@@ -67,6 +67,24 @@ void OgreCamera::SetAspectRatio(double _ratio)
 }
 
 //////////////////////////////////////////////////
+void OgreCamera::Render()
+{
+  if (this->renderTexture)
+  {
+    OgreRenderTexturePtr derived =
+        boost::dynamic_pointer_cast<OgreRenderTexture>(this->renderTexture);
+
+    derived->Update();
+  }
+}
+
+//////////////////////////////////////////////////
+RenderTexturePtr OgreCamera::GetRenderTexture() const
+{
+  return this->renderTexture2;
+}
+
+//////////////////////////////////////////////////
 BaseRenderTextureBuilderPtr OgreCamera::GetTextureBuilder() const
 {
   return this->textureBuilder;
@@ -77,6 +95,7 @@ void OgreCamera::Init()
 {
   BaseCamera::Init();
   this->CreateCamera();
+  this->CreateRenderTexture();
   this->CreateTextureBuilder();
   this->Reset();
 }
@@ -105,6 +124,13 @@ void OgreCamera::CreateCamera()
   this->ogreCamera->setCustomProjectionMatrix(false);
 
   this->ogreNode->attachObject(this->ogreCamera);
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::CreateRenderTexture()
+{
+  RenderTexturePtr texture = this->scene->CreateRenderTexture();
+  this->renderTexture2 = boost::dynamic_pointer_cast<OgreRenderTexture>(texture);
 }
 
 //////////////////////////////////////////////////

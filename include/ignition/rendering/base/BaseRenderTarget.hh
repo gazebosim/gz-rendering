@@ -17,37 +17,57 @@
 #ifndef _IGNITION_RENDERING_BASERENDERTARGET_HH_
 #define _IGNITION_RENDERING_BASERENDERTARGET_HH_
 
-#include "ignition/rendering/PixelFormat.hh"
+#include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/Util.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE BaseRenderTarget
+    template <class T>
+    class IGNITION_VISIBLE BaseRenderTarget :
+      public virtual RenderTarget,
+      public virtual T
     {
       public: BaseRenderTarget();
 
       public: virtual ~BaseRenderTarget();
-
-      public: virtual unsigned int GetWidth() const = 0;
-
-      public: virtual unsigned int GetHeight() const = 0;
-
-      public: virtual void Update() = 0;
-
-      public: virtual void Destroy() = 0;
     };
 
+    template <class T>
     class IGNITION_VISIBLE BaseRenderTexture :
-      public virtual BaseRenderTarget
+      public virtual RenderTexture,
+      public virtual T
     {
       public: BaseRenderTexture();
 
       public: virtual ~BaseRenderTexture();
 
-      public: virtual void GetData(void *data) const = 0;
+      public: virtual unsigned int GetWidth() const;
+
+      public: virtual void SetWidth(unsigned int _width);
+
+      public: virtual unsigned int GetHeight() const;
+
+      public: virtual void SetHeight(unsigned int _height);
+
+      public: virtual PixelFormat GetFormat() const;
+
+      public: virtual void SetFormat(PixelFormat _format);
+
+      public: virtual void PreRender();
+
+      protected: virtual void Rebuild();
+
+      protected: virtual void RebuildImpl() = 0;
+
+      protected: unsigned int width;
+
+      protected: unsigned int height;
+
+      protected: PixelFormat format;
+
+      protected: bool textureDirty;
     };
 
     class IGNITION_VISIBLE BaseRenderTextureBuilder
@@ -78,7 +98,7 @@ namespace ignition
 
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
-      public: virtual BaseRenderTexturePtr Build() const = 0;
+      public: virtual RenderTexturePtr Build() const = 0;
 
       protected: unsigned int width;
 
@@ -88,6 +108,95 @@ namespace ignition
 
       protected: unsigned int aa;
     };
+
+    //////////////////////////////////////////////////
+    /// BaseRenderTarget
+    template <class T>
+    BaseRenderTarget<T>::BaseRenderTarget()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRenderTarget<T>::~BaseRenderTarget()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    /// BaseRenderTexture
+    template <class T>
+    BaseRenderTexture<T>::BaseRenderTexture() :
+      textureDirty(true)
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRenderTexture<T>::~BaseRenderTexture()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseRenderTexture<T>::GetWidth() const
+    {
+      return this->width;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTexture<T>::SetWidth(unsigned int _width)
+    {
+      this->width = _width;
+      this->textureDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseRenderTexture<T>::GetHeight() const
+    {
+      return this->height;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTexture<T>::SetHeight(unsigned int _height)
+    {
+      this->height = _height;
+      this->textureDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    PixelFormat BaseRenderTexture<T>::GetFormat() const
+    {
+      return this->format;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTexture<T>::SetFormat(PixelFormat _format)
+    {
+      this->format = PixelUtil::Sanitize(_format);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTexture<T>::PreRender()
+    {
+      this->Rebuild();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTexture<T>::Rebuild()
+    {
+      if (this->textureDirty)
+      {
+        this->RebuildImpl();
+        this->textureDirty = false;
+      }
+    }
   }
 }
 #endif

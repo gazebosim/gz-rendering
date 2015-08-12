@@ -14,85 +14,83 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/base/BaseRenderTarget.hh"
+#include "ignition/rendering/optix/OptixRenderEngine.hh"
+
+#include "ignition/rendering/optix/OptixIncludes.hh"
+#include "ignition/rendering/optix/OptixScene.hh"
+#include "ignition/rendering/optix/OptixStorage.hh"
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-BaseRenderTextureBuilder::BaseRenderTextureBuilder()
+const std::string OptixRenderEngine::PTX_PREFIX("cuda_compile_ptx_generated_");
+
+const std::string OptixRenderEngine::PTX_SUFFIX(".cu.ptx");
+
+//////////////////////////////////////////////////
+OptixRenderEngine::OptixRenderEngine()
 {
 }
 
 //////////////////////////////////////////////////
-BaseRenderTextureBuilder::~BaseRenderTextureBuilder()
+OptixRenderEngine::~OptixRenderEngine()
 {
+  this->Fini();
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseRenderTextureBuilder::GetWidth() const
+bool OptixRenderEngine::Load()
 {
-  return this->width;
+  return true;
 }
 
 //////////////////////////////////////////////////
-void BaseRenderTextureBuilder::SetWidth(unsigned int _width)
+bool OptixRenderEngine::Init()
 {
-  this->width = _width;
+  this->scenes = OptixSceneStorePtr(new OptixSceneStore);
+  return true;
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseRenderTextureBuilder::GetHeight() const
+bool OptixRenderEngine::Fini()
 {
-  return this->height;
+  return true;
 }
 
 //////////////////////////////////////////////////
-void BaseRenderTextureBuilder::SetHeight(unsigned int _height)
+bool OptixRenderEngine::IsLoaded() const
 {
-  this->height = _height;
+  return true;
 }
 
 //////////////////////////////////////////////////
-void BaseRenderTextureBuilder::SetSize(unsigned int _width,
-    unsigned int _height)
+bool OptixRenderEngine::IsInitialized() const
 {
-  this->width = _width;
-  this->height = _height;
+  return true;
 }
 
 //////////////////////////////////////////////////
-PixelFormat BaseRenderTextureBuilder::GetFormat() const
+bool OptixRenderEngine::IsEnabled() const
 {
-  return this->format;
+  return true;
 }
 
 //////////////////////////////////////////////////
-void BaseRenderTextureBuilder::SetFormat(PixelFormat _format)
+std::string OptixRenderEngine::GetPtxFile(const std::string& _fileBase) const
 {
-  this->format = PixelUtil::Sanitize(_format);
+  return PTX_PREFIX + _fileBase + PTX_SUFFIX;
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseRenderTextureBuilder::GetDepth() const
+ScenePtr OptixRenderEngine::CreateSceneImpl(unsigned int _id,
+    const std::string &_name)
 {
-  return PixelUtil::GetChannelCount(this->format);
+  return OptixScenePtr(new OptixScene(_id, _name));
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseRenderTextureBuilder::GetMemorySize() const
+SceneStorePtr OptixRenderEngine::GetScenes() const
 {
-  return PixelUtil::GetMemorySize(this->format, this->width, this->height);
-}
-
-//////////////////////////////////////////////////
-unsigned int BaseRenderTextureBuilder::GetAntiAliasing() const
-{
-  return this->aa;
-}
-
-//////////////////////////////////////////////////
-void BaseRenderTextureBuilder::SetAntiAliasing(unsigned int _aa)
-{
-  this->aa = _aa;
+  return this->scenes;
 }

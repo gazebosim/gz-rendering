@@ -267,6 +267,8 @@ namespace ignition
       public: virtual MaterialPtr CreateMaterial(
                   const gazebo::common::Material &_material) = 0;
 
+      public: virtual RenderTexturePtr CreateRenderTexture() = 0;
+
       public: virtual void PreRender() = 0;
 
       public: virtual void Clear() = 0;

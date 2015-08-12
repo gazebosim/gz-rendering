@@ -245,6 +245,8 @@ namespace ignition
       public: virtual MaterialPtr CreateMaterial(
                   const gazebo::common::Material &_material);
 
+      public: virtual RenderTexturePtr CreateRenderTexture();
+
       public: virtual void PreRender();
 
       public: virtual void Clear();
@@ -303,6 +305,9 @@ namespace ignition
 
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      protected: virtual RenderTexturePtr CreateRenderTextureImpl(
+                     unsigned int _id, const std::string &_name) = 0;
 
       protected: virtual LightStorePtr GetLights() const = 0;
 

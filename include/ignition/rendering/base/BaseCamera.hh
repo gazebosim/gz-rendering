@@ -66,8 +66,6 @@ namespace ignition
 
       public: virtual void PreRender();
 
-      public: virtual void Render();
-
       public: virtual void PostRender();
 
       public: virtual Image CreateImage() const;
@@ -85,14 +83,14 @@ namespace ignition
 
       protected: virtual void *CreateImageBuffer() const;
 
-      protected: virtual bool ValidateImage(const Image &_image) const;
-
       protected: virtual void Reset();
+
+      protected: virtual RenderTexturePtr GetRenderTexture() const = 0;
 
       protected: virtual BaseRenderTextureBuilderPtr
                      GetTextureBuilder() const = 0;
 
-      protected: BaseRenderTexturePtr renderTexture;
+      protected: RenderTexturePtr renderTexture;
 
       protected: gazebo::event::EventT<void(const void *, unsigned int, unsigned int,
                      unsigned int, const std::string &)> newFrameEvent;
@@ -112,7 +110,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::Load(sdf::ElementPtr _sdf)
+    void BaseCamera<T>::Load(sdf::ElementPtr /*_sdf*/)
     {
     }
 
@@ -205,18 +203,9 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::Render()
-    {
-      if (this->renderTexture)
-      {
-        this->renderTexture->Update();
-      }
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
     void BaseCamera<T>::PostRender()
     {
+      // do nothing by default
     }
 
     //////////////////////////////////////////////////
@@ -243,16 +232,12 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::GetImageData(Image &_image) const
     {
-      if (this->ValidateImage(_image))
-      {
-        void *data = _image.GetData();
-        this->renderTexture->GetData(data);
-      }
+      this->renderTexture->GetImage(_image);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    bool BaseCamera<T>::SaveFrame(const std::string &_name)
+    bool BaseCamera<T>::SaveFrame(const std::string &/*_name*/)
     {
       return false;
     }
@@ -279,26 +264,6 @@ namespace ignition
       // TODO: determine proper type
       unsigned int size = this->GetImageMemorySize();
       return new unsigned char *[size];
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    bool BaseCamera<T>::ValidateImage(const Image &_image) const
-    {
-      if (_image.GetWidth() != this->GetImageWidth() ||
-          _image.GetHeight() != this->GetImageHeight())
-      {
-        gzerr << "Image dimensions do not match camera" << std::endl;
-        return false;
-      }
-
-      if (_image.GetFormat() != this->GetImageFormat())
-      {
-        gzerr << "Image format does not match camera" << std::endl;
-        return false;
-      }
-
-      return true;
     }
 
     //////////////////////////////////////////////////

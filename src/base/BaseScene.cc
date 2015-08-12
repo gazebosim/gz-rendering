@@ -699,6 +699,14 @@ MaterialPtr BaseScene::CreateMaterial(const gazebo::common::Material &_material)
 }
 
 //////////////////////////////////////////////////
+RenderTexturePtr BaseScene::CreateRenderTexture()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "RenderTexture");
+  return this->CreateRenderTextureImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
 void BaseScene::PreRender()
 {
   this->GetRootVisual()->PreRender();

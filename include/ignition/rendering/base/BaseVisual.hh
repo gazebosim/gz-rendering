@@ -139,20 +139,20 @@ namespace ignition
     template <class T>
     gazebo::math::Pose BaseVisual<T>::GetLocalPose() const
     {
-      gazebo::math::Pose pose = this->GetRawLocalPose();
+      gazebo::math::Pose rawPose = this->GetRawLocalPose();
       gazebo::math::Vector3 scale = this->GetScale();
-      pose.pos += pose.rot * (scale * this->origin);
-      return pose;
+      rawPose.pos += rawPose.rot * (scale * this->origin);
+      return rawPose;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::SetLocalPose(const gazebo::math::Pose &_pose)
     {
-      gazebo::math::Pose pose = _pose;
+      gazebo::math::Pose rawPose = _pose;
       gazebo::math::Vector3 scale = this->GetScale();
-      pose.pos -= pose.rot * (scale * this->origin);
-      this->SetRawLocalPose(pose);
+      rawPose.pos -= rawPose.rot * (scale * this->origin);
+      this->SetRawLocalPose(rawPose);
     }
 
     //////////////////////////////////////////////////
@@ -357,9 +357,9 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::SetScale(const gazebo::math::Vector3 &_scale)
     {
-      gazebo::math::Pose pose = this->GetLocalPose();
+      gazebo::math::Pose rawPose = this->GetLocalPose();
       this->SetScaleImpl(_scale);
-      this->SetLocalPose(pose);
+      this->SetLocalPose(rawPose);
     }
 
     //////////////////////////////////////////////////

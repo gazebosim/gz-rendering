@@ -45,15 +45,23 @@ namespace ignition
 
       public: virtual void SetAspectRatio(double _ratio);
 
+      public: virtual void Render();
+
+      protected: virtual RenderTexturePtr GetRenderTexture() const;
+
       protected: virtual BaseRenderTextureBuilderPtr GetTextureBuilder() const;
 
       protected: virtual void Init();
 
       private: void CreateCamera();
 
+      protected: virtual void CreateRenderTexture();
+
       protected: virtual void CreateTextureBuilder();
 
       protected: Ogre::Camera *ogreCamera;
+
+      protected: OgreRenderTexturePtr renderTexture2;
 
       protected: OgreRenderTextureBuilderPtr textureBuilder;
 

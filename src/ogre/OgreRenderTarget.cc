@@ -53,6 +53,28 @@ unsigned int OgreRenderTarget::GetHeight() const
 }
 
 //////////////////////////////////////////////////
+void OgreRenderTarget::GetImage(Image &_image) const
+{
+  // TODO: handle Bayer conversions
+  // TODO: handle ogre version differences
+
+  unsigned int width = this->ogreViewport->getActualWidth();
+  unsigned int height = this->ogreViewport->getActualHeight();
+
+  if (_image.GetWidth() != width || _image.GetHeight() != height)
+  {
+    gzerr << "Invalid image dimensions" << std::endl;
+    return;
+  }
+
+  Ogre::PixelFormat format = OgreConversions::Convert(_image.GetFormat());
+  void* data = _image.GetData();
+
+  Ogre::PixelBox ogrePixelBox(width, height, 1, format, data);
+  this->GetOgreRenderTarget()->copyContentsToMemory(ogrePixelBox);
+}
+
+//////////////////////////////////////////////////
 void OgreRenderTarget::Update()
 {
   this->GetOgreRenderTarget()->update();
@@ -83,30 +105,21 @@ OgreRenderTexture::~OgreRenderTexture()
 }
 
 //////////////////////////////////////////////////
-void OgreRenderTexture::GetData(void *data) const
-{
-  // TODO: handle Bayer conversions
-  // TODO: handle ogre version differences
-
-  unsigned int width = this->ogreViewport->getActualWidth();
-  unsigned int height = this->ogreViewport->getActualHeight();
-  Ogre::PixelFormat format = this->ogreFormat;
-
-  Ogre::PixelBox ogrePixelBox(width, height, 1, format, data);
-  this->GetOgreRenderTarget()->copyContentsToMemory(ogrePixelBox);
-}
-
-//////////////////////////////////////////////////
 void OgreRenderTexture::Destroy()
 {
-  std::string name = this->ogreTexture->getName();
-  Ogre::TextureManager::getSingleton().remove(name);
+  std::string ogreName = this->ogreTexture->getName();
+  Ogre::TextureManager::getSingleton().remove(ogreName);
 }
 
 //////////////////////////////////////////////////
 Ogre::RenderTarget *OgreRenderTexture::GetOgreRenderTarget() const
 {
   return this->ogreTexture->getBuffer()->getRenderTarget();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::RebuildImpl()
+{
 }
 
 //////////////////////////////////////////////////  
@@ -167,7 +180,7 @@ void OgreRenderTextureBuilder::SetBackgroundColor(gazebo::common::Color _color)
 }
 
 //////////////////////////////////////////////////
-BaseRenderTexturePtr OgreRenderTextureBuilder::Build() const
+RenderTexturePtr OgreRenderTextureBuilder::Build() const
 {
   if (!this->ogreCamera)
   {

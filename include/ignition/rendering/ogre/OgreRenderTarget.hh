@@ -17,12 +17,12 @@
 #ifndef _IGNITION_RENDERING_OGRERENDERTARGET_HH_
 #define _IGNITION_RENDERING_OGRERENDERTARGET_HH_
 
-#include <OGRE/OgrePixelFormat.h>
-#include <OGRE/OgreColourValue.h>
 #include "gazebo/common/Color.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreObject.hh"
 
 namespace Ogre
 {
@@ -36,7 +36,7 @@ namespace ignition
   namespace rendering
   {
     class IGNITION_VISIBLE OgreRenderTarget :
-      public virtual BaseRenderTarget
+      public virtual BaseRenderTarget<OgreObject>
     {
       protected: OgreRenderTarget();
 
@@ -45,6 +45,8 @@ namespace ignition
       public: virtual unsigned int GetWidth() const;
 
       public: virtual unsigned int GetHeight() const;
+
+      public: virtual void GetImage(Image &_image) const;
 
       public: virtual void Update();
 
@@ -64,22 +66,23 @@ namespace ignition
     };
 
     class IGNITION_VISIBLE OgreRenderTexture :
-      public virtual OgreRenderTarget,
-      public virtual BaseRenderTexture
+      public virtual BaseRenderTexture<OgreRenderTarget>
     {
       protected: OgreRenderTexture();
 
       public: virtual ~OgreRenderTexture();
 
-      public: virtual void GetData(void *data) const;
-
       public: virtual void Destroy();
 
       protected: virtual Ogre::RenderTarget *GetOgreRenderTarget() const;
 
+      protected: virtual void RebuildImpl();
+
       protected: Ogre::Texture *ogreTexture;
 
       protected: Ogre::PixelFormat ogreFormat;
+
+      private: friend class OgreScene;
 
       private: friend class OgreRenderTextureBuilder;
     };
@@ -105,7 +108,7 @@ namespace ignition
 
       public: virtual void SetBackgroundColor(gazebo::common::Color _color);
 
-      public: virtual BaseRenderTexturePtr Build() const;
+      public: virtual RenderTexturePtr Build() const;
 
       protected: virtual OgreRenderTexturePtr BuildSafe() const;
 

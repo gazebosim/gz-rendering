@@ -14,28 +14,23 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGRESCENE_HH_
-#define _IGNITION_RENDERING_OGRESCENE_HH_
+#ifndef _IGNITION_RENDERING_OPTIXSCENE_HH_
+#define _IGNITION_RENDERING_OPTIXSCENE_HH_
 
 #include "ignition/rendering/base/BaseScene.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-
-namespace Ogre
-{
-  class Root;
-  class SceneManager;
-}
+#include "ignition/rendering/optix/OptixRenderTypes.hh"
+#include "ignition/rendering/optix/OptixIncludes.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreScene :
+    class IGNITION_VISIBLE OptixScene :
       public BaseScene
     {
-      protected: OgreScene(unsigned int _id, const std::string &_name);
+      protected: OptixScene(unsigned int _id, const std::string &_name);
 
-      public: virtual ~OgreScene();
+      public: virtual ~OptixScene();
 
       public: virtual void Fini();
 
@@ -57,7 +52,12 @@ namespace ignition
 
       public: virtual void Destroy();
 
-      public: virtual Ogre::SceneManager *GetOgreSceneManager() const;
+      public: virtual OptixLightManagerPtr GetLightManager() const;
+
+      public: virtual optix::Context GetOptixContext() const;
+
+      public: virtual optix::Program CreateOptixProgram(
+                  const std::string &_fileBase, const std::string &_function);
 
       protected: virtual bool LoadImpl();
 
@@ -108,10 +108,7 @@ namespace ignition
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name);
 
-      protected: virtual RenderTexturePtr CreateRenderTextureImpl(
-                     unsigned int _id, const std::string &_name);
-
-      protected: virtual bool InitObject(OgreObjectPtr _object,
+      protected: virtual bool InitObject(OptixObjectPtr _object,
                      unsigned int _id, const std::string &_name);
 
       protected: virtual LightStorePtr GetLights() const;
@@ -126,31 +123,35 @@ namespace ignition
 
       private: void CreateRootVisual();
 
+      private: void CreateLightManager();
+
       private: void CreateMeshFactory();
 
       private: void CreateStores();
 
-      private: OgreScenePtr GetSharedThis();
+      private: OptixScenePtr SharedThis();
 
-      protected: OgreVisualPtr rootVisual;
+      protected: OptixVisualPtr rootVisual;
 
-      protected: OgreMeshFactoryPtr meshFactory;
+      protected: OptixLightManagerPtr lightManager;
+
+      protected: OptixMeshFactoryPtr meshFactory;
 
       protected: gazebo::common::Color backgroundColor;
 
-      protected: OgreLightStorePtr lights;
+      protected: OptixLightStorePtr lights;
 
-      protected: OgreSensorStorePtr sensors;
+      protected: OptixSensorStorePtr sensors;
 
-      protected: OgreVisualStorePtr visuals;
+      protected: OptixVisualStorePtr visuals;
 
-      protected: OgreMaterialMapPtr materials;
+      protected: OptixMaterialMapPtr materials;
 
-      protected: Ogre::Root *ogreRoot;
+      protected: optix::Context optixContext;
 
-      protected: Ogre::SceneManager *ogreSceneManager;
+      protected: gazebo::common::Color ambientLight;
 
-      private: friend class OgreRenderEngine;
+      private: friend class OptixRenderEngine;
     };
   }
 }

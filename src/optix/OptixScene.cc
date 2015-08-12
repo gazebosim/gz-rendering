@@ -14,238 +14,245 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/ogre.hh"
+#include "ignition/rendering/optix/OptixScene.hh"
+#include "ignition/rendering/optix/optix.hh"
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OgreScene::OgreScene(unsigned int _id, const std::string &_name) :
+OptixScene::OptixScene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name),
   rootVisual(NULL),
   meshFactory(NULL),
-  ogreRoot(NULL),
-  ogreSceneManager(NULL)
+  optixContext(NULL)
 {
   this->backgroundColor = gazebo::common::Color::Black;
 }
 
 //////////////////////////////////////////////////
-OgreScene::~OgreScene()
+OptixScene::~OptixScene()
 {
 }
 
 //////////////////////////////////////////////////
-void OgreScene::Fini()
+void OptixScene::Fini()
 {
 }
 
 //////////////////////////////////////////////////
-RenderEngine *OgreScene::GetEngine() const
+RenderEngine *OptixScene::GetEngine() const
 {
-  return OgreRenderEngine::Instance();
+  return OptixRenderEngine::Instance();
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreScene::GetRootVisual() const
+VisualPtr OptixScene::GetRootVisual() const
 {
   return this->rootVisual;
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreScene::GetAmbientLight() const
+gazebo::common::Color OptixScene::GetAmbientLight() const
 {
-  Ogre::ColourValue ogreColor = this->ogreSceneManager->getAmbientLight();
-  return OgreConversions::Convert(ogreColor);
+  return gazebo::common::Color::White;
 }
 
 //////////////////////////////////////////////////
-void OgreScene::SetAmbientLight(const gazebo::common::Color &_color)
+void OptixScene::SetAmbientLight(const gazebo::common::Color &/*_color*/)
 {
-  Ogre::ColourValue ogreColor = OgreConversions::Convert(_color);
-  this->ogreSceneManager->setAmbientLight(ogreColor);
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreScene::GetBackgroundColor() const
+gazebo::common::Color OptixScene::GetBackgroundColor() const
 {
-  return this->backgroundColor;
+  return gazebo::common::Color::Black;
 }
 
 //////////////////////////////////////////////////
-void OgreScene::SetBackgroundColor(const gazebo::common::Color &_color)
+void OptixScene::SetBackgroundColor(const gazebo::common::Color &/*_color*/)
 {
-  this->backgroundColor = _color;
 }
 
 //////////////////////////////////////////////////
-void OgreScene::PreRender()
+void OptixScene::PreRender()
 {
+  this->lightManager->Clear();
   BaseScene::PreRender();
-  OgreRTShaderSystem::Instance()->UpdateShaders();
+  this->lightManager->PreRender();
 }
 
 //////////////////////////////////////////////////
-void OgreScene::Clear()
+void OptixScene::Clear()
 {
 }
 
 //////////////////////////////////////////////////
-void OgreScene::Destroy()
+void OptixScene::Destroy()
 {
 }
 
 //////////////////////////////////////////////////
-Ogre::SceneManager *OgreScene::GetOgreSceneManager() const
+OptixLightManagerPtr OptixScene::GetLightManager() const
 {
-  return this->ogreSceneManager;
+  return this->lightManager;
 }
 
 //////////////////////////////////////////////////
-bool OgreScene::LoadImpl()
+optix::Context OptixScene::GetOptixContext() const
+{
+  return this->optixContext;
+}
+
+//////////////////////////////////////////////////
+optix::Program OptixScene::CreateOptixProgram(const std::string &_fileBase,
+    const std::string &_function)
+{
+  std::string fileName = OptixRenderEngine::Instance()->GetPtxFile(_fileBase);
+  return this->optixContext->createProgramFromPTXFile(fileName, _function);
+}
+
+//////////////////////////////////////////////////
+bool OptixScene::LoadImpl()
 {
   return true;
 }
 
 //////////////////////////////////////////////////
-bool OgreScene::InitImpl()
+bool OptixScene::InitImpl()
 {
   this->CreateContext();
   this->CreateRootVisual();
-  this->CreateStores();
+  this->CreateLightManager();
   this->CreateMeshFactory();
-
-  OgreRTShaderSystem::Instance()->AddScene(this->GetSharedThis());
-  OgreRTShaderSystem::Instance()->ApplyShadows(this->GetSharedThis());
-
+  this->CreateStores();
   return true;
 }
 
 //////////////////////////////////////////////////
-LightStorePtr OgreScene::GetLights() const
+LightStorePtr OptixScene::GetLights() const
 {
   return this->lights;
 }
 
 //////////////////////////////////////////////////
-SensorStorePtr OgreScene::GetSensors() const
+SensorStorePtr OptixScene::GetSensors() const
 {
   return this->sensors;
 }
 
 //////////////////////////////////////////////////
-VisualStorePtr OgreScene::GetVisuals() const
+VisualStorePtr OptixScene::GetVisuals() const
 {
   return this->visuals;
 }
 
 //////////////////////////////////////////////////
-MaterialMapPtr OgreScene::GetMaterials() const
+MaterialMapPtr OptixScene::GetMaterials() const
 {
   return this->materials;
 }
 
 //////////////////////////////////////////////////
-DirectionalLightPtr OgreScene::CreateDirectionalLightImpl(unsigned int _id,
+DirectionalLightPtr OptixScene::CreateDirectionalLightImpl(unsigned int _id,
     const std::string &_name)
 {
-  OgreDirectionalLightPtr light(new OgreDirectionalLight);
+  OptixDirectionalLightPtr light(new OptixDirectionalLight);
   bool result = this->InitObject(light, _id, _name);
   return (result) ? light : NULL;
 }
 
 //////////////////////////////////////////////////
-PointLightPtr OgreScene::CreatePointLightImpl(unsigned int _id,
+PointLightPtr OptixScene::CreatePointLightImpl(unsigned int _id,
     const std::string &_name)
 {
-  OgrePointLightPtr light(new OgrePointLight);
+  OptixPointLightPtr light(new OptixPointLight);
   bool result = this->InitObject(light, _id, _name);
   return (result) ? light : NULL;
 }
 
 //////////////////////////////////////////////////
-SpotLightPtr OgreScene::CreateSpotLightImpl(unsigned int _id,
+SpotLightPtr OptixScene::CreateSpotLightImpl(unsigned int _id,
     const std::string &_name)
 {
-  OgreSpotLightPtr light(new OgreSpotLight);
+  OptixSpotLightPtr light(new OptixSpotLight);
   bool result = this->InitObject(light, _id, _name);
   return (result) ? light : NULL;
 }
 
 //////////////////////////////////////////////////
-CameraPtr OgreScene::CreateCameraImpl(unsigned int _id,
+CameraPtr OptixScene::CreateCameraImpl(unsigned int _id,
     const std::string &_name)
 {
-  OgreCameraPtr camera(new OgreCamera);
+  OptixCameraPtr camera(new OptixCamera);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : NULL;
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreScene::CreateVisualImpl(unsigned int _id,
+VisualPtr OptixScene::CreateVisualImpl(unsigned int _id,
     const std::string &_name)
 {
-  OgreVisualPtr visual(new OgreVisual);
+  OptixVisualPtr visual(new OptixVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : NULL;
 }
 
 //////////////////////////////////////////////////
-ArrowVisualPtr OgreScene::CreateArrowVisualImpl(unsigned int _id,
+ArrowVisualPtr OptixScene::CreateArrowVisualImpl(unsigned int _id,
     const std::string &_name)
 {
-  OgreArrowVisualPtr visual(new OgreArrowVisual);
+  OptixArrowVisualPtr visual(new OptixArrowVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : NULL;
 }
 
 //////////////////////////////////////////////////
-AxisVisualPtr OgreScene::CreateAxisVisualImpl(unsigned int _id,
+AxisVisualPtr OptixScene::CreateAxisVisualImpl(unsigned int _id,
     const std::string &_name)
 {
-  OgreAxisVisualPtr visual(new OgreAxisVisual);
+  OptixAxisVisualPtr visual(new OptixAxisVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : NULL;
 }
 
 //////////////////////////////////////////////////
-GeometryPtr OgreScene::CreateBoxImpl(unsigned int _id,
+GeometryPtr OptixScene::CreateBoxImpl(unsigned int _id,
     const std::string &_name)
 {
   return this->CreateMeshImpl(_id, _name, "unit_box");
 }
 
 //////////////////////////////////////////////////
-GeometryPtr OgreScene::CreateConeImpl(unsigned int _id,
+GeometryPtr OptixScene::CreateConeImpl(unsigned int _id,
     const std::string &_name)
 {
   return this->CreateMeshImpl(_id, _name, "unit_cone");
 }
 
 //////////////////////////////////////////////////
-GeometryPtr OgreScene::CreateCylinderImpl(unsigned int _id,
+GeometryPtr OptixScene::CreateCylinderImpl(unsigned int _id,
     const std::string &_name)
 {
   return this->CreateMeshImpl(_id, _name, "unit_cylinder");
 }
 
 //////////////////////////////////////////////////
-GeometryPtr OgreScene::CreatePlaneImpl(unsigned int _id,
+GeometryPtr OptixScene::CreatePlaneImpl(unsigned int _id,
     const std::string &_name)
 {
   return this->CreateMeshImpl(_id, _name, "unit_plane");
 }
 
 //////////////////////////////////////////////////
-GeometryPtr OgreScene::CreateSphereImpl(unsigned int _id,
+GeometryPtr OptixScene::CreateSphereImpl(unsigned int _id,
     const std::string &_name)
 {
   return this->CreateMeshImpl(_id, _name, "unit_sphere");
 }
 
 //////////////////////////////////////////////////
-MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
+MeshPtr OptixScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
     const std::string &_meshName)
 {
   MeshDescriptor descriptor(_meshName);
@@ -253,40 +260,31 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
+MeshPtr OptixScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
     const MeshDescriptor &_desc)
 {
-  OgreMeshPtr mesh = this->meshFactory->Create(_desc);
+  OptixMeshPtr mesh = this->meshFactory->Create(_desc);
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : NULL;
 }
 
 //////////////////////////////////////////////////
-MaterialPtr OgreScene::CreateMaterialImpl(unsigned int _id,
+MaterialPtr OptixScene::CreateMaterialImpl(unsigned int _id,
     const std::string &_name)
 {
-  OgreMaterialPtr material(new OgreMaterial);
+  OptixMaterialPtr material(new OptixMaterial);
   bool result = this->InitObject(material, _id, _name);
   return (result) ? material : NULL;
 }
 
 //////////////////////////////////////////////////
-RenderTexturePtr OgreScene::CreateRenderTextureImpl(unsigned int _id,
-    const std::string &_name)
-{
-  OgreRenderTexturePtr renderTexture(new OgreRenderTexture);
-  bool result = this->InitObject(renderTexture, _id, _name);
-  return (result) ? renderTexture : NULL;
-}
-
-//////////////////////////////////////////////////
-bool OgreScene::InitObject(OgreObjectPtr _object, unsigned int _id,
+bool OptixScene::InitObject(OptixObjectPtr _object, unsigned int _id,
     const std::string &_name)
 {
   // assign needed varibles
   _object->id = _id;
   _object->name = _name;
-  _object->scene = this->GetSharedThis();
+  _object->scene = this->SharedThis();
 
   // initialize object
   _object->Load();
@@ -296,17 +294,30 @@ bool OgreScene::InitObject(OgreObjectPtr _object, unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-void OgreScene::CreateContext()
+void OptixScene::CreateContext()
 {
-  Ogre::Root *root = OgreRenderEngine::Instance()->GetOgreRoot();
-  this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC);
+  this->optixContext = optix::Context::create();
+  this->optixContext->setStackSize(8192); // TODO: set dynamically
+  this->optixContext->setEntryPointCount(0);
+  this->optixContext->setRayTypeCount(0);
+
+  // TODO: clean up code
+  this->optixContext["sceneEpsilon"]->setFloat(1E-3); // TODO: set dynamically
+
+  // TODO: setup programatically
+  this->optixContext["maxReflectionDepth"]->setInt(3);
+  this->optixContext["maxRefractionDepth"]->setInt(3);
+
+  // TODO: remove after testing
+  this->optixContext->setPrintEnabled(true);
+  this->optixContext->setPrintBufferSize(4096);
 }
 
 //////////////////////////////////////////////////
-void OgreScene::CreateRootVisual()
+void OptixScene::CreateRootVisual()
 {
   // create unregistered visual
-  this->rootVisual = OgreVisualPtr(new OgreVisual);
+  this->rootVisual = OptixVisualPtr(new OptixVisual);
   unsigned int rootId = this->CreateObjectId(); 
   std::string rootName = this->CreateObjectName(rootId, "_ROOT_");
 
@@ -317,32 +328,37 @@ void OgreScene::CreateRootVisual()
     this->rootVisual = NULL;
   }
 
-  // add visual node to actual ogre root
-  Ogre::SceneNode *ogreRootNode = this->rootVisual->GetOgreNode();
-  this->ogreSceneManager->getRootSceneNode()->addChild(ogreRootNode);
+  // set visual group as root entry point
+  optix::Group rootGroup = this->rootVisual->GetOptixGroup();
+  optixContext["rootGroup"]->set(rootGroup);
 }
 
 //////////////////////////////////////////////////
-void OgreScene::CreateMeshFactory()
+void OptixScene::CreateLightManager()
 {
-  OgreScenePtr sharedThis = this->GetSharedThis();
-  this->meshFactory = OgreMeshFactoryPtr(new OgreMeshFactory(sharedThis));
+  OptixScenePtr sharedThis = this->SharedThis();
+  this->lightManager = OptixLightManagerPtr(new OptixLightManager(sharedThis));
 }
 
 //////////////////////////////////////////////////
-void OgreScene::CreateStores()
+void OptixScene::CreateMeshFactory()
 {
-  this->lights = OgreLightStorePtr(new OgreLightStore);
-  this->sensors = OgreSensorStorePtr(new OgreSensorStore);
-  this->visuals = OgreVisualStorePtr(new OgreVisualStore);
-  this->materials = OgreMaterialMapPtr(new OgreMaterialMap);
+  OptixScenePtr sharedThis = this->SharedThis();
+  this->meshFactory = OptixMeshFactoryPtr(new OptixMeshFactory(sharedThis));
 }
 
 //////////////////////////////////////////////////
-OgreScenePtr OgreScene::GetSharedThis()
+void OptixScene::CreateStores()
+{
+  this->lights = OptixLightStorePtr(new OptixLightStore);
+  this->sensors = OptixSensorStorePtr(new OptixSensorStore);
+  this->visuals = OptixVisualStorePtr(new OptixVisualStore);
+  this->materials = OptixMaterialMapPtr(new OptixMaterialMap);
+}
+
+//////////////////////////////////////////////////
+OptixScenePtr OptixScene::SharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
-  return boost::dynamic_pointer_cast<OgreScene>(sharedBase);
+  return boost::dynamic_pointer_cast<OptixScene>(sharedBase);
 }
-
-//////////////////////////////////////////////////

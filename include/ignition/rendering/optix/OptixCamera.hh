@@ -84,6 +84,8 @@ namespace ignition
 
       protected: unsigned int entryId;
 
+      protected: optix::Program optixErrorProgram;
+
       private: static const std::string PTX_BASE_NAME;
 
       private: static const std::string PTX_RENDER_FUNCTION;

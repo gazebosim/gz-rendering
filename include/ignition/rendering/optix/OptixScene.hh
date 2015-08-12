@@ -122,6 +122,8 @@ namespace ignition
 
       protected: virtual MaterialMapPtr GetMaterials() const;
 
+      protected: virtual unsigned int GetNextEntryId();
+
       private: void CreateContext();
 
       private: void CreateRootVisual();
@@ -151,6 +153,8 @@ namespace ignition
       protected: OptixMaterialMapPtr materials;
 
       protected: optix::Context optixContext;
+
+      protected: optix::Program optixMissProgram;
 
       protected: gazebo::common::Color ambientLight;
 

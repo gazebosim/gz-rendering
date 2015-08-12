@@ -39,6 +39,8 @@ namespace ignition
       public: virtual optix::Buffer GetOptixBuffer() const = 0;
 
       protected: unsigned int GetMemorySize() const;
+
+      protected: float *hostData;
     };
 
     class IGNITION_VISIBLE OptixRenderTexture :

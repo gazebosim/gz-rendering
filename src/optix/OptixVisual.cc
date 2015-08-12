@@ -122,18 +122,7 @@ void OptixVisual::SetScaleImpl(const gazebo::math::Vector3 &/*_scale*/)
 void OptixVisual::Init()
 {
   BaseVisual::Init();
-  this->CreateGroup();
   this->CreateStorage();
-}
-
-//////////////////////////////////////////////////
-void OptixVisual::CreateGroup()
-{
-  optix::Context optixContext = this->scene->GetOptixContext();
-  this->optixAccel = optixContext->createAcceleration("MedianBvh", "Bvh");
-  this->optixGroup = optixContext->createGroup();
-  this->optixGroup->setAcceleration(this->optixAccel);
-  this->optixTransform->setChild(this->optixGroup);
 }
 
 //////////////////////////////////////////////////

@@ -123,4 +123,8 @@ void OptixNode::Init()
 {
   optix::Context optixContext = this->scene->GetOptixContext();
   this->optixTransform = optixContext->createTransform();
+  this->optixAccel = optixContext->createAcceleration("MedianBvh", "Bvh");
+  this->optixGroup = optixContext->createGroup();
+  this->optixGroup->setAcceleration(this->optixAccel);
+  this->optixTransform->setChild(this->optixGroup);
 }

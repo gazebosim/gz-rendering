@@ -24,6 +24,7 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
+
 const std::string OptixRenderEngine::PTX_PREFIX("cuda_compile_ptx_generated_");
 
 const std::string OptixRenderEngine::PTX_SUFFIX(".cu.ptx");
@@ -36,20 +37,20 @@ OptixRenderEngine::OptixRenderEngine()
 //////////////////////////////////////////////////
 OptixRenderEngine::~OptixRenderEngine()
 {
-  this->Fini();
 }
 
 //////////////////////////////////////////////////
 bool OptixRenderEngine::Fini()
 {
-  this->scenes->RemoveAll();
   return true;
 }
 
 //////////////////////////////////////////////////
 std::string OptixRenderEngine::GetPtxFile(const std::string& _fileBase) const
 {
-  return PTX_PREFIX + _fileBase + PTX_SUFFIX;
+  // TODO: search resources paths
+  // return PTX_PREFIX + _fileBase + PTX_SUFFIX;
+  return "src/optix/" + PTX_PREFIX + _fileBase + PTX_SUFFIX;
 }
 
 //////////////////////////////////////////////////

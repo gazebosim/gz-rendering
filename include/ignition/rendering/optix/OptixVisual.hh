@@ -54,17 +54,11 @@ namespace ignition
 
       protected: virtual void Init();
 
-      private: void CreateGroup();
-
       private: void CreateStorage();
 
       protected: OptixNodeStorePtr children;
 
       protected: OptixGeometryStorePtr geometries;
-
-      protected: optix::Group optixGroup;
-
-      protected: optix::Acceleration optixAccel;
 
       private: friend class OptixScene;
     };

@@ -1,6 +1,4 @@
-/*
- * Copyright (C) 2015 Open Source Robotics Foundation
- *
+/* * Copyright (C) 2015 Open Source Robotics Foundation *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +23,8 @@ OptixScene::OptixScene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name),
   rootVisual(NULL),
   meshFactory(NULL),
-  optixContext(NULL)
+  optixContext(NULL),
+  optixMissProgram(NULL)
 {
   this->backgroundColor = gazebo::common::Color::Black;
 }
@@ -80,6 +79,10 @@ void OptixScene::PreRender()
   this->lightManager->Clear();
   BaseScene::PreRender();
   this->lightManager->PreRender();
+
+  // TODO: remove for release
+  optixContext->validate();
+  optixContext->compile();
 }
 
 //////////////////////////////////////////////////
@@ -185,6 +188,7 @@ CameraPtr OptixScene::CreateCameraImpl(unsigned int _id,
     const std::string &_name)
 {
   OptixCameraPtr camera(new OptixCamera);
+  camera->entryId = this->GetNextEntryId();
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : NULL;
 }
@@ -303,12 +307,20 @@ bool OptixScene::InitObject(OptixObjectPtr _object, unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+unsigned int OptixScene::GetNextEntryId()
+{
+  unsigned int entryId = this->optixContext->getEntryPointCount();
+  this->optixContext->setEntryPointCount(entryId + 1);
+  return entryId;
+}
+
+//////////////////////////////////////////////////
 void OptixScene::CreateContext()
 {
   this->optixContext = optix::Context::create();
-  this->optixContext->setStackSize(8192); // TODO: set dynamically
+  this->optixContext->setStackSize(65536); // TODO: set dynamically
   this->optixContext->setEntryPointCount(0);
-  this->optixContext->setRayTypeCount(0);
+  this->optixContext->setRayTypeCount(RT_COUNT);
 
   // TODO: clean up code
   this->optixContext["sceneEpsilon"]->setFloat(1E-3); // TODO: set dynamically
@@ -320,6 +332,11 @@ void OptixScene::CreateContext()
   // TODO: remove after testing
   this->optixContext->setPrintEnabled(true);
   this->optixContext->setPrintBufferSize(4096);
+
+  // TODO: clean up code
+  this->optixMissProgram = this->CreateOptixProgram("OptixMissProgram", "Miss");
+  this->optixMissProgram["color"]->setFloat(0.25, 0.25, 0.25);
+  this->optixContext->setMissProgram(RT_RADIANCE, this->optixMissProgram);
 }
 
 //////////////////////////////////////////////////

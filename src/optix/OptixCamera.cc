@@ -32,6 +32,7 @@ const std::string OptixCamera::PTX_RENDER_FUNCTION("Render");
 OptixCamera::OptixCamera() :
   optixRenderProgram(NULL),
   renderTexture(NULL),
+  antiAliasing(1),
   cameraDirty(true),
   entryId(0)
 {
@@ -45,7 +46,8 @@ OptixCamera::~OptixCamera()
 //////////////////////////////////////////////////
 PixelFormat OptixCamera::GetImageFormat() const
 {
-  return PF_UNKNOWN;
+  // return PF_UNKNOWN;
+  return PF_R8G8B8;
 }
 
 //////////////////////////////////////////////////
@@ -128,7 +130,7 @@ void OptixCamera::WriteCameraToDevice()
 void OptixCamera::WriteCameraToDeviceImpl()
 {
   this->optixRenderProgram["aspectRatio"]->setFloat(this->aspectRatio);
-  this->optixRenderProgram["antiAliasing"]->setFloat(antiAliasing);
+  this->optixRenderProgram["aa"]->setInt(this->antiAliasing);
 }
 
 //////////////////////////////////////////////////
@@ -161,6 +163,7 @@ void OptixCamera::CreateRenderTexture()
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->renderTexture = boost::dynamic_pointer_cast<OptixRenderTexture>(base);
   this->renderTexture->SetFormat(PF_R8G8B8);
+  this->SetAntiAliasing(1);
 }
 
 //////////////////////////////////////////////////
@@ -169,9 +172,18 @@ void OptixCamera::CreateRenderProgram()
   this->optixRenderProgram =
       this->scene->CreateOptixProgram(PTX_BASE_NAME, PTX_RENDER_FUNCTION);
 
-  optix::Context context = this->scene->GetOptixContext();
-  context->setRayGenerationProgram(this->entryId, this->optixRenderProgram);
+  optix::Context optixContext = this->scene->GetOptixContext();
+
+  optixContext->setRayGenerationProgram(this->entryId,
+      this->optixRenderProgram);
 
   optix::Buffer optixBuffer = this->renderTexture->GetOptixBuffer();
   this->optixRenderProgram["buffer"]->setBuffer(optixBuffer);
+
+  // TODO: clean up
+  this->optixErrorProgram =
+      this->scene->CreateOptixProgram("OptixErrorProgram", "Error");
+
+  this->optixErrorProgram["buffer"]->setBuffer(optixBuffer);
+  optixContext->setExceptionProgram(this->entryId, this->optixErrorProgram);
 }

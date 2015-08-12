@@ -57,6 +57,8 @@ namespace ignition
 
       protected: optix::Group optixGroup;
 
+      protected: optix::Acceleration optixAccel;
+
       protected: gazebo::math::Pose pose;
 
       protected: bool poseDirty;

@@ -26,7 +26,8 @@ using namespace rendering;
 //////////////////////////////////////////////////
 // OptixRenderTarget
 //////////////////////////////////////////////////
-OptixRenderTarget::OptixRenderTarget()
+OptixRenderTarget::OptixRenderTarget() :
+  hostData(0)
 {
 }
 
@@ -50,10 +51,21 @@ void OptixRenderTarget::GetImage(Image &_image) const
     return;
   }
 
-  void* hostData = _image.GetData();
-  void* deviceData = this->GetOptixBuffer()->map();
-  std::memcpy(hostData, deviceData, this->GetMemorySize());
+  unsigned int count = width * height * 3;
+  void *deviceData = this->GetOptixBuffer()->map();
+  unsigned char *imageData = _image.GetData<unsigned char>();
+  std::memcpy(hostData, deviceData, sizeof(float) * count);
   this->GetOptixBuffer()->unmap();
+
+  for (unsigned int i = 0; i < count; ++i)
+  {
+    imageData[i] = (unsigned char)fminf(fmaxf(255 * this->hostData[i], 0), 255);
+  }
+
+  // void *hostData = _image.GetData();
+  // void *deviceData = this->GetOptixBuffer()->map();
+  // std::memcpy(hostData, deviceData, this->GetMemorySize());
+  // this->GetOptixBuffer()->unmap();
 }
 
 //////////////////////////////////////////////////
@@ -89,6 +101,12 @@ optix::Buffer OptixRenderTexture::GetOptixBuffer() const
 //////////////////////////////////////////////////
 void OptixRenderTexture::RebuildImpl()
 {
+  // TODO: determine pixel format
+
+  delete this->hostData;
+  unsigned int count = this->width * this->height * 3;
+  this->hostData = new float[count];
+
   this->optixBuffer->setSize(this->width, this->height);
 }
 
@@ -98,5 +116,6 @@ void OptixRenderTexture::Init()
   BaseRenderTarget::Init();
   optix::Context optixContext = this->scene->GetOptixContext();
   this->optixBuffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
-  this->optixBuffer->setFormat(RT_FORMAT_UNSIGNED_BYTE3);
+  // this->optixBuffer->setFormat(RT_FORMAT_UNSIGNED_BYTE3);
+  this->optixBuffer->setFormat(RT_FORMAT_FLOAT3);
 }

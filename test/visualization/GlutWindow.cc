@@ -25,6 +25,8 @@
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Scene.hh"
 
+#include <GL/glx.h>
+
 #define KEY_ESC 27
 
 //////////////////////////////////////////////////
@@ -32,6 +34,7 @@ unsigned int imgw = 0;
 unsigned int imgh = 0;
 gz::CameraPtr g_camera;
 gz::ImagePtr g_image;
+bool g_initContext = false;
 
 //////////////////////////////////////////////////
 void GlutRun(gz::CameraPtr _camera)
@@ -44,10 +47,29 @@ void GlutRun(gz::CameraPtr _camera)
 //////////////////////////////////////////////////
 void GlutDisplay()
 {
+  g_camera->Capture(*g_image);
+
   unsigned char *data = g_image->GetData<unsigned char>();
 
+  // share the context
+  if (!g_initContext)
+  {
+    g_initContext = true;
+    int attributeList[] = {GLX_RGBA, None};
+
+    GLXContext context = glXGetCurrentContext();
+    Display *display = glXGetCurrentDisplay();
+    GLXDrawable drawable = glXGetCurrentDrawable();
+
+    XVisualInfo * visualInfo = glXChooseVisual(display, 0, attributeList);
+    GLXContext currentContext
+        = glXCreateContext(display, visualInfo, context, GL_TRUE);
+    glXMakeCurrent(display, drawable, currentContext);
+  }
+
+
   glClearColor(0.5, 0.5, 0.5, 1);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPixelZoom(1, -1);
   glRasterPos2f(-1, 1);
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -58,6 +80,7 @@ void GlutDisplay()
 //////////////////////////////////////////////////
 void GlutIdle()
 {
+  glutPostRedisplay();
 }
 
 //////////////////////////////////////////////////

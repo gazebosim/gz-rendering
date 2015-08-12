@@ -93,7 +93,7 @@ void OgreCamera::SetAntiAliasing(unsigned int _aa)
 //////////////////////////////////////////////////
 void OgreCamera::Render()
 {
-  this->renderTexture->Update();
+  this->renderTexture->Render();
 }
 
 //////////////////////////////////////////////////
@@ -140,7 +140,8 @@ void OgreCamera::CreateCamera()
 //////////////////////////////////////////////////
 void OgreCamera::CreateRenderTexture()
 {
-  RenderTexturePtr texture = this->scene->CreateRenderTexture();
-  this->renderTexture = boost::dynamic_pointer_cast<OgreRenderTexture>(texture);
+  RenderTexturePtr base = this->scene->CreateRenderTexture();
+  this->renderTexture = boost::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);
+  this->renderTexture->SetFormat(PF_R8G8B8);
 }

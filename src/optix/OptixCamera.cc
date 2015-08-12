@@ -23,6 +23,7 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
+
 const std::string OptixCamera::PTX_BASE_NAME("OptixCamera");
 
 const std::string OptixCamera::PTX_RENDER_FUNCTION("Render");
@@ -30,9 +31,9 @@ const std::string OptixCamera::PTX_RENDER_FUNCTION("Render");
 //////////////////////////////////////////////////
 OptixCamera::OptixCamera() :
   optixRenderProgram(NULL),
-  optixImageBuffer(NULL),
-  cameraBuffer(true),
-  bufferDirty(true)
+  renderTexture(NULL),
+  cameraDirty(true),
+  entryId(0)
 {
 }
 
@@ -42,81 +43,53 @@ OptixCamera::~OptixCamera()
 }
 
 //////////////////////////////////////////////////
-unsigned int OptixCamera::GetImageWidth() const
-{
-}
-
-//////////////////////////////////////////////////
-void OptixCamera::SetImageWidth(unsigned int _width)
-{
-  this->bufferDirty = true;
-}
-
-//////////////////////////////////////////////////
-unsigned int OptixCamera::GetImageHeight() const
-{
-}
-
-//////////////////////////////////////////////////
-void OptixCamera::SetImageHeight(unsigned int _height)
-{
-  this->bufferDirty = true;
-}
-
-//////////////////////////////////////////////////
-void OptixCamera::SetImageSize(unsigned int _width, unsigned int _height)
-{
-  this->bufferDirty = true;
-}
-
-//////////////////////////////////////////////////
 PixelFormat OptixCamera::GetImageFormat() const
 {
+  return PF_UNKNOWN;
 }
 
 //////////////////////////////////////////////////
-void OptixCamera::SetImageFormat(PixelFormat _format)
-{
-}
-
-//////////////////////////////////////////////////
-unsigned int OptixCamera::GetImageDepth() const
-{
-}
-
-//////////////////////////////////////////////////
-unsigned int OptixCamera::GetImageMemorySize() const
+void OptixCamera::SetImageFormat(PixelFormat /*_format*/)
 {
 }
 
 //////////////////////////////////////////////////
 gazebo::math::Angle OptixCamera::GetHFOV() const
 {
+  return this->xFieldOfView;
 }
 
 //////////////////////////////////////////////////
 void OptixCamera::SetHFOV(const gazebo::math::Angle &_angle)
 {
+  this->xFieldOfView = _angle;
+  this->poseDirty = true;
 }
 
 //////////////////////////////////////////////////
 double OptixCamera::GetAspectRatio() const
 {
+  return this->aspectRatio;
 }
 
 //////////////////////////////////////////////////
 void OptixCamera::SetAspectRatio(double _ratio)
 {
+  this->aspectRatio = _ratio;
+  this->cameraDirty = true;
 }
 
 //////////////////////////////////////////////////
 unsigned int OptixCamera::GetAntiAliasing() const
 {
+  return this->antiAliasing;
 }
 
 //////////////////////////////////////////////////
 void OptixCamera::SetAntiAliasing(unsigned int _aa)
 {
+  this->antiAliasing = _aa;
+  this->cameraDirty = true;
 }
 
 //////////////////////////////////////////////////
@@ -124,7 +97,21 @@ void OptixCamera::PreRender()
 {
   BaseCamera::PreRender();
   this->WriteCameraToDevice();
-  this->WriteBufferToDevice();
+}
+
+//////////////////////////////////////////////////
+void OptixCamera::Render()
+{
+  unsigned int width = this->GetImageWidth();
+  unsigned int height = this->GetImageHeight();
+  optix::Context optixContext = this->scene->GetOptixContext();
+  optixContext->launch(this->entryId, width, height);
+}
+
+//////////////////////////////////////////////////
+RenderTexturePtr OptixCamera::GetRenderTexture() const
+{
+  return this->renderTexture;
 }
 
 //////////////////////////////////////////////////
@@ -140,27 +127,8 @@ void OptixCamera::WriteCameraToDevice()
 //////////////////////////////////////////////////
 void OptixCamera::WriteCameraToDeviceImpl()
 {
-  this->optixRenderProgram["aspectRatio"] = this->aspectRatio;
-  this->optixRenderProgram["antiAliasing"] = this->antiAliasing;
-}
-
-//////////////////////////////////////////////////
-void OptixCamera::WriteBufferToDevice()
-{
-  if (this->bufferDirty)
-  {
-    this->WriteBufferToDeviceImpl();
-    this->bufferDirty = false;
-  }
-}
-
-//////////////////////////////////////////////////
-void OptixCamera::WriteBufferToDeviceImpl()
-{
-  this->optixImageBuffer->setSize(imageWidth, imageHeight);
-
-  delete image;
-  image = new unsigned char[imageWidth * imageHeight * imageDepth];
+  this->optixRenderProgram["aspectRatio"]->setFloat(this->aspectRatio);
+  this->optixRenderProgram["antiAliasing"]->setFloat(antiAliasing);
 }
 
 //////////////////////////////////////////////////
@@ -182,20 +150,28 @@ void OptixCamera::WritePoseToDeviceImpl()
 void OptixCamera::Init()
 {
   BaseCamera::Init();
+  this->CreateRenderTexture();
   this->CreateRenderProgram();
   this->Reset();
 }
 
 //////////////////////////////////////////////////
+void OptixCamera::CreateRenderTexture()
+{
+  RenderTexturePtr base = this->scene->CreateRenderTexture();
+  this->renderTexture = boost::dynamic_pointer_cast<OptixRenderTexture>(base);
+  this->renderTexture->SetFormat(PF_R8G8B8);
+}
+
+//////////////////////////////////////////////////
 void OptixCamera::CreateRenderProgram()
 {
-  this->optixRenderFunction =
-      this->scene->CreatePtxProgram(PTX_BASE_NAME, PTX_RENDER_FUNCTION);
+  this->optixRenderProgram =
+      this->scene->CreateOptixProgram(PTX_BASE_NAME, PTX_RENDER_FUNCTION);
 
   optix::Context context = this->scene->GetOptixContext();
   context->setRayGenerationProgram(this->entryId, this->optixRenderProgram);
 
-  this->optixImageBuffer = context->createBuffer(RT_BUFFER_OUTPUT);
-  this->optixRenderProgram["buffer"]->setBuffer(imageBuffer);
-  this->optixImageBuffer->setFormat(RT_FORMAT_FLOAT3);
+  optix::Buffer optixBuffer = this->renderTexture->GetOptixBuffer();
+  this->optixRenderProgram["buffer"]->setBuffer(optixBuffer);
 }

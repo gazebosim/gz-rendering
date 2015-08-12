@@ -45,6 +45,8 @@ namespace ignition
 
       public: virtual void SetImageHeight(unsigned int _height);
 
+      public: virtual PixelFormat GetImageFormat() const = 0;
+
       public: virtual unsigned int GetImageDepth() const;
 
       public: virtual unsigned int GetImageMemorySize() const;
@@ -78,6 +80,8 @@ namespace ignition
 
       protected: gazebo::event::EventT<void(const void *, unsigned int, unsigned int,
                      unsigned int, const std::string &)> newFrameEvent;
+
+      protected: ImagePtr imageBuffer;
     };
 
     //////////////////////////////////////////////////

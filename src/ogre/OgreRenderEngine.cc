@@ -70,68 +70,10 @@ OgreRenderEngine::~OgreRenderEngine()
 }
 
 //////////////////////////////////////////////////
-bool OgreRenderEngine::Load()
-{
-  // check if needs loading
-  if (!this->loaded)
-  {
-    try
-    {
-      this->LoadAttempt();
-      this->loaded = true;
-      return true;
-    }
-    catch (Ogre::Exception &ex)
-    {
-      gzerr << ex.what() << std::endl;
-      this->loaded = false;
-    }
-    catch (...)
-    {
-      gzerr << "Failed to load render-engine" << std::endl;
-      this->loaded = false;
-    }
-
-    return false;
-  }
-
-  return true;
-}
-
-//////////////////////////////////////////////////
-bool OgreRenderEngine::Init()
-{
-  // check if loaded first
-  if (!this->loaded)
-  {
-    gzerr << "OgreRenderEngine::Load() must be called first" << std::endl;
-    return false;
-  }
-
-  // check if needs initialization
-  if (!this->initialized)
-  {
-    try
-    {
-      this->InitAttempt();
-      this->initialized = true;
-      return true;
-    }
-    catch (...)
-    {
-      gzerr << "Failed to initialize render-engine" << std::endl;
-      this->initialized = false;
-    }
-
-    return false;
-  }
-
-  return true;
-}
-
-//////////////////////////////////////////////////
 bool OgreRenderEngine::Fini()
 {
+  this->scenes->RemoveAll();
+
 #if not (Q_OS_MAC || _WIN32)
   if (this->dummyDisplay)
   {
@@ -167,21 +109,9 @@ bool OgreRenderEngine::Fini()
 }
 
 //////////////////////////////////////////////////
-bool OgreRenderEngine::IsLoaded() const
-{
-  return this->loaded;
-}
-
-//////////////////////////////////////////////////
-bool OgreRenderEngine::IsInitialized() const
-{
-  return this->initialized;
-}
-
-//////////////////////////////////////////////////
 bool OgreRenderEngine::IsEnabled() const
 {
-  return this->initialized;
+  return this->initialized && this->renderPathType != NONE;
 }
 
 //////////////////////////////////////////////////
@@ -291,6 +221,41 @@ ScenePtr OgreRenderEngine::CreateSceneImpl(unsigned int _id,
 SceneStorePtr OgreRenderEngine::GetScenes() const
 {
   return this->scenes;
+}
+
+//////////////////////////////////////////////////
+bool OgreRenderEngine::LoadImpl()
+{
+  try
+  {
+    this->LoadAttempt();
+    return true;
+  }
+  catch (Ogre::Exception &ex)
+  {
+    gzerr << ex.what() << std::endl;
+    return false;
+  }
+  catch (...)
+  {
+    gzerr << "Failed to load render-engine" << std::endl;
+    return false;
+  }
+}
+
+//////////////////////////////////////////////////
+bool OgreRenderEngine::InitImpl()
+{
+  try
+  {
+    this->InitAttempt();
+    return true;
+  }
+  catch (...)
+  {
+    gzerr << "Failed to initialize render-engine" << std::endl;
+    return false;
+  }
 }
 
 //////////////////////////////////////////////////

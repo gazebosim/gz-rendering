@@ -3,7 +3,6 @@ include (${project_cmake_dir}/Utils.cmake)
 set (sources
   BaseObject.cc
   BaseRenderEngine.cc
-  BaseRenderTarget.cc
   BaseScene.cc
 )
 

@@ -148,6 +148,12 @@ void OptixDirectionalLight::SetDirection(const gazebo::math::Vector3 &_dir)
 }
 
 //////////////////////////////////////////////////
+OptixDirectionalLightData OptixDirectionalLight::GetData() const
+{
+  return this->data;
+}
+
+//////////////////////////////////////////////////
 void OptixDirectionalLight::PreRender()
 {
   OptixLightManagerPtr lightManager = this->scene->GetLightManager();
@@ -185,6 +191,12 @@ OptixPointLight::~OptixPointLight()
 }
 
 //////////////////////////////////////////////////
+OptixPointLightData OptixPointLight::GetData() const
+{
+  return this->data;
+}
+
+//////////////////////////////////////////////////
 void OptixPointLight::PreRender()
 {
   OptixLightManagerPtr lightManager = this->scene->GetLightManager();
@@ -211,7 +223,8 @@ OptixPointLightPtr OptixPointLight::SharedThis()
 }
 
 //////////////////////////////////////////////////
-/// OptixSpotLight
+// OptixSpotLight
+//////////////////////////////////////////////////
 OptixSpotLight::OptixSpotLight()
 {
 }

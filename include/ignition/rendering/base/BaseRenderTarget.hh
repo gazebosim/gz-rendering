@@ -70,45 +70,6 @@ namespace ignition
       protected: PixelFormat format;
     };
 
-    class IGNITION_VISIBLE BaseRenderTextureBuilder
-    {
-      public: BaseRenderTextureBuilder();
-
-      public: virtual ~BaseRenderTextureBuilder();
-
-      public: virtual unsigned int GetWidth() const;
-
-      public: virtual void SetWidth(unsigned int _width);
-
-      public: virtual unsigned int GetHeight() const;
-
-      public: virtual void SetHeight(unsigned int _height);
-
-      public: virtual void SetSize(unsigned int _width, unsigned int _height);
-
-      public: virtual PixelFormat GetFormat() const;
-
-      public: virtual void SetFormat(PixelFormat _format);
-
-      public: virtual unsigned int GetDepth() const;
-
-      public: virtual unsigned int GetMemorySize() const;
-
-      public: virtual unsigned int GetAntiAliasing() const;
-
-      public: virtual void SetAntiAliasing(unsigned int _aa);
-
-      public: virtual RenderTexturePtr Build() const = 0;
-
-      protected: unsigned int width;
-
-      protected: unsigned int height;
-
-      protected: PixelFormat format;
-
-      protected: unsigned int aa;
-    };
-
     //////////////////////////////////////////////////
     // BaseRenderTarget
     //////////////////////////////////////////////////

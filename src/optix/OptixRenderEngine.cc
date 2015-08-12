@@ -40,39 +40,9 @@ OptixRenderEngine::~OptixRenderEngine()
 }
 
 //////////////////////////////////////////////////
-bool OptixRenderEngine::Load()
-{
-  return true;
-}
-
-//////////////////////////////////////////////////
-bool OptixRenderEngine::Init()
-{
-  this->scenes = OptixSceneStorePtr(new OptixSceneStore);
-  return true;
-}
-
-//////////////////////////////////////////////////
 bool OptixRenderEngine::Fini()
 {
-  return true;
-}
-
-//////////////////////////////////////////////////
-bool OptixRenderEngine::IsLoaded() const
-{
-  return true;
-}
-
-//////////////////////////////////////////////////
-bool OptixRenderEngine::IsInitialized() const
-{
-  return true;
-}
-
-//////////////////////////////////////////////////
-bool OptixRenderEngine::IsEnabled() const
-{
+  this->scenes->RemoveAll();
   return true;
 }
 
@@ -93,4 +63,17 @@ ScenePtr OptixRenderEngine::CreateSceneImpl(unsigned int _id,
 SceneStorePtr OptixRenderEngine::GetScenes() const
 {
   return this->scenes;
+}
+
+//////////////////////////////////////////////////
+bool OptixRenderEngine::LoadImpl()
+{
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool OptixRenderEngine::InitImpl()
+{
+  this->scenes = OptixSceneStorePtr(new OptixSceneStore);
+  return true;
 }

@@ -18,10 +18,13 @@
 
 #include "gazebo/common/Console.hh"
 #include "ignition/rendering/optix/OptixConversions.hh"
+#include "ignition/rendering/optix/OptixScene.hh"
 
 using namespace ignition;
 using namespace rendering;
 
+//////////////////////////////////////////////////
+// OptixRenderTarget
 //////////////////////////////////////////////////
 OptixRenderTarget::OptixRenderTarget()
 {
@@ -33,27 +36,35 @@ OptixRenderTarget::~OptixRenderTarget()
 }
 
 //////////////////////////////////////////////////
-unsigned int OptixRenderTarget::GetWidth() const
+void OptixRenderTarget::GetImage(Image &_image) const
 {
-  return 0;
+  // TODO: handle Bayer conversions
+  // TODO: move shared code to base 
+
+  unsigned int width = this->GetWidth();
+  unsigned int height = this->GetHeight();
+
+  if (_image.GetWidth() != width || _image.GetHeight() != height)
+  {
+    gzerr << "Invalid image dimensions" << std::endl;
+    return;
+  }
+
+  void* hostData = _image.GetData();
+  void* deviceData = this->GetOptixBuffer()->map();
+  std::memcpy(hostData, deviceData, this->GetMemorySize());
+  this->GetOptixBuffer()->unmap();
 }
 
 //////////////////////////////////////////////////
-unsigned int OptixRenderTarget::GetHeight() const
+unsigned int OptixRenderTarget::GetMemorySize() const
 {
-  return 0;
+  unsigned int elementSize = this->GetOptixBuffer()->getElementSize();
+  return elementSize * this->GetWidth() * this->GetHeight();
 }
 
 //////////////////////////////////////////////////
-void OptixRenderTarget::Update()
-{
-}
-
-//////////////////////////////////////////////////
-void OptixRenderTarget::Initialize()
-{
-}
-
+// OptixRenderTexture
 //////////////////////////////////////////////////
 OptixRenderTexture::OptixRenderTexture()
 {
@@ -65,67 +76,27 @@ OptixRenderTexture::~OptixRenderTexture()
 }
 
 //////////////////////////////////////////////////
-void OptixRenderTexture::GetData(void *data) const
-{
-}
-
-//////////////////////////////////////////////////
 void OptixRenderTexture::Destroy()
 {
 }
 
-//////////////////////////////////////////////////  
-OptixRenderTextureBuilder::OptixRenderTextureBuilder(OptixScenePtr _scene) :
-  scene(_scene),
-  name(""),
-  backgroundColor(gazebo::common::Color::Black)
+//////////////////////////////////////////////////
+optix::Buffer OptixRenderTexture::GetOptixBuffer() const
 {
+  return this->optixBuffer;
 }
 
 //////////////////////////////////////////////////
-OptixRenderTextureBuilder::~OptixRenderTextureBuilder()
+void OptixRenderTexture::RebuildImpl()
 {
+  this->optixBuffer->setSize(this->width, this->height);
 }
 
 //////////////////////////////////////////////////
-std::string OptixRenderTextureBuilder::GetName() const
+void OptixRenderTexture::Init()
 {
-  return this->name;
-}
-
-//////////////////////////////////////////////////
-void OptixRenderTextureBuilder::SetName(const std::string &_name)
-{
-  this->name = _name;
-}
-
-//////////////////////////////////////////////////
-void OptixRenderTextureBuilder::SetFormat(PixelFormat _format)
-{
-  _format = PixelUtil::Sanitize(_format);
-  this->format = _format;
-}
-
-//////////////////////////////////////////////////
-gazebo::common::Color OptixRenderTextureBuilder::GetBackgroundColor() const
-{
-  return this->backgroundColor;
-}
-
-//////////////////////////////////////////////////
-void OptixRenderTextureBuilder::SetBackgroundColor(gazebo::common::Color _color)
-{
-  this->backgroundColor = _color;
-}
-
-//////////////////////////////////////////////////
-BaseRenderTexturePtr OptixRenderTextureBuilder::Build() const
-{
-  return this->BuildSafe();
-}
-
-//////////////////////////////////////////////////
-OptixRenderTexturePtr OptixRenderTextureBuilder::BuildSafe() const
-{
-  return NULL;
+  BaseRenderTarget::Init();
+  optix::Context optixContext = this->scene->GetOptixContext();
+  this->optixBuffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
+  this->optixBuffer->setFormat(RT_FORMAT_UNSIGNED_BYTE3);
 }

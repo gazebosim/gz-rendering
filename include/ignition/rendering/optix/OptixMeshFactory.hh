@@ -27,6 +27,8 @@ namespace ignition
 {
   namespace rendering
   {
+    class OptixSubMeshStoreFactory;
+
     class IGNITION_VISIBLE OptixMeshFactory
     {
       public: OptixMeshFactory(OptixScenePtr _scene);
@@ -35,7 +37,7 @@ namespace ignition
 
       public: virtual OptixMeshPtr Create(const MeshDescriptor &_desc);
 
-      protected: virtual optix::Geometry GetOgreGeometry(
+      protected: virtual optix::Geometry GetOptixGeometry(
                      const MeshDescriptor &_desc);
 
       protected: virtual bool Load(const MeshDescriptor &_desc);
@@ -46,9 +48,20 @@ namespace ignition
 
       protected: virtual std::string GetMeshName(const MeshDescriptor &_desc);
 
+      protected: virtual bool Validate(const MeshDescriptor &_desc);
+
       protected: std::map<std::string, optix::Geometry> geometries;
 
       protected: OptixScenePtr scene;
+    };
+
+    class IGNITION_VISIBLE OptixSubMeshStoreFactory
+    {
+      public: OptixSubMeshStoreFactory();
+
+      public: virtual ~OptixSubMeshStoreFactory();
+
+      public: virtual OptixSubMeshStorePtr Create();
     };
   }
 }

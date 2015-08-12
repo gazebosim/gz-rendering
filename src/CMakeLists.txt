@@ -2,7 +2,7 @@ include (${project_cmake_dir}/Utils.cmake)
 
 add_subdirectory(base)
 add_subdirectory(ogre)
-# add_subdirectory(optix)
+add_subdirectory(optix)
 
 set (sources
   Image.cc
@@ -33,4 +33,5 @@ target_link_libraries(${PROJECT_NAME_LOWER}
   ${GAZEBO_LIBRARIES}
   boost_system
   ignition-rendering-ogre
+  ignition-rendering-optix
 )

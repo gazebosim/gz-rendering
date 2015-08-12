@@ -54,7 +54,7 @@ namespace ignition
 
       public: virtual void PreRender();
 
-      public: virtual void Update();
+      public: virtual void Render();
 
       public: virtual void Destroy() = 0;
 
@@ -103,42 +103,6 @@ namespace ignition
       protected: unsigned int antiAliasing;
 
       private: friend class OgreScene;
-
-      private: friend class OgreRenderTextureBuilder;
-    };
-
-    class IGNITION_VISIBLE OgreRenderTextureBuilder :
-      public virtual BaseRenderTextureBuilder
-    {
-      public: OgreRenderTextureBuilder(OgreScenePtr _scene);
-
-      public: virtual ~OgreRenderTextureBuilder();
-
-      public: virtual Ogre::Camera *GetCamera() const;
-
-      public: virtual void SetCamera(Ogre::Camera *_camera);
-
-      public: virtual std::string GetName() const;
-
-      public: virtual void SetName(const std::string &_name);
-
-      public: virtual void SetFormat(PixelFormat _format);
-
-      public: virtual gazebo::common::Color GetBackgroundColor() const;
-
-      public: virtual void SetBackgroundColor(gazebo::common::Color _color);
-
-      public: virtual RenderTexturePtr Build() const;
-
-      protected: virtual OgreRenderTexturePtr BuildSafe() const;
-
-      protected: OgreScenePtr scene;
-
-      protected: Ogre::Camera *ogreCamera;
-
-      protected: std::string name;
-
-      protected: gazebo::common::Color backgroundColor;
     };
   }
 }

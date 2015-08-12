@@ -17,10 +17,16 @@
 #include "ignition/rendering/optix/OptixMeshFactory.hh"
 
 #include <sstream>
+#include "gazebo/common/Console.hh"
+#include "gazebo/common/Mesh.hh"
+#include "ignition/rendering/optix/OptixMesh.hh"
+#include "ignition/rendering/optix/OptixStorage.hh"
 
 using namespace ignition;
 using namespace rendering;
 
+//////////////////////////////////////////////////
+// OptixMeshFactory
 //////////////////////////////////////////////////
 OptixMeshFactory::OptixMeshFactory(OptixScenePtr _scene) :
   scene(_scene)
@@ -38,22 +44,22 @@ OptixMeshPtr OptixMeshFactory::Create(const MeshDescriptor &_desc)
   // create optix entity
   OptixMeshPtr mesh(new OptixMesh);
   MeshDescriptor normDesc = _desc.Normalize();
-  mesh->optixGeomInstance = this->GetOptixGeomInstance(normDesc);
+  // mesh->optixGeomInstance = this->GetOptixGeomInstance(normDesc);
 
-  // check if invalid mesh
-  if (!mesh->optixEntity)
-  {
-    return NULL;
-  }
+  // // check if invalid mesh
+  // if (!mesh->optixEntity)
+  // {
+  //   return NULL;
+  // }
 
   // create sub-mesh store
-  OptixSubMeshStoreFactory subMeshFactory(this->scene, mesh->optixEntity);
-  mesh->subMeshes = subMeshFactory.Create();
+  OptixSubMeshStoreFactory storeFactory;
+  mesh->subMeshes = storeFactory.Create();
   return mesh;
 }
 
 //////////////////////////////////////////////////
-optix::Geometry OptixMeshFactory::GetOptixGeomInstance(
+optix::Geometry OptixMeshFactory::GetOptixGeometry(
     const MeshDescriptor &_desc)
 {
   if (this->Load(_desc))
@@ -90,8 +96,9 @@ bool OptixMeshFactory::IsLoaded(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
-bool OptixMeshFactory::LoadImpl(const MeshDescriptor &_desc)
+bool OptixMeshFactory::LoadImpl(const MeshDescriptor &/*_desc*/)
 {
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -125,4 +132,22 @@ bool OptixMeshFactory::Validate(const MeshDescriptor &_desc)
   }
 
   return true;
+}
+
+//////////////////////////////////////////////////
+// OptixSubMeshFactory
+//////////////////////////////////////////////////
+OptixSubMeshStoreFactory::OptixSubMeshStoreFactory()
+{
+}
+
+//////////////////////////////////////////////////
+OptixSubMeshStoreFactory::~OptixSubMeshStoreFactory()
+{
+}
+
+//////////////////////////////////////////////////
+OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create()
+{
+  return OptixSubMeshStorePtr(new OptixSubMeshStore);
 }

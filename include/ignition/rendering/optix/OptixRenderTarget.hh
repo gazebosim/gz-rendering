@@ -18,90 +18,47 @@
 #define _IGNITION_RENDERING_OPTIXRENDERTARGET_HH_
 
 #include "gazebo/common/Color.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
+#include "ignition/rendering/optix/OptixObject.hh"
 
 namespace ignition
 {
   namespace rendering
   {
     class IGNITION_VISIBLE OptixRenderTarget :
-      public virtual BaseRenderTarget
+      public virtual BaseRenderTarget<OptixObject>
     {
       protected: OptixRenderTarget();
 
       public: virtual ~OptixRenderTarget();
 
-      public: virtual unsigned int GetWidth() const;
+      public: virtual void GetImage(Image &_image) const;
 
-      public: virtual unsigned int GetHeight() const;
+      public: virtual optix::Buffer GetOptixBuffer() const = 0;
 
-      public: virtual void Update();
-
-      public: virtual void Destroy() = 0;
-
-      protected: virtual void Initialize();
-
-      protected: OptixScenePtr scene;
-
-      protected: unsigned int entryId;
-
-      protected: unsigned int width;
-
-      protected: unsigned int height;
-
-      protected: optix::Program optixRenderProgram;
-
-      protected: optix::Buffer optixImageBuffer;
+      protected: unsigned int GetMemorySize() const;
     };
 
     class IGNITION_VISIBLE OptixRenderTexture :
-      public virtual OptixRenderTarget,
-      public virtual BaseRenderTexture
+      public virtual BaseRenderTexture<OptixRenderTarget>
     {
       protected: OptixRenderTexture();
 
       public: virtual ~OptixRenderTexture();
 
-      public: virtual void GetData(void *data) const;
-
       public: virtual void Destroy();
 
-      private: friend class OptixRenderTextureBuilder;
-    };
+      public: virtual optix::Buffer GetOptixBuffer() const;
 
-    class IGNITION_VISIBLE OptixRenderTextureBuilder :
-      public virtual BaseRenderTextureBuilder
-    {
-      public: OptixRenderTextureBuilder(OptixScenePtr _scene);
+      protected: virtual void RebuildImpl();
 
-      public: virtual ~OptixRenderTextureBuilder();
+      protected: optix::Buffer optixBuffer;
 
-      public: virtual std::string GetProgramName() const;
+      protected: virtual void Init();
 
-      public: virtual void SetProgramName(const std::string &_name);
-
-      public: virtual std::string GetFunctionName() const;
-
-      public: virtual void SetFunctionName(const std::string &_name);
-
-      public: virtual void SetFormat(PixelFormat _format);
-
-      public: virtual gazebo::common::Color GetBackgroundColor() const;
-
-      public: virtual void SetBackgroundColor(gazebo::common::Color _color);
-
-      public: virtual BaseRenderTexturePtr Build() const;
-
-      protected: virtual OptixRenderTexturePtr BuildSafe() const;
-
-      protected: OptixScenePtr scene;
-
-      protected: std::string name;
-
-      protected: gazebo::common::Color backgroundColor;
+      private: friend class OptixScene;
     };
   }
 }

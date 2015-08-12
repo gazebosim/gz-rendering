@@ -23,10 +23,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class BaseRenderTextureBuilder;
     class BaseNodeCompositeStore;
-
-    typedef shared_ptr<BaseRenderTextureBuilder> BaseRenderTextureBuilderPtr;
     typedef shared_ptr<BaseNodeCompositeStore>   BaseNodeCompositeStorePtr;
 
     template <class T> class BaseSceneStore;

@@ -36,6 +36,8 @@ namespace ignition
 
       public: virtual bool Fini() = 0;
 
+      public: virtual bool IsLoaded() const = 0;
+
       public: virtual bool IsInitialized() const = 0;
 
       public: virtual bool IsEnabled() const = 0;

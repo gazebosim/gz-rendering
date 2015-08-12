@@ -33,17 +33,7 @@ namespace ignition
 
       public: virtual ~OptixRenderEngine();
 
-      public: virtual bool Load();
-
-      public: virtual bool Init();
-
       public: virtual bool Fini();
-
-      public: virtual bool IsLoaded() const;
-
-      public: virtual bool IsInitialized() const;
-
-      public: virtual bool IsEnabled() const;
 
       public: std::string GetPtxFile(const std::string& _fileBase) const;
 
@@ -51,6 +41,10 @@ namespace ignition
                   const std::string &_name);
 
       protected: virtual SceneStorePtr GetScenes() const;
+
+      protected: virtual bool LoadImpl();
+
+      protected: virtual bool InitImpl();
 
       private: OptixSceneStorePtr scenes;
 

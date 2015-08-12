@@ -32,24 +32,9 @@ namespace ignition
 
       public: virtual ~OptixCamera();
 
-      public: virtual unsigned int GetImageWidth() const;
-
-      public: virtual void SetImageWidth(unsigned int _width);
-
-      public: virtual unsigned int GetImageHeight() const;
-
-      public: virtual void SetImageHeight(unsigned int _height);
-
-      public: virtual void SetImageSize(unsigned int _width,
-                  unsigned int _height);
-
       public: virtual PixelFormat GetImageFormat() const;
 
       public: virtual void SetImageFormat(PixelFormat _format);
-
-      public: virtual unsigned int GetImageDepth() const;
-
-      public: virtual unsigned int GetImageMemorySize() const;
 
       public: virtual gazebo::math::Angle GetHFOV() const;
 
@@ -65,33 +50,31 @@ namespace ignition
 
       public: virtual void PreRender();
 
+      public: virtual void Render();
+
+      protected: virtual RenderTexturePtr GetRenderTexture() const;
+
       protected: virtual void WriteCameraToDevice();
 
       protected: virtual void WriteCameraToDeviceImpl();
-
-      protected: virtual void WriteBufferToDevice();
-
-      protected: virtual void WriteBufferToDeviceImpl();
 
       protected: virtual void WritePoseToDeviceImpl();
 
       protected: virtual void Init();
 
-      protected: virtual void CreateRenderProgram();
+      protected: virtual void CreateRenderTexture();
 
-      protected: unsigned int entryId;
+      protected: virtual void CreateRenderProgram();
 
       protected: optix::Program optixRenderProgram;
 
-      protected: optix::Buffer optixImageBuffer;
-
-      protected: unsigned char *imageBuffer;
+      protected: OptixRenderTexturePtr renderTexture;
 
       protected: unsigned int imageWidth;
 
       protected: unsigned int imageHeight;
 
-      protected: unsigned int xFieldOfView;
+      protected: gazebo::math::Angle xFieldOfView;
 
       protected: unsigned int aspectRatio;
 
@@ -99,7 +82,7 @@ namespace ignition
 
       protected: bool cameraDirty;
 
-      protected: bool bufferDirty;
+      protected: unsigned int entryId;
 
       private: static const std::string PTX_BASE_NAME;
 

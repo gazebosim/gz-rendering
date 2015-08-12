@@ -25,7 +25,8 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-/// OgreRenderTarget
+// OgreRenderTarget
+//////////////////////////////////////////////////
 OgreRenderTarget::OgreRenderTarget() :
   ogreCamera(NULL),
   ogreViewport(NULL),
@@ -41,8 +42,6 @@ OgreRenderTarget::~OgreRenderTarget()
 
   OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
       this->scene);
-
-  // this->Destroy();
 }
 
 //////////////////////////////////////////////////
@@ -60,7 +59,6 @@ void OgreRenderTarget::GetImage(Image &_image) const
     return;
   }
 
-  gzmsg << "GetImage()" << std::endl;
   void* data = _image.GetData();
   Ogre::PixelFormat format = OgreConversions::Convert(_image.GetFormat());
   Ogre::PixelBox ogrePixelBox(width, height, 1, format, data);
@@ -101,9 +99,8 @@ void OgreRenderTarget::PreRender()
 }
 
 //////////////////////////////////////////////////
-void OgreRenderTarget::Update()
+void OgreRenderTarget::Render()
 {
-  gzmsg << "Update()" << std::endl;
   this->GetOgreRenderTarget()->update();
 }
 
@@ -120,7 +117,6 @@ void OgreRenderTarget::UpdateBackgroundColor()
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildImpl()
 {
-  gzmsg << "RebuildImpl()" << std::endl;
   this->RebuildTarget();
   this->RebuildViewport();
 }
@@ -128,9 +124,8 @@ void OgreRenderTarget::RebuildImpl()
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildViewport()
 {
-  gzmsg << "RebuildViewport()" << std::endl;
   Ogre::RenderTarget *ogreRenderTarget = this->GetOgreRenderTarget();
-  // ogreRenderTarget->removeAllViewports();
+  ogreRenderTarget->removeAllViewports();
 
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
   this->ogreViewport->setBackgroundColour(Ogre::ColourValue::Black);
@@ -138,12 +133,13 @@ void OgreRenderTarget::RebuildViewport()
   this->ogreViewport->setShadowsEnabled(true);
   this->ogreViewport->setOverlaysEnabled(false);
 
-  // OgreRTShaderSystem::Instance()->AttachViewport(this->ogreViewport,
-  //     this->scene);
+  OgreRTShaderSystem::Instance()->AttachViewport(this->ogreViewport,
+      this->scene);
 }
 
 //////////////////////////////////////////////////
-/// OgreRenderTexture
+// OgreRenderTexture
+//////////////////////////////////////////////////
 OgreRenderTexture::OgreRenderTexture() :
   ogreTexture(NULL)
 {
@@ -190,6 +186,7 @@ void OgreRenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::DestroyTarget()
 {
+  // TODO: implement
 }
 
 //////////////////////////////////////////////////
@@ -201,113 +198,4 @@ void OgreRenderTexture::BuildTarget()
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
       Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).getPointer();
-}
-
-//////////////////////////////////////////////////  
-/// OgreRenderTextureBuilder
-OgreRenderTextureBuilder::OgreRenderTextureBuilder(OgreScenePtr _scene) :
-  scene(_scene),
-  ogreCamera(NULL),
-  name(""),
-  backgroundColor(gazebo::common::Color::Black)
-{
-}
-
-//////////////////////////////////////////////////
-OgreRenderTextureBuilder::~OgreRenderTextureBuilder()
-{
-}
-
-//////////////////////////////////////////////////
-Ogre::Camera *OgreRenderTextureBuilder::GetCamera() const
-{
-  return this->ogreCamera;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTextureBuilder::SetCamera(Ogre::Camera *_camera)
-{
-  this->ogreCamera = _camera;
-}
-
-//////////////////////////////////////////////////
-std::string OgreRenderTextureBuilder::GetName() const
-{
-  return this->name;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTextureBuilder::SetName(const std::string &_name)
-{
-  this->name = _name;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTextureBuilder::SetFormat(PixelFormat _format)
-{
-  _format = PixelUtil::Sanitize(_format);
-  this->format = _format;
-}
-
-//////////////////////////////////////////////////
-gazebo::common::Color OgreRenderTextureBuilder::GetBackgroundColor() const
-{
-  return this->backgroundColor;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTextureBuilder::SetBackgroundColor(gazebo::common::Color _color)
-{
-  this->backgroundColor = _color;
-}
-
-//////////////////////////////////////////////////
-RenderTexturePtr OgreRenderTextureBuilder::Build() const
-{
-  gzerr << "HERE: " << __LINE__ << std::endl;
-  if (!this->ogreCamera)
-  {
-    gzerr << "Ogre::Camera cannot be null" << std::endl;
-    return NULL;
-  }
-
-  return this->BuildSafe();
-}
-
-//////////////////////////////////////////////////
-OgreRenderTexturePtr OgreRenderTextureBuilder::BuildSafe() const
-{
-  // gzerr << "HERE: " << __LINE__ << std::endl;
-
-  // // TODO: improve name scope
-  // std::string texName = (!this->name.empty()) ?
-  //     this->name : this->ogreCamera->getName() + "::RenderTexture";
-
-  // Ogre::ColourValue ogreColor;
-  // ogreColor = OgreConversions::Convert(this->backgroundColor);
-  // // Ogre::PixelFormat ogreFormat = OgreConversions::Convert(this->format);
-
-  // // Ogre::TexturePtr ogreTexture = manager.createManual(texName, "General",
-  // //     Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-  // //     Ogre::TU_RENDERTARGET, 0, false, this->aa);
-
-  // // OgreRenderTexturePtr texture(new OgreRenderTexture());
-  // // texture->scene = this->scene;
-  // // texture->ogreTexture = ogreTexture.getPointer();
-  // // texture->ogreCamera = this->ogreCamera;
-  // // texture->ogreFormat = ogreFormat;
-  // // texture->ogreBackgroundColor = ogreColor;
-  // // texture->RebuildTexture();
-  // // texture->RebuildViewport();
-
-  // gzmsg << "w: " << this->width << "h: " << this->height << std::endl;
-
-  // gzerr << "HERE: " << __LINE__ << std::endl;
-  OgreRenderTexturePtr texture(new OgreRenderTexture());
-  // texture->name = texName;
-  // texture->SetCamera(ogreCamera);
-  // texture->ogreBackgroundColor = ogreColor;
-  // texture->SetWidth(this->width);
-  // texture->SetHeight(this->height);
-  return texture;
 }

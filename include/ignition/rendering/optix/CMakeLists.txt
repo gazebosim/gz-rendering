@@ -12,12 +12,12 @@ set (headers
   OptixLightTypes.hh
   OptixMaterial.hh
   OptixMesh.hh
-  # OptixMeshFactory.hh
+  OptixMeshFactory.hh
   OptixNode.hh
   OptixObject.hh
   OptixRayTypes.hh
   OptixRenderEngine.hh
-  # OptixRenderTarget.hh
+  OptixRenderTarget.hh
   OptixRenderTypes.hh
   OptixScene.hh
   OptixSensor.hh

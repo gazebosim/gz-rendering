@@ -278,6 +278,15 @@ MaterialPtr OptixScene::CreateMaterialImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+RenderTexturePtr OptixScene::CreateRenderTextureImpl(
+    unsigned int _id, const std::string &_name)
+{
+  OptixRenderTexturePtr material(new OptixRenderTexture);
+  bool result = this->InitObject(material, _id, _name);
+  return (result) ? material : NULL;
+}
+
+//////////////////////////////////////////////////
 bool OptixScene::InitObject(OptixObjectPtr _object, unsigned int _id,
     const std::string &_name)
 {

@@ -3,18 +3,18 @@ include (${project_cmake_dir}/Utils.cmake)
 set (sources
   OptixArrowVisual.cc
   OptixAxisVisual.cc
-  # OptixCamera.cc
+  OptixCamera.cc
   OptixConversions.cc
   OptixGeometry.cc
   OptixLight.cc
   OptixLightManager.cc
   OptixMaterial.cc
   OptixMesh.cc
-  # OptixMeshFactory.cc
+  OptixMeshFactory.cc
   OptixNode.cc
   OptixObject.cc
   OptixRenderEngine.cc
-  # OptixRenderTarget.cc
+  OptixRenderTarget.cc
   OptixScene.cc
   OptixSensor.cc
   OptixVisual.cc

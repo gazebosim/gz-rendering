@@ -72,15 +72,41 @@ namespace ignition
 
       public: virtual ~OgreRenderTexture();
 
+      public: virtual Ogre::Camera *GetCamera() const;
+
+      public: virtual void SetCamera(Ogre::Camera *_camera);
+
+      public: virtual unsigned int GetAntiAliasing() const;
+
+      public: virtual void SetAntiAliasing(unsigned int _aa);
+
+      public: virtual gazebo::common::Color GetBackgroundColor() const;
+
+      public: virtual void SetBackgroundColor(gazebo::common::Color _color);
+
+      public: virtual void PreRender();
+
       public: virtual void Destroy();
 
       protected: virtual Ogre::RenderTarget *GetOgreRenderTarget() const;
 
       protected: virtual void RebuildImpl();
 
+      protected: virtual void UpdateBackgroundColor();
+
+      protected: virtual void UpdateBackgroundColorImpl();
+
+      protected: Ogre::Camera *ogreCamera2;
+
       protected: Ogre::Texture *ogreTexture;
 
       protected: Ogre::PixelFormat ogreFormat;
+
+      protected: unsigned int antiAliasing;
+
+      protected: gazebo::common::Color backgroundColor;
+
+      protected: bool colorDirty;
 
       private: friend class OgreScene;
 

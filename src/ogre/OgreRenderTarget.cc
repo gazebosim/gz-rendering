@@ -25,6 +25,7 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
+/// OgreRenderTarget
 OgreRenderTarget::OgreRenderTarget()
 {
 }
@@ -95,13 +96,62 @@ void OgreRenderTarget::Initialize()
 }
 
 //////////////////////////////////////////////////
-OgreRenderTexture::OgreRenderTexture()
+/// OgreRenderTexture
+OgreRenderTexture::OgreRenderTexture() :
+  ogreCamera2(NULL),
+  colorDirty(true)
 {
 }
 
 //////////////////////////////////////////////////
 OgreRenderTexture::~OgreRenderTexture()
 {
+}
+
+//////////////////////////////////////////////////
+Ogre::Camera *OgreRenderTexture::GetCamera() const
+{
+  return this->ogreCamera2;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::SetCamera(Ogre::Camera *_camera)
+{
+  this->ogreCamera2 = _camera;
+  this->textureDirty = true;
+}
+
+//////////////////////////////////////////////////
+unsigned int OgreRenderTexture::GetAntiAliasing() const
+{
+  return this->antiAliasing;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::SetAntiAliasing(unsigned int _aa)
+{
+  this->antiAliasing = _aa;
+  this->textureDirty = true;
+}
+
+//////////////////////////////////////////////////
+gazebo::common::Color OgreRenderTexture::GetBackgroundColor() const
+{
+  return this->backgroundColor;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::SetBackgroundColor(gazebo::common::Color _color)
+{
+  this->backgroundColor = _color;
+  this->colorDirty = true;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::PreRender()
+{
+  BaseRenderTexture::PreRender();
+  this->UpdateBackgroundColor();
 }
 
 //////////////////////////////////////////////////
@@ -122,7 +172,25 @@ void OgreRenderTexture::RebuildImpl()
 {
 }
 
+//////////////////////////////////////////////////
+void OgreRenderTexture::UpdateBackgroundColor()
+{
+  if (this->colorDirty)
+  {
+    this->UpdateBackgroundColorImpl();
+    this->colorDirty = false;
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::UpdateBackgroundColorImpl()
+{
+  // Ogre::ColourValue ogreColor = OgreConversions::Convert(this->backgroundColor);
+  // this->ogreViewport->setBackgroundColour(ogreColor);
+}
+
 //////////////////////////////////////////////////  
+/// OgreRenderTextureBuilder
 OgreRenderTextureBuilder::OgreRenderTextureBuilder(OgreScenePtr _scene) :
   scene(_scene),
   ogreCamera(NULL),

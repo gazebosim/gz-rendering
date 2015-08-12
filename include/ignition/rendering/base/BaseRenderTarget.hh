@@ -178,6 +178,7 @@ namespace ignition
     void BaseRenderTexture<T>::SetFormat(PixelFormat _format)
     {
       this->format = PixelUtil::Sanitize(_format);
+      this->textureDirty = true;
     }
 
     //////////////////////////////////////////////////

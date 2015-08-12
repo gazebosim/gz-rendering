@@ -46,9 +46,6 @@ namespace ignition
 
       public: virtual void SetImageHeight(unsigned int _height) = 0;
 
-      public: virtual void SetImageSize(unsigned int _width,
-                  unsigned int _height) = 0;
-
       public: virtual PixelFormat GetImageFormat() const = 0;
 
       public: virtual void SetImageFormat(PixelFormat _format) = 0;

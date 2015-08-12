@@ -24,13 +24,25 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreCamera::OgreCamera() :
-  textureBuilder(NULL)
+  renderTexture(NULL)
 {
 }
 
 //////////////////////////////////////////////////
 OgreCamera::~OgreCamera()
 {
+}
+
+//////////////////////////////////////////////////
+PixelFormat OgreCamera::GetImageFormat() const
+{
+  return this->renderTexture->GetFormat();
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetImageFormat(PixelFormat _format)
+{
+  this->renderTexture->SetFormat(_format);
 }
 
 //////////////////////////////////////////////////
@@ -67,27 +79,27 @@ void OgreCamera::SetAspectRatio(double _ratio)
 }
 
 //////////////////////////////////////////////////
+unsigned int OgreCamera::GetAntiAliasing() const
+{
+  return this->renderTexture->GetAntiAliasing();
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetAntiAliasing(unsigned int _aa)
+{
+  this->renderTexture->SetAntiAliasing(_aa);
+}
+
+//////////////////////////////////////////////////
 void OgreCamera::Render()
 {
-  if (this->renderTexture)
-  {
-    OgreRenderTexturePtr derived =
-        boost::dynamic_pointer_cast<OgreRenderTexture>(this->renderTexture);
-
-    derived->Update();
-  }
+  this->renderTexture->Update();
 }
 
 //////////////////////////////////////////////////
 RenderTexturePtr OgreCamera::GetRenderTexture() const
 {
-  return this->renderTexture2;
-}
-
-//////////////////////////////////////////////////
-BaseRenderTextureBuilderPtr OgreCamera::GetTextureBuilder() const
-{
-  return this->textureBuilder;
+  return this->renderTexture;
 }
 
 //////////////////////////////////////////////////
@@ -96,16 +108,17 @@ void OgreCamera::Init()
   BaseCamera::Init();
   this->CreateCamera();
   this->CreateRenderTexture();
-  this->CreateTextureBuilder();
   this->Reset();
 }
 
 //////////////////////////////////////////////////
 void OgreCamera::CreateCamera()
 {
+  // create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->GetOgreSceneManager();
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
+  this->ogreNode->attachObject(this->ogreCamera);
 
   // rotate to Gazebo coordinate system
   this->ogreCamera->yaw(Ogre::Degree(-90.0));
@@ -122,22 +135,12 @@ void OgreCamera::CreateCamera()
   this->ogreCamera->setFOVy(Ogre::Degree(80));
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
-
-  this->ogreNode->attachObject(this->ogreCamera);
 }
 
 //////////////////////////////////////////////////
 void OgreCamera::CreateRenderTexture()
 {
   RenderTexturePtr texture = this->scene->CreateRenderTexture();
-  this->renderTexture2 = boost::dynamic_pointer_cast<OgreRenderTexture>(texture);
-}
-
-//////////////////////////////////////////////////
-void OgreCamera::CreateTextureBuilder()
-{
-  OgreRenderTextureBuilder *builder;
-  builder = new OgreRenderTextureBuilder(this->scene);
-  this->textureBuilder = OgreRenderTextureBuilderPtr(builder);
-  this->textureBuilder->SetCamera(this->ogreCamera);
+  this->renderTexture = boost::dynamic_pointer_cast<OgreRenderTexture>(texture);
+  this->renderTexture->SetCamera(this->ogreCamera);
 }

@@ -32,6 +32,14 @@ namespace ignition
       public: BaseRenderTarget();
 
       public: virtual ~BaseRenderTarget();
+
+      public: virtual void PreRender();
+
+      protected: virtual void Rebuild();
+
+      protected: virtual void RebuildImpl() = 0;
+
+      protected: bool targetDirty;
     };
 
     template <class T>
@@ -55,19 +63,11 @@ namespace ignition
 
       public: virtual void SetFormat(PixelFormat _format);
 
-      public: virtual void PreRender();
-
-      protected: virtual void Rebuild();
-
-      protected: virtual void RebuildImpl() = 0;
-
       protected: unsigned int width;
 
       protected: unsigned int height;
 
       protected: PixelFormat format;
-
-      protected: bool textureDirty;
     };
 
     class IGNITION_VISIBLE BaseRenderTextureBuilder
@@ -110,9 +110,11 @@ namespace ignition
     };
 
     //////////////////////////////////////////////////
-    /// BaseRenderTarget
+    // BaseRenderTarget
+    //////////////////////////////////////////////////
     template <class T>
-    BaseRenderTarget<T>::BaseRenderTarget()
+    BaseRenderTarget<T>::BaseRenderTarget() :
+      targetDirty(true)
     {
     }
 
@@ -123,10 +125,32 @@ namespace ignition
     }
 
     //////////////////////////////////////////////////
-    /// BaseRenderTexture
+    template <class T>
+    void BaseRenderTarget<T>::PreRender()
+    {
+      T::PreRender();
+      this->Rebuild();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::Rebuild()
+    {
+      if (this->targetDirty)
+      {
+        this->RebuildImpl();
+        this->targetDirty = false;
+      }
+    }
+
+    //////////////////////////////////////////////////
+    // BaseRenderTexture
+    //////////////////////////////////////////////////
     template <class T>
     BaseRenderTexture<T>::BaseRenderTexture() :
-      textureDirty(true)
+      width(0),
+      height(0),
+      format(PF_UNKNOWN)
     {
     }
 
@@ -148,7 +172,7 @@ namespace ignition
     void BaseRenderTexture<T>::SetWidth(unsigned int _width)
     {
       this->width = _width;
-      this->textureDirty = true;
+      this->targetDirty = true;
     }
 
     //////////////////////////////////////////////////
@@ -163,7 +187,7 @@ namespace ignition
     void BaseRenderTexture<T>::SetHeight(unsigned int _height)
     {
       this->height = _height;
-      this->textureDirty = true;
+      this->targetDirty = true;
     }
 
     //////////////////////////////////////////////////
@@ -178,25 +202,7 @@ namespace ignition
     void BaseRenderTexture<T>::SetFormat(PixelFormat _format)
     {
       this->format = PixelUtil::Sanitize(_format);
-      this->textureDirty = true;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseRenderTexture<T>::PreRender()
-    {
-      this->Rebuild();
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseRenderTexture<T>::Rebuild()
-    {
-      if (this->textureDirty)
-      {
-        this->RebuildImpl();
-        this->textureDirty = false;
-      }
+      this->targetDirty = true;
     }
   }
 }

@@ -109,7 +109,8 @@ int main(int, char**)
   CameraPtr camera = scene->CreateCamera();
   camera->SetLocalPosition(0.0, 0.0, 1.0);
   camera->SetLocalRotation(0.0, 0.3, 0.0);
-  camera->SetImageSize(800, 800);
+  camera->SetImageWidth(800);
+  camera->SetImageHeight(800);
   camera->SetAntiAliasing(4);
   root->AddChild(camera);
 

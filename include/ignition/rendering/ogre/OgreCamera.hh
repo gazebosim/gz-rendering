@@ -37,6 +37,10 @@ namespace ignition
 
       public: virtual ~OgreCamera();
 
+      public: virtual PixelFormat GetImageFormat() const;
+
+      public: virtual void SetImageFormat(PixelFormat _format);
+
       public: virtual gazebo::math::Angle GetHFOV() const;
 
       public: virtual void SetHFOV(const gazebo::math::Angle &_angle);
@@ -45,11 +49,13 @@ namespace ignition
 
       public: virtual void SetAspectRatio(double _ratio);
 
+      public: virtual unsigned int GetAntiAliasing() const;
+
+      public: virtual void SetAntiAliasing(unsigned int _aa);
+
       public: virtual void Render();
 
       protected: virtual RenderTexturePtr GetRenderTexture() const;
-
-      protected: virtual BaseRenderTextureBuilderPtr GetTextureBuilder() const;
 
       protected: virtual void Init();
 
@@ -57,13 +63,9 @@ namespace ignition
 
       protected: virtual void CreateRenderTexture();
 
-      protected: virtual void CreateTextureBuilder();
-
       protected: Ogre::Camera *ogreCamera;
 
-      protected: OgreRenderTexturePtr renderTexture2;
-
-      protected: OgreRenderTextureBuilderPtr textureBuilder;
+      protected: OgreRenderTexturePtr renderTexture;
 
       protected: gazebo::math::Angle xfov;
 

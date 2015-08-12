@@ -45,13 +45,6 @@ namespace ignition
 
       public: virtual void SetImageHeight(unsigned int _height);
 
-      public: virtual void SetImageSize(unsigned int _width,
-                  unsigned int _height);
-
-      public: virtual PixelFormat GetImageFormat() const;
-
-      public: virtual void SetImageFormat(PixelFormat _format);
-
       public: virtual unsigned int GetImageDepth() const;
 
       public: virtual unsigned int GetImageMemorySize() const;
@@ -59,10 +52,6 @@ namespace ignition
       public: virtual void SetHFOV(const gazebo::math::Angle &_angle) = 0;
 
       public: virtual void SetAspectRatio(double _ratio) = 0;
-
-      public: virtual unsigned int GetAntiAliasing() const;
-
-      public: virtual void SetAntiAliasing(unsigned int _aa);
 
       public: virtual void PreRender();
 
@@ -86,11 +75,6 @@ namespace ignition
       protected: virtual void Reset();
 
       protected: virtual RenderTexturePtr GetRenderTexture() const = 0;
-
-      protected: virtual BaseRenderTextureBuilderPtr
-                     GetTextureBuilder() const = 0;
-
-      protected: RenderTexturePtr renderTexture;
 
       protected: gazebo::event::EventT<void(const void *, unsigned int, unsigned int,
                      unsigned int, const std::string &)> newFrameEvent;
@@ -118,87 +102,52 @@ namespace ignition
     template <class T>
     unsigned int BaseCamera<T>::GetImageWidth() const
     {
-      return this->GetTextureBuilder()->GetWidth();
+      return this->GetRenderTexture()->GetWidth();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseCamera<T>::SetImageWidth(unsigned int _width)
     {
-      this->GetTextureBuilder()->SetWidth(_width);
+      this->GetRenderTexture()->SetWidth(_width);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     unsigned int BaseCamera<T>::GetImageHeight() const
     {
-      return this->GetTextureBuilder()->GetHeight();
+      return this->GetRenderTexture()->GetHeight();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseCamera<T>::SetImageHeight(unsigned int _height)
     {
-      this->GetTextureBuilder()->SetHeight(_height);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseCamera<T>::SetImageSize(unsigned int _width, unsigned int _height)
-    {
-      this->GetTextureBuilder()->SetSize(_width, _height);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    PixelFormat BaseCamera<T>::GetImageFormat() const
-    {
-      return this->GetTextureBuilder()->GetFormat();
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseCamera<T>::SetImageFormat(PixelFormat _format)
-    {
-      this->GetTextureBuilder()->SetFormat(_format);
+      this->GetRenderTexture()->SetHeight(_height);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     unsigned int BaseCamera<T>::GetImageDepth() const
     {
-      return this->GetTextureBuilder()->GetDepth();
+      return PixelUtil::GetChannelCount(this->GetImageFormat());
     }
 
     //////////////////////////////////////////////////
     template <class T>
     unsigned int BaseCamera<T>::GetImageMemorySize() const
     {
-      return this->GetTextureBuilder()->GetMemorySize();
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    unsigned int BaseCamera<T>::GetAntiAliasing() const
-    {
-      return this->GetTextureBuilder()->GetAntiAliasing();
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseCamera<T>::SetAntiAliasing(unsigned int _aa)
-    {
-      this->GetTextureBuilder()->SetAntiAliasing(_aa);
+      PixelFormat format = this->GetImageFormat();
+      unsigned int width = this->GetImageWidth();
+      unsigned int height = this->GetImageHeight();
+      return PixelUtil::GetMemorySize(format, width, height);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseCamera<T>::PreRender()
     {
-      if (!this->renderTexture)
-      {
-        this->renderTexture = this->GetTextureBuilder()->Build();
-      }
+      this->GetRenderTexture()->PreRender();
     }
 
     //////////////////////////////////////////////////
@@ -212,9 +161,9 @@ namespace ignition
     template <class T>
     Image BaseCamera<T>::CreateImage() const
     {
+      PixelFormat format = this->GetImageFormat();
       unsigned int width = this->GetImageWidth();
       unsigned int height = this->GetImageHeight();
-      PixelFormat format = this->GetImageFormat();
       return Image(width, height, format);
     }
 
@@ -232,7 +181,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::GetImageData(Image &_image) const
     {
-      this->renderTexture->GetImage(_image);
+      this->GetRenderTexture()->GetImage(_image);
     }
 
     //////////////////////////////////////////////////

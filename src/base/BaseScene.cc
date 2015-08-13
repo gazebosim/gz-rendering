@@ -109,6 +109,18 @@ void BaseScene::SetSimTime(const gazebo::common::Time &_time)
 }
 
 //////////////////////////////////////////////////
+void BaseScene::SetAmbientLight(double _r, double _g, double _b, double _a)
+{
+  this->SetAmbientLight(gazebo::common::Color(_r, _g, _b, _a));
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetBackgroundColor(double _r, double _g, double _b, double _a)
+{
+  this->SetBackgroundColor(gazebo::common::Color(_r, _g, _b, _a));
+}
+
+//////////////////////////////////////////////////
 unsigned int BaseScene::GetNodeCount() const
 {
   return this->nodes->Size();
@@ -696,6 +708,14 @@ MaterialPtr BaseScene::CreateMaterial(const gazebo::common::Material &_material)
   MaterialPtr material = this->CreateMaterial();
   material->CopyFrom(_material);
   return material;
+}
+
+//////////////////////////////////////////////////
+RenderTexturePtr BaseScene::CreateRenderTexture()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "RenderTexture");
+  return this->CreateRenderTextureImpl(objId, objName);
 }
 
 //////////////////////////////////////////////////

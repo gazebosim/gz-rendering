@@ -17,12 +17,12 @@
 #ifndef _IGNITION_RENDERING_OGRERENDERTARGET_HH_
 #define _IGNITION_RENDERING_OGRERENDERTARGET_HH_
 
-#include <OGRE/OgrePixelFormat.h>
-#include <OGRE/OgreColourValue.h>
 #include "gazebo/common/Color.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreObject.hh"
 
 namespace Ogre
 {
@@ -36,86 +36,73 @@ namespace ignition
   namespace rendering
   {
     class IGNITION_VISIBLE OgreRenderTarget :
-      public virtual BaseRenderTarget
+      public virtual BaseRenderTarget<OgreObject>
     {
       protected: OgreRenderTarget();
 
       public: virtual ~OgreRenderTarget();
 
-      public: virtual unsigned int GetWidth() const;
+      public: virtual void GetImage(Image &_image) const;
 
-      public: virtual unsigned int GetHeight() const;
+      public: virtual Ogre::Camera *GetCamera() const;
 
-      public: virtual void Update();
+      public: virtual void SetCamera(Ogre::Camera *_camera);
+
+      public: virtual gazebo::common::Color GetBackgroundColor() const;
+
+      public: virtual void SetBackgroundColor(gazebo::common::Color _color);
+
+      public: virtual void PreRender();
+
+      public: virtual void Render();
 
       public: virtual void Destroy() = 0;
 
       protected: virtual Ogre::RenderTarget *GetOgreRenderTarget() const = 0;
 
-      protected: virtual void Initialize();
+      protected: virtual void UpdateBackgroundColor();
 
-      protected: OgreScenePtr scene;
+      protected: virtual void RebuildImpl();
+
+      protected: virtual void RebuildTarget() = 0;
+
+      protected: virtual void RebuildViewport();
 
       protected: Ogre::Camera *ogreCamera;
 
       protected: Ogre::Viewport *ogreViewport;
 
       protected: Ogre::ColourValue ogreBackgroundColor;
+
+      protected: bool colorDirty;
     };
 
     class IGNITION_VISIBLE OgreRenderTexture :
-      public virtual OgreRenderTarget,
-      public virtual BaseRenderTexture
+      public virtual BaseRenderTexture<OgreRenderTarget>
     {
       protected: OgreRenderTexture();
 
       public: virtual ~OgreRenderTexture();
 
-      public: virtual void GetData(void *data) const;
+      public: virtual unsigned int GetAntiAliasing() const;
+
+      public: virtual void SetAntiAliasing(unsigned int _aa);
 
       public: virtual void Destroy();
 
       protected: virtual Ogre::RenderTarget *GetOgreRenderTarget() const;
 
+      protected: virtual void RebuildTarget();
+
+      protected: virtual void DestroyTarget();
+
+      protected: virtual void BuildTarget();
+
       protected: Ogre::Texture *ogreTexture;
 
-      protected: Ogre::PixelFormat ogreFormat;
+      protected: unsigned int antiAliasing;
 
-      private: friend class OgreRenderTextureBuilder;
-    };
-
-    class IGNITION_VISIBLE OgreRenderTextureBuilder :
-      public virtual BaseRenderTextureBuilder
-    {
-      public: OgreRenderTextureBuilder(OgreScenePtr _scene);
-
-      public: virtual ~OgreRenderTextureBuilder();
-
-      public: virtual Ogre::Camera *GetCamera() const;
-
-      public: virtual void SetCamera(Ogre::Camera *_camera);
-
-      public: virtual std::string GetName() const;
-
-      public: virtual void SetName(const std::string &_name);
-
-      public: virtual void SetFormat(PixelFormat _format);
-
-      public: virtual gazebo::common::Color GetBackgroundColor() const;
-
-      public: virtual void SetBackgroundColor(gazebo::common::Color _color);
-
-      public: virtual BaseRenderTexturePtr Build() const;
-
-      protected: virtual OgreRenderTexturePtr BuildSafe() const;
-
-      protected: OgreScenePtr scene;
-
-      protected: Ogre::Camera *ogreCamera;
-
-      protected: std::string name;
-
-      protected: gazebo::common::Color backgroundColor;
+      private: friend class OgreScene;
     };
   }
 }

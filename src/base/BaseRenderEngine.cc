@@ -15,6 +15,7 @@
  *
  */
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
+#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -32,26 +33,57 @@ BaseRenderEngine::~BaseRenderEngine()
 //////////////////////////////////////////////////
 bool BaseRenderEngine::Load()
 {
+  if (this->loaded)
+  {
+    gzwarn << "Render-engine has already been loaded" << std::endl;
+    return true;
+  }
+
+  this->loaded = this->LoadImpl();
+  return this->loaded;
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::Init()
 {
+  if (!this->loaded)
+  {
+    gzerr << "Render-engine must be loaded first" << std::endl;
+    return false;
+  }
+
+  if (this->initialized)
+  {
+    gzwarn << "Render-engine has already been initialized" << std::endl;
+    return true;
+  }
+
+  this->initialized = this->InitImpl();
+  return this->initialized;
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::Fini()
 {
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool BaseRenderEngine::IsLoaded() const
+{
+  return this->loaded;
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::IsInitialized() const
 {
+  return this->initialized;
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::IsEnabled() const
 {
+  return this->initialized;
 }
 
 //////////////////////////////////////////////////

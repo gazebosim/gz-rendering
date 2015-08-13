@@ -271,6 +271,15 @@ MaterialPtr OgreScene::CreateMaterialImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+RenderTexturePtr OgreScene::CreateRenderTextureImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreRenderTexturePtr renderTexture(new OgreRenderTexture);
+  bool result = this->InitObject(renderTexture, _id, _name);
+  return (result) ? renderTexture : NULL;
+}
+
+//////////////////////////////////////////////////
 bool OgreScene::InitObject(OgreObjectPtr _object, unsigned int _id,
     const std::string &_name)
 {

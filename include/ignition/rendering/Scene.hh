@@ -59,9 +59,15 @@ namespace ignition
 
       public: virtual gazebo::common::Color GetAmbientLight() const = 0;
 
+      public: virtual void SetAmbientLight(double _r, double _g, double _b,
+                  double _a = 1.0) = 0;
+
       public: virtual void SetAmbientLight(const gazebo::common::Color &_color) = 0;
 
       public: virtual gazebo::common::Color GetBackgroundColor() const = 0;
+
+      public: virtual void SetBackgroundColor(double _r, double _g, double _b,
+                  double _a = 1.0) = 0;
 
       public: virtual void SetBackgroundColor(const gazebo::common::Color &_color) = 0;
 
@@ -266,6 +272,8 @@ namespace ignition
 
       public: virtual MaterialPtr CreateMaterial(
                   const gazebo::common::Material &_material) = 0;
+
+      public: virtual RenderTexturePtr CreateRenderTexture() = 0;
 
       public: virtual void PreRender() = 0;
 

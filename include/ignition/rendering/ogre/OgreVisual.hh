@@ -32,7 +32,11 @@ namespace ignition
 
       public: virtual ~OgreVisual();
 
-      public: virtual gazebo::math::Vector3 GetScale() const;
+      public: virtual gazebo::math::Vector3 GetLocalScale() const;
+
+      public: virtual bool GetInheritScale() const;
+
+      public: virtual void SetInheritScale(bool _inherit);
 
       protected: virtual NodeStorePtr GetChildren() const;
 
@@ -46,7 +50,8 @@ namespace ignition
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry);
 
-      protected: virtual void SetScaleImpl(const gazebo::math::Vector3 &_scale);
+      protected: virtual void SetLocalScaleImpl(
+                     const gazebo::math::Vector3 &_scale);
 
       protected: virtual void Init();
 

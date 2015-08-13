@@ -17,44 +17,39 @@
 #ifndef _IGNITION_RENDERING_BASERENDERTARGET_HH_
 #define _IGNITION_RENDERING_BASERENDERTARGET_HH_
 
-#include "ignition/rendering/PixelFormat.hh"
+#include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/Util.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE BaseRenderTarget
+    template <class T>
+    class IGNITION_VISIBLE BaseRenderTarget :
+      public virtual RenderTarget,
+      public virtual T
     {
       public: BaseRenderTarget();
 
       public: virtual ~BaseRenderTarget();
 
-      public: virtual unsigned int GetWidth() const = 0;
+      public: virtual void PreRender();
 
-      public: virtual unsigned int GetHeight() const = 0;
+      protected: virtual void Rebuild();
 
-      public: virtual void Update() = 0;
+      protected: virtual void RebuildImpl() = 0;
 
-      public: virtual void Destroy() = 0;
+      protected: bool targetDirty;
     };
 
+    template <class T>
     class IGNITION_VISIBLE BaseRenderTexture :
-      public virtual BaseRenderTarget
+      public virtual RenderTexture,
+      public virtual T
     {
       public: BaseRenderTexture();
 
       public: virtual ~BaseRenderTexture();
-
-      public: virtual void GetData(void *data) const = 0;
-    };
-
-    class IGNITION_VISIBLE BaseRenderTextureBuilder
-    {
-      public: BaseRenderTextureBuilder();
-
-      public: virtual ~BaseRenderTextureBuilder();
 
       public: virtual unsigned int GetWidth() const;
 
@@ -64,30 +59,112 @@ namespace ignition
 
       public: virtual void SetHeight(unsigned int _height);
 
-      public: virtual void SetSize(unsigned int _width, unsigned int _height);
-
       public: virtual PixelFormat GetFormat() const;
 
       public: virtual void SetFormat(PixelFormat _format);
-
-      public: virtual unsigned int GetDepth() const;
-
-      public: virtual unsigned int GetMemorySize() const;
-
-      public: virtual unsigned int GetAntiAliasing() const;
-
-      public: virtual void SetAntiAliasing(unsigned int _aa);
-
-      public: virtual BaseRenderTexturePtr Build() const = 0;
 
       protected: unsigned int width;
 
       protected: unsigned int height;
 
       protected: PixelFormat format;
-
-      protected: unsigned int aa;
     };
+
+    //////////////////////////////////////////////////
+    // BaseRenderTarget
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRenderTarget<T>::BaseRenderTarget() :
+      targetDirty(true)
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRenderTarget<T>::~BaseRenderTarget()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::PreRender()
+    {
+      T::PreRender();
+      this->Rebuild();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::Rebuild()
+    {
+      if (this->targetDirty)
+      {
+        this->RebuildImpl();
+        this->targetDirty = false;
+      }
+    }
+
+    //////////////////////////////////////////////////
+    // BaseRenderTexture
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRenderTexture<T>::BaseRenderTexture() :
+      width(0),
+      height(0),
+      format(PF_UNKNOWN)
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRenderTexture<T>::~BaseRenderTexture()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseRenderTexture<T>::GetWidth() const
+    {
+      return this->width;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTexture<T>::SetWidth(unsigned int _width)
+    {
+      this->width = _width;
+      this->targetDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseRenderTexture<T>::GetHeight() const
+    {
+      return this->height;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTexture<T>::SetHeight(unsigned int _height)
+    {
+      this->height = _height;
+      this->targetDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    PixelFormat BaseRenderTexture<T>::GetFormat() const
+    {
+      return this->format;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTexture<T>::SetFormat(PixelFormat _format)
+    {
+      this->format = PixelUtil::Sanitize(_format);
+      this->targetDirty = true;
+    }
   }
 }
 #endif

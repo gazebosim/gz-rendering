@@ -47,6 +47,7 @@ namespace ignition
     class SubMesh;
     class Visual;
     class RenderTarget;
+    class RenderTexture;
 
     typedef shared_ptr<ArrowVisual>      ArrowVisualPtr;
     typedef shared_ptr<AxisVisual>       AxisVisualPtr;
@@ -68,6 +69,7 @@ namespace ignition
     typedef shared_ptr<SubMesh>          SubMeshPtr;
     typedef shared_ptr<Visual>           VisualPtr;
     typedef shared_ptr<RenderTarget>     RenderTargetPtr;
+    typedef shared_ptr<RenderTexture>    RenderTexturePtr;
 
     typedef shared_ptr<const ArrowVisual>      ConstArrowVisualPtr;
     typedef shared_ptr<const AxisVisual>       ConstAxisVisualPtr;
@@ -89,6 +91,7 @@ namespace ignition
     typedef shared_ptr<const SubMesh>          ConstSubMeshPtr;
     typedef shared_ptr<const Visual>           ConstVisualPtr;
     typedef shared_ptr<const RenderTarget>     ConstRenderTargetPtr;
+    typedef shared_ptr<const RenderTexture>    ConstRenderTexturePtr;
 
     /*
     template <class T> Map;

@@ -88,19 +88,29 @@ namespace ignition
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
                   bool unique = true);
 
-      public: virtual gazebo::math::Vector3 GetScale() const = 0;
+      public: virtual gazebo::math::Vector3 GetLocalScale() const = 0;
 
-      public: virtual void SetScale(double _scale);
+      public: virtual void SetLocalScale(double _scale);
 
-      public: virtual void SetScale(double _x, double _y, double _z);
+      public: virtual void SetLocalScale(double _x, double _y, double _z);
 
-      public: virtual void SetScale(const gazebo::math::Vector3 &_scale);
+      public: virtual void SetLocalScale(const gazebo::math::Vector3 &_scale);
+
+      public: virtual gazebo::math::Vector3 GetWorldScale() const;
+
+      public: virtual void SetWorldScale(double _scale);
+
+      public: virtual void SetWorldScale(double _x, double _y, double _z);
+
+      public: virtual void SetWorldScale(const gazebo::math::Vector3 &_scale);
 
       public: virtual void Scale(double _scale);
 
       public: virtual void Scale(double _x, double _y, double _z);
 
       public: virtual void Scale(const gazebo::math::Vector3 &_scale);
+
+      public: virtual bool GetInheritScale() const = 0;
 
       public: virtual void PreRender();
 
@@ -120,7 +130,8 @@ namespace ignition
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry) = 0;
 
-      protected: virtual void SetScaleImpl(const gazebo::math::Vector3 &_scale) = 0;
+      protected: virtual void SetLocalScaleImpl(
+                     const gazebo::math::Vector3 &_scale) = 0;
     };
 
     //////////////////////////////////////////////////
@@ -139,20 +150,20 @@ namespace ignition
     template <class T>
     gazebo::math::Pose BaseVisual<T>::GetLocalPose() const
     {
-      gazebo::math::Pose pose = this->GetRawLocalPose();
-      gazebo::math::Vector3 scale = this->GetScale();
-      pose.pos += pose.rot * (scale * this->origin);
-      return pose;
+      gazebo::math::Pose rawPose = this->GetRawLocalPose();
+      gazebo::math::Vector3 scale = this->GetLocalScale();
+      rawPose.pos += rawPose.rot * (scale * this->origin);
+      return rawPose;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::SetLocalPose(const gazebo::math::Pose &_pose)
     {
-      gazebo::math::Pose pose = _pose;
-      gazebo::math::Vector3 scale = this->GetScale();
-      pose.pos -= pose.rot * (scale * this->origin);
-      this->SetRawLocalPose(pose);
+      gazebo::math::Pose rawPose = _pose;
+      gazebo::math::Vector3 scale = this->GetLocalScale();
+      rawPose.pos -= rawPose.rot * (scale * this->origin);
+      this->SetRawLocalPose(rawPose);
     }
 
     //////////////////////////////////////////////////
@@ -341,25 +352,61 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetScale(double _scale)
+    void BaseVisual<T>::SetLocalScale(double _scale)
     {
-      this->SetScale(gazebo::math::Vector3(_scale, _scale, _scale));
+      this->SetLocalScale(gazebo::math::Vector3(_scale, _scale, _scale));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetScale(double _x, double _y, double _z)
+    void BaseVisual<T>::SetLocalScale(double _x, double _y, double _z)
     {
-      this->SetScale(gazebo::math::Vector3(_x, _y, _z));
+      this->SetLocalScale(gazebo::math::Vector3(_x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetScale(const gazebo::math::Vector3 &_scale)
+    void BaseVisual<T>::SetLocalScale(const gazebo::math::Vector3 &_scale)
     {
-      gazebo::math::Pose pose = this->GetLocalPose();
-      this->SetScaleImpl(_scale);
-      this->SetLocalPose(pose);
+      gazebo::math::Pose rawPose = this->GetLocalPose();
+      this->SetLocalScaleImpl(_scale);
+      this->SetLocalPose(rawPose);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    gazebo::math::Vector3 BaseVisual<T>::GetWorldScale() const
+    {
+      gazebo::math::Vector3 scale = this->GetLocalScale();
+
+      if (!this->GetInheritScale() || !this->HasParent())
+      {
+        return scale;
+      }
+
+      return scale * this->GetParent()->GetWorldScale();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetWorldScale(double _scale)
+    {
+      this->SetWorldScale(gazebo::math::Vector3(_scale, _scale, _scale));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetWorldScale(double _x, double _y, double _z)
+    {
+      this->SetWorldScale(gazebo::math::Vector3(_x, _y, _z));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetWorldScale(const gazebo::math::Vector3 &_scale)
+    {
+      gazebo::math::Vector3 currentScale = this->GetWorldScale();
+      this->SetLocalScale(_scale / currentScale);
     }
 
     //////////////////////////////////////////////////
@@ -380,13 +427,14 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::Scale(const gazebo::math::Vector3 &_scale)
     {
-      this->SetScale(_scale * this->GetScale());
+      this->SetLocalScale(_scale * this->GetLocalScale());
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::PreRender()
     {
+      T::PreRender();
       this->PreRenderChildren();
       this->PreRenderGeometries();
     }

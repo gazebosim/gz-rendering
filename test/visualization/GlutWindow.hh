@@ -17,11 +17,12 @@
 #ifndef _IGNITION_RENDERING_GLUTWINDOW_HH_
 #define _IGNITION_RENDERING_GLUTWINDOW_HH_
 
+#include <vector>
 #include "ignition/rendering/RenderTypes.hh"
 
 namespace gz = ignition::rendering;
 
-void GlutRun(gz::CameraPtr _camera);
+void GlutRun(std::vector<gz::CameraPtr> _cameras);
 
 void GlutDisplay();
 
@@ -34,5 +35,7 @@ void GlutReshape(int _width, int _height);
 void GlutInitCamera(gz::CameraPtr _camera);
 
 void GlutInitContext();
+
+void GlutPrintUsage();
 
 #endif

@@ -108,6 +108,9 @@ namespace ignition
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name);
 
+      protected: virtual RenderTexturePtr CreateRenderTextureImpl(
+                     unsigned int _id, const std::string &_name);
+
       protected: virtual bool InitObject(OgreObjectPtr _object,
                      unsigned int _id, const std::string &_name);
 

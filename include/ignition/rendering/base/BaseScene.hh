@@ -51,6 +51,16 @@ namespace ignition
 
       public: virtual void SetSimTime(const gazebo::common::Time &_time);
 
+      public: virtual void SetAmbientLight(double _r, double _g, double _b,
+                  double _a = 1.0);
+
+      public: virtual void SetAmbientLight(const gazebo::common::Color &_color) = 0;
+
+      public: virtual void SetBackgroundColor(double _r, double _g, double _b,
+                  double _a = 1.0);
+
+      public: virtual void SetBackgroundColor(const gazebo::common::Color &_color) = 0;
+
       public: virtual unsigned int GetNodeCount() const;
 
       public: virtual bool HasNode(ConstNodePtr _node) const;
@@ -245,6 +255,8 @@ namespace ignition
       public: virtual MaterialPtr CreateMaterial(
                   const gazebo::common::Material &_material);
 
+      public: virtual RenderTexturePtr CreateRenderTexture();
+
       public: virtual void PreRender();
 
       public: virtual void Clear();
@@ -303,6 +315,9 @@ namespace ignition
 
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      protected: virtual RenderTexturePtr CreateRenderTextureImpl(
+                     unsigned int _id, const std::string &_name) = 0;
 
       protected: virtual LightStorePtr GetLights() const = 0;
 

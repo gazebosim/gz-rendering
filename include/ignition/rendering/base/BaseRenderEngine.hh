@@ -37,6 +37,8 @@ namespace ignition
 
       public: virtual bool Fini();
 
+      public: virtual bool IsLoaded() const;
+
       public: virtual bool IsInitialized() const;
 
       public: virtual bool IsEnabled() const;
@@ -76,10 +78,18 @@ namespace ignition
 
       protected: virtual unsigned int GetNextSceneId();
 
+      protected: virtual bool LoadImpl() = 0;
+
+      protected: virtual bool InitImpl() = 0;
+
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name) = 0;
 
       protected: virtual SceneStorePtr GetScenes() const = 0;
+
+      protected: bool loaded;
+
+      protected: bool initialized;
 
       protected: unsigned int nextSceneId;
     };

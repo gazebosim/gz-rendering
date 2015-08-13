@@ -19,11 +19,13 @@
 
 #include "gazebo/common/Console.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
-// #include "ignition/rendering/optix/OptixRenderEngine.hh"
+#include "ignition/rendering/optix/OptixRenderEngine.hh"
 
 using namespace ignition;
 using namespace rendering;
 
+//////////////////////////////////////////////////
+// RenderEngineManager
 //////////////////////////////////////////////////
 RenderEngineManager::RenderEngineManager() :
   pimpl(new RenderEngineManagerPrivate)
@@ -142,6 +144,8 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 }
 
 //////////////////////////////////////////////////
+// RenderEngineManagerPrivate
+//////////////////////////////////////////////////
 RenderEngine *RenderEngineManagerPrivate::GetEngine(EngineIter _iter) const
 {
   RenderEngine *engine = _iter->second;
@@ -159,7 +163,7 @@ RenderEngine *RenderEngineManagerPrivate::GetEngine(EngineIter _iter) const
 void RenderEngineManagerPrivate::RegisterDefaultEngines()
 {
   this->engines["ogre"] = OgreRenderEngine::Instance();
-  // this->engines["optix"] = OptixRenderEngine::Instance();
+  this->engines["optix"] = OptixRenderEngine::Instance();
 }
 
 //////////////////////////////////////////////////

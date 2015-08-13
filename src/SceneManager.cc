@@ -1428,7 +1428,7 @@ void SubSceneManager::ProcessBox(const gazebo::msgs::Geometry &_geometryMsg,
   GeometryPtr box = this->activeScene->CreateBox();
   const gazebo::msgs::BoxGeom &boxMsg = _geometryMsg.box();
   const gazebo::msgs::Vector3d sizeMsg = boxMsg.size();
-  _parent->SetScale(SubSceneManager::Convert(sizeMsg));
+  _parent->SetLocalScale(SubSceneManager::Convert(sizeMsg));
   _parent->AddGeometry(box);
 }
 
@@ -1442,7 +1442,7 @@ void SubSceneManager::ProcessCone(const gazebo::msgs::Geometry &/*_geometryMsg*/
   // double x = coneMsg.radius();
   // double y = coneMsg.radius();
   // double z = coneMsg.length();
-  // _parent->SetScale(x, y, z);
+  // _parent->SetLocalScale(x, y, z);
   _parent->AddGeometry(cone);
 }
 
@@ -1455,7 +1455,7 @@ void SubSceneManager::ProcessCylinder(const gazebo::msgs::Geometry &_geometryMsg
   double x = cylinderMsg.radius();
   double y = cylinderMsg.radius();
   double z = cylinderMsg.length();
-  _parent->SetScale(x, y, z);
+  _parent->SetLocalScale(x, y, z);
   _parent->AddGeometry(cylinder);
 }
 
@@ -1496,7 +1496,7 @@ void SubSceneManager::ProcessMesh(const gazebo::msgs::Geometry &_geometryMsg,
   if (meshMsg.has_scale())
   {
     const gazebo::msgs::Vector3d scaleMsg = meshMsg.scale();
-    _parent->SetScale(SubSceneManager::Convert(scaleMsg));
+    _parent->SetLocalScale(SubSceneManager::Convert(scaleMsg));
   }
 
   // attach geometry to parent
@@ -1511,7 +1511,7 @@ void SubSceneManager::ProcessPlane(const gazebo::msgs::Geometry &_geometryMsg,
   GeometryPtr plane = this->activeScene->CreatePlane();
   const gazebo::msgs::PlaneGeom &planeMsg = _geometryMsg.plane();
   const gazebo::msgs::Vector2d planeSize = planeMsg.size();
-  _parent->SetScale(planeSize.x(), planeSize.y(), 1);
+  _parent->SetLocalScale(planeSize.x(), planeSize.y(), 1);
   _parent->AddGeometry(plane);
 }
 
@@ -1521,7 +1521,7 @@ void SubSceneManager::ProcessSphere(const gazebo::msgs::Geometry &_geometryMsg,
 {
   GeometryPtr sphere = this->activeScene->CreateSphere();
   const gazebo::msgs::SphereGeom &sphereMsg = _geometryMsg.sphere();
-  _parent->SetScale(sphereMsg.radius());
+  _parent->SetLocalScale(sphereMsg.radius());
   _parent->AddGeometry(sphere);
 }
 
@@ -1611,7 +1611,7 @@ void SubSceneManager::SetScale(VisualPtr _visual,
     const gazebo::msgs::Vector3d &_scaleMsg)
 {
   gazebo::math::Vector3 scale = SubSceneManager::Convert(_scaleMsg);
-  _visual->SetScale(scale);
+  _visual->SetLocalScale(scale);
 }
 
 //////////////////////////////////////////////////

@@ -29,12 +29,18 @@
 #include <GL/glx.h>
 
 #define KEY_ESC 27
+#define KEY_TAB  9
 
 //////////////////////////////////////////////////
 unsigned int imgw = 0;
 unsigned int imgh = 0;
+
+std::vector<gz::CameraPtr> g_cameras;
 gz::CameraPtr g_camera;
+gz::CameraPtr g_currCamera;
+unsigned int g_cameraIndex = 0;
 gz::ImagePtr g_image;
+
 bool g_initContext = false;
 GLXContext g_context;
 Display *g_display;
@@ -46,14 +52,16 @@ GLXDrawable g_glutDrawable;
 double g_offset = 0.0;
 
 //////////////////////////////////////////////////
-void GlutRun(gz::CameraPtr _camera)
+void GlutRun(std::vector<gz::CameraPtr> _cameras)
 {
   g_context = glXGetCurrentContext();
   g_display = glXGetCurrentDisplay();
   g_drawable = glXGetCurrentDrawable();
 
-  GlutInitCamera(_camera);
+  g_cameras = _cameras;
+  GlutInitCamera(_cameras[0]);
   GlutInitContext();
+  GlutPrintUsage();
 
   g_glutDisplay = glXGetCurrentDisplay();
   g_glutDrawable = glXGetCurrentDrawable();
@@ -63,10 +71,26 @@ void GlutRun(gz::CameraPtr _camera)
 }
 
 //////////////////////////////////////////////////
+void UpdateCameras()
+{
+  for (gz::CameraPtr camera : g_cameras)
+  {
+    camera->SetLocalPosition(g_offset, g_offset, g_offset);
+  }
+
+  g_offset+= 0.001;
+}
+
+//////////////////////////////////////////////////
 void GlutDisplay()
 {
-  glXMakeCurrent(g_display, g_drawable, g_context);
-  g_camera->Capture(*g_image);
+  if (g_display)
+  {
+    glXMakeCurrent(g_display, g_drawable, g_context);
+  }
+
+  g_cameras[g_cameraIndex]->Capture(*g_image);
+
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 
   unsigned char *data = g_image->GetData<unsigned char>();
@@ -78,10 +102,7 @@ void GlutDisplay()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-
-  g_camera->SetLocalPosition(g_offset, g_offset, g_offset);
-  g_offset+= 0.001;
-
+  UpdateCameras();
 }
 
 //////////////////////////////////////////////////
@@ -101,6 +122,10 @@ void GlutKeyboard(unsigned char _key, int, int)
   if (_key == KEY_ESC || _key == 'q' || _key == 'Q')
   {
     exit(0);
+  }
+  else if (_key == KEY_TAB)
+  {
+    g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
   }
 }
 
@@ -134,4 +159,12 @@ void GlutInitContext()
   glutIdleFunc(GlutIdle);
   glutKeyboardFunc(GlutKeyboard);
   glutReshapeFunc(GlutReshape);
+}
+
+void GlutPrintUsage()
+{
+  std::cout << "===============================" << std::endl;
+  std::cout << "  TAB - Switch render engines  " << std::endl;
+  std::cout << "  ESC - Exit                   " << std::endl;
+  std::cout << "===============================" << std::endl;
 }

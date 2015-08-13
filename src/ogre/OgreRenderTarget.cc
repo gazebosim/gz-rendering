@@ -25,8 +25,14 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OgreRenderTarget::OgreRenderTarget()
+// OgreRenderTarget
+//////////////////////////////////////////////////
+OgreRenderTarget::OgreRenderTarget() :
+  ogreCamera(NULL),
+  ogreViewport(NULL),
+  colorDirty(true)
 {
+  this->ogreBackgroundColor = Ogre::ColourValue::Black;
 }
 
 //////////////////////////////////////////////////
@@ -36,34 +42,93 @@ OgreRenderTarget::~OgreRenderTarget()
 
   OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
       this->scene);
-
-  // this->Destroy();
 }
 
 //////////////////////////////////////////////////
-unsigned int OgreRenderTarget::GetWidth() const
+void OgreRenderTarget::GetImage(Image &_image) const
 {
-  return this->ogreViewport->getActualWidth();
+  // TODO: handle Bayer conversions
+  // TODO: handle ogre version differences
+
+  unsigned int width = this->GetWidth();
+  unsigned int height = this->GetHeight();
+
+  if (_image.GetWidth() != width || _image.GetHeight() != height)
+  {
+    gzerr << "Invalid image dimensions" << std::endl;
+    return;
+  }
+
+  void* data = _image.GetData();
+  Ogre::PixelFormat format = OgreConversions::Convert(_image.GetFormat());
+  Ogre::PixelBox ogrePixelBox(width, height, 1, format, data);
+  this->GetOgreRenderTarget()->copyContentsToMemory(ogrePixelBox);
 }
 
 //////////////////////////////////////////////////
-unsigned int OgreRenderTarget::GetHeight() const
+Ogre::Camera *OgreRenderTarget::GetCamera() const
 {
-  return this->ogreViewport->getActualHeight();
+  return this->ogreCamera;
 }
 
 //////////////////////////////////////////////////
-void OgreRenderTarget::Update()
+void OgreRenderTarget::SetCamera(Ogre::Camera *_camera)
+{
+  this->ogreCamera = _camera;
+  this->targetDirty = true;
+}
+
+//////////////////////////////////////////////////
+gazebo::common::Color OgreRenderTarget::GetBackgroundColor() const
+{
+  return OgreConversions::Convert(this->ogreBackgroundColor);
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::SetBackgroundColor(gazebo::common::Color _color)
+{
+  this->ogreBackgroundColor = OgreConversions::Convert(_color);
+  this->colorDirty = true;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::PreRender()
+{
+  BaseRenderTarget::PreRender();
+  this->UpdateBackgroundColor();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::Render()
 {
   this->GetOgreRenderTarget()->update();
 }
 
 //////////////////////////////////////////////////
-void OgreRenderTarget::Initialize()
+void OgreRenderTarget::UpdateBackgroundColor()
+{
+  if (this->colorDirty && this->ogreViewport)
+  {
+    this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
+    this->colorDirty = false;
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::RebuildImpl()
+{
+  this->RebuildTarget();
+  this->RebuildViewport();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::RebuildViewport()
 {
   Ogre::RenderTarget *ogreRenderTarget = this->GetOgreRenderTarget();
+  ogreRenderTarget->removeAllViewports();
+
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
-  this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
+  this->ogreViewport->setBackgroundColour(Ogre::ColourValue::Black);
   this->ogreViewport->setClearEveryFrame(true);
   this->ogreViewport->setShadowsEnabled(true);
   this->ogreViewport->setOverlaysEnabled(false);
@@ -73,7 +138,10 @@ void OgreRenderTarget::Initialize()
 }
 
 //////////////////////////////////////////////////
-OgreRenderTexture::OgreRenderTexture()
+// OgreRenderTexture
+//////////////////////////////////////////////////
+OgreRenderTexture::OgreRenderTexture() :
+  ogreTexture(NULL)
 {
 }
 
@@ -83,24 +151,23 @@ OgreRenderTexture::~OgreRenderTexture()
 }
 
 //////////////////////////////////////////////////
-void OgreRenderTexture::GetData(void *data) const
+unsigned int OgreRenderTexture::GetAntiAliasing() const
 {
-  // TODO: handle Bayer conversions
-  // TODO: handle ogre version differences
+  return this->antiAliasing;
+}
 
-  unsigned int width = this->ogreViewport->getActualWidth();
-  unsigned int height = this->ogreViewport->getActualHeight();
-  Ogre::PixelFormat format = this->ogreFormat;
-
-  Ogre::PixelBox ogrePixelBox(width, height, 1, format, data);
-  this->GetOgreRenderTarget()->copyContentsToMemory(ogrePixelBox);
+//////////////////////////////////////////////////
+void OgreRenderTexture::SetAntiAliasing(unsigned int _aa)
+{
+  this->antiAliasing = _aa;
+  this->targetDirty = true;
 }
 
 //////////////////////////////////////////////////
 void OgreRenderTexture::Destroy()
 {
-  std::string name = this->ogreTexture->getName();
-  Ogre::TextureManager::getSingleton().remove(name);
+  std::string ogreName = this->ogreTexture->getName();
+  Ogre::TextureManager::getSingleton().remove(ogreName);
 }
 
 //////////////////////////////////////////////////
@@ -109,99 +176,26 @@ Ogre::RenderTarget *OgreRenderTexture::GetOgreRenderTarget() const
   return this->ogreTexture->getBuffer()->getRenderTarget();
 }
 
-//////////////////////////////////////////////////  
-OgreRenderTextureBuilder::OgreRenderTextureBuilder(OgreScenePtr _scene) :
-  scene(_scene),
-  ogreCamera(NULL),
-  name(""),
-  backgroundColor(gazebo::common::Color::Black)
+//////////////////////////////////////////////////
+void OgreRenderTexture::RebuildTarget()
 {
+  this->DestroyTarget();
+  this->BuildTarget();
 }
 
 //////////////////////////////////////////////////
-OgreRenderTextureBuilder::~OgreRenderTextureBuilder()
+void OgreRenderTexture::DestroyTarget()
 {
+  // TODO: implement
 }
 
 //////////////////////////////////////////////////
-Ogre::Camera *OgreRenderTextureBuilder::GetCamera() const
+void OgreRenderTexture::BuildTarget()
 {
-  return this->ogreCamera;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTextureBuilder::SetCamera(Ogre::Camera *_camera)
-{
-  this->ogreCamera = _camera;
-}
-
-//////////////////////////////////////////////////
-std::string OgreRenderTextureBuilder::GetName() const
-{
-  return this->name;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTextureBuilder::SetName(const std::string &_name)
-{
-  this->name = _name;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTextureBuilder::SetFormat(PixelFormat _format)
-{
-  _format = PixelUtil::Sanitize(_format);
-  this->format = _format;
-}
-
-//////////////////////////////////////////////////
-gazebo::common::Color OgreRenderTextureBuilder::GetBackgroundColor() const
-{
-  return this->backgroundColor;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTextureBuilder::SetBackgroundColor(gazebo::common::Color _color)
-{
-  this->backgroundColor = _color;
-}
-
-//////////////////////////////////////////////////
-BaseRenderTexturePtr OgreRenderTextureBuilder::Build() const
-{
-  if (!this->ogreCamera)
-  {
-    gzerr << "Ogre::Camera cannot be null" << std::endl;
-    return NULL;
-  }
-
-  return this->BuildSafe();
-}
-
-//////////////////////////////////////////////////
-OgreRenderTexturePtr OgreRenderTextureBuilder::BuildSafe() const
-{
-  // TODO: improve name scope
-  std::string texName = (!this->name.empty()) ?
-      this->name : this->ogreCamera->getName() + "::RenderTexture";
-
-  Ogre::ColourValue ogreColor;
-  ogreColor = OgreConversions::Convert(this->backgroundColor);
-
-  Ogre::PixelFormat ogreFormat = OgreConversions::Convert(this->format);
   Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
+  Ogre::PixelFormat ogreFormat = OgreConversions::Convert(this->format);
 
-  Ogre::TexturePtr ogreTexture = manager.createManual(texName, "General",
+  this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-      Ogre::TU_RENDERTARGET, 0, false, this->aa);
-
-  OgreRenderTexturePtr texture(new OgreRenderTexture());
-  texture->scene = this->scene;
-  texture->ogreTexture = ogreTexture.getPointer();
-  texture->ogreCamera = this->ogreCamera;
-  texture->ogreFormat = ogreFormat;
-  texture->ogreBackgroundColor = ogreColor;
-  texture->Initialize();
-
-  return texture;
+      Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).getPointer();
 }

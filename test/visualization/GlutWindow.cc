@@ -20,6 +20,7 @@
 #include <GL/glut.h>
 #include <GL/gl.h>
 
+#include "gazebo/common/Image.hh"
 #include "gazebo/common/Console.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Image.hh"
@@ -35,38 +36,40 @@ unsigned int imgh = 0;
 gz::CameraPtr g_camera;
 gz::ImagePtr g_image;
 bool g_initContext = false;
+GLXContext g_context;
+Display *g_display;
+GLXDrawable g_drawable;
+GLXContext g_glutContext;
+Display *g_glutDisplay;
+GLXDrawable g_glutDrawable;
+
+double g_offset = 0.0;
 
 //////////////////////////////////////////////////
 void GlutRun(gz::CameraPtr _camera)
 {
+  g_context = glXGetCurrentContext();
+  g_display = glXGetCurrentDisplay();
+  g_drawable = glXGetCurrentDrawable();
+
   GlutInitCamera(_camera);
   GlutInitContext();
+
+  g_glutDisplay = glXGetCurrentDisplay();
+  g_glutDrawable = glXGetCurrentDrawable();
+  g_glutContext = glXGetCurrentContext();
+
   glutMainLoop();
 }
 
 //////////////////////////////////////////////////
 void GlutDisplay()
 {
+  glXMakeCurrent(g_display, g_drawable, g_context);
   g_camera->Capture(*g_image);
+  glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 
   unsigned char *data = g_image->GetData<unsigned char>();
-
-  // share the context
-  if (!g_initContext)
-  {
-    g_initContext = true;
-    int attributeList[] = {GLX_RGBA, None};
-
-    GLXContext context = glXGetCurrentContext();
-    Display *display = glXGetCurrentDisplay();
-    GLXDrawable drawable = glXGetCurrentDrawable();
-
-    XVisualInfo * visualInfo = glXChooseVisual(display, 0, attributeList);
-    GLXContext currentContext
-        = glXCreateContext(display, visualInfo, context, GL_TRUE);
-    glXMakeCurrent(display, drawable, currentContext);
-  }
-
 
   glClearColor(0.5, 0.5, 0.5, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -75,6 +78,15 @@ void GlutDisplay()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
+
+  g_camera->SetLocalPosition(g_offset, g_offset, g_offset);
+  g_offset+= 0.001;
+
+}
+
+//////////////////////////////////////////////////
+void SwitchContext()
+{
 }
 
 //////////////////////////////////////////////////
@@ -105,7 +117,7 @@ void GlutInitCamera(gz::CameraPtr _camera)
   imgh = g_camera->GetImageHeight();
   gz::Image image = g_camera->CreateImage();
   g_image = boost::make_shared<gz::Image>(image);
-  _camera->Capture(*g_image);
+  g_camera->Capture(*g_image);
 }
 
 //////////////////////////////////////////////////

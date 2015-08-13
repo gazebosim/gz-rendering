@@ -125,6 +125,19 @@ void OptixLight::SetCastShadows(bool _castShadows)
 }
 
 //////////////////////////////////////////////////
+void OptixLight::WritePoseToDeviceImpl()
+{
+  BaseLight::WritePoseToDeviceImpl();
+
+  // TODO: handle rotation
+  gazebo::math::Pose worldPose = this->GetWorldPose();
+  OptixCommonLightData &_data = this->GetCommonData();
+  _data.position.x = worldPose.pos.x;
+  _data.position.y = worldPose.pos.y;
+  _data.position.z = worldPose.pos.z;
+}
+
+//////////////////////////////////////////////////
 /// OptixDirectionalLight
 OptixDirectionalLight::OptixDirectionalLight()
 {
@@ -156,6 +169,7 @@ OptixDirectionalLightData OptixDirectionalLight::GetData() const
 //////////////////////////////////////////////////
 void OptixDirectionalLight::PreRender()
 {
+  BaseDirectionalLight::PreRender();
   OptixLightManagerPtr lightManager = this->scene->GetLightManager();
   lightManager->AddDirectionalLight(this->SharedThis());
 }
@@ -199,6 +213,7 @@ OptixPointLightData OptixPointLight::GetData() const
 //////////////////////////////////////////////////
 void OptixPointLight::PreRender()
 {
+  BasePointLight::PreRender();
   OptixLightManagerPtr lightManager = this->scene->GetLightManager();
   lightManager->AddPointLight(this->SharedThis());
 }
@@ -291,6 +306,7 @@ OptixSpotLightData OptixSpotLight::GetData() const
 //////////////////////////////////////////////////
 void OptixSpotLight::PreRender()
 {
+  BaseSpotLight::PreRender();
   OptixLightManagerPtr lightManager = this->scene->GetLightManager();
   lightManager->AddSpotLight(this->SharedThis());
 }

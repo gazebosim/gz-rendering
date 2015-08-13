@@ -29,6 +29,7 @@ using namespace rendering;
 // OptixMeshFactory
 //////////////////////////////////////////////////
 OptixMeshFactory::OptixMeshFactory(OptixScenePtr _scene) :
+  subMeshStoreFactory(_scene),
   scene(_scene)
 {
 }
@@ -41,103 +42,49 @@ OptixMeshFactory::~OptixMeshFactory()
 //////////////////////////////////////////////////
 OptixMeshPtr OptixMeshFactory::Create(const MeshDescriptor &_desc)
 {
-  // create optix entity
-  OptixMeshPtr mesh(new OptixMesh);
+  OptixSubMeshStorePtr subMeshStore;
   MeshDescriptor normDesc = _desc.Normalize();
-  // mesh->optixGeomInstance = this->GetOptixGeomInstance(normDesc);
+  subMeshStore = this->subMeshStoreFactory.Create(normDesc);
 
-  // // check if invalid mesh
-  // if (!mesh->optixEntity)
-  // {
-  //   return NULL;
-  // }
-
-  // create sub-mesh store
-  OptixSubMeshStoreFactory storeFactory;
-  mesh->subMeshes = storeFactory.Create();
-  return mesh;
-}
-
-//////////////////////////////////////////////////
-optix::Geometry OptixMeshFactory::GetOptixGeometry(
-    const MeshDescriptor &_desc)
-{
-  if (this->Load(_desc))
+  if (!subMeshStore)
   {
     return NULL;
   }
 
-  std::string name = this->GetMeshName(_desc);
-  return this->geometries[name];
+  return this->Create(subMeshStore);
 }
 
 //////////////////////////////////////////////////
-bool OptixMeshFactory::Load(const MeshDescriptor &_desc)
+OptixMeshPtr OptixMeshFactory::Create(OptixSubMeshStorePtr _subMeshes)
 {
-  if (!this->Validate(_desc))
+  optix::Context optixContext = this->scene->GetOptixContext();
+
+  OptixMeshPtr mesh(new OptixMesh);
+  mesh->optixGeomGroup = optixContext->createGeometryGroup();
+  // mesh->optixAccel = optixContext->createAcceleration("TriangleKdTree", "KdTree");
+  mesh->optixAccel = optixContext->createAcceleration("MedianBvh", "Bvh");
+  mesh->optixAccel->markDirty();
+
+  mesh->optixGeomGroup->setAcceleration(mesh->optixAccel);
+  mesh->subMeshes = _subMeshes;
+
+  unsigned int count = _subMeshes->Size();
+
+  for (unsigned int i = 0; i < count; ++i)
   {
-    return false;
+    OptixSubMeshPtr subMesh = _subMeshes->GetDerivedByIndex(i);
+    mesh->optixGeomGroup->addChild(subMesh->GetOptixGeometryInstance());
+    subMesh->SetMaterial(this->scene->CreateMaterial());
   }
 
-  if (this->IsLoaded(_desc))
-  {
-    return true;
-  }
-
-  return this->LoadImpl(_desc);
+  return mesh;
 }
 
 //////////////////////////////////////////////////
-bool OptixMeshFactory::IsLoaded(const MeshDescriptor &_desc)
-{
-  std::string name = this->GetMeshName(_desc);
-  auto iter = this->geometries.find(name);
-  return iter != this->geometries.end();
-}
-
+// OptixSubMeshStoreFactory
 //////////////////////////////////////////////////
-bool OptixMeshFactory::LoadImpl(const MeshDescriptor &/*_desc*/)
-{
-  return true;
-}
-
-//////////////////////////////////////////////////
-std::string OptixMeshFactory::GetMeshName(const MeshDescriptor &_desc)
-{
-  std::stringstream ss;
-  ss << _desc.meshName << "::" << _desc.subMeshName << "::";
-  ss << ((_desc.centerSubMesh) ? "CENTERED" : "ORIGINAL");
-  return ss.str();
-}
-
-//////////////////////////////////////////////////
-bool OptixMeshFactory::Validate(const MeshDescriptor &_desc)
-{
-  if (!_desc.mesh && _desc.meshName.empty())
-  {
-    gzerr << "Invalid mesh-descriptor, no mesh specified" << std::endl;
-    return false;
-  }
-
-  if (!_desc.mesh)
-  {
-    gzerr << "Cannot load null mesh" << std::endl;
-    return false;
-  }
-  
-  if (_desc.mesh->GetSubMeshCount() == 0)
-  {
-    gzerr << "Cannot load mesh with zero sub-meshes" << std::endl;
-    return false;
-  }
-
-  return true;
-}
-
-//////////////////////////////////////////////////
-// OptixSubMeshFactory
-//////////////////////////////////////////////////
-OptixSubMeshStoreFactory::OptixSubMeshStoreFactory()
+OptixSubMeshStoreFactory::OptixSubMeshStoreFactory(OptixScenePtr _scene) :
+  scene(_scene)
 {
 }
 
@@ -147,7 +94,230 @@ OptixSubMeshStoreFactory::~OptixSubMeshStoreFactory()
 }
 
 //////////////////////////////////////////////////
-OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create()
+OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
+    const MeshDescriptor &_desc)
 {
-  return OptixSubMeshStorePtr(new OptixSubMeshStore);
+  optix::Context optixContext = this->scene->GetOptixContext();
+  unsigned int count = _desc.mesh->GetSubMeshCount();
+  const std::string searchName = _desc.subMeshName;
+
+  OptixSubMeshStorePtr store(new OptixSubMeshStore);
+
+  for (unsigned int i = 0; i < count; ++i)
+  {
+    const gazebo::common::SubMesh *subMesh = _desc.mesh->GetSubMesh(i);
+    const std::string foundName = subMesh->GetName();
+
+    if (searchName.empty() || foundName == searchName)
+    {
+      optix::Geometry optixGeometry = this->GetGeometry(_desc, i);
+      OptixSubMeshPtr sm(new OptixSubMesh);
+      sm->optixGeometry = optixGeometry;
+      sm->optixGeomInstance = optixContext->createGeometryInstance();
+      sm->optixGeomInstance->setGeometry(optixGeometry);
+      store->Add(sm);
+    }
+  }
+
+  return store;
+}
+
+//////////////////////////////////////////////////
+optix::Geometry OptixSubMeshStoreFactory::GetGeometry(
+    const MeshDescriptor &_desc, unsigned int _subMeshIndex)
+{
+  const gazebo::common::SubMesh *subMesh = _desc.mesh->GetSubMesh(_subMeshIndex);
+  const std::string keyName = this->GetKeyName(_desc, _subMeshIndex);
+  auto iter = this->geometries.find(keyName);
+
+  if (iter == this->geometries.end())
+  {
+    OptixMeshGeometryFactory factory(this->scene, *subMesh);
+    this->geometries[keyName] = factory.Create();
+    iter = this->geometries.find(keyName);
+  }
+
+  return iter->second;
+}
+
+//////////////////////////////////////////////////
+std::string OptixSubMeshStoreFactory::GetKeyName(const MeshDescriptor &_desc,
+    unsigned int _subMeshIndex)
+{
+  const gazebo::common::SubMesh subMesh = _desc.mesh->GetSubMesh(_subMeshIndex);
+  const std::string tail = (_desc.centerSubMesh) ? "_centered" : "_original";
+
+  std::stringstream ss;
+  ss << _desc.meshName << "::" << subMesh.GetName() << tail;
+  return ss.str();
+}
+
+//////////////////////////////////////////////////
+// OptixMeshGeometryFactory
+//////////////////////////////////////////////////
+OptixMeshGeometryFactory::OptixMeshGeometryFactory(OptixScenePtr _scene,
+    const gazebo::common::SubMesh &_subMesh) :
+  scene(_scene),
+  subMesh(_subMesh),
+  optixGeometry(NULL)
+{
+}
+
+//////////////////////////////////////////////////
+OptixMeshGeometryFactory::~OptixMeshGeometryFactory()
+{
+}
+
+//////////////////////////////////////////////////
+optix::Geometry OptixMeshGeometryFactory::Create()
+{
+  if (!this->optixGeometry)
+  {
+    this->CreateGeometry();
+  }
+
+  return this->optixGeometry;
+}
+
+//////////////////////////////////////////////////
+void OptixMeshGeometryFactory::CreateGeometry()
+{
+  optix::Context optixContext = this->scene->GetOptixContext();
+  this->optixGeometry = optixContext->createGeometry();
+
+  optix::Program intersectProgram, boundsProgram;
+  intersectProgram = this->scene->CreateOptixProgram("OptixMesh", "Intersect");
+  boundsProgram = this->scene->CreateOptixProgram("OptixMesh", "Bounds");
+
+  this->optixGeometry->setIntersectionProgram(intersectProgram);
+  this->optixGeometry->setBoundingBoxProgram(boundsProgram);
+
+  this->optixGeometry["vertexBuffer"]->setBuffer(this->CreateVertexBuffer());
+  this->optixGeometry["normalBuffer"]->setBuffer(this->CreateNormalBuffer());
+  this->optixGeometry["texCoordBuffer"]->setBuffer(this->CreateTexCoordBuffer());
+  this->optixGeometry["indexBuffer"]->setBuffer(this->CreateIndexBuffer());
+
+  unsigned int count = this->subMesh.GetIndexCount() / 3;
+  this->optixGeometry->setPrimitiveCount(count);
+}
+
+//////////////////////////////////////////////////
+optix::Buffer OptixMeshGeometryFactory::CreateVertexBuffer()
+{
+  // create new buffer
+  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
+  buffer->setFormat(RT_FORMAT_FLOAT3);
+
+  // update buffer size
+  unsigned int count = this->subMesh.GetVertexCount();
+  buffer->setSize(count);
+
+  // create host buffer from device buffer
+  float3* array = static_cast<float3*>(buffer->map());
+
+  // add each vertex to array
+  for (unsigned int i = 0; i < count; ++i)
+  {
+    // copy vertex to host buffer
+    const math::Vector3d& vertex = this->subMesh.Vertex(i);
+    array[i].x = vertex.X();
+    array[i].y = vertex.Y();
+    array[i].z = vertex.Z();
+  }
+
+  // copy host buffer to device
+  buffer->unmap();
+  return buffer;
+}
+
+//////////////////////////////////////////////////
+optix::Buffer OptixMeshGeometryFactory::CreateNormalBuffer()
+{
+  // create new buffer
+  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
+  buffer->setFormat(RT_FORMAT_FLOAT3);
+
+  // update buffer size
+  unsigned int count = this->subMesh.GetNormalCount();
+  buffer->setSize(count);
+
+  // create host buffer from device buffer
+  float3* array = static_cast<float3*>(buffer->map());
+
+  // add each vertex to array
+  for (unsigned int i = 0; i < count; ++i)
+  {
+    // copy vertex to host buffer
+    const math::Vector3d& normal = this->subMesh.Normal(i);
+    array[i].x = normal.X();
+    array[i].y = normal.Y();
+    array[i].z = normal.Z();
+  }
+
+  // copy host buffer to device
+  buffer->unmap();
+  return buffer;
+}
+
+//////////////////////////////////////////////////
+optix::Buffer OptixMeshGeometryFactory::CreateTexCoordBuffer()
+{
+  // create new buffer
+  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
+  buffer->setFormat(RT_FORMAT_FLOAT2);
+
+  // update buffer size
+  unsigned int count = this->subMesh.GetTexCoordCount();
+  buffer->setSize(count);
+
+  // create host buffer from device buffer
+  float2* array = static_cast<float2*>(buffer->map());
+
+  // add each vertex to array
+  for (unsigned int i = 0; i < count; ++i)
+  {
+    // copy vertex to host buffer
+    const math::Vector2d& normal = this->subMesh.TexCoord(i);
+    array[i].x = normal.X();
+    array[i].y = normal.Y();
+  }
+
+  // copy host buffer to device
+  buffer->unmap();
+  return buffer;
+}
+
+//////////////////////////////////////////////////
+optix::Buffer OptixMeshGeometryFactory::CreateIndexBuffer()
+{
+  // create new buffer
+  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
+  buffer->setFormat(RT_FORMAT_UNSIGNED_INT3);
+
+  // TODO: handle quads
+
+  // update buffer size
+  unsigned int count = this->subMesh.GetIndexCount() / 3;
+  buffer->setSize(count);
+
+  // create host buffer from device buffer
+  int3 *array = static_cast<int3*>(buffer->map());
+  unsigned int index = 0;
+
+  // add each vertex to array
+  for (unsigned int i = 0; i < count; ++i)
+  {
+    // copy vertex to host buffer
+    array[i].x = this->subMesh.GetIndex(index++);
+    array[i].y = this->subMesh.GetIndex(index++);
+    array[i].z = this->subMesh.GetIndex(index++);
+  }
+
+  // copy host buffer to device
+  buffer->unmap();
+  return buffer;
 }

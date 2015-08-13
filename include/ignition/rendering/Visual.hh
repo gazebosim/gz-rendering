@@ -80,19 +80,31 @@ namespace ignition
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
                   bool unique = true) = 0;
 
-      public: virtual gazebo::math::Vector3 GetScale() const = 0;
+      public: virtual gazebo::math::Vector3 GetLocalScale() const = 0;
 
-      public: virtual void SetScale(double _scale) = 0;
+      public: virtual void SetLocalScale(double _scale) = 0;
 
-      public: virtual void SetScale(double _x, double _y, double _z) = 0;
+      public: virtual void SetLocalScale(double _x, double _y, double _z) = 0;
 
-      public: virtual void SetScale(const gazebo::math::Vector3 &_scale) = 0;
+      public: virtual void SetLocalScale(const gazebo::math::Vector3 &_scale) = 0;
+
+      public: virtual gazebo::math::Vector3 GetWorldScale() const = 0;
+
+      public: virtual void SetWorldScale(double _scale) = 0;
+
+      public: virtual void SetWorldScale(double _x, double _y, double _z) = 0;
+
+      public: virtual void SetWorldScale(const gazebo::math::Vector3 &_scale) = 0;
 
       public: virtual void Scale(double _scale) = 0;
 
       public: virtual void Scale(double _x, double _y, double _z) = 0;
 
       public: virtual void Scale(const gazebo::math::Vector3 &_scale) = 0;
+
+      public: virtual bool GetInheritScale() const = 0;
+
+      public: virtual void SetInheritScale(bool _inherit) = 0;
     };
   }
 }

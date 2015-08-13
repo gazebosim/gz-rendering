@@ -26,6 +26,8 @@ OptixScene::OptixScene(unsigned int _id, const std::string &_name) :
   optixContext(NULL),
   optixMissProgram(NULL)
 {
+  // TODO: move defaults to BaseScene
+  this->ambientLight = gazebo::common::Color::Black;
   this->backgroundColor = gazebo::common::Color::Black;
 }
 
@@ -54,12 +56,17 @@ VisualPtr OptixScene::GetRootVisual() const
 //////////////////////////////////////////////////
 gazebo::common::Color OptixScene::GetAmbientLight() const
 {
-  return gazebo::common::Color::White;
+  return this->ambientLight;
 }
 
 //////////////////////////////////////////////////
-void OptixScene::SetAmbientLight(const gazebo::common::Color &/*_color*/)
+void OptixScene::SetAmbientLight(const gazebo::common::Color &_color)
 {
+  // TODO: clean up
+  this->ambientLight = _color;
+
+  this->optixContext["ambientLightColor"]->setFloat(
+      _color.r, _color.g, _color.b);
 }
 
 //////////////////////////////////////////////////
@@ -335,7 +342,7 @@ void OptixScene::CreateContext()
 
   // TODO: clean up code
   this->optixMissProgram = this->CreateOptixProgram("OptixMissProgram", "Miss");
-  this->optixMissProgram["color"]->setFloat(0.25, 0.25, 0.25);
+  this->optixMissProgram["color"]->setFloat(0, 0, 0);
   this->optixContext->setMissProgram(RT_RADIANCE, this->optixMissProgram);
 }
 
@@ -345,7 +352,7 @@ void OptixScene::CreateRootVisual()
   // create unregistered visual
   this->rootVisual = OptixVisualPtr(new OptixVisual);
   unsigned int rootId = this->CreateObjectId(); 
-  std::string rootName = this->CreateObjectName(rootId, "_ROOT_");
+  std::string rootName = this->CreateObjectName(rootId, "ROOT");
 
   // check if root visual created successfully
   if (!this->InitObject(this->rootVisual, rootId, rootName))
@@ -354,9 +361,15 @@ void OptixScene::CreateRootVisual()
     this->rootVisual = NULL;
   }
 
-  // set visual group as root entry point
+  // create transform-less optix root group
+  this->optixRootGroup = this->optixContext->createGroup();
+  optix::Acceleration rootAccel = this->optixContext->createAcceleration("NoAccel", "NoAccel");
+  this->optixRootGroup->setAcceleration(rootAccel);
+
+  // attach root visual to actual root group
+  this->optixRootGroup->addChild(this->rootVisual->GetOptixGroup());
   optix::Group rootGroup = this->rootVisual->GetOptixGroup();
-  optixContext["rootGroup"]->set(rootGroup);
+  optixContext["rootGroup"]->set(this->optixRootGroup);
 }
 
 //////////////////////////////////////////////////

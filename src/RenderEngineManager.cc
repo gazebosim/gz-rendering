@@ -25,6 +25,8 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
+// RenderEngineManager
+//////////////////////////////////////////////////
 RenderEngineManager::RenderEngineManager() :
   pimpl(new RenderEngineManagerPrivate)
 {
@@ -141,6 +143,8 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
   this->pimpl->UnregisterEngine(iter);
 }
 
+//////////////////////////////////////////////////
+// RenderEngineManagerPrivate
 //////////////////////////////////////////////////
 RenderEngine *RenderEngineManagerPrivate::GetEngine(EngineIter _iter) const
 {

@@ -66,13 +66,15 @@ OgreRenderEngine::OgreRenderEngine() :
 //////////////////////////////////////////////////
 OgreRenderEngine::~OgreRenderEngine()
 {
-  this->Fini();
 }
 
 //////////////////////////////////////////////////
 bool OgreRenderEngine::Fini()
 {
-  this->scenes->RemoveAll();
+  if (this->scenes)
+  {
+    this->scenes->RemoveAll();
+  }
 
 #if not (Q_OS_MAC || _WIN32)
   if (this->dummyDisplay)

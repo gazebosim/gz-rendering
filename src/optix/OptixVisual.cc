@@ -22,8 +22,11 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OptixVisual::OptixVisual()
+OptixVisual::OptixVisual() :
+  scale(1, 1, 1),
+  inheritScale(true)
 {
+  // TODO: move defaults to BaseVisual
 }
 
 //////////////////////////////////////////////////
@@ -32,10 +35,21 @@ OptixVisual::~OptixVisual()
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OptixVisual::GetScale() const
+gazebo::math::Vector3 OptixVisual::GetLocalScale() const
 {
-  // TODO: implement
-  return gazebo::math::Vector3(1, 1, 1);
+  return this->scale;
+}
+
+//////////////////////////////////////////////////
+bool OptixVisual::GetInheritScale() const
+{
+  return this->inheritScale;
+}
+
+//////////////////////////////////////////////////
+void OptixVisual::SetInheritScale(bool _inherit)
+{
+  this->inheritScale = _inherit;
 }
 
 //////////////////////////////////////////////////
@@ -48,6 +62,21 @@ optix::Group OptixVisual::GetOptixGroup() const
 optix::Acceleration OptixVisual::GetOptixAccel() const
 {
   return this->optixAccel;
+}
+
+//////////////////////////////////////////////////
+void OptixVisual::PreRender()
+{
+  BaseVisual::PreRender();
+
+  // TODO: optimize this funtionality
+  gazebo::math::Vector3 worldScale = this->GetWorldScale();
+
+  for (unsigned int i = 0; i < this->GetGeometryCount(); ++i)
+  {
+    OptixGeometryPtr geometry = this->geometries->GetDerivedByIndex(i);
+    geometry->SetScale(worldScale);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -73,6 +102,7 @@ bool OptixVisual::AttachChild(NodePtr _child)
     return false;
   }
 
+  derived->SetParent(this->SharedThis());
   optix::Transform childTransform = derived->GetOptixTransform();
   this->optixGroup->addChild(childTransform);
   this->optixAccel->markDirty();
@@ -100,6 +130,7 @@ bool OptixVisual::AttachGeometry(GeometryPtr _geometry)
     return false;
   }
 
+  derived->SetParent(this->SharedThis());
   optix::GeometryGroup childGeomGroup = derived->GetOptixGeometryGroup();
   this->optixGroup->addChild(childGeomGroup);
   this->optixAccel->markDirty();
@@ -113,9 +144,9 @@ bool OptixVisual::DetachGeometry(GeometryPtr /*_geometry*/)
 }
 
 //////////////////////////////////////////////////
-void OptixVisual::SetScaleImpl(const gazebo::math::Vector3 &/*_scale*/)
+void OptixVisual::SetLocalScaleImpl(const gazebo::math::Vector3 &_scale)
 {
-  // TODO: implement
+  this->scale = _scale;
 }
 
 //////////////////////////////////////////////////
@@ -130,4 +161,10 @@ void OptixVisual::CreateStorage()
 {
   this->children = OptixNodeStorePtr(new OptixNodeStore);
   this->geometries = OptixGeometryStorePtr(new OptixGeometryStore);
+}
+
+//////////////////////////////////////////////////
+OptixVisualPtr OptixVisual::SharedThis()
+{
+  return boost::dynamic_pointer_cast<OptixVisual>(shared_from_this());
 }

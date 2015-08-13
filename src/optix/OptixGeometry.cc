@@ -44,3 +44,22 @@ VisualPtr OptixGeometry::GetParent() const
 {
   return this->parent;
 }
+
+//////////////////////////////////////////////////
+void OptixGeometry::SetParent(OptixVisualPtr _parent)
+{
+  this->parent = _parent;
+}
+
+//////////////////////////////////////////////////
+void OptixGeometry::SetScale(gazebo::math::Vector3 _scale)
+{
+  optix::GeometryGroup optixGeomGroup = this->GetOptixGeometryGroup();
+  unsigned int count = optixGeomGroup->getChildCount();
+
+  for (unsigned int i = 0; i < count; ++i)
+  {
+    optix::GeometryInstance optixGeomInstance = optixGeomGroup->getChild(i);
+    optixGeomInstance["scale"]->setFloat(_scale.x, _scale.y, _scale.z);
+  }
+}

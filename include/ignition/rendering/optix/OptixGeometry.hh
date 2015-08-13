@@ -38,6 +38,10 @@ namespace ignition
 
       public: virtual optix::GeometryGroup GetOptixGeometryGroup() const = 0;
 
+      protected: virtual void SetParent(OptixVisualPtr _parent);
+
+      protected: virtual void SetScale(gazebo::math::Vector3 _scale);
+
       protected: OptixVisualPtr parent;
 
       private: friend class OptixVisual;

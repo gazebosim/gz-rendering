@@ -28,7 +28,7 @@ set(cuda_sources
   OptixErrorProgram.cu
   OptixMaterial.cu
   OptixMissProgram.cu
-  # OptixMesh.cu
+  OptixMesh.cu
   # OptixPlane.cu
   # OptixBackgroundColor.cu
   # OptixSphere.cu

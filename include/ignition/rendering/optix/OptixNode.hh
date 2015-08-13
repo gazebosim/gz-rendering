@@ -49,6 +49,8 @@ namespace ignition
 
       protected: virtual void WritePoseToDeviceImpl();
 
+      protected: virtual void SetParent(OptixVisualPtr _parent);
+
       protected: virtual void Init();
 
       protected: OptixVisualPtr parent;

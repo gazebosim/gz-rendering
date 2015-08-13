@@ -109,6 +109,18 @@ void BaseScene::SetSimTime(const gazebo::common::Time &_time)
 }
 
 //////////////////////////////////////////////////
+void BaseScene::SetAmbientLight(double _r, double _g, double _b, double _a)
+{
+  this->SetAmbientLight(gazebo::common::Color(_r, _g, _b, _a));
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetBackgroundColor(double _r, double _g, double _b, double _a)
+{
+  this->SetBackgroundColor(gazebo::common::Color(_r, _g, _b, _a));
+}
+
+//////////////////////////////////////////////////
 unsigned int BaseScene::GetNodeCount() const
 {
   return this->nodes->Size();

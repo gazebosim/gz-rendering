@@ -24,6 +24,7 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
+
 const std::string OptixMaterial::PTX_FILE_BASE("OptixMaterial");
 
 const std::string OptixMaterial::PTX_CLOSEST_HIT_FUNC("ClosestHit");
@@ -286,6 +287,10 @@ void OptixMaterial::WriteNormalMapToDevice()
 void OptixMaterial::WriteColorToDeviceImpl()
 {
   // TODO: implement
+  this->optixMaterial["diffuse"]->setFloat(this->diffuse.r, this->diffuse.g, this->diffuse.b);
+  this->optixMaterial["ambient"]->setFloat(this->ambient.r, this->ambient.g, this->ambient.b);
+  this->optixMaterial["specular"]->setFloat(this->specular.r, this->specular.g, this->specular.b);
+  this->optixMaterial["emissive"]->setFloat(this->emissive.r, this->emissive.g, this->emissive.b);
 }
 
 //////////////////////////////////////////////////

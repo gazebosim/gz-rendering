@@ -103,17 +103,20 @@ void OptixLightManager::WriteBuffer(optix::Buffer _buffer,
 //////////////////////////////////////////////////
 void OptixLightManager::CreateBuffers()
 {
-  this->directionalBuffer = this->CreateBuffer<OptixDirectionalLightData>();
-  this->pointBuffer = this->CreateBuffer<OptixPointLightData>();
-  this->spotBuffer = this->CreateBuffer<OptixSpotLightData>();
+  this->directionalBuffer =
+      this->CreateBuffer<OptixDirectionalLightData>("directionalLights");
+
+  this->pointBuffer = this->CreateBuffer<OptixPointLightData>("pointLights");
+  this->spotBuffer = this->CreateBuffer<OptixSpotLightData>("spotLights");
 }
 
 //////////////////////////////////////////////////
 template <class T>
-optix::Buffer OptixLightManager::CreateBuffer()
+optix::Buffer OptixLightManager::CreateBuffer(const std::string &_name)
 {
   optix::Context optixContext = this->scene->GetOptixContext();
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
+  optixContext[_name]->setBuffer(buffer);
   buffer->setFormat(RT_FORMAT_USER);
   buffer->setElementSize(sizeof(T));
   return buffer;

@@ -32,9 +32,21 @@ OgreVisual::~OgreVisual()
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OgreVisual::GetScale() const
+gazebo::math::Vector3 OgreVisual::GetLocalScale() const
 {
   return OgreConversions::Convert(this->ogreNode->getScale());
+}
+
+//////////////////////////////////////////////////
+bool OgreVisual::GetInheritScale() const
+{
+  return this->ogreNode->getInheritScale();
+}
+
+//////////////////////////////////////////////////
+void OgreVisual::SetInheritScale(bool _inherit)
+{
+  this->ogreNode->setInheritScale(_inherit);
 }
 
 //////////////////////////////////////////////////
@@ -95,7 +107,7 @@ bool OgreVisual::DetachGeometry(GeometryPtr /*_geometry*/)
 }
 
 //////////////////////////////////////////////////
-void OgreVisual::SetScaleImpl(const gazebo::math::Vector3 &_scale)
+void OgreVisual::SetLocalScaleImpl(const gazebo::math::Vector3 &_scale)
 {
   this->ogreNode->setScale(OgreConversions::Convert(_scale));
 }

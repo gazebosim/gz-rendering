@@ -61,6 +61,8 @@ namespace ignition
 
       public: virtual void SetCastShadows(bool _castShadows);
 
+      protected: virtual void WritePoseToDeviceImpl();
+
       protected: virtual OptixCommonLightData &GetCommonData() = 0;
 
       protected: virtual const OptixCommonLightData &GetCommonData() const = 0;

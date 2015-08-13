@@ -32,11 +32,17 @@ namespace ignition
 
       public: virtual ~OptixVisual();
 
-      public: virtual gazebo::math::Vector3 GetScale() const;
+      public: virtual gazebo::math::Vector3 GetLocalScale() const;
+
+      public: virtual bool GetInheritScale() const;
+
+      public: virtual void SetInheritScale(bool _inherit);
 
       public: virtual optix::Group GetOptixGroup() const;
 
       public: virtual optix::Acceleration GetOptixAccel() const;
+
+      public: virtual void PreRender();
 
       protected: virtual NodeStorePtr GetChildren() const;
 
@@ -50,15 +56,22 @@ namespace ignition
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry);
 
-      protected: virtual void SetScaleImpl(const gazebo::math::Vector3 &_scale);
+      protected: virtual void SetLocalScaleImpl(
+                     const gazebo::math::Vector3 &_scale);
 
       protected: virtual void Init();
 
       private: void CreateStorage();
 
+      private: OptixVisualPtr SharedThis();
+
       protected: OptixNodeStorePtr children;
 
       protected: OptixGeometryStorePtr geometries;
+
+      protected: gazebo::math::Vector3 scale;
+
+      protected: bool inheritScale;
 
       private: friend class OptixScene;
     };

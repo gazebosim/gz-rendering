@@ -51,6 +51,16 @@ namespace ignition
 
       public: virtual void SetSimTime(const gazebo::common::Time &_time);
 
+      public: virtual void SetAmbientLight(double _r, double _g, double _b,
+                  double _a = 1.0);
+
+      public: virtual void SetAmbientLight(const gazebo::common::Color &_color) = 0;
+
+      public: virtual void SetBackgroundColor(double _r, double _g, double _b,
+                  double _a = 1.0);
+
+      public: virtual void SetBackgroundColor(const gazebo::common::Color &_color) = 0;
+
       public: virtual unsigned int GetNodeCount() const;
 
       public: virtual bool HasNode(ConstNodePtr _node) const;

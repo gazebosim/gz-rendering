@@ -154,6 +154,8 @@ namespace ignition
 
       protected: optix::Context optixContext;
 
+      protected: optix::Group optixRootGroup;
+
       protected: optix::Program optixMissProgram;
 
       protected: gazebo::common::Color ambientLight;

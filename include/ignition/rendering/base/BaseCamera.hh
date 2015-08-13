@@ -151,6 +151,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::PreRender()
     {
+      T::PreRender();
       this->GetRenderTexture()->PreRender();
     }
 

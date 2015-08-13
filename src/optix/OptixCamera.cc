@@ -78,7 +78,7 @@ double OptixCamera::GetAspectRatio() const
 void OptixCamera::SetAspectRatio(double _ratio)
 {
   this->aspectRatio = _ratio;
-  this->cameraDirty = true;
+  this->poseDirty = true;
 }
 
 //////////////////////////////////////////////////
@@ -129,7 +129,6 @@ void OptixCamera::WriteCameraToDevice()
 //////////////////////////////////////////////////
 void OptixCamera::WriteCameraToDeviceImpl()
 {
-  this->optixRenderProgram["aspectRatio"]->setFloat(this->aspectRatio);
   this->optixRenderProgram["aa"]->setInt(this->antiAliasing);
 }
 
@@ -142,10 +141,20 @@ void OptixCamera::WritePoseToDeviceImpl()
   gazebo::math::Vector3 pos = worldPose.pos;
   gazebo::math::Matrix3 rot = worldPose.rot.GetAsMatrix3();
 
-  this->optixRenderProgram["eye"]->setFloat(pos.x, pos.y, pos.z);
-  this->optixRenderProgram["u"]->setFloat(-rot[0][1], -rot[1][1], -rot[2][1]);
-  this->optixRenderProgram["v"]->setFloat(-rot[0][2], -rot[1][2], -rot[2][2]);
-  this->optixRenderProgram["w"]->setFloat( rot[0][0],  rot[1][0],  rot[2][0]);
+  float3 eye = make_float3(pos.x, pos.y, pos.z);
+  float3   u = make_float3(-rot[0][1], -rot[1][1], -rot[2][1]);
+  float3   v = make_float3(-rot[0][2], -rot[1][2], -rot[2][2]);
+  float3   w = make_float3( rot[0][0],  rot[1][0],  rot[2][0]);
+
+  // TODO: handle auto and manual aspect-ratio
+  // v *= 1 / this->aspectRatio;
+  v *= (float)this->GetImageHeight() / this->GetImageWidth();
+  w *= 1 / (2 * tan(this->xFieldOfView.Radian() / 2));
+
+  this->optixRenderProgram["eye"]->setFloat(eye);
+  this->optixRenderProgram["u"]->setFloat(u);
+  this->optixRenderProgram["v"]->setFloat(v);
+  this->optixRenderProgram["w"]->setFloat(w);
 }
 
 //////////////////////////////////////////////////

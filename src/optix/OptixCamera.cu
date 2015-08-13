@@ -24,8 +24,11 @@ RT_PROGRAM void Render()
   float step = 1.0 / aa;
   float2 pixel = make_float2(launchIndex) + (step / 2);
   float2 size  = make_float2(launchDim);
-
   int pixCount = aa * aa;
+
+  // clear current pixel buffer
+  buffer[launchIndex] = make_float3(0, 0, 0);
+
   float y0 = pixel.y;
   OptixRadianceRayData data;
 

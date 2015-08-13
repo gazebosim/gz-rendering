@@ -56,7 +56,7 @@ namespace ignition
       private: void CreateBuffers();
 
       private: template <class T>
-               optix::Buffer CreateBuffer();
+               optix::Buffer CreateBuffer(const std::string &_name);
 
       protected: OptixScenePtr scene;
 

@@ -41,8 +41,6 @@ namespace ignition
 
       protected: virtual SubMeshStorePtr GetSubMeshes() const;
 
-      protected: virtual void Init();
-
       protected: OptixSubMeshStorePtr subMeshes;
 
       protected: optix::GeometryGroup optixGeomGroup;
@@ -74,9 +72,19 @@ namespace ignition
 
       protected: optix::GeometryInstance optixGeomInstance;
 
+      protected: optix::Geometry optixGeometry;
+
+      protected: optix::Buffer optixVertexBuffer;
+
+      protected: optix::Buffer optixNormalBuffer;
+
+      protected: optix::Buffer optixTexCoordBuffer;
+
+      protected: optix::Buffer optixIndexBuffer;
+
       private: friend class OptixScene;
 
-      private: friend class OptixMeshFactory;
+      private: friend class OptixSubMeshStoreFactory;
     };
   }
 }

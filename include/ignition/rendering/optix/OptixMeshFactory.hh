@@ -18,6 +18,7 @@
 #define _IGNITION_RENDERING_OPTIXMESHFACTORY_HH_
 
 #include <map>
+#include "gazebo/common/Mesh.hh"
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixMesh.hh"
@@ -27,7 +28,24 @@ namespace ignition
 {
   namespace rendering
   {
-    class OptixSubMeshStoreFactory;
+    class IGNITION_VISIBLE OptixSubMeshStoreFactory
+    {
+      public: OptixSubMeshStoreFactory(OptixScenePtr _scene);
+
+      public: virtual ~OptixSubMeshStoreFactory();
+
+      public: virtual OptixSubMeshStorePtr Create(const MeshDescriptor &_desc);
+
+      protected: virtual optix::Geometry GetGeometry(
+                     const MeshDescriptor &_desc, unsigned int _subMeshIndex);
+
+      protected: virtual std::string GetKeyName(const MeshDescriptor &_desc,
+                  unsigned int _subMeshIndex);
+
+      protected: std::map<std::string, optix::Geometry> geometries;
+
+      protected: OptixScenePtr scene;
+    };
 
     class IGNITION_VISIBLE OptixMeshFactory
     {
@@ -37,31 +55,37 @@ namespace ignition
 
       public: virtual OptixMeshPtr Create(const MeshDescriptor &_desc);
 
-      protected: virtual optix::Geometry GetOptixGeometry(
-                     const MeshDescriptor &_desc);
+      protected: virtual OptixMeshPtr Create(OptixSubMeshStorePtr _subMeshes);
 
-      protected: virtual bool Load(const MeshDescriptor &_desc);
-
-      protected: virtual bool IsLoaded(const MeshDescriptor &_desc);
-
-      protected: virtual bool LoadImpl(const MeshDescriptor &_desc);
-
-      protected: virtual std::string GetMeshName(const MeshDescriptor &_desc);
-
-      protected: virtual bool Validate(const MeshDescriptor &_desc);
-
-      protected: std::map<std::string, optix::Geometry> geometries;
+      protected: OptixSubMeshStoreFactory subMeshStoreFactory;
 
       protected: OptixScenePtr scene;
     };
 
-    class IGNITION_VISIBLE OptixSubMeshStoreFactory
+    class IGNITION_VISIBLE OptixMeshGeometryFactory
     {
-      public: OptixSubMeshStoreFactory();
+      public: OptixMeshGeometryFactory(OptixScenePtr _scene,
+                  const gazebo::common::SubMesh &_subMesh);
 
-      public: virtual ~OptixSubMeshStoreFactory();
+      public: virtual ~OptixMeshGeometryFactory();
 
-      public: virtual OptixSubMeshStorePtr Create();
+      public: virtual optix::Geometry Create();
+
+      protected: virtual void CreateGeometry();
+
+      protected: virtual optix::Buffer CreateVertexBuffer();
+
+      protected: virtual optix::Buffer CreateNormalBuffer();
+
+      protected: virtual optix::Buffer CreateTexCoordBuffer();
+
+      protected: virtual optix::Buffer CreateIndexBuffer();
+
+      protected: OptixScenePtr scene;
+
+      protected: const gazebo::common::SubMesh &subMesh;
+
+      protected: optix::Geometry optixGeometry;
     };
   }
 }

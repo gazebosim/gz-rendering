@@ -51,21 +51,19 @@ void OptixRenderTarget::GetImage(Image &_image) const
     return;
   }
 
-  unsigned int count = width * height * 3;
-  void *deviceData = this->GetOptixBuffer()->map();
+  float3 *deviceData = static_cast<float3 *>(this->GetOptixBuffer()->map());
   unsigned char *imageData = _image.GetData<unsigned char>();
-  std::memcpy(hostData, deviceData, sizeof(float) * count);
-  this->GetOptixBuffer()->unmap();
+  unsigned int count = width * height;
+  unsigned int index = 0;
 
   for (unsigned int i = 0; i < count; ++i)
   {
-    imageData[i] = (unsigned char)fminf(fmaxf(255 * this->hostData[i], 0), 255);
+    imageData[index++] = (unsigned char)fminf(fmaxf(255 * deviceData[i].x, 0), 255);
+    imageData[index++] = (unsigned char)fminf(fmaxf(255 * deviceData[i].y, 0), 255);
+    imageData[index++] = (unsigned char)fminf(fmaxf(255 * deviceData[i].z, 0), 255);
   }
 
-  // void *hostData = _image.GetData();
-  // void *deviceData = this->GetOptixBuffer()->map();
-  // std::memcpy(hostData, deviceData, this->GetMemorySize());
-  // this->GetOptixBuffer()->unmap();
+  this->GetOptixBuffer()->unmap();
 }
 
 //////////////////////////////////////////////////

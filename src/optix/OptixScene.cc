@@ -72,12 +72,13 @@ void OptixScene::SetAmbientLight(const gazebo::common::Color &_color)
 //////////////////////////////////////////////////
 gazebo::common::Color OptixScene::GetBackgroundColor() const
 {
-  return gazebo::common::Color::Black;
+  return this->backgroundColor;
 }
 
 //////////////////////////////////////////////////
-void OptixScene::SetBackgroundColor(const gazebo::common::Color &/*_color*/)
+void OptixScene::SetBackgroundColor(const gazebo::common::Color &_color)
 {
+  this->optixMissProgram["color"]->setFloat(_color.r, _color.g, _color.b);
 }
 
 //////////////////////////////////////////////////
@@ -86,6 +87,7 @@ void OptixScene::PreRender()
   this->lightManager->Clear();
   BaseScene::PreRender();
   this->lightManager->PreRender();
+  this->optixRootAccel->markDirty();
 
   // TODO: remove for release
   optixContext->validate();
@@ -325,7 +327,9 @@ unsigned int OptixScene::GetNextEntryId()
 void OptixScene::CreateContext()
 {
   this->optixContext = optix::Context::create();
-  this->optixContext->setStackSize(65536); // TODO: set dynamically
+  // this->optixContext->setStackSize(65536); // TODO: set dynamically
+  // this->optixContext->setStackSize(45536); // TODO: set dynamically
+  this->optixContext->setStackSize(20000); // TODO: set dynamically
   this->optixContext->setEntryPointCount(0);
   this->optixContext->setRayTypeCount(RT_COUNT);
 
@@ -363,8 +367,8 @@ void OptixScene::CreateRootVisual()
 
   // create transform-less optix root group
   this->optixRootGroup = this->optixContext->createGroup();
-  optix::Acceleration rootAccel = this->optixContext->createAcceleration("NoAccel", "NoAccel");
-  this->optixRootGroup->setAcceleration(rootAccel);
+  this->optixRootAccel = this->optixContext->createAcceleration("NoAccel", "NoAccel");
+  this->optixRootGroup->setAcceleration(this->optixRootAccel);
 
   // attach root visual to actual root group
   this->optixRootGroup->addChild(this->rootVisual->GetOptixGroup());

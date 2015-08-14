@@ -53,6 +53,10 @@ namespace ignition
 
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
+      public: virtual gazebo::common::Color GetBackgroundColor() const;
+
+      public: virtual void SetBackgroundColor(const gazebo::common::Color &_color);
+
       public: virtual void Render();
 
       protected: virtual RenderTexturePtr GetRenderTexture() const;

@@ -16,6 +16,18 @@ include_directories (${GAZEBO_INCLUDE_DIRS})
 link_directories (${GAZEBO_LIBRARY_DIRS})
 
 ########################################
+# Find FreeImage
+include (${project_cmake_dir}/FindFreeImage.cmake)
+find_package(FreeImage QUIET)
+if (NOT FreeImage_INCLUDE_DIRS)
+  message(STATUS "Lookding for FreeImage - not found")
+  BUILD_ERROR("Missing: FreeImage library.")
+else()
+  message(STATUS "Looking for FreeImage - found")
+  include_directories(${FreeImage_INCLUDE_DIRS})
+endif()
+
+########################################
 # Find CUDA
 find_package(CUDA 5.5 QUIET)
 if (NOT CUDA_FOUND)

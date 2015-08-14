@@ -14,33 +14,34 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_GEOMETRY_HH_
-#define _IGNITION_RENDERING_GEOMETRY_HH_
+#ifndef _IGNITION_RENDERING_OPTIXTEXTUREFACTORY_HH_
+#define _IGNITION_RENDERING_OPTIXTEXTUREFACTORY_HH_
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Object.hh"
+#include "ignition/rendering/optix/OptixRenderTypes.hh"
+#include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/Util.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE Geometry :
-      public virtual Object
+    class IGNITION_VISIBLE OptixTextureFactory
     {
-      public: virtual ~Geometry() { }
+      public: OptixTextureFactory(OptixScenePtr _scene);
 
-      public: virtual bool HasParent() const = 0;
+      public: virtual ~OptixTextureFactory();
 
-      public: virtual VisualPtr GetParent() const = 0;
+      public: optix::TextureSampler Create(const std::string &_filename);
 
-      public: virtual void RemoveParent() = 0;
+      public: optix::TextureSampler Create();
 
-      public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true) = 0;
+      protected: optix::Buffer CreateBuffer(const std::string &_filename);
 
-      public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+      protected: optix::Buffer CreateBuffer();
+
+      protected: optix::TextureSampler CreateSampler(optix::Buffer _buffer);
+
+      protected: OptixScenePtr scene;
     };
   }
 }

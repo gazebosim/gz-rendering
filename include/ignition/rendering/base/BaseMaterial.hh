@@ -176,11 +176,11 @@ namespace ignition
     void BaseMaterial<T>::Reset()
     {
       this->SetLightingEnabled(true);
-      this->SetAmbient(gazebo::common::Color::White);
-      this->SetDiffuse(gazebo::common::Color::White);
-      this->SetSpecular(gazebo::common::Color::Black);
-      this->SetEmissive(gazebo::common::Color::Black);
-      this->SetShininess(0);
+      this->SetAmbient(0.3, 0.3, 0.3);
+      this->SetDiffuse(0.7, 0.7, 0.7);
+      this->SetSpecular(0.01, 0.01, 0.01);
+      this->SetEmissive(0, 0, 0);
+      this->SetShininess(1.5);
       this->SetTransparency(0);
       this->SetReflectivity(0);
       this->SetReceiveShadows(true);

@@ -129,7 +129,7 @@ void OptixCamera::WriteCameraToDevice()
 //////////////////////////////////////////////////
 void OptixCamera::WriteCameraToDeviceImpl()
 {
-  this->optixRenderProgram["aa"]->setInt(this->antiAliasing);
+  this->optixRenderProgram["aa"]->setInt(this->antiAliasing + 1);
 }
 
 //////////////////////////////////////////////////

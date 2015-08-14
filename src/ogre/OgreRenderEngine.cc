@@ -117,6 +117,12 @@ bool OgreRenderEngine::IsEnabled() const
 }
 
 //////////////////////////////////////////////////
+std::string OgreRenderEngine::GetName() const
+{
+  return "Ogre";
+}
+
+//////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderPathType
     OgreRenderEngine::GetRenderPathType() const
 {

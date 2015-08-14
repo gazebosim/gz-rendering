@@ -17,6 +17,7 @@ set (sources
   OptixRenderTarget.cc
   OptixScene.cc
   OptixSensor.cc
+  OptixTextureFactory.cc
   OptixVisual.cc
 )
 

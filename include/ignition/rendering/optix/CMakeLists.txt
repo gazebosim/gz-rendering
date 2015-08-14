@@ -22,6 +22,7 @@ set (headers
   OptixScene.hh
   OptixSensor.hh
   OptixStorage.hh
+  OptixTextureFactory.hh
   OptixVisual.hh
 )
 

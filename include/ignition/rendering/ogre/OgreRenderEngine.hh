@@ -60,6 +60,8 @@ namespace ignition
 
       public: virtual bool IsEnabled() const;
 
+      public: virtual std::string GetName() const;
+
       public: OgreRenderPathType GetRenderPathType() const;
 
       public: void AddResourcePath(const std::string &_uri);

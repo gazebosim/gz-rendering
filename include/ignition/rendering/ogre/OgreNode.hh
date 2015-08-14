@@ -41,9 +41,9 @@ namespace ignition
 
       public: virtual VisualPtr GetParent() const;
 
-      public: virtual void Destroy();
-
       public: virtual Ogre::SceneNode *GetOgreNode() const;
+
+      public: virtual void Destroy();
 
       protected: virtual gazebo::math::Pose GetRawLocalPose() const;
 
@@ -58,6 +58,8 @@ namespace ignition
 
       protected: virtual void SetRawLocalRotation(
                      const gazebo::math::Quaternion &_rotation);
+
+      protected: virtual void SetParent(OgreVisualPtr _parent);
 
       protected: virtual void Load();
 

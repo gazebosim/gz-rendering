@@ -72,14 +72,24 @@ bool OgreVisual::AttachChild(NodePtr _child)
     return false;
   }
 
+  derived->SetParent(this->SharedThis());
   this->ogreNode->addChild(derived->GetOgreNode());
   return true;
 }
 
 //////////////////////////////////////////////////
-bool OgreVisual::DetachChild(NodePtr /*_child*/)
+bool OgreVisual::DetachChild(NodePtr _child)
 {
-  return false;
+  OgreNodePtr derived = boost::dynamic_pointer_cast<OgreNode>(_child);
+
+  if (!derived)
+  {
+    gzerr << "Cannot detach node created by another render-engine" << std::endl;
+    return false;
+  }
+
+  this->ogreNode->removeChild(derived->GetOgreNode());
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -96,14 +106,27 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
     return false;
   }
 
+  derived->SetParent(this->SharedThis());
   this->ogreNode->attachObject(derived->GetOgreObject());
   return true;
 }
 
 //////////////////////////////////////////////////
-bool OgreVisual::DetachGeometry(GeometryPtr /*_geometry*/)
+bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 {
-  return false;
+  OgreGeometryPtr derived =
+      boost::dynamic_pointer_cast<OgreGeometry>(_geometry);
+
+  if (!derived)
+  {
+    gzerr << "Cannot detach geometry created by another render-engine"
+          << std::endl;
+
+    return false;
+  }
+
+  this->ogreNode->detachObject(derived->GetOgreObject());
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -118,4 +141,11 @@ void OgreVisual::Init()
   BaseVisual::Init();
   this->children = OgreNodeStorePtr(new OgreNodeStore);
   this->geometries = OgreGeometryStorePtr(new OgreGeometryStore);
+}
+
+//////////////////////////////////////////////////
+OgreVisualPtr OgreVisual::SharedThis()
+{
+  ObjectPtr object = shared_from_this();
+  return boost::dynamic_pointer_cast<OgreVisual>(object);
 }

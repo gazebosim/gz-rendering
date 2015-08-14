@@ -847,6 +847,7 @@ void SubSceneManager::ProcessMessages()
   this->ProcessVisuals();
   this->ProcessSensors();
   this->ProcessPoses();
+  this->ProcessRemovals();
 
   // flush changes to scene
   this->activeScene->SetSimTime(this->timePosesReceived);
@@ -1452,8 +1453,8 @@ void SubSceneManager::ProcessCylinder(const gazebo::msgs::Geometry &_geometryMsg
 {
   GeometryPtr cylinder = this->activeScene->CreateCylinder();
   const gazebo::msgs::CylinderGeom &cylinderMsg = _geometryMsg.cylinder();
-  double x = cylinderMsg.radius();
-  double y = cylinderMsg.radius();
+  double x = 2 * cylinderMsg.radius();
+  double y = 2 * cylinderMsg.radius();
   double z = cylinderMsg.length();
   _parent->SetLocalScale(x, y, z);
   _parent->AddGeometry(cylinder);
@@ -1521,7 +1522,7 @@ void SubSceneManager::ProcessSphere(const gazebo::msgs::Geometry &_geometryMsg,
 {
   GeometryPtr sphere = this->activeScene->CreateSphere();
   const gazebo::msgs::SphereGeom &sphereMsg = _geometryMsg.sphere();
-  _parent->SetLocalScale(sphereMsg.radius());
+  _parent->SetLocalScale(2 * sphereMsg.radius());
   _parent->AddGeometry(sphere);
 }
 
@@ -1530,6 +1531,10 @@ MaterialPtr SubSceneManager::CreateMaterial(
     const gazebo::msgs::Material &_materialMsg)
 {
   MaterialPtr material = this->activeScene->CreateMaterial();
+
+  // TODO: remove after testing
+  material->SetShininess(50);
+  material->SetReflectivity(0.25);
 
   // set ambient if available
   if (_materialMsg.has_ambient())
@@ -1602,7 +1607,6 @@ void SubSceneManager::ProcessPose(const gazebo::msgs::Pose &_poseMsg)
 void SubSceneManager::SetPose(NodePtr _node, const gazebo::msgs::Pose &_poseMsg)
 {
   gazebo::math::Pose pose = SubSceneManager::Convert(_poseMsg);
-  gzmsg << _node->GetName() << " : " << pose.pos << std::endl;
   _node->SetLocalPose(pose);
 }
 
@@ -1629,8 +1633,12 @@ VisualPtr SubSceneManager::GetParent(const std::string &_name)
     // node not found
     if (!parent)
     {
-      gzerr  << "invalid parent name: " << _name << std::endl;
-      gzwarn << "using scene root node" << std::endl;
+      if (_name != "default")
+      {
+        gzerr  << "invalid parent name: " << _name << std::endl;
+        gzwarn << "using scene root node" << std::endl;
+      }
+
       parent = this->activeScene->GetRootVisual();
     }
   }
@@ -1841,6 +1849,9 @@ void CurrentSceneManager::ProcessRemovals()
   {
     this->ProcessRemoval(removal);
   }
+
+  // clear processed removals
+  this->approvedRemovals.clear();
 }
 
 //////////////////////////////////////////////////  
@@ -2012,4 +2023,7 @@ void NewSceneManager::ProcessRemovals()
     // TODO: check if message sent after scene response
     this->ProcessRemoval(removal);
   }
+
+  // clear processed removals
+  this->approvedRemovals.clear();
 }

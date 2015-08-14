@@ -36,6 +36,14 @@ namespace ignition
       public: virtual VisualPtr GetParent() const = 0;
 
       public: virtual void RemoveParent();
+
+      public: virtual void SetMaterial(const std::string &_name,
+                  bool unique = true);
+
+      public: virtual void SetMaterial(MaterialPtr _material,
+                  bool unique = true) = 0;
+
+      public: virtual void Destroy();
     };
 
     //////////////////////////////////////////////////
@@ -65,6 +73,22 @@ namespace ignition
 
         parent->RemoveGeometry(thisShared);
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGeometry<T>::SetMaterial(const std::string &_name, bool unique)
+    {
+      MaterialPtr material = this->GetScene()->GetMaterial(_name);
+      if (material) this->SetMaterial(material, unique);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGeometry<T>::Destroy()
+    {
+      T::Destroy();
+      this->RemoveParent();
     }
   }
 }

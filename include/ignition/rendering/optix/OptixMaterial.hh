@@ -94,21 +94,17 @@ namespace ignition
 
       protected: virtual void WriteColorToDevice();
 
-      protected: virtual void WriteTextureToDevice();
-
       protected: virtual void WriteNormalMapToDevice();
 
       protected: virtual void WriteColorToDeviceImpl();
 
-      protected: virtual void WriteTextureToDeviceImpl();
-
       protected: virtual void WriteNormalMapToDeviceImpl();
+
+      protected: virtual void SetTextureImpl(const std::string &_name);
 
       protected: virtual void Init();
 
       protected: bool colorDirty;
-
-      protected: bool textureDirty;
 
       protected: bool normalMapDirty;
 
@@ -137,6 +133,10 @@ namespace ignition
       protected: ShaderType shaderType;
 
       protected: optix::Material optixMaterial;
+
+      protected: optix::TextureSampler optixTexture;
+
+      protected: optix::TextureSampler optixEmptyTexture;
 
       private: static const std::string PTX_FILE_BASE;
 

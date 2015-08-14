@@ -50,6 +50,9 @@ namespace ignition
 
       public: virtual MaterialPtr GetMaterial() const = 0;
 
+      public: virtual void SetMaterial(const std::string &_name,
+                  bool unique = true) = 0;
+
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true) = 0;
     };

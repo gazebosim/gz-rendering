@@ -21,6 +21,7 @@
 #include "ignition/rendering/Storage.hh"
 
 #include "gazebo/common/Console.hh"
+#include "ignition/rendering/RenderEngine.hh"
 
 namespace ignition
 {
@@ -79,6 +80,9 @@ namespace ignition
 
       public: virtual void RemoveGeometries();
 
+      public: virtual void SetMaterial(const std::string &_name,
+                  bool unique = true);
+
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true);
 
@@ -113,6 +117,8 @@ namespace ignition
       public: virtual bool GetInheritScale() const = 0;
 
       public: virtual void PreRender();
+
+      public: virtual void Destroy();
 
       protected: virtual void PreRenderChildren();
 
@@ -229,35 +235,48 @@ namespace ignition
     template <class T>
     NodePtr BaseVisual<T>::RemoveChild(NodePtr _child)
     {
-      return this->GetChildren()->Remove(_child);
+      NodePtr child = this->GetChildren()->Remove(_child);
+      if (child) this->DetachChild(child);
+      return child;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     NodePtr BaseVisual<T>::RemoveChildById(unsigned int _id)
     {
-      return this->GetChildren()->RemoveById(_id);
+      NodePtr child = this->GetChildren()->RemoveById(_id);
+      if (child) this->DetachChild(child);
+      return child;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     NodePtr BaseVisual<T>::RemoveChildByName(const std::string &_name)
     {
-      return this->GetChildren()->RemoveByName(_name);
+      NodePtr child = this->GetChildren()->RemoveByName(_name);
+      if (child) this->DetachChild(child);
+      return child;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     NodePtr BaseVisual<T>::RemoveChildByIndex(unsigned int _index)
     {
-      return this->GetChildren()->RemoveByIndex(_index);
+      NodePtr child = this->GetChildren()->RemoveByIndex(_index);
+      if (child) this->DetachChild(child);
+      return child;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::RemoveChildren()
     {
-      this->GetChildren()->RemoveAll();
+      unsigned int count = this->GetChildren()->Size();
+
+      for (unsigned int i = 0; i < count; ++i)
+      {
+        this->RemoveChildByIndex(i);
+      }
     }
 
     //////////////////////////////////////////////////
@@ -310,6 +329,14 @@ namespace ignition
     void BaseVisual<T>::RemoveGeometries()
     {
       this->GetGeometries()->RemoveAll();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetMaterial(const std::string &_name, bool unique)
+    {
+      MaterialPtr material = this->GetScene()->GetMaterial(_name);
+      if (material) this->SetMaterial(material, unique);
     }
 
     //////////////////////////////////////////////////
@@ -437,6 +464,15 @@ namespace ignition
       T::PreRender();
       this->PreRenderChildren();
       this->PreRenderGeometries();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::Destroy()
+    {
+      T::Destroy();
+      this->GetGeometries()->DestroyAll();
+      this->GetChildren()->RemoveAll();
     }
 
     //////////////////////////////////////////////////

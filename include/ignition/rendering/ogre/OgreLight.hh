@@ -67,6 +67,8 @@ namespace ignition
 
       public: virtual Ogre::Light *GetOgreLight() const;
 
+      public: virtual void Destroy();
+
       protected: virtual void Init();
 
       private: void CreateLight();

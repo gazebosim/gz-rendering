@@ -44,3 +44,9 @@ VisualPtr OgreGeometry::GetParent() const
 {
   return this->parent;
 }
+
+//////////////////////////////////////////////////
+void OgreGeometry::SetParent(OgreVisualPtr _parent)
+{
+  this->parent = _parent;
+}

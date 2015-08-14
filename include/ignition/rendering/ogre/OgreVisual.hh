@@ -59,6 +59,8 @@ namespace ignition
 
       protected: OgreGeometryStorePtr geometries;
 
+      private: OgreVisualPtr SharedThis();
+
       private: friend class OgreScene;
     };
   }

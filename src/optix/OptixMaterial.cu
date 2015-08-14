@@ -10,6 +10,7 @@ rtDeclareVariable(float, sceneEpsilon, , );
 rtDeclareVariable(rtObject, rootGroup, , );
 rtBuffer<OptixDirectionalLightData> directionalLights;
 rtBuffer<OptixPointLightData> pointLights;
+rtTextureSampler<float4, 2> texSampler;
 
 // material variables
 rtDeclareVariable(float3, ambient, , );
@@ -25,6 +26,7 @@ rtDeclareVariable(OptixShadowRayData, shadowData, rtPayload, );
 rtDeclareVariable(float, hitDist, rtIntersectionDistance, );
 rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
+rtDeclareVariable(float3, texcoord, attribute texcoord, );
 
 RT_PROGRAM void AnyHit()
 {
@@ -35,7 +37,6 @@ RT_PROGRAM void AnyHit()
 RT_PROGRAM void ClosestHit()
 {
   float3 color = ambient * ambientLightColor;
-  // color += hitDist * make_float3(0.025, 0.025, 0.025);
 
   float3 worldGeomNorm = normalize(
       rtTransformNormal(RT_OBJECT_TO_WORLD, geometricNormal));
@@ -64,10 +65,20 @@ RT_PROGRAM void ClosestHit()
 
       if (fmaxf(attenuation) > 0)
       {
-        // TODO: add light's attenuation
+        OptixLightAttenuation att = light.common.atten;
+        float attp = 1 - fminf(hitDist, att.range) / att.range;
+
+        float attf = att.constant + attp * att.linear + attp *
+            attp * att.quadratic;
+
+        // rtPrintf("1 - (%f / %f) = %f\n", hitDist, att.range, attp);
+
+        // rtPrintf("%f + %f * %f + %f * %f * %f = %f\n", att.constant, attp,
+        //     att.linear, attp, attp, att.quadratic, attf);
+
         float4 ld4 = light.common.color.diffuse;
         float3 Lc = make_float3(ld4.x, ld4.y, ld4.z) * attenuation;
-        color += diffuse * ndl * Lc;
+        color += diffuse * ndl * Lc * attf;
 
         float3 H = normalize(l - ray.direction);
         float nDh = dot( forwardNormal, H );
@@ -133,5 +144,9 @@ RT_PROGRAM void ClosestHit()
     color += reflectivity * refData.color;
   }
 
-  radianceData.color = color;
+  const float3 uv = texcoord;
+  float3 tcolor = make_float3(tex2D(texSampler, uv.x, uv.y));
+  float3 finalColor = color + color * tcolor * tcolor * tcolor;
+
+  radianceData.color = finalColor;
 }

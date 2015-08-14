@@ -68,6 +68,8 @@ namespace ignition
 
       public: virtual Ogre::SubEntity *GetOgreSubEntity() const;
 
+      public: virtual void Destroy();
+
       protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
 
       protected: virtual void Init();

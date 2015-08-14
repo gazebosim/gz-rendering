@@ -66,6 +66,8 @@ namespace ignition
       protected: virtual OptixCommonLightData &GetCommonData() = 0;
 
       protected: virtual const OptixCommonLightData &GetCommonData() const = 0;
+
+      protected: virtual void Init();
     };
 
     class IGNITION_VISIBLE OptixDirectionalLight :

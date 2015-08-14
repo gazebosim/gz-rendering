@@ -19,7 +19,6 @@
 
 #include "gazebo/common/Console.hh"
 #include "ignition/rendering/rendering.hh"
-#include "ignition/rendering/optix/optix.hh"
 #include "GlutWindow.hh"
 
 #include <GL/glut.h>

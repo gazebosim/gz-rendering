@@ -20,6 +20,8 @@
 #include "ignition/rendering/Node.hh"
 #include "ignition/rendering/Visual.hh"
 
+#include "gazebo/common/Console.hh"
+
 namespace ignition
 {
   namespace rendering
@@ -306,8 +308,8 @@ namespace ignition
     template <class T>
     void BaseNode<T>::Destroy()
     {
-      this->RemoveParent();
       T::Destroy();
+      this->RemoveParent();
     }
   }
 }

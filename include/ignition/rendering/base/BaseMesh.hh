@@ -46,10 +46,15 @@ namespace ignition
 
       public: virtual SubMeshPtr GetSubMeshByIndex(unsigned int _index) const;
 
+      public: virtual void SetMaterial(const std::string &_name,
+                  bool unique = true);
+
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true);
 
       public: virtual void PreRender();
+
+      public: virtual void Destroy();
 
       protected: virtual SubMeshStorePtr GetSubMeshes() const = 0;
     };
@@ -64,11 +69,19 @@ namespace ignition
 
       public: virtual ~BaseSubMesh();
 
-      public: virtual void PreRender();
-
       public: virtual MaterialPtr GetMaterial() const = 0;
+
+      public: virtual void SetMaterial(const std::string &_name,
+                  bool unique = true);
+
+      public: virtual void SetMaterial(MaterialPtr _material,
+                  bool unique = true) = 0;
+
+      public: virtual void PreRender();
     };
 
+    //////////////////////////////////////////////////
+    // BaseMesh
     //////////////////////////////////////////////////
     template <class T>
     BaseMesh<T>::BaseMesh()
@@ -118,6 +131,14 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMesh<T>::SetMaterial(const std::string &_name, bool unique)
+    {
+      MaterialPtr material = this->GetScene()->GetMaterial(_name);
+      if (material) this->SetMaterial(material, unique);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMesh<T>::SetMaterial(MaterialPtr _material, bool unique)
     {
       _material = (unique) ? _material->Clone() : _material;
@@ -147,6 +168,16 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMesh<T>::Destroy()
+    {
+      T::Destroy();
+      this->GetSubMeshes()->DestroyAll();
+    }
+
+    //////////////////////////////////////////////////
+    // BaseSubMesh
+    //////////////////////////////////////////////////
+    template <class T>
     BaseSubMesh<T>::BaseSubMesh()
     {
     }
@@ -159,10 +190,18 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseSubMesh<T>::SetMaterial(const std::string &_name, bool unique)
+    {
+      MaterialPtr material = this->GetScene()->GetMaterial(_name);
+      if (material) this->SetMaterial(material, unique);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseSubMesh<T>::PreRender()
     {
-      this->GetMaterial()->PreRender();
       T::PreRender();
+      this->GetMaterial()->PreRender();
     }
   }
 }

@@ -35,6 +35,8 @@ namespace ignition
 
       public: virtual bool Fini();
 
+      public: virtual std::string GetName() const;
+
       public: std::string GetPtxFile(const std::string& _fileBase) const;
 
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,

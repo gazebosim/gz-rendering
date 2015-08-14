@@ -91,6 +91,18 @@ void OgreCamera::SetAntiAliasing(unsigned int _aa)
 }
 
 //////////////////////////////////////////////////
+gazebo::common::Color OgreCamera::GetBackgroundColor() const
+{
+  return this->renderTexture->GetBackgroundColor();
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetBackgroundColor(const gazebo::common::Color &_color)
+{
+  this->renderTexture->SetBackgroundColor(_color);
+}
+
+//////////////////////////////////////////////////
 void OgreCamera::Render()
 {
   this->renderTexture->Render();

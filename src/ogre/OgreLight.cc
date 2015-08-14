@@ -25,6 +25,8 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
+// OgreLight
+//////////////////////////////////////////////////
 OgreLight::OgreLight() :
   ogreLight(NULL),
   ogreLightType(Ogre::Light::LT_POINT)
@@ -133,6 +135,14 @@ Ogre::Light *OgreLight::GetOgreLight() const
 }
 
 //////////////////////////////////////////////////
+void OgreLight::Destroy()
+{
+  BaseLight::Destroy();
+  Ogre::SceneManager *ogreSceneManager = this->scene->GetOgreSceneManager();
+  ogreSceneManager->destroyLight(this->ogreLight);
+}
+
+//////////////////////////////////////////////////
 void OgreLight::Init()
 {
   OgreNode::Init();
@@ -167,6 +177,8 @@ void OgreLight::UpdateAttenuation()
 }
 
 //////////////////////////////////////////////////
+// OgreDirectionalLight
+//////////////////////////////////////////////////
 OgreDirectionalLight::OgreDirectionalLight()
 {
   this->ogreLightType = Ogre::Light::LT_DIRECTIONAL;
@@ -190,6 +202,8 @@ void OgreDirectionalLight::SetDirection(const gazebo::math::Vector3 &_dir)
 }
 
 //////////////////////////////////////////////////
+// OgrePointLight
+//////////////////////////////////////////////////
 OgrePointLight::OgrePointLight()
 {
   this->ogreLightType = Ogre::Light::LT_POINT;
@@ -200,6 +214,8 @@ OgrePointLight::~OgrePointLight()
 {
 }
 
+//////////////////////////////////////////////////
+// OgreSpotLight
 //////////////////////////////////////////////////
 OgreSpotLight::OgreSpotLight()
 {

@@ -42,6 +42,8 @@ namespace ignition
 
       public: virtual bool IsEnabled() const = 0;
 
+      public: virtual std::string GetName() const = 0;
+
       public: virtual unsigned int GetSceneCount() const = 0;
 
       public: virtual bool HasScene(ConstScenePtr _scene) const = 0;

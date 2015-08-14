@@ -54,6 +54,7 @@ void OptixNode::PreRender()
 {
   BaseNode::PreRender();
   this->WritePoseToDevice();
+  this->optixAccel->markDirty();
 }
 
 //////////////////////////////////////////////////
@@ -130,7 +131,9 @@ void OptixNode::Init()
 {
   optix::Context optixContext = this->scene->GetOptixContext();
   this->optixTransform = optixContext->createTransform();
-  this->optixAccel = optixContext->createAcceleration("MedianBvh", "Bvh");
+  // this->optixAccel = optixContext->createAcceleration("MedianBvh", "Bvh");
+  // this->optixAccel = optixContext->createAcceleration("Lbvh", "Bvh");
+  this->optixAccel = optixContext->createAcceleration("Sbvh", "Bvh");
   this->optixGroup = optixContext->createGroup();
   this->optixGroup->setAcceleration(this->optixAccel);
   this->optixTransform->setChild(this->optixGroup);

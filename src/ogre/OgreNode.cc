@@ -48,15 +48,17 @@ VisualPtr OgreNode::GetParent() const
 }
 
 //////////////////////////////////////////////////
-void OgreNode::Destroy()
-{
-  BaseNode::Destroy();
-}
-
-//////////////////////////////////////////////////
 Ogre::SceneNode *OgreNode::GetOgreNode() const
 {
   return this->ogreNode;
+}
+
+//////////////////////////////////////////////////
+void OgreNode::Destroy()
+{
+  BaseNode::Destroy();
+  Ogre::SceneManager *ogreSceneManager = this->scene->GetOgreSceneManager();
+  ogreSceneManager->destroySceneNode(this->ogreNode);
 }
 
 //////////////////////////////////////////////////
@@ -97,6 +99,12 @@ gazebo::math::Quaternion OgreNode::GetRawLocalRotation() const
 void OgreNode::SetRawLocalRotation(const gazebo::math::Quaternion &_rotation)
 {
   this->ogreNode->setOrientation(OgreConversions::Convert(_rotation));
+}
+
+//////////////////////////////////////////////////
+void OgreNode::SetParent(OgreVisualPtr _parent)
+{
+  this->parent = _parent;
 }
 
 //////////////////////////////////////////////////

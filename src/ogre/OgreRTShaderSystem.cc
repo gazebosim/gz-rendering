@@ -186,7 +186,6 @@ void OgreRTShaderSystem::AttachEntity(OgreSubMesh *subMesh)
   this->entityMutex->lock();
   this->entities.push_back(subMesh);
   this->entityMutex->unlock();
-  this->GenerateShaders(subMesh);
 }
 
 //////////////////////////////////////////////////
@@ -210,6 +209,9 @@ void OgreRTShaderSystem::Clear()
 void OgreRTShaderSystem::AttachViewport(Ogre::Viewport *_viewport,
     OgreScenePtr _scene)
 {
+  if (!OgreRTShaderSystem::Instance()->initialized)
+    return;
+
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 7
   _viewport->setMaterialScheme(_scene->GetName() +
       Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
@@ -220,6 +222,9 @@ void OgreRTShaderSystem::AttachViewport(Ogre::Viewport *_viewport,
 void OgreRTShaderSystem::DetachViewport(Ogre::Viewport *_viewport,
     OgreScenePtr _scene)
 {
+  if (!OgreRTShaderSystem::Instance()->initialized)
+    return;
+
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 7
   if (_viewport && _scene && _scene->IsInitialized())
     _viewport->setMaterialScheme(_scene->GetName());

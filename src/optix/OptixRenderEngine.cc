@@ -46,6 +46,12 @@ bool OptixRenderEngine::Fini()
 }
 
 //////////////////////////////////////////////////
+std::string OptixRenderEngine::GetName() const
+{
+  return "Optix";
+}
+
+//////////////////////////////////////////////////
 std::string OptixRenderEngine::GetPtxFile(const std::string& _fileBase) const
 {
   // TODO: search resources paths

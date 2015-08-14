@@ -138,6 +138,13 @@ void OptixLight::WritePoseToDeviceImpl()
 }
 
 //////////////////////////////////////////////////
+void OptixLight::Init()
+{
+  BaseLight::Init();
+  this->Reset();
+}
+
+//////////////////////////////////////////////////
 /// OptixDirectionalLight
 OptixDirectionalLight::OptixDirectionalLight()
 {

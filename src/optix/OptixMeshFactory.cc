@@ -62,7 +62,9 @@ OptixMeshPtr OptixMeshFactory::Create(OptixSubMeshStorePtr _subMeshes)
   OptixMeshPtr mesh(new OptixMesh);
   mesh->optixGeomGroup = optixContext->createGeometryGroup();
   // mesh->optixAccel = optixContext->createAcceleration("TriangleKdTree", "KdTree");
-  mesh->optixAccel = optixContext->createAcceleration("MedianBvh", "Bvh");
+  // mesh->optixAccel = optixContext->createAcceleration("MedianBvh", "Bvh");
+  // mesh->optixAccel = optixContext->createAcceleration("Lbvh", "Bvh");
+  mesh->optixAccel = optixContext->createAcceleration("Sbvh", "Bvh");
   mesh->optixAccel->markDirty();
 
   mesh->optixGeomGroup->setAcceleration(mesh->optixAccel);

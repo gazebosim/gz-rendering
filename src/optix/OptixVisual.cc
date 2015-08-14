@@ -110,10 +110,18 @@ bool OptixVisual::AttachChild(NodePtr _child)
 }
 
 //////////////////////////////////////////////////
-bool OptixVisual::DetachChild(NodePtr /*_child*/)
+bool OptixVisual::DetachChild(NodePtr _child)
 {
-  // TODO: implement
-  return false;
+  OptixNodePtr derived = boost::dynamic_pointer_cast<OptixNode>(_child);
+  
+  if (!derived)
+  {
+    return false;
+  }
+  
+  this->optixGroup->removeChild(derived->GetOptixTransform());
+  this->optixAccel->markDirty();
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -138,9 +146,22 @@ bool OptixVisual::AttachGeometry(GeometryPtr _geometry)
 }
 
 //////////////////////////////////////////////////
-bool OptixVisual::DetachGeometry(GeometryPtr /*_geometry*/)
+bool OptixVisual::DetachGeometry(GeometryPtr _geometry)
 {
-  return false;
+  OptixGeometryPtr derived =
+      boost::dynamic_pointer_cast<OptixGeometry>(_geometry);
+
+  if (!derived)
+  {
+    gzerr << "Cannot detach geometry created by another render-engine"
+          << std::endl;
+
+    return false;
+  }
+
+  this->optixGroup->removeChild(derived->GetOptixGeometryGroup());
+  this->optixAccel->markDirty();
+  return true;
 }
 
 //////////////////////////////////////////////////

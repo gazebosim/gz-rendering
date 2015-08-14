@@ -42,6 +42,8 @@ namespace ignition
 
       public: virtual Ogre::MovableObject *GetOgreObject() const = 0;
 
+      protected: virtual void SetParent(OgreVisualPtr _parent);
+
       protected: OgreVisualPtr parent;
 
       private: friend class OgreVisual;

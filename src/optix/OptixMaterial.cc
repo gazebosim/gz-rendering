@@ -19,6 +19,7 @@
 #include "ignition/rendering/optix/OptixRayTypes.hh"
 #include "ignition/rendering/optix/OptixRenderEngine.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
+#include "ignition/rendering/optix/OptixTextureFactory.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -34,7 +35,6 @@ const std::string OptixMaterial::PTX_ANY_HIT_FUNC("AnyHit");
 //////////////////////////////////////////////////  
 OptixMaterial::OptixMaterial() :
   colorDirty(true),
-  textureDirty(true),
   normalMapDirty(true)
 {
 }
@@ -182,17 +182,22 @@ void OptixMaterial::SetTexture(const std::string &_name)
     return;
   }
 
-  // TODO: implement
+  this->SetTextureImpl(_name);
   this->textureName = _name;
-  this->textureDirty = true;
 }
 
 //////////////////////////////////////////////////
 void OptixMaterial::ClearTexture()
 {
-  // TODO: implement
-  this->textureName = "";
-  this->textureDirty = true;
+  if (this->optixTexture)
+  {
+    this->optixMaterial["texSampler"]->setTextureSampler(
+        this->optixEmptyTexture);
+
+    this->optixTexture->destroy();
+    this->optixTexture = 0;
+    this->textureName = "";
+  }
 }
 
 //////////////////////////////////////////////////
@@ -264,16 +269,6 @@ void OptixMaterial::WriteColorToDevice()
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::WriteTextureToDevice()
-{
-  if (this->colorDirty)
-  {
-    this->WriteTextureToDeviceImpl();
-    this->textureDirty = false;
-  }
-}
-
-//////////////////////////////////////////////////
 void OptixMaterial::WriteNormalMapToDevice()
 {
   if (this->colorDirty)
@@ -295,15 +290,17 @@ void OptixMaterial::WriteColorToDeviceImpl()
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::WriteTextureToDeviceImpl()
+void OptixMaterial::WriteNormalMapToDeviceImpl()
 {
   // TODO: implement
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::WriteNormalMapToDeviceImpl()
+void OptixMaterial::SetTextureImpl(const std::string &_name)
 {
-  // TODO: implement
+  OptixTextureFactory texFactory(this->scene);
+  this->optixTexture = texFactory.Create(_name);
+  this->optixMaterial["texSampler"]->setTextureSampler(this->optixTexture);
 }
 
 //////////////////////////////////////////////////
@@ -321,6 +318,10 @@ void OptixMaterial::Init()
   this->optixMaterial = optixContext->createMaterial();
   optixMaterial->setClosestHitProgram(RT_RADIANCE, closestHitProgram);
   optixMaterial->setAnyHitProgram(RT_SHADOW, anyHitProgram);
+
+  OptixTextureFactory texFactory(this->scene);
+  this->optixEmptyTexture = texFactory.Create();
+  this->optixMaterial["texSampler"]->setTextureSampler(this->optixEmptyTexture);
 
   this->Reset();
 }

@@ -77,6 +77,16 @@ gazebo::common::Color OgreScene::GetBackgroundColor() const
 void OgreScene::SetBackgroundColor(const gazebo::common::Color &_color)
 {
   this->backgroundColor = _color;
+
+  // TODO: clean up code
+  unsigned int count = this->GetSensorCount();
+
+  for (unsigned int i = 0; i < count; ++i)
+  {
+    SensorPtr sensor = this->GetSensorByIndex(i);
+    OgreCameraPtr camera = boost::dynamic_pointer_cast<OgreCamera>(sensor);
+    if (camera) camera->SetBackgroundColor(_color);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -179,6 +189,7 @@ CameraPtr OgreScene::CreateCameraImpl(unsigned int _id,
 {
   OgreCameraPtr camera(new OgreCamera);
   bool result = this->InitObject(camera, _id, _name);
+  camera->SetBackgroundColor(this->backgroundColor);
   return (result) ? camera : NULL;
 }
 

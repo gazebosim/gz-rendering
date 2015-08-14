@@ -6,6 +6,8 @@
 // scene variables
 rtDeclareVariable(float3, ambientLightColor, , );
 rtDeclareVariable(int, maxReflectionDepth, , );
+rtDeclareVariable(int, maxRefractionDepth, , );
+rtDeclareVariable(float, importanceCutoff, , );
 rtDeclareVariable(float, sceneEpsilon, , );
 rtDeclareVariable(rtObject, rootGroup, , );
 rtBuffer<OptixDirectionalLightData> directionalLights;
@@ -16,6 +18,7 @@ rtTextureSampler<float4, 2> texSampler;
 rtDeclareVariable(float3, ambient, , );
 rtDeclareVariable(float3, diffuse, , );
 rtDeclareVariable(float, reflectivity, , );
+rtDeclareVariable(float, transparency, , );
 
 // ray variables
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
@@ -28,14 +31,49 @@ rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
 rtDeclareVariable(float3, texcoord, attribute texcoord, );
 
+static __device__ __inline__ float3 Exp(const float3 &_x)
+{
+  return make_float3(exp(_x.x), exp(_x.y), exp(_x.z));
+}
+
 RT_PROGRAM void AnyHit()
 {
-  shadowData.attenuation = make_float3(0);
-  rtTerminateRay();
+  float3 shadowAtten   = make_float3(0.8, 0.2, 0.2);
+
+  if (transparency > 0)
+  {
+    float3 worldNormal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD,
+          shadingNormal));
+
+    float ndi = fabs(dot(worldNormal, ray.direction));
+
+    shadowData.attenuation *= 1 - fresnel_schlick(ndi, 5, 1 - shadowAtten,
+        make_float3(1));
+
+    // float3 ones = make_float3(1);
+    // shadowData.attenuation *= 1 - transparency * (ones - ambient) *
+    //     (2 - fresnel_schlick(ndi, 5, 1 - shadowAtten, make_float3(1)));
+
+    rtIgnoreIntersection();
+  }
+  else
+  {
+    shadowData.attenuation = make_float3(0);
+    rtTerminateRay();
+  }
 }
 
 RT_PROGRAM void ClosestHit()
 {
+  float  fresnelExp    = 3.0;
+  float  fresnelMin    = 0.1;
+  float  fresnelMax    = 1.0;
+  float  refractIndex  = 1.4;
+  float3 refractColor  = make_float3(1.0, 0.8, 0.8);
+  float3 extinctConst  = make_float3(1.0, 0.8, 0.8);
+  float3 cutoffColor   = make_float3(1.0, 0.8, 0.8);
+  float3 shadowAtten   = make_float3(1.0, 0.8, 0.8);
+
   float3 color = ambient * ambientLightColor;
 
   float3 worldGeomNorm = normalize(
@@ -48,6 +86,47 @@ RT_PROGRAM void ClosestHit()
       worldGeomNorm);
 
   float3 hitPoint = ray.origin + hitDist * ray.direction;
+
+  float reflection = 1.0;
+  float3 result = make_float3(0);
+  float3 beerAtten = make_float3(1);
+
+  if (transparency > 0)
+  { 
+    float3 beerAtten = (dot(worldShadeNorm, ray.direction) > 0) ?
+      Exp(extinctConst * hitDist) : make_float3(1);
+
+    if (radianceData.depth < maxRefractionDepth)
+    {
+      float3 t;
+
+      if (refract(t, ray.direction, worldShadeNorm, refractIndex))
+      {
+        float cosTheta = dot(ray.direction, worldGeomNorm);
+        cosTheta = (cosTheta < 0) ? -cosTheta : dot(t, worldShadeNorm);
+
+        reflection = fresnel_schlick(cosTheta, fresnelExp, fresnelMin,
+            fresnelMax);
+
+        float importance = radianceData.importance * (1 - reflection) *
+          optix::luminance(refractColor * beerAtten);
+
+        if (importance > importanceCutoff)
+        {
+          optix::Ray ray(hitPoint, t, RT_RADIANCE, sceneEpsilon);
+          OptixRadianceRayData refrData;
+          refrData.depth = radianceData.depth + 1;
+          refrData.importance = importance;
+          rtTrace(rootGroup, ray, refrData);
+          result += (1 - reflectivity) * refractColor * refrData.color;
+        }
+        else
+        {
+          result += (1 - reflectivity) * refractColor * cutoffColor;
+        }
+      }
+    }
+  }
 
   for (int i = 0; i < directionalLights.size(); ++i)
   {
@@ -69,7 +148,7 @@ RT_PROGRAM void ClosestHit()
         float attp = 1 - fminf(hitDist, att.range) / att.range;
 
         float attf = att.constant + attp * att.linear + attp *
-            attp * att.quadratic;
+          attp * att.quadratic;
 
         // rtPrintf("1 - (%f / %f) = %f\n", hitDist, att.range, attp);
 
@@ -148,5 +227,6 @@ RT_PROGRAM void ClosestHit()
   float3 tcolor = make_float3(tex2D(texSampler, uv.x, uv.y));
   float3 finalColor = color + color * tcolor * tcolor * tcolor;
 
-  radianceData.color = finalColor;
+  radianceData.color = (1 - transparency) * finalColor +
+      (transparency * result * beerAtten);
 }

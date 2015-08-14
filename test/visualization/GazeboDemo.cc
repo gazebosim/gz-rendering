@@ -48,8 +48,8 @@ CameraPtr CreateCamera(const std::string &_engine)
   VisualPtr root = scene->GetRootVisual();
 
   CameraPtr camera = scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 1.0);
-  camera->SetLocalRotation(0.0, 0.35, M_PI / 2);
+  camera->SetLocalPosition(0.0, 0.0, 1.5);
+  camera->SetLocalRotation(0.0, 0.20, M_PI / 2);
   camera->SetImageWidth(640);
   camera->SetImageHeight(480);
   camera->SetAntiAliasing(2);

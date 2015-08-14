@@ -406,8 +406,8 @@ void ShadowSceneBuilder::BuildScene(ScenePtr _scene)
   
   PointLightPtr light = _scene->CreatePointLight();
   light->SetLocalPosition(5.5, -2.0, 4.75);
-  light->SetDiffuseColor(0.6, 0.6, 0.6);
-  light->SetSpecularColor(0.8, 0.8, 0.8);
+  light->SetDiffuseColor(1.0, 1.0, 1.0);
+  light->SetSpecularColor(1.0, 1.0, 1.0);
   this->AddLight(light, _scene);
 }
 

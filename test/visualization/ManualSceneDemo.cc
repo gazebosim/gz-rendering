@@ -173,6 +173,7 @@ int main(int, char**)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(2)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(3)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(4)));
+  sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
   sceneDemo->AddCamera("ogre");
   sceneDemo->AddCamera("optix");
   sceneDemo->Run();

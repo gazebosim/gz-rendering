@@ -287,6 +287,7 @@ void OptixMaterial::WriteColorToDeviceImpl()
   this->optixMaterial["specular"]->setFloat(this->specular.r, this->specular.g, this->specular.b);
   this->optixMaterial["emissive"]->setFloat(this->emissive.r, this->emissive.g, this->emissive.b);
   this->optixMaterial["reflectivity"]->setFloat(this->reflectivity);
+  this->optixMaterial["transparency"]->setFloat(this->transparency);
 }
 
 //////////////////////////////////////////////////

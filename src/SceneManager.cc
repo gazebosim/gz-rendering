@@ -862,6 +862,7 @@ void SubSceneManager::ClearMessages()
   this->jointMsgs.clear();
   this->visualMsgs.clear();
   this->sensorMsgs.clear();
+  this->approvedRemovals.clear();
 }
 
 //////////////////////////////////////////////////
@@ -1849,9 +1850,6 @@ void CurrentSceneManager::ProcessRemovals()
   {
     this->ProcessRemoval(removal);
   }
-
-  // clear processed removals
-  this->approvedRemovals.clear();
 }
 
 //////////////////////////////////////////////////  
@@ -2023,7 +2021,4 @@ void NewSceneManager::ProcessRemovals()
     // TODO: check if message sent after scene response
     this->ProcessRemoval(removal);
   }
-
-  // clear processed removals
-  this->approvedRemovals.clear();
 }

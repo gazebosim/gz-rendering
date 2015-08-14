@@ -333,12 +333,11 @@ void OptixScene::CreateContext()
   this->optixContext->setEntryPointCount(0);
   this->optixContext->setRayTypeCount(RT_COUNT);
 
-  // TODO: clean up code
-  this->optixContext["sceneEpsilon"]->setFloat(1E-3); // TODO: set dynamically
-
   // TODO: setup programatically
+  this->optixContext["sceneEpsilon"]->setFloat(1E-3); // TODO: set dynamically
   this->optixContext["maxReflectionDepth"]->setInt(3);
   this->optixContext["maxRefractionDepth"]->setInt(3);
+  this->optixContext["importanceCutoff"]->setFloat(0.01);
 
   // TODO: remove after testing
   this->optixContext->setPrintEnabled(true);

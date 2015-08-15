@@ -185,7 +185,10 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     if (!_scene->MaterialRegistered(childName))
     {
       MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
-      mat->SetTexture("/home/mike/Downloads/tiles.jpg");
+      // mat->SetTexture("/home/mike/Development/ign-rendering/build/examples/custom_scene_viewer/media/tiles.jpg");
+      
+
+      mat->SetTexture("./examples/custom_scene_viewer/media/tiles.jpg");
       _scene->RegisterMaterial(childName, mat);
     }
   }
@@ -198,7 +201,20 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     if (!_scene->MaterialRegistered(childName))
     {
       MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
-      mat->SetReflectivity(0.1);
+      mat->SetReflectivity(0.25);
+      _scene->RegisterMaterial(childName, mat);
+    }
+  }
+
+  for (auto baseName : baseNames)
+  {
+    std::string parentName = "Texture" + baseName;
+    std::string childName = "Trans" + baseName;
+
+    if (!_scene->MaterialRegistered(childName))
+    {
+      MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
+      mat->SetTransparency(0.5);
       _scene->RegisterMaterial(childName, mat);
     }
   }
@@ -383,6 +399,44 @@ void ReflectionSceneBuilder::BuildScene(ScenePtr _scene)
 
   VisualPtr sphere = _scene->GetVisualByName(SPHERE);
   sphere->SetMaterial("ReflectRed");
+}
+
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+TransparencySceneBuilder::TransparencySceneBuilder()
+{
+}
+
+//////////////////////////////////////////////////
+TransparencySceneBuilder::~TransparencySceneBuilder()
+{
+}
+
+//////////////////////////////////////////////////
+void TransparencySceneBuilder::BuildScene(ScenePtr _scene)
+{
+  TextureSceneBuilder::BuildScene(_scene);
+  VisualPtr root = _scene->GetRootVisual();
+
+  VisualPtr box = _scene->GetVisualByName(BOX);
+  box->SetMaterial("TransYellow");
+
+  VisualPtr cone = _scene->GetVisualByName(CONE);
+  cone->SetMaterial("TransBlue");
+
+  VisualPtr cylinder = _scene->GetVisualByName(CYLINDER);
+  cylinder->SetMaterial("TransGreen");
+
+  VisualPtr sphere = _scene->GetVisualByName(SPHERE);
+  sphere->SetMaterial("TransRed");
+
+  VisualPtr background = _scene->CreateVisual();
+  background->AddGeometry(_scene->CreatePlane());
+  background->SetLocalPosition(4, 0, 4);
+  background->SetLocalRotation(0, -M_PI / 2, 0);
+  background->SetLocalScale(10, 10, 1);
+  background->SetMaterial("TextureWhite");
+  root->AddChild(background);
 }
 
 //////////////////////////////////////////////////

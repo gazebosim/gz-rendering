@@ -114,6 +114,16 @@ namespace ignition
       protected: virtual void BuildScene(ScenePtr _scene);
     };
 
+    class TransparencySceneBuilder :
+      public TextureSceneBuilder
+    {
+      public: TransparencySceneBuilder();
+
+      public: virtual ~TransparencySceneBuilder();
+
+      protected: virtual void BuildScene(ScenePtr _scene);
+    };
+
     class ShadowSceneBuilder :
       public SimpleSceneBuilder
     {

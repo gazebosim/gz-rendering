@@ -1,0 +1,3 @@
+add_subdirectory(custom_scene_viewer)
+add_subdirectory(gazebo_scene_viewer)
+add_subdirectory(simple_demo)

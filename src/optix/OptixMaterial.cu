@@ -38,7 +38,7 @@ static __device__ __inline__ float3 Exp(const float3 &_x)
 
 RT_PROGRAM void AnyHit()
 {
-  float3 shadowAtten   = make_float3(0.8, 0.2, 0.2);
+  float3 shadowAtten   = diffuse;
 
   if (transparency > 0)
   {
@@ -69,10 +69,10 @@ RT_PROGRAM void ClosestHit()
   float  fresnelMin    = 0.1;
   float  fresnelMax    = 1.0;
   float  refractIndex  = 1.4;
-  float3 refractColor  = make_float3(1.0, 0.8, 0.8);
-  float3 extinctConst  = make_float3(1.0, 0.8, 0.8);
-  float3 cutoffColor   = make_float3(1.0, 0.8, 0.8);
-  float3 shadowAtten   = make_float3(1.0, 0.8, 0.8);
+  float3 refractColor  = diffuse;
+  float3 extinctConst  = diffuse;
+  float3 cutoffColor   = diffuse;
+  float3 shadowAtten   = diffuse;
 
   float3 color = ambient * ambientLightColor;
 

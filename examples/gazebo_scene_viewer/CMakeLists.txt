@@ -15,36 +15,18 @@ find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 link_directories(${GLEW_LIBRARY_DIRS})
 
-add_executable(main Main.cc GlutWindow.cc)
+add_executable(gazebo_scene_viewer GazeboDemo.cc CameraWindow.cc)
 
-target_link_libraries(main
+target_link_libraries(gazebo_scene_viewer
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ignition-rendering
 )
 
-add_executable(gz_demo GazeboDemo.cc CameraWindow.cc)
+add_executable(gazebo_scene_viewer2_demo GazeboWorldDemo.cc CameraWindow.cc)
 
-target_link_libraries(gz_demo
-  ${GLUT_LIBRARIES}
-  ${OPENGL_LIBRARIES}
-  ${GLEW_LIBRARIES}
-  ignition-rendering
-)
-
-add_executable(gz_world_demo GazeboWorldDemo.cc CameraWindow.cc)
-
-target_link_libraries(gz_world_demo
-  ${GLUT_LIBRARIES}
-  ${OPENGL_LIBRARIES}
-  ${GLEW_LIBRARIES}
-  ignition-rendering
-)
-
-add_executable(man_demo ManualSceneDemo.cc SceneBuilder.cc DemoWindow.cc)
-
-target_link_libraries(man_demo
+target_link_libraries(gazebo_scene_viewer2_demo
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}

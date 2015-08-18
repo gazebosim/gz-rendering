@@ -62,41 +62,41 @@ void OgreNode::Destroy()
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Pose OgreNode::GetRawLocalPose() const
+math::Pose3d OgreNode::GetRawLocalPose() const
 {
-  gazebo::math::Pose pose;
-  pose.pos = this->GetRawLocalPosition();
-  pose.rot = this->GetRawLocalRotation();
-  return pose;
+  math::Pose3d Pose3d;
+  Pose3d.Pos() = this->GetRawLocalPosition();
+  Pose3d.Rot() = this->GetRawLocalRotation();
+  return Pose3d;
 }
 
 //////////////////////////////////////////////////
-void OgreNode::SetRawLocalPose(const gazebo::math::Pose &_pose)
+void OgreNode::SetRawLocalPose(const math::Pose3d &_Pose3d)
 {
-  this->SetRawLocalPosition(_pose.pos);
-  this->SetRawLocalRotation(_pose.rot);
+  this->SetRawLocalPosition(_Pose3d.Pos());
+  this->SetRawLocalRotation(_Pose3d.Rot());
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OgreNode::GetRawLocalPosition() const
+math::Vector3d OgreNode::GetRawLocalPosition() const
 {
   return OgreConversions::Convert(this->ogreNode->getPosition());
 }
 
 //////////////////////////////////////////////////
-void OgreNode::SetRawLocalPosition(const gazebo::math::Vector3 &_position)
+void OgreNode::SetRawLocalPosition(const math::Vector3d &_position)
 {
   this->ogreNode->setPosition(OgreConversions::Convert(_position));
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Quaternion OgreNode::GetRawLocalRotation() const
+math::Quaterniond OgreNode::GetRawLocalRotation() const
 {
   return OgreConversions::Convert(this->ogreNode->getOrientation());
 }
 
 //////////////////////////////////////////////////
-void OgreNode::SetRawLocalRotation(const gazebo::math::Quaternion &_rotation)
+void OgreNode::SetRawLocalRotation(const math::Quaterniond &_rotation)
 {
   this->ogreNode->setOrientation(OgreConversions::Convert(_rotation));
 }

@@ -45,39 +45,39 @@ gazebo::common::Color OgreConversions::Convert(const Ogre::ColourValue &_color)
 }
 
 //////////////////////////////////////////////////
-Ogre::Vector3 OgreConversions::Convert(const gazebo::math::Vector3 &_vector)
+Ogre::Vector3 OgreConversions::Convert(const math::Vector3d &_vector)
 {
-  return Ogre::Vector3(_vector.x, _vector.y, _vector.z);
+  return Ogre::Vector3(_vector.X(), _vector.Y(), _vector.Z());
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OgreConversions::Convert(const Ogre::Vector3 &_vector)
+math::Vector3d OgreConversions::Convert(const Ogre::Vector3 &_vector)
 {
-  return gazebo::math::Vector3(_vector.x, _vector.y, _vector.z);
+  return math::Vector3d(_vector.x, _vector.y, _vector.z);
 }
 
 //////////////////////////////////////////////////
-Ogre::Quaternion OgreConversions::Convert(const gazebo::math::Quaternion &_quat)
+Ogre::Quaternion OgreConversions::Convert(const math::Quaterniond &_quat)
 {
-  return Ogre::Quaternion(_quat.w, _quat.x, _quat.y, _quat.z);
+  return Ogre::Quaternion(_quat.W(), _quat.X(), _quat.Y(), _quat.Z());
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Quaternion OgreConversions::Convert(const Ogre::Quaternion &_quat)
+math::Quaterniond OgreConversions::Convert(const Ogre::Quaternion &_quat)
 {
-  return gazebo::math::Quaternion(_quat.w, _quat.x, _quat.y, _quat.z);
+  return math::Quaterniond(_quat.w, _quat.x, _quat.y, _quat.z);
 }
 
 //////////////////////////////////////////////////
-Ogre::Radian OgreConversions::Convert(const gazebo::math::Angle &_angle)
+Ogre::Radian OgreConversions::Convert(const math::Angle &_angle)
 {
   return Ogre::Radian(_angle.Radian());
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Angle OgreConversions::Convert(const Ogre::Radian &_angle)
+math::Angle OgreConversions::Convert(const Ogre::Radian &_angle)
 {
-  return gazebo::math::Angle(_angle.valueRadians());
+  return math::Angle(_angle.valueRadians());
 }
 
 //////////////////////////////////////////////////

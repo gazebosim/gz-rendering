@@ -45,19 +45,19 @@ namespace ignition
 
       public: virtual void Destroy();
 
-      protected: virtual gazebo::math::Pose GetRawLocalPose() const;
+      protected: virtual math::Pose3d GetRawLocalPose() const;
 
-      protected: virtual void SetRawLocalPose(const gazebo::math::Pose &_pose);
+      protected: virtual void SetRawLocalPose(const math::Pose3d &_Pose3d);
 
-      protected: virtual gazebo::math::Vector3 GetRawLocalPosition() const;
+      protected: virtual math::Vector3d GetRawLocalPosition() const;
 
       protected: virtual void SetRawLocalPosition(
-                     const gazebo::math::Vector3 &_position);
+                     const math::Vector3d &_position);
 
-      protected: virtual gazebo::math::Quaternion GetRawLocalRotation() const;
+      protected: virtual math::Quaterniond GetRawLocalRotation() const;
 
       protected: virtual void SetRawLocalRotation(
-                     const gazebo::math::Quaternion &_rotation);
+                     const math::Quaterniond &_rotation);
 
       protected: virtual void SetParent(OgreVisualPtr _parent);
 

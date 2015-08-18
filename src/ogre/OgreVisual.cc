@@ -32,7 +32,7 @@ OgreVisual::~OgreVisual()
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OgreVisual::GetLocalScale() const
+math::Vector3d OgreVisual::GetLocalScale() const
 {
   return OgreConversions::Convert(this->ogreNode->getScale());
 }
@@ -130,7 +130,7 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 }
 
 //////////////////////////////////////////////////
-void OgreVisual::SetLocalScaleImpl(const gazebo::math::Vector3 &_scale)
+void OgreVisual::SetLocalScaleImpl(const math::Vector3d &_scale)
 {
   this->ogreNode->setScale(OgreConversions::Convert(_scale));
 }

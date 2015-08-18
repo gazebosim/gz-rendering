@@ -18,7 +18,9 @@
 #define _IGNITION_RENDERING_NODE_HH_
 
 #include <string>
-#include "gazebo/math/Pose.hh"
+#include <ignition/math/Pose3.hh>
+#include <ignition/math/Quaternion.hh>
+
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/Util.hh"
@@ -38,18 +40,18 @@ namespace ignition
 
       public: virtual void RemoveParent() = 0;
 
-      public: virtual gazebo::math::Pose GetLocalPose() const = 0;
+      public: virtual math::Pose3d GetLocalPose() const = 0;
 
-      public: virtual void SetLocalPose(const gazebo::math::Pose &_pose) = 0;
+      public: virtual void SetLocalPose(const math::Pose3d &_Pose3d) = 0;
 
-      public: virtual gazebo::math::Vector3 GetLocalPosition() const = 0;
+      public: virtual math::Vector3d GetLocalPosition() const = 0;
 
       public: virtual void SetLocalPosition(double _x, double _y,
                   double _z) = 0;
 
-      public: virtual void SetLocalPosition(const gazebo::math::Vector3 &_position) = 0;
+      public: virtual void SetLocalPosition(const math::Vector3d &_position) = 0;
 
-      public: virtual gazebo::math::Quaternion GetLocalRotation() const = 0;
+      public: virtual math::Quaterniond GetLocalRotation() const = 0;
 
       public: virtual void SetLocalRotation(double _r, double _p,
                   double _y) = 0;
@@ -58,18 +60,18 @@ namespace ignition
                   double _z) = 0;
 
       public: virtual void SetLocalRotation(
-                  const gazebo::math::Quaternion &_rotation) = 0;
+                  const math::Quaterniond &_rotation) = 0;
 
-      public: virtual gazebo::math::Pose GetWorldPose() const = 0;
+      public: virtual math::Pose3d GetWorldPose() const = 0;
 
-      public: virtual void SetWorldPose(const gazebo::math::Pose &_pose) = 0;
+      public: virtual void SetWorldPose(const math::Pose3d &_Pose3d) = 0;
 
-      public: virtual gazebo::math::Vector3 GetWorldPosition() const = 0;
+      public: virtual math::Vector3d GetWorldPosition() const = 0;
 
       public: virtual void SetWorldPosition(double _x, double _y,
                   double _z) = 0;
 
-      public: virtual void SetWorldPosition(const gazebo::math::Vector3 &_position) = 0;
+      public: virtual void SetWorldPosition(const math::Vector3d &_position) = 0;
 
       public: virtual void SetWorldRotation(double _r, double _p,
                   double _y) = 0;
@@ -77,19 +79,19 @@ namespace ignition
       public: virtual void SetWorldRotation(double _w, double _x, double _y,
                   double _z) = 0;
 
-      public: virtual gazebo::math::Quaternion GetWorldRotation() const = 0;
+      public: virtual math::Quaterniond GetWorldRotation() const = 0;
 
       public: virtual void SetWorldRotation(
-                  const gazebo::math::Quaternion &_rotation) = 0;
+                  const math::Quaterniond &_rotation) = 0;
 
-      public: virtual gazebo::math::Pose WorldToLocal(
-                  const gazebo::math::Pose &_pose) const = 0;
+      public: virtual math::Pose3d WorldToLocal(
+                  const math::Pose3d &_Pose3d) const = 0;
 
-      public: virtual gazebo::math::Vector3 GetOrigin() const = 0;
+      public: virtual math::Vector3d GetOrigin() const = 0;
 
       public: virtual void SetOrigin(double _x, double _y, double _z) = 0;
 
-      public: virtual void SetOrigin(const gazebo::math::Vector3 &_origin) = 0;
+      public: virtual void SetOrigin(const math::Vector3d &_origin) = 0;
     };
   }
 }

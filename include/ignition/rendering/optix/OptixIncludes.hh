@@ -17,6 +17,7 @@
 #ifndef _IGNITION_RENDERING_OPTIXINCLUDES_HH_
 #define _IGNITION_RENDERING_OPTIXINCLUDES_HH_
 
+//#include <optixu/optixpp.h>
 #include <optixu/optixpp.h>
 
 #endif

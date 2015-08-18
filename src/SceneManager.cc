@@ -138,7 +138,7 @@ void SceneManager::UpdateScenes()
   this->pimpl->UpdateScenes();
 }
 
-//////////////////////////////////////////////////  
+//////////////////////////////////////////////////
 SceneManagerPrivate::SceneManagerPrivate() :
   currentSceneManager(new CurrentSceneManager),
   newSceneManager(new NewSceneManager),
@@ -563,7 +563,7 @@ SubSceneManager::~SubSceneManager()
 unsigned int SubSceneManager::GetSceneCount() const
 {
   // TODO: encapsulate
-  
+
   return this->scenes.size();
 }
 
@@ -571,7 +571,7 @@ unsigned int SubSceneManager::GetSceneCount() const
 bool SubSceneManager::HasScene(unsigned int _id) const
 {
   // TODO: encapsulate
-  
+
   for (auto scene : this->scenes)
   {
     if (scene->GetId() == _id)
@@ -587,7 +587,7 @@ bool SubSceneManager::HasScene(unsigned int _id) const
 bool SubSceneManager::HasScene(const std::string &_name) const
 {
   // TODO: encapsulate
-  
+
   for (auto scene : this->scenes)
   {
     if (scene->GetName() == _name)
@@ -603,7 +603,7 @@ bool SubSceneManager::HasScene(const std::string &_name) const
 bool SubSceneManager::HasScene(ConstScenePtr _scene) const
 {
   // TODO: encapsulate
-  
+
   for (auto scene : this->scenes)
   {
     if (scene == _scene)
@@ -619,7 +619,7 @@ bool SubSceneManager::HasScene(ConstScenePtr _scene) const
 ScenePtr SubSceneManager::GetScene(unsigned int _id) const
 {
   // TODO: encapsulate
-  
+
   for (auto scene : this->scenes)
   {
     if (scene->GetId() == _id)
@@ -635,7 +635,7 @@ ScenePtr SubSceneManager::GetScene(unsigned int _id) const
 ScenePtr SubSceneManager::GetScene(const std::string &_name) const
 {
   // TODO: encapsulate
-  
+
   for (auto scene : this->scenes)
   {
     if (scene->GetName() == _name)
@@ -651,7 +651,7 @@ ScenePtr SubSceneManager::GetScene(const std::string &_name) const
 ScenePtr SubSceneManager::GetSceneAt(unsigned int _index) const
 {
   // TODO: encapsulate
-  
+
   if (_index >= this->GetSceneCount())
   {
     gzerr << "Invalid scene index: " << _index << std::endl;
@@ -679,7 +679,7 @@ void SubSceneManager::AddScene(ScenePtr _scene)
     gzerr << "Scene has already been added" << std::endl;
     return;
   }
-  
+
   this->scenes.push_back(_scene);
 }
 
@@ -687,7 +687,7 @@ void SubSceneManager::AddScene(ScenePtr _scene)
 ScenePtr SubSceneManager::RemoveScene(unsigned int _id)
 {
   // TODO: encapsulate
-  
+
   for (auto scene : this->scenes)
   {
     if (scene->GetId() == _id)
@@ -703,7 +703,7 @@ ScenePtr SubSceneManager::RemoveScene(unsigned int _id)
 ScenePtr SubSceneManager::RemoveScene(const std::string &_name)
 {
   // TODO: encapsulate
-  
+
   for (auto scene : this->scenes)
   {
     if (scene->GetName() == _name)
@@ -719,7 +719,7 @@ ScenePtr SubSceneManager::RemoveScene(const std::string &_name)
 ScenePtr SubSceneManager::RemoveScene(ScenePtr _scene)
 {
   // TODO: encapsulate
-  
+
   for (auto scene : this->scenes)
   {
     if (scene == _scene)
@@ -735,7 +735,7 @@ ScenePtr SubSceneManager::RemoveScene(ScenePtr _scene)
 ScenePtr SubSceneManager::RemoveSceneAt(unsigned int _index)
 {
   // TODO: encapsulate
-  
+
   if (_index >= this->GetSceneCount())
   {
     gzerr << "Invalid scene index: " << _index << std::endl;
@@ -1025,14 +1025,14 @@ void SubSceneManager::ProcessSpotLightImpl(const gazebo::msgs::Light &_lightMsg,
   if (_lightMsg.has_spot_inner_angle())
   {
     double radians = _lightMsg.spot_inner_angle();
-    _light->SetInnerAngle(gazebo::math::Angle(radians));
+    _light->SetInnerAngle(math::Angle(radians));
   }
 
   // set outer-angle if available
   if (_lightMsg.has_spot_outer_angle())
   {
     double radians = _lightMsg.spot_outer_angle();
-    _light->SetOuterAngle(gazebo::math::Angle(radians));
+    _light->SetOuterAngle(math::Angle(radians));
   }
 
   // set falloff if available
@@ -1607,7 +1607,7 @@ void SubSceneManager::ProcessPose(const gazebo::msgs::Pose &_poseMsg)
 //////////////////////////////////////////////////
 void SubSceneManager::SetPose(NodePtr _node, const gazebo::msgs::Pose &_poseMsg)
 {
-  gazebo::math::Pose pose = SubSceneManager::Convert(_poseMsg);
+  math::Pose3d pose = SubSceneManager::Convert(_poseMsg);
   _node->SetLocalPose(pose);
 }
 
@@ -1615,7 +1615,7 @@ void SubSceneManager::SetPose(NodePtr _node, const gazebo::msgs::Pose &_poseMsg)
 void SubSceneManager::SetScale(VisualPtr _visual,
     const gazebo::msgs::Vector3d &_scaleMsg)
 {
-  gazebo::math::Vector3 scale = SubSceneManager::Convert(_scaleMsg);
+  math::Vector3d scale = SubSceneManager::Convert(_scaleMsg);
   _visual->SetLocalScale(scale);
 }
 
@@ -1665,37 +1665,37 @@ gazebo::common::Color SubSceneManager::Convert(const gazebo::msgs::Color &_color
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Pose SubSceneManager::Convert(const gazebo::msgs::Pose &_poseMsg)
+math::Pose3d SubSceneManager::Convert(const gazebo::msgs::Pose &_poseMsg)
 {
-  gazebo::math::Pose pose;
+  math::Pose3d pose;
 
   const gazebo::msgs::Vector3d &posMsg = _poseMsg.position();
-  pose.pos = SubSceneManager::Convert(posMsg);
+  pose.Pos() = SubSceneManager::Convert(posMsg);
 
   const gazebo::msgs::Quaternion &rotMsg = _poseMsg.orientation();
-  pose.rot = SubSceneManager::Convert(rotMsg);
+  pose.Rot() = SubSceneManager::Convert(rotMsg);
 
   return pose;
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 SubSceneManager::Convert(const gazebo::msgs::Vector3d &_vecMsg)
+math::Vector3d SubSceneManager::Convert(const gazebo::msgs::Vector3d &_vecMsg)
 {
-  gazebo::math::Vector3 vec;;
-  vec.x = _vecMsg.x();
-  vec.y = _vecMsg.y();
-  vec.z = _vecMsg.z();
+  math::Vector3d vec;
+  vec.X(_vecMsg.x());
+  vec.Y(_vecMsg.y());
+  vec.Z(_vecMsg.z());
   return vec;
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Quaternion SubSceneManager::Convert(const gazebo::msgs::Quaternion &_quatMsg)
+math::Quaterniond SubSceneManager::Convert(const gazebo::msgs::Quaternion &_quatMsg)
 {
-  gazebo::math::Quaternion quat;;
-  quat.w = _quatMsg.w();
-  quat.x = _quatMsg.x();
-  quat.y = _quatMsg.y();
-  quat.z = _quatMsg.z();
+  math::Quaterniond quat;
+  quat.W(_quatMsg.w());
+  quat.X(_quatMsg.x());
+  quat.Y(_quatMsg.y());
+  quat.Z(_quatMsg.z());
   return quat;
 }
 
@@ -1747,7 +1747,7 @@ void SubSceneManager::CreateGeometryFunctionMap()
       &SubSceneManager::ProcessSphere;
 }
 
-//////////////////////////////////////////////////  
+//////////////////////////////////////////////////
 CurrentSceneManager::CurrentSceneManager()
 {
 }
@@ -1759,7 +1759,7 @@ CurrentSceneManager::~CurrentSceneManager()
 
 //////////////////////////////////////////////////
 void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
-{ 
+{
   // record pose timestamp
   int sec = _posesMsg->time().sec();
   int nsec = _posesMsg->time().nsec();
@@ -1852,7 +1852,7 @@ void CurrentSceneManager::ProcessRemovals()
   }
 }
 
-//////////////////////////////////////////////////  
+//////////////////////////////////////////////////
 NewSceneManager::NewSceneManager() :
   sceneReceived(false)
 {

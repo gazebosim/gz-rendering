@@ -54,9 +54,9 @@ namespace ignition
 
       public: virtual unsigned int GetImageMemorySize() const = 0;
 
-      public: virtual gazebo::math::Angle GetHFOV() const = 0;
+      public: virtual math::Angle GetHFOV() const = 0;
 
-      public: virtual void SetHFOV(const gazebo::math::Angle &_angle) = 0;
+      public: virtual void SetHFOV(const math::Angle &_angle) = 0;
 
       public: virtual double GetAspectRatio() const = 0;
 

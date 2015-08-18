@@ -130,11 +130,11 @@ void OptixLight::WritePoseToDeviceImpl()
   BaseLight::WritePoseToDeviceImpl();
 
   // TODO: handle rotation
-  gazebo::math::Pose worldPose = this->GetWorldPose();
+  math::Pose3d worldPose = this->GetWorldPose();
   OptixCommonLightData &_data = this->GetCommonData();
-  _data.position.x = worldPose.pos.x;
-  _data.position.y = worldPose.pos.y;
-  _data.position.z = worldPose.pos.z;
+  _data.position.x = worldPose.Pos().X();
+  _data.position.y = worldPose.Pos().Y();
+  _data.position.z = worldPose.Pos().Z();
 }
 
 //////////////////////////////////////////////////
@@ -156,13 +156,13 @@ OptixDirectionalLight::~OptixDirectionalLight()
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OptixDirectionalLight::GetDirection() const
+math::Vector3d OptixDirectionalLight::GetDirection() const
 {
   return OptixConversions::ConvertVector(this->data.direction);
 }
 
 //////////////////////////////////////////////////
-void OptixDirectionalLight::SetDirection(const gazebo::math::Vector3 &_dir)
+void OptixDirectionalLight::SetDirection(const math::Vector3d &_dir)
 {
   this->data.direction = OptixConversions::ConvertVector(_dir);
 }
@@ -257,37 +257,37 @@ OptixSpotLight::~OptixSpotLight()
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OptixSpotLight::GetDirection() const
+math::Vector3d OptixSpotLight::GetDirection() const
 {
   return OptixConversions::ConvertVector(this->data.direction);
 }
 
 //////////////////////////////////////////////////
-void OptixSpotLight::SetDirection(const gazebo::math::Vector3 &_dir)
+void OptixSpotLight::SetDirection(const math::Vector3d &_dir)
 {
   this->data.direction = OptixConversions::ConvertVector(_dir);
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Angle OptixSpotLight::GetInnerAngle() const
+math::Angle OptixSpotLight::GetInnerAngle() const
 {
-  return gazebo::math::Angle(this->data.spot.outerAngle);
+  return math::Angle(this->data.spot.outerAngle);
 }
 
 //////////////////////////////////////////////////
-void OptixSpotLight::SetInnerAngle(const gazebo::math::Angle &_angle)
+void OptixSpotLight::SetInnerAngle(const math::Angle &_angle)
 {
   this->data.spot.outerAngle = _angle.Radian();
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Angle OptixSpotLight::GetOuterAngle() const
+math::Angle OptixSpotLight::GetOuterAngle() const
 {
-  return gazebo::math::Angle(this->data.spot.outerAngle);
+  return math::Angle(this->data.spot.outerAngle);
 }
 
 //////////////////////////////////////////////////
-void OptixSpotLight::SetOuterAngle(const gazebo::math::Angle &_angle)
+void OptixSpotLight::SetOuterAngle(const math::Angle &_angle)
 {
   this->data.spot.outerAngle = _angle.Radian();
 }

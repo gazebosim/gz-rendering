@@ -38,9 +38,9 @@ namespace ignition
 
       public: virtual unsigned int GetChildCount() const;
 
-      public: virtual gazebo::math::Pose GetLocalPose() const;
+      public: virtual math::Pose3d GetLocalPose() const;
 
-      public: virtual void SetLocalPose(const gazebo::math::Pose &_pose);
+      public: virtual void SetLocalPose(const math::Pose3d &_pose);
 
       public: virtual bool HasChild(ConstNodePtr _child) const;
 
@@ -92,27 +92,27 @@ namespace ignition
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
                   bool unique = true);
 
-      public: virtual gazebo::math::Vector3 GetLocalScale() const = 0;
+      public: virtual math::Vector3d GetLocalScale() const = 0;
 
       public: virtual void SetLocalScale(double _scale);
 
       public: virtual void SetLocalScale(double _x, double _y, double _z);
 
-      public: virtual void SetLocalScale(const gazebo::math::Vector3 &_scale);
+      public: virtual void SetLocalScale(const math::Vector3d &_scale);
 
-      public: virtual gazebo::math::Vector3 GetWorldScale() const;
+      public: virtual math::Vector3d GetWorldScale() const;
 
       public: virtual void SetWorldScale(double _scale);
 
       public: virtual void SetWorldScale(double _x, double _y, double _z);
 
-      public: virtual void SetWorldScale(const gazebo::math::Vector3 &_scale);
+      public: virtual void SetWorldScale(const math::Vector3d &_scale);
 
       public: virtual void Scale(double _scale);
 
       public: virtual void Scale(double _x, double _y, double _z);
 
-      public: virtual void Scale(const gazebo::math::Vector3 &_scale);
+      public: virtual void Scale(const math::Vector3d &_scale);
 
       public: virtual bool GetInheritScale() const = 0;
 
@@ -137,7 +137,7 @@ namespace ignition
       protected: virtual bool DetachGeometry(GeometryPtr _geometry) = 0;
 
       protected: virtual void SetLocalScaleImpl(
-                     const gazebo::math::Vector3 &_scale) = 0;
+                     const math::Vector3d &_scale) = 0;
     };
 
     //////////////////////////////////////////////////
@@ -154,21 +154,21 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Pose BaseVisual<T>::GetLocalPose() const
+    math::Pose3d BaseVisual<T>::GetLocalPose() const
     {
-      gazebo::math::Pose rawPose = this->GetRawLocalPose();
-      gazebo::math::Vector3 scale = this->GetLocalScale();
-      rawPose.pos += rawPose.rot * (scale * this->origin);
+      math::Pose3d rawPose = this->GetRawLocalPose();
+      math::Vector3d scale = this->GetLocalScale();
+      rawPose.Pos() += rawPose.Rot() * (scale * this->origin);
       return rawPose;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetLocalPose(const gazebo::math::Pose &_pose)
+    void BaseVisual<T>::SetLocalPose(const math::Pose3d &_pose)
     {
-      gazebo::math::Pose rawPose = _pose;
-      gazebo::math::Vector3 scale = this->GetLocalScale();
-      rawPose.pos -= rawPose.rot * (scale * this->origin);
+      math::Pose3d rawPose = _pose;
+      math::Vector3d scale = this->GetLocalScale();
+      rawPose.Pos() -= rawPose.Rot() * (scale * this->origin);
       this->SetRawLocalPose(rawPose);
     }
 
@@ -381,30 +381,30 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::SetLocalScale(double _scale)
     {
-      this->SetLocalScale(gazebo::math::Vector3(_scale, _scale, _scale));
+      this->SetLocalScale(math::Vector3d(_scale, _scale, _scale));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::SetLocalScale(double _x, double _y, double _z)
     {
-      this->SetLocalScale(gazebo::math::Vector3(_x, _y, _z));
+      this->SetLocalScale(math::Vector3d(_x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetLocalScale(const gazebo::math::Vector3 &_scale)
+    void BaseVisual<T>::SetLocalScale(const math::Vector3d &_scale)
     {
-      gazebo::math::Pose rawPose = this->GetLocalPose();
+      math::Pose3d rawPose = this->GetLocalPose();
       this->SetLocalScaleImpl(_scale);
       this->SetLocalPose(rawPose);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Vector3 BaseVisual<T>::GetWorldScale() const
+    math::Vector3d BaseVisual<T>::GetWorldScale() const
     {
-      gazebo::math::Vector3 scale = this->GetLocalScale();
+      math::Vector3d scale = this->GetLocalScale();
 
       if (!this->GetInheritScale() || !this->HasParent())
       {
@@ -418,21 +418,21 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::SetWorldScale(double _scale)
     {
-      this->SetWorldScale(gazebo::math::Vector3(_scale, _scale, _scale));
+      this->SetWorldScale(math::Vector3d(_scale, _scale, _scale));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::SetWorldScale(double _x, double _y, double _z)
     {
-      this->SetWorldScale(gazebo::math::Vector3(_x, _y, _z));
+      this->SetWorldScale(math::Vector3d(_x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetWorldScale(const gazebo::math::Vector3 &_scale)
+    void BaseVisual<T>::SetWorldScale(const math::Vector3d &_scale)
     {
-      gazebo::math::Vector3 currentScale = this->GetWorldScale();
+      math::Vector3d currentScale = this->GetWorldScale();
       this->SetLocalScale(_scale / currentScale);
     }
 
@@ -440,19 +440,19 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::Scale(double _scale)
     {
-      this->Scale(gazebo::math::Vector3(_scale, _scale, _scale));
+      this->Scale(math::Vector3d(_scale, _scale, _scale));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::Scale(double _x, double _y, double _z)
     {
-      this->Scale(gazebo::math::Vector3(_x, _y, _z));
+      this->Scale(math::Vector3d(_x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::Scale(const gazebo::math::Vector3 &_scale)
+    void BaseVisual<T>::Scale(const math::Vector3d &_scale)
     {
       this->SetLocalScale(_scale * this->GetLocalScale());
     }

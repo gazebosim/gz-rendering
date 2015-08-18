@@ -77,9 +77,9 @@ namespace ignition
 
       public: virtual ~OptixDirectionalLight();
 
-      public: virtual gazebo::math::Vector3 GetDirection() const;
+      public: virtual math::Vector3d GetDirection() const;
 
-      public: virtual void SetDirection(const gazebo::math::Vector3 &_dir);
+      public: virtual void SetDirection(const math::Vector3d &_dir);
 
       public: virtual OptixDirectionalLightData GetData() const;
 
@@ -125,17 +125,17 @@ namespace ignition
 
       public: virtual ~OptixSpotLight();
 
-      public: virtual gazebo::math::Vector3 GetDirection() const;
+      public: virtual math::Vector3d GetDirection() const;
 
-      public: virtual void SetDirection(const gazebo::math::Vector3 &_dir);
+      public: virtual void SetDirection(const math::Vector3d &_dir);
 
-      public: virtual gazebo::math::Angle GetInnerAngle() const;
+      public: virtual math::Angle GetInnerAngle() const;
 
-      public: virtual void SetInnerAngle(const gazebo::math::Angle &_angle);
+      public: virtual void SetInnerAngle(const math::Angle &_angle);
 
-      public: virtual gazebo::math::Angle GetOuterAngle() const;
+      public: virtual math::Angle GetOuterAngle() const;
 
-      public: virtual void SetOuterAngle(const gazebo::math::Angle &_angle);
+      public: virtual void SetOuterAngle(const math::Angle &_angle);
 
       public: virtual double GetFalloff() const;
 

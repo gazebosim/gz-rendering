@@ -15,8 +15,9 @@
  *
  */
 #include <iostream>
-#include "gazebo/common/Console.hh"
-#include "gazebo/transport/TransportIface.hh"
+#include <gazebo/common/Console.hh>
+#include <gazebo/transport/TransportIface.hh>
+
 #include "ignition/rendering/rendering.hh"
 #include "CameraWindow.hh"
 

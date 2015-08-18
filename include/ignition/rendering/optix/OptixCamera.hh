@@ -36,9 +36,9 @@ namespace ignition
 
       public: virtual void SetImageFormat(PixelFormat _format);
 
-      public: virtual gazebo::math::Angle GetHFOV() const;
+      public: virtual math::Angle GetHFOV() const;
 
-      public: virtual void SetHFOV(const gazebo::math::Angle &_angle);
+      public: virtual void SetHFOV(const math::Angle &_angle);
 
       public: virtual double GetAspectRatio() const;
 
@@ -74,7 +74,7 @@ namespace ignition
 
       protected: unsigned int imageHeight;
 
-      protected: gazebo::math::Angle xFieldOfView;
+      protected: math::Angle xFieldOfView;
 
       protected: unsigned int aspectRatio;
 

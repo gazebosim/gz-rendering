@@ -22,7 +22,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 const char *PixelUtil::names[PF_COUNT] =
-    { 
+    {
       "UNKNOWN",
       "L8",
       "R8G8B8",
@@ -35,7 +35,7 @@ const char *PixelUtil::names[PF_COUNT] =
 
 //////////////////////////////////////////////////
 const unsigned char PixelUtil::channelCounts[PF_COUNT] =
-    { 
+    {
       0, // UKNOWN
       1, // L8
       3, // R8G8B8
@@ -48,7 +48,7 @@ const unsigned char PixelUtil::channelCounts[PF_COUNT] =
 
 //////////////////////////////////////////////////
 const unsigned char PixelUtil::channelByteCounts[PF_COUNT] =
-    { 
+    {
       0, // UKNOWN
       1, // L8
       1, // R8G8B8

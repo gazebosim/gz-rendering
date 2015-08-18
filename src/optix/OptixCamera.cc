@@ -56,13 +56,13 @@ void OptixCamera::SetImageFormat(PixelFormat /*_format*/)
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Angle OptixCamera::GetHFOV() const
+math::Angle OptixCamera::GetHFOV() const
 {
   return this->xFieldOfView;
 }
 
 //////////////////////////////////////////////////
-void OptixCamera::SetHFOV(const gazebo::math::Angle &_angle)
+void OptixCamera::SetHFOV(const math::Angle &_angle)
 {
   this->xFieldOfView = _angle;
   this->poseDirty = true;
@@ -137,14 +137,14 @@ void OptixCamera::WritePoseToDeviceImpl()
 {
   BaseCamera::WritePoseToDeviceImpl();
 
-  gazebo::math::Pose worldPose = this->GetWorldPose();
-  gazebo::math::Vector3 pos = worldPose.pos;
-  gazebo::math::Matrix3 rot = worldPose.rot.GetAsMatrix3();
+  math::Pose3d worldPose = this->GetWorldPose();
+  math::Vector3d pos = worldPose.Pos();
+  math::Matrix3d rot(worldPose.Rot());
 
-  float3 eye = make_float3(pos.x, pos.y, pos.z);
-  float3   u = make_float3(-rot[0][1], -rot[1][1], -rot[2][1]);
-  float3   v = make_float3(-rot[0][2], -rot[1][2], -rot[2][2]);
-  float3   w = make_float3( rot[0][0],  rot[1][0],  rot[2][0]);
+  float3 eye = make_float3(pos.X(), pos.Y(), pos.Z());
+  float3   u = make_float3(-rot(0, 1), -rot(1, 1), -rot(2, 1));
+  float3   v = make_float3(-rot(0, 2), -rot(1, 2), -rot(2, 2));
+  float3   w = make_float3( rot(0, 0),  rot(1, 0),  rot(2, 0));
 
   // TODO: handle auto and manual aspect-ratio
   // v *= 1 / this->aspectRatio;

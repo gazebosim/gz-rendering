@@ -52,7 +52,7 @@ void OptixGeometry::SetParent(OptixVisualPtr _parent)
 }
 
 //////////////////////////////////////////////////
-void OptixGeometry::SetScale(gazebo::math::Vector3 _scale)
+void OptixGeometry::SetScale(math::Vector3d _scale)
 {
   optix::GeometryGroup optixGeomGroup = this->GetOptixGeometryGroup();
   unsigned int count = optixGeomGroup->getChildCount();
@@ -60,6 +60,6 @@ void OptixGeometry::SetScale(gazebo::math::Vector3 _scale)
   for (unsigned int i = 0; i < count; ++i)
   {
     optix::GeometryInstance optixGeomInstance = optixGeomGroup->getChild(i);
-    optixGeomInstance["scale"]->setFloat(_scale.x, _scale.y, _scale.z);
+    optixGeomInstance["scale"]->setFloat(_scale.X(), _scale.Y(), _scale.Z());
   }
 }

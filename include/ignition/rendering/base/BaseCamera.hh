@@ -51,7 +51,7 @@ namespace ignition
 
       public: virtual unsigned int GetImageMemorySize() const;
 
-      public: virtual void SetHFOV(const gazebo::math::Angle &_angle) = 0;
+      public: virtual void SetHFOV(const math::Angle &_angle) = 0;
 
       public: virtual void SetAspectRatio(double _ratio) = 0;
 
@@ -224,8 +224,8 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::Reset()
     {
-      gazebo::math::Angle fov;
-      fov.SetFromDegree(80);
+      math::Angle fov;
+      fov.Degree(80);
       this->SetImageWidth(1);
       this->SetImageHeight(1);
       this->SetImageFormat(PF_R8G8B8);

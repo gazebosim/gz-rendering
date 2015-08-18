@@ -14,12 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_SCENEMANAGERPRIVATE_HH 
-#define _IGNITION_RENDERING_SCENEMANAGERPRIVATE_HH 
+#ifndef _IGNITION_RENDERING_SCENEMANAGERPRIVATE_HH
+#define _IGNITION_RENDERING_SCENEMANAGERPRIVATE_HH
 
 #include <string>
+
+#include <ignition/math/Pose3.hh>
+
 #include "gazebo/common/Color.hh"
-#include "gazebo/math/Pose.hh"
 #include "gazebo/msgs/msgs.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ShaderType.hh"
@@ -349,11 +351,11 @@ namespace ignition
 
       protected: static gazebo::common::Color Convert(const gazebo::msgs::Color &_colorMsg);
 
-      protected: static gazebo::math::Pose Convert(const gazebo::msgs::Pose &_poseMsg);
+      protected: static math::Pose3d Convert(const gazebo::msgs::Pose &_poseMsg);
 
-      protected: static gazebo::math::Vector3 Convert(const gazebo::msgs::Vector3d &_vecMsg);
+      protected: static math::Vector3d Convert(const gazebo::msgs::Vector3d &_vecMsg);
 
-      protected: static gazebo::math::Quaternion Convert(
+      protected: static math::Quaterniond Convert(
                      const gazebo::msgs::Quaternion &_quatMsg);
 
       protected: static ShaderType Convert(gazebo::msgs::Material::ShaderType _type);

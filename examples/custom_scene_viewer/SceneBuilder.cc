@@ -186,7 +186,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     {
       MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
       // mat->SetTexture("/home/mike/Development/ign-rendering/build/examples/custom_scene_viewer/media/tiles.jpg");
-      
+
 
       mat->SetTexture("./examples/custom_scene_viewer/media/tiles.jpg");
       _scene->RegisterMaterial(childName, mat);
@@ -282,8 +282,8 @@ void SimpleSceneBuilder::UpdateScene(ScenePtr _scene)
   double scale = cos(this->tick * 0.05);
 
   VisualPtr sphere = _scene->GetVisualByName(SPHERE);
-  gazebo::math::Pose pose = sphere->GetLocalPose();
-  pose.pos.z = 0.6 + scale * 0.1;
+  math::Pose3d pose = sphere->GetLocalPose();
+  pose.Pos().Z(0.6 + scale * 0.1);
   sphere->SetLocalPose(pose);
 }
 
@@ -457,7 +457,7 @@ void ShadowSceneBuilder::BuildScene(ScenePtr _scene)
 {
   SimpleSceneBuilder::BuildScene(_scene);
   _scene->DestroyLightByName(LIGHT);
-  
+
   PointLightPtr light = _scene->CreatePointLight();
   light->SetLocalPosition(5.5, -2.0, 4.75);
   light->SetDiffuseColor(1.0, 1.0, 1.0);
@@ -473,11 +473,11 @@ void ShadowSceneBuilder::AddLight(PointLightPtr _light, ScenePtr _scene)
   double step = (this->n == 1) ? 0 : this->dist / (this->n - 1);
   double factor = 1.0 / total;
 
-  gazebo::math::Vector3 position = _light->GetLocalPosition();
+  math::Vector3d position = _light->GetLocalPosition();
   double offset = (this->n == 1) ? 0 : this->dist / 2;
-  double x0 = position.x - offset;
-  double y0 = position.y - offset;
-  double z0 = position.z - offset;
+  double x0 = position.X() - offset;
+  double y0 = position.Y() - offset;
+  double z0 = position.Z() - offset;
 
   gazebo::common::Color diffuse;
   diffuse = _light->GetDiffuseColor();
@@ -493,10 +493,10 @@ void ShadowSceneBuilder::AddLight(PointLightPtr _light, ScenePtr _scene)
     {
       for (unsigned int k = 0; k < this->n; ++k)
       {
-        gazebo::math::Vector3 subPosition;
-        subPosition.x = i * step + x0;
-        subPosition.y = j * step + y0;
-        subPosition.z = k * step + z0;
+        math::Vector3d subPosition;
+        subPosition.X(i * step + x0);
+        subPosition.Y(j * step + y0);
+        subPosition.Z(k * step + z0);
 
         PointLightPtr sublight = _scene->CreatePointLight();
         sublight->SetLocalPosition(subPosition);

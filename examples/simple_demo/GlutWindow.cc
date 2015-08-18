@@ -17,8 +17,15 @@
 #include "GlutWindow.hh"
 
 #include <boost/make_shared.hpp>
-#include <GL/glut.h>
-#include <GL/gl.h>
+
+#if __APPLE__
+  #include <OpenGL/gl.h>
+  #include <GLUT/glut.h>
+#else
+  #include <GL/glew.h>
+  #include <GL/gl.h>
+  #include <GL/glut.h>
+#endif
 
 #include "gazebo/common/Image.hh"
 #include "gazebo/common/Console.hh"
@@ -26,7 +33,9 @@
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Scene.hh"
 
-#include <GL/glx.h>
+#if not (__APPLE__ || _WIN32)
+  #include <GL/glx.h>
+#endif
 
 #define KEY_ESC 27
 #define KEY_TAB  9
@@ -42,30 +51,37 @@ unsigned int g_cameraIndex = 0;
 gz::ImagePtr g_image;
 
 bool g_initContext = false;
-GLXContext g_context;
-Display *g_display;
-GLXDrawable g_drawable;
-GLXContext g_glutContext;
-Display *g_glutDisplay;
-GLXDrawable g_glutDrawable;
+
+#if not (__APPLE__ || _WIN32)
+  GLXContext g_context;
+  Display *g_display;
+  GLXDrawable g_drawable;
+  GLXContext g_glutContext;
+  Display *g_glutDisplay;
+  GLXDrawable g_glutDrawable;
+#endif
 
 double g_offset = 0.0;
 
 //////////////////////////////////////////////////
 void GlutRun(std::vector<gz::CameraPtr> _cameras)
 {
+#if not (__APPLE__ || _WIN32)
   g_context = glXGetCurrentContext();
   g_display = glXGetCurrentDisplay();
   g_drawable = glXGetCurrentDrawable();
+#endif
 
   g_cameras = _cameras;
   GlutInitCamera(_cameras[0]);
   GlutInitContext();
   GlutPrintUsage();
 
+#if not (__APPLE__ || _WIN32)
   g_glutDisplay = glXGetCurrentDisplay();
   g_glutDrawable = glXGetCurrentDrawable();
   g_glutContext = glXGetCurrentContext();
+#endif
 
   glutMainLoop();
 }
@@ -84,14 +100,18 @@ void UpdateCameras()
 //////////////////////////////////////////////////
 void GlutDisplay()
 {
+#if not (__APPLE__ || _WIN32)
   if (g_display)
   {
     glXMakeCurrent(g_display, g_drawable, g_context);
   }
+#endif
 
   g_cameras[g_cameraIndex]->Capture(*g_image);
 
+#if not (__APPLE__ || _WIN32)
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
+#endif
 
   unsigned char *data = g_image->GetData<unsigned char>();
 

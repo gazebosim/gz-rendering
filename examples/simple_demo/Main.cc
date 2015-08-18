@@ -19,10 +19,17 @@
 
 #include "gazebo/common/Console.hh"
 #include "ignition/rendering/rendering.hh"
+#include "ignition/rendering/optix/OptixIncludes.hh"
 #include "GlutWindow.hh"
 
-#include <GL/glut.h>
-#include <GL/gl.h>
+#if __APPLE__
+  #include <OpenGL/gl.h>
+  #include <GLUT/glut.h>
+#else
+  #include <GL/glew.h>
+  #include <GL/gl.h>
+  #include <GL/glut.h>
+#endif
 
 using namespace ignition;
 using namespace rendering;
@@ -151,15 +158,23 @@ int main(int, char**)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back("ogre");
-  engineNames.push_back("optix");
-
-  for (auto engineName : engineNames)
+  try
   {
-    CameraPtr camera = CreateCamera(engineName);
-    cameras.push_back(camera);
+    // engineNames.push_back("ogre");
+    engineNames.push_back("optix");
+
+    for (auto engineName : engineNames)
+    {
+      CameraPtr camera = CreateCamera(engineName);
+      cameras.push_back(camera);
+    }
+
+    GlutRun(cameras);
+  }
+  catch (optix::Exception &ex)
+  {
+    std::cout << ex.what() << std::endl;
   }
 
-  GlutRun(cameras);
   return 0;
 }

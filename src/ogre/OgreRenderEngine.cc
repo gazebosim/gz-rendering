@@ -35,7 +35,7 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
 
-#if not (Q_OS_MAC || _WIN32)
+#if not (__APPLE__ || _WIN32)
   #include <X11/Xlib.h>
   #include <X11/Xutil.h>
   #include <GL/glx.h>
@@ -53,7 +53,7 @@ OgreRenderEngine::OgreRenderEngine() :
   dummyDisplay(0),
   dummyContext(0)
 {
-#if not (Q_OS_MAC || _WIN32)
+#if not (__APPLE__ || _WIN32)
   this->dummyDisplay = NULL;
   this->dummyWindowId = 0;
 #endif
@@ -76,7 +76,7 @@ bool OgreRenderEngine::Fini()
     this->scenes->RemoveAll();
   }
 
-#if not (Q_OS_MAC || _WIN32)
+#if not (__APPLE__ || _WIN32)
   if (this->dummyDisplay)
   {
     Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -296,7 +296,7 @@ void OgreRenderEngine::CreateLogger()
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateContext()
 {
-#if not (Q_OS_MAC || _WIN32)
+#if not (__APPLE__ || _WIN32)
   // create X11 display
   this->dummyDisplay = XOpenDisplay(0);
   Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -561,7 +561,7 @@ void OgreRenderEngine::CreateWindow()
   Ogre::RenderWindow *window = NULL;
 
   // Mac and Windows *must* use externalWindow handle.
-#if defined(Q_OS_MAC) || defined(_MSC_VER)
+#if defined(__APPLE__) || defined(_MSC_VER)
   params["externalWindowHandle"] = std::to_string(this->dummyWindowId);
 #else
   params["parentWindowHandle"] = std::to_string(this->dummyWindowId);
@@ -569,13 +569,15 @@ void OgreRenderEngine::CreateWindow()
   params["FSAA"] = "4";
   params["stereoMode"] = "Frame Sequential";
 
+  // TODO: determine api without qt
+
   // Set the macAPI for Ogre based on the Qt implementation
-#ifdef QT_MAC_USE_COCOA
+// #ifdef QT_MAC_USE_COCOA
   params["macAPI"] = "cocoa";
   params["macAPICocoaUseNSView"] = "true";
-#else
-  params["macAPI"] = "carbon";
-#endif
+// #else
+//   params["macAPI"] = "carbon";
+// #endif
 
   // Hide window if dimensions are less than or equal to one.
   params["border"] = "none";

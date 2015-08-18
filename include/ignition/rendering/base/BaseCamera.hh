@@ -74,6 +74,8 @@ namespace ignition
 
       protected: virtual void *CreateImageBuffer() const;
 
+      protected: virtual void Load();
+
       protected: virtual void Reset();
 
       protected: virtual RenderTexturePtr GetRenderTexture() const = 0;
@@ -218,6 +220,13 @@ namespace ignition
       // TODO: determine proper type
       unsigned int size = this->GetImageMemorySize();
       return new unsigned char *[size];
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::Load()
+    {
+      T::Load();
     }
 
     //////////////////////////////////////////////////

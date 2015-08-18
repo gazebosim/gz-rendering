@@ -17,16 +17,24 @@
 #include "DemoWindow.hh"
 #include <ctime>
 #include <boost/make_shared.hpp>
-#include <GL/glew.h>
-#include <GL/glut.h>
-#include <GL/gl.h>
+
+#if __APPLE__
+  #include <OpenGL/gl.h>
+  #include <GLUT/glut.h>
+#else
+  #include <GL/glew.h>
+  #include <GL/gl.h>
+  #include <GL/glut.h>
+#endif
 
 #include "gazebo/common/Image.hh"
 #include "gazebo/common/Console.hh"
 #include "ignition/rendering/rendering.hh"
 #include "ManualSceneDemo.hh"
 
-#include <GL/glx.h>
+#if not (__APPLE__ || _WIN32)
+  #include <GL/glx.h>
+#endif
 
 #define KEY_ESC 27
 #define KEY_TAB  9
@@ -43,12 +51,15 @@ unsigned int imgw = 0;
 unsigned int imgh = 0;
 
 bool g_initContext = false;
-GLXContext g_context;
-Display *g_display;
-GLXDrawable g_drawable;
-GLXContext g_glutContext;
-Display *g_glutDisplay;
-GLXDrawable g_glutDrawable;
+
+#if not (__APPLE__ || _WIN32)
+  GLXContext g_context;
+  Display *g_display;
+  GLXDrawable g_drawable;
+  GLXContext g_glutContext;
+  Display *g_glutDisplay;
+  GLXDrawable g_glutDrawable;
+#endif
 
 double g_offset = 0.0;
 double g_fps = 0.0;
@@ -62,9 +73,11 @@ clock_t g_prevTime;
 //////////////////////////////////////////////////
 void rendering::GlutRun(ManualSceneDemoPtr _demo)
 {
+#if not (__APPLE__ || _WIN32)
   g_context = glXGetCurrentContext();
   g_display = glXGetCurrentDisplay();
   g_drawable = glXGetCurrentDrawable();
+#endif
 
   g_prevTime = clock();
   g_demo = _demo;
@@ -72,9 +85,11 @@ void rendering::GlutRun(ManualSceneDemoPtr _demo)
   GlutInitContext();
   GlutPrintUsage();
 
+#if not (__APPLE__ || _WIN32)
   g_glutDisplay = glXGetCurrentDisplay();
   g_glutDrawable = glXGetCurrentDrawable();
   g_glutContext = glXGetCurrentContext();
+#endif
 
   glutMainLoop();
 }
@@ -82,17 +97,21 @@ void rendering::GlutRun(ManualSceneDemoPtr _demo)
 //////////////////////////////////////////////////
 void rendering::GlutDisplay()
 {
+#if not (__APPLE__ || _WIN32)
   if (g_display)
   {
     glXMakeCurrent(g_display, g_drawable, g_context);
   }
+#endif
 
   g_demo->Update();
   CameraPtr camera = g_demo->GetCurrentCamera();
 
   camera->Capture(*g_image);
 
+#if not (__APPLE__ || _WIN32)
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
+#endif
 
   unsigned char *data = g_image->GetData<unsigned char>();
 
@@ -117,10 +136,12 @@ void rendering::GlutIdle()
 //////////////////////////////////////////////////
 void rendering::GlutKeyboard(unsigned char _key, int, int)
 {
+#if not (__APPLE__ || _WIN32)
   if (g_display)
   {
     glXMakeCurrent(g_display, g_drawable, g_context);
   }
+#endif
 
   switch (_key)
   {
@@ -158,7 +179,9 @@ void rendering::GlutKeyboard(unsigned char _key, int, int)
     g_demo->SelectScene(index);
   }
 
+#if not (__APPLE__ || _WIN32)
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -190,7 +213,10 @@ void rendering::GlutInitContext()
   glutIdleFunc(GlutIdle);
   glutKeyboardFunc(GlutKeyboard);
   glutReshapeFunc(GlutReshape);
+
+#if not (__APPLE__ || _WIN32)
   glewInit();
+#endif
 }
 
 //////////////////////////////////////////////////

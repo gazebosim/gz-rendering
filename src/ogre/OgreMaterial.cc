@@ -86,13 +86,21 @@ void OgreMaterial::SetSpecular(const gazebo::common::Color &_color)
 //////////////////////////////////////////////////
 gazebo::common::Color OgreMaterial::GetEmissive() const
 {
+#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
+  return this->emissiveColor;
+#else
   return OgreConversions::Convert(this->ogrePass->getEmissive());
+#endif
 }
 
 //////////////////////////////////////////////////
 void OgreMaterial::SetEmissive(const gazebo::common::Color &_color)
 {
+#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
+  this->emissiveColor = _color;
+#else
   this->ogrePass->setEmissive(OgreConversions::Convert(_color));
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -249,7 +257,7 @@ void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
 //////////////////////////////////////////////////
 void OgreMaterial::SetTextureImpl(Ogre::TexturePtr _texture)
 {
-  this->ogreTexState->setTexture(_texture);
+  this->ogreTexState->setTextureName(_texture->getName());
   this->UpdateColorOperation();
 }
 

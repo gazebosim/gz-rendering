@@ -134,7 +134,7 @@ namespace ignition
     void BaseNode<T>::SetLocalPose(const math::Pose3d &_pose)
     {
       math::Pose3d pose = _pose;
-      pose.Pos() -= pose.Pos() - pose.Rot() * this->origin;
+      pose.Pos() = pose.Pos() - pose.Rot() * this->origin;
       this->SetRawLocalPose(pose);
     }
 

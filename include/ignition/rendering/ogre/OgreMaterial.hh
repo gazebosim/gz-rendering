@@ -116,6 +116,10 @@ namespace ignition
 
       protected: Ogre::String ogreGroup;
 
+#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
+      protected: gazebo::common::Color emissiveColor;
+#endif
+
       protected: double transparency;
 
       protected: double reflectivity;

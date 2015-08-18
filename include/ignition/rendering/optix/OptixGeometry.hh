@@ -40,7 +40,7 @@ namespace ignition
 
       protected: virtual void SetParent(OptixVisualPtr _parent);
 
-      protected: virtual void SetScale(gazebo::math::Vector3 _scale);
+      protected: virtual void SetScale(math::Vector3d _scale);
 
       protected: OptixVisualPtr parent;
 

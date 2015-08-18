@@ -20,8 +20,9 @@
 #include <GL/glut.h>
 #include <GL/gl.h>
 
-#include "gazebo/common/Image.hh"
-#include "gazebo/common/Console.hh"
+#include <gazebo/common/Image.hh>
+#include <gazebo/common/Console.hh>
+
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Scene.hh"

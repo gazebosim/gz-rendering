@@ -184,7 +184,8 @@ endif()
 # Check if warning options are avaliable for the compiler and return WARNING_CXX_FLAGS variable
 filter_valid_compiler_warnings(-Wall -Wextra -Wno-long-long
   -Wno-unused-value -Wno-unused-value -Wno-unused-value -Wno-unused-value
-  -Wfloat-equal -Wshadow -Winit-self -Wswitch-default
+  -Winit-self -Wswitch-default
+#  -Wfloat-equal -Wshadow -Winit-self -Wswitch-default
   -Wmissing-include-dirs -pedantic)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}${WARNING_CXX_FLAGS}")
 

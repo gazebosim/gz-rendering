@@ -39,59 +39,59 @@ namespace ignition
 
       public: virtual void RemoveParent();
 
-      public: virtual gazebo::math::Pose GetLocalPose() const;
+      public: virtual math::Pose3d GetLocalPose() const;
 
-      public: virtual void SetLocalPose(const gazebo::math::Pose &_pose);
+      public: virtual void SetLocalPose(const math::Pose3d &_pose);
 
-      public: virtual gazebo::math::Vector3 GetLocalPosition() const;
+      public: virtual math::Vector3d GetLocalPosition() const;
 
       public: virtual void SetLocalPosition(double _x, double _y, double _z);
 
-      public: virtual void SetLocalPosition(const gazebo::math::Vector3 &_position);
+      public: virtual void SetLocalPosition(const math::Vector3d &_position);
 
-      public: virtual gazebo::math::Quaternion GetLocalRotation() const;
+      public: virtual math::Quaterniond GetLocalRotation() const;
 
       public: virtual void SetLocalRotation(double _r, double _p, double _y);
 
       public: virtual void SetLocalRotation(double _w, double _x, double _y,
                   double _z);
 
-      public: virtual void SetLocalRotation(const gazebo::math::Quaternion &_rotation);
+      public: virtual void SetLocalRotation(const math::Quaterniond &_rotation);
 
-      public: virtual gazebo::math::Pose GetWorldPose() const;
+      public: virtual math::Pose3d GetWorldPose() const;
 
-      public: virtual void SetWorldPose(const gazebo::math::Pose &_pose);
+      public: virtual void SetWorldPose(const math::Pose3d &_pose);
 
-      public: virtual gazebo::math::Vector3 GetWorldPosition() const;
+      public: virtual math::Vector3d GetWorldPosition() const;
 
       public: virtual void SetWorldPosition(double _x, double _y, double _z);
 
-      public: virtual void SetWorldPosition(const gazebo::math::Vector3 &_position);
+      public: virtual void SetWorldPosition(const math::Vector3d &_position);
 
-      public: virtual gazebo::math::Quaternion GetWorldRotation() const;
+      public: virtual math::Quaterniond GetWorldRotation() const;
 
       public: virtual void SetWorldRotation(double _r, double _p, double _y);
 
       public: virtual void SetWorldRotation(double _w, double _x, double _y,
                   double _z);
 
-      public: virtual void SetWorldRotation(const gazebo::math::Quaternion &_rotation);
+      public: virtual void SetWorldRotation(const math::Quaterniond &_rotation);
 
-      public: virtual gazebo::math::Pose WorldToLocal(const gazebo::math::Pose &_pose) const;
+      public: virtual math::Pose3d WorldToLocal(const math::Pose3d &_pose) const;
 
-      public: virtual gazebo::math::Vector3 GetOrigin() const;
+      public: virtual math::Vector3d GetOrigin() const;
 
       public: virtual void SetOrigin(double _x, double _y, double _z);
 
-      public: virtual void SetOrigin(const gazebo::math::Vector3 &_origin);
+      public: virtual void SetOrigin(const math::Vector3d &_origin);
 
       public: virtual void Destroy();
 
-      protected: virtual gazebo::math::Pose GetRawLocalPose() const = 0;
+      protected: virtual math::Pose3d GetRawLocalPose() const = 0;
 
-      protected: virtual void SetRawLocalPose(const gazebo::math::Pose &_pose) = 0;
+      protected: virtual void SetRawLocalPose(const math::Pose3d &_pose) = 0;
 
-      protected: gazebo::math::Vector3 origin;
+      protected: math::Vector3d origin;
     };
 
     //////////////////////////////////////////////////
@@ -122,57 +122,57 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Pose BaseNode<T>::GetLocalPose() const
+    math::Pose3d BaseNode<T>::GetLocalPose() const
     {
-      gazebo::math::Pose pose = this->GetRawLocalPose();
-      pose.pos += pose.rot * this->origin;
+      math::Pose3d pose = this->GetRawLocalPose();
+      pose.Pos() += pose.Rot() * this->origin;
       return pose;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseNode<T>::SetLocalPose(const gazebo::math::Pose &_pose)
+    void BaseNode<T>::SetLocalPose(const math::Pose3d &_pose)
     {
-      gazebo::math::Pose pose = _pose;
-      pose.pos -= pose.rot * this->origin;
+      math::Pose3d pose = _pose;
+      pose.Pos() -= pose.Pos() - pose.Rot() * this->origin;
       this->SetRawLocalPose(pose);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Vector3 BaseNode<T>::GetLocalPosition() const
+    math::Vector3d BaseNode<T>::GetLocalPosition() const
     {
-      return this->GetLocalPose().pos;
+      return this->GetLocalPose().Pos();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseNode<T>::SetLocalPosition(double _x, double _y, double _z)
     {
-      this->SetLocalPosition(gazebo::math::Vector3(_x, _y, _z));
+      this->SetLocalPosition(math::Vector3d(_x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseNode<T>::SetLocalPosition(const gazebo::math::Vector3 &_position)
+    void BaseNode<T>::SetLocalPosition(const math::Vector3d &_position)
     {
-      gazebo::math::Pose pose = this->GetLocalPose();
-      pose.pos = _position;
+      math::Pose3d pose = this->GetLocalPose();
+      pose.Pos() = _position;
       this->SetLocalPose(pose);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Quaternion BaseNode<T>::GetLocalRotation() const
+    math::Quaterniond BaseNode<T>::GetLocalRotation() const
     {
-      return this->GetLocalPose().rot;
+      return this->GetLocalPose().Rot();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseNode<T>::SetLocalRotation(double _r, double _p, double _y)
     {
-      this->SetLocalRotation(gazebo::math::Quaternion(_r, _p, _y));
+      this->SetLocalRotation(math::Quaterniond(_r, _p, _y));
     }
 
     //////////////////////////////////////////////////
@@ -180,24 +180,24 @@ namespace ignition
     void BaseNode<T>::SetLocalRotation(double _w, double _x, double _y,
         double _z)
     {
-      this->SetLocalRotation(gazebo::math::Quaternion(_w, _x, _y, _z));
+      this->SetLocalRotation(math::Quaterniond(_w, _x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseNode<T>::SetLocalRotation(const gazebo::math::Quaternion &_rotation)
+    void BaseNode<T>::SetLocalRotation(const math::Quaterniond &_rotation)
     {
-      gazebo::math::Pose pose = this->GetLocalPose();
-      pose.rot = _rotation;
+      math::Pose3d pose = this->GetLocalPose();
+      pose.Rot() = _rotation;
       this->SetLocalPose(pose);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Pose BaseNode<T>::GetWorldPose() const
+    math::Pose3d BaseNode<T>::GetWorldPose() const
     {
       VisualPtr parent = this->GetParent();
-      gazebo::math::Pose pose = this->GetLocalPose();
+      math::Pose3d pose = this->GetLocalPose();
 
       if (!parent)
       {
@@ -209,9 +209,9 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseNode<T>::SetWorldPose(const gazebo::math::Pose &_pose)
+    void BaseNode<T>::SetWorldPose(const math::Pose3d &_pose)
     {
-      gazebo::math::Pose pose = this->WorldToLocal(_pose);
+      math::Pose3d pose = this->WorldToLocal(_pose);
       this->SetLocalPose(pose);
     }
 
@@ -219,37 +219,37 @@ namespace ignition
     template <class T>
     void BaseNode<T>::SetWorldPosition(double _x, double _y, double _z)
     {
-      this->SetWorldPosition(gazebo::math::Vector3(_x, _y, _z));
+      this->SetWorldPosition(math::Vector3d(_x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Vector3 BaseNode<T>::GetWorldPosition() const
+    math::Vector3d BaseNode<T>::GetWorldPosition() const
     {
-      return this->GetWorldPose().pos;
+      return this->GetWorldPose().Pos();
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseNode<T>::SetWorldPosition(const gazebo::math::Vector3 &_position)
+    void BaseNode<T>::SetWorldPosition(const math::Vector3d &_position)
     {
-      gazebo::math::Pose pose = this->GetWorldPose();
-      pose.pos = _position;
+      math::Pose3d pose = this->GetWorldPose();
+      pose.Pos() =_position;
       this->SetWorldPose(pose);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Quaternion BaseNode<T>::GetWorldRotation() const
+    math::Quaterniond BaseNode<T>::GetWorldRotation() const
     {
-      return this->GetWorldPose().rot;
+      return this->GetWorldPose().Rot();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseNode<T>::SetWorldRotation(double _r, double _p, double _y)
     {
-      this->SetWorldRotation(gazebo::math::Quaternion(_r, _p, _y));
+      this->SetWorldRotation(math::Quaterniond(_r, _p, _y));
     }
 
     //////////////////////////////////////////////////
@@ -257,21 +257,21 @@ namespace ignition
     void BaseNode<T>::SetWorldRotation(double _w, double _x, double _y,
         double _z)
     {
-      this->SetWorldRotation(gazebo::math::Quaternion(_w, _x, _y, _z));
+      this->SetWorldRotation(math::Quaterniond(_w, _x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseNode<T>::SetWorldRotation(const gazebo::math::Quaternion &_rotation)
+    void BaseNode<T>::SetWorldRotation(const math::Quaterniond &_rotation)
     {
-      gazebo::math::Pose pose = this->GetWorldPose();
-      pose.rot = _rotation;
+      math::Pose3d pose = this->GetWorldPose();
+      pose.Rot() = _rotation;
       this->SetWorldPose(pose);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Pose BaseNode<T>::WorldToLocal(const gazebo::math::Pose &_pose) const
+    math::Pose3d BaseNode<T>::WorldToLocal(const math::Pose3d &_pose) const
     {
       VisualPtr parent = this->GetParent();
 
@@ -285,7 +285,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::math::Vector3 BaseNode<T>::GetOrigin() const
+    math::Vector3d BaseNode<T>::GetOrigin() const
     {
       return this->origin;
     }
@@ -294,12 +294,12 @@ namespace ignition
     template <class T>
     void BaseNode<T>::SetOrigin(double _x, double _y, double _z)
     {
-      this->SetOrigin(gazebo::math::Vector3(_x, _y, _z));
+      this->SetOrigin(math::Vector3d(_x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseNode<T>::SetOrigin(const gazebo::math::Vector3 &_origin)
+    void BaseNode<T>::SetOrigin(const math::Vector3d &_origin)
     {
       this->origin = _origin;
     }

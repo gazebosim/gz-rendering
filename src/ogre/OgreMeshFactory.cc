@@ -32,7 +32,7 @@
 using namespace ignition;
 using namespace rendering;
 
-//////////////////////////////////////////////////  
+//////////////////////////////////////////////////
 OgreMeshFactory::OgreMeshFactory(OgreScenePtr _scene) :
   scene(_scene)
 {
@@ -363,7 +363,7 @@ bool OgreMeshFactory::Validate(const MeshDescriptor &_desc)
     gzerr << "Cannot load null mesh" << std::endl;
     return false;
   }
-  
+
   if (_desc.mesh->GetSubMeshCount() == 0)
   {
     gzerr << "Cannot load mesh with zero sub-meshes" << std::endl;

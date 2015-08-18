@@ -35,7 +35,7 @@ OptixVisual::~OptixVisual()
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OptixVisual::GetLocalScale() const
+math::Vector3d OptixVisual::GetLocalScale() const
 {
   return this->scale;
 }
@@ -70,7 +70,7 @@ void OptixVisual::PreRender()
   BaseVisual::PreRender();
 
   // TODO: optimize this funtionality
-  gazebo::math::Vector3 worldScale = this->GetWorldScale();
+  math::Vector3d worldScale = this->GetWorldScale();
 
   for (unsigned int i = 0; i < this->GetGeometryCount(); ++i)
   {
@@ -113,12 +113,12 @@ bool OptixVisual::AttachChild(NodePtr _child)
 bool OptixVisual::DetachChild(NodePtr _child)
 {
   OptixNodePtr derived = boost::dynamic_pointer_cast<OptixNode>(_child);
-  
+
   if (!derived)
   {
     return false;
   }
-  
+
   this->optixGroup->removeChild(derived->GetOptixTransform());
   this->optixAccel->markDirty();
   return true;
@@ -165,7 +165,7 @@ bool OptixVisual::DetachGeometry(GeometryPtr _geometry)
 }
 
 //////////////////////////////////////////////////
-void OptixVisual::SetLocalScaleImpl(const gazebo::math::Vector3 &_scale)
+void OptixVisual::SetLocalScaleImpl(const math::Vector3d &_scale)
 {
   this->scale = _scale;
 }

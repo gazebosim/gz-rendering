@@ -46,13 +46,13 @@ void OgreCamera::SetImageFormat(PixelFormat _format)
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Angle OgreCamera::GetHFOV() const
+math::Angle OgreCamera::GetHFOV() const
 {
   return this->xfov;
 }
 
 //////////////////////////////////////////////////
-void OgreCamera::SetHFOV(const gazebo::math::Angle &_angle)
+void OgreCamera::SetHFOV(const math::Angle &_angle)
 {
   double width  = static_cast<double>(this->GetImageWidth());
   double height = static_cast<double>(this->GetImageHeight());

@@ -49,12 +49,12 @@ namespace ignition
       /// \brief return Optix Vector from Gazebo Vector3
       /// \param[in] _vector Gazebo vector
       /// \return Optix vector
-      public: static float3 ConvertVector(const gazebo::math::Vector3 &_vector);
+      public: static float3 ConvertVector(const math::Vector3d &_vector);
 
       /// \brief return gazebo Vector from optix Vector3
       /// \param[in] _vector Optix vector
       /// \return Gazebo vector
-      public: static gazebo::math::Vector3 ConvertVector(const float3 &_vector);
+      public: static math::Vector3d ConvertVector(const float3 &_vector);
     };
 
     /// \}

@@ -318,7 +318,7 @@ void OgreScene::CreateRootVisual()
 {
   // create unregistered visual
   this->rootVisual = OgreVisualPtr(new OgreVisual);
-  unsigned int rootId = this->CreateObjectId(); 
+  unsigned int rootId = this->CreateObjectId();
   std::string rootName = this->CreateObjectName(rootId, "_ROOT_");
 
   // check if root visual created successfully

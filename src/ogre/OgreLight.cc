@@ -190,13 +190,13 @@ OgreDirectionalLight::~OgreDirectionalLight()
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OgreDirectionalLight::GetDirection() const
+math::Vector3d OgreDirectionalLight::GetDirection() const
 {
   return OgreConversions::Convert(this->ogreLight->getDirection());
 }
 
 //////////////////////////////////////////////////
-void OgreDirectionalLight::SetDirection(const gazebo::math::Vector3 &_dir)
+void OgreDirectionalLight::SetDirection(const math::Vector3d &_dir)
 {
   this->ogreLight->setDirection(OgreConversions::Convert(_dir));
 }
@@ -228,37 +228,37 @@ OgreSpotLight::~OgreSpotLight()
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OgreSpotLight::GetDirection() const
+math::Vector3d OgreSpotLight::GetDirection() const
 {
   return OgreConversions::Convert(this->ogreLight->getDirection());
 }
 
 //////////////////////////////////////////////////
-void OgreSpotLight::SetDirection(const gazebo::math::Vector3 &_dir)
+void OgreSpotLight::SetDirection(const math::Vector3d &_dir)
 {
   this->ogreLight->setDirection(OgreConversions::Convert(_dir));
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Angle OgreSpotLight::GetInnerAngle() const
+math::Angle OgreSpotLight::GetInnerAngle() const
 {
   return OgreConversions::Convert(this->ogreLight->getSpotlightInnerAngle());
 }
 
 //////////////////////////////////////////////////
-void OgreSpotLight::SetInnerAngle(const gazebo::math::Angle &_angle)
+void OgreSpotLight::SetInnerAngle(const math::Angle &_angle)
 {
   this->ogreLight->setSpotlightInnerAngle(OgreConversions::Convert(_angle));
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Angle OgreSpotLight::GetOuterAngle() const
+math::Angle OgreSpotLight::GetOuterAngle() const
 {
   return OgreConversions::Convert(this->ogreLight->getSpotlightOuterAngle());
 }
 
 //////////////////////////////////////////////////
-void OgreSpotLight::SetOuterAngle(const gazebo::math::Angle &_angle)
+void OgreSpotLight::SetOuterAngle(const math::Angle &_angle)
 {
   this->ogreLight->setSpotlightOuterAngle(OgreConversions::Convert(_angle));
 }

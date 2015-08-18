@@ -149,7 +149,7 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 RenderEngine *RenderEngineManagerPrivate::GetEngine(EngineIter _iter) const
 {
   RenderEngine *engine = _iter->second;
-  
+
   if (!engine->IsInitialized())
   {
     engine->Load();

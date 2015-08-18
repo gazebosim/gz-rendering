@@ -41,9 +41,9 @@ namespace ignition
 
       public: virtual optix::Transform GetOptixTransform() const;
 
-      protected: virtual gazebo::math::Pose GetRawLocalPose() const;
+      protected: virtual math::Pose3d GetRawLocalPose() const;
 
-      protected: virtual void SetRawLocalPose(const gazebo::math::Pose &_pose);
+      protected: virtual void SetRawLocalPose(const math::Pose3d &_pose);
 
       protected: virtual void WritePoseToDevice();
 
@@ -61,7 +61,7 @@ namespace ignition
 
       protected: optix::Acceleration optixAccel;
 
-      protected: gazebo::math::Pose pose;
+      protected: math::Pose3d pose;
 
       protected: bool poseDirty;
 

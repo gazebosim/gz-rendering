@@ -22,7 +22,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 const char *ShaderUtil::names[ST_COUNT] =
-    { 
+    {
       "UNKNOWN",
       "pixel",
       "vertex",

@@ -29,7 +29,7 @@ using namespace rendering;
 OptixNode::OptixNode() :
   poseDirty(true)
 {
-  this->pose = gazebo::math::Matrix4::IDENTITY.GetAsPose();
+  this->pose = math::Pose3d::Zero;
 }
 
 //////////////////////////////////////////////////
@@ -64,13 +64,13 @@ optix::Transform OptixNode::GetOptixTransform() const
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Pose OptixNode::GetRawLocalPose() const
+math::Pose3d OptixNode::GetRawLocalPose() const
 {
   return this->pose;
 }
 
 //////////////////////////////////////////////////
-void OptixNode::SetRawLocalPose(const gazebo::math::Pose &_pose)
+void OptixNode::SetRawLocalPose(const math::Pose3d &_pose)
 {
   this->pose = _pose;
   this->poseDirty = true;
@@ -90,26 +90,26 @@ void OptixNode::WritePoseToDevice()
 void OptixNode::WritePoseToDeviceImpl()
 {
   float matrix[16];
-  gazebo::math::Vector3 position = this->pose.pos;
-  gazebo::math::Matrix3 rotation = this->pose.rot.GetAsMatrix3();
+  math::Vector3d position = this->pose.Pos();
+  math::Matrix3d rotation(this->pose.Rot());
 
   // assign row 1
-  matrix[ 0] = rotation[0][0];
-  matrix[ 1] = rotation[0][1];
-  matrix[ 2] = rotation[0][2];
-  matrix[ 3] = position.x;
+  matrix[ 0] = rotation(0, 0);
+  matrix[ 1] = rotation(0, 1);
+  matrix[ 2] = rotation(0, 2);
+  matrix[ 3] = position.X();
 
   // assign row 2
-  matrix[ 4] = rotation[1][0];
-  matrix[ 5] = rotation[1][1];
-  matrix[ 6] = rotation[1][2];
-  matrix[ 7] = position.y;
+  matrix[ 4] = rotation(1, 0);
+  matrix[ 5] = rotation(1, 1);
+  matrix[ 6] = rotation(1, 2);
+  matrix[ 7] = position.Y();
 
   // assign row 3
-  matrix[ 8] = rotation[2][0];
-  matrix[ 9] = rotation[2][1];
-  matrix[10] = rotation[2][2];
-  matrix[11] = position.z;
+  matrix[ 8] = rotation(2, 0);
+  matrix[ 9] = rotation(2, 1);
+  matrix[10] = rotation(2, 2);
+  matrix[11] = position.Z();
 
   // assign row 4
   matrix[12] = 0;

@@ -39,7 +39,7 @@ Ogre::MovableObject *OgreMesh::GetOgreObject() const
   return this->ogreEntity;
 }
 
-//////////////////////////////////////////////////  
+//////////////////////////////////////////////////
 SubMeshStorePtr OgreMesh::GetSubMeshes() const
 {
   return this->subMeshes;

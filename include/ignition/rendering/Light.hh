@@ -69,11 +69,11 @@ namespace ignition
     {
       public: virtual ~DirectionalLight() { }
 
-      public: virtual gazebo::math::Vector3 GetDirection() const = 0;
+      public: virtual math::Vector3d GetDirection() const = 0;
 
       public: virtual void SetDirection(double _x, double _y, double _z) = 0;
 
-      public: virtual void SetDirection(const gazebo::math::Vector3 &_dir) = 0;
+      public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
     };
 
     class IGNITION_VISIBLE PointLight :
@@ -87,23 +87,23 @@ namespace ignition
     {
       public: virtual ~SpotLight() { }
 
-      public: virtual gazebo::math::Vector3 GetDirection() const = 0;
+      public: virtual math::Vector3d GetDirection() const = 0;
 
       public: virtual void SetDirection(double _x, double _y, double _z) = 0;
 
-      public: virtual void SetDirection(const gazebo::math::Vector3 &_dir) = 0;
+      public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
 
-      public: virtual gazebo::math::Angle GetInnerAngle() const = 0;
+      public: virtual math::Angle GetInnerAngle() const = 0;
 
       public: virtual void SetInnerAngle(double _radians) = 0;
 
-      public: virtual void SetInnerAngle(const gazebo::math::Angle &_angle) = 0;
+      public: virtual void SetInnerAngle(const math::Angle &_angle) = 0;
 
-      public: virtual gazebo::math::Angle GetOuterAngle() const = 0;
+      public: virtual math::Angle GetOuterAngle() const = 0;
 
       public: virtual void SetOuterAngle(double _radians) = 0;
 
-      public: virtual void SetOuterAngle(const gazebo::math::Angle &_angle) = 0;
+      public: virtual void SetOuterAngle(const math::Angle &_angle) = 0;
 
       public: virtual double GetFalloff() const = 0;
 

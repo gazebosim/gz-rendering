@@ -32,7 +32,7 @@ namespace ignition
 
       public: virtual ~OptixVisual();
 
-      public: virtual gazebo::math::Vector3 GetLocalScale() const;
+      public: virtual math::Vector3d GetLocalScale() const;
 
       public: virtual bool GetInheritScale() const;
 
@@ -57,7 +57,7 @@ namespace ignition
       protected: virtual bool DetachGeometry(GeometryPtr _geometry);
 
       protected: virtual void SetLocalScaleImpl(
-                     const gazebo::math::Vector3 &_scale);
+                     const math::Vector3d &_scale);
 
       protected: virtual void Init();
 
@@ -69,7 +69,7 @@ namespace ignition
 
       protected: OptixGeometryStorePtr geometries;
 
-      protected: gazebo::math::Vector3 scale;
+      protected: math::Vector3d scale;
 
       protected: bool inheritScale;
 

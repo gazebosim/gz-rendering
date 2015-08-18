@@ -66,7 +66,7 @@ namespace ignition
 
       public: virtual void SetDirection(double _x, double _y, double _z);
 
-      public: virtual void SetDirection(const gazebo::math::Vector3 &_dir) = 0;
+      public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
 
       protected: virtual void Reset();
     };
@@ -92,15 +92,15 @@ namespace ignition
 
       public: virtual void SetDirection(double _x, double _y, double _z);
 
-      public: virtual void SetDirection(const gazebo::math::Vector3 &_dir) = 0;
+      public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
 
       public: virtual void SetInnerAngle(double _radians);
 
-      public: virtual void SetInnerAngle(const gazebo::math::Angle &_angle) = 0;
+      public: virtual void SetInnerAngle(const math::Angle &_angle) = 0;
 
       public: virtual void SetOuterAngle(double _radians);
 
-      public: virtual void SetOuterAngle(const gazebo::math::Angle &_angle) = 0;
+      public: virtual void SetOuterAngle(const math::Angle &_angle) = 0;
 
       public: virtual void SetFalloff(double _falloff) = 0;
 
@@ -164,7 +164,7 @@ namespace ignition
     template <class T>
     void BaseDirectionalLight<T>::SetDirection(double _x, double _y, double _z)
     {
-      this->SetDirection(gazebo::math::Vector3(_x, _y, _z));
+      this->SetDirection(math::Vector3d(_x, _y, _z));
     }
 
     //////////////////////////////////////////////////
@@ -203,21 +203,21 @@ namespace ignition
     template <class T>
     void BaseSpotLight<T>::SetDirection(double _x, double _y, double _z)
     {
-      this->SetDirection(gazebo::math::Vector3(_x, _y, _z));
+      this->SetDirection(math::Vector3d(_x, _y, _z));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseSpotLight<T>::SetInnerAngle(double _radians)
     {
-      this->SetInnerAngle(gazebo::math::Angle(_radians));
+      this->SetInnerAngle(math::Angle(_radians));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseSpotLight<T>::SetOuterAngle(double _radians)
     {
-      this->SetOuterAngle(gazebo::math::Angle(_radians));
+      this->SetOuterAngle(math::Angle(_radians));
     }
 
     //////////////////////////////////////////////////

@@ -41,9 +41,9 @@ namespace ignition
 
       public: virtual void SetImageFormat(PixelFormat _format);
 
-      public: virtual gazebo::math::Angle GetHFOV() const;
+      public: virtual math::Angle GetHFOV() const;
 
-      public: virtual void SetHFOV(const gazebo::math::Angle &_angle);
+      public: virtual void SetHFOV(const math::Angle &_angle);
 
       public: virtual double GetAspectRatio() const;
 
@@ -71,7 +71,7 @@ namespace ignition
 
       protected: OgreRenderTexturePtr renderTexture;
 
-      protected: gazebo::math::Angle xfov;
+      protected: math::Angle xfov;
 
       protected: gazebo::common::Color backgroundColor;
 

@@ -32,13 +32,13 @@ gazebo::common::Color OptixConversions::ConvertColor(const float4 &_color)
 }
 
 //////////////////////////////////////////////////
-float3 OptixConversions::ConvertVector(const gazebo::math::Vector3 &_vector)
+float3 OptixConversions::ConvertVector(const math::Vector3d &_vector)
 {
-  return make_float3(_vector.x, _vector.y, _vector.z);
+  return make_float3(_vector.X(), _vector.Y(), _vector.Z());
 }
 
 //////////////////////////////////////////////////
-gazebo::math::Vector3 OptixConversions::ConvertVector(const float3 &_vector)
+math::Vector3d OptixConversions::ConvertVector(const float3 &_vector)
 {
-  return gazebo::math::Vector3(_vector.x, _vector.y, _vector.z);
+  return math::Vector3d(_vector.x, _vector.y, _vector.z);
 }

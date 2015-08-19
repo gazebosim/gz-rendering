@@ -19,7 +19,6 @@
 
 #include "gazebo/common/Console.hh"
 #include "ignition/rendering/rendering.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
 #include "GlutWindow.hh"
 
 #if __APPLE__
@@ -171,9 +170,9 @@ int main(int, char**)
 
     GlutRun(cameras);
   }
-  catch (optix::Exception &ex)
+  catch (...)
   {
-    std::cout << ex.what() << std::endl;
+    //std::cout << ex.what() << std::endl;
   }
 
   return 0;

@@ -1,8 +1,15 @@
 include (${project_cmake_dir}/Utils.cmake)
 
 add_subdirectory(base)
-add_subdirectory(ogre)
-add_subdirectory(optix)
+
+if (HAVE_OGRE)
+  add_subdirectory(ogre)
+endif ()
+
+if (HAVE_OPTIX)
+  add_subdirectory(optix)
+endif ()
+
 
 set (headers
   ArrowVisual.hh

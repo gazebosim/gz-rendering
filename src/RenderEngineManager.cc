@@ -14,12 +14,21 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/RenderEngineManager.hh"
+
+#include "ignition/rendering/config.hh"
+#include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderEngineManagerPrivate.hh"
+#include "ignition/rendering/RenderEngineManager.hh"
+
+#if HAVE_OGRE
+#include "ignition/rendering/ogre/OgreRenderEngine.hh"
+#endif
+
+#if HAVE_OPTIX
+#include "ignition/rendering/optix/OptixRenderEngine.hh"
+#endif
 
 #include "gazebo/common/Console.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/optix/OptixRenderEngine.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -162,8 +171,12 @@ RenderEngine *RenderEngineManagerPrivate::GetEngine(EngineIter _iter) const
 //////////////////////////////////////////////////
 void RenderEngineManagerPrivate::RegisterDefaultEngines()
 {
+#if HAVE_OGRE
   this->engines["ogre"] = OgreRenderEngine::Instance();
+#endif
+#if HAVE_OPTIX
   this->engines["optix"] = OptixRenderEngine::Instance();
+#endif
 }
 
 //////////////////////////////////////////////////

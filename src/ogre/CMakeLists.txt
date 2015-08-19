@@ -23,13 +23,16 @@ set (sources
 set (gtest_sources
 )
 
+link_directories(
+  ${ogre_library_dirs}
+)
+
 ign_build_tests(${gtest_sources})
 ign_add_library(${PROJECT_NAME_LOWER}-ogre ${sources})
 ign_install_library(${PROJECT_NAME_LOWER}-ogre)
 
 target_link_libraries(${PROJECT_NAME_LOWER}-ogre
   ignition-rendering-base
-  ${OGRE_LIBRARIES}
   ${OPENGL_LIBRARIES}
-  ${OGRE_RTShaderSystem_LIBRARIES}
+  ${ogre_libraries}
 )

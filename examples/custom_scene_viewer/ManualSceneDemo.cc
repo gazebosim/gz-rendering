@@ -18,7 +18,6 @@
 #include "ManualSceneDemo.hh"
 #include "SceneBuilder.hh"
 #include "DemoWindow.hh"
-#include <ignition/rendering/optix/OptixTextureFactory.hh>
 
 using namespace ignition;
 using namespace rendering;

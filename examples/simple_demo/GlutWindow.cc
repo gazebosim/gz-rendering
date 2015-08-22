@@ -185,9 +185,9 @@ void GlutInitCamera(gz::CameraPtr _camera)
 //////////////////////////////////////////////////
 void GlutInitContext()
 {
-  int argc = 0;
-  char **argv = 0;
-  //glutInit(&argc, argv);
+  // int argc = 0;
+  // char **argv = 0;
+  // glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);

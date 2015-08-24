@@ -14,14 +14,23 @@
  * limitations under the License.
  *
  */
-#include <optix.h>
-#include <optix_math.h>
-#include "ignition/rendering/optix/OptixRayTypes.hh"
+#include "ignition/rendering/optix/OptixCylinder.hh"
 
-rtDeclareVariable(float3, color, , );
-rtDeclareVariable(OptixRadianceRayData, payload, rtPayload, );
+using namespace ignition;
+using namespace rendering;
 
-RT_PROGRAM void Miss()
+//////////////////////////////////////////////////
+OptixCylinder::OptixCylinder()
 {
-  payload.color = color;
+}
+
+//////////////////////////////////////////////////
+OptixCylinder::~OptixCylinder()
+{
+}
+
+//////////////////////////////////////////////////
+optix::Geometry OptixCylinder::CreateOptixGeometry(OptixScenePtr _scene)
+{
+  return OptixPrimitive::CreateOptixGeometry(_scene, "OptixCylinder");
 }

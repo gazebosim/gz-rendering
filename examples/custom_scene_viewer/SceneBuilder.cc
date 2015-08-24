@@ -507,3 +507,60 @@ void ShadowSceneBuilder::AddLight(PointLightPtr _light, ScenePtr _scene)
     }
   }
 }
+
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+
+const std::string BoxSceneBuilder::LIGHT("Light");
+
+const std::string BoxSceneBuilder::BOX("Box");
+
+//////////////////////////////////////////////////
+BoxSceneBuilder::BoxSceneBuilder()
+{
+}
+
+//////////////////////////////////////////////////
+BoxSceneBuilder::~BoxSceneBuilder()
+{
+}
+
+//////////////////////////////////////////////////
+void BoxSceneBuilder::BuildScene(ScenePtr _scene)
+{
+  SceneBuilder::BuildScene(_scene);
+  VisualPtr root = _scene->GetRootVisual();
+  _scene->SetAmbientLight(0.1, 0.1, 0.1);
+
+  DirectionalLightPtr light = _scene->CreateDirectionalLight(LIGHT);
+  light->SetDirection(0.3, 0.5, -1.0);
+  light->SetDiffuseColor(0.8, 0.8, 0.8);
+  light->SetSpecularColor(0.8, 0.8, 0.8);
+  root->AddChild(light);
+
+  VisualPtr box = _scene->CreateVisual(BOX);
+  box->AddGeometry(_scene->CreateBox());
+  box->SetLocalPosition(3.0, 0.0, 0.5);
+  box->SetLocalRotation(0.0, 0.0, M_PI / 4);
+  box->SetMaterial("Red");
+  root->AddChild(box);
+}
+
+//////////////////////////////////////////////////
+void BoxSceneBuilder::ResetCamera(CameraPtr _camera)
+{
+  _camera->SetLocalPosition(0.5, 0.0, 1.0);
+  _camera->SetLocalRotation(0.0, 0.1, 0.0);
+}
+
+//////////////////////////////////////////////////
+void BoxSceneBuilder::UpdateScene(ScenePtr _scene)
+{
+  SceneBuilder::UpdateScene(_scene);
+  double scale = cos(this->tick * 0.05);
+
+  VisualPtr box = _scene->GetVisualByName(BOX);
+  math::Pose3d pose = box->GetLocalPose();
+  pose.Pos().Z(0.6 + scale * 0.1);
+  box->SetLocalPose(pose);
+}

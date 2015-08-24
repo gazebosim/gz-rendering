@@ -24,7 +24,11 @@ OptixScene::OptixScene(unsigned int _id, const std::string &_name) :
   rootVisual(NULL),
   meshFactory(NULL),
   optixContext(NULL),
-  optixMissProgram(NULL)
+  optixMissProgram(NULL),
+  optixBoxGeometry(NULL),
+  optixConeGeometry(NULL),
+  optixCylinderGeometry(NULL),
+  optixSphereGeometry(NULL)
 {
   // TODO: move defaults to BaseScene
   this->ambientLight = gazebo::common::Color::Black;
@@ -233,21 +237,54 @@ AxisVisualPtr OptixScene::CreateAxisVisualImpl(unsigned int _id,
 GeometryPtr OptixScene::CreateBoxImpl(unsigned int _id,
     const std::string &_name)
 {
-  return this->CreateMeshImpl(_id, _name, "unit_box");
+  if (!this->optixBoxGeometry)
+  {
+    this->optixBoxGeometry =
+        OptixBox::CreateOptixGeometry(this->SharedThis());
+  }
+
+  OptixBoxPtr box(new OptixBox);
+  box->optixGeometry = this->optixBoxGeometry;
+  bool result = this->InitObject(box, _id, _name);
+  box->SetMaterial(this->CreateMaterial());
+  return (result) ? box : NULL;
 }
 
 //////////////////////////////////////////////////
 GeometryPtr OptixScene::CreateConeImpl(unsigned int _id,
     const std::string &_name)
 {
-  return this->CreateMeshImpl(_id, _name, "unit_cone");
+  if (!this->optixConeGeometry)
+  {
+    this->optixConeGeometry =
+        OptixCone::CreateOptixGeometry(this->SharedThis());
+  }
+
+  OptixConePtr cone(new OptixCone);
+  cone->optixGeometry = this->optixConeGeometry;
+  bool result = this->InitObject(cone, _id, _name);
+  cone->SetMaterial(this->CreateMaterial());
+  return (result) ? cone : NULL;
+
+  // TODO: remove after testing
+  // return this->CreateMeshImpl(_id, _name, "unit_cone");
 }
 
 //////////////////////////////////////////////////
 GeometryPtr OptixScene::CreateCylinderImpl(unsigned int _id,
     const std::string &_name)
 {
-  return this->CreateMeshImpl(_id, _name, "unit_cylinder");
+  if (!this->optixCylinderGeometry)
+  {
+    this->optixCylinderGeometry =
+        OptixCylinder::CreateOptixGeometry(this->SharedThis());
+  }
+
+  OptixCylinderPtr cylinder(new OptixCylinder);
+  cylinder->optixGeometry = this->optixCylinderGeometry;
+  bool result = this->InitObject(cylinder, _id, _name);
+  cylinder->SetMaterial(this->CreateMaterial());
+  return (result) ? cylinder : NULL;
 }
 
 //////////////////////////////////////////////////
@@ -261,7 +298,17 @@ GeometryPtr OptixScene::CreatePlaneImpl(unsigned int _id,
 GeometryPtr OptixScene::CreateSphereImpl(unsigned int _id,
     const std::string &_name)
 {
-  return this->CreateMeshImpl(_id, _name, "unit_sphere");
+  if (!this->optixSphereGeometry)
+  {
+    this->optixSphereGeometry =
+        OptixSphere::CreateOptixGeometry(this->SharedThis());
+  }
+
+  OptixSpherePtr sphere(new OptixSphere);
+  sphere->optixGeometry = this->optixSphereGeometry;
+  bool result = this->InitObject(sphere, _id, _name);
+  sphere->SetMaterial(this->CreateMaterial());
+  return (result) ? sphere : NULL;
 }
 
 //////////////////////////////////////////////////

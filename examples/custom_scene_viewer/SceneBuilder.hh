@@ -139,6 +139,24 @@ namespace ignition
 
       protected: double dist;
     };
+
+    class BoxSceneBuilder :
+      public SceneBuilder
+    {
+      public: BoxSceneBuilder();
+
+      public: virtual ~BoxSceneBuilder();
+
+      protected: virtual void BuildScene(ScenePtr _scene);
+
+      protected: virtual void ResetCamera(CameraPtr _camera);
+
+      protected: virtual void UpdateScene(ScenePtr _scene);
+
+      protected: static const std::string LIGHT;
+
+      protected: static const std::string BOX;
+    };
   }
 }
 

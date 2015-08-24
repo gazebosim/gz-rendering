@@ -281,7 +281,6 @@ void OptixMaterial::WriteNormalMapToDevice()
 //////////////////////////////////////////////////
 void OptixMaterial::WriteColorToDeviceImpl()
 {
-  // TODO: implement
   this->optixMaterial["diffuse"]->setFloat(this->diffuse.r, this->diffuse.g, this->diffuse.b);
   this->optixMaterial["ambient"]->setFloat(this->ambient.r, this->ambient.g, this->ambient.b);
   this->optixMaterial["specular"]->setFloat(this->specular.r, this->specular.g, this->specular.b);

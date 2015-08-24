@@ -164,6 +164,7 @@ int main(int, char**)
   gazebo::common::Console::SetQuiet(false);
   ManualSceneDemoPtr sceneDemo(new ManualSceneDemo);
   sceneDemo->AddScene(SceneBuilderPtr(new SceneBuilder));
+  // sceneDemo->AddScene(SceneBuilderPtr(new BoxSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new SimpleSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new AllShapesSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new TextureSceneBuilder));
@@ -174,7 +175,7 @@ int main(int, char**)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(3)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(4)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
-  sceneDemo->AddCamera("ogre");
+  // sceneDemo->AddCamera("ogre");
   sceneDemo->AddCamera("optix");
   sceneDemo->Run();
   return 0;

@@ -3,8 +3,11 @@ include (${project_cmake_dir}/Utils.cmake)
 set (headers
   OptixArrowVisual.hh
   OptixAxisVisual.hh
+  OptixBox.hh
   OptixCamera.hh
+  OptixCone.hh
   OptixConversions.hh
+  OptixCylinder.hh
   OptixGeometry.hh
   OptixIncludes.hh
   OptixLight.hh
@@ -15,12 +18,14 @@ set (headers
   OptixMeshFactory.hh
   OptixNode.hh
   OptixObject.hh
+  OptixPrimitive.hh
   OptixRayTypes.hh
   OptixRenderEngine.hh
   OptixRenderTarget.hh
   OptixRenderTypes.hh
   OptixScene.hh
   OptixSensor.hh
+  OptixSphere.hh
   OptixStorage.hh
   OptixTextureFactory.hh
   OptixVisual.hh

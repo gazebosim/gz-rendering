@@ -14,14 +14,26 @@
  * limitations under the License.
  *
  */
-#include <optix.h>
-#include <optix_math.h>
-#include "ignition/rendering/optix/OptixRayTypes.hh"
+#ifndef _IGNITION_RENDERING_OPTIXCONE_HH_
+#define _IGNITION_RENDERING_OPTIXCONE_HH_
 
-rtDeclareVariable(float3, color, , );
-rtDeclareVariable(OptixRadianceRayData, payload, rtPayload, );
+#include "ignition/rendering/optix/OptixPrimitive.hh"
 
-RT_PROGRAM void Miss()
+namespace ignition
 {
-  payload.color = color;
+  namespace rendering
+  {
+    class IGNITION_VISIBLE OptixCone :
+      public OptixPrimitive
+    {
+      protected: OptixCone();
+
+      public: virtual ~OptixCone();
+
+      public: static optix::Geometry CreateOptixGeometry(OptixScenePtr _scene);
+
+      private: friend class OptixScene;
+    };
+  }
 }
+#endif

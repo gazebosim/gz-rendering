@@ -25,7 +25,10 @@ namespace ignition
   {
     class OptixArrowVisual;
     class OptixAxisVisual;
+    class OptixBox;
     class OptixCamera;
+    class OptixCone;
+    class OptixCylinder;
     class OptixDirectionalLight;
     class OptixGeometry;
     class OptixJointVisual;
@@ -40,6 +43,7 @@ namespace ignition
     class OptixRenderEngine;
     class OptixScene;
     class OptixSensor;
+    class OptixSphere;
     class OptixSpotLight;
     class OptixSubMesh;
     class OptixVisual;
@@ -58,7 +62,10 @@ namespace ignition
 
     typedef shared_ptr<OptixArrowVisual>          OptixArrowVisualPtr;
     typedef shared_ptr<OptixAxisVisual>           OptixAxisVisualPtr;
+    typedef shared_ptr<OptixBox>                  OptixBoxPtr;
     typedef shared_ptr<OptixCamera>               OptixCameraPtr;
+    typedef shared_ptr<OptixCone>                 OptixConePtr;
+    typedef shared_ptr<OptixCylinder>             OptixCylinderPtr;
     typedef shared_ptr<OptixDirectionalLight>     OptixDirectionalLightPtr;
     typedef shared_ptr<OptixGeometry>             OptixGeometryPtr;
     typedef shared_ptr<OptixJointVisual>          OptixJointVisualPtr;
@@ -72,6 +79,7 @@ namespace ignition
     typedef shared_ptr<OptixPointLight>           OptixPointLightPtr;
     typedef shared_ptr<OptixScene>                OptixScenePtr;
     typedef shared_ptr<OptixSensor>               OptixSensorPtr;
+    typedef shared_ptr<OptixSphere>               OptixSpherePtr;
     typedef shared_ptr<OptixSpotLight>            OptixSpotLightPtr;
     typedef shared_ptr<OptixSubMesh>              OptixSubMeshPtr;
     typedef shared_ptr<OptixVisual>               OptixVisualPtr;

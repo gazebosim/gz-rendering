@@ -160,6 +160,14 @@ namespace ignition
 
       protected: optix::Program optixMissProgram;
 
+      protected: optix::Geometry optixBoxGeometry;
+
+      protected: optix::Geometry optixConeGeometry;
+
+      protected: optix::Geometry optixCylinderGeometry;
+
+      protected: optix::Geometry optixSphereGeometry;
+
       protected: gazebo::common::Color ambientLight;
 
       private: friend class OptixRenderEngine;

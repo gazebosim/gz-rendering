@@ -151,16 +151,19 @@ CameraPtr CreateCamera(const std::string &_engineName)
   return boost::dynamic_pointer_cast<Camera>(sensor);
 }
 
-int main(int, char**)
+int main(int _argc, char** _argv)
 {
+
+  glutInit(&_argc, _argv);
+
   gazebo::common::Console::SetQuiet(false);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
   try
   {
-    // engineNames.push_back("ogre");
-    engineNames.push_back("optix");
+    engineNames.push_back("ogre");
+    // engineNames.push_back("optix");
 
     for (auto engineName : engineNames)
     {

@@ -265,9 +265,6 @@ GeometryPtr OptixScene::CreateConeImpl(unsigned int _id,
   bool result = this->InitObject(cone, _id, _name);
   cone->SetMaterial(this->CreateMaterial());
   return (result) ? cone : NULL;
-
-  // TODO: remove after testing
-  // return this->CreateMeshImpl(_id, _name, "unit_cone");
 }
 
 //////////////////////////////////////////////////

@@ -15,6 +15,8 @@ find_package(GLEW REQUIRED)
 include_directories(SYSTEM ${GLEW_INCLUDE_DIRS})
 link_directories(${GLEW_LIBRARY_DIRS})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+
 add_executable(gazebo_scene_viewer GazeboDemo.cc CameraWindow.cc)
 
 target_link_libraries(gazebo_scene_viewer

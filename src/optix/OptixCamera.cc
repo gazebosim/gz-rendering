@@ -28,13 +28,17 @@ const std::string OptixCamera::PTX_BASE_NAME("OptixCamera");
 
 const std::string OptixCamera::PTX_RENDER_FUNCTION("Render");
 
+const std::string OptixCamera::PTX_CLEAR_FUNCTION("Clear");
+
 //////////////////////////////////////////////////
 OptixCamera::OptixCamera() :
   optixRenderProgram(NULL),
+  optixClearProgram(NULL),
+  optixErrorProgram(NULL),
   renderTexture(NULL),
   antiAliasing(1),
   cameraDirty(true),
-  entryId(0)
+  traceId(0)
 {
 }
 
@@ -107,7 +111,8 @@ void OptixCamera::Render()
   unsigned int width = this->GetImageWidth();
   unsigned int height = this->GetImageHeight();
   optix::Context optixContext = this->scene->GetOptixContext();
-  optixContext->launch(this->entryId, width, height);
+  optixContext->launch(this->clearId, width, height);
+  optixContext->launch(this->traceId, width, height);
 }
 
 //////////////////////////////////////////////////
@@ -163,6 +168,8 @@ void OptixCamera::Init()
   BaseCamera::Init();
   this->CreateRenderTexture();
   this->CreateRenderProgram();
+  this->CreateClearProgram();
+  this->CreateErrorProgram();
   this->Reset();
 }
 
@@ -183,16 +190,37 @@ void OptixCamera::CreateRenderProgram()
 
   optix::Context optixContext = this->scene->GetOptixContext();
 
-  optixContext->setRayGenerationProgram(this->entryId,
+  optixContext->setRayGenerationProgram(this->traceId,
       this->optixRenderProgram);
 
   optix::Buffer optixBuffer = this->renderTexture->GetOptixBuffer();
   this->optixRenderProgram["buffer"]->setBuffer(optixBuffer);
+}
 
-  // TODO: clean up
+//////////////////////////////////////////////////
+void OptixCamera::CreateClearProgram()
+{
+  this->optixClearProgram =
+      this->scene->CreateOptixProgram(PTX_BASE_NAME, PTX_CLEAR_FUNCTION);
+
+  optix::Context optixContext = this->scene->GetOptixContext();
+
+  optixContext->setRayGenerationProgram(this->clearId,
+      this->optixClearProgram);
+
+  optix::Buffer optixBuffer = this->renderTexture->GetOptixBuffer();
+  this->optixClearProgram["buffer"]->setBuffer(optixBuffer);
+}
+
+//////////////////////////////////////////////////
+void OptixCamera::CreateErrorProgram()
+{
+  // TODO: clean up hard-coded name
   this->optixErrorProgram =
       this->scene->CreateOptixProgram("OptixErrorProgram", "Error");
 
+  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Buffer optixBuffer = this->renderTexture->GetOptixBuffer();
   this->optixErrorProgram["buffer"]->setBuffer(optixBuffer);
-  optixContext->setExceptionProgram(this->entryId, this->optixErrorProgram);
+  optixContext->setExceptionProgram(this->traceId, this->optixErrorProgram);
 }

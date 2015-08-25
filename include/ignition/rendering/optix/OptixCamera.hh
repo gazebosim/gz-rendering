@@ -66,7 +66,15 @@ namespace ignition
 
       protected: virtual void CreateRenderProgram();
 
+      protected: virtual void CreateClearProgram();
+
+      protected: virtual void CreateErrorProgram();
+
       protected: optix::Program optixRenderProgram;
+
+      protected: optix::Program optixClearProgram;
+
+      protected: optix::Program optixErrorProgram;
 
       protected: OptixRenderTexturePtr renderTexture;
 
@@ -82,13 +90,15 @@ namespace ignition
 
       protected: bool cameraDirty;
 
-      protected: unsigned int entryId;
+      protected: unsigned int traceId;
 
-      protected: optix::Program optixErrorProgram;
+      protected: unsigned int clearId;
 
       private: static const std::string PTX_BASE_NAME;
 
       private: static const std::string PTX_RENDER_FUNCTION;
+
+      private: static const std::string PTX_CLEAR_FUNCTION;
 
       private: friend class OptixScene;
     };

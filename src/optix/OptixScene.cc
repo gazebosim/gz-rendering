@@ -201,7 +201,8 @@ CameraPtr OptixScene::CreateCameraImpl(unsigned int _id,
     const std::string &_name)
 {
   OptixCameraPtr camera(new OptixCamera);
-  camera->entryId = this->GetNextEntryId();
+  camera->traceId = this->GetNextEntryId();
+  camera->clearId = this->GetNextEntryId();
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : NULL;
 }

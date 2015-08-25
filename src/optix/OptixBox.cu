@@ -26,7 +26,8 @@ rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
 rtDeclareVariable(float2, texCoord, attribute texCoord, );
 
-static __inline__ __device__ float3 GetNormal(float3 _t0, float3 _t1, float _t)
+static __inline__ __device__ float3 GetNormal(const float3 &_t0,
+    const float3 &_t1, float _t)
 {
   // TODO: don't use ==
 
@@ -44,25 +45,26 @@ static __inline__ __device__ float3 GetNormal(float3 _t0, float3 _t1, float _t)
   return pos - neg;
 }
 
-static __inline__ __device__ float2 GetTextureCoordinate(float3 p, float3 n)
+static __inline__ __device__ float2 GetTextureCoordinate(const float3 &_p,
+    const float3 &_n)
 {
-  float u = 0.5; // TODO: implement
-  float v = 0.5; // TODO: implement
+  float u = 0.0;
+  float v = 0.0;
 
-  if (n.x == 1 || n.x == -1)
+  if (_n.x == 1 || _n.x == -1)
   {
-    u = n.x * p.y / scale.y;
-    v = p.z / scale.z;
+    u = _n.x * _p.y / scale.y;
+    v = _p.z / scale.z;
   }
-  else if (n.y == 1 || n.y == -1)
+  else if (_n.y == 1 || _n.y == -1)
   {
-    u = n.y * p.x / scale.x;
-    v = p.z / scale.z;
+    u = _n.y * _p.x / scale.x;
+    v = _p.z / scale.z;
   }
-  else if (n.z == 1 || n.z == -1)
+  else if (_n.z == 1 || _n.z == -1)
   {
-    u = n.z * p.x / scale.x;
-    v = p.y / scale.y;
+    u = _n.z * _p.x / scale.x;
+    v = _p.y / scale.y;
   }
 
   return make_float2(u, v);

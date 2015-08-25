@@ -24,13 +24,13 @@ rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
 rtDeclareVariable(float2, texCoord, attribute texCoord, );
 
-static __inline__ __device__ bool ReportPotentialIntersect(float t, float3 n,
-    float2 uv)
+static __inline__ __device__ bool ReportPotentialIntersect(float _t,
+    const float3 &_n, const float2 &_uv)
 {
-  if (rtPotentialIntersection(t))
+  if (rtPotentialIntersection(_t))
   {
-    shadingNormal = geometricNormal = n;
-    texCoord = uv;
+    shadingNormal = geometricNormal = _n;
+    texCoord = _uv;
     return rtReportIntersection(0);
   }
 
@@ -104,9 +104,9 @@ RT_PROGRAM void Intersect(int)
   ReportPotentialIntersect(t, n, uv);
 }
 
-RT_PROGRAM void Bounds(int, float result[6])
+RT_PROGRAM void Bounds(int, float _result[6])
 {
   float3 ex = scale / 2;
-  optix::Aabb* aabb = (optix::Aabb*)result;
+  optix::Aabb* aabb = (optix::Aabb*)_result;
   aabb->set(-ex, ex);
 }

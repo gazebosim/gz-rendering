@@ -34,49 +34,128 @@ rtDeclareVariable(uint2, launchDim, rtLaunchDim, );
 rtDeclareVariable(rtObject, rootGroup, , );
 rtDeclareVariable(float, sceneEpsilon, , );
 
-RT_PROGRAM void Render()
+typedef struct Context_t
 {
-  // setup subpixel data
-  float step = 1.0 / aa;
-  float2 pixel = make_float2(launchIndex) + (step / 2);
-  float2 size  = make_float2(launchDim);
-  int pixCount = aa * aa;
 
-  // clear current pixel buffer
-  buffer[launchIndex] = make_float3(0, 0, 0);
+  uint2 subpixel;
+  float subpixelWeight;
 
-  float y0 = pixel.y;
-  OptixRadianceRayData data;
+} Context;
 
-  // process each subpixel column
-  for (int x = 0; x < aa; ++x)
+static __inline__ __device__ void AddColor(const uint2 &_index,
+    const float3 &_color)
+{
+  float *channels = (float *)&buffer[_index];
+  atomicAdd(&channels[0], _color.x);
+  atomicAdd(&channels[1], _color.y);
+  atomicAdd(&channels[2], _color.z);
+}
+
+static __inline__ __device__ void AddColor(const Context &_context,
+    const float3 &_color)
+{
+  // TODO: clean up
+
+  float3 weightedColor = _color * _context.subpixelWeight;
+  AddColor(launchIndex, weightedColor);
+
+  bool addX = _context.subpixel.x == aa - 1 && launchIndex.x < launchDim.x;
+  bool addY = _context.subpixel.y == aa - 1 && launchIndex.y < launchDim.y;
+
+  if (addX)
   {
-    // process each subpixel row
-    for (int y = 0; y < aa; ++y)
-    {
-      // create new ray for subpixel
-      float2 ratio = pixel / size - 0.5;
-      float3 direction = normalize(ratio.x * u + ratio.y * v + w);
-      optix::Ray ray(eye, direction, RT_RADIANCE, sceneEpsilon);
-
-      // reset ray data
-      data.depth = 0;
-      data.importance = 1;
-      data.color = make_float3(0, 0, 0);
-
-      // cast ray & update buffer
-      rtTrace(rootGroup, ray, data);
-      buffer[launchIndex] += data.color;
-
-      // increment y
-      pixel.y += step;
-    }
-
-    // increment x & reset y
-    pixel.x += step;
-    pixel.y = y0;
+    uint2 index = launchIndex + make_uint2(1, 0);
+    AddColor(index, weightedColor);
   }
 
-  // compute mean of all subpixels
-  buffer[launchIndex] /= pixCount;
+  if (addY)
+  {
+    uint2 index = launchIndex + make_uint2(0, 1);
+    AddColor(index, weightedColor);
+  }
+
+  if (addX && addY)
+  {
+    uint2 index = launchIndex + make_uint2(1, 1);
+    AddColor(index, weightedColor);
+  }
+}
+
+static __inline__ __device__ void TraceRay(const Context &_context)
+{
+  float2 offset = make_float2(_context.subpixel) / aa;
+
+  // get image plane intersect point
+  float2 pixel = make_float2(launchIndex) + offset;
+  float2 size  = make_float2(launchDim);
+  float2 ratio = pixel / size - 0.5;
+
+  // create ray that traverses through image plane point
+  float3 direction = normalize(ratio.x * u + ratio.y * v + w);
+  optix::Ray ray(eye, direction, RT_RADIANCE, sceneEpsilon);
+
+  // initialize ray payload
+  OptixRadianceRayData data;
+  data.color = make_float3(0, 0, 0);
+  data.importance = 1;
+  data.depth = 0;
+
+  // trace ray and update buffer
+  rtTrace(rootGroup, ray, data);
+  AddColor(_context, data.color);
+}
+
+static __inline__ __device__ void RenderAA()
+{
+  Context context;
+  context.subpixelWeight = 1.0 / (aa * aa);
+  uint &x = context.subpixel.x;
+  uint &y = context.subpixel.y;
+
+  for (x = 1; x < aa; ++x)
+  {
+    for (y = 1; y < aa; ++y)
+    {
+      TraceRay(context);
+    }
+  }
+}
+
+static __inline__ __device__ void RenderNoAA()
+{
+  // get image plane intersect point
+  float2 pixel = make_float2(launchIndex) + 0.5;
+  float2 size  = make_float2(launchDim);
+  float2 ratio = pixel / size - 0.5;
+
+  // create ray that traverses through image plane point
+  float3 direction = normalize(ratio.x * u + ratio.y * v + w);
+  optix::Ray ray(eye, direction, RT_RADIANCE, sceneEpsilon);
+
+  // initialize ray payload
+  OptixRadianceRayData data;
+  data.color = make_float3(0, 0, 0);
+  data.importance = 1;
+  data.depth = 0;
+
+  // trace ray and update buffer
+  rtTrace(rootGroup, ray, data);
+  buffer[launchIndex] = data.color;
+}
+
+RT_PROGRAM void Render()
+{
+  if (aa > 1)
+  {
+    RenderAA();
+  }
+  else
+  {
+    RenderNoAA();
+  }
+}
+
+RT_PROGRAM void Clear()
+{
+  buffer[launchIndex] = make_float3(0);
 }

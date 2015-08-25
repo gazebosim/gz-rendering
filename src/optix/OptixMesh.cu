@@ -82,10 +82,10 @@ RT_PROGRAM void Intersect(int primIndex)
   }
 }
 
-RT_PROGRAM void Bounds(int primIndex, float result[6])
+RT_PROGRAM void Bounds(int _primIndex, float _result[6])
 {
-  optix::Aabb* aabb = (optix::Aabb*)result;
-  const int3 indices = indexBuffer[primIndex];
+  optix::Aabb* aabb = (optix::Aabb*)_result;
+  const int3 indices = indexBuffer[_primIndex];
 
   const float3 v0   = vertexBuffer[ indices.x ];
   const float3 v1   = vertexBuffer[ indices.y ];

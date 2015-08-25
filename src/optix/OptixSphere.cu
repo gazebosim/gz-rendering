@@ -24,12 +24,12 @@ rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
 rtDeclareVariable(float2, texCoord, attribute texCoord, );
 
-static __inline__ __device__ bool ReportPotentialIntersect(float t)
+static __inline__ __device__ bool ReportPotentialIntersect(float _t)
 {
-  if (rtPotentialIntersection(t))
+  if (rtPotentialIntersection(_t))
   {
     float radius = scale.x / 2; // TODO: handle scale.y
-    float3 normal = (t * ray.direction + ray.origin) / radius;
+    float3 normal = (_t * ray.direction + ray.origin) / radius;
     shadingNormal = geometricNormal = normal;
 
     float u = atan2(normal.y, normal.x) / M_PI;
@@ -65,9 +65,9 @@ RT_PROGRAM void Intersect(int)
   }
 }
 
-RT_PROGRAM void Bounds(int, float result[6])
+RT_PROGRAM void Bounds(int, float _result[6])
 {
   float3 ex = scale / 2;
-  optix::Aabb* aabb = (optix::Aabb*)result;
+  optix::Aabb* aabb = (optix::Aabb*)_result;
   aabb->set(-ex, ex);
 }

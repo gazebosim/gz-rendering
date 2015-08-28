@@ -124,6 +124,16 @@ namespace ignition
       protected: virtual void BuildScene(ScenePtr _scene);
     };
 
+    class NormalReflectionSceneBuilder :
+      public NormalMapSceneBuilder
+    {
+      public: NormalReflectionSceneBuilder();
+
+      public: virtual ~NormalReflectionSceneBuilder();
+
+      protected: virtual void BuildScene(ScenePtr _scene);
+    };
+
     class TransparencySceneBuilder :
       public TextureSceneBuilder
     {

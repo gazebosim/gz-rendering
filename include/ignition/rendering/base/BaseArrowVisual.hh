@@ -18,6 +18,7 @@
 #define _IGNITION_RENDERING_BASEARROWVISUAL_HH_
 
 #include "ignition/rendering/ArrowVisual.hh"
+#include "ignition/rendering/Scene.hh"
 
 namespace ignition
 {
@@ -70,6 +71,23 @@ namespace ignition
     void BaseArrowVisual<T>::Init()
     {
       T::Init();
+      ScenePtr scene = this->GetScene();
+
+      VisualPtr cone = scene->CreateVisual();
+      cone->AddGeometry(scene->CreateCone());
+      cone->SetOrigin(0, 0, -0.5);
+      cone->SetLocalPosition(0, 0, 0);
+      cone->SetLocalScale(0.1, 0.1, 0.25);
+      this->AddChild(cone);
+
+      VisualPtr cylinder = scene->CreateVisual();
+      cylinder->AddGeometry(scene->CreateCylinder());
+      cylinder->SetOrigin(0, 0, 0.5);
+      cylinder->SetLocalPosition(0, 0, 0);
+      cylinder->SetLocalScale(0.05, 0.05, 0.5);
+      this->AddChild(cylinder);
+
+      this->SetOrigin(0, 0, -0.5);
     }
 
   }

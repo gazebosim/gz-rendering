@@ -36,8 +36,12 @@ rtDeclareVariable(bool, normWorldSpace, , );
 // material variables
 rtDeclareVariable(float3, ambient, , );
 rtDeclareVariable(float3, diffuse, , );
+rtDeclareVariable(float3, emissive, , );
 rtDeclareVariable(float, reflectivity, , );
 rtDeclareVariable(float, transparency, , );
+rtDeclareVariable(uint, lightingEnabled, , );
+rtDeclareVariable(uint, castShadows, , );
+rtDeclareVariable(uint, receiveShadows, , );
 
 // ray variables
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
@@ -60,7 +64,11 @@ RT_PROGRAM void AnyHit()
 {
   float3 shadowAtten   = diffuse;
 
-  if (transparency > 0)
+  if (!castShadows)
+  {
+    rtIgnoreIntersection();
+  }
+  else if (transparency > 0)
   {
     float3 worldNormal = normalize(rtTransformNormal(RT_OBJECT_TO_WORLD,
           shadingNormal));
@@ -93,7 +101,11 @@ RT_PROGRAM void ClosestHit()
   float3 extinctConst  = diffuse;
   float3 cutoffColor   = diffuse;
 
-  float3 color = ambient * ambientLightColor;
+  float3 color = ambient;
+  if (lightingEnabled) color *= ambientLightColor;
+
+  if (emissive.x > 0 || emissive.y > 0 || emissive.z > 0)
+    color = emissive;
 
   float3 worldGeomNorm = normalize(
       rtTransformNormal(RT_OBJECT_TO_WORLD, geometricNormal));
@@ -164,7 +176,8 @@ RT_PROGRAM void ClosestHit()
     }
   }
 
-  for (int i = 0; i < directionalLights.size(); ++i)
+  // TODO: clean up
+  for (int i = 0; i < directionalLights.size() && lightingEnabled; ++i)
   {
     OptixDirectionalLightData light = directionalLights[i];
     float3 l = normalize(-light.direction);
@@ -211,7 +224,7 @@ RT_PROGRAM void ClosestHit()
     }
   }
 
-  for (int i = 0; i < pointLights.size(); ++i)
+  for (int i = 0; i < pointLights.size() && lightingEnabled; ++i)
   {
     OptixPointLightData light = pointLights[i];
     float3 l = normalize(light.common.position - hitPoint);

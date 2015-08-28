@@ -17,14 +17,14 @@
 #ifndef _IGNITION_RENDERING_AXISVISUAL_HH_
 #define _IGNITION_RENDERING_AXISVISUAL_HH_
 
-#include "ignition/rendering/Visual.hh"
+#include "ignition/rendering/CompositeVisual.hh"
 
 namespace ignition
 {
   namespace rendering
   {
     class IGNITION_VISIBLE AxisVisual :
-      public virtual Visual
+      public virtual CompositeVisual
     {
       public: virtual ~AxisVisual() { }
     };

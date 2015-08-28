@@ -64,9 +64,17 @@ namespace ignition
 
       public: virtual void SetReflectivity(double _reflectivity);
 
+      public: virtual bool GetCastShadows() const;
+
+      public: virtual void SetCastShadows(bool _castShadows);
+
       public: virtual bool GetReceiveShadows() const;
 
       public: virtual void SetReceiveShadows(bool _receiveShadows);
+
+      public: virtual bool GetReflectionEnabled() const;
+
+      public: virtual void SetReflectionEnabled(bool _enabled);
 
       public: virtual bool HasTexture() const;
 
@@ -123,6 +131,10 @@ namespace ignition
       protected: double transparency;
 
       protected: double reflectivity;
+
+      protected: bool castShadows;
+
+      protected: bool reflectionEnabled;
 
       protected: std::string textureName;
 

@@ -140,7 +140,9 @@ namespace ignition
       this->SetShininess(_material->GetShininess());
       this->SetTransparency(_material->GetTransparency());
       this->SetReflectivity(_material->GetReflectivity());
+      this->SetCastShadows(_material->GetCastShadows());
       this->SetReceiveShadows(_material->GetReceiveShadows());
+      this->SetReflectionEnabled(_material->GetReflectionEnabled());
       this->SetTexture(_material->GetTexture());
       this->SetNormalMap(_material->GetNormalMap());
       this->SetShaderType(_material->GetShaderType());
@@ -159,7 +161,9 @@ namespace ignition
       this->SetTransparency(_material.GetTransparency());
       this->SetReflectivity(0); // TODO: update gazebo::common::Material
       this->SetTexture(_material.GetTextureImage());
+      this->SetCastShadows(true); // TODO: update gazebo::common::Material
       this->SetReceiveShadows(true); // TODO: update gazebo::common::Material
+      this->SetReflectionEnabled(true); // TODO: update gazebo::common::Material
       this->ClearNormalMap(); // TODO: update gazebo::common::Material
       this->SetShaderType(ST_PIXEL); // TODO: update gazebo::common::Material
     }
@@ -183,7 +187,9 @@ namespace ignition
       this->SetShininess(1.5);
       this->SetTransparency(0);
       this->SetReflectivity(0);
+      this->SetCastShadows(true);
       this->SetReceiveShadows(true);
+      this->SetReflectionEnabled(true);
       this->ClearTexture();
       this->ClearNormalMap();
       this->SetShaderType(ST_PIXEL);

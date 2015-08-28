@@ -64,6 +64,7 @@ void BaseScene::Init()
   {
     this->initialized = this->InitImpl();
     this->CreateNodeStore();
+    this->CreateMaterials();
   }
 }
 
@@ -794,4 +795,40 @@ void BaseScene::CreateNodeStore()
   compStore->AddStore(visualNodes);
 
   this->nodes = compStore;
+}
+
+//////////////////////////////////////////////////
+void BaseScene::CreateMaterials()
+{
+  MaterialPtr material;
+  
+  material = this->CreateMaterial();
+  material->SetAmbient(1.0, 0.0, 0.0);
+  material->SetDiffuse(1.0, 0.0, 0.0);
+  material->SetEmissive(1.0, 0.0, 0.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
+  this->RegisterMaterial("Default/TransRed", material);
+  
+  material = this->CreateMaterial();
+  material->SetAmbient(0.0, 1.0, 0.0);
+  material->SetDiffuse(0.0, 1.0, 0.0);
+  material->SetEmissive(0.0, 1.0, 0.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
+  this->RegisterMaterial("Default/TransGreen", material);
+  
+  material = this->CreateMaterial();
+  material->SetAmbient(0.0, 0.0, 1.0);
+  material->SetDiffuse(0.0, 0.0, 1.0);
+  material->SetEmissive(0.0, 0.0, 1.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
+  this->RegisterMaterial("Default/TransBlue", material);
 }

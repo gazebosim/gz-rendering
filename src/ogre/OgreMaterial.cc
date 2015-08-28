@@ -141,6 +141,19 @@ void OgreMaterial::SetReflectivity(double _reflectivity)
 }
 
 //////////////////////////////////////////////////
+bool OgreMaterial::GetCastShadows() const
+{
+  return this->castShadows;
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetCastShadows(bool _castShadows)
+{
+  // TODO: update RTShader
+  this->castShadows = _castShadows;
+}
+
+//////////////////////////////////////////////////
 bool OgreMaterial::GetReceiveShadows() const
 {
   return this->ogreMaterial->getReceiveShadows();
@@ -150,6 +163,18 @@ bool OgreMaterial::GetReceiveShadows() const
 void OgreMaterial::SetReceiveShadows(bool _receiveShadows)
 {
   this->ogreMaterial->setReceiveShadows(_receiveShadows);
+}
+
+//////////////////////////////////////////////////
+bool OgreMaterial::GetReflectionEnabled() const
+{
+  return this->reflectionEnabled;
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetReflectionEnabled(bool _enabled)
+{
+   this->reflectionEnabled = _enabled;
 }
 
 //////////////////////////////////////////////////

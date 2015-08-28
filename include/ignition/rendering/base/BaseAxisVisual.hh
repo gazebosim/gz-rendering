@@ -18,6 +18,8 @@
 #define _IGNITION_RENDERING_BASEAXISVISUAL_HH_
 
 #include "ignition/rendering/AxisVisual.hh"
+#include "ignition/rendering/ArrowVisual.hh"
+#include "ignition/rendering/Scene.hh"
 
 namespace ignition
 {
@@ -31,6 +33,8 @@ namespace ignition
       protected: BaseAxisVisual();
 
       public: virtual ~BaseAxisVisual();
+
+      public: virtual void Init();
     };
 
     //////////////////////////////////////////////////
@@ -43,6 +47,32 @@ namespace ignition
     template <class T>
     BaseAxisVisual<T>::~BaseAxisVisual()
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseAxisVisual<T>::Init()
+    {
+      T::Init();
+      ScenePtr scene = this->GetScene();
+
+      ArrowVisualPtr xArrow = scene->CreateArrowVisual();
+      xArrow->SetLocalPosition(0, 0, 0);
+      xArrow->SetLocalRotation(0, M_PI / 2, 0);
+      xArrow->SetMaterial("Default/TransRed");
+      this->AddChild(xArrow);
+
+      ArrowVisualPtr yArrow = scene->CreateArrowVisual();
+      yArrow->SetLocalPosition(0, 0, 0);
+      yArrow->SetLocalRotation(-M_PI / 2, 0, 0);
+      yArrow->SetMaterial("Default/TransGreen");
+      this->AddChild(yArrow);
+
+      ArrowVisualPtr zArrow = scene->CreateArrowVisual();
+      zArrow->SetLocalPosition(0, 0, 0);
+      zArrow->SetLocalRotation(0, 0, 0);
+      zArrow->SetMaterial("Default/TransBlue");
+      this->AddChild(zArrow);
     }
   }
 }

@@ -218,6 +218,19 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
   for (auto baseName : baseNames)
   {
+    std::string parentName = "Normal" + baseName;
+    std::string childName = "NormalReflect" + baseName;
+
+    if (!_scene->MaterialRegistered(childName))
+    {
+      MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
+      mat->SetReflectivity(0.25);
+      _scene->RegisterMaterial(childName, mat);
+    }
+  }
+
+  for (auto baseName : baseNames)
+  {
     std::string parentName = "Reflect" + baseName;
     std::string childName = "Trans" + baseName;
 
@@ -441,6 +454,38 @@ void ReflectionSceneBuilder::BuildScene(ScenePtr _scene)
 
   VisualPtr sphere = _scene->GetVisualByName(SPHERE);
   sphere->SetMaterial("ReflectRed");
+}
+
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+NormalReflectionSceneBuilder::NormalReflectionSceneBuilder()
+{
+}
+
+//////////////////////////////////////////////////
+NormalReflectionSceneBuilder::~NormalReflectionSceneBuilder()
+{
+}
+
+//////////////////////////////////////////////////
+void NormalReflectionSceneBuilder::BuildScene(ScenePtr _scene)
+{
+  NormalMapSceneBuilder::BuildScene(_scene);
+
+  VisualPtr box = _scene->GetVisualByName(BOX);
+  box->SetMaterial("NormalReflectYellow");
+
+  VisualPtr cone = _scene->GetVisualByName(CONE);
+  cone->SetMaterial("NormalReflectBlue");
+
+  VisualPtr cylinder = _scene->GetVisualByName(CYLINDER);
+  cylinder->SetMaterial("NormalReflectGreen");
+
+  VisualPtr plane = _scene->GetVisualByName(PLANE);
+  plane->SetMaterial("NormalReflectWhite");
+
+  VisualPtr sphere = _scene->GetVisualByName(SPHERE);
+  sphere->SetMaterial("NormalReflectRed");
 }
 
 //////////////////////////////////////////////////

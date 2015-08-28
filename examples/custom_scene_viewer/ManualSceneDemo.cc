@@ -61,8 +61,9 @@ void ManualSceneDemo::NextScene()
 //////////////////////////////////////////////////
 void ManualSceneDemo::SelectScene(int _index)
 {
-  this->builderIndex = _index;
-  this->builderIndex %= this->builders.size();
+  int count = this->GetSceneCount();
+  _index += (_index < 0) ? count : 0;
+  this->builderIndex = _index % count;
   this->ChangeScene();
 }
 
@@ -112,8 +113,9 @@ void ManualSceneDemo::NextCamera()
 //////////////////////////////////////////////////
 void ManualSceneDemo::SelectCamera(int _index)
 {
-  this->cameraIndex = _index;
-  this->cameraIndex %= this->cameras.size();
+  int count = this->GetCameraCount();
+  _index += (_index < 0) ? count : 0;
+  this->cameraIndex = _index % count;
 }
 
 //////////////////////////////////////////////////
@@ -170,6 +172,7 @@ int main(int, char**)
   sceneDemo->AddScene(SceneBuilderPtr(new TextureSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new NormalMapSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new ReflectionSceneBuilder));
+  sceneDemo->AddScene(SceneBuilderPtr(new NormalReflectionSceneBuilder));
   // sceneDemo->AddScene(SceneBuilderPtr(new TransparencySceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(1)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(2)));

@@ -333,6 +333,8 @@ namespace ignition
 
       private: virtual void CreateNodeStore();
 
+      private: virtual void CreateMaterials();
+
       protected: unsigned int id;
 
       protected: std::string name;

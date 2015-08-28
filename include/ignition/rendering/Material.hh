@@ -78,9 +78,17 @@ namespace ignition
 
       public: virtual void SetReflectivity(double _reflectivity) = 0;
 
+      public: virtual bool GetCastShadows() const = 0;
+
+      public: virtual void SetCastShadows(bool _castShadows) = 0;
+
       public: virtual bool GetReceiveShadows() const = 0;
 
       public: virtual void SetReceiveShadows(bool _receiveShadows) = 0;
+
+      public: virtual bool GetReflectionEnabled() const = 0;
+
+      public: virtual void SetReflectionEnabled(bool _enabled) = 0;
 
       public: virtual bool HasTexture() const = 0;
 

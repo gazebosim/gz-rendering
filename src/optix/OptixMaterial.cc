@@ -154,6 +154,19 @@ void OptixMaterial::SetReflectivity(double _reflectivity)
 }
 
 //////////////////////////////////////////////////
+bool OptixMaterial::GetCastShadows() const
+{
+  return this->castShadows;
+}
+
+//////////////////////////////////////////////////
+void OptixMaterial::SetCastShadows(bool _castShadows)
+{
+  this->castShadows = _castShadows;
+  this->colorDirty = true;
+}
+
+//////////////////////////////////////////////////
 bool OptixMaterial::GetReceiveShadows() const
 {
   return this->receiveShadows;
@@ -163,6 +176,19 @@ bool OptixMaterial::GetReceiveShadows() const
 void OptixMaterial::SetReceiveShadows(bool _receiveShadows)
 {
   this->receiveShadows = _receiveShadows;
+  this->colorDirty = true;
+}
+
+//////////////////////////////////////////////////
+bool OptixMaterial::GetReflectionEnabled() const
+{
+  return this->reflectionEnabled;
+}
+
+//////////////////////////////////////////////////
+void OptixMaterial::SetReflectionEnabled(bool _reflectionEnabled)
+{
+  this->reflectionEnabled = _reflectionEnabled;
   this->colorDirty = true;
 }
 
@@ -335,6 +361,11 @@ void OptixMaterial::WriteColorToDeviceImpl()
   this->optixMaterial["emissive"]->setFloat(this->emissive.r, this->emissive.g, this->emissive.b);
   this->optixMaterial["reflectivity"]->setFloat(this->reflectivity);
   this->optixMaterial["transparency"]->setFloat(this->transparency);
+
+  // TODO: employ bool bitmask
+  this->optixMaterial["lightingEnabled"]->setUint(this->lightingEnabled);
+  this->optixMaterial["castShadows"]->setUint(this->castShadows);
+  this->optixMaterial["receiveShadows"]->setUint(this->receiveShadows);
 }
 
 //////////////////////////////////////////////////

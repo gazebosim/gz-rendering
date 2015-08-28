@@ -35,7 +35,12 @@ const std::string OptixMaterial::PTX_ANY_HIT_FUNC("AnyHit");
 //////////////////////////////////////////////////  
 OptixMaterial::OptixMaterial() :
   colorDirty(true),
-  normalMapDirty(true)
+  textureDirty(true),
+  normalMapDirty(true),
+  optixMaterial(NULL),
+  optixTexture(NULL),
+  optixNormalMap(NULL),
+  optixEmptyTexture(NULL)
 {
 }
 
@@ -179,24 +184,21 @@ void OptixMaterial::SetTexture(const std::string &_name)
   if (_name.empty())
   {
     this->ClearTexture();
-    return;
   }
-
-  this->SetTextureImpl(_name);
-  this->textureName = _name;
+  else if (_name != this->textureName)
+  {
+    this->textureName = _name;
+    this->textureDirty = true;
+  }
 }
 
 //////////////////////////////////////////////////
 void OptixMaterial::ClearTexture()
 {
-  if (this->optixTexture)
+  if (this->HasTexture())
   {
-    this->optixMaterial["texSampler"]->setTextureSampler(
-        this->optixEmptyTexture);
-
-    this->optixTexture->destroy();
-    this->optixTexture = 0;
     this->textureName = "";
+    this->textureDirty = true;
   }
 }
 
@@ -218,20 +220,22 @@ void OptixMaterial::SetNormalMap(const std::string &_name)
   if (_name.empty())
   {
     this->ClearNormalMap();
-    return;
   }
-
-  // TODO: implement
-  this->normalMapName = _name;
-  this->normalMapDirty = true;
+  else if (_name != this->normalMapName)
+  {
+    this->normalMapName = _name;
+    this->normalMapDirty = true;
+  }
 }
 
 //////////////////////////////////////////////////
 void OptixMaterial::ClearNormalMap()
 {
-  // TODO: implement
-  this->normalMapName = "";
-  this->normalMapDirty = true;
+  if (this->HasNormalMap())
+  {
+    this->normalMapName = "";
+    this->normalMapDirty = true;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -244,12 +248,45 @@ ShaderType OptixMaterial::GetShaderType() const
 void OptixMaterial::SetShaderType(ShaderType _type)
 {
   this->shaderType = (ShaderUtil::IsValid(_type)) ? _type : ST_PIXEL;
+  // TODO: update normal space
 }
 
 //////////////////////////////////////////////////
 void OptixMaterial::PreRender()
 {
   this->WriteColorToDevice();
+  this->WriteTextureToDevice();
+  this->WriteNormalMapToDevice();
+}
+
+//////////////////////////////////////////////////
+void OptixMaterial::Destroy()
+{
+  if (this->optixTexture)
+  {
+    this->optixTexture->destroy();
+    this->optixTexture = 0;
+  }
+
+  if (this->optixNormalMap)
+  {
+    this->optixNormalMap->destroy();
+    this->optixNormalMap = 0;
+  }
+
+  if (this->optixEmptyTexture)
+  {
+    this->optixEmptyTexture->destroy();
+    this->optixEmptyTexture = 0;
+  }
+
+  if (this->optixMaterial)
+  {
+    this->optixMaterial->destroy();
+    this->optixMaterial = 0;
+  }
+
+  BaseMaterial::Destroy();
 }
 
 //////////////////////////////////////////////////
@@ -269,9 +306,19 @@ void OptixMaterial::WriteColorToDevice()
 }
 
 //////////////////////////////////////////////////
+void OptixMaterial::WriteTextureToDevice()
+{
+  if (this->textureDirty)
+  {
+    this->WriteTextureToDeviceImpl();
+    this->textureDirty = false;
+  }
+}
+
+//////////////////////////////////////////////////
 void OptixMaterial::WriteNormalMapToDevice()
 {
-  if (this->colorDirty)
+  if (this->normalMapDirty)
   {
     this->WriteNormalMapToDeviceImpl();
     this->normalMapDirty = false;
@@ -281,6 +328,7 @@ void OptixMaterial::WriteNormalMapToDevice()
 //////////////////////////////////////////////////
 void OptixMaterial::WriteColorToDeviceImpl()
 {
+  // TODO: clean up
   this->optixMaterial["diffuse"]->setFloat(this->diffuse.r, this->diffuse.g, this->diffuse.b);
   this->optixMaterial["ambient"]->setFloat(this->ambient.r, this->ambient.g, this->ambient.b);
   this->optixMaterial["specular"]->setFloat(this->specular.r, this->specular.g, this->specular.b);
@@ -290,17 +338,47 @@ void OptixMaterial::WriteColorToDeviceImpl()
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::WriteNormalMapToDeviceImpl()
+void OptixMaterial::WriteTextureToDeviceImpl()
 {
-  // TODO: implement
+  if (this->optixTexture)
+  {
+    this->optixTexture->destroy();
+    this->optixTexture = 0;
+  }
+
+  if (this->textureName.empty())
+  {
+    this->optixMaterial["texSampler"]->setTextureSampler(
+        this->optixEmptyTexture);
+  }
+  else
+  {
+    OptixTextureFactory texFactory(this->scene);
+    this->optixTexture = texFactory.Create(this->textureName);
+    this->optixMaterial["texSampler"]->setTextureSampler(this->optixTexture);
+  }
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetTextureImpl(const std::string &_name)
+void OptixMaterial::WriteNormalMapToDeviceImpl()
 {
-  OptixTextureFactory texFactory(this->scene);
-  this->optixTexture = texFactory.Create(_name);
-  this->optixMaterial["texSampler"]->setTextureSampler(this->optixTexture);
+  if (this->optixNormalMap)
+  {
+    this->optixNormalMap->destroy();
+    this->optixNormalMap = 0;
+  }
+
+  if (this->normalMapName.empty())
+  {
+    this->optixMaterial["normSampler"]->setTextureSampler(
+        this->optixEmptyTexture);
+  }
+  else
+  {
+    OptixTextureFactory texFactory(this->scene);
+    this->optixNormalMap = texFactory.Create(this->normalMapName);
+    this->optixMaterial["normSampler"]->setTextureSampler(this->optixNormalMap);
+  }
 }
 
 //////////////////////////////////////////////////

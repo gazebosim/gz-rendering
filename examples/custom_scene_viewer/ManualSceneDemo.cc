@@ -168,6 +168,7 @@ int main(int, char**)
   sceneDemo->AddScene(SceneBuilderPtr(new SimpleSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new AllShapesSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new TextureSceneBuilder));
+  sceneDemo->AddScene(SceneBuilderPtr(new NormalMapSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new ReflectionSceneBuilder));
   // sceneDemo->AddScene(SceneBuilderPtr(new TransparencySceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(1)));

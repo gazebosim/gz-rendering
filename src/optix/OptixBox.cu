@@ -24,13 +24,12 @@ rtDeclareVariable(float3, scale, , );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
+rtDeclareVariable(float3, shadingTangent, attribute shadingTangent, );
 rtDeclareVariable(float2, texCoord, attribute texCoord, );
 
-static __inline__ __device__ float3 GetNormal(const float3 &_t0,
-    const float3 &_t1, float _t)
+static __inline__ __device__ void GetVectors(const float3 &_t0,
+    const float3 &_t1, float _t, float3 &_norm, float3 &_tang)
 {
-  // TODO: don't use ==
-
   // match to min normal
   float3 neg = make_float3(_t == _t0.x ? 1 : 0,
                            _t == _t0.y ? 1 : 0,
@@ -42,7 +41,12 @@ static __inline__ __device__ float3 GetNormal(const float3 &_t0,
                            _t == _t1.z ? 1 : 0);
 
   // compute final normal
-  return pos - neg;
+  _norm = pos - neg;
+
+  // compute normal tangent
+  if (_norm.x !=  0) _tang.y =  _norm.x;
+  if (_norm.y !=  0) _tang.x = -_norm.y;
+  if (_norm.z !=  0) _tang.y = -_norm.z;
 }
 
 static __inline__ __device__ float2 GetTextureCoordinate(const float3 &_p,
@@ -67,7 +71,7 @@ static __inline__ __device__ float2 GetTextureCoordinate(const float3 &_p,
     v = _p.y / scale.y;
   }
 
-  return make_float2(u, v);
+  return make_float2(u, v) + 0.5;
 }
 
 static __inline__ __device__ bool ReportPotentialIntersect(float3 _t0,
@@ -75,14 +79,13 @@ static __inline__ __device__ bool ReportPotentialIntersect(float3 _t0,
 {
   if (rtPotentialIntersection(_t))
   {
-    float3 normal = GetNormal(_t0, _t1, _t);
+    float3 normal, tangent;
+    GetVectors(_t0, _t1, _t, normal, tangent);
+
     shadingNormal = geometricNormal = normal;
+    shadingTangent = tangent;
 
     float3 hitPoint = _t * ray.direction + ray.origin;
-    float3 normInv = -normal + 1;
-    float3 xxx = hitPoint * normInv;
-    hitPoint / scale;
-
     texCoord = GetTextureCoordinate(hitPoint, normal);
 
     return rtReportIntersection(0);
@@ -93,15 +96,16 @@ static __inline__ __device__ bool ReportPotentialIntersect(float3 _t0,
 
 RT_PROGRAM void Intersect(int)
 {
-  // get flight time to each extrema
+  // get time to each extrema
   float3 ex = scale / 2;
   float3 t0 = (-ex - ray.origin) / ray.direction;
   float3 t1 = ( ex - ray.origin) / ray.direction;
 
-  // determine closest extrema
+  // determine extrema times per coord
   float3 near = fminf(t0, t1);
   float3 far  = fmaxf(t0, t1);
 
+  // determine extrema times
   float tmin = fmaxf(near);
   float tmax = fminf(far);
 

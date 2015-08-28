@@ -185,10 +185,20 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     if (!_scene->MaterialRegistered(childName))
     {
       MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
-      // mat->SetTexture("/home/mike/Development/ign-rendering/build/examples/custom_scene_viewer/media/tiles.jpg");
-
-
       mat->SetTexture("./examples/custom_scene_viewer/media/tiles.jpg");
+      _scene->RegisterMaterial(childName, mat);
+    }
+  }
+
+  for (auto baseName : baseNames)
+  {
+    std::string parentName = "Texture" + baseName;
+    std::string childName = "Normal" + baseName;
+
+    if (!_scene->MaterialRegistered(childName))
+    {
+      MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
+      mat->SetNormalMap("./examples/custom_scene_viewer/media/brick_normal.jpg");
       _scene->RegisterMaterial(childName, mat);
     }
   }
@@ -208,7 +218,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
   for (auto baseName : baseNames)
   {
-    std::string parentName = "Texture" + baseName;
+    std::string parentName = "Reflect" + baseName;
     std::string childName = "Trans" + baseName;
 
     if (!_scene->MaterialRegistered(childName))
@@ -263,7 +273,7 @@ void SimpleSceneBuilder::BuildScene(ScenePtr _scene)
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalPosition(3.0, 0.0, 0.0);
   plane->SetLocalRotation(0.0, 0.0, 0.0);
-  plane->SetLocalScale(5.0, 50.0, 1.0);
+  plane->SetLocalScale(5.0, 10.5, 1.0);
   plane->SetMaterial("White");
   root->AddChild(plane);
 }
@@ -367,6 +377,38 @@ void TextureSceneBuilder::BuildScene(ScenePtr _scene)
 
   VisualPtr sphere = _scene->GetVisualByName(SPHERE);
   sphere->SetMaterial("TextureRed");
+}
+
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+NormalMapSceneBuilder::NormalMapSceneBuilder()
+{
+}
+
+//////////////////////////////////////////////////
+NormalMapSceneBuilder::~NormalMapSceneBuilder()
+{
+}
+
+//////////////////////////////////////////////////
+void NormalMapSceneBuilder::BuildScene(ScenePtr _scene)
+{
+  TextureSceneBuilder::BuildScene(_scene);
+
+  VisualPtr box = _scene->GetVisualByName(BOX);
+  box->SetMaterial("NormalYellow");
+
+  VisualPtr cone = _scene->GetVisualByName(CONE);
+  cone->SetMaterial("NormalBlue");
+
+  VisualPtr cylinder = _scene->GetVisualByName(CYLINDER);
+  cylinder->SetMaterial("NormalGreen");
+
+  VisualPtr plane = _scene->GetVisualByName(PLANE);
+  plane->SetMaterial("NormalWhite");
+
+  VisualPtr sphere = _scene->GetVisualByName(SPHERE);
+  sphere->SetMaterial("NormalRed");
 }
 
 //////////////////////////////////////////////////

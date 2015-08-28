@@ -22,14 +22,16 @@ rtDeclareVariable(float3, scale, , );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
+rtDeclareVariable(float3, shadingTangent, attribute shadingTangent, );
 rtDeclareVariable(float2, texCoord, attribute texCoord, );
 
 static __inline__ __device__ bool ReportPotentialIntersect(float _t,
-    const float3 &_n, const float2 &_uv)
+    const float3 &_norm, const float3 &_tang, const float2 &_uv)
 {
   if (rtPotentialIntersection(_t))
   {
-    shadingNormal = geometricNormal = _n;
+    shadingNormal = geometricNormal = _norm;
+    shadingTangent = _tang;
     texCoord = _uv;
     return rtReportIntersection(0);
   }
@@ -71,6 +73,7 @@ RT_PROGRAM void Intersect(int)
 
   float3 p = (t1 < t2) ? p1 : p2;
   float3 n;
+  float3 tg;
   float2 uv;
   float t;
 
@@ -79,29 +82,37 @@ RT_PROGRAM void Intersect(int)
     t = (hh - origin.z) / direction.z;
     p = origin + t * direction;
     n = make_float3(0, 0, 1);
+    tg = make_float3(0, -1, 0);
 
-    uv.x = atan2(p.y, p.x) / M_PI;
-    uv.y = (p.x * p.x + p.y * p.y) / (radius * radius);
+    uv.x = (p.y / scale.z + 0.5);
+    uv.y = (p.x / scale.z + 0.5);
   }
   else if (p.z < -hh)
   {
     t = (-hh - origin.z) / direction.z;
     p = origin + t * direction;
     n = make_float3(0, 0, -1);
+    tg = make_float3(0, 1, 0);
 
-    uv.x = atan2(p.y, p.x) / M_PI;
-    uv.y = (p.x * p.x + p.y * p.y) / (radius * radius);
+    uv.x = (0.5 - p.y / scale.z);
+    uv.y = (0.5 - p.x / scale.z);
   }
   else
   {
     t = fminf(t1, t2);
     n = make_float3(p.x, p.y, 0);
     n = normalize(n);
+
+    float xt = (n.y > 0) ? -n.y :  n.y;
+    float yt = (n.x > 0) ?  n.x : -n.x;
+    tg = normalize(make_float3(xt, yt, 0));
+
     uv.x = atan2(p.y, p.x) / M_PI;
     uv.y = p.z;
   }
 
-  ReportPotentialIntersect(t, n, uv);
+  uv = uv + 0.5;
+  ReportPotentialIntersect(t, n, tg, uv);
 }
 
 RT_PROGRAM void Bounds(int, float _result[6])

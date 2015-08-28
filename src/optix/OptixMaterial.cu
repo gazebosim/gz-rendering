@@ -16,6 +16,7 @@
  */
 #include <optix.h>
 #include <optix_math.h>
+#include <optixu/optixu_matrix_namespace.h>
 #include "ignition/rendering/optix/OptixRayTypes.hh"
 #include "ignition/rendering/optix/OptixLightTypes.hh"
 
@@ -29,6 +30,8 @@ rtDeclareVariable(rtObject, rootGroup, , );
 rtBuffer<OptixDirectionalLightData> directionalLights;
 rtBuffer<OptixPointLightData> pointLights;
 rtTextureSampler<float4, 2> texSampler;
+rtTextureSampler<float4, 2> normSampler;
+rtDeclareVariable(bool, normWorldSpace, , );
 
 // material variables
 rtDeclareVariable(float3, ambient, , );
@@ -45,6 +48,7 @@ rtDeclareVariable(OptixShadowRayData, shadowData, rtPayload, );
 rtDeclareVariable(float, hitDist, rtIntersectionDistance, );
 rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
+rtDeclareVariable(float3, shadingTangent, attribute shadingTangent, );
 rtDeclareVariable(float2, texCoord, attribute texCoord, );
 
 static __device__ __inline__ float3 Exp(const float3 &_x)
@@ -96,6 +100,23 @@ RT_PROGRAM void ClosestHit()
 
   float3 worldShadeNorm = normalize(
       rtTransformNormal(RT_OBJECT_TO_WORLD, shadingNormal));
+
+  float3 worldShadeTang = normalize(
+      rtTransformNormal(RT_OBJECT_TO_WORLD, shadingTangent));
+
+  float3 matNorm = make_float3(tex2D(normSampler, texCoord.x, texCoord.y));
+
+  if ((matNorm.x > 0 || matNorm.y > 0 || matNorm.z > 0) && 
+      (shadingTangent.x != 0 || shadingTangent.y != 0 || shadingTangent.z != 0))
+  {
+    optix::Matrix<3, 3> matrix;
+    matrix.setCol(0, worldShadeNorm);
+    matrix.setCol(1, worldShadeTang);
+    matrix.setCol(2, cross(worldShadeNorm, worldShadeTang));
+
+    matNorm = normalize(matNorm - 0.5);
+    worldShadeNorm = matrix * matNorm;
+  }
 
   float3 forwardNormal = faceforward(worldShadeNorm, -ray.direction,
       worldGeomNorm);
@@ -235,11 +256,13 @@ RT_PROGRAM void ClosestHit()
     float3 R = reflect(ray.direction, forwardNormal);
     optix::Ray refRay(hitPoint, R, RT_RADIANCE, sceneEpsilon);
     rtTrace(rootGroup, refRay, refData);
-    color += reflectivity * refData.color;
+    
+    // TODO: determine the actual root of the problem
+    if (refData.color.x < 1 || refData.color.y < 1 || refData.color.z < 1)
+      color += reflectivity * refData.color;
   }
 
-  const float2 uv = texCoord;
-  float3 tcolor = make_float3(tex2D(texSampler, uv.x, uv.y));
+  float3 tcolor = make_float3(tex2D(texSampler, texCoord.x, texCoord.y));
   float3 finalColor = color + color * tcolor * tcolor * tcolor;
 
   radianceData.color = (1 - transparency) * finalColor +

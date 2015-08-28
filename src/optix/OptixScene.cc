@@ -91,11 +91,6 @@ void OptixScene::PreRender()
   this->lightManager->Clear();
   BaseScene::PreRender();
   this->lightManager->PreRender();
-  this->optixRootAccel->markDirty();
-
-  // TODO: remove for release
-  optixContext->validate();
-  optixContext->compile();
 }
 
 //////////////////////////////////////////////////
@@ -374,12 +369,12 @@ void OptixScene::CreateContext()
   this->optixContext = optix::Context::create();
   // this->optixContext->setStackSize(65536); // TODO: set dynamically
   // this->optixContext->setStackSize(45536); // TODO: set dynamically
-  this->optixContext->setStackSize(20000); // TODO: set dynamically
+  this->optixContext->setStackSize(10000); // TODO: set dynamically
   this->optixContext->setEntryPointCount(0);
   this->optixContext->setRayTypeCount(RT_COUNT);
 
   // TODO: setup programatically
-  this->optixContext["sceneEpsilon"]->setFloat(1E-3); // TODO: set dynamically
+  this->optixContext["sceneEpsilon"]->setFloat(1E-4); // TODO: set dynamically
   this->optixContext["maxReflectionDepth"]->setInt(3);
   this->optixContext["maxRefractionDepth"]->setInt(3);
   this->optixContext["importanceCutoff"]->setFloat(0.01);

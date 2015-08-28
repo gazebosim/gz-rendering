@@ -44,3 +44,4 @@ immediate future:
  - Update SDF to include all material properties
  - Update `common::Material` to include all material properties
  - Add skybox functionality (include skyx?)
+ - Add render type mask (e.g. gui-only)

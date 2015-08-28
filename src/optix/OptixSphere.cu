@@ -22,6 +22,7 @@ rtDeclareVariable(float3, scale, , );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
+rtDeclareVariable(float3, shadingTangent, attribute shadingTangent, );
 rtDeclareVariable(float2, texCoord, attribute texCoord, );
 
 static __inline__ __device__ bool ReportPotentialIntersect(float _t)
@@ -32,9 +33,13 @@ static __inline__ __device__ bool ReportPotentialIntersect(float _t)
     float3 normal = (_t * ray.direction + ray.origin) / radius;
     shadingNormal = geometricNormal = normal;
 
+    float xt = (shadingNormal.y > 0) ? -shadingNormal.y :  shadingNormal.y;
+    float yt = (shadingNormal.x > 0) ?  shadingNormal.x : -shadingNormal.x;
+    shadingTangent = normalize(make_float3(xt, yt, 0));
+
     float u = atan2(normal.y, normal.x) / M_PI;
     float v = acos(normal.z) / M_PI;
-    texCoord = make_float2(u, v);
+    texCoord = make_float2(u, v) + 0.5;
 
     return rtReportIntersection(0);
   }

@@ -27,6 +27,7 @@ rtDeclareVariable(float3, scale, , );
 rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float3, geometricNormal, attribute geometricNormal, );
 rtDeclareVariable(float3, shadingNormal, attribute shadingNormal, );
+rtDeclareVariable(float3, shadingTangent, attribute shadingTangent, );
 rtDeclareVariable(float2, texCoord, attribute texCoord, );
 
 RT_PROGRAM void Intersect(int primIndex)
@@ -66,6 +67,7 @@ RT_PROGRAM void Intersect(int primIndex)
         indices.z < 0 )
       {
         texCoord = make_float2( 0.0f, 0.0f );
+        shadingTangent = make_float3(0);
       }
       else
       {
@@ -74,6 +76,7 @@ RT_PROGRAM void Intersect(int primIndex)
         float2 t2 = texCoordBuffer[ indices.z ];
 
         texCoord = t1 * beta + t2 * gamma + t0 * (1.0f - beta - gamma);
+        shadingTangent = make_float3(0); // TODO: implement
       }
 
       rtReportIntersection(0);

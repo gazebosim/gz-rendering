@@ -31,7 +31,7 @@ namespace ignition
     enum IGNITION_VISIBLE ShaderType
     {
       ST_UNKNOWN  = 0, /// < Unknown or errant type
-      ST_shader    = 1, /// < Shader shader
+      ST_PIXEL    = 1, /// < Shader shader
       ST_VERTEX   = 2, /// < Vertex shader
       ST_NORM_OBJ = 3, /// < Object-space normal map shader
       ST_NORM_TAN = 4, /// < Tangent-space normal map shader

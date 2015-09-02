@@ -30,25 +30,41 @@ namespace gazebo
 
 namespace ignition
 {
-
   namespace rendering
   {
+    /// \struct MeshDescriptor MeshDescriptor.hh
+    /// ignition/rendering/MeshDescriptor.hh
+    /// \brief Describes how a Mesh should be loaded
     struct IGNITION_VISIBLE MeshDescriptor
     {
+      /// \brief Constructor
       public: MeshDescriptor();
 
+      /// \brief Constructor. A common::Mesh will be retrieved from the
+      /// MeshManager by the given name upon a call to Normalize.
+      /// \param[in] _meshName Name of the mesh to load
       public: MeshDescriptor(const std::string &_meshName);
 
+      /// \brief Constructor
+      /// \param[in] _mesh Mesh to load
       public: MeshDescriptor(const gazebo::common::Mesh *_mesh);
 
+      /// \brief Ensures both the meshName and mesh member variables have been
+      /// assigned. If mesh is not null, it will be used to override the value
+      /// of meshName.
       public: MeshDescriptor Normalize() const;
 
+      /// \brief common::Mesh object
       public: const gazebo::common::Mesh *mesh;
 
+      /// \brief Name of the registered Mesh
       public: std::string meshName;
 
+      /// \brief Name of the sub-mesh to be loaded. An empty string signifies
+      /// all sub-meshes should be loaded.
       public: std::string subMeshName;
 
+      /// \brief Denotes if the loaded sub-mesh vertices should be centered
       public: bool centerSubMesh;
     };
   }

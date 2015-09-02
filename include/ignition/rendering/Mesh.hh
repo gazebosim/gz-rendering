@@ -25,34 +25,60 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \class Mesh Mesh.hh ignition/rendering/Mesh
+    /// \brief Represents a collection of mesh geometries
     class IGNITION_VISIBLE Mesh :
       public virtual Geometry
     {
+      /// \brief Deconstructor
       public: virtual ~Mesh() { }
 
+      /// \brief Get the sub-mesh count
+      /// \return The sub-mesh count
       public: virtual unsigned int GetSubMeshCount() const = 0;
 
+      /// \brief Determine if has given sub-mesh
+      /// \return True if has given sub-mesh
       public: virtual bool HasSubMesh(ConstSubMeshPtr _subMesh) const = 0;
 
+      /// \brief Determine if has sub-mesh with given name
+      /// \return True if has sub-mesh with given name
       public: virtual bool HasSubMeshName(const std::string &_name) const = 0;
 
+      /// \brief Get sub-mesh with given name
+      /// \return The sub-mesh with the given name
       public: virtual SubMeshPtr GetSubMeshByName(
                   const std::string &_name) const = 0;
 
+      /// \brief Get sub-mesh at given index
+      /// \return The sub-mesh at the given index
       public: virtual SubMeshPtr GetSubMeshByIndex(
                   unsigned int _index) const = 0;
     };
 
+    /// \class SubMesh Mesh.hh ignition/rendering/Mesh.hh
+    /// \brief Represents a single mesh geometry
     class IGNITION_VISIBLE SubMesh :
       public virtual Object
     {
+      /// \brief Deconstructor
       public: virtual ~SubMesh() { }
 
+      /// \brief Get the currently assigned material
+      /// \return The currently assigned material
       public: virtual MaterialPtr GetMaterial() const = 0;
 
+      /// \brief Set the materials of this SubMesh. The specified material
+      /// will be retrieved from the parent Scene. If no material is registered
+      /// by the given name, no work will be done.
+      /// \param[in] _name Name of registered Material
+      /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetMaterial(const std::string &_name,
                   bool unique = true) = 0;
 
+      /// \brief Set the materials of this SubMesh
+      /// \param[in] _material New Material to be assigned
+      /// \param[in] _unique True if the given material should be cloned
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true) = 0;
     };

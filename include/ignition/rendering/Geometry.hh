@@ -25,20 +25,37 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \class Geometry Geometry.hh ignition/rendering/Geometry.hh
+    /// \brief Represents a geometric shape to be rendered
     class IGNITION_VISIBLE Geometry :
       public virtual Object
     {
+      /// \brief Deconstructor
       public: virtual ~Geometry() { }
 
+      /// \brief Determine if this Geometry is attached to a Visual
+      /// \return True if this Geometry has a parent Visual
       public: virtual bool HasParent() const = 0;
 
+      /// \brief Get the parent Visual
+      /// \return the parent Visual
       public: virtual VisualPtr GetParent() const = 0;
 
+      /// \brief Detach this Geometry from its parent Visual. If this
+      /// Geometry does not have a parent, no work will be done.
       public: virtual void RemoveParent() = 0;
 
+      /// \brief Set the materials of this Geometry. The specified material
+      /// will be retrieved from the parent Scene. If no material is registered
+      /// by the given name, no work will be done.
+      /// \param[in] _name Name of registered Material
+      /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetMaterial(const std::string &_name,
                   bool unique = true) = 0;
 
+      /// \brief Set the materials of this Geometry
+      /// \param[in] _material New Material to be assigned
+      /// \param[in] _unique True if the given material should be cloned
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true) = 0;
     };

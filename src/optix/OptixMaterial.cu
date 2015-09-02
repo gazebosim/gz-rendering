@@ -75,7 +75,7 @@ RT_PROGRAM void AnyHit()
 
     float ndi = fabs(dot(worldNormal, ray.direction));
 
-    shadowData.attenuation *= 1 - fresnel_schlick(ndi, 5, 1 - shadowAtten,
+    shadowData.attenuation *= 1.0 - fresnel_schlick(ndi, 5, 1 - shadowAtten,
         make_float3(1));
 
     // float3 ones = make_float3(1);

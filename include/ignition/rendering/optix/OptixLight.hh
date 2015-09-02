@@ -43,15 +43,15 @@ namespace ignition
 
       public: virtual double GetAttenuationConstant() const;
 
-      public: virtual void SetAttenuationConstant(double _weight);
+      public: virtual void SetAttenuationConstant(double _value);
 
       public: virtual double GetAttenuationLinear() const;
 
-      public: virtual void SetAttenuationLinear(double _weight);
+      public: virtual void SetAttenuationLinear(double _value);
 
       public: virtual double GetAttenuationQuadratic() const;
 
-      public: virtual void SetAttenuationQuadratic(double _weight);
+      public: virtual void SetAttenuationQuadratic(double _value);
 
       public: virtual double GetAttenuationRange() const;
 

@@ -71,9 +71,9 @@ double OptixLight::GetAttenuationConstant() const
 }
 
 //////////////////////////////////////////////////
-void OptixLight::SetAttenuationConstant(double _weight)
+void OptixLight::SetAttenuationConstant(double _value)
 {
-  this->GetCommonData().atten.constant = _weight;
+  this->GetCommonData().atten.constant = _value;
 }
 
 //////////////////////////////////////////////////
@@ -83,9 +83,9 @@ double OptixLight::GetAttenuationLinear() const
 }
 
 //////////////////////////////////////////////////
-void OptixLight::SetAttenuationLinear(double _weight)
+void OptixLight::SetAttenuationLinear(double _value)
 {
-  this->GetCommonData().atten.linear = _weight;
+  this->GetCommonData().atten.linear = _value;
 }
 
 //////////////////////////////////////////////////
@@ -95,9 +95,9 @@ double OptixLight::GetAttenuationQuadratic() const
 }
 
 //////////////////////////////////////////////////
-void OptixLight::SetAttenuationQuadratic(double _weight)
+void OptixLight::SetAttenuationQuadratic(double _value)
 {
-  this->GetCommonData().atten.quadratic = _weight;
+  this->GetCommonData().atten.quadratic = _value;
 }
 
 //////////////////////////////////////////////////

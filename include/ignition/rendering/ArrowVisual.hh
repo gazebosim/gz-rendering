@@ -23,13 +23,20 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \class ArrowVisual ArrowVisual.hh ignition/rendering/ArrowVisual.hh
+    /// \brief Represents a arrow composite visual
     class IGNITION_VISIBLE ArrowVisual :
       public virtual CompositeVisual
     {
+      /// \brief Deconstructor
       public: virtual ~ArrowVisual() { }
 
+      /// \brief Get arrow-head visual
+      /// \return The arrow-head visual
       public: virtual VisualPtr GetHead() const = 0;
 
+      /// \brief Get arrow-shaft visual
+      /// \return The arrow-shaft visual
       public: virtual VisualPtr GetShaft() const = 0;
     };
   }

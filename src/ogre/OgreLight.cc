@@ -71,9 +71,9 @@ double OgreLight::GetAttenuationConstant() const
 }
 
 //////////////////////////////////////////////////
-void OgreLight::SetAttenuationConstant(double _weight)
+void OgreLight::SetAttenuationConstant(double _value)
 {
-  this->attenConstant = _weight;
+  this->attenConstant = _value;
   this->UpdateAttenuation();
 }
 
@@ -84,9 +84,9 @@ double OgreLight::GetAttenuationLinear() const
 }
 
 //////////////////////////////////////////////////
-void OgreLight::SetAttenuationLinear(double _weight)
+void OgreLight::SetAttenuationLinear(double _value)
 {
-  this->attenLinear = _weight;
+  this->attenLinear = _value;
   this->UpdateAttenuation();
 }
 
@@ -97,9 +97,9 @@ double OgreLight::GetAttenuationQuadratic() const
 }
 
 //////////////////////////////////////////////////
-void OgreLight::SetAttenuationQuadratic(double _weight)
+void OgreLight::SetAttenuationQuadratic(double _value)
 {
-  this->attenQuadratic = _weight;
+  this->attenQuadratic = _value;
   this->UpdateAttenuation();
 }
 

@@ -28,32 +28,71 @@ namespace ignition
   {
     class RenderEngine;
 
+    /// \class RenderEngineManager RenderEngineManager.hh
+    /// ignition/rendering/RenderEngineManager.hh
+    /// \brief Collection of render-engines. This provides access to all the
+    /// render-engines available at runtime. RenderEngine objects should not
+    /// be access directly, but instead via the RenderEngineManager to maintain
+    /// a flexible render-engine agnostic design.
     class IGNITION_VISIBLE RenderEngineManager :
       public virtual SingletonT<RenderEngineManager>
     {
+      /// \brief Constructor
       public: RenderEngineManager();
 
+      /// \brief Deconstructor
       public: ~RenderEngineManager();
 
+      /// \brief Get the number of available render-engines
+      /// \return the number of available render-engines
       public: unsigned int GetEngineCount() const;
 
+      /// \brief Determine if a render-engine with the given name is avaiable
+      /// \param[in] _name Name of the desired render-engine
+      /// \return True if the specified render-engine is available
       public: bool HasEngine(const std::string &_name) const;
 
+      /// \brief Get the render-engine with the given name. If the no
+      /// render-engine is registered under the given name, NULL will be
+      /// returned. 
+      /// \param[name] _name Name of the desired render-engine
+      /// \return The specified render-engine
       public: RenderEngine *GetEngine(const std::string &_name) const;
 
+      /// \brief Get the render-engine at the given index. If the no
+      /// render-engine is exists at the given index, NULL will be returned. 
+      /// \param[in] _index Index of the desired render-engine
+      /// \return The specified render-engine
       public: RenderEngine *GetEngineAt(unsigned int _index) const;
 
+      /// \brief Register a new render-engine under the given name. If the
+      /// given name is already in use, the render-engine will not be
+      /// registered.
+      /// \param[in] _name Name the render-engine will be registered under
+      /// \param[in] _engine Render-engine to be registered
       public: void RegisterEngine(const std::string &_name,
                   RenderEngine *_engine);
 
+      /// \brief Unregister a render-engine registered under the given name.
+      /// If the no render-engine is registered under the given name no work
+      /// will be done.
+      /// \param[in] _name Name of the render-engine to unregister
       public: void UnregisterEngine(const std::string &_name);
 
+      /// \brief Unregister the given render-engine. If the given render-engine
+      /// is not currently registered, no work will be done.
+      /// \param[in] _engine Render-engine to unregister
       public: void UnregisterEngine(RenderEngine *_engine);
 
+      /// \brief Unregister a render-engine at the given index. If the no
+      /// render-engine is registered at the given index, no work will be done.
+      /// \param[in] _index Index of the render-engine to unregister
       public: void UnregisterEngineAt(unsigned int _index);
 
+      /// \brief private implementation details
       private: class RenderEngineManagerPrivate *pimpl;
 
+      /// \brief required SingletonT friendship
       private: friend class SingletonT<RenderEngineManager>;
     };
   }

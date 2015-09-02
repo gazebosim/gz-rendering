@@ -42,11 +42,11 @@ namespace ignition
 
       public: virtual void SetSpecularColor(const gazebo::common::Color &_color) = 0;
 
-      public: virtual void SetAttenuationConstant(double _weight) = 0;
+      public: virtual void SetAttenuationConstant(double _value) = 0;
 
-      public: virtual void SetAttenuationLinear(double _weight) = 0;
+      public: virtual void SetAttenuationLinear(double _value) = 0;
 
-      public: virtual void SetAttenuationQuadratic(double _weight) = 0;
+      public: virtual void SetAttenuationQuadratic(double _value) = 0;
 
       public: virtual void SetAttenuationRange(double _range) = 0;
 

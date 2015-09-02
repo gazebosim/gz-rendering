@@ -28,59 +28,132 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \class Camera Camera.hh ignition/rendering/Camera.hh
+    /// \brief Posable camera used for rendering the scene graph
     class IGNITION_VISIBLE Camera :
       public virtual Sensor
     {
+      /// \brief Callback function for new frame render event listeners
       public: typedef boost::function<void(const void*, unsigned int,
           unsigned int, unsigned int, const std::string&)> NewFrameListener;
 
+      /// \brief Deconstructor
       public: virtual ~Camera() { }
 
+      // TODO: remove function
       public: virtual void Load(sdf::ElementPtr _sdf) = 0;
 
+      /// \brief Get the image width in pixels
+      /// \return The image width in pixels
       public: virtual unsigned int GetImageWidth() const = 0;
 
+      /// \brief Set the image width in pixels
+      /// \param[in] _width New image width in pixels
       public: virtual void SetImageWidth(unsigned int _width) = 0;
 
+      /// \brief Get the image height in pixels
+      /// \return The image height in pixels
       public: virtual unsigned int GetImageHeight() const = 0;
 
+      /// \brief Set the image height in pixels
+      /// \param[in] _height New image height in pixels
       public: virtual void SetImageHeight(unsigned int _height) = 0;
 
+      /// \brief Get the image pixel format. If the image pixel format has not
+      /// been set with a valid value, PF_UNKNOWN will be returned.
+      /// \return The image pixel format
       public: virtual PixelFormat GetImageFormat() const = 0;
 
+      /// \brief Set the image pixel format
+      /// \param[in] _format New image pixel format
       public: virtual void SetImageFormat(PixelFormat _format) = 0;
 
+      /// \brief Get the image channel depth
+      /// \return The image channel depth
       public: virtual unsigned int GetImageDepth() const = 0;
 
+      /// \brief Get the total image memory size in bytes
+      /// \return The image memory size in bytes
       public: virtual unsigned int GetImageMemorySize() const = 0;
 
+      /// \brief Get the camera's horizontal field-of-view
+      /// \return Angle containing the camera's horizontal field-of-view
       public: virtual math::Angle GetHFOV() const = 0;
 
+      /// \brief Set the camera's horizontal field-of-view
+      /// \param[in] _angle Desired horizontal field-of-view
       public: virtual void SetHFOV(const math::Angle &_angle) = 0;
 
+      /// \brief Get the camera's aspect ratio
+      /// \return The camera's aspect ratio
       public: virtual double GetAspectRatio() const = 0;
 
+      /// \brief Set the camera's aspect ratio. This value determines the
+      /// cameras vertical field-of-view. It is often the \code image_height /
+      /// image_width \endcode but this is not necessarily true.
+      /// \return The camera's aspect ratio
       public: virtual void SetAspectRatio(double _ratio) = 0;
 
+      // TODO: add auto-aspect ratio
+
+      /// \brief Get the level of anti-aliasing used during rendering
+      /// \return The level of anti-aliasing used during rendering
       public: virtual unsigned int GetAntiAliasing() const = 0;
 
+      /// \brief Set the level of anti-aliasing used during rendering. If a
+      /// value of 0 is given, no anti-aliasing will be performed. Higher values
+      /// can significantly slow-down rendering times, depending on the
+      /// underlying render engine.
+      /// \param[in] _aa Level of anti-aliasing used during rendering
       public: virtual void SetAntiAliasing(unsigned int _aa) = 0;
 
+      /// \brief Renders the current scene using this camera. This function
+      /// assumes PreRender() has already been called on the parent Scene,
+      /// allowing the camera and the scene itself to prepare for rendering.
       public: virtual void Render() = 0;
 
+      /// \brief Preforms any necessary final rendering work. Once rendering is
+      /// complete the camera will alert any listeners of the new frame event.
+      /// This function should only be called after a call to Render has
+      /// successfully been executed.
       public: virtual void PostRender() = 0;
 
+      /// \brief Created an empty image buffer for capturing images. The
+      /// resulting image will have sufficient memory allocated for subsequent
+      /// calls to this camera's Capture function. However, any changes to this
+      /// cameras properties may invalidate the condition.
+      /// \return A newly allocated Image for storing this cameras images
       public: virtual Image CreateImage() const = 0;
 
+      /// \brief Renders a new frame and writes the results to the given image.
+      /// This is a convenience function for single-camera scenes. It wraps the
+      /// pre-render, render, post-render, and get-image calls into a single
+      /// function. This should be used in applications with multiple cameras
+      /// or multiple consumers of a single camera's images.
+      /// \param[out] _image Output image buffer
       public: virtual void Capture(Image &_image) = 0;
 
+      /// \brief Writes the last rendered image to the given image buffer. This
+      /// function can be called multiple times after PostRender has been
+      /// called, without rendering the scene again. Calling this function
+      /// before a single image has been rendered will have undefined behavior.
+      /// \param[out] _image Output image buffer
       public: virtual void GetImageData(Image &_image) const = 0;
 
+      /// \brief Writes the previously rendered frame to a file. This function
+      /// can be called multiple times after PostRender has been called,
+      /// without rendering the scene again. Calling this function before a
+      /// single image has been rendered will have undefined behavior.
+      /// \param[in] _name Name of the output file
       public: virtual bool SaveFrame(const std::string &_name) = 0;
 
+      /// \brief Subscribes a new listener to this camera's new frame event
+      /// \param[in] _listener New camera listener callback
       public: virtual gazebo::event::ConnectionPtr ConnectNewImageFrame(
                   NewFrameListener _listener) = 0;
 
+      /// \brief Unsubscribes a listener callback from this camera
+      /// \param[in] _conn Callback to be unsubscribed
       public: virtual void DisconnectNewImageFrame(
                   gazebo::event::ConnectionPtr &_conn) = 0;
     };

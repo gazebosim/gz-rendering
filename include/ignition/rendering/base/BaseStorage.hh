@@ -31,11 +31,11 @@ namespace ignition
     class BaseMap :
       public Map<T>
     {
-      typedef boost::shared_ptr<T> TPtr;
+      typedef std::shared_ptr<T> TPtr;
 
-      typedef boost::shared_ptr<const T> ConstTPtr;
+      typedef std::shared_ptr<const T> ConstTPtr;
 
-      typedef boost::shared_ptr<U> UPtr;
+      typedef std::shared_ptr<U> UPtr;
 
       typedef std::map<std::string, UPtr> UMap;
 
@@ -79,11 +79,11 @@ namespace ignition
     class IGNITION_VISIBLE BaseStore :
       public Store<T>
     {
-      typedef boost::shared_ptr<T> TPtr;
+      typedef std::shared_ptr<T> TPtr;
 
-      typedef boost::shared_ptr<const T> ConstTPtr;
+      typedef std::shared_ptr<const T> ConstTPtr;
 
-      typedef boost::shared_ptr<U> UPtr;
+      typedef std::shared_ptr<U> UPtr;
 
       typedef std::map<std::string, UPtr> UStore;
 
@@ -182,15 +182,15 @@ namespace ignition
     class IGNITION_VISIBLE BaseCompositeStore :
       public CompositeStore<T>
     {
-      typedef boost::shared_ptr<T> TPtr;
+      typedef std::shared_ptr<T> TPtr;
 
-      typedef boost::shared_ptr<const T> ConstTPtr;
+      typedef std::shared_ptr<const T> ConstTPtr;
 
       typedef Store<T> TStore;
 
-      typedef boost::shared_ptr<TStore> TStorePtr;
+      typedef std::shared_ptr<TStore> TStorePtr;
 
-      typedef boost::shared_ptr<const TStore> ConstTStorePtr;
+      typedef std::shared_ptr<const TStore> ConstTStorePtr;
 
       typedef std::vector<TStorePtr> TStoreList;
 
@@ -258,17 +258,17 @@ namespace ignition
     class IGNITION_VISIBLE BaseStoreWrapper :
       public StoreWrapper<T, U>
     {
-      typedef boost::shared_ptr<T> TPtr;
+      typedef std::shared_ptr<T> TPtr;
 
-      typedef boost::shared_ptr<const T> ConstTPtr;
+      typedef std::shared_ptr<const T> ConstTPtr;
 
-      typedef boost::shared_ptr<U> UPtr;
+      typedef std::shared_ptr<U> UPtr;
 
-      typedef boost::shared_ptr<const U> ConstUPtr;
+      typedef std::shared_ptr<const U> ConstUPtr;
 
       typedef Store<U> UStore;
 
-      typedef boost::shared_ptr<UStore> UStorePtr;
+      typedef std::shared_ptr<UStore> UStorePtr;
 
       public: BaseStoreWrapper(UStorePtr _store);
 
@@ -443,7 +443,7 @@ namespace ignition
         return false;
       }
 
-      UPtr derived = boost::dynamic_pointer_cast<U>(_value);
+      UPtr derived = std::dynamic_pointer_cast<U>(_value);
 
       if (!derived)
       {
@@ -603,7 +603,7 @@ namespace ignition
         return false;
       }
 
-      UPtr derived = boost::dynamic_pointer_cast<U>(_object);
+      UPtr derived = std::dynamic_pointer_cast<U>(_object);
 
       if (!derived)
       {
@@ -1293,7 +1293,7 @@ namespace ignition
     template <class T, class U>
     bool BaseStoreWrapper<T, U>::Contains(ConstTPtr _object) const
     {
-      ConstUPtr derived = boost::dynamic_pointer_cast<const U>(_object);
+      ConstUPtr derived = std::dynamic_pointer_cast<const U>(_object);
       return this->store->Contains(derived);
     }
 
@@ -1339,7 +1339,7 @@ namespace ignition
     template <class T, class U>
     bool BaseStoreWrapper<T, U>::Add(TPtr _object)
     {
-      UPtr derived = boost::dynamic_pointer_cast<U>(_object);
+      UPtr derived = std::dynamic_pointer_cast<U>(_object);
       return this->store->Add(derived);
     }
 
@@ -1348,7 +1348,7 @@ namespace ignition
     typename BaseStoreWrapper<T, U>::TPtr
     BaseStoreWrapper<T, U>::Remove(TPtr _object)
     {
-      UPtr derived = boost::dynamic_pointer_cast<U>(_object);
+      UPtr derived = std::dynamic_pointer_cast<U>(_object);
       return this->store->Remove(derived);
     }
 
@@ -1387,7 +1387,7 @@ namespace ignition
     template <class T, class U>
     void BaseStoreWrapper<T, U>::Destroy(TPtr _object)
     {
-      UPtr derived = boost::dynamic_pointer_cast<U>(_object);
+      UPtr derived = std::dynamic_pointer_cast<U>(_object);
       this->store->Destroy(derived);
     }
 

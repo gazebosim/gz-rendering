@@ -42,14 +42,14 @@ namespace ignition
     typedef BaseSubMeshStore<OgreSubMesh>   OgreSubMeshStore;
     typedef BaseMaterialMap<OgreMaterial>   OgreMaterialMap;
 
-    typedef boost::shared_ptr<OgreSceneStore>    OgreSceneStorePtr;
-    typedef boost::shared_ptr<OgreNodeStore>     OgreNodeStorePtr;
-    typedef boost::shared_ptr<OgreLightStore>    OgreLightStorePtr;
-    typedef boost::shared_ptr<OgreSensorStore>   OgreSensorStorePtr;
-    typedef boost::shared_ptr<OgreVisualStore>   OgreVisualStorePtr;
-    typedef boost::shared_ptr<OgreGeometryStore> OgreGeometryStorePtr;
-    typedef boost::shared_ptr<OgreSubMeshStore>  OgreSubMeshStorePtr;
-    typedef boost::shared_ptr<OgreMaterialMap>   OgreMaterialMapPtr;
+    typedef std::shared_ptr<OgreSceneStore>    OgreSceneStorePtr;
+    typedef std::shared_ptr<OgreNodeStore>     OgreNodeStorePtr;
+    typedef std::shared_ptr<OgreLightStore>    OgreLightStorePtr;
+    typedef std::shared_ptr<OgreSensorStore>   OgreSensorStorePtr;
+    typedef std::shared_ptr<OgreVisualStore>   OgreVisualStorePtr;
+    typedef std::shared_ptr<OgreGeometryStore> OgreGeometryStorePtr;
+    typedef std::shared_ptr<OgreSubMeshStore>  OgreSubMeshStorePtr;
+    typedef std::shared_ptr<OgreMaterialMap>   OgreMaterialMapPtr;
   }
 }
 #endif

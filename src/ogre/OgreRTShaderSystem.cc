@@ -20,8 +20,8 @@
   #include <Winsock2.h>
 #endif
 
+#include <thread>
 #include <sys/stat.h>
-#include <boost/bind.hpp>
 
 #include "gazebo/common/Console.hh"
 #include "gazebo/common/Exception.hh"
@@ -40,7 +40,7 @@ using namespace rendering;
 //////////////////////////////////////////////////
 OgreRTShaderSystem::OgreRTShaderSystem()
 {
-  this->entityMutex = new boost::mutex();
+  this->entityMutex = new std::mutex();
   this->initialized = false;
   this->shadowsApplied = false;
   this->pssmSetup.setNull();
@@ -194,14 +194,14 @@ void OgreRTShaderSystem::DetachEntity(OgreSubMesh *_vis)
   if (!this->initialized)
     return;
 
-  boost::mutex::scoped_lock lock(*this->entityMutex);
+  std::lock_guard<std::mutex> lock(*this->entityMutex);
   this->entities.remove(_vis);
 }
 
 //////////////////////////////////////////////////
 void OgreRTShaderSystem::Clear()
 {
-  boost::mutex::scoped_lock lock(*this->entityMutex);
+  std::lock_guard<std::mutex> lock(*this->entityMutex);
   this->entities.clear();
 }
 
@@ -239,7 +239,7 @@ void OgreRTShaderSystem::UpdateShaders()
 
   std::list<OgreSubMesh*>::iterator iter;
 
-  boost::mutex::scoped_lock lock(*this->entityMutex);
+  std::lock_guard<std::mutex> lock(*this->entityMutex);
 
   // Update all the shaders
   for (iter = this->entities.begin(); iter != this->entities.end(); ++iter)
@@ -257,7 +257,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
   Ogre::SubEntity* curSubEntity = subMesh->GetOgreSubEntity();
 
   OgreMaterialPtr material =
-      boost::dynamic_pointer_cast<OgreMaterial>(subMesh->GetMaterial());
+      std::dynamic_pointer_cast<OgreMaterial>(subMesh->GetMaterial());
 
   if (!material)
   {

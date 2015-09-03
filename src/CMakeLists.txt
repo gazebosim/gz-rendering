@@ -27,7 +27,7 @@ find_package(gazebo REQUIRED gazebo_common gazebo_math)
 include_directories(${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
-find_package(Boost REQUIRED system filesystem)
+find_package(Boost REQUIRED filesystem)
 include_directories(${BOOST_INCLUDE_DIRS})
 link_directories(${BOOST_LIBRARY_DIRS})
 
@@ -37,7 +37,7 @@ ign_install_library(${PROJECT_NAME_LOWER})
 
 target_link_libraries(${PROJECT_NAME_LOWER}
   ${GAZEBO_LIBRARIES}
-  boost_system
+  boost_filesystem
 )
 
 if (HAVE_OGRE)

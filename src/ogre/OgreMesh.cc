@@ -68,7 +68,7 @@ void OgreSubMesh::SetMaterial(MaterialPtr _material, bool unique)
   _material = (unique) ? _material->Clone() : _material;
 
   OgreMaterialPtr derived =
-      boost::dynamic_pointer_cast<OgreMaterial>(_material);
+      std::dynamic_pointer_cast<OgreMaterial>(_material);
 
   if (!derived)
   {

@@ -17,6 +17,7 @@
 #ifndef _IGNITION_RENDERING_OGRERTSHADERSYSTEM_HH_
 #define _IGNITION_RENDERING_OGRERTSHADERSYSTEM_HH_
 
+#include <mutex>
 #include <list>
 #include <string>
 #include <vector>
@@ -156,7 +157,7 @@ namespace ignition
       private: std::vector<OgreScenePtr> scenes;
 
       /// \brief Mutex used to protext the entities list.
-      private: boost::mutex *entityMutex;
+      private: std::mutex *entityMutex;
 
       /// \brief Parallel Split Shadow Map (PSSM) camera setup
       private: Ogre::ShadowCameraSetupPtr pssmSetup;

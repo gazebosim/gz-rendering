@@ -58,7 +58,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
   _material = (unique) ? _material->Clone() : _material;
 
   OptixMaterialPtr derived =
-      boost::dynamic_pointer_cast<OptixMaterial>(_material);
+      std::dynamic_pointer_cast<OptixMaterial>(_material);
 
   if (!derived)
   {

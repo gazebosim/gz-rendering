@@ -358,7 +358,7 @@ namespace ignition
       for (unsigned int i = 0; i < count; ++i)
       {
         NodePtr child = this->GetChildByIndex(i);
-        VisualPtr visual = boost::dynamic_pointer_cast<Visual>(child);
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
         if (visual) visual->SetMaterial(_material);
       }
     }

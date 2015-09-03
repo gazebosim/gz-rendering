@@ -121,7 +121,7 @@ namespace ignition
       auto baseShared = this->shared_from_this();
 
       auto thisShared =
-          boost::dynamic_pointer_cast<const BaseMaterial<T>>(baseShared);
+          std::dynamic_pointer_cast<const BaseMaterial<T>>(baseShared);
 
       MaterialPtr material = T::GetScene()->CreateMaterial();
       material->CopyFrom(thisShared);

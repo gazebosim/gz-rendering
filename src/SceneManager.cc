@@ -164,7 +164,7 @@ void SceneManagerPrivate::Init()
 {
   // listen for pre-render events
   this->preRenderConn = gazebo::event::Events::ConnectPreRender(
-        boost::bind(&SceneManagerPrivate::UpdateScenes, this));
+        std::bind(&SceneManagerPrivate::UpdateScenes, this));
 
   // setup transport communication node
   this->transportNode = gazebo::transport::NodePtr(new gazebo::transport::Node());
@@ -940,7 +940,7 @@ DirectionalLightPtr SubSceneManager::GetDirectionalLight(
   LightPtr light = this->activeScene->GetLightByName(name);
 
   DirectionalLightPtr dirLight =
-      boost::dynamic_pointer_cast<DirectionalLight>(light);
+      std::dynamic_pointer_cast<DirectionalLight>(light);
 
   // check if not found
   if (!dirLight)
@@ -983,7 +983,7 @@ PointLightPtr SubSceneManager::GetPointLight(const gazebo::msgs::Light &_lightMs
   // find existing light with name
   std::string name = _lightMsg.name();
   LightPtr light = this->activeScene->GetLightByName(name);
-  PointLightPtr pointLight = boost::dynamic_pointer_cast<PointLight>(light);
+  PointLightPtr pointLight = std::dynamic_pointer_cast<PointLight>(light);
 
   // check if not found
   if (!pointLight)
@@ -1053,7 +1053,7 @@ SpotLightPtr SubSceneManager::GetSpotLight(const gazebo::msgs::Light &_lightMsg,
   // find existing light with name
   std::string name = _lightMsg.name();
   LightPtr light = this->activeScene->GetLightByName(name);
-  SpotLightPtr spotLight = boost::dynamic_pointer_cast<SpotLight>(light);
+  SpotLightPtr spotLight = std::dynamic_pointer_cast<SpotLight>(light);
 
   // check if not found
   if (!spotLight)
@@ -1167,7 +1167,7 @@ CameraPtr SubSceneManager::GetCamera(const gazebo::msgs::Sensor &_sensorMsg,
   // find existing camera with name
   std::string name = _sensorMsg.name();
   SensorPtr sensor = this->activeScene->GetSensorByName(name);
-  CameraPtr camera = boost::dynamic_pointer_cast<Camera>(sensor);
+  CameraPtr camera = std::dynamic_pointer_cast<Camera>(sensor);
 
   // check if not found
   if (!camera)

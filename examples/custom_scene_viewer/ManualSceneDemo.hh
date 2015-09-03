@@ -17,7 +17,6 @@
 #ifndef _IGNITION_RENDERING_TEST_MANUALSCENEDEMO_HH_
 #define _IGNITION_RENDERING_TEST_MANUALSCENEDEMO_HH_
 
-#include <boost/enable_shared_from_this.hpp>
 #include <ignition/rendering/rendering.hh>
 #include "TestTypes.hh"
 
@@ -26,7 +25,7 @@ namespace ignition
   namespace rendering
   {
     class ManualSceneDemo :
-      public boost::enable_shared_from_this<ManualSceneDemo>
+      public std::enable_shared_from_this<ManualSceneDemo>
     {
       public: ManualSceneDemo();
 

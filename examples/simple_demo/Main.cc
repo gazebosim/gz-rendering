@@ -148,7 +148,7 @@ CameraPtr CreateCamera(const std::string &_engineName)
 
   // return camera sensor
   SensorPtr sensor = scene->GetSensorByName("camera");
-  return boost::dynamic_pointer_cast<Camera>(sensor);
+  return std::dynamic_pointer_cast<Camera>(sensor);
 }
 
 int main(int _argc, char** _argv)

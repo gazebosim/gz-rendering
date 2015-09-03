@@ -42,14 +42,14 @@ namespace ignition
     typedef BaseSubMeshStore<OptixSubMesh>   OptixSubMeshStore;
     typedef BaseMaterialMap<OptixMaterial>   OptixMaterialMap;
 
-    typedef boost::shared_ptr<OptixSceneStore>    OptixSceneStorePtr;
-    typedef boost::shared_ptr<OptixNodeStore>     OptixNodeStorePtr;
-    typedef boost::shared_ptr<OptixLightStore>    OptixLightStorePtr;
-    typedef boost::shared_ptr<OptixSensorStore>   OptixSensorStorePtr;
-    typedef boost::shared_ptr<OptixVisualStore>   OptixVisualStorePtr;
-    typedef boost::shared_ptr<OptixGeometryStore> OptixGeometryStorePtr;
-    typedef boost::shared_ptr<OptixSubMeshStore>  OptixSubMeshStorePtr;
-    typedef boost::shared_ptr<OptixMaterialMap>   OptixMaterialMapPtr;
+    typedef std::shared_ptr<OptixSceneStore>    OptixSceneStorePtr;
+    typedef std::shared_ptr<OptixNodeStore>     OptixNodeStorePtr;
+    typedef std::shared_ptr<OptixLightStore>    OptixLightStorePtr;
+    typedef std::shared_ptr<OptixSensorStore>   OptixSensorStorePtr;
+    typedef std::shared_ptr<OptixVisualStore>   OptixVisualStorePtr;
+    typedef std::shared_ptr<OptixGeometryStore> OptixGeometryStorePtr;
+    typedef std::shared_ptr<OptixSubMeshStore>  OptixSubMeshStorePtr;
+    typedef std::shared_ptr<OptixMaterialMap>   OptixMaterialMapPtr;
   }
 }
 #endif

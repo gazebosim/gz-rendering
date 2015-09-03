@@ -16,7 +16,6 @@
  */
 #include "DemoWindow.hh"
 #include <ctime>
-#include <boost/make_shared.hpp>
 
 #if __APPLE__
   #include <OpenGL/gl.h>
@@ -195,7 +194,7 @@ void rendering::GlutInitCamera(CameraPtr _camera)
   imgw = _camera->GetImageWidth();
   imgh = _camera->GetImageHeight();
   Image image = _camera->CreateImage();
-  g_image = boost::make_shared<Image>(image);
+  g_image = std::make_shared<Image>(image);
   _camera->Capture(*g_image);
 }
 

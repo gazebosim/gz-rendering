@@ -442,5 +442,5 @@ void OptixScene::CreateStores()
 OptixScenePtr OptixScene::SharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
-  return boost::dynamic_pointer_cast<OptixScene>(sharedBase);
+  return std::dynamic_pointer_cast<OptixScene>(sharedBase);
 }

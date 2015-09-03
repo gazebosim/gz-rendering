@@ -197,7 +197,7 @@ const OptixCommonLightData &OptixDirectionalLight::GetCommonData() const
 OptixDirectionalLightPtr OptixDirectionalLight::SharedThis()
 {
   ObjectPtr sharedBase = this->shared_from_this();
-  return boost::dynamic_pointer_cast<OptixDirectionalLight>(sharedBase);
+  return std::dynamic_pointer_cast<OptixDirectionalLight>(sharedBase);
 }
 
 //////////////////////////////////////////////////
@@ -241,7 +241,7 @@ const OptixCommonLightData &OptixPointLight::GetCommonData() const
 OptixPointLightPtr OptixPointLight::SharedThis()
 {
   ObjectPtr sharedBase = this->shared_from_this();
-  return boost::dynamic_pointer_cast<OptixPointLight>(sharedBase);
+  return std::dynamic_pointer_cast<OptixPointLight>(sharedBase);
 }
 
 //////////////////////////////////////////////////
@@ -334,5 +334,5 @@ const OptixCommonLightData &OptixSpotLight::GetCommonData() const
 OptixSpotLightPtr OptixSpotLight::SharedThis()
 {
   ObjectPtr sharedBase = this->shared_from_this();
-  return boost::dynamic_pointer_cast<OptixSpotLight>(sharedBase);
+  return std::dynamic_pointer_cast<OptixSpotLight>(sharedBase);
 }

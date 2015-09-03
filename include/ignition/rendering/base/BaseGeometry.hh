@@ -69,7 +69,7 @@ namespace ignition
         auto baseShared = this->shared_from_this();
 
         auto thisShared =
-          boost::dynamic_pointer_cast<BaseGeometry<T>>(baseShared);
+          std::dynamic_pointer_cast<BaseGeometry<T>>(baseShared);
 
         parent->RemoveGeometry(thisShared);
       }

@@ -115,7 +115,7 @@ namespace ignition
       if (parent)
       {
         auto baseShared = this->shared_from_this();
-        auto thisShared = boost::dynamic_pointer_cast<BaseNode<T>>(baseShared);
+        auto thisShared = std::dynamic_pointer_cast<BaseNode<T>>(baseShared);
         parent->RemoveChild(thisShared);
       }
     }

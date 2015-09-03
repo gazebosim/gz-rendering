@@ -50,20 +50,24 @@ namespace ignition
       /// \brief Sanitize given format. If the given value is invalid,
       /// PF_UNKNOWN will be returned, otherwise input will be returned
       /// unchanged.
-      /// \return The santized pixel format
+      /// \param[in] _format Image pixel format to be sanitized
+      /// \return The sanitized pixel format
       public: static PixelFormat Sanitize(PixelFormat _format);
 
       /// \brief Get human-readable name for pixel format value.
+      /// \param[in] _format Image pixel format
       /// \return The format name
       public: static std::string GetName(PixelFormat _format);
 
       /// \brief Get number of channels for given format. If an invalid format
       /// is given, 0 will be returned.
+      /// \param[in] _format Image pixel format
       /// \return The channel count
       public: static unsigned int GetChannelCount(PixelFormat _format);
 
       /// \brief Get number of bytes per channel for given format. If an invalid
       /// format is given, 0 will be returned.
+      /// \param[in] _format Image pixel format
       /// \return The number of bytes per channel
       public: static unsigned int GetBytesPerChannel(PixelFormat _format);
 

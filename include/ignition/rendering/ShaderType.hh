@@ -30,12 +30,23 @@ namespace ignition
     /// alternative.
     enum IGNITION_VISIBLE ShaderType
     {
-      ST_UNKNOWN  = 0, /// < Unknown or errant type
-      ST_PIXEL    = 1, /// < Shader shader
-      ST_VERTEX   = 2, /// < Vertex shader
-      ST_NORM_OBJ = 3, /// < Object-space normal map shader
-      ST_NORM_TAN = 4, /// < Tangent-space normal map shader
-      ST_COUNT    = 5, /// < Total number of shader types
+      /// \brief Unknown or errant type
+      ST_UNKNOWN  = 0,
+
+      /// \brief Shader shader
+      ST_PIXEL    = 1,
+
+      /// \brief Vertex shader
+      ST_VERTEX   = 2,
+
+      /// \brief Object-space normal map shader
+      ST_NORM_OBJ = 3,
+
+      /// \brief Tangent-space normal map shader
+      ST_NORM_TAN = 4,
+
+      /// \brief Total number of shader types
+      ST_COUNT    = 5,
     };
 
     /// \class ShaderUtil ShaderType.hh ignition/rendering/ShaderType.hh
@@ -44,15 +55,18 @@ namespace ignition
     {
       /// \brief Determine if given type is valid ShaderType enum
       /// \param[in] _type Enum value to be evaluated
+      /// \return True if the given type is valid
       public: static bool IsValid(ShaderType _type);
 
       /// \brief Sanitize given type. If the given value is invalid,
       /// ST_UNKNOWN will be returned, otherwise input will be returned
       /// unchanged.
+      /// \param[in] _type Shader type to be sanitized
       /// \return The santized shader type
       public: static ShaderType Sanitize(ShaderType _type);
 
       /// \brief Get human-readable name for shader type value.
+      /// \param[in] _type Shader type enum value
       /// \return The type name
       public: static std::string GetName(ShaderType _type);
 

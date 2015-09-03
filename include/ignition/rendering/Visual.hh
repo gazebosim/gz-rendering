@@ -77,21 +77,25 @@ namespace ignition
       /// \brief Remove the given node from this visual. If the given node is
       /// not a child of this visual, no work will be done.
       /// \param[in] _child Child node to be removed
+      /// \return The removed child node
       public: virtual NodePtr RemoveChild(NodePtr _child) = 0;
 
       /// \brief Remove the node with the given ID from this visual. If the
       /// specified node is not a child of this visual, no work will be done.
       /// \param[in] _id ID of the child node to be removed
+      /// \return The removed child node
       public: virtual NodePtr RemoveChildById(unsigned int _id) = 0;
 
       /// \brief Remove the node with the given name from this visual. If the
       /// specified node is not a child of this visual, no work will be done.
       /// \param[in] _name Name of the child node to be removed
+      /// \return The removed child node
       public: virtual NodePtr RemoveChildByName(const std::string &_name) = 0;
 
       /// \brief Remove the node at the given index from this visual. If the
       /// specified node is not a child of this visual, no work will be done.
       /// \param[in] _index Index of the child node to be removed
+      /// \return The removed child node
       public: virtual NodePtr RemoveChildByIndex(unsigned int _index) = 0;
 
       /// \brief Remove all child nodes from this visual
@@ -102,6 +106,7 @@ namespace ignition
       public: virtual unsigned int GetGeometryCount() const = 0;
 
       /// \brief Determine if given geometry is attached to this visual
+      /// \param[in] _geometry Geometry in question
       /// \return True if given node is attached to this visual
       public: virtual bool HasGeometry(ConstGeometryPtr _geometry) const = 0;
 
@@ -120,11 +125,13 @@ namespace ignition
       /// \brief Remove the given geometry from this visual. If the given node
       /// is not a child of this visual, no work will be done.
       /// \param[in] _geometry Geometry to be removed
+      /// \return The removed geometry
       public: virtual GeometryPtr RemoveGeometry(GeometryPtr _geometry) = 0;
 
       /// \brief Remove the geometry at the given index from this visual. If the
       /// specified node is not attached this visual, no work will be done.
       /// \param[in] _index Index of the geometry to be removed
+      /// \return The removed geometry
       public: virtual GeometryPtr RemoveGeometryByIndex(
                   unsigned int _index) = 0;
 

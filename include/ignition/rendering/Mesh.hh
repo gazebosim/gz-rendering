@@ -38,19 +38,23 @@ namespace ignition
       public: virtual unsigned int GetSubMeshCount() const = 0;
 
       /// \brief Determine if has given sub-mesh
+      /// \param[in] _subMesh Sub-mesh in question
       /// \return True if has given sub-mesh
       public: virtual bool HasSubMesh(ConstSubMeshPtr _subMesh) const = 0;
 
       /// \brief Determine if has sub-mesh with given name
+      /// \param[in] _name Name of sub-mesh in question
       /// \return True if has sub-mesh with given name
       public: virtual bool HasSubMeshName(const std::string &_name) const = 0;
 
       /// \brief Get sub-mesh with given name
+      /// \param[in] _name Name of sub-mesh
       /// \return The sub-mesh with the given name
       public: virtual SubMeshPtr GetSubMeshByName(
                   const std::string &_name) const = 0;
 
       /// \brief Get sub-mesh at given index
+      /// \param[in] _index Index of sub-mesh
       /// \return The sub-mesh at the given index
       public: virtual SubMeshPtr GetSubMeshByIndex(
                   unsigned int _index) const = 0;

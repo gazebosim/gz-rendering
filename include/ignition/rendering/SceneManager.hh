@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_SCENEMANAGER_HH 
-#define _IGNITION_RENDERING_SCENEMANAGER_HH 
+#ifndef _IGNITION_RENDERING_SCENEMANAGER_HH
+#define _IGNITION_RENDERING_SCENEMANAGER_HH
 
 #include <string>
 #include "gazebo/common/SingletonT.hh"
@@ -94,21 +94,25 @@ namespace ignition
       /// \brief Remove the scene with the given ID. If not scene exists with
       /// the given ID, then no work will be done.
       /// \param[in] _id ID of the scene to be removed
+      /// \return The removed scene
       public: ScenePtr RemoveScene(unsigned int _id);
 
       /// \brief Remove the scene with the given name. If not scene exists with
       /// the given name, then no work will be done.
       /// \param[in] _name Name of the scene to be removed
+      /// \return The removed scene
       public: ScenePtr RemoveScene(const std::string &_name);
 
       /// \brief Remove the given scene. If the given scene has not yet been
       /// added, then no work will be done.
       /// \param[in] _scene Scene to be removed
+      /// \return The removed scene
       public: ScenePtr RemoveScene(ScenePtr _scene);
 
       /// \brief Remove the scene at the given index. If not scene exists at
       /// the given index, then no work will be done.
       /// \param[in] _index Index of the scene to be removed
+      /// \return The removed scene
       public: ScenePtr RemoveSceneAt(unsigned int _index);
 
       /// \brief Remove all scenes

@@ -29,7 +29,7 @@ namespace ignition
     /// \class RenderEngine RenderEngine.hh ignition/rendering/RenderEngine.hh
     /// \brief An abstract interface to a concrete render-engine. A
     /// RenderEngine is responsible for initializing a render-engine as well as
-    /// creating, storing, and destroying scenes. 
+    /// creating, storing, and destroying scenes.
     class IGNITION_VISIBLE RenderEngine
     {
       /// \brief Deconstructor
@@ -79,32 +79,38 @@ namespace ignition
 
       /// \brief Determine if the given scene is actively managed by this
       /// render-engine
+      /// \param[in] _scene Scene in question
       /// \return True if the scene is managed by this render-engine
       public: virtual bool HasScene(ConstScenePtr _scene) const = 0;
 
       /// \brief Determine if this render-engine manages the scene with the
       /// given ID.
+      /// \param[in] _id ID of scene in question
       /// \return True if this render-engine manages the specified scene
       public: virtual bool HasSceneId(unsigned int _id) const = 0;
 
       /// \brief Determine if this render-engine manages the scene with the
       /// given name.
+      /// \param[in] _name Name of scene in question
       /// \return True if this render-engine manages the specified scene
       public: virtual bool HasSceneName(const std::string &_name) const = 0;
 
       /// \brief Get the scene with the given ID. If no scenes exist with the
       /// given ID, NULL will be returned.
+      /// \param[in] _id ID of scene to be retrieved
       /// \return The specified scene
       public: virtual ScenePtr GetSceneById(unsigned int _id) const = 0;
 
       /// \brief Get the scene with the given name. If no scenes exist with the
       /// given name, NULL will be returned.
+      /// \param[in] _name Name of scene to be retrieved
       /// \return The specified scene
       public: virtual ScenePtr GetSceneByName(
                   const std::string &_name) const = 0;
 
       /// \brief Get the scene at the given index. If no scenes exist at the
       /// given index, NULL will be returned.
+      /// \param[in] _index Index of scene
       /// \return The specified scene
       public: virtual ScenePtr GetSceneByIndex(unsigned int _index) const = 0;
 
@@ -135,6 +141,7 @@ namespace ignition
       /// be unique across all scenes managed by this render-engine. If a
       /// duplicate name is given, NULL will be returned. An unique ID will
       /// automatically be assigned to the created scene.
+      /// \param[in] _name Name of the new scene
       /// \return The created scene
       public: virtual ScenePtr CreateScene(const std::string &_name) = 0;
 
@@ -142,6 +149,8 @@ namespace ignition
       /// be unique across all scenes managed by this render-engine. If a
       /// duplicate ID is given, NULL will be returned. An unique name will
       /// automatically be assigned to the created scene.
+      /// \param[in] _id ID of the new scene
+      /// \param[in] _name Name of the new scene
       /// \return The created scene
       public: virtual ScenePtr CreateScene(unsigned int _id,
                   const std::string &_name) = 0;

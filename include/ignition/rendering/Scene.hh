@@ -654,7 +654,7 @@ namespace ignition
       /// \brief Create new mesh geomerty. The rendering::Mesh will be created
       /// from the given common::Mesh specified in the MeshDescriptor.
       /// Sub-meshes will be loaded and centered according to the descriptor.
-      /// \param[in] _meshName Name of the mesh to load
+      /// \param[in] _desc Descriptor of the mesh to load
       /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc) = 0;
 
@@ -664,6 +664,7 @@ namespace ignition
       public: virtual MaterialPtr CreateMaterial() = 0;
 
       /// \brief Create new material from the reference common::Material
+      /// \param[in] _material Reference material
       /// \return The created material
       public: virtual MaterialPtr CreateMaterial(
                   const gazebo::common::Material &_material) = 0;

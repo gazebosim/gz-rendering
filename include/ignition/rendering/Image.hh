@@ -26,7 +26,7 @@ namespace ignition
   namespace rendering
   {
     /// \class Image Image.hh ignition/rendering/Image.hh
-    /// \brief Encapsulates an raw image buffer and relevant properties
+    /// \brief Encapsulates a raw image buffer and relevant properties
     class IGNITION_VISIBLE Image
     {
       // TODO: convert to std::unique_ptr

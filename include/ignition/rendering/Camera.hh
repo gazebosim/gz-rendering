@@ -17,7 +17,6 @@
 #ifndef _IGNITION_RENDERING_CAMERA_HH_
 #define _IGNITION_RENDERING_CAMERA_HH_
 
-#include <sdf/sdf.hh>
 #include <boost/function.hpp>
 #include "gazebo/common/Event.hh"
 #include "ignition/rendering/Image.hh"
@@ -39,9 +38,6 @@ namespace ignition
 
       /// \brief Deconstructor
       public: virtual ~Camera() { }
-
-      // TODO: remove function
-      public: virtual void Load(sdf::ElementPtr _sdf) = 0;
 
       /// \brief Get the image width in pixels
       /// \return The image width in pixels

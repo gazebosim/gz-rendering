@@ -35,8 +35,6 @@ namespace ignition
 
       public: virtual ~BaseCamera();
 
-      public: virtual void Load(sdf::ElementPtr _sdf);
-
       public: virtual unsigned int GetImageWidth() const;
 
       public: virtual void SetImageWidth(unsigned int _width);
@@ -95,12 +93,6 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     BaseCamera<T>::~BaseCamera()
-    {
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseCamera<T>::Load(sdf::ElementPtr /*_sdf*/)
     {
     }
 

@@ -49,75 +49,174 @@ namespace ignition
     class RenderTarget;
     class RenderTexture;
 
-    typedef shared_ptr<ArrowVisual>      ArrowVisualPtr;
-    typedef shared_ptr<AxisVisual>       AxisVisualPtr;
-    typedef shared_ptr<Camera>           CameraPtr;
+
+    /// \def ArrowVisualPtr
+    /// \brief Shared pointer to ArrowVisual
+    typedef shared_ptr<ArrowVisual> ArrowVisualPtr;
+
+    /// \def AxisVisualPtr
+    /// \brief Shared pointer to AxisVisual
+    typedef shared_ptr<AxisVisual> AxisVisualPtr;
+
+    /// \def CameraPtr
+    /// \brief Shared pointer to Camera
+    typedef shared_ptr<Camera> CameraPtr;
+
+    /// \def DirectionalLightPtr
+    /// \brief Shared pointer to DirectionalLight
     typedef shared_ptr<DirectionalLight> DirectionalLightPtr;
-    typedef shared_ptr<Geometry>         GeometryPtr;
-    typedef shared_ptr<JointVisual>      JointVisualPtr;
-    typedef shared_ptr<Image>            ImagePtr;
-    typedef shared_ptr<Light>            LightPtr;
-    typedef shared_ptr<Material>         MaterialPtr;
-    typedef shared_ptr<Mesh>             MeshPtr;
-    typedef shared_ptr<Node>             NodePtr;
-    typedef shared_ptr<Object>           ObjectPtr;
-    typedef shared_ptr<ObjectFactory>    ObjectFactoryPtr;
-    typedef shared_ptr<PointLight>       PointLightPtr;
-    typedef shared_ptr<Scene>            ScenePtr;
-    typedef shared_ptr<Sensor>           SensorPtr;
-    typedef shared_ptr<SpotLight>        SpotLightPtr;
-    typedef shared_ptr<SubMesh>          SubMeshPtr;
-    typedef shared_ptr<Visual>           VisualPtr;
-    typedef shared_ptr<RenderTarget>     RenderTargetPtr;
-    typedef shared_ptr<RenderTexture>    RenderTexturePtr;
 
-    typedef shared_ptr<const ArrowVisual>      ConstArrowVisualPtr;
-    typedef shared_ptr<const AxisVisual>       ConstAxisVisualPtr;
-    typedef shared_ptr<const Camera>           ConstCameraPtr;
+    /// \def GeometryPtr
+    /// \brief Shared pointer to Geometry
+    typedef shared_ptr<Geometry> GeometryPtr;
+
+    /// \def JointVisualPtr
+    /// \brief Shared pointer to JointVisual
+    typedef shared_ptr<JointVisual> JointVisualPtr;
+
+    /// \def ImagePtr
+    /// \brief Shared pointer to Image
+    typedef shared_ptr<Image> ImagePtr;
+
+    /// \def LightPtr
+    /// \brief Shared pointer to Light
+    typedef shared_ptr<Light> LightPtr;
+
+    /// \def MaterialPtr
+    /// \brief Shared pointer to Material
+    typedef shared_ptr<Material> MaterialPtr;
+
+    /// \def MeshPtr
+    /// \brief Shared pointer to Mesh
+    typedef shared_ptr<Mesh> MeshPtr;
+
+    /// \def NodePtr
+    /// \brief Shared pointer to Node
+    typedef shared_ptr<Node> NodePtr;
+
+    /// \def ObjectPtr
+    /// \brief Shared pointer to Object
+    typedef shared_ptr<Object> ObjectPtr;
+
+    /// \def ObjectFactoryPtr
+    /// \brief Shared pointer to ObjectFactory
+    typedef shared_ptr<ObjectFactory> ObjectFactoryPtr;
+
+    /// \def PointLightPtr
+    /// \brief Shared pointer to PointLight
+    typedef shared_ptr<PointLight> PointLightPtr;
+
+    /// \def ScenePtr
+    /// \brief Shared pointer to Scene
+    typedef shared_ptr<Scene> ScenePtr;
+
+    /// \def SensorPtr
+    /// \brief Shared pointer to Sensor
+    typedef shared_ptr<Sensor> SensorPtr;
+
+    /// \def SpotLightPtr
+    /// \brief Shared pointer to SpotLight
+    typedef shared_ptr<SpotLight> SpotLightPtr;
+
+    /// \def SubMeshPtr
+    /// \brief Shared pointer to SubMesh
+    typedef shared_ptr<SubMesh> SubMeshPtr;
+
+    /// \def VisualPtr
+    /// \brief Shared pointer to Visual
+    typedef shared_ptr<Visual> VisualPtr;
+
+    /// \def RenderTargetPtr
+    /// \brief Shared pointer to RenderTarget
+    typedef shared_ptr<RenderTarget> RenderTargetPtr;
+
+    /// \def RenderTexturePtr
+    /// \brief Shared pointer to RenderTexture
+    typedef shared_ptr<RenderTexture> RenderTexturePtr;
+
+    /// \def const ArrowVisualPtr
+    /// \brief Shared pointer to const ArrowVisual
+    typedef shared_ptr<const ArrowVisual> ConstArrowVisualPtr;
+
+    /// \def const AxisVisualPtr
+    /// \brief Shared pointer to const AxisVisual
+    typedef shared_ptr<const AxisVisual> ConstAxisVisualPtr;
+
+    /// \def const CameraPtr
+    /// \brief Shared pointer to const Camera
+    typedef shared_ptr<const Camera> ConstCameraPtr;
+
+    /// \def const DirectionalLightPtr
+    /// \brief Shared pointer to const DirectionalLight
     typedef shared_ptr<const DirectionalLight> ConstDirectionalLightPtr;
-    typedef shared_ptr<const Geometry>         ConstGeometryPtr;
-    typedef shared_ptr<const JointVisual>      ConstJointVisualPtr;
-    typedef shared_ptr<const Image>            ConstImagePtr;
-    typedef shared_ptr<const Light>            ConstLightPtr;
-    typedef shared_ptr<const Material>         ConstMaterialPtr;
-    typedef shared_ptr<const Mesh>             ConstMeshPtr;
-    typedef shared_ptr<const Node>             ConstNodePtr;
-    typedef shared_ptr<const Object>           ConstObjectPtr;
-    typedef shared_ptr<const ObjectFactory>    ConstObjectFactoryPtr;
-    typedef shared_ptr<const PointLight>       ConstPointLightPtr;
-    typedef shared_ptr<const Scene>            ConstScenePtr;
-    typedef shared_ptr<const Sensor>           ConstSensorPtr;
-    typedef shared_ptr<const SpotLight>        ConstSpotLightPtr;
-    typedef shared_ptr<const SubMesh>          ConstSubMeshPtr;
-    typedef shared_ptr<const Visual>           ConstVisualPtr;
-    typedef shared_ptr<const RenderTarget>     ConstRenderTargetPtr;
-    typedef shared_ptr<const RenderTexture>    ConstRenderTexturePtr;
 
-    /*
-    template <class T> Map;
-    template <class T> Store;
-    template <class T> CompositeStore;
+    /// \def const GeometryPtr
+    /// \brief Shared pointer to const Geometry
+    typedef shared_ptr<const Geometry> ConstGeometryPtr;
 
-    typedef Map<Material>        MaterialMap;
-    typedef Map<SubMesh>         SubMeshMap;
-    typedef Store<Scene>         SceneStore;
-    typedef Store<Node>          NodeStore;
-    typedef Store<Light>         LightStore;
-    typedef Store<Sensor>        SensorStore;
-    typedef Store<Visual>        VisualStore;
-    typedef Store<Geometry>      GeometryStore;
-    typedef CompositeStore<Node> NodeCompositeStore;
+    /// \def const JointVisualPtr
+    /// \brief Shared pointer to const JointVisual
+    typedef shared_ptr<const JointVisual> ConstJointVisualPtr;
 
-    typedef shared_ptr<SceneStore>         SceneStorePtr;
-    typedef shared_ptr<NodeStore>          NodeStorePtr;
-    typedef shared_ptr<LightStore>         LightStorePtr;
-    typedef shared_ptr<SensorStore>        SensorStorePtr;
-    typedef shared_ptr<VisualStore>        VisualStorePtr;
-    typedef shared_ptr<GeometryStore>      GeometryStorePtr;
-    typedef shared_ptr<MaterialMap>        MaterialMapPtr;
-    typedef shared_ptr<SubMeshMap>         SubMeshMapPtr;
-    typedef shared_ptr<NodeCompositeStore> NodeCompositeStorePtr;
-    */
+    /// \def const ImagePtr
+    /// \brief Shared pointer to const Image
+    typedef shared_ptr<const Image> ConstImagePtr;
+
+    /// \def const LightPtr
+    /// \brief Shared pointer to const Light
+    typedef shared_ptr<const Light> ConstLightPtr;
+
+    /// \def const MaterialPtr
+    /// \brief Shared pointer to const Material
+    typedef shared_ptr<const Material> ConstMaterialPtr;
+
+    /// \def const MeshPtr
+    /// \brief Shared pointer to const Mesh
+    typedef shared_ptr<const Mesh> ConstMeshPtr;
+
+    /// \def const NodePtr
+    /// \brief Shared pointer to const Node
+    typedef shared_ptr<const Node> ConstNodePtr;
+
+    /// \def const ObjectPtr
+    /// \brief Shared pointer to const Object
+    typedef shared_ptr<const Object> ConstObjectPtr;
+
+    /// \def const ObjectFactoryPtr
+    /// \brief Shared pointer to const ObjectFactory
+    typedef shared_ptr<const ObjectFactory> ConstObjectFactoryPtr;
+
+    /// \def const PointLightPtr
+    /// \brief Shared pointer to const PointLight
+    typedef shared_ptr<const PointLight> ConstPointLightPtr;
+
+    /// \def const ScenePtr
+    /// \brief Shared pointer to const Scene
+    typedef shared_ptr<const Scene> ConstScenePtr;
+
+    /// \def const SensorPtr
+    /// \brief Shared pointer to const Sensor
+    typedef shared_ptr<const Sensor> ConstSensorPtr;
+
+    /// \def const SpotLightPtr
+    /// \brief Shared pointer to const SpotLight
+    typedef shared_ptr<const SpotLight> ConstSpotLightPtr;
+
+    /// \def const SubMeshPtr
+    /// \brief Shared pointer to const SubMesh
+    typedef shared_ptr<const SubMesh> ConstSubMeshPtr;
+
+    /// \def const VisualPtr
+    /// \brief Shared pointer to const Visual
+    typedef shared_ptr<const Visual> ConstVisualPtr;
+
+    /// \def const RenderTargetPtr
+    /// \brief Shared pointer to const RenderTarget
+    typedef shared_ptr<const RenderTarget> ConstRenderTargetPtr;
+
+    /// \def const RenderTexturePtr
+    /// \brief Shared pointer to const RenderTexture
+    typedef shared_ptr<const RenderTexture> ConstRenderTexturePtr;
   }
 }
 #endif

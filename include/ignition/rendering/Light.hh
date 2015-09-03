@@ -24,89 +24,171 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \class Light Light.hh ignition/rendering/Light.hh
+    /// \brief Represents a light source in the scene graph
     class IGNITION_VISIBLE Light :
       public virtual Node
     {
+      /// \brief Deconstructor
       public: virtual ~Light() { }
 
+      /// \brief Get the diffuse color
+      /// \return The diffuse color
       public: virtual gazebo::common::Color GetDiffuseColor() const = 0;
 
+      /// \brief Set the diffuse color
+      /// \param[in] _r Red value 
+      /// \param[in] _g Green value 
+      /// \param[in] _b Blue value 
+      /// \param[in] _a Alpha value 
       public: virtual void SetDiffuseColor(double _r, double _g, double _b,
                   double _a = 1.0) = 0;
 
+      /// \brief Set the diffuse color
+      /// \param[in] _color New diffuse color
       public: virtual void SetDiffuseColor(const gazebo::common::Color &_color) = 0;
 
+      /// \brief Get the specular color
+      /// \return The specular color
       public: virtual gazebo::common::Color GetSpecularColor() const = 0;
 
+      /// \brief Set the specular color
+      /// \param[in] _r Red value 
+      /// \param[in] _g Green value 
+      /// \param[in] _b Blue value 
+      /// \param[in] _a Alpha value 
       public: virtual void SetSpecularColor(double _r, double _g, double _b,
                   double _a = 1.0) = 0;
 
+      /// \brief Set the specular color
+      /// \param[in] _color New specular color
       public: virtual void SetSpecularColor(const gazebo::common::Color &_color) = 0;
 
+      /// \brief Get the attenuation constant value
+      /// \return The attenuation constant value
       public: virtual double GetAttenuationConstant() const = 0;
 
-      public: virtual void SetAttenuationConstant(double _weight) = 0;
+      /// \brief Set the attenuation constant value
+      /// \param[in] _value New attenuation constant value
+      public: virtual void SetAttenuationConstant(double _value) = 0;
 
+      /// \brief Get the attenuation linear value
+      /// \return The attenuation linear value
       public: virtual double GetAttenuationLinear() const = 0;
 
-      public: virtual void SetAttenuationLinear(double _weight) = 0;
+      /// \brief Set the attenuation linear value
+      /// \param[in] _value New attenuation linear value
+      public: virtual void SetAttenuationLinear(double _value) = 0;
 
+      /// \brief Get the attenuation quadratic value
+      /// \return The attenuation quadratic value
       public: virtual double GetAttenuationQuadratic() const = 0;
 
-      public: virtual void SetAttenuationQuadratic(double _weight) = 0;
+      /// \brief Set the attenuation quadratic value
+      /// \param[in] _value New attenuation quadratic value
+      public: virtual void SetAttenuationQuadratic(double _value) = 0;
 
+      /// \brief Get the attenuation ranage
+      /// \return The attenuation ranage
       public: virtual double GetAttenuationRange() const = 0;
 
+      /// \brief Set the attenuation ranage
+      /// \param[in] _value New attenuation ranage
       public: virtual void SetAttenuationRange(double _range) = 0;
 
+      /// \brief Determine if this light cast shadows
+      /// \return True if this light cast shadows
       public: virtual bool GetCastShadows() const = 0;
 
+      /// \brief Specify if this light should cast shadows
+      /// \param[in] _castShadows True if this light cast shadows
       public: virtual void SetCastShadows(bool _castShadows) = 0;
     };
 
+    /// \class DirectionalLight Light.hh ignition/rendering/Light.hh
+    /// \brief Represents a infinite directional light
     class IGNITION_VISIBLE DirectionalLight :
       public virtual Light
     {
+      /// \brief Deconstructor
       public: virtual ~DirectionalLight() { }
 
+      /// \brief Get the direction of the light
+      /// \return The direction of the light
       public: virtual math::Vector3d GetDirection() const = 0;
 
+      /// \brief Set the direction of the light
+      /// \param[in] _x X-component of direction vector
+      /// \param[in] _y Y-component of direction vector
+      /// \param[in] _z Z-component of direction vector
       public: virtual void SetDirection(double _x, double _y, double _z) = 0;
 
+      /// \brief Set the direction of the light
+      /// \param[in] _dir New direction vector
       public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
     };
 
+    /// \class PointLight Light.hh ignition/rendering/Light.hh
+    /// \brief Represents a point light
     class IGNITION_VISIBLE PointLight :
       public virtual Light
     {
+      /// \brief Deconstructor
       public: virtual ~PointLight() { }
     };
 
+    /// \class SpotLight Light.hh ignition/rendering/Light.hh
+    /// \brief Represents a spotlight
     class IGNITION_VISIBLE SpotLight :
       public virtual Light
     {
+      /// \brief Deconstructor
       public: virtual ~SpotLight() { }
 
+      /// \brief Get direction of the light
+      /// \return The direction of the light
       public: virtual math::Vector3d GetDirection() const = 0;
 
+      /// \brief Set the direction of the light
+      /// \param[in] _x X-component of direction vector
+      /// \param[in] _y Y-component of direction vector
+      /// \param[in] _z Z-component of direction vector
       public: virtual void SetDirection(double _x, double _y, double _z) = 0;
 
+      /// \brief Set the direction of the light
+      /// \param[in] _dir New direction vector
       public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
 
+      /// \brief Get the inner angle of the spotlight
+      /// \return The inner angle of the spotlight
       public: virtual math::Angle GetInnerAngle() const = 0;
 
+      /// \brief Set the inner angle of the spotlight
+      /// \param[in] _radians New inner angle of the spotlight in radians
       public: virtual void SetInnerAngle(double _radians) = 0;
 
+      /// \brief Set the inner angle of the spotlight
+      /// \param[in] _radians New inner angle of the spotlight
       public: virtual void SetInnerAngle(const math::Angle &_angle) = 0;
 
+      /// \brief Get the outer angle of the spotlight
+      /// \return The outer angle of the spotlight
       public: virtual math::Angle GetOuterAngle() const = 0;
 
+      /// \brief Set the outer angle of the spotlight
+      /// \param[in] _radians New outer angle of the spotlight in radians
       public: virtual void SetOuterAngle(double _radians) = 0;
 
+      /// \brief Set the outer angle of the spotlight
+      /// \param[in] _radians New outer angle of the spotlight
       public: virtual void SetOuterAngle(const math::Angle &_angle) = 0;
 
+      /// \brief Get the falloff of the spotlight
+      /// \return The falloff of the spotlight
       public: virtual double GetFalloff() const = 0;
 
+      /// \brief Set the falloff of the spotlight
+      /// \param[in] _falloff New falloff of the spotlight
       public: virtual void SetFalloff(double _falloff) = 0;
     };
   }

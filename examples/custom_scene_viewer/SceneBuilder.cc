@@ -231,13 +231,13 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
   for (auto baseName : baseNames)
   {
-    std::string parentName = "Reflect" + baseName;
+    std::string parentName = baseName;
     std::string childName = "Trans" + baseName;
 
     if (!_scene->MaterialRegistered(childName))
     {
       MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
-      mat->SetTransparency(0.5);
+      mat->SetTransparency(0.75);
       _scene->RegisterMaterial(childName, mat);
     }
   }

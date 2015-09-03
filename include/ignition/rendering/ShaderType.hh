@@ -24,26 +24,60 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \enum ShaderType ShaderType.hh ignition/rendering/ShaderType.hh
+    /// \brief Available types of shaders. Note that not all rendering-engines
+    /// will be able to use each type. They will instead default to the closest
+    /// alternative.
     enum IGNITION_VISIBLE ShaderType
     {
+      /// \brief Unknown or errant type
       ST_UNKNOWN  = 0,
+
+      /// \brief Shader shader
       ST_PIXEL    = 1,
+
+      /// \brief Vertex shader
       ST_VERTEX   = 2,
+
+      /// \brief Object-space normal map shader
       ST_NORM_OBJ = 3,
+
+      /// \brief Tangent-space normal map shader
       ST_NORM_TAN = 4,
+
+      /// \brief Total number of shader types
       ST_COUNT    = 5,
     };
 
+    /// \class ShaderUtil ShaderType.hh ignition/rendering/ShaderType.hh
+    /// \brief Provides supporting functions for ShaderType enum
     class IGNITION_VISIBLE ShaderUtil
     {
+      /// \brief Determine if given type is valid ShaderType enum
+      /// \param[in] _type Enum value to be evaluated
+      /// \return True if the given type is valid
       public: static bool IsValid(ShaderType _type);
 
+      /// \brief Sanitize given type. If the given value is invalid,
+      /// ST_UNKNOWN will be returned, otherwise input will be returned
+      /// unchanged.
+      /// \param[in] _type Shader type to be sanitized
+      /// \return The santized shader type
       public: static ShaderType Sanitize(ShaderType _type);
 
+      /// \brief Get human-readable name for shader type value.
+      /// \param[in] _type Shader type enum value
+      /// \return The type name
       public: static std::string GetName(ShaderType _type);
 
+      /// \brief Get enum value by human-readable name. The given string should
+      /// match watch is returned by GetName. If an invalid name is given,
+      /// ST_UNKNOWN will be returned.
+      /// \param[in] _name Name of the shader type to be retrieved
+      /// \return The specified ShaderType enum value
       public: static ShaderType GetEnum(const std::string &_name);
 
+      /// \brief Array of human-readable names for each ShaderType
       private: static const char *names[ST_COUNT];
     };
   }

@@ -25,18 +25,38 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \class Object Object.hh ignition/rendering/Object.hh
+    /// \brief Represents an object present in the scene graph. This includes
+    /// sub-meshes, materials, render targets, as well as posable nodes.
     class IGNITION_VISIBLE Object
     {
+      /// \brief Deconstructor
       public: virtual ~Object() { }
 
+      /// \brief Get the object ID. This ID will be unique across all objects
+      /// inside a given scene, but necessarily true for objects across
+      /// different scenes.
+      /// \return The object ID
       public: virtual unsigned int GetId() const = 0;
 
+      /// \brief Get the object name. This name will be unique across all
+      /// objects inside a given scene, but necessarily true for objects across
+      /// different scenes.
+      /// \return The object name
       public: virtual std::string GetName() const = 0;
 
+      /// \brief Get the Scene that created this object.
+      /// \return The parent scene
       public: virtual ScenePtr GetScene() const = 0;
 
+      /// \brief Prepare this object and any of its children for rendering.
+      /// This should be called for each object in a scene just before
+      /// rendering, which can be achieved by a single call to Scene::PreRender
       public: virtual void PreRender() = 0;
 
+      /// \brief Destroy any resources associated with this object. Invoking
+      /// any other functions after destroying an object will result in
+      /// undefined behavior.
       public: virtual void Destroy() = 0;
     };
   }

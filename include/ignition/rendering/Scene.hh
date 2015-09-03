@@ -33,252 +33,658 @@ namespace ignition
   {
     class RenderEngine;
 
+    /// \class Scene Scene.hh ignition/rendering/Scene.hh
+    /// \brief Manages a single scene-graph. This class updates scene-wide
+    /// properties and holds the root scene node. A Scene also serves as a
+    /// factory for all scene objects.
     class IGNITION_VISIBLE Scene
     {
+      /// \brief Deconstructor
       public: virtual ~Scene() { }
 
+      /// \brief Load scene-specific resources
       public: virtual void Load() = 0;
 
+      /// \brief Initialize the scene
       public: virtual void Init() = 0;
 
+      // TODO: merge with Destroy
       public: virtual void Fini() = 0;
 
+      /// \brief Determine if the scene is initialized
+      /// \return True if the scene is initialized
       public: virtual bool IsInitialized() const = 0;
 
+      /// \brief Get the ID of the scene
+      /// \return The scene ID
       public: virtual unsigned int GetId() const = 0;
 
+      /// \brief Get the name of the scene
+      /// \return The scene name
       public: virtual std::string GetName() const = 0;
 
+      /// \brief Get the creating render-engine of the scene
+      /// \return The creating render-engine
       public: virtual RenderEngine *GetEngine() const = 0;
 
+      /// \brief Get the last simulation update time
+      /// \return The last simulation update time
       public: virtual gazebo::common::Time GetSimTime() const = 0;
 
+      /// \brief Set the last simulation update time
+      /// \param[in] _time Latest simulation update time
       public: virtual void SetSimTime(const gazebo::common::Time &_time) = 0;
 
+      /// \brief Get root Visual node. All nodes that are desired to be
+      /// rendered in a scene should be added to this Visual or one of its
+      /// ancestors in the scene-graph. Nodes created by this Scene will not be
+      /// added to the scene by default.
+      /// \return The root Visual node
       public: virtual VisualPtr GetRootVisual() const = 0;
 
+      /// \brief Get the scene ambient light color
+      /// \return The scene ambient light color
       public: virtual gazebo::common::Color GetAmbientLight() const = 0;
 
+      /// \brief Set the scene ambient light color
+      /// \param[in] _r Red color
+      /// \param[in] _g Green color
+      /// \param[in] _b Blue color
+      /// \param[in] _a Alpha color
       public: virtual void SetAmbientLight(double _r, double _g, double _b,
                   double _a = 1.0) = 0;
 
+      /// \brief Set the scene ambient light color
+      /// \param[in] _color The scene ambient light color
       public: virtual void SetAmbientLight(const gazebo::common::Color &_color) = 0;
 
+      /// \brief Get the scene background color
+      /// \return The scene background color
       public: virtual gazebo::common::Color GetBackgroundColor() const = 0;
 
+      /// \brief Set the scene background color
+      /// \param[in] _r Red color
+      /// \param[in] _g Green color
+      /// \param[in] _b Blue color
+      /// \param[in] _a Alpha color
       public: virtual void SetBackgroundColor(double _r, double _g, double _b,
                   double _a = 1.0) = 0;
 
+      /// \brief Set the scene background color
+      /// \param[in] _color The scene background color
       public: virtual void SetBackgroundColor(const gazebo::common::Color &_color) = 0;
 
+      /// \brief Get the number of nodes managed by this scene. Note these
+      /// nodes may not be directly or indirectly attached to the root node.
+      /// \return The number of nodes managed by this scene
       public: virtual unsigned int GetNodeCount() const = 0;
 
+      /// \brief Determine if the given node is managed by this Scene
+      /// \param[in] _node Node in question
+      /// \return True if a node is managed by this scene
       public: virtual bool HasNode(ConstNodePtr _node) const = 0;
 
+      /// \brief Determine if a given node with the given id is managed by
+      /// this Scene
+      /// \param[in] _id ID of the node in question
+      /// \return True if a node is managed by this scene
       public: virtual bool HasNodeId(unsigned int _id) const = 0;
 
+      /// \brief Determine if a given node with the given name is managed by
+      /// this Scene
+      /// \param[in] _name Name of the node in question
+      /// \return True if a node is managed by this scene
       public: virtual bool HasNodeName(const std::string &_name) const = 0;
 
+      /// \brief Get node with the given id. If no node exists with the given
+      /// id, NULL will be returned.
+      /// \param[in] _id ID of the desired node
+      /// \return The desired node
       public: virtual NodePtr GetNodeById(unsigned int _id) const = 0;
 
+      /// \brief Get node with the given name. If no node exists with the given
+      /// name, NULL will be returned.
+      /// \param[in] _name Name of the desired node
+      /// \return The desired node
       public: virtual NodePtr GetNodeByName(const std::string &_name) const = 0;
 
+      /// \brief Get node at the given index. If no node exists at the given
+      /// index, NULL will be returned.
+      /// \param[in] _index Index of the desired node
+      /// \return The desired node
       public: virtual NodePtr GetNodeByIndex(unsigned int _index) const = 0;
 
+      /// \brief Destroy given node. If the given node is not managed by this
+      /// scene, no work will be done. All children of the node will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _id ID of the node to destroy
       public: virtual void DestroyNode(NodePtr _node) = 0;
 
+      /// \brief Destroy node with the given id. If no node exists with the
+      /// given id, no work will be done. All children of the node will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _id ID of the node to destroy
       public: virtual void DestroyNodeById(unsigned int _id) = 0;
 
+      /// \brief Destroy node with the given name. If no node exists with the
+      /// given name, no work will be done. All children of the node will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _name Name of the node to destroy
       public: virtual void DestroyNodeByName(const std::string &_name) = 0;
 
+      /// \brief Destroy node at the given index. If no node exists at the
+      /// given index, no work will be done. All children of the node will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _index Index of the node to destroy
       public: virtual void DestroyNodeByIndex(unsigned int _index) = 0;
 
+      /// \brief Destroy all nodes manages by this scene.
       public: virtual void DestroyNodes() = 0;
 
+      /// \brief Get the number of lights managed by this scene. Note these
+      /// lights may not be directly or indirectly attached to the root light.
+      /// \return The number of lights managed by this scene
       public: virtual unsigned int GetLightCount() const = 0;
 
+      /// \brief Determine if the given light is managed by this Scene
+      /// \param[in] _light Light in question
+      /// \return True if a light is managed by this scene
       public: virtual bool HasLight(ConstLightPtr _light) const = 0;
 
+      /// \brief Determine if a given light with the given id is managed by
+      /// this Scene
+      /// \param[in] _id ID of the light in question
+      /// \return True if a light is managed by this scene
       public: virtual bool HasLightId(unsigned int _id) const = 0;
 
+      /// \brief Determine if a given light with the given name is managed by
+      /// this Scene
+      /// \param[in] _name Name of the light in question
+      /// \return True if a light is managed by this scene
       public: virtual bool HasLightName(const std::string &_name) const = 0;
 
+      /// \brief Get light with the given id. If no light exists with the given
+      /// id, NULL will be returned.
+      /// \param[in] _id ID of the desired light
+      /// \return The desired light
       public: virtual LightPtr GetLightById(unsigned int _id) const = 0;
 
+      /// \brief Get light with the given name. If no light exists with the
+      /// given name, NULL will be returned.
+      /// \param[in] _name Name of the desired light
+      /// \return The desired light
       public: virtual LightPtr GetLightByName(
                   const std::string &_name) const = 0;
 
+      /// \brief Get light at the given index. If no light exists at the given
+      /// index, NULL will be returned.
+      /// \param[in] _index Index of the desired light
+      /// \return The desired light
       public: virtual LightPtr GetLightByIndex(unsigned int _index) const = 0;
 
+      /// \brief Destroy given light. If the given light is not managed by this
+      /// scene, no work will be done. All children of the light will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _id ID of the light to destroy
       public: virtual void DestroyLight(LightPtr _light) = 0;
 
+      /// \brief Destroy light with the given id. If no light exists with the
+      /// given id, no work will be done. All children of the light will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _id ID of the light to destroy
       public: virtual void DestroyLightById(unsigned int _id) = 0;
 
+      /// \brief Destroy light with the given name. If no light exists with the
+      /// given name, no work will be done. All children of the light will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _name Name of the light to destroy
       public: virtual void DestroyLightByName(const std::string &_name) = 0;
 
+      /// \brief Destroy light at the given index. If no light exists at the
+      /// given index, no work will be done. All children of the light will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _index Index of the light to destroy
       public: virtual void DestroyLightByIndex(unsigned int _index) = 0;
 
+      /// \brief Destroy all lights manages by this scene.
       public: virtual void DestroyLights() = 0;
 
+      /// \brief Get the number of sensors managed by this scene. Note these
+      /// sensors may not be directly or indirectly attached to the root sensor.
+      /// \return The number of sensors managed by this scene
       public: virtual unsigned int GetSensorCount() const = 0;
 
+      /// \brief Determine if the given sensor is managed by this Scene
+      /// \param[in] _sensor Sensor in question
+      /// \return True if a sensor is managed by this scene
       public: virtual bool HasSensor(ConstSensorPtr _sensor) const = 0;
 
+      /// \brief Determine if a given sensor with the given id is managed by
+      /// this Scene
+      /// \param[in] _id ID of the sensor in question
+      /// \return True if a sensor is managed by this scene
       public: virtual bool HasSensorId(unsigned int _id) const = 0;
 
+      /// \brief Determine if a given sensor with the given name is managed by
+      /// this Scene
+      /// \param[in] _name Name of the sensor in question
+      /// \return True if a sensor is managed by this scene
       public: virtual bool HasSensorName(const std::string &_name) const = 0;
 
+      /// \brief Get sensor with the given id. If no sensor exists with the
+      /// given id, NULL will be returned.
+      /// \param[in] _id ID of the desired sensor
+      /// \return The desired sensor
       public: virtual SensorPtr GetSensorById(unsigned int _id) const = 0;
 
+      /// \brief Get sensor with the given name. If no sensor exists with the
+      /// given name, NULL will be returned.
+      /// \param[in] _name Name of the desired sensor
+      /// \return The desired sensor
       public: virtual SensorPtr GetSensorByName(
                   const std::string &_name) const = 0;
 
+      /// \brief Get sensor at the given index. If no sensor exists at the given
+      /// index, NULL will be returned.
+      /// \param[in] _index Index of the desired sensor
+      /// \return The desired sensor
       public: virtual SensorPtr GetSensorByIndex(unsigned int _index) const = 0;
 
+      /// \brief Destroy given sensor. If the given sensor is not managed by
+      /// this scene, no work will be done. All children of the sensor will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _id ID of the sensor to destroy
       public: virtual void DestroySensor(SensorPtr _sensor) = 0;
 
+      /// \brief Destroy sensor with the given id. If no sensor exists with the
+      /// given id, no work will be done. All children of the sensor will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _id ID of the sensor to destroy
       public: virtual void DestroySensorById(unsigned int _id) = 0;
 
+      /// \brief Destroy sensor with the given name. If no sensor exists with
+      /// the given name, no work will be done. All children of the sensor will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _name Name of the sensor to destroy
       public: virtual void DestroySensorByName(const std::string &_name) = 0;
 
+      /// \brief Destroy sensor at the given index. If no sensor exists at the
+      /// given index, no work will be done. All children of the sensor will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _index Index of the sensor to destroy
       public: virtual void DestroySensorByIndex(unsigned int _index) = 0;
 
+      /// \brief Destroy all sensors manages by this scene.
       public: virtual void DestroySensors() = 0;
 
+      /// \brief Get the number of nodes managed by this scene. Note these
+      /// nodes may not be directly or indirectly attached to the root node.
+      /// \return The number of nodes managed by this scene
       public: virtual unsigned int GetVisualCount() const = 0;
 
-      public: virtual bool HasVisual(ConstVisualPtr _visual) const = 0;
+      /// \brief Determine if the given node is managed by this Scene
+      /// \param[in] _node Visual in question
+      /// \return True if a node is managed by this scene
+      public: virtual bool HasVisual(ConstVisualPtr _node) const = 0;
 
+      /// \brief Determine if a given node with the given id is managed by
+      /// this Scene
+      /// \param[in] _id ID of the node in question
+      /// \return True if a node is managed by this scene
       public: virtual bool HasVisualId(unsigned int _id) const = 0;
 
+      /// \brief Determine if a given node with the given name is managed by
+      /// this Scene
+      /// \param[in] _name Name of the node in question
+      /// \return True if a node is managed by this scene
       public: virtual bool HasVisualName(const std::string &_name) const = 0;
 
+      /// \brief Get node with the given id. If no node exists with the given
+      /// id, NULL will be returned.
+      /// \param[in] _id ID of the desired node
+      /// \return The desired node
       public: virtual VisualPtr GetVisualById(unsigned int _id) const = 0;
 
+      /// \brief Get node with the given name. If no node exists with the given
+      /// name, NULL will be returned.
+      /// \param[in] _name Name of the desired node
+      /// \return The desired node
       public: virtual VisualPtr GetVisualByName(
                   const std::string &_name) const = 0;
 
+      /// \brief Get node at the given index. If no node exists at the given
+      /// index, NULL will be returned.
+      /// \param[in] _index Index of the desired node
+      /// \return The desired node
       public: virtual VisualPtr GetVisualByIndex(unsigned int _index) const = 0;
 
-      public: virtual void DestroyVisual(VisualPtr _visual) = 0;
+      /// \brief Destroy given node. If the given node is not managed by this
+      /// scene, no work will be done. All children of the node will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _id ID of the node to destroy
+      public: virtual void DestroyVisual(VisualPtr _node) = 0;
 
+      /// \brief Destroy node with the given id. If no node exists with the
+      /// given id, no work will be done. All children of the node will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _id ID of the node to destroy
       public: virtual void DestroyVisualById(unsigned int _id) = 0;
 
+      /// \brief Destroy node with the given name. If no node exists with the
+      /// given name, no work will be done. All children of the node will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _name Name of the node to destroy
       public: virtual void DestroyVisualByName(const std::string &_name) = 0;
 
+      /// \brief Destroy node at the given index. If no node exists at the
+      /// given index, no work will be done. All children of the node will
+      /// consequently be detached from the scene graph, but not destroyed.
+      /// \param[in] _index Index of the node to destroy
       public: virtual void DestroyVisualByIndex(unsigned int _index) = 0;
 
+      /// \brief Destroy all nodes manages by this scene.
       public: virtual void DestroyVisuals() = 0;
 
+      /// \brief Determine if a material is registered under the given name
+      /// \param[in] _name Name of the material in question
+      /// \return True if a material is registered under the given name
       public: virtual bool MaterialRegistered(
                   const std::string &_name) const = 0;
 
+      /// \brief Get material registered under the given name. If no material
+      /// is registered under the given name, NULL will be returned.
+      /// \param[in] _name Name of the desired material
+      /// \return The specified material
       public: virtual MaterialPtr GetMaterial(
                   const std::string &_name) const = 0;
 
+      /// \brief Register a new material under the given name. If the name is
+      /// already in use, no work will be done.
+      /// \param[in] _name Name which the material will be registered under
+      /// \param[in] _material Material to register
       public: virtual void RegisterMaterial(const std::string &_name,
                   MaterialPtr _material) = 0;
 
+      /// \brief Unregister material registered under the given name. If no
+      /// material is registered under this name, no work will be done.
+      /// \param[in] _name Name of the material to unregistered
       public: virtual void UnregisterMaterial(const std::string &_name) = 0;
 
+      /// \brief Unregister material all registered materials
       public: virtual void UnregisterMaterials() = 0;
 
+      /// \brief Create new directional light. A unique ID and name will
+      /// automatically be assigned to the light.
+      /// \return The created light
       public: virtual DirectionalLightPtr CreateDirectionalLight() = 0;
 
+      /// \brief Create new directional light with the given ID. A unique name
+      /// will automatically be assigned to the light. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light
+      /// \return The created light
       public: virtual DirectionalLightPtr CreateDirectionalLight(
                   unsigned int _id) = 0;
 
+      /// \brief Create new directional light with the given name. A unique ID
+      /// will automatically be assigned to the light. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new light
+      /// \return The created light
       public: virtual DirectionalLightPtr CreateDirectionalLight(
                   const std::string &_name) = 0;
 
+      /// \brief Create new directional light with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light
+      /// \param[in] _name Name of the new light
+      /// \return The created light
       public: virtual DirectionalLightPtr CreateDirectionalLight(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new point light. A unique ID and name will
+      /// automatically be assigned to the light.
+      /// \return The created light
       public: virtual PointLightPtr CreatePointLight() = 0;
 
-      public: virtual PointLightPtr CreatePointLight(unsigned int _id) = 0;
+      /// \brief Create new point light with the given ID. A unique name
+      /// will automatically be assigned to the light. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light
+      /// \return The created light
+      public: virtual PointLightPtr CreatePointLight(
+                  unsigned int _id) = 0;
 
+      /// \brief Create new point light with the given name. A unique ID
+      /// will automatically be assigned to the light. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new light
+      /// \return The created light
       public: virtual PointLightPtr CreatePointLight(
                   const std::string &_name) = 0;
 
-      public: virtual PointLightPtr CreatePointLight(unsigned int _id,
-                  const std::string &_name) = 0;
+      /// \brief Create new point light with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light
+      /// \param[in] _name Name of the new light
+      /// \return The created light
+      public: virtual PointLightPtr CreatePointLight(
+                  unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new spotlight. A unique ID and name will
+      /// automatically be assigned to the light.
+      /// \return The created light
       public: virtual SpotLightPtr CreateSpotLight() = 0;
 
-      public: virtual SpotLightPtr CreateSpotLight(unsigned int _id) = 0;
+      /// \brief Create new spotlight with the given ID. A unique name
+      /// will automatically be assigned to the light. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light
+      /// \return The created light
+      public: virtual SpotLightPtr CreateSpotLight(
+                  unsigned int _id) = 0;
 
+      /// \brief Create new spotlight with the given name. A unique ID
+      /// will automatically be assigned to the light. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new light
+      /// \return The created light
       public: virtual SpotLightPtr CreateSpotLight(
                   const std::string &_name) = 0;
 
-      public: virtual SpotLightPtr CreateSpotLight(unsigned int _id,
-                  const std::string &_name) = 0;
+      /// \brief Create new spotlight with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light
+      /// \param[in] _name Name of the new light
+      /// \return The created light
+      public: virtual SpotLightPtr CreateSpotLight(
+                  unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new camera. A unique ID and name will
+      /// automatically be assigned to the camera.
+      /// \return The created camera
       public: virtual CameraPtr CreateCamera() = 0;
 
-      public: virtual CameraPtr CreateCamera(unsigned int _id) = 0;
+      /// \brief Create new camera with the given ID. A unique name
+      /// will automatically be assigned to the camera. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new camera
+      /// \return The created camera
+      public: virtual CameraPtr CreateCamera(
+                  unsigned int _id) = 0;
 
-      public: virtual CameraPtr CreateCamera(const std::string &_name) = 0;
-
-      public: virtual CameraPtr CreateCamera(unsigned int _id,
+      /// \brief Create new camera with the given name. A unique ID
+      /// will automatically be assigned to the camera. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new camera
+      /// \return The created camera
+      public: virtual CameraPtr CreateCamera(
                   const std::string &_name) = 0;
 
+      /// \brief Create new camera with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new camera
+      /// \param[in] _name Name of the new camera
+      /// \return The created camera
+      public: virtual CameraPtr CreateCamera(
+                  unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new visual. A unique ID and name will
+      /// automatically be assigned to the visual.
+      /// \return The created visual
       public: virtual VisualPtr CreateVisual() = 0;
 
-      public: virtual VisualPtr CreateVisual(unsigned int _id) = 0;
+      /// \brief Create new visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new visual
+      /// \return The created visual
+      public: virtual VisualPtr CreateVisual(
+                  unsigned int _id) = 0;
 
-      public: virtual VisualPtr CreateVisual(const std::string &_name) = 0;
-
-      public: virtual VisualPtr CreateVisual(unsigned int _id,
+      /// \brief Create new visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new visual
+      /// \return The created visual
+      public: virtual VisualPtr CreateVisual(
                   const std::string &_name) = 0;
 
+      /// \brief Create new visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new visual
+      /// \param[in] _name Name of the new visual
+      /// \return The created visual
+      public: virtual VisualPtr CreateVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new arrow visual. A unique ID and name will
+      /// automatically be assigned to the visual.
+      /// \return The created arrow visual
       public: virtual ArrowVisualPtr CreateArrowVisual() = 0;
 
-      public: virtual ArrowVisualPtr CreateArrowVisual(unsigned int _id) = 0;
+      /// \brief Create new arrow visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new arrow visual
+      /// \return The created arrow visual
+      public: virtual ArrowVisualPtr CreateArrowVisual(
+                  unsigned int _id) = 0;
 
+      /// \brief Create new arrow visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new arrow visual
+      /// \return The created arrow visual
       public: virtual ArrowVisualPtr CreateArrowVisual(
                   const std::string &_name) = 0;
 
-      public: virtual ArrowVisualPtr CreateArrowVisual(unsigned int _id,
-                  const std::string &_name) = 0;
+      /// \brief Create new arrow visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new arrow visual
+      /// \param[in] _name Name of the new arrow visual
+      /// \return The created arrow visual
+      public: virtual ArrowVisualPtr CreateArrowVisual(
+                  unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new axis visual. A unique ID and name will
+      /// automatically be assigned to the visual.
+      /// \return The created axis visual
       public: virtual AxisVisualPtr CreateAxisVisual() = 0;
 
-      public: virtual AxisVisualPtr CreateAxisVisual(unsigned int _id) = 0;
+      /// \brief Create new axis visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new axis visual
+      /// \return The created axis visual
+      public: virtual AxisVisualPtr CreateAxisVisual(
+                  unsigned int _id) = 0;
 
+      /// \brief Create new axis visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new axis visual
+      /// \return The created axis visual
       public: virtual AxisVisualPtr CreateAxisVisual(
                   const std::string &_name) = 0;
 
-      public: virtual AxisVisualPtr CreateAxisVisual(unsigned int _id,
-                  const std::string &_name) = 0;
+      /// \brief Create new axis visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new axis visual
+      /// \param[in] _name Name of the new axis visual
+      /// \return The created axis visual
+      public: virtual AxisVisualPtr CreateAxisVisual(
+                  unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new box geometry
+      /// \return The created box
       public: virtual GeometryPtr CreateBox() = 0;
 
+      /// \brief Create new cone geometry
+      /// \return The created cone
       public: virtual GeometryPtr CreateCone() = 0;
 
+      /// \brief Create new cylinder geometry
+      /// \return The created cylinder
       public: virtual GeometryPtr CreateCylinder() = 0;
 
+      /// \brief Create new plane geometry
+      /// \return The created plane
       public: virtual GeometryPtr CreatePlane() = 0;
 
+      /// \brief Create new sphere geometry
+      /// \return The created sphere
       public: virtual GeometryPtr CreateSphere() = 0;
 
+      /// \brief Create new mesh geomerty. The rendering::Mesh will be created
+      /// from a common::Mesh retrieved from common::MeshManager using the given
+      /// mesh name. If no mesh exists by this name, NULL will be returned. All
+      /// sub-meshes will be loaded into the created mesh, uncentered.
+      /// \param[in] _meshName Name of the reference mesh
+      /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const std::string &_meshName) = 0;
 
+      /// \brief Create new mesh geomerty. The rendering::Mesh will be created
+      /// from the given common::Mesh. All sub-meshes will be loaded into this
+      /// created mesh, uncentered.
+      /// \param[in] _mesh Reference mesh
+      /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const gazebo::common::Mesh *_mesh) = 0;
 
+      /// \brief Create new mesh geomerty. The rendering::Mesh will be created
+      /// from the given common::Mesh specified in the MeshDescriptor.
+      /// Sub-meshes will be loaded and centered according to the descriptor.
+      /// \param[in] _desc Descriptor of the mesh to load
+      /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc) = 0;
 
+      /// \brief Create new material. Created material will have default
+      /// properties.
+      /// \return The created material
       public: virtual MaterialPtr CreateMaterial() = 0;
 
+      /// \brief Create new material from the reference common::Material
+      /// \param[in] _material Reference material
+      /// \return The created material
       public: virtual MaterialPtr CreateMaterial(
                   const gazebo::common::Material &_material) = 0;
 
+      /// \brief Create new render-texture
+      /// \return The created render-texture
       public: virtual RenderTexturePtr CreateRenderTexture() = 0;
 
+      /// \brief Prepare scene for rendering. The scene will flushing any scene
+      /// changes by traversing scene-graph, calling PreRender on all objects
       public: virtual void PreRender() = 0;
 
+      /// \brief Remove and destroy all objects from the scene graph. This does
+      /// not completely destroy scene resources, so new objects can be created
+      /// and added to the scene afterwards.
       public: virtual void Clear() = 0;
 
+      /// \brief Completely destroy the scene an all its resources. Continued
+      /// use of this scene after its destruction will result in undefined
+      /// behavior.
       public: virtual void Destroy() = 0;
     };
   }

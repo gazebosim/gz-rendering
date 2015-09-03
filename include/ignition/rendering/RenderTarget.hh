@@ -25,36 +25,67 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \class RenderTarget RenderTarget.hh ignition/rendering/RenderTarget.hh
+    /// \brief Represents a render-target to which cameras can render images.
     class IGNITION_VISIBLE RenderTarget :
       public virtual Object
     {
+      /// \brief Deconstructor
       public: virtual ~RenderTarget() { }
 
+      /// \brief Get image width in pixels
+      /// \return The image width in pixels
       public: virtual unsigned int GetWidth() const = 0;
 
+      /// \brief Get image height in pixels
+      /// \return The image height in pixels
       public: virtual unsigned int GetHeight() const = 0;
 
+      /// \brief Write rendered image to given Image. The RenderTarget will
+      /// convert the underlying image to the specified format listed in the
+      /// given Image. However if the given image is not of the correct size no
+      /// work will be done. Calling this function before an image has been
+      /// rendered will result in undefined behavior.
+      /// \param[out] _image Image to which output will be written
       public: virtual void GetImage(Image &_image) const = 0;
     };
 
+    /// \class RenderTexture RenderTexture.hh
+    /// ignition/rendering/RenderTexture.hh
+    /// \brief Represents a off-screen render-texture to which cameras can
+    /// render images.
     class IGNITION_VISIBLE RenderTexture :
       public virtual RenderTarget
     {
+      /// \brief Deconstructor
       public: virtual ~RenderTexture() { }
 
+      /// \brief Set the texture width in pixels
+      /// \param[in] _width New texture width in pixels
       public: virtual void SetWidth(unsigned int _width) = 0;
 
+      /// \brief Set the texture height in pixels
+      /// \param[in] _height New texture height in pixels
       public: virtual void SetHeight(unsigned int _height) = 0;
     };
 
+    /// \class RenderWindow RenderWindow.hh
+    /// ignition/rendering/RenderWindow.hh
+    /// \brief Represents a on-screen render-window to which cameras can
+    /// render images.
     class IGNITION_VISIBLE RenderWindow :
       public virtual RenderTarget
     {
+      /// \brief Deconstructor
       public: virtual ~RenderWindow() { }
 
+      /// \brief Alert the window of a window resize event
+      /// \param[in] _width New window width in pixels
+      /// \param[in] _height New window height in pixels
       public: virtual void OnResize(unsigned int _width,
                   unsigned int _height) = 0;
 
+      /// \brief Alert the window of a window move event
       public: virtual void OnMove() = 0;
     };
   }

@@ -43,17 +43,9 @@ set(cuda_sources
 set (gtest_sources
 )
 
-
-# TODO: remove after development
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wfatal-errors")
-
 find_package(CUDA REQUIRED system filesystem)
 include_directories(${CUDA_INCLUDE_DIRS})
 link_directories(${CUDA_LIBRARY_DIRS})
-
-
 
 ign_build_tests(${gtest_sources})
 ign_add_library(${PROJECT_NAME_LOWER}-optix ${sources})
@@ -72,5 +64,5 @@ add_custom_target(${PROJECT_NAME_LOWER}-optix-ptx ALL
                   DEPENDS ${ptx_files} ${cuda_sources}
                   SOURCES ${cuda_sources})
 
-# set(media_dir "${CMAKE_INSTALL_PREFIX}/share/gazebo-${GAZEBO_VERSION}/media")
-# install(FILES ${ptx_files} DESTINATION ${media_dir}/optix)
+set(ptx_dir "${CMAKE_INSTALL_PREFIX}/share/ignition/rendering/ptx")
+install(FILES ${ptx_files} DESTINATION ${ptx_dir})

@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+#include <gazebo/common/Console.hh>
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"

@@ -19,7 +19,6 @@
 
 #include <string>
 #include "gazebo/common/SingletonT.hh"
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/Util.hh"
 
 namespace ignition

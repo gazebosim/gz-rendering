@@ -27,6 +27,8 @@ link_directories(
   ${ogre_library_dirs}
 )
 
+find_package(OpenGL)
+
 ign_build_tests(${gtest_sources})
 ign_add_library(${PROJECT_NAME_LOWER}-ogre ${sources})
 ign_install_library(${PROJECT_NAME_LOWER}-ogre)

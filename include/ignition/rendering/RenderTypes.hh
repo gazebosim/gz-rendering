@@ -17,14 +17,14 @@
 #ifndef _IGNITION_RENDERING_RENDERTYPES_HH_
 #define _IGNITION_RENDERING_RENDERTYPES_HH_
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace ignition
 {
   namespace rendering
   {
     template <class T>
-    using shared_ptr = boost::shared_ptr<T>;
+    using shared_ptr = std::shared_ptr<T>;
 
     class ArrowVisual;
     class AxisVisual;

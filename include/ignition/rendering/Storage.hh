@@ -17,8 +17,8 @@
 #ifndef _IGNITION_RENDERING_STORAGE_HH_
 #define _IGNITION_RENDERING_STORAGE_HH_
 
+#include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Node.hh"
 #include "ignition/rendering/Light.hh"
@@ -41,11 +41,11 @@ namespace ignition
     {
       /// \def TPtr
       /// \brief Shared pointer to T
-      typedef boost::shared_ptr<T> TPtr;
+      typedef std::shared_ptr<T> TPtr;
 
       /// \def const TPtr
       /// \brief Shared pointer to const T
-      typedef boost::shared_ptr<const T> ConstTPtr;
+      typedef std::shared_ptr<const T> ConstTPtr;
 
       /// \brief Deconstructor
       public: virtual ~Map() { }
@@ -106,11 +106,11 @@ namespace ignition
     {
       /// \def TPtr
       /// \brief Shared pointer to T
-      typedef boost::shared_ptr<T> TPtr;
+      typedef std::shared_ptr<T> TPtr;
 
       /// \def const TPtr
       /// \brief Shared pointer to const T
-      typedef boost::shared_ptr<const T> ConstTPtr;
+      typedef std::shared_ptr<const T> ConstTPtr;
 
       /// \brief Deconstructor
       public: virtual ~Store() { }
@@ -220,7 +220,7 @@ namespace ignition
     {
       /// \def TPtr
       /// \brief Shared pointer to T
-      typedef boost::shared_ptr<T> TPtr;
+      typedef std::shared_ptr<T> TPtr;
 
       /// \def TPtr
       /// \brief Store of T
@@ -228,11 +228,11 @@ namespace ignition
 
       /// \def TStorePtr
       /// \brief Shared pointer to TStore
-      typedef boost::shared_ptr<TStore> TStorePtr;
+      typedef std::shared_ptr<TStore> TStorePtr;
 
       /// \def const TStorePtr
       /// \brief Shared pointer to const TStore
-      typedef boost::shared_ptr<const TStore> ConstTStorePtr;
+      typedef std::shared_ptr<const TStore> ConstTStorePtr;
 
       /// \brief Deconstructor
       public: virtual ~CompositeStore() { }
@@ -333,39 +333,39 @@ namespace ignition
 
     /// \def SceneStorePtr
     /// \brief Shared pointer to SceneStore
-    typedef boost::shared_ptr<SceneStore> SceneStorePtr;
+    typedef std::shared_ptr<SceneStore> SceneStorePtr;
 
     /// \def NodeStorePtr
     /// \brief Shared pointer to NodeStore
-    typedef boost::shared_ptr<NodeStore> NodeStorePtr;
+    typedef std::shared_ptr<NodeStore> NodeStorePtr;
 
     /// \def LightStorePtr
     /// \brief Shared pointer to LightStore
-    typedef boost::shared_ptr<LightStore> LightStorePtr;
+    typedef std::shared_ptr<LightStore> LightStorePtr;
 
     /// \def SensorStorePtr
     /// \brief Shared pointer to SensorStore
-    typedef boost::shared_ptr<SensorStore> SensorStorePtr;
+    typedef std::shared_ptr<SensorStore> SensorStorePtr;
 
     /// \def VisualStorePtr
     /// \brief Shared pointer to VisualStore
-    typedef boost::shared_ptr<VisualStore> VisualStorePtr;
+    typedef std::shared_ptr<VisualStore> VisualStorePtr;
 
     /// \def GeometryStorePtr
     /// \brief Shared pointer to GeometryStore
-    typedef boost::shared_ptr<GeometryStore> GeometryStorePtr;
+    typedef std::shared_ptr<GeometryStore> GeometryStorePtr;
 
     /// \def SubMeshStorePtr
     /// \brief Shared pointer to SubMeshStore
-    typedef boost::shared_ptr<SubMeshStore> SubMeshStorePtr;
+    typedef std::shared_ptr<SubMeshStore> SubMeshStorePtr;
 
     /// \def MaterialMapPtr
     /// \brief Shared pointer to MaterialMap
-    typedef boost::shared_ptr<MaterialMap> MaterialMapPtr;
+    typedef std::shared_ptr<MaterialMap> MaterialMapPtr;
 
     /// \def NodeCompositeStorePtr
     /// \brief Shared pointer to NodeCompositeStore
-    typedef boost::shared_ptr<NodeCompositeStore> NodeCompositeStorePtr;
+    typedef std::shared_ptr<NodeCompositeStore> NodeCompositeStorePtr;
   }
 }
 #endif

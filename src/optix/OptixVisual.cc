@@ -94,7 +94,7 @@ GeometryStorePtr OptixVisual::GetGeometries() const
 //////////////////////////////////////////////////
 bool OptixVisual::AttachChild(NodePtr _child)
 {
-  OptixNodePtr derived = boost::dynamic_pointer_cast<OptixNode>(_child);
+  OptixNodePtr derived = std::dynamic_pointer_cast<OptixNode>(_child);
 
   if (!derived)
   {
@@ -112,7 +112,7 @@ bool OptixVisual::AttachChild(NodePtr _child)
 //////////////////////////////////////////////////
 bool OptixVisual::DetachChild(NodePtr _child)
 {
-  OptixNodePtr derived = boost::dynamic_pointer_cast<OptixNode>(_child);
+  OptixNodePtr derived = std::dynamic_pointer_cast<OptixNode>(_child);
 
   if (!derived)
   {
@@ -128,7 +128,7 @@ bool OptixVisual::DetachChild(NodePtr _child)
 bool OptixVisual::AttachGeometry(GeometryPtr _geometry)
 {
   OptixGeometryPtr derived =
-      boost::dynamic_pointer_cast<OptixGeometry>(_geometry);
+      std::dynamic_pointer_cast<OptixGeometry>(_geometry);
 
   if (!derived)
   {
@@ -149,7 +149,7 @@ bool OptixVisual::AttachGeometry(GeometryPtr _geometry)
 bool OptixVisual::DetachGeometry(GeometryPtr _geometry)
 {
   OptixGeometryPtr derived =
-      boost::dynamic_pointer_cast<OptixGeometry>(_geometry);
+      std::dynamic_pointer_cast<OptixGeometry>(_geometry);
 
   if (!derived)
   {
@@ -187,5 +187,5 @@ void OptixVisual::CreateStorage()
 //////////////////////////////////////////////////
 OptixVisualPtr OptixVisual::SharedThis()
 {
-  return boost::dynamic_pointer_cast<OptixVisual>(shared_from_this());
+  return std::dynamic_pointer_cast<OptixVisual>(shared_from_this());
 }

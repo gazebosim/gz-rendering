@@ -17,7 +17,7 @@
 #ifndef _IGNITION_RENDERING_IMAGE_HH_
 #define _IGNITION_RENDERING_IMAGE_HH_
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Util.hh"
 
@@ -29,9 +29,8 @@ namespace ignition
     /// \brief Encapsulates a raw image buffer and relevant properties
     class IGNITION_VISIBLE Image
     {
-      // TODO: convert to std::unique_ptr
-      /// \brief Smart pointer to raw image buffer
-      typedef boost::shared_ptr<unsigned char> DataPtr;
+      /// \brief Shared pointer to raw image buffer
+      typedef std::shared_ptr<unsigned char> DataPtr;
 
       /// \brief Constructor
       /// \param[in] _width Image width in pixels

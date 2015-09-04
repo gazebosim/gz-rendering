@@ -17,7 +17,6 @@
 #ifndef _IGNITION_RENDERING_BASESCENE_HH_
 #define _IGNITION_RENDERING_BASESCENE_HH_
 
-#include <boost/enable_shared_from_this.hpp>
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
@@ -26,7 +25,7 @@ namespace ignition
   namespace rendering
   {
     class IGNITION_VISIBLE BaseScene :
-      public boost::enable_shared_from_this<BaseScene>,
+      public std::enable_shared_from_this<BaseScene>,
       public virtual Scene
     {
       protected: BaseScene(unsigned int _id, const std::string &_name);

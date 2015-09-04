@@ -17,7 +17,6 @@
 #ifndef _IGNITION_RENDERING_BASEOBJECT_HH_
 #define _IGNITION_RENDERING_BASEOBJECT_HH_
 
-#include <boost/enable_shared_from_this.hpp>
 #include "ignition/rendering/Object.hh"
 
 namespace ignition
@@ -25,7 +24,7 @@ namespace ignition
   namespace rendering
   {
     class IGNITION_VISIBLE BaseObject :
-      public virtual boost::enable_shared_from_this<BaseObject>,
+      public virtual std::enable_shared_from_this<BaseObject>,
       public virtual Object
     {
       protected: BaseObject();

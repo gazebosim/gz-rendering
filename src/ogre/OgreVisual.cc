@@ -64,7 +64,7 @@ GeometryStorePtr OgreVisual::GetGeometries() const
 //////////////////////////////////////////////////
 bool OgreVisual::AttachChild(NodePtr _child)
 {
-  OgreNodePtr derived = boost::dynamic_pointer_cast<OgreNode>(_child);
+  OgreNodePtr derived = std::dynamic_pointer_cast<OgreNode>(_child);
 
   if (!derived)
   {
@@ -80,7 +80,7 @@ bool OgreVisual::AttachChild(NodePtr _child)
 //////////////////////////////////////////////////
 bool OgreVisual::DetachChild(NodePtr _child)
 {
-  OgreNodePtr derived = boost::dynamic_pointer_cast<OgreNode>(_child);
+  OgreNodePtr derived = std::dynamic_pointer_cast<OgreNode>(_child);
 
   if (!derived)
   {
@@ -96,7 +96,7 @@ bool OgreVisual::DetachChild(NodePtr _child)
 bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 {
   OgreGeometryPtr derived =
-      boost::dynamic_pointer_cast<OgreGeometry>(_geometry);
+      std::dynamic_pointer_cast<OgreGeometry>(_geometry);
 
   if (!derived)
   {
@@ -115,7 +115,7 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 {
   OgreGeometryPtr derived =
-      boost::dynamic_pointer_cast<OgreGeometry>(_geometry);
+      std::dynamic_pointer_cast<OgreGeometry>(_geometry);
 
   if (!derived)
   {
@@ -147,5 +147,5 @@ void OgreVisual::Init()
 OgreVisualPtr OgreVisual::SharedThis()
 {
   ObjectPtr object = shared_from_this();
-  return boost::dynamic_pointer_cast<OgreVisual>(object);
+  return std::dynamic_pointer_cast<OgreVisual>(object);
 }

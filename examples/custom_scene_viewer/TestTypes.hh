@@ -27,9 +27,8 @@ namespace ignition
     class SceneBuilder;
     class ManualSceneDemo;
 
-    typedef boost::shared_ptr<SceneBuilder> SceneBuilderPtr;
-    typedef boost::shared_ptr<ManualSceneDemo> ManualSceneDemoPtr;
-
+    typedef std::shared_ptr<SceneBuilder> SceneBuilderPtr;
+    typedef std::shared_ptr<ManualSceneDemo> ManualSceneDemoPtr;
     typedef std::vector<ScenePtr> SceneList;
     typedef std::vector<CameraPtr> CameraList;
     typedef std::vector<SceneBuilderPtr> SceneBuilderList;

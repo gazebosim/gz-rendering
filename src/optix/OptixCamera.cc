@@ -179,7 +179,7 @@ void OptixCamera::Init()
 void OptixCamera::CreateRenderTexture()
 {
   RenderTexturePtr base = this->scene->CreateRenderTexture();
-  this->renderTexture = boost::dynamic_pointer_cast<OptixRenderTexture>(base);
+  this->renderTexture = std::dynamic_pointer_cast<OptixRenderTexture>(base);
   this->renderTexture->SetFormat(PF_R8G8B8);
   this->SetAntiAliasing(1);
 }

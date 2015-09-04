@@ -84,7 +84,7 @@ void OgreScene::SetBackgroundColor(const gazebo::common::Color &_color)
   for (unsigned int i = 0; i < count; ++i)
   {
     SensorPtr sensor = this->GetSensorByIndex(i);
-    OgreCameraPtr camera = boost::dynamic_pointer_cast<OgreCamera>(sensor);
+    OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(sensor);
     if (camera) camera->SetBackgroundColor(_color);
   }
 }
@@ -353,7 +353,7 @@ void OgreScene::CreateStores()
 OgreScenePtr OgreScene::GetSharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
-  return boost::dynamic_pointer_cast<OgreScene>(sharedBase);
+  return std::dynamic_pointer_cast<OgreScene>(sharedBase);
 }
 
 //////////////////////////////////////////////////

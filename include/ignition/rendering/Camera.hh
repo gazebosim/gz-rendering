@@ -17,7 +17,6 @@
 #ifndef _IGNITION_RENDERING_CAMERA_HH_
 #define _IGNITION_RENDERING_CAMERA_HH_
 
-#include <boost/function.hpp>
 #include "gazebo/common/Event.hh"
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"
@@ -33,7 +32,7 @@ namespace ignition
       public virtual Sensor
     {
       /// \brief Callback function for new frame render event listeners
-      public: typedef boost::function<void(const void*, unsigned int,
+      public: typedef std::function<void(const void*, unsigned int,
           unsigned int, unsigned int, const std::string&)> NewFrameListener;
 
       /// \brief Deconstructor

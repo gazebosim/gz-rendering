@@ -16,8 +16,6 @@
  */
 #include "GlutWindow.hh"
 
-#include <boost/make_shared.hpp>
-
 #if __APPLE__
   #include <OpenGL/gl.h>
   #include <OpenGL/OpenGL.h>
@@ -178,7 +176,7 @@ void GlutInitCamera(gz::CameraPtr _camera)
   imgw = g_camera->GetImageWidth();
   imgh = g_camera->GetImageHeight();
   gz::Image image = g_camera->CreateImage();
-  g_image = boost::make_shared<gz::Image>(image);
+  g_image = std::make_shared<gz::Image>(image);
   g_camera->Capture(*g_image);
 }
 

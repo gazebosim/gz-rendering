@@ -15,6 +15,7 @@
  *
  */
 #include <iostream>
+#include <gazebo/common/Console.hh>
 #include "ManualSceneDemo.hh"
 #include "SceneBuilder.hh"
 #include "DemoWindow.hh"
@@ -172,7 +173,7 @@ int main(int, char**)
   sceneDemo->AddScene(SceneBuilderPtr(new NormalMapSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new ReflectionSceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new NormalReflectionSceneBuilder));
-  sceneDemo->AddScene(SceneBuilderPtr(new TransparencySceneBuilder));
+  // sceneDemo->AddScene(SceneBuilderPtr(new TransparencySceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(1)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(2)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(3)));

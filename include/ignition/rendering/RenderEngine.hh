@@ -18,7 +18,6 @@
 #define _IGNITION_RENDERING_RENDERENGINE_HH_
 
 #include <string>
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Util.hh"
 

@@ -16,6 +16,9 @@
  */
 #include "ignition/rendering/optix/OptixRenderEngine.hh"
 
+#include <cstdlib>
+#include <vector>
+#include <boost/filesystem.hpp>
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/OptixStorage.hh"
@@ -54,9 +57,32 @@ std::string OptixRenderEngine::GetName() const
 //////////////////////////////////////////////////
 std::string OptixRenderEngine::GetPtxFile(const std::string& _fileBase) const
 {
-  // TODO: search resources paths
-  // return PTX_PREFIX + _fileBase + PTX_SUFFIX;
-  return "src/optix/" + PTX_PREFIX + _fileBase + PTX_SUFFIX;
+  // TODO: actual implement system path system
+  
+  std::vector<std::string> folders;
+  folders.push_back("./src/optix/");
+
+  std::string home(std::getenv("HOME"));
+  folders.push_back(home + "/local/share/ignition/rendering/ptx/");
+
+  const char *cstr = std::getenv("IGN_RENDERING_INSTALL_DIR");
+
+  if (cstr)
+    folders.push_back(std::string(cstr) + "/share/ignition/rendering/ptx/");
+
+  std::string file = PTX_PREFIX + _fileBase + PTX_SUFFIX;
+
+  for (auto folder : folders)
+  {
+    std::string uri = folder + file;
+
+    if (boost::filesystem::exists(uri))
+    {
+      return uri;
+    }
+  }
+
+  return file;
 }
 
 //////////////////////////////////////////////////

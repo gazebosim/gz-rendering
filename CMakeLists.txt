@@ -271,9 +271,9 @@ else (build_errors)
   ########################################
   # Make the cmake config files
   set(PKG_NAME ${PROJECT_NAME_UPPER})
-  set(PKG_LIBRARIES ${PROJECT_NAME_LOWER})
-  set(cmake_conf_file "${PROJECT_NAME_LOWER}-config.cmake")
-  set(cmake_conf_version_file "${PROJECT_NAME_LOWER}-config-version.cmake")
+  set(PKG_LIBRARIES ${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION})
+  set(cmake_conf_file "${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}-config.cmake")
+  set(cmake_conf_version_file "${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}-config-version.cmake")
 
   set(PKG_DEPENDS)
 
@@ -294,7 +294,7 @@ else (build_errors)
   install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_file}
     ${CMAKE_CURRENT_BINARY_DIR}/${cmake_conf_version_file}
-    DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}/ COMPONENT cmake)
+    DESTINATION ${LIB_INSTALL_DIR}/cmake/${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}/ COMPONENT cmake)
 
   ########################################
   # If present, load platform-specific build hooks.  This system is used,

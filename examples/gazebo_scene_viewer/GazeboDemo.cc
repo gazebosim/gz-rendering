@@ -38,6 +38,13 @@ void Connect()
 ScenePtr CreateScene(const std::string &_engine)
 {
   RenderEngine *engine = rendering::get_engine(_engine);
+  if (!engine)
+  {
+    std::cout << "Engine '" << _engine
+              << "' is not supported" << std::endl;
+    return ScenePtr();
+  }
+
   ScenePtr scene = engine->CreateScene("scene");
   SceneManager::Instance()->AddScene(scene);
   return scene;
@@ -46,6 +53,8 @@ ScenePtr CreateScene(const std::string &_engine)
 CameraPtr CreateCamera(const std::string &_engine)
 {
   ScenePtr scene = CreateScene(_engine);
+  if (!scene)
+    return CameraPtr();
   VisualPtr root = scene->GetRootVisual();
 
   CameraPtr camera = scene->CreateCamera("camera");
@@ -65,8 +74,18 @@ int main(int, char**)
 {
   Connect();
   std::vector<CameraPtr> cameras;
-  // cameras.push_back(CreateCamera("ogre"));
-  cameras.push_back(CreateCamera("optix"));
+  std::vector<std::string> engineNames;
+
+  engineNames.push_back("ogre");
+  // engineNames.push_back("optix");
+
+  for (auto engineName : engineNames)
+  {
+    CameraPtr camera = CreateCamera(engineName);
+    if (camera)
+      cameras.push_back(camera);
+  }
+
   GlutRun(cameras);
   return 0;
 }

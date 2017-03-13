@@ -17,7 +17,7 @@
 #ifndef _IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
 #define _IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
 
-#include "gazebo/common/SingletonT.hh"
+#include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 
@@ -27,7 +27,7 @@ namespace ignition
   {
     class IGNITION_VISIBLE OptixRenderEngine :
       public virtual BaseRenderEngine,
-      public SingletonT<OptixRenderEngine>
+      public common::SingletonT<OptixRenderEngine>
     {
       private: OptixRenderEngine();
 

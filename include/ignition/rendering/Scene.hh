@@ -19,9 +19,13 @@
 
 #include <string>
 #include <limits>
-#include "gazebo/common/Color.hh"
-#include "gazebo/common/Material.hh"
-#include "gazebo/common/Time.hh"
+
+#include <ignition/common/Material.hh>
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/Time.hh>
+
+#include <ignition/math/Color.hh>
+
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Storage.hh"
@@ -69,11 +73,11 @@ namespace ignition
 
       /// \brief Get the last simulation update time
       /// \return The last simulation update time
-      public: virtual gazebo::common::Time GetSimTime() const = 0;
+      public: virtual common::Time GetSimTime() const = 0;
 
       /// \brief Set the last simulation update time
       /// \param[in] _time Latest simulation update time
-      public: virtual void SetSimTime(const gazebo::common::Time &_time) = 0;
+      public: virtual void SetSimTime(const common::Time &_time) = 0;
 
       /// \brief Get root Visual node. All nodes that are desired to be
       /// rendered in a scene should be added to this Visual or one of its
@@ -84,7 +88,7 @@ namespace ignition
 
       /// \brief Get the scene ambient light color
       /// \return The scene ambient light color
-      public: virtual gazebo::common::Color GetAmbientLight() const = 0;
+      public: virtual math::Color GetAmbientLight() const = 0;
 
       /// \brief Set the scene ambient light color
       /// \param[in] _r Red color
@@ -96,11 +100,11 @@ namespace ignition
 
       /// \brief Set the scene ambient light color
       /// \param[in] _color The scene ambient light color
-      public: virtual void SetAmbientLight(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetAmbientLight(const math::Color &_color) = 0;
 
       /// \brief Get the scene background color
       /// \return The scene background color
-      public: virtual gazebo::common::Color GetBackgroundColor() const = 0;
+      public: virtual math::Color GetBackgroundColor() const = 0;
 
       /// \brief Set the scene background color
       /// \param[in] _r Red color
@@ -112,7 +116,7 @@ namespace ignition
 
       /// \brief Set the scene background color
       /// \param[in] _color The scene background color
-      public: virtual void SetBackgroundColor(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetBackgroundColor(const math::Color &_color) = 0;
 
       /// \brief Get the number of nodes managed by this scene. Note these
       /// nodes may not be directly or indirectly attached to the root node.
@@ -649,7 +653,7 @@ namespace ignition
       /// created mesh, uncentered.
       /// \param[in] _mesh Reference mesh
       /// \return The created mesh
-      public: virtual MeshPtr CreateMesh(const gazebo::common::Mesh *_mesh) = 0;
+      public: virtual MeshPtr CreateMesh(const common::Mesh *_mesh) = 0;
 
       /// \brief Create new mesh geomerty. The rendering::Mesh will be created
       /// from the given common::Mesh specified in the MeshDescriptor.
@@ -667,7 +671,7 @@ namespace ignition
       /// \param[in] _material Reference material
       /// \return The created material
       public: virtual MaterialPtr CreateMaterial(
-                  const gazebo::common::Material &_material) = 0;
+                  const common::Material &_material) = 0;
 
       /// \brief Create new render-texture
       /// \return The created render-texture

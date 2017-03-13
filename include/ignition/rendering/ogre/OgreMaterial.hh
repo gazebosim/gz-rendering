@@ -36,21 +36,21 @@ namespace ignition
 
       public: virtual void SetLightingEnabled(bool _enabled);
 
-      public: virtual gazebo::common::Color GetAmbient() const;
+      public: virtual math::Color GetAmbient() const;
 
-      public: virtual void SetAmbient(const gazebo::common::Color &_color);
+      public: virtual void SetAmbient(const math::Color &_color);
 
-      public: virtual gazebo::common::Color GetDiffuse() const;
+      public: virtual math::Color GetDiffuse() const;
 
-      public: virtual void SetDiffuse(const gazebo::common::Color &_color);
+      public: virtual void SetDiffuse(const math::Color &_color);
 
-      public: virtual gazebo::common::Color GetSpecular() const;
+      public: virtual math::Color GetSpecular() const;
 
-      public: virtual void SetSpecular(const gazebo::common::Color &_color);
+      public: virtual void SetSpecular(const math::Color &_color);
 
-      public: virtual gazebo::common::Color GetEmissive() const;
+      public: virtual math::Color GetEmissive() const;
 
-      public: virtual void SetEmissive(const gazebo::common::Color &_color);
+      public: virtual void SetEmissive(const math::Color &_color);
 
       public: virtual double GetShininess() const;
 
@@ -125,7 +125,7 @@ namespace ignition
       protected: Ogre::String ogreGroup;
 
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
-      protected: gazebo::common::Color emissiveColor;
+      protected: math::Color emissiveColor;
 #endif
 
       protected: double transparency;

@@ -46,19 +46,19 @@ namespace ignition
 
       public: virtual std::string GetName() const;
 
-      public: virtual gazebo::common::Time GetSimTime() const;
+      public: virtual common::Time GetSimTime() const;
 
-      public: virtual void SetSimTime(const gazebo::common::Time &_time);
+      public: virtual void SetSimTime(const common::Time &_time);
 
       public: virtual void SetAmbientLight(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetAmbientLight(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetAmbientLight(const math::Color &_color) = 0;
 
       public: virtual void SetBackgroundColor(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetBackgroundColor(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetBackgroundColor(const math::Color &_color) = 0;
 
       public: virtual unsigned int GetNodeCount() const;
 
@@ -245,14 +245,14 @@ namespace ignition
 
       public: virtual MeshPtr CreateMesh(const std::string &_meshName);
 
-      public: virtual MeshPtr CreateMesh(const gazebo::common::Mesh *_mesh);
+      public: virtual MeshPtr CreateMesh(const common::Mesh *_mesh);
 
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc);
 
       public: virtual MaterialPtr CreateMaterial();
 
       public: virtual MaterialPtr CreateMaterial(
-                  const gazebo::common::Material &_material);
+                  const common::Material &_material);
 
       public: virtual RenderTexturePtr CreateRenderTexture();
 
@@ -310,7 +310,8 @@ namespace ignition
                      const std::string &_name) = 0;
 
       protected: virtual MeshPtr CreateMeshImpl(unsigned int _id,
-                     const std::string &_name, const MeshDescriptor &_desc) = 0;
+                     const std::string &_name,
+                     const MeshDescriptor &_desc) = 0;
 
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name) = 0;
@@ -338,7 +339,7 @@ namespace ignition
 
       protected: std::string name;
 
-      protected: gazebo::common::Time simTime;
+      protected: common::Time simTime;
 
       protected: bool loaded;
 

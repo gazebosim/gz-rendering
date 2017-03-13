@@ -18,7 +18,7 @@
 #define _IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
 
 #include <string>
-#include "gazebo/common/SingletonT.hh"
+#include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/Util.hh"
 
 namespace ignition
@@ -34,7 +34,7 @@ namespace ignition
     /// be access directly, but instead via the RenderEngineManager to maintain
     /// a flexible render-engine agnostic design.
     class IGNITION_VISIBLE RenderEngineManager :
-      public virtual SingletonT<RenderEngineManager>
+      public virtual common::SingletonT<RenderEngineManager>
     {
       /// \brief Constructor
       public: RenderEngineManager();

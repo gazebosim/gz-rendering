@@ -143,6 +143,12 @@ CameraPtr CreateCamera(const std::string &_engineName)
 {
   // create and populate scene
   RenderEngine *engine = rendering::get_engine(_engineName);
+  if (!engine)
+  {
+    std::cout << "Engine '" << _engineName
+              << "' is not supported" << std::endl;
+    return CameraPtr();
+  }
   ScenePtr scene = engine->CreateScene("scene");
   BuildScene(scene);
 
@@ -162,13 +168,14 @@ int main(int _argc, char** _argv)
 
   try
   {
-    engineNames.push_back("ogre");
+//    engineNames.push_back("ogre");
     engineNames.push_back("optix");
 
     for (auto engineName : engineNames)
     {
       CameraPtr camera = CreateCamera(engineName);
-      cameras.push_back(camera);
+      if (camera)
+        cameras.push_back(camera);
     }
 
     GlutRun(cameras);

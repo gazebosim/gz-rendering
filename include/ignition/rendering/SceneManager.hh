@@ -18,7 +18,7 @@
 #define _IGNITION_RENDERING_SCENEMANAGER_HH
 
 #include <string>
-#include "gazebo/common/SingletonT.hh"
+#include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Util.hh"
 
@@ -32,7 +32,7 @@ namespace ignition
     /// synchronized. This class currently consumes Gazebo-specified protobuf
     /// messages, but will be updated to be Gazebo-agnostic in the future.
     class IGNITION_VISIBLE SceneManager :
-      public virtual SingletonT<SceneManager>
+      public virtual common::SingletonT<SceneManager>
     {
       /// \brief Constructor
       public: SceneManager();

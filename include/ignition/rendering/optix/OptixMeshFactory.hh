@@ -18,7 +18,8 @@
 #define _IGNITION_RENDERING_OPTIXMESHFACTORY_HH_
 
 #include <map>
-#include "gazebo/common/Mesh.hh"
+#include <ignition/common/Mesh.hh>
+
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixMesh.hh"
@@ -65,7 +66,7 @@ namespace ignition
     class IGNITION_VISIBLE OptixMeshGeometryFactory
     {
       public: OptixMeshGeometryFactory(OptixScenePtr _scene,
-                  const gazebo::common::SubMesh &_subMesh);
+                  const common::SubMesh &_subMesh);
 
       public: virtual ~OptixMeshGeometryFactory();
 
@@ -83,7 +84,7 @@ namespace ignition
 
       protected: OptixScenePtr scene;
 
-      protected: const gazebo::common::SubMesh &subMesh;
+      protected: const common::SubMesh &subMesh;
 
       protected: optix::Geometry optixGeometry;
     };

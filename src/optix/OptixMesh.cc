@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/optix/OptixMesh.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixMaterial.hh"
@@ -46,7 +49,7 @@ optix::Acceleration OptixMesh::GetOptixAccel() const
   return this->optixAccel;
 }
 
-//////////////////////////////////////////////////  
+//////////////////////////////////////////////////
 SubMeshStorePtr OptixMesh::GetSubMeshes() const
 {
   return this->subMeshes;
@@ -80,7 +83,7 @@ void OptixSubMesh::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!derived)
   {
-    gzerr << "Cannot assign material created by another render-engine"
+    ignerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

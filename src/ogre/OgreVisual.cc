@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreVisual.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
@@ -68,7 +71,7 @@ bool OgreVisual::AttachChild(NodePtr _child)
 
   if (!derived)
   {
-    gzerr << "Cannot attach node created by another render-engine" << std::endl;
+    ignerr << "Cannot attach node created by another render-engine" << std::endl;
     return false;
   }
 
@@ -84,7 +87,7 @@ bool OgreVisual::DetachChild(NodePtr _child)
 
   if (!derived)
   {
-    gzerr << "Cannot detach node created by another render-engine" << std::endl;
+    ignerr << "Cannot detach node created by another render-engine" << std::endl;
     return false;
   }
 
@@ -100,7 +103,7 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    gzerr << "Cannot attach geometry created by another render-engine"
+    ignerr << "Cannot attach geometry created by another render-engine"
           << std::endl;
 
     return false;
@@ -119,7 +122,7 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    gzerr << "Cannot detach geometry created by another render-engine"
+    ignerr << "Cannot detach geometry created by another render-engine"
           << std::endl;
 
     return false;

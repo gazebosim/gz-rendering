@@ -12,6 +12,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/optix.hh"
 
@@ -31,8 +34,8 @@ OptixScene::OptixScene(unsigned int _id, const std::string &_name) :
   optixSphereGeometry(NULL)
 {
   // TODO: move defaults to BaseScene
-  this->ambientLight = gazebo::common::Color::Black;
-  this->backgroundColor = gazebo::common::Color::Black;
+  this->ambientLight = math::Color::Black;
+  this->backgroundColor = math::Color::Black;
 }
 
 //////////////////////////////////////////////////
@@ -58,31 +61,32 @@ VisualPtr OptixScene::GetRootVisual() const
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OptixScene::GetAmbientLight() const
+math::Color OptixScene::GetAmbientLight() const
 {
   return this->ambientLight;
 }
 
 //////////////////////////////////////////////////
-void OptixScene::SetAmbientLight(const gazebo::common::Color &_color)
+void OptixScene::SetAmbientLight(const math::Color &_color)
 {
   // TODO: clean up
   this->ambientLight = _color;
 
   this->optixContext["ambientLightColor"]->setFloat(
-      _color.r, _color.g, _color.b);
+      _color.R(), _color.G(), _color.B());
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OptixScene::GetBackgroundColor() const
+math::Color OptixScene::GetBackgroundColor() const
 {
   return this->backgroundColor;
 }
 
 //////////////////////////////////////////////////
-void OptixScene::SetBackgroundColor(const gazebo::common::Color &_color)
+void OptixScene::SetBackgroundColor(const math::Color &_color)
 {
-  this->optixMissProgram["color"]->setFloat(_color.r, _color.g, _color.b);
+  this->optixMissProgram["color"]->setFloat(
+      _color.R(), _color.G(), _color.B());
 }
 
 //////////////////////////////////////////////////
@@ -366,12 +370,17 @@ unsigned int OptixScene::GetNextEntryId()
 //////////////////////////////////////////////////
 void OptixScene::CreateContext()
 {
+  std::cerr << "create context " << std::endl;
   this->optixContext = optix::Context::create();
+
+  std::cerr << "create context 1 " << std::endl;
   // this->optixContext->setStackSize(65536); // TODO: set dynamically
   // this->optixContext->setStackSize(45536); // TODO: set dynamically
   this->optixContext->setStackSize(10000); // TODO: set dynamically
   this->optixContext->setEntryPointCount(0);
   this->optixContext->setRayTypeCount(RT_COUNT);
+
+  std::cerr << "create context 2" << std::endl;
 
   // TODO: setup programatically
   this->optixContext["sceneEpsilon"]->setFloat(1E-4); // TODO: set dynamically
@@ -379,9 +388,13 @@ void OptixScene::CreateContext()
   this->optixContext["maxRefractionDepth"]->setInt(3);
   this->optixContext["importanceCutoff"]->setFloat(0.01);
 
+  std::cerr << "create context 3" << std::endl;
+
   // TODO: remove after testing
   this->optixContext->setPrintEnabled(true);
   this->optixContext->setPrintBufferSize(4096);
+
+  std::cerr << "create context 4" << std::endl;
 
   // TODO: clean up code
   this->optixMissProgram = this->CreateOptixProgram("OptixMissProgram", "Miss");
@@ -394,13 +407,13 @@ void OptixScene::CreateRootVisual()
 {
   // create unregistered visual
   this->rootVisual = OptixVisualPtr(new OptixVisual);
-  unsigned int rootId = this->CreateObjectId(); 
+  unsigned int rootId = this->CreateObjectId();
   std::string rootName = this->CreateObjectName(rootId, "ROOT");
 
   // check if root visual created successfully
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
-    gzerr << "Unable to create root visual" << std::endl;
+    ignerr << "Unable to create root visual" << std::endl;
     this->rootVisual = NULL;
   }
 

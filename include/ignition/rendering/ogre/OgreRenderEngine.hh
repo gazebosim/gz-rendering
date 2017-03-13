@@ -17,7 +17,8 @@
 #ifndef _IGNITION_RENDERING_OGRERENDERENGINE_HH_
 #define _IGNITION_RENDERING_OGRERENDERENGINE_HH_
 
-#include "gazebo/common/SingletonT.hh"
+#include <ignition/common/SingletonT.hh>
+
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -34,7 +35,7 @@ namespace ignition
   {
     class IGNITION_VISIBLE OgreRenderEngine :
       public virtual BaseRenderEngine,
-      public SingletonT<OgreRenderEngine>
+      public common::SingletonT<OgreRenderEngine>
     {
       /// \enum RenderPathType
       /// \brief The type of rendering path used by the rendering engine.

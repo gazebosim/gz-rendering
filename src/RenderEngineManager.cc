@@ -15,6 +15,8 @@
  *
  */
 
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderEngineManagerPrivate.hh"
@@ -27,8 +29,6 @@
 #if HAVE_OPTIX
 #include "ignition/rendering/optix/OptixRenderEngine.hh"
 #endif
-
-#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -69,7 +69,7 @@ RenderEngine *RenderEngineManager::GetEngine(const std::string &_name) const
 
   if (iter == this->pimpl->engines.end())
   {
-    gzerr << "No render-engine registered with name: " << _name << std::endl;
+    ignerr << "No render-engine registered with name: " << _name << std::endl;
     return NULL;
   }
 
@@ -81,7 +81,7 @@ RenderEngine *RenderEngineManager::GetEngineAt(unsigned int _index) const
 {
   if (_index >= this->GetEngineCount())
   {
-    gzerr << "Invalid render-engine index: " << _index << std::endl;
+    ignerr << "Invalid render-engine index: " << _index << std::endl;
     return NULL;
   }
 
@@ -96,13 +96,13 @@ void RenderEngineManager::RegisterEngine(const std::string &_name,
 {
   if (!_engine)
   {
-    gzerr << "Render-engine cannot be null" << std::endl;
+    ignerr << "Render-engine cannot be null" << std::endl;
     return;
   }
 
   if (this->HasEngine(_name))
   {
-    gzerr << "Render-engine already registered with name: "
+    ignerr << "Render-engine already registered with name: "
           << _name << std::endl;
 
     return;
@@ -143,7 +143,7 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 {
   if (_index >= this->GetEngineCount())
   {
-    gzerr << "Invalid render-engine index: " << _index << std::endl;
+    ignerr << "Invalid render-engine index: " << _index << std::endl;
     return;
   }
 

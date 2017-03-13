@@ -17,7 +17,8 @@
 #ifndef _IGNITION_RENDERING_OGRERENDERTARGET_HH_
 #define _IGNITION_RENDERING_OGRERENDERTARGET_HH_
 
-#include "gazebo/common/Color.hh"
+#include <ignition/math/Color.hh>
+
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -48,9 +49,9 @@ namespace ignition
 
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
-      public: virtual gazebo::common::Color GetBackgroundColor() const;
+      public: virtual math::Color GetBackgroundColor() const;
 
-      public: virtual void SetBackgroundColor(gazebo::common::Color _color);
+      public: virtual void SetBackgroundColor(math::Color _color);
 
       public: virtual void PreRender();
 

@@ -14,14 +14,19 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/base/BaseScene.hh"
 
-#include <limits>
 #include <sstream>
-#include "gazebo/common/Console.hh"
-#include "gazebo/common/Mesh.hh"
-#include "gazebo/common/MeshManager.hh"
+
+#include <ignition/math/Helpers.hh>
+
+#include <ignition/common/Console.hh>
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/MeshManager.hh>
+
+#include "ignition/common/Time.hh"
 #include "ignition/rendering/base/base.hh"
+
+#include "ignition/rendering/base/BaseScene.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -32,7 +37,7 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   name(_name),
   loaded(false),
   initialized(false),
-  nextObjectId(UINT_MAX),
+  nextObjectId(ignition::math::MAX_UI16),
   nodes(NULL)
 {
 }
@@ -56,7 +61,7 @@ void BaseScene::Init()
 {
   if (!this->loaded)
   {
-    gzerr << "Scene must be loaded first" << std::endl;
+    ignerr << "Scene must be loaded first" << std::endl;
     return;
   }
 
@@ -98,13 +103,13 @@ std::string BaseScene::GetName() const
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Time BaseScene::GetSimTime() const
+common::Time BaseScene::GetSimTime() const
 {
   return this->simTime;
 }
 
 //////////////////////////////////////////////////
-void BaseScene::SetSimTime(const gazebo::common::Time &_time)
+void BaseScene::SetSimTime(const common::Time &_time)
 {
   this->simTime = _time;
 }
@@ -112,13 +117,13 @@ void BaseScene::SetSimTime(const gazebo::common::Time &_time)
 //////////////////////////////////////////////////
 void BaseScene::SetAmbientLight(double _r, double _g, double _b, double _a)
 {
-  this->SetAmbientLight(gazebo::common::Color(_r, _g, _b, _a));
+  this->SetAmbientLight(math::Color(_r, _g, _b, _a));
 }
 
 //////////////////////////////////////////////////
 void BaseScene::SetBackgroundColor(double _r, double _g, double _b, double _a)
 {
-  this->SetBackgroundColor(gazebo::common::Color(_r, _g, _b, _a));
+  this->SetBackgroundColor(math::Color(_r, _g, _b, _a));
 }
 
 //////////////////////////////////////////////////
@@ -678,7 +683,7 @@ MeshPtr BaseScene::CreateMesh(const std::string &_meshName)
 }
 
 //////////////////////////////////////////////////
-MeshPtr BaseScene::CreateMesh(const gazebo::common::Mesh *_mesh)
+MeshPtr BaseScene::CreateMesh(const common::Mesh *_mesh)
 {
   MeshDescriptor descriptor(_mesh);
   return this->CreateMesh(descriptor);
@@ -688,7 +693,7 @@ MeshPtr BaseScene::CreateMesh(const gazebo::common::Mesh *_mesh)
 MeshPtr BaseScene::CreateMesh(const MeshDescriptor &_desc)
 {
   std::string meshName = (_desc.mesh) ?
-      _desc.mesh->GetName() : _desc.meshName;
+      _desc.mesh->Name() : _desc.meshName;
 
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Mesh-" + meshName);
@@ -704,7 +709,7 @@ MaterialPtr BaseScene::CreateMaterial()
 }
 
 //////////////////////////////////////////////////
-MaterialPtr BaseScene::CreateMaterial(const gazebo::common::Material &_material)
+MaterialPtr BaseScene::CreateMaterial(const common::Material &_material)
 {
   MaterialPtr material = this->CreateMaterial();
   material->CopyFrom(_material);
@@ -730,7 +735,7 @@ void BaseScene::Clear()
 {
   this->nodes->DestroyAll();
   this->GetMaterials()->RemoveAll();
-  this->nextObjectId = UINT_MAX;
+  this->nextObjectId = ignition::math::MAX_UI16;
 }
 
 //////////////////////////////////////////////////
@@ -801,7 +806,7 @@ void BaseScene::CreateNodeStore()
 void BaseScene::CreateMaterials()
 {
   MaterialPtr material;
-  
+
   material = this->CreateMaterial();
   material->SetAmbient(1.0, 0.0, 0.0);
   material->SetDiffuse(1.0, 0.0, 0.0);
@@ -811,7 +816,7 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
   this->RegisterMaterial("Default/TransRed", material);
-  
+
   material = this->CreateMaterial();
   material->SetAmbient(0.0, 1.0, 0.0);
   material->SetDiffuse(0.0, 1.0, 0.0);
@@ -821,7 +826,7 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
   this->RegisterMaterial("Default/TransGreen", material);
-  
+
   material = this->CreateMaterial();
   material->SetAmbient(0.0, 0.0, 1.0);
   material->SetDiffuse(0.0, 0.0, 1.0);

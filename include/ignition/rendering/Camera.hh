@@ -17,7 +17,7 @@
 #ifndef _IGNITION_RENDERING_CAMERA_HH_
 #define _IGNITION_RENDERING_CAMERA_HH_
 
-#include "gazebo/common/Event.hh"
+#include <ignition/common/Event.hh>
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Sensor.hh"
@@ -144,13 +144,8 @@ namespace ignition
 
       /// \brief Subscribes a new listener to this camera's new frame event
       /// \param[in] _listener New camera listener callback
-      public: virtual gazebo::event::ConnectionPtr ConnectNewImageFrame(
+      public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   NewFrameListener _listener) = 0;
-
-      /// \brief Unsubscribes a listener callback from this camera
-      /// \param[in] _conn Callback to be unsubscribed
-      public: virtual void DisconnectNewImageFrame(
-                  gazebo::event::ConnectionPtr &_conn) = 0;
     };
   }
 }

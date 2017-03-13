@@ -14,9 +14,11 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
@@ -55,7 +57,7 @@ void OgreRenderTarget::GetImage(Image &_image) const
 
   if (_image.GetWidth() != width || _image.GetHeight() != height)
   {
-    gzerr << "Invalid image dimensions" << std::endl;
+    ignerr << "Invalid image dimensions" << std::endl;
     return;
   }
 
@@ -79,13 +81,13 @@ void OgreRenderTarget::SetCamera(Ogre::Camera *_camera)
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreRenderTarget::GetBackgroundColor() const
+math::Color OgreRenderTarget::GetBackgroundColor() const
 {
   return OgreConversions::Convert(this->ogreBackgroundColor);
 }
 
 //////////////////////////////////////////////////
-void OgreRenderTarget::SetBackgroundColor(gazebo::common::Color _color)
+void OgreRenderTarget::SetBackgroundColor(math::Color _color)
 {
   this->ogreBackgroundColor = OgreConversions::Convert(_color);
   this->colorDirty = true;

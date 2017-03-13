@@ -33,13 +33,15 @@ namespace ignition
 
       public: virtual ~OptixLight();
 
-      public: virtual gazebo::common::Color GetDiffuseColor() const;
+      public: virtual ignition::math::Color GetDiffuseColor() const;
 
-      public: virtual void SetDiffuseColor(const gazebo::common::Color &_color);
+      public: virtual void SetDiffuseColor(
+          const ignition::math::Color &_color);
 
-      public: virtual gazebo::common::Color GetSpecularColor() const;
+      public: virtual ignition::math::Color GetSpecularColor() const;
 
-      public: virtual void SetSpecularColor(const gazebo::common::Color &_color);
+      public: virtual void SetSpecularColor(
+          const ignition::math::Color &_color);
 
       public: virtual double GetAttenuationConstant() const;
 
@@ -77,9 +79,9 @@ namespace ignition
 
       public: virtual ~OptixDirectionalLight();
 
-      public: virtual math::Vector3d GetDirection() const;
+      public: virtual ignition::math::Vector3d GetDirection() const;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir);
+      public: virtual void SetDirection(const ignition::math::Vector3d &_dir);
 
       public: virtual OptixDirectionalLightData GetData() const;
 
@@ -125,17 +127,17 @@ namespace ignition
 
       public: virtual ~OptixSpotLight();
 
-      public: virtual math::Vector3d GetDirection() const;
+      public: virtual ignition::math::Vector3d GetDirection() const;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir);
+      public: virtual void SetDirection(const ignition::math::Vector3d &_dir);
 
-      public: virtual math::Angle GetInnerAngle() const;
+      public: virtual ignition::math::Angle GetInnerAngle() const;
 
-      public: virtual void SetInnerAngle(const math::Angle &_angle);
+      public: virtual void SetInnerAngle(const ignition::math::Angle &_angle);
 
-      public: virtual math::Angle GetOuterAngle() const;
+      public: virtual ignition::math::Angle GetOuterAngle() const;
 
-      public: virtual void SetOuterAngle(const math::Angle &_angle);
+      public: virtual void SetOuterAngle(const ignition::math::Angle &_angle);
 
       public: virtual double GetFalloff() const;
 

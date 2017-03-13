@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/optix/OptixVisual.hh"
 #include "ignition/rendering/optix/OptixConversions.hh"
 #include "ignition/rendering/optix/OptixStorage.hh"
@@ -98,7 +101,7 @@ bool OptixVisual::AttachChild(NodePtr _child)
 
   if (!derived)
   {
-    gzerr << "Cannot attach node created by another render-engine" << std::endl;
+    ignerr << "Cannot attach node created by another render-engine" << std::endl;
     return false;
   }
 
@@ -132,7 +135,7 @@ bool OptixVisual::AttachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    gzerr << "Cannot attach geometry created by another render-engine"
+    ignerr << "Cannot attach geometry created by another render-engine"
           << std::endl;
 
     return false;
@@ -153,7 +156,7 @@ bool OptixVisual::DetachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    gzerr << "Cannot detach geometry created by another render-engine"
+    ignerr << "Cannot detach geometry created by another render-engine"
           << std::endl;
 
     return false;

@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -35,7 +37,7 @@ bool BaseRenderEngine::Load()
 {
   if (this->loaded)
   {
-    gzwarn << "Render-engine has already been loaded" << std::endl;
+    ignwarn << "Render-engine has already been loaded" << std::endl;
     return true;
   }
 
@@ -48,13 +50,13 @@ bool BaseRenderEngine::Init()
 {
   if (!this->loaded)
   {
-    gzerr << "Render-engine must be loaded first" << std::endl;
+    ignerr << "Render-engine must be loaded first" << std::endl;
     return false;
   }
 
   if (this->initialized)
   {
-    gzwarn << "Render-engine has already been initialized" << std::endl;
+    ignwarn << "Render-engine has already been initialized" << std::endl;
     return true;
   }
 
@@ -171,19 +173,19 @@ ScenePtr BaseRenderEngine::CreateScene(unsigned int _id,
 {
   if (!this->IsInitialized())
   {
-    gzerr << "Render-engine has not been initialized" << std::endl;
+    ignerr << "Render-engine has not been initialized" << std::endl;
     return NULL;
   }
 
   if (this->HasSceneId(_id))
   {
-    gzerr << "Scene already exists with id: " << _id << std::endl;
+    ignerr << "Scene already exists with id: " << _id << std::endl;
     return NULL;
   }
 
   if (this->HasSceneName(_name))
   {
-    gzerr << "Scene already exists with id: " << _id << std::endl;
+    ignerr << "Scene already exists with id: " << _id << std::endl;
     return NULL;
   }
 

@@ -16,7 +16,6 @@
  */
 #include "ignition/rendering/ogre/OgreObject.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
 using namespace ignition;

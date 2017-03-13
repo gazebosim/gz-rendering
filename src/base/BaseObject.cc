@@ -16,8 +16,6 @@
  */
 #include "ignition/rendering/base/BaseObject.hh"
 
-#include "gazebo/common/Console.hh"
-
 using namespace ignition;
 using namespace rendering;
 

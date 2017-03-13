@@ -16,7 +16,6 @@
  */
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 

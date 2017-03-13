@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
@@ -72,7 +75,7 @@ void OgreSubMesh::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!derived)
   {
-    gzerr << "Cannot assign material created by another render-engine"
+    ignerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

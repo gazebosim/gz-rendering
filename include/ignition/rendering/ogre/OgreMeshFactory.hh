@@ -18,8 +18,6 @@
 #define _IGNITION_RENDERING_OGREMESHFACTORY_HH_
 
 #include <vector>
-#include "gazebo/common/Mesh.hh"
-#include "gazebo/common/SingletonT.hh"
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/Util.hh"

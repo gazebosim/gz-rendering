@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ShaderType.hh"
-#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -42,7 +44,7 @@ ShaderType ShaderUtil::Sanitize(ShaderType _type)
   // check if value within enum bounds
   if (!ShaderUtil::IsValid(_type))
   {
-    gzerr << "Invalid ShaderType value: " << _type << std::endl;
+    ignerr << "Invalid ShaderType value: " << _type << std::endl;
     return ST_UNKNOWN;
   }
 

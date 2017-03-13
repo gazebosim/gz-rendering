@@ -32,7 +32,7 @@ const std::string OptixMaterial::PTX_CLOSEST_HIT_FUNC("ClosestHit");
 
 const std::string OptixMaterial::PTX_ANY_HIT_FUNC("AnyHit");
 
-//////////////////////////////////////////////////  
+//////////////////////////////////////////////////
 OptixMaterial::OptixMaterial() :
   colorDirty(true),
   textureDirty(true),
@@ -63,52 +63,52 @@ void OptixMaterial::SetLightingEnabled(bool _enabled)
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OptixMaterial::GetAmbient() const
+math::Color OptixMaterial::GetAmbient() const
 {
   return this->ambient;
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetAmbient(const gazebo::common::Color &_color)
+void OptixMaterial::SetAmbient(const math::Color &_color)
 {
   this->ambient = _color;
   this->colorDirty = true;
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OptixMaterial::GetDiffuse() const
+math::Color OptixMaterial::GetDiffuse() const
 {
   return this->diffuse;
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetDiffuse(const gazebo::common::Color &_color)
+void OptixMaterial::SetDiffuse(const math::Color &_color)
 {
   this->diffuse = _color;
   this->colorDirty = true;
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OptixMaterial::GetSpecular() const
+math::Color OptixMaterial::GetSpecular() const
 {
   return this->specular;
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetSpecular(const gazebo::common::Color &_color)
+void OptixMaterial::SetSpecular(const math::Color &_color)
 {
   this->specular = _color;
   this->colorDirty = true;
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OptixMaterial::GetEmissive() const
+math::Color OptixMaterial::GetEmissive() const
 {
   return this->emissive;
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetEmissive(const gazebo::common::Color &_color)
+void OptixMaterial::SetEmissive(const math::Color &_color)
 {
   this->emissive = _color;
   this->colorDirty = true;
@@ -355,10 +355,14 @@ void OptixMaterial::WriteNormalMapToDevice()
 void OptixMaterial::WriteColorToDeviceImpl()
 {
   // TODO: clean up
-  this->optixMaterial["diffuse"]->setFloat(this->diffuse.r, this->diffuse.g, this->diffuse.b);
-  this->optixMaterial["ambient"]->setFloat(this->ambient.r, this->ambient.g, this->ambient.b);
-  this->optixMaterial["specular"]->setFloat(this->specular.r, this->specular.g, this->specular.b);
-  this->optixMaterial["emissive"]->setFloat(this->emissive.r, this->emissive.g, this->emissive.b);
+  this->optixMaterial["diffuse"]->setFloat(this->diffuse.R(),
+      this->diffuse.G(), this->diffuse.B());
+  this->optixMaterial["ambient"]->setFloat(this->ambient.R(),
+      this->ambient.G(), this->ambient.B());
+  this->optixMaterial["specular"]->setFloat(this->specular.R(),
+      this->specular.G(), this->specular.B());
+  this->optixMaterial["emissive"]->setFloat(this->emissive.R(),
+      this->emissive.G(), this->emissive.B());
   this->optixMaterial["reflectivity"]->setFloat(this->reflectivity);
   this->optixMaterial["transparency"]->setFloat(this->transparency);
 

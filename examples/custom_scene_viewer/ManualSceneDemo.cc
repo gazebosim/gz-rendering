@@ -84,6 +84,13 @@ unsigned int ManualSceneDemo::GetCameraCount() const
 void ManualSceneDemo::AddCamera(const std::string &_engineName)
 {
   RenderEngine *engine = get_engine(_engineName);
+  if (!engine)
+  {
+    std::cout << "Engine '" << _engineName
+              << "' is not supported" << std::endl;
+    return;
+  }
+
   ScenePtr scene = engine->CreateScene("Scene");
   VisualPtr root = scene->GetRootVisual();
 
@@ -179,8 +186,8 @@ int main(int, char**)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(3)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(4)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
-  // sceneDemo->AddCamera("ogre");
-  sceneDemo->AddCamera("optix");
+  sceneDemo->AddCamera("ogre");
+  // sceneDemo->AddCamera("optix");
   sceneDemo->Run();
   return 0;
 }

@@ -17,7 +17,7 @@
 #ifndef _IGNITION_RENDERING_LIGHT_HH_
 #define _IGNITION_RENDERING_LIGHT_HH_
 
-#include "gazebo/common/Color.hh"
+#include "ignition/math/Color.hh"
 #include "ignition/rendering/Node.hh"
 
 namespace ignition
@@ -34,7 +34,7 @@ namespace ignition
 
       /// \brief Get the diffuse color
       /// \return The diffuse color
-      public: virtual gazebo::common::Color GetDiffuseColor() const = 0;
+      public: virtual math::Color GetDiffuseColor() const = 0;
 
       /// \brief Set the diffuse color
       /// \param[in] _r Red value 
@@ -46,11 +46,11 @@ namespace ignition
 
       /// \brief Set the diffuse color
       /// \param[in] _color New diffuse color
-      public: virtual void SetDiffuseColor(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetDiffuseColor(const math::Color &_color) = 0;
 
       /// \brief Get the specular color
       /// \return The specular color
-      public: virtual gazebo::common::Color GetSpecularColor() const = 0;
+      public: virtual math::Color GetSpecularColor() const = 0;
 
       /// \brief Set the specular color
       /// \param[in] _r Red value 
@@ -62,7 +62,7 @@ namespace ignition
 
       /// \brief Set the specular color
       /// \param[in] _color New specular color
-      public: virtual void SetSpecularColor(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetSpecularColor(const math::Color &_color) = 0;
 
       /// \brief Get the attenuation constant value
       /// \return The attenuation constant value

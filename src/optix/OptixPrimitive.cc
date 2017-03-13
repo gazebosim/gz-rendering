@@ -14,10 +14,12 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/optix/OptixPrimitive.hh"
 #include "ignition/rendering/optix/OptixMaterial.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
-#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -51,7 +53,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!_material)
   {
-    gzerr << "Cannot assign null material" << std::endl;
+    ignerr << "Cannot assign null material" << std::endl;
     return;
   }
 
@@ -62,7 +64,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!derived)
   {
-    gzerr << "Cannot assign material created by another render-engine"
+    ignerr << "Cannot assign material created by another render-engine"
            << std::endl;
 
     return;

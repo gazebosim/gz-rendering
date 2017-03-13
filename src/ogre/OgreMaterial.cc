@@ -14,7 +14,9 @@
  * limitations under the License.
  *
  */
-#include <gazebo/common/Console.hh>
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
@@ -47,13 +49,13 @@ void OgreMaterial::SetLightingEnabled(bool _enabled)
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreMaterial::GetAmbient() const
+math::Color OgreMaterial::GetAmbient() const
 {
   return OgreConversions::Convert(this->ogrePass->getAmbient());
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetAmbient(const gazebo::common::Color &_color)
+void OgreMaterial::SetAmbient(const math::Color &_color)
 {
   this->ogrePass->setAmbient(OgreConversions::Convert(_color));
   this->UpdateColorOperation();
@@ -61,31 +63,31 @@ void OgreMaterial::SetAmbient(const gazebo::common::Color &_color)
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreMaterial::GetDiffuse() const
+math::Color OgreMaterial::GetDiffuse() const
 {
   return OgreConversions::Convert(this->ogrePass->getDiffuse());
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetDiffuse(const gazebo::common::Color &_color)
+void OgreMaterial::SetDiffuse(const math::Color &_color)
 {
   this->ogrePass->setDiffuse(OgreConversions::Convert(_color));
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreMaterial::GetSpecular() const
+math::Color OgreMaterial::GetSpecular() const
 {
   return OgreConversions::Convert(this->ogrePass->getSpecular());
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetSpecular(const gazebo::common::Color &_color)
+void OgreMaterial::SetSpecular(const math::Color &_color)
 {
   this->ogrePass->setSpecular(OgreConversions::Convert(_color));
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreMaterial::GetEmissive() const
+math::Color OgreMaterial::GetEmissive() const
 {
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
   return this->emissiveColor;
@@ -95,7 +97,7 @@ gazebo::common::Color OgreMaterial::GetEmissive() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetEmissive(const gazebo::common::Color &_color)
+void OgreMaterial::SetEmissive(const math::Color &_color)
 {
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
   this->emissiveColor = _color;
@@ -276,7 +278,7 @@ void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
   }
   catch (const Ogre::Exception &ex)
   {
-    gzerr << "Unable to load texture image: " << _name << std::endl;
+    ignerr << "Unable to load texture image: " << _name << std::endl;
   }
 }
 

@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
+
 #include "ignition/rendering/optix/OptixGeometry.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/OptixVisual.hh"
 

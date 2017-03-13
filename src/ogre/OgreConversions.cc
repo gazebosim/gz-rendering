@@ -33,15 +33,15 @@ const Ogre::PixelFormat OgreConversions::ogrePixelFormats[PF_COUNT] =
     };
 
 //////////////////////////////////////////////////
-Ogre::ColourValue OgreConversions::Convert(const gazebo::common::Color &_color)
+Ogre::ColourValue OgreConversions::Convert(const math::Color &_color)
 {
-  return Ogre::ColourValue(_color.r, _color.g, _color.b, _color.a);
+  return Ogre::ColourValue(_color.R(), _color.G(), _color.B(), _color.A());
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreConversions::Convert(const Ogre::ColourValue &_color)
+math::Color OgreConversions::Convert(const Ogre::ColourValue &_color)
 {
-  return gazebo::common::Color(_color.r, _color.g, _color.b, _color.a);
+  return math::Color(_color.r, _color.g, _color.b, _color.a);
 }
 
 //////////////////////////////////////////////////

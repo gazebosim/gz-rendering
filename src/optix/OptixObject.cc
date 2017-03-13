@@ -16,7 +16,6 @@
  */
 #include "ignition/rendering/optix/OptixObject.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 
 using namespace ignition;

@@ -14,9 +14,11 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreLight.hh"
 
-#include "gazebo/common/Exception.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
@@ -39,29 +41,29 @@ OgreLight::~OgreLight()
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreLight::GetDiffuseColor() const
+math::Color OgreLight::GetDiffuseColor() const
 {
   Ogre::ColourValue color = this->ogreLight->getDiffuseColour();
   return OgreConversions::Convert(color);
 }
 
 //////////////////////////////////////////////////
-void OgreLight::SetDiffuseColor(const gazebo::common::Color &_color)
+void OgreLight::SetDiffuseColor(const math::Color &_color)
 {
-  this->ogreLight->setDiffuseColour(_color.r, _color.g, _color.b);
+  this->ogreLight->setDiffuseColour(_color.R(), _color.G(), _color.B());
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreLight::GetSpecularColor() const
+math::Color OgreLight::GetSpecularColor() const
 {
   Ogre::ColourValue color = this->ogreLight->getSpecularColour();
   return OgreConversions::Convert(color);
 }
 
 //////////////////////////////////////////////////
-void OgreLight::SetSpecularColor(const gazebo::common::Color &_color)
+void OgreLight::SetSpecularColor(const math::Color &_color)
 {
-  this->ogreLight->setSpecularColour(_color.r, _color.g, _color.b);
+  this->ogreLight->setSpecularColour(_color.R(), _color.G(), _color.B());
 }
 
 //////////////////////////////////////////////////
@@ -165,7 +167,8 @@ void OgreLight::CreateLight()
   }
   catch (Ogre::Exception &ex)
   {
-    gzthrow("Unabled to create light: " << ex.getFullDescription());
+    ignerr << "Unabled to create light: " << ex.getFullDescription() <<
+        std::endl;
   }
 }
 

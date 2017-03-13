@@ -38,22 +38,38 @@ namespace ignition
       public: virtual void SetAmbient(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetAmbient(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetAmbient(const math::Color &_color) = 0;
+      public: virtual void SetAmbient(const common::Color &_color)
+      {
+        this->SetAmbient(_color.R(), _color.G(), _color.B(), _color.A());
+      };
 
       public: virtual void SetDiffuse(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetDiffuse(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetDiffuse(const math::Color &_color) = 0;
+      public: virtual void SetDiffuse(const common::Color &_color)
+      {
+        this->SetDiffuse(_color.R(), _color.G(), _color.B(), _color.A());
+      };
 
       public: virtual void SetSpecular(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetSpecular(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetSpecular(const math::Color &_color) = 0;
+      public: virtual void SetSpecular(const common::Color &_color)
+      {
+        this->SetSpecular(_color.R(), _color.G(), _color.B(), _color.A());
+      };
 
       public: virtual void SetEmissive(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetEmissive(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetEmissive(const math::Color &_color) = 0;
+      public: virtual void SetEmissive(const common::Color &_color)
+      {
+        this->SetEmissive(_color.R(), _color.G(), _color.B(), _color.A());
+      };
 
       public: virtual void SetReceiveShadows(bool _receiveShadows) = 0;
 
@@ -65,7 +81,7 @@ namespace ignition
 
       public: virtual void CopyFrom(ConstMaterialPtr _material);
 
-      public: virtual void CopyFrom(const gazebo::common::Material &_material);
+      public: virtual void CopyFrom(const common::Material &_material);
 
       public: virtual void PreRender();
 
@@ -88,14 +104,14 @@ namespace ignition
     template <class T>
     void BaseMaterial<T>::SetAmbient(double _r, double _g, double _b, double _a)
     {
-      this->SetAmbient(gazebo::common::Color(_r, _g, _b, _a));
+      this->SetAmbient(math::Color(_r, _g, _b, _a));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseMaterial<T>::SetDiffuse(double _r, double _g, double _b, double _a)
     {
-      this->SetDiffuse(gazebo::common::Color(_r, _g, _b, _a));
+      this->SetDiffuse(math::Color(_r, _g, _b, _a));
     }
 
     //////////////////////////////////////////////////
@@ -103,7 +119,7 @@ namespace ignition
     void BaseMaterial<T>::SetSpecular(double _r, double _g, double _b,
         double _a)
     {
-      this->SetSpecular(gazebo::common::Color(_r, _g, _b, _a));
+      this->SetSpecular(math::Color(_r, _g, _b, _a));
     }
 
     //////////////////////////////////////////////////
@@ -111,7 +127,7 @@ namespace ignition
     void BaseMaterial<T>::SetEmissive(double _r, double _g, double _b,
         double _a)
     {
-      this->SetEmissive(gazebo::common::Color(_r, _g, _b, _a));
+      this->SetEmissive(math::Color(_r, _g, _b, _a));
     }
 
     //////////////////////////////////////////////////
@@ -150,22 +166,22 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::CopyFrom(const gazebo::common::Material &_material)
+    void BaseMaterial<T>::CopyFrom(const common::Material &_material)
     {
-      this->SetLightingEnabled(_material.GetLighting());
-      this->SetAmbient(_material.GetAmbient());
-      this->SetDiffuse(_material.GetDiffuse());
-      this->SetSpecular(_material.GetSpecular());
-      this->SetEmissive(_material.GetEmissive());
-      this->SetShininess(_material.GetShininess());
-      this->SetTransparency(_material.GetTransparency());
-      this->SetReflectivity(0); // TODO: update gazebo::common::Material
-      this->SetTexture(_material.GetTextureImage());
-      this->SetCastShadows(true); // TODO: update gazebo::common::Material
-      this->SetReceiveShadows(true); // TODO: update gazebo::common::Material
-      this->SetReflectionEnabled(true); // TODO: update gazebo::common::Material
-      this->ClearNormalMap(); // TODO: update gazebo::common::Material
-      this->SetShaderType(ST_PIXEL); // TODO: update gazebo::common::Material
+      this->SetLightingEnabled(_material.Lighting());
+      this->SetAmbient(_material.Ambient());
+      this->SetDiffuse(_material.Diffuse());
+      this->SetSpecular(_material.Specular());
+      this->SetEmissive(_material.Emissive());
+      this->SetShininess(_material.Shininess());
+      this->SetTransparency(_material.Transparency());
+      this->SetReflectivity(0); // TODO: update common::Material
+      this->SetTexture(_material.TextureImage());
+      this->SetCastShadows(true); // TODO: update common::Material
+      this->SetReceiveShadows(true); // TODO: update common::Material
+      this->SetReflectionEnabled(true); // TODO: update common::Material
+      this->ClearNormalMap(); // TODO: update common::Material
+      this->SetShaderType(ST_PIXEL); // TODO: update common::Material
     }
 
     //////////////////////////////////////////////////

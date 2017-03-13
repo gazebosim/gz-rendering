@@ -53,6 +53,8 @@ ign_install_library(${PROJECT_NAME_LOWER}-optix)
 
 target_link_libraries(${PROJECT_NAME_LOWER}-optix
   ignition-rendering-base
+  ${IGNITION_MATH_LIBRARIES}
+  ${IGNITION_COMMON_LIBRARIES}
   ${optix_LIBRARY}
 )
 

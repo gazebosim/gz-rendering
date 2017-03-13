@@ -23,9 +23,9 @@
 #include <thread>
 #include <sys/stat.h>
 
-#include "gazebo/common/Console.hh"
-#include "gazebo/common/Exception.hh"
-#include "gazebo/common/SystemPaths.hh"
+#include <boost/filesystem.hpp>
+
+#include <ignition/common/Console.hh>
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
@@ -86,7 +86,7 @@ void OgreRTShaderSystem::Init()
     this->shaderGenerator->setTargetLanguage("glsl");
   }
   else
-    gzerr << "RT Shader system failed to initialize\n";
+    ignerr << "RT Shader system failed to initialize" << std::endl;
 
 #endif
 }
@@ -282,7 +282,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
     }
     catch(Ogre::Exception &e)
     {
-      gzerr << "Unable to create shader technique for material["
+      ignerr << "Unable to create shader technique for material["
         << curMaterialName << "]\n";
       success = false;
     }
@@ -409,14 +409,15 @@ bool OgreRTShaderSystem::GetPaths(std::string &coreLibsPath,
           tmpdir = getenv("TMP");
           if (!tmpdir)
           {
-            gazebo::common::SystemPaths *paths = gazebo::common::SystemPaths::Instance();
-            tmpdir = const_cast<char*>(paths->GetTmpPath().c_str());
+            tmpdir = const_cast<char *>(
+                boost::filesystem::temp_directory_path().string().c_str());
           }
           // Get the user
           user = getenv("USER");
           if (!user)
             user = const_cast<char*>("nobody");
-          stream << tmpdir << "/gazebo-" << user << "-rtshaderlibcache" << "/";
+          stream << tmpdir << "/ign-rendering-" << user
+              << "-rtshaderlibcache" << "/";
           cachePath = stream.str();
           // Create the directory
 #ifdef _WIN32
@@ -447,7 +448,8 @@ bool OgreRTShaderSystem::GetPaths(std::string &coreLibsPath,
   // Core shader lib not found -> shader generating will fail.
   if (coreLibsPath.empty())
   {
-    gzerr << "Unable to find shader lib. Shader generating will fail.";
+    ignerr << "Unable to find shader lib. Shader generating will fail."
+      << std::endl;
     return false;
   }
 

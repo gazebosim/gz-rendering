@@ -14,11 +14,15 @@
  * limitations under the License.
  *
  */
+
+#include <gazebo/common/Events.hh>
+
+#include <ignition/common/MeshManager.hh>
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/SceneManager.hh"
 #include "ignition/rendering/SceneManagerPrivate.hh"
 
-#include "gazebo/common/Events.hh"
-#include "gazebo/common/MeshManager.hh"
 #include "ignition/rendering/rendering.hh"
 
 using namespace ignition;
@@ -167,11 +171,13 @@ void SceneManagerPrivate::Init()
         std::bind(&SceneManagerPrivate::UpdateScenes, this));
 
   // setup transport communication node
-  this->transportNode = gazebo::transport::NodePtr(new gazebo::transport::Node());
+  this->transportNode = gazebo::transport::NodePtr(
+      new gazebo::transport::Node());
   this->transportNode->Init();
 
   // create publisher for sending scene request
-  this->requestPub = this->transportNode->Advertise<gazebo::msgs::Request>("~/request");
+  this->requestPub =
+      this->transportNode->Advertise<gazebo::msgs::Request>("~/request");
 
   // listen for deletion requests
   this->requestSub = this->transportNode->Subscribe("~/request",
@@ -654,7 +660,7 @@ ScenePtr SubSceneManager::GetSceneAt(unsigned int _index) const
 
   if (_index >= this->GetSceneCount())
   {
-    gzerr << "Invalid scene index: " << _index << std::endl;
+    ignerr << "Invalid scene index: " << _index << std::endl;
     return NULL;
   }
 
@@ -670,13 +676,13 @@ void SubSceneManager::AddScene(ScenePtr _scene)
 
   if (!_scene)
   {
-    gzerr << "Cannot add null scene pointer" << std::endl;
+    ignerr << "Cannot add null scene pointer" << std::endl;
     return;
   }
 
   if (this->HasScene(_scene))
   {
-    gzerr << "Scene has already been added" << std::endl;
+    ignerr << "Scene has already been added" << std::endl;
     return;
   }
 
@@ -738,7 +744,7 @@ ScenePtr SubSceneManager::RemoveSceneAt(unsigned int _index)
 
   if (_index >= this->GetSceneCount())
   {
-    gzerr << "Invalid scene index: " << _index << std::endl;
+    ignerr << "Invalid scene index: " << _index << std::endl;
     return NULL;
   }
 
@@ -897,7 +903,7 @@ void SubSceneManager::ProcessLight(const gazebo::msgs::Light &_lightMsg,
         return;
 
       default:
-        gzerr << "Invalid light type: " << type << std::endl;
+        ignerr << "Invalid light type: " << type << std::endl;
         return;
     }
   }
@@ -1415,8 +1421,8 @@ void SubSceneManager::ProcessGeometry(const gazebo::msgs::Geometry &_geometryMsg
   // check if invalid type
   if (!geomFunc)
   {
-    gzerr << "Unsupported geometry type: " << geomType << std::endl;
-    gzwarn << "Using empty geometry instead" << std::endl;
+    ignerr << "Unsupported geometry type: " << geomType << std::endl;
+    ignwarn << "Using empty geometry instead" << std::endl;
     geomFunc = this->geomFunctions[gazebo::msgs::Geometry::EMPTY];
   }
 
@@ -1490,7 +1496,7 @@ void SubSceneManager::ProcessMesh(const gazebo::msgs::Geometry &_geometryMsg,
   }
 
   // actually create mesh geometry
-  gazebo::common::MeshManager *meshManager = gazebo::common::MeshManager::Instance();
+  common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
   MeshPtr mesh = this->activeScene->CreateMesh(descriptor);
 
@@ -1541,7 +1547,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   if (_materialMsg.has_ambient())
   {
     gazebo::msgs::Color msg = _materialMsg.ambient();
-    gazebo::common::Color ambient(msg.r(), msg.g(), msg.b(), msg.a());
+    math::Color ambient(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetAmbient(ambient);
   }
 
@@ -1549,7 +1555,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   if (_materialMsg.has_diffuse())
   {
     gazebo::msgs::Color msg = _materialMsg.diffuse();
-    gazebo::common::Color diffuse(msg.r(), msg.g(), msg.b(), msg.a());
+    math::Color diffuse(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetDiffuse(diffuse);
   }
 
@@ -1557,7 +1563,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   if (_materialMsg.has_specular())
   {
     gazebo::msgs::Color msg = _materialMsg.specular();
-    gazebo::common::Color specular(msg.r(), msg.g(), msg.b(), msg.a());
+    math::Color specular(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetSpecular(specular);
   }
 
@@ -1565,7 +1571,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   if (_materialMsg.has_emissive())
   {
     gazebo::msgs::Color msg = _materialMsg.emissive();
-    gazebo::common::Color emissive(msg.r(), msg.g(), msg.b(), msg.a());
+    math::Color emissive(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetEmissive(emissive);
   }
 
@@ -1636,8 +1642,8 @@ VisualPtr SubSceneManager::GetParent(const std::string &_name)
     {
       if (_name != "default")
       {
-        gzerr  << "invalid parent name: " << _name << std::endl;
-        gzwarn << "using scene root node" << std::endl;
+        ignerr  << "invalid parent name: " << _name << std::endl;
+        ignwarn << "using scene root node" << std::endl;
       }
 
       parent = this->activeScene->GetRootVisual();
@@ -1654,13 +1660,13 @@ void SubSceneManager::ProcessRemoval(const std::string &_name)
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color SubSceneManager::Convert(const gazebo::msgs::Color &_colorMsg)
+math::Color SubSceneManager::Convert(const gazebo::msgs::Color &_colorMsg)
 {
-  gazebo::common::Color color;
-  color.r = _colorMsg.r();
-  color.g = _colorMsg.g();
-  color.b = _colorMsg.b();
-  color.a = _colorMsg.a();
+  math::Color color;
+  color.R() = _colorMsg.r();
+  color.G() = _colorMsg.g();
+  color.B() = _colorMsg.b();
+  color.A() = _colorMsg.a();
   return color;
 }
 
@@ -1763,7 +1769,7 @@ void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
   // record pose timestamp
   int sec = _posesMsg->time().sec();
   int nsec = _posesMsg->time().nsec();
-  this->timePosesReceived = gazebo::common::Time(sec, nsec);
+  this->timePosesReceived = common::Time(sec, nsec);
 
   // process each pose in message
   for (int i = 0; i < _posesMsg->pose_size(); ++i)
@@ -1903,7 +1909,7 @@ void NewSceneManager::ProcessScene()
   if (this->sceneMsg.has_ambient())
   {
     gazebo::msgs::Color colorMsg = this->sceneMsg.ambient();
-    gazebo::common::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
+    math::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
     this->activeScene->SetAmbientLight(color);
   }
 
@@ -1911,7 +1917,7 @@ void NewSceneManager::ProcessScene()
   if (this->sceneMsg.has_background())
   {
     gazebo::msgs::Color colorMsg = this->sceneMsg.background();
-    gazebo::common::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
+    math::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
     this->activeScene->SetBackgroundColor(color);
   }
 
@@ -2002,7 +2008,7 @@ void NewSceneManager::ProcessPoses(const gazebo::msgs::PosesStamped &_posesMsg)
   // record pose timestamp
   int sec = _posesMsg.time().sec();
   int nsec = _posesMsg.time().nsec();
-  this->timePosesReceived = gazebo::common::Time(sec, nsec);
+  this->timePosesReceived = common::Time(sec, nsec);
 
   // process each pose in list
   for (int i = 0; i < _posesMsg.pose_size(); ++i)

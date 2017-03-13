@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/PixelFormat.hh"
-#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -71,7 +73,7 @@ PixelFormat PixelUtil::Sanitize(PixelFormat _format)
   // check if value within enum bounds
   if (!PixelUtil::IsValid(_format))
   {
-    gzerr << "Invalid PixelFormat value: " << _format << std::endl;
+    ignerr << "Invalid PixelFormat value: " << _format << std::endl;
     return PF_UNKNOWN;
   }
 

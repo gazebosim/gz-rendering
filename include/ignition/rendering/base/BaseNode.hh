@@ -20,8 +20,6 @@
 #include "ignition/rendering/Node.hh"
 #include "ignition/rendering/Visual.hh"
 
-#include "gazebo/common/Console.hh"
-
 namespace ignition
 {
   namespace rendering

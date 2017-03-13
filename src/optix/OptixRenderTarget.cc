@@ -14,9 +14,11 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/optix/OptixRenderTarget.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/optix/OptixConversions.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 
@@ -40,14 +42,14 @@ OptixRenderTarget::~OptixRenderTarget()
 void OptixRenderTarget::GetImage(Image &_image) const
 {
   // TODO: handle Bayer conversions
-  // TODO: move shared code to base 
+  // TODO: move shared code to base
 
   unsigned int width = this->GetWidth();
   unsigned int height = this->GetHeight();
 
   if (_image.GetWidth() != width || _image.GetHeight() != height)
   {
-    gzerr << "Invalid image dimensions" << std::endl;
+    ignerr << "Invalid image dimensions" << std::endl;
     return;
   }
 

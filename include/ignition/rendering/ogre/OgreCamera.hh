@@ -53,9 +53,9 @@ namespace ignition
 
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
-      public: virtual gazebo::common::Color GetBackgroundColor() const;
+      public: virtual math::Color GetBackgroundColor() const;
 
-      public: virtual void SetBackgroundColor(const gazebo::common::Color &_color);
+      public: virtual void SetBackgroundColor(const math::Color &_color);
 
       public: virtual void Render();
 
@@ -73,7 +73,7 @@ namespace ignition
 
       protected: math::Angle xfov;
 
-      protected: gazebo::common::Color backgroundColor;
+      protected: math::Color backgroundColor;
 
       private: friend class OgreScene;
     };

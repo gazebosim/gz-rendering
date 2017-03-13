@@ -17,8 +17,8 @@
 #include "ignition/rendering/optix/OptixMeshFactory.hh"
 
 #include <sstream>
-#include "gazebo/common/Console.hh"
-#include "gazebo/common/Mesh.hh"
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/SubMesh.hh>
 #include "ignition/rendering/optix/OptixMesh.hh"
 #include "ignition/rendering/optix/OptixStorage.hh"
 
@@ -100,15 +100,15 @@ OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
     const MeshDescriptor &_desc)
 {
   optix::Context optixContext = this->scene->GetOptixContext();
-  unsigned int count = _desc.mesh->GetSubMeshCount();
+  unsigned int count = _desc.mesh->SubMeshCount();
   const std::string searchName = _desc.subMeshName;
 
   OptixSubMeshStorePtr store(new OptixSubMeshStore);
 
   for (unsigned int i = 0; i < count; ++i)
   {
-    const gazebo::common::SubMesh *subMesh = _desc.mesh->GetSubMesh(i);
-    const std::string foundName = subMesh->GetName();
+    auto subMesh = _desc.mesh->SubMeshByIndex(i).lock();
+    const std::string foundName = subMesh->Name();
 
     if (searchName.empty() || foundName == searchName)
     {
@@ -128,13 +128,13 @@ OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
 optix::Geometry OptixSubMeshStoreFactory::GetGeometry(
     const MeshDescriptor &_desc, unsigned int _subMeshIndex)
 {
-  const gazebo::common::SubMesh *subMesh = _desc.mesh->GetSubMesh(_subMeshIndex);
   const std::string keyName = this->GetKeyName(_desc, _subMeshIndex);
   auto iter = this->geometries.find(keyName);
 
-  if (iter == this->geometries.end())
+  auto subMesh = _desc.mesh->SubMeshByIndex(_subMeshIndex).lock();
+  if (iter == this->geometries.end() && subMesh)
   {
-    OptixMeshGeometryFactory factory(this->scene, *subMesh);
+    OptixMeshGeometryFactory factory(this->scene, *subMesh.get());
     this->geometries[keyName] = factory.Create();
     iter = this->geometries.find(keyName);
   }
@@ -146,11 +146,11 @@ optix::Geometry OptixSubMeshStoreFactory::GetGeometry(
 std::string OptixSubMeshStoreFactory::GetKeyName(const MeshDescriptor &_desc,
     unsigned int _subMeshIndex)
 {
-  const gazebo::common::SubMesh subMesh = _desc.mesh->GetSubMesh(_subMeshIndex);
   const std::string tail = (_desc.centerSubMesh) ? "_centered" : "_original";
 
   std::stringstream ss;
-  ss << _desc.meshName << "::" << subMesh.GetName() << tail;
+  auto subMesh = _desc.mesh->SubMeshByIndex(_subMeshIndex).lock();
+  ss << _desc.meshName << "::" << subMesh->Name() << tail;
   return ss.str();
 }
 
@@ -158,7 +158,7 @@ std::string OptixSubMeshStoreFactory::GetKeyName(const MeshDescriptor &_desc,
 // OptixMeshGeometryFactory
 //////////////////////////////////////////////////
 OptixMeshGeometryFactory::OptixMeshGeometryFactory(OptixScenePtr _scene,
-    const gazebo::common::SubMesh &_subMesh) :
+    const common::SubMesh &_subMesh) :
   scene(_scene),
   subMesh(_subMesh),
   optixGeometry(NULL)
@@ -199,7 +199,7 @@ void OptixMeshGeometryFactory::CreateGeometry()
   this->optixGeometry["texCoordBuffer"]->setBuffer(this->CreateTexCoordBuffer());
   this->optixGeometry["indexBuffer"]->setBuffer(this->CreateIndexBuffer());
 
-  unsigned int count = this->subMesh.GetIndexCount() / 3;
+  unsigned int count = this->subMesh.IndexCount() / 3;
   this->optixGeometry->setPrimitiveCount(count);
 }
 
@@ -212,7 +212,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateVertexBuffer()
   buffer->setFormat(RT_FORMAT_FLOAT3);
 
   // update buffer size
-  unsigned int count = this->subMesh.GetVertexCount();
+  unsigned int count = this->subMesh.VertexCount();
   buffer->setSize(count);
 
   // create host buffer from device buffer
@@ -242,7 +242,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateNormalBuffer()
   buffer->setFormat(RT_FORMAT_FLOAT3);
 
   // update buffer size
-  unsigned int count = this->subMesh.GetNormalCount();
+  unsigned int count = this->subMesh.NormalCount();
   buffer->setSize(count);
 
   // create host buffer from device buffer
@@ -272,7 +272,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateTexCoordBuffer()
   buffer->setFormat(RT_FORMAT_FLOAT2);
 
   // update buffer size
-  unsigned int count = this->subMesh.GetTexCoordCount();
+  unsigned int count = this->subMesh.TexCoordCount();
   buffer->setSize(count);
 
   // create host buffer from device buffer
@@ -303,7 +303,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateIndexBuffer()
   // TODO: handle quads
 
   // update buffer size
-  unsigned int count = this->subMesh.GetIndexCount() / 3;
+  unsigned int count = this->subMesh.IndexCount() / 3;
   buffer->setSize(count);
 
   // create host buffer from device buffer
@@ -314,9 +314,9 @@ optix::Buffer OptixMeshGeometryFactory::CreateIndexBuffer()
   for (unsigned int i = 0; i < count; ++i)
   {
     // copy vertex to host buffer
-    array[i].x = this->subMesh.GetIndex(index++);
-    array[i].y = this->subMesh.GetIndex(index++);
-    array[i].z = this->subMesh.GetIndex(index++);
+    array[i].x = this->subMesh.Index(index++);
+    array[i].y = this->subMesh.Index(index++);
+    array[i].z = this->subMesh.Index(index++);
   }
 
   // copy host buffer to device

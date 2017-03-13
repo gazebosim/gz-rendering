@@ -35,6 +35,8 @@ ign_install_library(${PROJECT_NAME_LOWER}-ogre)
 
 target_link_libraries(${PROJECT_NAME_LOWER}-ogre
   ignition-rendering-base
+  ${IGNITION-MATH_LIBRARIES}
+  ${IGNITION-COMMON_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${ogre_libraries}
 )

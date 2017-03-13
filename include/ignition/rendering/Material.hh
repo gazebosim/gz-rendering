@@ -18,8 +18,8 @@
 #define _IGNITION_RENDERING_MATERIAL_HH_
 
 #include <string>
-#include "gazebo/common/Color.hh"
-#include "gazebo/common/Material.hh"
+#include <ignition/math/Color.hh>
+#include <ignition/common/Material.hh>
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/ShaderType.hh"
@@ -47,7 +47,7 @@ namespace ignition
 
       /// \brief Get the ambient color
       /// \return The ambient color
-      public: virtual gazebo::common::Color GetAmbient() const = 0;
+      public: virtual math::Color GetAmbient() const = 0;
 
       /// \brief Set the ambient color
       /// \param[in] _r Red value
@@ -59,11 +59,11 @@ namespace ignition
 
       /// \brief Set the ambient color
       /// \param[in] _color New ambient color
-      public: virtual void SetAmbient(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetAmbient(const math::Color &_color) = 0;
 
       /// \brief Get the diffuse color
       /// \return The diffuse color
-      public: virtual gazebo::common::Color GetDiffuse() const = 0;
+      public: virtual math::Color GetDiffuse() const = 0;
 
       /// \brief Set the diffuse color
       /// \param[in] _r Red value
@@ -75,11 +75,11 @@ namespace ignition
 
       /// \brief Set the diffuse color
       /// \param[in] _color New diffuse color
-      public: virtual void SetDiffuse(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetDiffuse(const math::Color &_color) = 0;
 
       /// \brief Get the specular color
       /// \return The specular color
-      public: virtual gazebo::common::Color GetSpecular() const = 0;
+      public: virtual math::Color GetSpecular() const = 0;
 
       /// \brief Set the specular color
       /// \param[in] _r Red value
@@ -91,11 +91,11 @@ namespace ignition
 
       /// \brief Set the specular color
       /// \param[in] _color New specular color
-      public: virtual void SetSpecular(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetSpecular(const math::Color &_color) = 0;
 
       /// \brief Get the emissive color
       /// \return The emissive color
-      public: virtual gazebo::common::Color GetEmissive() const = 0;
+      public: virtual math::Color GetEmissive() const = 0;
 
       /// \brief Set the emissive color
       /// \param[in] _r Red value
@@ -107,7 +107,7 @@ namespace ignition
 
       /// \brief Set the emissive color
       /// \param[in] _color New emissive color
-      public: virtual void SetEmissive(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetEmissive(const math::Color &_color) = 0;
 
       /// \brief Get the shininess value
       /// \return The shininess value
@@ -205,7 +205,7 @@ namespace ignition
 
       /// \brief Copy properties from given Material
       /// \param[in] _material Source Material to be copied from
-      public: virtual void CopyFrom(const gazebo::common::Material &_material) = 0;
+      public: virtual void CopyFrom(const common::Material &_material) = 0;
     };
   }
 }

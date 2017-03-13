@@ -22,8 +22,7 @@
 #include <string>
 #include <vector>
 
-#include "gazebo/gazebo_config.h"
-#include "gazebo/common/SingletonT.hh"
+#include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/Util.hh"
@@ -32,7 +31,7 @@ namespace ignition
 {
   namespace rendering
   {
-    /// \addtogroup gazebo_rendering
+    /// \addtogroup ign_rendering
     /// \{
 
     /// \class OgreRTShaderSystem OgreRTShaderSystem.hh rendering/rendering.hh
@@ -41,7 +40,7 @@ namespace ignition
     /// This class allows Gazebo to generate per-pixel shaders for every
     /// material at run-time.
     class IGNITION_VISIBLE OgreRTShaderSystem :
-      public SingletonT<OgreRTShaderSystem>
+      public common::SingletonT<OgreRTShaderSystem>
     {
       /// \enum LightingModel.
       /// \brief The type of lighting.

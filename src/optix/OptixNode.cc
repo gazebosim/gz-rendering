@@ -20,8 +20,6 @@
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/OptixVisual.hh"
 
-#include "gazebo/common/Console.hh"
-
 using namespace ignition;
 using namespace rendering;
 

@@ -16,7 +16,6 @@
  */
 #include "ignition/rendering/optix/OptixLightManager.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/optix/OptixLight.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/OptixVisual.hh"

@@ -17,7 +17,6 @@
 #ifndef _IGNITION_RENDERING_OPTIXRENDERTARGET_HH_
 #define _IGNITION_RENDERING_OPTIXRENDERTARGET_HH_
 
-#include "gazebo/common/Color.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"

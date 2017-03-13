@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/ogre.hh"
 
@@ -28,7 +31,7 @@ OgreScene::OgreScene(unsigned int _id, const std::string &_name) :
   ogreRoot(NULL),
   ogreSceneManager(NULL)
 {
-  this->backgroundColor = gazebo::common::Color::Black;
+  this->backgroundColor = math::Color::Black;
 }
 
 //////////////////////////////////////////////////
@@ -54,27 +57,27 @@ VisualPtr OgreScene::GetRootVisual() const
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreScene::GetAmbientLight() const
+math::Color OgreScene::GetAmbientLight() const
 {
   Ogre::ColourValue ogreColor = this->ogreSceneManager->getAmbientLight();
   return OgreConversions::Convert(ogreColor);
 }
 
 //////////////////////////////////////////////////
-void OgreScene::SetAmbientLight(const gazebo::common::Color &_color)
+void OgreScene::SetAmbientLight(const math::Color &_color)
 {
   Ogre::ColourValue ogreColor = OgreConversions::Convert(_color);
   this->ogreSceneManager->setAmbientLight(ogreColor);
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreScene::GetBackgroundColor() const
+math::Color OgreScene::GetBackgroundColor() const
 {
   return this->backgroundColor;
 }
 
 //////////////////////////////////////////////////
-void OgreScene::SetBackgroundColor(const gazebo::common::Color &_color)
+void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;
 
@@ -324,7 +327,7 @@ void OgreScene::CreateRootVisual()
   // check if root visual created successfully
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
-    gzerr << "Unable to create root visual" << std::endl;
+    ignerr << "Unable to create root visual" << std::endl;
     this->rootVisual = NULL;
   }
 

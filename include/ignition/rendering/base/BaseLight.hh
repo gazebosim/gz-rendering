@@ -35,12 +35,12 @@ namespace ignition
       public: virtual void SetDiffuseColor(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetDiffuseColor(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetDiffuseColor(const math::Color &_color) = 0;
 
       public: virtual void SetSpecularColor(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetSpecularColor(const gazebo::common::Color &_color) = 0;
+      public: virtual void SetSpecularColor(const math::Color &_color) = 0;
 
       public: virtual void SetAttenuationConstant(double _value) = 0;
 
@@ -124,7 +124,7 @@ namespace ignition
     void BaseLight<T>::SetDiffuseColor(double _r, double _g, double _b,
         double _a)
     {
-      this->SetDiffuseColor(gazebo::common::Color(_r, _g, _b, _a));
+      this->SetDiffuseColor(math::Color(_r, _g, _b, _a));
     }
 
     //////////////////////////////////////////////////
@@ -132,15 +132,15 @@ namespace ignition
     void BaseLight<T>::SetSpecularColor(double _r, double _g, double _b,
         double _a)
     {
-      this->SetSpecularColor(gazebo::common::Color(_r, _g, _b, _a));
+      this->SetSpecularColor(math::Color(_r, _g, _b, _a));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseLight<T>::Reset()
     {
-      this->SetDiffuseColor(gazebo::common::Color::White);
-      this->SetSpecularColor(gazebo::common::Color::White);
+      this->SetDiffuseColor(math::Color::White);
+      this->SetSpecularColor(math::Color::White);
       this->SetAttenuationConstant(1);
       this->SetAttenuationLinear(0);
       this->SetAttenuationQuadratic(0);

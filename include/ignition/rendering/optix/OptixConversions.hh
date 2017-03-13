@@ -17,18 +17,18 @@
 #ifndef _IGNITION_RENDERING_OPTIXCONVERSIONS_HH_
 #define _IGNITION_RENDERING_OPTIXCONVERSIONS_HH_
 
-#include "gazebo/common/Color.hh"
-#include "gazebo/math/Quaternion.hh"
-#include "gazebo/math/Vector3.hh"
+#include <ignition/math/Color.hh>
+#include <ignition/math/Quaternion.hh>
+#include <ignition/math/Vector3.hh>
+
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
-#include "gazebo/util/system.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    /// \addtogroup gazebo_rendering
+    /// \addtogroup ign_rendering
     /// \{
 
     /// \brief Conversions Conversions.hh rendering/Conversions.hh
@@ -39,19 +39,19 @@ namespace ignition
       /// \brief Return the equivalent optix color
       /// \param[in] _color Gazebo color to convert
       /// \return Optix color value
-      public: static float4 ConvertColor(const gazebo::common::Color &_color);
+      public: static float4 ConvertColor(const math::Color &_color);
 
-      /// \brief Return the equivalent gazebo color
+      /// \brief Return the equivalent ign-math color
       /// \param[in] _color Optix color to convert
       /// \return Gazebo color value
-      public: static gazebo::common::Color ConvertColor(const float4 &_color);
+      public: static math::Color ConvertColor(const float4 &_color);
 
       /// \brief return Optix Vector from Gazebo Vector3
       /// \param[in] _vector Gazebo vector
       /// \return Optix vector
       public: static float3 ConvertVector(const math::Vector3d &_vector);
 
-      /// \brief return gazebo Vector from optix Vector3
+      /// \brief return ign-math Vector from optix Vector3
       /// \param[in] _vector Optix vector
       /// \return Gazebo vector
       public: static math::Vector3d ConvertVector(const float3 &_vector);

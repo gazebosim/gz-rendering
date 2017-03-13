@@ -43,13 +43,13 @@ namespace ignition
 
       public: virtual VisualPtr GetRootVisual() const;
 
-      public: virtual gazebo::common::Color GetAmbientLight() const;
+      public: virtual math::Color GetAmbientLight() const;
 
-      public: virtual void SetAmbientLight(const gazebo::common::Color &_color);
+      public: virtual void SetAmbientLight(const math::Color &_color);
 
-      public: virtual gazebo::common::Color GetBackgroundColor() const;
+      public: virtual math::Color GetBackgroundColor() const;
 
-      public: virtual void SetBackgroundColor(const gazebo::common::Color &_color);
+      public: virtual void SetBackgroundColor(const math::Color &_color);
 
       public: virtual void PreRender();
 
@@ -136,7 +136,7 @@ namespace ignition
 
       protected: OgreMeshFactoryPtr meshFactory;
 
-      protected: gazebo::common::Color backgroundColor;
+      protected: math::Color backgroundColor;
 
       protected: OgreLightStorePtr lights;
 

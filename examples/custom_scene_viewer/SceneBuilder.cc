@@ -198,7 +198,8 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     if (!_scene->MaterialRegistered(childName))
     {
       MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
-      mat->SetNormalMap("./examples/custom_scene_viewer/media/brick_normal.jpg");
+      mat->SetNormalMap(
+          "./examples/custom_scene_viewer/media/brick_normal.jpg");
       _scene->RegisterMaterial(childName, mat);
     }
   }
@@ -566,11 +567,11 @@ void ShadowSceneBuilder::AddLight(PointLightPtr _light, ScenePtr _scene)
   double y0 = position.Y() - offset;
   double z0 = position.Z() - offset;
 
-  gazebo::common::Color diffuse;
+  math::Color diffuse;
   diffuse = _light->GetDiffuseColor();
   diffuse = diffuse * factor;
 
-  gazebo::common::Color specular;
+  math::Color specular;
   specular = _light->GetSpecularColor();
   specular = specular * factor;
 

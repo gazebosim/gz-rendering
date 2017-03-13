@@ -9,6 +9,29 @@ of libraries designed to rapidly develop robot applications.
 
 ## Installation
 
+### Dependencies
+
+####OGRE
+
+Ubuntu:
+
+    # this installs ogre 1.9. Alternatively, 1.8 should also work
+    sudo apt-get install libogre-1.9-dev
+
+#### OptiX
+
+Download and install by following instructions on NVIDIA website
+
+CUDA:
+
+http://docs.nvidia.com/cuda
+
+Optix:
+
+https://developer.nvidia.com/optix
+
+### Build
+
 Standard installation can be performed in UNIX systems using the following
 steps:
 
@@ -16,6 +39,13 @@ steps:
  - cd build/
  - cmake ..
  - sudo make install
+
+
+### Troubleshooting
+
+if  you encounter errors about different exception specifiers in optix math,
+edit `[optix_install_dir]/include/optixu/optixu_math_namespace.h` and comment
+out the section that defines `fminf`, fmaxf, and `copysignf`
 
 ## Uninstallation
 

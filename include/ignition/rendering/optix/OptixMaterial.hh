@@ -36,21 +36,21 @@ namespace ignition
 
       public: virtual void SetLightingEnabled(bool _enabled);
 
-      public: virtual gazebo::common::Color GetAmbient() const;
+      public: virtual math::Color GetAmbient() const;
 
-      public: virtual void SetAmbient(const gazebo::common::Color &_color);
+      public: virtual void SetAmbient(const math::Color &_color);
 
-      public: virtual gazebo::common::Color GetDiffuse() const;
+      public: virtual math::Color GetDiffuse() const;
 
-      public: virtual void SetDiffuse(const gazebo::common::Color &_color);
+      public: virtual void SetDiffuse(const math::Color &_color);
 
-      public: virtual gazebo::common::Color GetSpecular() const;
+      public: virtual math::Color GetSpecular() const;
 
-      public: virtual void SetSpecular(const gazebo::common::Color &_color);
+      public: virtual void SetSpecular(const math::Color &_color);
 
-      public: virtual gazebo::common::Color GetEmissive() const;
+      public: virtual math::Color GetEmissive() const;
 
-      public: virtual void SetEmissive(const gazebo::common::Color &_color);
+      public: virtual void SetEmissive(const math::Color &_color);
 
       public: virtual double GetShininess() const;
 
@@ -124,13 +124,13 @@ namespace ignition
 
       protected: bool lightingEnabled;
 
-      protected: gazebo::common::Color ambient;
+      protected: math::Color ambient;
 
-      protected: gazebo::common::Color diffuse;
+      protected: math::Color diffuse;
 
-      protected: gazebo::common::Color specular;
+      protected: math::Color specular;
 
-      protected: gazebo::common::Color emissive;
+      protected: math::Color emissive;
 
       protected: double shininess;
 

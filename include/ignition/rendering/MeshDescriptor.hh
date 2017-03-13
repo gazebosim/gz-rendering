@@ -20,7 +20,7 @@
 #include <string>
 #include "ignition/rendering/Util.hh"
 
-namespace gazebo
+namespace ignition
 {
   namespace common
   {
@@ -47,7 +47,7 @@ namespace ignition
 
       /// \brief Constructor
       /// \param[in] _mesh Mesh to load
-      public: MeshDescriptor(const gazebo::common::Mesh *_mesh);
+      public: MeshDescriptor(const common::Mesh *_mesh);
 
       /// \brief Ensures both the meshName and mesh member variables have been
       /// assigned. If mesh is not null, it will be used to override the value
@@ -55,7 +55,7 @@ namespace ignition
       public: MeshDescriptor Normalize() const;
 
       /// \brief common::Mesh object
-      public: const gazebo::common::Mesh *mesh;
+      public: const common::Mesh *mesh;
 
       /// \brief Name of the registered Mesh
       public: std::string meshName;

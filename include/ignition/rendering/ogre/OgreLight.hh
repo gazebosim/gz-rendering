@@ -37,13 +37,13 @@ namespace ignition
 
       public: virtual ~OgreLight();
 
-      public: virtual gazebo::common::Color GetDiffuseColor() const;
+      public: virtual math::Color GetDiffuseColor() const;
 
-      public: virtual void SetDiffuseColor(const gazebo::common::Color &_color);
+      public: virtual void SetDiffuseColor(const math::Color &_color);
 
-      public: virtual gazebo::common::Color GetSpecularColor() const;
+      public: virtual math::Color GetSpecularColor() const;
 
-      public: virtual void SetSpecularColor(const gazebo::common::Color &_color);
+      public: virtual void SetSpecularColor(const math::Color &_color);
 
       public: virtual double GetAttenuationConstant() const;
 

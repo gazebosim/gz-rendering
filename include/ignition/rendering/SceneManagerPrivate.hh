@@ -19,10 +19,13 @@
 
 #include <string>
 
+#include <ignition/common/Time.hh>
+
+#include <ignition/math/Color.hh>
 #include <ignition/math/Pose3.hh>
 
-#include "gazebo/common/Color.hh"
-#include "gazebo/msgs/msgs.hh"
+#include <ignition/msgs.hh>
+
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ShaderType.hh"
 #include "gazebo/transport/Node.hh"
@@ -324,11 +327,11 @@ namespace ignition
       protected: virtual void ProcessMesh(const gazebo::msgs::Geometry &_geometryMsg,
                      VisualPtr _parent);
 
-      protected: virtual void ProcessPlane(const gazebo::msgs::Geometry &_geometryMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessPlane(
+          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
-      protected: virtual void ProcessSphere(const gazebo::msgs::Geometry &_geometryMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessSphere(
+          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual MaterialPtr CreateMaterial(
                   const gazebo::msgs::Material &_materialMsg);
@@ -349,16 +352,20 @@ namespace ignition
 
       protected: virtual VisualPtr GetParent(const std::string &_name);
 
-      protected: static gazebo::common::Color Convert(const gazebo::msgs::Color &_colorMsg);
+      protected: static math::Color Convert(
+          const gazebo::msgs::Color &_colorMsg);
 
-      protected: static math::Pose3d Convert(const gazebo::msgs::Pose &_poseMsg);
+      protected: static math::Pose3d Convert(
+          const gazebo::msgs::Pose &_poseMsg);
 
-      protected: static math::Vector3d Convert(const gazebo::msgs::Vector3d &_vecMsg);
+      protected: static math::Vector3d Convert(
+          const gazebo::msgs::Vector3d &_vecMsg);
 
       protected: static math::Quaterniond Convert(
                      const gazebo::msgs::Quaternion &_quatMsg);
 
-      protected: static ShaderType Convert(gazebo::msgs::Material::ShaderType _type);
+      protected: static ShaderType Convert(
+          gazebo::msgs::Material::ShaderType _type);
 
       private: void CreateGeometryFunctionMap();
 
@@ -366,7 +373,7 @@ namespace ignition
 
       protected: std::vector<ScenePtr> scenes;
 
-      protected: gazebo::common::Time timePosesReceived;
+      protected: common::Time timePosesReceived;
 
       protected: std::vector<gazebo::msgs::Light> lightMsgs;
 

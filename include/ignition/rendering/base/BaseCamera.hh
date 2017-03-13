@@ -17,7 +17,8 @@
 #ifndef _IGNITION_RENDERING_BASECAMERA_HH_
 #define _IGNITION_RENDERING_BASECAMERA_HH_
 
-#include "gazebo/common/Console.hh"
+#include <ignition/common/Event.hh>
+
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
@@ -65,10 +66,8 @@ namespace ignition
 
       public: virtual bool SaveFrame(const std::string &_name);
 
-      public: virtual gazebo::event::ConnectionPtr ConnectNewImageFrame(
+      public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   Camera::NewFrameListener _listener);
-
-      public: virtual void DisconnectNewImageFrame(gazebo::event::ConnectionPtr &_conn);
 
       protected: virtual void *CreateImageBuffer() const;
 
@@ -78,7 +77,7 @@ namespace ignition
 
       protected: virtual RenderTexturePtr GetRenderTexture() const = 0;
 
-      protected: gazebo::event::EventT<void(const void *, unsigned int, unsigned int,
+      protected: common::EventT<void(const void *, unsigned int, unsigned int,
                      unsigned int, const std::string &)> newFrameEvent;
 
       protected: ImagePtr imageBuffer;
@@ -192,17 +191,10 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::event::ConnectionPtr BaseCamera<T>::ConnectNewImageFrame(
+    common::ConnectionPtr BaseCamera<T>::ConnectNewImageFrame(
         Camera::NewFrameListener _listener)
     {
       return newFrameEvent.Connect(_listener);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseCamera<T>::DisconnectNewImageFrame(gazebo::event::ConnectionPtr &_conn)
-    {
-      newFrameEvent.Disconnect(_conn);
     }
 
     //////////////////////////////////////////////////

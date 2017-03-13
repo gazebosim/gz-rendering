@@ -16,7 +16,6 @@
  */
 #include "ignition/rendering/optix/OptixLight.hh"
 
-#include "gazebo/common/Exception.hh"
 #include "ignition/rendering/optix/OptixConversions.hh"
 #include "ignition/rendering/optix/OptixLightManager.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
@@ -37,28 +36,28 @@ OptixLight::~OptixLight()
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OptixLight::GetDiffuseColor() const
+math::Color OptixLight::GetDiffuseColor() const
 {
   float4 optixColor = this->GetCommonData().color.diffuse;;
   return OptixConversions::ConvertColor(optixColor);
 }
 
 //////////////////////////////////////////////////
-void OptixLight::SetDiffuseColor(const gazebo::common::Color &_color)
+void OptixLight::SetDiffuseColor(const math::Color &_color)
 {
   float4 optixColor = OptixConversions::ConvertColor(_color);
   this->GetCommonData().color.diffuse = optixColor;
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OptixLight::GetSpecularColor() const
+math::Color OptixLight::GetSpecularColor() const
 {
   float4 optixColor = this->GetCommonData().color.specular;;
   return OptixConversions::ConvertColor(optixColor);
 }
 
 //////////////////////////////////////////////////
-void OptixLight::SetSpecularColor(const gazebo::common::Color &_color)
+void OptixLight::SetSpecularColor(const math::Color &_color)
 {
   float4 optixColor = OptixConversions::ConvertColor(_color);
   this->GetCommonData().color.specular = optixColor;

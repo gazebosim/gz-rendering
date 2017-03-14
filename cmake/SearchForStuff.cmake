@@ -11,9 +11,16 @@ add_manpage_target()
 
 ########################################
 # Temporarily include Gazebo stuff
-find_package (gazebo REQUIRED gazebo_common gazebo_math)
-include_directories (${GAZEBO_INCLUDE_DIRS})
-link_directories (${GAZEBO_LIBRARY_DIRS})
+find_package (gazebo)
+if (NOT gazebo_FOUND)
+  set (HAVE_GAZEBO OFF CACHE BOOL "HAVE GAZEBO" FORCE)
+  message(STATUS "Looking for Gazebo- not found")
+else()
+  message(STATUS "Looking for Gazebo - found")
+  include_directories (${GAZEBO_INCLUDE_DIRS})
+  link_directories (${GAZEBO_LIBRARY_DIRS})
+  set (HAVE_GAZEBO ON CACHE BOOL "HAVE GAZEBO" FORCE)
+endif()
 
 ########################################
 # Find FreeImage
@@ -108,28 +115,52 @@ else ()
   set(ogre_cflags ${ogre_cflags} ${OGRE_CFLAGS})
   set (HAVE_OGRE ON CACHE BOOL "HAVE OGRE" FORCE)
   set (HAVE_RENDERING TRUE)
+
+
+  pkg_check_modules(OGRE-Terrain OGRE-Terrain)
+  if (OGRE-Terrain_FOUND)
+    set(ogre_ldflags ${ogre_ldflags} ${OGRE-Terrain_LDFLAGS})
+    set(ogre_include_dirs ${ogre_include_dirs} ${OGRE-Terrain_INCLUDE_DIRS})
+    set(ogre_libraries ${ogre_libraries};${OGRE-Terrain_LIBRARIES})
+    set(ogre_library_dirs ${ogre_library_dirs} ${OGRE-Terrain_LIBRARY_DIRS})
+    set(ogre_cflags ${ogre_cflags} ${OGRE-Terrain_CFLAGS})
+  endif()
+
+  pkg_check_modules(OGRE-Overlay OGRE-Overlay)
+  if (OGRE-Overlay_FOUND)
+    set(ogre_ldflags ${ogre_ldflags} ${OGRE-Overlay_LDFLAGS})
+    set(ogre_include_dirs ${ogre_include_dirs} ${OGRE-Overlay_INCLUDE_DIRS})
+    set(ogre_libraries ${ogre_libraries};${OGRE-Overlay_LIBRARIES})
+    set(ogre_library_dirs ${ogre_library_dirs} ${OGRE-Overlay_LIBRARY_DIRS})
+    set(ogre_cflags ${ogre_cflags} ${OGRE-Overlay_CFLAGS})
+  endif()
+
+  set (OGRE_INCLUDE_DIRS ${ogre_include_dirs}
+       CACHE INTERNAL "Ogre include path")
+
+  # Also find OGRE's plugin directory, which is provided in its .pc file as the
+  # `plugindir` variable.  We have to call pkg-config manually to get it.
+  # On Windows, we assume that all the OGRE* defines are passed in manually
+  # to CMake.
+  if (NOT WIN32)
+    execute_process(COMMAND pkg-config --variable=plugindir OGRE
+                    OUTPUT_VARIABLE _pkgconfig_invoke_result
+                    RESULT_VARIABLE _pkgconfig_failed)
+    if(_pkgconfig_failed)
+      BUILD_WARNING ("Failed to find OGRE's plugin directory.  The build will succeed, but gazebo will likely fail to run.")
+    else()
+      # This variable will be substituted into cmake/setup.sh.in
+      set (OGRE_PLUGINDIR ${_pkgconfig_invoke_result})
+    endif()
+
+  endif()
+
+  set(OGRE_RESOURCE_PATH ${OGRE_PLUGINDIR})
+  # Seems that OGRE_PLUGINDIR can end in a newline, which will cause problems when
+  # we pass it to the compiler later.
+  string(REPLACE "\n" "" OGRE_RESOURCE_PATH ${OGRE_RESOURCE_PATH})
+
 endif ()
-
-pkg_check_modules(OGRE-Terrain OGRE-Terrain)
-if (OGRE-Terrain_FOUND)
-  set(ogre_ldflags ${ogre_ldflags} ${OGRE-Terrain_LDFLAGS})
-  set(ogre_include_dirs ${ogre_include_dirs} ${OGRE-Terrain_INCLUDE_DIRS})
-  set(ogre_libraries ${ogre_libraries};${OGRE-Terrain_LIBRARIES})
-  set(ogre_library_dirs ${ogre_library_dirs} ${OGRE-Terrain_LIBRARY_DIRS})
-  set(ogre_cflags ${ogre_cflags} ${OGRE-Terrain_CFLAGS})
-endif()
-
-pkg_check_modules(OGRE-Overlay OGRE-Overlay)
-if (OGRE-Overlay_FOUND)
-  set(ogre_ldflags ${ogre_ldflags} ${OGRE-Overlay_LDFLAGS})
-  set(ogre_include_dirs ${ogre_include_dirs} ${OGRE-Overlay_INCLUDE_DIRS})
-  set(ogre_libraries ${ogre_libraries};${OGRE-Overlay_LIBRARIES})
-  set(ogre_library_dirs ${ogre_library_dirs} ${OGRE-Overlay_LIBRARY_DIRS})
-  set(ogre_cflags ${ogre_cflags} ${OGRE-Overlay_CFLAGS})
-endif()
-
-set (OGRE_INCLUDE_DIRS ${ogre_include_dirs}
-     CACHE INTERNAL "Ogre include path")
 
 # Also find OGRE's plugin directory, which is provided in its .pc file as the
 # `plugindir` variable.  We have to call pkg-config manually to get it.

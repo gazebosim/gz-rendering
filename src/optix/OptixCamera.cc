@@ -38,7 +38,7 @@ OptixCamera::OptixCamera() :
   optixClearProgram(NULL),
   optixErrorProgram(NULL),
   renderTexture(NULL),
-  antiAliasing(1),
+  antiAliasing(1u),
   cameraDirty(true),
   traceId(0)
 {
@@ -136,7 +136,7 @@ void OptixCamera::WriteCameraToDevice()
 //////////////////////////////////////////////////
 void OptixCamera::WriteCameraToDeviceImpl()
 {
-  this->optixRenderProgram["aa"]->setInt(this->antiAliasing + 1);
+  this->optixRenderProgram["aa"]->setUint(this->antiAliasing + 1u);
 }
 
 //////////////////////////////////////////////////

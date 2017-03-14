@@ -370,17 +370,13 @@ unsigned int OptixScene::GetNextEntryId()
 //////////////////////////////////////////////////
 void OptixScene::CreateContext()
 {
-  std::cerr << "create context " << std::endl;
   this->optixContext = optix::Context::create();
 
-  std::cerr << "create context 1 " << std::endl;
   // this->optixContext->setStackSize(65536); // TODO: set dynamically
   // this->optixContext->setStackSize(45536); // TODO: set dynamically
   this->optixContext->setStackSize(10000); // TODO: set dynamically
   this->optixContext->setEntryPointCount(0);
   this->optixContext->setRayTypeCount(RT_COUNT);
-
-  std::cerr << "create context 2" << std::endl;
 
   // TODO: setup programatically
   this->optixContext["sceneEpsilon"]->setFloat(1E-4); // TODO: set dynamically
@@ -388,13 +384,9 @@ void OptixScene::CreateContext()
   this->optixContext["maxRefractionDepth"]->setInt(3);
   this->optixContext["importanceCutoff"]->setFloat(0.01);
 
-  std::cerr << "create context 3" << std::endl;
-
   // TODO: remove after testing
   this->optixContext->setPrintEnabled(true);
   this->optixContext->setPrintBufferSize(4096);
-
-  std::cerr << "create context 4" << std::endl;
 
   // TODO: clean up code
   this->optixMissProgram = this->CreateOptixProgram("OptixMissProgram", "Miss");

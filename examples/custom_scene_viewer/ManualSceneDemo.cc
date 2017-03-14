@@ -187,7 +187,7 @@ int main(int, char**)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(4)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
   sceneDemo->AddCamera("ogre");
-  // sceneDemo->AddCamera("optix");
+  sceneDemo->AddCamera("optix");
   sceneDemo->Run();
   return 0;
 }

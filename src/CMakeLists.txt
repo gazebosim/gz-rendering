@@ -16,16 +16,31 @@ set (sources
   PixelFormat.cc
   RenderEngineManager.cc
   RenderingIface.cc
-  SceneManager.cc
   ShaderType.cc
+  SystemPaths.cc
 )
+
+if (HAVE_GAZEBO)
+  set (sources
+    ${sources}
+    SceneManager.cc
+  )
+endif ()
 
 set (gtest_sources
 )
 
-find_package(gazebo REQUIRED gazebo_common gazebo_math)
-include_directories(${GAZEBO_INCLUDE_DIRS})
-link_directories(${GAZEBO_LIBRARY_DIRS})
+set_property(
+  SOURCE SystemPaths.cc
+  PROPERTY COMPILE_DEFINITIONS
+  IGN_RENDERING_PLUGIN_PATH="${GAZEBO_PLUGIN_PATH}"
+  OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
+)
+
+
+#find_package(gazebo REQUIRED gazebo_common gazebo_math)
+#include_directories(${GAZEBO_INCLUDE_DIRS})
+#link_directories(${GAZEBO_LIBRARY_DIRS})
 
 find_package(Boost REQUIRED filesystem)
 include_directories(${BOOST_INCLUDE_DIRS})

@@ -30,13 +30,20 @@ set (headers
   RenderingIface.hh
   RenderTypes.hh
   Scene.hh
-  SceneManager.hh
   Sensor.hh
   ShaderType.hh
   Storage.hh
+  SystemPaths.hh
   Util.hh
   Visual.hh
 )
+
+if (HAVE_GAZEBO)
+  set (headers
+    ${headers}
+    SceneManager.hh
+  )
+endif ()
 
 #################################################
 ### Do not change the following

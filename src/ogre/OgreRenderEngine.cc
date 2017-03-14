@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
+
+#include <boost/filesystem.hpp>
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Util.hh>
@@ -28,7 +29,10 @@
   #include <ignition/common/win_dirent.h>
 #endif
 
-#include "gazebo/common/SystemPaths.hh"
+
+#include "ignition/rendering/SystemPaths.hh"
+
+#include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
@@ -285,7 +289,7 @@ void OgreRenderEngine::LoadAttempt()
 void OgreRenderEngine::CreateLogger()
 {
   // create log file path
-  std::string logPath = gazebo::common::SystemPaths::Instance()->GetLogPath();
+  std::string logPath = SystemPaths::Instance()->GetLogPath();
   logPath += "/ogre.log";
 
   // create actual log
@@ -367,7 +371,7 @@ void OgreRenderEngine::LoadPlugins()
 {
   std::list<std::string>::iterator iter;
   std::list<std::string> ogrePaths =
-    gazebo::common::SystemPaths::Instance()->GetOgrePaths();
+    SystemPaths::Instance()->GetOgrePaths();
 
   for (iter = ogrePaths.begin();
        iter != ogrePaths.end(); ++iter)
@@ -486,8 +490,10 @@ void OgreRenderEngine::CreateResources()
   std::vector< std::pair<std::string, std::string> > archNames;
   std::vector< std::pair<std::string, std::string> >::iterator aiter;
   std::list<std::string>::const_iterator iter;
-  std::list<std::string> paths =
-    gazebo::common::SystemPaths::Instance()->GetGazeboPaths();
+  // std::list<std::string> paths = SystemPaths::Instance()->GetGazeboPaths();
+  // TODO do this in gazebo plugin
+  std::list<std::string> paths;
+
 
   std::list<std::string> mediaDirs;
   mediaDirs.push_back("media");

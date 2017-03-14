@@ -168,7 +168,7 @@ int main(int _argc, char** _argv)
 
   try
   {
-//    engineNames.push_back("ogre");
+    engineNames.push_back("ogre");
     engineNames.push_back("optix");
 
     for (auto engineName : engineNames)

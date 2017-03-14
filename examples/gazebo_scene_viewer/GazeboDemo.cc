@@ -20,6 +20,7 @@
 
 #include "ignition/rendering/rendering.hh"
 #include "CameraWindow.hh"
+#include "SceneManager.hh"
 
 using namespace ignition;
 using namespace rendering;

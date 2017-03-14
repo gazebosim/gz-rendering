@@ -17,7 +17,7 @@
 #include <iostream>
 #include <vector>
 
-#include "gazebo/common/Console.hh"
+#include "ignition/common/Console.hh"
 #include "ignition/rendering/rendering.hh"
 #include "GlutWindow.hh"
 
@@ -162,7 +162,7 @@ int main(int _argc, char** _argv)
 
   glutInit(&_argc, _argv);
 
-  gazebo::common::Console::SetQuiet(false);
+  common::Console::SetQuiet(false);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 

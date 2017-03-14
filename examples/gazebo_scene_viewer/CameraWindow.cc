@@ -25,13 +25,14 @@
   #include <GL/glut.h>
 #endif
 
-#include <gazebo/common/Image.hh>
 #include <gazebo/common/Console.hh>
 
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/rendering.hh"
+
+#include "SceneManager.hh"
 
 #if not (__APPLE__ || _WIN32)
   #include <GL/glx.h>

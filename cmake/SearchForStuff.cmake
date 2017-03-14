@@ -10,19 +10,6 @@ include (${project_cmake_dir}/Ronn2Man.cmake)
 add_manpage_target()
 
 ########################################
-# Temporarily include Gazebo stuff
-find_package (gazebo)
-if (NOT gazebo_FOUND)
-  set (HAVE_GAZEBO OFF CACHE BOOL "HAVE GAZEBO" FORCE)
-  message(STATUS "Looking for Gazebo- not found")
-else()
-  message(STATUS "Looking for Gazebo - found")
-  include_directories (${GAZEBO_INCLUDE_DIRS})
-  link_directories (${GAZEBO_LIBRARY_DIRS})
-  set (HAVE_GAZEBO ON CACHE BOOL "HAVE GAZEBO" FORCE)
-endif()
-
-########################################
 # Find FreeImage
 include (${project_cmake_dir}/FindFreeImage.cmake)
 find_package(FreeImage QUIET)
@@ -90,24 +77,24 @@ endif()
 pkg_check_modules(OGRE-RTShaderSystem
                   OGRE-RTShaderSystem>=${MIN_OGRE_VERSION})
 
-if (OGRE-RTShaderSystem_FOUND)
-  set(ogre_ldflags ${OGRE-RTShaderSystem_LDFLAGS})
-  set(ogre_include_dirs ${OGRE-RTShaderSystem_INCLUDE_DIRS})
-  set(ogre_libraries ${OGRE-RTShaderSystem_LIBRARIES})
-  set(ogre_library_dirs ${OGRE-RTShaderSystem_LIBRARY_DIRS})
-  set(ogre_cflags ${OGRE-RTShaderSystem_CFLAGS})
-
-  set (INCLUDE_RTSHADER ON CACHE BOOL "Enable GPU shaders")
-else ()
-  set (INCLUDE_RTSHADER OFF CACHE BOOL "Enable GPU shaders")
-endif ()
-
 pkg_check_modules(OGRE OGRE>=${MIN_OGRE_VERSION})
 # There are some runtime problems to solve with ogre-1.9.
 # Please read gazebo issues: 994, 995
 if (NOT OGRE_FOUND)
   set (HAVE_OGRE OFF CACHE BOOL "HAVE OGRE" FORCE)
 else ()
+  if (OGRE-RTShaderSystem_FOUND)
+    set(ogre_ldflags ${OGRE-RTShaderSystem_LDFLAGS})
+    set(ogre_include_dirs ${OGRE-RTShaderSystem_INCLUDE_DIRS})
+    set(ogre_libraries ${OGRE-RTShaderSystem_LIBRARIES})
+    set(ogre_library_dirs ${OGRE-RTShaderSystem_LIBRARY_DIRS})
+    set(ogre_cflags ${OGRE-RTShaderSystem_CFLAGS})
+
+    set (INCLUDE_RTSHADER ON CACHE BOOL "Enable GPU shaders")
+  else ()
+    set (INCLUDE_RTSHADER OFF CACHE BOOL "Enable GPU shaders")
+  endif ()
+
   set(ogre_ldflags ${ogre_ldflags} ${OGRE_LDFLAGS})
   set(ogre_include_dirs ${ogre_include_dirs} ${OGRE_INCLUDE_DIRS})
   set(ogre_libraries ${ogre_libraries};${OGRE_LIBRARIES})
@@ -219,3 +206,4 @@ else()
   include_directories(${IGNITION-MSGS_INCLUDE_DIRS})
   link_directories(${IGNITION-MSGS_LIBRARY_DIRS})
 endif()
+

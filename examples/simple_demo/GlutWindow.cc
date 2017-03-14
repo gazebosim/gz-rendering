@@ -26,8 +26,7 @@
   #include <GL/glut.h>
 #endif
 
-#include "gazebo/common/Image.hh"
-#include "gazebo/common/Console.hh"
+#include "ignition/common/Console.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Scene.hh"

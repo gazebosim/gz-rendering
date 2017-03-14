@@ -15,18 +15,19 @@
  *
  */
 #include <iostream>
-#include <gazebo/common/Console.hh>
+#include <ignition/common/Console.hh>
 #include <gazebo/transport/TransportIface.hh>
 
 #include "ignition/rendering/rendering.hh"
 #include "CameraWindow.hh"
+#include "SceneManager.hh"
 
 using namespace ignition;
 using namespace rendering;
 
 void Connect()
 {
-  gazebo::common::Console::SetQuiet(false);
+  ignition::common::Console::SetQuiet(false);
   gazebo::transport::init();
   gazebo::transport::run();
 

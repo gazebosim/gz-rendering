@@ -14,7 +14,7 @@
 #  FreeImage_INCLUDE_DIRS - the FreeImage include directories 
 #  FreeImage_LIBRARIES - link these to use FreeImage
 
-include(FindPkgMacros)
+include(${project_cmake_dir}/FindPkgMacros.cmake)
 findpkg_begin(FreeImage)
 
 # Get path, convert backslashes as ${ENV_${var}}

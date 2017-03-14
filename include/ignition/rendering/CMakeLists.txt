@@ -38,13 +38,6 @@ set (headers
   Visual.hh
 )
 
-if (HAVE_GAZEBO)
-  set (headers
-    ${headers}
-    SceneManager.hh
-  )
-endif ()
-
 #################################################
 ### Do not change the following
 

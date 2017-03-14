@@ -15,7 +15,7 @@
  *
  */
 #include <iostream>
-#include <gazebo/common/Console.hh>
+#include <ignition/common/Console.hh>
 #include "ManualSceneDemo.hh"
 #include "SceneBuilder.hh"
 #include "DemoWindow.hh"
@@ -171,7 +171,7 @@ void ManualSceneDemo::ChangeScene()
 //////////////////////////////////////////////////
 int main(int, char**)
 {
-  gazebo::common::Console::SetQuiet(false);
+  common::Console::SetQuiet(false);
   ManualSceneDemoPtr sceneDemo(new ManualSceneDemo);
   sceneDemo->AddScene(SceneBuilderPtr(new SceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new SimpleSceneBuilder));

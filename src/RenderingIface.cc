@@ -16,12 +16,12 @@
  */
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/SceneManager.hh"
+//#include "ignition/rendering/SceneManager.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 
 using namespace ignition;
 
-//////////////////////////////////////////////////
+/*//////////////////////////////////////////////////
 bool rendering::load()
 {
   SceneManager::Instance()->Load();
@@ -40,9 +40,9 @@ bool rendering::fini()
 {
   SceneManager::Instance()->Fini();
   return true;
-}
+}*/
 
-//////////////////////////////////////////////////  
+//////////////////////////////////////////////////
 unsigned int rendering::get_engine_count()
 {
   return RenderEngineManager::Instance()->GetEngineCount();

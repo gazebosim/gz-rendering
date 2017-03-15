@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_CAMERA_HH_
-#define _IGNITION_RENDERING_CAMERA_HH_
+#ifndef IGNITION_RENDERING_CAMERA_HH_
+#define IGNITION_RENDERING_CAMERA_HH_
 
 #include <ignition/common/Event.hh>
 #include "ignition/rendering/Image.hh"

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASEMESH_HH_
-#define _IGNITION_RENDERING_BASEMESH_HH_
+#ifndef IGNITION_RENDERING_BASEMESH_HH_
+#define IGNITION_RENDERING_BASEMESH_HH_
 
 #include "ignition/rendering/Mesh.hh"
 #include "ignition/rendering/Storage.hh"

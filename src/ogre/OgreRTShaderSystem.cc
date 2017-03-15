@@ -71,7 +71,7 @@ void OgreRTShaderSystem::Init()
     this->initialized = true;
 
     std::string coreLibsPath, cachePath;
-    this->GetPaths(coreLibsPath, cachePath);
+    this->Paths(coreLibsPath, cachePath);
 
     // Get the shader generator pointer
     this->shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
@@ -361,7 +361,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
 }
 
 //////////////////////////////////////////////////
-bool OgreRTShaderSystem::GetPaths(std::string &coreLibsPath,
+bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
     std::string &cachePath)
 {
   if (!this->initialized)
@@ -576,7 +576,7 @@ void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
 
 //////////////////////////////////////////////////
 Ogre::PSSMShadowCameraSetup
-    *OgreRTShaderSystem::GetPSSMShadowCameraSetup() const
+    *OgreRTShaderSystem::PSSMShadowCameraSetup() const
 {
   return dynamic_cast<Ogre::PSSMShadowCameraSetup *>(this->pssmSetup.get());
 }

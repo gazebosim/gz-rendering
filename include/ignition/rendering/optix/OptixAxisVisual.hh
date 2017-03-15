@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXAXISVISUAL_HH_
-#define _IGNITION_RENDERING_OPTIXAXISVISUAL_HH_
+#ifndef IGNITION_RENDERING_OPTIXAXISVISUAL_HH_
+#define IGNITION_RENDERING_OPTIXAXISVISUAL_HH_
 
 #include "ignition/rendering/base/BaseAxisVisual.hh"
 #include "ignition/rendering/optix/OptixVisual.hh"

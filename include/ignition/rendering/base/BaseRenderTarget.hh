@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASERENDERTARGET_HH_
-#define _IGNITION_RENDERING_BASERENDERTARGET_HH_
+#ifndef IGNITION_RENDERING_BASERENDERTARGET_HH_
+#define IGNITION_RENDERING_BASERENDERTARGET_HH_
 
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"

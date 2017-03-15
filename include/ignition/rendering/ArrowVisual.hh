@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_ARROWVISUAL_HH_
-#define _IGNITION_RENDERING_ARROWVISUAL_HH_
+#ifndef IGNITION_RENDERING_ARROWVISUAL_HH_
+#define IGNITION_RENDERING_ARROWVISUAL_HH_
 
 #include "ignition/rendering/CompositeVisual.hh"
 
@@ -33,11 +33,11 @@ namespace ignition
 
       /// \brief Get arrow-head visual
       /// \return The arrow-head visual
-      public: virtual VisualPtr GetHead() const = 0;
+      public: virtual VisualPtr Head() const = 0;
 
       /// \brief Get arrow-shaft visual
       /// \return The arrow-shaft visual
-      public: virtual VisualPtr GetShaft() const = 0;
+      public: virtual VisualPtr Shaft() const = 0;
     };
   }
 }

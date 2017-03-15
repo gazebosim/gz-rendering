@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGREMATERIAL_HH_
-#define _IGNITION_RENDERING_OGREMATERIAL_HH_
+#ifndef IGNITION_RENDERING_OGREMATERIAL_HH_
+#define IGNITION_RENDERING_OGREMATERIAL_HH_
 
 #include "ignition/rendering/base/BaseMaterial.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"

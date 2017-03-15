@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXCONVERSIONS_HH_
-#define _IGNITION_RENDERING_OPTIXCONVERSIONS_HH_
+#ifndef IGNITION_RENDERING_OPTIXCONVERSIONS_HH_
+#define IGNITION_RENDERING_OPTIXCONVERSIONS_HH_
 
 #include <ignition/math/Color.hh>
 #include <ignition/math/Quaternion.hh>

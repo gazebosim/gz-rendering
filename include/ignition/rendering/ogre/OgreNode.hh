@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGRENODE_HH_
-#define _IGNITION_RENDERING_OGRENODE_HH_
+#ifndef IGNITION_RENDERING_OGRENODE_HH_
+#define IGNITION_RENDERING_OGRENODE_HH_
 
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"

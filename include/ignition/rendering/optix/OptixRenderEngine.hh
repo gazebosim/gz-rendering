@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
-#define _IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
+#ifndef IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
+#define IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
 
 #include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/base/BaseRenderEngine.hh"

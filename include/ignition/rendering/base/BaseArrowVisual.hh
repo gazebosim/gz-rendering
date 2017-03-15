@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASEARROWVISUAL_HH_
-#define _IGNITION_RENDERING_BASEARROWVISUAL_HH_
+#ifndef IGNITION_RENDERING_BASEARROWVISUAL_HH_
+#define IGNITION_RENDERING_BASEARROWVISUAL_HH_
 
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/Scene.hh"
@@ -33,9 +33,9 @@ namespace ignition
 
       public: virtual ~BaseArrowVisual();
 
-      public: virtual VisualPtr GetHead() const;
+      public: virtual VisualPtr Head() const;
 
-      public: virtual VisualPtr GetShaft() const;
+      public: virtual VisualPtr Shaft() const;
 
       protected: virtual void Init();
     };
@@ -54,14 +54,14 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    VisualPtr BaseArrowVisual<T>::GetHead() const
+    VisualPtr BaseArrowVisual<T>::Head() const
     {
       return NULL;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    VisualPtr BaseArrowVisual<T>::GetShaft() const
+    VisualPtr BaseArrowVisual<T>::Shaft() const
     {
       return NULL;
     }

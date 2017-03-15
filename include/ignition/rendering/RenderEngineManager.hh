@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
-#define _IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
+#ifndef IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
+#define IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/Util.hh"
@@ -25,7 +26,9 @@ namespace ignition
 {
   namespace rendering
   {
+    // forward declarations.
     class RenderEngine;
+    class RenderEngineManagerPrivate;
 
     /// \class RenderEngineManager RenderEngineManager.hh
     /// ignition/rendering/RenderEngineManager.hh
@@ -53,7 +56,7 @@ namespace ignition
 
       /// \brief Get the render-engine with the given name. If the no
       /// render-engine is registered under the given name, NULL will be
-      /// returned. 
+      /// returned.
       /// \param[name] _name Name of the desired render-engine
       /// \return The specified render-engine
       public: RenderEngine *Engine(const std::string &_name) const;
@@ -89,7 +92,7 @@ namespace ignition
       public: void UnregisterEngineAt(unsigned int _index);
 
       /// \brief private implementation details
-      private: class RenderEngineManagerPrivate *pimpl;
+      private: std::unique_ptr<RenderEngineManagerPrivate> dataPtr;
 
       /// \brief required SingletonT friendship
       private: friend class SingletonT<RenderEngineManager>;

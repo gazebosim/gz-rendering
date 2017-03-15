@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_PIXELFORMAT_HH_
-#define _IGNITION_RENDERING_PIXELFORMAT_HH_
+#ifndef IGNITION_RENDERING_PIXELFORMAT_HH_
+#define IGNITION_RENDERING_PIXELFORMAT_HH_
 
 #include <string>
 #include "ignition/rendering/Util.hh"

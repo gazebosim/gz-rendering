@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXLIGHTMANAGER_HH_
-#define _IGNITION_RENDERING_OPTIXLIGHTMANAGER_HH_
+#ifndef IGNITION_RENDERING_OPTIXLIGHTMANAGER_HH_
+#define IGNITION_RENDERING_OPTIXLIGHTMANAGER_HH_
 
 #include <vector>
 #include "ignition/rendering/optix/OptixLightTypes.hh"

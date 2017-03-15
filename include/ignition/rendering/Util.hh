@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_UTIL_HH_
-#define _IGNITION_RENDERING_UTIL_HH_
+#ifndef IGNITION_RENDERING_UTIL_HH_
+#define IGNITION_RENDERING_UTIL_HH_
 
 /// \def IGNITION_VISIBLE
 /// Use to represent "symbol visible" if supported

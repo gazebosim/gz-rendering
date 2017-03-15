@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASEGEOMETRY_HH_
-#define _IGNITION_RENDERING_BASEGEOMETRY_HH_
+#ifndef IGNITION_RENDERING_BASEGEOMETRY_HH_
+#define IGNITION_RENDERING_BASEGEOMETRY_HH_
 
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Scene.hh"

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXMESHFACTORY_HH_
-#define _IGNITION_RENDERING_OPTIXMESHFACTORY_HH_
+#ifndef IGNITION_RENDERING_OPTIXMESHFACTORY_HH_
+#define IGNITION_RENDERING_OPTIXMESHFACTORY_HH_
 
 #include <map>
 #include <ignition/common/Mesh.hh>

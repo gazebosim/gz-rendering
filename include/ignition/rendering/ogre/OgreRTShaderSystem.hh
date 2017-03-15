@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGRERTSHADERSYSTEM_HH_
-#define _IGNITION_RENDERING_OGRERTSHADERSYSTEM_HH_
+#ifndef IGNITION_RENDERING_OGRERTSHADERSYSTEM_HH_
+#define IGNITION_RENDERING_OGRERTSHADERSYSTEM_HH_
 
 #include <mutex>
 #include <list>
@@ -126,13 +126,13 @@ namespace ignition
 
       /// \brief Get the Ogre PSSM Shadows camera setup.
       /// \return The Ogre PSSM Shadows camera setup.
-      public: Ogre::PSSMShadowCameraSetup *GetPSSMShadowCameraSetup() const;
+      public: Ogre::PSSMShadowCameraSetup *PSSMShadowCameraSetup() const;
 
       /// \brief Get paths for the shader system
       /// \param[out] _coreLibsPath Path to the core libraries.
       /// \param[out] _cachePath Path to where the generated shaders are
       /// stored.
-      private: bool GetPaths(std::string &_coreLibsPath,
+      private: bool Paths(std::string &_coreLibsPath,
                              std::string &_cachePath);
 
 #if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 7

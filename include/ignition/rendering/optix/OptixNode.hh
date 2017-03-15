@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXNODE_HH_
-#define _IGNITION_RENDERING_OPTIXNODE_HH_
+#ifndef IGNITION_RENDERING_OPTIXNODE_HH_
+#define IGNITION_RENDERING_OPTIXNODE_HH_
 
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"

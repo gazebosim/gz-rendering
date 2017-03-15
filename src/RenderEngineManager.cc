@@ -15,11 +15,12 @@
  *
  */
 
+#include <map>
+
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderEngineManagerPrivate.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
 
 #if HAVE_OGRE
@@ -30,6 +31,29 @@
 #include "ignition/rendering/optix/OptixRenderEngine.hh"
 #endif
 
+namespace ignition
+{
+  namespace rendering
+  {
+    class RenderEngine;
+
+    class RenderEngineManagerPrivate
+    {
+      typedef std::map<std::string, RenderEngine *> EngineMap;
+
+      typedef EngineMap::iterator EngineIter;
+
+      public: RenderEngine *Engine(EngineIter _iter) const;
+
+      public: void RegisterDefaultEngines();
+
+      public: void UnregisterEngine(EngineIter _iter);
+
+      public: EngineMap engines;
+    };
+  }
+}
+
 using namespace ignition;
 using namespace rendering;
 
@@ -37,43 +61,41 @@ using namespace rendering;
 // RenderEngineManager
 //////////////////////////////////////////////////
 RenderEngineManager::RenderEngineManager() :
-  pimpl(new RenderEngineManagerPrivate)
+  dataPtr(new RenderEngineManagerPrivate)
 {
-  this->pimpl->RegisterDefaultEngines();
+  this->dataPtr->RegisterDefaultEngines();
 }
 
 //////////////////////////////////////////////////
 RenderEngineManager::~RenderEngineManager()
 {
-  delete this->pimpl;
-  this->pimpl = NULL;
 }
 
 //////////////////////////////////////////////////
 unsigned int RenderEngineManager::EngineCount() const
 {
-  return this->pimpl->engines.size();
+  return this->dataPtr->engines.size();
 }
 
 //////////////////////////////////////////////////
 bool RenderEngineManager::HasEngine(const std::string &_name) const
 {
-  auto iter = this->pimpl->engines.find(_name);
-  return iter != this->pimpl->engines.end();
+  auto iter = this->dataPtr->engines.find(_name);
+  return iter != this->dataPtr->engines.end();
 }
 
 //////////////////////////////////////////////////
 RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
 {
-  auto iter = this->pimpl->engines.find(_name);
+  auto iter = this->dataPtr->engines.find(_name);
 
-  if (iter == this->pimpl->engines.end())
+  if (iter == this->dataPtr->engines.end())
   {
     ignerr << "No render-engine registered with name: " << _name << std::endl;
     return NULL;
   }
 
-  return this->pimpl->Engine(iter);
+  return this->dataPtr->Engine(iter);
 }
 
 //////////////////////////////////////////////////
@@ -85,9 +107,9 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index) const
     return NULL;
   }
 
-  auto iter = this->pimpl->engines.begin();
+  auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
-  return this->pimpl->Engine(iter);
+  return this->dataPtr->Engine(iter);
 }
 
 //////////////////////////////////////////////////
@@ -108,31 +130,31 @@ void RenderEngineManager::RegisterEngine(const std::string &_name,
     return;
   }
 
-  this->pimpl->engines[_name] = _engine;
+  this->dataPtr->engines[_name] = _engine;
 }
 
 //////////////////////////////////////////////////
 void RenderEngineManager::UnregisterEngine(const std::string &_name)
 {
-  auto iter = this->pimpl->engines.find(_name);
+  auto iter = this->dataPtr->engines.find(_name);
 
-  if (iter != this->pimpl->engines.end())
+  if (iter != this->dataPtr->engines.end())
   {
-    this->pimpl->UnregisterEngine(iter);
+    this->dataPtr->UnregisterEngine(iter);
   }
 }
 
 //////////////////////////////////////////////////
 void RenderEngineManager::UnregisterEngine(RenderEngine *_engine)
 {
-  auto begin = this->pimpl->engines.begin();
-  auto end = this->pimpl->engines.end();
+  auto begin = this->dataPtr->engines.begin();
+  auto end = this->dataPtr->engines.end();
 
   for (auto iter = begin; iter != end; ++iter)
   {
     if (iter->second == _engine)
     {
-      this->pimpl->UnregisterEngine(iter);
+      this->dataPtr->UnregisterEngine(iter);
       return;
     }
   }
@@ -147,9 +169,9 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
     return;
   }
 
-  auto iter = this->pimpl->engines.begin();
+  auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
-  this->pimpl->UnregisterEngine(iter);
+  this->dataPtr->UnregisterEngine(iter);
 }
 
 //////////////////////////////////////////////////

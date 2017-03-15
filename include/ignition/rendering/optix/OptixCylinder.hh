@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXCYLINDER_HH_
-#define _IGNITION_RENDERING_OPTIXCYLINDER_HH_
+#ifndef IGNITION_RENDERING_OPTIXCYLINDER_HH_
+#define IGNITION_RENDERING_OPTIXCYLINDER_HH_
 
 #include "ignition/rendering/optix/OptixPrimitive.hh"
 

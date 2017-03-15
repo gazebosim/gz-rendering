@@ -37,7 +37,7 @@ void BuildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
-  VisualPtr root = _scene->GetRootVisual();
+  VisualPtr root = _scene->RootVisual();
 
   // create point light
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
@@ -153,7 +153,7 @@ CameraPtr CreateCamera(const std::string &_engineName)
   BuildScene(scene);
 
   // return camera sensor
-  SensorPtr sensor = scene->GetSensorByName("camera");
+  SensorPtr sensor = scene->SensorByName("camera");
   return std::dynamic_pointer_cast<Camera>(sensor);
 }
 

@@ -39,40 +39,43 @@ OptixRenderTarget::~OptixRenderTarget()
 }
 
 //////////////////////////////////////////////////
-void OptixRenderTarget::GetImage(Image &_image) const
+void OptixRenderTarget::Copy(Image &_image) const
 {
   // TODO: handle Bayer conversions
   // TODO: move shared code to base
 
-  unsigned int width = this->GetWidth();
-  unsigned int height = this->GetHeight();
+  unsigned int width = this->Width();
+  unsigned int height = this->Height();
 
-  if (_image.GetWidth() != width || _image.GetHeight() != height)
+  if (_image.Width() != width || _image.Height() != height)
   {
     ignerr << "Invalid image dimensions" << std::endl;
     return;
   }
 
-  float3 *deviceData = static_cast<float3 *>(this->GetOptixBuffer()->map());
-  unsigned char *imageData = _image.GetData<unsigned char>();
+  float3 *deviceData = static_cast<float3 *>(this->OptixBuffer()->map());
+  unsigned char *imageData = _image.Data<unsigned char>();
   unsigned int count = width * height;
   unsigned int index = 0;
 
   for (unsigned int i = 0; i < count; ++i)
   {
-    imageData[index++] = (unsigned char)fminf(fmaxf(255 * deviceData[i].x, 0), 255);
-    imageData[index++] = (unsigned char)fminf(fmaxf(255 * deviceData[i].y, 0), 255);
-    imageData[index++] = (unsigned char)fminf(fmaxf(255 * deviceData[i].z, 0), 255);
+    imageData[index++] =
+        (unsigned char)fminf(fmaxf(255 * deviceData[i].x, 0), 255);
+    imageData[index++] =
+        (unsigned char)fminf(fmaxf(255 * deviceData[i].y, 0), 255);
+    imageData[index++] =
+        (unsigned char)fminf(fmaxf(255 * deviceData[i].z, 0), 255);
   }
 
-  this->GetOptixBuffer()->unmap();
+  this->OptixBuffer()->unmap();
 }
 
 //////////////////////////////////////////////////
-unsigned int OptixRenderTarget::GetMemorySize() const
+unsigned int OptixRenderTarget::MemorySize() const
 {
-  unsigned int elementSize = this->GetOptixBuffer()->getElementSize();
-  return elementSize * this->GetWidth() * this->GetHeight();
+  unsigned int elementSize = this->OptixBuffer()->getElementSize();
+  return elementSize * this->Width() * this->Height();
 }
 
 //////////////////////////////////////////////////
@@ -93,7 +96,7 @@ void OptixRenderTexture::Destroy()
 }
 
 //////////////////////////////////////////////////
-optix::Buffer OptixRenderTexture::GetOptixBuffer() const
+optix::Buffer OptixRenderTexture::OptixBuffer() const
 {
   return this->optixBuffer;
 }
@@ -114,7 +117,7 @@ void OptixRenderTexture::RebuildImpl()
 void OptixRenderTexture::Init()
 {
   BaseRenderTarget::Init();
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   this->optixBuffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
   // this->optixBuffer->setFormat(RT_FORMAT_UNSIGNED_BYTE3);
   this->optixBuffer->setFormat(RT_FORMAT_FLOAT3);

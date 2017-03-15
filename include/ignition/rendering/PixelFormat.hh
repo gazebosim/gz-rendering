@@ -57,25 +57,25 @@ namespace ignition
       /// \brief Get human-readable name for pixel format value.
       /// \param[in] _format Image pixel format
       /// \return The format name
-      public: static std::string GetName(PixelFormat _format);
+      public: static std::string Name(PixelFormat _format);
 
       /// \brief Get number of channels for given format. If an invalid format
       /// is given, 0 will be returned.
       /// \param[in] _format Image pixel format
       /// \return The channel count
-      public: static unsigned int GetChannelCount(PixelFormat _format);
+      public: static unsigned int ChannelCount(PixelFormat _format);
 
       /// \brief Get number of bytes per channel for given format. If an invalid
       /// format is given, 0 will be returned.
       /// \param[in] _format Image pixel format
       /// \return The number of bytes per channel
-      public: static unsigned int GetBytesPerChannel(PixelFormat _format);
+      public: static unsigned int BytesPerChannel(PixelFormat _format);
 
       /// \brief Get number of bytes per pixel for given format. If an invalid
       /// format is given, 0 will be returned. This is simply the product of
       /// GetChannelCount and GetBytesPerChannel.
       /// \return The number of bytes per pixel
-      public: static unsigned int GetBytesPerPixel(PixelFormat _format);
+      public: static unsigned int BytesPerPixel(PixelFormat _format);
 
       /// \brief Get total memory size in bytes for an image with the given
       /// format and dimensions. If an invalid format is given, 0 will be
@@ -85,7 +85,7 @@ namespace ignition
       /// \param[in] _width Image width in pixels
       /// \param[in] _height Image height in pixels
       /// \return The number of bytes per pixel
-      public: static unsigned int GetMemorySize(PixelFormat _format,
+      public: static unsigned int MemorySize(PixelFormat _format,
                   unsigned int _width, unsigned int _height);
 
       /// \brief Get enum value by human-readable name. The given string should
@@ -93,7 +93,7 @@ namespace ignition
       /// PF_UNKNOWN will be returned.
       /// \param[in] _name Name of the pixel format to be retrieved
       /// \return The specified PixelFormat enum value
-      public: static PixelFormat GetEnum(const std::string &_name);
+      public: static PixelFormat Enum(const std::string &_name);
 
       /// \brief Array of human-readable names for each PixelFormat
       private: static const char *names[PF_COUNT];

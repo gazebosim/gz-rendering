@@ -45,7 +45,7 @@ bool rendering::fini()
 //////////////////////////////////////////////////
 unsigned int rendering::get_engine_count()
 {
-  return RenderEngineManager::Instance()->GetEngineCount();
+  return RenderEngineManager::Instance()->EngineCount();
 }
 
 //////////////////////////////////////////////////
@@ -57,13 +57,13 @@ bool rendering::has_engine(const std::string &_name)
 //////////////////////////////////////////////////
 rendering::RenderEngine *rendering::get_engine(const std::string &_name)
 {
-  return RenderEngineManager::Instance()->GetEngine(_name);
+  return RenderEngineManager::Instance()->Engine(_name);
 }
 
 //////////////////////////////////////////////////
 rendering::RenderEngine *rendering::get_engine(unsigned int _index)
 {
-  return RenderEngineManager::Instance()->GetEngineAt(_index);
+  return RenderEngineManager::Instance()->EngineAt(_index);
 }
 
 //////////////////////////////////////////////////

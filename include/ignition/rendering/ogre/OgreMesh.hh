@@ -41,9 +41,9 @@ namespace ignition
 
       public: virtual ~OgreMesh();
 
-      public: virtual Ogre::MovableObject *GetOgreObject() const;
+      public: virtual Ogre::MovableObject *OgreObject() const;
 
-      protected: virtual SubMeshStorePtr GetSubMeshes() const;
+      protected: virtual SubMeshStorePtr SubMeshes() const;
 
       protected: OgreSubMeshStorePtr subMeshes;
 
@@ -61,12 +61,12 @@ namespace ignition
 
       public: virtual ~OgreSubMesh();
 
-      public: virtual MaterialPtr GetMaterial() const;
+      public: virtual MaterialPtr Material() const;
 
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true);
 
-      public: virtual Ogre::SubEntity *GetOgreSubEntity() const;
+      public: virtual Ogre::SubEntity *OgreSubEntity() const;
 
       public: virtual void Destroy();
 

@@ -35,7 +35,7 @@ namespace ignition
 
       /// \brief Get the sub-mesh count
       /// \return The sub-mesh count
-      public: virtual unsigned int GetSubMeshCount() const = 0;
+      public: virtual unsigned int SubMeshCount() const = 0;
 
       /// \brief Determine if has given sub-mesh
       /// \param[in] _subMesh Sub-mesh in question
@@ -50,13 +50,13 @@ namespace ignition
       /// \brief Get sub-mesh with given name
       /// \param[in] _name Name of sub-mesh
       /// \return The sub-mesh with the given name
-      public: virtual SubMeshPtr GetSubMeshByName(
+      public: virtual SubMeshPtr SubMeshByName(
                   const std::string &_name) const = 0;
 
       /// \brief Get sub-mesh at given index
       /// \param[in] _index Index of sub-mesh
       /// \return The sub-mesh at the given index
-      public: virtual SubMeshPtr GetSubMeshByIndex(
+      public: virtual SubMeshPtr SubMeshByIndex(
                   unsigned int _index) const = 0;
     };
 
@@ -70,7 +70,7 @@ namespace ignition
 
       /// \brief Get the currently assigned material
       /// \return The currently assigned material
-      public: virtual MaterialPtr GetMaterial() const = 0;
+      public: virtual MaterialPtr Material() const = 0;
 
       /// \brief Set the materials of this SubMesh. The specified material
       /// will be retrieved from the parent Scene. If no material is registered

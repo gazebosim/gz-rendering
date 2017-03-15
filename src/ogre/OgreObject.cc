@@ -32,7 +32,7 @@ OgreObject::~OgreObject()
 }
 
 //////////////////////////////////////////////////
-ScenePtr OgreObject::GetScene() const
+ScenePtr OgreObject::Scene() const
 {
   return this->scene;
 }

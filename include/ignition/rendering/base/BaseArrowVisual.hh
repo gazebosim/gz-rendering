@@ -71,7 +71,7 @@ namespace ignition
     void BaseArrowVisual<T>::Init()
     {
       T::Init();
-      ScenePtr scene = this->GetScene();
+      ScenePtr scene = this->Scene();
 
       VisualPtr cone = scene->CreateVisual();
       cone->AddGeometry(scene->CreateCone());

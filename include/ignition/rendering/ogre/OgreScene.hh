@@ -39,15 +39,15 @@ namespace ignition
 
       public: virtual void Fini();
 
-      public: virtual RenderEngine *GetEngine() const;
+      public: virtual RenderEngine *Engine() const;
 
-      public: virtual VisualPtr GetRootVisual() const;
+      public: virtual VisualPtr RootVisual() const;
 
-      public: virtual math::Color GetAmbientLight() const;
+      public: virtual math::Color AmbientLight() const;
 
       public: virtual void SetAmbientLight(const math::Color &_color);
 
-      public: virtual math::Color GetBackgroundColor() const;
+      public: virtual math::Color BackgroundColor() const;
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
@@ -57,7 +57,7 @@ namespace ignition
 
       public: virtual void Destroy();
 
-      public: virtual Ogre::SceneManager *GetOgreSceneManager() const;
+      public: virtual Ogre::SceneManager *OgreSceneManager() const;
 
       protected: virtual bool LoadImpl();
 
@@ -114,13 +114,13 @@ namespace ignition
       protected: virtual bool InitObject(OgreObjectPtr _object,
                      unsigned int _id, const std::string &_name);
 
-      protected: virtual LightStorePtr GetLights() const;
+      protected: virtual LightStorePtr Lights() const;
 
-      protected: virtual SensorStorePtr GetSensors() const;
+      protected: virtual SensorStorePtr Sensors() const;
 
-      protected: virtual VisualStorePtr GetVisuals() const;
+      protected: virtual VisualStorePtr Visuals() const;
 
-      protected: virtual MaterialMapPtr GetMaterials() const;
+      protected: virtual MaterialMapPtr Materials() const;
 
       private: void CreateContext();
 
@@ -130,7 +130,7 @@ namespace ignition
 
       private: void CreateStores();
 
-      private: OgreScenePtr GetSharedThis();
+      private: OgreScenePtr SharedThis();
 
       protected: OgreVisualPtr rootVisual;
 

@@ -38,9 +38,9 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr GetParent() const;
+      public: virtual VisualPtr Parent() const;
 
-      public: virtual Ogre::MovableObject *GetOgreObject() const = 0;
+      public: virtual Ogre::MovableObject *OgreObject() const = 0;
 
       protected: virtual void SetParent(OgreVisualPtr _parent);
 

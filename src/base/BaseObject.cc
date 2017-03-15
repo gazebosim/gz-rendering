@@ -31,13 +31,13 @@ BaseObject::~BaseObject()
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseObject::GetId() const
+unsigned int BaseObject::Id() const
 {
   return this->id;
 }
 
 //////////////////////////////////////////////////
-std::string BaseObject::GetName() const
+std::string BaseObject::Name() const
 {
   return this->name;
 }

@@ -39,7 +39,7 @@ namespace ignition
 
       public: virtual OgreMeshPtr Create(const MeshDescriptor &_desc);
 
-      protected: virtual Ogre::Entity *GetOgreEntity(
+      protected: virtual Ogre::Entity *OgreEntity(
                      const MeshDescriptor &_desc);
 
       protected: virtual bool Load(const MeshDescriptor &_desc);
@@ -48,7 +48,7 @@ namespace ignition
 
       protected: virtual bool LoadImpl(const MeshDescriptor &_desc);
 
-      protected: virtual std::string GetMeshName(const MeshDescriptor &_desc);
+      protected: virtual std::string MeshName(const MeshDescriptor &_desc);
 
       protected: virtual bool Validate(const MeshDescriptor &_desc);
 

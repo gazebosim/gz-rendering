@@ -52,7 +52,7 @@ namespace ignition
 
       public: void Fini();
 
-      public: unsigned int GetSceneCount() const;
+      public: unsigned int SceneCount() const;
 
       public: bool HasScene(unsigned int _id) const;
 
@@ -60,11 +60,11 @@ namespace ignition
 
       public: bool HasScene(ConstScenePtr _scene) const;
 
-      public: ScenePtr GetScene(unsigned int _id) const;
+      public: ScenePtr Scene(unsigned int _id) const;
 
-      public: ScenePtr GetScene(const std::string &_name) const;
+      public: ScenePtr Scene(const std::string &_name) const;
 
-      public: ScenePtr GetSceneAt(unsigned int _index) const;
+      public: ScenePtr SceneAt(unsigned int _index) const;
 
       public: void AddScene(ScenePtr _scene);
 
@@ -158,7 +158,7 @@ namespace ignition
 
       public: virtual ~SubSceneManager();
 
-      public: virtual unsigned int GetSceneCount() const;
+      public: virtual unsigned int SceneCount() const;
 
       public: virtual bool HasScene(unsigned int _id) const;
 
@@ -166,11 +166,11 @@ namespace ignition
 
       public: virtual bool HasScene(ConstScenePtr _scene) const;
 
-      public: virtual ScenePtr GetScene(unsigned int _id) const;
+      public: virtual ScenePtr Scene(unsigned int _id) const;
 
-      public: virtual ScenePtr GetScene(const std::string &_name) const;
+      public: virtual ScenePtr Scene(const std::string &_name) const;
 
-      public: virtual ScenePtr GetSceneAt(unsigned int _index) const;
+      public: virtual ScenePtr SceneAt(unsigned int _index) const;
 
       public: virtual void AddScene(ScenePtr _scene);
 
@@ -219,7 +219,7 @@ namespace ignition
       protected: virtual void ProcessDirectionalLightImpl(
                      const gazebo::msgs::Light &_lightMsg, DirectionalLightPtr _light);
 
-      protected: virtual DirectionalLightPtr GetDirectionalLight(
+      protected: virtual DirectionalLightPtr DirectionalLight(
                      const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual DirectionalLightPtr CreateDirectionalLight(
@@ -231,7 +231,7 @@ namespace ignition
       protected: virtual void ProcessPointLightImpl(
                      const gazebo::msgs::Light &_lightMsg, PointLightPtr _light);
 
-      protected: virtual PointLightPtr GetPointLight(
+      protected: virtual PointLightPtr PointLight(
                      const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual PointLightPtr CreatePointLight(
@@ -243,7 +243,7 @@ namespace ignition
       protected: virtual void ProcessSpotLightImpl(const gazebo::msgs::Light &_lightMsg,
                      SpotLightPtr _light);
 
-      protected: virtual SpotLightPtr GetSpotLight(const gazebo::msgs::Light &_lightMsg,
+      protected: virtual SpotLightPtr SpotLight(const gazebo::msgs::Light &_lightMsg,
                      VisualPtr _parent);
 
       protected: virtual SpotLightPtr CreateSpotLight(
@@ -262,7 +262,7 @@ namespace ignition
       protected: virtual void ProcessCamera(const gazebo::msgs::Sensor &_sensorMsg,
                      VisualPtr _parent);
 
-      protected: virtual CameraPtr GetCamera(const gazebo::msgs::Sensor &_sensorMsg,
+      protected: virtual CameraPtr Camera(const gazebo::msgs::Sensor &_sensorMsg,
                      VisualPtr _parent);
 
       protected: virtual CameraPtr CreateCamera(const gazebo::msgs::Sensor &_sensorMsg);
@@ -274,7 +274,7 @@ namespace ignition
       protected: virtual void ProcessModel(const gazebo::msgs::Model &_modelMsg,
                      VisualPtr _parent);
 
-      protected: virtual VisualPtr GetModel(const gazebo::msgs::Model &_modelMsg,
+      protected: virtual VisualPtr Model(const gazebo::msgs::Model &_modelMsg,
                      VisualPtr _parent);
 
       protected: virtual void ProcessJoints() = 0;
@@ -284,7 +284,7 @@ namespace ignition
       protected: virtual void ProcessJoint(const gazebo::msgs::Joint &_jointMsg,
                      VisualPtr _parent);
 
-      protected: virtual VisualPtr GetJoint(const gazebo::msgs::Joint &_jointMsg,
+      protected: virtual VisualPtr Joint(const gazebo::msgs::Joint &_jointMsg,
                      VisualPtr _parent);
 
       protected: virtual void ProcessVisuals() = 0;
@@ -294,16 +294,16 @@ namespace ignition
       protected: virtual void ProcessVisual(const gazebo::msgs::Visual &_visualMsg,
                      VisualPtr _parent);
 
-      protected: virtual VisualPtr GetVisual(const gazebo::msgs::Visual &_visualMsg,
+      protected: virtual VisualPtr Visual(const gazebo::msgs::Visual &_visualMsg,
                      VisualPtr _parent);
 
       protected: virtual void ProcessLink(const gazebo::msgs::Link &_linkMsg,
                      VisualPtr _parent);
 
-      protected: virtual VisualPtr GetLink(const gazebo::msgs::Link &_linkMsg,
+      protected: virtual VisualPtr Link(const gazebo::msgs::Link &_linkMsg,
                      VisualPtr _parent);
 
-      protected: virtual VisualPtr GetVisual(bool _hasId, unsigned int _id,
+      protected: virtual VisualPtr Visual(bool _hasId, unsigned int _id,
                      const std::string &_name, VisualPtr _parent);
 
       protected: virtual VisualPtr CreateVisual(bool _hasId, unsigned int _id,
@@ -350,7 +350,7 @@ namespace ignition
 
       protected: virtual void ProcessRemoval(const std::string &_name);
 
-      protected: virtual VisualPtr GetParent(const std::string &_name);
+      protected: virtual VisualPtr Parent(const std::string &_name);
 
       protected: static math::Color Convert(
           const gazebo::msgs::Color &_colorMsg);

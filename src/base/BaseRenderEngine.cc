@@ -89,81 +89,81 @@ bool BaseRenderEngine::IsEnabled() const
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseRenderEngine::GetSceneCount() const
+unsigned int BaseRenderEngine::SceneCount() const
 {
-  return this->GetScenes()->Size();
+  return this->Scenes()->Size();
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::HasScene(ConstScenePtr _scene) const
 {
-  return this->GetScenes()->Contains(_scene);
+  return this->Scenes()->Contains(_scene);
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::HasSceneId(unsigned int _id) const
 {
-  return this->GetScenes()->ContainsId(_id);
+  return this->Scenes()->ContainsId(_id);
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::HasSceneName(const std::string &_name) const
 {
-  return this->GetScenes()->ContainsName(_name);
+  return this->Scenes()->ContainsName(_name);
 }
 
 //////////////////////////////////////////////////
-ScenePtr BaseRenderEngine::GetSceneById(unsigned int _id) const
+ScenePtr BaseRenderEngine::SceneById(unsigned int _id) const
 {
-  return this->GetScenes()->GetById(_id);
+  return this->Scenes()->GetById(_id);
 }
 
 //////////////////////////////////////////////////
-ScenePtr BaseRenderEngine::GetSceneByName(const std::string &_name) const
+ScenePtr BaseRenderEngine::SceneByName(const std::string &_name) const
 {
-  return this->GetScenes()->GetByName(_name);
+  return this->Scenes()->GetByName(_name);
 }
 
 //////////////////////////////////////////////////
-ScenePtr BaseRenderEngine::GetSceneByIndex(unsigned int _index) const
+ScenePtr BaseRenderEngine::SceneByIndex(unsigned int _index) const
 {
-  return this->GetScenes()->GetByIndex(_index);
+  return this->Scenes()->GetByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroyScene(ScenePtr _scene)
 {
-  this->GetScenes()->Destroy(_scene);
+  this->Scenes()->Destroy(_scene);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroySceneById(unsigned int _id)
 {
-  this->GetScenes()->DestroyById(_id);
+  this->Scenes()->DestroyById(_id);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroySceneByName(const std::string &_name)
 {
-  this->GetScenes()->DestroyByName(_name);
+  this->Scenes()->DestroyByName(_name);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroySceneByIndex(unsigned int _index)
 {
-  this->GetScenes()->DestroyByIndex(_index);
+  this->Scenes()->DestroyByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroyScenes()
 {
-  this->GetScenes()->DestroyAll();
+  this->Scenes()->DestroyAll();
 }
 
 //////////////////////////////////////////////////
 ScenePtr BaseRenderEngine::CreateScene(const std::string &_name)
 {
-  unsigned int sceneId = this->GetNextSceneId();
+  unsigned int sceneId = this->NextSceneId();
   return this->CreateScene(sceneId, _name);
 }
 
@@ -210,7 +210,7 @@ void BaseRenderEngine::PrepareScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseRenderEngine::GetNextSceneId()
+unsigned int BaseRenderEngine::NextSceneId()
 {
   return this->nextSceneId--;
 }

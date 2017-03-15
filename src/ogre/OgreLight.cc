@@ -41,7 +41,7 @@ OgreLight::~OgreLight()
 }
 
 //////////////////////////////////////////////////
-math::Color OgreLight::GetDiffuseColor() const
+math::Color OgreLight::DiffuseColor() const
 {
   Ogre::ColourValue color = this->ogreLight->getDiffuseColour();
   return OgreConversions::Convert(color);
@@ -54,7 +54,7 @@ void OgreLight::SetDiffuseColor(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OgreLight::GetSpecularColor() const
+math::Color OgreLight::SpecularColor() const
 {
   Ogre::ColourValue color = this->ogreLight->getSpecularColour();
   return OgreConversions::Convert(color);
@@ -67,7 +67,7 @@ void OgreLight::SetSpecularColor(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-double OgreLight::GetAttenuationConstant() const
+double OgreLight::AttenuationConstant() const
 {
   return this->ogreLight->getAttenuationConstant();
 }
@@ -80,7 +80,7 @@ void OgreLight::SetAttenuationConstant(double _value)
 }
 
 //////////////////////////////////////////////////
-double OgreLight::GetAttenuationLinear() const
+double OgreLight::AttenuationLinear() const
 {
   return this->ogreLight->getAttenuationLinear();
 }
@@ -93,7 +93,7 @@ void OgreLight::SetAttenuationLinear(double _value)
 }
 
 //////////////////////////////////////////////////
-double OgreLight::GetAttenuationQuadratic() const
+double OgreLight::AttenuationQuadratic() const
 {
   return this->ogreLight->getAttenuationQuadric();
 }
@@ -106,7 +106,7 @@ void OgreLight::SetAttenuationQuadratic(double _value)
 }
 
 //////////////////////////////////////////////////
-double OgreLight::GetAttenuationRange() const
+double OgreLight::AttenuationRange() const
 {
   return this->ogreLight->getAttenuationRange();
 }
@@ -119,7 +119,7 @@ void OgreLight::SetAttenuationRange(double _range)
 }
 
 //////////////////////////////////////////////////
-bool OgreLight::GetCastShadows() const
+bool OgreLight::CastShadows() const
 {
   return this->ogreLight->getCastShadows();
 }
@@ -131,7 +131,7 @@ void OgreLight::SetCastShadows(bool _castShadows)
 }
 
 //////////////////////////////////////////////////
-Ogre::Light *OgreLight::GetOgreLight() const
+Ogre::Light *OgreLight::Light() const
 {
   return this->ogreLight;
 }
@@ -140,7 +140,7 @@ Ogre::Light *OgreLight::GetOgreLight() const
 void OgreLight::Destroy()
 {
   BaseLight::Destroy();
-  Ogre::SceneManager *ogreSceneManager = this->scene->GetOgreSceneManager();
+  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   ogreSceneManager->destroyLight(this->ogreLight);
 }
 
@@ -158,7 +158,7 @@ void OgreLight::CreateLight()
   try
   {
     Ogre::SceneManager *sceneManager;
-    sceneManager = this->scene->GetOgreSceneManager();
+    sceneManager = this->scene->OgreSceneManager();
     this->ogreLight = sceneManager->createLight(this->name);
     this->ogreLight->setType(this->ogreLightType);
     this->ogreNode->attachObject(this->ogreLight);
@@ -193,7 +193,7 @@ OgreDirectionalLight::~OgreDirectionalLight()
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OgreDirectionalLight::GetDirection() const
+math::Vector3d OgreDirectionalLight::Direction() const
 {
   return OgreConversions::Convert(this->ogreLight->getDirection());
 }
@@ -231,7 +231,7 @@ OgreSpotLight::~OgreSpotLight()
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OgreSpotLight::GetDirection() const
+math::Vector3d OgreSpotLight::Direction() const
 {
   return OgreConversions::Convert(this->ogreLight->getDirection());
 }
@@ -243,7 +243,7 @@ void OgreSpotLight::SetDirection(const math::Vector3d &_dir)
 }
 
 //////////////////////////////////////////////////
-math::Angle OgreSpotLight::GetInnerAngle() const
+math::Angle OgreSpotLight::InnerAngle() const
 {
   return OgreConversions::Convert(this->ogreLight->getSpotlightInnerAngle());
 }
@@ -255,7 +255,7 @@ void OgreSpotLight::SetInnerAngle(const math::Angle &_angle)
 }
 
 //////////////////////////////////////////////////
-math::Angle OgreSpotLight::GetOuterAngle() const
+math::Angle OgreSpotLight::OuterAngle() const
 {
   return OgreConversions::Convert(this->ogreLight->getSpotlightOuterAngle());
 }
@@ -267,7 +267,7 @@ void OgreSpotLight::SetOuterAngle(const math::Angle &_angle)
 }
 
 //////////////////////////////////////////////////
-double OgreSpotLight::GetFalloff() const
+double OgreSpotLight::Falloff() const
 {
   return this->ogreLight->getSpotlightFalloff();
 }

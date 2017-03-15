@@ -36,9 +36,9 @@ OptixLight::~OptixLight()
 }
 
 //////////////////////////////////////////////////
-math::Color OptixLight::GetDiffuseColor() const
+math::Color OptixLight::DiffuseColor() const
 {
-  float4 optixColor = this->GetCommonData().color.diffuse;;
+  float4 optixColor = this->CommonData().color.diffuse;;
   return OptixConversions::ConvertColor(optixColor);
 }
 
@@ -46,13 +46,13 @@ math::Color OptixLight::GetDiffuseColor() const
 void OptixLight::SetDiffuseColor(const math::Color &_color)
 {
   float4 optixColor = OptixConversions::ConvertColor(_color);
-  this->GetCommonData().color.diffuse = optixColor;
+  this->CommonData().color.diffuse = optixColor;
 }
 
 //////////////////////////////////////////////////
-math::Color OptixLight::GetSpecularColor() const
+math::Color OptixLight::SpecularColor() const
 {
-  float4 optixColor = this->GetCommonData().color.specular;;
+  float4 optixColor = this->CommonData().color.specular;;
   return OptixConversions::ConvertColor(optixColor);
 }
 
@@ -60,67 +60,67 @@ math::Color OptixLight::GetSpecularColor() const
 void OptixLight::SetSpecularColor(const math::Color &_color)
 {
   float4 optixColor = OptixConversions::ConvertColor(_color);
-  this->GetCommonData().color.specular = optixColor;
+  this->CommonData().color.specular = optixColor;
 }
 
 //////////////////////////////////////////////////
-double OptixLight::GetAttenuationConstant() const
+double OptixLight::AttenuationConstant() const
 {
-  return this->GetCommonData().atten.constant;
+  return this->CommonData().atten.constant;
 }
 
 //////////////////////////////////////////////////
 void OptixLight::SetAttenuationConstant(double _value)
 {
-  this->GetCommonData().atten.constant = _value;
+  this->CommonData().atten.constant = _value;
 }
 
 //////////////////////////////////////////////////
-double OptixLight::GetAttenuationLinear() const
+double OptixLight::AttenuationLinear() const
 {
-  return this->GetCommonData().atten.linear;
+  return this->CommonData().atten.linear;
 }
 
 //////////////////////////////////////////////////
 void OptixLight::SetAttenuationLinear(double _value)
 {
-  this->GetCommonData().atten.linear = _value;
+  this->CommonData().atten.linear = _value;
 }
 
 //////////////////////////////////////////////////
-double OptixLight::GetAttenuationQuadratic() const
+double OptixLight::AttenuationQuadratic() const
 {
-  return this->GetCommonData().atten.quadratic;
+  return this->CommonData().atten.quadratic;
 }
 
 //////////////////////////////////////////////////
 void OptixLight::SetAttenuationQuadratic(double _value)
 {
-  this->GetCommonData().atten.quadratic = _value;
+  this->CommonData().atten.quadratic = _value;
 }
 
 //////////////////////////////////////////////////
-double OptixLight::GetAttenuationRange() const
+double OptixLight::AttenuationRange() const
 {
-  return this->GetCommonData().atten.range;
+  return this->CommonData().atten.range;
 }
 
 //////////////////////////////////////////////////
 void OptixLight::SetAttenuationRange(double _range)
 {
-  this->GetCommonData().atten.range = _range;
+  this->CommonData().atten.range = _range;
 }
 
 //////////////////////////////////////////////////
-bool OptixLight::GetCastShadows() const
+bool OptixLight::CastShadows() const
 {
-  return this->GetCommonData().castShadows;
+  return this->CommonData().castShadows;
 }
 
 //////////////////////////////////////////////////
 void OptixLight::SetCastShadows(bool _castShadows)
 {
-  this->GetCommonData().castShadows = _castShadows;
+  this->CommonData().castShadows = _castShadows;
 }
 
 //////////////////////////////////////////////////
@@ -129,8 +129,8 @@ void OptixLight::WritePoseToDeviceImpl()
   BaseLight::WritePoseToDeviceImpl();
 
   // TODO: handle rotation
-  math::Pose3d worldPose = this->GetWorldPose();
-  OptixCommonLightData &_data = this->GetCommonData();
+  math::Pose3d worldPose = this->WorldPose();
+  OptixCommonLightData &_data = this->CommonData();
   _data.position.x = worldPose.Pos().X();
   _data.position.y = worldPose.Pos().Y();
   _data.position.z = worldPose.Pos().Z();
@@ -155,7 +155,7 @@ OptixDirectionalLight::~OptixDirectionalLight()
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OptixDirectionalLight::GetDirection() const
+math::Vector3d OptixDirectionalLight::Direction() const
 {
   return OptixConversions::ConvertVector(this->data.direction);
 }
@@ -167,7 +167,7 @@ void OptixDirectionalLight::SetDirection(const math::Vector3d &_dir)
 }
 
 //////////////////////////////////////////////////
-OptixDirectionalLightData OptixDirectionalLight::GetData() const
+OptixDirectionalLightData OptixDirectionalLight::Data() const
 {
   return this->data;
 }
@@ -176,18 +176,18 @@ OptixDirectionalLightData OptixDirectionalLight::GetData() const
 void OptixDirectionalLight::PreRender()
 {
   BaseDirectionalLight::PreRender();
-  OptixLightManagerPtr lightManager = this->scene->GetLightManager();
+  OptixLightManagerPtr lightManager = this->scene->LightManager();
   lightManager->AddDirectionalLight(this->SharedThis());
 }
 
 //////////////////////////////////////////////////
-OptixCommonLightData &OptixDirectionalLight::GetCommonData()
+OptixCommonLightData &OptixDirectionalLight::CommonData()
 {
   return this->data.common;
 }
 
 //////////////////////////////////////////////////
-const OptixCommonLightData &OptixDirectionalLight::GetCommonData() const
+const OptixCommonLightData &OptixDirectionalLight::CommonData() const
 {
   return this->data.common;
 }
@@ -211,7 +211,7 @@ OptixPointLight::~OptixPointLight()
 }
 
 //////////////////////////////////////////////////
-OptixPointLightData OptixPointLight::GetData() const
+OptixPointLightData OptixPointLight::Data() const
 {
   return this->data;
 }
@@ -220,18 +220,18 @@ OptixPointLightData OptixPointLight::GetData() const
 void OptixPointLight::PreRender()
 {
   BasePointLight::PreRender();
-  OptixLightManagerPtr lightManager = this->scene->GetLightManager();
+  OptixLightManagerPtr lightManager = this->scene->LightManager();
   lightManager->AddPointLight(this->SharedThis());
 }
 
 //////////////////////////////////////////////////
-OptixCommonLightData &OptixPointLight::GetCommonData()
+OptixCommonLightData &OptixPointLight::CommonData()
 {
   return this->data.common;
 }
 
 //////////////////////////////////////////////////
-const OptixCommonLightData &OptixPointLight::GetCommonData() const
+const OptixCommonLightData &OptixPointLight::CommonData() const
 {
   return this->data.common;
 }
@@ -256,7 +256,7 @@ OptixSpotLight::~OptixSpotLight()
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OptixSpotLight::GetDirection() const
+math::Vector3d OptixSpotLight::Direction() const
 {
   return OptixConversions::ConvertVector(this->data.direction);
 }
@@ -268,7 +268,7 @@ void OptixSpotLight::SetDirection(const math::Vector3d &_dir)
 }
 
 //////////////////////////////////////////////////
-math::Angle OptixSpotLight::GetInnerAngle() const
+math::Angle OptixSpotLight::InnerAngle() const
 {
   return math::Angle(this->data.spot.outerAngle);
 }
@@ -280,7 +280,7 @@ void OptixSpotLight::SetInnerAngle(const math::Angle &_angle)
 }
 
 //////////////////////////////////////////////////
-math::Angle OptixSpotLight::GetOuterAngle() const
+math::Angle OptixSpotLight::OuterAngle() const
 {
   return math::Angle(this->data.spot.outerAngle);
 }
@@ -292,7 +292,7 @@ void OptixSpotLight::SetOuterAngle(const math::Angle &_angle)
 }
 
 //////////////////////////////////////////////////
-double OptixSpotLight::GetFalloff() const
+double OptixSpotLight::Falloff() const
 {
   return this->data.spot.falloff;
 }
@@ -304,7 +304,7 @@ void OptixSpotLight::SetFalloff(double _falloff)
 }
 
 //////////////////////////////////////////////////
-OptixSpotLightData OptixSpotLight::GetData() const
+OptixSpotLightData OptixSpotLight::Data() const
 {
   return this->data;
 }
@@ -313,18 +313,18 @@ OptixSpotLightData OptixSpotLight::GetData() const
 void OptixSpotLight::PreRender()
 {
   BaseSpotLight::PreRender();
-  OptixLightManagerPtr lightManager = this->scene->GetLightManager();
+  OptixLightManagerPtr lightManager = this->scene->LightManager();
   lightManager->AddSpotLight(this->SharedThis());
 }
 
 //////////////////////////////////////////////////
-OptixCommonLightData &OptixSpotLight::GetCommonData()
+OptixCommonLightData &OptixSpotLight::CommonData()
 {
   return this->data.common;
 }
 
 //////////////////////////////////////////////////
-const OptixCommonLightData &OptixSpotLight::GetCommonData() const
+const OptixCommonLightData &OptixSpotLight::CommonData() const
 {
   return this->data.common;
 }

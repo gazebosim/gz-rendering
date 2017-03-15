@@ -57,7 +57,7 @@ OptixMeshPtr OptixMeshFactory::Create(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 OptixMeshPtr OptixMeshFactory::Create(OptixSubMeshStorePtr _subMeshes)
 {
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
 
   OptixMeshPtr mesh(new OptixMesh);
   mesh->optixGeomGroup = optixContext->createGeometryGroup();
@@ -74,8 +74,8 @@ OptixMeshPtr OptixMeshFactory::Create(OptixSubMeshStorePtr _subMeshes)
 
   for (unsigned int i = 0; i < count; ++i)
   {
-    OptixSubMeshPtr subMesh = _subMeshes->GetDerivedByIndex(i);
-    mesh->optixGeomGroup->addChild(subMesh->GetOptixGeometryInstance());
+    OptixSubMeshPtr subMesh = _subMeshes->DerivedByIndex(i);
+    mesh->optixGeomGroup->addChild(subMesh->OptixGeometryInstance());
     subMesh->SetMaterial(this->scene->CreateMaterial());
   }
 
@@ -99,7 +99,7 @@ OptixSubMeshStoreFactory::~OptixSubMeshStoreFactory()
 OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
     const MeshDescriptor &_desc)
 {
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   unsigned int count = _desc.mesh->SubMeshCount();
   const std::string searchName = _desc.subMeshName;
 
@@ -112,7 +112,7 @@ OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
 
     if (searchName.empty() || foundName == searchName)
     {
-      optix::Geometry optixGeometry = this->GetGeometry(_desc, i);
+      optix::Geometry optixGeometry = this->Geometry(_desc, i);
       OptixSubMeshPtr sm(new OptixSubMesh);
       sm->optixGeometry = optixGeometry;
       sm->optixGeomInstance = optixContext->createGeometryInstance();
@@ -125,10 +125,10 @@ OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
 }
 
 //////////////////////////////////////////////////
-optix::Geometry OptixSubMeshStoreFactory::GetGeometry(
+optix::Geometry OptixSubMeshStoreFactory::Geometry(
     const MeshDescriptor &_desc, unsigned int _subMeshIndex)
 {
-  const std::string keyName = this->GetKeyName(_desc, _subMeshIndex);
+  const std::string keyName = this->KeyName(_desc, _subMeshIndex);
   auto iter = this->geometries.find(keyName);
 
   auto subMesh = _desc.mesh->SubMeshByIndex(_subMeshIndex).lock();
@@ -143,7 +143,7 @@ optix::Geometry OptixSubMeshStoreFactory::GetGeometry(
 }
 
 //////////////////////////////////////////////////
-std::string OptixSubMeshStoreFactory::GetKeyName(const MeshDescriptor &_desc,
+std::string OptixSubMeshStoreFactory::KeyName(const MeshDescriptor &_desc,
     unsigned int _subMeshIndex)
 {
   const std::string tail = (_desc.centerSubMesh) ? "_centered" : "_original";
@@ -184,7 +184,7 @@ optix::Geometry OptixMeshGeometryFactory::Create()
 //////////////////////////////////////////////////
 void OptixMeshGeometryFactory::CreateGeometry()
 {
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   this->optixGeometry = optixContext->createGeometry();
 
   optix::Program intersectProgram, boundsProgram;
@@ -207,7 +207,7 @@ void OptixMeshGeometryFactory::CreateGeometry()
 optix::Buffer OptixMeshGeometryFactory::CreateVertexBuffer()
 {
   // create new buffer
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
   buffer->setFormat(RT_FORMAT_FLOAT3);
 
@@ -237,7 +237,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateVertexBuffer()
 optix::Buffer OptixMeshGeometryFactory::CreateNormalBuffer()
 {
   // create new buffer
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
   buffer->setFormat(RT_FORMAT_FLOAT3);
 
@@ -267,7 +267,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateNormalBuffer()
 optix::Buffer OptixMeshGeometryFactory::CreateTexCoordBuffer()
 {
   // create new buffer
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
   buffer->setFormat(RT_FORMAT_FLOAT2);
 
@@ -296,7 +296,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateTexCoordBuffer()
 optix::Buffer OptixMeshGeometryFactory::CreateIndexBuffer()
 {
   // create new buffer
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
   buffer->setFormat(RT_FORMAT_UNSIGNED_INT3);
 

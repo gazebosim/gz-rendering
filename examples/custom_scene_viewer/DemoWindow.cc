@@ -78,7 +78,7 @@ void rendering::GlutRun(ManualSceneDemoPtr _demo)
 
   g_prevTime = clock();
   g_demo = _demo;
-  GlutInitCamera(_demo->GetCurrentCamera());
+  GlutInitCamera(_demo->CurrentCamera());
   GlutInitContext();
   GlutPrintUsage();
 
@@ -102,7 +102,7 @@ void rendering::GlutDisplay()
 #endif
 
   g_demo->Update();
-  CameraPtr camera = g_demo->GetCurrentCamera();
+  CameraPtr camera = g_demo->CurrentCamera();
 
   camera->Capture(*g_image);
 
@@ -110,7 +110,7 @@ void rendering::GlutDisplay()
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 #endif
 
-  unsigned char *data = g_image->GetData<unsigned char>();
+  unsigned char *data = g_image->Data<unsigned char>();
 
   glClearColor(0.5, 0.5, 0.5, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -189,8 +189,8 @@ void rendering::GlutReshape(int, int)
 //////////////////////////////////////////////////
 void rendering::GlutInitCamera(CameraPtr _camera)
 {
-  imgw = _camera->GetImageWidth();
-  imgh = _camera->GetImageHeight();
+  imgw = _camera->ImageWidth();
+  imgh = _camera->ImageHeight();
   Image image = _camera->CreateImage();
   g_image = std::make_shared<Image>(image);
   _camera->Capture(*g_image);
@@ -232,7 +232,8 @@ void rendering::GlutPrintUsage()
 void rendering::GlutPrintEngine()
 {
   int y = imgh - 20;
-  std::string text = "Engine: " + g_demo->GetCurrentCamera()->GetScene()->GetEngine()->GetName();
+  std::string text = "Engine: " +
+      g_demo->CurrentCamera()->Scene()->Engine()->Name();
   GlutPrintText(text, 10, y);
 }
 

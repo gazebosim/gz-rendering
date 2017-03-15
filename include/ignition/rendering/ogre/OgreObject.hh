@@ -31,7 +31,7 @@ namespace ignition
 
       public: virtual ~OgreObject();
 
-      public: virtual ScenePtr GetScene() const;
+      public: virtual ScenePtr Scene() const;
 
       protected: OgreScenePtr scene;
 

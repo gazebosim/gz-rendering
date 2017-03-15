@@ -45,19 +45,19 @@ void OgreScene::Fini()
 }
 
 //////////////////////////////////////////////////
-RenderEngine *OgreScene::GetEngine() const
+RenderEngine *OgreScene::Engine() const
 {
   return OgreRenderEngine::Instance();
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreScene::GetRootVisual() const
+VisualPtr OgreScene::RootVisual() const
 {
   return this->rootVisual;
 }
 
 //////////////////////////////////////////////////
-math::Color OgreScene::GetAmbientLight() const
+math::Color OgreScene::AmbientLight() const
 {
   Ogre::ColourValue ogreColor = this->ogreSceneManager->getAmbientLight();
   return OgreConversions::Convert(ogreColor);
@@ -71,7 +71,7 @@ void OgreScene::SetAmbientLight(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OgreScene::GetBackgroundColor() const
+math::Color OgreScene::BackgroundColor() const
 {
   return this->backgroundColor;
 }
@@ -82,11 +82,11 @@ void OgreScene::SetBackgroundColor(const math::Color &_color)
   this->backgroundColor = _color;
 
   // TODO: clean up code
-  unsigned int count = this->GetSensorCount();
+  unsigned int count = this->SensorCount();
 
   for (unsigned int i = 0; i < count; ++i)
   {
-    SensorPtr sensor = this->GetSensorByIndex(i);
+    SensorPtr sensor = this->SensorByIndex(i);
     OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(sensor);
     if (camera) camera->SetBackgroundColor(_color);
   }
@@ -110,7 +110,7 @@ void OgreScene::Destroy()
 }
 
 //////////////////////////////////////////////////
-Ogre::SceneManager *OgreScene::GetOgreSceneManager() const
+Ogre::SceneManager *OgreScene::OgreSceneManager() const
 {
   return this->ogreSceneManager;
 }
@@ -129,32 +129,32 @@ bool OgreScene::InitImpl()
   this->CreateStores();
   this->CreateMeshFactory();
 
-  OgreRTShaderSystem::Instance()->AddScene(this->GetSharedThis());
-  OgreRTShaderSystem::Instance()->ApplyShadows(this->GetSharedThis());
+  OgreRTShaderSystem::Instance()->AddScene(this->SharedThis());
+  OgreRTShaderSystem::Instance()->ApplyShadows(this->SharedThis());
 
   return true;
 }
 
 //////////////////////////////////////////////////
-LightStorePtr OgreScene::GetLights() const
+LightStorePtr OgreScene::Lights() const
 {
   return this->lights;
 }
 
 //////////////////////////////////////////////////
-SensorStorePtr OgreScene::GetSensors() const
+SensorStorePtr OgreScene::Sensors() const
 {
   return this->sensors;
 }
 
 //////////////////////////////////////////////////
-VisualStorePtr OgreScene::GetVisuals() const
+VisualStorePtr OgreScene::Visuals() const
 {
   return this->visuals;
 }
 
 //////////////////////////////////////////////////
-MaterialMapPtr OgreScene::GetMaterials() const
+MaterialMapPtr OgreScene::Materials() const
 {
   return this->materials;
 }
@@ -300,7 +300,7 @@ bool OgreScene::InitObject(OgreObjectPtr _object, unsigned int _id,
   // assign needed varibles
   _object->id = _id;
   _object->name = _name;
-  _object->scene = this->GetSharedThis();
+  _object->scene = this->SharedThis();
 
   // initialize object
   _object->Load();
@@ -312,7 +312,7 @@ bool OgreScene::InitObject(OgreObjectPtr _object, unsigned int _id,
 //////////////////////////////////////////////////
 void OgreScene::CreateContext()
 {
-  Ogre::Root *root = OgreRenderEngine::Instance()->GetOgreRoot();
+  Ogre::Root *root = OgreRenderEngine::Instance()->OgreRoot();
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC);
 }
 
@@ -332,14 +332,14 @@ void OgreScene::CreateRootVisual()
   }
 
   // add visual node to actual ogre root
-  Ogre::SceneNode *ogreRootNode = this->rootVisual->GetOgreNode();
+  Ogre::SceneNode *ogreRootNode = this->rootVisual->Node();
   this->ogreSceneManager->getRootSceneNode()->addChild(ogreRootNode);
 }
 
 //////////////////////////////////////////////////
 void OgreScene::CreateMeshFactory()
 {
-  OgreScenePtr sharedThis = this->GetSharedThis();
+  OgreScenePtr sharedThis = this->SharedThis();
   this->meshFactory = OgreMeshFactoryPtr(new OgreMeshFactory(sharedThis));
 }
 
@@ -353,7 +353,7 @@ void OgreScene::CreateStores()
 }
 
 //////////////////////////////////////////////////
-OgreScenePtr OgreScene::GetSharedThis()
+OgreScenePtr OgreScene::SharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<OgreScene>(sharedBase);

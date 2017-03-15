@@ -40,7 +40,7 @@ namespace ignition
 
       /// \brief Get the image width in pixels
       /// \return The image width in pixels
-      public: virtual unsigned int GetImageWidth() const = 0;
+      public: virtual unsigned int ImageWidth() const = 0;
 
       /// \brief Set the image width in pixels
       /// \param[in] _width New image width in pixels
@@ -48,7 +48,7 @@ namespace ignition
 
       /// \brief Get the image height in pixels
       /// \return The image height in pixels
-      public: virtual unsigned int GetImageHeight() const = 0;
+      public: virtual unsigned int ImageHeight() const = 0;
 
       /// \brief Set the image height in pixels
       /// \param[in] _height New image height in pixels
@@ -57,7 +57,7 @@ namespace ignition
       /// \brief Get the image pixel format. If the image pixel format has not
       /// been set with a valid value, PF_UNKNOWN will be returned.
       /// \return The image pixel format
-      public: virtual PixelFormat GetImageFormat() const = 0;
+      public: virtual PixelFormat ImageFormat() const = 0;
 
       /// \brief Set the image pixel format
       /// \param[in] _format New image pixel format
@@ -65,15 +65,15 @@ namespace ignition
 
       /// \brief Get the image channel depth
       /// \return The image channel depth
-      public: virtual unsigned int GetImageDepth() const = 0;
+      public: virtual unsigned int ImageDepth() const = 0;
 
       /// \brief Get the total image memory size in bytes
       /// \return The image memory size in bytes
-      public: virtual unsigned int GetImageMemorySize() const = 0;
+      public: virtual unsigned int ImageMemorySize() const = 0;
 
       /// \brief Get the camera's horizontal field-of-view
       /// \return Angle containing the camera's horizontal field-of-view
-      public: virtual math::Angle GetHFOV() const = 0;
+      public: virtual math::Angle HFOV() const = 0;
 
       /// \brief Set the camera's horizontal field-of-view
       /// \param[in] _angle Desired horizontal field-of-view
@@ -81,7 +81,7 @@ namespace ignition
 
       /// \brief Get the camera's aspect ratio
       /// \return The camera's aspect ratio
-      public: virtual double GetAspectRatio() const = 0;
+      public: virtual double AspectRatio() const = 0;
 
       /// \brief Set the camera's aspect ratio. This value determines the
       /// cameras vertical field-of-view. It is often the \code image_height /
@@ -93,7 +93,7 @@ namespace ignition
 
       /// \brief Get the level of anti-aliasing used during rendering
       /// \return The level of anti-aliasing used during rendering
-      public: virtual unsigned int GetAntiAliasing() const = 0;
+      public: virtual unsigned int AntiAliasing() const = 0;
 
       /// \brief Set the level of anti-aliasing used during rendering. If a
       /// value of 0 is given, no anti-aliasing will be performed. Higher values
@@ -133,7 +133,7 @@ namespace ignition
       /// called, without rendering the scene again. Calling this function
       /// before a single image has been rendered will have undefined behavior.
       /// \param[out] _image Output image buffer
-      public: virtual void GetImageData(Image &_image) const = 0;
+      public: virtual void Copy(Image &_image) const = 0;
 
       /// \brief Writes the previously rendered frame to a file. This function
       /// can be called multiple times after PostRender has been called,

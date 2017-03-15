@@ -39,22 +39,22 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr GetParent() const;
+      public: virtual VisualPtr Parent() const;
 
-      public: virtual Ogre::SceneNode *GetOgreNode() const;
+      public: virtual Ogre::SceneNode *Node() const;
 
       public: virtual void Destroy();
 
-      protected: virtual math::Pose3d GetRawLocalPose() const;
+      protected: virtual math::Pose3d RawLocalPose() const;
 
       protected: virtual void SetRawLocalPose(const math::Pose3d &_Pose3d);
 
-      protected: virtual math::Vector3d GetRawLocalPosition() const;
+      protected: virtual math::Vector3d RawLocalPosition() const;
 
       protected: virtual void SetRawLocalPosition(
                      const math::Vector3d &_position);
 
-      protected: virtual math::Quaterniond GetRawLocalRotation() const;
+      protected: virtual math::Quaterniond RawLocalRotation() const;
 
       protected: virtual void SetRawLocalRotation(
                      const math::Quaterniond &_rotation);

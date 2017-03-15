@@ -35,13 +35,13 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr GetParent() const;
+      public: virtual VisualPtr Parent() const;
 
       public: virtual void PreRender();
 
-      public: virtual optix::Transform GetOptixTransform() const;
+      public: virtual optix::Transform OptixTransform() const;
 
-      protected: virtual math::Pose3d GetRawLocalPose() const;
+      protected: virtual math::Pose3d RawLocalPose() const;
 
       protected: virtual void SetRawLocalPose(const math::Pose3d &_pose);
 

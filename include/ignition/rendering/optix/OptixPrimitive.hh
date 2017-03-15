@@ -30,18 +30,18 @@ namespace ignition
 
       public: virtual ~OptixPrimitive();
 
-      public: virtual MaterialPtr GetMaterial() const;
+      public: virtual MaterialPtr Material() const;
 
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true);
 
-      public: virtual optix::GeometryGroup GetOptixGeometryGroup() const;
+      public: virtual optix::GeometryGroup OptixGeometryGroup() const;
 
-      public: virtual optix::Acceleration GetOptixAccel() const;
+      public: virtual optix::Acceleration OptixAccel() const;
 
-      public: virtual optix::GeometryInstance GetOptixGeometryInstance() const;
+      public: virtual optix::GeometryInstance OptixGeometryInstance() const;
 
-      public: virtual optix::Geometry GetOptixGeometry() const;
+      public: virtual optix::Geometry OptixGeometry() const;
 
       public: virtual void PreRender();
 

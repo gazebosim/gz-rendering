@@ -39,7 +39,7 @@ namespace ignition
 
       /// \brief Get the parent Visual
       /// \return the parent Visual
-      public: virtual VisualPtr GetParent() const = 0;
+      public: virtual VisualPtr Parent() const = 0;
 
       /// \brief Detach this Geometry from its parent Visual. If this
       /// Geometry does not have a parent, no work will be done.

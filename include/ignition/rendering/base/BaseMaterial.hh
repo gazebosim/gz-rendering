@@ -77,7 +77,7 @@ namespace ignition
 
       public: virtual void ClearNormalMap() = 0;
 
-      public: virtual void SetShaderType(ShaderType _type) = 0;
+      public: virtual void SetShaderType(enum ShaderType _type) = 0;
 
       public: virtual void CopyFrom(ConstMaterialPtr _material);
 
@@ -139,7 +139,7 @@ namespace ignition
       auto thisShared =
           std::dynamic_pointer_cast<const BaseMaterial<T>>(baseShared);
 
-      MaterialPtr material = T::GetScene()->CreateMaterial();
+      MaterialPtr material = T::Scene()->CreateMaterial();
       material->CopyFrom(thisShared);
       return material;
     }
@@ -148,20 +148,20 @@ namespace ignition
     template <class T>
     void BaseMaterial<T>::CopyFrom(ConstMaterialPtr _material)
     {
-      this->SetLightingEnabled(_material->GetLightingEnabled());
-      this->SetAmbient(_material->GetAmbient());
-      this->SetDiffuse(_material->GetDiffuse());
-      this->SetSpecular(_material->GetSpecular());
-      this->SetEmissive(_material->GetEmissive());
-      this->SetShininess(_material->GetShininess());
-      this->SetTransparency(_material->GetTransparency());
-      this->SetReflectivity(_material->GetReflectivity());
-      this->SetCastShadows(_material->GetCastShadows());
-      this->SetReceiveShadows(_material->GetReceiveShadows());
-      this->SetReflectionEnabled(_material->GetReflectionEnabled());
-      this->SetTexture(_material->GetTexture());
-      this->SetNormalMap(_material->GetNormalMap());
-      this->SetShaderType(_material->GetShaderType());
+      this->SetLightingEnabled(_material->LightingEnabled());
+      this->SetAmbient(_material->Ambient());
+      this->SetDiffuse(_material->Diffuse());
+      this->SetSpecular(_material->Specular());
+      this->SetEmissive(_material->Emissive());
+      this->SetShininess(_material->Shininess());
+      this->SetTransparency(_material->Transparency());
+      this->SetReflectivity(_material->Reflectivity());
+      this->SetCastShadows(_material->CastShadows());
+      this->SetReceiveShadows(_material->ReceiveShadows());
+      this->SetReflectionEnabled(_material->ReflectionEnabled());
+      this->SetTexture(_material->Texture());
+      this->SetNormalMap(_material->NormalMap());
+      this->SetShaderType(_material->ShaderType());
     }
 
     //////////////////////////////////////////////////

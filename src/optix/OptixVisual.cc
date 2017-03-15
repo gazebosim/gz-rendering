@@ -38,13 +38,13 @@ OptixVisual::~OptixVisual()
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OptixVisual::GetLocalScale() const
+math::Vector3d OptixVisual::LocalScale() const
 {
   return this->scale;
 }
 
 //////////////////////////////////////////////////
-bool OptixVisual::GetInheritScale() const
+bool OptixVisual::InheritScale() const
 {
   return this->inheritScale;
 }
@@ -56,13 +56,13 @@ void OptixVisual::SetInheritScale(bool _inherit)
 }
 
 //////////////////////////////////////////////////
-optix::Group OptixVisual::GetOptixGroup() const
+optix::Group OptixVisual::OptixGroup() const
 {
   return this->optixGroup;
 }
 
 //////////////////////////////////////////////////
-optix::Acceleration OptixVisual::GetOptixAccel() const
+optix::Acceleration OptixVisual::OptixAccel() const
 {
   return this->optixAccel;
 }
@@ -73,23 +73,23 @@ void OptixVisual::PreRender()
   BaseVisual::PreRender();
 
   // TODO: optimize this funtionality
-  math::Vector3d worldScale = this->GetWorldScale();
+  math::Vector3d worldScale = this->WorldScale();
 
-  for (unsigned int i = 0; i < this->GetGeometryCount(); ++i)
+  for (unsigned int i = 0; i < this->GeometryCount(); ++i)
   {
-    OptixGeometryPtr geometry = this->geometries->GetDerivedByIndex(i);
+    OptixGeometryPtr geometry = this->geometries->DerivedByIndex(i);
     geometry->SetScale(worldScale);
   }
 }
 
 //////////////////////////////////////////////////
-NodeStorePtr OptixVisual::GetChildren() const
+NodeStorePtr OptixVisual::Children() const
 {
   return this->children;
 }
 
 //////////////////////////////////////////////////
-GeometryStorePtr OptixVisual::GetGeometries() const
+GeometryStorePtr OptixVisual::Geometries() const
 {
   return this->geometries;
 }
@@ -106,7 +106,7 @@ bool OptixVisual::AttachChild(NodePtr _child)
   }
 
   derived->SetParent(this->SharedThis());
-  optix::Transform childTransform = derived->GetOptixTransform();
+  optix::Transform childTransform = derived->OptixTransform();
   this->optixGroup->addChild(childTransform);
   this->optixAccel->markDirty();
   return true;
@@ -122,7 +122,7 @@ bool OptixVisual::DetachChild(NodePtr _child)
     return false;
   }
 
-  this->optixGroup->removeChild(derived->GetOptixTransform());
+  this->optixGroup->removeChild(derived->OptixTransform());
   this->optixAccel->markDirty();
   return true;
 }
@@ -142,7 +142,7 @@ bool OptixVisual::AttachGeometry(GeometryPtr _geometry)
   }
 
   derived->SetParent(this->SharedThis());
-  optix::GeometryGroup childGeomGroup = derived->GetOptixGeometryGroup();
+  optix::GeometryGroup childGeomGroup = derived->OptixGeometryGroup();
   this->optixGroup->addChild(childGeomGroup);
   this->optixAccel->markDirty();
   return true;
@@ -162,7 +162,7 @@ bool OptixVisual::DetachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  this->optixGroup->removeChild(derived->GetOptixGeometryGroup());
+  this->optixGroup->removeChild(derived->OptixGeometryGroup());
   this->optixAccel->markDirty();
   return true;
 }

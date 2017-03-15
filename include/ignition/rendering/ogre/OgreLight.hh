@@ -37,35 +37,35 @@ namespace ignition
 
       public: virtual ~OgreLight();
 
-      public: virtual math::Color GetDiffuseColor() const;
+      public: virtual math::Color DiffuseColor() const;
 
       public: virtual void SetDiffuseColor(const math::Color &_color);
 
-      public: virtual math::Color GetSpecularColor() const;
+      public: virtual math::Color SpecularColor() const;
 
       public: virtual void SetSpecularColor(const math::Color &_color);
 
-      public: virtual double GetAttenuationConstant() const;
+      public: virtual double AttenuationConstant() const;
 
       public: virtual void SetAttenuationConstant(double _value);
 
-      public: virtual double GetAttenuationLinear() const;
+      public: virtual double AttenuationLinear() const;
 
       public: virtual void SetAttenuationLinear(double _value);
 
-      public: virtual double GetAttenuationQuadratic() const;
+      public: virtual double AttenuationQuadratic() const;
 
       public: virtual void SetAttenuationQuadratic(double _value);
 
-      public: virtual double GetAttenuationRange() const;
+      public: virtual double AttenuationRange() const;
 
       public: virtual void SetAttenuationRange(double _range);
 
-      public: virtual bool GetCastShadows() const;
+      public: virtual bool CastShadows() const;
 
       public: virtual void SetCastShadows(bool _castShadows);
 
-      public: virtual Ogre::Light *GetOgreLight() const;
+      public: virtual Ogre::Light *Light() const;
 
       public: virtual void Destroy();
 
@@ -95,7 +95,7 @@ namespace ignition
 
       public: virtual ~OgreDirectionalLight();
 
-      public: virtual math::Vector3d GetDirection() const;
+      public: virtual math::Vector3d Direction() const;
 
       public: virtual void SetDirection(const math::Vector3d &_dir);
 
@@ -119,19 +119,19 @@ namespace ignition
 
       public: virtual ~OgreSpotLight();
 
-      public: virtual math::Vector3d GetDirection() const;
+      public: virtual math::Vector3d Direction() const;
 
       public: virtual void SetDirection(const math::Vector3d &_dir);
 
-      public: virtual math::Angle GetInnerAngle() const;
+      public: virtual math::Angle InnerAngle() const;
 
       public: virtual void SetInnerAngle(const math::Angle &_angle);
 
-      public: virtual math::Angle GetOuterAngle() const;
+      public: virtual math::Angle OuterAngle() const;
 
       public: virtual void SetOuterAngle(const math::Angle &_angle);
 
-      public: virtual double GetFalloff() const;
+      public: virtual double Falloff() const;
 
       public: virtual void SetFalloff(double _falloff);
 

@@ -44,7 +44,7 @@ namespace ignition
 
       /// \brief Get the number of available render-engines
       /// \return the number of available render-engines
-      public: unsigned int GetEngineCount() const;
+      public: unsigned int EngineCount() const;
 
       /// \brief Determine if a render-engine with the given name is avaiable
       /// \param[in] _name Name of the desired render-engine
@@ -56,13 +56,13 @@ namespace ignition
       /// returned. 
       /// \param[name] _name Name of the desired render-engine
       /// \return The specified render-engine
-      public: RenderEngine *GetEngine(const std::string &_name) const;
+      public: RenderEngine *Engine(const std::string &_name) const;
 
       /// \brief Get the render-engine at the given index. If the no
       /// render-engine is exists at the given index, NULL will be returned. 
       /// \param[in] _index Index of the desired render-engine
       /// \return The specified render-engine
-      public: RenderEngine *GetEngineAt(unsigned int _index) const;
+      public: RenderEngine *EngineAt(unsigned int _index) const;
 
       /// \brief Register a new render-engine under the given name. If the
       /// given name is already in use, the render-engine will not be

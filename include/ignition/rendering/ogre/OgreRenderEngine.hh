@@ -61,18 +61,18 @@ namespace ignition
 
       public: virtual bool IsEnabled() const;
 
-      public: virtual std::string GetName() const;
+      public: virtual std::string Name() const;
 
-      public: OgreRenderPathType GetRenderPathType() const;
+      public: OgreRenderPathType RenderPathType() const;
 
       public: void AddResourcePath(const std::string &_uri);
 
-      public: virtual Ogre::Root *GetOgreRoot() const;
+      public: virtual Ogre::Root *OgreRoot() const;
 
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name);
 
-      protected: virtual SceneStorePtr GetScenes() const;
+      protected: virtual SceneStorePtr Scenes() const;
 
       protected: virtual bool LoadImpl();
 

@@ -34,7 +34,7 @@ namespace ignition
 
       /// \brief Get number of child nodes
       /// \return The number of child nodes
-      public: virtual unsigned int GetChildCount() const = 0;
+      public: virtual unsigned int ChildCount() const = 0;
 
       /// \brief Determine if given node is an attached child
       /// \return True if given node is an attached child
@@ -54,20 +54,20 @@ namespace ignition
       /// will be returned.
       /// \param[in] _id ID of the desired node
       /// \return The specified node
-      public: virtual NodePtr GetChildById(unsigned int _id) const = 0;
+      public: virtual NodePtr ChildById(unsigned int _id) const = 0;
 
       /// \brief Get node with given name. If no child exists with given name,
       /// NULL will be returned.
       /// \param[in] _name Name of the desired node
       /// \return The specified node
-      public: virtual NodePtr GetChildByName(
+      public: virtual NodePtr ChildByName(
                   const std::string &_name) const = 0;
 
       /// \brief Get node at given index. If no child exists at given index,
       /// NULL will be returned.
       /// \param[in] _index Index of the desired node
       /// \return The specified node
-      public: virtual NodePtr GetChildByIndex(unsigned int _index) const = 0;
+      public: virtual NodePtr ChildByIndex(unsigned int _index) const = 0;
 
       /// \brief Add the given node to this visual. If the given node is
       /// already a child, no work will be done.
@@ -103,7 +103,7 @@ namespace ignition
 
       /// \brief Get the number of geometries attached to this visual
       /// \return The number of geometries attached to this visual
-      public: virtual unsigned int GetGeometryCount() const = 0;
+      public: virtual unsigned int GeometryCount() const = 0;
 
       /// \brief Determine if given geometry is attached to this visual
       /// \param[in] _geometry Geometry in question
@@ -114,7 +114,7 @@ namespace ignition
       /// index, NULL will be returned.
       /// \param[in] _index Index of the desired geometry
       /// \return The specified geometry
-      public: virtual GeometryPtr GetGeometryByIndex(
+      public: virtual GeometryPtr GeometryByIndex(
                   unsigned int _index) const = 0;
 
       /// \brief Add the given geometry to this visual. If the given node is
@@ -139,7 +139,7 @@ namespace ignition
       public: virtual void RemoveGeometries() = 0;
 
       /// \brief Set the material for all attached visuals and geometries. The
-      /// specified material will be retrieved from Scene::GetMaterial using
+      /// specified material will be retrieved from Scene::Material using
       /// the given material name. If no material is registered with the given
       /// name, no work will be done.
       /// \param[in] _name Name of the material to be assigned
@@ -167,7 +167,7 @@ namespace ignition
 
       /// \brief Get the local scale
       /// \return The local scale
-      public: virtual math::Vector3d GetLocalScale() const = 0;
+      public: virtual math::Vector3d LocalScale() const = 0;
 
       /// \brief Set the local scale. The given scale will be assigned to the
       /// x, y, and z coordinates.
@@ -186,7 +186,7 @@ namespace ignition
 
       /// \brief Get the world scale
       /// \return The world scale
-      public: virtual math::Vector3d GetWorldScale() const = 0;
+      public: virtual math::Vector3d WorldScale() const = 0;
 
       /// \brief Set the world scale. The given scale will be assigned to the
       /// x, y, and z coordinates.
@@ -220,7 +220,7 @@ namespace ignition
 
       /// \brief Determine if this visual inherits scale from this parent
       /// \return True if this visual inherits scale from this parent
-      public: virtual bool GetInheritScale() const = 0;
+      public: virtual bool InheritScale() const = 0;
 
       /// \brief Specify if this visual inherits scale from its parent
       /// \param[in] _inherit True if this visual inherits scale from its parent

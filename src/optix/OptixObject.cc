@@ -32,7 +32,7 @@ OptixObject::~OptixObject()
 }
 
 //////////////////////////////////////////////////
-ScenePtr OptixObject::GetScene() const
+ScenePtr OptixObject::Scene() const
 {
   return this->scene;
 }

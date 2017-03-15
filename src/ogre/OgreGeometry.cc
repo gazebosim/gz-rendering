@@ -39,7 +39,7 @@ bool OgreGeometry::HasParent() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreGeometry::GetParent() const
+VisualPtr OgreGeometry::Parent() const
 {
   return this->parent;
 }

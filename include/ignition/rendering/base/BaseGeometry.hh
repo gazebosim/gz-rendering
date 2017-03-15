@@ -33,7 +33,7 @@ namespace ignition
 
       public: virtual ~BaseGeometry();
 
-      public: virtual VisualPtr GetParent() const = 0;
+      public: virtual VisualPtr Parent() const = 0;
 
       public: virtual void RemoveParent();
 
@@ -62,7 +62,7 @@ namespace ignition
     template <class T>
     void BaseGeometry<T>::RemoveParent()
     {
-      VisualPtr parent = this->GetParent();
+      VisualPtr parent = this->Parent();
 
       if (parent)
       {
@@ -79,7 +79,7 @@ namespace ignition
     template <class T>
     void BaseGeometry<T>::SetMaterial(const std::string &_name, bool unique)
     {
-      MaterialPtr material = this->GetScene()->GetMaterial(_name);
+      MaterialPtr material = this->Scene()->Material(_name);
       if (material) this->SetMaterial(material, unique);
     }
 

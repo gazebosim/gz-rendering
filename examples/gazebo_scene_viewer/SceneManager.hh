@@ -51,7 +51,7 @@ namespace ignition
 
       /// \brief Get number of managed scenes
       /// \return The number of managed scenes
-      public: unsigned int GetSceneCount() const;
+      public: unsigned int SceneCount() const;
 
       /// \brief Determine if a scene with the given ID exists
       /// \param[in] _id ID of the scene in question
@@ -72,19 +72,19 @@ namespace ignition
       /// ID, NULL will be returned.
       /// \param[in] _id ID of the desired scene
       /// \return The specified scene
-      public: ScenePtr GetScene(unsigned int _id) const;
+      public: ScenePtr Scene(unsigned int _id) const;
 
       /// \brief Get scene with the given name. If no scene exists with the
       /// given name, NULL will be returned.
       /// \param[in] _id ID of the desired scene
       /// \return The specified scene
-      public: ScenePtr GetScene(const std::string &_name) const;
+      public: ScenePtr Scene(const std::string &_name) const;
 
       /// \brief Get scene at the given index. If no scene exists at the
       /// given index, NULL will be returned.
       /// \param[in] _index Index of the desired scene
       /// \return The specified scene
-      public: ScenePtr GetSceneAt(unsigned int _index) const;
+      public: ScenePtr SceneAt(unsigned int _index) const;
 
       /// \brief Add the given scene. If the given scene has already been added
       /// then no work will be done.

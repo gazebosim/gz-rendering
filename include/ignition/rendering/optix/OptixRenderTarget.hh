@@ -33,11 +33,11 @@ namespace ignition
 
       public: virtual ~OptixRenderTarget();
 
-      public: virtual void GetImage(Image &_image) const;
+      public: virtual void Copy(Image &_image) const;
 
-      public: virtual optix::Buffer GetOptixBuffer() const = 0;
+      public: virtual optix::Buffer OptixBuffer() const = 0;
 
-      protected: unsigned int GetMemorySize() const;
+      protected: unsigned int MemorySize() const;
 
       protected: float *hostData;
     };
@@ -51,7 +51,7 @@ namespace ignition
 
       public: virtual void Destroy();
 
-      public: virtual optix::Buffer GetOptixBuffer() const;
+      public: virtual optix::Buffer OptixBuffer() const;
 
       protected: virtual void RebuildImpl();
 

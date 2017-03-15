@@ -50,7 +50,7 @@ RenderEngineManager::~RenderEngineManager()
 }
 
 //////////////////////////////////////////////////
-unsigned int RenderEngineManager::GetEngineCount() const
+unsigned int RenderEngineManager::EngineCount() const
 {
   return this->pimpl->engines.size();
 }
@@ -63,7 +63,7 @@ bool RenderEngineManager::HasEngine(const std::string &_name) const
 }
 
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManager::GetEngine(const std::string &_name) const
+RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
 {
   auto iter = this->pimpl->engines.find(_name);
 
@@ -73,13 +73,13 @@ RenderEngine *RenderEngineManager::GetEngine(const std::string &_name) const
     return NULL;
   }
 
-  return this->pimpl->GetEngine(iter);
+  return this->pimpl->Engine(iter);
 }
 
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManager::GetEngineAt(unsigned int _index) const
+RenderEngine *RenderEngineManager::EngineAt(unsigned int _index) const
 {
-  if (_index >= this->GetEngineCount())
+  if (_index >= this->EngineCount())
   {
     ignerr << "Invalid render-engine index: " << _index << std::endl;
     return NULL;
@@ -87,7 +87,7 @@ RenderEngine *RenderEngineManager::GetEngineAt(unsigned int _index) const
 
   auto iter = this->pimpl->engines.begin();
   std::advance(iter, _index);
-  return this->pimpl->GetEngine(iter);
+  return this->pimpl->Engine(iter);
 }
 
 //////////////////////////////////////////////////
@@ -141,7 +141,7 @@ void RenderEngineManager::UnregisterEngine(RenderEngine *_engine)
 //////////////////////////////////////////////////
 void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 {
-  if (_index >= this->GetEngineCount())
+  if (_index >= this->EngineCount())
   {
     ignerr << "Invalid render-engine index: " << _index << std::endl;
     return;
@@ -155,7 +155,7 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 //////////////////////////////////////////////////
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManagerPrivate::GetEngine(EngineIter _iter) const
+RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter) const
 {
   RenderEngine *engine = _iter->second;
 

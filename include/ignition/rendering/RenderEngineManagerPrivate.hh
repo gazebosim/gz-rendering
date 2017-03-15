@@ -33,7 +33,7 @@ namespace ignition
 
       typedef EngineMap::iterator EngineIter;
 
-      public: RenderEngine *GetEngine(EngineIter _iter) const;
+      public: RenderEngine *Engine(EngineIter _iter) const;
 
       public: void RegisterDefaultEngines();
 

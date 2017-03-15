@@ -34,7 +34,7 @@ namespace ignition
 
       /// \brief Get the diffuse color
       /// \return The diffuse color
-      public: virtual math::Color GetDiffuseColor() const = 0;
+      public: virtual math::Color DiffuseColor() const = 0;
 
       /// \brief Set the diffuse color
       /// \param[in] _r Red value 
@@ -50,7 +50,7 @@ namespace ignition
 
       /// \brief Get the specular color
       /// \return The specular color
-      public: virtual math::Color GetSpecularColor() const = 0;
+      public: virtual math::Color SpecularColor() const = 0;
 
       /// \brief Set the specular color
       /// \param[in] _r Red value 
@@ -66,7 +66,7 @@ namespace ignition
 
       /// \brief Get the attenuation constant value
       /// \return The attenuation constant value
-      public: virtual double GetAttenuationConstant() const = 0;
+      public: virtual double AttenuationConstant() const = 0;
 
       /// \brief Set the attenuation constant value
       /// \param[in] _value New attenuation constant value
@@ -74,7 +74,7 @@ namespace ignition
 
       /// \brief Get the attenuation linear value
       /// \return The attenuation linear value
-      public: virtual double GetAttenuationLinear() const = 0;
+      public: virtual double AttenuationLinear() const = 0;
 
       /// \brief Set the attenuation linear value
       /// \param[in] _value New attenuation linear value
@@ -82,7 +82,7 @@ namespace ignition
 
       /// \brief Get the attenuation quadratic value
       /// \return The attenuation quadratic value
-      public: virtual double GetAttenuationQuadratic() const = 0;
+      public: virtual double AttenuationQuadratic() const = 0;
 
       /// \brief Set the attenuation quadratic value
       /// \param[in] _value New attenuation quadratic value
@@ -90,7 +90,7 @@ namespace ignition
 
       /// \brief Get the attenuation ranage
       /// \return The attenuation ranage
-      public: virtual double GetAttenuationRange() const = 0;
+      public: virtual double AttenuationRange() const = 0;
 
       /// \brief Set the attenuation ranage
       /// \param[in] _value New attenuation ranage
@@ -98,7 +98,7 @@ namespace ignition
 
       /// \brief Determine if this light cast shadows
       /// \return True if this light cast shadows
-      public: virtual bool GetCastShadows() const = 0;
+      public: virtual bool CastShadows() const = 0;
 
       /// \brief Specify if this light should cast shadows
       /// \param[in] _castShadows True if this light cast shadows
@@ -115,7 +115,7 @@ namespace ignition
 
       /// \brief Get the direction of the light
       /// \return The direction of the light
-      public: virtual math::Vector3d GetDirection() const = 0;
+      public: virtual math::Vector3d Direction() const = 0;
 
       /// \brief Set the direction of the light
       /// \param[in] _x X-component of direction vector
@@ -147,7 +147,7 @@ namespace ignition
 
       /// \brief Get direction of the light
       /// \return The direction of the light
-      public: virtual math::Vector3d GetDirection() const = 0;
+      public: virtual math::Vector3d Direction() const = 0;
 
       /// \brief Set the direction of the light
       /// \param[in] _x X-component of direction vector
@@ -161,7 +161,7 @@ namespace ignition
 
       /// \brief Get the inner angle of the spotlight
       /// \return The inner angle of the spotlight
-      public: virtual math::Angle GetInnerAngle() const = 0;
+      public: virtual math::Angle InnerAngle() const = 0;
 
       /// \brief Set the inner angle of the spotlight
       /// \param[in] _radians New inner angle of the spotlight in radians
@@ -173,7 +173,7 @@ namespace ignition
 
       /// \brief Get the outer angle of the spotlight
       /// \return The outer angle of the spotlight
-      public: virtual math::Angle GetOuterAngle() const = 0;
+      public: virtual math::Angle OuterAngle() const = 0;
 
       /// \brief Set the outer angle of the spotlight
       /// \param[in] _radians New outer angle of the spotlight in radians
@@ -185,7 +185,7 @@ namespace ignition
 
       /// \brief Get the falloff of the spotlight
       /// \return The falloff of the spotlight
-      public: virtual double GetFalloff() const = 0;
+      public: virtual double Falloff() const = 0;
 
       /// \brief Set the falloff of the spotlight
       /// \param[in] _falloff New falloff of the spotlight

@@ -32,53 +32,53 @@ namespace ignition
 
       public: virtual ~OptixMaterial();
 
-      public: virtual bool GetLightingEnabled() const;
+      public: virtual bool LightingEnabled() const;
 
       public: virtual void SetLightingEnabled(bool _enabled);
 
-      public: virtual math::Color GetAmbient() const;
+      public: virtual math::Color Ambient() const;
 
       public: virtual void SetAmbient(const math::Color &_color);
 
-      public: virtual math::Color GetDiffuse() const;
+      public: virtual math::Color Diffuse() const;
 
       public: virtual void SetDiffuse(const math::Color &_color);
 
-      public: virtual math::Color GetSpecular() const;
+      public: virtual math::Color Specular() const;
 
       public: virtual void SetSpecular(const math::Color &_color);
 
-      public: virtual math::Color GetEmissive() const;
+      public: virtual math::Color Emissive() const;
 
       public: virtual void SetEmissive(const math::Color &_color);
 
-      public: virtual double GetShininess() const;
+      public: virtual double Shininess() const;
 
       public: virtual void SetShininess(double _shininess);
 
-      public: virtual double GetTransparency() const;
+      public: virtual double Transparency() const;
 
       public: virtual void SetTransparency(double _transparency);
 
-      public: virtual double GetReflectivity() const;
+      public: virtual double Reflectivity() const;
 
       public: virtual void SetReflectivity(double _reflectivity);
 
-      public: virtual bool GetCastShadows() const;
+      public: virtual bool CastShadows() const;
 
       public: virtual void SetCastShadows(bool _castShadows);
 
-      public: virtual bool GetReceiveShadows() const;
+      public: virtual bool ReceiveShadows() const;
 
       public: virtual void SetReceiveShadows(bool _receiveShadows);
 
-      public: virtual bool GetReflectionEnabled() const;
+      public: virtual bool ReflectionEnabled() const;
 
       public: virtual void SetReflectionEnabled(bool _enabled);
 
       public: virtual bool HasTexture() const;
 
-      public: virtual std::string GetTexture() const;
+      public: virtual std::string Texture() const;
 
       public: virtual void SetTexture(const std::string &_name);
 
@@ -86,21 +86,21 @@ namespace ignition
 
       public: virtual bool HasNormalMap() const;
 
-      public: virtual std::string GetNormalMap() const;
+      public: virtual std::string NormalMap() const;
 
       public: virtual void SetNormalMap(const std::string &_name);
 
       public: virtual void ClearNormalMap();
 
-      public: virtual ShaderType GetShaderType() const;
+      public: virtual enum ShaderType ShaderType() const;
 
-      public: virtual void SetShaderType(ShaderType _type);
+      public: virtual void SetShaderType(enum ShaderType _type);
 
       public: virtual void PreRender();
 
       public: virtual void Destroy();
 
-      public: virtual optix::Material GetOptixMaterial() const;
+      public: virtual optix::Material Material() const;
 
       protected: virtual void WriteColorToDevice();
 
@@ -148,7 +148,7 @@ namespace ignition
 
       protected: std::string normalMapName;
 
-      protected: ShaderType shaderType;
+      protected: enum ShaderType shaderType;
 
       protected: optix::Material optixMaterial;
 

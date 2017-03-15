@@ -54,7 +54,7 @@ namespace ignition
     void BaseAxisVisual<T>::Init()
     {
       T::Init();
-      ScenePtr scene = this->GetScene();
+      ScenePtr scene = this->Scene();
 
       ArrowVisualPtr xArrow = scene->CreateArrowVisual();
       xArrow->SetLocalPosition(0, 0, 0);

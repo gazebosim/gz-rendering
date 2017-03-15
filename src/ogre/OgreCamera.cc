@@ -34,9 +34,9 @@ OgreCamera::~OgreCamera()
 }
 
 //////////////////////////////////////////////////
-PixelFormat OgreCamera::GetImageFormat() const
+PixelFormat OgreCamera::ImageFormat() const
 {
-  return this->renderTexture->GetFormat();
+  return this->renderTexture->Format();
 }
 
 //////////////////////////////////////////////////
@@ -46,7 +46,7 @@ void OgreCamera::SetImageFormat(PixelFormat _format)
 }
 
 //////////////////////////////////////////////////
-math::Angle OgreCamera::GetHFOV() const
+math::Angle OgreCamera::HFOV() const
 {
   return this->xfov;
 }
@@ -54,8 +54,8 @@ math::Angle OgreCamera::GetHFOV() const
 //////////////////////////////////////////////////
 void OgreCamera::SetHFOV(const math::Angle &_angle)
 {
-  double width  = static_cast<double>(this->GetImageWidth());
-  double height = static_cast<double>(this->GetImageHeight());
+  double width  = static_cast<double>(this->ImageWidth());
+  double height = static_cast<double>(this->ImageHeight());
   double ratio  = width / height;
 
   double hfov = _angle.Radian();
@@ -67,7 +67,7 @@ void OgreCamera::SetHFOV(const math::Angle &_angle)
 }
 
 //////////////////////////////////////////////////
-double OgreCamera::GetAspectRatio() const
+double OgreCamera::AspectRatio() const
 {
   return this->ogreCamera->getAspectRatio();
 }
@@ -79,9 +79,9 @@ void OgreCamera::SetAspectRatio(double _ratio)
 }
 
 //////////////////////////////////////////////////
-unsigned int OgreCamera::GetAntiAliasing() const
+unsigned int OgreCamera::AntiAliasing() const
 {
-  return this->renderTexture->GetAntiAliasing();
+  return this->renderTexture->AntiAliasing();
 }
 
 //////////////////////////////////////////////////
@@ -91,9 +91,9 @@ void OgreCamera::SetAntiAliasing(unsigned int _aa)
 }
 
 //////////////////////////////////////////////////
-math::Color OgreCamera::GetBackgroundColor() const
+math::Color OgreCamera::BackgroundColor() const
 {
-  return this->renderTexture->GetBackgroundColor();
+  return this->renderTexture->BackgroundColor();
 }
 
 //////////////////////////////////////////////////
@@ -109,7 +109,7 @@ void OgreCamera::Render()
 }
 
 //////////////////////////////////////////////////
-RenderTexturePtr OgreCamera::GetRenderTexture() const
+RenderTexturePtr OgreCamera::RenderTexture() const
 {
   return this->renderTexture;
 }
@@ -128,7 +128,7 @@ void OgreCamera::CreateCamera()
 {
   // create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
-  ogreSceneManager = this->scene->GetOgreSceneManager();
+  ogreSceneManager = this->scene->OgreSceneManager();
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
   this->ogreNode->attachObject(this->ogreCamera);
 

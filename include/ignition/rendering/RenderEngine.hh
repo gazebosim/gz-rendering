@@ -69,12 +69,12 @@ namespace ignition
 
       /// \brief Get name of the render-engine.
       /// \return The render-engine name
-      public: virtual std::string GetName() const = 0;
+      public: virtual std::string Name() const = 0;
 
       /// \brief Get the number of scenes actively managed by this
       /// render-engine
       /// \return The number of active scenes
-      public: virtual unsigned int GetSceneCount() const = 0;
+      public: virtual unsigned int SceneCount() const = 0;
 
       /// \brief Determine if the given scene is actively managed by this
       /// render-engine
@@ -98,20 +98,20 @@ namespace ignition
       /// given ID, NULL will be returned.
       /// \param[in] _id ID of scene to be retrieved
       /// \return The specified scene
-      public: virtual ScenePtr GetSceneById(unsigned int _id) const = 0;
+      public: virtual ScenePtr SceneById(unsigned int _id) const = 0;
 
       /// \brief Get the scene with the given name. If no scenes exist with the
       /// given name, NULL will be returned.
       /// \param[in] _name Name of scene to be retrieved
       /// \return The specified scene
-      public: virtual ScenePtr GetSceneByName(
+      public: virtual ScenePtr SceneByName(
                   const std::string &_name) const = 0;
 
       /// \brief Get the scene at the given index. If no scenes exist at the
       /// given index, NULL will be returned.
       /// \param[in] _index Index of scene
       /// \return The specified scene
-      public: virtual ScenePtr GetSceneByIndex(unsigned int _index) const = 0;
+      public: virtual ScenePtr SceneByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy the given scene. If the given scene is not managed by
       /// this render-engine, no work will be done.

@@ -35,13 +35,13 @@ OgreVisual::~OgreVisual()
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OgreVisual::GetLocalScale() const
+math::Vector3d OgreVisual::LocalScale() const
 {
   return OgreConversions::Convert(this->ogreNode->getScale());
 }
 
 //////////////////////////////////////////////////
-bool OgreVisual::GetInheritScale() const
+bool OgreVisual::InheritScale() const
 {
   return this->ogreNode->getInheritScale();
 }
@@ -53,13 +53,13 @@ void OgreVisual::SetInheritScale(bool _inherit)
 }
 
 //////////////////////////////////////////////////
-NodeStorePtr OgreVisual::GetChildren() const
+NodeStorePtr OgreVisual::Children() const
 {
   return this->children;
 }
 
 //////////////////////////////////////////////////
-GeometryStorePtr OgreVisual::GetGeometries() const
+GeometryStorePtr OgreVisual::Geometries() const
 {
   return this->geometries;
 }
@@ -76,7 +76,7 @@ bool OgreVisual::AttachChild(NodePtr _child)
   }
 
   derived->SetParent(this->SharedThis());
-  this->ogreNode->addChild(derived->GetOgreNode());
+  this->ogreNode->addChild(derived->Node());
   return true;
 }
 
@@ -91,7 +91,7 @@ bool OgreVisual::DetachChild(NodePtr _child)
     return false;
   }
 
-  this->ogreNode->removeChild(derived->GetOgreNode());
+  this->ogreNode->removeChild(derived->Node());
   return true;
 }
 
@@ -110,7 +110,7 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
   }
 
   derived->SetParent(this->SharedThis());
-  this->ogreNode->attachObject(derived->GetOgreObject());
+  this->ogreNode->attachObject(derived->OgreObject());
   return true;
 }
 
@@ -128,7 +128,7 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  this->ogreNode->detachObject(derived->GetOgreObject());
+  this->ogreNode->detachObject(derived->OgreObject());
   return true;
 }
 

@@ -42,7 +42,7 @@ bool OptixNode::HasParent() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr OptixNode::GetParent() const
+VisualPtr OptixNode::Parent() const
 {
   return this->parent;
 }
@@ -56,13 +56,13 @@ void OptixNode::PreRender()
 }
 
 //////////////////////////////////////////////////
-optix::Transform OptixNode::GetOptixTransform() const
+optix::Transform OptixNode::OptixTransform() const
 {
   return this->optixTransform;
 }
 
 //////////////////////////////////////////////////
-math::Pose3d OptixNode::GetRawLocalPose() const
+math::Pose3d OptixNode::RawLocalPose() const
 {
   return this->pose;
 }
@@ -127,7 +127,7 @@ void OptixNode::SetParent(OptixVisualPtr _parent)
 //////////////////////////////////////////////////
 void OptixNode::Init()
 {
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   this->optixTransform = optixContext->createTransform();
   // this->optixAccel = optixContext->createAcceleration("MedianBvh", "Bvh");
   // this->optixAccel = optixContext->createAcceleration("Lbvh", "Bvh");

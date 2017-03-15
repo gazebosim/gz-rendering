@@ -34,9 +34,9 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr GetParent() const;
+      public: virtual VisualPtr Parent() const;
 
-      public: virtual optix::GeometryGroup GetOptixGeometryGroup() const = 0;
+      public: virtual optix::GeometryGroup OptixGeometryGroup() const = 0;
 
       protected: virtual void SetParent(OptixVisualPtr _parent);
 

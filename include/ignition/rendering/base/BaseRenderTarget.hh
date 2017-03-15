@@ -51,15 +51,15 @@ namespace ignition
 
       public: virtual ~BaseRenderTexture();
 
-      public: virtual unsigned int GetWidth() const;
+      public: virtual unsigned int Width() const;
 
       public: virtual void SetWidth(unsigned int _width);
 
-      public: virtual unsigned int GetHeight() const;
+      public: virtual unsigned int Height() const;
 
       public: virtual void SetHeight(unsigned int _height);
 
-      public: virtual PixelFormat GetFormat() const;
+      public: virtual PixelFormat Format() const;
 
       public: virtual void SetFormat(PixelFormat _format);
 
@@ -123,7 +123,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseRenderTexture<T>::GetWidth() const
+    unsigned int BaseRenderTexture<T>::Width() const
     {
       return this->width;
     }
@@ -138,7 +138,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseRenderTexture<T>::GetHeight() const
+    unsigned int BaseRenderTexture<T>::Height() const
     {
       return this->height;
     }
@@ -153,7 +153,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    PixelFormat BaseRenderTexture<T>::GetFormat() const
+    PixelFormat BaseRenderTexture<T>::Format() const
     {
       return this->format;
     }

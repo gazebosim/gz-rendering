@@ -49,16 +49,16 @@ bool OptixRenderEngine::Fini()
 }
 
 //////////////////////////////////////////////////
-std::string OptixRenderEngine::GetName() const
+std::string OptixRenderEngine::Name() const
 {
   return "Optix";
 }
 
 //////////////////////////////////////////////////
-std::string OptixRenderEngine::GetPtxFile(const std::string& _fileBase) const
+std::string OptixRenderEngine::PtxFile(const std::string& _fileBase) const
 {
   // TODO: actual implement system path system
-  
+
   std::vector<std::string> folders;
   folders.push_back("./src/optix/");
 
@@ -93,7 +93,7 @@ ScenePtr OptixRenderEngine::CreateSceneImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-SceneStorePtr OptixRenderEngine::GetScenes() const
+SceneStorePtr OptixRenderEngine::Scenes() const
 {
   return this->scenes;
 }

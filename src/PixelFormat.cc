@@ -81,28 +81,28 @@ PixelFormat PixelUtil::Sanitize(PixelFormat _format)
 }
 
 //////////////////////////////////////////////////
-std::string PixelUtil::GetName(PixelFormat _format)
+std::string PixelUtil::Name(PixelFormat _format)
 {
   _format = PixelUtil::Sanitize(_format);
   return PixelUtil::names[_format];
 }
 
 //////////////////////////////////////////////////
-unsigned int PixelUtil::GetChannelCount(PixelFormat _format)
+unsigned int PixelUtil::ChannelCount(PixelFormat _format)
 {
   _format = PixelUtil::Sanitize(_format);
   return PixelUtil::channelCounts[_format];
 }
 
 //////////////////////////////////////////////////
-unsigned int PixelUtil::GetBytesPerChannel(PixelFormat _format)
+unsigned int PixelUtil::BytesPerChannel(PixelFormat _format)
 {
   _format = PixelUtil::Sanitize(_format);
   return PixelUtil::channelByteCounts[_format];
 }
 
 //////////////////////////////////////////////////
-unsigned int PixelUtil::GetBytesPerPixel(PixelFormat _format)
+unsigned int PixelUtil::BytesPerPixel(PixelFormat _format)
 {
   _format = PixelUtil::Sanitize(_format);
   unsigned int channels = PixelUtil::channelCounts[_format];
@@ -111,15 +111,15 @@ unsigned int PixelUtil::GetBytesPerPixel(PixelFormat _format)
 }
 
 //////////////////////////////////////////////////
-unsigned int PixelUtil::GetMemorySize(PixelFormat _format, unsigned int _width,
+unsigned int PixelUtil::MemorySize(PixelFormat _format, unsigned int _width,
     unsigned int _height)
 {
-  unsigned int bytesPerPixel = PixelUtil::GetBytesPerPixel(_format);
+  unsigned int bytesPerPixel = PixelUtil::BytesPerPixel(_format);
   return _width * _height * bytesPerPixel;
 }
 
 //////////////////////////////////////////////////
-PixelFormat PixelUtil::GetEnum(const std::string &_name)
+PixelFormat PixelUtil::Enum(const std::string &_name)
 {
   // search over all enum elements
   for (unsigned int i = 1; i < PF_COUNT; ++i)
@@ -127,7 +127,7 @@ PixelFormat PixelUtil::GetEnum(const std::string &_name)
     PixelFormat format = static_cast<PixelFormat>(i);
 
     // check if names match
-    if (PixelUtil::GetName(format) == _name)
+    if (PixelUtil::Name(format) == _name)
     {
       return format;
     }

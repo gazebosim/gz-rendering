@@ -37,10 +37,10 @@ namespace ignition
 
       public: virtual OptixSubMeshStorePtr Create(const MeshDescriptor &_desc);
 
-      protected: virtual optix::Geometry GetGeometry(
+      protected: virtual optix::Geometry Geometry(
                      const MeshDescriptor &_desc, unsigned int _subMeshIndex);
 
-      protected: virtual std::string GetKeyName(const MeshDescriptor &_desc,
+      protected: virtual std::string KeyName(const MeshDescriptor &_desc,
                   unsigned int _subMeshIndex);
 
       protected: std::map<std::string, optix::Geometry> geometries;

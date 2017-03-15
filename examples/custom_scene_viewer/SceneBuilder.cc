@@ -184,7 +184,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
+      MaterialPtr mat = _scene->Material(parentName)->Clone();
       mat->SetTexture("./examples/custom_scene_viewer/media/tiles.jpg");
       _scene->RegisterMaterial(childName, mat);
     }
@@ -197,7 +197,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
+      MaterialPtr mat = _scene->Material(parentName)->Clone();
       mat->SetNormalMap(
           "./examples/custom_scene_viewer/media/brick_normal.jpg");
       _scene->RegisterMaterial(childName, mat);
@@ -211,7 +211,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
+      MaterialPtr mat = _scene->Material(parentName)->Clone();
       mat->SetReflectivity(0.25);
       _scene->RegisterMaterial(childName, mat);
     }
@@ -224,7 +224,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
+      MaterialPtr mat = _scene->Material(parentName)->Clone();
       mat->SetReflectivity(0.25);
       _scene->RegisterMaterial(childName, mat);
     }
@@ -237,7 +237,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->GetMaterial(parentName)->Clone();
+      MaterialPtr mat = _scene->Material(parentName)->Clone();
       mat->SetTransparency(0.75);
       _scene->RegisterMaterial(childName, mat);
     }
@@ -267,7 +267,7 @@ SimpleSceneBuilder::~SimpleSceneBuilder()
 void SimpleSceneBuilder::BuildScene(ScenePtr _scene)
 {
   SceneBuilder::BuildScene(_scene);
-  VisualPtr root = _scene->GetRootVisual();
+  VisualPtr root = _scene->RootVisual();
   _scene->SetAmbientLight(0.1, 0.1, 0.1);
 
   DirectionalLightPtr light = _scene->CreateDirectionalLight(LIGHT);
@@ -305,8 +305,8 @@ void SimpleSceneBuilder::UpdateScene(ScenePtr _scene)
   SceneBuilder::UpdateScene(_scene);
   double scale = cos(this->tick * 0.05);
 
-  VisualPtr sphere = _scene->GetVisualByName(SPHERE);
-  math::Pose3d pose = sphere->GetLocalPose();
+  VisualPtr sphere = _scene->VisualByName(SPHERE);
+  math::Pose3d pose = sphere->LocalPose();
   pose.Pos().Z(0.6 + scale * 0.1);
   sphere->SetLocalPose(pose);
 }
@@ -334,7 +334,7 @@ AllShapesSceneBuilder::~AllShapesSceneBuilder()
 void AllShapesSceneBuilder::BuildScene(ScenePtr _scene)
 {
   SimpleSceneBuilder::BuildScene(_scene);
-  VisualPtr root = _scene->GetRootVisual();
+  VisualPtr root = _scene->RootVisual();
 
   VisualPtr cylinder = _scene->CreateVisual(CYLINDER);
   cylinder->AddGeometry(_scene->CreateCylinder());
@@ -377,19 +377,19 @@ void TextureSceneBuilder::BuildScene(ScenePtr _scene)
 {
   AllShapesSceneBuilder::BuildScene(_scene);
 
-  VisualPtr box = _scene->GetVisualByName(BOX);
+  VisualPtr box = _scene->VisualByName(BOX);
   box->SetMaterial("TextureYellow");
 
-  VisualPtr cone = _scene->GetVisualByName(CONE);
+  VisualPtr cone = _scene->VisualByName(CONE);
   cone->SetMaterial("TextureBlue");
 
-  VisualPtr cylinder = _scene->GetVisualByName(CYLINDER);
+  VisualPtr cylinder = _scene->VisualByName(CYLINDER);
   cylinder->SetMaterial("TextureGreen");
 
-  VisualPtr plane = _scene->GetVisualByName(PLANE);
+  VisualPtr plane = _scene->VisualByName(PLANE);
   plane->SetMaterial("TextureWhite");
 
-  VisualPtr sphere = _scene->GetVisualByName(SPHERE);
+  VisualPtr sphere = _scene->VisualByName(SPHERE);
   sphere->SetMaterial("TextureRed");
 }
 
@@ -409,19 +409,19 @@ void NormalMapSceneBuilder::BuildScene(ScenePtr _scene)
 {
   TextureSceneBuilder::BuildScene(_scene);
 
-  VisualPtr box = _scene->GetVisualByName(BOX);
+  VisualPtr box = _scene->VisualByName(BOX);
   box->SetMaterial("NormalYellow");
 
-  VisualPtr cone = _scene->GetVisualByName(CONE);
+  VisualPtr cone = _scene->VisualByName(CONE);
   cone->SetMaterial("NormalBlue");
 
-  VisualPtr cylinder = _scene->GetVisualByName(CYLINDER);
+  VisualPtr cylinder = _scene->VisualByName(CYLINDER);
   cylinder->SetMaterial("NormalGreen");
 
-  VisualPtr plane = _scene->GetVisualByName(PLANE);
+  VisualPtr plane = _scene->VisualByName(PLANE);
   plane->SetMaterial("NormalWhite");
 
-  VisualPtr sphere = _scene->GetVisualByName(SPHERE);
+  VisualPtr sphere = _scene->VisualByName(SPHERE);
   sphere->SetMaterial("NormalRed");
 }
 
@@ -441,19 +441,19 @@ void ReflectionSceneBuilder::BuildScene(ScenePtr _scene)
 {
   TextureSceneBuilder::BuildScene(_scene);
 
-  VisualPtr box = _scene->GetVisualByName(BOX);
+  VisualPtr box = _scene->VisualByName(BOX);
   box->SetMaterial("ReflectYellow");
 
-  VisualPtr cone = _scene->GetVisualByName(CONE);
+  VisualPtr cone = _scene->VisualByName(CONE);
   cone->SetMaterial("ReflectBlue");
 
-  VisualPtr cylinder = _scene->GetVisualByName(CYLINDER);
+  VisualPtr cylinder = _scene->VisualByName(CYLINDER);
   cylinder->SetMaterial("ReflectGreen");
 
-  VisualPtr plane = _scene->GetVisualByName(PLANE);
+  VisualPtr plane = _scene->VisualByName(PLANE);
   plane->SetMaterial("ReflectWhite");
 
-  VisualPtr sphere = _scene->GetVisualByName(SPHERE);
+  VisualPtr sphere = _scene->VisualByName(SPHERE);
   sphere->SetMaterial("ReflectRed");
 }
 
@@ -473,19 +473,19 @@ void NormalReflectionSceneBuilder::BuildScene(ScenePtr _scene)
 {
   NormalMapSceneBuilder::BuildScene(_scene);
 
-  VisualPtr box = _scene->GetVisualByName(BOX);
+  VisualPtr box = _scene->VisualByName(BOX);
   box->SetMaterial("NormalReflectYellow");
 
-  VisualPtr cone = _scene->GetVisualByName(CONE);
+  VisualPtr cone = _scene->VisualByName(CONE);
   cone->SetMaterial("NormalReflectBlue");
 
-  VisualPtr cylinder = _scene->GetVisualByName(CYLINDER);
+  VisualPtr cylinder = _scene->VisualByName(CYLINDER);
   cylinder->SetMaterial("NormalReflectGreen");
 
-  VisualPtr plane = _scene->GetVisualByName(PLANE);
+  VisualPtr plane = _scene->VisualByName(PLANE);
   plane->SetMaterial("NormalReflectWhite");
 
-  VisualPtr sphere = _scene->GetVisualByName(SPHERE);
+  VisualPtr sphere = _scene->VisualByName(SPHERE);
   sphere->SetMaterial("NormalReflectRed");
 }
 
@@ -504,18 +504,18 @@ TransparencySceneBuilder::~TransparencySceneBuilder()
 void TransparencySceneBuilder::BuildScene(ScenePtr _scene)
 {
   TextureSceneBuilder::BuildScene(_scene);
-  VisualPtr root = _scene->GetRootVisual();
+  VisualPtr root = _scene->RootVisual();
 
-  VisualPtr box = _scene->GetVisualByName(BOX);
+  VisualPtr box = _scene->VisualByName(BOX);
   box->SetMaterial("TransYellow");
 
-  VisualPtr cone = _scene->GetVisualByName(CONE);
+  VisualPtr cone = _scene->VisualByName(CONE);
   cone->SetMaterial("TransBlue");
 
-  VisualPtr cylinder = _scene->GetVisualByName(CYLINDER);
+  VisualPtr cylinder = _scene->VisualByName(CYLINDER);
   cylinder->SetMaterial("TransGreen");
 
-  VisualPtr sphere = _scene->GetVisualByName(SPHERE);
+  VisualPtr sphere = _scene->VisualByName(SPHERE);
   sphere->SetMaterial("TransRed");
 
   VisualPtr background = _scene->CreateVisual();
@@ -556,23 +556,23 @@ void ShadowSceneBuilder::BuildScene(ScenePtr _scene)
 //////////////////////////////////////////////////
 void ShadowSceneBuilder::AddLight(PointLightPtr _light, ScenePtr _scene)
 {
-  VisualPtr root = _scene->GetRootVisual();
+  VisualPtr root = _scene->RootVisual();
   unsigned int total = this->n * this->n * this->n;
   double step = (this->n == 1) ? 0 : this->dist / (this->n - 1);
   double factor = 1.0 / total;
 
-  math::Vector3d position = _light->GetLocalPosition();
+  math::Vector3d position = _light->LocalPosition();
   double offset = (this->n == 1) ? 0 : this->dist / 2;
   double x0 = position.X() - offset;
   double y0 = position.Y() - offset;
   double z0 = position.Z() - offset;
 
   math::Color diffuse;
-  diffuse = _light->GetDiffuseColor();
+  diffuse = _light->DiffuseColor();
   diffuse = diffuse * factor;
 
   math::Color specular;
-  specular = _light->GetSpecularColor();
+  specular = _light->SpecularColor();
   specular = specular * factor;
 
   for (unsigned int i = 0; i < this->n; ++i)
@@ -617,7 +617,7 @@ BoxSceneBuilder::~BoxSceneBuilder()
 void BoxSceneBuilder::BuildScene(ScenePtr _scene)
 {
   SceneBuilder::BuildScene(_scene);
-  VisualPtr root = _scene->GetRootVisual();
+  VisualPtr root = _scene->RootVisual();
   _scene->SetAmbientLight(0.1, 0.1, 0.1);
 
   DirectionalLightPtr light = _scene->CreateDirectionalLight(LIGHT);
@@ -647,8 +647,8 @@ void BoxSceneBuilder::UpdateScene(ScenePtr _scene)
   SceneBuilder::UpdateScene(_scene);
   double scale = cos(this->tick * 0.05);
 
-  VisualPtr box = _scene->GetVisualByName(BOX);
-  math::Pose3d pose = box->GetLocalPose();
+  VisualPtr box = _scene->VisualByName(BOX);
+  math::Pose3d pose = box->LocalPose();
   pose.Pos().Z(0.6 + scale * 0.1);
   box->SetLocalPose(pose);
 }

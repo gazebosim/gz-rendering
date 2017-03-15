@@ -127,7 +127,7 @@ void GlutDisplay()
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 #endif
 
-  unsigned char *data = g_image->GetData<unsigned char>();
+  unsigned char *data = g_image->Data<unsigned char>();
 
   glClearColor(0.5, 0.5, 0.5, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -172,8 +172,8 @@ void GlutReshape(int, int)
 void GlutInitCamera(gz::CameraPtr _camera)
 {
   g_camera = _camera;
-  imgw = g_camera->GetImageWidth();
-  imgh = g_camera->GetImageHeight();
+  imgw = g_camera->ImageWidth();
+  imgh = g_camera->ImageHeight();
   gz::Image image = g_camera->CreateImage();
   g_image = std::make_shared<gz::Image>(image);
   g_camera->Capture(*g_image);

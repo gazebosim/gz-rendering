@@ -40,7 +40,7 @@ bool OptixGeometry::HasParent() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr OptixGeometry::GetParent() const
+VisualPtr OptixGeometry::Parent() const
 {
   return this->parent;
 }
@@ -54,7 +54,7 @@ void OptixGeometry::SetParent(OptixVisualPtr _parent)
 //////////////////////////////////////////////////
 void OptixGeometry::SetScale(math::Vector3d _scale)
 {
-  optix::GeometryGroup optixGeomGroup = this->GetOptixGeometryGroup();
+  optix::GeometryGroup optixGeomGroup = this->OptixGeometryGroup();
   unsigned int count = optixGeomGroup->getChildCount();
 
   for (unsigned int i = 0; i < count; ++i)

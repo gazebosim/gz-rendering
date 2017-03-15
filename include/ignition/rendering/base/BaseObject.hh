@@ -31,9 +31,9 @@ namespace ignition
 
       public: virtual ~BaseObject();
 
-      public: virtual unsigned int GetId() const;
+      public: virtual unsigned int Id() const;
 
-      public: virtual std::string GetName() const;
+      public: virtual std::string Name() const;
 
       public: virtual void PreRender();
 

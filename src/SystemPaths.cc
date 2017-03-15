@@ -64,7 +64,7 @@ class ignition::rendering::SystemPathsPrivate
   /// \brief Log path
   public: std::string logPath;
 
-  /// \brief if true, call UpdateOgrePaths() within GetOgrePaths()
+  /// \brief if true, call UpdateOgrePaths() within OgrePaths()
   public: bool ogrePathsFromEnv;
 
   /// \brief Find file callback.
@@ -128,13 +128,13 @@ SystemPaths::~SystemPaths()
 }
 
 /////////////////////////////////////////////////
-std::string SystemPaths::GetLogPath() const
+std::string SystemPaths::LogPath() const
 {
   return this->dataPtr->logPath;
 }
 
 /////////////////////////////////////////////////
-const std::list<std::string> &SystemPaths::GetPluginPaths()
+const std::list<std::string> &SystemPaths::PluginPaths()
 {
   if (this->dataPtr->pluginPathsFromEnv)
     this->UpdatePluginPaths();
@@ -142,7 +142,7 @@ const std::list<std::string> &SystemPaths::GetPluginPaths()
 }
 
 /////////////////////////////////////////////////
-const std::list<std::string> &SystemPaths::GetOgrePaths()
+const std::list<std::string> &SystemPaths::OgrePaths()
 {
   if (this->dataPtr->ogrePathsFromEnv)
     this->UpdateOgrePaths();

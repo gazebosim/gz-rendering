@@ -121,14 +121,14 @@ bool OgreRenderEngine::IsEnabled() const
 }
 
 //////////////////////////////////////////////////
-std::string OgreRenderEngine::GetName() const
+std::string OgreRenderEngine::Name() const
 {
   return "Ogre";
 }
 
 //////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderPathType
-    OgreRenderEngine::GetRenderPathType() const
+    OgreRenderEngine::RenderPathType() const
 {
   return this->renderPathType;
 }
@@ -217,7 +217,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
 }
 
 //////////////////////////////////////////////////
-Ogre::Root *OgreRenderEngine::GetOgreRoot() const
+Ogre::Root *OgreRenderEngine::OgreRoot() const
 {
   return this->ogreRoot;
 }
@@ -230,7 +230,7 @@ ScenePtr OgreRenderEngine::CreateSceneImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-SceneStorePtr OgreRenderEngine::GetScenes() const
+SceneStorePtr OgreRenderEngine::Scenes() const
 {
   return this->scenes;
 }
@@ -289,7 +289,7 @@ void OgreRenderEngine::LoadAttempt()
 void OgreRenderEngine::CreateLogger()
 {
   // create log file path
-  std::string logPath = SystemPaths::Instance()->GetLogPath();
+  std::string logPath = SystemPaths::Instance()->LogPath();
   logPath += "/ogre.log";
 
   // create actual log
@@ -371,7 +371,7 @@ void OgreRenderEngine::LoadPlugins()
 {
   std::list<std::string>::iterator iter;
   std::list<std::string> ogrePaths =
-    SystemPaths::Instance()->GetOgrePaths();
+    SystemPaths::Instance()->OgrePaths();
 
   for (iter = ogrePaths.begin();
        iter != ogrePaths.end(); ++iter)

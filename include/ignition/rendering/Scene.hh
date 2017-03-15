@@ -61,19 +61,19 @@ namespace ignition
 
       /// \brief Get the ID of the scene
       /// \return The scene ID
-      public: virtual unsigned int GetId() const = 0;
+      public: virtual unsigned int Id() const = 0;
 
       /// \brief Get the name of the scene
       /// \return The scene name
-      public: virtual std::string GetName() const = 0;
+      public: virtual std::string Name() const = 0;
 
       /// \brief Get the creating render-engine of the scene
       /// \return The creating render-engine
-      public: virtual RenderEngine *GetEngine() const = 0;
+      public: virtual RenderEngine *Engine() const = 0;
 
       /// \brief Get the last simulation update time
       /// \return The last simulation update time
-      public: virtual common::Time GetSimTime() const = 0;
+      public: virtual common::Time SimTime() const = 0;
 
       /// \brief Set the last simulation update time
       /// \param[in] _time Latest simulation update time
@@ -84,11 +84,11 @@ namespace ignition
       /// ancestors in the scene-graph. Nodes created by this Scene will not be
       /// added to the scene by default.
       /// \return The root Visual node
-      public: virtual VisualPtr GetRootVisual() const = 0;
+      public: virtual VisualPtr RootVisual() const = 0;
 
       /// \brief Get the scene ambient light color
       /// \return The scene ambient light color
-      public: virtual math::Color GetAmbientLight() const = 0;
+      public: virtual math::Color AmbientLight() const = 0;
 
       /// \brief Set the scene ambient light color
       /// \param[in] _r Red color
@@ -104,7 +104,7 @@ namespace ignition
 
       /// \brief Get the scene background color
       /// \return The scene background color
-      public: virtual math::Color GetBackgroundColor() const = 0;
+      public: virtual math::Color BackgroundColor() const = 0;
 
       /// \brief Set the scene background color
       /// \param[in] _r Red color
@@ -121,7 +121,7 @@ namespace ignition
       /// \brief Get the number of nodes managed by this scene. Note these
       /// nodes may not be directly or indirectly attached to the root node.
       /// \return The number of nodes managed by this scene
-      public: virtual unsigned int GetNodeCount() const = 0;
+      public: virtual unsigned int NodeCount() const = 0;
 
       /// \brief Determine if the given node is managed by this Scene
       /// \param[in] _node Node in question
@@ -144,19 +144,19 @@ namespace ignition
       /// id, NULL will be returned.
       /// \param[in] _id ID of the desired node
       /// \return The desired node
-      public: virtual NodePtr GetNodeById(unsigned int _id) const = 0;
+      public: virtual NodePtr NodeById(unsigned int _id) const = 0;
 
       /// \brief Get node with the given name. If no node exists with the given
       /// name, NULL will be returned.
       /// \param[in] _name Name of the desired node
       /// \return The desired node
-      public: virtual NodePtr GetNodeByName(const std::string &_name) const = 0;
+      public: virtual NodePtr NodeByName(const std::string &_name) const = 0;
 
       /// \brief Get node at the given index. If no node exists at the given
       /// index, NULL will be returned.
       /// \param[in] _index Index of the desired node
       /// \return The desired node
-      public: virtual NodePtr GetNodeByIndex(unsigned int _index) const = 0;
+      public: virtual NodePtr NodeByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given node. If the given node is not managed by this
       /// scene, no work will be done. All children of the node will
@@ -188,7 +188,7 @@ namespace ignition
       /// \brief Get the number of lights managed by this scene. Note these
       /// lights may not be directly or indirectly attached to the root light.
       /// \return The number of lights managed by this scene
-      public: virtual unsigned int GetLightCount() const = 0;
+      public: virtual unsigned int LightCount() const = 0;
 
       /// \brief Determine if the given light is managed by this Scene
       /// \param[in] _light Light in question
@@ -211,20 +211,20 @@ namespace ignition
       /// id, NULL will be returned.
       /// \param[in] _id ID of the desired light
       /// \return The desired light
-      public: virtual LightPtr GetLightById(unsigned int _id) const = 0;
+      public: virtual LightPtr LightById(unsigned int _id) const = 0;
 
       /// \brief Get light with the given name. If no light exists with the
       /// given name, NULL will be returned.
       /// \param[in] _name Name of the desired light
       /// \return The desired light
-      public: virtual LightPtr GetLightByName(
+      public: virtual LightPtr LightByName(
                   const std::string &_name) const = 0;
 
       /// \brief Get light at the given index. If no light exists at the given
       /// index, NULL will be returned.
       /// \param[in] _index Index of the desired light
       /// \return The desired light
-      public: virtual LightPtr GetLightByIndex(unsigned int _index) const = 0;
+      public: virtual LightPtr LightByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given light. If the given light is not managed by this
       /// scene, no work will be done. All children of the light will
@@ -256,7 +256,7 @@ namespace ignition
       /// \brief Get the number of sensors managed by this scene. Note these
       /// sensors may not be directly or indirectly attached to the root sensor.
       /// \return The number of sensors managed by this scene
-      public: virtual unsigned int GetSensorCount() const = 0;
+      public: virtual unsigned int SensorCount() const = 0;
 
       /// \brief Determine if the given sensor is managed by this Scene
       /// \param[in] _sensor Sensor in question
@@ -279,20 +279,20 @@ namespace ignition
       /// given id, NULL will be returned.
       /// \param[in] _id ID of the desired sensor
       /// \return The desired sensor
-      public: virtual SensorPtr GetSensorById(unsigned int _id) const = 0;
+      public: virtual SensorPtr SensorById(unsigned int _id) const = 0;
 
       /// \brief Get sensor with the given name. If no sensor exists with the
       /// given name, NULL will be returned.
       /// \param[in] _name Name of the desired sensor
       /// \return The desired sensor
-      public: virtual SensorPtr GetSensorByName(
+      public: virtual SensorPtr SensorByName(
                   const std::string &_name) const = 0;
 
       /// \brief Get sensor at the given index. If no sensor exists at the given
       /// index, NULL will be returned.
       /// \param[in] _index Index of the desired sensor
       /// \return The desired sensor
-      public: virtual SensorPtr GetSensorByIndex(unsigned int _index) const = 0;
+      public: virtual SensorPtr SensorByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given sensor. If the given sensor is not managed by
       /// this scene, no work will be done. All children of the sensor will
@@ -324,7 +324,7 @@ namespace ignition
       /// \brief Get the number of nodes managed by this scene. Note these
       /// nodes may not be directly or indirectly attached to the root node.
       /// \return The number of nodes managed by this scene
-      public: virtual unsigned int GetVisualCount() const = 0;
+      public: virtual unsigned int VisualCount() const = 0;
 
       /// \brief Determine if the given node is managed by this Scene
       /// \param[in] _node Visual in question
@@ -347,20 +347,20 @@ namespace ignition
       /// id, NULL will be returned.
       /// \param[in] _id ID of the desired node
       /// \return The desired node
-      public: virtual VisualPtr GetVisualById(unsigned int _id) const = 0;
+      public: virtual VisualPtr VisualById(unsigned int _id) const = 0;
 
       /// \brief Get node with the given name. If no node exists with the given
       /// name, NULL will be returned.
       /// \param[in] _name Name of the desired node
       /// \return The desired node
-      public: virtual VisualPtr GetVisualByName(
+      public: virtual VisualPtr VisualByName(
                   const std::string &_name) const = 0;
 
       /// \brief Get node at the given index. If no node exists at the given
       /// index, NULL will be returned.
       /// \param[in] _index Index of the desired node
       /// \return The desired node
-      public: virtual VisualPtr GetVisualByIndex(unsigned int _index) const = 0;
+      public: virtual VisualPtr VisualByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given node. If the given node is not managed by this
       /// scene, no work will be done. All children of the node will
@@ -399,7 +399,7 @@ namespace ignition
       /// is registered under the given name, NULL will be returned.
       /// \param[in] _name Name of the desired material
       /// \return The specified material
-      public: virtual MaterialPtr GetMaterial(
+      public: virtual MaterialPtr Material(
                   const std::string &_name) const = 0;
 
       /// \brief Register a new material under the given name. If the name is

@@ -42,11 +42,11 @@ namespace ignition
 
       public: virtual bool IsInitialized() const;
 
-      public: virtual unsigned int GetId() const;
+      public: virtual unsigned int Id() const;
 
-      public: virtual std::string GetName() const;
+      public: virtual std::string Name() const;
 
-      public: virtual common::Time GetSimTime() const;
+      public: virtual common::Time SimTime() const;
 
       public: virtual void SetSimTime(const common::Time &_time);
 
@@ -60,7 +60,7 @@ namespace ignition
 
       public: virtual void SetBackgroundColor(const math::Color &_color) = 0;
 
-      public: virtual unsigned int GetNodeCount() const;
+      public: virtual unsigned int NodeCount() const;
 
       public: virtual bool HasNode(ConstNodePtr _node) const;
 
@@ -68,11 +68,11 @@ namespace ignition
 
       public: virtual bool HasNodeName(const std::string &_name) const;
 
-      public: virtual NodePtr GetNodeById(unsigned int _id) const;
+      public: virtual NodePtr NodeById(unsigned int _id) const;
 
-      public: virtual NodePtr GetNodeByName(const std::string &_name) const;
+      public: virtual NodePtr NodeByName(const std::string &_name) const;
 
-      public: virtual NodePtr GetNodeByIndex(unsigned int _index) const;
+      public: virtual NodePtr NodeByIndex(unsigned int _index) const;
 
       public: virtual void DestroyNode(NodePtr _node);
 
@@ -84,7 +84,7 @@ namespace ignition
 
       public: virtual void DestroyNodes();
 
-      public: virtual unsigned int GetLightCount() const;
+      public: virtual unsigned int LightCount() const;
 
       public: virtual bool HasLight(ConstLightPtr _light) const;
 
@@ -92,11 +92,11 @@ namespace ignition
 
       public: virtual bool HasLightName(const std::string &_name) const;
 
-      public: virtual LightPtr GetLightById(unsigned int _id) const;
+      public: virtual LightPtr LightById(unsigned int _id) const;
 
-      public: virtual LightPtr GetLightByName(const std::string &_name) const;
+      public: virtual LightPtr LightByName(const std::string &_name) const;
 
-      public: virtual LightPtr GetLightByIndex(unsigned int _index) const;
+      public: virtual LightPtr LightByIndex(unsigned int _index) const;
 
       public: virtual void DestroyLight(LightPtr _light);
 
@@ -108,7 +108,7 @@ namespace ignition
 
       public: virtual void DestroyLights();
 
-      public: virtual unsigned int GetSensorCount() const;
+      public: virtual unsigned int SensorCount() const;
 
       public: virtual bool HasSensor(ConstSensorPtr _sensor) const;
 
@@ -116,11 +116,11 @@ namespace ignition
 
       public: virtual bool HasSensorName(const std::string &_name) const;
 
-      public: virtual SensorPtr GetSensorById(unsigned int _id) const;
+      public: virtual SensorPtr SensorById(unsigned int _id) const;
 
-      public: virtual SensorPtr GetSensorByName(const std::string &_name) const;
+      public: virtual SensorPtr SensorByName(const std::string &_name) const;
 
-      public: virtual SensorPtr GetSensorByIndex(unsigned int _index) const;
+      public: virtual SensorPtr SensorByIndex(unsigned int _index) const;
 
       public: virtual void DestroySensor(SensorPtr _sensor);
 
@@ -132,7 +132,7 @@ namespace ignition
 
       public: virtual void DestroySensors();
 
-      public: virtual unsigned int GetVisualCount() const;
+      public: virtual unsigned int VisualCount() const;
 
       public: virtual bool HasVisual(ConstVisualPtr _visual) const;
 
@@ -140,11 +140,11 @@ namespace ignition
 
       public: virtual bool HasVisualName(const std::string &_name) const;
 
-      public: virtual VisualPtr GetVisualById(unsigned int _id) const;
+      public: virtual VisualPtr VisualById(unsigned int _id) const;
 
-      public: virtual VisualPtr GetVisualByName(const std::string &_name) const;
+      public: virtual VisualPtr VisualByName(const std::string &_name) const;
 
-      public: virtual VisualPtr GetVisualByIndex(unsigned int _index) const;
+      public: virtual VisualPtr VisualByIndex(unsigned int _index) const;
 
       public: virtual void DestroyVisual(VisualPtr _visual);
 
@@ -158,7 +158,7 @@ namespace ignition
 
       public: virtual bool MaterialRegistered(const std::string &_name) const;
 
-      public: virtual MaterialPtr GetMaterial(const std::string &_name) const;
+      public: virtual MaterialPtr Material(const std::string &_name) const;
 
       public: virtual void RegisterMaterial(const std::string &_name,
                   MaterialPtr _material);
@@ -319,13 +319,13 @@ namespace ignition
       protected: virtual RenderTexturePtr CreateRenderTextureImpl(
                      unsigned int _id, const std::string &_name) = 0;
 
-      protected: virtual LightStorePtr GetLights() const = 0;
+      protected: virtual LightStorePtr Lights() const = 0;
 
-      protected: virtual SensorStorePtr GetSensors() const = 0;
+      protected: virtual SensorStorePtr Sensors() const = 0;
 
-      protected: virtual VisualStorePtr GetVisuals() const = 0;
+      protected: virtual VisualStorePtr Visuals() const = 0;
 
-      protected: virtual MaterialMapPtr GetMaterials() const = 0;
+      protected: virtual MaterialMapPtr Materials() const = 0;
 
       protected: virtual bool LoadImpl() = 0;
 

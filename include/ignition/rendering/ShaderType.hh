@@ -68,14 +68,14 @@ namespace ignition
       /// \brief Get human-readable name for shader type value.
       /// \param[in] _type Shader type enum value
       /// \return The type name
-      public: static std::string GetName(ShaderType _type);
+      public: static std::string Name(ShaderType _type);
 
       /// \brief Get enum value by human-readable name. The given string should
       /// match watch is returned by GetName. If an invalid name is given,
       /// ST_UNKNOWN will be returned.
       /// \param[in] _name Name of the shader type to be retrieved
       /// \return The specified ShaderType enum value
-      public: static ShaderType GetEnum(const std::string &_name);
+      public: static ShaderType Enum(const std::string &_name);
 
       /// \brief Array of human-readable names for each ShaderType
       private: static const char *names[ST_COUNT];

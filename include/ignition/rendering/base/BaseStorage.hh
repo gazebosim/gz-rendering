@@ -67,9 +67,9 @@ namespace ignition
 
       public: virtual void RemoveAll();
 
-      public: virtual UPtr GetDerived(const std::string &_key) const;
+      public: virtual UPtr Derived(const std::string &_key) const;
 
-      public: virtual UPtr GetDerivedByIndex(unsigned int _index) const;
+      public: virtual UPtr DerivedByIndex(unsigned int _index) const;
 
       protected: virtual bool IsValidIter(ConstUIter _iter) const;
 
@@ -133,11 +133,11 @@ namespace ignition
 
       public: virtual void DestroyAll();
 
-      public: virtual UPtr GetDerivedById(unsigned int _id) const;
+      public: virtual UPtr DerivedById(unsigned int _id) const;
 
-      public: virtual UPtr GetDerivedByName(const std::string &_name) const;
+      public: virtual UPtr DerivedByName(const std::string &_name) const;
 
-      public: virtual UPtr GetDerivedByIndex(unsigned int _index) const;
+      public: virtual UPtr DerivedByIndex(unsigned int _index) const;
 
       public: virtual bool AddDerived(UPtr _object);
 
@@ -412,7 +412,7 @@ namespace ignition
     typename BaseMap<T, U>::TPtr
     BaseMap<T, U>::Get(const std::string &_key) const
     {
-      return this->GetDerived(_key);
+      return this->Derived(_key);
     }
 
     //////////////////////////////////////////////////
@@ -420,7 +420,7 @@ namespace ignition
     typename BaseMap<T, U>::TPtr
     BaseMap<T, U>::GetByIndex(unsigned int _index) const
     {
-      return this->GetDerivedByIndex(_index);
+      return this->DerivedByIndex(_index);
     }
 
     //////////////////////////////////////////////////
@@ -499,7 +499,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseMap<T, U>::UPtr
-    BaseMap<T, U>::GetDerived(const std::string &_key) const
+    BaseMap<T, U>::Derived(const std::string &_key) const
     {
       auto iter = this->map.find(_key);
       return (this->IsValidIter(iter)) ? iter->second : nullptr;
@@ -508,7 +508,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseMap<T, U>::UPtr
-    BaseMap<T, U>::GetDerivedByIndex(unsigned int _index) const
+    BaseMap<T, U>::DerivedByIndex(unsigned int _index) const
     {
       if (_index >= this->Size())
       {
@@ -576,7 +576,7 @@ namespace ignition
     typename BaseStore<T, U>::TPtr
     BaseStore<T, U>::GetById(unsigned int _id) const
     {
-      return this->GetDerivedById(_id);
+      return this->DerivedById(_id);
     }
 
     //////////////////////////////////////////////////
@@ -584,7 +584,7 @@ namespace ignition
     typename BaseStore<T, U>::TPtr
     BaseStore<T, U>::GetByName(const std::string &_name) const
     {
-      return this->GetDerivedByName(_name);
+      return this->DerivedByName(_name);
     }
 
     //////////////////////////////////////////////////
@@ -592,7 +592,7 @@ namespace ignition
     typename BaseStore<T, U>::TPtr
     BaseStore<T, U>::GetByIndex(unsigned int _index) const
     {
-      return this->GetDerivedByIndex(_index);
+      return this->DerivedByIndex(_index);
     }
 
     //////////////////////////////////////////////////
@@ -705,7 +705,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseStore<T, U>::UPtr
-    BaseStore<T, U>::GetDerivedById(unsigned int _id) const
+    BaseStore<T, U>::DerivedById(unsigned int _id) const
     {
       auto iter = this->ConstIterById(_id);
       return (this->IsValidIter(iter)) ? iter->second : nullptr;
@@ -714,7 +714,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseStore<T, U>::UPtr
-    BaseStore<T, U>::GetDerivedByName(const std::string &_name) const
+    BaseStore<T, U>::DerivedByName(const std::string &_name) const
     {
       auto iter = this->ConstIterByName(_name);
       return (this->IsValidIter(iter)) ? iter->second : nullptr;
@@ -723,7 +723,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseStore<T, U>::UPtr
-    BaseStore<T, U>::GetDerivedByIndex(unsigned int _index) const
+    BaseStore<T, U>::DerivedByIndex(unsigned int _index) const
     {
       auto iter = this->ConstIterByIndex(_index);
       return (this->IsValidIter(iter)) ? iter->second : nullptr;
@@ -807,7 +807,7 @@ namespace ignition
 
       for (auto iter = begin; iter != end; ++iter)
       {
-        if (iter->second->GetId() == _id)
+        if (iter->second->Id() == _id)
         {
           return iter;
         }
@@ -880,8 +880,8 @@ namespace ignition
     template <class T, class U>
     bool BaseStore<T, U>::AddImpl(UPtr _object)
     {
-      unsigned int id = _object->GetId();
-      std::string name = _object->GetName();
+      unsigned int id = _object->Id();
+      std::string name = _object->Name();
 
       if (this->ContainsId(id))
       {

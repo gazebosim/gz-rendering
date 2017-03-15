@@ -32,21 +32,21 @@ namespace ignition
 
       public: virtual ~OptixVisual();
 
-      public: virtual math::Vector3d GetLocalScale() const;
+      public: virtual math::Vector3d LocalScale() const;
 
-      public: virtual bool GetInheritScale() const;
+      public: virtual bool InheritScale() const;
 
       public: virtual void SetInheritScale(bool _inherit);
 
-      public: virtual optix::Group GetOptixGroup() const;
+      public: virtual optix::Group OptixGroup() const;
 
-      public: virtual optix::Acceleration GetOptixAccel() const;
+      public: virtual optix::Acceleration OptixAccel() const;
 
       public: virtual void PreRender();
 
-      protected: virtual NodeStorePtr GetChildren() const;
+      protected: virtual NodeStorePtr Children() const;
 
-      protected: virtual GeometryStorePtr GetGeometries() const;
+      protected: virtual GeometryStorePtr Geometries() const;
 
       protected: virtual bool AttachChild(NodePtr _child);
 

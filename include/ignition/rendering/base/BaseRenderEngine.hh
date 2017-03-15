@@ -43,7 +43,7 @@ namespace ignition
 
       public: virtual bool IsEnabled() const;
 
-      public: virtual unsigned int GetSceneCount() const;
+      public: virtual unsigned int SceneCount() const;
 
       public: virtual bool HasScene(ConstScenePtr _scene) const;
 
@@ -51,11 +51,11 @@ namespace ignition
 
       public: virtual bool HasSceneName(const std::string &_name) const;
 
-      public: virtual ScenePtr GetSceneById(unsigned int _id) const;
+      public: virtual ScenePtr SceneById(unsigned int _id) const;
 
-      public: virtual ScenePtr GetSceneByName(const std::string &_name) const;
+      public: virtual ScenePtr SceneByName(const std::string &_name) const;
 
-      public: virtual ScenePtr GetSceneByIndex(unsigned int _index) const;
+      public: virtual ScenePtr SceneByIndex(unsigned int _index) const;
 
       public: virtual void DestroyScene(ScenePtr _scene);
 
@@ -76,7 +76,7 @@ namespace ignition
 
       protected: virtual void PrepareScene(ScenePtr _scene);
 
-      protected: virtual unsigned int GetNextSceneId();
+      protected: virtual unsigned int NextSceneId();
 
       protected: virtual bool LoadImpl() = 0;
 
@@ -85,7 +85,7 @@ namespace ignition
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name) = 0;
 
-      protected: virtual SceneStorePtr GetScenes() const = 0;
+      protected: virtual SceneStorePtr Scenes() const = 0;
 
       protected: bool loaded;
 

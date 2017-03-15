@@ -50,7 +50,7 @@ OptixMaterial::~OptixMaterial()
 }
 
 //////////////////////////////////////////////////
-bool OptixMaterial::GetLightingEnabled() const
+bool OptixMaterial::LightingEnabled() const
 {
   return this->lightingEnabled;
 }
@@ -63,7 +63,7 @@ void OptixMaterial::SetLightingEnabled(bool _enabled)
 }
 
 //////////////////////////////////////////////////
-math::Color OptixMaterial::GetAmbient() const
+math::Color OptixMaterial::Ambient() const
 {
   return this->ambient;
 }
@@ -76,7 +76,7 @@ void OptixMaterial::SetAmbient(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OptixMaterial::GetDiffuse() const
+math::Color OptixMaterial::Diffuse() const
 {
   return this->diffuse;
 }
@@ -89,7 +89,7 @@ void OptixMaterial::SetDiffuse(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OptixMaterial::GetSpecular() const
+math::Color OptixMaterial::Specular() const
 {
   return this->specular;
 }
@@ -102,7 +102,7 @@ void OptixMaterial::SetSpecular(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OptixMaterial::GetEmissive() const
+math::Color OptixMaterial::Emissive() const
 {
   return this->emissive;
 }
@@ -115,7 +115,7 @@ void OptixMaterial::SetEmissive(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-double OptixMaterial::GetShininess() const
+double OptixMaterial::Shininess() const
 {
   return this->shininess;
 }
@@ -128,7 +128,7 @@ void OptixMaterial::SetShininess(double _shininess)
 }
 
 //////////////////////////////////////////////////
-double OptixMaterial::GetTransparency() const
+double OptixMaterial::Transparency() const
 {
   return this->transparency;
 }
@@ -141,7 +141,7 @@ void OptixMaterial::SetTransparency(double _transparency)
 }
 
 //////////////////////////////////////////////////
-double OptixMaterial::GetReflectivity() const
+double OptixMaterial::Reflectivity() const
 {
   return this->reflectivity;
 }
@@ -154,7 +154,7 @@ void OptixMaterial::SetReflectivity(double _reflectivity)
 }
 
 //////////////////////////////////////////////////
-bool OptixMaterial::GetCastShadows() const
+bool OptixMaterial::CastShadows() const
 {
   return this->castShadows;
 }
@@ -167,7 +167,7 @@ void OptixMaterial::SetCastShadows(bool _castShadows)
 }
 
 //////////////////////////////////////////////////
-bool OptixMaterial::GetReceiveShadows() const
+bool OptixMaterial::ReceiveShadows() const
 {
   return this->receiveShadows;
 }
@@ -180,7 +180,7 @@ void OptixMaterial::SetReceiveShadows(bool _receiveShadows)
 }
 
 //////////////////////////////////////////////////
-bool OptixMaterial::GetReflectionEnabled() const
+bool OptixMaterial::ReflectionEnabled() const
 {
   return this->reflectionEnabled;
 }
@@ -199,7 +199,7 @@ bool OptixMaterial::HasTexture() const
 }
 
 //////////////////////////////////////////////////
-std::string OptixMaterial::GetTexture() const
+std::string OptixMaterial::Texture() const
 {
   return this->textureName;
 }
@@ -235,7 +235,7 @@ bool OptixMaterial::HasNormalMap() const
 }
 
 //////////////////////////////////////////////////
-std::string OptixMaterial::GetNormalMap() const
+std::string OptixMaterial::NormalMap() const
 {
   return this->normalMapName;
 }
@@ -265,13 +265,13 @@ void OptixMaterial::ClearNormalMap()
 }
 
 //////////////////////////////////////////////////
-ShaderType OptixMaterial::GetShaderType() const
+enum ShaderType OptixMaterial::ShaderType() const
 {
   return this->shaderType;
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetShaderType(ShaderType _type)
+void OptixMaterial::SetShaderType(enum ShaderType _type)
 {
   this->shaderType = (ShaderUtil::IsValid(_type)) ? _type : ST_PIXEL;
   // TODO: update normal space
@@ -316,7 +316,7 @@ void OptixMaterial::Destroy()
 }
 
 //////////////////////////////////////////////////
-optix::Material OptixMaterial::GetOptixMaterial() const
+optix::Material OptixMaterial::Material() const
 {
   return this->optixMaterial;
 }
@@ -420,7 +420,7 @@ void OptixMaterial::WriteNormalMapToDeviceImpl()
 void OptixMaterial::Init()
 {
   BaseMaterial::Init();
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
 
   optix::Program closestHitProgram =
       this->scene->CreateOptixProgram(PTX_FILE_BASE, PTX_CLOSEST_HIT_FUNC);

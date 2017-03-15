@@ -31,7 +31,7 @@ namespace ignition
 
       public: virtual ~OptixObject();
 
-      public: virtual ScenePtr GetScene() const;
+      public: virtual ScenePtr Scene() const;
 
       protected: OptixScenePtr scene;
 

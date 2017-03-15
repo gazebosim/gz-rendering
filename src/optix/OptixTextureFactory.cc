@@ -78,7 +78,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 
   unsigned char *data = static_cast<unsigned char *>(FreeImage_GetBits(image));
 
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
 
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
   buffer->setFormat(RT_FORMAT_UNSIGNED_BYTE4);
@@ -96,7 +96,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer()
   unsigned char data[4] = { 0, 0, 0, 0 };
   unsigned int memSize = sizeof(data);
 
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
 
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
   buffer->setFormat(RT_FORMAT_UNSIGNED_BYTE4);
@@ -111,7 +111,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer()
 //////////////////////////////////////////////////
 optix::TextureSampler OptixTextureFactory::CreateSampler(optix::Buffer _buffer)
 {
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   optix::TextureSampler sampler = optixContext->createTextureSampler();
 
   sampler->setWrapMode(0, RT_WRAP_REPEAT);

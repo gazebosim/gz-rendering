@@ -57,15 +57,15 @@ namespace ignition
 
       /// \brief Get the log path
       /// \return the path
-      public: std::string GetLogPath() const;
+      public: std::string LogPath() const;
 
       /// \brief Get the ogre install paths
       /// \return a list of paths
-      public: const std::list<std::string> &GetOgrePaths();
+      public: const std::list<std::string> &OgrePaths();
 
       /// \brief Get the plugin paths
       /// \return a list of paths
-      public: const std::list<std::string> &GetPluginPaths();
+      public: const std::list<std::string> &PluginPaths();
 
       /// \brief Find a file or path using a URI
       /// \param[in] _uri the uniform resource identifier

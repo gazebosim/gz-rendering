@@ -54,7 +54,7 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
   // create ogre entity
   OgreMeshPtr mesh(new OgreMesh);
   MeshDescriptor normDesc = _desc.Normalize();
-  mesh->ogreEntity = this->GetOgreEntity(normDesc);
+  mesh->ogreEntity = this->OgreEntity(normDesc);
 
   // check if invalid mesh
   if (!mesh->ogreEntity)
@@ -69,15 +69,15 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
-Ogre::Entity *OgreMeshFactory::GetOgreEntity(const MeshDescriptor &_desc)
+Ogre::Entity *OgreMeshFactory::OgreEntity(const MeshDescriptor &_desc)
 {
   if (!this->Load(_desc))
   {
     return NULL;
   }
 
-  std::string name = this->GetMeshName(_desc);
-  Ogre::SceneManager *sceneManager = this->scene->GetOgreSceneManager();
+  std::string name = this->MeshName(_desc);
+  Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
   return sceneManager->createEntity(name);
 }
 
@@ -100,7 +100,7 @@ bool OgreMeshFactory::Load(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 bool OgreMeshFactory::IsLoaded(const MeshDescriptor &_desc)
 {
-  std::string name = this->GetMeshName(_desc);
+  std::string name = this->MeshName(_desc);
   return Ogre::MeshManager::getSingleton().resourceExists(name);
 }
 
@@ -115,7 +115,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
   try
   {
-    name = this->GetMeshName(_desc);
+    name = this->MeshName(_desc);
     group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
     ogreMesh = Ogre::MeshManager::getSingleton().createManual(name, group);
 
@@ -353,7 +353,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
-std::string OgreMeshFactory::GetMeshName(const MeshDescriptor &_desc)
+std::string OgreMeshFactory::MeshName(const MeshDescriptor &_desc)
 {
   std::stringstream ss;
   ss << _desc.meshName << "::";

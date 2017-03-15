@@ -43,13 +43,13 @@ bool OgreNode::HasParent() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreNode::GetParent() const
+VisualPtr OgreNode::Parent() const
 {
   return this->parent;
 }
 
 //////////////////////////////////////////////////
-Ogre::SceneNode *OgreNode::GetOgreNode() const
+Ogre::SceneNode *OgreNode::Node() const
 {
   return this->ogreNode;
 }
@@ -58,16 +58,16 @@ Ogre::SceneNode *OgreNode::GetOgreNode() const
 void OgreNode::Destroy()
 {
   BaseNode::Destroy();
-  Ogre::SceneManager *ogreSceneManager = this->scene->GetOgreSceneManager();
+  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   ogreSceneManager->destroySceneNode(this->ogreNode);
 }
 
 //////////////////////////////////////////////////
-math::Pose3d OgreNode::GetRawLocalPose() const
+math::Pose3d OgreNode::RawLocalPose() const
 {
   math::Pose3d Pose3d;
-  Pose3d.Pos() = this->GetRawLocalPosition();
-  Pose3d.Rot() = this->GetRawLocalRotation();
+  Pose3d.Pos() = this->RawLocalPosition();
+  Pose3d.Rot() = this->RawLocalRotation();
   return Pose3d;
 }
 
@@ -79,7 +79,7 @@ void OgreNode::SetRawLocalPose(const math::Pose3d &_Pose3d)
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OgreNode::GetRawLocalPosition() const
+math::Vector3d OgreNode::RawLocalPosition() const
 {
   return OgreConversions::Convert(this->ogreNode->getPosition());
 }
@@ -91,7 +91,7 @@ void OgreNode::SetRawLocalPosition(const math::Vector3d &_position)
 }
 
 //////////////////////////////////////////////////
-math::Quaterniond OgreNode::GetRawLocalRotation() const
+math::Quaterniond OgreNode::RawLocalRotation() const
 {
   return OgreConversions::Convert(this->ogreNode->getOrientation());
 }
@@ -117,7 +117,7 @@ void OgreNode::Load()
 void OgreNode::Init()
 {
   Ogre::SceneManager *sceneManager;
-  sceneManager = this->scene->GetOgreSceneManager();
+  sceneManager = this->scene->OgreSceneManager();
   this->ogreNode = sceneManager->createSceneNode(this->name);
   this->ogreNode->setInheritScale(true);
 }

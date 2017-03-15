@@ -49,19 +49,19 @@ void OptixScene::Fini()
 }
 
 //////////////////////////////////////////////////
-RenderEngine *OptixScene::GetEngine() const
+RenderEngine *OptixScene::Engine() const
 {
   return OptixRenderEngine::Instance();
 }
 
 //////////////////////////////////////////////////
-VisualPtr OptixScene::GetRootVisual() const
+VisualPtr OptixScene::RootVisual() const
 {
   return this->rootVisual;
 }
 
 //////////////////////////////////////////////////
-math::Color OptixScene::GetAmbientLight() const
+math::Color OptixScene::AmbientLight() const
 {
   return this->ambientLight;
 }
@@ -77,7 +77,7 @@ void OptixScene::SetAmbientLight(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OptixScene::GetBackgroundColor() const
+math::Color OptixScene::BackgroundColor() const
 {
   return this->backgroundColor;
 }
@@ -108,13 +108,13 @@ void OptixScene::Destroy()
 }
 
 //////////////////////////////////////////////////
-OptixLightManagerPtr OptixScene::GetLightManager() const
+OptixLightManagerPtr OptixScene::LightManager() const
 {
   return this->lightManager;
 }
 
 //////////////////////////////////////////////////
-optix::Context OptixScene::GetOptixContext() const
+optix::Context OptixScene::OptixContext() const
 {
   return this->optixContext;
 }
@@ -123,7 +123,7 @@ optix::Context OptixScene::GetOptixContext() const
 optix::Program OptixScene::CreateOptixProgram(const std::string &_fileBase,
     const std::string &_function)
 {
-  std::string fileName = OptixRenderEngine::Instance()->GetPtxFile(_fileBase);
+  std::string fileName = OptixRenderEngine::Instance()->PtxFile(_fileBase);
   return this->optixContext->createProgramFromPTXFile(fileName, _function);
 }
 
@@ -145,25 +145,25 @@ bool OptixScene::InitImpl()
 }
 
 //////////////////////////////////////////////////
-LightStorePtr OptixScene::GetLights() const
+LightStorePtr OptixScene::Lights() const
 {
   return this->lights;
 }
 
 //////////////////////////////////////////////////
-SensorStorePtr OptixScene::GetSensors() const
+SensorStorePtr OptixScene::Sensors() const
 {
   return this->sensors;
 }
 
 //////////////////////////////////////////////////
-VisualStorePtr OptixScene::GetVisuals() const
+VisualStorePtr OptixScene::Visuals() const
 {
   return this->visuals;
 }
 
 //////////////////////////////////////////////////
-MaterialMapPtr OptixScene::GetMaterials() const
+MaterialMapPtr OptixScene::Materials() const
 {
   return this->materials;
 }
@@ -200,8 +200,8 @@ CameraPtr OptixScene::CreateCameraImpl(unsigned int _id,
     const std::string &_name)
 {
   OptixCameraPtr camera(new OptixCamera);
-  camera->traceId = this->GetNextEntryId();
-  camera->clearId = this->GetNextEntryId();
+  camera->traceId = this->NextEntryId();
+  camera->clearId = this->NextEntryId();
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : NULL;
 }
@@ -360,7 +360,7 @@ bool OptixScene::InitObject(OptixObjectPtr _object, unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-unsigned int OptixScene::GetNextEntryId()
+unsigned int OptixScene::NextEntryId()
 {
   unsigned int entryId = this->optixContext->getEntryPointCount();
   this->optixContext->setEntryPointCount(entryId + 1);
@@ -411,12 +411,13 @@ void OptixScene::CreateRootVisual()
 
   // create transform-less optix root group
   this->optixRootGroup = this->optixContext->createGroup();
-  this->optixRootAccel = this->optixContext->createAcceleration("NoAccel", "NoAccel");
+  this->optixRootAccel = this->optixContext->createAcceleration(
+      "NoAccel", "NoAccel");
   this->optixRootGroup->setAcceleration(this->optixRootAccel);
 
   // attach root visual to actual root group
-  this->optixRootGroup->addChild(this->rootVisual->GetOptixGroup());
-  optix::Group rootGroup = this->rootVisual->GetOptixGroup();
+  this->optixRootGroup->addChild(this->rootVisual->OptixGroup());
+  optix::Group rootGroup = this->rootVisual->OptixGroup();
   optixContext["rootGroup"]->set(this->optixRootGroup);
 }
 

@@ -35,7 +35,7 @@ OgreGeometry::~OgreGeometry()
 //////////////////////////////////////////////////
 bool OgreGeometry::HasParent() const
 {
-  return this->parent != NULL;
+  return this->parent != nullptr;
 }
 
 //////////////////////////////////////////////////

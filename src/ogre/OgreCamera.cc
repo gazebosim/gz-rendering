@@ -24,7 +24,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreCamera::OgreCamera() :
-  renderTexture(NULL)
+  renderTexture(nullptr)
 {
 }
 

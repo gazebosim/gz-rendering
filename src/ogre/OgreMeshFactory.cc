@@ -59,7 +59,7 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
   // check if invalid mesh
   if (!mesh->ogreEntity)
   {
-    return NULL;
+    return nullptr;
   }
 
   // create sub-mesh store
@@ -73,7 +73,7 @@ Ogre::Entity *OgreMeshFactory::OgreEntity(const MeshDescriptor &_desc)
 {
   if (!this->Load(_desc))
   {
-    return NULL;
+    return nullptr;
   }
 
   std::string name = this->MeshName(_desc);

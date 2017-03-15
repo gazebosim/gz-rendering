@@ -25,7 +25,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 MeshDescriptor::MeshDescriptor() :
-  mesh(NULL),
+  mesh(nullptr),
   meshName(""),
   subMeshName(""),
   centerSubMesh(false)
@@ -34,7 +34,7 @@ MeshDescriptor::MeshDescriptor() :
 
 //////////////////////////////////////////////////
 MeshDescriptor::MeshDescriptor(const std::string &_meshName) :
-  mesh(NULL),
+  mesh(nullptr),
   meshName(_meshName),
   subMeshName(""),
   centerSubMesh(false)

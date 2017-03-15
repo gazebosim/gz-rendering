@@ -34,10 +34,10 @@ const std::string OptixCamera::PTX_CLEAR_FUNCTION("Clear");
 
 //////////////////////////////////////////////////
 OptixCamera::OptixCamera() :
-  optixRenderProgram(NULL),
-  optixClearProgram(NULL),
-  optixErrorProgram(NULL),
-  renderTexture(NULL),
+  optixRenderProgram(nullptr),
+  optixClearProgram(nullptr),
+  optixErrorProgram(nullptr),
+  renderTexture(nullptr),
   antiAliasing(1u),
   cameraDirty(true),
   traceId(0)

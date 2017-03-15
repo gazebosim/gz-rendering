@@ -56,14 +56,14 @@ namespace ignition
     template <class T>
     VisualPtr BaseArrowVisual<T>::Head() const
     {
-      return NULL;
+      return nullptr;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     VisualPtr BaseArrowVisual<T>::Shaft() const
     {
-      return NULL;
+      return nullptr;
     }
 
     //////////////////////////////////////////////////

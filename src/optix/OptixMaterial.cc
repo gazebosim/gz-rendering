@@ -37,10 +37,10 @@ OptixMaterial::OptixMaterial() :
   colorDirty(true),
   textureDirty(true),
   normalMapDirty(true),
-  optixMaterial(NULL),
-  optixTexture(NULL),
-  optixNormalMap(NULL),
-  optixEmptyTexture(NULL)
+  optixMaterial(nullptr),
+  optixTexture(nullptr),
+  optixNormalMap(nullptr),
+  optixEmptyTexture(nullptr)
 {
 }
 

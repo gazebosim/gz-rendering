@@ -36,7 +36,7 @@ OptixGeometry::~OptixGeometry()
 //////////////////////////////////////////////////
 bool OptixGeometry::HasParent() const
 {
-  return this->parent != NULL;
+  return this->parent != nullptr;
 }
 
 //////////////////////////////////////////////////

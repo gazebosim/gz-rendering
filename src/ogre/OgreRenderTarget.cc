@@ -30,8 +30,8 @@ using namespace rendering;
 // OgreRenderTarget
 //////////////////////////////////////////////////
 OgreRenderTarget::OgreRenderTarget() :
-  ogreCamera(NULL),
-  ogreViewport(NULL),
+  ogreCamera(nullptr),
+  ogreViewport(nullptr),
   colorDirty(true)
 {
   this->ogreBackgroundColor = Ogre::ColourValue::Black;
@@ -143,7 +143,7 @@ void OgreRenderTarget::RebuildViewport()
 // OgreRenderTexture
 //////////////////////////////////////////////////
 OgreRenderTexture::OgreRenderTexture() :
-  ogreTexture(NULL)
+  ogreTexture(nullptr)
 {
 }
 

@@ -52,18 +52,18 @@ using namespace rendering;
 OgreRenderEngine::OgreRenderEngine() :
   loaded(false),
   initialized(false),
-  ogreRoot(NULL),
-  ogreLogManager(NULL),
+  ogreRoot(nullptr),
+  ogreLogManager(nullptr),
   dummyDisplay(0),
   dummyContext(0)
 {
 #if not (__APPLE__ || _WIN32)
-  this->dummyDisplay = NULL;
+  this->dummyDisplay = nullptr;
   this->dummyWindowId = 0;
 #endif
 
 #ifdef OGRE_OVERLAY_NEEDED
-  this->ogreOverlaySystem = NULL;
+  this->ogreOverlaySystem = nullptr;
 #endif
 }
 
@@ -88,13 +88,13 @@ bool OgreRenderEngine::Fini()
     glXDestroyContext(x11Display, x11Context);
     XDestroyWindow(x11Display, this->dummyWindowId);
     XCloseDisplay(x11Display);
-    this->dummyDisplay = NULL;
+    this->dummyDisplay = nullptr;
   }
 #endif
 
 #ifdef OGRE_OVERLAY_NEEDED
   delete this->ogreOverlaySystem;
-  this->ogreOverlaySystem = NULL;
+  this->ogreOverlaySystem = nullptr;
 #endif
 
   if (ogreRoot)
@@ -102,11 +102,11 @@ bool OgreRenderEngine::Fini()
     this->ogreRoot->shutdown();
     // TODO: fix segfault on delete
     // delete this->ogreRoot;
-    this->ogreRoot = NULL;
+    this->ogreRoot = nullptr;
   }
 
   delete this->ogreLogManager;
-  this->ogreLogManager = NULL;
+  this->ogreLogManager = nullptr;
 
   this->loaded = false;
   this->initialized = false;
@@ -330,7 +330,7 @@ void OgreRenderEngine::CreateContext()
   this->dummyWindowId = XCreateSimpleWindow(x11Display,
       RootWindow(this->dummyDisplay, screenId), 0, 0, 1, 1, 0, 0, 0);
 
-  this->dummyContext = glXCreateContext(x11Display, dummyVisual, NULL, 1);
+  this->dummyContext = glXCreateContext(x11Display, dummyVisual, nullptr, 1);
 
   GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
 
@@ -379,7 +379,7 @@ void OgreRenderEngine::LoadPlugins()
     std::string path(*iter);
     DIR *dir = opendir(path.c_str());
 
-    if (dir == NULL)
+    if (dir == nullptr)
     {
       continue;
     }
@@ -449,7 +449,7 @@ void OgreRenderEngine::CreateRenderSystem()
 
   int c = 0;
 
-  renderSys = NULL;
+  renderSys = nullptr;
 
   do
   {
@@ -462,7 +462,7 @@ void OgreRenderEngine::CreateRenderSystem()
   while (renderSys &&
          renderSys->getName().compare("OpenGL Rendering Subsystem") != 0);
 
-  if (renderSys == NULL)
+  if (renderSys == nullptr)
   {
     ignerr << "unable to find OpenGL rendering system. OGRE is probably "
             "installed incorrectly. Double check the OGRE cmake output, "
@@ -502,7 +502,7 @@ void OgreRenderEngine::CreateResources()
   for (iter = paths.begin(); iter != paths.end(); ++iter)
   {
     DIR *dir;
-    if ((dir = opendir((*iter).c_str())) == NULL)
+    if ((dir = opendir((*iter).c_str())) == nullptr)
     {
       continue;
     }
@@ -567,7 +567,7 @@ void OgreRenderEngine::CreateWindow()
 {
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
-  Ogre::RenderWindow *window = NULL;
+  Ogre::RenderWindow *window = nullptr;
 
   // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
@@ -595,7 +595,7 @@ void OgreRenderEngine::CreateWindow()
   stream << "OgreWindow(0)";
 
   int attempts = 0;
-  while (window == NULL && (attempts++) < 10)
+  while (window == nullptr && (attempts++) < 10)
   {
     try
     {
@@ -605,7 +605,7 @@ void OgreRenderEngine::CreateWindow()
     catch(...)
     {
       ignerr << " Unable to create the rendering window\n";
-      window = NULL;
+      window = nullptr;
     }
   }
 

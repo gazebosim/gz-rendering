@@ -102,7 +102,7 @@ void OgreRTShaderSystem::Fini()
       Ogre::MaterialManager::DEFAULT_SCHEME_NAME);
 
   // Finalize RTShader system.
-  if (this->shaderGenerator != NULL)
+  if (this->shaderGenerator != nullptr)
   {
     // On Windows, we're using 1.9RC1, which doesn't have a bunch of changes.
 #if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0)) || defined(_WIN32)
@@ -110,7 +110,7 @@ void OgreRTShaderSystem::Fini()
 #else
     Ogre::RTShader::ShaderGenerator::destroy();
 #endif
-    this->shaderGenerator = NULL;
+    this->shaderGenerator = nullptr;
   }
 
   this->pssmSetup.setNull();

@@ -26,10 +26,10 @@ using namespace rendering;
 //////////////////////////////////////////////////
 OgreScene::OgreScene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name),
-  rootVisual(NULL),
-  meshFactory(NULL),
-  ogreRoot(NULL),
-  ogreSceneManager(NULL)
+  rootVisual(nullptr),
+  meshFactory(nullptr),
+  ogreRoot(nullptr),
+  ogreSceneManager(nullptr)
 {
   this->backgroundColor = math::Color::Black;
 }
@@ -165,7 +165,7 @@ DirectionalLightPtr OgreScene::CreateDirectionalLightImpl(unsigned int _id,
 {
   OgreDirectionalLightPtr light(new OgreDirectionalLight);
   bool result = this->InitObject(light, _id, _name);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -174,7 +174,7 @@ PointLightPtr OgreScene::CreatePointLightImpl(unsigned int _id,
 {
   OgrePointLightPtr light(new OgrePointLight);
   bool result = this->InitObject(light, _id, _name);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -183,7 +183,7 @@ SpotLightPtr OgreScene::CreateSpotLightImpl(unsigned int _id,
 {
   OgreSpotLightPtr light(new OgreSpotLight);
   bool result = this->InitObject(light, _id, _name);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -193,7 +193,7 @@ CameraPtr OgreScene::CreateCameraImpl(unsigned int _id,
   OgreCameraPtr camera(new OgreCamera);
   bool result = this->InitObject(camera, _id, _name);
   camera->SetBackgroundColor(this->backgroundColor);
-  return (result) ? camera : NULL;
+  return (result) ? camera : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -202,7 +202,7 @@ VisualPtr OgreScene::CreateVisualImpl(unsigned int _id,
 {
   OgreVisualPtr visual(new OgreVisual);
   bool result = this->InitObject(visual, _id, _name);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -211,7 +211,7 @@ ArrowVisualPtr OgreScene::CreateArrowVisualImpl(unsigned int _id,
 {
   OgreArrowVisualPtr visual(new OgreArrowVisual);
   bool result = this->InitObject(visual, _id, _name);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -220,7 +220,7 @@ AxisVisualPtr OgreScene::CreateAxisVisualImpl(unsigned int _id,
 {
   OgreAxisVisualPtr visual(new OgreAxisVisual);
   bool result = this->InitObject(visual, _id, _name);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -272,7 +272,7 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 {
   OgreMeshPtr mesh = this->meshFactory->Create(_desc);
   bool result = this->InitObject(mesh, _id, _name);
-  return (result) ? mesh : NULL;
+  return (result) ? mesh : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -281,7 +281,7 @@ MaterialPtr OgreScene::CreateMaterialImpl(unsigned int _id,
 {
   OgreMaterialPtr material(new OgreMaterial);
   bool result = this->InitObject(material, _id, _name);
-  return (result) ? material : NULL;
+  return (result) ? material : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -290,7 +290,7 @@ RenderTexturePtr OgreScene::CreateRenderTextureImpl(unsigned int _id,
 {
   OgreRenderTexturePtr renderTexture(new OgreRenderTexture);
   bool result = this->InitObject(renderTexture, _id, _name);
-  return (result) ? renderTexture : NULL;
+  return (result) ? renderTexture : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -328,7 +328,7 @@ void OgreScene::CreateRootVisual()
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
     ignerr << "Unable to create root visual" << std::endl;
-    this->rootVisual = NULL;
+    this->rootVisual = nullptr;
   }
 
   // add visual node to actual ogre root

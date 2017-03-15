@@ -92,7 +92,7 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
   if (iter == this->dataPtr->engines.end())
   {
     ignerr << "No render-engine registered with name: " << _name << std::endl;
-    return NULL;
+    return nullptr;
   }
 
   return this->dataPtr->Engine(iter);
@@ -104,7 +104,7 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index) const
   if (_index >= this->EngineCount())
   {
     ignerr << "Invalid render-engine index: " << _index << std::endl;
-    return NULL;
+    return nullptr;
   }
 
   auto iter = this->dataPtr->engines.begin();

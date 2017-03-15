@@ -174,19 +174,19 @@ ScenePtr BaseRenderEngine::CreateScene(unsigned int _id,
   if (!this->IsInitialized())
   {
     ignerr << "Render-engine has not been initialized" << std::endl;
-    return NULL;
+    return nullptr;
   }
 
   if (this->HasSceneId(_id))
   {
     ignerr << "Scene already exists with id: " << _id << std::endl;
-    return NULL;
+    return nullptr;
   }
 
   if (this->HasSceneName(_name))
   {
     ignerr << "Scene already exists with id: " << _id << std::endl;
-    return NULL;
+    return nullptr;
   }
 
   ScenePtr scene = this->CreateSceneImpl(_id, _name);

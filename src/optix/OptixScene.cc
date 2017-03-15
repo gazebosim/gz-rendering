@@ -24,14 +24,14 @@ using namespace rendering;
 //////////////////////////////////////////////////
 OptixScene::OptixScene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name),
-  rootVisual(NULL),
-  meshFactory(NULL),
-  optixContext(NULL),
-  optixMissProgram(NULL),
-  optixBoxGeometry(NULL),
-  optixConeGeometry(NULL),
-  optixCylinderGeometry(NULL),
-  optixSphereGeometry(NULL)
+  rootVisual(nullptr),
+  meshFactory(nullptr),
+  optixContext(nullptr),
+  optixMissProgram(nullptr),
+  optixBoxGeometry(nullptr),
+  optixConeGeometry(nullptr),
+  optixCylinderGeometry(nullptr),
+  optixSphereGeometry(nullptr)
 {
   // TODO: move defaults to BaseScene
   this->ambientLight = math::Color::Black;
@@ -174,7 +174,7 @@ DirectionalLightPtr OptixScene::CreateDirectionalLightImpl(unsigned int _id,
 {
   OptixDirectionalLightPtr light(new OptixDirectionalLight);
   bool result = this->InitObject(light, _id, _name);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -183,7 +183,7 @@ PointLightPtr OptixScene::CreatePointLightImpl(unsigned int _id,
 {
   OptixPointLightPtr light(new OptixPointLight);
   bool result = this->InitObject(light, _id, _name);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -192,7 +192,7 @@ SpotLightPtr OptixScene::CreateSpotLightImpl(unsigned int _id,
 {
   OptixSpotLightPtr light(new OptixSpotLight);
   bool result = this->InitObject(light, _id, _name);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -203,7 +203,7 @@ CameraPtr OptixScene::CreateCameraImpl(unsigned int _id,
   camera->traceId = this->NextEntryId();
   camera->clearId = this->NextEntryId();
   bool result = this->InitObject(camera, _id, _name);
-  return (result) ? camera : NULL;
+  return (result) ? camera : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -212,7 +212,7 @@ VisualPtr OptixScene::CreateVisualImpl(unsigned int _id,
 {
   OptixVisualPtr visual(new OptixVisual);
   bool result = this->InitObject(visual, _id, _name);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -221,7 +221,7 @@ ArrowVisualPtr OptixScene::CreateArrowVisualImpl(unsigned int _id,
 {
   OptixArrowVisualPtr visual(new OptixArrowVisual);
   bool result = this->InitObject(visual, _id, _name);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -230,7 +230,7 @@ AxisVisualPtr OptixScene::CreateAxisVisualImpl(unsigned int _id,
 {
   OptixAxisVisualPtr visual(new OptixAxisVisual);
   bool result = this->InitObject(visual, _id, _name);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -247,7 +247,7 @@ GeometryPtr OptixScene::CreateBoxImpl(unsigned int _id,
   box->optixGeometry = this->optixBoxGeometry;
   bool result = this->InitObject(box, _id, _name);
   box->SetMaterial(this->CreateMaterial());
-  return (result) ? box : NULL;
+  return (result) ? box : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -264,7 +264,7 @@ GeometryPtr OptixScene::CreateConeImpl(unsigned int _id,
   cone->optixGeometry = this->optixConeGeometry;
   bool result = this->InitObject(cone, _id, _name);
   cone->SetMaterial(this->CreateMaterial());
-  return (result) ? cone : NULL;
+  return (result) ? cone : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -281,7 +281,7 @@ GeometryPtr OptixScene::CreateCylinderImpl(unsigned int _id,
   cylinder->optixGeometry = this->optixCylinderGeometry;
   bool result = this->InitObject(cylinder, _id, _name);
   cylinder->SetMaterial(this->CreateMaterial());
-  return (result) ? cylinder : NULL;
+  return (result) ? cylinder : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -305,7 +305,7 @@ GeometryPtr OptixScene::CreateSphereImpl(unsigned int _id,
   sphere->optixGeometry = this->optixSphereGeometry;
   bool result = this->InitObject(sphere, _id, _name);
   sphere->SetMaterial(this->CreateMaterial());
-  return (result) ? sphere : NULL;
+  return (result) ? sphere : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -322,7 +322,7 @@ MeshPtr OptixScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 {
   OptixMeshPtr mesh = this->meshFactory->Create(_desc);
   bool result = this->InitObject(mesh, _id, _name);
-  return (result) ? mesh : NULL;
+  return (result) ? mesh : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -331,7 +331,7 @@ MaterialPtr OptixScene::CreateMaterialImpl(unsigned int _id,
 {
   OptixMaterialPtr material(new OptixMaterial);
   bool result = this->InitObject(material, _id, _name);
-  return (result) ? material : NULL;
+  return (result) ? material : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -340,7 +340,7 @@ RenderTexturePtr OptixScene::CreateRenderTextureImpl(
 {
   OptixRenderTexturePtr material(new OptixRenderTexture);
   bool result = this->InitObject(material, _id, _name);
-  return (result) ? material : NULL;
+  return (result) ? material : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -406,7 +406,7 @@ void OptixScene::CreateRootVisual()
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
     ignerr << "Unable to create root visual" << std::endl;
-    this->rootVisual = NULL;
+    this->rootVisual = nullptr;
   }
 
   // create transform-less optix root group

@@ -38,7 +38,7 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   loaded(false),
   initialized(false),
   nextObjectId(ignition::math::MAX_UI16),
-  nodes(NULL)
+  nodes(nullptr)
 {
 }
 
@@ -472,7 +472,7 @@ DirectionalLightPtr BaseScene::CreateDirectionalLight(unsigned int _id,
 {
   DirectionalLightPtr light = this->CreateDirectionalLightImpl(_id, _name);
   bool result = this->RegisterLight(light);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -499,7 +499,7 @@ PointLightPtr BaseScene::CreatePointLight(unsigned int _id,
 {
   PointLightPtr light = this->CreatePointLightImpl(_id, _name);
   bool result = this->RegisterLight(light);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -526,7 +526,7 @@ SpotLightPtr BaseScene::CreateSpotLight(unsigned int _id,
 {
   SpotLightPtr light = this->CreateSpotLightImpl(_id, _name);
   bool result = this->RegisterLight(light);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -552,7 +552,7 @@ CameraPtr BaseScene::CreateCamera(unsigned int _id, const std::string &_name)
 {
   CameraPtr camera = this->CreateCameraImpl(_id, _name);
   bool result = this->RegisterSensor(camera);
-  return (result) ? camera : NULL;
+  return (result) ? camera : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -578,7 +578,7 @@ VisualPtr BaseScene::CreateVisual(unsigned int _id, const std::string &_name)
 {
   VisualPtr visual = this->CreateVisualImpl(_id, _name);
   bool result = this->RegisterVisual(visual);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -605,7 +605,7 @@ ArrowVisualPtr BaseScene::CreateArrowVisual(unsigned int _id,
 {
   ArrowVisualPtr visual = this->CreateArrowVisualImpl(_id, _name);
   bool result = this->RegisterVisual(visual);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -632,7 +632,7 @@ AxisVisualPtr BaseScene::CreateAxisVisual(unsigned int _id,
 {
   AxisVisualPtr visual = this->CreateAxisVisualImpl(_id, _name);
   bool result = this->RegisterVisual(visual);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

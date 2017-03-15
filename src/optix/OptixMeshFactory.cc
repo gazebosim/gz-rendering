@@ -48,7 +48,7 @@ OptixMeshPtr OptixMeshFactory::Create(const MeshDescriptor &_desc)
 
   if (!subMeshStore)
   {
-    return NULL;
+    return nullptr;
   }
 
   return this->Create(subMeshStore);
@@ -161,7 +161,7 @@ OptixMeshGeometryFactory::OptixMeshGeometryFactory(OptixScenePtr _scene,
     const common::SubMesh &_subMesh) :
   scene(_scene),
   subMesh(_subMesh),
-  optixGeometry(NULL)
+  optixGeometry(nullptr)
 {
 }
 

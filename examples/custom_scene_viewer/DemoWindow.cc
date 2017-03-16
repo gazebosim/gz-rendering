@@ -14,24 +14,27 @@
  * limitations under the License.
  *
  */
-#include "DemoWindow.hh"
-#include <ctime>
 
-#if __APPLE__
+#if defined(__APPLE__)
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
-#else
+#elif not defined(_WIN32)
   #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glut.h>
 #endif
 
-#include "ignition/rendering/rendering.hh"
-#include "ManualSceneDemo.hh"
-
-#if not (__APPLE__ || _WIN32)
+#if not defined(__APPLE__) && not defined(_WIN32)
   #include <GL/glx.h>
 #endif
+
+#include <ctime>
+#include <vector>
+
+#include "ignition/rendering/rendering.hh"
+
+#include "ManualSceneDemo.hh"
+#include "DemoWindow.hh"
 
 #define KEY_ESC 27
 #define KEY_TAB  9
@@ -62,7 +65,7 @@ double g_offset = 0.0;
 double g_fps = 0.0;
 
 const int g_fpsSize = 10;
-double g_fpsQueue[g_fpsSize];
+std::vector<double> g_fpsQueue(g_fpsSize);
 int g_fpsIndex = 0;
 int g_fpsCount = 0;
 clock_t g_prevTime;
@@ -258,7 +261,8 @@ void rendering::GlutPrintFPS()
 void rendering::GlutUpdateFPS()
 {
   clock_t currTime = clock();
-  double elapsedTime = double(currTime - g_prevTime) / CLOCKS_PER_SEC;
+  double elapsedTime = static_cast<double>(currTime - g_prevTime)
+      / CLOCKS_PER_SEC;
   g_fpsQueue[g_fpsIndex] = 1 / elapsedTime;
   g_fpsCount = (g_fpsCount >= g_fpsSize) ? g_fpsSize : g_fpsCount + 1;
   g_fpsIndex = (g_fpsIndex + 1) % g_fpsSize;

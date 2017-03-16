@@ -555,7 +555,7 @@ void SceneManagerPrivate::DemoteCurrentScenes()
 
 //////////////////////////////////////////////////
 SubSceneManager::SubSceneManager() :
-  activeScene(NULL)
+  activeScene(nullptr)
 {
   this->CreateGeometryFunctionMap();
 }
@@ -634,7 +634,7 @@ ScenePtr SubSceneManager::Scene(unsigned int _id) const
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -650,7 +650,7 @@ ScenePtr SubSceneManager::Scene(const std::string &_name) const
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -661,7 +661,7 @@ ScenePtr SubSceneManager::SceneAt(unsigned int _index) const
   if (_index >= this->SceneCount())
   {
     ignerr << "Invalid scene index: " << _index << std::endl;
-    return NULL;
+    return nullptr;
   }
 
   auto iter = this->scenes.begin();
@@ -702,7 +702,7 @@ ScenePtr SubSceneManager::RemoveScene(unsigned int _id)
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -718,7 +718,7 @@ ScenePtr SubSceneManager::RemoveScene(const std::string &_name)
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -734,7 +734,7 @@ ScenePtr SubSceneManager::RemoveScene(ScenePtr _scene)
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -745,7 +745,7 @@ ScenePtr SubSceneManager::RemoveSceneAt(unsigned int _index)
   if (_index >= this->SceneCount())
   {
     ignerr << "Invalid scene index: " << _index << std::endl;
-    return NULL;
+    return nullptr;
   }
 
   auto iter = this->scenes.begin();
@@ -772,7 +772,7 @@ void SubSceneManager::UpdateScenes()
   }
 
   ClearMessages();
-  this->activeScene = NULL;
+  this->activeScene = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -780,7 +780,7 @@ void SubSceneManager::Clear()
 {
   this->scenes.clear();
   this->ClearMessages();
-  this->activeScene = NULL;
+  this->activeScene = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -975,16 +975,16 @@ void SubSceneManager::ProcessPointLight(const gazebo::msgs::Light &_lightMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessPointLightImpl(const gazebo::msgs::Light &_lightMsg,
-    PointLightPtr _light)
+void SubSceneManager::ProcessPointLightImpl(
+    const gazebo::msgs::Light &_lightMsg, PointLightPtr _light)
 {
   // process general light information
   this->ProcessLightImpl(_lightMsg, _light);
 }
 
 //////////////////////////////////////////////////
-PointLightPtr SubSceneManager::PointLight(const gazebo::msgs::Light &_lightMsg,
-    VisualPtr _parent)
+PointLightPtr SubSceneManager::PointLight(
+    const gazebo::msgs::Light &_lightMsg, VisualPtr _parent)
 {
   // find existing light with name
   std::string name = _lightMsg.name();
@@ -1003,7 +1003,8 @@ PointLightPtr SubSceneManager::PointLight(const gazebo::msgs::Light &_lightMsg,
 }
 
 //////////////////////////////////////////////////
-PointLightPtr SubSceneManager::CreatePointLight(const gazebo::msgs::Light &_lightMsg)
+PointLightPtr SubSceneManager::CreatePointLight(
+    const gazebo::msgs::Light &_lightMsg)
 {
   std::string name = _lightMsg.name();
   return this->activeScene->CreatePointLight(name);
@@ -1018,8 +1019,8 @@ void SubSceneManager::ProcessSpotLight(const gazebo::msgs::Light &_lightMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessSpotLightImpl(const gazebo::msgs::Light &_lightMsg,
-    SpotLightPtr _light)
+void SubSceneManager::ProcessSpotLightImpl(
+    const gazebo::msgs::Light &_lightMsg, SpotLightPtr _light)
 {
   // set direction if available
   if (_lightMsg.has_direction())
@@ -1074,7 +1075,8 @@ SpotLightPtr SubSceneManager::SpotLight(const gazebo::msgs::Light &_lightMsg,
 }
 
 //////////////////////////////////////////////////
-SpotLightPtr SubSceneManager::CreateSpotLight(const gazebo::msgs::Light &_lightMsg)
+SpotLightPtr SubSceneManager::CreateSpotLight(
+    const gazebo::msgs::Light &_lightMsg)
 {
   std::string name = _lightMsg.name();
   return this->activeScene->CreateSpotLight(name);
@@ -1413,8 +1415,8 @@ VisualPtr SubSceneManager::CreateVisual(bool _hasId, unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessGeometry(const gazebo::msgs::Geometry &_geometryMsg,
-    VisualPtr _parent)
+void SubSceneManager::ProcessGeometry(
+    const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)
 {
   GeomType geomType = _geometryMsg.type();
   GeomFunc geomFunc = this->geomFunctions[geomType];
@@ -1443,8 +1445,8 @@ void SubSceneManager::ProcessBox(const gazebo::msgs::Geometry &_geometryMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessCone(const gazebo::msgs::Geometry &/*_geometryMsg*/,
-    VisualPtr _parent)
+void SubSceneManager::ProcessCone(
+    const gazebo::msgs::Geometry &/*_geometryMsg*/, VisualPtr _parent)
 {
   // TODO: needs protobuf msg
   GeometryPtr cone = this->activeScene->CreateCone();
@@ -1457,8 +1459,8 @@ void SubSceneManager::ProcessCone(const gazebo::msgs::Geometry &/*_geometryMsg*/
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessCylinder(const gazebo::msgs::Geometry &_geometryMsg,
-    VisualPtr _parent)
+void SubSceneManager::ProcessCylinder(
+    const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)
 {
   GeometryPtr cylinder = this->activeScene->CreateCylinder();
   const gazebo::msgs::CylinderGeom &cylinderMsg = _geometryMsg.cylinder();
@@ -1594,7 +1596,8 @@ MaterialPtr SubSceneManager::CreateMaterial(
   // set shader-type if available
   if (_materialMsg.has_shader_type())
   {
-    gazebo::msgs::Material::ShaderType shader_type = _materialMsg.shader_type();
+    gazebo::msgs::Material::ShaderType shader_type =
+        _materialMsg.shader_type();
     ShaderType type = SubSceneManager::Convert(shader_type);
     material->SetShaderType(type);
   }
@@ -1613,7 +1616,8 @@ void SubSceneManager::ProcessPose(const gazebo::msgs::Pose &_poseMsg)
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::SetPose(NodePtr _node, const gazebo::msgs::Pose &_poseMsg)
+void SubSceneManager::SetPose(NodePtr _node,
+    const gazebo::msgs::Pose &_poseMsg)
 {
   math::Pose3d pose = SubSceneManager::Convert(_poseMsg);
   _node->SetLocalPose(pose);
@@ -1697,7 +1701,8 @@ math::Vector3d SubSceneManager::Convert(const gazebo::msgs::Vector3d &_vecMsg)
 }
 
 //////////////////////////////////////////////////
-math::Quaterniond SubSceneManager::Convert(const gazebo::msgs::Quaternion &_quatMsg)
+math::Quaterniond SubSceneManager::Convert(
+    const gazebo::msgs::Quaternion &_quatMsg)
 {
   math::Quaterniond quat;
   quat.W(_quatMsg.w());

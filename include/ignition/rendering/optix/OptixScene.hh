@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OPTIXSCENE_HH_
 #define IGNITION_RENDERING_OPTIXSCENE_HH_
 
+#include <string>
+
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"

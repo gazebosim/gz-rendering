@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OPTIXCAMERA_HH_
 #define IGNITION_RENDERING_OPTIXCAMERA_HH_
 
+#include <string>
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixSensor.hh"

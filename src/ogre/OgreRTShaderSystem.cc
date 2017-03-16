@@ -20,10 +20,9 @@
   #include <Winsock2.h>
 #endif
 
-#include <thread>
 #include <sys/stat.h>
-
 #include <boost/filesystem.hpp>
+#include <thread>
 
 #include <ignition/common/Console.hh>
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
@@ -56,7 +55,7 @@ OgreRTShaderSystem::~OgreRTShaderSystem()
 //////////////////////////////////////////////////
 void OgreRTShaderSystem::Init()
 {
-#if INCLUDE_RTSHADER && OGRE_VERSION_MAJOR >= 1 &&\
+#if INCLUDE_RTSHADER && OGRE_VERSION_MAJOR >= 1 && \
     OGRE_VERSION_MINOR >= MINOR_VERSION
 
   // Only initialize if using FORWARD rendering
@@ -120,7 +119,7 @@ void OgreRTShaderSystem::Fini()
 }
 
 //////////////////////////////////////////////////
-#if INCLUDE_RTSHADER && OGRE_VERSION_MAJOR >= 1 &&\
+#if INCLUDE_RTSHADER && OGRE_VERSION_MAJOR >= 1 && \
     OGRE_VERSION_MINOR >= MINOR_VERSION
 void OgreRTShaderSystem::AddScene(OgreScenePtr _scene)
 {
@@ -422,10 +421,11 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
           // Create the directory
 #ifdef _WIN32
           if (mkdir(cachePath.c_str()) != 0)
+          {
 #else
           if (mkdir(cachePath.c_str(), S_IRUSR | S_IWUSR | S_IXUSR) != 0)
-#endif
           {
+#endif
             if (errno != EEXIST)
             {
               errStream << "failed to create [" << cachePath << "] : ["

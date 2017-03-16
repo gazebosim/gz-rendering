@@ -26,14 +26,14 @@
   #include <GL/glut.h>
 #endif
 
+#if not defined(__APPLE__) && not defined(_WIN32)
+  #include <GL/glx.h>
+#endif
+
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Scene.hh"
-
-#if not (__APPLE__ || _WIN32)
-  #include <GL/glx.h>
-#endif
 
 #define KEY_ESC 27
 #define KEY_TAB  9

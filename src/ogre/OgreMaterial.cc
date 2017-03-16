@@ -177,7 +177,7 @@ bool OgreMaterial::ReflectionEnabled() const
 //////////////////////////////////////////////////
 void OgreMaterial::SetReflectionEnabled(bool _enabled)
 {
-   this->reflectionEnabled = _enabled;
+  this->reflectionEnabled = _enabled;
 }
 
 //////////////////////////////////////////////////

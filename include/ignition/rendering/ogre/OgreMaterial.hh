@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGREMATERIAL_HH_
 #define IGNITION_RENDERING_OGREMATERIAL_HH_
 
+#include <string>
+
 #include "ignition/rendering/base/BaseMaterial.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"

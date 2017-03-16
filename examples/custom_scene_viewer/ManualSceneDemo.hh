@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_TEST_MANUALSCENEDEMO_HH_
-#define _IGNITION_RENDERING_TEST_MANUALSCENEDEMO_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_TEST_MANUALSCENEDEMO_HH_
+#define IGNITION_RENDERING_EXAMPLES_TEST_MANUALSCENEDEMO_HH_
 
+#include <string>
 #include <ignition/rendering/rendering.hh>
 #include "TestTypes.hh"
 

@@ -75,7 +75,8 @@ namespace ignition
 
       public: virtual void SetWorldRotation(const math::Quaterniond &_rotation);
 
-      public: virtual math::Pose3d WorldToLocal(const math::Pose3d &_pose) const;
+      public: virtual math::Pose3d WorldToLocal(const math::Pose3d &_pose)
+          const;
 
       public: virtual math::Vector3d Origin() const;
 

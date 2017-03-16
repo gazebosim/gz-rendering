@@ -61,9 +61,12 @@ OptixMeshPtr OptixMeshFactory::Create(OptixSubMeshStorePtr _subMeshes)
 
   OptixMeshPtr mesh(new OptixMesh);
   mesh->optixGeomGroup = optixContext->createGeometryGroup();
-  // mesh->optixAccel = optixContext->createAcceleration("TriangleKdTree", "KdTree");
-  // mesh->optixAccel = optixContext->createAcceleration("MedianBvh", "Bvh");
-  // mesh->optixAccel = optixContext->createAcceleration("Lbvh", "Bvh");
+  // mesh->optixAccel =
+  //    optixContext->createAcceleration("TriangleKdTree", "KdTree");
+  // mesh->optixAccel =
+  //    optixContext->createAcceleration("MedianBvh", "Bvh");
+  // mesh->optixAccel =
+  //    optixContext->createAcceleration("Lbvh", "Bvh");
   mesh->optixAccel = optixContext->createAcceleration("Sbvh", "Bvh");
   mesh->optixAccel->markDirty();
 
@@ -196,7 +199,8 @@ void OptixMeshGeometryFactory::CreateGeometry()
 
   this->optixGeometry["vertexBuffer"]->setBuffer(this->CreateVertexBuffer());
   this->optixGeometry["normalBuffer"]->setBuffer(this->CreateNormalBuffer());
-  this->optixGeometry["texCoordBuffer"]->setBuffer(this->CreateTexCoordBuffer());
+  this->optixGeometry["texCoordBuffer"]->setBuffer(
+      this->CreateTexCoordBuffer());
   this->optixGeometry["indexBuffer"]->setBuffer(this->CreateIndexBuffer());
 
   unsigned int count = this->subMesh.IndexCount() / 3;

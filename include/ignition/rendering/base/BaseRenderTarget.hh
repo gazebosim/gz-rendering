@@ -39,7 +39,7 @@ namespace ignition
 
       protected: virtual void RebuildImpl() = 0;
 
-      protected: bool targetDirty;
+      protected: bool targetDirty = true;
     };
 
     template <class T>
@@ -63,9 +63,9 @@ namespace ignition
 
       public: virtual void SetFormat(PixelFormat _format);
 
-      protected: unsigned int width;
+      protected: unsigned int width = 0u;
 
-      protected: unsigned int height;
+      protected: unsigned int height = 0u;
 
       protected: PixelFormat format;
     };
@@ -74,8 +74,7 @@ namespace ignition
     // BaseRenderTarget
     //////////////////////////////////////////////////
     template <class T>
-    BaseRenderTarget<T>::BaseRenderTarget() :
-      targetDirty(true)
+    BaseRenderTarget<T>::BaseRenderTarget()
     {
     }
 
@@ -109,8 +108,6 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     BaseRenderTexture<T>::BaseRenderTexture() :
-      width(0),
-      height(0),
       format(PF_UNKNOWN)
     {
     }

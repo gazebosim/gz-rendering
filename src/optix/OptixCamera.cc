@@ -151,11 +151,11 @@ void OptixCamera::WritePoseToDeviceImpl()
   float3 eye = make_float3(pos.X(), pos.Y(), pos.Z());
   float3   u = make_float3(-rot(0, 1), -rot(1, 1), -rot(2, 1));
   float3   v = make_float3(-rot(0, 2), -rot(1, 2), -rot(2, 2));
-  float3   w = make_float3( rot(0, 0),  rot(1, 0),  rot(2, 0));
+  float3   w = make_float3(rot(0, 0),  rot(1, 0),  rot(2, 0));
 
   // TODO: handle auto and manual aspect-ratio
   // v *= 1 / this->aspectRatio;
-  v *= (float)this->ImageHeight() / this->ImageWidth();
+  v *= static_cast<float>(this->ImageHeight()) / this->ImageWidth();
   w *= 1 / (2 * tan(this->xFieldOfView.Radian() / 2));
 
   this->optixRenderProgram["eye"]->setFloat(eye);

@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
 #define IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
 
+#include <string>
 #include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"

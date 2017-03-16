@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (C) 2015 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,15 @@
  *
  */
 
-#include <boost/filesystem.hpp>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Util.hh>
+// Not Apple or Windows
+#if not defined(__APPLE__) && not defined(_WIN32)
+# include <X11/Xlib.h>
+# include <X11/Xutil.h>
+# include <GL/glx.h>
+#endif
+
+#include <boost/filesystem.hpp>
 
 #ifndef _WIN32
   #include <dirent.h>
@@ -28,7 +33,7 @@
   #include <Winsock2.h>
   #include <ignition/common/win_dirent.h>
 #endif
-
+#include <ignition/common/Console.hh>
 
 #include "ignition/rendering/SystemPaths.hh"
 
@@ -38,12 +43,6 @@
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
-
-#if not (__APPLE__ || _WIN32)
-  #include <X11/Xlib.h>
-  #include <X11/Xutil.h>
-  #include <GL/glx.h>
-#endif
 
 using namespace ignition;
 using namespace rendering;

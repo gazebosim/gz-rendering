@@ -43,11 +43,11 @@ namespace ignition
       /// \brief Constructor. A common::Mesh will be retrieved from the
       /// MeshManager by the given name upon a call to Normalize.
       /// \param[in] _meshName Name of the mesh to load
-      public: MeshDescriptor(const std::string &_meshName);
+      public: explicit MeshDescriptor(const std::string &_meshName);
 
       /// \brief Constructor
       /// \param[in] _mesh Mesh to load
-      public: MeshDescriptor(const common::Mesh *_mesh);
+      public: explicit MeshDescriptor(const common::Mesh *_mesh);
 
       /// \brief Ensures both the meshName and mesh member variables have been
       /// assigned. If mesh is not null, it will be used to override the value

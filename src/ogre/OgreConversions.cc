@@ -22,14 +22,22 @@ using namespace rendering;
 //////////////////////////////////////////////////
 const Ogre::PixelFormat OgreConversions::ogrePixelFormats[PF_COUNT] =
     {
-      Ogre::PF_UNKNOWN,  // UKNOWN
-      Ogre::PF_L8,       // L8
-      Ogre::PF_BYTE_RGB, // R8G8B8
-      Ogre::PF_BYTE_BGR, // B8G8R8
-      Ogre::PF_BYTE_RGB, // BAYER_RGGB8
-      Ogre::PF_BYTE_RGB, // BAYER_BGGR8
-      Ogre::PF_BYTE_RGB, // BAYER_GBGR8
-      Ogre::PF_BYTE_RGB, // BAYER_GRGB8
+      // UKNOWN
+      Ogre::PF_UNKNOWN,
+      // L8
+      Ogre::PF_L8,
+      // R8G8B8
+      Ogre::PF_BYTE_RGB,
+      // B8G8R8
+      Ogre::PF_BYTE_BGR,
+      // BAYER_RGGB8
+      Ogre::PF_BYTE_RGB,
+      // BAYER_BGGR8
+      Ogre::PF_BYTE_RGB,
+      // BAYER_GBGR8
+      Ogre::PF_BYTE_RGB,
+      // BAYER_GRGB8
+      Ogre::PF_BYTE_RGB,
     };
 
 //////////////////////////////////////////////////

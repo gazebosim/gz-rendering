@@ -15,11 +15,6 @@
  *
  */
 
-#include <algorithm>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -30,6 +25,11 @@
 #else
   #include <ignition/common/win_dirent.h>
 #endif
+
+#include <algorithm>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/SystemPaths.hh"
@@ -68,10 +68,10 @@ class ignition::rendering::SystemPathsPrivate
   public: bool ogrePathsFromEnv;
 
   /// \brief Find file callback.
-  public: std::function<std::string (const std::string &)> findFileCB;
+  public: std::function<std::string(const std::string &)> findFileCB;
 
   /// \brief Find file URI callback.
-  public: std::function<std::string (const std::string &)> findFileURICB;
+  public: std::function<std::string(const std::string &)> findFileURICB;
 };
 
 
@@ -167,11 +167,13 @@ void SystemPaths::UpdatePluginPaths()
   size_t pos2 = path.find(PathDelimiter);
   while (pos2 != std::string::npos)
   {
-    this->InsertUnique(path.substr(pos1, pos2-pos1), this->dataPtr->pluginPaths);
+    this->InsertUnique(path.substr(pos1, pos2-pos1),
+        this->dataPtr->pluginPaths);
     pos1 = pos2+1;
     pos2 = path.find(PathDelimiter, pos2+1);
   }
-  this->InsertUnique(path.substr(pos1, path.size()-pos1), this->dataPtr->pluginPaths);
+  this->InsertUnique(path.substr(pos1, path.size()-pos1),
+      this->dataPtr->pluginPaths);
 }
 
 //////////////////////////////////////////////////
@@ -196,7 +198,8 @@ void SystemPaths::UpdateOgrePaths()
     pos1 = pos2+1;
     pos2 = path.find(PathDelimiter, pos2+1);
   }
-  this->InsertUnique(path.substr(pos1, path.size()-pos1), this->dataPtr->ogrePaths);
+  this->InsertUnique(path.substr(pos1, path.size()-pos1),
+      this->dataPtr->ogrePaths);
 }
 
 //////////////////////////////////////////////////
@@ -295,11 +298,13 @@ void SystemPaths::AddOgrePaths(const std::string &_path)
   size_t pos2 = _path.find(PathDelimiter);
   while (pos2 != std::string::npos)
   {
-    this->InsertUnique(_path.substr(pos1, pos2-pos1), this->dataPtr->ogrePaths);
+    this->InsertUnique(_path.substr(pos1, pos2-pos1),
+        this->dataPtr->ogrePaths);
     pos1 = pos2+1;
     pos2 = _path.find(PathDelimiter, pos2+1);
   }
-  this->InsertUnique(_path.substr(pos1, _path.size()-pos1), this->dataPtr->ogrePaths);
+  this->InsertUnique(_path.substr(pos1, _path.size()-pos1),
+      this->dataPtr->ogrePaths);
 }
 
 /////////////////////////////////////////////////
@@ -309,11 +314,13 @@ void SystemPaths::AddPluginPaths(const std::string &_path)
   size_t pos2 = _path.find(PathDelimiter);
   while (pos2 != std::string::npos)
   {
-    this->InsertUnique(_path.substr(pos1, pos2-pos1), this->dataPtr->pluginPaths);
+    this->InsertUnique(_path.substr(pos1, pos2-pos1),
+        this->dataPtr->pluginPaths);
     pos1 = pos2+1;
     pos2 = _path.find(PathDelimiter, pos2+1);
   }
-  this->InsertUnique(_path.substr(pos1, _path.size()-pos1), this->dataPtr->pluginPaths);
+  this->InsertUnique(_path.substr(pos1, _path.size()-pos1),
+      this->dataPtr->pluginPaths);
 }
 
 /////////////////////////////////////////////////

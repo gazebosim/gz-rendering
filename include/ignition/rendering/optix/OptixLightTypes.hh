@@ -28,12 +28,10 @@ namespace ignition
 
   typedef enum OptixLightType_t
   {
-
     LT_DIRECTIONAL = 0,
     LT_POINT       = 1,
     LT_SPOT        = 2,
     LT_COUNT       = 3,
-
   } OptixLightType;
 
   struct OptixLightColor

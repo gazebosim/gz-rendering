@@ -14,21 +14,22 @@
  * limitations under the License.
  *
  */
+
+#if defined(__APPLE__)
+  #include <OpenGL/gl.h>
+  #include <GLUT/glut.h>
+#elif not defined(_WIN32)
+  #include <GL/glew.h>
+  #include <GL/gl.h>
+  #include <GL/glut.h>
+#endif
+
 #include <iostream>
 #include <vector>
 
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/rendering.hh"
 #include "GlutWindow.hh"
-
-#if __APPLE__
-  #include <OpenGL/gl.h>
-  #include <GLUT/glut.h>
-#else
-  #include <GL/glew.h>
-  #include <GL/gl.h>
-  #include <GL/glut.h>
-#endif
 
 using namespace ignition;
 using namespace rendering;
@@ -159,7 +160,6 @@ CameraPtr CreateCamera(const std::string &_engineName)
 
 int main(int _argc, char** _argv)
 {
-
   glutInit(&_argc, _argv);
 
   common::Console::SetQuiet(false);
@@ -182,7 +182,7 @@ int main(int _argc, char** _argv)
   }
   catch (...)
   {
-    //std::cout << ex.what() << std::endl;
+    // std::cout << ex.what() << std::endl;
   }
 
   return 0;

@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGREMESH_HH_
 #define IGNITION_RENDERING_OGREMESH_HH_
 
+#include <string>
+#include <vector>
 #include "ignition/rendering/base/BaseMesh.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"

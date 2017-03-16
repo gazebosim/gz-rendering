@@ -45,7 +45,7 @@ then
   CPPLINT_FILES="$CHECK_FILES"
   QUICK_TMP=`mktemp -t asdfXXXXXXXXXX`
 else
-  CHECK_DIRS="./src ./include ./test/integration ./test/regression ./test/performance"
+  CHECK_DIRS="./src ./include ./test/integration ./test/regression ./test/performance ./examples"
   if [ $CPPCHECK_LT_157 -eq 1 ]; then
     # cppcheck is older than 1.57, so don't check header files (issue #907)
     CPPCHECK_FILES=`find $CHECK_DIRS -name "*.cc"`
@@ -58,14 +58,18 @@ fi
 
 SUPPRESS=/tmp/cpp_check.suppress
 
+
 # The follow suppression is useful when checking for missing includes.
 # It's disable for now because checking for missing includes is very
 # time consuming. See CPPCHECK_CMD3.
 #echo "missingIncludeSystem" >> $SUPPRESS
-echo "*:include/ignition/transport/TransportTypes.hh:63" > $SUPPRESS
+
+# Suppress unused struct member warnings for optix headers. The variables
+# are used by cuda which are not known to cppcheck.
+echo "unusedStructMember:include/ignition/rendering/optix/*.hh" > $SUPPRESS
 
 #cppcheck
-CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS"
+CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS --inline-suppr"
 if [ $CPPCHECK_LT_157 -eq 0 ]; then
   # use --language argument if 1.57 or greater (issue #907)
   CPPCHECK_BASE="$CPPCHECK_BASE --language=c++"

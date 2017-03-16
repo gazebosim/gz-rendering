@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OPTIXPRIMITIVE_HH_
 #define IGNITION_RENDERING_OPTIXPRIMITIVE_HH_
 
+#include <string>
 #include "ignition/rendering/optix/OptixGeometry.hh"
 
 namespace ignition

@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASEMESH_HH_
 #define IGNITION_RENDERING_BASEMESH_HH_
 
+#include <string>
 #include "ignition/rendering/Mesh.hh"
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseObject.hh"

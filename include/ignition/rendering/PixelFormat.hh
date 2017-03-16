@@ -28,15 +28,24 @@ namespace ignition
     /// \brief Image pixel format types
     enum IGNITION_VISIBLE PixelFormat
     {
-      PF_UNKNOWN      = 0, /// < Unknown or errant type
-      PF_L8           = 1, /// < Grayscale, 1-byte per channel
-      PF_R8G8B8       = 2, /// < RGB, 1-byte per channel
-      PF_B8G8R8       = 3, /// < BGR, 1-byte per channel
-      PF_BAYER_RGGB8  = 4, /// < Bayer RGGB, 1-byte per channel
-      PF_BAYER_BGGR8  = 5, /// < Bayer BGGR, 1-byte per channel
-      PF_BAYER_GBGR8  = 6, /// < Bayer GBGR, 1-byte per channel
-      PF_BAYER_GRGB8  = 7, /// < Bayer GRGB, 1-byte per channel
-      PF_COUNT        = 8, /// < Number of pixel format types
+      /// < Unknown or errant type
+      PF_UNKNOWN      = 0,
+      /// < Grayscale, 1-byte per channel
+      PF_L8           = 1,
+      /// < RGB, 1-byte per channel
+      PF_R8G8B8       = 2,
+      /// < BGR, 1-byte per channel
+      PF_B8G8R8       = 3,
+      /// < Bayer RGGB, 1-byte per channel
+      PF_BAYER_RGGB8  = 4,
+      /// < Bayer BGGR, 1-byte per channel
+      PF_BAYER_BGGR8  = 5,
+      /// < Bayer GBGR, 1-byte per channel
+      PF_BAYER_GBGR8  = 6,
+      /// < Bayer GRGB, 1-byte per channel
+      PF_BAYER_GRGB8  = 7,
+      /// < Number of pixel format types
+      PF_COUNT        = 8
     };
 
     /// \class PixelUtil PixelFormat.hh ignition/rendering/PixelFormat.hh

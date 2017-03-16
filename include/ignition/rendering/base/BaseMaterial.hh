@@ -175,13 +175,19 @@ namespace ignition
       this->SetEmissive(_material.Emissive());
       this->SetShininess(_material.Shininess());
       this->SetTransparency(_material.Transparency());
-      this->SetReflectivity(0); // TODO: update common::Material
+      // TODO: update common::Material
+      this->SetReflectivity(0);
       this->SetTexture(_material.TextureImage());
-      this->SetCastShadows(true); // TODO: update common::Material
-      this->SetReceiveShadows(true); // TODO: update common::Material
-      this->SetReflectionEnabled(true); // TODO: update common::Material
-      this->ClearNormalMap(); // TODO: update common::Material
-      this->SetShaderType(ST_PIXEL); // TODO: update common::Material
+      // TODO: update common::Material
+      this->SetCastShadows(true);
+      // TODO: update common::Material
+      this->SetReceiveShadows(true);
+      // TODO: update common::Material
+      this->SetReflectionEnabled(true);
+      // TODO: update common::Material
+      this->ClearNormalMap();
+      // TODO: update common::Material
+      this->SetShaderType(ST_PIXEL);
     }
 
     //////////////////////////////////////////////////

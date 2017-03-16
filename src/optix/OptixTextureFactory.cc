@@ -14,11 +14,11 @@
  *
  */
 
+#include <FreeImage.h>
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/optix/OptixTextureFactory.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
-#include <FreeImage.h>
 
 using namespace ignition;
 using namespace rendering;

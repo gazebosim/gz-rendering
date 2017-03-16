@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_TEST_SCENEBUILDER_HH_
-#define _IGNITION_RENDERING_TEST_SCENEBUILDER_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_TEST_SCENEBUILDER_HH_
+#define IGNITION_RENDERING_EXAMPLES_TEST_SCENEBUILDER_HH_
 
+#include <string>
 #include "TestTypes.hh"
 
 namespace ignition

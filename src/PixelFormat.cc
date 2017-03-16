@@ -32,33 +32,49 @@ const char *PixelUtil::names[PF_COUNT] =
       "BAYER_RGGB8",
       "BAYER_BGGR8",
       "BAYER_GBGR8",
-      "BAYER_GRGB8",
+      "BAYER_GRGB8"
     };
 
 //////////////////////////////////////////////////
 const unsigned char PixelUtil::channelCounts[PF_COUNT] =
     {
-      0, // UKNOWN
-      1, // L8
-      3, // R8G8B8
-      3, // B8G8R8
-      4, // BAYER_RGGB8
-      4, // BAYER_BGGR8
-      4, // BAYER_GBGR8
-      4, // BAYER_GRGB8
+      // UKNOWN
+      0,
+      // L8
+      1,
+      // R8G8B8
+      3,
+      // B8G8R8
+      3,
+      // BAYER_RGGB8
+      4,
+      // BAYER_BGGR8
+      4,
+      // BAYER_GBGR8
+      4,
+      // BAYER_GRGB8
+      4
     };
 
 //////////////////////////////////////////////////
 const unsigned char PixelUtil::channelByteCounts[PF_COUNT] =
     {
-      0, // UKNOWN
-      1, // L8
-      1, // R8G8B8
-      1, // B8G8R8
-      1, // BAYER_RGGB8
-      1, // BAYER_BGGR8
-      1, // BAYER_GBGR8
-      1, // BAYER_GRGB8
+      // UNKNOWN
+      0,
+      // L8
+      1,
+      // R8G8B8
+      1,
+      // B8G8R8
+      1,
+      // BAYER_RGGB8
+      1,
+      // BAYER_BGGR8
+      1,
+      // BAYER_GBGR8
+      1,
+      // BAYER_GRGB8
+      1
     };
 
 //////////////////////////////////////////////////

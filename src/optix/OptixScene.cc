@@ -371,15 +371,17 @@ unsigned int OptixScene::NextEntryId()
 void OptixScene::CreateContext()
 {
   this->optixContext = optix::Context::create();
-
-  // this->optixContext->setStackSize(65536); // TODO: set dynamically
-  // this->optixContext->setStackSize(45536); // TODO: set dynamically
-  this->optixContext->setStackSize(10000); // TODO: set dynamically
+  // TODO: set dynamically
+  // this->optixContext->setStackSize(65536);
+  // TODO: set dynamically
+  // this->optixContext->setStackSize(45536);
+  // TODO: set dynamically
+  this->optixContext->setStackSize(10000);
   this->optixContext->setEntryPointCount(0);
   this->optixContext->setRayTypeCount(RT_COUNT);
 
   // TODO: setup programatically
-  this->optixContext["sceneEpsilon"]->setFloat(1E-4); // TODO: set dynamically
+  this->optixContext["sceneEpsilon"]->setFloat(1E-4);
   this->optixContext["maxReflectionDepth"]->setInt(3);
   this->optixContext["maxRefractionDepth"]->setInt(3);
   this->optixContext["importanceCutoff"]->setFloat(0.01);

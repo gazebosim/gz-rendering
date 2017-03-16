@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASEGEOMETRY_HH_
 #define IGNITION_RENDERING_BASEGEOMETRY_HH_
 
+#include <string>
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Scene.hh"
 

@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OPTIXTEXTUREFACTORY_HH_
 #define IGNITION_RENDERING_OPTIXTEXTUREFACTORY_HH_
 
+#include <string>
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/Util.hh"
@@ -27,7 +28,7 @@ namespace ignition
   {
     class IGNITION_VISIBLE OptixTextureFactory
     {
-      public: OptixTextureFactory(OptixScenePtr _scene);
+      public: explicit OptixTextureFactory(OptixScenePtr _scene);
 
       public: virtual ~OptixTextureFactory();
 

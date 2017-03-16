@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_CAMERA_HH_
 #define IGNITION_RENDERING_CAMERA_HH_
 
+#include <string>
 #include <ignition/common/Event.hh>
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"

@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASEOBJECT_HH_
 #define IGNITION_RENDERING_BASEOBJECT_HH_
 
+#include <string>
 #include "ignition/rendering/Object.hh"
 
 namespace ignition

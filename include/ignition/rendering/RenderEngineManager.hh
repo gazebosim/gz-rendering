@@ -62,7 +62,7 @@ namespace ignition
       public: RenderEngine *Engine(const std::string &_name) const;
 
       /// \brief Get the render-engine at the given index. If the no
-      /// render-engine is exists at the given index, NULL will be returned. 
+      /// render-engine is exists at the given index, NULL will be returned.
       /// \param[in] _index Index of the desired render-engine
       /// \return The specified render-engine
       public: RenderEngine *EngineAt(unsigned int _index) const;

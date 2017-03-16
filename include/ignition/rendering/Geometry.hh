@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_GEOMETRY_HH_
 #define IGNITION_RENDERING_GEOMETRY_HH_
 
+#include <string>
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/Util.hh"

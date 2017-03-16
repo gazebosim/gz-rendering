@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRERENDERENGINE_HH_
 #define IGNITION_RENDERING_OGRERENDERENGINE_HH_
 
+#include <string>
+
 #include <ignition/common/SingletonT.hh>
 
 #include "ignition/rendering/base/BaseRenderEngine.hh"
@@ -112,12 +114,12 @@ namespace ignition
 
       private: Ogre::LogManager *ogreLogManager;
 
-#if not (Q_OS_MAC || _WIN32)
+#if not (__APPLE__ || _WIN32)
       private: void *dummyDisplay;
 
       private: void *dummyContext;
 
-      private: unsigned long dummyWindowId;
+      private: uint64_t dummyWindowId;
 #endif
 
 #ifdef OGRE_OVERLAY_NEEDED

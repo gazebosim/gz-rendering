@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_SCENEMANAGER_HH
-#define _IGNITION_RENDERING_SCENEMANAGER_HH
+#ifndef IGNITION_RENDERING_EXAMPLES_SCENEMANAGER_HH
+#define IGNITION_RENDERING_EXAMPLES_SCENEMANAGER_HH
 
 #include <string>
 #include <ignition/common/SingletonT.hh>

@@ -14,10 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_SCENEMANAGERPRIVATE_HH
-#define _IGNITION_RENDERING_SCENEMANAGERPRIVATE_HH
+#ifndef IGNITION_RENDERING_EXAMPLES_SCENEMANAGERPRIVATE_HH
+#define IGNITION_RENDERING_EXAMPLES_SCENEMANAGERPRIVATE_HH
 
+#include <map>
 #include <string>
+#include <vector>
 
 #include <ignition/common/Time.hh>
 
@@ -208,16 +210,17 @@ namespace ignition
 
       protected: virtual void ProcessLights() = 0;
 
-      protected: virtual void ProcessLight(const gazebo::msgs::Light &_lightMsg);
+      protected: virtual void ProcessLight(
+          const gazebo::msgs::Light &_lightMsg);
 
-      public: virtual void ProcessLight(const gazebo::msgs::Light &_lightMsg,
-                  VisualPtr _parent);
+      public: virtual void ProcessLight(
+          const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual void ProcessDirectionalLight(
                      const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual void ProcessDirectionalLightImpl(
-                     const gazebo::msgs::Light &_lightMsg, DirectionalLightPtr _light);
+          const gazebo::msgs::Light &_lightMsg, DirectionalLightPtr _light);
 
       protected: virtual DirectionalLightPtr DirectionalLight(
                      const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
@@ -225,11 +228,11 @@ namespace ignition
       protected: virtual DirectionalLightPtr CreateDirectionalLight(
                      const gazebo::msgs::Light &_lightMsg);
 
-      protected: virtual void ProcessPointLight(const gazebo::msgs::Light &_lightMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessPointLight(
+          const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual void ProcessPointLightImpl(
-                     const gazebo::msgs::Light &_lightMsg, PointLightPtr _light);
+          const gazebo::msgs::Light &_lightMsg, PointLightPtr _light);
 
       protected: virtual PointLightPtr PointLight(
                      const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
@@ -237,65 +240,70 @@ namespace ignition
       protected: virtual PointLightPtr CreatePointLight(
                      const gazebo::msgs::Light &_lightMsg);
 
-      protected: virtual void ProcessSpotLight(const gazebo::msgs::Light &_lightMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessSpotLight(
+          const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
 
-      protected: virtual void ProcessSpotLightImpl(const gazebo::msgs::Light &_lightMsg,
-                     SpotLightPtr _light);
+      protected: virtual void ProcessSpotLightImpl(
+          const gazebo::msgs::Light &_lightMsg, SpotLightPtr _light);
 
-      protected: virtual SpotLightPtr SpotLight(const gazebo::msgs::Light &_lightMsg,
-                     VisualPtr _parent);
+      protected: virtual SpotLightPtr SpotLight(
+          const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual SpotLightPtr CreateSpotLight(
                      const gazebo::msgs::Light &_lightMsg);
 
-      protected: virtual void ProcessLightImpl(const gazebo::msgs::Light &_lightMsg,
-                     LightPtr _light);
+      protected: virtual void ProcessLightImpl(
+          const gazebo::msgs::Light &_lightMsg, LightPtr _light);
 
       protected: virtual void ProcessSensors() = 0;
 
-      protected: virtual void ProcessSensor(const gazebo::msgs::Sensor &_sensorMsg);
+      protected: virtual void ProcessSensor(
+          const gazebo::msgs::Sensor &_sensorMsg);
 
-      protected: virtual void ProcessSensor(const gazebo::msgs::Sensor &_sensorMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessSensor(
+          const gazebo::msgs::Sensor &_sensorMsg, VisualPtr _parent);
 
-      protected: virtual void ProcessCamera(const gazebo::msgs::Sensor &_sensorMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessCamera(
+          const gazebo::msgs::Sensor &_sensorMsg, VisualPtr _parent);
 
-      protected: virtual CameraPtr Camera(const gazebo::msgs::Sensor &_sensorMsg,
-                     VisualPtr _parent);
+      protected: virtual CameraPtr Camera(
+          const gazebo::msgs::Sensor &_sensorMsg, VisualPtr _parent);
 
-      protected: virtual CameraPtr CreateCamera(const gazebo::msgs::Sensor &_sensorMsg);
+      protected: virtual CameraPtr CreateCamera(
+         const gazebo::msgs::Sensor &_sensorMsg);
 
       protected: virtual void ProcessModels() = 0;
 
-      protected: virtual void ProcessModel(const gazebo::msgs::Model &_modelMsg);
+      protected: virtual void ProcessModel(
+          const gazebo::msgs::Model &_modelMsg);
 
-      protected: virtual void ProcessModel(const gazebo::msgs::Model &_modelMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessModel(
+          const gazebo::msgs::Model &_modelMsg, VisualPtr _parent);
 
       protected: virtual VisualPtr Model(const gazebo::msgs::Model &_modelMsg,
                      VisualPtr _parent);
 
       protected: virtual void ProcessJoints() = 0;
 
-      protected: virtual void ProcessJoint(const gazebo::msgs::Joint &_jointMsg);
+      protected: virtual void ProcessJoint(
+          const gazebo::msgs::Joint &_jointMsg);
 
-      protected: virtual void ProcessJoint(const gazebo::msgs::Joint &_jointMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessJoint(
+          const gazebo::msgs::Joint &_jointMsg, VisualPtr _parent);
 
       protected: virtual VisualPtr Joint(const gazebo::msgs::Joint &_jointMsg,
                      VisualPtr _parent);
 
       protected: virtual void ProcessVisuals() = 0;
 
-      protected: virtual void ProcessVisual(const gazebo::msgs::Visual &_visualMsg);
+      protected: virtual void ProcessVisual(
+          const gazebo::msgs::Visual &_visualMsg);
 
-      protected: virtual void ProcessVisual(const gazebo::msgs::Visual &_visualMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessVisual(
+          const gazebo::msgs::Visual &_visualMsg, VisualPtr _parent);
 
-      protected: virtual VisualPtr Visual(const gazebo::msgs::Visual &_visualMsg,
-                     VisualPtr _parent);
+      protected: virtual VisualPtr Visual(
+          const gazebo::msgs::Visual &_visualMsg, VisualPtr _parent);
 
       protected: virtual void ProcessLink(const gazebo::msgs::Link &_linkMsg,
                      VisualPtr _parent);
@@ -310,22 +318,22 @@ namespace ignition
                      const std::string &_name);
 
       protected: virtual void ProcessGeometry(
-                     const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
-      protected: virtual void ProcessBox(const gazebo::msgs::Geometry &_geometryMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessBox(
+          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
-      protected: virtual void ProcessCone(const gazebo::msgs::Geometry &_geometryMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessCone(
+          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual void ProcessCylinder(
-                     const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
-      protected: virtual void ProcessEmpty(const gazebo::msgs::Geometry &_geometryMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessEmpty(
+          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
-      protected: virtual void ProcessMesh(const gazebo::msgs::Geometry &_geometryMsg,
-                     VisualPtr _parent);
+      protected: virtual void ProcessMesh(
+          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual void ProcessPlane(
           const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
@@ -447,7 +455,8 @@ namespace ignition
 
       protected: virtual void ProcessPoses();
 
-      protected: virtual void ProcessPoses(const gazebo::msgs::PosesStamped &_posesMsg);
+      protected: virtual void ProcessPoses(
+          const gazebo::msgs::PosesStamped &_posesMsg);
 
       protected: virtual void ProcessRemovals();
 

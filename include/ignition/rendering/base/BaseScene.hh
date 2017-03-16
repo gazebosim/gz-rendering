@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASESCENE_HH_
 #define IGNITION_RENDERING_BASESCENE_HH_
 
+#include <string>
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 

@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_VISUAL_HH_
 #define IGNITION_RENDERING_VISUAL_HH_
 
+#include <string>
 #include "ignition/rendering/Node.hh"
 
 namespace ignition

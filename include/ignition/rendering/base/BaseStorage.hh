@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BASESTORAGE_HH_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include <ignition/common/Console.hh>
@@ -891,7 +892,8 @@ namespace ignition
 
       if (this->ContainsName(name))
       {
-        ignerr << "Another item already exists with name: " << name << std::endl;
+        ignerr << "Another item already exists with name: " << name
+            << std::endl;
         return false;
       }
 

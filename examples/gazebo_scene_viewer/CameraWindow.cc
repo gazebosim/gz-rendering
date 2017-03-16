@@ -25,6 +25,10 @@
   #include <GL/glut.h>
 #endif
 
+#if not defined(__APPLE__) && not defined(_WIN32)
+  #include <GL/glx.h>
+#endif
+
 #include <gazebo/common/Console.hh>
 
 #include "ignition/rendering/Camera.hh"
@@ -33,10 +37,6 @@
 #include "ignition/rendering/rendering.hh"
 
 #include "SceneManager.hh"
-
-#if not (__APPLE__ || _WIN32)
-  #include <GL/glx.h>
-#endif
 
 #define KEY_ESC 27
 #define KEY_TAB  9

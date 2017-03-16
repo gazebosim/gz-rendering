@@ -17,7 +17,9 @@
 #ifndef IGNITION_RENDERING_OGREMESHFACTORY_HH_
 #define IGNITION_RENDERING_OGREMESHFACTORY_HH_
 
+#include <string>
 #include <vector>
+
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/Util.hh"
@@ -33,7 +35,7 @@ namespace ignition
   {
     class IGNITION_VISIBLE OgreMeshFactory
     {
-      public: OgreMeshFactory(OgreScenePtr _scene);
+      public: explicit OgreMeshFactory(OgreScenePtr _scene);
 
       public: virtual ~OgreMeshFactory();
 

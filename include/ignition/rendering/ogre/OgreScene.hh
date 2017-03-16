@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRESCENE_HH_
 #define IGNITION_RENDERING_OGRESCENE_HH_
 
+#include <string>
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 

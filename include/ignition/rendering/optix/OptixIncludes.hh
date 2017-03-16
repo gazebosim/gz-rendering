@@ -17,7 +17,7 @@
 #ifndef IGNITION_RENDERING_OPTIXINCLUDES_HH_
 #define IGNITION_RENDERING_OPTIXINCLUDES_HH_
 
-//#include <optixu/optixpp.h>
+// #include <optixu/optixpp.h>
 #include <optixu/optixpp.h>
 
 #endif

@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OPTIXMESH_HH_
 #define IGNITION_RENDERING_OPTIXMESH_HH_
 
+#include <string>
+#include <vector>
 #include "ignition/rendering/base/BaseMesh.hh"
 #include "ignition/rendering/optix/OptixGeometry.hh"
 #include "ignition/rendering/optix/OptixObject.hh"

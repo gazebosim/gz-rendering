@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_OPTIXMESHFACTORY_HH_
 
 #include <map>
+#include <string>
 #include <ignition/common/Mesh.hh>
 
 #include "ignition/rendering/MeshDescriptor.hh"

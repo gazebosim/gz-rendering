@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASERENDERENGINE_HH_
 #define IGNITION_RENDERING_BASERENDERENGINE_HH_
 
+#include <string>
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Storage.hh"
 

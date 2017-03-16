@@ -37,10 +37,10 @@ namespace ignition
       public: virtual math::Color DiffuseColor() const = 0;
 
       /// \brief Set the diffuse color
-      /// \param[in] _r Red value 
-      /// \param[in] _g Green value 
-      /// \param[in] _b Blue value 
-      /// \param[in] _a Alpha value 
+      /// \param[in] _r Red value
+      /// \param[in] _g Green value
+      /// \param[in] _b Blue value
+      /// \param[in] _a Alpha value
       public: virtual void SetDiffuseColor(double _r, double _g, double _b,
                   double _a = 1.0) = 0;
 
@@ -53,10 +53,10 @@ namespace ignition
       public: virtual math::Color SpecularColor() const = 0;
 
       /// \brief Set the specular color
-      /// \param[in] _r Red value 
-      /// \param[in] _g Green value 
-      /// \param[in] _b Blue value 
-      /// \param[in] _a Alpha value 
+      /// \param[in] _r Red value
+      /// \param[in] _g Green value
+      /// \param[in] _b Blue value
+      /// \param[in] _a Alpha value
       public: virtual void SetSpecularColor(double _r, double _g, double _b,
                   double _a = 1.0) = 0;
 

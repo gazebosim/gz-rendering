@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OPTIXMATERIAL_HH_
 #define IGNITION_RENDERING_OPTIXMATERIAL_HH_
 
+#include <string>
 #include "ignition/rendering/base/BaseMaterial.hh"
 #include "ignition/rendering/optix/OptixObject.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"

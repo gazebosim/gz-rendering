@@ -17,9 +17,6 @@
 #ifndef IGNITION_RENDERING_SYSTEMPATHS_HH_
 #define IGNITION_RENDERING_SYSTEMPATHS_HH_
 
-#include <memory>
-#include <stdio.h>
-
 #define LINUX
 #ifdef _WIN32
   #include <direct.h>
@@ -28,8 +25,10 @@
   #include <unistd.h>
   #define GetCurrentDir getcwd
 #endif
+#include <stdio.h>
 
 #include <list>
+#include <memory>
 #include <string>
 
 #include <ignition/common/SingletonT.hh>
@@ -115,7 +114,6 @@ namespace ignition
       /// \brief Private data pointer
       private: std::unique_ptr<SystemPathsPrivate> dataPtr;
     };
-    /// \}
   }
 }
 #endif

@@ -28,11 +28,9 @@ namespace ignition
 
   typedef enum OptixRayType_t
   {
-
     RT_RADIANCE = 0,
     RT_SHADOW   = 1,
     RT_COUNT    = 2,
-
   } OptixRayType;
 
   struct OptixRadianceRayData

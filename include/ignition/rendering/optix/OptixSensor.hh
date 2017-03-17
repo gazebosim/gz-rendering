@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIXSENSOR_HH_
-#define IGNITION_RENDERING_OPTIXSENSOR_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXSENSOR_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXSENSOR_HH_
 
 #include "ignition/rendering/base/BaseSensor.hh"
 #include "ignition/rendering/optix/OptixNode.hh"

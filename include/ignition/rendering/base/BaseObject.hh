@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASEOBJECT_HH_
-#define IGNITION_RENDERING_BASEOBJECT_HH_
+#ifndef IGNITION_RENDERING_BASE_BASEOBJECT_HH_
+#define IGNITION_RENDERING_BASE_BASEOBJECT_HH_
 
 #include <string>
 #include "ignition/rendering/Object.hh"

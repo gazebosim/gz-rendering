@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASERENDERTYPES_HH_
-#define IGNITION_RENDERING_BASERENDERTYPES_HH_
+#ifndef IGNITION_RENDERING_BASE_BASERENDERTYPES_HH_
+#define IGNITION_RENDERING_BASE_BASERENDERTYPES_HH_
 
 #include "ignition/rendering/RenderTypes.hh"
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGREINCLUDES_HH_
-#define IGNITION_RENDERING_OGREINCLUDES_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREINCLUDES_HH_
+#define IGNITION_RENDERING_OGRE_OGREINCLUDES_HH_
 
 // This disables warning messages for OGRE
 #pragma GCC system_header

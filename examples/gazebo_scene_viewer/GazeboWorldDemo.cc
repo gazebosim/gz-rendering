@@ -27,7 +27,7 @@ using namespace rendering;
 
 void Connect()
 {
-  ignition::common::Console::SetQuiet(false);
+  ignition::common::Console::SetVerbosity(4);
   gazebo::transport::init();
   gazebo::transport::run();
 

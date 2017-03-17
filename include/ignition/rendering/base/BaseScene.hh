@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASESCENE_HH_
-#define IGNITION_RENDERING_BASESCENE_HH_
+#ifndef IGNITION_RENDERING_BASE_BASESCENE_HH_
+#define IGNITION_RENDERING_BASE_BASESCENE_HH_
 
 #include <string>
 #include "ignition/rendering/Scene.hh"

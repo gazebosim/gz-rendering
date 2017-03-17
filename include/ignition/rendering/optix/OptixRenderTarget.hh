@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIXRENDERTARGET_HH_
-#define IGNITION_RENDERING_OPTIXRENDERTARGET_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXRENDERTARGET_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXRENDERTARGET_HH_
 
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"

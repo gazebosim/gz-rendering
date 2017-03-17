@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIXSCENE_HH_
-#define IGNITION_RENDERING_OPTIXSCENE_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXSCENE_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXSCENE_HH_
 
 #include <string>
 

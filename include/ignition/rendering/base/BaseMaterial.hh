@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASEMATERIAL_HH_
-#define IGNITION_RENDERING_BASEMATERIAL_HH_
+#ifndef IGNITION_RENDERING_BASE_BASEMATERIAL_HH_
+#define IGNITION_RENDERING_BASE_BASEMATERIAL_HH_
 
 #include "ignition/rendering/Material.hh"
 #include "ignition/rendering/Scene.hh"
@@ -39,37 +39,21 @@ namespace ignition
                   double _a = 1.0);
 
       public: virtual void SetAmbient(const math::Color &_color) = 0;
-      public: virtual void SetAmbient(const common::Color &_color)
-      {
-        this->SetAmbient(_color.R(), _color.G(), _color.B(), _color.A());
-      };
 
       public: virtual void SetDiffuse(double _r, double _g, double _b,
                   double _a = 1.0);
 
       public: virtual void SetDiffuse(const math::Color &_color) = 0;
-      public: virtual void SetDiffuse(const common::Color &_color)
-      {
-        this->SetDiffuse(_color.R(), _color.G(), _color.B(), _color.A());
-      };
 
       public: virtual void SetSpecular(double _r, double _g, double _b,
                   double _a = 1.0);
 
       public: virtual void SetSpecular(const math::Color &_color) = 0;
-      public: virtual void SetSpecular(const common::Color &_color)
-      {
-        this->SetSpecular(_color.R(), _color.G(), _color.B(), _color.A());
-      };
 
       public: virtual void SetEmissive(double _r, double _g, double _b,
                   double _a = 1.0);
 
       public: virtual void SetEmissive(const math::Color &_color) = 0;
-      public: virtual void SetEmissive(const common::Color &_color)
-      {
-        this->SetEmissive(_color.R(), _color.G(), _color.B(), _color.A());
-      };
 
       public: virtual void SetReceiveShadows(bool _receiveShadows) = 0;
 

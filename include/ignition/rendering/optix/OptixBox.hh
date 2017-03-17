@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIXBOX_HH_
-#define IGNITION_RENDERING_OPTIXBOX_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXBOX_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXBOX_HH_
 
 #include "ignition/rendering/optix/OptixPrimitive.hh"
 

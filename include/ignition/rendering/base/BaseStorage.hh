@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASESTORAGE_HH_
-#define IGNITION_RENDERING_BASESTORAGE_HH_
+#ifndef IGNITION_RENDERING_BASE_BASESTORAGE_HH_
+#define IGNITION_RENDERING_BASE_BASESTORAGE_HH_
 
 #include <map>
 #include <string>

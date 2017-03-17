@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGREMESH_HH_
-#define IGNITION_RENDERING_OGREMESH_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREMESH_HH_
+#define IGNITION_RENDERING_OGRE_OGREMESH_HH_
 
 #include <string>
 #include <vector>

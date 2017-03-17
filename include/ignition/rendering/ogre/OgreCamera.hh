@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRECAMERA_HH_
-#define IGNITION_RENDERING_OGRECAMERA_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
+#define IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
 
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"

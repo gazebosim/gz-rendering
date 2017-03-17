@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRECONVERSIONS_HH_
-#define IGNITION_RENDERING_OGRECONVERSIONS_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGRECONVERSIONS_HH_
+#define IGNITION_RENDERING_OGRE_OGRECONVERSIONS_HH_
 
 #include <ignition/math/Color.hh>
 #include <ignition/math/Quaternion.hh>

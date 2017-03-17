@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGREGEOMETRY_HH_
-#define IGNITION_RENDERING_OGREGEOMETRY_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
+#define IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
 
 #include "ignition/rendering/base/BaseGeometry.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"

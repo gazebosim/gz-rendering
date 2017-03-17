@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGREOBJECT_HH_
-#define IGNITION_RENDERING_OGREOBJECT_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREOBJECT_HH_
+#define IGNITION_RENDERING_OGRE_OGREOBJECT_HH_
 
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"

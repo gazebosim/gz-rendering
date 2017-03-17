@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIXMESH_HH_
-#define IGNITION_RENDERING_OPTIXMESH_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXMESH_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXMESH_HH_
 
 #include <string>
 #include <vector>

@@ -171,7 +171,7 @@ void ManualSceneDemo::ChangeScene()
 //////////////////////////////////////////////////
 int main(int, char**)
 {
-  common::Console::SetQuiet(false);
+  common::Console::SetVerbosity(4);
   ManualSceneDemoPtr sceneDemo(new ManualSceneDemo);
   sceneDemo->AddScene(SceneBuilderPtr(new SceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new SimpleSceneBuilder));

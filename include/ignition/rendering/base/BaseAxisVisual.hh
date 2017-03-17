@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASEAXISVISUAL_HH_
-#define IGNITION_RENDERING_BASEAXISVISUAL_HH_
+#ifndef IGNITION_RENDERING_BASE_BASEAXISVISUAL_HH_
+#define IGNITION_RENDERING_BASE_BASEAXISVISUAL_HH_
 
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/ArrowVisual.hh"

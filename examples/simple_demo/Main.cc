@@ -162,7 +162,7 @@ int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
 
-  common::Console::SetQuiet(false);
+  common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 

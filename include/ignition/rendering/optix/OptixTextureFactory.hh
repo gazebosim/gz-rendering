@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIXTEXTUREFACTORY_HH_
-#define IGNITION_RENDERING_OPTIXTEXTUREFACTORY_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXTEXTUREFACTORY_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXTEXTUREFACTORY_HH_
 
 #include <string>
 #include "ignition/rendering/optix/OptixRenderTypes.hh"

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRESTORAGE_HH_
-#define IGNITION_RENDERING_OGRESTORAGE_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGRESTORAGE_HH_
+#define IGNITION_RENDERING_OGRE_OGRESTORAGE_HH_
 
 #include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/ogre/ogre.hh"

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIXOBJECT_HH_
-#define IGNITION_RENDERING_OPTIXOBJECT_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXOBJECT_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXOBJECT_HH_
 
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"

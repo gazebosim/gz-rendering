@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/SystemPaths.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 
 using namespace ignition;
@@ -197,6 +198,12 @@ ScenePtr BaseRenderEngine::CreateScene(unsigned int _id,
 //////////////////////////////////////////////////
 void BaseRenderEngine::Destroy()
 {
+}
+
+//////////////////////////////////////////////////
+void BaseRenderEngine::AddResourcePath(const std::string &_path)
+{
+  SystemPaths::Instance()->AddResourcePaths(_path);
 }
 
 //////////////////////////////////////////////////

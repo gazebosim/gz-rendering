@@ -273,12 +273,29 @@ void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
   try
   {
     // TODO: improve how resource paths are handled
-    OgreRenderEngine::Instance()->AddResourcePath(_name);
-    _image.load(_name, this->ogreGroup);
+    // OgreRenderEngine::Instance()->AddResourcePath(_name);
+    //_image.load(_name, this->ogreGroup);
+    if (Ogre::ResourceGroupManager::getSingleton().resourceExists(
+        this->ogreGroup, _name))
+    {
+      _image.load(_name, this->ogreGroup);
+    }
+    else
+    {
+      std::string path = common::findFile(_name);
+      if (!path.empty())
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            path, "FileSystem", this->ogreGroup);
+        _image.load(path, this->ogreGroup);
+      }
+      else
+        ignerr << "Unable to find texture image: " << _name << std::endl;
+    }
   }
   catch (const Ogre::Exception &ex)
   {
-    ignerr << "Unable to load texture image: " << _name << std::endl;
+    ignerr << "Unable to load texture image: " << ex.what() << std::endl;
   }
 }
 
@@ -370,12 +387,12 @@ void OgreMaterial::UpdateColorOperation()
 void OgreMaterial::Init()
 {
   BaseMaterial::Init();
+  this->ogreGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
   Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-  this->ogreMaterial = matManager.create(this->name, "General");
+  this->ogreMaterial = matManager.create(this->name, this->ogreGroup);
   this->ogreTechnique = this->ogreMaterial->getTechnique(0);
   this->ogrePass = this->ogreTechnique->getPass(0);
   this->ogreTexState = this->ogrePass->createTextureUnitState();
-  this->ogreGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
   this->ogreTexState->setBlank();
   this->Reset();
 

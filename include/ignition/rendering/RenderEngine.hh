@@ -153,6 +153,10 @@ namespace ignition
       /// \return The created scene
       public: virtual ScenePtr CreateScene(unsigned int _id,
                   const std::string &_name) = 0;
+
+      /// \brief Add path to media resource location
+      /// \param[in] _paths Absolute path to resource location
+      public: virtual void AddResourcePath(const std::string &_path) = 0;
     };
   }
 }

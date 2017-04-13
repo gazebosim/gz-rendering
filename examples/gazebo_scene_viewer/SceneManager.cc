@@ -194,7 +194,7 @@ void SceneManagerPrivate::Init()
   // TODO: handle non-local model info
 
   // listen for to model updates
-  this->modelSub = this->transportNode->Subscribe("~/model/local/info",
+  this->modelSub = this->transportNode->Subscribe("~/model/info",
       &SceneManagerPrivate::OnModelUpdate, this);
 
   // listen for to joint updates

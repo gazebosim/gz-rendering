@@ -49,6 +49,21 @@ class ignition::rendering::SystemPathsPrivate
   /// \brief re-read SystemPaths#pluginPaths from environment variable
   public: void UpdatePluginPaths();
 
+  /// \brief re-read SystemPaths#ogrePaths from environment variable
+  public: void UpdateOgrePaths();
+
+  /// \brief adds a path to the provided list
+  /// \param[in]_path the path
+  /// \param[in]_list the list
+  public: void AddPaths(const std::string &_path,
+                        std::list<std::string> &_list);
+
+   /// \brief adds a path to the list if not already present
+   /// \param[in]_path the path
+   /// \param[in]_list the list
+   private: void InsertUnique(const std::string &_path,
+                              std::list<std::string> &_list);
+
   /// \brief if true, call UpdatePluginPaths() within PluginPaths()
   public: bool pluginPathsFromEnv;
 
@@ -57,6 +72,9 @@ class ignition::rendering::SystemPathsPrivate
 
   /// \brief Paths to plugins
   public: std::list<std::string> pluginPaths;
+
+  /// \brief Paths to resources
+  public: std::list<std::string> resourcePaths;
 
   /// \brief Suffix paths
   public: std::list<std::string> suffixPaths;
@@ -115,8 +133,8 @@ SystemPaths::SystemPaths()
 
   this->dataPtr->logPath = fullPath;
 
-  this->UpdatePluginPaths();
-  this->UpdateOgrePaths();
+  this->dataPtr->UpdatePluginPaths();
+  this->dataPtr->UpdateOgrePaths();
 
   this->dataPtr->pluginPathsFromEnv = true;
   this->dataPtr->ogrePathsFromEnv = true;
@@ -137,7 +155,7 @@ std::string SystemPaths::LogPath() const
 const std::list<std::string> &SystemPaths::PluginPaths()
 {
   if (this->dataPtr->pluginPathsFromEnv)
-    this->UpdatePluginPaths();
+    this->dataPtr->UpdatePluginPaths();
   return this->dataPtr->pluginPaths;
 }
 
@@ -145,62 +163,10 @@ const std::list<std::string> &SystemPaths::PluginPaths()
 const std::list<std::string> &SystemPaths::OgrePaths()
 {
   if (this->dataPtr->ogrePathsFromEnv)
-    this->UpdateOgrePaths();
+    this->dataPtr->UpdateOgrePaths();
   return this->dataPtr->ogrePaths;
 }
 
-//////////////////////////////////////////////////
-void SystemPaths::UpdatePluginPaths()
-{
-  std::string path;
-
-  char *pathCStr = getenv("IGN_RENDERING_PLUGIN_PATH");
-  if (!pathCStr || *pathCStr == '\0')
-  {
-    // No env var; take the compile-time default.
-    path = IGN_RENDERING_PLUGIN_PATH;
-  }
-  else
-    path = pathCStr;
-
-  size_t pos1 = 0;
-  size_t pos2 = path.find(PathDelimiter);
-  while (pos2 != std::string::npos)
-  {
-    this->InsertUnique(path.substr(pos1, pos2-pos1),
-        this->dataPtr->pluginPaths);
-    pos1 = pos2+1;
-    pos2 = path.find(PathDelimiter, pos2+1);
-  }
-  this->InsertUnique(path.substr(pos1, path.size()-pos1),
-      this->dataPtr->pluginPaths);
-}
-
-//////////////////////////////////////////////////
-void SystemPaths::UpdateOgrePaths()
-{
-  std::string path;
-
-  char *pathCStr = getenv("OGRE_RESOURCE_PATH");
-  if (!pathCStr || *pathCStr == '\0')
-  {
-    // No env var; take the compile-time default.
-    path = OGRE_RESOURCE_PATH;
-  }
-  else
-    path = pathCStr;
-
-  size_t pos1 = 0;
-  size_t pos2 = path.find(PathDelimiter);
-  while (pos2 != std::string::npos)
-  {
-    this->InsertUnique(path.substr(pos1, pos2-pos1), this->dataPtr->ogrePaths);
-    pos1 = pos2+1;
-    pos2 = path.find(PathDelimiter, pos2+1);
-  }
-  this->InsertUnique(path.substr(pos1, path.size()-pos1),
-      this->dataPtr->ogrePaths);
-}
 
 //////////////////////////////////////////////////
 std::string SystemPaths::FindFileURI(const std::string &_uri)
@@ -292,43 +258,27 @@ void SystemPaths::ClearPluginPaths()
 }
 
 /////////////////////////////////////////////////
+void SystemPaths::ClearResourcePaths()
+{
+  this->dataPtr->resourcePaths.clear();
+}
+
+/////////////////////////////////////////////////
 void SystemPaths::AddOgrePaths(const std::string &_path)
 {
-  size_t pos1 = 0;
-  size_t pos2 = _path.find(PathDelimiter);
-  while (pos2 != std::string::npos)
-  {
-    this->InsertUnique(_path.substr(pos1, pos2-pos1),
-        this->dataPtr->ogrePaths);
-    pos1 = pos2+1;
-    pos2 = _path.find(PathDelimiter, pos2+1);
-  }
-  this->InsertUnique(_path.substr(pos1, _path.size()-pos1),
-      this->dataPtr->ogrePaths);
+  this->dataPtr->AddPaths(_path, this->dataPtr->ogrePaths);
 }
 
 /////////////////////////////////////////////////
 void SystemPaths::AddPluginPaths(const std::string &_path)
 {
-  size_t pos1 = 0;
-  size_t pos2 = _path.find(PathDelimiter);
-  while (pos2 != std::string::npos)
-  {
-    this->InsertUnique(_path.substr(pos1, pos2-pos1),
-        this->dataPtr->pluginPaths);
-    pos1 = pos2+1;
-    pos2 = _path.find(PathDelimiter, pos2+1);
-  }
-  this->InsertUnique(_path.substr(pos1, _path.size()-pos1),
-      this->dataPtr->pluginPaths);
+  this->dataPtr->AddPaths(_path, this->dataPtr->pluginPaths);
 }
 
 /////////////////////////////////////////////////
-void SystemPaths::InsertUnique(const std::string &_path,
-                               std::list<std::string> &_list)
+void SystemPaths::AddResourcePaths(const std::string &_path)
 {
-  if (std::find(_list.begin(), _list.end(), _path) == _list.end())
-    _list.push_back(_path);
+  this->dataPtr->AddPaths(_path, this->dataPtr->resourcePaths);
 }
 
 /////////////////////////////////////////////////
@@ -346,3 +296,81 @@ void SystemPaths::AddSearchPathSuffix(const std::string &_suffix)
 
   this->dataPtr->suffixPaths.push_back(s);
 }
+
+//////////////////////////////////////////////////
+void SystemPathsPrivate::UpdatePluginPaths()
+{
+  std::string path;
+
+  char *pathCStr = getenv("IGN_RENDERING_PLUGIN_PATH");
+  if (!pathCStr || *pathCStr == '\0')
+  {
+    // No env var; take the compile-time default.
+    path = IGN_RENDERING_PLUGIN_PATH;
+  }
+  else
+    path = pathCStr;
+
+  size_t pos1 = 0;
+  size_t pos2 = path.find(PathDelimiter);
+  while (pos2 != std::string::npos)
+  {
+    this->InsertUnique(path.substr(pos1, pos2-pos1),
+        this->pluginPaths);
+    pos1 = pos2+1;
+    pos2 = path.find(PathDelimiter, pos2+1);
+  }
+  this->InsertUnique(path.substr(pos1, path.size()-pos1),
+      this->pluginPaths);
+}
+
+//////////////////////////////////////////////////
+void SystemPathsPrivate::UpdateOgrePaths()
+{
+  std::string path;
+
+  char *pathCStr = getenv("OGRE_RESOURCE_PATH");
+  if (!pathCStr || *pathCStr == '\0')
+  {
+    // No env var; take the compile-time default.
+    path = OGRE_RESOURCE_PATH;
+  }
+  else
+    path = pathCStr;
+
+  size_t pos1 = 0;
+  size_t pos2 = path.find(PathDelimiter);
+  while (pos2 != std::string::npos)
+  {
+    this->InsertUnique(path.substr(pos1, pos2-pos1), this->ogrePaths);
+    pos1 = pos2+1;
+    pos2 = path.find(PathDelimiter, pos2+1);
+  }
+  this->InsertUnique(path.substr(pos1, path.size()-pos1),
+      this->ogrePaths);
+}
+
+/////////////////////////////////////////////////
+void SystemPathsPrivate::AddPaths(const std::string &_path,
+    std::list<std::string> &_list)
+{
+  size_t pos1 = 0;
+  size_t pos2 = _path.find(PathDelimiter);
+  while (pos2 != std::string::npos)
+  {
+    this->InsertUnique(_path.substr(pos1, pos2-pos1), _list);
+    pos1 = pos2+1;
+    pos2 = _path.find(PathDelimiter, pos2+1);
+  }
+  this->InsertUnique(_path.substr(pos1, _path.size()-pos1), _list);
+}
+
+/////////////////////////////////////////////////
+void SystemPathsPrivate::InsertUnique(const std::string &_path,
+                               std::list<std::string> &_list)
+{
+  if (std::find(_list.begin(), _list.end(), _path) == _list.end())
+    _list.push_back(_path);
+}
+
+

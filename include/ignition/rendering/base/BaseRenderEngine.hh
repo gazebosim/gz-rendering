@@ -75,6 +75,9 @@ namespace ignition
 
       public: virtual void Destroy();
 
+      /// Documentation Inherited
+      public: virtual void AddResourcePath(const std::string &_path);
+
       protected: virtual void PrepareScene(ScenePtr _scene);
 
       protected: virtual unsigned int NextSceneId();

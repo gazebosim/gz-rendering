@@ -80,34 +80,30 @@ namespace ignition
                                    bool _searchLocalPath = true);
 
       /// \brief Add colon delimited paths to ogre install
-      /// \param[in] _path the directory to add
+      /// \param[in] _path of the directory to add
       public: void AddOgrePaths(const std::string &_path);
 
       /// \brief Add colon delimited paths to plugins
-      /// \param[in] _path the directory to add
+      /// \param[in] _path of the directory to add
       public: void AddPluginPaths(const std::string &_path);
 
-      /// \brief clear out SystemPaths#ogrePaths
+      /// \brief Add colon delimited paths to resources
+      /// \param[in] _path of the directory to add
+      public: void AddResourcePaths(const std::string &_path);
+
+      /// \brief clear out ogre paths
       public: void ClearOgrePaths();
 
-      /// \brief clear out SystemPaths#pluginPaths
+      /// \brief clear out plugin paths
       public: void ClearPluginPaths();
+
+      /// \brief clear out resource paths
+      public: void ClearResourcePaths();
 
       /// \brief add _suffix to the list of path search suffixes
       /// \param[in] _suffix The suffix to add
       public: void AddSearchPathSuffix(const std::string &_suffix);
 
-      /// \brief re-read SystemPaths#pluginPaths from environment variable
-      private: void UpdatePluginPaths();
-
-      /// \brief re-read SystemPaths#ogrePaths from environment variable
-      private: void UpdateOgrePaths();
-
-      /// \brief adds a path to the list if not already present
-      /// \param[in]_path the path
-      /// \param[in]_list the list
-      private: void InsertUnique(const std::string &_path,
-                                 std::list<std::string> &_list);
 
       private: friend class SingletonT<SystemPaths>;
 

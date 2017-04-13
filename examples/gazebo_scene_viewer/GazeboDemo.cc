@@ -59,8 +59,8 @@ CameraPtr CreateCamera(const std::string &_engine)
   VisualPtr root = scene->RootVisual();
 
   CameraPtr camera = scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 1.5);
-  camera->SetLocalRotation(0.0, 0.20, M_PI / 2);
+  camera->SetLocalPosition(5.0, -5.0, 2.0);
+  camera->SetLocalRotation(0.0, 0.27, 2.36);
   camera->SetImageWidth(640);
   camera->SetImageHeight(480);
   camera->SetAntiAliasing(2);
@@ -78,7 +78,7 @@ int main(int, char**)
   std::vector<std::string> engineNames;
 
   engineNames.push_back("ogre");
-  // engineNames.push_back("optix");
+  engineNames.push_back("optix");
 
   for (auto engineName : engineNames)
   {

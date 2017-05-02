@@ -118,9 +118,9 @@ namespace ignition
       private: void *dummyDisplay;
 
       private: void *dummyContext;
+#endif
 
       private: uint64_t dummyWindowId;
-#endif
 
 #ifdef OGRE_OVERLAY_NEEDED
       private: Ogre::OverlaySystem *ogreOverlaySystem;

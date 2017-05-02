@@ -52,14 +52,14 @@ OgreRenderEngine::OgreRenderEngine() :
   loaded(false),
   initialized(false),
   ogreRoot(nullptr),
-  ogreLogManager(nullptr),
-  dummyDisplay(0),
-  dummyContext(0)
+  ogreLogManager(nullptr)
 {
 #if not (__APPLE__ || _WIN32)
   this->dummyDisplay = nullptr;
-  this->dummyWindowId = 0;
+  this->dummyContext = 0;
 #endif
+
+  this->dummyWindowId = 0;
 
 #ifdef OGRE_OVERLAY_NEEDED
   this->ogreOverlaySystem = nullptr;

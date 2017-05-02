@@ -31,17 +31,17 @@ set_property(
 )
 
 ign_build_tests(${gtest_sources})
-ign_add_library(${PROJECT_NAME_LOWER} ${sources})
-ign_install_library(${PROJECT_NAME_LOWER})
+ign_add_library(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION} ${sources})
+ign_install_library(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION})
 
 if (HAVE_OGRE)
-  target_link_libraries(${PROJECT_NAME_LOWER}
+  target_link_libraries(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}
     ignition-rendering-ogre
 )
 endif ()
 
 if (HAVE_OPTIX)
-  target_link_libraries(${PROJECT_NAME_LOWER}
+  target_link_libraries(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}
     ignition-rendering-optix
 )
 endif ()

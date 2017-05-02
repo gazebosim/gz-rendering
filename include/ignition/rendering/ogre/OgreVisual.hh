@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGREVISUAL_HH_
-#define _IGNITION_RENDERING_OGREVISUAL_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREVISUAL_HH_
+#define IGNITION_RENDERING_OGRE_OGREVISUAL_HH_
 
 #include "ignition/rendering/base/BaseVisual.hh"
 #include "ignition/rendering/ogre/OgreNode.hh"
@@ -32,15 +32,15 @@ namespace ignition
 
       public: virtual ~OgreVisual();
 
-      public: virtual math::Vector3d GetLocalScale() const;
+      public: virtual math::Vector3d LocalScale() const;
 
-      public: virtual bool GetInheritScale() const;
+      public: virtual bool InheritScale() const;
 
       public: virtual void SetInheritScale(bool _inherit);
 
-      protected: virtual NodeStorePtr GetChildren() const;
+      protected: virtual NodeStorePtr Children() const;
 
-      protected: virtual GeometryStorePtr GetGeometries() const;
+      protected: virtual GeometryStorePtr Geometries() const;
 
       protected: virtual bool AttachChild(NodePtr _child);
 

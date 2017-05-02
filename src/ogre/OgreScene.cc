@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/ogre.hh"
 
@@ -23,12 +26,12 @@ using namespace rendering;
 //////////////////////////////////////////////////
 OgreScene::OgreScene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name),
-  rootVisual(NULL),
-  meshFactory(NULL),
-  ogreRoot(NULL),
-  ogreSceneManager(NULL)
+  rootVisual(nullptr),
+  meshFactory(nullptr),
+  ogreRoot(nullptr),
+  ogreSceneManager(nullptr)
 {
-  this->backgroundColor = gazebo::common::Color::Black;
+  this->backgroundColor = math::Color::Black;
 }
 
 //////////////////////////////////////////////////
@@ -42,48 +45,48 @@ void OgreScene::Fini()
 }
 
 //////////////////////////////////////////////////
-RenderEngine *OgreScene::GetEngine() const
+RenderEngine *OgreScene::Engine() const
 {
   return OgreRenderEngine::Instance();
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreScene::GetRootVisual() const
+VisualPtr OgreScene::RootVisual() const
 {
   return this->rootVisual;
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreScene::GetAmbientLight() const
+math::Color OgreScene::AmbientLight() const
 {
   Ogre::ColourValue ogreColor = this->ogreSceneManager->getAmbientLight();
   return OgreConversions::Convert(ogreColor);
 }
 
 //////////////////////////////////////////////////
-void OgreScene::SetAmbientLight(const gazebo::common::Color &_color)
+void OgreScene::SetAmbientLight(const math::Color &_color)
 {
   Ogre::ColourValue ogreColor = OgreConversions::Convert(_color);
   this->ogreSceneManager->setAmbientLight(ogreColor);
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreScene::GetBackgroundColor() const
+math::Color OgreScene::BackgroundColor() const
 {
   return this->backgroundColor;
 }
 
 //////////////////////////////////////////////////
-void OgreScene::SetBackgroundColor(const gazebo::common::Color &_color)
+void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;
 
   // TODO: clean up code
-  unsigned int count = this->GetSensorCount();
+  unsigned int count = this->SensorCount();
 
   for (unsigned int i = 0; i < count; ++i)
   {
-    SensorPtr sensor = this->GetSensorByIndex(i);
+    SensorPtr sensor = this->SensorByIndex(i);
     OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(sensor);
     if (camera) camera->SetBackgroundColor(_color);
   }
@@ -107,7 +110,7 @@ void OgreScene::Destroy()
 }
 
 //////////////////////////////////////////////////
-Ogre::SceneManager *OgreScene::GetOgreSceneManager() const
+Ogre::SceneManager *OgreScene::OgreSceneManager() const
 {
   return this->ogreSceneManager;
 }
@@ -126,32 +129,32 @@ bool OgreScene::InitImpl()
   this->CreateStores();
   this->CreateMeshFactory();
 
-  OgreRTShaderSystem::Instance()->AddScene(this->GetSharedThis());
-  OgreRTShaderSystem::Instance()->ApplyShadows(this->GetSharedThis());
+  OgreRTShaderSystem::Instance()->AddScene(this->SharedThis());
+  OgreRTShaderSystem::Instance()->ApplyShadows(this->SharedThis());
 
   return true;
 }
 
 //////////////////////////////////////////////////
-LightStorePtr OgreScene::GetLights() const
+LightStorePtr OgreScene::Lights() const
 {
   return this->lights;
 }
 
 //////////////////////////////////////////////////
-SensorStorePtr OgreScene::GetSensors() const
+SensorStorePtr OgreScene::Sensors() const
 {
   return this->sensors;
 }
 
 //////////////////////////////////////////////////
-VisualStorePtr OgreScene::GetVisuals() const
+VisualStorePtr OgreScene::Visuals() const
 {
   return this->visuals;
 }
 
 //////////////////////////////////////////////////
-MaterialMapPtr OgreScene::GetMaterials() const
+MaterialMapPtr OgreScene::Materials() const
 {
   return this->materials;
 }
@@ -162,7 +165,7 @@ DirectionalLightPtr OgreScene::CreateDirectionalLightImpl(unsigned int _id,
 {
   OgreDirectionalLightPtr light(new OgreDirectionalLight);
   bool result = this->InitObject(light, _id, _name);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -171,7 +174,7 @@ PointLightPtr OgreScene::CreatePointLightImpl(unsigned int _id,
 {
   OgrePointLightPtr light(new OgrePointLight);
   bool result = this->InitObject(light, _id, _name);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -180,7 +183,7 @@ SpotLightPtr OgreScene::CreateSpotLightImpl(unsigned int _id,
 {
   OgreSpotLightPtr light(new OgreSpotLight);
   bool result = this->InitObject(light, _id, _name);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -190,7 +193,7 @@ CameraPtr OgreScene::CreateCameraImpl(unsigned int _id,
   OgreCameraPtr camera(new OgreCamera);
   bool result = this->InitObject(camera, _id, _name);
   camera->SetBackgroundColor(this->backgroundColor);
-  return (result) ? camera : NULL;
+  return (result) ? camera : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -199,7 +202,7 @@ VisualPtr OgreScene::CreateVisualImpl(unsigned int _id,
 {
   OgreVisualPtr visual(new OgreVisual);
   bool result = this->InitObject(visual, _id, _name);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -208,7 +211,7 @@ ArrowVisualPtr OgreScene::CreateArrowVisualImpl(unsigned int _id,
 {
   OgreArrowVisualPtr visual(new OgreArrowVisual);
   bool result = this->InitObject(visual, _id, _name);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -217,7 +220,7 @@ AxisVisualPtr OgreScene::CreateAxisVisualImpl(unsigned int _id,
 {
   OgreAxisVisualPtr visual(new OgreAxisVisual);
   bool result = this->InitObject(visual, _id, _name);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -269,7 +272,7 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 {
   OgreMeshPtr mesh = this->meshFactory->Create(_desc);
   bool result = this->InitObject(mesh, _id, _name);
-  return (result) ? mesh : NULL;
+  return (result) ? mesh : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -278,7 +281,7 @@ MaterialPtr OgreScene::CreateMaterialImpl(unsigned int _id,
 {
   OgreMaterialPtr material(new OgreMaterial);
   bool result = this->InitObject(material, _id, _name);
-  return (result) ? material : NULL;
+  return (result) ? material : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -287,7 +290,7 @@ RenderTexturePtr OgreScene::CreateRenderTextureImpl(unsigned int _id,
 {
   OgreRenderTexturePtr renderTexture(new OgreRenderTexture);
   bool result = this->InitObject(renderTexture, _id, _name);
-  return (result) ? renderTexture : NULL;
+  return (result) ? renderTexture : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -297,7 +300,7 @@ bool OgreScene::InitObject(OgreObjectPtr _object, unsigned int _id,
   // assign needed varibles
   _object->id = _id;
   _object->name = _name;
-  _object->scene = this->GetSharedThis();
+  _object->scene = this->SharedThis();
 
   // initialize object
   _object->Load();
@@ -309,7 +312,7 @@ bool OgreScene::InitObject(OgreObjectPtr _object, unsigned int _id,
 //////////////////////////////////////////////////
 void OgreScene::CreateContext()
 {
-  Ogre::Root *root = OgreRenderEngine::Instance()->GetOgreRoot();
+  Ogre::Root *root = OgreRenderEngine::Instance()->OgreRoot();
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC);
 }
 
@@ -324,19 +327,19 @@ void OgreScene::CreateRootVisual()
   // check if root visual created successfully
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
-    gzerr << "Unable to create root visual" << std::endl;
-    this->rootVisual = NULL;
+    ignerr << "Unable to create root visual" << std::endl;
+    this->rootVisual = nullptr;
   }
 
   // add visual node to actual ogre root
-  Ogre::SceneNode *ogreRootNode = this->rootVisual->GetOgreNode();
+  Ogre::SceneNode *ogreRootNode = this->rootVisual->Node();
   this->ogreSceneManager->getRootSceneNode()->addChild(ogreRootNode);
 }
 
 //////////////////////////////////////////////////
 void OgreScene::CreateMeshFactory()
 {
-  OgreScenePtr sharedThis = this->GetSharedThis();
+  OgreScenePtr sharedThis = this->SharedThis();
   this->meshFactory = OgreMeshFactoryPtr(new OgreMeshFactory(sharedThis));
 }
 
@@ -350,7 +353,7 @@ void OgreScene::CreateStores()
 }
 
 //////////////////////////////////////////////////
-OgreScenePtr OgreScene::GetSharedThis()
+OgreScenePtr OgreScene::SharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<OgreScene>(sharedBase);

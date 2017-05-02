@@ -14,21 +14,22 @@
  * limitations under the License.
  *
  */
-#include <iostream>
-#include <vector>
 
-#include "gazebo/common/Console.hh"
-#include "ignition/rendering/rendering.hh"
-#include "GlutWindow.hh"
-
-#if __APPLE__
+#if defined(__APPLE__)
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
-#else
+#elif not defined(_WIN32)
   #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glut.h>
 #endif
+
+#include <iostream>
+#include <vector>
+
+#include "ignition/common/Console.hh"
+#include "ignition/rendering/rendering.hh"
+#include "GlutWindow.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -37,7 +38,7 @@ void BuildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
-  VisualPtr root = _scene->GetRootVisual();
+  VisualPtr root = _scene->RootVisual();
 
   // create point light
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
@@ -143,20 +144,25 @@ CameraPtr CreateCamera(const std::string &_engineName)
 {
   // create and populate scene
   RenderEngine *engine = rendering::get_engine(_engineName);
+  if (!engine)
+  {
+    std::cout << "Engine '" << _engineName
+              << "' is not supported" << std::endl;
+    return CameraPtr();
+  }
   ScenePtr scene = engine->CreateScene("scene");
   BuildScene(scene);
 
   // return camera sensor
-  SensorPtr sensor = scene->GetSensorByName("camera");
+  SensorPtr sensor = scene->SensorByName("camera");
   return std::dynamic_pointer_cast<Camera>(sensor);
 }
 
 int main(int _argc, char** _argv)
 {
-
   glutInit(&_argc, _argv);
 
-  gazebo::common::Console::SetQuiet(false);
+  common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
@@ -168,14 +174,15 @@ int main(int _argc, char** _argv)
     for (auto engineName : engineNames)
     {
       CameraPtr camera = CreateCamera(engineName);
-      cameras.push_back(camera);
+      if (camera)
+        cameras.push_back(camera);
     }
 
     GlutRun(cameras);
   }
   catch (...)
   {
-    //std::cout << ex.what() << std::endl;
+    // std::cout << ex.what() << std::endl;
   }
 
   return 0;

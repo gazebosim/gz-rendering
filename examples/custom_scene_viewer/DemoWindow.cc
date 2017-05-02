@@ -14,26 +14,27 @@
  * limitations under the License.
  *
  */
-#include "DemoWindow.hh"
-#include <ctime>
 
-#if __APPLE__
+#if defined(__APPLE__)
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
-#else
+#elif not defined(_WIN32)
   #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glut.h>
 #endif
 
-#include "gazebo/common/Image.hh"
-#include "gazebo/common/Console.hh"
-#include "ignition/rendering/rendering.hh"
-#include "ManualSceneDemo.hh"
-
-#if not (__APPLE__ || _WIN32)
+#if not defined(__APPLE__) && not defined(_WIN32)
   #include <GL/glx.h>
 #endif
+
+#include <ctime>
+#include <vector>
+
+#include "ignition/rendering/rendering.hh"
+
+#include "ManualSceneDemo.hh"
+#include "DemoWindow.hh"
 
 #define KEY_ESC 27
 #define KEY_TAB  9
@@ -64,7 +65,7 @@ double g_offset = 0.0;
 double g_fps = 0.0;
 
 const int g_fpsSize = 10;
-double g_fpsQueue[g_fpsSize];
+std::vector<double> g_fpsQueue(g_fpsSize);
 int g_fpsIndex = 0;
 int g_fpsCount = 0;
 clock_t g_prevTime;
@@ -80,7 +81,7 @@ void rendering::GlutRun(ManualSceneDemoPtr _demo)
 
   g_prevTime = clock();
   g_demo = _demo;
-  GlutInitCamera(_demo->GetCurrentCamera());
+  GlutInitCamera(_demo->CurrentCamera());
   GlutInitContext();
   GlutPrintUsage();
 
@@ -104,7 +105,7 @@ void rendering::GlutDisplay()
 #endif
 
   g_demo->Update();
-  CameraPtr camera = g_demo->GetCurrentCamera();
+  CameraPtr camera = g_demo->CurrentCamera();
 
   camera->Capture(*g_image);
 
@@ -112,7 +113,7 @@ void rendering::GlutDisplay()
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 #endif
 
-  unsigned char *data = g_image->GetData<unsigned char>();
+  unsigned char *data = g_image->Data<unsigned char>();
 
   glClearColor(0.5, 0.5, 0.5, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -191,8 +192,8 @@ void rendering::GlutReshape(int, int)
 //////////////////////////////////////////////////
 void rendering::GlutInitCamera(CameraPtr _camera)
 {
-  imgw = _camera->GetImageWidth();
-  imgh = _camera->GetImageHeight();
+  imgw = _camera->ImageWidth();
+  imgh = _camera->ImageHeight();
   Image image = _camera->CreateImage();
   g_image = std::make_shared<Image>(image);
   _camera->Capture(*g_image);
@@ -234,7 +235,8 @@ void rendering::GlutPrintUsage()
 void rendering::GlutPrintEngine()
 {
   int y = imgh - 20;
-  std::string text = "Engine: " + g_demo->GetCurrentCamera()->GetScene()->GetEngine()->GetName();
+  std::string text = "Engine: " +
+      g_demo->CurrentCamera()->Scene()->Engine()->Name();
   GlutPrintText(text, 10, y);
 }
 
@@ -259,7 +261,8 @@ void rendering::GlutPrintFPS()
 void rendering::GlutUpdateFPS()
 {
   clock_t currTime = clock();
-  double elapsedTime = double(currTime - g_prevTime) / CLOCKS_PER_SEC;
+  double elapsedTime = static_cast<double>(currTime - g_prevTime)
+      / CLOCKS_PER_SEC;
   g_fpsQueue[g_fpsIndex] = 1 / elapsedTime;
   g_fpsCount = (g_fpsCount >= g_fpsSize) ? g_fpsSize : g_fpsCount + 1;
   g_fpsIndex = (g_fpsIndex + 1) % g_fpsSize;

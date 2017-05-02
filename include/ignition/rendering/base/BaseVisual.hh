@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASEVISUAL_HH_
-#define _IGNITION_RENDERING_BASEVISUAL_HH_
+#ifndef IGNITION_RENDERING_BASE_BASEVISUAL_HH_
+#define IGNITION_RENDERING_BASE_BASEVISUAL_HH_
 
+#include <string>
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/Storage.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/RenderEngine.hh"
 
 namespace ignition
@@ -36,9 +36,9 @@ namespace ignition
 
       public: virtual ~BaseVisual();
 
-      public: virtual unsigned int GetChildCount() const;
+      public: virtual unsigned int ChildCount() const;
 
-      public: virtual math::Pose3d GetLocalPose() const;
+      public: virtual math::Pose3d LocalPose() const;
 
       public: virtual void SetLocalPose(const math::Pose3d &_pose);
 
@@ -48,11 +48,11 @@ namespace ignition
 
       public: virtual bool HasChildName(const std::string &_name) const;
 
-      public: virtual NodePtr GetChildById(unsigned int _id) const;
+      public: virtual NodePtr ChildById(unsigned int _id) const;
 
-      public: virtual NodePtr GetChildByName(const std::string &_name) const;
+      public: virtual NodePtr ChildByName(const std::string &_name) const;
 
-      public: virtual NodePtr GetChildByIndex(unsigned int _index) const;
+      public: virtual NodePtr ChildByIndex(unsigned int _index) const;
 
       public: virtual void AddChild(NodePtr _child);
 
@@ -66,11 +66,11 @@ namespace ignition
 
       public: virtual void RemoveChildren();
 
-      public: virtual unsigned int GetGeometryCount() const;
+      public: virtual unsigned int GeometryCount() const;
 
       public: virtual bool HasGeometry(ConstGeometryPtr _geometry) const;
 
-      public: virtual GeometryPtr GetGeometryByIndex(unsigned int _index) const;
+      public: virtual GeometryPtr GeometryByIndex(unsigned int _index) const;
 
       public: virtual void AddGeometry(GeometryPtr _geometry);
 
@@ -92,7 +92,7 @@ namespace ignition
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
                   bool unique = true);
 
-      public: virtual math::Vector3d GetLocalScale() const = 0;
+      public: virtual math::Vector3d LocalScale() const = 0;
 
       public: virtual void SetLocalScale(double _scale);
 
@@ -100,7 +100,7 @@ namespace ignition
 
       public: virtual void SetLocalScale(const math::Vector3d &_scale);
 
-      public: virtual math::Vector3d GetWorldScale() const;
+      public: virtual math::Vector3d WorldScale() const;
 
       public: virtual void SetWorldScale(double _scale);
 
@@ -114,7 +114,7 @@ namespace ignition
 
       public: virtual void Scale(const math::Vector3d &_scale);
 
-      public: virtual bool GetInheritScale() const = 0;
+      public: virtual bool InheritScale() const = 0;
 
       public: virtual void PreRender();
 
@@ -124,9 +124,9 @@ namespace ignition
 
       protected: virtual void PreRenderGeometries();
 
-      protected: virtual NodeStorePtr GetChildren() const = 0;
+      protected: virtual NodeStorePtr Children() const = 0;
 
-      protected: virtual GeometryStorePtr GetGeometries() const = 0;
+      protected: virtual GeometryStorePtr Geometries() const = 0;
 
       protected: virtual bool AttachChild(NodePtr _child) = 0;
 
@@ -154,10 +154,10 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    math::Pose3d BaseVisual<T>::GetLocalPose() const
+    math::Pose3d BaseVisual<T>::LocalPose() const
     {
-      math::Pose3d rawPose = this->GetRawLocalPose();
-      math::Vector3d scale = this->GetLocalScale();
+      math::Pose3d rawPose = this->RawLocalPose();
+      math::Vector3d scale = this->LocalScale();
       rawPose.Pos() += rawPose.Rot() * (scale * this->origin);
       return rawPose;
     }
@@ -167,58 +167,58 @@ namespace ignition
     void BaseVisual<T>::SetLocalPose(const math::Pose3d &_pose)
     {
       math::Pose3d rawPose = _pose;
-      math::Vector3d scale = this->GetLocalScale();
+      math::Vector3d scale = this->LocalScale();
       rawPose.Pos() -= rawPose.Rot() * (scale * this->origin);
       this->SetRawLocalPose(rawPose);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseVisual<T>::GetChildCount() const
+    unsigned int BaseVisual<T>::ChildCount() const
     {
-      return this->GetChildren()->Size();
+      return this->Children()->Size();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     bool BaseVisual<T>::HasChild(ConstNodePtr _child) const
     {
-      return this->GetChildren()->Contains(_child);
+      return this->Children()->Contains(_child);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     bool BaseVisual<T>::HasChildId(unsigned int _id) const
     {
-      return this->GetChildren()->ContainsId(_id);
+      return this->Children()->ContainsId(_id);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     bool BaseVisual<T>::HasChildName(const std::string &_name) const
     {
-      return this->GetChildren()->ContainsName(_name);
+      return this->Children()->ContainsName(_name);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    NodePtr BaseVisual<T>::GetChildById(unsigned int _id) const
+    NodePtr BaseVisual<T>::ChildById(unsigned int _id) const
     {
-      return this->GetChildren()->GetById(_id);
+      return this->Children()->GetById(_id);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    NodePtr BaseVisual<T>::GetChildByName(const std::string &_name) const
+    NodePtr BaseVisual<T>::ChildByName(const std::string &_name) const
     {
-      return this->GetChildren()->GetByName(_name);
+      return this->Children()->GetByName(_name);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    NodePtr BaseVisual<T>::GetChildByIndex(unsigned int _index) const
+    NodePtr BaseVisual<T>::ChildByIndex(unsigned int _index) const
     {
-      return this->GetChildren()->GetByIndex(_index);
+      return this->Children()->GetByIndex(_index);
     }
 
     //////////////////////////////////////////////////
@@ -227,7 +227,7 @@ namespace ignition
     {
       if (this->AttachChild(_child))
       {
-        this->GetChildren()->Add(_child);
+        this->Children()->Add(_child);
       }
     }
 
@@ -235,7 +235,7 @@ namespace ignition
     template <class T>
     NodePtr BaseVisual<T>::RemoveChild(NodePtr _child)
     {
-      NodePtr child = this->GetChildren()->Remove(_child);
+      NodePtr child = this->Children()->Remove(_child);
       if (child) this->DetachChild(child);
       return child;
     }
@@ -244,7 +244,7 @@ namespace ignition
     template <class T>
     NodePtr BaseVisual<T>::RemoveChildById(unsigned int _id)
     {
-      NodePtr child = this->GetChildren()->RemoveById(_id);
+      NodePtr child = this->Children()->RemoveById(_id);
       if (child) this->DetachChild(child);
       return child;
     }
@@ -253,7 +253,7 @@ namespace ignition
     template <class T>
     NodePtr BaseVisual<T>::RemoveChildByName(const std::string &_name)
     {
-      NodePtr child = this->GetChildren()->RemoveByName(_name);
+      NodePtr child = this->Children()->RemoveByName(_name);
       if (child) this->DetachChild(child);
       return child;
     }
@@ -262,7 +262,7 @@ namespace ignition
     template <class T>
     NodePtr BaseVisual<T>::RemoveChildByIndex(unsigned int _index)
     {
-      NodePtr child = this->GetChildren()->RemoveByIndex(_index);
+      NodePtr child = this->Children()->RemoveByIndex(_index);
       if (child) this->DetachChild(child);
       return child;
     }
@@ -271,7 +271,7 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::RemoveChildren()
     {
-      unsigned int count = this->GetChildren()->Size();
+      unsigned int count = this->Children()->Size();
 
       for (unsigned int i = 0; i < count; ++i)
       {
@@ -281,23 +281,23 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseVisual<T>::GetGeometryCount() const
+    unsigned int BaseVisual<T>::GeometryCount() const
     {
-      return this->GetGeometries()->Size();
+      return this->Geometries()->Size();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     bool BaseVisual<T>::HasGeometry(ConstGeometryPtr _geometry) const
     {
-      return this->GetGeometries()->Contains(_geometry);
+      return this->Geometries()->Contains(_geometry);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    GeometryPtr BaseVisual<T>::GetGeometryByIndex(unsigned int _index) const
+    GeometryPtr BaseVisual<T>::GeometryByIndex(unsigned int _index) const
     {
-      return this->GetGeometries()->GetByIndex(_index);
+      return this->Geometries()->GetByIndex(_index);
     }
 
     //////////////////////////////////////////////////
@@ -306,7 +306,7 @@ namespace ignition
     {
       if (this->AttachGeometry(_geometry))
       {
-        this->GetGeometries()->Add(_geometry);
+        this->Geometries()->Add(_geometry);
       }
     }
 
@@ -314,28 +314,28 @@ namespace ignition
     template <class T>
     GeometryPtr BaseVisual<T>::RemoveGeometry(GeometryPtr _geometry)
     {
-      return this->GetGeometries()->Remove(_geometry);
+      return this->Geometries()->Remove(_geometry);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     GeometryPtr BaseVisual<T>::RemoveGeometryByIndex(unsigned int _index)
     {
-      return this->GetGeometries()->RemoveByIndex(_index);
+      return this->Geometries()->RemoveByIndex(_index);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::RemoveGeometries()
     {
-      this->GetGeometries()->RemoveAll();
+      this->Geometries()->RemoveAll();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::SetMaterial(const std::string &_name, bool unique)
     {
-      MaterialPtr material = this->GetScene()->GetMaterial(_name);
+      MaterialPtr material = this->Scene()->Material(_name);
       if (material) this->SetMaterial(material, unique);
     }
 
@@ -353,11 +353,11 @@ namespace ignition
     void BaseVisual<T>::SetChildMaterial(MaterialPtr _material, bool unique)
     {
       _material = (unique) ? _material->Clone() : _material;
-      unsigned int count = this->GetChildCount();
+      unsigned int count = this->ChildCount();
 
       for (unsigned int i = 0; i < count; ++i)
       {
-        NodePtr child = this->GetChildByIndex(i);
+        NodePtr child = this->ChildByIndex(i);
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
         if (visual) visual->SetMaterial(_material);
       }
@@ -368,11 +368,11 @@ namespace ignition
     void BaseVisual<T>::SetGeometryMaterial(MaterialPtr _material, bool unique)
     {
       _material = (unique) ? _material->Clone() : _material;
-      unsigned int count = this->GetGeometryCount();
+      unsigned int count = this->GeometryCount();
 
       for (unsigned int i = 0; i < count; ++i)
       {
-        GeometryPtr geometry = this->GetGeometryByIndex(i);
+        GeometryPtr geometry = this->GeometryByIndex(i);
         geometry->SetMaterial(_material);
       }
     }
@@ -395,23 +395,23 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::SetLocalScale(const math::Vector3d &_scale)
     {
-      math::Pose3d rawPose = this->GetLocalPose();
+      math::Pose3d rawPose = this->LocalPose();
       this->SetLocalScaleImpl(_scale);
       this->SetLocalPose(rawPose);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    math::Vector3d BaseVisual<T>::GetWorldScale() const
+    math::Vector3d BaseVisual<T>::WorldScale() const
     {
-      math::Vector3d scale = this->GetLocalScale();
+      math::Vector3d scale = this->LocalScale();
 
-      if (!this->GetInheritScale() || !this->HasParent())
+      if (!this->InheritScale() || !this->HasParent())
       {
         return scale;
       }
 
-      return scale * this->GetParent()->GetWorldScale();
+      return scale * this->Parent()->WorldScale();
     }
 
     //////////////////////////////////////////////////
@@ -432,7 +432,7 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::SetWorldScale(const math::Vector3d &_scale)
     {
-      math::Vector3d currentScale = this->GetWorldScale();
+      math::Vector3d currentScale = this->WorldScale();
       this->SetLocalScale(_scale / currentScale);
     }
 
@@ -454,7 +454,7 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::Scale(const math::Vector3d &_scale)
     {
-      this->SetLocalScale(_scale * this->GetLocalScale());
+      this->SetLocalScale(_scale * this->LocalScale());
     }
 
     //////////////////////////////////////////////////
@@ -471,19 +471,19 @@ namespace ignition
     void BaseVisual<T>::Destroy()
     {
       T::Destroy();
-      this->GetGeometries()->DestroyAll();
-      this->GetChildren()->RemoveAll();
+      this->Geometries()->DestroyAll();
+      this->Children()->RemoveAll();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::PreRenderChildren()
     {
-      unsigned int count = this->GetChildCount();
+      unsigned int count = this->ChildCount();
 
       for (unsigned int i = 0; i < count; ++i)
       {
-        NodePtr child = this->GetChildByIndex(i);
+        NodePtr child = this->ChildByIndex(i);
         child->PreRender();
       }
     }
@@ -492,11 +492,11 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::PreRenderGeometries()
     {
-      unsigned int count = this->GetGeometryCount();
+      unsigned int count = this->GeometryCount();
 
       for (unsigned int i = 0; i < count; ++i)
       {
-        GeometryPtr geometry = this->GetGeometryByIndex(i);
+        GeometryPtr geometry = this->GeometryByIndex(i);
         geometry->PreRender();
       }
     }

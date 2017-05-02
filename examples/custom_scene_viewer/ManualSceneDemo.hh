@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_TEST_MANUALSCENEDEMO_HH_
-#define _IGNITION_RENDERING_TEST_MANUALSCENEDEMO_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_TEST_MANUALSCENEDEMO_HH_
+#define IGNITION_RENDERING_EXAMPLES_TEST_MANUALSCENEDEMO_HH_
 
+#include <string>
 #include <ignition/rendering/rendering.hh>
 #include "TestTypes.hh"
 
@@ -31,7 +32,7 @@ namespace ignition
 
       public: virtual ~ManualSceneDemo();
 
-      public: virtual unsigned int GetSceneCount() const;
+      public: virtual unsigned int SceneCount() const;
 
       public: virtual void AddScene(SceneBuilderPtr _builder);
 
@@ -41,9 +42,9 @@ namespace ignition
 
       public: virtual void SelectScene(int _index);
 
-      public: virtual SceneBuilderPtr GetCurrentScene();
+      public: virtual SceneBuilderPtr CurrentScene();
 
-      public: virtual unsigned int GetCameraCount() const;
+      public: virtual unsigned int CameraCount() const;
 
       public: virtual void AddCamera(const std::string &_engineName);
 
@@ -53,9 +54,9 @@ namespace ignition
 
       public: virtual void SelectCamera(int _index);
 
-      public: virtual CameraPtr GetCamera(int _index);
+      public: virtual CameraPtr Camera(int _index);
 
-      public: virtual CameraPtr GetCurrentCamera();
+      public: virtual CameraPtr CurrentCamera();
 
       public: virtual void Run();
 

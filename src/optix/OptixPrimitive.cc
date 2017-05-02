@@ -14,10 +14,12 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/optix/OptixPrimitive.hh"
 #include "ignition/rendering/optix/OptixMaterial.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
-#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -39,7 +41,7 @@ OptixPrimitive::~OptixPrimitive()
 }
 
 //////////////////////////////////////////////////
-MaterialPtr OptixPrimitive::GetMaterial() const
+MaterialPtr OptixPrimitive::Material() const
 {
   return this->material;
 }
@@ -51,7 +53,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!_material)
   {
-    gzerr << "Cannot assign null material" << std::endl;
+    ignerr << "Cannot assign null material" << std::endl;
     return;
   }
 
@@ -62,7 +64,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!derived)
   {
-    gzerr << "Cannot assign material created by another render-engine"
+    ignerr << "Cannot assign material created by another render-engine"
            << std::endl;
 
     return;
@@ -72,7 +74,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
 }
 
 //////////////////////////////////////////////////
-optix::GeometryGroup OptixPrimitive::GetOptixGeometryGroup() const
+optix::GeometryGroup OptixPrimitive::OptixGeometryGroup() const
 {
   return this->optixGeomGroup;
 }
@@ -85,19 +87,19 @@ void OptixPrimitive::PreRender()
 }
 
 //////////////////////////////////////////////////
-optix::Acceleration OptixPrimitive::GetOptixAccel() const
+optix::Acceleration OptixPrimitive::OptixAccel() const
 {
   return this->optixAccel;
 }
 
 //////////////////////////////////////////////////
-optix::GeometryInstance OptixPrimitive::GetOptixGeometryInstance() const
+optix::GeometryInstance OptixPrimitive::OptixGeometryInstance() const
 {
   return this->optixGeomInstance;
 }
 
 //////////////////////////////////////////////////
-optix::Geometry OptixPrimitive::GetOptixGeometry() const
+optix::Geometry OptixPrimitive::OptixGeometry() const
 {
   return this->optixGeometry;
 }
@@ -106,7 +108,7 @@ optix::Geometry OptixPrimitive::GetOptixGeometry() const
 void OptixPrimitive::SetMaterialImpl(OptixMaterialPtr _material)
 {
   this->optixGeomInstance->setMaterialCount(0);
-  this->optixGeomInstance->addMaterial(_material->GetOptixMaterial());
+  this->optixGeomInstance->addMaterial(_material->Material());
   this->material = _material;
 }
 
@@ -114,7 +116,7 @@ void OptixPrimitive::SetMaterialImpl(OptixMaterialPtr _material)
 void OptixPrimitive::Init()
 {
   OptixGeometry::Init();
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   this->optixGeomInstance = optixContext->createGeometryInstance();
   this->optixGeomInstance->setGeometry(this->optixGeometry);
   this->optixAccel = optixContext->createAcceleration("Bvh", "Bvh");
@@ -133,7 +135,7 @@ optix::Geometry OptixPrimitive::CreateOptixGeometry(OptixScenePtr _scene,
   boundsProgram = _scene->CreateOptixProgram(_ptxFile, PTX_BOUNDS_FUNC);
 
   // create actual geometry
-  optix::Context optixContext = _scene->GetOptixContext();
+  optix::Context optixContext = _scene->OptixContext();
   optix::Geometry geometry = optixContext->createGeometry();
   geometry->setIntersectionProgram(interProgram);
   geometry->setBoundingBoxProgram(boundsProgram);

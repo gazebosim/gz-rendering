@@ -14,11 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASECAMERA_HH_
-#define _IGNITION_RENDERING_BASECAMERA_HH_
+#ifndef IGNITION_RENDERING_BASE_BASECAMERA_HH_
+#define IGNITION_RENDERING_BASE_BASECAMERA_HH_
 
-#include "gazebo/common/Console.hh"
+#include <string>
+#include <ignition/common/Event.hh>
+
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 
@@ -35,19 +38,19 @@ namespace ignition
 
       public: virtual ~BaseCamera();
 
-      public: virtual unsigned int GetImageWidth() const;
+      public: virtual unsigned int ImageWidth() const;
 
       public: virtual void SetImageWidth(unsigned int _width);
 
-      public: virtual unsigned int GetImageHeight() const;
+      public: virtual unsigned int ImageHeight() const;
 
       public: virtual void SetImageHeight(unsigned int _height);
 
-      public: virtual PixelFormat GetImageFormat() const = 0;
+      public: virtual PixelFormat ImageFormat() const = 0;
 
-      public: virtual unsigned int GetImageDepth() const;
+      public: virtual unsigned int ImageDepth() const;
 
-      public: virtual unsigned int GetImageMemorySize() const;
+      public: virtual unsigned int ImageMemorySize() const;
 
       public: virtual void SetHFOV(const math::Angle &_angle) = 0;
 
@@ -61,14 +64,12 @@ namespace ignition
 
       public: virtual void Capture(Image &_image);
 
-      public: virtual void GetImageData(Image &_image) const;
+      public: virtual void Copy(Image &_image) const;
 
       public: virtual bool SaveFrame(const std::string &_name);
 
-      public: virtual gazebo::event::ConnectionPtr ConnectNewImageFrame(
+      public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   Camera::NewFrameListener _listener);
-
-      public: virtual void DisconnectNewImageFrame(gazebo::event::ConnectionPtr &_conn);
 
       protected: virtual void *CreateImageBuffer() const;
 
@@ -76,9 +77,9 @@ namespace ignition
 
       protected: virtual void Reset();
 
-      protected: virtual RenderTexturePtr GetRenderTexture() const = 0;
+      protected: virtual RenderTexturePtr RenderTexture() const = 0;
 
-      protected: gazebo::event::EventT<void(const void *, unsigned int, unsigned int,
+      protected: common::EventT<void(const void *, unsigned int, unsigned int,
                      unsigned int, const std::string &)> newFrameEvent;
 
       protected: ImagePtr imageBuffer;
@@ -98,47 +99,47 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseCamera<T>::GetImageWidth() const
+    unsigned int BaseCamera<T>::ImageWidth() const
     {
-      return this->GetRenderTexture()->GetWidth();
+      return this->RenderTexture()->Width();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseCamera<T>::SetImageWidth(unsigned int _width)
     {
-      this->GetRenderTexture()->SetWidth(_width);
+      this->RenderTexture()->SetWidth(_width);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseCamera<T>::GetImageHeight() const
+    unsigned int BaseCamera<T>::ImageHeight() const
     {
-      return this->GetRenderTexture()->GetHeight();
+      return this->RenderTexture()->Height();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseCamera<T>::SetImageHeight(unsigned int _height)
     {
-      this->GetRenderTexture()->SetHeight(_height);
+      this->RenderTexture()->SetHeight(_height);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseCamera<T>::GetImageDepth() const
+    unsigned int BaseCamera<T>::ImageDepth() const
     {
-      return PixelUtil::GetChannelCount(this->GetImageFormat());
+      return PixelUtil::ChannelCount(this->ImageFormat());
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseCamera<T>::GetImageMemorySize() const
+    unsigned int BaseCamera<T>::ImageMemorySize() const
     {
-      PixelFormat format = this->GetImageFormat();
-      unsigned int width = this->GetImageWidth();
-      unsigned int height = this->GetImageHeight();
-      return PixelUtil::GetMemorySize(format, width, height);
+      PixelFormat format = this->ImageFormat();
+      unsigned int width = this->ImageWidth();
+      unsigned int height = this->ImageHeight();
+      return PixelUtil::MemorySize(format, width, height);
     }
 
     //////////////////////////////////////////////////
@@ -146,7 +147,7 @@ namespace ignition
     void BaseCamera<T>::PreRender()
     {
       T::PreRender();
-      this->GetRenderTexture()->PreRender();
+      this->RenderTexture()->PreRender();
     }
 
     //////////////////////////////////////////////////
@@ -160,9 +161,9 @@ namespace ignition
     template <class T>
     Image BaseCamera<T>::CreateImage() const
     {
-      PixelFormat format = this->GetImageFormat();
-      unsigned int width = this->GetImageWidth();
-      unsigned int height = this->GetImageHeight();
+      PixelFormat format = this->ImageFormat();
+      unsigned int width = this->ImageWidth();
+      unsigned int height = this->ImageHeight();
       return Image(width, height, format);
     }
 
@@ -170,17 +171,17 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::Capture(Image &_image)
     {
-      this->GetScene()->PreRender();
+      this->Scene()->PreRender();
       this->Render();
       this->PostRender();
-      this->GetImageData(_image);
+      this->Copy(_image);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::GetImageData(Image &_image) const
+    void BaseCamera<T>::Copy(Image &_image) const
     {
-      this->GetRenderTexture()->GetImage(_image);
+      this->RenderTexture()->Copy(_image);
     }
 
     //////////////////////////////////////////////////
@@ -192,7 +193,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    gazebo::event::ConnectionPtr BaseCamera<T>::ConnectNewImageFrame(
+    common::ConnectionPtr BaseCamera<T>::ConnectNewImageFrame(
         Camera::NewFrameListener _listener)
     {
       return newFrameEvent.Connect(_listener);
@@ -200,17 +201,10 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::DisconnectNewImageFrame(gazebo::event::ConnectionPtr &_conn)
-    {
-      newFrameEvent.Disconnect(_conn);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
     void *BaseCamera<T>::CreateImageBuffer() const
     {
       // TODO: determine proper type
-      unsigned int size = this->GetImageMemorySize();
+      unsigned int size = this->ImageMemorySize();
       return new unsigned char *[size];
     }
 

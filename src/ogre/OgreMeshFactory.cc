@@ -14,15 +14,20 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreMeshFactory.hh"
+
 
 #include <sstream>
-#include "gazebo/common/Console.hh"
-#include "gazebo/common/Exception.hh"
-#include "gazebo/common/Material.hh"
-#include "gazebo/common/MeshManager.hh"
-#include "gazebo/common/Skeleton.hh"
-#include "gazebo/math/Matrix4.hh"
+
+
+#include <ignition/common/Console.hh>
+#include <ignition/common/Material.hh>
+#include <ignition/common/MeshManager.hh>
+#include <ignition/common/Skeleton.hh>
+#include <ignition/common/SubMesh.hh>
+
+#include <ignition/math/Matrix4.hh>
+
+#include "ignition/rendering/ogre/OgreMeshFactory.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
@@ -49,12 +54,12 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
   // create ogre entity
   OgreMeshPtr mesh(new OgreMesh);
   MeshDescriptor normDesc = _desc.Normalize();
-  mesh->ogreEntity = this->GetOgreEntity(normDesc);
+  mesh->ogreEntity = this->OgreEntity(normDesc);
 
   // check if invalid mesh
   if (!mesh->ogreEntity)
   {
-    return NULL;
+    return nullptr;
   }
 
   // create sub-mesh store
@@ -64,15 +69,15 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
-Ogre::Entity *OgreMeshFactory::GetOgreEntity(const MeshDescriptor &_desc)
+Ogre::Entity *OgreMeshFactory::OgreEntity(const MeshDescriptor &_desc)
 {
   if (!this->Load(_desc))
   {
-    return NULL;
+    return nullptr;
   }
 
-  std::string name = this->GetMeshName(_desc);
-  Ogre::SceneManager *sceneManager = this->scene->GetOgreSceneManager();
+  std::string name = this->MeshName(_desc);
+  Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
   return sceneManager->createEntity(name);
 }
 
@@ -95,7 +100,7 @@ bool OgreMeshFactory::Load(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 bool OgreMeshFactory::IsLoaded(const MeshDescriptor &_desc)
 {
-  std::string name = this->GetMeshName(_desc);
+  std::string name = this->MeshName(_desc);
   return Ogre::MeshManager::getSingleton().resourceExists(name);
 }
 
@@ -106,11 +111,11 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
   std::string name;
   std::string group;
 
-  OgreRenderEngine::Instance()->AddResourcePath(_desc.mesh->GetPath());
+  OgreRenderEngine::Instance()->AddResourcePath(_desc.mesh->Path());
 
   try
   {
-    name = this->GetMeshName(_desc);
+    name = this->MeshName(_desc);
     group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
     ogreMesh = Ogre::MeshManager::getSingleton().createManual(name, group);
 
@@ -118,19 +123,19 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
     if (_desc.mesh->HasSkeleton())
     {
-      gazebo::common::Skeleton *skel = _desc.mesh->GetSkeleton();
+      common::SkeletonPtr skel = _desc.mesh->MeshSkeleton();
       ogreSkeleton = Ogre::SkeletonManager::getSingleton().create(
-        _desc.mesh->GetName() + "_skeleton",
+        _desc.mesh->Name() + "_skeleton",
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         true);
 
-      for (unsigned int i = 0; i < skel->GetNumNodes(); i++)
+      for (unsigned int i = 0; i < skel->NodeCount(); i++)
       {
-        gazebo::common::SkeletonNode *node = skel->GetNodeByHandle(i);
-        Ogre::Bone *bone = ogreSkeleton->createBone(node->GetName());
+        common::SkeletonNode *node = skel->NodeByHandle(i);
+        Ogre::Bone *bone = ogreSkeleton->createBone(node->Name());
 
-        if (node->GetParent())
-          ogreSkeleton->getBone(node->GetParent()->GetName())->addChild(bone);
+        if (node->Parent())
+          ogreSkeleton->getBone(node->Parent()->Name())->addChild(bone);
 
         math::Matrix4d trans = node->Transform();
         math::Vector3d pos = trans.Translation();
@@ -141,13 +146,14 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
         bone->setManuallyControlled(true);
         bone->setInitialState();
       }
-      ogreMesh->setSkeletonName(_desc.mesh->GetName() + "_skeleton");
+      ogreMesh->setSkeletonName(_desc.mesh->Name() + "_skeleton");
     }
 
-    for (unsigned int i = 0; i < _desc.mesh->GetSubMeshCount(); i++)
+    for (unsigned int i = 0; i < _desc.mesh->SubMeshCount(); i++)
     {
-      if (!_desc.subMeshName.empty() &&
-          _desc.mesh->GetSubMesh(i)->GetName() != _desc.subMeshName)
+      auto s = _desc.mesh->SubMeshByIndex(i).lock();
+      if (!_desc.subMeshName.empty() && s &&
+          s->Name() != _desc.subMeshName)
       {
         continue;
       }
@@ -164,7 +170,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
       // Copy the original submesh. We may need to modify the vertices, and
       // we don't want to change the original.
-      gazebo::common::SubMesh subMesh(_desc.mesh->GetSubMesh(i));
+      common::SubMesh subMesh(*s.get());
 
       // Recenter the vertices if requested.
       if (_desc.centerSubMesh)
@@ -172,21 +178,21 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
       ogreSubMesh = ogreMesh->createSubMesh();
       ogreSubMesh->useSharedVertices = false;
-      if (subMesh.GetPrimitiveType() == gazebo::common::SubMesh::TRIANGLES)
+      if (subMesh.SubMeshPrimitiveType() == common::SubMesh::TRIANGLES)
         ogreSubMesh->operationType = Ogre::RenderOperation::OT_TRIANGLE_LIST;
-      else if (subMesh.GetPrimitiveType() == gazebo::common::SubMesh::LINES)
+      else if (subMesh.SubMeshPrimitiveType() == common::SubMesh::LINES)
         ogreSubMesh->operationType = Ogre::RenderOperation::OT_LINE_LIST;
-      else if (subMesh.GetPrimitiveType() == gazebo::common::SubMesh::LINESTRIPS)
+      else if (subMesh.SubMeshPrimitiveType() == common::SubMesh::LINESTRIPS)
         ogreSubMesh->operationType = Ogre::RenderOperation::OT_LINE_STRIP;
-      else if (subMesh.GetPrimitiveType() == gazebo::common::SubMesh::TRIFANS)
+      else if (subMesh.SubMeshPrimitiveType() == common::SubMesh::TRIFANS)
         ogreSubMesh->operationType = Ogre::RenderOperation::OT_TRIANGLE_FAN;
-      else if (subMesh.GetPrimitiveType() == gazebo::common::SubMesh::TRISTRIPS)
+      else if (subMesh.SubMeshPrimitiveType() == common::SubMesh::TRISTRIPS)
         ogreSubMesh->operationType = Ogre::RenderOperation::OT_TRIANGLE_STRIP;
-      else if (subMesh.GetPrimitiveType() == gazebo::common::SubMesh::POINTS)
+      else if (subMesh.SubMeshPrimitiveType() == common::SubMesh::POINTS)
         ogreSubMesh->operationType = Ogre::RenderOperation::OT_POINT_LIST;
       else
-        gzerr << "Unknown primitive type["
-              << subMesh.GetPrimitiveType() << "]\n";
+        ignerr << "Unknown primitive type["
+              << subMesh.SubMeshPrimitiveType() << "]\n";
 
       ogreSubMesh->vertexData = new Ogre::VertexData();
       vertexData = ogreSubMesh->vertexData;
@@ -201,7 +207,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       // TODO: blending weights
 
       // normals
-      if (subMesh.GetNormalCount() > 0)
+      if (subMesh.NormalCount() > 0)
       {
         vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT3,
                                Ogre::VES_NORMAL);
@@ -213,7 +219,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       // TODO: specular colors
 
       // two dimensional texture coordinates
-      if (subMesh.GetTexCoordCount() > 0)
+      if (subMesh.TexCoordCount() > 0)
       {
         vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT2,
             Ogre::VES_TEXTURE_COORDINATES, 0);
@@ -221,7 +227,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       }
 
       // allocate the vertex buffer
-      vertexData->vertexCount = subMesh.GetVertexCount();
+      vertexData->vertexCount = subMesh.VertexCount();
 
       vBuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
                  vertexDecl->getVertexSize(0),
@@ -235,21 +241,21 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
       if (_desc.mesh->HasSkeleton())
       {
-        gazebo::common::Skeleton *skel = _desc.mesh->GetSkeleton();
-        for (unsigned int j = 0; j < subMesh.GetNodeAssignmentsCount(); j++)
+        common::SkeletonPtr skel = _desc.mesh->MeshSkeleton();
+        for (unsigned int j = 0; j < subMesh.NodeAssignmentsCount(); j++)
         {
-          gazebo::common::NodeAssignment na = subMesh.GetNodeAssignment(j);
+          common::NodeAssignment na = subMesh.NodeAssignmentByIndex(j);
           Ogre::VertexBoneAssignment vba;
           vba.vertexIndex = na.vertexIndex;
-          vba.boneIndex = ogreSkeleton->getBone(skel->GetNodeByHandle(
-                              na.nodeIndex)->GetName())->getHandle();
+          vba.boneIndex = ogreSkeleton->getBone(skel->NodeByHandle(
+                              na.nodeIndex)->Name())->getHandle();
           vba.weight = na.weight;
           ogreSubMesh->addBoneAssignment(vba);
         }
       }
 
       // allocate index buffer
-      ogreSubMesh->indexData->indexCount = subMesh.GetIndexCount();
+      ogreSubMesh->indexData->indexCount = subMesh.IndexCount();
 
       ogreSubMesh->indexData->indexBuffer =
         Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
@@ -265,20 +271,20 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       unsigned int j;
 
       // Add all the vertices
-      for (j = 0; j < subMesh.GetVertexCount(); j++)
+      for (j = 0; j < subMesh.VertexCount(); j++)
       {
         *vertices++ = subMesh.Vertex(j).X();
         *vertices++ = subMesh.Vertex(j).Y();
         *vertices++ = subMesh.Vertex(j).Z();
 
-        if (subMesh.GetNormalCount() > 0)
+        if (subMesh.NormalCount() > 0)
         {
           *vertices++ = subMesh.Normal(j).X();
           *vertices++ = subMesh.Normal(j).Y();
           *vertices++ = subMesh.Normal(j).Z();
         }
 
-        if (subMesh.GetTexCoordCount() > 0)
+        if (subMesh.TexCoordCount() > 0)
         {
           *vertices++ = subMesh.TexCoord(j).X();
           *vertices++ = subMesh.TexCoord(j).Y();
@@ -286,16 +292,16 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       }
 
       // Add all the indices
-      for (j = 0; j < subMesh.GetIndexCount(); j++)
-        *indices++ = subMesh.GetIndex(j);
+      for (j = 0; j < subMesh.IndexCount(); j++)
+        *indices++ = subMesh.Index(j);
 
-      const gazebo::common::Material *material;
-      material = _desc.mesh->GetMaterial(subMesh.GetMaterialIndex());
+      common::MaterialPtr material;
+      material = _desc.mesh->MaterialByIndex(subMesh.MaterialIndex());
 
       if (material)
       {
         this->scene->CreateMaterial(*material);
-        ogreSubMesh->setMaterialName(material->GetName());
+        ogreSubMesh->setMaterialName(material->Name());
       }
       else
       {
@@ -317,10 +323,16 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
     }
 
     if (!max.IsFinite())
-      gzthrow("Max bounding box is not finite[" << max << "]\n");
+    {
+      ignerr << "Max bounding box is not finite[" << max << "]" << std::endl;
+      return false;
+    }
 
     if (!min.IsFinite())
-      gzthrow("Min bounding box is not finite[" << min << "]\n");
+    {
+      ignerr << "Min bounding box is not finite[" << min << "]" << std::endl;
+      return false;
+    }
 
     ogreMesh->_setBounds(Ogre::AxisAlignedBox(
           Ogre::Vector3(min.X(), min.Y(), min.Z()),
@@ -332,7 +344,8 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
   }
   catch(Ogre::Exception &e)
   {
-    gzerr << "Unable to insert mesh[" << e.getDescription() << "]" << std::endl;
+    ignerr << "Unable to insert mesh[" << e.getDescription() << "]"
+        << std::endl;
     return false;
   }
 
@@ -340,7 +353,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
-std::string OgreMeshFactory::GetMeshName(const MeshDescriptor &_desc)
+std::string OgreMeshFactory::MeshName(const MeshDescriptor &_desc)
 {
   std::stringstream ss;
   ss << _desc.meshName << "::";
@@ -354,19 +367,19 @@ bool OgreMeshFactory::Validate(const MeshDescriptor &_desc)
 {
   if (!_desc.mesh && _desc.meshName.empty())
   {
-    gzerr << "Invalid mesh-descriptor, no mesh specified" << std::endl;
+    ignerr << "Invalid mesh-descriptor, no mesh specified" << std::endl;
     return false;
   }
 
   if (!_desc.mesh)
   {
-    gzerr << "Cannot load null mesh" << std::endl;
+    ignerr << "Cannot load null mesh" << std::endl;
     return false;
   }
 
-  if (_desc.mesh->GetSubMeshCount() == 0)
+  if (_desc.mesh->SubMeshCount() == 0)
   {
-    gzerr << "Cannot load mesh with zero sub-meshes" << std::endl;
+    ignerr << "Cannot load mesh with zero sub-meshes" << std::endl;
     return false;
   }
 

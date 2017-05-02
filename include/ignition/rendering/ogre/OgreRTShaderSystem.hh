@@ -14,16 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGRERTSHADERSYSTEM_HH_
-#define _IGNITION_RENDERING_OGRERTSHADERSYSTEM_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
+#define IGNITION_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
 
 #include <mutex>
 #include <list>
 #include <string>
 #include <vector>
 
-#include "gazebo/gazebo_config.h"
-#include "gazebo/common/SingletonT.hh"
+#include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/Util.hh"
@@ -32,7 +31,7 @@ namespace ignition
 {
   namespace rendering
   {
-    /// \addtogroup gazebo_rendering
+    /// \addtogroup ign_rendering
     /// \{
 
     /// \class OgreRTShaderSystem OgreRTShaderSystem.hh rendering/rendering.hh
@@ -41,7 +40,7 @@ namespace ignition
     /// This class allows Gazebo to generate per-pixel shaders for every
     /// material at run-time.
     class IGNITION_VISIBLE OgreRTShaderSystem :
-      public SingletonT<OgreRTShaderSystem>
+      public common::SingletonT<OgreRTShaderSystem>
     {
       /// \enum LightingModel.
       /// \brief The type of lighting.
@@ -127,13 +126,13 @@ namespace ignition
 
       /// \brief Get the Ogre PSSM Shadows camera setup.
       /// \return The Ogre PSSM Shadows camera setup.
-      public: Ogre::PSSMShadowCameraSetup *GetPSSMShadowCameraSetup() const;
+      public: Ogre::PSSMShadowCameraSetup *PSSMShadowCameraSetup() const;
 
       /// \brief Get paths for the shader system
       /// \param[out] _coreLibsPath Path to the core libraries.
       /// \param[out] _cachePath Path to where the generated shaders are
       /// stored.
-      private: bool GetPaths(std::string &_coreLibsPath,
+      private: bool Paths(std::string &_coreLibsPath,
                              std::string &_cachePath);
 
 #if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 7

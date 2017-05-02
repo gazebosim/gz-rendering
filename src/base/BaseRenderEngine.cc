@@ -14,8 +14,11 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
+#include "ignition/rendering/SystemPaths.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -35,7 +38,7 @@ bool BaseRenderEngine::Load()
 {
   if (this->loaded)
   {
-    gzwarn << "Render-engine has already been loaded" << std::endl;
+    ignwarn << "Render-engine has already been loaded" << std::endl;
     return true;
   }
 
@@ -48,13 +51,13 @@ bool BaseRenderEngine::Init()
 {
   if (!this->loaded)
   {
-    gzerr << "Render-engine must be loaded first" << std::endl;
+    ignerr << "Render-engine must be loaded first" << std::endl;
     return false;
   }
 
   if (this->initialized)
   {
-    gzwarn << "Render-engine has already been initialized" << std::endl;
+    ignwarn << "Render-engine has already been initialized" << std::endl;
     return true;
   }
 
@@ -87,81 +90,81 @@ bool BaseRenderEngine::IsEnabled() const
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseRenderEngine::GetSceneCount() const
+unsigned int BaseRenderEngine::SceneCount() const
 {
-  return this->GetScenes()->Size();
+  return this->Scenes()->Size();
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::HasScene(ConstScenePtr _scene) const
 {
-  return this->GetScenes()->Contains(_scene);
+  return this->Scenes()->Contains(_scene);
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::HasSceneId(unsigned int _id) const
 {
-  return this->GetScenes()->ContainsId(_id);
+  return this->Scenes()->ContainsId(_id);
 }
 
 //////////////////////////////////////////////////
 bool BaseRenderEngine::HasSceneName(const std::string &_name) const
 {
-  return this->GetScenes()->ContainsName(_name);
+  return this->Scenes()->ContainsName(_name);
 }
 
 //////////////////////////////////////////////////
-ScenePtr BaseRenderEngine::GetSceneById(unsigned int _id) const
+ScenePtr BaseRenderEngine::SceneById(unsigned int _id) const
 {
-  return this->GetScenes()->GetById(_id);
+  return this->Scenes()->GetById(_id);
 }
 
 //////////////////////////////////////////////////
-ScenePtr BaseRenderEngine::GetSceneByName(const std::string &_name) const
+ScenePtr BaseRenderEngine::SceneByName(const std::string &_name) const
 {
-  return this->GetScenes()->GetByName(_name);
+  return this->Scenes()->GetByName(_name);
 }
 
 //////////////////////////////////////////////////
-ScenePtr BaseRenderEngine::GetSceneByIndex(unsigned int _index) const
+ScenePtr BaseRenderEngine::SceneByIndex(unsigned int _index) const
 {
-  return this->GetScenes()->GetByIndex(_index);
+  return this->Scenes()->GetByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroyScene(ScenePtr _scene)
 {
-  this->GetScenes()->Destroy(_scene);
+  this->Scenes()->Destroy(_scene);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroySceneById(unsigned int _id)
 {
-  this->GetScenes()->DestroyById(_id);
+  this->Scenes()->DestroyById(_id);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroySceneByName(const std::string &_name)
 {
-  this->GetScenes()->DestroyByName(_name);
+  this->Scenes()->DestroyByName(_name);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroySceneByIndex(unsigned int _index)
 {
-  this->GetScenes()->DestroyByIndex(_index);
+  this->Scenes()->DestroyByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseRenderEngine::DestroyScenes()
 {
-  this->GetScenes()->DestroyAll();
+  this->Scenes()->DestroyAll();
 }
 
 //////////////////////////////////////////////////
 ScenePtr BaseRenderEngine::CreateScene(const std::string &_name)
 {
-  unsigned int sceneId = this->GetNextSceneId();
+  unsigned int sceneId = this->NextSceneId();
   return this->CreateScene(sceneId, _name);
 }
 
@@ -171,20 +174,20 @@ ScenePtr BaseRenderEngine::CreateScene(unsigned int _id,
 {
   if (!this->IsInitialized())
   {
-    gzerr << "Render-engine has not been initialized" << std::endl;
-    return NULL;
+    ignerr << "Render-engine has not been initialized" << std::endl;
+    return nullptr;
   }
 
   if (this->HasSceneId(_id))
   {
-    gzerr << "Scene already exists with id: " << _id << std::endl;
-    return NULL;
+    ignerr << "Scene already exists with id: " << _id << std::endl;
+    return nullptr;
   }
 
   if (this->HasSceneName(_name))
   {
-    gzerr << "Scene already exists with id: " << _id << std::endl;
-    return NULL;
+    ignerr << "Scene already exists with id: " << _id << std::endl;
+    return nullptr;
   }
 
   ScenePtr scene = this->CreateSceneImpl(_id, _name);
@@ -198,6 +201,12 @@ void BaseRenderEngine::Destroy()
 }
 
 //////////////////////////////////////////////////
+void BaseRenderEngine::AddResourcePath(const std::string &_path)
+{
+  SystemPaths::Instance()->AddResourcePaths(_path);
+}
+
+//////////////////////////////////////////////////
 void BaseRenderEngine::PrepareScene(ScenePtr _scene)
 {
   if (_scene)
@@ -208,7 +217,7 @@ void BaseRenderEngine::PrepareScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseRenderEngine::GetNextSceneId()
+unsigned int BaseRenderEngine::NextSceneId()
 {
   return this->nextSceneId--;
 }

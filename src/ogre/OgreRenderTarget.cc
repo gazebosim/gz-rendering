@@ -14,9 +14,11 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
@@ -28,8 +30,8 @@ using namespace rendering;
 // OgreRenderTarget
 //////////////////////////////////////////////////
 OgreRenderTarget::OgreRenderTarget() :
-  ogreCamera(NULL),
-  ogreViewport(NULL),
+  ogreCamera(nullptr),
+  ogreViewport(nullptr),
   colorDirty(true)
 {
   this->ogreBackgroundColor = Ogre::ColourValue::Black;
@@ -45,28 +47,28 @@ OgreRenderTarget::~OgreRenderTarget()
 }
 
 //////////////////////////////////////////////////
-void OgreRenderTarget::GetImage(Image &_image) const
+void OgreRenderTarget::Copy(Image &_image) const
 {
   // TODO: handle Bayer conversions
   // TODO: handle ogre version differences
 
-  unsigned int width = this->GetWidth();
-  unsigned int height = this->GetHeight();
+  unsigned int width = this->Width();
+  unsigned int height = this->Height();
 
-  if (_image.GetWidth() != width || _image.GetHeight() != height)
+  if (_image.Width() != width || _image.Height() != height)
   {
-    gzerr << "Invalid image dimensions" << std::endl;
+    ignerr << "Invalid image dimensions" << std::endl;
     return;
   }
 
-  void* data = _image.GetData();
-  Ogre::PixelFormat format = OgreConversions::Convert(_image.GetFormat());
+  void* data = _image.Data();
+  Ogre::PixelFormat format = OgreConversions::Convert(_image.Format());
   Ogre::PixelBox ogrePixelBox(width, height, 1, format, data);
-  this->GetOgreRenderTarget()->copyContentsToMemory(ogrePixelBox);
+  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
 }
 
 //////////////////////////////////////////////////
-Ogre::Camera *OgreRenderTarget::GetCamera() const
+Ogre::Camera *OgreRenderTarget::Camera() const
 {
   return this->ogreCamera;
 }
@@ -79,13 +81,13 @@ void OgreRenderTarget::SetCamera(Ogre::Camera *_camera)
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreRenderTarget::GetBackgroundColor() const
+math::Color OgreRenderTarget::BackgroundColor() const
 {
   return OgreConversions::Convert(this->ogreBackgroundColor);
 }
 
 //////////////////////////////////////////////////
-void OgreRenderTarget::SetBackgroundColor(gazebo::common::Color _color)
+void OgreRenderTarget::SetBackgroundColor(math::Color _color)
 {
   this->ogreBackgroundColor = OgreConversions::Convert(_color);
   this->colorDirty = true;
@@ -101,7 +103,7 @@ void OgreRenderTarget::PreRender()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Render()
 {
-  this->GetOgreRenderTarget()->update();
+  this->RenderTarget()->update();
 }
 
 //////////////////////////////////////////////////
@@ -124,7 +126,7 @@ void OgreRenderTarget::RebuildImpl()
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildViewport()
 {
-  Ogre::RenderTarget *ogreRenderTarget = this->GetOgreRenderTarget();
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
   ogreRenderTarget->removeAllViewports();
 
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
@@ -141,7 +143,7 @@ void OgreRenderTarget::RebuildViewport()
 // OgreRenderTexture
 //////////////////////////////////////////////////
 OgreRenderTexture::OgreRenderTexture() :
-  ogreTexture(NULL)
+  ogreTexture(nullptr)
 {
 }
 
@@ -151,7 +153,7 @@ OgreRenderTexture::~OgreRenderTexture()
 }
 
 //////////////////////////////////////////////////
-unsigned int OgreRenderTexture::GetAntiAliasing() const
+unsigned int OgreRenderTexture::AntiAliasing() const
 {
   return this->antiAliasing;
 }
@@ -171,7 +173,7 @@ void OgreRenderTexture::Destroy()
 }
 
 //////////////////////////////////////////////////
-Ogre::RenderTarget *OgreRenderTexture::GetOgreRenderTarget() const
+Ogre::RenderTarget *OgreRenderTexture::RenderTarget() const
 {
   return this->ogreTexture->getBuffer()->getRenderTarget();
 }

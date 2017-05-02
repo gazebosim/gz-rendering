@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_NODE_HH_
-#define _IGNITION_RENDERING_NODE_HH_
+#ifndef IGNITION_RENDERING_NODE_HH_
+#define IGNITION_RENDERING_NODE_HH_
 
 #include <string>
 #include <ignition/math/Pose3.hh>
@@ -43,7 +43,7 @@ namespace ignition
 
       /// \brief Get the parent Visual
       /// \return the parent Visual
-      public: virtual VisualPtr GetParent() const = 0;
+      public: virtual VisualPtr Parent() const = 0;
 
       /// \brief Detach this Geometry from its parent Visual. If this
       /// Geometry does not have a parent, no work will be done.
@@ -51,7 +51,7 @@ namespace ignition
 
       /// \brief Get the local pose
       /// \return The local pose
-      public: virtual math::Pose3d GetLocalPose() const = 0;
+      public: virtual math::Pose3d LocalPose() const = 0;
 
       /// \brief Set the local pose
       /// \param[in] _pose New local pose
@@ -59,7 +59,7 @@ namespace ignition
 
       /// \brief Get the local position
       /// \return The local position
-      public: virtual math::Vector3d GetLocalPosition() const = 0;
+      public: virtual math::Vector3d LocalPosition() const = 0;
 
       /// \brief Set the local position
       /// \param[in] _x X-coordinate
@@ -75,7 +75,7 @@ namespace ignition
 
       /// \brief Get the local rotation
       /// \return The local rotation
-      public: virtual math::Quaterniond GetLocalRotation() const = 0;
+      public: virtual math::Quaterniond LocalRotation() const = 0;
 
       /// \brief Set the local rotation
       /// \param[in] _r roll
@@ -99,7 +99,7 @@ namespace ignition
 
       /// \brief Get the world pose
       /// \return The world pose
-      public: virtual math::Pose3d GetWorldPose() const = 0;
+      public: virtual math::Pose3d WorldPose() const = 0;
 
       /// \brief Set the world pose
       /// \param[in] _pose New world pose
@@ -107,7 +107,7 @@ namespace ignition
 
       /// \brief Get the world position
       /// \return The world position
-      public: virtual math::Vector3d GetWorldPosition() const = 0;
+      public: virtual math::Vector3d WorldPosition() const = 0;
 
       /// \brief Set the world position
       /// \param[in] _x X-coordinate
@@ -123,7 +123,7 @@ namespace ignition
 
       /// \brief Get the world rotation
       /// \return The world rotation
-      public: virtual math::Quaterniond GetWorldRotation() const = 0;
+      public: virtual math::Quaterniond WorldRotation() const = 0;
 
       /// \brief Set the world rotation
       /// \param[in] _r roll
@@ -152,7 +152,7 @@ namespace ignition
 
       /// \brief Get position of origin
       /// \return The position of the origin
-      public: virtual math::Vector3d GetOrigin() const = 0;
+      public: virtual math::Vector3d Origin() const = 0;
 
       /// \brief Set position of origin. The position should be relative to the
       /// original origin of the geometry.

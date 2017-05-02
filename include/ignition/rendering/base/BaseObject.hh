@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASEOBJECT_HH_
-#define _IGNITION_RENDERING_BASEOBJECT_HH_
+#ifndef IGNITION_RENDERING_BASE_BASEOBJECT_HH_
+#define IGNITION_RENDERING_BASE_BASEOBJECT_HH_
 
+#include <string>
 #include "ignition/rendering/Object.hh"
 
 namespace ignition
@@ -31,9 +32,9 @@ namespace ignition
 
       public: virtual ~BaseObject();
 
-      public: virtual unsigned int GetId() const;
+      public: virtual unsigned int Id() const;
 
-      public: virtual std::string GetName() const;
+      public: virtual std::string Name() const;
 
       public: virtual void PreRender();
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_SHADERTYPE_HH_
-#define _IGNITION_RENDERING_SHADERTYPE_HH_
+#ifndef IGNITION_RENDERING_SHADERTYPE_HH_
+#define IGNITION_RENDERING_SHADERTYPE_HH_
 
 #include <string>
 #include "ignition/rendering/Util.hh"
@@ -68,14 +68,14 @@ namespace ignition
       /// \brief Get human-readable name for shader type value.
       /// \param[in] _type Shader type enum value
       /// \return The type name
-      public: static std::string GetName(ShaderType _type);
+      public: static std::string Name(ShaderType _type);
 
       /// \brief Get enum value by human-readable name. The given string should
       /// match watch is returned by GetName. If an invalid name is given,
       /// ST_UNKNOWN will be returned.
       /// \param[in] _name Name of the shader type to be retrieved
       /// \return The specified ShaderType enum value
-      public: static ShaderType GetEnum(const std::string &_name);
+      public: static ShaderType Enum(const std::string &_name);
 
       /// \brief Array of human-readable names for each ShaderType
       private: static const char *names[ST_COUNT];

@@ -16,7 +16,6 @@
  */
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 
@@ -36,11 +35,11 @@ OgreGeometry::~OgreGeometry()
 //////////////////////////////////////////////////
 bool OgreGeometry::HasParent() const
 {
-  return this->parent != NULL;
+  return this->parent != nullptr;
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreGeometry::GetParent() const
+VisualPtr OgreGeometry::Parent() const
 {
   return this->parent;
 }

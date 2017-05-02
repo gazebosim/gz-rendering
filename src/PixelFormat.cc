@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/PixelFormat.hh"
-#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -30,33 +32,49 @@ const char *PixelUtil::names[PF_COUNT] =
       "BAYER_RGGB8",
       "BAYER_BGGR8",
       "BAYER_GBGR8",
-      "BAYER_GRGB8",
+      "BAYER_GRGB8"
     };
 
 //////////////////////////////////////////////////
 const unsigned char PixelUtil::channelCounts[PF_COUNT] =
     {
-      0, // UKNOWN
-      1, // L8
-      3, // R8G8B8
-      3, // B8G8R8
-      4, // BAYER_RGGB8
-      4, // BAYER_BGGR8
-      4, // BAYER_GBGR8
-      4, // BAYER_GRGB8
+      // UKNOWN
+      0,
+      // L8
+      1,
+      // R8G8B8
+      3,
+      // B8G8R8
+      3,
+      // BAYER_RGGB8
+      4,
+      // BAYER_BGGR8
+      4,
+      // BAYER_GBGR8
+      4,
+      // BAYER_GRGB8
+      4
     };
 
 //////////////////////////////////////////////////
 const unsigned char PixelUtil::channelByteCounts[PF_COUNT] =
     {
-      0, // UKNOWN
-      1, // L8
-      1, // R8G8B8
-      1, // B8G8R8
-      1, // BAYER_RGGB8
-      1, // BAYER_BGGR8
-      1, // BAYER_GBGR8
-      1, // BAYER_GRGB8
+      // UNKNOWN
+      0,
+      // L8
+      1,
+      // R8G8B8
+      1,
+      // B8G8R8
+      1,
+      // BAYER_RGGB8
+      1,
+      // BAYER_BGGR8
+      1,
+      // BAYER_GBGR8
+      1,
+      // BAYER_GRGB8
+      1
     };
 
 //////////////////////////////////////////////////
@@ -71,7 +89,7 @@ PixelFormat PixelUtil::Sanitize(PixelFormat _format)
   // check if value within enum bounds
   if (!PixelUtil::IsValid(_format))
   {
-    gzerr << "Invalid PixelFormat value: " << _format << std::endl;
+    ignerr << "Invalid PixelFormat value: " << _format << std::endl;
     return PF_UNKNOWN;
   }
 
@@ -79,28 +97,28 @@ PixelFormat PixelUtil::Sanitize(PixelFormat _format)
 }
 
 //////////////////////////////////////////////////
-std::string PixelUtil::GetName(PixelFormat _format)
+std::string PixelUtil::Name(PixelFormat _format)
 {
   _format = PixelUtil::Sanitize(_format);
   return PixelUtil::names[_format];
 }
 
 //////////////////////////////////////////////////
-unsigned int PixelUtil::GetChannelCount(PixelFormat _format)
+unsigned int PixelUtil::ChannelCount(PixelFormat _format)
 {
   _format = PixelUtil::Sanitize(_format);
   return PixelUtil::channelCounts[_format];
 }
 
 //////////////////////////////////////////////////
-unsigned int PixelUtil::GetBytesPerChannel(PixelFormat _format)
+unsigned int PixelUtil::BytesPerChannel(PixelFormat _format)
 {
   _format = PixelUtil::Sanitize(_format);
   return PixelUtil::channelByteCounts[_format];
 }
 
 //////////////////////////////////////////////////
-unsigned int PixelUtil::GetBytesPerPixel(PixelFormat _format)
+unsigned int PixelUtil::BytesPerPixel(PixelFormat _format)
 {
   _format = PixelUtil::Sanitize(_format);
   unsigned int channels = PixelUtil::channelCounts[_format];
@@ -109,15 +127,15 @@ unsigned int PixelUtil::GetBytesPerPixel(PixelFormat _format)
 }
 
 //////////////////////////////////////////////////
-unsigned int PixelUtil::GetMemorySize(PixelFormat _format, unsigned int _width,
+unsigned int PixelUtil::MemorySize(PixelFormat _format, unsigned int _width,
     unsigned int _height)
 {
-  unsigned int bytesPerPixel = PixelUtil::GetBytesPerPixel(_format);
+  unsigned int bytesPerPixel = PixelUtil::BytesPerPixel(_format);
   return _width * _height * bytesPerPixel;
 }
 
 //////////////////////////////////////////////////
-PixelFormat PixelUtil::GetEnum(const std::string &_name)
+PixelFormat PixelUtil::Enum(const std::string &_name)
 {
   // search over all enum elements
   for (unsigned int i = 1; i < PF_COUNT; ++i)
@@ -125,7 +143,7 @@ PixelFormat PixelUtil::GetEnum(const std::string &_name)
     PixelFormat format = static_cast<PixelFormat>(i);
 
     // check if names match
-    if (PixelUtil::GetName(format) == _name)
+    if (PixelUtil::Name(format) == _name)
     {
       return format;
     }

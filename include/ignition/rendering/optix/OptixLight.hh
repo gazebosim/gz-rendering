@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXLIGHT_HH_
-#define _IGNITION_RENDERING_OPTIXLIGHT_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXLIGHT_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXLIGHT_HH_
 
 #include "ignition/rendering/base/BaseLight.hh"
 #include "ignition/rendering/optix/OptixNode.hh"
@@ -33,39 +33,41 @@ namespace ignition
 
       public: virtual ~OptixLight();
 
-      public: virtual gazebo::common::Color GetDiffuseColor() const;
+      public: virtual ignition::math::Color DiffuseColor() const;
 
-      public: virtual void SetDiffuseColor(const gazebo::common::Color &_color);
+      public: virtual void SetDiffuseColor(
+          const ignition::math::Color &_color);
 
-      public: virtual gazebo::common::Color GetSpecularColor() const;
+      public: virtual ignition::math::Color SpecularColor() const;
 
-      public: virtual void SetSpecularColor(const gazebo::common::Color &_color);
+      public: virtual void SetSpecularColor(
+          const ignition::math::Color &_color);
 
-      public: virtual double GetAttenuationConstant() const;
+      public: virtual double AttenuationConstant() const;
 
       public: virtual void SetAttenuationConstant(double _value);
 
-      public: virtual double GetAttenuationLinear() const;
+      public: virtual double AttenuationLinear() const;
 
       public: virtual void SetAttenuationLinear(double _value);
 
-      public: virtual double GetAttenuationQuadratic() const;
+      public: virtual double AttenuationQuadratic() const;
 
       public: virtual void SetAttenuationQuadratic(double _value);
 
-      public: virtual double GetAttenuationRange() const;
+      public: virtual double AttenuationRange() const;
 
       public: virtual void SetAttenuationRange(double _range);
 
-      public: virtual bool GetCastShadows() const;
+      public: virtual bool CastShadows() const;
 
       public: virtual void SetCastShadows(bool _castShadows);
 
       protected: virtual void WritePoseToDeviceImpl();
 
-      protected: virtual OptixCommonLightData &GetCommonData() = 0;
+      protected: virtual OptixCommonLightData &CommonData() = 0;
 
-      protected: virtual const OptixCommonLightData &GetCommonData() const = 0;
+      protected: virtual const OptixCommonLightData &CommonData() const = 0;
 
       protected: virtual void Init();
     };
@@ -77,17 +79,17 @@ namespace ignition
 
       public: virtual ~OptixDirectionalLight();
 
-      public: virtual math::Vector3d GetDirection() const;
+      public: virtual ignition::math::Vector3d Direction() const;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir);
+      public: virtual void SetDirection(const ignition::math::Vector3d &_dir);
 
-      public: virtual OptixDirectionalLightData GetData() const;
+      public: virtual OptixDirectionalLightData Data() const;
 
       public: virtual void PreRender();
 
-      protected: virtual OptixCommonLightData &GetCommonData();
+      protected: virtual OptixCommonLightData &CommonData();
 
-      protected: virtual const OptixCommonLightData &GetCommonData() const;
+      protected: virtual const OptixCommonLightData &CommonData() const;
 
       protected: OptixDirectionalLightData data;
 
@@ -103,13 +105,13 @@ namespace ignition
 
       public: virtual ~OptixPointLight();
 
-      public: virtual OptixPointLightData GetData() const;
+      public: virtual OptixPointLightData Data() const;
 
       public: virtual void PreRender();
 
-      protected: virtual OptixCommonLightData &GetCommonData();
+      protected: virtual OptixCommonLightData &CommonData();
 
-      protected: virtual const OptixCommonLightData &GetCommonData() const;
+      protected: virtual const OptixCommonLightData &CommonData() const;
 
       protected: OptixPointLightData data;
 
@@ -125,29 +127,29 @@ namespace ignition
 
       public: virtual ~OptixSpotLight();
 
-      public: virtual math::Vector3d GetDirection() const;
+      public: virtual ignition::math::Vector3d Direction() const;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir);
+      public: virtual void SetDirection(const ignition::math::Vector3d &_dir);
 
-      public: virtual math::Angle GetInnerAngle() const;
+      public: virtual ignition::math::Angle InnerAngle() const;
 
-      public: virtual void SetInnerAngle(const math::Angle &_angle);
+      public: virtual void SetInnerAngle(const ignition::math::Angle &_angle);
 
-      public: virtual math::Angle GetOuterAngle() const;
+      public: virtual ignition::math::Angle OuterAngle() const;
 
-      public: virtual void SetOuterAngle(const math::Angle &_angle);
+      public: virtual void SetOuterAngle(const ignition::math::Angle &_angle);
 
-      public: virtual double GetFalloff() const;
+      public: virtual double Falloff() const;
 
       public: virtual void SetFalloff(double _falloff);
 
-      public: virtual OptixSpotLightData GetData() const;
+      public: virtual OptixSpotLightData Data() const;
 
       public: virtual void PreRender();
 
-      protected: virtual OptixCommonLightData &GetCommonData();
+      protected: virtual OptixCommonLightData &CommonData();
 
-      protected: virtual const OptixCommonLightData &GetCommonData() const;
+      protected: virtual const OptixCommonLightData &CommonData() const;
 
       protected: OptixSpotLightData data;
 

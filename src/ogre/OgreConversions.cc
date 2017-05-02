@@ -22,26 +22,34 @@ using namespace rendering;
 //////////////////////////////////////////////////
 const Ogre::PixelFormat OgreConversions::ogrePixelFormats[PF_COUNT] =
     {
-      Ogre::PF_UNKNOWN,  // UKNOWN
-      Ogre::PF_L8,       // L8
-      Ogre::PF_BYTE_RGB, // R8G8B8
-      Ogre::PF_BYTE_BGR, // B8G8R8
-      Ogre::PF_BYTE_RGB, // BAYER_RGGB8
-      Ogre::PF_BYTE_RGB, // BAYER_BGGR8
-      Ogre::PF_BYTE_RGB, // BAYER_GBGR8
-      Ogre::PF_BYTE_RGB, // BAYER_GRGB8
+      // UKNOWN
+      Ogre::PF_UNKNOWN,
+      // L8
+      Ogre::PF_L8,
+      // R8G8B8
+      Ogre::PF_BYTE_RGB,
+      // B8G8R8
+      Ogre::PF_BYTE_BGR,
+      // BAYER_RGGB8
+      Ogre::PF_BYTE_RGB,
+      // BAYER_BGGR8
+      Ogre::PF_BYTE_RGB,
+      // BAYER_GBGR8
+      Ogre::PF_BYTE_RGB,
+      // BAYER_GRGB8
+      Ogre::PF_BYTE_RGB,
     };
 
 //////////////////////////////////////////////////
-Ogre::ColourValue OgreConversions::Convert(const gazebo::common::Color &_color)
+Ogre::ColourValue OgreConversions::Convert(const math::Color &_color)
 {
-  return Ogre::ColourValue(_color.r, _color.g, _color.b, _color.a);
+  return Ogre::ColourValue(_color.R(), _color.G(), _color.B(), _color.A());
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreConversions::Convert(const Ogre::ColourValue &_color)
+math::Color OgreConversions::Convert(const Ogre::ColourValue &_color)
 {
-  return gazebo::common::Color(_color.r, _color.g, _color.b, _color.a);
+  return math::Color(_color.r, _color.g, _color.b, _color.a);
 }
 
 //////////////////////////////////////////////////

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_RENDERTYPES_HH_
-#define _IGNITION_RENDERING_RENDERTYPES_HH_
+#ifndef IGNITION_RENDERING_RENDERTYPES_HH_
+#define IGNITION_RENDERING_RENDERTYPES_HH_
 
 #include <memory>
 

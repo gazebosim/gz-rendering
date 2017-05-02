@@ -15,7 +15,7 @@
  *
  */
 #include <iostream>
-#include <gazebo/common/Console.hh>
+#include <ignition/common/Console.hh>
 #include "ManualSceneDemo.hh"
 #include "SceneBuilder.hh"
 #include "DemoWindow.hh"
@@ -36,7 +36,7 @@ ManualSceneDemo::~ManualSceneDemo()
 }
 
 //////////////////////////////////////////////////
-unsigned int ManualSceneDemo::GetSceneCount() const
+unsigned int ManualSceneDemo::SceneCount() const
 {
   return this->builders.size();
 }
@@ -62,20 +62,20 @@ void ManualSceneDemo::NextScene()
 //////////////////////////////////////////////////
 void ManualSceneDemo::SelectScene(int _index)
 {
-  int count = this->GetSceneCount();
+  int count = this->SceneCount();
   _index += (_index < 0) ? count : 0;
   this->builderIndex = _index % count;
   this->ChangeScene();
 }
 
 //////////////////////////////////////////////////
-SceneBuilderPtr ManualSceneDemo::GetCurrentScene()
+SceneBuilderPtr ManualSceneDemo::CurrentScene()
 {
   return this->builders[this->builderIndex];
 }
 
 //////////////////////////////////////////////////
-unsigned int ManualSceneDemo::GetCameraCount() const
+unsigned int ManualSceneDemo::CameraCount() const
 {
   return this->cameras.size();
 }
@@ -84,8 +84,15 @@ unsigned int ManualSceneDemo::GetCameraCount() const
 void ManualSceneDemo::AddCamera(const std::string &_engineName)
 {
   RenderEngine *engine = get_engine(_engineName);
+  if (!engine)
+  {
+    std::cout << "Engine '" << _engineName
+              << "' is not supported" << std::endl;
+    return;
+  }
+
   ScenePtr scene = engine->CreateScene("Scene");
-  VisualPtr root = scene->GetRootVisual();
+  VisualPtr root = scene->RootVisual();
 
   CameraPtr camera = scene->CreateCamera("Camera");
   camera->SetImageWidth(640);
@@ -114,20 +121,20 @@ void ManualSceneDemo::NextCamera()
 //////////////////////////////////////////////////
 void ManualSceneDemo::SelectCamera(int _index)
 {
-  int count = this->GetCameraCount();
+  int count = this->CameraCount();
   _index += (_index < 0) ? count : 0;
   this->cameraIndex = _index % count;
 }
 
 //////////////////////////////////////////////////
-CameraPtr ManualSceneDemo::GetCamera(int _index)
+CameraPtr ManualSceneDemo::Camera(int _index)
 {
   unsigned int i = _index % this->cameras.size();
   return this->cameras[i];
 }
 
 //////////////////////////////////////////////////
-CameraPtr ManualSceneDemo::GetCurrentCamera()
+CameraPtr ManualSceneDemo::CurrentCamera()
 {
   return this->cameras[this->cameraIndex];
 }
@@ -149,13 +156,13 @@ void ManualSceneDemo::Run()
 //////////////////////////////////////////////////
 void ManualSceneDemo::Update()
 {
-  this->GetCurrentScene()->UpdateScenes();
+  this->CurrentScene()->UpdateScenes();
 }
 
 //////////////////////////////////////////////////
 void ManualSceneDemo::ChangeScene()
 {
-  SceneBuilderPtr builder = this->GetCurrentScene();
+  SceneBuilderPtr builder = this->CurrentScene();
   builder->ResetCameras();
   builder->BuildScenes();
 }
@@ -164,7 +171,7 @@ void ManualSceneDemo::ChangeScene()
 //////////////////////////////////////////////////
 int main(int, char**)
 {
-  gazebo::common::Console::SetQuiet(false);
+  common::Console::SetVerbosity(4);
   ManualSceneDemoPtr sceneDemo(new ManualSceneDemo);
   sceneDemo->AddScene(SceneBuilderPtr(new SceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new SimpleSceneBuilder));
@@ -179,7 +186,7 @@ int main(int, char**)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(3)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(4)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
-  // sceneDemo->AddCamera("ogre");
+  sceneDemo->AddCamera("ogre");
   sceneDemo->AddCamera("optix");
   sceneDemo->Run();
   return 0;

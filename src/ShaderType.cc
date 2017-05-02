@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ShaderType.hh"
-#include "gazebo/common/Console.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -42,7 +44,7 @@ ShaderType ShaderUtil::Sanitize(ShaderType _type)
   // check if value within enum bounds
   if (!ShaderUtil::IsValid(_type))
   {
-    gzerr << "Invalid ShaderType value: " << _type << std::endl;
+    ignerr << "Invalid ShaderType value: " << _type << std::endl;
     return ST_UNKNOWN;
   }
 
@@ -50,14 +52,14 @@ ShaderType ShaderUtil::Sanitize(ShaderType _type)
 }
 
 //////////////////////////////////////////////////
-std::string ShaderUtil::GetName(ShaderType _type)
+std::string ShaderUtil::Name(ShaderType _type)
 {
   _type = ShaderUtil::Sanitize(_type);
   return ShaderUtil::names[_type];
 }
 
 //////////////////////////////////////////////////
-ShaderType ShaderUtil::GetEnum(const std::string &_name)
+ShaderType ShaderUtil::Enum(const std::string &_name)
 {
   // search over all enum elements
   for (unsigned int i = 0; i < ST_COUNT; ++i)
@@ -65,7 +67,7 @@ ShaderType ShaderUtil::GetEnum(const std::string &_name)
     ShaderType format = static_cast<ShaderType>(i);
 
     // check if names match
-    if (ShaderUtil::GetName(format) == _name)
+    if (ShaderUtil::Name(format) == _name)
     {
       return format;
     }

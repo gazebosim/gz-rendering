@@ -14,8 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXSCENE_HH_
-#define _IGNITION_RENDERING_OPTIXSCENE_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXSCENE_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXSCENE_HH_
+
+#include <string>
 
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
@@ -34,17 +36,17 @@ namespace ignition
 
       public: virtual void Fini();
 
-      public: virtual RenderEngine *GetEngine() const;
+      public: virtual RenderEngine *Engine() const;
 
-      public: virtual VisualPtr GetRootVisual() const;
+      public: virtual VisualPtr RootVisual() const;
 
-      public: virtual gazebo::common::Color GetAmbientLight() const;
+      public: virtual math::Color AmbientLight() const;
 
-      public: virtual void SetAmbientLight(const gazebo::common::Color &_color);
+      public: virtual void SetAmbientLight(const math::Color &_color);
 
-      public: virtual gazebo::common::Color GetBackgroundColor() const;
+      public: virtual math::Color BackgroundColor() const;
 
-      public: virtual void SetBackgroundColor(const gazebo::common::Color &_color);
+      public: virtual void SetBackgroundColor(const math::Color &_color);
 
       public: virtual void PreRender();
 
@@ -52,9 +54,9 @@ namespace ignition
 
       public: virtual void Destroy();
 
-      public: virtual OptixLightManagerPtr GetLightManager() const;
+      public: virtual OptixLightManagerPtr LightManager() const;
 
-      public: virtual optix::Context GetOptixContext() const;
+      public: virtual optix::Context OptixContext() const;
 
       public: virtual optix::Program CreateOptixProgram(
                   const std::string &_fileBase, const std::string &_function);
@@ -114,15 +116,15 @@ namespace ignition
       protected: virtual bool InitObject(OptixObjectPtr _object,
                      unsigned int _id, const std::string &_name);
 
-      protected: virtual LightStorePtr GetLights() const;
+      protected: virtual LightStorePtr Lights() const;
 
-      protected: virtual SensorStorePtr GetSensors() const;
+      protected: virtual SensorStorePtr Sensors() const;
 
-      protected: virtual VisualStorePtr GetVisuals() const;
+      protected: virtual VisualStorePtr Visuals() const;
 
-      protected: virtual MaterialMapPtr GetMaterials() const;
+      protected: virtual MaterialMapPtr Materials() const;
 
-      protected: virtual unsigned int GetNextEntryId();
+      protected: virtual unsigned int NextEntryId();
 
       private: void CreateContext();
 
@@ -142,7 +144,7 @@ namespace ignition
 
       protected: OptixMeshFactoryPtr meshFactory;
 
-      protected: gazebo::common::Color backgroundColor;
+      protected: math::Color backgroundColor;
 
       protected: OptixLightStorePtr lights;
 
@@ -168,7 +170,7 @@ namespace ignition
 
       protected: optix::Geometry optixSphereGeometry;
 
-      protected: gazebo::common::Color ambientLight;
+      protected: math::Color ambientLight;
 
       private: friend class OptixRenderEngine;
     };

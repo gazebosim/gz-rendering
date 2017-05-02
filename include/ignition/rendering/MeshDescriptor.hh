@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_MESHDESCRIPTOR_HH_
-#define _IGNITION_RENDERING_MESHDESCRIPTOR_HH_
+#ifndef IGNITION_RENDERING_MESHDESCRIPTOR_HH_
+#define IGNITION_RENDERING_MESHDESCRIPTOR_HH_
 
 #include <string>
 #include "ignition/rendering/Util.hh"
 
-namespace gazebo
+namespace ignition
 {
   namespace common
   {
@@ -43,11 +43,11 @@ namespace ignition
       /// \brief Constructor. A common::Mesh will be retrieved from the
       /// MeshManager by the given name upon a call to Normalize.
       /// \param[in] _meshName Name of the mesh to load
-      public: MeshDescriptor(const std::string &_meshName);
+      public: explicit MeshDescriptor(const std::string &_meshName);
 
       /// \brief Constructor
       /// \param[in] _mesh Mesh to load
-      public: MeshDescriptor(const gazebo::common::Mesh *_mesh);
+      public: explicit MeshDescriptor(const common::Mesh *_mesh);
 
       /// \brief Ensures both the meshName and mesh member variables have been
       /// assigned. If mesh is not null, it will be used to override the value
@@ -55,7 +55,7 @@ namespace ignition
       public: MeshDescriptor Normalize() const;
 
       /// \brief common::Mesh object
-      public: const gazebo::common::Mesh *mesh;
+      public: const common::Mesh *mesh;
 
       /// \brief Name of the registered Mesh
       public: std::string meshName;

@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASEGEOMETRY_HH_
-#define _IGNITION_RENDERING_BASEGEOMETRY_HH_
+#ifndef IGNITION_RENDERING_BASE_BASEGEOMETRY_HH_
+#define IGNITION_RENDERING_BASE_BASEGEOMETRY_HH_
 
+#include <string>
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -33,7 +34,7 @@ namespace ignition
 
       public: virtual ~BaseGeometry();
 
-      public: virtual VisualPtr GetParent() const = 0;
+      public: virtual VisualPtr Parent() const = 0;
 
       public: virtual void RemoveParent();
 
@@ -62,7 +63,7 @@ namespace ignition
     template <class T>
     void BaseGeometry<T>::RemoveParent()
     {
-      VisualPtr parent = this->GetParent();
+      VisualPtr parent = this->Parent();
 
       if (parent)
       {
@@ -79,7 +80,7 @@ namespace ignition
     template <class T>
     void BaseGeometry<T>::SetMaterial(const std::string &_name, bool unique)
     {
-      MaterialPtr material = this->GetScene()->GetMaterial(_name);
+      MaterialPtr material = this->Scene()->Material(_name);
       if (material) this->SetMaterial(material, unique);
     }
 

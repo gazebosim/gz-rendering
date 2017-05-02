@@ -15,9 +15,12 @@
  *
  */
 
+#include <map>
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderEngineManagerPrivate.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
 
 #if HAVE_OGRE
@@ -28,7 +31,28 @@
 #include "ignition/rendering/optix/OptixRenderEngine.hh"
 #endif
 
-#include "gazebo/common/Console.hh"
+namespace ignition
+{
+  namespace rendering
+  {
+    class RenderEngine;
+
+    class RenderEngineManagerPrivate
+    {
+      typedef std::map<std::string, RenderEngine *> EngineMap;
+
+      typedef EngineMap::iterator EngineIter;
+
+      public: RenderEngine *Engine(EngineIter _iter) const;
+
+      public: void RegisterDefaultEngines();
+
+      public: void UnregisterEngine(EngineIter _iter);
+
+      public: EngineMap engines;
+    };
+  }
+}
 
 using namespace ignition;
 using namespace rendering;
@@ -37,57 +61,55 @@ using namespace rendering;
 // RenderEngineManager
 //////////////////////////////////////////////////
 RenderEngineManager::RenderEngineManager() :
-  pimpl(new RenderEngineManagerPrivate)
+  dataPtr(new RenderEngineManagerPrivate)
 {
-  this->pimpl->RegisterDefaultEngines();
+  this->dataPtr->RegisterDefaultEngines();
 }
 
 //////////////////////////////////////////////////
 RenderEngineManager::~RenderEngineManager()
 {
-  delete this->pimpl;
-  this->pimpl = NULL;
 }
 
 //////////////////////////////////////////////////
-unsigned int RenderEngineManager::GetEngineCount() const
+unsigned int RenderEngineManager::EngineCount() const
 {
-  return this->pimpl->engines.size();
+  return this->dataPtr->engines.size();
 }
 
 //////////////////////////////////////////////////
 bool RenderEngineManager::HasEngine(const std::string &_name) const
 {
-  auto iter = this->pimpl->engines.find(_name);
-  return iter != this->pimpl->engines.end();
+  auto iter = this->dataPtr->engines.find(_name);
+  return iter != this->dataPtr->engines.end();
 }
 
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManager::GetEngine(const std::string &_name) const
+RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
 {
-  auto iter = this->pimpl->engines.find(_name);
+  auto iter = this->dataPtr->engines.find(_name);
 
-  if (iter == this->pimpl->engines.end())
+  if (iter == this->dataPtr->engines.end())
   {
-    gzerr << "No render-engine registered with name: " << _name << std::endl;
-    return NULL;
+    ignerr << "No render-engine registered with name: " << _name << std::endl;
+    return nullptr;
   }
 
-  return this->pimpl->GetEngine(iter);
+  return this->dataPtr->Engine(iter);
 }
 
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManager::GetEngineAt(unsigned int _index) const
+RenderEngine *RenderEngineManager::EngineAt(unsigned int _index) const
 {
-  if (_index >= this->GetEngineCount())
+  if (_index >= this->EngineCount())
   {
-    gzerr << "Invalid render-engine index: " << _index << std::endl;
-    return NULL;
+    ignerr << "Invalid render-engine index: " << _index << std::endl;
+    return nullptr;
   }
 
-  auto iter = this->pimpl->engines.begin();
+  auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
-  return this->pimpl->GetEngine(iter);
+  return this->dataPtr->Engine(iter);
 }
 
 //////////////////////////////////////////////////
@@ -96,43 +118,43 @@ void RenderEngineManager::RegisterEngine(const std::string &_name,
 {
   if (!_engine)
   {
-    gzerr << "Render-engine cannot be null" << std::endl;
+    ignerr << "Render-engine cannot be null" << std::endl;
     return;
   }
 
   if (this->HasEngine(_name))
   {
-    gzerr << "Render-engine already registered with name: "
+    ignerr << "Render-engine already registered with name: "
           << _name << std::endl;
 
     return;
   }
 
-  this->pimpl->engines[_name] = _engine;
+  this->dataPtr->engines[_name] = _engine;
 }
 
 //////////////////////////////////////////////////
 void RenderEngineManager::UnregisterEngine(const std::string &_name)
 {
-  auto iter = this->pimpl->engines.find(_name);
+  auto iter = this->dataPtr->engines.find(_name);
 
-  if (iter != this->pimpl->engines.end())
+  if (iter != this->dataPtr->engines.end())
   {
-    this->pimpl->UnregisterEngine(iter);
+    this->dataPtr->UnregisterEngine(iter);
   }
 }
 
 //////////////////////////////////////////////////
 void RenderEngineManager::UnregisterEngine(RenderEngine *_engine)
 {
-  auto begin = this->pimpl->engines.begin();
-  auto end = this->pimpl->engines.end();
+  auto begin = this->dataPtr->engines.begin();
+  auto end = this->dataPtr->engines.end();
 
   for (auto iter = begin; iter != end; ++iter)
   {
     if (iter->second == _engine)
     {
-      this->pimpl->UnregisterEngine(iter);
+      this->dataPtr->UnregisterEngine(iter);
       return;
     }
   }
@@ -141,21 +163,21 @@ void RenderEngineManager::UnregisterEngine(RenderEngine *_engine)
 //////////////////////////////////////////////////
 void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 {
-  if (_index >= this->GetEngineCount())
+  if (_index >= this->EngineCount())
   {
-    gzerr << "Invalid render-engine index: " << _index << std::endl;
+    ignerr << "Invalid render-engine index: " << _index << std::endl;
     return;
   }
 
-  auto iter = this->pimpl->engines.begin();
+  auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
-  this->pimpl->UnregisterEngine(iter);
+  this->dataPtr->UnregisterEngine(iter);
 }
 
 //////////////////////////////////////////////////
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManagerPrivate::GetEngine(EngineIter _iter) const
+RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter) const
 {
   RenderEngine *engine = _iter->second;
 

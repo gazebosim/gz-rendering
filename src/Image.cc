@@ -20,12 +20,13 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-Image::Image(unsigned int _width, unsigned int _height, PixelFormat _format) :
+Image::Image(unsigned int _width, unsigned int _height,
+  PixelFormat _format) :
   width(_width),
   height(_height)
 {
   this->format = PixelUtil::Sanitize(_format);
-  unsigned int size = this->GetMemorySize();
+  unsigned int size = this->MemorySize();
   this->data = DataPtr(new unsigned char[size]);
 }
 
@@ -35,43 +36,43 @@ Image::~Image()
 }
 
 //////////////////////////////////////////////////
-unsigned int Image::GetWidth() const
+unsigned int Image::Width() const
 {
   return this->width;
 }
 
 //////////////////////////////////////////////////
-unsigned int Image::GetHeight() const
+unsigned int Image::Height() const
 {
   return this->height;
 }
 
 //////////////////////////////////////////////////
-PixelFormat Image::GetFormat() const
+PixelFormat Image::Format() const
 {
   return this->format;
 }
 
 //////////////////////////////////////////////////
-unsigned int Image::GetDepth() const
+unsigned int Image::Depth() const
 {
-  return PixelUtil::GetChannelCount(this->format);
+  return PixelUtil::ChannelCount(this->format);
 }
 
 //////////////////////////////////////////////////
-unsigned int Image::GetMemorySize() const
+unsigned int Image::MemorySize() const
 {
-  return PixelUtil::GetMemorySize(this->format, this->width, this->height);
+  return PixelUtil::MemorySize(this->format, this->width, this->height);
 }
 
 //////////////////////////////////////////////////
-const void *Image::GetData() const
+const void *Image::Data() const
 {
   return this->data.get();
 }
 
 //////////////////////////////////////////////////
-void *Image::GetData()
+void *Image::Data()
 {
   return this->data.get();
 }

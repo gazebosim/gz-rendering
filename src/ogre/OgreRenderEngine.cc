@@ -14,7 +14,16 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
+
+
+// Not Apple or Windows
+#if not defined(__APPLE__) && not defined(_WIN32)
+# include <X11/Xlib.h>
+# include <X11/Xutil.h>
+# include <GL/glx.h>
+#endif
+
+#include <boost/filesystem.hpp>
 
 #ifndef _WIN32
   #include <dirent.h>
@@ -22,24 +31,18 @@
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
-  #include "gazebo/common/win_dirent.h"
+  #include <ignition/common/win_dirent.h>
 #endif
+#include <ignition/common/Console.hh>
 
-#include "gazebo/common/CommonIface.hh"
-#include "gazebo/common/Console.hh"
-#include "gazebo/common/Exception.hh"
-#include "gazebo/common/SystemPaths.hh"
+#include "ignition/rendering/SystemPaths.hh"
+
+#include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
-
-#if not (__APPLE__ || _WIN32)
-  #include <X11/Xlib.h>
-  #include <X11/Xutil.h>
-  #include <GL/glx.h>
-#endif
 
 using namespace ignition;
 using namespace rendering;
@@ -48,18 +51,18 @@ using namespace rendering;
 OgreRenderEngine::OgreRenderEngine() :
   loaded(false),
   initialized(false),
-  ogreRoot(NULL),
-  ogreLogManager(NULL),
+  ogreRoot(nullptr),
+  ogreLogManager(nullptr),
   dummyDisplay(0),
   dummyContext(0)
 {
 #if not (__APPLE__ || _WIN32)
-  this->dummyDisplay = NULL;
+  this->dummyDisplay = nullptr;
   this->dummyWindowId = 0;
 #endif
 
 #ifdef OGRE_OVERLAY_NEEDED
-  this->ogreOverlaySystem = NULL;
+  this->ogreOverlaySystem = nullptr;
 #endif
 }
 
@@ -84,13 +87,13 @@ bool OgreRenderEngine::Fini()
     glXDestroyContext(x11Display, x11Context);
     XDestroyWindow(x11Display, this->dummyWindowId);
     XCloseDisplay(x11Display);
-    this->dummyDisplay = NULL;
+    this->dummyDisplay = nullptr;
   }
 #endif
 
 #ifdef OGRE_OVERLAY_NEEDED
   delete this->ogreOverlaySystem;
-  this->ogreOverlaySystem = NULL;
+  this->ogreOverlaySystem = nullptr;
 #endif
 
   if (ogreRoot)
@@ -98,11 +101,11 @@ bool OgreRenderEngine::Fini()
     this->ogreRoot->shutdown();
     // TODO: fix segfault on delete
     // delete this->ogreRoot;
-    this->ogreRoot = NULL;
+    this->ogreRoot = nullptr;
   }
 
   delete this->ogreLogManager;
-  this->ogreLogManager = NULL;
+  this->ogreLogManager = nullptr;
 
   this->loaded = false;
   this->initialized = false;
@@ -117,14 +120,14 @@ bool OgreRenderEngine::IsEnabled() const
 }
 
 //////////////////////////////////////////////////
-std::string OgreRenderEngine::GetName() const
+std::string OgreRenderEngine::Name() const
 {
   return "Ogre";
 }
 
 //////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderPathType
-    OgreRenderEngine::GetRenderPathType() const
+    OgreRenderEngine::RenderPathType() const
 {
   return this->renderPathType;
 }
@@ -135,11 +138,11 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
   if (_uri == "__default__" || _uri.empty())
     return;
 
-  std::string path = gazebo::common::find_file_path(_uri);
+  std::string path = common::findFilePath(_uri);
 
   if (path.empty())
   {
-    gzerr << "URI doesn't exist[" << _uri << "]\n";
+    ignerr << "URI doesn't exist[" << _uri << "]\n";
     return;
   }
 
@@ -167,7 +170,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
 
         std::sort(paths.begin(), paths.end());
 
-        // Iterate over all the models in the current gazebo path
+        // Iterate over all the models in the current ign-rendering path
         for (std::vector<boost::filesystem::path>::iterator dIter =
             paths.begin(); dIter != paths.end(); ++dIter)
         {
@@ -197,7 +200,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
             }
             catch(Ogre::Exception& e)
             {
-              gzerr << "Unable to parse material file[" << fullPath << "]\n";
+              ignerr << "Unable to parse material file[" << fullPath << "]\n";
             }
             stream->close();
           }
@@ -207,13 +210,13 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
   }
   catch(Ogre::Exception &/*_e*/)
   {
-    gzthrow("Unable to load Ogre Resources.\nMake sure the"
-        "resources path in the world file is set correctly.");
+    ignerr << "Unable to load Ogre Resources.\nMake sure the"
+        "resources path in the world file is set correctly." << std::endl;
   }
 }
 
 //////////////////////////////////////////////////
-Ogre::Root *OgreRenderEngine::GetOgreRoot() const
+Ogre::Root *OgreRenderEngine::OgreRoot() const
 {
   return this->ogreRoot;
 }
@@ -226,7 +229,7 @@ ScenePtr OgreRenderEngine::CreateSceneImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-SceneStorePtr OgreRenderEngine::GetScenes() const
+SceneStorePtr OgreRenderEngine::Scenes() const
 {
   return this->scenes;
 }
@@ -241,12 +244,12 @@ bool OgreRenderEngine::LoadImpl()
   }
   catch (Ogre::Exception &ex)
   {
-    gzerr << ex.what() << std::endl;
+    ignerr << ex.what() << std::endl;
     return false;
   }
   catch (...)
   {
-    gzerr << "Failed to load render-engine" << std::endl;
+    ignerr << "Failed to load render-engine" << std::endl;
     return false;
   }
 }
@@ -261,7 +264,7 @@ bool OgreRenderEngine::InitImpl()
   }
   catch (...)
   {
-    gzerr << "Failed to initialize render-engine" << std::endl;
+    ignerr << "Failed to initialize render-engine" << std::endl;
     return false;
   }
 }
@@ -285,7 +288,7 @@ void OgreRenderEngine::LoadAttempt()
 void OgreRenderEngine::CreateLogger()
 {
   // create log file path
-  std::string logPath = gazebo::common::SystemPaths::Instance()->GetLogPath();
+  std::string logPath = SystemPaths::Instance()->LogPath();
   logPath += "/ogre.log";
 
   // create actual log
@@ -303,7 +306,8 @@ void OgreRenderEngine::CreateContext()
 
   if (!this->dummyDisplay)
   {
-    gzthrow("Unable to open dipslay: " << XDisplayName(0));
+    ignerr << "Unable to open dipslay: " << XDisplayName(0) << std::endl;
+    return;
   }
 
   // create X11 visual
@@ -317,20 +321,22 @@ void OgreRenderEngine::CreateContext()
 
   if (!dummyVisual)
   {
-    gzthrow("Unable to create glx visual");
+    ignerr << "Unable to create glx visual" << std::endl;
+    return;
   }
 
   // create X11 context
   this->dummyWindowId = XCreateSimpleWindow(x11Display,
       RootWindow(this->dummyDisplay, screenId), 0, 0, 1, 1, 0, 0, 0);
 
-  this->dummyContext = glXCreateContext(x11Display, dummyVisual, NULL, 1);
+  this->dummyContext = glXCreateContext(x11Display, dummyVisual, nullptr, 1);
 
   GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
 
   if (!this->dummyContext)
   {
-    gzthrow("Unable to create glx context");
+    ignerr << "Unable to create glx context" << std::endl;
+    return;
   }
 
   // select X11 context
@@ -347,7 +353,7 @@ void OgreRenderEngine::CreateRoot()
   }
   catch (Ogre::Exception &ex)
   {
-    gzthrow("Unable to create Ogre root");
+    ignerr << "Unable to create Ogre root" << std::endl;
   }
 }
 
@@ -364,7 +370,7 @@ void OgreRenderEngine::LoadPlugins()
 {
   std::list<std::string>::iterator iter;
   std::list<std::string> ogrePaths =
-    gazebo::common::SystemPaths::Instance()->GetOgrePaths();
+    SystemPaths::Instance()->OgrePaths();
 
   for (iter = ogrePaths.begin();
        iter != ogrePaths.end(); ++iter)
@@ -372,7 +378,7 @@ void OgreRenderEngine::LoadPlugins()
     std::string path(*iter);
     DIR *dir = opendir(path.c_str());
 
-    if (dir == NULL)
+    if (dir == nullptr)
     {
       continue;
     }
@@ -417,7 +423,7 @@ void OgreRenderEngine::LoadPlugins()
         {
           if ((*piter).find("RenderSystem") != std::string::npos)
           {
-            gzerr << "Unable to load Ogre Plugin[" << *piter
+            ignerr << "Unable to load Ogre Plugin[" << *piter
                   << "]. Rendering will not be possible."
                   << "Make sure you have installed OGRE and Gazebo properly.\n";
           }
@@ -442,7 +448,7 @@ void OgreRenderEngine::CreateRenderSystem()
 
   int c = 0;
 
-  renderSys = NULL;
+  renderSys = nullptr;
 
   do
   {
@@ -455,11 +461,11 @@ void OgreRenderEngine::CreateRenderSystem()
   while (renderSys &&
          renderSys->getName().compare("OpenGL Rendering Subsystem") != 0);
 
-  if (renderSys == NULL)
+  if (renderSys == nullptr)
   {
-    gzthrow("unable to find OpenGL rendering system. OGRE is probably "
+    ignerr << "unable to find OpenGL rendering system. OGRE is probably "
             "installed incorrectly. Double check the OGRE cmake output, "
-            "and make sure OpenGL is enabled.");
+            "and make sure OpenGL is enabled." << std::endl;
   }
 
   // We operate in windowed mode
@@ -483,8 +489,10 @@ void OgreRenderEngine::CreateResources()
   std::vector< std::pair<std::string, std::string> > archNames;
   std::vector< std::pair<std::string, std::string> >::iterator aiter;
   std::list<std::string>::const_iterator iter;
-  std::list<std::string> paths =
-    gazebo::common::SystemPaths::Instance()->GetGazeboPaths();
+  // std::list<std::string> paths = SystemPaths::Instance()->GetGazeboPaths();
+  // TODO do this in gazebo plugin
+  std::list<std::string> paths;
+
 
   std::list<std::string> mediaDirs;
   mediaDirs.push_back("media");
@@ -493,7 +501,7 @@ void OgreRenderEngine::CreateResources()
   for (iter = paths.begin(); iter != paths.end(); ++iter)
   {
     DIR *dir;
-    if ((dir = opendir((*iter).c_str())) == NULL)
+    if ((dir = opendir((*iter).c_str())) == nullptr)
     {
       continue;
     }
@@ -546,8 +554,8 @@ void OgreRenderEngine::CreateResources()
       }
       catch(Ogre::Exception &/*_e*/)
       {
-        gzthrow("Unable to load Ogre Resources. Make sure the resources path "
-            "in the world file is set correctly.");
+        ignerr << "Unable to load Ogre Resources. Make sure the resources "
+            "path in the world file is set correctly." << std::endl;
       }
     }
   }
@@ -558,7 +566,7 @@ void OgreRenderEngine::CreateWindow()
 {
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
-  Ogre::RenderWindow *window = NULL;
+  Ogre::RenderWindow *window = nullptr;
 
   // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
@@ -586,7 +594,7 @@ void OgreRenderEngine::CreateWindow()
   stream << "OgreWindow(0)";
 
   int attempts = 0;
-  while (window == NULL && (attempts++) < 10)
+  while (window == nullptr && (attempts++) < 10)
   {
     try
     {
@@ -595,14 +603,15 @@ void OgreRenderEngine::CreateWindow()
     }
     catch(...)
     {
-      gzerr << " Unable to create the rendering window\n";
-      window = NULL;
+      ignerr << " Unable to create the rendering window\n";
+      window = nullptr;
     }
   }
 
   if (attempts >= 10)
   {
-    gzthrow("Unable to create the rendering window\n");
+    ignerr << "Unable to create the rendering window\n" << std::endl;
+    return;
   }
 
   if (window)
@@ -639,15 +648,15 @@ void OgreRenderEngine::CheckCapabilities()
     std::find(profiles.begin(), profiles.end(), "glsl") != profiles.end();
 
   if (!hasFragmentPrograms || !hasVertexPrograms)
-    gzwarn << "Vertex and fragment shaders are missing. "
+    ignwarn << "Vertex and fragment shaders are missing. "
            << "Fixed function rendering will be used.\n";
 
   if (!hasGLSL)
-    gzwarn << "GLSL is missing."
+    ignwarn << "GLSL is missing."
            << "Fixed function rendering will be used.\n";
 
   if (!hasFBO)
-    gzwarn << "Frame Buffer Objects (FBO) is missing. "
+    ignwarn << "Frame Buffer Objects (FBO) is missing. "
            << "Rendering will be disabled.\n";
 
   this->renderPathType = OgreRenderEngine::NONE;
@@ -667,7 +676,7 @@ void OgreRenderEngine::InitAttempt()
 {
   if (this->renderPathType == NONE)
   {
-    gzwarn << "Cannot initialize render engine since "
+    ignwarn << "Cannot initialize render engine since "
            << "render path type is NONE. Ignore this warning if"
            << "rendering has been turned off on purpose.\n";
     return;
@@ -678,7 +687,7 @@ void OgreRenderEngine::InitAttempt()
   Ogre::ColourValue ambient;
 
   /// Create a dummy rendering context.
-  /// This will allow gazebo to run headless. And it also allows OGRE to
+  /// This will allow ign-rendering to run headless. And it also allows OGRE to
   /// initialize properly
 
   // Set default mipmap level (NB some APIs ignore this)
@@ -694,5 +703,3 @@ void OgreRenderEngine::InitAttempt()
 
   this->scenes = OgreSceneStorePtr(new OgreSceneStore);
 }
-
-//////////////////////////////////////////////////

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGRECAMERA_HH_
-#define _IGNITION_RENDERING_OGRECAMERA_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
+#define IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
 
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -37,29 +37,29 @@ namespace ignition
 
       public: virtual ~OgreCamera();
 
-      public: virtual PixelFormat GetImageFormat() const;
+      public: virtual PixelFormat ImageFormat() const;
 
       public: virtual void SetImageFormat(PixelFormat _format);
 
-      public: virtual math::Angle GetHFOV() const;
+      public: virtual math::Angle HFOV() const;
 
       public: virtual void SetHFOV(const math::Angle &_angle);
 
-      public: virtual double GetAspectRatio() const;
+      public: virtual double AspectRatio() const;
 
       public: virtual void SetAspectRatio(double _ratio);
 
-      public: virtual unsigned int GetAntiAliasing() const;
+      public: virtual unsigned int AntiAliasing() const;
 
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
-      public: virtual gazebo::common::Color GetBackgroundColor() const;
+      public: virtual math::Color BackgroundColor() const;
 
-      public: virtual void SetBackgroundColor(const gazebo::common::Color &_color);
+      public: virtual void SetBackgroundColor(const math::Color &_color);
 
       public: virtual void Render();
 
-      protected: virtual RenderTexturePtr GetRenderTexture() const;
+      protected: virtual RenderTexturePtr RenderTexture() const;
 
       protected: virtual void Init();
 
@@ -73,7 +73,7 @@ namespace ignition
 
       protected: math::Angle xfov;
 
-      protected: gazebo::common::Color backgroundColor;
+      protected: math::Color backgroundColor;
 
       private: friend class OgreScene;
     };

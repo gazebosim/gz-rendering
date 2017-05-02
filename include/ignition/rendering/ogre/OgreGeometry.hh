@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGREGEOMETRY_HH_
-#define _IGNITION_RENDERING_OGREGEOMETRY_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
+#define IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
 
 #include "ignition/rendering/base/BaseGeometry.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
@@ -38,9 +38,9 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr GetParent() const;
+      public: virtual VisualPtr Parent() const;
 
-      public: virtual Ogre::MovableObject *GetOgreObject() const = 0;
+      public: virtual Ogre::MovableObject *OgreObject() const = 0;
 
       protected: virtual void SetParent(OgreVisualPtr _parent);
 

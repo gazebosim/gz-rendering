@@ -20,6 +20,7 @@
 
 #include "ignition/rendering/rendering.hh"
 #include "CameraWindow.hh"
+#include "SceneManager.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -38,6 +39,13 @@ void Connect()
 ScenePtr CreateScene(const std::string &_engine)
 {
   RenderEngine *engine = rendering::get_engine(_engine);
+  if (!engine)
+  {
+    std::cout << "Engine '" << _engine
+              << "' is not supported" << std::endl;
+    return ScenePtr();
+  }
+
   ScenePtr scene = engine->CreateScene("scene");
   SceneManager::Instance()->AddScene(scene);
   return scene;
@@ -46,11 +54,13 @@ ScenePtr CreateScene(const std::string &_engine)
 CameraPtr CreateCamera(const std::string &_engine)
 {
   ScenePtr scene = CreateScene(_engine);
-  VisualPtr root = scene->GetRootVisual();
+  if (!scene)
+    return CameraPtr();
+  VisualPtr root = scene->RootVisual();
 
   CameraPtr camera = scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 1.5);
-  camera->SetLocalRotation(0.0, 0.20, M_PI / 2);
+  camera->SetLocalPosition(5.0, -5.0, 2.0);
+  camera->SetLocalRotation(0.0, 0.27, 2.36);
   camera->SetImageWidth(640);
   camera->SetImageHeight(480);
   camera->SetAntiAliasing(2);
@@ -65,8 +75,18 @@ int main(int, char**)
 {
   Connect();
   std::vector<CameraPtr> cameras;
-  // cameras.push_back(CreateCamera("ogre"));
-  cameras.push_back(CreateCamera("optix"));
+  std::vector<std::string> engineNames;
+
+  engineNames.push_back("ogre");
+  engineNames.push_back("optix");
+
+  for (auto engineName : engineNames)
+  {
+    CameraPtr camera = CreateCamera(engineName);
+    if (camera)
+      cameras.push_back(camera);
+  }
+
   GlutRun(cameras);
   return 0;
 }

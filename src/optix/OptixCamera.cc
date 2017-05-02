@@ -34,11 +34,11 @@ const std::string OptixCamera::PTX_CLEAR_FUNCTION("Clear");
 
 //////////////////////////////////////////////////
 OptixCamera::OptixCamera() :
-  optixRenderProgram(NULL),
-  optixClearProgram(NULL),
-  optixErrorProgram(NULL),
-  renderTexture(NULL),
-  antiAliasing(1),
+  optixRenderProgram(nullptr),
+  optixClearProgram(nullptr),
+  optixErrorProgram(nullptr),
+  renderTexture(nullptr),
+  antiAliasing(1u),
   cameraDirty(true),
   traceId(0)
 {
@@ -50,7 +50,7 @@ OptixCamera::~OptixCamera()
 }
 
 //////////////////////////////////////////////////
-PixelFormat OptixCamera::GetImageFormat() const
+PixelFormat OptixCamera::ImageFormat() const
 {
   // return PF_UNKNOWN;
   return PF_R8G8B8;
@@ -62,7 +62,7 @@ void OptixCamera::SetImageFormat(PixelFormat /*_format*/)
 }
 
 //////////////////////////////////////////////////
-math::Angle OptixCamera::GetHFOV() const
+math::Angle OptixCamera::HFOV() const
 {
   return this->xFieldOfView;
 }
@@ -75,7 +75,7 @@ void OptixCamera::SetHFOV(const math::Angle &_angle)
 }
 
 //////////////////////////////////////////////////
-double OptixCamera::GetAspectRatio() const
+double OptixCamera::AspectRatio() const
 {
   return this->aspectRatio;
 }
@@ -88,7 +88,7 @@ void OptixCamera::SetAspectRatio(double _ratio)
 }
 
 //////////////////////////////////////////////////
-unsigned int OptixCamera::GetAntiAliasing() const
+unsigned int OptixCamera::AntiAliasing() const
 {
   return this->antiAliasing;
 }
@@ -110,15 +110,15 @@ void OptixCamera::PreRender()
 //////////////////////////////////////////////////
 void OptixCamera::Render()
 {
-  unsigned int width = this->GetImageWidth();
-  unsigned int height = this->GetImageHeight();
-  optix::Context optixContext = this->scene->GetOptixContext();
+  unsigned int width = this->ImageWidth();
+  unsigned int height = this->ImageHeight();
+  optix::Context optixContext = this->scene->OptixContext();
   optixContext->launch(this->clearId, width, height);
   optixContext->launch(this->traceId, width, height);
 }
 
 //////////////////////////////////////////////////
-RenderTexturePtr OptixCamera::GetRenderTexture() const
+RenderTexturePtr OptixCamera::RenderTexture() const
 {
   return this->renderTexture;
 }
@@ -136,7 +136,7 @@ void OptixCamera::WriteCameraToDevice()
 //////////////////////////////////////////////////
 void OptixCamera::WriteCameraToDeviceImpl()
 {
-  this->optixRenderProgram["aa"]->setInt(this->antiAliasing + 1);
+  this->optixRenderProgram["aa"]->setUint(this->antiAliasing + 1u);
 }
 
 //////////////////////////////////////////////////
@@ -144,18 +144,18 @@ void OptixCamera::WritePoseToDeviceImpl()
 {
   BaseCamera::WritePoseToDeviceImpl();
 
-  math::Pose3d worldPose = this->GetWorldPose();
+  math::Pose3d worldPose = this->WorldPose();
   math::Vector3d pos = worldPose.Pos();
   math::Matrix3d rot(worldPose.Rot());
 
   float3 eye = make_float3(pos.X(), pos.Y(), pos.Z());
   float3   u = make_float3(-rot(0, 1), -rot(1, 1), -rot(2, 1));
   float3   v = make_float3(-rot(0, 2), -rot(1, 2), -rot(2, 2));
-  float3   w = make_float3( rot(0, 0),  rot(1, 0),  rot(2, 0));
+  float3   w = make_float3(rot(0, 0),  rot(1, 0),  rot(2, 0));
 
   // TODO: handle auto and manual aspect-ratio
   // v *= 1 / this->aspectRatio;
-  v *= (float)this->GetImageHeight() / this->GetImageWidth();
+  v *= static_cast<float>(this->ImageHeight()) / this->ImageWidth();
   w *= 1 / (2 * tan(this->xFieldOfView.Radian() / 2));
 
   this->optixRenderProgram["eye"]->setFloat(eye);
@@ -190,12 +190,12 @@ void OptixCamera::CreateRenderProgram()
   this->optixRenderProgram =
       this->scene->CreateOptixProgram(PTX_BASE_NAME, PTX_RENDER_FUNCTION);
 
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
 
   optixContext->setRayGenerationProgram(this->traceId,
       this->optixRenderProgram);
 
-  optix::Buffer optixBuffer = this->renderTexture->GetOptixBuffer();
+  optix::Buffer optixBuffer = this->renderTexture->OptixBuffer();
   this->optixRenderProgram["buffer"]->setBuffer(optixBuffer);
 }
 
@@ -205,12 +205,12 @@ void OptixCamera::CreateClearProgram()
   this->optixClearProgram =
       this->scene->CreateOptixProgram(PTX_BASE_NAME, PTX_CLEAR_FUNCTION);
 
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
 
   optixContext->setRayGenerationProgram(this->clearId,
       this->optixClearProgram);
 
-  optix::Buffer optixBuffer = this->renderTexture->GetOptixBuffer();
+  optix::Buffer optixBuffer = this->renderTexture->OptixBuffer();
   this->optixClearProgram["buffer"]->setBuffer(optixBuffer);
 }
 
@@ -221,8 +221,8 @@ void OptixCamera::CreateErrorProgram()
   this->optixErrorProgram =
       this->scene->CreateOptixProgram("OptixErrorProgram", "Error");
 
-  optix::Context optixContext = this->scene->GetOptixContext();
-  optix::Buffer optixBuffer = this->renderTexture->GetOptixBuffer();
+  optix::Context optixContext = this->scene->OptixContext();
+  optix::Buffer optixBuffer = this->renderTexture->OptixBuffer();
   this->optixErrorProgram["buffer"]->setBuffer(optixBuffer);
   optixContext->setExceptionProgram(this->traceId, this->optixErrorProgram);
 }

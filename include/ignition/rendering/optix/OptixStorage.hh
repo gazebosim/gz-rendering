@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXSTORAGE_HH_
-#define _IGNITION_RENDERING_OPTIXSTORAGE_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXSTORAGE_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXSTORAGE_HH_
 
 #include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/optix/optix.hh"

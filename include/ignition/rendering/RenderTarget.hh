@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_RENDERTARGET_HH_
-#define _IGNITION_RENDERING_RENDERTARGET_HH_
+#ifndef IGNITION_RENDERING_RENDERTARGET_HH_
+#define IGNITION_RENDERING_RENDERTARGET_HH_
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Image.hh"
@@ -35,11 +35,11 @@ namespace ignition
 
       /// \brief Get image width in pixels
       /// \return The image width in pixels
-      public: virtual unsigned int GetWidth() const = 0;
+      public: virtual unsigned int Width() const = 0;
 
       /// \brief Get image height in pixels
       /// \return The image height in pixels
-      public: virtual unsigned int GetHeight() const = 0;
+      public: virtual unsigned int Height() const = 0;
 
       /// \brief Write rendered image to given Image. The RenderTarget will
       /// convert the underlying image to the specified format listed in the
@@ -47,7 +47,7 @@ namespace ignition
       /// work will be done. Calling this function before an image has been
       /// rendered will result in undefined behavior.
       /// \param[out] _image Image to which output will be written
-      public: virtual void GetImage(Image &_image) const = 0;
+      public: virtual void Copy(Image &_image) const = 0;
     };
 
     /// \class RenderTexture RenderTexture.hh

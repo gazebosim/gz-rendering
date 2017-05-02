@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXPRIMITIVE_HH_
-#define _IGNITION_RENDERING_OPTIXPRIMITIVE_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXPRIMITIVE_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXPRIMITIVE_HH_
 
+#include <string>
 #include "ignition/rendering/optix/OptixGeometry.hh"
 
 namespace ignition
@@ -30,18 +31,18 @@ namespace ignition
 
       public: virtual ~OptixPrimitive();
 
-      public: virtual MaterialPtr GetMaterial() const;
+      public: virtual MaterialPtr Material() const;
 
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true);
 
-      public: virtual optix::GeometryGroup GetOptixGeometryGroup() const;
+      public: virtual optix::GeometryGroup OptixGeometryGroup() const;
 
-      public: virtual optix::Acceleration GetOptixAccel() const;
+      public: virtual optix::Acceleration OptixAccel() const;
 
-      public: virtual optix::GeometryInstance GetOptixGeometryInstance() const;
+      public: virtual optix::GeometryInstance OptixGeometryInstance() const;
 
-      public: virtual optix::Geometry GetOptixGeometry() const;
+      public: virtual optix::Geometry OptixGeometry() const;
 
       public: virtual void PreRender();
 

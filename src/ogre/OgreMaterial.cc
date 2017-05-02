@@ -14,7 +14,9 @@
  * limitations under the License.
  *
  */
-#include <gazebo/common/Console.hh>
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
@@ -34,7 +36,7 @@ OgreMaterial::~OgreMaterial()
 }
 
 //////////////////////////////////////////////////
-bool OgreMaterial::GetLightingEnabled() const
+bool OgreMaterial::LightingEnabled() const
 {
   return this->ogrePass->getLightingEnabled();
 }
@@ -47,13 +49,13 @@ void OgreMaterial::SetLightingEnabled(bool _enabled)
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreMaterial::GetAmbient() const
+math::Color OgreMaterial::Ambient() const
 {
   return OgreConversions::Convert(this->ogrePass->getAmbient());
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetAmbient(const gazebo::common::Color &_color)
+void OgreMaterial::SetAmbient(const math::Color &_color)
 {
   this->ogrePass->setAmbient(OgreConversions::Convert(_color));
   this->UpdateColorOperation();
@@ -61,31 +63,31 @@ void OgreMaterial::SetAmbient(const gazebo::common::Color &_color)
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreMaterial::GetDiffuse() const
+math::Color OgreMaterial::Diffuse() const
 {
   return OgreConversions::Convert(this->ogrePass->getDiffuse());
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetDiffuse(const gazebo::common::Color &_color)
+void OgreMaterial::SetDiffuse(const math::Color &_color)
 {
   this->ogrePass->setDiffuse(OgreConversions::Convert(_color));
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreMaterial::GetSpecular() const
+math::Color OgreMaterial::Specular() const
 {
   return OgreConversions::Convert(this->ogrePass->getSpecular());
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetSpecular(const gazebo::common::Color &_color)
+void OgreMaterial::SetSpecular(const math::Color &_color)
 {
   this->ogrePass->setSpecular(OgreConversions::Convert(_color));
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OgreMaterial::GetEmissive() const
+math::Color OgreMaterial::Emissive() const
 {
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
   return this->emissiveColor;
@@ -95,7 +97,7 @@ gazebo::common::Color OgreMaterial::GetEmissive() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetEmissive(const gazebo::common::Color &_color)
+void OgreMaterial::SetEmissive(const math::Color &_color)
 {
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
   this->emissiveColor = _color;
@@ -105,7 +107,7 @@ void OgreMaterial::SetEmissive(const gazebo::common::Color &_color)
 }
 
 //////////////////////////////////////////////////
-double OgreMaterial::GetShininess() const
+double OgreMaterial::Shininess() const
 {
   return this->ogrePass->getShininess();
 }
@@ -117,7 +119,7 @@ void OgreMaterial::SetShininess(double _shininess)
 }
 
 //////////////////////////////////////////////////
-double OgreMaterial::GetTransparency() const
+double OgreMaterial::Transparency() const
 {
   return this->transparency;
 }
@@ -130,7 +132,7 @@ void OgreMaterial::SetTransparency(double _transparency)
 }
 
 //////////////////////////////////////////////////
-double OgreMaterial::GetReflectivity() const
+double OgreMaterial::Reflectivity() const
 {
   return this->reflectivity;
 }
@@ -142,7 +144,7 @@ void OgreMaterial::SetReflectivity(double _reflectivity)
 }
 
 //////////////////////////////////////////////////
-bool OgreMaterial::GetCastShadows() const
+bool OgreMaterial::CastShadows() const
 {
   return this->castShadows;
 }
@@ -155,7 +157,7 @@ void OgreMaterial::SetCastShadows(bool _castShadows)
 }
 
 //////////////////////////////////////////////////
-bool OgreMaterial::GetReceiveShadows() const
+bool OgreMaterial::ReceiveShadows() const
 {
   return this->ogreMaterial->getReceiveShadows();
 }
@@ -167,7 +169,7 @@ void OgreMaterial::SetReceiveShadows(bool _receiveShadows)
 }
 
 //////////////////////////////////////////////////
-bool OgreMaterial::GetReflectionEnabled() const
+bool OgreMaterial::ReflectionEnabled() const
 {
   return this->reflectionEnabled;
 }
@@ -175,7 +177,7 @@ bool OgreMaterial::GetReflectionEnabled() const
 //////////////////////////////////////////////////
 void OgreMaterial::SetReflectionEnabled(bool _enabled)
 {
-   this->reflectionEnabled = _enabled;
+  this->reflectionEnabled = _enabled;
 }
 
 //////////////////////////////////////////////////
@@ -185,7 +187,7 @@ bool OgreMaterial::HasTexture() const
 }
 
 //////////////////////////////////////////////////
-std::string OgreMaterial::GetTexture() const
+std::string OgreMaterial::Texture() const
 {
   return this->textureName;
 }
@@ -199,7 +201,7 @@ void OgreMaterial::SetTexture(const std::string &_name)
     return;
   }
 
-  Ogre::TexturePtr texture = this->GetTexture(_name);
+  Ogre::TexturePtr texture = this->Texture(_name);
 
   if (!texture.isNull())
   {
@@ -223,7 +225,7 @@ bool OgreMaterial::HasNormalMap() const
 }
 
 //////////////////////////////////////////////////
-std::string OgreMaterial::GetNormalMap() const
+std::string OgreMaterial::NormalMap() const
 {
   return this->normalMapName;
 }
@@ -248,19 +250,19 @@ void OgreMaterial::ClearNormalMap()
 }
 
 //////////////////////////////////////////////////
-ShaderType OgreMaterial::GetShaderType() const
+enum ShaderType OgreMaterial::ShaderType() const
 {
   return this->shaderType;
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetShaderType(ShaderType _type)
+void OgreMaterial::SetShaderType(enum ShaderType _type)
 {
   this->shaderType = (ShaderUtil::IsValid(_type)) ? _type : ST_PIXEL;
 }
 
 //////////////////////////////////////////////////
-Ogre::MaterialPtr OgreMaterial::GetOgreMaterial() const
+Ogre::MaterialPtr OgreMaterial::Material() const
 {
   return this->ogreMaterial;
 }
@@ -271,12 +273,29 @@ void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
   try
   {
     // TODO: improve how resource paths are handled
-    OgreRenderEngine::Instance()->AddResourcePath(_name);
-    _image.load(_name, this->ogreGroup);
+    // OgreRenderEngine::Instance()->AddResourcePath(_name);
+    //_image.load(_name, this->ogreGroup);
+    if (Ogre::ResourceGroupManager::getSingleton().resourceExists(
+        this->ogreGroup, _name))
+    {
+      _image.load(_name, this->ogreGroup);
+    }
+    else
+    {
+      std::string path = common::findFile(_name);
+      if (!path.empty())
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            path, "FileSystem", this->ogreGroup);
+        _image.load(path, this->ogreGroup);
+      }
+      else
+        ignerr << "Unable to find texture image: " << _name << std::endl;
+    }
   }
   catch (const Ogre::Exception &ex)
   {
-    gzerr << "Unable to load texture image: " << _name << std::endl;
+    ignerr << "Unable to load texture image: " << ex.what() << std::endl;
   }
 }
 
@@ -288,7 +307,7 @@ void OgreMaterial::SetTextureImpl(Ogre::TexturePtr _texture)
 }
 
 //////////////////////////////////////////////////
-Ogre::TexturePtr OgreMaterial::GetTexture(const std::string &_name)
+Ogre::TexturePtr OgreMaterial::Texture(const std::string &_name)
 {
   Ogre::TextureManager &texManager = Ogre::TextureManager::getSingleton();
 
@@ -354,7 +373,7 @@ void OgreMaterial::UpdateColorOperation()
   Ogre::ColourValue color;
 
   bool texOff = !this->HasTexture();
-  bool lightOff = !this->GetLightingEnabled();
+  bool lightOff = !this->LightingEnabled();
 
   operation = (texOff) ? Ogre::LBX_SOURCE1 : Ogre::LBX_MODULATE;
   source1 = (texOff && lightOff) ? Ogre::LBS_MANUAL : Ogre::LBS_CURRENT;
@@ -368,12 +387,12 @@ void OgreMaterial::UpdateColorOperation()
 void OgreMaterial::Init()
 {
   BaseMaterial::Init();
+  this->ogreGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
   Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-  this->ogreMaterial = matManager.create(this->name, "General");
+  this->ogreMaterial = matManager.create(this->name, this->ogreGroup);
   this->ogreTechnique = this->ogreMaterial->getTechnique(0);
   this->ogrePass = this->ogreTechnique->getPass(0);
   this->ogreTexState = this->ogrePass->createTextureUnitState();
-  this->ogreGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
   this->ogreTexState->setBlank();
   this->Reset();
 

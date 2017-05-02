@@ -14,12 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASESTORAGE_HH_
-#define _IGNITION_RENDERING_BASESTORAGE_HH_
+#ifndef IGNITION_RENDERING_BASE_BASESTORAGE_HH_
+#define IGNITION_RENDERING_BASE_BASESTORAGE_HH_
 
 #include <map>
+#include <string>
 #include <vector>
-#include "gazebo/common/Console.hh"
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/Storage.hh"
 
 namespace ignition
@@ -65,9 +68,9 @@ namespace ignition
 
       public: virtual void RemoveAll();
 
-      public: virtual UPtr GetDerived(const std::string &_key) const;
+      public: virtual UPtr Derived(const std::string &_key) const;
 
-      public: virtual UPtr GetDerivedByIndex(unsigned int _index) const;
+      public: virtual UPtr DerivedByIndex(unsigned int _index) const;
 
       protected: virtual bool IsValidIter(ConstUIter _iter) const;
 
@@ -131,11 +134,11 @@ namespace ignition
 
       public: virtual void DestroyAll();
 
-      public: virtual UPtr GetDerivedById(unsigned int _id) const;
+      public: virtual UPtr DerivedById(unsigned int _id) const;
 
-      public: virtual UPtr GetDerivedByName(const std::string &_name) const;
+      public: virtual UPtr DerivedByName(const std::string &_name) const;
 
-      public: virtual UPtr GetDerivedByIndex(unsigned int _index) const;
+      public: virtual UPtr DerivedByIndex(unsigned int _index) const;
 
       public: virtual bool AddDerived(UPtr _object);
 
@@ -410,7 +413,7 @@ namespace ignition
     typename BaseMap<T, U>::TPtr
     BaseMap<T, U>::Get(const std::string &_key) const
     {
-      return this->GetDerived(_key);
+      return this->Derived(_key);
     }
 
     //////////////////////////////////////////////////
@@ -418,7 +421,7 @@ namespace ignition
     typename BaseMap<T, U>::TPtr
     BaseMap<T, U>::GetByIndex(unsigned int _index) const
     {
-      return this->GetDerivedByIndex(_index);
+      return this->DerivedByIndex(_index);
     }
 
     //////////////////////////////////////////////////
@@ -427,19 +430,19 @@ namespace ignition
     {
       if (_key.empty())
       {
-        gzerr << "Cannot store item with empty key" << std::endl;
+        ignerr << "Cannot store item with empty key" << std::endl;
         return false;
       }
 
       if (!_value)
       {
-        gzerr << "Cannot store null pointer value" << std::endl;
+        ignerr << "Cannot store null pointer value" << std::endl;
         return false;
       }
 
       if (this->ContainsKey(_key))
       {
-        gzerr << "Item already registered with key: " << _key << std::endl;
+        ignerr << "Item already registered with key: " << _key << std::endl;
         return false;
       }
 
@@ -447,7 +450,7 @@ namespace ignition
 
       if (!derived)
       {
-        gzerr << "Cannot add item created by another render-engine"
+        ignerr << "Cannot add item created by another render-engine"
               << std::endl;
 
         return false;
@@ -497,21 +500,21 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseMap<T, U>::UPtr
-    BaseMap<T, U>::GetDerived(const std::string &_key) const
+    BaseMap<T, U>::Derived(const std::string &_key) const
     {
       auto iter = this->map.find(_key);
-      return (this->IsValidIter(iter)) ? iter->second : NULL;
+      return (this->IsValidIter(iter)) ? iter->second : nullptr;
     }
 
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseMap<T, U>::UPtr
-    BaseMap<T, U>::GetDerivedByIndex(unsigned int _index) const
+    BaseMap<T, U>::DerivedByIndex(unsigned int _index) const
     {
       if (_index >= this->Size())
       {
-        gzerr << "Invalid index: " << _index << std::endl;
-        return NULL;
+        ignerr << "Invalid index: " << _index << std::endl;
+        return nullptr;
       }
 
       auto iter = this->map.begin();
@@ -574,7 +577,7 @@ namespace ignition
     typename BaseStore<T, U>::TPtr
     BaseStore<T, U>::GetById(unsigned int _id) const
     {
-      return this->GetDerivedById(_id);
+      return this->DerivedById(_id);
     }
 
     //////////////////////////////////////////////////
@@ -582,7 +585,7 @@ namespace ignition
     typename BaseStore<T, U>::TPtr
     BaseStore<T, U>::GetByName(const std::string &_name) const
     {
-      return this->GetDerivedByName(_name);
+      return this->DerivedByName(_name);
     }
 
     //////////////////////////////////////////////////
@@ -590,7 +593,7 @@ namespace ignition
     typename BaseStore<T, U>::TPtr
     BaseStore<T, U>::GetByIndex(unsigned int _index) const
     {
-      return this->GetDerivedByIndex(_index);
+      return this->DerivedByIndex(_index);
     }
 
     //////////////////////////////////////////////////
@@ -599,7 +602,7 @@ namespace ignition
     {
       if (!_object)
       {
-        gzerr << "Cannot add null pointer" << std::endl;
+        ignerr << "Cannot add null pointer" << std::endl;
         return false;
       }
 
@@ -607,7 +610,7 @@ namespace ignition
 
       if (!derived)
       {
-        gzerr << "Cannot add item created by another render-engine"
+        ignerr << "Cannot add item created by another render-engine"
               << std::endl;
 
         return false;
@@ -703,28 +706,28 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseStore<T, U>::UPtr
-    BaseStore<T, U>::GetDerivedById(unsigned int _id) const
+    BaseStore<T, U>::DerivedById(unsigned int _id) const
     {
       auto iter = this->ConstIterById(_id);
-      return (this->IsValidIter(iter)) ? iter->second : NULL;
+      return (this->IsValidIter(iter)) ? iter->second : nullptr;
     }
 
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseStore<T, U>::UPtr
-    BaseStore<T, U>::GetDerivedByName(const std::string &_name) const
+    BaseStore<T, U>::DerivedByName(const std::string &_name) const
     {
       auto iter = this->ConstIterByName(_name);
-      return (this->IsValidIter(iter)) ? iter->second : NULL;
+      return (this->IsValidIter(iter)) ? iter->second : nullptr;
     }
 
     //////////////////////////////////////////////////
     template <class T, class U>
     typename BaseStore<T, U>::UPtr
-    BaseStore<T, U>::GetDerivedByIndex(unsigned int _index) const
+    BaseStore<T, U>::DerivedByIndex(unsigned int _index) const
     {
       auto iter = this->ConstIterByIndex(_index);
-      return (this->IsValidIter(iter)) ? iter->second : NULL;
+      return (this->IsValidIter(iter)) ? iter->second : nullptr;
     }
 
     //////////////////////////////////////////////////
@@ -733,7 +736,7 @@ namespace ignition
     {
       if (!_object)
       {
-        gzerr << "Cannot add null pointer" << std::endl;
+        ignerr << "Cannot add null pointer" << std::endl;
         return false;
       }
 
@@ -805,7 +808,7 @@ namespace ignition
 
       for (auto iter = begin; iter != end; ++iter)
       {
-        if (iter->second->GetId() == _id)
+        if (iter->second->Id() == _id)
         {
           return iter;
         }
@@ -829,7 +832,7 @@ namespace ignition
     {
       if (_index >= this->Size())
       {
-        gzerr << "Invalid index: " << _index << std::endl;
+        ignerr << "Invalid index: " << _index << std::endl;
         return this->store.end();
       }
 
@@ -878,18 +881,19 @@ namespace ignition
     template <class T, class U>
     bool BaseStore<T, U>::AddImpl(UPtr _object)
     {
-      unsigned int id = _object->GetId();
-      std::string name = _object->GetName();
+      unsigned int id = _object->Id();
+      std::string name = _object->Name();
 
       if (this->ContainsId(id))
       {
-        gzerr << "Another item already exists with id: " << id << std::endl;
+        ignerr << "Another item already exists with id: " << id << std::endl;
         return false;
       }
 
       if (this->ContainsName(name))
       {
-        gzerr << "Another item already exists with name: " << name << std::endl;
+        ignerr << "Another item already exists with name: " << name
+            << std::endl;
         return false;
       }
 
@@ -904,7 +908,7 @@ namespace ignition
     {
       if (!this->IsValidIter(_iter))
       {
-        return NULL;
+        return nullptr;
       }
 
       UPtr result = _iter->second;
@@ -1009,7 +1013,7 @@ namespace ignition
         if (object) return object;
       }
 
-      return NULL;
+      return nullptr;
     }
 
     //////////////////////////////////////////////////
@@ -1023,7 +1027,7 @@ namespace ignition
         if (object) return object;
       }
 
-      return NULL;
+      return nullptr;
     }
 
     //////////////////////////////////////////////////
@@ -1040,15 +1044,15 @@ namespace ignition
         _index -= size;
       }
 
-      gzerr << "Invalid index: " << origIndex << std::endl;
-      return NULL;
+      ignerr << "Invalid index: " << origIndex << std::endl;
+      return nullptr;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     bool BaseCompositeStore<T>::Add(TPtr)
     {
-      gzerr << "Adding to BaseCompositeStore not supported" << std::endl;
+      ignerr << "Adding to BaseCompositeStore not supported" << std::endl;
       return false;
     }
 
@@ -1057,7 +1061,7 @@ namespace ignition
     typename BaseCompositeStore<T>::TPtr
     BaseCompositeStore<T>::Remove(TPtr _object)
     {
-      TPtr result = NULL;
+      TPtr result = nullptr;
 
       for (auto store : this->stores)
       {
@@ -1073,7 +1077,7 @@ namespace ignition
     typename BaseCompositeStore<T>::TPtr
     BaseCompositeStore<T>::RemoveById(unsigned int _id)
     {
-      TPtr result = NULL;
+      TPtr result = nullptr;
 
       for (auto store : this->stores)
       {
@@ -1089,7 +1093,7 @@ namespace ignition
     typename BaseCompositeStore<T>::TPtr
     BaseCompositeStore<T>::RemoveByName(const std::string &_name)
     {
-      TPtr result = NULL;
+      TPtr result = nullptr;
 
       for (auto store : this->stores)
       {
@@ -1105,7 +1109,7 @@ namespace ignition
     typename BaseCompositeStore<T>::TPtr
     BaseCompositeStore<T>::RemoveByIndex(unsigned int _index)
     {
-      TPtr result = NULL;
+      TPtr result = nullptr;
 
       for (auto store : this->stores)
       {
@@ -1200,8 +1204,8 @@ namespace ignition
     {
       if (_index >= this->GetStoreCount())
       {
-        gzerr << "Invalid store index: " << _index << std::endl;
-        return NULL;
+        ignerr << "Invalid store index: " << _index << std::endl;
+        return nullptr;
       }
 
       return this->stores[_index];
@@ -1213,13 +1217,13 @@ namespace ignition
     {
       if (!_store)
       {
-        gzerr << "Cannot all null store pointer" << std::endl;
+        ignerr << "Cannot all null store pointer" << std::endl;
         return false;
       }
 
       if (this->ContainsStore(_store))
       {
-        gzerr << "Store has already been added" << std::endl;
+        ignerr << "Store has already been added" << std::endl;
         return false;
       }
 
@@ -1245,8 +1249,8 @@ namespace ignition
     {
       if (_index >= this->GetStoreCount())
       {
-        gzerr << "Invalid store index: " << _index << std::endl;
-        return NULL;
+        ignerr << "Invalid store index: " << _index << std::endl;
+        return nullptr;
       }
 
       auto iter = this->stores.begin();
@@ -1261,7 +1265,7 @@ namespace ignition
     {
       if (_iter == this->stores.end())
       {
-        return NULL;
+        return nullptr;
       }
 
       TStorePtr result = *_iter;

@@ -14,9 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGREMESH_HH_
-#define _IGNITION_RENDERING_OGREMESH_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREMESH_HH_
+#define IGNITION_RENDERING_OGRE_OGREMESH_HH_
 
+#include <string>
+#include <vector>
 #include "ignition/rendering/base/BaseMesh.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
@@ -41,9 +43,9 @@ namespace ignition
 
       public: virtual ~OgreMesh();
 
-      public: virtual Ogre::MovableObject *GetOgreObject() const;
+      public: virtual Ogre::MovableObject *OgreObject() const;
 
-      protected: virtual SubMeshStorePtr GetSubMeshes() const;
+      protected: virtual SubMeshStorePtr SubMeshes() const;
 
       protected: OgreSubMeshStorePtr subMeshes;
 
@@ -61,12 +63,12 @@ namespace ignition
 
       public: virtual ~OgreSubMesh();
 
-      public: virtual MaterialPtr GetMaterial() const;
+      public: virtual MaterialPtr Material() const;
 
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true);
 
-      public: virtual Ogre::SubEntity *GetOgreSubEntity() const;
+      public: virtual Ogre::SubEntity *OgreSubEntity() const;
 
       public: virtual void Destroy();
 

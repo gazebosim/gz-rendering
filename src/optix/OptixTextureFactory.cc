@@ -13,10 +13,12 @@
  * limitations under the License.
  *
  */
+
+#include <FreeImage.h>
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/optix/OptixTextureFactory.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
-#include "gazebo/common/Console.hh"
-#include <FreeImage.h>
 
 using namespace ignition;
 using namespace rendering;
@@ -52,7 +54,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 {
   if (_filename.empty())
   {
-    gzerr << "Cannot load texture from empty filename" << std::endl;
+    ignerr << "Cannot load texture from empty filename" << std::endl;
     return this->CreateBuffer();
   }
 
@@ -61,7 +63,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 
   if (!image)
   {
-    gzerr << "Unable to load texture: " << _filename << std::endl;
+    ignerr << "Unable to load texture: " << _filename << std::endl;
     return this->CreateBuffer();
   }
 
@@ -76,7 +78,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 
   unsigned char *data = static_cast<unsigned char *>(FreeImage_GetBits(image));
 
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
 
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
   buffer->setFormat(RT_FORMAT_UNSIGNED_BYTE4);
@@ -94,7 +96,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer()
   unsigned char data[4] = { 0, 0, 0, 0 };
   unsigned int memSize = sizeof(data);
 
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
 
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
   buffer->setFormat(RT_FORMAT_UNSIGNED_BYTE4);
@@ -109,7 +111,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer()
 //////////////////////////////////////////////////
 optix::TextureSampler OptixTextureFactory::CreateSampler(optix::Buffer _buffer)
 {
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   optix::TextureSampler sampler = optixContext->createTextureSampler();
 
   sampler->setWrapMode(0, RT_WRAP_REPEAT);

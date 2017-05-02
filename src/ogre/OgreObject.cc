@@ -16,7 +16,6 @@
  */
 #include "ignition/rendering/ogre/OgreObject.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
 using namespace ignition;
@@ -33,7 +32,7 @@ OgreObject::~OgreObject()
 }
 
 //////////////////////////////////////////////////
-ScenePtr OgreObject::GetScene() const
+ScenePtr OgreObject::Scene() const
 {
   return this->scene;
 }

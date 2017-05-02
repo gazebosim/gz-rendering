@@ -10,12 +10,6 @@ include (${project_cmake_dir}/Ronn2Man.cmake)
 add_manpage_target()
 
 ########################################
-# Temporarily include Gazebo stuff
-find_package (gazebo REQUIRED gazebo_common gazebo_math)
-include_directories (${GAZEBO_INCLUDE_DIRS})
-link_directories (${GAZEBO_LIBRARY_DIRS})
-
-########################################
 # Find FreeImage
 include (${project_cmake_dir}/FindFreeImage.cmake)
 find_package(FreeImage QUIET)
@@ -83,24 +77,24 @@ endif()
 pkg_check_modules(OGRE-RTShaderSystem
                   OGRE-RTShaderSystem>=${MIN_OGRE_VERSION})
 
-if (OGRE-RTShaderSystem_FOUND)
-  set(ogre_ldflags ${OGRE-RTShaderSystem_LDFLAGS})
-  set(ogre_include_dirs ${OGRE-RTShaderSystem_INCLUDE_DIRS})
-  set(ogre_libraries ${OGRE-RTShaderSystem_LIBRARIES})
-  set(ogre_library_dirs ${OGRE-RTShaderSystem_LIBRARY_DIRS})
-  set(ogre_cflags ${OGRE-RTShaderSystem_CFLAGS})
-
-  set (INCLUDE_RTSHADER ON CACHE BOOL "Enable GPU shaders")
-else ()
-  set (INCLUDE_RTSHADER OFF CACHE BOOL "Enable GPU shaders")
-endif ()
-
 pkg_check_modules(OGRE OGRE>=${MIN_OGRE_VERSION})
 # There are some runtime problems to solve with ogre-1.9.
 # Please read gazebo issues: 994, 995
 if (NOT OGRE_FOUND)
   set (HAVE_OGRE OFF CACHE BOOL "HAVE OGRE" FORCE)
 else ()
+  if (OGRE-RTShaderSystem_FOUND)
+    set(ogre_ldflags ${OGRE-RTShaderSystem_LDFLAGS})
+    set(ogre_include_dirs ${OGRE-RTShaderSystem_INCLUDE_DIRS})
+    set(ogre_libraries ${OGRE-RTShaderSystem_LIBRARIES})
+    set(ogre_library_dirs ${OGRE-RTShaderSystem_LIBRARY_DIRS})
+    set(ogre_cflags ${OGRE-RTShaderSystem_CFLAGS})
+
+    set (INCLUDE_RTSHADER ON CACHE BOOL "Enable GPU shaders")
+  else ()
+    set (INCLUDE_RTSHADER OFF CACHE BOOL "Enable GPU shaders")
+  endif ()
+
   set(ogre_ldflags ${ogre_ldflags} ${OGRE_LDFLAGS})
   set(ogre_include_dirs ${ogre_include_dirs} ${OGRE_INCLUDE_DIRS})
   set(ogre_libraries ${ogre_libraries};${OGRE_LIBRARIES})
@@ -108,28 +102,52 @@ else ()
   set(ogre_cflags ${ogre_cflags} ${OGRE_CFLAGS})
   set (HAVE_OGRE ON CACHE BOOL "HAVE OGRE" FORCE)
   set (HAVE_RENDERING TRUE)
+
+
+  pkg_check_modules(OGRE-Terrain OGRE-Terrain)
+  if (OGRE-Terrain_FOUND)
+    set(ogre_ldflags ${ogre_ldflags} ${OGRE-Terrain_LDFLAGS})
+    set(ogre_include_dirs ${ogre_include_dirs} ${OGRE-Terrain_INCLUDE_DIRS})
+    set(ogre_libraries ${ogre_libraries};${OGRE-Terrain_LIBRARIES})
+    set(ogre_library_dirs ${ogre_library_dirs} ${OGRE-Terrain_LIBRARY_DIRS})
+    set(ogre_cflags ${ogre_cflags} ${OGRE-Terrain_CFLAGS})
+  endif()
+
+  pkg_check_modules(OGRE-Overlay OGRE-Overlay)
+  if (OGRE-Overlay_FOUND)
+    set(ogre_ldflags ${ogre_ldflags} ${OGRE-Overlay_LDFLAGS})
+    set(ogre_include_dirs ${ogre_include_dirs} ${OGRE-Overlay_INCLUDE_DIRS})
+    set(ogre_libraries ${ogre_libraries};${OGRE-Overlay_LIBRARIES})
+    set(ogre_library_dirs ${ogre_library_dirs} ${OGRE-Overlay_LIBRARY_DIRS})
+    set(ogre_cflags ${ogre_cflags} ${OGRE-Overlay_CFLAGS})
+  endif()
+
+  set (OGRE_INCLUDE_DIRS ${ogre_include_dirs}
+       CACHE INTERNAL "Ogre include path")
+
+  # Also find OGRE's plugin directory, which is provided in its .pc file as the
+  # `plugindir` variable.  We have to call pkg-config manually to get it.
+  # On Windows, we assume that all the OGRE* defines are passed in manually
+  # to CMake.
+  if (NOT WIN32)
+    execute_process(COMMAND pkg-config --variable=plugindir OGRE
+                    OUTPUT_VARIABLE _pkgconfig_invoke_result
+                    RESULT_VARIABLE _pkgconfig_failed)
+    if(_pkgconfig_failed)
+      BUILD_WARNING ("Failed to find OGRE's plugin directory.  The build will succeed, but gazebo will likely fail to run.")
+    else()
+      # This variable will be substituted into cmake/setup.sh.in
+      set (OGRE_PLUGINDIR ${_pkgconfig_invoke_result})
+    endif()
+
+  endif()
+
+  set(OGRE_RESOURCE_PATH ${OGRE_PLUGINDIR})
+  # Seems that OGRE_PLUGINDIR can end in a newline, which will cause problems when
+  # we pass it to the compiler later.
+  string(REPLACE "\n" "" OGRE_RESOURCE_PATH ${OGRE_RESOURCE_PATH})
+
 endif ()
-
-pkg_check_modules(OGRE-Terrain OGRE-Terrain)
-if (OGRE-Terrain_FOUND)
-  set(ogre_ldflags ${ogre_ldflags} ${OGRE-Terrain_LDFLAGS})
-  set(ogre_include_dirs ${ogre_include_dirs} ${OGRE-Terrain_INCLUDE_DIRS})
-  set(ogre_libraries ${ogre_libraries};${OGRE-Terrain_LIBRARIES})
-  set(ogre_library_dirs ${ogre_library_dirs} ${OGRE-Terrain_LIBRARY_DIRS})
-  set(ogre_cflags ${ogre_cflags} ${OGRE-Terrain_CFLAGS})
-endif()
-
-pkg_check_modules(OGRE-Overlay OGRE-Overlay)
-if (OGRE-Overlay_FOUND)
-  set(ogre_ldflags ${ogre_ldflags} ${OGRE-Overlay_LDFLAGS})
-  set(ogre_include_dirs ${ogre_include_dirs} ${OGRE-Overlay_INCLUDE_DIRS})
-  set(ogre_libraries ${ogre_libraries};${OGRE-Overlay_LIBRARIES})
-  set(ogre_library_dirs ${ogre_library_dirs} ${OGRE-Overlay_LIBRARY_DIRS})
-  set(ogre_cflags ${ogre_cflags} ${OGRE-Overlay_CFLAGS})
-endif()
-
-set (OGRE_INCLUDE_DIRS ${ogre_include_dirs}
-     CACHE INTERNAL "Ogre include path")
 
 # Also find OGRE's plugin directory, which is provided in its .pc file as the
 # `plugindir` variable.  We have to call pkg-config manually to get it.
@@ -153,3 +171,39 @@ endif()
 if (NOT HAVE_RENDERING)
   BUILD_ERROR("No rendering libraries found")
 endif ()
+
+########################################
+# Find ignition math
+set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 3)
+if (NOT DEFINED IGNITION-MATH_LIBRARY_DIRS AND NOT DEFINED IGNITION-MATH_INCLUDE_DIRS AND NOT DEFINED IGNITION-MATH_LIBRARIES)
+  find_package(ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION} QUIET)
+  if (NOT ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}_FOUND)
+    message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - not found")
+    BUILD_ERROR ("Missing: Ignition math${IGNITION-MATH_REQUIRED_MAJOR_VERSION} library.")
+  else()
+    message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - found")
+  endif()
+endif()
+
+########################################
+# Find Ignition Common
+find_package(ignition-common0 QUIET)
+if (NOT ignition-common0_FOUND)
+  BUILD_ERROR ("Missing: Ignition Common (libignition-common0-dev)")
+else()
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-COMMON_CXX_FLAGS}")
+  include_directories(${IGNITION-COMMON_INCLUDE_DIRS})
+  link_directories(${IGNITION-COMMON_LIBRARY_DIRS})
+endif()
+
+#################################################
+# Find ign msgs library
+find_package(ignition-msgs0 QUIET)
+if (NOT ignition-msgs0_FOUND)
+  message(FATAL_ERROR "Looking for ignition-msgs - not found")
+else()
+  message(STATUS "Looking for ignition-msgs - found")
+  include_directories(${IGNITION-MSGS_INCLUDE_DIRS})
+  link_directories(${IGNITION-MSGS_LIBRARY_DIRS})
+endif()
+

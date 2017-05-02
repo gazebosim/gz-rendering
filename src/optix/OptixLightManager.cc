@@ -16,7 +16,6 @@
  */
 #include "ignition/rendering/optix/OptixLightManager.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/optix/OptixLight.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/OptixVisual.hh"
@@ -39,19 +38,19 @@ OptixLightManager::~OptixLightManager()
 //////////////////////////////////////////////////
 void OptixLightManager::AddDirectionalLight(OptixDirectionalLightPtr _light)
 {
-  this->directionalData.push_back(_light->GetData());
+  this->directionalData.push_back(_light->Data());
 }
 
 //////////////////////////////////////////////////
 void OptixLightManager::AddPointLight(OptixPointLightPtr _light)
 {
-  this->pointData.push_back(_light->GetData());
+  this->pointData.push_back(_light->Data());
 }
 
 //////////////////////////////////////////////////
 void OptixLightManager::AddSpotLight(OptixSpotLightPtr _light)
 {
-  this->spotData.push_back(_light->GetData());
+  this->spotData.push_back(_light->Data());
 }
 
 //////////////////////////////////////////////////
@@ -114,7 +113,7 @@ void OptixLightManager::CreateBuffers()
 template <class T>
 optix::Buffer OptixLightManager::CreateBuffer(const std::string &_name)
 {
-  optix::Context optixContext = this->scene->GetOptixContext();
+  optix::Context optixContext = this->scene->OptixContext();
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
   optixContext[_name]->setBuffer(buffer);
   buffer->setFormat(RT_FORMAT_USER);

@@ -14,16 +14,18 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/MeshManager.hh>
+
 #include "ignition/rendering/MeshDescriptor.hh"
-#include "gazebo/common/Mesh.hh"
-#include "gazebo/common/MeshManager.hh"
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 MeshDescriptor::MeshDescriptor() :
-  mesh(NULL),
+  mesh(nullptr),
   meshName(""),
   subMeshName(""),
   centerSubMesh(false)
@@ -32,7 +34,7 @@ MeshDescriptor::MeshDescriptor() :
 
 //////////////////////////////////////////////////
 MeshDescriptor::MeshDescriptor(const std::string &_meshName) :
-  mesh(NULL),
+  mesh(nullptr),
   meshName(_meshName),
   subMeshName(""),
   centerSubMesh(false)
@@ -40,7 +42,7 @@ MeshDescriptor::MeshDescriptor(const std::string &_meshName) :
 }
 
 //////////////////////////////////////////////////
-MeshDescriptor::MeshDescriptor(const gazebo::common::Mesh *_mesh) :
+MeshDescriptor::MeshDescriptor(const common::Mesh *_mesh) :
   mesh(_mesh),
   meshName(""),
   subMeshName(""),
@@ -55,11 +57,11 @@ MeshDescriptor MeshDescriptor::Normalize() const
 
   if (norm.mesh)
   {
-    norm.meshName = norm.mesh->GetName();
+    norm.meshName = norm.mesh->Name();
   }
   else
   {
-    norm.mesh = gazebo::common::MeshManager::Instance()->GetMesh(norm.meshName);
+    norm.mesh = common::MeshManager::Instance()->MeshByName(norm.meshName);
   }
 
   return norm;

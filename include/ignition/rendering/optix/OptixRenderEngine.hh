@@ -14,10 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
-#define _IGNITION_RENDERING_OPTIXRENDERENGINE_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXRENDERENGINE_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXRENDERENGINE_HH_
 
-#include "gazebo/common/SingletonT.hh"
+#include <string>
+#include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 
@@ -27,7 +28,7 @@ namespace ignition
   {
     class IGNITION_VISIBLE OptixRenderEngine :
       public virtual BaseRenderEngine,
-      public SingletonT<OptixRenderEngine>
+      public common::SingletonT<OptixRenderEngine>
     {
       private: OptixRenderEngine();
 
@@ -35,14 +36,14 @@ namespace ignition
 
       public: virtual bool Fini();
 
-      public: virtual std::string GetName() const;
+      public: virtual std::string Name() const;
 
-      public: std::string GetPtxFile(const std::string& _fileBase) const;
+      public: std::string PtxFile(const std::string& _fileBase) const;
 
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name);
 
-      protected: virtual SceneStorePtr GetScenes() const;
+      protected: virtual SceneStorePtr Scenes() const;
 
       protected: virtual bool LoadImpl();
 

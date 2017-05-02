@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXRAYTYPES_HH_
-#define _IGNITION_RENDERING_OPTIXRAYTYPES_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXRAYTYPES_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXRAYTYPES_HH_
 
 #include <optix.h>
 
@@ -28,11 +28,9 @@ namespace ignition
 
   typedef enum OptixRayType_t
   {
-
     RT_RADIANCE = 0,
     RT_SHADOW   = 1,
     RT_COUNT    = 2,
-
   } OptixRayType;
 
   struct OptixRadianceRayData

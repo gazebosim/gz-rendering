@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASEAXISVISUAL_HH_
-#define _IGNITION_RENDERING_BASEAXISVISUAL_HH_
+#ifndef IGNITION_RENDERING_BASE_BASEAXISVISUAL_HH_
+#define IGNITION_RENDERING_BASE_BASEAXISVISUAL_HH_
 
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/ArrowVisual.hh"
@@ -54,7 +54,7 @@ namespace ignition
     void BaseAxisVisual<T>::Init()
     {
       T::Init();
-      ScenePtr scene = this->GetScene();
+      ScenePtr scene = this->Scene();
 
       ArrowVisualPtr xArrow = scene->CreateArrowVisual();
       xArrow->SetLocalPosition(0, 0, 0);

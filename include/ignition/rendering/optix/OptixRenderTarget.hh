@@ -14,10 +14,9 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXRENDERTARGET_HH_
-#define _IGNITION_RENDERING_OPTIXRENDERTARGET_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXRENDERTARGET_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXRENDERTARGET_HH_
 
-#include "gazebo/common/Color.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
@@ -34,11 +33,11 @@ namespace ignition
 
       public: virtual ~OptixRenderTarget();
 
-      public: virtual void GetImage(Image &_image) const;
+      public: virtual void Copy(Image &_image) const;
 
-      public: virtual optix::Buffer GetOptixBuffer() const = 0;
+      public: virtual optix::Buffer OptixBuffer() const = 0;
 
-      protected: unsigned int GetMemorySize() const;
+      protected: unsigned int MemorySize() const;
 
       protected: float *hostData;
     };
@@ -52,7 +51,7 @@ namespace ignition
 
       public: virtual void Destroy();
 
-      public: virtual optix::Buffer GetOptixBuffer() const;
+      public: virtual optix::Buffer OptixBuffer() const;
 
       protected: virtual void RebuildImpl();
 

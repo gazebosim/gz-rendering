@@ -14,9 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXMESH_HH_
-#define _IGNITION_RENDERING_OPTIXMESH_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXMESH_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXMESH_HH_
 
+#include <string>
+#include <vector>
 #include "ignition/rendering/base/BaseMesh.hh"
 #include "ignition/rendering/optix/OptixGeometry.hh"
 #include "ignition/rendering/optix/OptixObject.hh"
@@ -35,11 +37,11 @@ namespace ignition
 
       public: virtual ~OptixMesh();
 
-      public: virtual optix::GeometryGroup GetOptixGeometryGroup() const;
+      public: virtual optix::GeometryGroup OptixGeometryGroup() const;
 
-      public: virtual optix::Acceleration GetOptixAccel() const;
+      public: virtual optix::Acceleration OptixAccel() const;
 
-      protected: virtual SubMeshStorePtr GetSubMeshes() const;
+      protected: virtual SubMeshStorePtr SubMeshes() const;
 
       protected: OptixSubMeshStorePtr subMeshes;
 
@@ -59,12 +61,12 @@ namespace ignition
 
       public: virtual ~OptixSubMesh();
 
-      public: virtual MaterialPtr GetMaterial() const;
+      public: virtual MaterialPtr Material() const;
 
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true);
 
-      public: virtual optix::GeometryInstance GetOptixGeometryInstance() const;
+      public: virtual optix::GeometryInstance OptixGeometryInstance() const;
 
       protected: virtual void SetMaterialImpl(OptixMaterialPtr _material);
 

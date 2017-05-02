@@ -14,10 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGRERENDERENGINE_HH_
-#define _IGNITION_RENDERING_OGRERENDERENGINE_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
+#define IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
 
-#include "gazebo/common/SingletonT.hh"
+#include <string>
+
+#include <ignition/common/SingletonT.hh>
+
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -34,7 +37,7 @@ namespace ignition
   {
     class IGNITION_VISIBLE OgreRenderEngine :
       public virtual BaseRenderEngine,
-      public SingletonT<OgreRenderEngine>
+      public common::SingletonT<OgreRenderEngine>
     {
       /// \enum RenderPathType
       /// \brief The type of rendering path used by the rendering engine.
@@ -60,18 +63,18 @@ namespace ignition
 
       public: virtual bool IsEnabled() const;
 
-      public: virtual std::string GetName() const;
+      public: virtual std::string Name() const;
 
-      public: OgreRenderPathType GetRenderPathType() const;
+      public: OgreRenderPathType RenderPathType() const;
 
       public: void AddResourcePath(const std::string &_uri);
 
-      public: virtual Ogre::Root *GetOgreRoot() const;
+      public: virtual Ogre::Root *OgreRoot() const;
 
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name);
 
-      protected: virtual SceneStorePtr GetScenes() const;
+      protected: virtual SceneStorePtr Scenes() const;
 
       protected: virtual bool LoadImpl();
 
@@ -111,12 +114,12 @@ namespace ignition
 
       private: Ogre::LogManager *ogreLogManager;
 
-#if not (Q_OS_MAC || _WIN32)
+#if not (__APPLE__ || _WIN32)
       private: void *dummyDisplay;
 
       private: void *dummyContext;
 
-      private: unsigned long dummyWindowId;
+      private: uint64_t dummyWindowId;
 #endif
 
 #ifdef OGRE_OVERLAY_NEEDED

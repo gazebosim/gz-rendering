@@ -30,10 +30,10 @@ set (headers
   RenderingIface.hh
   RenderTypes.hh
   Scene.hh
-  SceneManager.hh
   Sensor.hh
   ShaderType.hh
   Storage.hh
+  SystemPaths.hh
   Util.hh
   Visual.hh
 )

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_STORAGE_HH_
-#define _IGNITION_RENDERING_STORAGE_HH_
+#ifndef IGNITION_RENDERING_STORAGE_HH_
+#define IGNITION_RENDERING_STORAGE_HH_
 
 #include <memory>
 #include <string>
@@ -28,6 +28,12 @@
 #include "ignition/rendering/Material.hh"
 #include "ignition/rendering/Mesh.hh"
 #include "ignition/rendering/Util.hh"
+
+// An X11 header file defines a macro that conflicts with our function name,
+// so undefine it here
+#ifdef DestroyAll
+#undef DestroyAll
+#endif
 
 namespace ignition
 {

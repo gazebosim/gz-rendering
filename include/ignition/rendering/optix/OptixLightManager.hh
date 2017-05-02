@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXLIGHTMANAGER_HH_
-#define _IGNITION_RENDERING_OPTIXLIGHTMANAGER_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXLIGHTMANAGER_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXLIGHTMANAGER_HH_
 
+#include <string>
 #include <vector>
 #include "ignition/rendering/optix/OptixLightTypes.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
@@ -29,7 +30,7 @@ namespace ignition
   {
     class IGNITION_VISIBLE OptixLightManager
     {
-      public: OptixLightManager(OptixScenePtr _scene);
+      public: explicit OptixLightManager(OptixScenePtr _scene);
 
       public: virtual ~OptixLightManager();
 

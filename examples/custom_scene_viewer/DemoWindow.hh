@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_DEMOWINDOW_HH_
-#define _IGNITION_RENDERING_DEMOWINDOW_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_DEMOWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_DEMOWINDOW_HH_
 
+#include <string>
 #include <vector>
 #include "TestTypes.hh"
 #include "ignition/rendering/RenderTypes.hh"

@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
@@ -34,13 +37,13 @@ OgreMesh::~OgreMesh()
 }
 
 //////////////////////////////////////////////////
-Ogre::MovableObject *OgreMesh::GetOgreObject() const
+Ogre::MovableObject *OgreMesh::OgreObject() const
 {
   return this->ogreEntity;
 }
 
 //////////////////////////////////////////////////
-SubMeshStorePtr OgreMesh::GetSubMeshes() const
+SubMeshStorePtr OgreMesh::SubMeshes() const
 {
   return this->subMeshes;
 }
@@ -57,7 +60,7 @@ OgreSubMesh::~OgreSubMesh()
 }
 
 //////////////////////////////////////////////////
-MaterialPtr OgreSubMesh::GetMaterial() const
+MaterialPtr OgreSubMesh::Material() const
 {
   return this->material;
 }
@@ -72,7 +75,7 @@ void OgreSubMesh::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!derived)
   {
-    gzerr << "Cannot assign material created by another render-engine"
+    ignerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;
@@ -82,7 +85,7 @@ void OgreSubMesh::SetMaterial(MaterialPtr _material, bool unique)
 }
 
 //////////////////////////////////////////////////
-Ogre::SubEntity *OgreSubMesh::GetOgreSubEntity() const
+Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
 {
   return this->ogreSubEntity;
 }
@@ -96,8 +99,8 @@ void OgreSubMesh::Destroy()
 //////////////////////////////////////////////////
 void OgreSubMesh::SetMaterialImpl(OgreMaterialPtr _material)
 {
-  std::string materialName = _material->GetName();
-  Ogre::MaterialPtr ogreMaterial = _material->GetOgreMaterial();
+  std::string materialName = _material->Name();
+  Ogre::MaterialPtr ogreMaterial = _material->Material();
   this->ogreSubEntity->setMaterialName(materialName);
   this->material = _material;
 }

@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre/OgreVisual.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
@@ -32,13 +35,13 @@ OgreVisual::~OgreVisual()
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OgreVisual::GetLocalScale() const
+math::Vector3d OgreVisual::LocalScale() const
 {
   return OgreConversions::Convert(this->ogreNode->getScale());
 }
 
 //////////////////////////////////////////////////
-bool OgreVisual::GetInheritScale() const
+bool OgreVisual::InheritScale() const
 {
   return this->ogreNode->getInheritScale();
 }
@@ -50,13 +53,13 @@ void OgreVisual::SetInheritScale(bool _inherit)
 }
 
 //////////////////////////////////////////////////
-NodeStorePtr OgreVisual::GetChildren() const
+NodeStorePtr OgreVisual::Children() const
 {
   return this->children;
 }
 
 //////////////////////////////////////////////////
-GeometryStorePtr OgreVisual::GetGeometries() const
+GeometryStorePtr OgreVisual::Geometries() const
 {
   return this->geometries;
 }
@@ -68,12 +71,13 @@ bool OgreVisual::AttachChild(NodePtr _child)
 
   if (!derived)
   {
-    gzerr << "Cannot attach node created by another render-engine" << std::endl;
+    ignerr << "Cannot attach node created by another render-engine"
+        << std::endl;
     return false;
   }
 
   derived->SetParent(this->SharedThis());
-  this->ogreNode->addChild(derived->GetOgreNode());
+  this->ogreNode->addChild(derived->Node());
   return true;
 }
 
@@ -84,11 +88,12 @@ bool OgreVisual::DetachChild(NodePtr _child)
 
   if (!derived)
   {
-    gzerr << "Cannot detach node created by another render-engine" << std::endl;
+    ignerr << "Cannot detach node created by another render-engine"
+        << std::endl;
     return false;
   }
 
-  this->ogreNode->removeChild(derived->GetOgreNode());
+  this->ogreNode->removeChild(derived->Node());
   return true;
 }
 
@@ -100,14 +105,14 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    gzerr << "Cannot attach geometry created by another render-engine"
+    ignerr << "Cannot attach geometry created by another render-engine"
           << std::endl;
 
     return false;
   }
 
   derived->SetParent(this->SharedThis());
-  this->ogreNode->attachObject(derived->GetOgreObject());
+  this->ogreNode->attachObject(derived->OgreObject());
   return true;
 }
 
@@ -119,13 +124,13 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    gzerr << "Cannot detach geometry created by another render-engine"
+    ignerr << "Cannot detach geometry created by another render-engine"
           << std::endl;
 
     return false;
   }
 
-  this->ogreNode->detachObject(derived->GetOgreObject());
+  this->ogreNode->detachObject(derived->OgreObject());
   return true;
 }
 

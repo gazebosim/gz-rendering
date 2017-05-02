@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXARROWVISUAL_HH_
-#define _IGNITION_RENDERING_OPTIXARROWVISUAL_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXARROWVISUAL_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXARROWVISUAL_HH_
 
 #include "ignition/rendering/base/BaseArrowVisual.hh"
 #include "ignition/rendering/optix/OptixVisual.hh"

@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXCAMERA_HH_
-#define _IGNITION_RENDERING_OPTIXCAMERA_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXCAMERA_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXCAMERA_HH_
 
+#include <string>
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixSensor.hh"
@@ -32,19 +33,19 @@ namespace ignition
 
       public: virtual ~OptixCamera();
 
-      public: virtual PixelFormat GetImageFormat() const;
+      public: virtual PixelFormat ImageFormat() const;
 
       public: virtual void SetImageFormat(PixelFormat _format);
 
-      public: virtual math::Angle GetHFOV() const;
+      public: virtual math::Angle HFOV() const;
 
       public: virtual void SetHFOV(const math::Angle &_angle);
 
-      public: virtual double GetAspectRatio() const;
+      public: virtual double AspectRatio() const;
 
       public: virtual void SetAspectRatio(double _ratio);
 
-      public: virtual unsigned int GetAntiAliasing() const;
+      public: virtual unsigned int AntiAliasing() const;
 
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
@@ -52,7 +53,7 @@ namespace ignition
 
       public: virtual void Render();
 
-      protected: virtual RenderTexturePtr GetRenderTexture() const;
+      protected: virtual RenderTexturePtr RenderTexture() const;
 
       protected: virtual void WriteCameraToDevice();
 

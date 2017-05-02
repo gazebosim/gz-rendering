@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXNODE_HH_
-#define _IGNITION_RENDERING_OPTIXNODE_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXNODE_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXNODE_HH_
 
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
@@ -35,13 +35,13 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr GetParent() const;
+      public: virtual VisualPtr Parent() const;
 
       public: virtual void PreRender();
 
-      public: virtual optix::Transform GetOptixTransform() const;
+      public: virtual optix::Transform OptixTransform() const;
 
-      protected: virtual math::Pose3d GetRawLocalPose() const;
+      protected: virtual math::Pose3d RawLocalPose() const;
 
       protected: virtual void SetRawLocalPose(const math::Pose3d &_pose);
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_IMAGE_HH_
-#define _IGNITION_RENDERING_IMAGE_HH_
+#ifndef IGNITION_RENDERING_IMAGE_HH_
+#define IGNITION_RENDERING_IMAGE_HH_
 
 #include <memory>
 #include "ignition/rendering/PixelFormat.hh"
@@ -44,43 +44,43 @@ namespace ignition
 
       /// \brief Get image width in pixels
       /// \return The image width in pixels
-      public: unsigned int GetWidth() const;
+      public: unsigned int Width() const;
 
       /// \brief Get image height in pixels
       /// \return The image height in pixels
-      public: unsigned int GetHeight() const;
+      public: unsigned int Height() const;
 
       /// \brief Get image pixel format
       /// \return The image pixel format
-      public: PixelFormat GetFormat() const;
+      public: PixelFormat Format() const;
 
       /// \brief Get image channel depth
       /// \return The image channel depth
-      public: unsigned int GetDepth() const;
+      public: unsigned int Depth() const;
 
       /// \brief Get image channel depth
       /// \return The image channel depth
-      public: unsigned int GetMemorySize() const;
+      public: unsigned int MemorySize() const;
 
       /// \brief Get a const pointer to image data
       /// \return The const pointer to image data
-      public: const void *GetData() const;
+      public: const void *Data() const;
 
       /// \brief Get a pointer to image data
       /// \return The pointer to image data
-      public: void *GetData();
+      public: void *Data();
 
       /// \brief Get a const pointer to image data. The returned image buffer
       /// will be statically cast to the given template type T.
       /// \return The const pointer to image data
       public: template <typename T>
-              const T *GetData() const;
+              const T *Data() const;
 
       /// \brief Get a pointer to image data. The returned image buffer will be
       /// statically cast to the given template type T.
       /// \return The pointer to image data
       public: template <typename T>
-              T *GetData();
+              T *Data();
 
       /// \brief Image width in pixels
       private: unsigned int width;
@@ -97,14 +97,14 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <typename T>
-    const T *Image::GetData() const
+    const T *Image::Data() const
     {
       return static_cast<const T *>(this->data.get());
     }
 
     //////////////////////////////////////////////////
     template <typename T>
-    T *Image::GetData()
+    T *Image::Data()
     {
       return static_cast<T *>(this->data.get());
     }

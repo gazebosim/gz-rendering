@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_RENDERENGINE_HH_
-#define _IGNITION_RENDERING_RENDERENGINE_HH_
+#ifndef IGNITION_RENDERING_RENDERENGINE_HH_
+#define IGNITION_RENDERING_RENDERENGINE_HH_
 
 #include <string>
 #include "ignition/rendering/RenderTypes.hh"
@@ -69,12 +69,12 @@ namespace ignition
 
       /// \brief Get name of the render-engine.
       /// \return The render-engine name
-      public: virtual std::string GetName() const = 0;
+      public: virtual std::string Name() const = 0;
 
       /// \brief Get the number of scenes actively managed by this
       /// render-engine
       /// \return The number of active scenes
-      public: virtual unsigned int GetSceneCount() const = 0;
+      public: virtual unsigned int SceneCount() const = 0;
 
       /// \brief Determine if the given scene is actively managed by this
       /// render-engine
@@ -98,20 +98,20 @@ namespace ignition
       /// given ID, NULL will be returned.
       /// \param[in] _id ID of scene to be retrieved
       /// \return The specified scene
-      public: virtual ScenePtr GetSceneById(unsigned int _id) const = 0;
+      public: virtual ScenePtr SceneById(unsigned int _id) const = 0;
 
       /// \brief Get the scene with the given name. If no scenes exist with the
       /// given name, NULL will be returned.
       /// \param[in] _name Name of scene to be retrieved
       /// \return The specified scene
-      public: virtual ScenePtr GetSceneByName(
+      public: virtual ScenePtr SceneByName(
                   const std::string &_name) const = 0;
 
       /// \brief Get the scene at the given index. If no scenes exist at the
       /// given index, NULL will be returned.
       /// \param[in] _index Index of scene
       /// \return The specified scene
-      public: virtual ScenePtr GetSceneByIndex(unsigned int _index) const = 0;
+      public: virtual ScenePtr SceneByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy the given scene. If the given scene is not managed by
       /// this render-engine, no work will be done.
@@ -153,6 +153,10 @@ namespace ignition
       /// \return The created scene
       public: virtual ScenePtr CreateScene(unsigned int _id,
                   const std::string &_name) = 0;
+
+      /// \brief Add path to media resource location
+      /// \param[in] _paths Absolute path to resource location
+      public: virtual void AddResourcePath(const std::string &_path) = 0;
     };
   }
 }

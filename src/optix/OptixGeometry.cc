@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
+
 #include "ignition/rendering/optix/OptixGeometry.hh"
 
-#include "gazebo/common/Console.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/OptixVisual.hh"
 
@@ -36,11 +36,11 @@ OptixGeometry::~OptixGeometry()
 //////////////////////////////////////////////////
 bool OptixGeometry::HasParent() const
 {
-  return this->parent != NULL;
+  return this->parent != nullptr;
 }
 
 //////////////////////////////////////////////////
-VisualPtr OptixGeometry::GetParent() const
+VisualPtr OptixGeometry::Parent() const
 {
   return this->parent;
 }
@@ -54,7 +54,7 @@ void OptixGeometry::SetParent(OptixVisualPtr _parent)
 //////////////////////////////////////////////////
 void OptixGeometry::SetScale(math::Vector3d _scale)
 {
-  optix::GeometryGroup optixGeomGroup = this->GetOptixGeometryGroup();
+  optix::GeometryGroup optixGeomGroup = this->OptixGeometryGroup();
   unsigned int count = optixGeomGroup->getChildCount();
 
   for (unsigned int i = 0; i < count; ++i)

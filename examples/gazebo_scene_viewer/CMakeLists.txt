@@ -17,20 +17,30 @@ link_directories(${GLEW_LIBRARY_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
-add_executable(gazebo_scene_viewer GazeboDemo.cc CameraWindow.cc)
+add_executable(gazebo_scene_viewer
+  CameraWindow.cc
+  GazeboDemo.cc
+  SceneManager.cc
+)
 
 target_link_libraries(gazebo_scene_viewer
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
+  ${GAZEBO_LIBRARIES}
   ignition-rendering
 )
 
-add_executable(gazebo_scene_viewer2_demo GazeboWorldDemo.cc CameraWindow.cc)
+add_executable(gazebo_scene_viewer2_demo
+  CameraWindow.cc
+  GazeboWorldDemo.cc
+  SceneManager.cc
+)
 
 target_link_libraries(gazebo_scene_viewer2_demo
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
+  ${GAZEBO_LIBRARIES}
   ignition-rendering
 )

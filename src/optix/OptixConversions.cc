@@ -20,15 +20,15 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-float4 OptixConversions::ConvertColor(const gazebo::common::Color &_color)
+float4 OptixConversions::ConvertColor(const math::Color &_color)
 {
-  return make_float4(_color.r, _color.g, _color.b, _color.a);
+  return make_float4(_color.R(), _color.G(), _color.B(), _color.A());
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color OptixConversions::ConvertColor(const float4 &_color)
+math::Color OptixConversions::ConvertColor(const float4 &_color)
 {
-  return gazebo::common::Color(_color.x, _color.y, _color.z, _color.w);
+  return math::Color(_color.x, _color.y, _color.z, _color.w);
 }
 
 //////////////////////////////////////////////////

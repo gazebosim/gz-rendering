@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_AXISVISUAL_HH_
-#define _IGNITION_RENDERING_AXISVISUAL_HH_
+#ifndef IGNITION_RENDERING_AXISVISUAL_HH_
+#define IGNITION_RENDERING_AXISVISUAL_HH_
 
 #include "ignition/rendering/CompositeVisual.hh"
 

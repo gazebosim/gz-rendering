@@ -130,6 +130,11 @@ message (STATUS "\n\n====== Finding 3rd Party Packages ======")
 include (${project_cmake_dir}/SearchForStuff.cmake)
 message (STATUS "----------------------------------------\n")
 
+
+#####################################
+# Define compile-time default variables
+set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/ign-rendering-${PROJECT_MAJOR_VERSION}/plugins)
+
 #####################################
 MESSAGE(STATUS "Checking ignition build type")
 # Set the default build type

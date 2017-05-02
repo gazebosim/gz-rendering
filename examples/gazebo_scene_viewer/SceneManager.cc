@@ -14,11 +14,15 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/SceneManager.hh"
-#include "ignition/rendering/SceneManagerPrivate.hh"
 
-#include "gazebo/common/Events.hh"
-#include "gazebo/common/MeshManager.hh"
+#include <gazebo/common/Events.hh>
+
+#include <ignition/common/MeshManager.hh>
+#include <ignition/common/Console.hh>
+
+#include "SceneManager.hh"
+#include "SceneManagerPrivate.hh"
+
 #include "ignition/rendering/rendering.hh"
 
 using namespace ignition;
@@ -55,9 +59,9 @@ void SceneManager::Fini()
 }
 
 //////////////////////////////////////////////////
-unsigned int SceneManager::GetSceneCount() const
+unsigned int SceneManager::SceneCount() const
 {
-  return this->pimpl->GetSceneCount();
+  return this->pimpl->SceneCount();
 }
 
 //////////////////////////////////////////////////
@@ -79,21 +83,21 @@ bool SceneManager::HasScene(ConstScenePtr _scene) const
 }
 
 //////////////////////////////////////////////////
-ScenePtr SceneManager::GetScene(unsigned int _id) const
+ScenePtr SceneManager::Scene(unsigned int _id) const
 {
-  return this->pimpl->GetScene(_id);
+  return this->pimpl->Scene(_id);
 }
 
 //////////////////////////////////////////////////
-ScenePtr SceneManager::GetScene(const std::string &_name) const
+ScenePtr SceneManager::Scene(const std::string &_name) const
 {
-  return this->pimpl->GetScene(_name);
+  return this->pimpl->Scene(_name);
 }
 
 //////////////////////////////////////////////////
-ScenePtr SceneManager::GetSceneAt(unsigned int _index) const
+ScenePtr SceneManager::SceneAt(unsigned int _index) const
 {
-  return this->pimpl->GetSceneAt(_index);
+  return this->pimpl->SceneAt(_index);
 }
 
 //////////////////////////////////////////////////
@@ -167,11 +171,13 @@ void SceneManagerPrivate::Init()
         std::bind(&SceneManagerPrivate::UpdateScenes, this));
 
   // setup transport communication node
-  this->transportNode = gazebo::transport::NodePtr(new gazebo::transport::Node());
+  this->transportNode = gazebo::transport::NodePtr(
+      new gazebo::transport::Node());
   this->transportNode->Init();
 
   // create publisher for sending scene request
-  this->requestPub = this->transportNode->Advertise<gazebo::msgs::Request>("~/request");
+  this->requestPub =
+      this->transportNode->Advertise<gazebo::msgs::Request>("~/request");
 
   // listen for deletion requests
   this->requestSub = this->transportNode->Subscribe("~/request",
@@ -188,7 +194,7 @@ void SceneManagerPrivate::Init()
   // TODO: handle non-local model info
 
   // listen for to model updates
-  this->modelSub = this->transportNode->Subscribe("~/model/local/info",
+  this->modelSub = this->transportNode->Subscribe("~/model/info",
       &SceneManagerPrivate::OnModelUpdate, this);
 
   // listen for to joint updates
@@ -217,11 +223,11 @@ void SceneManagerPrivate::Fini()
 }
 
 //////////////////////////////////////////////////
-unsigned int SceneManagerPrivate::GetSceneCount() const
+unsigned int SceneManagerPrivate::SceneCount() const
 {
   unsigned int count = 0;
-  count += this->currentSceneManager->GetSceneCount();
-  count += this->newSceneManager->GetSceneCount();
+  count += this->currentSceneManager->SceneCount();
+  count += this->newSceneManager->SceneCount();
   return count;
 }
 
@@ -247,24 +253,24 @@ bool SceneManagerPrivate::HasScene(ConstScenePtr _scene) const
 }
 
 //////////////////////////////////////////////////
-ScenePtr SceneManagerPrivate::GetScene(unsigned int _id) const
+ScenePtr SceneManagerPrivate::Scene(unsigned int _id) const
 {
-  ScenePtr scene = this->currentSceneManager->GetScene(_id);
-  return (scene) ? scene : this->newSceneManager->GetScene(_id);
+  ScenePtr scene = this->currentSceneManager->Scene(_id);
+  return (scene) ? scene : this->newSceneManager->Scene(_id);
 }
 
 //////////////////////////////////////////////////
-ScenePtr SceneManagerPrivate::GetScene(const std::string &_name) const
+ScenePtr SceneManagerPrivate::Scene(const std::string &_name) const
 {
-  ScenePtr scene = this->currentSceneManager->GetScene(_name);
-  return (scene) ? scene : this->newSceneManager->GetScene(_name);
+  ScenePtr scene = this->currentSceneManager->Scene(_name);
+  return (scene) ? scene : this->newSceneManager->Scene(_name);
 }
 
 //////////////////////////////////////////////////
-ScenePtr SceneManagerPrivate::GetSceneAt(unsigned int _index) const
+ScenePtr SceneManagerPrivate::SceneAt(unsigned int _index) const
 {
-  ScenePtr scene = this->currentSceneManager->GetSceneAt(_index);
-  return (scene) ? scene : this->newSceneManager->GetSceneAt(_index);
+  ScenePtr scene = this->currentSceneManager->SceneAt(_index);
+  return (scene) ? scene : this->newSceneManager->SceneAt(_index);
 }
 
 //////////////////////////////////////////////////
@@ -512,12 +518,12 @@ void SceneManagerPrivate::OnRemovalUpdate(const std::string &_name)
 //////////////////////////////////////////////////
 void SceneManagerPrivate::PromoteNewScenes()
 {
-  unsigned int newSceneCount = this->newSceneManager->GetSceneCount();
+  unsigned int newSceneCount = this->newSceneManager->SceneCount();
 
   // move each new scene
   for (unsigned int i = 0; i < newSceneCount; ++i)
   {
-    ScenePtr scene = this->newSceneManager->GetSceneAt(i);
+    ScenePtr scene = this->newSceneManager->SceneAt(i);
     this->currentSceneManager->AddScene(scene);
   }
 
@@ -533,12 +539,12 @@ void SceneManagerPrivate::DemoteCurrentScenes()
   this->PromoteNewScenes();
 
   // get updated current scene size
-  unsigned int currSceneCount = this->currentSceneManager->GetSceneCount();
+  unsigned int currSceneCount = this->currentSceneManager->SceneCount();
 
   // move each current scene
   for (unsigned int i = 0; i < currSceneCount; ++i)
   {
-    ScenePtr scene = this->currentSceneManager->GetSceneAt(i);
+    ScenePtr scene = this->currentSceneManager->SceneAt(i);
     this->newSceneManager->AddScene(scene);
     scene->Clear();
   }
@@ -549,7 +555,7 @@ void SceneManagerPrivate::DemoteCurrentScenes()
 
 //////////////////////////////////////////////////
 SubSceneManager::SubSceneManager() :
-  activeScene(NULL)
+  activeScene(nullptr)
 {
   this->CreateGeometryFunctionMap();
 }
@@ -560,7 +566,7 @@ SubSceneManager::~SubSceneManager()
 }
 
 //////////////////////////////////////////////////
-unsigned int SubSceneManager::GetSceneCount() const
+unsigned int SubSceneManager::SceneCount() const
 {
   // TODO: encapsulate
 
@@ -574,7 +580,7 @@ bool SubSceneManager::HasScene(unsigned int _id) const
 
   for (auto scene : this->scenes)
   {
-    if (scene->GetId() == _id)
+    if (scene->Id() == _id)
     {
       return true;
     }
@@ -590,7 +596,7 @@ bool SubSceneManager::HasScene(const std::string &_name) const
 
   for (auto scene : this->scenes)
   {
-    if (scene->GetName() == _name)
+    if (scene->Name() == _name)
     {
       return true;
     }
@@ -616,46 +622,46 @@ bool SubSceneManager::HasScene(ConstScenePtr _scene) const
 }
 
 //////////////////////////////////////////////////
-ScenePtr SubSceneManager::GetScene(unsigned int _id) const
+ScenePtr SubSceneManager::Scene(unsigned int _id) const
 {
   // TODO: encapsulate
 
   for (auto scene : this->scenes)
   {
-    if (scene->GetId() == _id)
+    if (scene->Id() == _id)
     {
       return scene;
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
-ScenePtr SubSceneManager::GetScene(const std::string &_name) const
+ScenePtr SubSceneManager::Scene(const std::string &_name) const
 {
   // TODO: encapsulate
 
   for (auto scene : this->scenes)
   {
-    if (scene->GetName() == _name)
+    if (scene->Name() == _name)
     {
       return scene;
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
-ScenePtr SubSceneManager::GetSceneAt(unsigned int _index) const
+ScenePtr SubSceneManager::SceneAt(unsigned int _index) const
 {
   // TODO: encapsulate
 
-  if (_index >= this->GetSceneCount())
+  if (_index >= this->SceneCount())
   {
-    gzerr << "Invalid scene index: " << _index << std::endl;
-    return NULL;
+    ignerr << "Invalid scene index: " << _index << std::endl;
+    return nullptr;
   }
 
   auto iter = this->scenes.begin();
@@ -670,13 +676,13 @@ void SubSceneManager::AddScene(ScenePtr _scene)
 
   if (!_scene)
   {
-    gzerr << "Cannot add null scene pointer" << std::endl;
+    ignerr << "Cannot add null scene pointer" << std::endl;
     return;
   }
 
   if (this->HasScene(_scene))
   {
-    gzerr << "Scene has already been added" << std::endl;
+    ignerr << "Scene has already been added" << std::endl;
     return;
   }
 
@@ -690,13 +696,13 @@ ScenePtr SubSceneManager::RemoveScene(unsigned int _id)
 
   for (auto scene : this->scenes)
   {
-    if (scene->GetId() == _id)
+    if (scene->Id() == _id)
     {
       return scene;
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -706,13 +712,13 @@ ScenePtr SubSceneManager::RemoveScene(const std::string &_name)
 
   for (auto scene : this->scenes)
   {
-    if (scene->GetName() == _name)
+    if (scene->Name() == _name)
     {
       return scene;
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -728,7 +734,7 @@ ScenePtr SubSceneManager::RemoveScene(ScenePtr _scene)
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -736,10 +742,10 @@ ScenePtr SubSceneManager::RemoveSceneAt(unsigned int _index)
 {
   // TODO: encapsulate
 
-  if (_index >= this->GetSceneCount())
+  if (_index >= this->SceneCount())
   {
-    gzerr << "Invalid scene index: " << _index << std::endl;
-    return NULL;
+    ignerr << "Invalid scene index: " << _index << std::endl;
+    return nullptr;
   }
 
   auto iter = this->scenes.begin();
@@ -766,7 +772,7 @@ void SubSceneManager::UpdateScenes()
   }
 
   ClearMessages();
-  this->activeScene = NULL;
+  this->activeScene = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -774,7 +780,7 @@ void SubSceneManager::Clear()
 {
   this->scenes.clear();
   this->ClearMessages();
-  this->activeScene = NULL;
+  this->activeScene = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -869,7 +875,7 @@ void SubSceneManager::ClearMessages()
 void SubSceneManager::ProcessLight(const gazebo::msgs::Light &_lightMsg)
 {
   // TODO: get parent when protobuf message is updated
-  this->ProcessLight(_lightMsg, this->activeScene->GetRootVisual());
+  this->ProcessLight(_lightMsg, this->activeScene->RootVisual());
 }
 
 //////////////////////////////////////////////////
@@ -897,14 +903,14 @@ void SubSceneManager::ProcessLight(const gazebo::msgs::Light &_lightMsg,
         return;
 
       default:
-        gzerr << "Invalid light type: " << type << std::endl;
+        ignerr << "Invalid light type: " << type << std::endl;
         return;
     }
   }
 
   // update existing light
   std::string name = _lightMsg.name();
-  LightPtr light = this->activeScene->GetLightByName(name);
+  LightPtr light = this->activeScene->LightByName(name);
   if (light) this->ProcessLightImpl(_lightMsg, light);
 }
 
@@ -912,7 +918,7 @@ void SubSceneManager::ProcessLight(const gazebo::msgs::Light &_lightMsg,
 void SubSceneManager::ProcessDirectionalLight(
     const gazebo::msgs::Light &_lightMsg, VisualPtr _parent)
 {
-  DirectionalLightPtr light = this->GetDirectionalLight(_lightMsg, _parent);
+  DirectionalLightPtr light = this->DirectionalLight(_lightMsg, _parent);
   if (light) this->ProcessDirectionalLightImpl(_lightMsg, light);
 }
 
@@ -932,15 +938,15 @@ void SubSceneManager::ProcessDirectionalLightImpl(
 }
 
 //////////////////////////////////////////////////
-DirectionalLightPtr SubSceneManager::GetDirectionalLight(
+DirectionalLightPtr SubSceneManager::DirectionalLight(
     const gazebo::msgs::Light &_lightMsg, VisualPtr _parent)
 {
   // find existing light with name
   std::string name = _lightMsg.name();
-  LightPtr light = this->activeScene->GetLightByName(name);
+  LightPtr light = this->activeScene->LightByName(name);
 
   DirectionalLightPtr dirLight =
-      std::dynamic_pointer_cast<DirectionalLight>(light);
+      std::dynamic_pointer_cast<rendering::DirectionalLight>(light);
 
   // check if not found
   if (!dirLight)
@@ -964,26 +970,27 @@ DirectionalLightPtr SubSceneManager::CreateDirectionalLight(
 void SubSceneManager::ProcessPointLight(const gazebo::msgs::Light &_lightMsg,
     VisualPtr _parent)
 {
-  PointLightPtr light = this->GetPointLight(_lightMsg, _parent);
+  PointLightPtr light = this->PointLight(_lightMsg, _parent);
   if (light) this->ProcessPointLightImpl(_lightMsg, light);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessPointLightImpl(const gazebo::msgs::Light &_lightMsg,
-    PointLightPtr _light)
+void SubSceneManager::ProcessPointLightImpl(
+    const gazebo::msgs::Light &_lightMsg, PointLightPtr _light)
 {
   // process general light information
   this->ProcessLightImpl(_lightMsg, _light);
 }
 
 //////////////////////////////////////////////////
-PointLightPtr SubSceneManager::GetPointLight(const gazebo::msgs::Light &_lightMsg,
-    VisualPtr _parent)
+PointLightPtr SubSceneManager::PointLight(
+    const gazebo::msgs::Light &_lightMsg, VisualPtr _parent)
 {
   // find existing light with name
   std::string name = _lightMsg.name();
-  LightPtr light = this->activeScene->GetLightByName(name);
-  PointLightPtr pointLight = std::dynamic_pointer_cast<PointLight>(light);
+  LightPtr light = this->activeScene->LightByName(name);
+  PointLightPtr pointLight =
+      std::dynamic_pointer_cast<rendering::PointLight>(light);
 
   // check if not found
   if (!pointLight)
@@ -996,7 +1003,8 @@ PointLightPtr SubSceneManager::GetPointLight(const gazebo::msgs::Light &_lightMs
 }
 
 //////////////////////////////////////////////////
-PointLightPtr SubSceneManager::CreatePointLight(const gazebo::msgs::Light &_lightMsg)
+PointLightPtr SubSceneManager::CreatePointLight(
+    const gazebo::msgs::Light &_lightMsg)
 {
   std::string name = _lightMsg.name();
   return this->activeScene->CreatePointLight(name);
@@ -1006,13 +1014,13 @@ PointLightPtr SubSceneManager::CreatePointLight(const gazebo::msgs::Light &_ligh
 void SubSceneManager::ProcessSpotLight(const gazebo::msgs::Light &_lightMsg,
     VisualPtr _parent)
 {
-  SpotLightPtr light = this->GetSpotLight(_lightMsg, _parent);
+  SpotLightPtr light = this->SpotLight(_lightMsg, _parent);
   if (light) this->ProcessSpotLightImpl(_lightMsg, light);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessSpotLightImpl(const gazebo::msgs::Light &_lightMsg,
-    SpotLightPtr _light)
+void SubSceneManager::ProcessSpotLightImpl(
+    const gazebo::msgs::Light &_lightMsg, SpotLightPtr _light)
 {
   // set direction if available
   if (_lightMsg.has_direction())
@@ -1047,13 +1055,14 @@ void SubSceneManager::ProcessSpotLightImpl(const gazebo::msgs::Light &_lightMsg,
 }
 
 //////////////////////////////////////////////////
-SpotLightPtr SubSceneManager::GetSpotLight(const gazebo::msgs::Light &_lightMsg,
+SpotLightPtr SubSceneManager::SpotLight(const gazebo::msgs::Light &_lightMsg,
     VisualPtr _parent)
 {
   // find existing light with name
   std::string name = _lightMsg.name();
-  LightPtr light = this->activeScene->GetLightByName(name);
-  SpotLightPtr spotLight = std::dynamic_pointer_cast<SpotLight>(light);
+  LightPtr light = this->activeScene->LightByName(name);
+  SpotLightPtr spotLight =
+      std::dynamic_pointer_cast<rendering::SpotLight>(light);
 
   // check if not found
   if (!spotLight)
@@ -1066,7 +1075,8 @@ SpotLightPtr SubSceneManager::GetSpotLight(const gazebo::msgs::Light &_lightMsg,
 }
 
 //////////////////////////////////////////////////
-SpotLightPtr SubSceneManager::CreateSpotLight(const gazebo::msgs::Light &_lightMsg)
+SpotLightPtr SubSceneManager::CreateSpotLight(
+    const gazebo::msgs::Light &_lightMsg)
 {
   std::string name = _lightMsg.name();
   return this->activeScene->CreateSpotLight(name);
@@ -1135,7 +1145,7 @@ void SubSceneManager::ProcessLightImpl(const gazebo::msgs::Light &_lightMsg,
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessSensor(const gazebo::msgs::Sensor &_sensorMsg)
 {
-  VisualPtr parent = this->GetParent(_sensorMsg.parent());
+  VisualPtr parent = this->Parent(_sensorMsg.parent());
   this->ProcessSensor(_sensorMsg, parent);
 }
 
@@ -1155,19 +1165,19 @@ void SubSceneManager::ProcessSensor(const gazebo::msgs::Sensor &_sensorMsg,
 void SubSceneManager::ProcessCamera(const gazebo::msgs::Sensor &_sensorMsg,
     VisualPtr _parent)
 {
-  CameraPtr camera = this->GetCamera(_sensorMsg, _parent);
+  CameraPtr camera = this->Camera(_sensorMsg, _parent);
 
   // TODO: update camera
 }
 
 //////////////////////////////////////////////////
-CameraPtr SubSceneManager::GetCamera(const gazebo::msgs::Sensor &_sensorMsg,
+CameraPtr SubSceneManager::Camera(const gazebo::msgs::Sensor &_sensorMsg,
     VisualPtr _parent)
 {
   // find existing camera with name
   std::string name = _sensorMsg.name();
-  SensorPtr sensor = this->activeScene->GetSensorByName(name);
-  CameraPtr camera = std::dynamic_pointer_cast<Camera>(sensor);
+  SensorPtr sensor = this->activeScene->SensorByName(name);
+  CameraPtr camera = std::dynamic_pointer_cast<rendering::Camera>(sensor);
 
   // check if not found
   if (!camera)
@@ -1194,7 +1204,7 @@ CameraPtr SubSceneManager::CreateCamera(const gazebo::msgs::Sensor &_sensorMsg)
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessModel(const gazebo::msgs::Model &_modelMsg)
 {
-  VisualPtr parent = this->activeScene->GetRootVisual();
+  VisualPtr parent = this->activeScene->RootVisual();
   this->ProcessModel(_modelMsg, parent);
 }
 
@@ -1202,7 +1212,7 @@ void SubSceneManager::ProcessModel(const gazebo::msgs::Model &_modelMsg)
 void SubSceneManager::ProcessModel(const gazebo::msgs::Model &_modelMsg,
     VisualPtr _parent)
 {
-  VisualPtr model = this->GetModel(_modelMsg, _parent);
+  VisualPtr model = this->Model(_modelMsg, _parent);
 
   // set pose if available
   if (_modelMsg.has_pose())
@@ -1240,19 +1250,19 @@ void SubSceneManager::ProcessModel(const gazebo::msgs::Model &_modelMsg,
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::GetModel(const gazebo::msgs::Model &_modelMsg,
+VisualPtr SubSceneManager::Model(const gazebo::msgs::Model &_modelMsg,
     VisualPtr _parent)
 {
   bool hasId = _modelMsg.has_id();
   unsigned int id = _modelMsg.id();
   std::string name = _modelMsg.name();
-  return this->GetVisual(hasId, id, name, _parent);
+  return this->Visual(hasId, id, name, _parent);
 }
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessJoint(const gazebo::msgs::Joint &_jointMsg)
 {
-  VisualPtr parent = this->GetParent(_jointMsg.parent());
+  VisualPtr parent = this->Parent(_jointMsg.parent());
   this->ProcessJoint(_jointMsg, parent);
 }
 
@@ -1260,7 +1270,7 @@ void SubSceneManager::ProcessJoint(const gazebo::msgs::Joint &_jointMsg)
 void SubSceneManager::ProcessJoint(const gazebo::msgs::Joint &_jointMsg,
     VisualPtr _parent)
 {
-  VisualPtr joint = this->GetJoint(_jointMsg, _parent);
+  VisualPtr joint = this->Joint(_jointMsg, _parent);
 
   // set pose if available
   if (_jointMsg.has_pose())
@@ -1277,19 +1287,19 @@ void SubSceneManager::ProcessJoint(const gazebo::msgs::Joint &_jointMsg,
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::GetJoint(const gazebo::msgs::Joint &_jointMsg,
+VisualPtr SubSceneManager::Joint(const gazebo::msgs::Joint &_jointMsg,
     VisualPtr _parent)
 {
   bool hasId = _jointMsg.has_id();
   unsigned int id = _jointMsg.id();
   std::string name = _jointMsg.name();
-  return this->GetVisual(hasId, id, name, _parent);
+  return this->Visual(hasId, id, name, _parent);
 }
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessVisual(const gazebo::msgs::Visual &_visualMsg)
 {
-  VisualPtr parent = this->GetParent(_visualMsg.parent_name());
+  VisualPtr parent = this->Parent(_visualMsg.parent_name());
   this->ProcessVisual(_visualMsg, parent);
 }
 
@@ -1297,7 +1307,7 @@ void SubSceneManager::ProcessVisual(const gazebo::msgs::Visual &_visualMsg)
 void SubSceneManager::ProcessVisual(const gazebo::msgs::Visual &_visualMsg,
     VisualPtr _parent)
 {
-  VisualPtr visual = this->GetVisual(_visualMsg, _parent);
+  VisualPtr visual = this->Visual(_visualMsg, _parent);
 
   // TODO: handle cast shadows
   // TODO: handle transparency
@@ -1331,20 +1341,20 @@ void SubSceneManager::ProcessVisual(const gazebo::msgs::Visual &_visualMsg,
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::GetVisual(const gazebo::msgs::Visual &_visualMsg,
+VisualPtr SubSceneManager::Visual(const gazebo::msgs::Visual &_visualMsg,
     VisualPtr _parent)
 {
   bool hasId = _visualMsg.has_id();
   unsigned int id = _visualMsg.id();
   std::string name = _visualMsg.name();
-  return this->GetVisual(hasId, id, name, _parent);
+  return this->Visual(hasId, id, name, _parent);
 }
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessLink(const gazebo::msgs::Link &_linkMsg,
     VisualPtr _parent)
 {
-  VisualPtr link = this->GetLink(_linkMsg, _parent);
+  VisualPtr link = this->Link(_linkMsg, _parent);
 
   // set pose if available
   if (_linkMsg.has_pose())
@@ -1369,21 +1379,21 @@ void SubSceneManager::ProcessLink(const gazebo::msgs::Link &_linkMsg,
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::GetLink(const gazebo::msgs::Link &_linkMsg,
+VisualPtr SubSceneManager::Link(const gazebo::msgs::Link &_linkMsg,
     VisualPtr _parent)
 {
   bool hasId = _linkMsg.has_id();
   unsigned int id = _linkMsg.id();
   std::string name = _linkMsg.name();
-  return this->GetVisual(hasId, id, name, _parent);
+  return this->Visual(hasId, id, name, _parent);
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::GetVisual(bool _hasId, unsigned int _id,
+VisualPtr SubSceneManager::Visual(bool _hasId, unsigned int _id,
     const std::string &_name, VisualPtr _parent)
 {
   // find existing visual with name
-  VisualPtr visual = this->activeScene->GetVisualByName(_name);
+  VisualPtr visual = this->activeScene->VisualByName(_name);
 
   // check if not found
   if (!visual)
@@ -1405,8 +1415,8 @@ VisualPtr SubSceneManager::CreateVisual(bool _hasId, unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessGeometry(const gazebo::msgs::Geometry &_geometryMsg,
-    VisualPtr _parent)
+void SubSceneManager::ProcessGeometry(
+    const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)
 {
   GeomType geomType = _geometryMsg.type();
   GeomFunc geomFunc = this->geomFunctions[geomType];
@@ -1415,8 +1425,8 @@ void SubSceneManager::ProcessGeometry(const gazebo::msgs::Geometry &_geometryMsg
   // check if invalid type
   if (!geomFunc)
   {
-    gzerr << "Unsupported geometry type: " << geomType << std::endl;
-    gzwarn << "Using empty geometry instead" << std::endl;
+    ignerr << "Unsupported geometry type: " << geomType << std::endl;
+    ignwarn << "Using empty geometry instead" << std::endl;
     geomFunc = this->geomFunctions[gazebo::msgs::Geometry::EMPTY];
   }
 
@@ -1435,8 +1445,8 @@ void SubSceneManager::ProcessBox(const gazebo::msgs::Geometry &_geometryMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessCone(const gazebo::msgs::Geometry &/*_geometryMsg*/,
-    VisualPtr _parent)
+void SubSceneManager::ProcessCone(
+    const gazebo::msgs::Geometry &/*_geometryMsg*/, VisualPtr _parent)
 {
   // TODO: needs protobuf msg
   GeometryPtr cone = this->activeScene->CreateCone();
@@ -1449,8 +1459,8 @@ void SubSceneManager::ProcessCone(const gazebo::msgs::Geometry &/*_geometryMsg*/
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessCylinder(const gazebo::msgs::Geometry &_geometryMsg,
-    VisualPtr _parent)
+void SubSceneManager::ProcessCylinder(
+    const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)
 {
   GeometryPtr cylinder = this->activeScene->CreateCylinder();
   const gazebo::msgs::CylinderGeom &cylinderMsg = _geometryMsg.cylinder();
@@ -1490,7 +1500,7 @@ void SubSceneManager::ProcessMesh(const gazebo::msgs::Geometry &_geometryMsg,
   }
 
   // actually create mesh geometry
-  gazebo::common::MeshManager *meshManager = gazebo::common::MeshManager::Instance();
+  common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
   MeshPtr mesh = this->activeScene->CreateMesh(descriptor);
 
@@ -1541,7 +1551,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   if (_materialMsg.has_ambient())
   {
     gazebo::msgs::Color msg = _materialMsg.ambient();
-    gazebo::common::Color ambient(msg.r(), msg.g(), msg.b(), msg.a());
+    math::Color ambient(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetAmbient(ambient);
   }
 
@@ -1549,7 +1559,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   if (_materialMsg.has_diffuse())
   {
     gazebo::msgs::Color msg = _materialMsg.diffuse();
-    gazebo::common::Color diffuse(msg.r(), msg.g(), msg.b(), msg.a());
+    math::Color diffuse(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetDiffuse(diffuse);
   }
 
@@ -1557,7 +1567,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   if (_materialMsg.has_specular())
   {
     gazebo::msgs::Color msg = _materialMsg.specular();
-    gazebo::common::Color specular(msg.r(), msg.g(), msg.b(), msg.a());
+    math::Color specular(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetSpecular(specular);
   }
 
@@ -1565,7 +1575,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   if (_materialMsg.has_emissive())
   {
     gazebo::msgs::Color msg = _materialMsg.emissive();
-    gazebo::common::Color emissive(msg.r(), msg.g(), msg.b(), msg.a());
+    math::Color emissive(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetEmissive(emissive);
   }
 
@@ -1586,7 +1596,8 @@ MaterialPtr SubSceneManager::CreateMaterial(
   // set shader-type if available
   if (_materialMsg.has_shader_type())
   {
-    gazebo::msgs::Material::ShaderType shader_type = _materialMsg.shader_type();
+    gazebo::msgs::Material::ShaderType shader_type =
+        _materialMsg.shader_type();
     ShaderType type = SubSceneManager::Convert(shader_type);
     material->SetShaderType(type);
   }
@@ -1600,12 +1611,13 @@ MaterialPtr SubSceneManager::CreateMaterial(
 void SubSceneManager::ProcessPose(const gazebo::msgs::Pose &_poseMsg)
 {
   std::string name = _poseMsg.name();
-  NodePtr node = this->activeScene->GetNodeByName(name);
+  NodePtr node = this->activeScene->NodeByName(name);
   if (node) this->SetPose(node, _poseMsg);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::SetPose(NodePtr _node, const gazebo::msgs::Pose &_poseMsg)
+void SubSceneManager::SetPose(NodePtr _node,
+    const gazebo::msgs::Pose &_poseMsg)
 {
   math::Pose3d pose = SubSceneManager::Convert(_poseMsg);
   _node->SetLocalPose(pose);
@@ -1620,27 +1632,27 @@ void SubSceneManager::SetScale(VisualPtr _visual,
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::GetParent(const std::string &_name)
+VisualPtr SubSceneManager::Parent(const std::string &_name)
 {
   // assign default parent node
-  VisualPtr parent = this->activeScene->GetRootVisual();
+  VisualPtr parent = this->activeScene->RootVisual();
 
   // check if name given
   if (!_name.empty())
   {
     // get node with name
-    parent = this->activeScene->GetVisualByName(_name);
+    parent = this->activeScene->VisualByName(_name);
 
     // node not found
     if (!parent)
     {
       if (_name != "default")
       {
-        gzerr  << "invalid parent name: " << _name << std::endl;
-        gzwarn << "using scene root node" << std::endl;
+        ignerr  << "invalid parent name: " << _name << std::endl;
+        ignwarn << "using scene root node" << std::endl;
       }
 
-      parent = this->activeScene->GetRootVisual();
+      parent = this->activeScene->RootVisual();
     }
   }
 
@@ -1654,13 +1666,13 @@ void SubSceneManager::ProcessRemoval(const std::string &_name)
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Color SubSceneManager::Convert(const gazebo::msgs::Color &_colorMsg)
+math::Color SubSceneManager::Convert(const gazebo::msgs::Color &_colorMsg)
 {
-  gazebo::common::Color color;
-  color.r = _colorMsg.r();
-  color.g = _colorMsg.g();
-  color.b = _colorMsg.b();
-  color.a = _colorMsg.a();
+  math::Color color;
+  color.R() = _colorMsg.r();
+  color.G() = _colorMsg.g();
+  color.B() = _colorMsg.b();
+  color.A() = _colorMsg.a();
   return color;
 }
 
@@ -1689,7 +1701,8 @@ math::Vector3d SubSceneManager::Convert(const gazebo::msgs::Vector3d &_vecMsg)
 }
 
 //////////////////////////////////////////////////
-math::Quaterniond SubSceneManager::Convert(const gazebo::msgs::Quaternion &_quatMsg)
+math::Quaterniond SubSceneManager::Convert(
+    const gazebo::msgs::Quaternion &_quatMsg)
 {
   math::Quaterniond quat;
   quat.W(_quatMsg.w());
@@ -1763,7 +1776,7 @@ void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
   // record pose timestamp
   int sec = _posesMsg->time().sec();
   int nsec = _posesMsg->time().nsec();
-  this->timePosesReceived = gazebo::common::Time(sec, nsec);
+  this->timePosesReceived = common::Time(sec, nsec);
 
   // process each pose in message
   for (int i = 0; i < _posesMsg->pose_size(); ++i)
@@ -1903,7 +1916,7 @@ void NewSceneManager::ProcessScene()
   if (this->sceneMsg.has_ambient())
   {
     gazebo::msgs::Color colorMsg = this->sceneMsg.ambient();
-    gazebo::common::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
+    math::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
     this->activeScene->SetAmbientLight(color);
   }
 
@@ -1911,7 +1924,7 @@ void NewSceneManager::ProcessScene()
   if (this->sceneMsg.has_background())
   {
     gazebo::msgs::Color colorMsg = this->sceneMsg.background();
-    gazebo::common::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
+    math::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
     this->activeScene->SetBackgroundColor(color);
   }
 
@@ -1919,14 +1932,14 @@ void NewSceneManager::ProcessScene()
   for (int i = 0; i < this->sceneMsg.light_size(); ++i)
   {
     gazebo::msgs::Light lightMsg = this->sceneMsg.light(i);
-    this->ProcessLight(lightMsg, this->activeScene->GetRootVisual());
+    this->ProcessLight(lightMsg, this->activeScene->RootVisual());
   }
 
   // process each scene model
   for (int i = 0; i < this->sceneMsg.model_size(); ++i)
   {
     gazebo::msgs::Model modelMsg = this->sceneMsg.model(i);
-    this->ProcessModel(modelMsg, this->activeScene->GetRootVisual());
+    this->ProcessModel(modelMsg, this->activeScene->RootVisual());
   }
 }
 
@@ -2002,7 +2015,7 @@ void NewSceneManager::ProcessPoses(const gazebo::msgs::PosesStamped &_posesMsg)
   // record pose timestamp
   int sec = _posesMsg.time().sec();
   int nsec = _posesMsg.time().nsec();
-  this->timePosesReceived = gazebo::common::Time(sec, nsec);
+  this->timePosesReceived = common::Time(sec, nsec);
 
   // process each pose in list
   for (int i = 0; i < _posesMsg.pose_size(); ++i)

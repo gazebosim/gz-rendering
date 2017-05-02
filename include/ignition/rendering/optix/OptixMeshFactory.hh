@@ -14,11 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OPTIXMESHFACTORY_HH_
-#define _IGNITION_RENDERING_OPTIXMESHFACTORY_HH_
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXMESHFACTORY_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXMESHFACTORY_HH_
 
 #include <map>
-#include "gazebo/common/Mesh.hh"
+#include <string>
+#include <ignition/common/Mesh.hh>
+
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixMesh.hh"
@@ -36,10 +38,10 @@ namespace ignition
 
       public: virtual OptixSubMeshStorePtr Create(const MeshDescriptor &_desc);
 
-      protected: virtual optix::Geometry GetGeometry(
+      protected: virtual optix::Geometry Geometry(
                      const MeshDescriptor &_desc, unsigned int _subMeshIndex);
 
-      protected: virtual std::string GetKeyName(const MeshDescriptor &_desc,
+      protected: virtual std::string KeyName(const MeshDescriptor &_desc,
                   unsigned int _subMeshIndex);
 
       protected: std::map<std::string, optix::Geometry> geometries;
@@ -65,7 +67,7 @@ namespace ignition
     class IGNITION_VISIBLE OptixMeshGeometryFactory
     {
       public: OptixMeshGeometryFactory(OptixScenePtr _scene,
-                  const gazebo::common::SubMesh &_subMesh);
+                  const common::SubMesh &_subMesh);
 
       public: virtual ~OptixMeshGeometryFactory();
 
@@ -83,7 +85,7 @@ namespace ignition
 
       protected: OptixScenePtr scene;
 
-      protected: const gazebo::common::SubMesh &subMesh;
+      protected: const common::SubMesh &subMesh;
 
       protected: optix::Geometry optixGeometry;
     };

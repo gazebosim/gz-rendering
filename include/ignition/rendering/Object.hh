@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OBJECT_HH_
-#define _IGNITION_RENDERING_OBJECT_HH_
+#ifndef IGNITION_RENDERING_OBJECT_HH_
+#define IGNITION_RENDERING_OBJECT_HH_
 
 #include <string>
 #include "ignition/rendering/RenderTypes.hh"
@@ -37,17 +37,17 @@ namespace ignition
       /// inside a given scene, but necessarily true for objects across
       /// different scenes.
       /// \return The object ID
-      public: virtual unsigned int GetId() const = 0;
+      public: virtual unsigned int Id() const = 0;
 
       /// \brief Get the object name. This name will be unique across all
       /// objects inside a given scene, but necessarily true for objects across
       /// different scenes.
       /// \return The object name
-      public: virtual std::string GetName() const = 0;
+      public: virtual std::string Name() const = 0;
 
       /// \brief Get the Scene that created this object.
       /// \return The parent scene
-      public: virtual ScenePtr GetScene() const = 0;
+      public: virtual ScenePtr Scene() const = 0;
 
       /// \brief Prepare this object and any of its children for rendering.
       /// This should be called for each object in a scene just before

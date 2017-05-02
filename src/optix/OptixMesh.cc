@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/optix/OptixMesh.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixMaterial.hh"
@@ -35,19 +38,19 @@ OptixMesh::~OptixMesh()
 }
 
 //////////////////////////////////////////////////
-optix::GeometryGroup OptixMesh::GetOptixGeometryGroup() const
+optix::GeometryGroup OptixMesh::OptixGeometryGroup() const
 {
   return this->optixGeomGroup;
 }
 
 //////////////////////////////////////////////////
-optix::Acceleration OptixMesh::GetOptixAccel() const
+optix::Acceleration OptixMesh::OptixAccel() const
 {
   return this->optixAccel;
 }
 
-//////////////////////////////////////////////////  
-SubMeshStorePtr OptixMesh::GetSubMeshes() const
+//////////////////////////////////////////////////
+SubMeshStorePtr OptixMesh::SubMeshes() const
 {
   return this->subMeshes;
 }
@@ -65,7 +68,7 @@ OptixSubMesh::~OptixSubMesh()
 }
 
 //////////////////////////////////////////////////
-MaterialPtr OptixSubMesh::GetMaterial() const
+MaterialPtr OptixSubMesh::Material() const
 {
   return this->material;
 }
@@ -80,7 +83,7 @@ void OptixSubMesh::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!derived)
   {
-    gzerr << "Cannot assign material created by another render-engine"
+    ignerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;
@@ -90,7 +93,7 @@ void OptixSubMesh::SetMaterial(MaterialPtr _material, bool unique)
 }
 
 //////////////////////////////////////////////////
-optix::GeometryInstance OptixSubMesh::GetOptixGeometryInstance() const
+optix::GeometryInstance OptixSubMesh::OptixGeometryInstance() const
 {
   return this->optixGeomInstance;
 }
@@ -98,7 +101,7 @@ optix::GeometryInstance OptixSubMesh::GetOptixGeometryInstance() const
 //////////////////////////////////////////////////
 void OptixSubMesh::SetMaterialImpl(OptixMaterialPtr _material)
 {
-  optix::Material optixMaterial = _material->GetOptixMaterial();
+  optix::Material optixMaterial = _material->Material();
   this->optixGeomInstance->setMaterialCount(0);
   this->optixGeomInstance->addMaterial(optixMaterial);
   this->material = _material;

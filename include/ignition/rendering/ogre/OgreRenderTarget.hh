@@ -14,10 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGRERENDERTARGET_HH_
-#define _IGNITION_RENDERING_OGRERENDERTARGET_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGRERENDERTARGET_HH_
+#define IGNITION_RENDERING_OGRE_OGRERENDERTARGET_HH_
 
-#include "gazebo/common/Color.hh"
+#include <ignition/math/Color.hh>
+
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -42,15 +43,15 @@ namespace ignition
 
       public: virtual ~OgreRenderTarget();
 
-      public: virtual void GetImage(Image &_image) const;
+      public: virtual void Copy(Image &_image) const;
 
-      public: virtual Ogre::Camera *GetCamera() const;
+      public: virtual Ogre::Camera *Camera() const;
 
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
-      public: virtual gazebo::common::Color GetBackgroundColor() const;
+      public: virtual math::Color BackgroundColor() const;
 
-      public: virtual void SetBackgroundColor(gazebo::common::Color _color);
+      public: virtual void SetBackgroundColor(math::Color _color);
 
       public: virtual void PreRender();
 
@@ -58,7 +59,7 @@ namespace ignition
 
       public: virtual void Destroy() = 0;
 
-      protected: virtual Ogre::RenderTarget *GetOgreRenderTarget() const = 0;
+      protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
       protected: virtual void UpdateBackgroundColor();
 
@@ -84,13 +85,13 @@ namespace ignition
 
       public: virtual ~OgreRenderTexture();
 
-      public: virtual unsigned int GetAntiAliasing() const;
+      public: virtual unsigned int AntiAliasing() const;
 
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
       public: virtual void Destroy();
 
-      protected: virtual Ogre::RenderTarget *GetOgreRenderTarget() const;
+      protected: virtual Ogre::RenderTarget *RenderTarget() const;
 
       protected: virtual void RebuildTarget();
 

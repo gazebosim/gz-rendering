@@ -14,9 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_GEOMETRY_HH_
-#define _IGNITION_RENDERING_GEOMETRY_HH_
+#ifndef IGNITION_RENDERING_GEOMETRY_HH_
+#define IGNITION_RENDERING_GEOMETRY_HH_
 
+#include <string>
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/Util.hh"
@@ -39,7 +40,7 @@ namespace ignition
 
       /// \brief Get the parent Visual
       /// \return the parent Visual
-      public: virtual VisualPtr GetParent() const = 0;
+      public: virtual VisualPtr Parent() const = 0;
 
       /// \brief Detach this Geometry from its parent Visual. If this
       /// Geometry does not have a parent, no work will be done.

@@ -14,18 +14,21 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
-#define _IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
+#ifndef IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
+#define IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
 
+#include <memory>
 #include <string>
-#include "gazebo/common/SingletonT.hh"
+#include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/Util.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    // forward declarations.
     class RenderEngine;
+    class RenderEngineManagerPrivate;
 
     /// \class RenderEngineManager RenderEngineManager.hh
     /// ignition/rendering/RenderEngineManager.hh
@@ -34,7 +37,7 @@ namespace ignition
     /// be access directly, but instead via the RenderEngineManager to maintain
     /// a flexible render-engine agnostic design.
     class IGNITION_VISIBLE RenderEngineManager :
-      public virtual SingletonT<RenderEngineManager>
+      public virtual common::SingletonT<RenderEngineManager>
     {
       /// \brief Constructor
       public: RenderEngineManager();
@@ -44,7 +47,7 @@ namespace ignition
 
       /// \brief Get the number of available render-engines
       /// \return the number of available render-engines
-      public: unsigned int GetEngineCount() const;
+      public: unsigned int EngineCount() const;
 
       /// \brief Determine if a render-engine with the given name is avaiable
       /// \param[in] _name Name of the desired render-engine
@@ -53,16 +56,16 @@ namespace ignition
 
       /// \brief Get the render-engine with the given name. If the no
       /// render-engine is registered under the given name, NULL will be
-      /// returned. 
+      /// returned.
       /// \param[name] _name Name of the desired render-engine
       /// \return The specified render-engine
-      public: RenderEngine *GetEngine(const std::string &_name) const;
+      public: RenderEngine *Engine(const std::string &_name) const;
 
       /// \brief Get the render-engine at the given index. If the no
-      /// render-engine is exists at the given index, NULL will be returned. 
+      /// render-engine is exists at the given index, NULL will be returned.
       /// \param[in] _index Index of the desired render-engine
       /// \return The specified render-engine
-      public: RenderEngine *GetEngineAt(unsigned int _index) const;
+      public: RenderEngine *EngineAt(unsigned int _index) const;
 
       /// \brief Register a new render-engine under the given name. If the
       /// given name is already in use, the render-engine will not be
@@ -89,7 +92,7 @@ namespace ignition
       public: void UnregisterEngineAt(unsigned int _index);
 
       /// \brief private implementation details
-      private: class RenderEngineManagerPrivate *pimpl;
+      private: std::unique_ptr<RenderEngineManagerPrivate> dataPtr;
 
       /// \brief required SingletonT friendship
       private: friend class SingletonT<RenderEngineManager>;

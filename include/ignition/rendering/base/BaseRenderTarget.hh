@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_BASERENDERTARGET_HH_
-#define _IGNITION_RENDERING_BASERENDERTARGET_HH_
+#ifndef IGNITION_RENDERING_BASE_BASERENDERTARGET_HH_
+#define IGNITION_RENDERING_BASE_BASERENDERTARGET_HH_
 
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -39,7 +39,7 @@ namespace ignition
 
       protected: virtual void RebuildImpl() = 0;
 
-      protected: bool targetDirty;
+      protected: bool targetDirty = true;
     };
 
     template <class T>
@@ -51,21 +51,21 @@ namespace ignition
 
       public: virtual ~BaseRenderTexture();
 
-      public: virtual unsigned int GetWidth() const;
+      public: virtual unsigned int Width() const;
 
       public: virtual void SetWidth(unsigned int _width);
 
-      public: virtual unsigned int GetHeight() const;
+      public: virtual unsigned int Height() const;
 
       public: virtual void SetHeight(unsigned int _height);
 
-      public: virtual PixelFormat GetFormat() const;
+      public: virtual PixelFormat Format() const;
 
       public: virtual void SetFormat(PixelFormat _format);
 
-      protected: unsigned int width;
+      protected: unsigned int width = 0u;
 
-      protected: unsigned int height;
+      protected: unsigned int height = 0u;
 
       protected: PixelFormat format;
     };
@@ -74,8 +74,7 @@ namespace ignition
     // BaseRenderTarget
     //////////////////////////////////////////////////
     template <class T>
-    BaseRenderTarget<T>::BaseRenderTarget() :
-      targetDirty(true)
+    BaseRenderTarget<T>::BaseRenderTarget()
     {
     }
 
@@ -109,8 +108,6 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     BaseRenderTexture<T>::BaseRenderTexture() :
-      width(0),
-      height(0),
       format(PF_UNKNOWN)
     {
     }
@@ -123,7 +120,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseRenderTexture<T>::GetWidth() const
+    unsigned int BaseRenderTexture<T>::Width() const
     {
       return this->width;
     }
@@ -138,7 +135,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseRenderTexture<T>::GetHeight() const
+    unsigned int BaseRenderTexture<T>::Height() const
     {
       return this->height;
     }
@@ -153,7 +150,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    PixelFormat BaseRenderTexture<T>::GetFormat() const
+    PixelFormat BaseRenderTexture<T>::Format() const
     {
       return this->format;
     }

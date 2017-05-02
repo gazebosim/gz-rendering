@@ -14,14 +14,19 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/base/BaseScene.hh"
 
-#include <limits>
 #include <sstream>
-#include "gazebo/common/Console.hh"
-#include "gazebo/common/Mesh.hh"
-#include "gazebo/common/MeshManager.hh"
+
+#include <ignition/math/Helpers.hh>
+
+#include <ignition/common/Console.hh>
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/MeshManager.hh>
+
+#include "ignition/common/Time.hh"
 #include "ignition/rendering/base/base.hh"
+
+#include "ignition/rendering/base/BaseScene.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -32,8 +37,8 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   name(_name),
   loaded(false),
   initialized(false),
-  nextObjectId(UINT_MAX),
-  nodes(NULL)
+  nextObjectId(ignition::math::MAX_UI16),
+  nodes(nullptr)
 {
 }
 
@@ -56,7 +61,7 @@ void BaseScene::Init()
 {
   if (!this->loaded)
   {
-    gzerr << "Scene must be loaded first" << std::endl;
+    ignerr << "Scene must be loaded first" << std::endl;
     return;
   }
 
@@ -86,25 +91,25 @@ bool BaseScene::IsInitialized() const
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseScene::GetId() const
+unsigned int BaseScene::Id() const
 {
   return this->id;
 }
 
 //////////////////////////////////////////////////
-std::string BaseScene::GetName() const
+std::string BaseScene::Name() const
 {
   return this->name;
 }
 
 //////////////////////////////////////////////////
-gazebo::common::Time BaseScene::GetSimTime() const
+common::Time BaseScene::SimTime() const
 {
   return this->simTime;
 }
 
 //////////////////////////////////////////////////
-void BaseScene::SetSimTime(const gazebo::common::Time &_time)
+void BaseScene::SetSimTime(const common::Time &_time)
 {
   this->simTime = _time;
 }
@@ -112,17 +117,17 @@ void BaseScene::SetSimTime(const gazebo::common::Time &_time)
 //////////////////////////////////////////////////
 void BaseScene::SetAmbientLight(double _r, double _g, double _b, double _a)
 {
-  this->SetAmbientLight(gazebo::common::Color(_r, _g, _b, _a));
+  this->SetAmbientLight(math::Color(_r, _g, _b, _a));
 }
 
 //////////////////////////////////////////////////
 void BaseScene::SetBackgroundColor(double _r, double _g, double _b, double _a)
 {
-  this->SetBackgroundColor(gazebo::common::Color(_r, _g, _b, _a));
+  this->SetBackgroundColor(math::Color(_r, _g, _b, _a));
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseScene::GetNodeCount() const
+unsigned int BaseScene::NodeCount() const
 {
   return this->nodes->Size();
 }
@@ -146,19 +151,19 @@ bool BaseScene::HasNodeName(const std::string &_name) const
 }
 
 //////////////////////////////////////////////////
-NodePtr BaseScene::GetNodeById(unsigned int _id) const
+NodePtr BaseScene::NodeById(unsigned int _id) const
 {
   return this->nodes->GetById(_id);
 }
 
 //////////////////////////////////////////////////
-NodePtr BaseScene::GetNodeByName(const std::string &_name) const
+NodePtr BaseScene::NodeByName(const std::string &_name) const
 {
   return this->nodes->GetByName(_name);
 }
 
 //////////////////////////////////////////////////
-NodePtr BaseScene::GetNodeByIndex(unsigned int _index) const
+NodePtr BaseScene::NodeByIndex(unsigned int _index) const
 {
   return this->nodes->GetByIndex(_index);
 }
@@ -194,250 +199,250 @@ void BaseScene::DestroyNodes()
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseScene::GetLightCount() const
+unsigned int BaseScene::LightCount() const
 {
-  return this->GetLights()->Size();
+  return this->Lights()->Size();
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::HasLight(ConstLightPtr _light) const
 {
-  return this->GetLights()->Contains(_light);
+  return this->Lights()->Contains(_light);
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::HasLightId(unsigned int _id) const
 {
-  return this->GetLights()->ContainsId(_id);
+  return this->Lights()->ContainsId(_id);
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::HasLightName(const std::string &_name) const
 {
-  return this->GetLights()->ContainsName(_name);
+  return this->Lights()->ContainsName(_name);
 }
 
 //////////////////////////////////////////////////
-LightPtr BaseScene::GetLightById(unsigned int _id) const
+LightPtr BaseScene::LightById(unsigned int _id) const
 {
-  return this->GetLights()->GetById(_id);
+  return this->Lights()->GetById(_id);
 }
 
 //////////////////////////////////////////////////
-LightPtr BaseScene::GetLightByName(const std::string &_name) const
+LightPtr BaseScene::LightByName(const std::string &_name) const
 {
-  return this->GetLights()->GetByName(_name);
+  return this->Lights()->GetByName(_name);
 }
 
 //////////////////////////////////////////////////
-LightPtr BaseScene::GetLightByIndex(unsigned int _index) const
+LightPtr BaseScene::LightByIndex(unsigned int _index) const
 {
-  return this->GetLights()->GetByIndex(_index);
+  return this->Lights()->GetByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyLight(LightPtr _light)
 {
-  this->GetLights()->Destroy(_light);
+  this->Lights()->Destroy(_light);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyLightById(unsigned int _id)
 {
-  this->GetLights()->DestroyById(_id);
+  this->Lights()->DestroyById(_id);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyLightByName(const std::string &_name)
 {
-  this->GetLights()->DestroyByName(_name);
+  this->Lights()->DestroyByName(_name);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyLightByIndex(unsigned int _index)
 {
-  this->GetLights()->DestroyByIndex(_index);
+  this->Lights()->DestroyByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyLights()
 {
-  this->GetLights()->DestroyAll();
+  this->Lights()->DestroyAll();
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseScene::GetSensorCount() const
+unsigned int BaseScene::SensorCount() const
 {
-  return this->GetSensors()->Size();
+  return this->Sensors()->Size();
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::HasSensor(ConstSensorPtr _sensor) const
 {
-  return this->GetSensors()->Contains(_sensor);
+  return this->Sensors()->Contains(_sensor);
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::HasSensorId(unsigned int _id) const
 {
-  return this->GetSensors()->ContainsId(_id);
+  return this->Sensors()->ContainsId(_id);
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::HasSensorName(const std::string &_name) const
 {
-  return this->GetSensors()->ContainsName(_name);
+  return this->Sensors()->ContainsName(_name);
 }
 
 //////////////////////////////////////////////////
-SensorPtr BaseScene::GetSensorById(unsigned int _id) const
+SensorPtr BaseScene::SensorById(unsigned int _id) const
 {
-  return this->GetSensors()->GetById(_id);
+  return this->Sensors()->GetById(_id);
 }
 
 //////////////////////////////////////////////////
-SensorPtr BaseScene::GetSensorByName(const std::string &_name) const
+SensorPtr BaseScene::SensorByName(const std::string &_name) const
 {
-  return this->GetSensors()->GetByName(_name);
+  return this->Sensors()->GetByName(_name);
 }
 
 //////////////////////////////////////////////////
-SensorPtr BaseScene::GetSensorByIndex(unsigned int _index) const
+SensorPtr BaseScene::SensorByIndex(unsigned int _index) const
 {
-  return this->GetSensors()->GetByIndex(_index);
+  return this->Sensors()->GetByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroySensor(SensorPtr _sensor)
 {
-  this->GetSensors()->Destroy(_sensor);
+  this->Sensors()->Destroy(_sensor);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroySensorById(unsigned int _id)
 {
-  this->GetSensors()->DestroyById(_id);
+  this->Sensors()->DestroyById(_id);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroySensorByName(const std::string &_name)
 {
-  this->GetSensors()->DestroyByName(_name);
+  this->Sensors()->DestroyByName(_name);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroySensorByIndex(unsigned int _index)
 {
-  this->GetSensors()->DestroyByIndex(_index);
+  this->Sensors()->DestroyByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroySensors()
 {
-  this->GetSensors()->DestroyAll();
+  this->Sensors()->DestroyAll();
 }
 
 //////////////////////////////////////////////////
-unsigned int BaseScene::GetVisualCount() const
+unsigned int BaseScene::VisualCount() const
 {
-  return this->GetVisuals()->Size();
+  return this->Visuals()->Size();
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::HasVisual(ConstVisualPtr _visual) const
 {
-  return this->GetVisuals()->Contains(_visual);
+  return this->Visuals()->Contains(_visual);
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::HasVisualId(unsigned int _id) const
 {
-  return this->GetVisuals()->ContainsId(_id);
+  return this->Visuals()->ContainsId(_id);
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::HasVisualName(const std::string &_name) const
 {
-  return this->GetVisuals()->ContainsName(_name);
+  return this->Visuals()->ContainsName(_name);
 }
 
 //////////////////////////////////////////////////
-VisualPtr BaseScene::GetVisualById(unsigned int _id) const
+VisualPtr BaseScene::VisualById(unsigned int _id) const
 {
-  return this->GetVisuals()->GetById(_id);
+  return this->Visuals()->GetById(_id);
 }
 
 //////////////////////////////////////////////////
-VisualPtr BaseScene::GetVisualByName(const std::string &_name) const
+VisualPtr BaseScene::VisualByName(const std::string &_name) const
 {
-  return this->GetVisuals()->GetByName(_name);
+  return this->Visuals()->GetByName(_name);
 }
 
 //////////////////////////////////////////////////
-VisualPtr BaseScene::GetVisualByIndex(unsigned int _index) const
+VisualPtr BaseScene::VisualByIndex(unsigned int _index) const
 {
-  return this->GetVisuals()->GetByIndex(_index);
+  return this->Visuals()->GetByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyVisual(VisualPtr _visual)
 {
-  this->GetVisuals()->Destroy(_visual);
+  this->Visuals()->Destroy(_visual);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyVisualById(unsigned int _id)
 {
-  this->GetVisuals()->DestroyById(_id);
+  this->Visuals()->DestroyById(_id);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyVisualByName(const std::string &_name)
 {
-  this->GetVisuals()->DestroyByName(_name);
+  this->Visuals()->DestroyByName(_name);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyVisualByIndex(unsigned int _index)
 {
-  this->GetVisuals()->DestroyByIndex(_index);
+  this->Visuals()->DestroyByIndex(_index);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::DestroyVisuals()
 {
-  this->GetVisuals()->DestroyAll();
+  this->Visuals()->DestroyAll();
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::MaterialRegistered(const std::string &_name) const
 {
-  return this->GetMaterials()->ContainsKey(_name);
+  return this->Materials()->ContainsKey(_name);
 }
 
 //////////////////////////////////////////////////
-MaterialPtr BaseScene::GetMaterial(const std::string &_name) const
+MaterialPtr BaseScene::Material(const std::string &_name) const
 {
-  return this->GetMaterials()->Get(_name);
+  return this->Materials()->Get(_name);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::RegisterMaterial(const std::string &_name,
     MaterialPtr _material)
 {
-  this->GetMaterials()->Put(_name, _material);
+  this->Materials()->Put(_name, _material);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::UnregisterMaterial(const std::string &_name)
 {
-  this->GetMaterials()->Remove(_name);
+  this->Materials()->Remove(_name);
 }
 
 //////////////////////////////////////////////////
 void BaseScene::UnregisterMaterials()
 {
-  this->GetMaterials()->RemoveAll();
+  this->Materials()->RemoveAll();
 }
 
 //////////////////////////////////////////////////
@@ -467,7 +472,7 @@ DirectionalLightPtr BaseScene::CreateDirectionalLight(unsigned int _id,
 {
   DirectionalLightPtr light = this->CreateDirectionalLightImpl(_id, _name);
   bool result = this->RegisterLight(light);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -494,7 +499,7 @@ PointLightPtr BaseScene::CreatePointLight(unsigned int _id,
 {
   PointLightPtr light = this->CreatePointLightImpl(_id, _name);
   bool result = this->RegisterLight(light);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -521,7 +526,7 @@ SpotLightPtr BaseScene::CreateSpotLight(unsigned int _id,
 {
   SpotLightPtr light = this->CreateSpotLightImpl(_id, _name);
   bool result = this->RegisterLight(light);
-  return (result) ? light : NULL;
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -547,7 +552,7 @@ CameraPtr BaseScene::CreateCamera(unsigned int _id, const std::string &_name)
 {
   CameraPtr camera = this->CreateCameraImpl(_id, _name);
   bool result = this->RegisterSensor(camera);
-  return (result) ? camera : NULL;
+  return (result) ? camera : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -573,7 +578,7 @@ VisualPtr BaseScene::CreateVisual(unsigned int _id, const std::string &_name)
 {
   VisualPtr visual = this->CreateVisualImpl(_id, _name);
   bool result = this->RegisterVisual(visual);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -600,7 +605,7 @@ ArrowVisualPtr BaseScene::CreateArrowVisual(unsigned int _id,
 {
   ArrowVisualPtr visual = this->CreateArrowVisualImpl(_id, _name);
   bool result = this->RegisterVisual(visual);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -627,7 +632,7 @@ AxisVisualPtr BaseScene::CreateAxisVisual(unsigned int _id,
 {
   AxisVisualPtr visual = this->CreateAxisVisualImpl(_id, _name);
   bool result = this->RegisterVisual(visual);
-  return (result) ? visual : NULL;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -678,7 +683,7 @@ MeshPtr BaseScene::CreateMesh(const std::string &_meshName)
 }
 
 //////////////////////////////////////////////////
-MeshPtr BaseScene::CreateMesh(const gazebo::common::Mesh *_mesh)
+MeshPtr BaseScene::CreateMesh(const common::Mesh *_mesh)
 {
   MeshDescriptor descriptor(_mesh);
   return this->CreateMesh(descriptor);
@@ -688,7 +693,7 @@ MeshPtr BaseScene::CreateMesh(const gazebo::common::Mesh *_mesh)
 MeshPtr BaseScene::CreateMesh(const MeshDescriptor &_desc)
 {
   std::string meshName = (_desc.mesh) ?
-      _desc.mesh->GetName() : _desc.meshName;
+      _desc.mesh->Name() : _desc.meshName;
 
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Mesh-" + meshName);
@@ -704,7 +709,7 @@ MaterialPtr BaseScene::CreateMaterial()
 }
 
 //////////////////////////////////////////////////
-MaterialPtr BaseScene::CreateMaterial(const gazebo::common::Material &_material)
+MaterialPtr BaseScene::CreateMaterial(const common::Material &_material)
 {
   MaterialPtr material = this->CreateMaterial();
   material->CopyFrom(_material);
@@ -722,15 +727,15 @@ RenderTexturePtr BaseScene::CreateRenderTexture()
 //////////////////////////////////////////////////
 void BaseScene::PreRender()
 {
-  this->GetRootVisual()->PreRender();
+  this->RootVisual()->PreRender();
 }
 
 //////////////////////////////////////////////////
 void BaseScene::Clear()
 {
   this->nodes->DestroyAll();
-  this->GetMaterials()->RemoveAll();
-  this->nextObjectId = UINT_MAX;
+  this->Materials()->RemoveAll();
+  this->nextObjectId = ignition::math::MAX_UI16;
 }
 
 //////////////////////////////////////////////////
@@ -759,19 +764,19 @@ std::string BaseScene::CreateObjectName(unsigned int _id,
 //////////////////////////////////////////////////
 bool BaseScene::RegisterLight(LightPtr _light)
 {
-  return (_light) ? this->GetLights()->Add(_light) : false;
+  return (_light) ? this->Lights()->Add(_light) : false;
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::RegisterSensor(SensorPtr _sensor)
 {
-  return (_sensor) ? this->GetSensors()->Add(_sensor) : false;
+  return (_sensor) ? this->Sensors()->Add(_sensor) : false;
 }
 
 //////////////////////////////////////////////////
 bool BaseScene::RegisterVisual(VisualPtr _visual)
 {
-  return (_visual) ? this->GetVisuals()->Add(_visual) : false;
+  return (_visual) ? this->Visuals()->Add(_visual) : false;
 }
 
 //////////////////////////////////////////////////
@@ -780,9 +785,9 @@ void BaseScene::CreateNodeStore()
   NodeCompositeStorePtr compStore(new BaseNodeCompositeStore);
 
   // get specific stores
-  LightStorePtr lights = this->GetLights();
-  SensorStorePtr sensors = this->GetSensors();
-  VisualStorePtr visuals = this->GetVisuals();
+  LightStorePtr lights = this->Lights();
+  SensorStorePtr sensors = this->Sensors();
+  VisualStorePtr visuals = this->Visuals();
 
   // convert to node stores
   NodeStorePtr lightNodes(new BaseStoreWrapper<Node, Light>(lights));
@@ -801,7 +806,7 @@ void BaseScene::CreateNodeStore()
 void BaseScene::CreateMaterials()
 {
   MaterialPtr material;
-  
+
   material = this->CreateMaterial();
   material->SetAmbient(1.0, 0.0, 0.0);
   material->SetDiffuse(1.0, 0.0, 0.0);
@@ -811,7 +816,7 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
   this->RegisterMaterial("Default/TransRed", material);
-  
+
   material = this->CreateMaterial();
   material->SetAmbient(0.0, 1.0, 0.0);
   material->SetDiffuse(0.0, 1.0, 0.0);
@@ -821,7 +826,7 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
   this->RegisterMaterial("Default/TransGreen", material);
-  
+
   material = this->CreateMaterial();
   material->SetAmbient(0.0, 0.0, 1.0);
   material->SetDiffuse(0.0, 0.0, 1.0);

@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGREMESHFACTORY_HH_
-#define _IGNITION_RENDERING_OGREMESHFACTORY_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREMESHFACTORY_HH_
+#define IGNITION_RENDERING_OGRE_OGREMESHFACTORY_HH_
 
+#include <string>
 #include <vector>
-#include "gazebo/common/Mesh.hh"
-#include "gazebo/common/SingletonT.hh"
+
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/Util.hh"
@@ -35,13 +35,13 @@ namespace ignition
   {
     class IGNITION_VISIBLE OgreMeshFactory
     {
-      public: OgreMeshFactory(OgreScenePtr _scene);
+      public: explicit OgreMeshFactory(OgreScenePtr _scene);
 
       public: virtual ~OgreMeshFactory();
 
       public: virtual OgreMeshPtr Create(const MeshDescriptor &_desc);
 
-      protected: virtual Ogre::Entity *GetOgreEntity(
+      protected: virtual Ogre::Entity *OgreEntity(
                      const MeshDescriptor &_desc);
 
       protected: virtual bool Load(const MeshDescriptor &_desc);
@@ -50,7 +50,7 @@ namespace ignition
 
       protected: virtual bool LoadImpl(const MeshDescriptor &_desc);
 
-      protected: virtual std::string GetMeshName(const MeshDescriptor &_desc);
+      protected: virtual std::string MeshName(const MeshDescriptor &_desc);
 
       protected: virtual bool Validate(const MeshDescriptor &_desc);
 

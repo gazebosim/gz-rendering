@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef _IGNITION_RENDERING_OGREARROWVISUAL_HH_
-#define _IGNITION_RENDERING_OGREARROWVISUAL_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREARROWVISUAL_HH_
+#define IGNITION_RENDERING_OGRE_OGREARROWVISUAL_HH_
 
 #include "ignition/rendering/base/BaseArrowVisual.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"

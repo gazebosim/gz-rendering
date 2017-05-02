@@ -15,18 +15,19 @@
  *
  */
 #include <iostream>
-#include <gazebo/common/Console.hh>
+#include <ignition/common/Console.hh>
 #include <gazebo/transport/TransportIface.hh>
 
 #include "ignition/rendering/rendering.hh"
 #include "CameraWindow.hh"
+#include "SceneManager.hh"
 
 using namespace ignition;
 using namespace rendering;
 
 void Connect()
 {
-  gazebo::common::Console::SetQuiet(false);
+  ignition::common::Console::SetVerbosity(4);
   gazebo::transport::init();
   gazebo::transport::run();
 
@@ -46,7 +47,7 @@ ScenePtr CreateScene(const std::string &_engine)
 CameraPtr CreateCamera(const std::string &_engine)
 {
   ScenePtr scene = CreateScene(_engine);
-  VisualPtr root = scene->GetRootVisual();
+  VisualPtr root = scene->RootVisual();
 
   CameraPtr camera = scene->CreateCamera("camera");
   camera->SetLocalPosition(-1.0, 1.0, 0.0);

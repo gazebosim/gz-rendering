@@ -15,7 +15,6 @@
  *
  */
 
-#include <boost/filesystem.hpp>
 #include <vector>
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
@@ -75,7 +74,7 @@ std::string OptixRenderEngine::PtxFile(const std::string& _fileBase) const
   {
     std::string uri = folder + file;
 
-    if (boost::filesystem::exists(uri))
+    if (common::exists(uri))
     {
       return uri;
     }

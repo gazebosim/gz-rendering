@@ -1,7 +1,12 @@
-include (${project_cmake_dir}/Utils.cmake)
+find_package(ignition-rendering0 REQUIRED)
 
-include_directories(.)
-link_directories(${CMAKE_BINARY_DIR}/src)
+include_directories(SYSTEM
+  ${IGNITION-RENDERING_INCLUDE_DIRS}
+)
+
+link_directories(
+  ${IGNITION-RENDERING_LIBRARY_DIRS}
+)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -23,5 +28,7 @@ target_link_libraries(simple_demo
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ignition-rendering
+  ${IGNITION-COMMON_LIBRARIES}
+  ${IGNITION-MATH_LIBRARIES}
+  ${IGNITION-RENDERING_LIBRARIES}
 )

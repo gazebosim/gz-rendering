@@ -16,7 +16,7 @@ of libraries designed to rapidly develop robot applications.
 Ubuntu:
 
     # this installs ogre 1.9. Alternatively, 1.8 should also work
-    sudo apt-get install libogre-1.9-dev
+    sudo apt-get install libogre-1.9-dev libglew-dev
 
 #### OptiX
 

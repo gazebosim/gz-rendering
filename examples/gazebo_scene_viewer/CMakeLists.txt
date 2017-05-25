@@ -1,7 +1,12 @@
-include (${project_cmake_dir}/Utils.cmake)
+find_package(ignition-rendering0 REQUIRED)
 
-include_directories(.)
-link_directories(${CMAKE_BINARY_DIR}/src)
+include_directories(SYSTEM
+  ${IGNITION-RENDERING_INCLUDE_DIRS}
+)
+
+link_directories(
+  ${IGNITION-RENDERING_LIBRARY_DIRS}
+)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -28,7 +33,8 @@ target_link_libraries(gazebo_scene_viewer
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
-  ignition-rendering
+  ${IGNITION-COMMON_LIBRARIES}
+  ${IGNITION-RENDERING_LIBRARIES}
 )
 
 add_executable(gazebo_scene_viewer2_demo
@@ -42,5 +48,6 @@ target_link_libraries(gazebo_scene_viewer2_demo
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
-  ignition-rendering
+  ${IGNITION-COMMON_LIBRARIES}
+  ${IGNITION-RENDERING_LIBRARIES}
 )

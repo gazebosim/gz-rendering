@@ -172,6 +172,15 @@ if (NOT HAVE_RENDERING)
   BUILD_ERROR("No rendering libraries found")
 endif ()
 
+#################################################
+# Find glew
+find_package(GLEW)
+if (NOT GLEW_FOUND)
+  BUILD_ERROR("Missing: libglew-dev")
+else()
+  message(STATUS "Looking for GLEW - found")
+endif()
+
 ########################################
 # Find ignition math
 set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 3)

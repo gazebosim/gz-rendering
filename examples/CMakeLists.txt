@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+project(ignition-rendering-examples)
+
 add_subdirectory(simple_demo)
 add_subdirectory(custom_scene_viewer)
 

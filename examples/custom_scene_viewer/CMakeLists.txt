@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+project(ignition-rendering-custom-scene-viewer)
 find_package(ignition-rendering0 REQUIRED)
 
 include_directories(SYSTEM

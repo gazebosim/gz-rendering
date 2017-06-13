@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ignition-rendering-gazebo-scene-viewer)
 find_package(ignition-rendering0 REQUIRED)
 find_package(gazebo REQUIRED)

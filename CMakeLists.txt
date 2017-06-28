@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 set(IGN_PROJECT_NAME "rendering")
 
@@ -262,7 +262,6 @@ else (build_errors)
     add_subdirectory(src)
     add_subdirectory(include)
     add_subdirectory(test)
-    add_subdirectory(examples)
   endif (BUILD_IGNITION)
 
   ########################################

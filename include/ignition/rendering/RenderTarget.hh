@@ -41,6 +41,14 @@ namespace ignition
       /// \return The image height in pixels
       public: virtual unsigned int Height() const = 0;
 
+      /// \brief Set the texture width in pixels
+      /// \param[in] _width New texture width in pixels
+      public: virtual void SetWidth(unsigned int _width) = 0;
+
+      /// \brief Set the texture height in pixels
+      /// \param[in] _height New texture height in pixels
+      public: virtual void SetHeight(unsigned int _height) = 0;
+
       /// \brief Write rendered image to given Image. The RenderTarget will
       /// convert the underlying image to the specified format listed in the
       /// given Image. However if the given image is not of the correct size no
@@ -59,14 +67,6 @@ namespace ignition
     {
       /// \brief Deconstructor
       public: virtual ~RenderTexture() { }
-
-      /// \brief Set the texture width in pixels
-      /// \param[in] _width New texture width in pixels
-      public: virtual void SetWidth(unsigned int _width) = 0;
-
-      /// \brief Set the texture height in pixels
-      /// \param[in] _height New texture height in pixels
-      public: virtual void SetHeight(unsigned int _height) = 0;
     };
 
     /// \class RenderWindow RenderWindow.hh

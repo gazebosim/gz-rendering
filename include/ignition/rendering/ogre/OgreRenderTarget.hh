@@ -105,6 +105,25 @@ namespace ignition
 
       private: friend class OgreScene;
     };
+
+    class IGNITION_VISIBLE OgreRenderWindow :
+      public virtual BaseRenderWindow<OgreRenderTarget>
+    {
+      protected: OgreRenderWindow();
+
+      public: virtual ~OgreRenderWindow();
+
+      public: virtual void Destroy();
+
+      protected: virtual Ogre::RenderTarget *RenderTarget() const;
+
+      protected: virtual void RebuildTarget();
+
+      protected: virtual void BuildTarget();
+
+      protected: Ogre::RenderTarget *ogreRenderWindow = nullptr;
+    };
+
   }
 }
 #endif

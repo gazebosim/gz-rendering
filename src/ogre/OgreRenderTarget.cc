@@ -19,6 +19,7 @@
 
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 
+#include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
@@ -200,4 +201,50 @@ void OgreRenderTexture::BuildTarget()
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
       Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).getPointer();
+}
+
+//////////////////////////////////////////////////
+// OgreRenderWindow
+//////////////////////////////////////////////////
+OgreRenderWindow::OgreRenderWindow() :
+  ogreRenderWindow(nullptr)
+{
+}
+
+//////////////////////////////////////////////////
+OgreRenderWindow::~OgreRenderWindow()
+{
+}
+
+//////////////////////////////////////////////////
+Ogre::RenderTarget *OgreRenderWindow::RenderTarget() const
+{
+  return this->ogreRenderWindow;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderWindow::Destroy()
+{
+  // if (this->ogreRenderWindow)
+  //  this->ogreRenderWindow->destroy();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderWindow::RebuildTarget()
+{
+  // todo support resizing without destroying target
+  if (!ogreRenderWindow)
+    this->BuildTarget();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderWindow::BuildTarget()
+{
+  auto engine = OgreRenderEngine::Instance();
+  std::string renderTargetName =
+      engine->CreateWindow(this->handle,
+          this->width,
+          this->height);
+  this->ogreRenderWindow =
+      engine->OgreRoot()->getRenderTarget(renderTargetName);
 }

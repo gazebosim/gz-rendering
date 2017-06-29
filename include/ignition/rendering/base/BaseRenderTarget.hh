@@ -35,11 +35,23 @@ namespace ignition
 
       public: virtual void PreRender();
 
+      public: virtual unsigned int Width() const;
+
+      public: virtual void SetWidth(unsigned int _width);
+
+      public: virtual unsigned int Height() const;
+
+      public: virtual void SetHeight(unsigned int _height);
+
       protected: virtual void Rebuild();
 
       protected: virtual void RebuildImpl() = 0;
 
       protected: bool targetDirty = true;
+
+      protected: unsigned int width = 0u;
+
+      protected: unsigned int height = 0u;
     };
 
     template <class T>
@@ -51,23 +63,28 @@ namespace ignition
 
       public: virtual ~BaseRenderTexture();
 
-      public: virtual unsigned int Width() const;
-
-      public: virtual void SetWidth(unsigned int _width);
-
-      public: virtual unsigned int Height() const;
-
-      public: virtual void SetHeight(unsigned int _height);
-
       public: virtual PixelFormat Format() const;
 
       public: virtual void SetFormat(PixelFormat _format);
 
-      protected: unsigned int width = 0u;
-
-      protected: unsigned int height = 0u;
-
       protected: PixelFormat format;
+    };
+
+    template <class T>
+    class IGNITION_VISIBLE BaseRenderWindow :
+      public virtual RenderWindow,
+      public virtual T
+    {
+      public: BaseRenderWindow();
+
+      public: virtual ~BaseRenderWindow();
+
+      public: virtual void OnResize(const unsigned int _width,
+                  const unsigned int _height);
+
+      public: virtual void OnMove();
+
+      std::string handle;
     };
 
     //////////////////////////////////////////////////
@@ -104,6 +121,37 @@ namespace ignition
     }
 
     //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseRenderTarget<T>::Width() const
+    {
+      return this->width;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::SetWidth(unsigned int _width)
+    {
+      this->width = _width;
+      this->targetDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseRenderTarget<T>::Height() const
+    {
+      return this->height;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::SetHeight(unsigned int _height)
+    {
+      this->height = _height;
+      this->targetDirty = true;
+    }
+
+
+    //////////////////////////////////////////////////
     // BaseRenderTexture
     //////////////////////////////////////////////////
     template <class T>
@@ -120,36 +168,6 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseRenderTexture<T>::Width() const
-    {
-      return this->width;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseRenderTexture<T>::SetWidth(unsigned int _width)
-    {
-      this->width = _width;
-      this->targetDirty = true;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    unsigned int BaseRenderTexture<T>::Height() const
-    {
-      return this->height;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseRenderTexture<T>::SetHeight(unsigned int _height)
-    {
-      this->height = _height;
-      this->targetDirty = true;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
     PixelFormat BaseRenderTexture<T>::Format() const
     {
       return this->format;
@@ -162,6 +180,38 @@ namespace ignition
       this->format = PixelUtil::Sanitize(_format);
       this->targetDirty = true;
     }
+
+    //////////////////////////////////////////////////
+    // BaseRenderWindow
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRenderWindow<T>::BaseRenderWindow()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRenderWindow<T>::~BaseRenderWindow()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderWindow<T>::OnResize(const unsigned int _width,
+        const unsigned int _height)
+    {
+      this->width = _width;
+      this->height = _height;
+      this->targetDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderWindow<T>::OnMove()
+    {
+      this->targetDirty = true;
+    }
+
   }
 }
 #endif

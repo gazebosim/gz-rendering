@@ -43,9 +43,15 @@ namespace ignition
 
       public: virtual void SetHeight(unsigned int _height);
 
+      public: virtual PixelFormat Format() const;
+
+      public: virtual void SetFormat(PixelFormat _format);
+
       protected: virtual void Rebuild();
 
       protected: virtual void RebuildImpl() = 0;
+
+      protected: PixelFormat format = PF_UNKNOWN;
 
       protected: bool targetDirty = true;
 
@@ -63,11 +69,6 @@ namespace ignition
 
       public: virtual ~BaseRenderTexture();
 
-      public: virtual PixelFormat Format() const;
-
-      public: virtual void SetFormat(PixelFormat _format);
-
-      protected: PixelFormat format;
     };
 
     template <class T>
@@ -79,12 +80,18 @@ namespace ignition
 
       public: virtual ~BaseRenderWindow();
 
+      public: virtual void SetHandle(const std::string &_handle);
+
+      public: virtual void SetRatio(const double _ratio);
+
       public: virtual void OnResize(const unsigned int _width,
                   const unsigned int _height);
 
       public: virtual void OnMove();
 
-      std::string handle;
+      protected: std::string handle;
+
+      protected: double ratio = 1.0;
     };
 
     //////////////////////////////////////////////////
@@ -150,13 +157,27 @@ namespace ignition
       this->targetDirty = true;
     }
 
+    //////////////////////////////////////////////////
+    template <class T>
+    PixelFormat BaseRenderTarget<T>::Format() const
+    {
+      return this->format;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::SetFormat(PixelFormat _format)
+    {
+      this->format = PixelUtil::Sanitize(_format);
+      this->targetDirty = true;
+    }
+
 
     //////////////////////////////////////////////////
     // BaseRenderTexture
     //////////////////////////////////////////////////
     template <class T>
-    BaseRenderTexture<T>::BaseRenderTexture() :
-      format(PF_UNKNOWN)
+    BaseRenderTexture<T>::BaseRenderTexture()
     {
     }
 
@@ -164,21 +185,6 @@ namespace ignition
     template <class T>
     BaseRenderTexture<T>::~BaseRenderTexture()
     {
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    PixelFormat BaseRenderTexture<T>::Format() const
-    {
-      return this->format;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseRenderTexture<T>::SetFormat(PixelFormat _format)
-    {
-      this->format = PixelUtil::Sanitize(_format);
-      this->targetDirty = true;
     }
 
     //////////////////////////////////////////////////
@@ -197,6 +203,22 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseRenderWindow<T>::SetHandle(const std::string &_handle)
+    {
+      this->handle = _handle;
+      this->targetDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderWindow<T>::SetRatio(const double _ratio)
+    {
+      this->ratio = _ratio;
+      this->targetDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseRenderWindow<T>::OnResize(const unsigned int _width,
         const unsigned int _height)
     {
@@ -211,7 +233,6 @@ namespace ignition
     {
       this->targetDirty = true;
     }
-
   }
 }
 #endif

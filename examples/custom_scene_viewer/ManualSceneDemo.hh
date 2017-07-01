@@ -18,7 +18,7 @@
 #define IGNITION_RENDERING_EXAMPLES_TEST_MANUALSCENEDEMO_HH_
 
 #include <string>
-#include <ignition/rendering/rendering.hh>
+#include <ignition/rendering.hh>
 #include "TestTypes.hh"
 
 namespace ignition

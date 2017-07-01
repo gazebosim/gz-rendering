@@ -17,6 +17,8 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/SystemPaths.hh"
+
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
@@ -282,7 +284,7 @@ void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
     }
     else
     {
-      std::string path = common::findFile(_name);
+      std::string path = SystemPaths::Instance()->FindFile(_name);
       if (!path.empty())
       {
         Ogre::ResourceGroupManager::getSingleton().addResourceLocation(

@@ -31,7 +31,7 @@
 #include <ctime>
 #include <vector>
 
-#include "ignition/rendering/rendering.hh"
+#include <ignition/rendering.hh>
 
 #include "ManualSceneDemo.hh"
 #include "DemoWindow.hh"

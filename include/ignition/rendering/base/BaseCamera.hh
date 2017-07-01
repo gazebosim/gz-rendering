@@ -60,6 +60,8 @@ namespace ignition
 
       public: virtual void PostRender();
 
+      public: virtual void Update();
+
       public: virtual Image CreateImage() const;
 
       public: virtual void Capture(Image &_image);
@@ -71,13 +73,16 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   Camera::NewFrameListener _listener);
 
+      public: virtual RenderWindowPtr CreateRenderWindow(
+                  const std::string &_handle);
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load();
 
       protected: virtual void Reset();
 
-      protected: virtual RenderTexturePtr RenderTexture() const = 0;
+      protected: virtual RenderTargetPtr RenderTarget() const = 0;
 
       protected: common::EventT<void(const void *, unsigned int, unsigned int,
                      unsigned int, const std::string &)> newFrameEvent;
@@ -101,28 +106,28 @@ namespace ignition
     template <class T>
     unsigned int BaseCamera<T>::ImageWidth() const
     {
-      return this->RenderTexture()->Width();
+      return this->RenderTarget()->Width();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseCamera<T>::SetImageWidth(unsigned int _width)
     {
-      this->RenderTexture()->SetWidth(_width);
+      this->RenderTarget()->SetWidth(_width);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     unsigned int BaseCamera<T>::ImageHeight() const
     {
-      return this->RenderTexture()->Height();
+      return this->RenderTarget()->Height();
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseCamera<T>::SetImageHeight(unsigned int _height)
     {
-      this->RenderTexture()->SetHeight(_height);
+      this->RenderTarget()->SetHeight(_height);
     }
 
     //////////////////////////////////////////////////
@@ -147,7 +152,7 @@ namespace ignition
     void BaseCamera<T>::PreRender()
     {
       T::PreRender();
-      this->RenderTexture()->PreRender();
+      this->RenderTarget()->PreRender();
     }
 
     //////////////////////////////////////////////////
@@ -169,6 +174,15 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseCamera<T>::Update()
+    {
+      this->Scene()->PreRender();
+      this->Render();
+      this->PostRender();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseCamera<T>::Capture(Image &_image)
     {
       this->Scene()->PreRender();
@@ -181,7 +195,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::Copy(Image &_image) const
     {
-      this->RenderTexture()->Copy(_image);
+      this->RenderTarget()->Copy(_image);
     }
 
     //////////////////////////////////////////////////
@@ -228,6 +242,16 @@ namespace ignition
       this->SetAntiAliasing(0);
       this->SetHFOV(fov);
     }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    RenderWindowPtr BaseCamera<T>::CreateRenderWindow(const std::string &_handle)
+    {
+      // TODO Does nothing for now
+      std::cerr << "Create empty render window: " << _handle << std::endl;
+      return RenderWindowPtr();
+    }
+
   }
 }
 #endif

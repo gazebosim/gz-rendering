@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ignition-rendering-custom-scene-viewer)
 find_package(ignition-rendering0 REQUIRED)
+find_package(ignition-common0 REQUIRED)
+find_package(ignition-math3 REQUIRED)
 
 include_directories(SYSTEM
+  ${PROJECT_BINARY_DIR}
+  ${IGNITION-COMMON_INCLUDE_DIRS}
+  ${IGNITION-MATH_INCLUDE_DIRS}
   ${IGNITION-RENDERING_INCLUDE_DIRS}
 )
 
@@ -27,6 +32,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wfatal-errors")
 
+configure_file (example_config.h.in ${PROJECT_BINARY_DIR}/example_config.h)
+
 add_executable(custom_scene_viewer
   DemoWindow.cc
   ManualSceneDemo.cc
@@ -43,5 +50,5 @@ target_link_libraries(custom_scene_viewer
 
 add_custom_command(TARGET custom_scene_viewer POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${CMAKE_SOURCE_DIR}/examples/custom_scene_viewer/media
+  ${CMAKE_SOURCE_DIR}/media
   $<TARGET_FILE_DIR:custom_scene_viewer>/media)

@@ -44,6 +44,7 @@ namespace ignition
     class OgreVisual;
     class OgreRenderTarget;
     class OgreRenderTexture;
+    class OgreRenderWindow;
 
     typedef BaseSceneStore<OgreScene>       OgreSceneStore;
     typedef BaseNodeStore<OgreNode>         OgreNodeStore;
@@ -82,6 +83,7 @@ namespace ignition
     typedef shared_ptr<OgreMaterialMap>          OgreMaterialMapPtr;
     typedef shared_ptr<OgreRenderTarget>         OgreRenderTargetPtr;
     typedef shared_ptr<OgreRenderTexture>        OgreRenderTexturePtr;
+    typedef shared_ptr<OgreRenderWindow>         OgreRenderWindowPtr;
   }
 }
 #endif

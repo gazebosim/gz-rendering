@@ -565,12 +565,13 @@ void OgreRenderEngine::CreateResources()
 void OgreRenderEngine::CreateWindow()
 {
   // create dummy window
-  this->CreateWindow(std::to_string(this->dummyWindowId), 1, 1);
+  this->CreateWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
 }
 
 //////////////////////////////////////////////////
 std::string OgreRenderEngine::CreateWindow(const std::string &_handle,
-    const unsigned int _width, const unsigned int _height)
+    const unsigned int _width, const unsigned int _height,
+    const double _ratio, const unsigned int _antiAliasing)
 {
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
@@ -582,7 +583,7 @@ std::string OgreRenderEngine::CreateWindow(const std::string &_handle,
 #else
   params["parentWindowHandle"] = _handle;
 #endif
-  params["FSAA"] = "4";
+  params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
   // TODO: determine api without qt
@@ -595,7 +596,10 @@ std::string OgreRenderEngine::CreateWindow(const std::string &_handle,
   params["border"] = "none";
 
   std::ostringstream stream;
-  stream << "OgreWindow(0)";
+  stream << "OgreWindow(0)" << "_" << _handle;
+
+  // Needed for retina displays
+  params["contentScalingFactor"] = std::to_string(_ratio);
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)

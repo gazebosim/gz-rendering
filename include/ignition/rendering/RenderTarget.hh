@@ -79,6 +79,14 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~RenderWindow() { }
 
+      /// \brief Set the window handle to attach the render window to
+      /// \param[in] _handle Window handle
+      public: virtual void SetHandle(const std::string &_handle) = 0;
+
+      /// \brief Set the device to pixel ratio
+      /// \param[in] _ratio Device to pixel ratio
+      public: virtual void SetRatio(const double _ratio) = 0;
+
       /// \brief Alert the window of a window resize event
       /// \param[in] _width New window width in pixels
       /// \param[in] _height New window height in pixels

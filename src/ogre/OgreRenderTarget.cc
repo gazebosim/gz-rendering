@@ -30,10 +30,7 @@ using namespace rendering;
 //////////////////////////////////////////////////
 // OgreRenderTarget
 //////////////////////////////////////////////////
-OgreRenderTarget::OgreRenderTarget() :
-  ogreCamera(nullptr),
-  ogreViewport(nullptr),
-  colorDirty(true)
+OgreRenderTarget::OgreRenderTarget()
 {
   this->ogreBackgroundColor = Ogre::ColourValue::Black;
 }
@@ -95,6 +92,19 @@ void OgreRenderTarget::SetBackgroundColor(math::Color _color)
 }
 
 //////////////////////////////////////////////////
+unsigned int OgreRenderTarget::AntiAliasing() const
+{
+  return this->antiAliasing;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::SetAntiAliasing(unsigned int _aa)
+{
+  this->antiAliasing = _aa;
+  this->targetDirty = true;
+}
+
+//////////////////////////////////////////////////
 void OgreRenderTarget::PreRender()
 {
   BaseRenderTarget::PreRender();
@@ -143,27 +153,13 @@ void OgreRenderTarget::RebuildViewport()
 //////////////////////////////////////////////////
 // OgreRenderTexture
 //////////////////////////////////////////////////
-OgreRenderTexture::OgreRenderTexture() :
-  ogreTexture(nullptr)
+OgreRenderTexture::OgreRenderTexture()
 {
 }
 
 //////////////////////////////////////////////////
 OgreRenderTexture::~OgreRenderTexture()
 {
-}
-
-//////////////////////////////////////////////////
-unsigned int OgreRenderTexture::AntiAliasing() const
-{
-  return this->antiAliasing;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTexture::SetAntiAliasing(unsigned int _aa)
-{
-  this->antiAliasing = _aa;
-  this->targetDirty = true;
 }
 
 //////////////////////////////////////////////////
@@ -206,8 +202,7 @@ void OgreRenderTexture::BuildTarget()
 //////////////////////////////////////////////////
 // OgreRenderWindow
 //////////////////////////////////////////////////
-OgreRenderWindow::OgreRenderWindow() :
-  ogreRenderWindow(nullptr)
+OgreRenderWindow::OgreRenderWindow()
 {
 }
 
@@ -232,9 +227,16 @@ void OgreRenderWindow::Destroy()
 //////////////////////////////////////////////////
 void OgreRenderWindow::RebuildTarget()
 {
-  // todo support resizing without destroying target
-  if (!ogreRenderWindow)
+  // TODO determine when to rebuild
+  // ie. only when ratio or handle changes!
+  // e.g. sizeDirty?
+  if (!this->ogreRenderWindow)
     this->BuildTarget();
+
+  Ogre::RenderWindow *window =
+      dynamic_cast<Ogre::RenderWindow *>(this->ogreRenderWindow);
+  window->resize(this->width, this->height);
+  window->windowMovedOrResized();
 }
 
 //////////////////////////////////////////////////
@@ -244,7 +246,9 @@ void OgreRenderWindow::BuildTarget()
   std::string renderTargetName =
       engine->CreateWindow(this->handle,
           this->width,
-          this->height);
+          this->height,
+          this->ratio,
+          this->antiAliasing);
   this->ogreRenderWindow =
       engine->OgreRoot()->getRenderTarget(renderTargetName);
 }

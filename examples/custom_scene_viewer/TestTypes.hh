@@ -18,7 +18,7 @@
 #define IGNITION_RENDERING_EXAMPLES_TEST_TESTYPES_HH_
 
 #include <vector>
-#include <ignition/rendering/rendering.hh>
+#include <ignition/rendering.hh>
 
 namespace ignition
 {

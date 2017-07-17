@@ -155,9 +155,9 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   NewFrameListener _listener) = 0;
 
-      /// \brief Create a render window with the given window handle. 
+      /// \brief Create a render window.
       /// \return A pointer to the render window.
-      public: virtual RenderWindowPtr CreateRenderWindow(const std::string &_handle) = 0;
+      public: virtual RenderWindowPtr CreateRenderWindow() = 0;
     };
   }
 }

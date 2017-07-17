@@ -59,8 +59,7 @@ namespace ignition
 
       public: virtual void Render();
 
-      public: virtual RenderWindowPtr CreateRenderWindow(
-                  const std::string &_handle);
+      public: virtual RenderWindowPtr CreateRenderWindow();
 
       protected: virtual RenderTargetPtr RenderTarget() const;
 

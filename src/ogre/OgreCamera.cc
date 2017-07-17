@@ -158,14 +158,13 @@ void OgreCamera::CreateRenderTexture()
 }
 
 //////////////////////////////////////////////////
-RenderWindowPtr OgreCamera::CreateRenderWindow(const std::string &_handle)
+RenderWindowPtr OgreCamera::CreateRenderWindow()
 {
   OgreRenderWindowPtr renderWindow =
       OgreRenderWindowPtr(new OgreRenderWindow());
   renderWindow->SetWidth(this->ImageWidth());
   renderWindow->SetHeight(this->ImageHeight());
   renderWindow->SetRatio(1);
-  renderWindow->SetHandle(_handle);
   renderWindow->SetCamera(this->ogreCamera);
 
   this->renderTexture = renderWindow;

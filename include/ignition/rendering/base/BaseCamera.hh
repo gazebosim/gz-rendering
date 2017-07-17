@@ -73,8 +73,7 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   Camera::NewFrameListener _listener);
 
-      public: virtual RenderWindowPtr CreateRenderWindow(
-                  const std::string &_handle);
+      public: virtual RenderWindowPtr CreateRenderWindow();
 
       protected: virtual void *CreateImageBuffer() const;
 
@@ -245,10 +244,10 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    RenderWindowPtr BaseCamera<T>::CreateRenderWindow(const std::string &_handle)
+    RenderWindowPtr BaseCamera<T>::CreateRenderWindow()
     {
-      // TODO Does nothing for now
-      std::cerr << "Create empty render window: " << _handle << std::endl;
+      // Does nothing by default
+      std::cerr << "Create empty render window " << std::endl;
       return RenderWindowPtr();
     }
 

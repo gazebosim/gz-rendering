@@ -1,0 +1,22 @@
+# This is a sample build configuration for C++.
+# Check our guides at https://confluence.atlassian.com/x/VYk8Lw for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+
+pipelines:
+  default:
+    - step:
+        script: # Modify the commands below to build your repository.
+          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list'
+          - wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+          - apt-get update
+          - apt-get -y install cmake pkg-config cppcheck libogre-1.9-dev libglew-dev doxygen libignition-math3-dev
+          - mkdir build
+          - cd build
+          - cmake ..
+          - make -j4 
+          - make test ARGS="-VV"
+          - make doc 
+          - cd ..
+          - sh tools/code_check.sh

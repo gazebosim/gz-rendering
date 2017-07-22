@@ -25,6 +25,7 @@ set (headers
   Node.hh
   Object.hh
   PixelFormat.hh
+  RayQuery.hh
   RenderEngine.hh
   RenderEngineManager.hh
   RenderingIface.hh

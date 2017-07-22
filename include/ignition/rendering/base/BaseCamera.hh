@@ -71,6 +71,8 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   Camera::NewFrameListener _listener);
 
+      public: virtual math::Matrix4d ProjectionMatrix() const;
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load();
@@ -227,6 +229,15 @@ namespace ignition
       this->SetAspectRatio(1);
       this->SetAntiAliasing(0);
       this->SetHFOV(fov);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Matrix4d BaseCamera<T>::ProjectionMatrix() const
+    {
+      // TODO!!
+      // Return projection matrix for perspective and orthographic cameras
+      return math::Matrix4d::Identity;
     }
   }
 }

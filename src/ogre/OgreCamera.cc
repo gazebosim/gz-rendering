@@ -14,7 +14,9 @@
  * limitations under the License.
  *
  */
+
 #include "ignition/rendering/ogre/OgreCamera.hh"
+#include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
@@ -156,4 +158,10 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture = std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);
   this->renderTexture->SetFormat(PF_R8G8B8);
+}
+
+//////////////////////////////////////////////////
+math::Matrix4d OgreCamera::ProjectionMatrix() const
+{
+  return OgreConversions::Convert(this->ogreCamera->getProjectionMatrix());
 }

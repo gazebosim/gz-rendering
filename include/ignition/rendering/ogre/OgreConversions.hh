@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_OGRE_OGRECONVERSIONS_HH_
 
 #include <ignition/math/Color.hh>
+#include <ignition/math/Matrix4.hh>
 #include <ignition/math/Quaternion.hh>
 #include <ignition/math/Vector3.hh>
 
@@ -78,6 +79,17 @@ namespace ignition
       /// \param[in] _angle Ogre angle
       /// return Ign-math angle
       public: static math::Angle Convert(const Ogre::Radian &_angle);
+
+
+      /// \brief Ogre Matrix4 to ignition math Matrix4d
+      /// \param[in] _m Ogre Matrix4
+      /// \return ignition math Matrix4d
+      public: static math::Matrix4d Convert(const Ogre::Matrix4 &_m);
+
+      /// \brief Ignition math Matrix4d to Ogre Matrix4
+      /// \param[in] _m ignition math Matrix4d
+      /// \return Ogre Matrix4
+      public: static Ogre::Matrix4 Convert(const math::Matrix4d &_m);
 
       /// \brief Ign-rendering PixelFormat to Ogre PixelFormat
       /// \param[in] _v Ign-rendering PixelFormat

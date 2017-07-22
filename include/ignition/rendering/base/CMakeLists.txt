@@ -10,6 +10,7 @@ set (headers
   BaseMesh.hh
   BaseNode.hh
   BaseObject.hh
+  BaseRayQuery.hh
   BaseRenderEngine.hh
   BaseRenderTarget.hh
   BaseRenderTypes.hh

@@ -39,6 +39,7 @@
 #include <OGRE/OgreVector3.h>
 #include <OGRE/OgreManualObject.h>
 #include <OGRE/OgreMaterialManager.h>
+#include <OGRE/OgreMatrix4.h>
 #include <OGRE/OgreColourValue.h>
 #include <OGRE/OgreQuaternion.h>
 #include <OGRE/OgreMesh.h>
@@ -55,6 +56,7 @@
 #include <OGRE/OgreGpuProgramManager.h>
 #include <OGRE/OgreHighLevelGpuProgramManager.h>
 #include <OGRE/OgreHardwarePixelBuffer.h>
+#include <OGRE/OgreSceneQuery.h>
 #include <OGRE/OgreShadowCameraSetupPSSM.h>
 #include <OGRE/Paging/OgrePageManager.h>
 #include <OGRE/Paging/OgrePagedWorld.h>

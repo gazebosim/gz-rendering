@@ -13,6 +13,7 @@ set (headers
   OgreMesh.hh
   OgreNode.hh
   OgreObject.hh
+  OgreRayQuery.hh
   OgreRenderEngine.hh
   OgreRenderTarget.hh
   OgreRenderTypes.hh

@@ -59,6 +59,8 @@ namespace ignition
 
       public: virtual void Render();
 
+      public: virtual math::Matrix4d ProjectionMatrix() const;
+
       protected: virtual RenderTexturePtr RenderTexture() const;
 
       protected: virtual void Init();

@@ -31,6 +31,7 @@ set (sources
   OgreMeshFactory.cc
   OgreNode.cc
   OgreObject.cc
+  OgreRayQuery.cc
   OgreRenderEngine.cc
   OgreRenderTarget.cc
   OgreRTShaderSystem.cc

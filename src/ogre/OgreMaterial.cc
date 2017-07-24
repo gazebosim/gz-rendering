@@ -274,7 +274,7 @@ void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
   {
     // TODO: improve how resource paths are handled
     // OgreRenderEngine::Instance()->AddResourcePath(_name);
-    //_image.load(_name, this->ogreGroup);
+    // _image.load(_name, this->ogreGroup);
     if (Ogre::ResourceGroupManager::getSingleton().resourceExists(
         this->ogreGroup, _name))
     {

@@ -58,11 +58,11 @@ class ignition::rendering::SystemPathsPrivate
   public: void AddPaths(const std::string &_path,
                         std::list<std::string> &_list);
 
-   /// \brief adds a path to the list if not already present
-   /// \param[in]_path the path
-   /// \param[in]_list the list
-   private: void InsertUnique(const std::string &_path,
-                              std::list<std::string> &_list);
+  /// \brief adds a path to the list if not already present
+  /// \param[in]_path the path
+  /// \param[in]_list the list
+  private: void InsertUnique(const std::string &_path,
+                             std::list<std::string> &_list);
 
   /// \brief if true, call UpdatePluginPaths() within PluginPaths()
   public: bool pluginPathsFromEnv;

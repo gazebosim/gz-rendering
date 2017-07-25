@@ -17,38 +17,46 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRERAYQUERY_HH_
 #define IGNITION_RENDERING_OGRE_OGRERAYQUERY_HH_
 
-#include "ignition/rendering/base/BaseRayQuery.hh"
+#include <memory>
 
-namespace Ogre
-{
-  class RaySceneQuery;
-}
+#include "ignition/rendering/base/BaseRayQuery.hh"
+#include "ignition/rendering/ogre/OgreObject.hh"
+#include "ignition/rendering/ogre/OgreRenderTypes.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    // forward declaration
+    class OgreRayQueryPrivate;
+
     /// \class OgreRayQuery OgreRayQuery.hh ignition/rendering/base/OgreRayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_VISIBLE OgreRayQuery
-        : public virtual BaseRayQuery
+    class IGNITION_VISIBLE OgreRayQuery :
+        public BaseRayQuery<OgreObject>
     {
       /// \brief Constructor
-      public: OgreRayQuery(const math::Vector3d &_origin,
-                const math::Vector3d &_dir);
+      protected: OgreRayQuery();
 
       /// \brief Deconstructor
       public: virtual ~OgreRayQuery();
 
+      /// \brief Create the ray query from camera
+      /// \param[in] _camera Camera to construct ray
+      /// \param[in] _coord normalized device coords [-1, +1]
+      public: virtual void SetFromCamera(const CameraPtr &_camera,
+                const math::Vector2d &_coord);
+
       /// \brief Compute intersections
-      /// \param[] Scene where the ray query will be executed
       /// \param[out] A vector of intersection results
       /// \return True if results are not empty
-      public: virtual bool Intersect(const ScenePtr &_scene,
-                std::vector<RayQueryResult> &_result);
+      public: virtual bool Intersect(std::vector<RayQueryResult> &_result);
 
-      /// \brief Ogre ray scene query object for computing intersection.
-      private: Ogre::RaySceneQuery *rayQuery = nullptr;
+      /// \brief Private data pointer
+      private: std::unique_ptr<OgreRayQueryPrivate> dataPtr;
+
+      /// \brief Pointer to friend scene class for creating ray query
+      private: friend class OgreScene;
     };
   }
 }

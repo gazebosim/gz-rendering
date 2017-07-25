@@ -18,19 +18,22 @@
 #define IGNITION_RENDERING_BASE_BASERAYQUERY_HH_
 
 #include "ignition/rendering/RayQuery.hh"
+#include "ignition/rendering/Scene.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    /// \class BaseRayQuery BaseRayQuery.hh ignition/rendering/base/BaseRayQuery.hh
+    /// \class BaseRayQuery BaseRayQuery.hh
+    /// ignition/rendering/base/BaseRayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_VISIBLE BaseRayQuery
-        : public virtual RayQuery
+    template <class T>
+    class IGNITION_VISIBLE BaseRayQuery :
+        public virtual RayQuery,
+        public T
     {
       /// \brief Constructor
-      public: BaseRayQuery(const math::Vector3d &_origin,
-                const math::Vector3d &_dir);
+      protected: BaseRayQuery();
 
       /// \brief Deconstructor
       public: virtual ~BaseRayQuery();
@@ -46,15 +49,13 @@ namespace ignition
       /// \brief Create the ray query from camera
       /// \param[in] _camera Camera to construct ray
       /// \param[in] _coord normalized device coords [-1, +1]
-      public: virtual void SetFromCamera(CameraPtr _camera,
+      public: virtual void SetFromCamera(const CameraPtr &_camera,
                 const math::Vector2d &_coord);
 
       /// \brief Compute intersections
-      /// \param[] Scene where the ray query will be executed
       /// \param[out] A vector of intersection results
       /// \return True if results are not empty
-      public: virtual bool Intersect(const ScenePtr &_scene,
-                std::vector<RayQueryResult> &_result);
+      public: virtual bool Intersect(std::vector<RayQueryResult> &_result);
 
       /// \brief Ray origin
       protected: ignition::math::Vector3d origin;
@@ -62,6 +63,59 @@ namespace ignition
       /// \brief Ray direction
       protected: ignition::math::Vector3d direction;
     };
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRayQuery<T>::BaseRayQuery()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseRayQuery<T>::~BaseRayQuery()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRayQuery<T>::SetOrigin(const math::Vector3d &_origin)
+    {
+      this->origin = _origin;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRayQuery<T>::SetDirection(const math::Vector3d &_dir)
+    {
+      this->direction = _dir;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRayQuery<T>::SetFromCamera(const CameraPtr &_camera,
+        const ignition::math::Vector2d &_coord)
+    {
+    //  math::Matrix4d projectionMatrix = _camera->ProjectionMatrix();
+      math::Matrix4d projectionMatrix;
+      math::Matrix4d viewMatrix = math::Matrix4d(_camera->WorldPose());
+      math::Vector3d start(_coord.X(), _coord.Y(), -1.0);
+      math::Vector3d end(_coord.X(), _coord.Y(), 0.0);
+      math::Matrix4d viewProjInv = (projectionMatrix * viewMatrix).Inverse();
+      start = viewProjInv * start;
+      end = viewProjInv * end;
+
+      this->origin =  start;
+      this->direction = (end - start).Normalize();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseRayQuery<T>::Intersect(std::vector<RayQueryResult> &/*_results*/)
+    {
+      // TODO implement a generic ray query here?
+      return false;
+    }
+
   }
 }
 #endif

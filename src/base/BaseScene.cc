@@ -725,6 +725,14 @@ RenderTexturePtr BaseScene::CreateRenderTexture()
 }
 
 //////////////////////////////////////////////////
+RayQueryPtr BaseScene::CreateRayQuery()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "RayQuery");
+  return this->CreateRayQueryImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
 void BaseScene::PreRender()
 {
   this->RootVisual()->PreRender();

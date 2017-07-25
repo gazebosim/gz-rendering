@@ -153,7 +153,7 @@ namespace ignition
 
       /// \brief Get the projection matrix for this camera
       /// \return Camera projection matrix
-      public: virtual math::Matrix4d ProjectionMatrix() const;
+      public: virtual math::Matrix4d ProjectionMatrix() const = 0;
     };
   }
 }

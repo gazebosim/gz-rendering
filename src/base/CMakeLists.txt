@@ -2,7 +2,6 @@ include (${project_cmake_dir}/Utils.cmake)
 
 set (sources
   BaseObject.cc
-  BaseRayQuery.cc
   BaseRenderEngine.cc
   BaseScene.cc
 )

@@ -78,6 +78,7 @@ namespace ignition
       protected: math::Color backgroundColor;
 
       private: friend class OgreScene;
+      private: friend class OgreRayQuery;
     };
   }
 }

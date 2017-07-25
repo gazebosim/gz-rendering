@@ -33,13 +33,17 @@ namespace ignition
       /// \brief Intersection distance
       public: double distance = 0;
 
-      /// \brief Intersected Visual
-      public: VisualPtr visual;
+      /// \brief Intersection point in 3d space
+      public: ignition::math::Vector3d point;
+
+      /// \brief Intersected object id
+      public: unsigned int id = 0;
     };
 
     /// \class RayQuery RayQuery.hh ignition/rendering/RayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
     class IGNITION_VISIBLE RayQuery
+        : public virtual Object
     {
       /// \brief Deconstructor
       public: virtual ~RayQuery() { }
@@ -55,15 +59,13 @@ namespace ignition
       /// \brief Create the ray query from camera
       /// \param[in] _camera Camera to construct ray
       /// \param[in] _coord normalized device coords [-1, +1]
-      public: virtual void SetFromCamera(CameraPtr _camera,
+      public: virtual void SetFromCamera(const CameraPtr &_camera,
                 const math::Vector2d &_coord) = 0;
 
       /// \brief Compute intersections
-      /// \param[in] _scene Scene where the ray query will be executed.
       /// \param[out] A vector of intersection results
       /// \return True if results are not empty
-      public: virtual bool Intersect(const Scene &_scene,
-                std::vector<RayQueryResult> &_result) = 0;
+      public: virtual bool Intersect(std::vector<RayQueryResult> &_result) = 0;
     };
   }
 }

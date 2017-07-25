@@ -15,19 +15,35 @@
  *
  */
 
+#include <typeinfo>
+
+#include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    class OgreRayQueryPrivate
+    {
+      /// \brief Ogre ray scene query object for computing intersection.
+      public: Ogre::RaySceneQuery *rayQuery = nullptr;
+    };
+  }
+}
+
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OgreRayQuery::OgreRayQuery(const ignition::math::Vector3d &_origin,
-    const ignition::math::Vector3d &_direction)
-    : BaseRayQuery(_origin, _direction)
+OgreRayQuery::OgreRayQuery()
+    : dataPtr(new OgreRayQueryPrivate)
 {
 }
 
@@ -37,31 +53,58 @@ OgreRayQuery::~OgreRayQuery()
 }
 
 //////////////////////////////////////////////////
-bool OgreRayQuery::Intersect(const ScenePtr &_scene, std::vector<RayQueryResult> &_results)
+void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
+    const ignition::math::Vector2d &_coord)
 {
-  Ogre::Ray mouseRay(OgreConversions::Convert(this->origin),
-      OgreConversions::Convert(this->direction));
+  OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(_camera);
+  Ogre::Ray ray =
+      camera->ogreCamera->getCameraToViewportRay(_coord.X(), _coord.Y());
+  this->origin = OgreConversions::Convert(ray.getOrigin());
+  this->direction = OgreConversions::Convert(ray.getDirection());
+}
 
-  OgreScenePtr scene = std::dynamic_pointer_cast<OgreScene>(_scene);
+//////////////////////////////////////////////////
+bool OgreRayQuery::Intersect(std::vector<RayQueryResult> &_results)
+{
+  OgreScenePtr scene = std::dynamic_pointer_cast<OgreScene>(this->Scene());
+
   if (!scene)
     return false;
 
-  if (!this->rayQuery)
-    this->rayQuery =
-      scene->OgreSceneManager()->createRayQuery(mouseRay);
-  this->rayQuery->setSortByDistance(true);
+  Ogre::Ray mouseRay(OgreConversions::Convert(this->origin),
+      OgreConversions::Convert(this->direction));
+
+  if (!this->dataPtr->rayQuery)
+  {
+    this->dataPtr->rayQuery =
+        scene->OgreSceneManager()->createRayQuery(mouseRay);
+  }
+  this->dataPtr->rayQuery->setSortByDistance(true);
 
   _results.clear();
 
   // Perform the scene query
-  Ogre::RaySceneQueryResult &result = this->rayQuery->execute();
+  Ogre::RaySceneQueryResult &result = this->dataPtr->rayQuery->execute();
   // Iterate over all the results.
   for (auto iter = result.begin(); iter != result.end(); ++iter)
   {
-    RayQueryResult r;
-    r.distance = iter->distance;
-//    r.visual
-    _results.push_back(r);
+    if (iter->distance <= 0.0)
+      continue;
+
+    if (iter->movable && iter->movable->getVisible())
+    {
+      unsigned int id = 0;
+      auto userAny = iter->movable->getUserObjectBindings().getUserAny();
+      if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
+      {
+        id = Ogre::any_cast<unsigned int>(userAny);
+        RayQueryResult r;
+        r.distance = iter->distance;
+        r.point = OgreConversions::Convert(mouseRay.getPoint(iter->distance));
+        r.id = id;
+        _results.push_back(r);
+      }
+    }
   }
 
   return !_results.empty();

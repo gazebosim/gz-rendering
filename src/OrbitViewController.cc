@@ -15,6 +15,7 @@
  *
  */
 
+#include <ignition/common/Console.hh>
 
 #include "ignition/rendering/OrbitViewController.hh"
 
@@ -70,11 +71,33 @@ void OrbitViewController::SetTarget(const math::Vector3d &_target)
 //////////////////////////////////////////////////
 void OrbitViewController::Zoom(const double _value)
 {
+  if (!this->dataPtr->camera)
+  {
+    ignerr << "Camera is NULL" << std::endl;
+    return;
+  }
+
+  double distance =
+      this->dataPtr->camera->WorldPose().Pos().Distance(this->dataPtr->target);
+
+  distance -= _value;
+
+  math::Vector3d delta = this->dataPtr->camera->WorldPosition() -
+    this->dataPtr->target;
+  delta.Normalize();
+  delta *= distance;
+  this->dataPtr->camera->SetWorldPosition(this->dataPtr->target + delta);
 }
 
 //////////////////////////////////////////////////
 void OrbitViewController::Pan(const math::Vector2d &_value)
 {
+  if (!this->dataPtr->camera)
+  {
+    ignerr << "Camera is NULL" << std::endl;
+    return;
+  }
+
   double viewportWidth = this->dataPtr->camera->ImageWidth();
   double viewportHeight = this->dataPtr->camera->ImageHeight();
 
@@ -83,6 +106,12 @@ void OrbitViewController::Pan(const math::Vector2d &_value)
   double hfov = this->dataPtr->camera->HFOV().Radian();
   double vfov = 2.0f * atan(tan(hfov / 2.0f) *
         this->dataPtr->camera->AspectRatio());
+
+  std::cerr << "vp width : " << viewportWidth << std::endl;
+  std::cerr << "vp height : " << viewportHeight<< std::endl;
+  std::cerr << "vp hfov : " << hfov << std::endl;
+  std::cerr << "vp vfov : " << vfov << std::endl;
+  std::cerr << "vp aspect : " << this->dataPtr->camera->AspectRatio()<< std::endl;
 
   ignition::math::Vector3d translation;
 
@@ -104,4 +133,9 @@ void OrbitViewController::Pan(const math::Vector2d &_value)
 //////////////////////////////////////////////////
 void OrbitViewController::Orbit(const math::Vector2d &_value)
 {
+  if (!this->dataPtr->camera)
+  {
+    ignerr << "Camera is NULL" << std::endl;
+    return;
+  }
 }

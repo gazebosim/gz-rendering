@@ -20,6 +20,7 @@
 #include <memory>
 
 #include "ignition/rendering/base/BaseRayQuery.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 
@@ -47,10 +48,28 @@ namespace ignition
       public: virtual void SetFromCamera(const CameraPtr &_camera,
                 const math::Vector2d &_coord);
 
-      /// \brief Compute intersections
-      /// \param[out] A vector of intersection results
-      /// \return True if results are not empty
-      public: virtual bool Intersect(std::vector<RayQueryResult> &_result);
+      /// \brief Compute cloests intersection result
+      /// \return Closest intersection result
+      public: virtual RayQueryResult ClosestPoint();
+
+      /// \brief Get the mesh information for the given mesh.
+      /// \param[in] _mesh Mesh to get info about.
+      /// \param[out] _vertexCount Number of vertices in the mesh.
+      /// \param[out] _vertices Array of the vertices.
+      /// \param[out] _indexCount Number if indices.
+      /// \param[out] _indices Array of the indices.
+      /// \param[in] _position Position of the mesh.
+      /// \param[in] _orient Orientation of the mesh.
+      /// \param[in] _scale Scale of the mesh
+      // Code found in Wiki: www.ogre3d.org/wiki/index.php/RetrieveVertexData
+      private: void MeshInformation(const Ogre::Mesh *_mesh,
+                                    size_t &_vertexCount,
+                                    Ogre::Vector3* &_vertices,
+                                    size_t &_indexCount,
+                                    uint64_t* &_indices,
+                                    const math::Vector3d &_position,
+                                    const math::Quaterniond &_orient,
+                                    const math::Vector3d &_scale);
 
       /// \brief Private data pointer
       private: std::unique_ptr<OgreRayQueryPrivate> dataPtr;

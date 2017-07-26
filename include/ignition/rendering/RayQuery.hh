@@ -31,13 +31,19 @@ namespace ignition
     class IGNITION_VISIBLE RayQueryResult
     {
       /// \brief Intersection distance
-      public: double distance = 0;
+      public: double distance = -1;
 
       /// \brief Intersection point in 3d space
       public: ignition::math::Vector3d point;
 
       /// \brief Intersected object id
       public: unsigned int id = 0;
+
+      /// \brief Returns false if result is not valid
+      public: operator bool()
+              {
+                return distance > 0;
+              }
     };
 
     /// \class RayQuery RayQuery.hh ignition/rendering/RayQuery.hh
@@ -65,7 +71,7 @@ namespace ignition
       /// \brief Compute intersections
       /// \param[out] A vector of intersection results
       /// \return True if results are not empty
-      public: virtual bool Intersect(std::vector<RayQueryResult> &_result) = 0;
+      public: virtual RayQueryResult ClosestPoint() = 0;
     };
   }
 }

@@ -53,5 +53,11 @@ endforeach()
 set(ign_group_header ${CMAKE_CURRENT_BINARY_DIR}/${IGN_PROJECT_NAME}.hh)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/rendering.hh.in ${ign_group_header})
 
-ign_install_includes("" ${ign_group_header})
-ign_install_includes(${IGN_PROJECT_NAME} ${headers})
+#ign_install_includes("" ${ign_group_header})
+#ign_install_includes(${IGN_PROJECT_NAME} ${headers})
+
+
+ign_install_includes("${IGN_PROJECT_NAME}${PROJECT_MAJOR_VERSION}/ignition"
+                     ${ign_group_header})
+ign_install_includes("${IGN_PROJECT_NAME}${PROJECT_MAJOR_VERSION}/ignition/${IGN_PROJECT_NAME}"
+                     ${headers})

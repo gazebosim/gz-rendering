@@ -33,4 +33,6 @@ set(ign_group_in ${CMAKE_CURRENT_SOURCE_DIR}/base.hh.in)
 set(ign_group_header ${CMAKE_CURRENT_BINARY_DIR}/base.hh)
 configure_file (${ign_group_in} ${ign_group_header})
 
-ign_install_includes(${IGN_PROJECT_NAME}/base ${headers})
+#ign_install_includes(${IGN_PROJECT_NAME}/base ${headers})
+ign_install_includes("${IGN_PROJECT_NAME}${PROJECT_MAJOR_VERSION}/ignition/${IGN_PROJECT_NAME}/base"
+                     ${headers})

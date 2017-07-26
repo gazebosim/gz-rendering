@@ -55,7 +55,7 @@ namespace ignition
       /// \brief Compute intersections
       /// \param[out] A vector of intersection results
       /// \return True if results are not empty
-      public: virtual bool Intersect(std::vector<RayQueryResult> &_result);
+      public: virtual RayQueryResult ClosestPoint();
 
       /// \brief Ray origin
       protected: ignition::math::Vector3d origin;
@@ -110,10 +110,11 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    bool BaseRayQuery<T>::Intersect(std::vector<RayQueryResult> &/*_results*/)
+    RayQueryResult BaseRayQuery<T>::ClosestPoint()
     {
       // TODO implement a generic ray query here?
-      return false;
+      RayQueryResult result;
+      return result;
     }
 
   }

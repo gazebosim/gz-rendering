@@ -71,9 +71,7 @@ namespace ignition
 
       protected: Ogre::Camera *ogreCamera = nullptr;
 
-//      protected: OgreRenderTexturePtr renderTexture = nullptr;
-
-      protected: OgreRenderTargetPtr renderTexture = nullptr;
+      protected: OgreRenderTargetPtr renderTexture;
 
       protected: math::Angle xfov;
 

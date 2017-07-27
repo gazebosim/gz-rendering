@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_BASE_BASERENDERTARGET_HH_
 #define IGNITION_RENDERING_BASE_BASERENDERTARGET_HH_
 
+#include <string>
+
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
@@ -68,7 +70,6 @@ namespace ignition
       public: BaseRenderTexture();
 
       public: virtual ~BaseRenderTexture();
-
     };
 
     template <class T>

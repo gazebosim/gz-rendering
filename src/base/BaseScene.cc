@@ -697,7 +697,7 @@ MeshPtr BaseScene::CreateMesh(const MeshDescriptor &_desc)
 
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Mesh-" + meshName);
-  return this->CreateMeshImpl(objId, name, _desc);
+  return this->CreateMeshImpl(objId, objName, _desc);
 }
 
 //////////////////////////////////////////////////

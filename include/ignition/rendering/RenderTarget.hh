@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_RENDERTARGET_HH_
 #define IGNITION_RENDERING_RENDERTARGET_HH_
 
+#include <string>
+
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Object.hh"

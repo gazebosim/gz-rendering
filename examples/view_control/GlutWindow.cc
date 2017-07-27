@@ -213,7 +213,6 @@ void HandleMouse()
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
         g_viewControl.Pan(drag);
-        break;
       }
     }
     else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN)

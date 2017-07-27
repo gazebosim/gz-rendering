@@ -95,8 +95,7 @@ namespace ignition
     void BaseRayQuery<T>::SetFromCamera(const CameraPtr &_camera,
         const ignition::math::Vector2d &_coord)
     {
-    //  math::Matrix4d projectionMatrix = _camera->ProjectionMatrix();
-      math::Matrix4d projectionMatrix;
+      math::Matrix4d projectionMatrix = _camera->ProjectionMatrix();
       math::Matrix4d viewMatrix = math::Matrix4d(_camera->WorldPose());
       math::Vector3d start(_coord.X(), _coord.Y(), -1.0);
       math::Vector3d end(_coord.X(), _coord.Y(), 0.0);

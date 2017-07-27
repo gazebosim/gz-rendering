@@ -18,6 +18,8 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/OrbitViewController.hh"
+#include "ignition/rendering/Scene.hh"
+#include "ignition/rendering/Visual.hh"
 
 namespace ignition
 {
@@ -30,6 +32,14 @@ namespace ignition
 
       /// \brief Target point for camera movements
       public: math::Vector3d target;
+
+      /// \brief Keep yaw within limits
+      /// \return Normalized yaw
+      public: double NormalizeYaw(double _yaw);
+
+      /// \brief Keep pitch within limits
+      /// \return Normalized pitch
+      public: double NormalizePitch(double _pitch);
     };
   }
 }
@@ -37,6 +47,9 @@ namespace ignition
 
 using namespace ignition;
 using namespace rendering;
+
+static const float PITCH_LIMIT_LOW = -M_PI*0.5 + 0.001;
+static const float PITCH_LIMIT_HIGH = M_PI*0.5 - 0.001;
 
 //////////////////////////////////////////////////
 OrbitViewController::OrbitViewController()
@@ -102,16 +115,10 @@ void OrbitViewController::Pan(const math::Vector2d &_value)
   double viewportHeight = this->dataPtr->camera->ImageHeight();
 
   double distance =
-      this->dataPtr->camera->WorldPose().Pos().Distance(this->dataPtr->target);
+      this->dataPtr->camera->WorldPosition().Distance(this->dataPtr->target);
   double hfov = this->dataPtr->camera->HFOV().Radian();
-  double vfov = 2.0f * atan(tan(hfov / 2.0f) *
+  double vfov = 2.0f * atan(tan(hfov / 2.0f) /
         this->dataPtr->camera->AspectRatio());
-
-  std::cerr << "vp width : " << viewportWidth << std::endl;
-  std::cerr << "vp height : " << viewportHeight<< std::endl;
-  std::cerr << "vp hfov : " << hfov << std::endl;
-  std::cerr << "vp vfov : " << vfov << std::endl;
-  std::cerr << "vp aspect : " << this->dataPtr->camera->AspectRatio()<< std::endl;
 
   ignition::math::Vector3d translation;
 
@@ -126,8 +133,8 @@ void OrbitViewController::Pan(const math::Vector2d &_value)
 
   // Translate in the local coordinate frame
   this->dataPtr->camera->SetWorldPosition(
-      this->dataPtr->camera->WorldPose().Pos() +
-      this->dataPtr->camera->WorldPose().Rot() * translation);
+      this->dataPtr->camera->WorldPosition() +
+      this->dataPtr->camera->WorldRotation() * translation);
 }
 
 //////////////////////////////////////////////////
@@ -138,4 +145,54 @@ void OrbitViewController::Orbit(const math::Vector2d &_value)
     ignerr << "Camera is NULL" << std::endl;
     return;
   }
+
+  double dy = 2 * M_PI * _value.X() / this->dataPtr->camera->ImageWidth();
+  double dp = 2 * M_PI * _value.Y() / this->dataPtr->camera->ImageHeight();
+
+  // translate to make target the origin for rotation
+  this->dataPtr->camera->SetWorldPosition(
+      this->dataPtr->camera->WorldPosition() - this->dataPtr->target);
+
+  // rotate around world axis at target point
+  math::Quaterniond yawQuat;
+  yawQuat.Axis(math::Vector3d::UnitZ, -dy);
+  this->dataPtr->camera->SetWorldRotation(
+      yawQuat * this->dataPtr->camera->WorldRotation());
+  this->dataPtr->camera->SetWorldPosition(
+      yawQuat * this->dataPtr->camera->WorldPosition());
+
+  math::Quaterniond localPitchQuat;
+  localPitchQuat.Axis(
+      this->dataPtr->camera->WorldRotation()*math::Vector3d::UnitY, dp);
+  this->dataPtr->camera->SetWorldRotation(
+      localPitchQuat * this->dataPtr->camera->WorldRotation());
+  this->dataPtr->camera->SetWorldPosition(
+      localPitchQuat * this->dataPtr->camera->WorldPosition());
+
+  // translate camera back
+  this->dataPtr->camera->SetWorldPosition(
+      this->dataPtr->camera->WorldPosition() + this->dataPtr->target);
+}
+
+//////////////////////////////////////////////////
+double OrbitViewControllerPrivate::NormalizeYaw(double _yaw)
+{
+  _yaw = fmod(_yaw, M_PI*2);
+  if (_yaw < 0.0f)
+  {
+    _yaw = M_PI * 2 + _yaw;
+  }
+
+  return _yaw;
+}
+
+//////////////////////////////////////////////////
+double OrbitViewControllerPrivate::NormalizePitch(double _pitch)
+{
+  if (_pitch < PITCH_LIMIT_LOW)
+    _pitch = PITCH_LIMIT_LOW;
+  else if (_pitch > PITCH_LIMIT_HIGH)
+    _pitch = PITCH_LIMIT_HIGH;
+
+  return _pitch;
 }

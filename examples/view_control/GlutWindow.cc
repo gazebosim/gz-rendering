@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <mutex>
+
 #include "GlutWindow.hh"
 
 #if __APPLE__
@@ -84,11 +87,12 @@ struct mouseButton
   bool motionDirty = false;
 };
 struct mouseButton g_mouse;
+std::mutex g_mouseMutex;
 
 //////////////////////////////////////////////////
 void GlutMouseButton(int button, int state, int x, int y)
 {
-  std::cerr << "button, state, x, y: " << button << " " << state << " " << x << " " << y << std::endl;
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
   g_mouse.button = button;
   g_mouse.state = state;
   g_mouse.x = x;
@@ -101,6 +105,7 @@ void GlutMouseButton(int button, int state, int x, int y)
 //////////////////////////////////////////////////
 void GlutMouseMove(int x, int y)
 {
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
   int deltaX = x - g_mouse.motionX;
   int deltaY = y - g_mouse.motionY;
   g_mouse.motionX = x;
@@ -117,14 +122,6 @@ void GlutMouseMove(int x, int y)
     g_mouse.dragY = deltaY;
   }
   g_mouse.motionDirty = true;
-/*  ignition::math::Vector3d target;
-//  target =
-
-  for (gz::CameraPtr camera : g_cameras)
-  {
-//    g_viewControl.SetCamera(camera);
-//    g_viewControl.SetTarget(target);
-  }*/
 }
 
 //////////////////////////////////////////////////
@@ -159,6 +156,7 @@ void GlutRun(std::vector<gz::CameraPtr> _cameras)
 //////////////////////////////////////////////////
 void HandleMouse()
 {
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
   // only ogre supports ray query for now so use
   // ogre camera located at camera index = 0.
   gz::CameraPtr rayCamera = g_cameras[0];
@@ -183,10 +181,8 @@ void HandleMouse()
       ignerr << "Empty Ray Query results" << std::endl;
       return;
     }
-    std::cerr << "Target " << g_target.point << std::endl;
-    std::cerr << "State " << g_mouse.state  << std::endl;
 
-    // scroll wheel events
+    // mouse wheel scroll zoom
     if ((g_mouse.button == 3 || g_mouse.button == 4) && g_mouse.state == GLUT_UP)
     {
       double scroll = (g_mouse.button == 3) ? -1.0 : 1.0;
@@ -194,7 +190,6 @@ void HandleMouse()
           g_target.point);
       int factor = 1;
       double amount = -(scroll * factor) * (distance / 5.0);
-      std::cerr << " amount " << amount << std::endl;
       for (gz::CameraPtr camera : g_cameras)
       {
         g_viewControl.SetCamera(camera);
@@ -208,7 +203,8 @@ void HandleMouse()
   {
     g_mouse.motionDirty = false;
     auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
-    std::cerr << "drag " << drag << std::endl;
+
+    // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
     {
       for (gz::CameraPtr camera : g_cameras)
@@ -216,28 +212,37 @@ void HandleMouse()
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
         g_viewControl.Pan(drag);
+        break;
       }
     }
+    else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      for (gz::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Orbit(drag);
+      }
+
+    }
+    // right mouse button zoom
     else if (g_mouse.button == GLUT_RIGHT_BUTTON && g_mouse.state == GLUT_DOWN)
     {
-
       double hfov = rayCamera->HFOV().Radian();
-      double vfov = 2.0f * atan(tan(hfov / 2.0f) *
+      double vfov = 2.0f * atan(tan(hfov / 2.0f) /
           rayCamera->AspectRatio());
       double distance = rayCamera->WorldPosition().Distance(
           g_target.point);
-      double amount = ((-g_mouse.dragY / static_cast<double>(rayCamera->ImageHeight()))
-        * distance * tan(vfov/2.0) * 6.0);
-      std::cerr << " zoom " << amount << std::endl;
+      double amount = ((-g_mouse.dragY /
+          static_cast<double>(rayCamera->ImageHeight()))
+          * distance * tan(vfov/2.0) * 6.0);
       for (gz::CameraPtr camera : g_cameras)
       {
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
         g_viewControl.Zoom(amount);
-
       }
     }
-
   }
 }
 

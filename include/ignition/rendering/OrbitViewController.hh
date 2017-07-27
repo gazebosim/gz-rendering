@@ -66,7 +66,6 @@ namespace ignition
       /// \param[in] _value robit amount in image plane, e.g. mouse drag delta
       public: virtual void Orbit(const math::Vector2d &_value);
 
-
       /// \brief Private data pointer
       public: std::unique_ptr<OrbitViewControllerPrivate> dataPtr;
     };

@@ -47,13 +47,6 @@ void BuildScene(ScenePtr _scene)
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
-  // // create point light
-  // PointLightPtr light1 = _scene->CreatePointLight();
-  // light1->SetDiffuseColor(0.5, 0.5, 0.5);
-  // light1->SetSpecularColor(0.5, 0.5, 0.5);
-  // light1->SetLocalPosition(5, -5, 10);
-  // root->AddChild(light1);
-
   // create point light
   PointLightPtr light2 = _scene->CreatePointLight();
   light2->SetDiffuseColor(0.5, 0.5, 0.5);

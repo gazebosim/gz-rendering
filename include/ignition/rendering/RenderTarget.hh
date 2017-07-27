@@ -45,11 +45,11 @@ namespace ignition
 
       /// \brief Set the texture width in pixels
       /// \param[in] _width New texture width in pixels
-      public: virtual void SetWidth(unsigned int _width) = 0;
+      public: virtual void SetWidth(const unsigned int _width) = 0;
 
       /// \brief Set the texture height in pixels
       /// \param[in] _height New texture height in pixels
-      public: virtual void SetHeight(unsigned int _height) = 0;
+      public: virtual void SetHeight(const unsigned int _height) = 0;
 
       /// \brief Write rendered image to given Image. The RenderTarget will
       /// convert the underlying image to the specified format listed in the

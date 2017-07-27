@@ -39,11 +39,11 @@ namespace ignition
 
       public: virtual unsigned int Width() const;
 
-      public: virtual void SetWidth(unsigned int _width);
+      public: virtual void SetWidth(const unsigned int _width);
 
       public: virtual unsigned int Height() const;
 
-      public: virtual void SetHeight(unsigned int _height);
+      public: virtual void SetHeight(const unsigned int _height);
 
       public: virtual PixelFormat Format() const;
 
@@ -137,7 +137,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseRenderTarget<T>::SetWidth(unsigned int _width)
+    void BaseRenderTarget<T>::SetWidth(const unsigned int _width)
     {
       this->width = _width;
       this->targetDirty = true;
@@ -152,7 +152,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseRenderTarget<T>::SetHeight(unsigned int _height)
+    void BaseRenderTarget<T>::SetHeight(const unsigned int _height)
     {
       this->height = _height;
       this->targetDirty = true;

@@ -182,6 +182,8 @@ if (NOT DEFINED IGNITION-MATH_LIBRARY_DIRS AND NOT DEFINED IGNITION-MATH_INCLUDE
     BUILD_ERROR ("Missing: Ignition math${IGNITION-MATH_REQUIRED_MAJOR_VERSION} library.")
   else()
     message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - found")
+    include_directories(${IGNITION-MATH_INCLUDE_DIRS})
+    link_directories(${IGNITION-MATH_LIBRARY_DIRS})
   endif()
 endif()
 
@@ -196,14 +198,4 @@ else()
   link_directories(${IGNITION-COMMON_LIBRARY_DIRS})
 endif()
 
-#################################################
-# Find ign msgs library
-find_package(ignition-msgs0 QUIET)
-if (NOT ignition-msgs0_FOUND)
-  message(FATAL_ERROR "Looking for ignition-msgs - not found")
-else()
-  message(STATUS "Looking for ignition-msgs - found")
-  include_directories(${IGNITION-MSGS_INCLUDE_DIRS})
-  link_directories(${IGNITION-MSGS_LIBRARY_DIRS})
-endif()
 

@@ -15,7 +15,7 @@
  *
  */
 
-#include "example_config.h"
+#include "example_config.hh"
 #include "SceneBuilder.hh"
 
 using namespace ignition;

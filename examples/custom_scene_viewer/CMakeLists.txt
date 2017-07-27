@@ -32,7 +32,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wfatal-errors")
 
-configure_file (example_config.h.in ${PROJECT_BINARY_DIR}/example_config.h)
+configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
 
 add_executable(custom_scene_viewer
   DemoWindow.cc

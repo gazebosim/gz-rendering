@@ -15,10 +15,6 @@
  *
  */
 
-#include <mutex>
-
-#include "GlutWindow.hh"
-
 #if __APPLE__
   #include <OpenGL/gl.h>
   #include <OpenGL/OpenGL.h>
@@ -33,12 +29,16 @@
   #include <GL/glx.h>
 #endif
 
+#include <mutex>
+
 #include <ignition/common/Console.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/RayQuery.hh>
 #include <ignition/rendering/Scene.hh>
 #include <ignition/rendering/OrbitViewController.hh>
+
+#include "GlutWindow.hh"
 
 #define KEY_ESC 27
 #define KEY_TAB  9
@@ -183,7 +183,8 @@ void HandleMouse()
     }
 
     // mouse wheel scroll zoom
-    if ((g_mouse.button == 3 || g_mouse.button == 4) && g_mouse.state == GLUT_UP)
+    if ((g_mouse.button == 3 || g_mouse.button == 4) &&
+        g_mouse.state == GLUT_UP)
     {
       double scroll = (g_mouse.button == 3) ? -1.0 : 1.0;
       double distance = rayCamera->WorldPosition().Distance(
@@ -223,7 +224,6 @@ void HandleMouse()
         g_viewControl.SetTarget(g_target.point);
         g_viewControl.Orbit(drag);
       }
-
     }
     // right mouse button zoom
     else if (g_mouse.button == GLUT_RIGHT_BUTTON && g_mouse.state == GLUT_DOWN)

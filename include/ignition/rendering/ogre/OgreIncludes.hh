@@ -56,7 +56,6 @@
 #include <OGRE/OgreGpuProgramManager.h>
 #include <OGRE/OgreHighLevelGpuProgramManager.h>
 #include <OGRE/OgreHardwarePixelBuffer.h>
-#include <OGRE/OgreSceneQuery.h>
 #include <OGRE/OgreShadowCameraSetupPSSM.h>
 #include <OGRE/Paging/OgrePageManager.h>
 #include <OGRE/Paging/OgrePagedWorld.h>

@@ -235,7 +235,7 @@ namespace ignition
     template <class T>
     math::Matrix4d BaseCamera<T>::ProjectionMatrix() const
     {
-      // TODO!!
+      // TODO
       // Return projection matrix for perspective and orthographic cameras
       return math::Matrix4d::Identity;
     }

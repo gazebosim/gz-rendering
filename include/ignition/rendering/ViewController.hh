@@ -26,7 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
-    /// \class ViewController ViewController.hh ignition/rendering/ViewController.hh
+    /// \class ViewController ViewController.hh
+    ///   ignition/rendering/ViewController.hh
     /// \brief A camera view controller
     class IGNITION_VISIBLE ViewController
     {

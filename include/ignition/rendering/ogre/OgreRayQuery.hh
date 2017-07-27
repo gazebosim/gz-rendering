@@ -31,7 +31,8 @@ namespace ignition
     // forward declaration
     class OgreRayQueryPrivate;
 
-    /// \class OgreRayQuery OgreRayQuery.hh ignition/rendering/base/OgreRayQuery.hh
+    /// \class OgreRayQuery OgreRayQuery.hh
+    /// ignition/rendering/base/OgreRayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
     class IGNITION_VISIBLE OgreRayQuery :
         public BaseRayQuery<OgreObject>

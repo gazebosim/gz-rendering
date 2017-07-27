@@ -41,7 +41,7 @@ namespace ignition
       public: OrbitViewController();
 
       /// \brief Deconstructor
-      public: OrbitViewController(const CameraPtr &_camera);
+      public: explicit OrbitViewController(const CameraPtr &_camera);
 
       /// \brief Deconstructor
       public: virtual ~OrbitViewController();

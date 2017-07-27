@@ -80,7 +80,6 @@ namespace ignition
       /// return Ign-math angle
       public: static math::Angle Convert(const Ogre::Radian &_angle);
 
-
       /// \brief Ogre Matrix4 to ignition math Matrix4d
       /// \param[in] _m Ogre Matrix4
       /// \return ignition math Matrix4d

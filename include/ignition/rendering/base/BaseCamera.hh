@@ -19,9 +19,11 @@
 
 #include <string>
 #include <ignition/common/Event.hh>
+#include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Image.hh"
+#include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 
@@ -247,7 +249,8 @@ namespace ignition
     RenderWindowPtr BaseCamera<T>::CreateRenderWindow()
     {
       // Does nothing by default
-      std::cerr << "Create empty render window " << std::endl;
+      ignerr << "Render window not supported for render engine: " <<
+          this->Scene()->Engine()->Name() << std::endl;
       return RenderWindowPtr();
     }
 

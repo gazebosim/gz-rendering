@@ -135,6 +135,9 @@ message (STATUS "----------------------------------------\n")
 # Define compile-time default variables
 set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/ign-rendering-${PROJECT_MAJOR_VERSION}/plugins)
 
+# Check for DRI capable Display
+include (${project_cmake_dir}/CheckDRIDisplay.cmake)
+
 #####################################
 MESSAGE(STATUS "Checking ignition build type")
 # Set the default build type

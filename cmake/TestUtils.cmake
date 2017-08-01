@@ -40,3 +40,14 @@ macro (ign_build_tests)
 	${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   endforeach()
 endmacro()
+
+if (VALID_DRI_DISPLAY)
+  macro (ign_build_dri_tests)
+    ign_build_tests(${ARGV})
+  endmacro()
+else()
+  # Fake macro when no valid DRI display is found
+  macro (ign_build_dri_tests)
+  endmacro()
+endif()
+

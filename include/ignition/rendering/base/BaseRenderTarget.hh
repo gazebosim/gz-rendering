@@ -81,9 +81,13 @@ namespace ignition
 
       public: virtual ~BaseRenderWindow();
 
+      public: virtual std::string Handle() const;
+
       public: virtual void SetHandle(const std::string &_handle);
 
-      public: virtual void SetRatio(const double _ratio);
+      public: virtual double DevicePixelRatio() const;
+
+      public: virtual void SetDevicePixelRatio(const double _ratio);
 
       public: virtual void OnResize(const unsigned int _width,
                   const unsigned int _height);
@@ -204,6 +208,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    std::string BaseRenderWindow<T>::Handle() const
+    {
+      return this->handle;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseRenderWindow<T>::SetHandle(const std::string &_handle)
     {
       this->handle = _handle;
@@ -212,7 +223,14 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseRenderWindow<T>::SetRatio(const double _ratio)
+    double BaseRenderWindow<T>::DevicePixelRatio() const
+    {
+      return this->ratio;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderWindow<T>::SetDevicePixelRatio(const double _ratio)
     {
       this->ratio = _ratio;
       this->targetDirty = true;

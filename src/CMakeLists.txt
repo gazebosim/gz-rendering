@@ -21,6 +21,7 @@ set (sources
 )
 
 set (gtest_sources
+  RenderTarget_TEST.cc
 )
 
 set_property(

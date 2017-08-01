@@ -164,7 +164,7 @@ RenderWindowPtr OgreCamera::CreateRenderWindow()
       OgreRenderWindowPtr(new OgreRenderWindow());
   renderWindow->SetWidth(this->ImageWidth());
   renderWindow->SetHeight(this->ImageHeight());
-  renderWindow->SetRatio(1);
+  renderWindow->SetDevicePixelRatio(1);
   renderWindow->SetCamera(this->ogreCamera);
 
   this->renderTexture = renderWindow;

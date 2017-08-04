@@ -25,8 +25,7 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OgreCamera::OgreCamera() :
-  renderTexture(nullptr)
+OgreCamera::OgreCamera()
 {
 }
 
@@ -111,7 +110,7 @@ void OgreCamera::Render()
 }
 
 //////////////////////////////////////////////////
-RenderTexturePtr OgreCamera::RenderTexture() const
+RenderTargetPtr OgreCamera::RenderTarget() const
 {
   return this->renderTexture;
 }
@@ -158,6 +157,20 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture = std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);
   this->renderTexture->SetFormat(PF_R8G8B8);
+}
+
+//////////////////////////////////////////////////
+RenderWindowPtr OgreCamera::CreateRenderWindow()
+{
+  OgreRenderWindowPtr renderWindow =
+      OgreRenderWindowPtr(new OgreRenderWindow());
+  renderWindow->SetWidth(this->ImageWidth());
+  renderWindow->SetHeight(this->ImageHeight());
+  renderWindow->SetDevicePixelRatio(1);
+  renderWindow->SetCamera(this->ogreCamera);
+
+  this->renderTexture = renderWindow;
+  return renderWindow;
 }
 
 //////////////////////////////////////////////////

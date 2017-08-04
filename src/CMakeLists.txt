@@ -24,6 +24,10 @@ set (sources
 set (gtest_sources
 )
 
+set (gtest_sources_dri
+  RenderTarget_TEST.cc
+)
+
 set_property(
   SOURCE SystemPaths.cc
   PROPERTY COMPILE_DEFINITIONS
@@ -32,6 +36,7 @@ set_property(
 )
 
 ign_build_tests(${gtest_sources})
+ign_build_dri_tests(${gtest_sources_dri})
 ign_add_library(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION} ${sources})
 ign_install_library(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION})
 

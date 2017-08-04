@@ -28,6 +28,7 @@
 #include <OGRE/OgreImageCodec.h>
 #include <OGRE/OgreMovableObject.h>
 #include <OGRE/OgreRenderable.h>
+#include <OGRE/OgreRenderWindow.h>
 #include <OGRE/OgrePlugin.h>
 #include <OGRE/OgreDataStream.h>
 #include <OGRE/OgreLogManager.h>

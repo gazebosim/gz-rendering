@@ -44,6 +44,7 @@ namespace ignition
     class RenderEngine;
     class RenderTarget;
     class RenderTexture;
+    class RenderWindow;
     class Scene;
     class Sensor;
     class SpotLight;
@@ -118,6 +119,9 @@ namespace ignition
     /// \brief Shared pointer to RenderTexture
     typedef shared_ptr<RenderTexture> RenderTexturePtr;
 
+    /// \def RenderWindowPtr
+    /// \brief Shared pointer to RenderWindow
+    typedef shared_ptr<RenderWindow> RenderWindowPtr;
     /// \def ScenePtr
     /// \brief Shared pointer to Scene
     typedef shared_ptr<Scene> ScenePtr;
@@ -205,6 +209,10 @@ namespace ignition
     /// \def const RenderTexturePtr
     /// \brief Shared pointer to const RenderTexture
     typedef shared_ptr<const RenderTexture> ConstRenderTexturePtr;
+
+    /// \def const RenderWindowPtr
+    /// \brief Shared pointer to const RenderWindow
+    typedef shared_ptr<const RenderWindow> ConstRenderWindowPtr;
 
     /// \def const ScenePtr
     /// \brief Shared pointer to const Scene

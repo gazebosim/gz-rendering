@@ -564,34 +564,42 @@ void OgreRenderEngine::CreateResources()
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateWindow()
 {
+  // create dummy window
+  this->CreateWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
+}
+
+//////////////////////////////////////////////////
+std::string OgreRenderEngine::CreateWindow(const std::string &_handle,
+    const unsigned int _width, const unsigned int _height,
+    const double _ratio, const unsigned int _antiAliasing)
+{
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
   Ogre::RenderWindow *window = nullptr;
 
   // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
-  params["externalWindowHandle"] = std::to_string(this->dummyWindowId);
+  params["externalWindowHandle"] = _handle;
 #else
-  params["parentWindowHandle"] = std::to_string(this->dummyWindowId);
+  params["parentWindowHandle"] = _handle;
 #endif
-  params["FSAA"] = "4";
+  params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
   // TODO: determine api without qt
 
   // Set the macAPI for Ogre based on the Qt implementation
-// #ifdef QT_MAC_USE_COCOA
   params["macAPI"] = "cocoa";
   params["macAPICocoaUseNSView"] = "true";
-// #else
-//   params["macAPI"] = "carbon";
-// #endif
 
   // Hide window if dimensions are less than or equal to one.
   params["border"] = "none";
 
   std::ostringstream stream;
-  stream << "OgreWindow(0)";
+  stream << "OgreWindow(0)" << "_" << _handle;
+
+  // Needed for retina displays
+  params["contentScalingFactor"] = std::to_string(_ratio);
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
@@ -599,7 +607,7 @@ void OgreRenderEngine::CreateWindow()
     try
     {
       window = this->ogreRoot->createRenderWindow(
-          stream.str(), 1, 1, false, &params);
+          stream.str(), _width, _height, false, &params);
     }
     catch(...)
     {
@@ -611,7 +619,7 @@ void OgreRenderEngine::CreateWindow()
   if (attempts >= 10)
   {
     ignerr << "Unable to create the rendering window\n" << std::endl;
-    return;
+    return std::string();
   }
 
   if (window)
@@ -623,6 +631,7 @@ void OgreRenderEngine::CreateWindow()
     // Windows needs to reposition the render window to 0,0.
     window->reposition(0, 0);
   }
+  return stream.str();
 }
 
 //////////////////////////////////////////////////

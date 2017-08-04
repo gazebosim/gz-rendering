@@ -225,7 +225,7 @@ std::string SystemPaths::FindFile(const std::string &_filename,
       path = _filename;
       found = true;
     }
-    else
+    else if (this->dataPtr->findFileCB)
     {
       path = this->dataPtr->findFileCB(_filename);
       found = !path.empty();

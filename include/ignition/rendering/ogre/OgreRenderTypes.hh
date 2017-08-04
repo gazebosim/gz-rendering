@@ -40,6 +40,7 @@ namespace ignition
     class OgreRenderEngine;
     class OgreRenderTarget;
     class OgreRenderTexture;
+    class OgreRenderWindow;
     class OgreScene;
     class OgreSensor;
     class OgreSpotLight;
@@ -72,6 +73,7 @@ namespace ignition
     typedef shared_ptr<OgreRenderEngine>         OgreRenderEnginePtr;
     typedef shared_ptr<OgreRenderTarget>         OgreRenderTargetPtr;
     typedef shared_ptr<OgreRenderTexture>        OgreRenderTexturePtr;
+    typedef shared_ptr<OgreRenderWindow>         OgreRenderWindowPtr;
     typedef shared_ptr<OgreScene>                OgreScenePtr;
     typedef shared_ptr<OgreSensor>               OgreSensorPtr;
     typedef shared_ptr<OgreSpotLight>            OgreSpotLightPtr;

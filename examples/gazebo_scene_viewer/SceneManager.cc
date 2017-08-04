@@ -19,11 +19,10 @@
 
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/Console.hh>
+#include <ignition/rendering.hh>
 
 #include "SceneManager.hh"
 #include "SceneManagerPrivate.hh"
-
-#include "ignition/rendering/rendering.hh"
 
 using namespace ignition;
 using namespace rendering;

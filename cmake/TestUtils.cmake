@@ -10,16 +10,24 @@ macro (ign_build_tests)
     add_executable(${BINARY_NAME} ${GTEST_SOURCE_file})
 
     add_dependencies(${BINARY_NAME}
-      lib${PROJECT_NAME_LOWER}
+      ${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}
       gtest gtest_main
       )
 
-    target_link_libraries(${BINARY_NAME}
-      lib${PROJECT_NAME_LOWER}
-      libgtest.a
-      libgtest_main.a
-      pthread
+    if (UNIX)
+      target_link_libraries(${BINARY_NAME}
+        libgtest.a
+        libgtest_main.a
+        pthread
+        ${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}
       )
+    elseif(WIN32)
+      target_link_libraries(${BINARY_NAME}
+        gtest
+        gtest_main
+        ${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}.lib
+      )
+    endif()
 
     add_test(${BINARY_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${BINARY_NAME}
 	--gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
@@ -32,3 +40,14 @@ macro (ign_build_tests)
 	${CMAKE_BINARY_DIR}/test_results/${BINARY_NAME}.xml)
   endforeach()
 endmacro()
+
+if (VALID_DRI_DISPLAY)
+  macro (ign_build_dri_tests)
+    ign_build_tests(${ARGV})
+  endmacro()
+else()
+  # Fake macro when no valid DRI display is found
+  macro (ign_build_dri_tests)
+  endmacro()
+endif()
+

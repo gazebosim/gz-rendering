@@ -114,6 +114,13 @@ namespace ignition
       /// successfully been executed.
       public: virtual void PostRender() = 0;
 
+      /// \brief Renders a new frame.
+      /// This is a convenience function for single-camera scenes. It wraps the
+      /// pre-render, render, and post-render into a single
+      /// function. This should be used in applications with multiple cameras
+      /// or multiple consumers of a single camera's images.
+      public: virtual void Update() = 0;
+
       /// \brief Created an empty image buffer for capturing images. The
       /// resulting image will have sufficient memory allocated for subsequent
       /// calls to this camera's Capture function. However, any changes to this
@@ -147,6 +154,10 @@ namespace ignition
       /// \param[in] _listener New camera listener callback
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   NewFrameListener _listener) = 0;
+
+      /// \brief Create a render window.
+      /// \return A pointer to the render window.
+      public: virtual RenderWindowPtr CreateRenderWindow() = 0;
     };
   }
 }

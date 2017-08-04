@@ -48,6 +48,7 @@ namespace ignition
     class Visual;
     class RenderTarget;
     class RenderTexture;
+    class RenderWindow;
 
 
     /// \def ArrowVisualPtr
@@ -133,6 +134,10 @@ namespace ignition
     /// \def RenderTexturePtr
     /// \brief Shared pointer to RenderTexture
     typedef shared_ptr<RenderTexture> RenderTexturePtr;
+
+    /// \def RenderWindowPtr
+    /// \brief Shared pointer to RenderWindow
+    typedef shared_ptr<RenderWindow> RenderWindowPtr;
 
     /// \def const ArrowVisualPtr
     /// \brief Shared pointer to const ArrowVisual

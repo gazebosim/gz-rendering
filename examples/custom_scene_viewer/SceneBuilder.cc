@@ -14,10 +14,15 @@
  * limitations under the License.
  *
  */
+
+#include "example_config.hh"
 #include "SceneBuilder.hh"
 
 using namespace ignition;
 using namespace rendering;
+
+const std::string RESOURCE_PATH = std::string(PROJECT_BINARY_PATH) + "/media";
+
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -185,7 +190,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     if (!_scene->MaterialRegistered(childName))
     {
       MaterialPtr mat = _scene->Material(parentName)->Clone();
-      mat->SetTexture("./examples/custom_scene_viewer/media/tiles.jpg");
+      mat->SetTexture(RESOURCE_PATH + "/tiles.jpg");
       _scene->RegisterMaterial(childName, mat);
     }
   }
@@ -199,7 +204,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     {
       MaterialPtr mat = _scene->Material(parentName)->Clone();
       mat->SetNormalMap(
-          "./examples/custom_scene_viewer/media/brick_normal.jpg");
+          RESOURCE_PATH + "/brick_normal.jpg");
       _scene->RegisterMaterial(childName, mat);
     }
   }

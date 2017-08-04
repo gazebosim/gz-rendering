@@ -59,7 +59,9 @@ namespace ignition
 
       public: virtual void Render();
 
-      protected: virtual RenderTexturePtr RenderTexture() const;
+      public: virtual RenderWindowPtr CreateRenderWindow();
+
+      protected: virtual RenderTargetPtr RenderTarget() const;
 
       protected: virtual void Init();
 
@@ -67,9 +69,9 @@ namespace ignition
 
       protected: virtual void CreateRenderTexture();
 
-      protected: Ogre::Camera *ogreCamera;
+      protected: Ogre::Camera *ogreCamera = nullptr;
 
-      protected: OgreRenderTexturePtr renderTexture;
+      protected: OgreRenderTargetPtr renderTexture;
 
       protected: math::Angle xfov;
 

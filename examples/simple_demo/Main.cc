@@ -27,8 +27,9 @@
 #include <iostream>
 #include <vector>
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/rendering.hh"
+#include <ignition/common/Console.hh>
+#include <ignition/rendering.hh>
+
 #include "GlutWindow.hh"
 
 using namespace ignition;

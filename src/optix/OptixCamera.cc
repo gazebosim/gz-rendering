@@ -118,7 +118,7 @@ void OptixCamera::Render()
 }
 
 //////////////////////////////////////////////////
-RenderTexturePtr OptixCamera::RenderTexture() const
+RenderTargetPtr OptixCamera::RenderTarget() const
 {
   return this->renderTexture;
 }

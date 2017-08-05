@@ -262,6 +262,7 @@ namespace ignition
     {
       // TODO
       // Return projection matrix for perspective and orthographic cameras
+      ignerr << "Projection matrix not implemented yet" << std::endl;
       return math::Matrix4d::Identity;
     }
   }

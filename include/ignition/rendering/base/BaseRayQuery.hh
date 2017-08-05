@@ -38,30 +38,30 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~BaseRayQuery();
 
-      /// \brief Set ray origin
-      /// \param[in] _origin Ray Origin
+      // Documentation inherited
       public: virtual void SetOrigin(const math::Vector3d &_origin);
 
-      /// \brief Set ray direction
-      /// \param[in] _origin Ray Origin
+      // Documentation inherited
+      public: virtual math::Vector3d Origin() const;
+
+      // Documentation inherited
       public: virtual void SetDirection(const math::Vector3d &_dir);
 
-      /// \brief Create the ray query from camera
-      /// \param[in] _camera Camera to construct ray
-      /// \param[in] _coord normalized device coords [-1, +1]
+      // Documentation inherited
+      public: virtual math::Vector3d Direction() const;
+
+      // Documentation inherited
       public: virtual void SetFromCamera(const CameraPtr &_camera,
                 const math::Vector2d &_coord);
 
-      /// \brief Compute intersections
-      /// \param[out] A vector of intersection results
-      /// \return True if results are not empty
+      // Documentation inherited
       public: virtual RayQueryResult ClosestPoint();
 
       /// \brief Ray origin
-      protected: ignition::math::Vector3d origin;
+      protected: math::Vector3d origin;
 
       /// \brief Ray direction
-      protected: ignition::math::Vector3d direction;
+      protected: math::Vector3d direction;
     };
 
     //////////////////////////////////////////////////
@@ -85,9 +85,23 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    ignition::math::Vector3d BaseRayQuery<T>::Origin() const
+    {
+      return this->origin;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseRayQuery<T>::SetDirection(const math::Vector3d &_dir)
     {
       this->direction = _dir;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Vector3d BaseRayQuery<T>::Direction() const
+    {
+      return this->direction;
     }
 
     //////////////////////////////////////////////////

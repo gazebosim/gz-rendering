@@ -172,8 +172,10 @@ void HandleMouse()
   if (g_mouse.buttonDirty)
   {
     g_mouse.buttonDirty = false;
-    double nx = g_mouse.x / static_cast<double>(rayCamera->ImageWidth());
-    double ny = g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
+    double nx =
+        2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
+    double ny = 1.0 -
+        2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
     g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)

@@ -134,8 +134,8 @@ namespace ignition
       end = end / endw;
       math::Vector3d dir = (end - start).Normalize();
 
-      this->origin.Set(start.X(), start.Y(), start.Z());
-      this->direction.Set(dir.X(), dir.Y(), dir.Z());
+      this->origin = start;
+      this->direction = dir;
     }
 
     //////////////////////////////////////////////////

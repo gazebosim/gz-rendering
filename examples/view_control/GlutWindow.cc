@@ -92,6 +92,10 @@ std::mutex g_mouseMutex;
 //////////////////////////////////////////////////
 void GlutMouseButton(int button, int state, int x, int y)
 {
+  // ignore unknown mouse button numbers
+  if (button >= 5)
+    return;
+
   std::lock_guard<std::mutex> lock(g_mouseMutex);
   g_mouse.button = button;
   g_mouse.state = state;

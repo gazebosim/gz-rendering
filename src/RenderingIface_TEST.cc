@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 
@@ -27,8 +28,14 @@ using namespace rendering;
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, GetEngine)
 {
-  // 2 engines by default for now. This will change when engines become plugins
-  unsigned int count = 2u;
+  // 2 engines now. This will change when engines become plugins
+  unsigned int count = 0u;
+#if HAVE_OGRE
+  count++;
+#endif
+#if HAVE_OPTIX
+  count++;
+#endif
   EXPECT_EQ(count, engineCount());
 
   // check get engine

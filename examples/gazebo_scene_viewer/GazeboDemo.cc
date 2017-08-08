@@ -39,7 +39,7 @@ void Connect()
 
 ScenePtr CreateScene(const std::string &_engine)
 {
-  RenderEngine *engine = rendering::get_engine(_engine);
+  RenderEngine *engine = rendering::engine(_engine);
   if (!engine)
   {
     std::cout << "Engine '" << _engine

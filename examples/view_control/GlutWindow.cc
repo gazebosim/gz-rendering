@@ -92,6 +92,10 @@ std::mutex g_mouseMutex;
 //////////////////////////////////////////////////
 void GlutMouseButton(int button, int state, int x, int y)
 {
+  // ignore unknown mouse button numbers
+  if (button >= 5)
+    return;
+
   std::lock_guard<std::mutex> lock(g_mouseMutex);
   g_mouse.button = button;
   g_mouse.state = state;
@@ -180,7 +184,6 @@ void HandleMouse()
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
-      ignerr << "Empty Ray Query results" << std::endl;
       return;
     }
 

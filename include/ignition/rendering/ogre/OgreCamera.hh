@@ -63,6 +63,8 @@ namespace ignition
 
       public: virtual math::Matrix4d ProjectionMatrix() const;
 
+      public: virtual math::Matrix4d ViewMatrix() const;
+
       protected: virtual RenderTargetPtr RenderTarget() const;
 
       protected: virtual void Init();

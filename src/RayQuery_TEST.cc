@@ -89,26 +89,6 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
   EXPECT_LT(result.distance, 0.0);
   EXPECT_EQ(0u, result.objectId);
   EXPECT_FALSE((result));
-
-      math::Matrix4d projectionMatrix = camera->ProjectionMatrix();
-      math::Matrix4d viewMatrix = math::Matrix4d(camera->WorldPose());
-      math::Vector3d start(pos.X(), pos.Y(), -1.0);
-      math::Vector3d end(pos.X(), pos.Y(), 0.0);
-      math::Matrix4d viewProjInv = (projectionMatrix * viewMatrix).Inverse();
-
-      std::cerr << "  ray origin b4 " << rayQuery->Origin() << std::endl;
-      std::cerr << " origin b4 " << start << std::endl;
-      std::cerr << " end b4 " << end << std::endl;
-      std::cerr << " viewMatrix " << viewMatrix << std::endl;
-
-      start = viewProjInv * start;
-      end = viewProjInv * end;
-
-      std::cerr << " cam pos " << camera->WorldPose() << std::endl;
-      std::cerr << " origin " << start << std::endl;
-      std::cerr << " end " << end << std::endl;
-      std::cerr << " direction " << (end-start).Normalize() << std::endl;
-
 }
 
 /////////////////////////////////////////////////

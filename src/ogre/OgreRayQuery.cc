@@ -61,6 +61,7 @@ void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
   OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(_camera);
   Ogre::Ray ray =
       camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
+
   this->origin = OgreConversions::Convert(ray.getOrigin());
   this->direction = OgreConversions::Convert(ray.getDirection());
 }

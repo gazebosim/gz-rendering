@@ -18,6 +18,9 @@
 #define IGNITION_RENDERING_BASE_BASECAMERA_HH_
 
 #include <string>
+
+#include <ignition/math/Matrix3.hh>
+
 #include <ignition/common/Event.hh>
 #include <ignition/common/Console.hh>
 
@@ -78,6 +81,8 @@ namespace ignition
       public: virtual RenderWindowPtr CreateRenderWindow();
 
       public: virtual math::Matrix4d ProjectionMatrix() const;
+
+      public: virtual math::Matrix4d ViewMatrix() const;
 
       protected: virtual void *CreateImageBuffer() const;
 
@@ -264,6 +269,24 @@ namespace ignition
       // Return projection matrix for perspective and orthographic cameras
       ignerr << "Projection matrix not implemented yet" << std::endl;
       return math::Matrix4d::Identity;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Matrix4d BaseCamera<T>::ViewMatrix() const
+    {
+      math::Matrix3d r(this->WorldPose().Rot());
+      // transform from y up to z up
+      math::Matrix3d tf(0, 0, -1,
+                       -1, 0,  0,
+                        0, 1,  0);
+      r = r * tf;
+      r.Transpose();
+      math::Vector3d t = r  * this->WorldPose().Pos() * -1;
+      math::Matrix4d result = math::Matrix4d::Identity;
+      result = r;
+      result.Translate(t);
+      return result;
     }
   }
 }

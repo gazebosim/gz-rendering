@@ -165,6 +165,10 @@ namespace ignition
       /// \brief Get the projection matrix for this camera
       /// \return Camera projection matrix
       public: virtual math::Matrix4d ProjectionMatrix() const = 0;
+
+      /// \brief Get the view matrix for this camera
+      /// \return Camera view matrix
+      public: virtual math::Matrix4d ViewMatrix() const = 0;
     };
   }
 }

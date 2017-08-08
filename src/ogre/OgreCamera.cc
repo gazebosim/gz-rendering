@@ -178,3 +178,9 @@ math::Matrix4d OgreCamera::ProjectionMatrix() const
 {
   return OgreConversions::Convert(this->ogreCamera->getProjectionMatrix());
 }
+
+//////////////////////////////////////////////////
+math::Matrix4d OgreCamera::ViewMatrix() const
+{
+  return OgreConversions::Convert(this->ogreCamera->getViewMatrix(true));
+}

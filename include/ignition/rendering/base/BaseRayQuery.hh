@@ -17,6 +17,9 @@
 #ifndef IGNITION_RENDERING_BASE_BASERAYQUERY_HH_
 #define IGNITION_RENDERING_BASE_BASERAYQUERY_HH_
 
+#include <ignition/math/Matrix4.hh>
+#include <ignition/math/Vector3.hh>
+
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -110,15 +113,29 @@ namespace ignition
         const ignition::math::Vector2d &_coord)
     {
       math::Matrix4d projectionMatrix = _camera->ProjectionMatrix();
-      math::Matrix4d viewMatrix = math::Matrix4d(_camera->WorldPose());
+      math::Matrix4d viewMatrix = _camera->ViewMatrix();
       math::Vector3d start(_coord.X(), _coord.Y(), -1.0);
       math::Vector3d end(_coord.X(), _coord.Y(), 0.0);
       math::Matrix4d viewProjInv = (projectionMatrix * viewMatrix).Inverse();
+
+      // rotate start and end
+      // ign math does not support matrix4 * vec4
+      // so calc homogeneous coordinate w ourselves
+      double startw = viewProjInv(3, 0) * start[0] +
+                      viewProjInv(3, 1) * start[1] +
+                      viewProjInv(3, 2) * start[2] + viewProjInv(3, 3);
+      double endw = viewProjInv(3, 0) * end[0] +
+                    viewProjInv(3, 1) * end[1] +
+                    viewProjInv(3, 2) * end[2] + viewProjInv(3, 3);
       start = viewProjInv * start;
       end = viewProjInv * end;
+      // normalize
+      start = start / startw;
+      end = end / endw;
+      math::Vector3d dir = (end - start).Normalize();
 
-      this->origin =  start;
-      this->direction = (end - start).Normalize();
+      this->origin.Set(start.X(), start.Y(), start.Z());
+      this->direction.Set(dir.X(), dir.Y(), dir.Z());
     }
 
     //////////////////////////////////////////////////

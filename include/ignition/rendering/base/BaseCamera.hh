@@ -45,11 +45,11 @@ namespace ignition
 
       public: virtual unsigned int ImageWidth() const;
 
-      public: virtual void SetImageWidth(unsigned int _width);
+      public: virtual void SetImageWidth(const unsigned int _width);
 
       public: virtual unsigned int ImageHeight() const;
 
-      public: virtual void SetImageHeight(unsigned int _height);
+      public: virtual void SetImageHeight(const unsigned int _height);
 
       public: virtual PixelFormat ImageFormat() const = 0;
 
@@ -57,9 +57,25 @@ namespace ignition
 
       public: virtual unsigned int ImageMemorySize() const;
 
-      public: virtual void SetHFOV(const math::Angle &_angle) = 0;
+      public: virtual math::Angle HFOV() const;
 
-      public: virtual void SetAspectRatio(double _ratio) = 0;
+      public: virtual void SetHFOV(const math::Angle &_hfov);
+
+      public: virtual double AspectRatio() const;
+
+      public: virtual void SetAspectRatio(const double _ratio);
+
+      public: virtual unsigned int AntiAliasing() const;
+
+      public: virtual void SetAntiAliasing(const unsigned int _aa);
+
+      public: virtual double FarClipPlane() const;
+
+      public: virtual void SetFarClipPlane(const double _far);
+
+      public: virtual double NearClipPlane() const;
+
+      public: virtual void SetNearClipPlane(const double _near);
 
       public: virtual void PreRender();
 
@@ -96,6 +112,24 @@ namespace ignition
                      unsigned int, const std::string &)> newFrameEvent;
 
       protected: ImagePtr imageBuffer;
+
+      /// \brief Near clipping plane distance
+      protected: double nearClip = 0.0;
+
+      /// \brief Far clipping plane distance
+      protected: double farClip = 0.0;
+
+      /// \brief Aspect ratio
+      protected: double aspect = 1.0;
+
+      /// \brief Vertical camera field of view
+      protected: math::Angle vfov;
+
+      /// \brief Horizontal camera field of view
+      protected: math::Angle hfov;
+
+      /// \brief Anti-aliasing
+      protected: unsigned int antiAliasing = 0u;
     };
 
     //////////////////////////////////////////////////
@@ -119,7 +153,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::SetImageWidth(unsigned int _width)
+    void BaseCamera<T>::SetImageWidth(const unsigned int _width)
     {
       this->RenderTarget()->SetWidth(_width);
     }
@@ -133,7 +167,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::SetImageHeight(unsigned int _height)
+    void BaseCamera<T>::SetImageHeight(const unsigned int _height)
     {
       this->RenderTarget()->SetHeight(_height);
     }
@@ -265,10 +299,42 @@ namespace ignition
     template <class T>
     math::Matrix4d BaseCamera<T>::ProjectionMatrix() const
     {
+      // perspective projection
+      double ratio = this->AspectRatio();
+      double hfov = this->HFOV().Radian();
+      double vfov =  2.0 * std::atan(std::tan(hfov / 2.0) / ratio);
+      double f = 1.0;
+      double near = this->NearClipPlane();
+      double far = this->FarClipPlane();
+      double top = near * std::tan(0.5*vfov) / f;
+      double height = 2 * top;
+      double width = ratio * height;
+      double left = -0.5 * width;
+      double right = left + width;
+      double bottom = top - height;
+
+      double invw = 1.0 / (right - left);
+      double invh = 1.0 / (top - bottom);
+      double invd = 1.0 / (far - near);
+      double x = 2 * near * invw;
+      double y = 2 * near * invh;
+      double a = (right + left) * invw;
+      double b = (top + bottom) * invh;
+      double c = -(far + near) * invd;
+      double d = -2 * far * near * invd;
+      math::Matrix4d result;
+      result(0, 0) = x;
+      result(0, 2) = a;
+      result(1, 1) = y;
+      result(1, 2) = b;
+      result(2, 2) = c;
+      result(2, 3) = d;
+      result(3, 2) = -1;
+
       // TODO
-      // Return projection matrix for perspective and orthographic cameras
-      ignerr << "Projection matrix not implemented yet" << std::endl;
-      return math::Matrix4d::Identity;
+      // compute projection matrix for orthographic camera
+
+      return result;
     }
 
     //////////////////////////////////////////////////
@@ -287,6 +353,76 @@ namespace ignition
       result = r;
       result.Translate(t);
       return result;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Angle BaseCamera<T>::HFOV() const
+    {
+      return this->hfov;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetHFOV(const math::Angle &_hfov)
+    {
+      this->hfov= _hfov;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseCamera<T>::AspectRatio() const
+    {
+      return this->aspect;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetAspectRatio(const double _aspect)
+    {
+      this->aspect = _aspect;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseCamera<T>::AntiAliasing() const
+    {
+      return this->antiAliasing;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetAntiAliasing(const unsigned int _aa)
+    {
+      this->antiAliasing = _aa;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseCamera<T>::FarClipPlane() const
+    {
+      return this->farClip;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetFarClipPlane(const double _far)
+    {
+      this->farClip = _far;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseCamera<T>::NearClipPlane() const
+    {
+      return this->nearClip;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetNearClipPlane(const double _near)
+    {
+      this->nearClip = _near;
     }
   }
 }

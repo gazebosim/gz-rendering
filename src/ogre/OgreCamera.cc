@@ -47,14 +47,9 @@ void OgreCamera::SetImageFormat(PixelFormat _format)
 }
 
 //////////////////////////////////////////////////
-math::Angle OgreCamera::HFOV() const
-{
-  return this->xfov;
-}
-
-//////////////////////////////////////////////////
 void OgreCamera::SetHFOV(const math::Angle &_angle)
 {
+  BaseCamera::SetHFOV(_angle);
   double width  = static_cast<double>(this->ImageWidth());
   double height = static_cast<double>(this->ImageHeight());
   double ratio  = width / height;
@@ -62,9 +57,8 @@ void OgreCamera::SetHFOV(const math::Angle &_angle)
   double hfov = _angle.Radian();
   double vfov = 2.0 * atan(tan(hfov / 2.0) / ratio);
 
-  this->ogreCamera->setAspectRatio(ratio);
+  this->SetAspectRatio(ratio);
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
-  this->xfov = _angle;
 }
 
 //////////////////////////////////////////////////
@@ -74,8 +68,9 @@ double OgreCamera::AspectRatio() const
 }
 
 //////////////////////////////////////////////////
-void OgreCamera::SetAspectRatio(double _ratio)
+void OgreCamera::SetAspectRatio(const double _ratio)
 {
+  BaseCamera::SetAspectRatio(_ratio);
   return this->ogreCamera->setAspectRatio(_ratio);
 }
 
@@ -86,8 +81,9 @@ unsigned int OgreCamera::AntiAliasing() const
 }
 
 //////////////////////////////////////////////////
-void OgreCamera::SetAntiAliasing(unsigned int _aa)
+void OgreCamera::SetAntiAliasing(const unsigned int _aa)
 {
+  BaseCamera::SetAntiAliasing(_aa);
   this->renderTexture->SetAntiAliasing(_aa);
 }
 
@@ -140,12 +136,11 @@ void OgreCamera::CreateCamera()
 
   // TODO: provide api access
   this->ogreCamera->setAutoAspectRatio(true);
-  this->ogreCamera->setNearClipDistance(0.001);
-  this->ogreCamera->setFarClipDistance(1000);
+  this->SetAspectRatio(1);
+  this->SetNearClipPlane(0.001);
+  this->SetFarClipPlane(1000);
   this->ogreCamera->setRenderingDistance(0);
-  this->ogreCamera->setAspectRatio(1);
   this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
-  this->ogreCamera->setFOVy(Ogre::Degree(80));
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
 }
@@ -183,4 +178,19 @@ math::Matrix4d OgreCamera::ProjectionMatrix() const
 math::Matrix4d OgreCamera::ViewMatrix() const
 {
   return OgreConversions::Convert(this->ogreCamera->getViewMatrix(true));
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetNearClipPlane(const double _near)
+{
+  // this->nearClip = _near;
+  BaseCamera::SetNearClipPlane(_near);
+  this->ogreCamera->setNearClipDistance(_near);
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetFarClipPlane(const double _far)
+{
+  BaseCamera::SetFarClipPlane(_far);
+  this->ogreCamera->setFarClipDistance(_far);
 }

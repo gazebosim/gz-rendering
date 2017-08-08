@@ -37,17 +37,11 @@ namespace ignition
 
       public: virtual void SetImageFormat(PixelFormat _format);
 
-      public: virtual math::Angle HFOV() const;
-
       public: virtual void SetHFOV(const math::Angle &_angle);
 
-      public: virtual double AspectRatio() const;
+      public: virtual void SetAspectRatio(const double _ratio);
 
-      public: virtual void SetAspectRatio(double _ratio);
-
-      public: virtual unsigned int AntiAliasing() const;
-
-      public: virtual void SetAntiAliasing(unsigned int _aa);
+      public: virtual void SetAntiAliasing(const unsigned int _aa);
 
       public: virtual void PreRender();
 
@@ -78,16 +72,6 @@ namespace ignition
       protected: optix::Program optixErrorProgram;
 
       protected: OptixRenderTexturePtr renderTexture;
-
-      protected: unsigned int imageWidth;
-
-      protected: unsigned int imageHeight;
-
-      protected: math::Angle xFieldOfView;
-
-      protected: unsigned int aspectRatio;
-
-      protected: unsigned int antiAliasing;
 
       protected: bool cameraDirty;
 

@@ -91,7 +91,7 @@ namespace ignition
       /// cameras vertical field-of-view. It is often the \code image_height /
       /// image_width \endcode but this is not necessarily true.
       /// \return The camera's aspect ratio
-      public: virtual void SetAspectRatio(double _ratio) = 0;
+      public: virtual void SetAspectRatio(const double _ratio) = 0;
 
       // TODO: add auto-aspect ratio
 
@@ -104,7 +104,23 @@ namespace ignition
       /// can significantly slow-down rendering times, depending on the
       /// underlying render engine.
       /// \param[in] _aa Level of anti-aliasing used during rendering
-      public: virtual void SetAntiAliasing(unsigned int _aa) = 0;
+      public: virtual void SetAntiAliasing(const unsigned int _aa) = 0;
+
+      /// \brief Get the camera's far clipping plane distance
+      /// \return Far clipping plane distance
+      public: virtual double FarClipPlane() const = 0;
+
+      /// \brief Set the camera's far clipping plane distance
+      /// \param[in] _far Far clipping plane distance
+      public: virtual void SetFarClipPlane(const double _far) = 0;
+
+      /// \brief Get the camera's near clipping plane distance
+      /// \return Near clipping plane distance
+      public: virtual double NearClipPlane() const = 0;
+
+      /// \brief Set the camera's near clipping plane distance
+      /// \param[in] _near Near clipping plane distance
+      public: virtual void SetNearClipPlane(const double _near) = 0;
 
       /// \brief Renders the current scene using this camera. This function
       /// assumes PreRender() has already been called on the parent Scene,

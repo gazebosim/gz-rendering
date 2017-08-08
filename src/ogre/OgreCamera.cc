@@ -14,7 +14,9 @@
  * limitations under the License.
  *
  */
+
 #include "ignition/rendering/ogre/OgreCamera.hh"
+#include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
@@ -171,10 +173,8 @@ RenderWindowPtr OgreCamera::CreateRenderWindow()
   return renderWindow;
 }
 
-/*
 //////////////////////////////////////////////////
-void OgreCamera::SetRenderTarget(OgreRenderTargetPtr _renderTarget)
+math::Matrix4d OgreCamera::ProjectionMatrix() const
 {
-  this->renderTarget = renderWindow;
+  return OgreConversions::Convert(this->ogreCamera->getProjectionMatrix());
 }
-*/

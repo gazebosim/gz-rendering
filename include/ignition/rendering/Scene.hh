@@ -677,6 +677,10 @@ namespace ignition
       /// \return The created render-texture
       public: virtual RenderTexturePtr CreateRenderTexture() = 0;
 
+      /// \brief Create new ray query
+      /// \return The created ray query
+      public: virtual RayQueryPtr CreateRayQuery() = 0;
+
       /// \brief Prepare scene for rendering. The scene will flushing any scene
       /// changes by traversing scene-graph, calling PreRender on all objects
       public: virtual void PreRender() = 0;

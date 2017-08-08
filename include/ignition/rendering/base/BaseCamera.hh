@@ -77,6 +77,8 @@ namespace ignition
 
       public: virtual RenderWindowPtr CreateRenderWindow();
 
+      public: virtual math::Matrix4d ProjectionMatrix() const;
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load();
@@ -254,6 +256,14 @@ namespace ignition
       return RenderWindowPtr();
     }
 
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Matrix4d BaseCamera<T>::ProjectionMatrix() const
+    {
+      // TODO
+      // Return projection matrix for perspective and orthographic cameras
+      return math::Matrix4d::Identity;
+    }
   }
 }
 #endif

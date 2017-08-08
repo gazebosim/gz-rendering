@@ -24,7 +24,9 @@ set (headers
   Mesh.hh
   Node.hh
   Object.hh
+  OrbitViewController.hh
   PixelFormat.hh
+  RayQuery.hh
   RenderingIface.hh
   RenderEngine.hh
   RenderEngineManager.hh
@@ -36,6 +38,7 @@ set (headers
   Storage.hh
   SystemPaths.hh
   Util.hh
+  ViewController.hh
   Visual.hh
 )
 

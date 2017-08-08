@@ -61,6 +61,8 @@ namespace ignition
 
       public: virtual RenderWindowPtr CreateRenderWindow();
 
+      public: virtual math::Matrix4d ProjectionMatrix() const;
+
       protected: virtual RenderTargetPtr RenderTarget() const;
 
       protected: virtual void Init();
@@ -78,6 +80,7 @@ namespace ignition
       protected: math::Color backgroundColor;
 
       private: friend class OgreScene;
+      private: friend class OgreRayQuery;
     };
   }
 }

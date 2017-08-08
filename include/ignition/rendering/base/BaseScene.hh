@@ -257,6 +257,8 @@ namespace ignition
 
       public: virtual RenderTexturePtr CreateRenderTexture();
 
+      public: virtual RayQueryPtr CreateRayQuery();
+
       public: virtual void PreRender();
 
       public: virtual void Clear();
@@ -318,6 +320,9 @@ namespace ignition
                      const std::string &_name) = 0;
 
       protected: virtual RenderTexturePtr CreateRenderTextureImpl(
+                     unsigned int _id, const std::string &_name) = 0;
+
+      protected: virtual RayQueryPtr CreateRayQueryImpl(
                      unsigned int _id, const std::string &_name) = 0;
 
       protected: virtual LightStorePtr Lights() const = 0;

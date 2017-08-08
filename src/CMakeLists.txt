@@ -13,6 +13,7 @@ endif ()
 set (sources
   Image.cc
   MeshDescriptor.cc
+  OrbitViewController.cc
   PixelFormat.cc
   RenderEngineManager.cc
   RenderingIface.cc

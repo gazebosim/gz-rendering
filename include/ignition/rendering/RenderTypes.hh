@@ -40,16 +40,16 @@ namespace ignition
     class Object;
     class ObjectFactory;
     class PointLight;
+    class RayQuery;
     class RenderEngine;
+    class RenderTarget;
+    class RenderTexture;
+    class RenderWindow;
     class Scene;
     class Sensor;
     class SpotLight;
     class SubMesh;
     class Visual;
-    class RenderTarget;
-    class RenderTexture;
-    class RenderWindow;
-
 
     /// \def ArrowVisualPtr
     /// \brief Shared pointer to ArrowVisual
@@ -107,6 +107,21 @@ namespace ignition
     /// \brief Shared pointer to PointLight
     typedef shared_ptr<PointLight> PointLightPtr;
 
+    /// \def RayQueryPtr
+    /// \brief Shared pointer to RayQuery
+    typedef shared_ptr<RayQuery> RayQueryPtr;
+
+    /// \def RenderTargetPtr
+    /// \brief Shared pointer to RenderTarget
+    typedef shared_ptr<RenderTarget> RenderTargetPtr;
+
+    /// \def RenderTexturePtr
+    /// \brief Shared pointer to RenderTexture
+    typedef shared_ptr<RenderTexture> RenderTexturePtr;
+
+    /// \def RenderWindowPtr
+    /// \brief Shared pointer to RenderWindow
+    typedef shared_ptr<RenderWindow> RenderWindowPtr;
     /// \def ScenePtr
     /// \brief Shared pointer to Scene
     typedef shared_ptr<Scene> ScenePtr;
@@ -126,18 +141,6 @@ namespace ignition
     /// \def VisualPtr
     /// \brief Shared pointer to Visual
     typedef shared_ptr<Visual> VisualPtr;
-
-    /// \def RenderTargetPtr
-    /// \brief Shared pointer to RenderTarget
-    typedef shared_ptr<RenderTarget> RenderTargetPtr;
-
-    /// \def RenderTexturePtr
-    /// \brief Shared pointer to RenderTexture
-    typedef shared_ptr<RenderTexture> RenderTexturePtr;
-
-    /// \def RenderWindowPtr
-    /// \brief Shared pointer to RenderWindow
-    typedef shared_ptr<RenderWindow> RenderWindowPtr;
 
     /// \def const ArrowVisualPtr
     /// \brief Shared pointer to const ArrowVisual
@@ -195,6 +198,22 @@ namespace ignition
     /// \brief Shared pointer to const PointLight
     typedef shared_ptr<const PointLight> ConstPointLightPtr;
 
+    /// \def RayQueryPtr
+    /// \brief Shared pointer to RayQuery
+    typedef shared_ptr<const RayQuery> ConstRayQuery;
+
+    /// \def const RenderTargetPtr
+    /// \brief Shared pointer to const RenderTarget
+    typedef shared_ptr<const RenderTarget> ConstRenderTargetPtr;
+
+    /// \def const RenderTexturePtr
+    /// \brief Shared pointer to const RenderTexture
+    typedef shared_ptr<const RenderTexture> ConstRenderTexturePtr;
+
+    /// \def const RenderWindowPtr
+    /// \brief Shared pointer to const RenderWindow
+    typedef shared_ptr<const RenderWindow> ConstRenderWindowPtr;
+
     /// \def const ScenePtr
     /// \brief Shared pointer to const Scene
     typedef shared_ptr<const Scene> ConstScenePtr;
@@ -214,14 +233,6 @@ namespace ignition
     /// \def const VisualPtr
     /// \brief Shared pointer to const Visual
     typedef shared_ptr<const Visual> ConstVisualPtr;
-
-    /// \def const RenderTargetPtr
-    /// \brief Shared pointer to const RenderTarget
-    typedef shared_ptr<const RenderTarget> ConstRenderTargetPtr;
-
-    /// \def const RenderTexturePtr
-    /// \brief Shared pointer to const RenderTexture
-    typedef shared_ptr<const RenderTexture> ConstRenderTexturePtr;
   }
 }
 #endif

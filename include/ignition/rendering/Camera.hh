@@ -18,7 +18,10 @@
 #define IGNITION_RENDERING_CAMERA_HH_
 
 #include <string>
+
 #include <ignition/common/Event.hh>
+#include <ignition/math/Matrix4.hh>
+
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Sensor.hh"
@@ -158,6 +161,10 @@ namespace ignition
       /// \brief Create a render window.
       /// \return A pointer to the render window.
       public: virtual RenderWindowPtr CreateRenderWindow() = 0;
+
+      /// \brief Get the projection matrix for this camera
+      /// \return Camera projection matrix
+      public: virtual math::Matrix4d ProjectionMatrix() const = 0;
     };
   }
 }

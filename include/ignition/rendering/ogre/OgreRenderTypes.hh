@@ -36,15 +36,16 @@ namespace ignition
     class OgreNode;
     class OgreObject;
     class OgrePointLight;
+    class OgreRayQuery;
     class OgreRenderEngine;
+    class OgreRenderTarget;
+    class OgreRenderTexture;
+    class OgreRenderWindow;
     class OgreScene;
     class OgreSensor;
     class OgreSpotLight;
     class OgreSubMesh;
     class OgreVisual;
-    class OgreRenderTarget;
-    class OgreRenderTexture;
-    class OgreRenderWindow;
 
     typedef BaseSceneStore<OgreScene>       OgreSceneStore;
     typedef BaseNodeStore<OgreNode>         OgreNodeStore;
@@ -68,6 +69,11 @@ namespace ignition
     typedef shared_ptr<OgreNode>                 OgreNodePtr;
     typedef shared_ptr<OgreObject>               OgreObjectPtr;
     typedef shared_ptr<OgrePointLight>           OgrePointLightPtr;
+    typedef shared_ptr<OgreRayQuery>             OgreRayQueryPtr;
+    typedef shared_ptr<OgreRenderEngine>         OgreRenderEnginePtr;
+    typedef shared_ptr<OgreRenderTarget>         OgreRenderTargetPtr;
+    typedef shared_ptr<OgreRenderTexture>        OgreRenderTexturePtr;
+    typedef shared_ptr<OgreRenderWindow>         OgreRenderWindowPtr;
     typedef shared_ptr<OgreScene>                OgreScenePtr;
     typedef shared_ptr<OgreSensor>               OgreSensorPtr;
     typedef shared_ptr<OgreSpotLight>            OgreSpotLightPtr;
@@ -81,9 +87,6 @@ namespace ignition
     typedef shared_ptr<OgreGeometryStore>        OgreGeometryStorePtr;
     typedef shared_ptr<OgreSubMeshStore>         OgreSubMeshStorePtr;
     typedef shared_ptr<OgreMaterialMap>          OgreMaterialMapPtr;
-    typedef shared_ptr<OgreRenderTarget>         OgreRenderTargetPtr;
-    typedef shared_ptr<OgreRenderTexture>        OgreRenderTexturePtr;
-    typedef shared_ptr<OgreRenderWindow>         OgreRenderWindowPtr;
   }
 }
 #endif

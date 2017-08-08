@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/ogre.hh"
 
@@ -291,6 +292,15 @@ RenderTexturePtr OgreScene::CreateRenderTextureImpl(unsigned int _id,
   OgreRenderTexturePtr renderTexture(new OgreRenderTexture);
   bool result = this->InitObject(renderTexture, _id, _name);
   return (result) ? renderTexture : nullptr;
+}
+
+//////////////////////////////////////////////////
+RayQueryPtr OgreScene::CreateRayQueryImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreRayQueryPtr rayQuery(new OgreRayQuery);
+  bool result = this->InitObject(rayQuery, _id, _name);
+  return (result) ? rayQuery : nullptr;
 }
 
 //////////////////////////////////////////////////

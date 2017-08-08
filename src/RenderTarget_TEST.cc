@@ -38,7 +38,7 @@ class RenderTargetTest : public testing::Test,
 void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::get_engine(_renderEngine);
+  RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine

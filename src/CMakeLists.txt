@@ -27,6 +27,7 @@ set (gtest_sources
 set (gtest_sources_dri
   RayQuery_TEST.cc
   RenderTarget_TEST.cc
+  RenderingIface_TEST.cc
 )
 
 set_property(

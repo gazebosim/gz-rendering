@@ -122,7 +122,7 @@ bool OgreRenderEngine::IsEnabled() const
 //////////////////////////////////////////////////
 std::string OgreRenderEngine::Name() const
 {
-  return "Ogre";
+  return "ogre";
 }
 
 //////////////////////////////////////////////////

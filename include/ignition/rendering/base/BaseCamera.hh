@@ -122,9 +122,6 @@ namespace ignition
       /// \brief Aspect ratio
       protected: double aspect = 1.0;
 
-      /// \brief Vertical camera field of view
-      protected: math::Angle vfov;
-
       /// \brief Horizontal camera field of view
       protected: math::Angle hfov;
 

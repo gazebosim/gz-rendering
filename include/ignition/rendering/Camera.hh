@@ -67,10 +67,6 @@ namespace ignition
       /// \param[in] _format New image pixel format
       public: virtual void SetImageFormat(PixelFormat _format) = 0;
 
-      /// \brief Get the image channel depth
-      /// \return The image channel depth
-      public: virtual unsigned int ImageDepth() const = 0;
-
       /// \brief Get the total image memory size in bytes
       /// \return The image memory size in bytes
       public: virtual unsigned int ImageMemorySize() const = 0;

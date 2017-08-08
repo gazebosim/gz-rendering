@@ -37,10 +37,6 @@ namespace ignition
 
       public: virtual ~OgreCamera();
 
-      public: virtual PixelFormat ImageFormat() const;
-
-      public: virtual void SetImageFormat(PixelFormat _format);
-
       public: virtual void SetHFOV(const math::Angle &_angle);
 
       public: virtual double AspectRatio() const;

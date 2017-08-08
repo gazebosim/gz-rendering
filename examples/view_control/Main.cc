@@ -136,7 +136,7 @@ void BuildScene(ScenePtr _scene)
 CameraPtr CreateCamera(const std::string &_engineName)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::get_engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName

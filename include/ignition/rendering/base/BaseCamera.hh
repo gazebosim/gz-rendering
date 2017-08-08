@@ -51,11 +51,11 @@ namespace ignition
 
       public: virtual void SetImageHeight(const unsigned int _height);
 
-      public: virtual PixelFormat ImageFormat() const = 0;
-
-      public: virtual unsigned int ImageDepth() const;
+      public: virtual PixelFormat ImageFormat() const;
 
       public: virtual unsigned int ImageMemorySize() const;
+
+      public: virtual void SetImageFormat(PixelFormat _format);
 
       public: virtual math::Angle HFOV() const;
 
@@ -114,19 +114,19 @@ namespace ignition
       protected: ImagePtr imageBuffer;
 
       /// \brief Near clipping plane distance
-      protected: double nearClip = 0.0;
+      protected: double nearClip = 0.001;
 
       /// \brief Far clipping plane distance
-      protected: double farClip = 0.0;
+      protected: double farClip = 1000.0;
 
       /// \brief Aspect ratio
-      protected: double aspect = 1.0;
+      protected: double aspect = 1.3333333;
 
       /// \brief Horizontal camera field of view
       protected: math::Angle hfov;
 
       /// \brief Anti-aliasing
-      protected: unsigned int antiAliasing = 0u;
+      protected: unsigned int antiAliasing = 1u;
     };
 
     //////////////////////////////////////////////////
@@ -171,19 +171,26 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseCamera<T>::ImageDepth() const
-    {
-      return PixelUtil::ChannelCount(this->ImageFormat());
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
     unsigned int BaseCamera<T>::ImageMemorySize() const
     {
       PixelFormat format = this->ImageFormat();
       unsigned int width = this->ImageWidth();
       unsigned int height = this->ImageHeight();
       return PixelUtil::MemorySize(format, width, height);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    PixelFormat BaseCamera<T>::ImageFormat() const
+    {
+      return this->RenderTarget()->Format();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetImageFormat(PixelFormat _format)
+    {
+      this->RenderTarget()->SetFormat(_format);
     }
 
     //////////////////////////////////////////////////
@@ -273,13 +280,15 @@ namespace ignition
     void BaseCamera<T>::Reset()
     {
       math::Angle fov;
-      fov.Degree(80);
+      fov.Degree(60);
       this->SetImageWidth(1);
       this->SetImageHeight(1);
       this->SetImageFormat(PF_R8G8B8);
-      this->SetAspectRatio(1);
-      this->SetAntiAliasing(0);
+      this->SetAspectRatio(1.33333);
+      this->SetAntiAliasing(0u);
       this->SetHFOV(fov);
+      this->SetNearClipPlane(0.001);
+      this->SetFarClipPlane(1000);
     }
 
     //////////////////////////////////////////////////

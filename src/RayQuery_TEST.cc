@@ -38,7 +38,7 @@ class RayQueryTest : public testing::Test,
 void RayQueryTest::RayQuery(const std::string &_renderEngine)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::get_engine(_renderEngine);
+  RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine

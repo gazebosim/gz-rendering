@@ -49,18 +49,6 @@ OptixCamera::~OptixCamera()
 }
 
 //////////////////////////////////////////////////
-PixelFormat OptixCamera::ImageFormat() const
-{
-  // return PF_UNKNOWN;
-  return PF_R8G8B8;
-}
-
-//////////////////////////////////////////////////
-void OptixCamera::SetImageFormat(PixelFormat /*_format*/)
-{
-}
-
-//////////////////////////////////////////////////
 void OptixCamera::SetHFOV(const math::Angle &_angle)
 {
   BaseCamera::SetHFOV(_angle);

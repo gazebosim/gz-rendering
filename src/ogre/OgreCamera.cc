@@ -35,29 +35,11 @@ OgreCamera::~OgreCamera()
 }
 
 //////////////////////////////////////////////////
-PixelFormat OgreCamera::ImageFormat() const
-{
-  return this->renderTexture->Format();
-}
-
-//////////////////////////////////////////////////
-void OgreCamera::SetImageFormat(PixelFormat _format)
-{
-  this->renderTexture->SetFormat(_format);
-}
-
-//////////////////////////////////////////////////
 void OgreCamera::SetHFOV(const math::Angle &_angle)
 {
   BaseCamera::SetHFOV(_angle);
-  double width  = static_cast<double>(this->ImageWidth());
-  double height = static_cast<double>(this->ImageHeight());
-  double ratio  = width / height;
-
   double hfov = _angle.Radian();
-  double vfov = 2.0 * atan(tan(hfov / 2.0) / ratio);
-
-  this->SetAspectRatio(ratio);
+  double vfov = 2.0 * atan(tan(hfov / 2.0) / this->aspect);
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
 }
 
@@ -136,9 +118,6 @@ void OgreCamera::CreateCamera()
 
   // TODO: provide api access
   this->ogreCamera->setAutoAspectRatio(true);
-  this->SetAspectRatio(1);
-  this->SetNearClipPlane(0.001);
-  this->SetFarClipPlane(1000);
   this->ogreCamera->setRenderingDistance(0);
   this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);

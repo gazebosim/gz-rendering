@@ -178,7 +178,6 @@ void HandleMouse()
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
-      ignerr << "Empty Ray Query results" << std::endl;
       return;
     }
 

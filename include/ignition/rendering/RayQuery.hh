@@ -63,7 +63,6 @@ namespace ignition
       /// \return Ray origin
       public: virtual math::Vector3d Origin() const = 0;
 
-
       /// \brief Set ray direction
       /// \param[in] _origin Ray origin
       public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
@@ -74,7 +73,7 @@ namespace ignition
 
       /// \brief Create the ray query from camera
       /// \param[in] _camera Camera to construct ray
-      /// \param[in] _coord normalized device coords [-1 +1]
+      /// \param[in] _coord normalized device coords [-1, +1]
       public: virtual void SetFromCamera(const CameraPtr &_camera,
                 const math::Vector2d &_coord) = 0;
 

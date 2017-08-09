@@ -38,7 +38,7 @@ namespace ignition
       /// \brief Constructor
       protected: BaseRayQuery();
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~BaseRayQuery();
 
       // Documentation inherited

@@ -17,7 +17,6 @@
 #ifndef IGNITION_RENDERING_RAYQUERY_HH_
 #define IGNITION_RENDERING_RAYQUERY_HH_
 
-#include <ignition/math/Vector2.hh>
 #include <ignition/math/Vector3.hh>
 
 #include "ignition/rendering/Camera.hh"

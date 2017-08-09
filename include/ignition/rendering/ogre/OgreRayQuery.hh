@@ -40,7 +40,7 @@ namespace ignition
       /// \brief Constructor
       protected: OgreRayQuery();
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~OgreRayQuery();
 
       // Documentation inherited

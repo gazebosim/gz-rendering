@@ -20,7 +20,6 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"

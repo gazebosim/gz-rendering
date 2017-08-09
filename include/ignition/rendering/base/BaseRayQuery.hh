@@ -144,6 +144,7 @@ namespace ignition
     {
       // TODO implement a generic ray query here?
       RayQueryResult result;
+      result.distance = -1;
       return result;
     }
 

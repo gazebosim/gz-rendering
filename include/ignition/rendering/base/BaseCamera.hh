@@ -126,7 +126,7 @@ namespace ignition
       protected: math::Angle hfov;
 
       /// \brief Anti-aliasing
-      protected: unsigned int antiAliasing = 1u;
+      protected: unsigned int antiAliasing = 0u;
     };
 
     //////////////////////////////////////////////////
@@ -355,9 +355,10 @@ namespace ignition
       r = r * tf;
       r.Transpose();
       math::Vector3d t = r  * this->WorldPose().Pos() * -1;
-      math::Matrix4d result = math::Matrix4d::Identity;
+      math::Matrix4d result;
       result = r;
       result.Translate(t);
+      result(3, 3) = 1.0;
       return result;
     }
 

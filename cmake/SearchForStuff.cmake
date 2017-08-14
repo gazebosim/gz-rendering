@@ -174,7 +174,7 @@ endif ()
 
 ########################################
 # Find ignition math
-set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 3)
+set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 4)
 if (NOT DEFINED IGNITION-MATH_LIBRARY_DIRS AND NOT DEFINED IGNITION-MATH_INCLUDE_DIRS AND NOT DEFINED IGNITION-MATH_LIBRARIES)
   find_package(ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION} QUIET)
   if (NOT ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}_FOUND)
@@ -189,13 +189,11 @@ endif()
 
 ########################################
 # Find Ignition Common
-find_package(ignition-common0 QUIET)
-if (NOT ignition-common0_FOUND)
-  BUILD_ERROR ("Missing: Ignition Common (libignition-common0-dev)")
+find_package(ignition-common1 QUIET)
+if (NOT ignition-common1_FOUND)
+  BUILD_ERROR ("Missing: Ignition Common (libignition-common1-dev)")
 else()
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-COMMON_CXX_FLAGS}")
   include_directories(${IGNITION-COMMON_INCLUDE_DIRS})
   link_directories(${IGNITION-COMMON_LIBRARY_DIRS})
 endif()
-
-

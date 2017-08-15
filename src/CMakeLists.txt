@@ -25,6 +25,7 @@ set (gtest_sources
 )
 
 set (gtest_sources_dri
+  OrbitViewController_TEST.cc
   RenderTarget_TEST.cc
   RenderingIface_TEST.cc
 )

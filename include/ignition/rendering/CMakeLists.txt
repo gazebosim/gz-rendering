@@ -36,7 +36,6 @@ set (headers
   Sensor.hh
   ShaderType.hh
   Storage.hh
-  SystemPaths.hh
   Util.hh
   ViewController.hh
   Visual.hh

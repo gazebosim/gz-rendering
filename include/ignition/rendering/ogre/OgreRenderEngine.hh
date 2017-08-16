@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
 
 #include <string>
+#include <vector>
 
 #include <ignition/common/SingletonT.hh>
 
@@ -117,6 +118,9 @@ namespace ignition
       private: Ogre::Root *ogreRoot;
 
       private: Ogre::LogManager *ogreLogManager;
+
+      /// \brief Paths to ogre plugins
+      private: std::vector<std::string> ogrePaths;
 
 #if not (__APPLE__ || _WIN32)
       private: void *dummyDisplay;

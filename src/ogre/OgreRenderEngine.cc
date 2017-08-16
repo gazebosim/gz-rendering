@@ -23,8 +23,6 @@
 # include <GL/glx.h>
 #endif
 
-#include <boost/filesystem.hpp>
-
 #ifndef _WIN32
   #include <dirent.h>
 #else
@@ -34,8 +32,8 @@
   #include <ignition/common/win_dirent.h>
 #endif
 #include <ignition/common/Console.hh>
-
-#include "ignition/rendering/SystemPaths.hh"
+#include <ignition/common/Filesystem.hh>
+#include <ignition/common/Util.hh>
 
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -64,6 +62,8 @@ OgreRenderEngine::OgreRenderEngine() :
 #ifdef OGRE_OVERLAY_NEEDED
   this->ogreOverlaySystem = nullptr;
 #endif
+
+  this->ogrePaths.push_back(std::string(OGRE_RESOURCE_PATH));
 }
 
 //////////////////////////////////////////////////
@@ -157,30 +157,27 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
       Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
           "General");
       // Parse all material files in the path if any exist
-      boost::filesystem::path dir(path);
-
-      if (boost::filesystem::exists(dir) &&
-          boost::filesystem::is_directory(dir))
+      if (common::exists(path) && common::isDirectory(path))
       {
-        std::vector<boost::filesystem::path> paths;
+        std::vector<std::string> paths;
 
-        std::copy(boost::filesystem::directory_iterator(dir),
-            boost::filesystem::directory_iterator(),
-            std::back_inserter(paths));
-
+        common::DirIter endIter;
+        for (common::DirIter dirIter(path); dirIter != endIter; ++dirIter)
+        {
+          paths.push_back(*dirIter);
+        }
         std::sort(paths.begin(), paths.end());
 
         // Iterate over all the models in the current ign-rendering path
-        for (std::vector<boost::filesystem::path>::iterator dIter =
-            paths.begin(); dIter != paths.end(); ++dIter)
+        for (auto dIter = paths.begin(); dIter != paths.end(); ++dIter)
         {
-          if (dIter->filename().extension() == ".material")
+          std::string fullPath = *dIter;
+          std::string matExtension = fullPath.substr(fullPath.size()-9);
+          if (matExtension == ".material")
           {
-            boost::filesystem::path fullPath = path / dIter->filename();
-
             Ogre::DataStreamPtr stream =
               Ogre::ResourceGroupManager::getSingleton().openResource(
-                  fullPath.string(), "General");
+                  fullPath, "General");
 
             // There is a material file under there somewhere, read the thing in
             try
@@ -189,7 +186,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
                   stream, "General");
               Ogre::MaterialPtr matPtr =
                 Ogre::MaterialManager::getSingleton().getByName(
-                    fullPath.string());
+                    fullPath);
 
               if (!matPtr.isNull())
               {
@@ -288,7 +285,10 @@ void OgreRenderEngine::LoadAttempt()
 void OgreRenderEngine::CreateLogger()
 {
   // create log file path
-  std::string logPath = SystemPaths::Instance()->LogPath();
+  std::string logPath;
+  ignition::common::env(IGN_HOMEDIR, logPath);
+  logPath += "/.ignition/rendering/";
+  common::createDirectories(logPath);
   logPath += "/ogre.log";
 
   // create actual log
@@ -368,22 +368,12 @@ void OgreRenderEngine::CreateOverlay()
 //////////////////////////////////////////////////
 void OgreRenderEngine::LoadPlugins()
 {
-  std::list<std::string>::iterator iter;
-  std::list<std::string> ogrePaths =
-    SystemPaths::Instance()->OgrePaths();
-
-  for (iter = ogrePaths.begin();
-       iter != ogrePaths.end(); ++iter)
+  for (auto iter = this->ogrePaths.begin();
+       iter != this->ogrePaths.end(); ++iter)
   {
     std::string path(*iter);
-    DIR *dir = opendir(path.c_str());
-
-    if (dir == nullptr)
-    {
+    if (!common::isDirectory(path))
       continue;
-    }
-
-    closedir(dir);
 
     std::vector<std::string> plugins;
     std::vector<std::string>::iterator piter;
@@ -496,16 +486,11 @@ void OgreRenderEngine::CreateResources()
 
   std::list<std::string> mediaDirs;
   mediaDirs.push_back("media");
-  mediaDirs.push_back("Media");
 
   for (iter = paths.begin(); iter != paths.end(); ++iter)
   {
-    DIR *dir;
-    if ((dir = opendir((*iter).c_str())) == nullptr)
-    {
+    if (!common::isDirectory((*iter)))
       continue;
-    }
-    closedir(dir);
 
     archNames.push_back(
         std::make_pair((*iter)+"/", "General"));

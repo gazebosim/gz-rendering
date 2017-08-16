@@ -20,11 +20,12 @@
   #include <Winsock2.h>
 #endif
 
-#include <sys/stat.h>
-#include <boost/filesystem.hpp>
 #include <thread>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Filesystem.hh>
+#include <ignition/common/Util.hh>
+
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
@@ -400,39 +401,23 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
           coreLibsPath = (*it)->archive->getName() + "/";
 
           // setup patch name for rt shader cache in tmp
-          char *tmpdir;
           char *user;
           std::ostringstream stream;
           std::ostringstream errStream;
-          // Get the tmp dir
-          tmpdir = getenv("TMP");
-          if (!tmpdir)
-          {
-            tmpdir = const_cast<char *>(
-                boost::filesystem::temp_directory_path().string().c_str());
-          }
+
+          std::string tmpDir;
+          ignition::common::env(IGN_HOMEDIR, tmpDir);
+          tmpDir += "/.ignition/rendering/ogre-rtshader";
+
           // Get the user
           user = getenv("USER");
           if (!user)
             user = const_cast<char*>("nobody");
-          stream << tmpdir << "/ign-rendering-" << user
+          stream << tmpDir << "/" << user
               << "-rtshaderlibcache" << "/";
           cachePath = stream.str();
           // Create the directory
-#ifdef _WIN32
-          if (mkdir(cachePath.c_str()) != 0)
-          {
-#else
-          if (mkdir(cachePath.c_str(), S_IRUSR | S_IWUSR | S_IXUSR) != 0)
-          {
-#endif
-            if (errno != EEXIST)
-            {
-              errStream << "failed to create [" << cachePath << "] : ["
-                <<  strerror(errno) << "]";
-              throw(errStream.str());
-            }
-          }
+          common::createDirectories(cachePath);
 
           coreLibsFound = true;
           break;

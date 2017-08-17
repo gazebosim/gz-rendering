@@ -18,7 +18,6 @@ set (sources
   RenderEngineManager.cc
   RenderingIface.cc
   ShaderType.cc
-  SystemPaths.cc
 )
 
 set (gtest_sources
@@ -28,13 +27,6 @@ set (gtest_sources_dri
   OrbitViewController_TEST.cc
   RenderTarget_TEST.cc
   RenderingIface_TEST.cc
-)
-
-set_property(
-  SOURCE SystemPaths.cc
-  PROPERTY COMPILE_DEFINITIONS
-  IGN_RENDERING_PLUGIN_PATH="${IGN_RENDERING_PLUGIN_PATH}"
-  OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
 )
 
 ign_build_tests(${gtest_sources})

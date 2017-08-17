@@ -17,7 +17,6 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/SystemPaths.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 
 using namespace ignition;
@@ -201,9 +200,10 @@ void BaseRenderEngine::Destroy()
 }
 
 //////////////////////////////////////////////////
-void BaseRenderEngine::AddResourcePath(const std::string &_path)
+void BaseRenderEngine::AddResourcePath(const std::string &/*_path*/)
 {
-  SystemPaths::Instance()->AddResourcePaths(_path);
+  ignerr << "BaseRenderEngine::AddResourcePath not implemented yet"
+      << std::endl;
 }
 
 //////////////////////////////////////////////////

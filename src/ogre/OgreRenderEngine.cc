@@ -157,7 +157,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
       Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
           "General");
       // Parse all material files in the path if any exist
-      if (common::exists(path) && common::isDirectory(path))
+      if (common::isDirectory(path))
       {
         std::vector<std::string> paths;
 
@@ -287,9 +287,9 @@ void OgreRenderEngine::CreateLogger()
   // create log file path
   std::string logPath;
   ignition::common::env(IGN_HOMEDIR, logPath);
-  logPath += "/.ignition/rendering/";
+  logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
-  logPath += "/ogre.log";
+  logPath = common::joinPaths(logPath, "ogre.log");
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();

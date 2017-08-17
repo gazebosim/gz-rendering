@@ -401,21 +401,15 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
           coreLibsPath = (*it)->archive->getName() + "/";
 
           // setup patch name for rt shader cache in tmp
-          char *user;
-          std::ostringstream stream;
-          std::ostringstream errStream;
-
           std::string tmpDir;
           ignition::common::env(IGN_HOMEDIR, tmpDir);
-          tmpDir += "/.ignition/rendering/ogre-rtshader";
-
+          tmpDir = common::joinPaths(tmpDir, ".ignition", "rendering",
+              "ogre-rtshader");
           // Get the user
-          user = getenv("USER");
-          if (!user)
-            user = const_cast<char*>("nobody");
-          stream << tmpDir << "/" << user
-              << "-rtshaderlibcache" << "/";
-          cachePath = stream.str();
+          std::string user = getenv("USER");
+          if (user.empty())
+            user = "nobody";
+          cachePath = common::joinPaths(tmpDir, user + "-rtshaderlibcache");
           // Create the directory
           common::createDirectories(cachePath);
 

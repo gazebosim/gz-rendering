@@ -39,26 +39,26 @@ namespace ignition
       protected: BaseRayQuery();
 
       /// \brief Destructor
-      public: virtual ~BaseRayQuery();
+      public: virtual ~BaseRayQuery() override;
 
       // Documentation inherited
-      public: virtual void SetOrigin(const math::Vector3d &_origin);
+      public: virtual void SetOrigin(const math::Vector3d &_origin) override;
 
       // Documentation inherited
-      public: virtual math::Vector3d Origin() const;
+      public: virtual math::Vector3d Origin() const override;
 
       // Documentation inherited
-      public: virtual void SetDirection(const math::Vector3d &_dir);
+      public: virtual void SetDirection(const math::Vector3d &_dir) override;
 
       // Documentation inherited
-      public: virtual math::Vector3d Direction() const;
+      public: virtual math::Vector3d Direction() const override;
 
       // Documentation inherited
       public: virtual void SetFromCamera(const CameraPtr &_camera,
-                const math::Vector2d &_coord);
+                const math::Vector2d &_coord) override;
 
       // Documentation inherited
-      public: virtual RayQueryResult ClosestPoint();
+      public: virtual RayQueryResult ClosestPoint() override;
 
       /// \brief Ray origin
       protected: math::Vector3d origin;

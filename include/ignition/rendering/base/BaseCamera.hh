@@ -114,7 +114,7 @@ namespace ignition
       protected: ImagePtr imageBuffer;
 
       /// \brief Near clipping plane distance
-      protected: double nearClip = 0.001;
+      protected: double nearClip = 0.01;
 
       /// \brief Far clipping plane distance
       protected: double farClip = 1000.0;
@@ -287,7 +287,7 @@ namespace ignition
       this->SetAspectRatio(1.33333);
       this->SetAntiAliasing(0u);
       this->SetHFOV(fov);
-      this->SetNearClipPlane(0.001);
+      this->SetNearClipPlane(0.01);
       this->SetFarClipPlane(1000);
     }
 

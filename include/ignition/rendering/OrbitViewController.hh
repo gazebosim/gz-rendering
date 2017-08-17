@@ -50,9 +50,17 @@ namespace ignition
       /// \param[in] _camera Camera to control
       public: virtual void SetCamera(const CameraPtr &_camera);
 
+      /// \brief Get the camera that is controlled by this view controller.
+      /// \return Camera being controlled
+      public: virtual CameraPtr Camera() const;
+
       /// \brief Set target point for pan, zoom, oribit
       /// \param[in] _target Target point in world coordinates
       public: virtual void SetTarget(const math::Vector3d &_target);
+
+      /// \brief Get target point for pan, zoom, oribit
+      /// \return target point in world coordinates
+      public: virtual math::Vector3d Target() const;
 
       /// \brief Set zoom amount
       /// \param[in] _value Camera zoon value, e.g. mouse scroll delta

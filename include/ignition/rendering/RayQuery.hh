@@ -34,10 +34,10 @@ namespace ignition
       public: double distance = -1;
 
       /// \brief Intersection point in 3d space
-      public: ignition::math::Vector3d point;
+      public: math::Vector3d point;
 
       /// \brief Intersected object id
-      public: unsigned int id = 0;
+      public: unsigned int objectId = 0;
 
       /// \brief Returns false if result is not valid
       public: operator bool()
@@ -51,16 +51,24 @@ namespace ignition
     class IGNITION_VISIBLE RayQuery
         : public virtual Object
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~RayQuery() { }
 
       /// \brief Set ray origin
-      /// \param[in] _origin Ray Origin
+      /// \param[in] _origin Ray origin
       public: virtual void SetOrigin(const math::Vector3d &_origin) = 0;
 
+      /// \brief Get ray origin
+      /// \return Ray origin
+      public: virtual math::Vector3d Origin() const = 0;
+
       /// \brief Set ray direction
-      /// \param[in] _origin Ray Origin
+      /// \param[in] _origin Ray origin
       public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
+
+      /// \brief Get ray direction
+      /// \return Ray direction.
+      public: virtual math::Vector3d Direction() const = 0;
 
       /// \brief Create the ray query from camera
       /// \param[in] _camera Camera to construct ray

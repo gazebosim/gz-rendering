@@ -35,21 +35,29 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~RenderTarget() { }
 
-      /// \brief Get image width in pixels
-      /// \return The image width in pixels
+      /// \brief Get render target width in pixels
+      /// \return The render target width in pixels
       public: virtual unsigned int Width() const = 0;
 
-      /// \brief Get image height in pixels
-      /// \return The image height in pixels
+      /// \brief Get render target height in pixels
+      /// \return The Render target height in pixels
       public: virtual unsigned int Height() const = 0;
 
-      /// \brief Set the texture width in pixels
-      /// \param[in] _width New texture width in pixels
+      /// \brief Set the render target width in pixels
+      /// \param[in] _width New render target width in pixels
       public: virtual void SetWidth(const unsigned int _width) = 0;
 
-      /// \brief Set the texture height in pixels
-      /// \param[in] _height New texture height in pixels
+      /// \brief Set the render target height in pixels
+      /// \param[in] _height New render target height in pixels
       public: virtual void SetHeight(const unsigned int _height) = 0;
+
+      /// \brief Set the render target image format
+      /// \return Render target format
+      public: virtual PixelFormat Format() const = 0;
+
+      /// \brief Set the render target image format
+      /// \param[in] _format New target format
+      public: virtual void SetFormat(PixelFormat _format) = 0;
 
       /// \brief Write rendered image to given Image. The RenderTarget will
       /// convert the underlying image to the specified format listed in the

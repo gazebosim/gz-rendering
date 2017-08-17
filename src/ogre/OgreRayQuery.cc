@@ -54,11 +54,14 @@ OgreRayQuery::~OgreRayQuery()
 
 //////////////////////////////////////////////////
 void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
-    const ignition::math::Vector2d &_coord)
+    const math::Vector2d &_coord)
 {
+  // convert to nomalized screen pos for ogre
+  math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
   OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(_camera);
   Ogre::Ray ray =
-      camera->ogreCamera->getCameraToViewportRay(_coord.X(), _coord.Y());
+      camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
+
   this->origin = OgreConversions::Convert(ray.getOrigin());
   this->direction = OgreConversions::Convert(ray.getDirection());
 }
@@ -140,7 +143,7 @@ RayQueryResult OgreRayQuery::ClosestPoint()
               result.distance = distance;
               result.point =
                   OgreConversions::Convert(mouseRay.getPoint(distance));
-              result.id = Ogre::any_cast<unsigned int>(userAny);
+              result.objectId = Ogre::any_cast<unsigned int>(userAny);
             }
           }
         }

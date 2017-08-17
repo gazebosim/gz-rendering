@@ -40,17 +40,14 @@ namespace ignition
       /// \brief Constructor
       protected: OgreRayQuery();
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~OgreRayQuery();
 
-      /// \brief Create the ray query from camera
-      /// \param[in] _camera Camera to construct ray
-      /// \param[in] _coord normalized device coords [-1, +1]
+      // Documentation inherited
       public: virtual void SetFromCamera(const CameraPtr &_camera,
                 const math::Vector2d &_coord);
 
-      /// \brief Compute cloests intersection result
-      /// \return Closest intersection result
+      // Documentation inherited
       public: virtual RayQueryResult ClosestPoint();
 
       /// \brief Get the mesh information for the given mesh.

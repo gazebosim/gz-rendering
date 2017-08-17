@@ -29,8 +29,9 @@ using namespace ignition;
 using namespace rendering;
 
 class RayQueryTest : public testing::Test,
-                         public testing::WithParamInterface<const char*>
+                     public testing::WithParamInterface<const char *>
 {
+  /// \brief Test ray query basic API
   public: void RayQuery(const std::string &_renderEngine);
 };
 

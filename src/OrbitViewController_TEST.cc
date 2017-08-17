@@ -99,7 +99,7 @@ void OrbitViewControllerTest::Control(const std::string &_renderEngine)
 
   OrbitViewController viewControl;
 
-  // test setting caream
+  // test setting camera
   viewControl.SetCamera(camera);
   EXPECT_EQ(camera, viewControl.Camera());
 

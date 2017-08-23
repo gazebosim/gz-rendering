@@ -197,7 +197,7 @@ namespace ignition
 
       /// \brief Clone this material
       /// \return New cloned material
-      public: virtual MaterialPtr Clone() const = 0;
+      public: virtual MaterialPtr Clone(const std::string &_name = "") const = 0;
 
       /// \brief Copy properties from given Material
       /// \param[in] _material Source Material to be copied from

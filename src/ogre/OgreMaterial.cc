@@ -301,6 +301,7 @@ void OgreMaterial::SetTextureImpl(Ogre::TexturePtr _texture)
 {
   this->ogreTexState->setTextureName(_texture->getName());
   this->UpdateColorOperation();
+  std::cerr << " OgreMaterial set texture impl " << _texture->getName() << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -387,6 +388,7 @@ void OgreMaterial::Init()
   this->ogreGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
   Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
   this->ogreMaterial = matManager.create(this->name, this->ogreGroup);
+  std::cerr << "OgreMaterial Init  " << this->name << std::endl;
   this->ogreTechnique = this->ogreMaterial->getTechnique(0);
   this->ogrePass = this->ogreTechnique->getPass(0);
   this->ogreTexState = this->ogrePass->createTextureUnitState();

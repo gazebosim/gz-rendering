@@ -78,10 +78,10 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGeometry<T>::SetMaterial(const std::string &_name, bool unique)
+    void BaseGeometry<T>::SetMaterial(const std::string &_name, bool _unique)
     {
       MaterialPtr material = this->Scene()->Material(_name);
-      if (material) this->SetMaterial(material, unique);
+      if (material) this->SetMaterial(material, _unique);
     }
 
     //////////////////////////////////////////////////

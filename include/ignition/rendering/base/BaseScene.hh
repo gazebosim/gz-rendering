@@ -250,7 +250,7 @@ namespace ignition
 
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc);
 
-      public: virtual MaterialPtr CreateMaterial();
+      public: virtual MaterialPtr CreateMaterial(const std::string &_name = "");
 
       public: virtual MaterialPtr CreateMaterial(
                   const common::Material &_material);

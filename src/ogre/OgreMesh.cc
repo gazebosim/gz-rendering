@@ -66,9 +66,10 @@ MaterialPtr OgreSubMesh::Material() const
 }
 
 //////////////////////////////////////////////////
-void OgreSubMesh::SetMaterial(MaterialPtr _material, bool unique)
+void OgreSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
 {
-  _material = (unique) ? _material->Clone() : _material;
+  std::cerr << " ogresubmesh set material " << _unique << std::endl;
+  _material = (_unique) ? _material->Clone() : _material;
 
   OgreMaterialPtr derived =
       std::dynamic_pointer_cast<OgreMaterial>(_material);
@@ -102,6 +103,7 @@ void OgreSubMesh::SetMaterialImpl(OgreMaterialPtr _material)
   std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
   this->ogreSubEntity->setMaterialName(materialName);
+  std::cerr << "OgreSubMesh setMaterialName " << materialName << std::endl;
   this->material = _material;
 }
 

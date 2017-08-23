@@ -33,7 +33,7 @@ namespace ignition
 
       public: virtual ~BaseMaterial();
 
-      public: virtual MaterialPtr Clone() const;
+      public: virtual MaterialPtr Clone(const std::string &_name = "") const;
 
       public: virtual void SetAmbient(double _r, double _g, double _b,
                   double _a = 1.0);
@@ -116,14 +116,14 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    MaterialPtr BaseMaterial<T>::Clone() const
+    MaterialPtr BaseMaterial<T>::Clone(const std::string &_name) const
     {
       auto baseShared = this->shared_from_this();
 
       auto thisShared =
           std::dynamic_pointer_cast<const BaseMaterial<T>>(baseShared);
 
-      MaterialPtr material = T::Scene()->CreateMaterial();
+      MaterialPtr material = T::Scene()->CreateMaterial(_name);
       material->CopyFrom(thisShared);
       return material;
     }
@@ -172,6 +172,15 @@ namespace ignition
       this->ClearNormalMap();
       // TODO: update common::Material
       this->SetShaderType(ST_PIXEL);
+
+
+      std::cerr << " BaseMaterial CopyFrom " << 
+          _material.Lighting() << " \n " <<
+          _material.Ambient() << " \n" << 
+          _material.TextureImage() << " \n" <<
+          _material.Transparency() << 
+          std::endl;
+
     }
 
     //////////////////////////////////////////////////

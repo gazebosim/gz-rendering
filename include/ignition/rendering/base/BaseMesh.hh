@@ -142,7 +142,6 @@ namespace ignition
     template <class T>
     void BaseMesh<T>::SetMaterial(MaterialPtr _material, bool _unique)
     {
-      std::cerr << "base mesh set material " << std::endl;
       unsigned int count = this->SubMeshCount();
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 

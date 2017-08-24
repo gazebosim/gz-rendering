@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2017 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@
 #include "ignition/rendering/RenderTypes.hh"
 
 namespace gz = ignition::rendering;
+
+void GlutMouseButton(int button, int state, int x, int y);
+
+void GlutMouseMove(int x, int y);
 
 void GlutRun(std::vector<gz::CameraPtr> _cameras);
 

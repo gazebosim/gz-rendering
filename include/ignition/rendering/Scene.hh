@@ -666,7 +666,8 @@ namespace ignition
       /// have default properties.
       /// \param[in] _name Name for the new material.
       /// \return The created material
-      public: virtual MaterialPtr CreateMaterial(const std::string &_name = "") = 0;
+      public: virtual MaterialPtr CreateMaterial(const std::string &_name = "")
+                  = 0;
 
       /// \brief Create new material from the reference common::Material
       /// \param[in] _material Reference material

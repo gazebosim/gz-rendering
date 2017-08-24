@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_BASE_BASEMATERIAL_HH_
 #define IGNITION_RENDERING_BASE_BASEMATERIAL_HH_
 
+#include <string>
+
 #include "ignition/rendering/Material.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -35,27 +37,27 @@ namespace ignition
 
       public: virtual MaterialPtr Clone(const std::string &_name = "") const;
 
-      public: virtual void SetAmbient(double _r, double _g, double _b,
-                  double _a = 1.0);
+      public: virtual void SetAmbient(const double _r, const double _g,
+                  const double _b, const double _a = 1.0);
 
       public: virtual void SetAmbient(const math::Color &_color) = 0;
 
-      public: virtual void SetDiffuse(double _r, double _g, double _b,
-                  double _a = 1.0);
+      public: virtual void SetDiffuse(const double _r, const double _g,
+                  const double _b, const double _a = 1.0);
 
       public: virtual void SetDiffuse(const math::Color &_color) = 0;
 
-      public: virtual void SetSpecular(double _r, double _g, double _b,
-                  double _a = 1.0);
+      public: virtual void SetSpecular(const double _r, const double _g,
+                  const double _b, const double _a = 1.0);
 
       public: virtual void SetSpecular(const math::Color &_color) = 0;
 
-      public: virtual void SetEmissive(double _r, double _g, double _b,
-                  double _a = 1.0);
+      public: virtual void SetEmissive(const double _r, const double _g,
+                  const double _b, const double _a = 1.0);
 
       public: virtual void SetEmissive(const math::Color &_color) = 0;
 
-      public: virtual void SetReceiveShadows(bool _receiveShadows) = 0;
+      public: virtual void SetReceiveShadows(const bool _receiveShadows) = 0;
 
       public: virtual void ClearTexture() = 0;
 
@@ -86,30 +88,32 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetAmbient(double _r, double _g, double _b, double _a)
+    void BaseMaterial<T>::SetAmbient(const double _r, const double _g,
+        const double _b, const double _a)
     {
       this->SetAmbient(math::Color(_r, _g, _b, _a));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetDiffuse(double _r, double _g, double _b, double _a)
+    void BaseMaterial<T>::SetDiffuse(const double _r, const double _g,
+        const double _b, const double _a)
     {
       this->SetDiffuse(math::Color(_r, _g, _b, _a));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetSpecular(double _r, double _g, double _b,
-        double _a)
+    void BaseMaterial<T>::SetSpecular(const double _r, const double _g,
+        const double _b, const double _a)
     {
       this->SetSpecular(math::Color(_r, _g, _b, _a));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetEmissive(double _r, double _g, double _b,
-        double _a)
+    void BaseMaterial<T>::SetEmissive(const double _r, const double _g,
+        const double _b, const double _a)
     {
       this->SetEmissive(math::Color(_r, _g, _b, _a));
     }
@@ -172,15 +176,6 @@ namespace ignition
       this->ClearNormalMap();
       // TODO: update common::Material
       this->SetShaderType(ST_PIXEL);
-
-
-      std::cerr << " BaseMaterial CopyFrom " << 
-          _material.Lighting() << " \n " <<
-          _material.Ambient() << " \n" << 
-          _material.TextureImage() << " \n" <<
-          _material.Transparency() << 
-          std::endl;
-
     }
 
     //////////////////////////////////////////////////

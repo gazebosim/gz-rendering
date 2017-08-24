@@ -52,33 +52,21 @@ void BuildScene(ScenePtr _scene)
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
-  MaterialPtr mat = _scene->CreateMaterial("duck");
-  mat->SetTexture(RESOURCE_PATH + "/duck.png");
-  VisualPtr box = _scene->CreateVisual("box");
-  box->AddGeometry(_scene->CreateBox());
-  box->SetLocalPosition(2.2, -0.8, 0.2);
-  box->SetMaterial("duck");
-  root->AddChild(box);
-
-  std::cerr << " duck  ============= " << std::endl;
   // create a mesh
   VisualPtr mesh = _scene->CreateVisual();
   mesh->SetLocalPosition(3, 0, 0);
-  mesh->SetLocalRotation(1.5708, 0, 1.5708);
+  mesh->SetLocalRotation(1.5708, 0, 2.0);
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-  std::cerr << "mesh vis add geometry " << std::endl;
   mesh->AddGeometry(meshGeom);
-  std::cerr << "mesh vis add child" << std::endl;
-//  mesh->SetMaterial("duck");
   root->AddChild(mesh);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.0);
+  camera->SetLocalPosition(0.0, 0.0, 0.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);

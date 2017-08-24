@@ -34,9 +34,6 @@ const std::string OptixMaterial::PTX_ANY_HIT_FUNC("AnyHit");
 
 //////////////////////////////////////////////////
 OptixMaterial::OptixMaterial() :
-  colorDirty(true),
-  textureDirty(true),
-  normalMapDirty(true),
   optixMaterial(nullptr),
   optixTexture(nullptr),
   optixNormalMap(nullptr),
@@ -56,7 +53,7 @@ bool OptixMaterial::LightingEnabled() const
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetLightingEnabled(bool _enabled)
+void OptixMaterial::SetLightingEnabled(const bool _enabled)
 {
   this->lightingEnabled = _enabled;
   this->colorDirty = true;
@@ -121,7 +118,7 @@ double OptixMaterial::Shininess() const
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetShininess(double _shininess)
+void OptixMaterial::SetShininess(const double _shininess)
 {
   this->shininess = _shininess;
   this->colorDirty = true;
@@ -134,7 +131,7 @@ double OptixMaterial::Transparency() const
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetTransparency(double _transparency)
+void OptixMaterial::SetTransparency(const double _transparency)
 {
   this->transparency = std::min(std::max(_transparency, 0.0), 1.0);
   this->colorDirty = true;
@@ -147,7 +144,7 @@ double OptixMaterial::Reflectivity() const
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetReflectivity(double _reflectivity)
+void OptixMaterial::SetReflectivity(const double _reflectivity)
 {
   this->reflectivity = std::min(std::max(_reflectivity, 0.0), 1.0);
   this->colorDirty = true;
@@ -160,7 +157,7 @@ bool OptixMaterial::CastShadows() const
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetCastShadows(bool _castShadows)
+void OptixMaterial::SetCastShadows(const bool _castShadows)
 {
   this->castShadows = _castShadows;
   this->colorDirty = true;
@@ -173,7 +170,7 @@ bool OptixMaterial::ReceiveShadows() const
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetReceiveShadows(bool _receiveShadows)
+void OptixMaterial::SetReceiveShadows(const bool _receiveShadows)
 {
   this->receiveShadows = _receiveShadows;
   this->colorDirty = true;
@@ -186,7 +183,7 @@ bool OptixMaterial::ReflectionEnabled() const
 }
 
 //////////////////////////////////////////////////
-void OptixMaterial::SetReflectionEnabled(bool _reflectionEnabled)
+void OptixMaterial::SetReflectionEnabled(const bool _reflectionEnabled)
 {
   this->reflectionEnabled = _reflectionEnabled;
   this->colorDirty = true;
@@ -231,7 +228,7 @@ void OptixMaterial::ClearTexture()
 //////////////////////////////////////////////////
 bool OptixMaterial::HasNormalMap() const
 {
-  return !this->textureName.empty();
+  return !this->normalMapName.empty();
 }
 
 //////////////////////////////////////////////////

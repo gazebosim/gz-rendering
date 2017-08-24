@@ -51,7 +51,6 @@ OgreMeshFactory::~OgreMeshFactory()
 //////////////////////////////////////////////////
 OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
 {
-  std::cerr << " OgreMeshFactory create mesh " << std::endl;
   // create ogre entity
   OgreMeshPtr mesh(new OgreMesh);
   MeshDescriptor normDesc = _desc.Normalize();
@@ -63,7 +62,6 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
     return nullptr;
   }
 
-  std::cerr << " OgreMeshFactory create sub mesh " << std::endl;
   // create sub-mesh store
   OgreSubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreEntity);
   mesh->subMeshes = subMeshFactory.Create();
@@ -304,7 +302,6 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       {
         this->scene->CreateMaterial(*material);
         ogreSubMesh->setMaterialName(material->Name());
-        std::cerr << "OgreMeshFactory setMaterialName " << material->Name() << std::endl;
       }
       else
       {
@@ -427,18 +424,13 @@ OgreSubMeshPtr OgreSubMeshStoreFactory::CreateSubMesh(unsigned int _index)
   subMesh->name = this->names[_index];
   subMesh->scene = this->scene;
   subMesh->ogreSubEntity = this->ogreEntity->getSubEntity(_index);
-  std::cerr << "ogre sub mesh store factory " << subMesh->ogreSubEntity->getMaterialName() << std::endl;
-  MaterialPtr mat = this->scene->Material(subMesh->ogreSubEntity->getMaterialName());
+  MaterialPtr mat = this->scene->Material(
+      subMesh->ogreSubEntity->getMaterialName());
   if (!mat)
   {
-    std::cerr << "  sub mesh store mat not found !!!! " << std::endl;
     mat = this->scene->CreateMaterial();
   }
   subMesh->SetMaterial(mat);
-
-/*  MaterialPtr mat = this->scene->Material(subMesh->ogreSubEntity->getMaterialName());
-  subMesh->SetMaterial(this->scene->CreateMaterial());
-  subMesh->Material()->SetTexture(mat->Texture());*/
 
   subMesh->Load();
   subMesh->Init();

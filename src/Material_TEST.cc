@@ -20,6 +20,8 @@
 #include <ignition/common/Console.hh>
 #include <ignition/common/Material.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
+
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Material.hh"
 #include "ignition/rendering/RenderEngine.hh"
@@ -37,7 +39,11 @@ class MaterialTest : public testing::Test,
   public: void MaterialProperties(const std::string &_renderEngine);
 
   /// \brief Test copying and cloning a material
-  public: void CopyFrom(const std::string &_renderEngine);
+  public: void Copy(const std::string &_renderEngine);
+
+  public: const std::string TEST_MEDIA_PATH =
+        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+        "test", "media", "materials", "textures");
 };
 
 /////////////////////////////////////////////////
@@ -97,7 +103,7 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   EXPECT_EQ(emissive, material->Emissive());
 
   // shininess
-  double shininess = 0.83457;
+  double shininess = 0.8;
   material->SetShininess(shininess);
   EXPECT_DOUBLE_EQ(shininess, material->Shininess());
 
@@ -122,27 +128,43 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   EXPECT_EQ(receiveShadows, material->ReceiveShadows());
 
   // reflection
-  bool reflectionEnabled = true;
+  bool reflectionEnabled = false;
   material->SetReflectionEnabled(reflectionEnabled);
   EXPECT_EQ(reflectionEnabled, material->ReflectionEnabled());
 
+  // reflection
+  bool lightingEnabled = false;
+  material->SetLightingEnabled(lightingEnabled);
+  EXPECT_EQ(lightingEnabled, material->LightingEnabled());
+
   // texture
-  std::string textureName = "texture.png";
+  std::string textureName =
+      common::joinPaths(TEST_MEDIA_PATH, "texture.png");
   material->SetTexture(textureName);
   EXPECT_EQ(textureName, material->Texture());
-  EXPECT_TRUE(material->HasTexture())'
+  EXPECT_TRUE(material->HasTexture());
 
   material->ClearTexture();
-  EXPECT_FALSE(material->HasTexture())'
+  EXPECT_FALSE(material->HasTexture());
+
+  std::string noSuchTextureName = "no_such_texture.png";
+  material->SetTexture(noSuchTextureName);
+  EXPECT_EQ(noSuchTextureName, material->Texture());
+  EXPECT_TRUE(material->HasTexture());
 
   // normal map
-  std::string normalMapName = "normal.png";
+  std::string normalMapName = textureName;
   material->SetNormalMap(normalMapName);
   EXPECT_EQ(normalMapName, material->NormalMap());
-  EXPECT_TRUE(material->HasNormalMap())'
+  EXPECT_TRUE(material->HasNormalMap());
 
   material->ClearNormalMap();
-  EXPECT_FALSE(material->HasNormalMap())'
+  EXPECT_FALSE(material->HasNormalMap());
+
+  std::string noSuchNormalMapName = "no_such_normal.png";
+  material->SetNormalMap(noSuchNormalMapName);
+  EXPECT_EQ(noSuchNormalMapName, material->NormalMap());
+  EXPECT_TRUE(material->HasNormalMap());
 
   // shader type
   enum ShaderType shaderType = ShaderType::ST_PIXEL;
@@ -151,7 +173,7 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
-void MaterialTest::CopyFrom(const std::string &_renderEngine)
+void MaterialTest::Copy(const std::string &_renderEngine)
 {
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -161,7 +183,7 @@ void MaterialTest::CopyFrom(const std::string &_renderEngine)
     return;
   }
 
-  ScenePtr scene = engine->CreateScene("scene");
+  ScenePtr scene = engine->CreateScene("copy_scene");
 
   MaterialPtr material = scene->CreateMaterial();
   EXPECT_TRUE(material != nullptr);
@@ -170,19 +192,22 @@ void MaterialTest::CopyFrom(const std::string &_renderEngine)
   math::Color diffuse(0.1, 0.9, 0.3, 1.0);
   math::Color specular(0.8, 0.7, 0.0, 1.0);
   math::Color emissive(0.6, 0.4, 0.2, 1.0);
-  double shininess = 0.83457;
+  double shininess = 0.8;
   double transparency = 0.3;
   double reflectivity = 0.5;
   bool castShadows = false;
   bool receiveShadows = false;
   bool reflectionEnabled = true;
-  std::string textureName = "texture.png";
-  std::string normalMapName = "normal.png";
+  bool lightingEnabled = false;
+
+  std::string textureName =
+    common::joinPaths(TEST_MEDIA_PATH, "texture.png");
+  std::string normalMapName = textureName;
   enum ShaderType shaderType = ShaderType::ST_PIXEL;
 
   material->SetAmbient(ambient);
   material->SetDiffuse(diffuse);
-  matieral->SetSpecular(specular);
+  material->SetSpecular(specular);
   material->SetEmissive(emissive);
   material->SetShininess(shininess);
   material->SetTransparency(transparency);
@@ -190,6 +215,7 @@ void MaterialTest::CopyFrom(const std::string &_renderEngine)
   material->SetCastShadows(castShadows);
   material->SetReceiveShadows(receiveShadows);
   material->SetReflectionEnabled(reflectionEnabled);
+  material->SetLightingEnabled(lightingEnabled);
   material->SetTexture(textureName);
   material->SetNormalMap(normalMapName);
   material->SetShaderType(shaderType);
@@ -207,6 +233,7 @@ void MaterialTest::CopyFrom(const std::string &_renderEngine)
   EXPECT_EQ(castShadows, clone->CastShadows());
   EXPECT_EQ(receiveShadows, clone->ReceiveShadows());
   EXPECT_EQ(reflectionEnabled, clone->ReflectionEnabled());
+  EXPECT_EQ(lightingEnabled, clone->LightingEnabled());
   EXPECT_EQ(textureName, clone->Texture());
   EXPECT_TRUE(clone->HasTexture());
   EXPECT_EQ(normalMapName, clone->NormalMap());
@@ -215,8 +242,8 @@ void MaterialTest::CopyFrom(const std::string &_renderEngine)
 
   // test copying a material
   MaterialPtr copy = scene->CreateMaterial("copy");
-  EXPECT_TRUE(scene->MaterialRegistered("clone"));
-  material->CopyFrom(clone);
+  EXPECT_TRUE(scene->MaterialRegistered("copy"));
+  copy->CopyFrom(material);
   EXPECT_EQ(ambient, copy->Ambient());
   EXPECT_EQ(diffuse, copy->Diffuse());
   EXPECT_EQ(specular, copy->Specular());
@@ -227,6 +254,7 @@ void MaterialTest::CopyFrom(const std::string &_renderEngine)
   EXPECT_EQ(castShadows, copy->CastShadows());
   EXPECT_EQ(receiveShadows, copy->ReceiveShadows());
   EXPECT_EQ(reflectionEnabled, copy->ReflectionEnabled());
+  EXPECT_EQ(lightingEnabled, copy->LightingEnabled());
   EXPECT_EQ(textureName, copy->Texture());
   EXPECT_TRUE(copy->HasTexture());
   EXPECT_EQ(normalMapName, copy->NormalMap());
@@ -234,7 +262,30 @@ void MaterialTest::CopyFrom(const std::string &_renderEngine)
   EXPECT_EQ(shaderType, copy->ShaderType());
 
   // test copying from a common material
+  // common::Material currently only has a subset of  material properties
+  common::Material comMat;
+  comMat.SetAmbient(ambient);
+  comMat.SetDiffuse(ambient);
+  comMat.SetSpecular(ambient);
+  comMat.SetEmissive(ambient);
+  comMat.SetShininess(shininess);
+  comMat.SetTransparency(transparency);
+  comMat.SetLighting(lightingEnabled);
+  comMat.SetTextureImage(textureName);
 
+  MaterialPtr comCopy = scene->CreateMaterial("comCopy");
+  EXPECT_TRUE(scene->MaterialRegistered("comCopy"));
+  comCopy->CopyFrom(material);
+  EXPECT_EQ(ambient, comCopy->Ambient());
+  EXPECT_EQ(diffuse, comCopy->Diffuse());
+  EXPECT_EQ(specular, comCopy->Specular());
+  EXPECT_EQ(emissive, comCopy->Emissive());
+  EXPECT_DOUBLE_EQ(shininess, comCopy->Shininess());
+  EXPECT_DOUBLE_EQ(transparency, comCopy->Transparency());
+  EXPECT_DOUBLE_EQ(reflectivity, comCopy->Reflectivity());
+  EXPECT_EQ(lightingEnabled, comCopy->LightingEnabled());
+  EXPECT_EQ(textureName, comCopy->Texture());
+  EXPECT_TRUE(comCopy->HasTexture());
 }
 
 /////////////////////////////////////////////////

@@ -68,7 +68,6 @@ MaterialPtr OgreSubMesh::Material() const
 //////////////////////////////////////////////////
 void OgreSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
 {
-  std::cerr << " ogresubmesh set material " << _unique << std::endl;
   _material = (_unique) ? _material->Clone() : _material;
 
   OgreMaterialPtr derived =

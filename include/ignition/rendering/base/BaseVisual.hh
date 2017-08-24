@@ -372,7 +372,6 @@ namespace ignition
 
       for (unsigned int i = 0; i < count; ++i)
       {
-        std::cerr << "    BaseVisual  geom set material " << _unique << std::endl;
         GeometryPtr geometry = this->GeometryByIndex(i);
         geometry->SetMaterial(_material, false);
       }

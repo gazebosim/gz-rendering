@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2017 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-#include "GlutWindow.hh"
 
 #if __APPLE__
   #include <OpenGL/gl.h>
@@ -30,10 +29,16 @@
   #include <GL/glx.h>
 #endif
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/Scene.hh"
+#include <mutex>
+
+#include <ignition/common/Console.hh>
+#include <ignition/rendering/Camera.hh>
+#include <ignition/rendering/Image.hh>
+#include <ignition/rendering/RayQuery.hh>
+#include <ignition/rendering/Scene.hh>
+#include <ignition/rendering/OrbitViewController.hh>
+
+#include "GlutWindow.hh"
 
 #define KEY_ESC 27
 #define KEY_TAB  9
@@ -63,7 +68,65 @@ bool g_initContext = false;
   GLXDrawable g_glutDrawable;
 #endif
 
-double g_offset = 0.0;
+// view control variables
+gz::RayQueryPtr g_rayQuery;
+gz::OrbitViewController g_viewControl;
+gz::RayQueryResult g_target;
+struct mouseButton
+{
+  int button = 0;
+  int state = GLUT_UP;
+  int x = 0;
+  int y = 0;
+  int motionX = 0;
+  int motionY = 0;
+  int dragX = 0;
+  int dragY = 0;
+  int scroll = 0;
+  bool buttonDirty = false;
+  bool motionDirty = false;
+};
+struct mouseButton g_mouse;
+std::mutex g_mouseMutex;
+
+//////////////////////////////////////////////////
+void GlutMouseButton(int button, int state, int x, int y)
+{
+  // ignore unknown mouse button numbers
+  if (button >= 5)
+    return;
+
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
+  g_mouse.button = button;
+  g_mouse.state = state;
+  g_mouse.x = x;
+  g_mouse.y = y;
+  g_mouse.motionX = x;
+  g_mouse.motionY = y;
+  g_mouse.buttonDirty = true;
+}
+
+//////////////////////////////////////////////////
+void GlutMouseMove(int x, int y)
+{
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
+  int deltaX = x - g_mouse.motionX;
+  int deltaY = y - g_mouse.motionY;
+  g_mouse.motionX = x;
+  g_mouse.motionY = y;
+
+  if (g_mouse.motionDirty)
+  {
+    g_mouse.dragX += deltaX;
+    g_mouse.dragY += deltaY;
+  }
+  else
+  {
+    g_mouse.dragX = deltaX;
+    g_mouse.dragY = deltaY;
+  }
+  g_mouse.motionDirty = true;
+}
 
 //////////////////////////////////////////////////
 void GlutRun(std::vector<gz::CameraPtr> _cameras)
@@ -95,6 +158,100 @@ void GlutRun(std::vector<gz::CameraPtr> _cameras)
 }
 
 //////////////////////////////////////////////////
+void HandleMouse()
+{
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
+  // only ogre supports ray query for now so use
+  // ogre camera located at camera index = 0.
+  gz::CameraPtr rayCamera = g_cameras[0];
+  if (!g_rayQuery)
+  {
+    g_rayQuery = rayCamera->Scene()->CreateRayQuery();
+    if (!g_rayQuery)
+    {
+      ignerr << "Failed to create Ray Query" << std::endl;
+      return;
+    }
+  }
+  if (g_mouse.buttonDirty)
+  {
+    g_mouse.buttonDirty = false;
+    double nx =
+        2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
+    double ny = 1.0 -
+        2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
+    g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
+    g_target  = g_rayQuery->ClosestPoint();
+    if (!g_target)
+    {
+      return;
+    }
+
+    // mouse wheel scroll zoom
+    if ((g_mouse.button == 3 || g_mouse.button == 4) &&
+        g_mouse.state == GLUT_UP)
+    {
+      double scroll = (g_mouse.button == 3) ? -1.0 : 1.0;
+      double distance = rayCamera->WorldPosition().Distance(
+          g_target.point);
+      int factor = 1;
+      double amount = -(scroll * factor) * (distance / 5.0);
+      for (gz::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Zoom(amount);
+      }
+    }
+  }
+
+  if (g_mouse.motionDirty)
+  {
+    g_mouse.motionDirty = false;
+    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+
+    // left mouse button pan
+    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      for (gz::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Pan(drag);
+      }
+    }
+    else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      for (gz::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Orbit(drag);
+      }
+    }
+    // right mouse button zoom
+    else if (g_mouse.button == GLUT_RIGHT_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      double hfov = rayCamera->HFOV().Radian();
+      double vfov = 2.0f * atan(tan(hfov / 2.0f) /
+          rayCamera->AspectRatio());
+      double distance = rayCamera->WorldPosition().Distance(
+          g_target.point);
+      double amount = ((-g_mouse.dragY /
+          static_cast<double>(rayCamera->ImageHeight()))
+          * distance * tan(vfov/2.0) * 6.0);
+      for (gz::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Zoom(amount);
+      }
+    }
+  }
+}
+
+
+//////////////////////////////////////////////////
 void GlutDisplay()
 {
 #if __APPLE__
@@ -108,6 +265,7 @@ void GlutDisplay()
 #endif
 
   g_cameras[g_cameraIndex]->Capture(*g_image);
+  HandleMouse();
 
 #if __APPLE__
   CGLSetCurrentContext(g_glutContext);
@@ -181,6 +339,9 @@ void GlutInitContext()
   glutIdleFunc(GlutIdle);
   glutKeyboardFunc(GlutKeyboard);
   glutReshapeFunc(GlutReshape);
+
+  glutMouseFunc(GlutMouseButton);
+  glutMotionFunc(GlutMouseMove);
 }
 
 void GlutPrintUsage()

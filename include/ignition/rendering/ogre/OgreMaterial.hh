@@ -36,7 +36,7 @@ namespace ignition
 
       public: virtual bool LightingEnabled() const;
 
-      public: virtual void SetLightingEnabled(bool _enabled);
+      public: virtual void SetLightingEnabled(const bool _enabled);
 
       public: virtual math::Color Ambient() const;
 
@@ -56,27 +56,27 @@ namespace ignition
 
       public: virtual double Shininess() const;
 
-      public: virtual void SetShininess(double _shininess);
+      public: virtual void SetShininess(const double _shininess);
 
       public: virtual double Transparency() const;
 
-      public: virtual void SetTransparency(double _transparency);
+      public: virtual void SetTransparency(const double _transparency);
 
       public: virtual double Reflectivity() const;
 
-      public: virtual void SetReflectivity(double _reflectivity);
+      public: virtual void SetReflectivity(const double _reflectivity);
 
       public: virtual bool CastShadows() const;
 
-      public: virtual void SetCastShadows(bool _castShadows);
+      public: virtual void SetCastShadows(const bool _castShadows);
 
       public: virtual bool ReceiveShadows() const;
 
-      public: virtual void SetReceiveShadows(bool _receiveShadows);
+      public: virtual void SetReceiveShadows(const bool _receiveShadows);
 
       public: virtual bool ReflectionEnabled() const;
 
-      public: virtual void SetReflectionEnabled(bool _enabled);
+      public: virtual void SetReflectionEnabled(const bool _enabled);
 
       public: virtual bool HasTexture() const;
 
@@ -103,7 +103,9 @@ namespace ignition
       protected: virtual void LoadImage(const std::string &_name,
                      Ogre::Image &_image);
 
-      protected: virtual void SetTextureImpl(Ogre::TexturePtr _texture);
+      /// \brief Set the texture for this material
+      /// \param[in] _texture Name of the texture.
+      protected: virtual void SetTextureImpl(const std::string &_texture);
 
       protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
 
@@ -118,31 +120,32 @@ namespace ignition
 
       protected: Ogre::MaterialPtr ogreMaterial;
 
-      protected: Ogre::Technique *ogreTechnique;
+      protected: Ogre::Technique *ogreTechnique = nullptr;
 
-      protected: Ogre::Pass *ogrePass;
+      protected: Ogre::Pass *ogrePass = nullptr;
 
-      protected: Ogre::TextureUnitState *ogreTexState;
+      protected: Ogre::TextureUnitState *ogreTexState = nullptr;
 
       protected: Ogre::String ogreGroup;
 
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
       protected: math::Color emissiveColor;
 #endif
+      protected: double shininess = 0.0;
 
-      protected: double transparency;
+      protected: double transparency = 0.0;
 
-      protected: double reflectivity;
+      protected: double reflectivity = 0.0;
 
-      protected: bool castShadows;
+      protected: bool castShadows = true;
 
-      protected: bool reflectionEnabled;
+      protected: bool reflectionEnabled = true;
 
       protected: std::string textureName;
 
       protected: std::string normalMapName;
 
-      protected: enum ShaderType shaderType;
+      protected: enum ShaderType shaderType = ST_PIXEL;
 
       private: friend class OgreScene;
     };

@@ -140,7 +140,7 @@ RT_PROGRAM void ClosestHit()
   float3 beerAtten = make_float3(1);
 
   if (transparency > 0)
-  { 
+  {
     float3 beerAtten = (dot(worldShadeNorm, ray.direction) > 0) ?
       Exp(extinctConst * hitDist) : make_float3(1);
 
@@ -269,7 +269,7 @@ RT_PROGRAM void ClosestHit()
     float3 R = reflect(ray.direction, forwardNormal);
     optix::Ray refRay(hitPoint, R, RT_RADIANCE, sceneEpsilon);
     rtTrace(rootGroup, refRay, refData);
-    
+
     // TODO: determine the actual root of the problem
     if (refData.color.x < 1 || refData.color.y < 1 || refData.color.z < 1)
       color += reflectivity * refData.color;

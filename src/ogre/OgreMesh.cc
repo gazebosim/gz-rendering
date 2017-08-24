@@ -102,7 +102,6 @@ void OgreSubMesh::SetMaterialImpl(OgreMaterialPtr _material)
   std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
   this->ogreSubEntity->setMaterialName(materialName);
-  std::cerr << "OgreSubMesh setMaterialName " << materialName << std::endl;
   this->material = _material;
 }
 

@@ -118,7 +118,7 @@ RT_PROGRAM void ClosestHit()
 
   float3 matNorm = make_float3(tex2D(normSampler, texCoord.x, texCoord.y));
 
-  if ((matNorm.x > 0 || matNorm.y > 0 || matNorm.z > 0) && 
+  if ((matNorm.x > 0 || matNorm.y > 0 || matNorm.z > 0) &&
       (shadingTangent.x != 0 || shadingTangent.y != 0 || shadingTangent.z != 0))
   {
     optix::Matrix<3, 3> matrix;

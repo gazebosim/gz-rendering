@@ -69,12 +69,27 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 
   FIBITMAP *temp = image;
   image = FreeImage_ConvertTo32Bits(image);
-  FreeImage_Unload(temp);
 
-  int w = FreeImage_GetWidth(image);
-  int h = FreeImage_GetHeight(image);
-  int p = FreeImage_GetPitch(image);
-  int memSize = h * p;
+  unsigned w = FreeImage_GetWidth(image);
+  unsigned h = FreeImage_GetHeight(image);
+  unsigned p = FreeImage_GetPitch(image);
+  unsigned memSize = h * p;
+
+#if FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_BGR
+  unsigned bpp = FreeImage_GetBPP(image) / 8;
+  unsigned lineSize = FreeImage_GetLine(image);
+  BYTE* line = FreeImage_GetBits(image);
+  for (unsigned y = 0; y < h; ++y, line += p)
+  {
+    for (BYTE* pixel = line; pixel < line + lineSize; pixel += bpp)
+    {
+      // in- place swap
+      pixel[0] ^= pixel[2]; pixel[2] ^= pixel[0]; pixel[0] ^= pixel[2];
+    }
+  }
+#endif
+
+  FreeImage_Unload(temp);
 
   unsigned char *data = static_cast<unsigned char *>(FreeImage_GetBits(image));
 

@@ -52,6 +52,14 @@ void BuildScene(ScenePtr _scene)
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
+  MaterialPtr mat = _scene->CreateMaterial("duck");
+  mat->SetTexture(RESOURCE_PATH + "/duck.png");
+  VisualPtr box = _scene->CreateVisual("box");
+  box->AddGeometry(_scene->CreateBox());
+  box->SetLocalPosition(2.2, -0.8, 0.2);
+  box->SetMaterial("duck");
+  root->AddChild(box);
+
   // create a mesh
   VisualPtr mesh = _scene->CreateVisual();
   mesh->SetLocalPosition(3, 0, 0);

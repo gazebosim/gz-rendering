@@ -20,26 +20,10 @@
 #include <vector>
 #include "ignition/rendering/RenderTypes.hh"
 
-namespace gz = ignition::rendering;
+namespace ir = ignition::rendering;
 
-void GlutMouseButton(int button, int state, int x, int y);
-
-void GlutMouseMove(int x, int y);
-
-void GlutRun(std::vector<gz::CameraPtr> _cameras);
-
-void GlutDisplay();
-
-void GlutIdle();
-
-void GlutKeyboard(unsigned char _key, int _x, int _y);
-
-void GlutReshape(int _width, int _height);
-
-void GlutInitCamera(gz::CameraPtr _camera);
-
-void GlutInitContext();
-
-void GlutPrintUsage();
+/// \brief Run the demo and render the scene from the cameras
+/// \param[in] _cameras Cameras in the scene
+void run(std::vector<ir::CameraPtr> _cameras);
 
 #endif

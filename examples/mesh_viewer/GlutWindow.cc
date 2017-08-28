@@ -47,11 +47,11 @@
 unsigned int imgw = 0;
 unsigned int imgh = 0;
 
-std::vector<gz::CameraPtr> g_cameras;
-gz::CameraPtr g_camera;
-gz::CameraPtr g_currCamera;
+std::vector<ir::CameraPtr> g_cameras;
+ir::CameraPtr g_camera;
+ir::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
-gz::ImagePtr g_image;
+ir::ImagePtr g_image;
 
 bool g_initContext = false;
 
@@ -69,9 +69,9 @@ bool g_initContext = false;
 #endif
 
 // view control variables
-gz::RayQueryPtr g_rayQuery;
-gz::OrbitViewController g_viewControl;
-gz::RayQueryResult g_target;
+ir::RayQueryPtr g_rayQuery;
+ir::OrbitViewController g_viewControl;
+ir::RayQueryResult g_target;
 struct mouseButton
 {
   int button = 0;
@@ -90,30 +90,30 @@ struct mouseButton g_mouse;
 std::mutex g_mouseMutex;
 
 //////////////////////////////////////////////////
-void GlutMouseButton(int button, int state, int x, int y)
+void mouseCB(int _button, int _state, int _x, int _y)
 {
   // ignore unknown mouse button numbers
-  if (button >= 5)
+  if (_button >= 5)
     return;
 
   std::lock_guard<std::mutex> lock(g_mouseMutex);
-  g_mouse.button = button;
-  g_mouse.state = state;
-  g_mouse.x = x;
-  g_mouse.y = y;
-  g_mouse.motionX = x;
-  g_mouse.motionY = y;
+  g_mouse.button = _button;
+  g_mouse.state = _state;
+  g_mouse.x = _x;
+  g_mouse.y = _y;
+  g_mouse.motionX = _x;
+  g_mouse.motionY = _y;
   g_mouse.buttonDirty = true;
 }
 
 //////////////////////////////////////////////////
-void GlutMouseMove(int x, int y)
+void motionCB(int _x, int _y)
 {
   std::lock_guard<std::mutex> lock(g_mouseMutex);
-  int deltaX = x - g_mouse.motionX;
-  int deltaY = y - g_mouse.motionY;
-  g_mouse.motionX = x;
-  g_mouse.motionY = y;
+  int deltaX = _x - g_mouse.motionX;
+  int deltaY = _y - g_mouse.motionY;
+  g_mouse.motionX = _x;
+  g_mouse.motionY = _y;
 
   if (g_mouse.motionDirty)
   {
@@ -129,41 +129,12 @@ void GlutMouseMove(int x, int y)
 }
 
 //////////////////////////////////////////////////
-void GlutRun(std::vector<gz::CameraPtr> _cameras)
-{
-#if __APPLE__
-  g_context = CGLGetCurrentContext();
-#elif _WIN32
-#else
-  g_context = glXGetCurrentContext();
-  g_display = glXGetCurrentDisplay();
-  g_drawable = glXGetCurrentDrawable();
-#endif
-
-  g_cameras = _cameras;
-  GlutInitCamera(_cameras[0]);
-  GlutInitContext();
-  GlutPrintUsage();
-
-#if __APPLE__
-  g_glutContext = CGLGetCurrentContext();
-#elif _WIN32
-#else
-  g_glutDisplay = glXGetCurrentDisplay();
-  g_glutDrawable = glXGetCurrentDrawable();
-  g_glutContext = glXGetCurrentContext();
-#endif
-
-  glutMainLoop();
-}
-
-//////////////////////////////////////////////////
-void HandleMouse()
+void handleMouse()
 {
   std::lock_guard<std::mutex> lock(g_mouseMutex);
   // only ogre supports ray query for now so use
   // ogre camera located at camera index = 0.
-  gz::CameraPtr rayCamera = g_cameras[0];
+  ir::CameraPtr rayCamera = g_cameras[0];
   if (!g_rayQuery)
   {
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
@@ -196,7 +167,7 @@ void HandleMouse()
           g_target.point);
       int factor = 1;
       double amount = -(scroll * factor) * (distance / 5.0);
-      for (gz::CameraPtr camera : g_cameras)
+      for (ir::CameraPtr camera : g_cameras)
       {
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
@@ -213,7 +184,7 @@ void HandleMouse()
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
     {
-      for (gz::CameraPtr camera : g_cameras)
+      for (ir::CameraPtr camera : g_cameras)
       {
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
@@ -222,7 +193,7 @@ void HandleMouse()
     }
     else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN)
     {
-      for (gz::CameraPtr camera : g_cameras)
+      for (ir::CameraPtr camera : g_cameras)
       {
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
@@ -240,7 +211,7 @@ void HandleMouse()
       double amount = ((-g_mouse.dragY /
           static_cast<double>(rayCamera->ImageHeight()))
           * distance * tan(vfov/2.0) * 6.0);
-      for (gz::CameraPtr camera : g_cameras)
+      for (ir::CameraPtr camera : g_cameras)
       {
         g_viewControl.SetCamera(camera);
         g_viewControl.SetTarget(g_target.point);
@@ -252,7 +223,7 @@ void HandleMouse()
 
 
 //////////////////////////////////////////////////
-void GlutDisplay()
+void displayCB()
 {
 #if __APPLE__
   CGLSetCurrentContext(g_context);
@@ -265,7 +236,7 @@ void GlutDisplay()
 #endif
 
   g_cameras[g_cameraIndex]->Capture(*g_image);
-  HandleMouse();
+  handleMouse();
 
 #if __APPLE__
   CGLSetCurrentContext(g_glutContext);
@@ -286,18 +257,13 @@ void GlutDisplay()
 }
 
 //////////////////////////////////////////////////
-void SwitchContext()
-{
-}
-
-//////////////////////////////////////////////////
-void GlutIdle()
+void idleCB()
 {
   glutPostRedisplay();
 }
 
 //////////////////////////////////////////////////
-void GlutKeyboard(unsigned char _key, int, int)
+void keyboardCB(unsigned char _key, int, int)
 {
   if (_key == KEY_ESC || _key == 'q' || _key == 'Q')
   {
@@ -310,44 +276,72 @@ void GlutKeyboard(unsigned char _key, int, int)
 }
 
 //////////////////////////////////////////////////
-void GlutReshape(int, int)
-{
-}
-
-//////////////////////////////////////////////////
-void GlutInitCamera(gz::CameraPtr _camera)
+void initCamera(ir::CameraPtr _camera)
 {
   g_camera = _camera;
   imgw = g_camera->ImageWidth();
   imgh = g_camera->ImageHeight();
-  gz::Image image = g_camera->CreateImage();
-  g_image = std::make_shared<gz::Image>(image);
+  ir::Image image = g_camera->CreateImage();
+  g_image = std::make_shared<ir::Image>(image);
   g_camera->Capture(*g_image);
 }
 
 //////////////////////////////////////////////////
-void GlutInitContext()
+void initContext()
 {
-  // int argc = 0;
-  // char **argv = 0;
-  // glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
   glutCreateWindow("Gazebo");
-  glutDisplayFunc(GlutDisplay);
-  glutIdleFunc(GlutIdle);
-  glutKeyboardFunc(GlutKeyboard);
-  glutReshapeFunc(GlutReshape);
+  glutDisplayFunc(displayCB);
+  glutIdleFunc(idleCB);
+  glutKeyboardFunc(keyboardCB);
 
-  glutMouseFunc(GlutMouseButton);
-  glutMotionFunc(GlutMouseMove);
+  glutMouseFunc(mouseCB);
+  glutMotionFunc(motionCB);
 }
 
-void GlutPrintUsage()
+void printUsage()
 {
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
   std::cout << "===============================" << std::endl;
 }
+
+//////////////////////////////////////////////////
+void run(std::vector<ir::CameraPtr> _cameras)
+{
+  if (_cameras.empty())
+  {
+    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    return;
+  }
+
+#if __APPLE__
+  g_context = CGLGetCurrentContext();
+#elif _WIN32
+#else
+  g_context = glXGetCurrentContext();
+  g_display = glXGetCurrentDisplay();
+  g_drawable = glXGetCurrentDrawable();
+#endif
+
+  g_cameras = _cameras;
+  initCamera(_cameras[0]);
+  initContext();
+  printUsage();
+
+#if __APPLE__
+  g_glutContext = CGLGetCurrentContext();
+#elif _WIN32
+#else
+  g_glutDisplay = glXGetCurrentDisplay();
+  g_glutDrawable = glXGetCurrentDrawable();
+  g_glutContext = glXGetCurrentContext();
+#endif
+
+  glutMainLoop();
+}
+
+

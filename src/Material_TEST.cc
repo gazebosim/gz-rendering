@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <string>
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Material.hh>
@@ -60,10 +61,10 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
 
   MaterialPtr material = scene->CreateMaterial();
-  EXPECT_TRUE(material != nullptr);
+  ASSERT_TRUE(material != nullptr);
 
   material = scene->CreateMaterial("unique");
-  EXPECT_TRUE(material != nullptr);
+  ASSERT_TRUE(material != nullptr);
   EXPECT_TRUE(scene->MaterialRegistered("unique"));
 
   // ambient
@@ -186,7 +187,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("copy_scene");
 
   MaterialPtr material = scene->CreateMaterial();
-  EXPECT_TRUE(material != nullptr);
+  ASSERT_TRUE(material != nullptr);
 
   math::Color ambient(0.5, 0.2, 0.4, 1.0);
   math::Color diffuse(0.1, 0.9, 0.3, 1.0);

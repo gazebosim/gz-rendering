@@ -39,7 +39,8 @@ using namespace rendering;
 
 const std::string RESOURCE_PATH = std::string(PROJECT_BINARY_PATH) + "/media";
 
-void BuildScene(ScenePtr _scene)
+//////////////////////////////////////////////////
+void buildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
@@ -76,24 +77,26 @@ void BuildScene(ScenePtr _scene)
   root->AddChild(camera);
 }
 
-CameraPtr CreateCamera(const std::string &_engineName)
+//////////////////////////////////////////////////
+CameraPtr createCamera(const std::string &_engineName)
 {
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
-    std::cout << "Engine '" << _engineName
+    ignwarn << "Engine '" << _engineName
               << "' is not supported" << std::endl;
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  BuildScene(scene);
+  buildScene(scene);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
   return std::dynamic_pointer_cast<Camera>(sensor);
 }
 
+//////////////////////////////////////////////////
 int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
@@ -109,12 +112,12 @@ int main(int _argc, char** _argv)
 
     for (auto engineName : engineNames)
     {
-      CameraPtr camera = CreateCamera(engineName);
+      CameraPtr camera = createCamera(engineName);
       if (camera)
         cameras.push_back(camera);
     }
 
-    GlutRun(cameras);
+    run(cameras);
   }
   catch (...)
   {

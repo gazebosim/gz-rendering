@@ -99,7 +99,7 @@ void UpdateCameras()
 {
   for (gz::CameraPtr camera : g_cameras)
   {
-    camera->SetLocalPosition(g_offset, g_offset, g_offset);
+//    camera->SetLocalPosition(g_offset, g_offset, g_offset);
   }
 
   g_offset+= 0.001;

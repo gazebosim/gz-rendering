@@ -121,7 +121,7 @@ void BuildScene(ScenePtr _scene)
   white->SetReceiveShadows(true);
   white->SetReflectivity(0);
 
-  // create sphere visual
+  // create plane visual
   VisualPtr plane = _scene->CreateVisual();
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(5, 8, 1);
@@ -167,7 +167,7 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  try
+//  try
   {
     engineNames.push_back("ogre");
     engineNames.push_back("optix");
@@ -181,7 +181,7 @@ int main(int _argc, char** _argv)
 
     GlutRun(cameras);
   }
-  catch (...)
+//  catch (...)
   {
     // std::cout << ex.what() << std::endl;
   }

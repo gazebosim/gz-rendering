@@ -55,11 +55,24 @@ void buildScene(ScenePtr _scene)
 
   MaterialPtr mat = _scene->CreateMaterial("duck");
   mat->SetTexture(RESOURCE_PATH + "/duck.png");
+
   VisualPtr box = _scene->CreateVisual("box");
   box->AddGeometry(_scene->CreateBox());
   box->SetLocalPosition(2.2, -0.8, 0.2);
   box->SetMaterial("duck");
   root->AddChild(box);
+
+  VisualPtr cylinder = _scene->CreateVisual("cylinder");
+  cylinder->AddGeometry(_scene->CreateCylinder());
+  cylinder->SetLocalPosition(2.2, 0.8, 0.2);
+  cylinder->SetMaterial("duck");
+  root->AddChild(cylinder);
+
+  VisualPtr s = _scene->CreateVisual("sphere");
+  s->AddGeometry(_scene->CreateSphere());
+  s->SetLocalPosition(1.2, 0.0, -0.2);
+  s->SetMaterial("duck");
+  root->AddChild(s);
 
   // create a mesh
   VisualPtr mesh = _scene->CreateVisual();
@@ -72,7 +85,6 @@ void buildScene(ScenePtr _scene)
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
-
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.5);
@@ -113,7 +125,7 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  try
+//  try
   {
     engineNames.push_back("ogre");
     engineNames.push_back("optix");
@@ -127,7 +139,7 @@ int main(int _argc, char** _argv)
 
     run(cameras);
   }
-  catch (...)
+//  catch (...)
   {
     // std::cout << ex.what() << std::endl;
   }

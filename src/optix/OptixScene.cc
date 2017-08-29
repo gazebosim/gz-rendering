@@ -248,6 +248,7 @@ GeometryPtr OptixScene::CreateBoxImpl(unsigned int _id,
   bool result = this->InitObject(box, _id, _name);
   box->SetMaterial(this->CreateMaterial());
   return (result) ? box : nullptr;
+//  return this->CreateMeshImpl(_id, _name, "unit_box");
 }
 
 //////////////////////////////////////////////////
@@ -282,6 +283,7 @@ GeometryPtr OptixScene::CreateCylinderImpl(unsigned int _id,
   bool result = this->InitObject(cylinder, _id, _name);
   cylinder->SetMaterial(this->CreateMaterial());
   return (result) ? cylinder : nullptr;
+//  return this->CreateMeshImpl(_id, _name, "unit_cylinder");
 }
 
 //////////////////////////////////////////////////
@@ -306,6 +308,7 @@ GeometryPtr OptixScene::CreateSphereImpl(unsigned int _id,
   bool result = this->InitObject(sphere, _id, _name);
   sphere->SetMaterial(this->CreateMaterial());
   return (result) ? sphere : nullptr;
+//  return this->CreateMeshImpl(_id, _name, "unit_sphere");
 }
 
 //////////////////////////////////////////////////
@@ -398,6 +401,11 @@ void OptixScene::CreateContext()
   // TODO: remove after testing
   this->optixContext->setPrintEnabled(true);
   this->optixContext->setPrintBufferSize(4096);
+
+  // TODO: remove after testing
+// Launch index (0,0) at lower left.
+//  this->optixContext->setPrintLaunchIndex(256, 256);
+//  this->optixContext->setExceptionEnabled(RT_EXCEPTION_ALL, true);
 
   // TODO: clean up code
   this->optixMissProgram = this->CreateOptixProgram("OptixMissProgram", "Miss");

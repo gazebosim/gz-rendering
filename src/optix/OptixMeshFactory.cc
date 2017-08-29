@@ -116,6 +116,9 @@ OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
     {
       optix::Geometry optixGeometry = this->Geometry(_desc, i);
       OptixSubMeshPtr sm(new OptixSubMesh);
+      sm->id = i;
+      sm->name = foundName;
+      sm->scene = this->scene;
       sm->optixGeometry = optixGeometry;
       sm->optixGeomInstance = optixContext->createGeometryInstance();
       sm->optixGeomInstance->setGeometry(optixGeometry);

@@ -55,7 +55,7 @@ else
   fi
   CPPLINT_FILES=`\
     find $CHECK_DIRS -name "*.cc" -o -name "*.hh" -o -name "*.c" -o -name "*.h"\
-     | grep -v -e examples/*/build -e examples/build`
+     | grep -v -e 'examples/.*/build' -e 'examples/build'`
 fi
 
 SUPPRESS=/tmp/cpp_check.suppress

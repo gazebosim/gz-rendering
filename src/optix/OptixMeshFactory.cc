@@ -43,7 +43,8 @@ OptixMeshFactory::~OptixMeshFactory()
 OptixMeshPtr OptixMeshFactory::Create(const MeshDescriptor &_desc)
 {
   OptixSubMeshStorePtr subMeshStore;
-  MeshDescriptor normDesc = _desc.Normalize();
+  MeshDescriptor normDesc = _desc;
+  normDesc.Load();
   subMeshStore = this->subMeshStoreFactory.Create(normDesc);
 
   if (!subMeshStore)

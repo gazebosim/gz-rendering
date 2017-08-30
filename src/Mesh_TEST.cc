@@ -19,7 +19,6 @@
 #include <string>
 
 #include <ignition/common/Console.hh>
-#include <ignition/common/MeshManager.hh>
 
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Mesh.hh"
@@ -50,9 +49,6 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
-
-  common::MeshManager *meshManager = common::MeshManager::Instance();
-  ASSERT_TRUE(meshManager != nullptr);
 
   // create the mesh using mesh descriptor
   MeshDescriptor descriptor("unit_box");

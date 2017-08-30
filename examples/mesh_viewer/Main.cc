@@ -37,7 +37,8 @@
 using namespace ignition;
 using namespace rendering;
 
-const std::string RESOURCE_PATH = std::string(PROJECT_BINARY_PATH) + "/media";
+const std::string RESOURCE_PATH =
+    common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)

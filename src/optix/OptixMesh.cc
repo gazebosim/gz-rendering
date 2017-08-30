@@ -74,9 +74,9 @@ MaterialPtr OptixSubMesh::Material() const
 }
 
 //////////////////////////////////////////////////
-void OptixSubMesh::SetMaterial(MaterialPtr _material, bool unique)
+void OptixSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
 {
-  _material = (unique) ? _material->Clone() : _material;
+  _material = (_unique) ? _material->Clone() : _material;
 
   OptixMaterialPtr derived =
       std::dynamic_pointer_cast<OptixMaterial>(_material);

@@ -379,6 +379,7 @@ unsigned int OptixScene::NextEntryId()
 void OptixScene::CreateContext()
 {
   this->optixContext = optix::Context::create();
+
   // TODO: set dynamically
   // this->optixContext->setStackSize(65536);
   // TODO: set dynamically

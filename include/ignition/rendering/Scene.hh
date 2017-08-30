@@ -662,10 +662,12 @@ namespace ignition
       /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc) = 0;
 
-      /// \brief Create new material. Created material will have default
-      /// properties.
+      /// \brief Create new material with the given name. Created material will
+      /// have default properties.
+      /// \param[in] _name Name for the new material.
       /// \return The created material
-      public: virtual MaterialPtr CreateMaterial() = 0;
+      public: virtual MaterialPtr CreateMaterial(const std::string &_name = "")
+                  = 0;
 
       /// \brief Create new material from the reference common::Material
       /// \param[in] _material Reference material

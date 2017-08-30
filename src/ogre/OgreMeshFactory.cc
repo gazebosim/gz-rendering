@@ -305,7 +305,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       }
       else
       {
-        ogreSubMesh->setMaterialName("Gazebo/White");
+        ogreSubMesh->setMaterialName("Default/White");
       }
 
       // Unlock
@@ -424,7 +424,13 @@ OgreSubMeshPtr OgreSubMeshStoreFactory::CreateSubMesh(unsigned int _index)
   subMesh->name = this->names[_index];
   subMesh->scene = this->scene;
   subMesh->ogreSubEntity = this->ogreEntity->getSubEntity(_index);
-  subMesh->SetMaterial(this->scene->CreateMaterial());
+  MaterialPtr mat = this->scene->Material(
+      subMesh->ogreSubEntity->getMaterialName());
+  if (!mat)
+  {
+    mat = this->scene->CreateMaterial();
+  }
+  subMesh->SetMaterial(mat);
 
   subMesh->Load();
   subMesh->Init();

@@ -79,7 +79,6 @@ OptixMeshPtr OptixMeshFactory::Create(OptixSubMeshStorePtr _subMeshes)
   {
     OptixSubMeshPtr subMesh = _subMeshes->DerivedByIndex(i);
     mesh->optixGeomGroup->addChild(subMesh->OptixGeometryInstance());
-    subMesh->SetMaterial(this->scene->CreateMaterial());
   }
 
   return mesh;
@@ -120,6 +119,19 @@ OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
       sm->optixGeometry = optixGeometry;
       sm->optixGeomInstance = optixContext->createGeometryInstance();
       sm->optixGeomInstance->setGeometry(optixGeometry);
+
+      common::MaterialPtr material;
+      material = _desc.mesh->MaterialByIndex(subMesh->MaterialIndex());
+      if (material)
+      {
+        MaterialPtr mat = this->scene->CreateMaterial(*material);
+        sm->SetMaterial(mat);
+      }
+      else
+      {
+        sm->SetMaterial(this->scene->Material("Default/White"));
+      }
+
       store->Add(sm);
     }
   }
@@ -226,7 +238,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateVertexBuffer()
   for (unsigned int i = 0; i < count; ++i)
   {
     // copy vertex to host buffer
-    const math::Vector3d& vertex = this->subMesh.Vertex(i);
+    const math::Vector3d &vertex = this->subMesh.Vertex(i);
     array[i].x = vertex.X();
     array[i].y = vertex.Y();
     array[i].z = vertex.Z();
@@ -302,7 +314,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateIndexBuffer()
   // create new buffer
   optix::Context optixContext = this->scene->OptixContext();
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
-  buffer->setFormat(RT_FORMAT_UNSIGNED_INT3);
+  buffer->setFormat(RT_FORMAT_INT3);
 
   // TODO: handle quads
 

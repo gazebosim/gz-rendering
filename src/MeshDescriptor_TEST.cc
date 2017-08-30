@@ -33,7 +33,7 @@ using namespace rendering;
 class MeshDescriptorTest : public testing::Test,
                            public testing::WithParamInterface<const char *>
 {
-  /// \brief Test mesh and submesh basic API
+  /// \brief Test MeshDescriptor basic API
   public: void Descriptor(const std::string &_renderEngine);
 };
 

@@ -292,7 +292,7 @@ void initContext()
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
-  glutCreateWindow("Gazebo");
+  glutCreateWindow("Mesh Viewer");
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);

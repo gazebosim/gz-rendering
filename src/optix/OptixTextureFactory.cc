@@ -73,7 +73,8 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
   unsigned w = FreeImage_GetWidth(image);
   unsigned h = FreeImage_GetHeight(image);
 
-  // flip pixel values to get RGB if needed
+  // freeimage stores data as BGR[A] on little endian architecture
+  // reverse pixel values if needed
 #if FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_BGR
   unsigned p = FreeImage_GetPitch(image);
   unsigned bpp = FreeImage_GetBPP(image) / 8;

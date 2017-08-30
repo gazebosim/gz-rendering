@@ -236,7 +236,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateVertexBuffer()
   buffer->setSize(count);
 
   // create host buffer from device buffer
-  float3* array = static_cast<float3*>(buffer->map());
+  float3 *array = static_cast<float3 *>(buffer->map());
 
   // add each vertex to array
   for (unsigned int i = 0; i < count; ++i)
@@ -272,7 +272,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateNormalBuffer()
   for (unsigned int i = 0; i < count; ++i)
   {
     // copy normal to host buffer
-    const math::Vector3d& normal = this->subMesh.Normal(i);
+    const math::Vector3d &normal = this->subMesh.Normal(i);
     array[i].x = normal.X();
     array[i].y = normal.Y();
     array[i].z = normal.Z();
@@ -302,7 +302,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateTexCoordBuffer()
   for (unsigned int i = 0; i < count; ++i)
   {
     // copy texcoord to host buffer
-    const math::Vector2d& texcoord = this->subMesh.TexCoord(i);
+    const math::Vector2d &texcoord = this->subMesh.TexCoord(i);
     array[i].x = texcoord.X();
     array[i].y = texcoord.Y();
   }

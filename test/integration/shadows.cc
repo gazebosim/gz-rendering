@@ -20,7 +20,7 @@
 #include <ignition/common/Console.hh>
 #include <ignition/common/Image.hh>
 
-#include "test_config.h" // NOLINT(build/include)
+#include "test_config.h"  // NOLINT(build/include)
 
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Image.hh"
@@ -137,14 +137,8 @@ void ShadowsTest::Shadows(const std::string &_renderEngine)
           shaded += r + g + b;
         else
           unshaded += r + g + b;
-        std::cerr << "[" << r << " " << g << " " << b << "]" << " ";
       }
-      std::cerr << std::endl;
     }
-/*    common::Image image;
-    image.SetFromData(data, width, height, common::Image::RGB_INT8);
-    image.SavePNG("test.png");*/
-
     // left side of image should be significanly darker than the right side
     EXPECT_LT(shaded, unshaded);
   }

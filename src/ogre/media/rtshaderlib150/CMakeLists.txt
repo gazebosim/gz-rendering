@@ -12,5 +12,5 @@ SGXLib_NormalMapLighting.glsl
 SGXLib_PerPixelLighting.glsl
 )
 
-install(FILES ${files} DESTINATION ${IGN_RENDERING_RESOURCE_PATH}/ogre/media/rtshaderlib)
+install(FILES ${files} DESTINATION ${IGN_RENDERING_RESOURCE_PATH}/ogre/media/rtshaderlib150)
 

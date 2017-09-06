@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BASE_BASERENDERENGINE_HH_
 
 #include <string>
+#include <vector>
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Storage.hh"
 

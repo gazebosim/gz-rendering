@@ -239,6 +239,7 @@ void OgreRTShaderSystem::AttachEntity(OgreSubMesh *subMesh)
 
   this->dataPtr->entityMutex->lock();
   this->dataPtr->entities.push_back(subMesh);
+  this->dataPtr->updateShaders = true;
   this->dataPtr->entityMutex->unlock();
 }
 
@@ -414,7 +415,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
       IGN_RENDERING_RESOURCE_PATH;
 
   resourcePath = common::joinPaths(resourcePath, "ogre", "media",
-      "rtshaderlib");
+      "rtshaderlib150");
 
   std::vector<std::string> paths;
   paths.push_back(resourcePath);
@@ -591,12 +592,10 @@ void OgreRTShaderSystem::Update()
   if (!this->dataPtr->initialized || !this->dataPtr->updateShaders)
     return;
 
-  std::list<OgreSubMesh*>::iterator iter;
-
   std::lock_guard<std::mutex> lock(*this->dataPtr->entityMutex);
 
   // Update all the shaders
-  for (iter = this->dataPtr->entities.begin();
+  for (auto iter = this->dataPtr->entities.begin();
       iter != this->dataPtr->entities.end(); ++iter)
     this->GenerateShaders(*iter);
 

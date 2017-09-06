@@ -146,6 +146,8 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
     return;
   }
 
+  this->resourcePaths.push_back(path);
+
   try
   {
     if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
@@ -477,60 +479,45 @@ void OgreRenderEngine::CreateRenderSystem()
 void OgreRenderEngine::CreateResources()
 {
   std::vector< std::pair<std::string, std::string> > archNames;
-  std::vector< std::pair<std::string, std::string> >::iterator aiter;
-  std::list<std::string>::const_iterator iter;
-  // std::list<std::string> paths = SystemPaths::Instance()->GetGazeboPaths();
-  // TODO do this in gazebo plugin
-  std::list<std::string> paths;
 
+  // TODO support loading resources from user specified paths
+  std::list<std::string> paths;
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+  resourcePath = common::joinPaths(resourcePath, "ogre");
+  paths.push_back(resourcePath);
 
   std::list<std::string> mediaDirs;
   mediaDirs.push_back("media");
 
-  for (iter = paths.begin(); iter != paths.end(); ++iter)
+  for (auto const &p : paths)
   {
-    if (!common::isDirectory((*iter)))
+    if (!common::isDirectory(p))
       continue;
 
     archNames.push_back(
-        std::make_pair((*iter)+"/", "General"));
+        std::make_pair(p, "General"));
 
-    for (std::list<std::string>::iterator mediaIter = mediaDirs.begin();
-         mediaIter != mediaDirs.end(); ++mediaIter)
+    for (auto const &m : mediaDirs)
     {
-      std::string prefix = (*iter) + "/" + (*mediaIter);
+      std::string prefix = common::joinPaths(p, m);
 
       archNames.push_back(
           std::make_pair(prefix, "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/skyx", "SkyX"));
-      archNames.push_back(
-          std::make_pair(prefix + "/rtshaderlib", "General"));
+      // archNames.push_back(
+      //     std::make_pair(prefix + "/skyx", "SkyX"));
       archNames.push_back(
           std::make_pair(prefix + "/materials/programs", "General"));
       archNames.push_back(
           std::make_pair(prefix + "/materials/scripts", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/materials/textures", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/media/models", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/fonts", "Fonts"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/looknfeel", "LookNFeel"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/schemes", "Schemes"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/imagesets", "Imagesets"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/fonts", "Fonts"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/layouts", "Layouts"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/animations", "Animations"));
+      // archNames.push_back(
+      //     std::make_pair(prefix + "/materials/textures", "General"));
+      // archNames.push_back(
+      //     std::make_pair(prefix + "/media/models", "General"));
     }
 
-    for (aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
     {
       try
       {

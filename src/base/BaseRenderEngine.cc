@@ -200,10 +200,9 @@ void BaseRenderEngine::Destroy()
 }
 
 //////////////////////////////////////////////////
-void BaseRenderEngine::AddResourcePath(const std::string &/*_path*/)
+void BaseRenderEngine::AddResourcePath(const std::string &_path)
 {
-  ignerr << "BaseRenderEngine::AddResourcePath not implemented yet"
-      << std::endl;
+  this->resourcePaths.push_back(_path);
 }
 
 //////////////////////////////////////////////////

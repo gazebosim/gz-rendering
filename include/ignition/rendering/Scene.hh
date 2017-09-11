@@ -655,7 +655,7 @@ namespace ignition
       /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const common::Mesh *_mesh) = 0;
 
-      /// \brief Create new mesh geomerty. The rendering::Mesh will be created
+      /// \brief Create new mesh geometry. The rendering::Mesh will be created
       /// from the given common::Mesh specified in the MeshDescriptor.
       /// Sub-meshes will be loaded and centered according to the descriptor.
       /// \param[in] _desc Descriptor of the mesh to load

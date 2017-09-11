@@ -119,7 +119,7 @@ void OgreRTShaderSystem::Init()
     if (!this->Paths(coreLibsPath, cachePath))
     {
       ignerr << "Cannot find OGRE rtshaderlib. "
-          << "Shadows will be disabled.." << std::endl;
+             << "Shadows will be disabled." << std::endl;
       return;
     }
 

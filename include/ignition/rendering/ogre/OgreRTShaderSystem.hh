@@ -147,7 +147,7 @@ namespace ignition
       public: unsigned int ShadowTextureSize() const;
 
       /// \brief Get if RTShaderSystem is initialized or not
-      /// \return True if intialized _
+      /// \return True if intialized.
       public: bool IsInitialized() const;
 
       /// \brief Update the RT shaders. This should not be called frequently.

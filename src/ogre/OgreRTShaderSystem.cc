@@ -35,22 +35,17 @@
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 
-#define MINOR_VERSION 7
-
-
 namespace ignition
 {
   namespace rendering
   {
     class OgreRTShaderSystemPrivate
     {
-#if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 7
       /// \brief The shader generator.
       public: Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
 
       /// \brief Used to generate shadows.
       public: Ogre::RTShader::SubRenderState *shadowRenderState = nullptr;
-#endif
 
       /// \brief All the entites being used.
       public: std::list<OgreSubMesh*> entities;
@@ -65,7 +60,7 @@ namespace ignition
       public: std::vector<OgreScenePtr> scenes;
 
       /// \brief Mutex used to protext the entities list.
-      public: std::mutex *entityMutex;
+      public: std::mutex entityMutex;
 
       /// \brief Parallel Split Shadow Map (PSSM) camera setup
       public: Ogre::ShadowCameraSetupPtr pssmSetup;
@@ -76,6 +71,9 @@ namespace ignition
       /// \brief Size of the Parallel Split Shadow Map (PSSM) shadow texture
       /// at closest layer.
       public: unsigned int shadowTextureSize = 1024u;
+
+      /// \brief Flag to indicate shadows need to be reapplied
+      public: bool resetShadows = false;
     };
   }
 }
@@ -87,7 +85,6 @@ using namespace rendering;
 OgreRTShaderSystem::OgreRTShaderSystem()
   : dataPtr(new OgreRTShaderSystemPrivate)
 {
-  this->dataPtr->entityMutex = new std::mutex();
   this->dataPtr->initialized = false;
   this->dataPtr->shadowsApplied = false;
   this->dataPtr->pssmSetup.setNull();
@@ -97,20 +94,16 @@ OgreRTShaderSystem::OgreRTShaderSystem()
 OgreRTShaderSystem::~OgreRTShaderSystem()
 {
   this->Fini();
-  delete this->dataPtr->entityMutex;
 }
 
 //////////////////////////////////////////////////
-void OgreRTShaderSystem::Init()
+bool OgreRTShaderSystem::Init()
 {
-#if INCLUDE_RTSHADER && OGRE_VERSION_MAJOR >= 1 && \
-    OGRE_VERSION_MINOR >= MINOR_VERSION
-
   // Only initialize if using FORWARD rendering
   if (OgreRenderEngine::Instance()->RenderPathType() !=
       OgreRenderEngine::FORWARD)
   {
-    return;
+    return false;
   }
 
   if (Ogre::RTShader::ShaderGenerator::initialize())
@@ -120,7 +113,7 @@ void OgreRTShaderSystem::Init()
     {
       ignerr << "Cannot find OGRE rtshaderlib. "
              << "Shadows will be disabled." << std::endl;
-      return;
+      return false;
     }
 
     this->dataPtr->initialized = true;
@@ -138,9 +131,11 @@ void OgreRTShaderSystem::Init()
     this->dataPtr->shaderGenerator->setTargetLanguage("glsl");
   }
   else
+  {
     ignerr << "RT Shader system failed to initialize" << std::endl;
-
-#endif
+    return false;
+  }
+  return false;
 }
 
 //////////////////////////////////////////////////
@@ -173,8 +168,6 @@ void OgreRTShaderSystem::Fini()
 }
 
 //////////////////////////////////////////////////
-#if INCLUDE_RTSHADER && OGRE_VERSION_MAJOR >= 1 && \
-    OGRE_VERSION_MINOR >= MINOR_VERSION
 void OgreRTShaderSystem::AddScene(OgreScenePtr _scene)
 {
   if (!this->dataPtr->initialized)
@@ -186,12 +179,8 @@ void OgreRTShaderSystem::AddScene(OgreScenePtr _scene)
       Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
   this->dataPtr->scenes.push_back(_scene);
 }
-#else
-void OgreRTShaderSystem::AddScene(OgreScenePtr /*_scene*/)
-{
-}
-#endif
 
+//////////////////////////////////////////////////
 void OgreRTShaderSystem::RemoveScene(OgreScenePtr _scene)
 {
   if (!this->dataPtr->initialized)
@@ -237,10 +226,9 @@ void OgreRTShaderSystem::AttachEntity(OgreSubMesh *subMesh)
   if (!this->dataPtr->initialized)
     return;
 
-  this->dataPtr->entityMutex->lock();
+  std::lock_guard<std::mutex> lock(this->dataPtr->entityMutex);
   this->dataPtr->entities.push_back(subMesh);
   this->dataPtr->updateShaders = true;
-  this->dataPtr->entityMutex->unlock();
 }
 
 //////////////////////////////////////////////////
@@ -249,14 +237,14 @@ void OgreRTShaderSystem::DetachEntity(OgreSubMesh *_vis)
   if (!this->dataPtr->initialized)
     return;
 
-  std::lock_guard<std::mutex> lock(*this->dataPtr->entityMutex);
+  std::lock_guard<std::mutex> lock(this->dataPtr->entityMutex);
   this->dataPtr->entities.remove(_vis);
 }
 
 //////////////////////////////////////////////////
 void OgreRTShaderSystem::Clear()
 {
-  std::lock_guard<std::mutex> lock(*this->dataPtr->entityMutex);
+  std::lock_guard<std::mutex> lock(this->dataPtr->entityMutex);
   this->dataPtr->entities.clear();
 }
 
@@ -267,10 +255,8 @@ void OgreRTShaderSystem::AttachViewport(Ogre::Viewport *_viewport,
   if (!OgreRTShaderSystem::Instance()->IsInitialized())
     return;
 
-#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 7
   _viewport->setMaterialScheme(_scene->Name() +
       Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-#endif
 }
 
 //////////////////////////////////////////////////
@@ -280,10 +266,8 @@ void OgreRTShaderSystem::DetachViewport(Ogre::Viewport *_viewport,
   if (!OgreRTShaderSystem::Instance()->IsInitialized())
     return;
 
-#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 7
   if (_viewport && _scene && _scene->IsInitialized())
     _viewport->setMaterialScheme(_scene->Name());
-#endif
 }
 
 //////////////////////////////////////////////////
@@ -426,8 +410,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
     {
       coreLibsPath = p;
       // setup patch name for rt shader cache in tmp
-      std::string tmpDir;
-      ignition::common::env(IGN_HOMEDIR, tmpDir);
+      std::string tmpDir = std::getenv(IGN_HOMEDIR);
       tmpDir = common::joinPaths(tmpDir, ".ignition", "rendering",
           "ogre-rtshader");
       // Get the user
@@ -589,17 +572,30 @@ Ogre::PSSMShadowCameraSetup
 /////////////////////////////////////////////////
 void OgreRTShaderSystem::Update()
 {
-  if (!this->dataPtr->initialized || !this->dataPtr->updateShaders)
+  if (!this->dataPtr->initialized)
     return;
 
-  std::lock_guard<std::mutex> lock(*this->dataPtr->entityMutex);
+  if (this->dataPtr->resetShadows)
+  {
+    for (auto & s : this->dataPtr->scenes)
+    {
+      this->RemoveShadows(s);
+      this->ApplyShadows(s);
+    }
+    this->dataPtr->resetShadows = false;
+  }
 
-  // Update all the shaders
-  for (auto iter = this->dataPtr->entities.begin();
-      iter != this->dataPtr->entities.end(); ++iter)
-    this->GenerateShaders(*iter);
+  std::lock_guard<std::mutex> lock(this->dataPtr->entityMutex);
 
-  this->dataPtr->updateShaders = false;
+  if (this->dataPtr->updateShaders)
+  {
+    // Update all the shaders
+    for (auto iter = this->dataPtr->entities.begin();
+        iter != this->dataPtr->entities.end(); ++iter)
+      this->GenerateShaders(*iter);
+
+    this->dataPtr->updateShaders = false;
+  }
 }
 
 /////////////////////////////////////////////////
@@ -613,6 +609,7 @@ bool OgreRTShaderSystem::SetShadowTextureSize(const unsigned int _size)
   }
 
   this->dataPtr->shadowTextureSize = _size;
+  this->dataPtr->resetShadows = true;
   return true;
 }
 

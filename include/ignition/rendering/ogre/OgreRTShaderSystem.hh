@@ -65,8 +65,10 @@ namespace ignition
       /// \brief Destructor.
       private: virtual ~OgreRTShaderSystem();
 
-      /// \brief Init the run time shader system.
-      public: void Init();
+      /// \brief Initialize the run time shader system.
+      /// \return True if the run time shader system is initialized
+      /// successfully.
+      public: bool Init();
 
       /// \brief Finalize the shader system
       public: void Fini();
@@ -150,7 +152,14 @@ namespace ignition
       /// \return True if intialized.
       public: bool IsInitialized() const;
 
-      /// \brief Update the RT shaders. This should not be called frequently.
+      /// \brief Update the RT shaders. The call will only take effect if
+      /// shadow properties changed, e.g. texture size, or the shaders
+      /// have been marked dirty by UpdateShaders, e.g. when entities are
+      /// added. The function reapplies shadows if properties have changed,
+      /// and iterates through all entities added to RTShaderSystem
+      /// and regenerates shader programs for each entity if shaders are dirty.
+      /// This function is currently called by OgreScene::PreRender
+      /// \sa OgreScene::PreRender
       public: void Update();
 
       /// \brief Make the RTShader system a singleton.

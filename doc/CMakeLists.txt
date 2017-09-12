@@ -11,4 +11,7 @@ if (DOXYGEN_FOUND)
     COMMAND cp ${CMAKE_SOURCE_DIR}/doc/ignition_logo.svg
             ${CMAKE_BINARY_DIR}/doxygen/html
     COMMENT "Generating API documentation with Doxygen" VERBATIM)
+
+  install(FILES ${CMAKE_BINARY_DIR}/doc/${PROJECT_NAME_LOWER}.tag.xml 
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/share/ignition/${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}_${PROJECT_MINOR_VERSION})
 endif()

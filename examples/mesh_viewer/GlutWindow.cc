@@ -155,6 +155,8 @@ void handleMouse()
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
+      // set point to be 10m away if no intersection found
+      g_target.point = g_rayQuery->Origin() + g_rayQuery->Direction() * 10;
       return;
     }
 
@@ -301,6 +303,7 @@ void initContext()
   glutMotionFunc(motionCB);
 }
 
+//////////////////////////////////////////////////
 void printUsage()
 {
   std::cout << "===============================" << std::endl;

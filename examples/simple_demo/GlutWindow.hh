@@ -14,28 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_GLUTWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_GLUTWINDOW_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_GLUTWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_GLUTWINDOW_HH_
 
 #include <vector>
 #include "ignition/rendering/RenderTypes.hh"
 
-namespace gz = ignition::rendering;
+namespace ir = ignition::rendering;
 
-void GlutRun(std::vector<gz::CameraPtr> _cameras);
-
-void GlutDisplay();
-
-void GlutIdle();
-
-void GlutKeyboard(unsigned char _key, int _x, int _y);
-
-void GlutReshape(int _width, int _height);
-
-void GlutInitCamera(gz::CameraPtr _camera);
-
-void GlutInitContext();
-
-void GlutPrintUsage();
+/// \brief Run the demo and render the scene from the cameras
+/// \param[in] _cameras Cameras in the scene
+void run(std::vector<ir::CameraPtr> _cameras);
 
 #endif

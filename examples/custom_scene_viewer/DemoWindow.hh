@@ -14,48 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_DEMOWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_DEMOWINDOW_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_DEMOWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_DEMOWINDOW_HH_
 
-#include <string>
-#include <vector>
 #include "TestTypes.hh"
-#include "ignition/rendering/RenderTypes.hh"
 
-namespace ignition
-{
-  namespace rendering
-  {
-    void GlutRun(ManualSceneDemoPtr _demo);
+namespace ir = ignition::rendering;
 
-    void GlutDisplay();
-
-    void GlutIdle();
-
-    void GlutKeyboard(unsigned char _key, int _x, int _y);
-
-    void GlutReshape(int _width, int _height);
-
-    void GlutInitCamera(CameraPtr _camera);
-
-    void GlutInitContext();
-
-    void GlutPrintUsage();
-
-    void GlutPrintEngine();
-
-    void GlutPrintFPS();
-
-    void GlutUpdateFPS();
-
-    void GlutPrintText(const std::string &_text, int x, int y);
-
-    void GlutPrintTextBack(const std::string &_text, int x, int y);
-
-    void GlutPrintTextFore(const std::string &_text, int x, int y);
-
-    void GlutPrintTextImpl(const std::string &_text, int x, int y);
-  }
-}
+/// \brief Run the demo
+/// \param[in] _Pointer to demo
+void run(ir::ManualSceneDemoPtr _demo);
 
 #endif

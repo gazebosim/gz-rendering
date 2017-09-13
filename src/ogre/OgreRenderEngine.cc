@@ -345,7 +345,8 @@ void OgreRenderEngine::CreateContext()
   this->dummyWindowId = XCreateSimpleWindow(x11Display,
       RootWindow(this->dummyDisplay, screenId), 0, 0, 1, 1, 0, 0, 0);
 
-  this->dummyContext = glXCreateContext(x11Display, this->dataPtr->dummyVisual, nullptr, 1);
+  this->dummyContext = glXCreateContext(x11Display, this->dataPtr->dummyVisual,
+                                        nullptr, 1);
 
   GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
 

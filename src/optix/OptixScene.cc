@@ -77,14 +77,9 @@ void OptixScene::SetAmbientLight(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OptixScene::BackgroundColor() const
-{
-  return this->backgroundColor;
-}
-
-//////////////////////////////////////////////////
 void OptixScene::SetBackgroundColor(const math::Color &_color)
 {
+  this->backgroundColor = _color;
   this->optixMissProgram["color"]->setFloat(
       _color.R(), _color.G(), _color.B());
 }

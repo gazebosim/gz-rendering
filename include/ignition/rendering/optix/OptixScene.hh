@@ -44,8 +44,6 @@ namespace ignition
 
       public: virtual void SetAmbientLight(const math::Color &_color);
 
-      public: virtual math::Color BackgroundColor() const;
-
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
       public: virtual void PreRender();
@@ -146,8 +144,6 @@ namespace ignition
       protected: OptixLightManagerPtr lightManager;
 
       protected: OptixMeshFactoryPtr meshFactory;
-
-      protected: math::Color backgroundColor;
 
       protected: OptixLightStorePtr lights;
 

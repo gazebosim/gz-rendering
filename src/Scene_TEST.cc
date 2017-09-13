@@ -19,7 +19,6 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
@@ -60,7 +59,7 @@ TEST_P(SceneTest, Scene)
   Scene(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Camera, SceneTest,
+INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
     ::testing::Values("ogre", "optix"));
 
 int main(int argc, char **argv)

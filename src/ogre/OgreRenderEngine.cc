@@ -49,7 +49,7 @@ namespace ignition
     class OgreRenderEnginePrivate
     {
 #if not defined(__APPLE__) && not defined(_WIN32)
-      public: XVisualInfo *dummyVisual;
+      public: XVisualInfo *dummyVisual = nullptr;
 #endif
     };
   }

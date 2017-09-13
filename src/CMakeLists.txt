@@ -30,6 +30,7 @@ set (gtest_sources_dri
   RayQuery_TEST.cc
   RenderTarget_TEST.cc
   RenderingIface_TEST.cc
+  Scene_TEST.cc
 )
 
 ign_build_tests(${gtest_sources})

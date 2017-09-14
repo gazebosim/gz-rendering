@@ -42,6 +42,19 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
 
+namespace ignition
+{
+  namespace rendering
+  {
+    class OgreRenderEnginePrivate
+    {
+#if not defined(__APPLE__) && not defined(_WIN32)
+      public: XVisualInfo *dummyVisual = nullptr;
+#endif
+    };
+  }
+}
+
 using namespace ignition;
 using namespace rendering;
 
@@ -50,7 +63,8 @@ OgreRenderEngine::OgreRenderEngine() :
   loaded(false),
   initialized(false),
   ogreRoot(nullptr),
-  ogreLogManager(nullptr)
+  ogreLogManager(nullptr),
+  dataPtr(new OgreRenderEnginePrivate)
 {
 #if not (__APPLE__ || _WIN32)
   this->dummyDisplay = nullptr;
@@ -88,6 +102,8 @@ bool OgreRenderEngine::Fini()
     XDestroyWindow(x11Display, this->dummyWindowId);
     XCloseDisplay(x11Display);
     this->dummyDisplay = nullptr;
+    XFree(this->dataPtr->dummyVisual);
+    this->dataPtr->dummyVisual = nullptr;
   }
 #endif
 
@@ -306,7 +322,7 @@ void OgreRenderEngine::CreateContext()
 
   if (!this->dummyDisplay)
   {
-    ignerr << "Unable to open dipslay: " << XDisplayName(0) << std::endl;
+    ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
     return;
   }
 
@@ -316,10 +332,10 @@ void OgreRenderEngine::CreateContext()
   int attributeList[] = { GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 16,
       GLX_STENCIL_SIZE, 8, None };
 
-  XVisualInfo *dummyVisual =
+  this->dataPtr->dummyVisual =
       glXChooseVisual(x11Display, screenId, attributeList);
 
-  if (!dummyVisual)
+  if (!this->dataPtr->dummyVisual)
   {
     ignerr << "Unable to create glx visual" << std::endl;
     return;
@@ -329,7 +345,8 @@ void OgreRenderEngine::CreateContext()
   this->dummyWindowId = XCreateSimpleWindow(x11Display,
       RootWindow(this->dummyDisplay, screenId), 0, 0, 1, 1, 0, 0, 0);
 
-  this->dummyContext = glXCreateContext(x11Display, dummyVisual, nullptr, 1);
+  this->dummyContext = glXCreateContext(x11Display, this->dataPtr->dummyVisual,
+                                        nullptr, 1);
 
   GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
 

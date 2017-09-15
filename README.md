@@ -30,6 +30,12 @@ Optix:
 
 https://developer.nvidia.com/optix
 
+Update `LD_LIBRARY_PATH` and add an `OPTIX_INSTALL_DIR` environment variables
+so that ign-rendering can find Optix, e.g. if you installed in HOME/optix:
+
+    export LD_LIBRARY_PATH=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64/lib64:${LD_LIBRARY_PATH}
+    export OPTIX_INSTALL_DIR=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64
+
 #### Examples
 
     # glew is used for managing gl context when switching between rendering
@@ -49,9 +55,10 @@ steps:
 
 ### Troubleshooting
 
-if  you encounter errors about different exception specifiers in optix math,
+if you encounter errors about different exception specifiers in optix math,
 edit `[optix_install_dir]/include/optixu/optixu_math_namespace.h` and comment
-out the section that defines `fminf`, fmaxf, and `copysignf`
+out the section that defines `fminf`, fmaxf, and `copysignf` (for optix
+sdk 4.0.2, comment out line 167-206).
 
 ## Uninstallation
 

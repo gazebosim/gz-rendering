@@ -58,7 +58,7 @@ steps:
 if you encounter errors about different exception specifiers in optix math,
 edit `[optix_install_dir]/include/optixu/optixu_math_namespace.h` and comment
 out the section that defines `fminf`, fmaxf, and `copysignf` (for optix
-sdk 4.0.2, comment out line 167-206).
+sdk 4.0.2, comment out lines 167-206).
 
 ## Uninstallation
 

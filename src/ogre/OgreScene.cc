@@ -97,7 +97,7 @@ void OgreScene::SetBackgroundColor(const math::Color &_color)
 void OgreScene::PreRender()
 {
   BaseScene::PreRender();
-  OgreRTShaderSystem::Instance()->UpdateShaders();
+  OgreRTShaderSystem::Instance()->Update();
 }
 
 //////////////////////////////////////////////////

@@ -58,21 +58,21 @@ std::string OptixRenderEngine::PtxFile(const std::string& _fileBase) const
   // TODO: actual implement system path system
 
   std::vector<std::string> folders;
-  folders.push_back("./src/optix/");
 
-  std::string home(std::getenv("HOME"));
-  folders.push_back(home + "/local/share/ignition/rendering/ptx/");
+  const char *env= std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+  resourcePath = common::joinPaths(resourcePath, "optix");
+  folders.push_back(resourcePath);
 
-  const char *cstr = std::getenv("IGN_RENDERING_INSTALL_DIR");
-
-  if (cstr)
-    folders.push_back(std::string(cstr) + "/share/ignition/rendering/ptx/");
+  for (auto &p : this->resourcePaths)
+    folders.push_back(common::joinPaths(p, "optix"));
 
   std::string file = PTX_PREFIX + _fileBase + PTX_SUFFIX;
 
   for (auto folder : folders)
   {
-    std::string uri = folder + file;
+    std::string uri = common::joinPaths(folder, file);
 
     if (common::exists(uri))
     {

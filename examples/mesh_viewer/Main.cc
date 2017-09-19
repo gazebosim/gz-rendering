@@ -65,7 +65,6 @@ void buildScene(ScenePtr _scene)
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
-
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.5);
@@ -106,24 +105,17 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  try
-  {
-    engineNames.push_back("ogre");
-    engineNames.push_back("optix");
+  engineNames.push_back("ogre");
+  engineNames.push_back("optix");
 
-    for (auto engineName : engineNames)
-    {
-      CameraPtr camera = createCamera(engineName);
-      if (camera)
-        cameras.push_back(camera);
-    }
-
-    run(cameras);
-  }
-  catch (...)
+  for (auto engineName : engineNames)
   {
-    // std::cout << ex.what() << std::endl;
+    CameraPtr camera = createCamera(engineName);
+    if (camera)
+      cameras.push_back(camera);
   }
+
+  run(cameras);
 
   return 0;
 }

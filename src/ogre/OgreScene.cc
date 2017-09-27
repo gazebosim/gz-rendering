@@ -72,12 +72,6 @@ void OgreScene::SetAmbientLight(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OgreScene::BackgroundColor() const
-{
-  return this->backgroundColor;
-}
-
-//////////////////////////////////////////////////
 void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;

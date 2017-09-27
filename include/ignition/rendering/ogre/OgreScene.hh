@@ -48,8 +48,6 @@ namespace ignition
 
       public: virtual void SetAmbientLight(const math::Color &_color);
 
-      public: virtual math::Color BackgroundColor() const;
-
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
       public: virtual void PreRender();
@@ -139,8 +137,6 @@ namespace ignition
       protected: OgreVisualPtr rootVisual;
 
       protected: OgreMeshFactoryPtr meshFactory;
-
-      protected: math::Color backgroundColor;
 
       protected: OgreLightStorePtr lights;
 

@@ -131,6 +131,7 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture = std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);
   this->renderTexture->SetFormat(PF_R8G8B8);
+  this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
 }
 
 //////////////////////////////////////////////////
@@ -142,6 +143,7 @@ RenderWindowPtr OgreCamera::CreateRenderWindow()
   renderWindow->SetHeight(this->ImageHeight());
   renderWindow->SetDevicePixelRatio(1);
   renderWindow->SetCamera(this->ogreCamera);
+  renderWindow->SetBackgroundColor(this->scene->BackgroundColor());
 
   this->renderTexture = renderWindow;
   return renderWindow;

@@ -252,7 +252,8 @@ void OgreRTShaderSystem::Clear()
 void OgreRTShaderSystem::AttachViewport(Ogre::Viewport *_viewport,
     OgreScenePtr _scene)
 {
-  if (!OgreRTShaderSystem::Instance()->IsInitialized() || _scene == nullptr)
+  if (!OgreRTShaderSystem::Instance()->IsInitialized() || _scene == nullptr ||
+      _viewport == nullptr)
     return;
 
   _viewport->setMaterialScheme(_scene->Name() +

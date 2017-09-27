@@ -14,7 +14,7 @@ SET (VALID_DISPLAY FALSE)
 SET (VALID_DRI_DISPLAY FALSE)
 SET (CHECKER_ERROR "(no glxinfo or pyopengl)")
 
-IF((DEFINED ENV{DISPLAY}) AND NOT ("$ENV{DISPLAY}" STREQUAL ""))
+IF ((DEFINED ENV{DISPLAY}) AND NOT ("$ENV{DISPLAY}" STREQUAL ""))
   EXECUTE_PROCESS(
     COMMAND xwininfo -root
     RESULT_VARIABLE DISPLAY_FAIL_RESULT
@@ -55,7 +55,7 @@ IF((DEFINED ENV{DISPLAY}) AND NOT ("$ENV{DISPLAY}" STREQUAL ""))
       IF (NOT GL_FAIL_RESULT)
         MESSAGE(STATUS " + found a valid dri display (pyopengl)")
         SET (VALID_DRI_DISPLAY TRUE)
-     ELSE()
+      ELSE()
         # Check error string: no python module means no pyopengl
         STRING(FIND ${GL_ERROR}
                 "ImportError: No module named OpenGL.GLUT" ERROR_POS)
@@ -73,5 +73,5 @@ IF (NOT VALID_DISPLAY)
 ENDIF ()
 
 IF (NOT VALID_DRI_DISPLAY)
-    MESSAGE(STATUS " ! valid dri display not found ${CHECKER_ERROR}")
+  MESSAGE(STATUS " ! valid dri display not found ${CHECKER_ERROR}")
 ENDIF ()

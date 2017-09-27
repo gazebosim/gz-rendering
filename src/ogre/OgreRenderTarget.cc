@@ -141,7 +141,7 @@ void OgreRenderTarget::RebuildViewport()
   ogreRenderTarget->removeAllViewports();
 
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
-  this->ogreViewport->setBackgroundColour(Ogre::ColourValue::Black);
+  this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
   this->ogreViewport->setClearEveryFrame(true);
   this->ogreViewport->setShadowsEnabled(true);
   this->ogreViewport->setOverlaysEnabled(false);

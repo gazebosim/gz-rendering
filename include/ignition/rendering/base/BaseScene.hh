@@ -56,10 +56,12 @@ namespace ignition
 
       public: virtual void SetAmbientLight(const math::Color &_color) = 0;
 
+      public: virtual math::Color BackgroundColor() const;
+
       public: virtual void SetBackgroundColor(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetBackgroundColor(const math::Color &_color) = 0;
+      public: virtual void SetBackgroundColor(const math::Color &_color);
 
       public: virtual unsigned int NodeCount() const;
 
@@ -350,6 +352,9 @@ namespace ignition
       protected: bool loaded;
 
       protected: bool initialized;
+
+      /// \brief Scene background color. Default should be black.
+      protected: math::Color backgroundColor;
 
       private: unsigned int nextObjectId;
 

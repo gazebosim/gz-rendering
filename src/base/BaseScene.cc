@@ -121,9 +121,21 @@ void BaseScene::SetAmbientLight(double _r, double _g, double _b, double _a)
 }
 
 //////////////////////////////////////////////////
+math::Color BaseScene::BackgroundColor() const
+{
+  return this->backgroundColor;
+}
+
+//////////////////////////////////////////////////
 void BaseScene::SetBackgroundColor(double _r, double _g, double _b, double _a)
 {
   this->SetBackgroundColor(math::Color(_r, _g, _b, _a));
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetBackgroundColor(const math::Color &_color)
+{
+  this->backgroundColor = _color;
 }
 
 //////////////////////////////////////////////////

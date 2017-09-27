@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
 #define IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -36,6 +37,9 @@ namespace ignition
 {
   namespace rendering
   {
+    // forward declaration
+    class OgreRenderEnginePrivate;
+
     class IGNITION_VISIBLE OgreRenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<OgreRenderEngine>
@@ -130,6 +134,7 @@ namespace ignition
 
       private: uint64_t dummyWindowId;
 
+      private: std::unique_ptr<OgreRenderEnginePrivate> dataPtr;
 #ifdef OGRE_OVERLAY_NEEDED
       private: Ogre::OverlaySystem *ogreOverlaySystem;
 #endif

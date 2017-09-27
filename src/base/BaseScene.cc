@@ -129,8 +129,7 @@ math::Color BaseScene::BackgroundColor() const
 //////////////////////////////////////////////////
 void BaseScene::SetBackgroundColor(double _r, double _g, double _b, double _a)
 {
-  this->backgroundColor.Set(_r, _g, _b, _a);
-  this->SetBackgroundColor(this->backgroundColor);
+  this->SetBackgroundColor(math::Color(_r, _g, _b, _a));
 }
 
 //////////////////////////////////////////////////

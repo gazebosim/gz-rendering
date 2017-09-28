@@ -20,6 +20,7 @@
 #include <string>
 
 #include "ignition/rendering/RenderTarget.hh"
+#include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
 namespace ignition
@@ -48,6 +49,9 @@ namespace ignition
       public: virtual PixelFormat Format() const;
 
       public: virtual void SetFormat(PixelFormat _format);
+
+      // Documentation inherited
+      public: virtual math::Color BackgroundColor() const;
 
       protected: virtual void Rebuild();
 
@@ -175,6 +179,13 @@ namespace ignition
     {
       this->format = PixelUtil::Sanitize(_format);
       this->targetDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Color BaseRenderTarget<T>::BackgroundColor() const
+    {
+      return this->Scene()->BackgroundColor();
     }
 
 

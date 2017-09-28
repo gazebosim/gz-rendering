@@ -53,6 +53,7 @@ namespace ignition
 
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
+      // Documentation inherited
       public: virtual math::Color BackgroundColor() const;
 
       public: virtual void SetBackgroundColor(math::Color _color);

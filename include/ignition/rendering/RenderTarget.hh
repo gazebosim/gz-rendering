@@ -25,6 +25,12 @@
 
 namespace ignition
 {
+  // forward declaration
+  namespace math
+  {
+    class Color;
+  }
+
   namespace rendering
   {
     /// \class RenderTarget RenderTarget.hh ignition/rendering/RenderTarget.hh
@@ -66,6 +72,11 @@ namespace ignition
       /// rendered will result in undefined behavior.
       /// \param[out] _image Image to which output will be written
       public: virtual void Copy(Image &_image) const = 0;
+
+      /// \brief Get the background color of the render target.
+      /// This should be the same as the scene background color.
+      /// \return Render target background color.
+      public: virtual math::Color BackgroundColor() const = 0;
     };
 
     /// \class RenderTexture RenderTexture.hh

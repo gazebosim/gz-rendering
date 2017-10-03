@@ -59,6 +59,16 @@ void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
   EXPECT_EQ(240u, renderWindow->Height());
   EXPECT_EQ("windowId", renderWindow->Handle());
   EXPECT_EQ(1.0, renderWindow->DevicePixelRatio());
+  EXPECT_EQ(math::Color::Black, renderWindow->BackgroundColor());
+
+  // change render window properties and verify
+  renderWindow->SetWidth(640);
+  renderWindow->SetHeight(480);
+  scene->SetBackgroundColor(math::Color::Red);
+
+  EXPECT_EQ(640u, renderWindow->Width());
+  EXPECT_EQ(480u, renderWindow->Height());
+  EXPECT_EQ(math::Color::Red, renderWindow->BackgroundColor());
 }
 
 /////////////////////////////////////////////////

@@ -154,6 +154,16 @@ void OptixCamera::CreateRenderTexture()
 }
 
 //////////////////////////////////////////////////
+RenderWindowPtr OptixCamera::CreateRenderWindow()
+{
+  RenderWindowPtr base = this->scene->CreateRenderWindow();
+  this->renderTexture = std::dynamic_pointer_cast<OptixRenderWindow>(base);
+  this->renderTexture->SetFormat(PF_R8G8B8);
+  this->SetAntiAliasing(1);
+  return base;
+}
+
+//////////////////////////////////////////////////
 void OptixCamera::CreateRenderProgram()
 {
   this->optixRenderProgram =

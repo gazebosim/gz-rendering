@@ -123,7 +123,7 @@ namespace ignition
 
       protected: Ogre::RenderTarget *ogreRenderWindow = nullptr;
 
-      private: friend class OgreCamera;
+      private: friend class OgreScene;
     };
 
   }

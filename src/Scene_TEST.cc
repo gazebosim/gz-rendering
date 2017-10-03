@@ -20,6 +20,7 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/RenderEngine.hh"
+#include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -51,6 +52,12 @@ void SceneTest::Scene(const std::string &_renderEngine)
   math::Color red(1, 0, 0, 1);
   scene->SetBackgroundColor(red);
   EXPECT_EQ(red, scene->BackgroundColor());
+
+
+  // test creating render window from scene
+  RenderWindowPtr renderWindow = scene->CreateRenderWindow();
+  EXPECT_NE(nullptr, renderWindow->Scene());
+  EXPECT_EQ(scene, renderWindow->Scene());
 }
 
 /////////////////////////////////////////////////

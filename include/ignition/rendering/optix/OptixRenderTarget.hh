@@ -61,6 +61,17 @@ namespace ignition
 
       private: friend class OptixScene;
     };
+
+    class IGNITION_VISIBLE OptixRenderWindow :
+      public virtual BaseRenderWindow<OptixRenderTexture>
+    {
+      protected: OptixRenderWindow();
+
+      public: virtual ~OptixRenderWindow();
+
+      private: friend class OptixScene;
+    };
+
   }
 }
 #endif

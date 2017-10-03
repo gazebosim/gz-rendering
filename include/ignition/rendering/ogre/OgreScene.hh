@@ -110,6 +110,10 @@ namespace ignition
       protected: virtual RenderTexturePtr CreateRenderTextureImpl(
                      unsigned int _id, const std::string &_name);
 
+      // Documentation inherited.
+      protected: virtual RenderWindowPtr CreateRenderWindowImpl(
+                     unsigned int _id, const std::string &_name);
+
       protected: virtual RayQueryPtr CreateRayQueryImpl(
                      unsigned int _id, const std::string &_name);
 

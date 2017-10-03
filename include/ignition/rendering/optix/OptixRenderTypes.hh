@@ -49,6 +49,7 @@ namespace ignition
     class OptixVisual;
     class OptixRenderTarget;
     class OptixRenderTexture;
+    class OptixRenderWindow;
     class OptixLightManager;
 
     typedef BaseSceneStore<OptixScene>       OptixSceneStore;
@@ -93,6 +94,7 @@ namespace ignition
     typedef shared_ptr<OptixMaterialMap>          OptixMaterialMapPtr;
     typedef shared_ptr<OptixRenderTarget>         OptixRenderTargetPtr;
     typedef shared_ptr<OptixRenderTexture>        OptixRenderTexturePtr;
+    typedef shared_ptr<OptixRenderWindow>         OptixRenderWindowPtr;
     typedef shared_ptr<OptixLightManager>         OptixLightManagerPtr;
   }
 }

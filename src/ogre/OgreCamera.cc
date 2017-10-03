@@ -137,8 +137,9 @@ void OgreCamera::CreateRenderTexture()
 //////////////////////////////////////////////////
 RenderWindowPtr OgreCamera::CreateRenderWindow()
 {
+  RenderWindowPtr base = this->scene->CreateRenderWindow();
   OgreRenderWindowPtr renderWindow =
-      OgreRenderWindowPtr(new OgreRenderWindow());
+      std::dynamic_pointer_cast<OgreRenderWindow>(base);
   renderWindow->SetWidth(this->ImageWidth());
   renderWindow->SetHeight(this->ImageHeight());
   renderWindow->SetDevicePixelRatio(1);
@@ -146,7 +147,7 @@ RenderWindowPtr OgreCamera::CreateRenderWindow()
   renderWindow->SetBackgroundColor(this->scene->BackgroundColor());
 
   this->renderTexture = renderWindow;
-  return renderWindow;
+  return base;
 }
 
 //////////////////////////////////////////////////

@@ -675,9 +675,15 @@ namespace ignition
       public: virtual MaterialPtr CreateMaterial(
                   const common::Material &_material) = 0;
 
-      /// \brief Create new render-texture
-      /// \return The created render-texture
+      /// \brief Create new render texture
+      /// \return The created render texture
       public: virtual RenderTexturePtr CreateRenderTexture() = 0;
+
+      /// \brief Create new render window. This feature is render engine
+      /// dependent. If the engine does not support attaching to a windowing
+      /// then it should behave as a a render texture
+      /// \return The created render window
+      public: virtual RenderWindowPtr CreateRenderWindow() = 0;
 
       /// \brief Create new ray query
       /// \return The created ray query

@@ -271,6 +271,14 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
+GridPtr OgreScene::CreateGridImpl(unsigned int _id, const std::string &_name)
+{
+  OgreGridPtr grid(new OgreGrid);
+  bool result = this->InitObject(grid, _id, _name);
+  return (result) ? grid: nullptr;
+}
+
+//////////////////////////////////////////////////
 MaterialPtr OgreScene::CreateMaterialImpl(unsigned int _id,
     const std::string &_name)
 {

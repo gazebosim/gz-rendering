@@ -321,6 +321,14 @@ MeshPtr OptixScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
+GridPtr OptixScene::CreateGridImpl(
+    unsigned int /*_id*/, const std::string &/*_name*/)
+{
+  /// TODO
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
 MaterialPtr OptixScene::CreateMaterialImpl(unsigned int _id,
     const std::string &_name)
 {

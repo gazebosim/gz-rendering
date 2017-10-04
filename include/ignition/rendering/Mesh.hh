@@ -30,7 +30,7 @@ namespace ignition
     class IGNITION_VISIBLE Mesh :
       public virtual Geometry
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Mesh() { }
 
       /// \brief Get the sub-mesh count

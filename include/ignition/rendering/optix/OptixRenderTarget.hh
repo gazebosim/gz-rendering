@@ -66,10 +66,13 @@ namespace ignition
     class IGNITION_VISIBLE OptixRenderWindow :
       public virtual BaseRenderWindow<OptixRenderTexture>
     {
+      /// \brief Constructor
       protected: OptixRenderWindow();
 
+      /// \brief Destructor
       public: virtual ~OptixRenderWindow();
 
+      /// \brief Render windows should only be created by the scene class
       private: friend class OptixScene;
     };
 

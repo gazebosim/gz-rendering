@@ -26,7 +26,7 @@ namespace ignition
   namespace rendering
   {
     /// \class Grid Grid.hh ignition/rendering/Grid
-    /// \brief Represents a grid geometry drawn along the XY Plane.
+    /// \brief Represents a grid geometry drawn along the XY plane.
     /// If vertical cell count is specified then the grid becomes 3D.
     class IGNITION_VISIBLE Grid :
       public virtual Geometry
@@ -52,7 +52,7 @@ namespace ignition
       public: virtual double CellLength() const = 0;
 
       /// \brief Set the vertical cell count of the grid. This makes the grid 3D
-      /// \param[in] _height Grid height
+      /// \param[in] _count Number of cells in vertical direction.
       public: virtual void SetVerticalCellCount(const unsigned int _count) = 0;
 
       /// \brief Get the vertical cell count

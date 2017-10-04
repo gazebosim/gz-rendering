@@ -35,7 +35,6 @@ class GridTest : public testing::Test,
 /////////////////////////////////////////////////
 void GridTest::Grid(const std::string &_renderEngine)
 {
-  // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

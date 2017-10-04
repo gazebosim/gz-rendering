@@ -324,7 +324,7 @@ namespace ignition
       /// \brief Implementation for creating a grid geometry object
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.
-      /// \return Grid geometry object
+      /// \return Pointer to a grid geometry object
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
                      const std::string &_name) = 0;
 

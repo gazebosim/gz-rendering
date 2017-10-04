@@ -36,7 +36,7 @@ namespace ignition
     // Forward declaration
     class OgreGridPrivate;
 
-    ///  \brief Ogre implementation of a grid geometry.
+    /// \brief Ogre implementation of a grid geometry.
     class IGNITION_VISIBLE OgreGrid
       : public BaseGrid<OgreGeometry>
     {
@@ -58,11 +58,11 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
 
-      /// \brief Set material to grid manual object.
+      /// \brief Set material to grid geometry.
       /// \param[in] _material Ogre material.
       protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
 
-      /// \brief Create the grid manual object
+      /// \brief Create the grid geometry in ogre
       private: void Create();
 
       /// \brief Grid should only be created by scene.

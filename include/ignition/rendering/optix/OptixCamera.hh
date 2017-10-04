@@ -55,6 +55,7 @@ namespace ignition
 
       protected: virtual void CreateRenderTexture();
 
+      // Documentation inherited.
       protected: virtual RenderWindowPtr CreateRenderWindow();
 
       protected: virtual void CreateRenderProgram();

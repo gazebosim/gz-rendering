@@ -681,7 +681,7 @@ namespace ignition
 
       /// \brief Create new render window. This feature is render engine
       /// dependent. If the engine does not support attaching to a windowing
-      /// then it should behave as a a render texture
+      /// system then it should behave as a a render texture.
       /// \return The created render window
       public: virtual RenderWindowPtr CreateRenderWindow() = 0;
 

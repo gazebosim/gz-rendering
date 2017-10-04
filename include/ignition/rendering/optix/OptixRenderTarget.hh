@@ -62,6 +62,7 @@ namespace ignition
       private: friend class OptixScene;
     };
 
+    /// \brief Render window mocked using a render texture.
     class IGNITION_VISIBLE OptixRenderWindow :
       public virtual BaseRenderWindow<OptixRenderTexture>
     {

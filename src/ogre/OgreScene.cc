@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreGrid.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/ogre.hh"

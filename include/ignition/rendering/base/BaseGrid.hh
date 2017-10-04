@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2017 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,20 +25,56 @@ namespace ignition
 {
   namespace rendering
   {
-    //////////////////////////////////////////////////
+    /// \brief Base implementation of a grid geometry
     template <class T>
     class IGNITION_VISIBLE BaseGrid :
-      public virtual Mesh,
+      public virtual Grid,
       public virtual T
     {
+      /// \brief Constructor
       protected: BaseGrid();
 
+      /// \brief Destructor
       public: virtual ~BaseGrid();
 
+      // Documentation inherited.
       public: virtual void PreRender();
 
+      // Documentation inherited.
       public: virtual void Destroy();
 
+      // Documentation inherited.
+      public: virtual unsigned int CellCount() const;
+
+      // Documentation inherited.
+      public: virtual void SetCellCount(const unsigned int _count);
+
+      // Documentation inherited.
+      public: virtual double CellLength() const;
+
+      // Documentation inherited.
+      public: virtual void SetCellLength(const double _len);
+
+      // Documentation inherited.
+      public: virtual unsigned int VerticalCellCount() const;
+
+      // Documentation inherited.
+      public: virtual void SetVerticalCellCount(const unsigned int _count);
+
+      /// \brief Number of cells in grid
+      protected: unsigned int cellCount = 10u;
+
+      /// \brief Length of a single cell
+      protected: double cellLength = 1.0;
+
+      /// \brief Number of cells in vertical direction
+      protected: unsigned int verticalCellCount = 0;
+
+      /// \brief vertical offset of the XY plane from origin
+      protected: double heightOffset = 0.0;
+
+      /// \brief Flag to indicate grid is dirty
+      protected: bool gridDirty = false;
     };
 
     //////////////////////////////////////////////////
@@ -64,9 +100,25 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseGrid<T>::CellLength() const
+    void BaseGrid<T>::SetCellCount(const unsigned int _count)
+    {
+      this->cellCount = _count;
+      this->gridDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseGrid<T>::CellLength() const
     {
       return this->cellLength;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGrid<T>::SetCellLength(const double _len)
+    {
+      this->cellLength = _len;
+      this->gridDirty = true;
     }
 
     //////////////////////////////////////////////////
@@ -76,6 +128,13 @@ namespace ignition
       return this->verticalCellCount;
     }
 
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGrid<T>::SetVerticalCellCount(const unsigned int _count)
+    {
+      this->verticalCellCount = _count;
+      this->gridDirty = true;
+    }
 
     //////////////////////////////////////////////////
     template <class T>

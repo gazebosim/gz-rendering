@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Open Source Robotics Foundation
+ * Copyright (C) 2017 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,141 +15,155 @@
  *
 */
 
-#include <sstream>
+#include <ignition/common/Console.hh>
 
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/OgreGrid.hh"
+#include "ignition/rendering/ogre/OgreGrid.hh"
+#include "ignition/rendering/ogre/OgreMaterial.hh"
+#include "ignition/rendering/ogre/OgreScene.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    class OgreGridPrivate
+    {
+      /// \brief Grid materal
+      public: OgreMaterialPtr material;
+
+      /// \brief Ogre manual object used to render the grid.
+      public: Ogre::ManualObject *manualObject = nullptr;
+    };
+  }
+}
 
 using namespace ignition;
 using namespace rendering;
 
-
 //////////////////////////////////////////////////
 OgreGrid::OgreGrid()
+    : dataPtr(new OgreGridPrivate)
 {
 }
 
 //////////////////////////////////////////////////
 OgreGrid::~OgreGrid()
 {
-  this->scene->OgreSceneManager()->destroySceneNode(this->sceneNode->getName());
-  this->scene->OgreSceneManager()->destroyManualObject(this->manualObject);
-  this->material->unload();
 }
 
 //////////////////////////////////////////////////
-void OgreGrid::UpdateColor()
+void OgreGrid::PreRender()
 {
-  this->dataPtr->material->setDiffuse(_color.r, _color.g, _color.b, _color.a);
-  this->dataPtr->material->setAmbient(_color.r, _color.g, _color.b);
+  if (this->gridDirty)
+  {
+    this->Create();
+    this->gridDirty = false;
+  }
+}
 
-  if ((this->color).a < 0.9998)
-    this->dataPtr->material->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
-  else
-    this->dataPtr->material->setSceneBlending(Ogre::SBT_REPLACE);
-
-  this->dataPtr->material->setDepthWriteEnabled(false);
-  this->dataPtr->material->setDepthCheckEnabled(true);
+//////////////////////////////////////////////////
+Ogre::MovableObject *OgreGrid::OgreObject() const
+{
+  return this->dataPtr->manualObject;
 }
 
 //////////////////////////////////////////////////
 void OgreGrid::Init()
 {
-  this->dataPtr->anualObject =
-    this->dataPtr->scene->OgreSceneManager()->createManualObject(this->name);
-
-  this->dataPtr->manualObject->setDynamic(false);
-
-  Ogre::SceneNode *parent_node =
-      this->scene->OgreSceneManager()->getRootSceneNode();
-
-  this->sceneNode = parent_node->createChildSceneNode(this->name);
-  this->sceneNode->attachObject(this->manualObject);
-
-  std::stringstream ss;
-  ss << this->name << "Material";
-  this->material =
-    Ogre::MaterialManager::getSingleton().create(ss.str(),
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  this->material->setReceiveShadows(false);
-  this->material->getTechnique(0)->setLightingEnabled(false);
-
-  this->SetColor(this->color);
-
   this->Create();
 }
 
 //////////////////////////////////////////////////
 void OgreGrid::Create()
 {
-  this->manualObject->clear();
+  if (!this->dataPtr->manualObject)
+  {
+    this->dataPtr->manualObject =
+      this->scene->OgreSceneManager()->createManualObject(this->name);
+  }
 
-  float extent = (this->cellLength * static_cast<double>(this->cellCount))/2;
+  this->dataPtr->manualObject->clear();
 
-  this->manualObject->setCastShadows(false);
-  this->manualObject->estimateVertexCount(
-      this->cellCount * 4 * this->height +
+  double extent = (this->cellLength * static_cast<double>(this->cellCount))/2;
+
+  this->dataPtr->manualObject->setCastShadows(false);
+  this->dataPtr->manualObject->estimateVertexCount(
+      this->cellCount * 4 * this->verticalCellCount +
       ((this->cellCount + 1) * (this->cellCount + 1)));
 
-  this->manualObject->begin(this->material->getName(),
+  std::string materialName = this->dataPtr->material ?
+      this->dataPtr->material->Name() : "Default/White";
+  this->dataPtr->manualObject->begin(materialName,
       Ogre::RenderOperation::OT_LINE_LIST);
-
-  for (uint32_t h = 0; h <= this->height; ++h)
+  for (unsigned int h = 0; h <= this->verticalCellCount; ++h)
   {
-    float h_real = this->heightOffset +
-      (this->height / 2.0f - static_cast<float>(h)) * this->cellLength;
-    for (uint32_t i = 0; i <= this->cellCount; i++)
+    double hReal = this->heightOffset +
+        (this->verticalCellCount / 2.0f - static_cast<double>(h))
+        * this->cellLength;
+    for (unsigned int i = 0; i <= this->cellCount; i++)
     {
-      float inc = extent - (i * this->cellLength);
+      double inc = extent - (i * this->cellLength);
 
-      Ogre::Vector3 p1(inc, -extent, h_real);
-      Ogre::Vector3 p2(inc, extent , h_real);
-      Ogre::Vector3 p3(-extent, inc, h_real);
-      Ogre::Vector3 p4(extent, inc, h_real);
+      Ogre::Vector3 p1(inc, -extent, hReal);
+      Ogre::Vector3 p2(inc, extent , hReal);
+      Ogre::Vector3 p3(-extent, inc, hReal);
+      Ogre::Vector3 p4(extent, inc, hReal);
 
-      this->manualObject->position(p1);
-      this->manualObject->colour(Conversions::Convert(this->color));
-      this->manualObject->position(p2);
-      this->manualObject->colour(Conversions::Convert(this->color));
+      this->dataPtr->manualObject->position(p1);
+      this->dataPtr->manualObject->position(p2);
 
-      this->manualObject->position(p3);
-      this->manualObject->colour(Conversions::Convert(this->color));
-      this->manualObject->position(p4);
-      this->manualObject->colour(Conversions::Convert(this->color));
+      this->dataPtr->manualObject->position(p3);
+      this->dataPtr->manualObject->position(p4);
     }
   }
 
-  if (this->height > 0)
+  if (this->verticalCellCount > 0)
   {
-    for (uint32_t x = 0; x <= this->cellCount; ++x)
+    for (unsigned int x = 0; x <= this->cellCount; ++x)
     {
-      for (uint32_t y = 0; y <= this->cellCount; ++y)
+      for (unsigned int y = 0; y <= this->cellCount; ++y)
       {
-        float x_real = extent - x * this->cellLength;
-        float y_real = extent - y * this->cellLength;
+        double xReal = extent - x * this->cellLength;
+        double yReal = extent - y * this->cellLength;
 
-        float z_top = (this->height / 2.0f) * this->cellLength;
-        float z_bottom = -z_top;
+        double zTop = (this->verticalCellCount / 2.0f) * this->cellLength;
+        double zBottom = -zTop;
 
-        this->manualObject->position(x_real, y_real, z_bottom);
-        this->manualObject->colour(Conversions::Convert(this->color));
-        this->manualObject->position(x_real, y_real, z_bottom);
-        this->manualObject->colour(Conversions::Convert(this->color));
+        this->dataPtr->manualObject->position(xReal, yReal, zBottom);
+        this->dataPtr->manualObject->position(xReal, yReal, zBottom);
       }
     }
   }
 
-  this->manualObject->end();
+  this->dataPtr->manualObject->end();
 }
 
 //////////////////////////////////////////////////
-void OgreGrid::SetUserData(const Ogre::Any &_data)
+void OgreGrid::SetMaterial(MaterialPtr _material, bool _unique)
 {
-  this->manualObject->getUserObjectBindings().setUserAny(_data);
+  _material = (_unique) ? _material->Clone() : _material;
+
+  OgreMaterialPtr derived =
+      std::dynamic_pointer_cast<OgreMaterial>(_material);
+
+  if (!derived)
+  {
+    ignerr << "Cannot assign material created by another render-engine"
+        << std::endl;
+
+    return;
+  }
+
+  this->SetMaterialImpl(derived);
 }
 
 //////////////////////////////////////////////////
-void OgreGrid::Enable(bool _enable)
+void OgreGrid::SetMaterialImpl(OgreMaterialPtr _material)
 {
-  this->sceneNode->setVisible(_enable);
+  std::string materialName = _material->Name();
+  Ogre::MaterialPtr ogreMaterial = _material->Material();
+  this->dataPtr->manualObject->setMaterialName(0, materialName);
+  this->dataPtr->material = _material;
+
+  this->dataPtr->material->SetReceiveShadows(false);
+  this->dataPtr->material->SetLightingEnabled(false);
 }

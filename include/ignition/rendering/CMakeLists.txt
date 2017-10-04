@@ -17,6 +17,7 @@ set (headers
   Camera.hh
   CompositeVisual.hh
   Geometry.hh
+  Grid.hh
   Image.hh
   Light.hh
   Material.hh

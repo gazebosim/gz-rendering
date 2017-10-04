@@ -66,6 +66,17 @@ void buildScene(ScenePtr _scene)
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
+
+  // create grid visual
+  VisualPtr grid = _scene->CreateVisual();
+  GridPtr gridGeom = _scene->CreateGrid();
+  gridGeom->SetCellCount(20);
+  gridGeom->SetCellLength(1);
+  gridGeom->SetVerticalCellCount(0);
+  grid->AddGeometry(gridGeom);
+  grid->SetLocalPosition(3, 0, 0.0);
+  root->AddChild(grid);
+
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.5);

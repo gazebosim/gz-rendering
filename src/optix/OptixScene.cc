@@ -15,6 +15,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/optix/OptixGrid.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/optix.hh"
 
@@ -322,10 +323,20 @@ MeshPtr OptixScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 
 //////////////////////////////////////////////////
 GridPtr OptixScene::CreateGridImpl(
-    unsigned int /*_id*/, const std::string &/*_name*/)
+    unsigned int _id, const std::string &_name)
 {
-  /// TODO
-  return nullptr;
+  // TODO implement optix grid! Use box as stub for now.
+  if (!this->optixBoxGeometry)
+  {
+    this->optixBoxGeometry =
+        OptixBox::CreateOptixGeometry(this->SharedThis());
+  }
+
+  OptixGridPtr grid(new OptixGrid);
+  grid->optixGeometry = this->optixBoxGeometry;
+  bool result = this->InitObject(grid, _id, _name);
+  grid->SetMaterial(this->CreateMaterial());
+  return (result) ? grid: nullptr;
 }
 
 //////////////////////////////////////////////////

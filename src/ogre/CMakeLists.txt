@@ -16,6 +16,7 @@ set (sources
   OgreCamera.cc
   OgreConversions.cc
   OgreGeometry.cc
+  OgreGrid.cc
   OgreLight.cc
   OgreMaterial.cc
   OgreMesh.cc

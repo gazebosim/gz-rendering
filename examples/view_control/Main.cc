@@ -159,7 +159,7 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  try
+//  try
   {
     engineNames.push_back("ogre");
     engineNames.push_back("optix");
@@ -173,7 +173,7 @@ int main(int _argc, char** _argv)
 
     GlutRun(cameras);
   }
-  catch (...)
+//  catch (...)
   {
     // std::cout << ex.what() << std::endl;
   }

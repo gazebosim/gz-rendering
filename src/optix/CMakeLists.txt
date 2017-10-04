@@ -13,6 +13,7 @@ set (sources OptixArrowVisual.cc
   OptixConversions.cc
   OptixCylinder.cc
   OptixGeometry.cc
+  OptixGrid.cc
   OptixLight.cc
   OptixLightManager.cc
   OptixMaterial.cc

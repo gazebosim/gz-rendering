@@ -56,6 +56,9 @@ namespace ignition
       public: virtual void PreRender();
 
       // Documentation inherited.
+      public: virtual MaterialPtr Material() const;
+
+      // Documentation inherited.
       public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
 
       /// \brief Set material to grid geometry.

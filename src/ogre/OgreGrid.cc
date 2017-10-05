@@ -167,3 +167,9 @@ void OgreGrid::SetMaterialImpl(OgreMaterialPtr _material)
   this->dataPtr->material->SetReceiveShadows(false);
   this->dataPtr->material->SetLightingEnabled(false);
 }
+
+//////////////////////////////////////////////////
+MaterialPtr OgreGrid::Material() const
+{
+  return this->dataPtr->material;
+}

@@ -47,6 +47,9 @@ namespace ignition
 
       public: virtual SubMeshPtr SubMeshByIndex(unsigned int _index) const;
 
+      // Documentation inherited.
+      public: virtual MaterialPtr Material() const;
+
       public: virtual void SetMaterial(const std::string &_name,
                   bool _unique = true);
 
@@ -128,6 +131,15 @@ namespace ignition
     SubMeshPtr BaseMesh<T>::SubMeshByIndex(unsigned int _index) const
     {
       return this->SubMeshes()->GetByIndex(_index);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    MaterialPtr BaseMesh<T>::Material() const
+    {
+      unsigned int count = this->SubMeshCount();
+      return (count > 0) ? this->SubMeshByIndex(0)->Material() :
+          MaterialPtr();
     }
 
     //////////////////////////////////////////////////

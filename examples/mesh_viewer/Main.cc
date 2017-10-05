@@ -67,6 +67,12 @@ void buildScene(ScenePtr _scene)
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
 
+  // create gray material
+  MaterialPtr gray = _scene->CreateMaterial();
+  gray->SetAmbient(0.7, 0.7, 0.7);
+  gray->SetDiffuse(0.7, 0.7, 0.7);
+  gray->SetSpecular(0.7, 0.7, 0.7);
+
   // create grid visual
   VisualPtr grid = _scene->CreateVisual();
   GridPtr gridGeom = _scene->CreateGrid();
@@ -75,6 +81,7 @@ void buildScene(ScenePtr _scene)
   gridGeom->SetVerticalCellCount(0);
   grid->AddGeometry(gridGeom);
   grid->SetLocalPosition(3, 0, 0.0);
+  grid->SetMaterial(gray);
   root->AddChild(grid);
 
   // create camera

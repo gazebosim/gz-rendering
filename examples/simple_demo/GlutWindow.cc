@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-#include "GlutWindow.hh"
 
 #if __APPLE__
   #include <OpenGL/gl.h>
@@ -30,10 +29,14 @@
   #include <GL/glx.h>
 #endif
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/Scene.hh"
+#include <mutex>
+
+#include <ignition/common/Console.hh>
+#include <ignition/rendering/Camera.hh>
+#include <ignition/rendering/Image.hh>
+#include <ignition/rendering/Scene.hh>
+
+#include "GlutWindow.hh"
 
 #define KEY_ESC 27
 #define KEY_TAB  9
@@ -42,11 +45,11 @@
 unsigned int imgw = 0;
 unsigned int imgh = 0;
 
-std::vector<gz::CameraPtr> g_cameras;
-gz::CameraPtr g_camera;
-gz::CameraPtr g_currCamera;
+std::vector<ir::CameraPtr> g_cameras;
+ir::CameraPtr g_camera;
+ir::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
-gz::ImagePtr g_image;
+ir::ImagePtr g_image;
 
 bool g_initContext = false;
 
@@ -66,38 +69,9 @@ bool g_initContext = false;
 double g_offset = 0.0;
 
 //////////////////////////////////////////////////
-void GlutRun(std::vector<gz::CameraPtr> _cameras)
+void updateCameras()
 {
-#if __APPLE__
-  g_context = CGLGetCurrentContext();
-#elif _WIN32
-#else
-  g_context = glXGetCurrentContext();
-  g_display = glXGetCurrentDisplay();
-  g_drawable = glXGetCurrentDrawable();
-#endif
-
-  g_cameras = _cameras;
-  GlutInitCamera(_cameras[0]);
-  GlutInitContext();
-  GlutPrintUsage();
-
-#if __APPLE__
-  g_glutContext = CGLGetCurrentContext();
-#elif _WIN32
-#else
-  g_glutDisplay = glXGetCurrentDisplay();
-  g_glutDrawable = glXGetCurrentDrawable();
-  g_glutContext = glXGetCurrentContext();
-#endif
-
-  glutMainLoop();
-}
-
-//////////////////////////////////////////////////
-void UpdateCameras()
-{
-  for (gz::CameraPtr camera : g_cameras)
+  for (ir::CameraPtr camera : g_cameras)
   {
     camera->SetLocalPosition(g_offset, g_offset, g_offset);
   }
@@ -106,7 +80,7 @@ void UpdateCameras()
 }
 
 //////////////////////////////////////////////////
-void GlutDisplay()
+void displayCB()
 {
 #if __APPLE__
   CGLSetCurrentContext(g_context);
@@ -136,22 +110,17 @@ void GlutDisplay()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-  UpdateCameras();
+  updateCameras();
 }
 
 //////////////////////////////////////////////////
-void SwitchContext()
-{
-}
-
-//////////////////////////////////////////////////
-void GlutIdle()
+void idleCB()
 {
   glutPostRedisplay();
 }
 
 //////////////////////////////////////////////////
-void GlutKeyboard(unsigned char _key, int, int)
+void keyboardCB(unsigned char _key, int, int)
 {
   if (_key == KEY_ESC || _key == 'q' || _key == 'Q')
   {
@@ -164,41 +133,70 @@ void GlutKeyboard(unsigned char _key, int, int)
 }
 
 //////////////////////////////////////////////////
-void GlutReshape(int, int)
-{
-}
-
-//////////////////////////////////////////////////
-void GlutInitCamera(gz::CameraPtr _camera)
+void initCamera(ir::CameraPtr _camera)
 {
   g_camera = _camera;
   imgw = g_camera->ImageWidth();
   imgh = g_camera->ImageHeight();
-  gz::Image image = g_camera->CreateImage();
-  g_image = std::make_shared<gz::Image>(image);
+  ir::Image image = g_camera->CreateImage();
+  g_image = std::make_shared<ir::Image>(image);
   g_camera->Capture(*g_image);
 }
 
 //////////////////////////////////////////////////
-void GlutInitContext()
+void initContext()
 {
-  // int argc = 0;
-  // char **argv = 0;
-  // glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
-  glutCreateWindow("Gazebo");
-  glutDisplayFunc(GlutDisplay);
-  glutIdleFunc(GlutIdle);
-  glutKeyboardFunc(GlutKeyboard);
-  glutReshapeFunc(GlutReshape);
+  glutCreateWindow("Simple Demo");
+  glutDisplayFunc(displayCB);
+  glutIdleFunc(idleCB);
+  glutKeyboardFunc(keyboardCB);
 }
 
-void GlutPrintUsage()
+//////////////////////////////////////////////////
+void printUsage()
 {
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
   std::cout << "===============================" << std::endl;
 }
+
+//////////////////////////////////////////////////
+void run(std::vector<ir::CameraPtr> _cameras)
+{
+  if (_cameras.empty())
+  {
+    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    return;
+  }
+
+#if __APPLE__
+  g_context = CGLGetCurrentContext();
+#elif _WIN32
+#else
+  g_context = glXGetCurrentContext();
+  g_display = glXGetCurrentDisplay();
+  g_drawable = glXGetCurrentDrawable();
+#endif
+
+  g_cameras = _cameras;
+  initCamera(_cameras[0]);
+  initContext();
+  printUsage();
+
+#if __APPLE__
+  g_glutContext = CGLGetCurrentContext();
+#elif _WIN32
+#else
+  g_glutDisplay = glXGetCurrentDisplay();
+  g_glutDrawable = glXGetCurrentDrawable();
+  g_glutContext = glXGetCurrentContext();
+#endif
+
+  glutMainLoop();
+}
+
+

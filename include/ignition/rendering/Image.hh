@@ -32,6 +32,9 @@ namespace ignition
       /// \brief Shared pointer to raw image buffer
       typedef std::shared_ptr<unsigned char> DataPtr;
 
+      /// \brief Default constructor
+      public: Image() = default;
+
       /// \brief Constructor
       /// \param[in] _width Image width in pixels
       /// \param[in] _height Image height in pixels
@@ -83,16 +86,16 @@ namespace ignition
               T *Data();
 
       /// \brief Image width in pixels
-      private: unsigned int width;
+      private: unsigned int width = 0;
 
       /// \brief Image height in pixels
-      private: unsigned int height;
+      private: unsigned int height = 0;
 
       /// \brief Image pixel format
-      private: PixelFormat format;
+      private: PixelFormat format = PF_UNKNOWN;
 
       /// \brief Pointer to the image data
-      private: DataPtr data;
+      private: DataPtr data = nullptr;
     };
 
     //////////////////////////////////////////////////

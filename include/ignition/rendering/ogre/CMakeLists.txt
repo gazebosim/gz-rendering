@@ -6,6 +6,7 @@ set (headers
   OgreCamera.hh
   OgreConversions.hh
   OgreGeometry.hh
+  OgreGrid.hh
   OgreIncludes.hh
   OgreLight.hh
   OgreMaterial.hh

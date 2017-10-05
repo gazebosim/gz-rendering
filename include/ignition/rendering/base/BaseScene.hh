@@ -252,6 +252,9 @@ namespace ignition
 
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc);
 
+      // Documentation inherited.
+      public: virtual GridPtr CreateGrid();
+
       public: virtual MaterialPtr CreateMaterial(const std::string &_name = "");
 
       public: virtual MaterialPtr CreateMaterial(
@@ -317,6 +320,13 @@ namespace ignition
       protected: virtual MeshPtr CreateMeshImpl(unsigned int _id,
                      const std::string &_name,
                      const MeshDescriptor &_desc) = 0;
+
+      /// \brief Implementation for creating a grid geometry object
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a grid geometry object
+      protected: virtual GridPtr CreateGridImpl(unsigned int _id,
+                     const std::string &_name) = 0;
 
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name) = 0;

@@ -31,6 +31,7 @@ namespace ignition
     class Camera;
     class DirectionalLight;
     class Geometry;
+    class Grid;
     class JointVisual;
     class Image;
     class Light;
@@ -70,6 +71,10 @@ namespace ignition
     /// \def GeometryPtr
     /// \brief Shared pointer to Geometry
     typedef shared_ptr<Geometry> GeometryPtr;
+
+    /// \def GridPtr
+    /// \brief Shared pointer to Grid
+    typedef shared_ptr<Grid> GridPtr;
 
     /// \def JointVisualPtr
     /// \brief Shared pointer to JointVisual

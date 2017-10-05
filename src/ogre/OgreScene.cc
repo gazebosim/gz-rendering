@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreGrid.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/ogre.hh"
@@ -268,6 +269,14 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
   OgreMeshPtr mesh = this->meshFactory->Create(_desc);
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
+}
+
+//////////////////////////////////////////////////
+GridPtr OgreScene::CreateGridImpl(unsigned int _id, const std::string &_name)
+{
+  OgreGridPtr grid(new OgreGrid);
+  bool result = this->InitObject(grid, _id, _name);
+  return (result) ? grid: nullptr;
 }
 
 //////////////////////////////////////////////////

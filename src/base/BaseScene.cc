@@ -714,6 +714,14 @@ MeshPtr BaseScene::CreateMesh(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
+GridPtr BaseScene::CreateGrid()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Grid");
+  return this->CreateGridImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
 MaterialPtr BaseScene::CreateMaterial(const std::string &_name)
 {
   unsigned int objId = this->CreateObjectId();

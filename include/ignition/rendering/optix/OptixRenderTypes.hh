@@ -31,6 +31,7 @@ namespace ignition
     class OptixCylinder;
     class OptixDirectionalLight;
     class OptixGeometry;
+    class OptixGrid;
     class OptixJointVisual;
     class OptixLight;
     class OptixMaterial;
@@ -68,6 +69,7 @@ namespace ignition
     typedef shared_ptr<OptixCylinder>             OptixCylinderPtr;
     typedef shared_ptr<OptixDirectionalLight>     OptixDirectionalLightPtr;
     typedef shared_ptr<OptixGeometry>             OptixGeometryPtr;
+    typedef shared_ptr<OptixGrid>                 OptixGridPtr;
     typedef shared_ptr<OptixJointVisual>          OptixJointVisualPtr;
     typedef shared_ptr<OptixLight>                OptixLightPtr;
     typedef shared_ptr<OptixMaterial>             OptixMaterialPtr;

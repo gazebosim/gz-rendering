@@ -759,6 +759,14 @@ RenderTexturePtr BaseScene::CreateRenderTexture()
 }
 
 //////////////////////////////////////////////////
+RenderWindowPtr BaseScene::CreateRenderWindow()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "RenderWindow");
+  return this->CreateRenderWindowImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
 RayQueryPtr BaseScene::CreateRayQuery()
 {
   unsigned int objId = this->CreateObjectId();

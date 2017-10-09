@@ -358,6 +358,15 @@ RenderTexturePtr OptixScene::CreateRenderTextureImpl(
 }
 
 //////////////////////////////////////////////////
+RenderWindowPtr OptixScene::CreateRenderWindowImpl(
+    unsigned int _id, const std::string &_name)
+{
+  OptixRenderWindowPtr renderWindow(new OptixRenderWindow);
+  bool result = this->InitObject(renderWindow, _id, _name);
+  return (result) ? renderWindow: nullptr;
+}
+
+//////////////////////////////////////////////////
 RayQueryPtr OptixScene::CreateRayQueryImpl(
     unsigned int /*_id*/, const std::string &/*_name*/)
 {

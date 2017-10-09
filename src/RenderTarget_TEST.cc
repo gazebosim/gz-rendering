@@ -78,7 +78,7 @@ TEST_P(RenderTargetTest, RenderWindow)
 }
 
 INSTANTIATE_TEST_CASE_P(RenderTarget, RenderTargetTest,
-    ::testing::Values("ogre"));
+    ::testing::Values("ogre", "optix"));
 
 int main(int argc, char **argv)
 {

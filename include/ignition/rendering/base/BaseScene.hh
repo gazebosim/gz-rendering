@@ -262,6 +262,9 @@ namespace ignition
 
       public: virtual RenderTexturePtr CreateRenderTexture();
 
+      // Documentation inherited.
+      public: virtual RenderWindowPtr CreateRenderWindow();
+
       public: virtual RayQueryPtr CreateRayQuery();
 
       public: virtual void PreRender();
@@ -332,6 +335,14 @@ namespace ignition
                      const std::string &_name) = 0;
 
       protected: virtual RenderTexturePtr CreateRenderTextureImpl(
+                     unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Render engine specific implementation for creating a render
+      /// window
+      /// \param[in] _id unique object id
+      /// \param[in] _name object name
+      /// \return  Pointer to the created render window.
+      protected: virtual RenderWindowPtr CreateRenderWindowImpl(
                      unsigned int _id, const std::string &_name) = 0;
 
       protected: virtual RayQueryPtr CreateRayQueryImpl(

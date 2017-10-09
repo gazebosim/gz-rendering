@@ -298,6 +298,15 @@ RenderTexturePtr OgreScene::CreateRenderTextureImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+RenderWindowPtr OgreScene::CreateRenderWindowImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreRenderWindowPtr renderWindow(new OgreRenderWindow);
+  bool result = this->InitObject(renderWindow, _id, _name);
+  return (result) ? renderWindow: nullptr;
+}
+
+//////////////////////////////////////////////////
 RayQueryPtr OgreScene::CreateRayQueryImpl(unsigned int _id,
     const std::string &_name)
 {

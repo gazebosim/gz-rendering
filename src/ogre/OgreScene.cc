@@ -72,12 +72,6 @@ void OgreScene::SetAmbientLight(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OgreScene::BackgroundColor() const
-{
-  return this->backgroundColor;
-}
-
-//////////////////////////////////////////////////
 void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;
@@ -97,7 +91,7 @@ void OgreScene::SetBackgroundColor(const math::Color &_color)
 void OgreScene::PreRender()
 {
   BaseScene::PreRender();
-  OgreRTShaderSystem::Instance()->UpdateShaders();
+  OgreRTShaderSystem::Instance()->Update();
 }
 
 //////////////////////////////////////////////////

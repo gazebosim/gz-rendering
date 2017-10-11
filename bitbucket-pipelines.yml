@@ -3,19 +3,36 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
+image: ubuntu:xenial
 
 pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
+          - apt update
+          - apt -y install wget lsb-release
           - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list'
-          - wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+          - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt-get update
-          - apt-get -y install cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn libignition-math3-dev libignition-common-dev
+          - apt-get -y install
+            cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn libignition-math3-dev
+            curl mercurial lcov
+            python uuid-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
+            libgts-dev libswscale-dev libtinyxml2-dev
+          - sh tools/code_check.sh
+          # Dependency: Ignition common
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b default
+          - cd ign-common
           - mkdir build
           - cd build
-          - cmake ..
+          - cmake .. -DENABLE_TESTS_COMPILATION=false
+          - make -j4 install
+          - cd ../..
+          # Ignition rendering
+          - mkdir build
+          - cd build
+          - cmake .. -DCMAKE_BUILD_TYPE=coverage
           - make -j4
-          - make test ARGS="-VV"
-          - cd ..
-          - sh tools/code_check.sh
+          - make install
+          # Can't make tests - valid display not found
+

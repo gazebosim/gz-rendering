@@ -1,5 +1,7 @@
 include (${project_cmake_dir}/Utils.cmake)
 
+add_subdirectory(media)
+
 include_directories(SYSTEM
   ${OGRE_INCLUDE_DIRS}
 )
@@ -36,9 +38,9 @@ set (gtest_sources
 find_package(OpenGL)
 
 set_property(
-  SOURCE OgreRenderEngine.cc
+  SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc
   PROPERTY COMPILE_DEFINITIONS
-  IGN_RENDERING_PLUGIN_PATH="${IGN_RENDERING_PLUGIN_PATH}"
+  IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
 )
 

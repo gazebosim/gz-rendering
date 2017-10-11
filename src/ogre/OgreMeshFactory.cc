@@ -53,7 +53,8 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
 {
   // create ogre entity
   OgreMeshPtr mesh(new OgreMesh);
-  MeshDescriptor normDesc = _desc.Normalize();
+  MeshDescriptor normDesc = _desc;
+  normDesc.Load();
   mesh->ogreEntity = this->OgreEntity(normDesc);
 
   // check if invalid mesh

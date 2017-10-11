@@ -42,6 +42,19 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
 
+namespace ignition
+{
+  namespace rendering
+  {
+    class OgreRenderEnginePrivate
+    {
+#if not defined(__APPLE__) && not defined(_WIN32)
+      public: XVisualInfo *dummyVisual = nullptr;
+#endif
+    };
+  }
+}
+
 using namespace ignition;
 using namespace rendering;
 
@@ -50,7 +63,8 @@ OgreRenderEngine::OgreRenderEngine() :
   loaded(false),
   initialized(false),
   ogreRoot(nullptr),
-  ogreLogManager(nullptr)
+  ogreLogManager(nullptr),
+  dataPtr(new OgreRenderEnginePrivate)
 {
 #if not (__APPLE__ || _WIN32)
   this->dummyDisplay = nullptr;
@@ -88,6 +102,8 @@ bool OgreRenderEngine::Fini()
     XDestroyWindow(x11Display, this->dummyWindowId);
     XCloseDisplay(x11Display);
     this->dummyDisplay = nullptr;
+    XFree(this->dataPtr->dummyVisual);
+    this->dataPtr->dummyVisual = nullptr;
   }
 #endif
 
@@ -145,6 +161,8 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
     ignerr << "URI doesn't exist[" << _uri << "]\n";
     return;
   }
+
+  this->resourcePaths.push_back(path);
 
   try
   {
@@ -306,7 +324,7 @@ void OgreRenderEngine::CreateContext()
 
   if (!this->dummyDisplay)
   {
-    ignerr << "Unable to open dipslay: " << XDisplayName(0) << std::endl;
+    ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
     return;
   }
 
@@ -316,10 +334,10 @@ void OgreRenderEngine::CreateContext()
   int attributeList[] = { GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 16,
       GLX_STENCIL_SIZE, 8, None };
 
-  XVisualInfo *dummyVisual =
+  this->dataPtr->dummyVisual =
       glXChooseVisual(x11Display, screenId, attributeList);
 
-  if (!dummyVisual)
+  if (!this->dataPtr->dummyVisual)
   {
     ignerr << "Unable to create glx visual" << std::endl;
     return;
@@ -329,7 +347,8 @@ void OgreRenderEngine::CreateContext()
   this->dummyWindowId = XCreateSimpleWindow(x11Display,
       RootWindow(this->dummyDisplay, screenId), 0, 0, 1, 1, 0, 0, 0);
 
-  this->dummyContext = glXCreateContext(x11Display, dummyVisual, nullptr, 1);
+  this->dummyContext = glXCreateContext(x11Display, this->dataPtr->dummyVisual,
+                                        nullptr, 1);
 
   GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
 
@@ -477,60 +496,45 @@ void OgreRenderEngine::CreateRenderSystem()
 void OgreRenderEngine::CreateResources()
 {
   std::vector< std::pair<std::string, std::string> > archNames;
-  std::vector< std::pair<std::string, std::string> >::iterator aiter;
-  std::list<std::string>::const_iterator iter;
-  // std::list<std::string> paths = SystemPaths::Instance()->GetGazeboPaths();
-  // TODO do this in gazebo plugin
-  std::list<std::string> paths;
 
+  // TODO support loading resources from user specified paths
+  std::list<std::string> paths;
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+  resourcePath = common::joinPaths(resourcePath, "ogre");
+  paths.push_back(resourcePath);
 
   std::list<std::string> mediaDirs;
   mediaDirs.push_back("media");
 
-  for (iter = paths.begin(); iter != paths.end(); ++iter)
+  for (auto const &p : paths)
   {
-    if (!common::isDirectory((*iter)))
+    if (!common::isDirectory(p))
       continue;
 
     archNames.push_back(
-        std::make_pair((*iter)+"/", "General"));
+        std::make_pair(p, "General"));
 
-    for (std::list<std::string>::iterator mediaIter = mediaDirs.begin();
-         mediaIter != mediaDirs.end(); ++mediaIter)
+    for (auto const &m : mediaDirs)
     {
-      std::string prefix = (*iter) + "/" + (*mediaIter);
+      std::string prefix = common::joinPaths(p, m);
 
       archNames.push_back(
           std::make_pair(prefix, "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/skyx", "SkyX"));
-      archNames.push_back(
-          std::make_pair(prefix + "/rtshaderlib", "General"));
+      // archNames.push_back(
+      //     std::make_pair(prefix + "/skyx", "SkyX"));
       archNames.push_back(
           std::make_pair(prefix + "/materials/programs", "General"));
       archNames.push_back(
           std::make_pair(prefix + "/materials/scripts", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/materials/textures", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/media/models", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/fonts", "Fonts"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/looknfeel", "LookNFeel"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/schemes", "Schemes"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/imagesets", "Imagesets"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/fonts", "Fonts"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/layouts", "Layouts"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/animations", "Animations"));
+      // archNames.push_back(
+      //     std::make_pair(prefix + "/materials/textures", "General"));
+      // archNames.push_back(
+      //     std::make_pair(prefix + "/media/models", "General"));
     }
 
-    for (aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
     {
       try
       {

@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BASE_BASERENDERENGINE_HH_
 
 #include <string>
+#include <vector>
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Storage.hh"
 
@@ -96,6 +97,10 @@ namespace ignition
       protected: bool initialized;
 
       protected: unsigned int nextSceneId;
+
+      /// \brief a list of paths that render engines use to locate their
+      /// resources
+      protected: std::vector<std::string> resourcePaths;
     };
   }
 }

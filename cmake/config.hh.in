@@ -16,3 +16,4 @@
 #cmakedefine HAVE_OGRE 1
 #cmakedefine HAVE_OPTIX 1
 #cmakedefine HAVE_GAZEBO 1
+#cmakedefine INCLUDE_RTSHADER 1

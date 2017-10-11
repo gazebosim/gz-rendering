@@ -69,21 +69,39 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 
   FIBITMAP *temp = image;
   image = FreeImage_ConvertTo32Bits(image);
+
+  unsigned w = FreeImage_GetWidth(image);
+  unsigned h = FreeImage_GetHeight(image);
+
+  // freeimage stores data as BGR[A] on little endian architecture
+  // reverse pixel values if needed
+#if FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_BGR
+  unsigned p = FreeImage_GetPitch(image);
+  unsigned bpp = FreeImage_GetBPP(image) / 8;
+  unsigned lineSize = FreeImage_GetLine(image);
+  BYTE* line = FreeImage_GetBits(image);
+  for (unsigned y = 0; y < h; ++y, line += p)
+  {
+    for (BYTE* pixel = line; pixel < line + lineSize; pixel += bpp)
+    {
+      // in- place swap
+      pixel[0] ^= pixel[2]; pixel[2] ^= pixel[0]; pixel[0] ^= pixel[2];
+    }
+  }
+#endif
+
   FreeImage_Unload(temp);
-
-  int w = FreeImage_GetWidth(image);
-  int h = FreeImage_GetHeight(image);
-  int p = FreeImage_GetPitch(image);
-  int memSize = h * p;
-
-  unsigned char *data = static_cast<unsigned char *>(FreeImage_GetBits(image));
 
   optix::Context optixContext = this->scene->OptixContext();
 
   optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
   buffer->setFormat(RT_FORMAT_UNSIGNED_BYTE4);
   buffer->setSize(w, h);
-  std::memcpy(buffer->map(), data, memSize);
+  // get raw bits after flipping vertical axis (last bool arg)
+  // as free image stores data upside down in memory
+  FreeImage_ConvertToRawBits(reinterpret_cast<BYTE *>(buffer->map()),
+      image, FreeImage_GetLine(image), FreeImage_GetBPP(image),
+      FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, true);
   buffer->unmap();
   FreeImage_Unload(image);
 

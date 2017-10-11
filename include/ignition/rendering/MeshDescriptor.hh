@@ -52,10 +52,10 @@ namespace ignition
       /// \brief Ensures both the meshName and mesh member variables have been
       /// assigned. If mesh is not null, it will be used to override the value
       /// of meshName.
-      public: MeshDescriptor Normalize() const;
+      public: void Load();
 
       /// \brief common::Mesh object
-      public: const common::Mesh *mesh;
+      public: const common::Mesh *mesh = nullptr;
 
       /// \brief Name of the registered Mesh
       public: std::string meshName;
@@ -65,7 +65,7 @@ namespace ignition
       public: std::string subMeshName;
 
       /// \brief Denotes if the loaded sub-mesh vertices should be centered
-      public: bool centerSubMesh;
+      public: bool centerSubMesh = false;
     };
   }
 }

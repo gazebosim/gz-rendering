@@ -121,7 +121,7 @@ void BuildScene(ScenePtr _scene)
   white->SetReceiveShadows(true);
   white->SetReflectivity(0);
 
-  // create sphere visual
+  // create plane visual
   VisualPtr plane = _scene->CreateVisual();
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(5, 8, 1);

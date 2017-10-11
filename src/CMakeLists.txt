@@ -26,10 +26,13 @@ set (gtest_sources
 set (gtest_sources_dri
   Camera_TEST.cc
   Material_TEST.cc
+  Mesh_TEST.cc
+  MeshDescriptor_TEST.cc
   OrbitViewController_TEST.cc
   RayQuery_TEST.cc
   RenderTarget_TEST.cc
   RenderingIface_TEST.cc
+  Scene_TEST.cc
 )
 
 ign_build_tests(${gtest_sources})

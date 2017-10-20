@@ -150,7 +150,7 @@ void ManualSceneDemo::Run()
 
   this->SelectScene(0);
   this->SelectCamera(0);
-  GlutRun(shared_from_this());
+  run(shared_from_this());
 }
 
 //////////////////////////////////////////////////

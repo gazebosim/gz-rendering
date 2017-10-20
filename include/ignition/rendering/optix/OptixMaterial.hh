@@ -35,7 +35,7 @@ namespace ignition
 
       public: virtual bool LightingEnabled() const;
 
-      public: virtual void SetLightingEnabled(bool _enabled);
+      public: virtual void SetLightingEnabled(const bool _enabled);
 
       public: virtual math::Color Ambient() const;
 
@@ -55,27 +55,27 @@ namespace ignition
 
       public: virtual double Shininess() const;
 
-      public: virtual void SetShininess(double _shininess);
+      public: virtual void SetShininess(const double _shininess);
 
       public: virtual double Transparency() const;
 
-      public: virtual void SetTransparency(double _transparency);
+      public: virtual void SetTransparency(const double _transparency);
 
       public: virtual double Reflectivity() const;
 
-      public: virtual void SetReflectivity(double _reflectivity);
+      public: virtual void SetReflectivity(const double _reflectivity);
 
       public: virtual bool CastShadows() const;
 
-      public: virtual void SetCastShadows(bool _castShadows);
+      public: virtual void SetCastShadows(const bool _castShadows);
 
       public: virtual bool ReceiveShadows() const;
 
-      public: virtual void SetReceiveShadows(bool _receiveShadows);
+      public: virtual void SetReceiveShadows(const bool _receiveShadows);
 
       public: virtual bool ReflectionEnabled() const;
 
-      public: virtual void SetReflectionEnabled(bool _enabled);
+      public: virtual void SetReflectionEnabled(const bool _enabled);
 
       public: virtual bool HasTexture() const;
 
@@ -117,13 +117,13 @@ namespace ignition
 
       protected: virtual void Init();
 
-      protected: bool colorDirty;
+      protected: bool colorDirty = true;
 
-      protected: bool textureDirty;
+      protected: bool textureDirty = true;
 
-      protected: bool normalMapDirty;
+      protected: bool normalMapDirty = true;
 
-      protected: bool lightingEnabled;
+      protected: bool lightingEnabled = true;
 
       protected: math::Color ambient;
 
@@ -133,17 +133,17 @@ namespace ignition
 
       protected: math::Color emissive;
 
-      protected: double shininess;
+      protected: double shininess = 0.0;
 
-      protected: double transparency;
+      protected: double transparency = 0.0;
 
-      protected: double reflectivity;
+      protected: double reflectivity = 0.0;
 
-      protected: bool castShadows;
+      protected: bool castShadows = true;
 
-      protected: bool receiveShadows;
+      protected: bool receiveShadows = true;
 
-      protected: bool reflectionEnabled;
+      protected: bool reflectionEnabled = true;
 
       protected: std::string textureName;
 

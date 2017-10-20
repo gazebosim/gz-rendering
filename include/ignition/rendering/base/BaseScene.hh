@@ -56,10 +56,12 @@ namespace ignition
 
       public: virtual void SetAmbientLight(const math::Color &_color) = 0;
 
+      public: virtual math::Color BackgroundColor() const;
+
       public: virtual void SetBackgroundColor(double _r, double _g, double _b,
                   double _a = 1.0);
 
-      public: virtual void SetBackgroundColor(const math::Color &_color) = 0;
+      public: virtual void SetBackgroundColor(const math::Color &_color);
 
       public: virtual unsigned int NodeCount() const;
 
@@ -250,12 +252,18 @@ namespace ignition
 
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc);
 
-      public: virtual MaterialPtr CreateMaterial();
+      // Documentation inherited.
+      public: virtual GridPtr CreateGrid();
+
+      public: virtual MaterialPtr CreateMaterial(const std::string &_name = "");
 
       public: virtual MaterialPtr CreateMaterial(
                   const common::Material &_material);
 
       public: virtual RenderTexturePtr CreateRenderTexture();
+
+      // Documentation inherited.
+      public: virtual RenderWindowPtr CreateRenderWindow();
 
       public: virtual RayQueryPtr CreateRayQuery();
 
@@ -316,10 +324,25 @@ namespace ignition
                      const std::string &_name,
                      const MeshDescriptor &_desc) = 0;
 
+      /// \brief Implementation for creating a grid geometry object
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a grid geometry object
+      protected: virtual GridPtr CreateGridImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
       protected: virtual RenderTexturePtr CreateRenderTextureImpl(
+                     unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Render engine specific implementation for creating a render
+      /// window
+      /// \param[in] _id unique object id
+      /// \param[in] _name object name
+      /// \return  Pointer to the created render window.
+      protected: virtual RenderWindowPtr CreateRenderWindowImpl(
                      unsigned int _id, const std::string &_name) = 0;
 
       protected: virtual RayQueryPtr CreateRayQueryImpl(
@@ -350,6 +373,9 @@ namespace ignition
       protected: bool loaded;
 
       protected: bool initialized;
+
+      /// \brief Scene background color. Default should be black.
+      protected: math::Color backgroundColor;
 
       private: unsigned int nextObjectId;
 

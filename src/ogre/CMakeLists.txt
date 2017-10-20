@@ -1,22 +1,13 @@
 include (${project_cmake_dir}/Utils.cmake)
 
-########################################
-# Find Boost, if not specified manually
-include(FindBoost)
-find_package(Boost REQUIRED filesystem)
-if (NOT Boost_FOUND)
-  BUILD_ERROR ("Boost not found. Please install boost filesystem.")
-endif()
-
+add_subdirectory(media)
 
 include_directories(SYSTEM
   ${OGRE_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
 )
 
 link_directories(
   ${ogre_library_dirs}
-  ${Boost_LIBRARY_DIRS}
 )
 
 set (sources
@@ -25,6 +16,7 @@ set (sources
   OgreCamera.cc
   OgreConversions.cc
   OgreGeometry.cc
+  OgreGrid.cc
   OgreLight.cc
   OgreMaterial.cc
   OgreMesh.cc
@@ -46,6 +38,13 @@ set (gtest_sources
 
 find_package(OpenGL)
 
+set_property(
+  SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc
+  PROPERTY COMPILE_DEFINITIONS
+  IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
+  OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
+)
+
 ign_build_tests(${gtest_sources})
 ign_add_library(${PROJECT_NAME_LOWER}-ogre ${sources})
 ign_install_library(${PROJECT_NAME_LOWER}-ogre)
@@ -56,5 +55,4 @@ target_link_libraries(${PROJECT_NAME_LOWER}-ogre
   ${IGNITION-COMMON_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${ogre_libraries}
-  ${Boost_LIBRARIES}
 )

@@ -47,11 +47,14 @@ namespace ignition
 
       public: virtual SubMeshPtr SubMeshByIndex(unsigned int _index) const;
 
+      // Documentation inherited.
+      public: virtual MaterialPtr Material() const;
+
       public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true);
+                  bool _unique = true);
 
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true);
+                  bool _unique = true);
 
       public: virtual void PreRender();
 
@@ -73,10 +76,10 @@ namespace ignition
       public: virtual MaterialPtr Material() const = 0;
 
       public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true);
+                  bool _unique = true);
 
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       public: virtual void PreRender();
     };
@@ -132,23 +135,32 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMesh<T>::SetMaterial(const std::string &_name, bool unique)
+    MaterialPtr BaseMesh<T>::Material() const
     {
-      MaterialPtr material = this->Scene()->Material(_name);
-      if (material) this->SetMaterial(material, unique);
+      unsigned int count = this->SubMeshCount();
+      return (count > 0) ? this->SubMeshByIndex(0)->Material() :
+          MaterialPtr();
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMesh<T>::SetMaterial(MaterialPtr _material, bool unique)
+    void BaseMesh<T>::SetMaterial(const std::string &_name, bool _unique)
     {
-      _material = (unique) ? _material->Clone() : _material;
+      MaterialPtr material = this->Scene()->Material(_name);
+      if (material) this->SetMaterial(material, _unique);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMesh<T>::SetMaterial(MaterialPtr _material, bool _unique)
+    {
       unsigned int count = this->SubMeshCount();
+      _material = (_unique && count > 0) ? _material->Clone() : _material;
 
       for (unsigned int i = 0; i < count; ++i)
       {
         SubMeshPtr subMesh = this->SubMeshByIndex(i);
-        subMesh->SetMaterial(_material);
+        subMesh->SetMaterial(_material, false);
       }
     }
 
@@ -191,10 +203,10 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseSubMesh<T>::SetMaterial(const std::string &_name, bool unique)
+    void BaseSubMesh<T>::SetMaterial(const std::string &_name, bool _unique)
     {
       MaterialPtr material = this->Scene()->Material(_name);
-      if (material) this->SetMaterial(material, unique);
+      if (material) this->SetMaterial(material, _unique);
     }
 
     //////////////////////////////////////////////////

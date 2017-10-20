@@ -38,7 +38,6 @@ OptixCamera::OptixCamera() :
   optixClearProgram(nullptr),
   optixErrorProgram(nullptr),
   renderTexture(nullptr),
-  antiAliasing(1u),
   cameraDirty(true),
   traceId(0)
 {
@@ -50,53 +49,23 @@ OptixCamera::~OptixCamera()
 }
 
 //////////////////////////////////////////////////
-PixelFormat OptixCamera::ImageFormat() const
-{
-  // return PF_UNKNOWN;
-  return PF_R8G8B8;
-}
-
-//////////////////////////////////////////////////
-void OptixCamera::SetImageFormat(PixelFormat /*_format*/)
-{
-}
-
-//////////////////////////////////////////////////
-math::Angle OptixCamera::HFOV() const
-{
-  return this->xFieldOfView;
-}
-
-//////////////////////////////////////////////////
 void OptixCamera::SetHFOV(const math::Angle &_angle)
 {
-  this->xFieldOfView = _angle;
+  BaseCamera::SetHFOV(_angle);
   this->poseDirty = true;
 }
 
 //////////////////////////////////////////////////
-double OptixCamera::AspectRatio() const
+void OptixCamera::SetAspectRatio(const double _ratio)
 {
-  return this->aspectRatio;
-}
-
-//////////////////////////////////////////////////
-void OptixCamera::SetAspectRatio(double _ratio)
-{
-  this->aspectRatio = _ratio;
+  BaseCamera::SetAspectRatio(_ratio);
   this->poseDirty = true;
 }
 
 //////////////////////////////////////////////////
-unsigned int OptixCamera::AntiAliasing() const
+void OptixCamera::SetAntiAliasing(const unsigned int _aa)
 {
-  return this->antiAliasing;
-}
-
-//////////////////////////////////////////////////
-void OptixCamera::SetAntiAliasing(unsigned int _aa)
-{
-  this->antiAliasing = _aa;
+  BaseCamera::SetAntiAliasing(_aa);
   this->cameraDirty = true;
 }
 
@@ -136,7 +105,7 @@ void OptixCamera::WriteCameraToDevice()
 //////////////////////////////////////////////////
 void OptixCamera::WriteCameraToDeviceImpl()
 {
-  this->optixRenderProgram["aa"]->setUint(this->antiAliasing + 1u);
+  this->optixRenderProgram["aa"]->setUint(this->AntiAliasing() + 1u);
 }
 
 //////////////////////////////////////////////////
@@ -156,7 +125,7 @@ void OptixCamera::WritePoseToDeviceImpl()
   // TODO: handle auto and manual aspect-ratio
   // v *= 1 / this->aspectRatio;
   v *= static_cast<float>(this->ImageHeight()) / this->ImageWidth();
-  w *= 1 / (2 * tan(this->xFieldOfView.Radian() / 2));
+  w *= 1 / (2 * tan(this->HFOV().Radian() / 2));
 
   this->optixRenderProgram["eye"]->setFloat(eye);
   this->optixRenderProgram["u"]->setFloat(u);
@@ -182,6 +151,16 @@ void OptixCamera::CreateRenderTexture()
   this->renderTexture = std::dynamic_pointer_cast<OptixRenderTexture>(base);
   this->renderTexture->SetFormat(PF_R8G8B8);
   this->SetAntiAliasing(1);
+}
+
+//////////////////////////////////////////////////
+RenderWindowPtr OptixCamera::CreateRenderWindow()
+{
+  RenderWindowPtr base = this->scene->CreateRenderWindow();
+  this->renderTexture = std::dynamic_pointer_cast<OptixRenderWindow>(base);
+  this->renderTexture->SetFormat(PF_R8G8B8);
+  this->SetAntiAliasing(1);
+  return base;
 }
 
 //////////////////////////////////////////////////

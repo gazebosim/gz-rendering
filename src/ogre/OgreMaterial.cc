@@ -17,8 +17,6 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/SystemPaths.hh"
-
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
@@ -111,13 +109,14 @@ void OgreMaterial::SetEmissive(const math::Color &_color)
 //////////////////////////////////////////////////
 double OgreMaterial::Shininess() const
 {
-  return this->ogrePass->getShininess();
+  return this->shininess;
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetShininess(double _shininess)
+void OgreMaterial::SetShininess(const double _shininess)
 {
-  this->ogrePass->setShininess(_shininess);
+  this->shininess = _shininess;
+  this->ogrePass->setShininess(this->shininess);
 }
 
 //////////////////////////////////////////////////
@@ -127,7 +126,7 @@ double OgreMaterial::Transparency() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetTransparency(double _transparency)
+void OgreMaterial::SetTransparency(const double _transparency)
 {
   this->transparency = std::min(std::max(_transparency, 0.0), 1.0);
   this->UpdateTransparency();
@@ -140,7 +139,7 @@ double OgreMaterial::Reflectivity() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetReflectivity(double _reflectivity)
+void OgreMaterial::SetReflectivity(const double _reflectivity)
 {
   this->reflectivity = std::min(std::max(_reflectivity, 0.0), 1.0);
 }
@@ -152,7 +151,7 @@ bool OgreMaterial::CastShadows() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetCastShadows(bool _castShadows)
+void OgreMaterial::SetCastShadows(const bool _castShadows)
 {
   // TODO: update RTShader
   this->castShadows = _castShadows;
@@ -165,7 +164,7 @@ bool OgreMaterial::ReceiveShadows() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetReceiveShadows(bool _receiveShadows)
+void OgreMaterial::SetReceiveShadows(const bool _receiveShadows)
 {
   this->ogreMaterial->setReceiveShadows(_receiveShadows);
 }
@@ -177,7 +176,7 @@ bool OgreMaterial::ReflectionEnabled() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetReflectionEnabled(bool _enabled)
+void OgreMaterial::SetReflectionEnabled(const bool _enabled)
 {
   this->reflectionEnabled = _enabled;
 }
@@ -203,13 +202,8 @@ void OgreMaterial::SetTexture(const std::string &_name)
     return;
   }
 
-  Ogre::TexturePtr texture = this->Texture(_name);
-
-  if (!texture.isNull())
-  {
-    this->textureName = _name;
-    this->SetTextureImpl(texture);
-  }
+  this->textureName = _name;
+  this->SetTextureImpl(this->textureName);
 }
 
 //////////////////////////////////////////////////
@@ -223,7 +217,7 @@ void OgreMaterial::ClearTexture()
 //////////////////////////////////////////////////
 bool OgreMaterial::HasNormalMap() const
 {
-  return !this->textureName.empty();
+  return !this->normalMapName.empty();
 }
 
 //////////////////////////////////////////////////
@@ -241,8 +235,9 @@ void OgreMaterial::SetNormalMap(const std::string &_name)
     return;
   }
 
-  // TODO: implement
   this->normalMapName = _name;
+  // TODO: implement
+  // this->SetNormalMapImpl(texture);
 }
 
 //////////////////////////////////////////////////
@@ -274,9 +269,6 @@ void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
 {
   try
   {
-    // TODO: improve how resource paths are handled
-    // OgreRenderEngine::Instance()->AddResourcePath(_name);
-    // _image.load(_name, this->ogreGroup);
     if (Ogre::ResourceGroupManager::getSingleton().resourceExists(
         this->ogreGroup, _name))
     {
@@ -284,7 +276,7 @@ void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
     }
     else
     {
-      std::string path = SystemPaths::Instance()->FindFile(_name);
+      std::string path = common::findFile(_name);
       if (!path.empty())
       {
         Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
@@ -302,9 +294,16 @@ void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetTextureImpl(Ogre::TexturePtr _texture)
+void OgreMaterial::SetTextureImpl(const std::string &_texture)
 {
-  this->ogreTexState->setTextureName(_texture->getName());
+  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
+      this->ogreGroup, _texture))
+  {
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        _texture, "FileSystem", this->ogreGroup);
+  }
+
+  this->ogreTexState->setTextureName(_texture);
   this->UpdateColorOperation();
 }
 

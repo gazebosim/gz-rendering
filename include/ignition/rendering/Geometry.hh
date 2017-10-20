@@ -59,6 +59,10 @@ namespace ignition
       /// \param[in] _unique True if the given material should be cloned
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true) = 0;
+
+      /// \brief Get the material of this geometry
+      /// \return Material used by this geometry
+      public: virtual MaterialPtr Material() const = 0;
     };
   }
 }

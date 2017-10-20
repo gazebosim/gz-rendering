@@ -76,9 +76,21 @@ void OrbitViewController::SetCamera(const CameraPtr &_camera)
 }
 
 //////////////////////////////////////////////////
+CameraPtr OrbitViewController::Camera() const
+{
+  return this->dataPtr->camera;
+}
+
+//////////////////////////////////////////////////
 void OrbitViewController::SetTarget(const math::Vector3d &_target)
 {
   this->dataPtr->target = _target;
+}
+
+//////////////////////////////////////////////////
+math::Vector3d OrbitViewController::Target() const
+{
+  return this->dataPtr->target;
 }
 
 //////////////////////////////////////////////////

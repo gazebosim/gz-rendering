@@ -44,8 +44,6 @@ namespace ignition
 
       public: virtual void SetAmbientLight(const math::Color &_color);
 
-      public: virtual math::Color BackgroundColor() const;
-
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
       public: virtual void PreRender();
@@ -107,10 +105,18 @@ namespace ignition
       protected: virtual MeshPtr CreateMeshImpl(unsigned int _id,
                      const std::string &_name, const MeshDescriptor &_desc);
 
+      // Documentation inherited.
+      protected: virtual GridPtr CreateGridImpl(unsigned int _id,
+                     const std::string &_name);
+
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name);
 
       protected: virtual RenderTexturePtr CreateRenderTextureImpl(
+                     unsigned int _id, const std::string &_name);
+
+      // Documentation inherited.
+      protected: virtual RenderWindowPtr CreateRenderWindowImpl(
                      unsigned int _id, const std::string &_name);
 
       protected: virtual RayQueryPtr CreateRayQueryImpl(
@@ -146,8 +152,6 @@ namespace ignition
       protected: OptixLightManagerPtr lightManager;
 
       protected: OptixMeshFactoryPtr meshFactory;
-
-      protected: math::Color backgroundColor;
 
       protected: OptixLightStorePtr lights;
 

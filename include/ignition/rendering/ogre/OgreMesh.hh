@@ -66,7 +66,7 @@ namespace ignition
       public: virtual MaterialPtr Material() const;
 
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true);
+                  bool _unique = true);
 
       public: virtual Ogre::SubEntity *OgreSubEntity() const;
 

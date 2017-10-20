@@ -9,6 +9,7 @@ set (headers
   OptixConversions.hh
   OptixCylinder.hh
   OptixGeometry.hh
+  OptixGrid.hh
   OptixIncludes.hh
   OptixLight.hh
   OptixLightManager.hh

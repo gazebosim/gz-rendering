@@ -655,17 +655,23 @@ namespace ignition
       /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const common::Mesh *_mesh) = 0;
 
-      /// \brief Create new mesh geomerty. The rendering::Mesh will be created
+      /// \brief Create new mesh geometry. The rendering::Mesh will be created
       /// from the given common::Mesh specified in the MeshDescriptor.
       /// Sub-meshes will be loaded and centered according to the descriptor.
       /// \param[in] _desc Descriptor of the mesh to load
       /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc) = 0;
 
-      /// \brief Create new material. Created material will have default
-      /// properties.
+      /// \brief Create new grid geometry.
+      /// \return The created grid
+      public: virtual GridPtr CreateGrid() = 0;
+
+      /// \brief Create new material with the given name. Created material will
+      /// have default properties.
+      /// \param[in] _name Name for the new material.
       /// \return The created material
-      public: virtual MaterialPtr CreateMaterial() = 0;
+      public: virtual MaterialPtr CreateMaterial(const std::string &_name = "")
+                  = 0;
 
       /// \brief Create new material from the reference common::Material
       /// \param[in] _material Reference material
@@ -673,9 +679,15 @@ namespace ignition
       public: virtual MaterialPtr CreateMaterial(
                   const common::Material &_material) = 0;
 
-      /// \brief Create new render-texture
-      /// \return The created render-texture
+      /// \brief Create new render texture
+      /// \return The created render texture
       public: virtual RenderTexturePtr CreateRenderTexture() = 0;
+
+      /// \brief Create new render window. This feature is render engine
+      /// dependent. If the engine does not support attaching to a windowing
+      /// system then it should behave as a a render texture.
+      /// \return The created render window
+      public: virtual RenderWindowPtr CreateRenderWindow() = 0;
 
       /// \brief Create new ray query
       /// \return The created ray query

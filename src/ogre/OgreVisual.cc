@@ -111,7 +111,7 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  // set uesr data for mouse queries
+  // set user data for mouse queries
   derived->OgreObject()->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
 

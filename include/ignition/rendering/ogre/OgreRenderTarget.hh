@@ -53,6 +53,7 @@ namespace ignition
 
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
+      // Documentation inherited
       public: virtual math::Color BackgroundColor() const;
 
       public: virtual void SetBackgroundColor(math::Color _color);
@@ -123,7 +124,7 @@ namespace ignition
 
       protected: Ogre::RenderTarget *ogreRenderWindow = nullptr;
 
-      private: friend class OgreCamera;
+      private: friend class OgreScene;
     };
 
   }

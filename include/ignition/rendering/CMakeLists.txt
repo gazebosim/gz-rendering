@@ -17,6 +17,7 @@ set (headers
   Camera.hh
   CompositeVisual.hh
   Geometry.hh
+  Grid.hh
   Image.hh
   Light.hh
   Material.hh
@@ -36,7 +37,6 @@ set (headers
   Sensor.hh
   ShaderType.hh
   Storage.hh
-  SystemPaths.hh
   Util.hh
   ViewController.hh
   Visual.hh

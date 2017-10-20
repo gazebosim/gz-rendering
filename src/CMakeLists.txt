@@ -18,22 +18,22 @@ set (sources
   RenderEngineManager.cc
   RenderingIface.cc
   ShaderType.cc
-  SystemPaths.cc
 )
 
 set (gtest_sources
 )
 
 set (gtest_sources_dri
+  Camera_TEST.cc
+  Grid_TEST.cc
+  Material_TEST.cc
+  Mesh_TEST.cc
+  MeshDescriptor_TEST.cc
+  OrbitViewController_TEST.cc
+  RayQuery_TEST.cc
   RenderTarget_TEST.cc
   RenderingIface_TEST.cc
-)
-
-set_property(
-  SOURCE SystemPaths.cc
-  PROPERTY COMPILE_DEFINITIONS
-  IGN_RENDERING_PLUGIN_PATH="${IGN_RENDERING_PLUGIN_PATH}"
-  OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
+  Scene_TEST.cc
 )
 
 ign_build_tests(${gtest_sources})

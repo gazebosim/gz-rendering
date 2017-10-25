@@ -181,6 +181,18 @@ namespace ignition
       /// \brief Get the view matrix for this camera
       /// \return Camera view matrix
       public: virtual math::Matrix4d ViewMatrix() const = 0;
+
+      /// \brief Set whether to auto track a taget node.
+      /// \param[in] _target Target node to track
+      /// \param[in] _follow  True to use follow mode which moves this node to
+      /// follow the target node.
+      /// \param[in] _followOffset If follow mode is on then this offset
+      /// determines the distance at which the taget node is being followed.
+      public: virtual void SetAutoTrack(const NodePtr &_target) = 0;
+
+      public: virtual void SetFollow(const NodePtr &_target, const bool _fixed,
+                  const math::Vector3d &_followOffset = math::Vector3d::Zero)
+                  = 0;
     };
   }
 }

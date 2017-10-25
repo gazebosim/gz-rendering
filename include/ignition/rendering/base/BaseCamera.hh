@@ -100,6 +100,19 @@ namespace ignition
 
       public: virtual math::Matrix4d ViewMatrix() const;
 
+      // Documentation inherited.
+/*      public: virtual void SetAutoTrack(const bool _enabled,
+                  const NodePtr &_target = NodePtr(),
+                  const bool _follow = false,
+                  const math::Vector3d &_followOffset = math::Vector3d::Zero);
+*/
+      public: virtual void SetAutoTrack(const NodePtr &_target) = 0;
+
+      public: virtual void SetFollow(const NodePtr &_target, const bool _fixed,
+                  const math::Vector3d &_followOffset = math::Vector3d::Zero)
+                  = 0;
+
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load();
@@ -127,6 +140,19 @@ namespace ignition
 
       /// \brief Anti-aliasing
       protected: unsigned int antiAliasing = 0u;
+
+      /// \brief Target node to track if auto tracking is on.
+      protected: NodePtr trackNode;
+
+      /// \brief Target node to track if auto following is on.
+      protected: NodePtr followNode;
+
+      /// \brief Fixed pose follow.
+      protected: bool followFixed = false;
+
+      /// \brief Offset distance between this node and target node being
+      /// followed.
+      protected: math::Vector3d followOffset;
     };
 
     //////////////////////////////////////////////////
@@ -198,7 +224,35 @@ namespace ignition
     void BaseCamera<T>::PreRender()
     {
       T::PreRender();
+
       this->RenderTarget()->PreRender();
+      // camera tracking
+      if (this->trackNode)
+      {
+        math::Vector3d eye = this->WorldPosition();
+        math::Vector3d target = this->trackNode->WorldPosition();
+        math::Pose3d p =
+            math::Matrix4d::LookAt(eye, target).Pose();
+        this->SetWorldPose(p);
+      }
+
+      // camera pos update if following
+      if (this->followNode)
+      {
+        if (this->followFixed)
+        {
+          math::Vector3d pos = this->WorldPosition();
+          math::Vector3d targetPos = this->followNode->WorldPosition();
+          this->SetWorldPosition(targetPos + this->followOffset);
+        }
+        else
+        {
+          ignition::math::Pose3d p =
+              math::Pose3d(this->followOffset, ignition::math::Vector3d::Zero);
+          p += this->followNode->WorldPose();
+          this->SetWorldPose(p);
+        }
+      }
     }
 
     //////////////////////////////////////////////////
@@ -429,6 +483,24 @@ namespace ignition
     {
       this->nearClip = _near;
     }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetAutoTrack(const NodePtr &_target)
+    {
+      this->trackNode = _target;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetFollow(const NodePtr &_target, const bool _fixed,
+        const math::Vector3d &_offset)
+    {
+      this->followNode = _target;
+      this->followFixed = _fixed;
+      this->followOffset= _offset;
+    }
+
   }
 }
 #endif

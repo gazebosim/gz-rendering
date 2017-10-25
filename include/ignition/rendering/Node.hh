@@ -165,18 +165,6 @@ namespace ignition
       /// original origin of the geometry.
       /// \param[in] _origin New origin position
       public: virtual void SetOrigin(const math::Vector3d &_origin) = 0;
-
-
-      /// \brief Set whether to auto track a taget node.
-      /// \param[in] _enabled True to enable auto tracking
-      /// \param[in] _target Target node to track
-      /// \param[in] _follow  True to use follow mode which moves this node to
-      /// follow the target node.
-      /// \param[in] _followOffset If follow mode is on then this offset
-      /// determines the distance at which the taget node is being followed.
-      public: virtual void SetAutoTrack(const bool _enabled,
-                  const NodePtr &_targeti, const bool _follow,
-                  const math::Vector3d &_followOffset) = 0;
     };
   }
 }

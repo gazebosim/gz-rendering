@@ -91,27 +91,11 @@ namespace ignition
       // Documentation inherited.
       public: virtual void PreRender();
 
-      // Documentation inherited.
-      public: virtual void SetAutoTrack(const bool _enabled,
-                  const NodePtr &_target = NodePtr(),
-                  const bool _follow = false,
-                  const math::Vector3d &_followOffset = math::Vector3d::Zero);
-
       protected: virtual math::Pose3d RawLocalPose() const = 0;
 
       protected: virtual void SetRawLocalPose(const math::Pose3d &_pose) = 0;
 
       protected: math::Vector3d origin;
-
-      /// \brief Target node to track if auto tracking is on.
-      protected: NodePtr trackNode;
-
-      /// \brief Enable follow mode with auto tracking.
-      protected: bool trackFollow = false;
-
-      /// \brief Offset distance between this node and target node being
-      /// followed.
-      protected: math::Vector3d trackFollowOffset;
     };
 
     //////////////////////////////////////////////////
@@ -336,36 +320,6 @@ namespace ignition
     void BaseNode<T>::PreRender()
     {
       T::PreRender();
-      if (this->trackNode)
-      {
-        math::Vector3d eye = this->WorldPosition();
-        math::Vector3d target = this->trackNode->WorldPosition();
-        if (this->trackFollow)
-        {
-          eye = target + this->trackFollowOffset;
-        }
-        math::Pose3d p =
-            math::Matrix4d::LookAt(eye, target).Pose();
-        this->SetWorldPose(p);
-      }
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseNode<T>::SetAutoTrack(const bool _enabled, const NodePtr &_target,
-        const bool _follow,
-        const math::Vector3d &_followOffset)
-    {
-      if (!_enabled)
-      {
-        this->trackNode = NodePtr();
-        this->trackFollow = false;
-        this->trackFollowOffset = math::Vector3d::Zero;
-        return;
-      }
-      this->trackNode = _target;
-      this->trackFollow = _follow;
-      this->trackFollowOffset = _followOffset;
     }
   }
 }

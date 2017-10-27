@@ -188,16 +188,20 @@ namespace ignition
       /// follow the target node.
       /// \param[in] _followOffset If follow mode is on then this offset
       /// determines the distance at which the taget node is being followed.
-      public: virtual void Track(const NodePtr &_target) = 0;
+      public: virtual void Track(const NodePtr &_target,
+                  const math::Vector3d &_offset = math::Vector3d::Zero) = 0;
 
       public: virtual void SetTrackPGain(const double _pGain) = 0;
 
+      public: virtual double TrackPGain() const = 0;
+
       public: virtual void Follow(const NodePtr &_target,
-                  const bool _fixed = false,
-                  const math::Vector3d &_followOffset = math::Vector3d::Zero)
-                  = 0;
+                  const math::Vector3d &_offset = math::Vector3d::Zero,
+                  const bool _fixed = false) = 0;
 
       public: virtual void SetFollowPGain(const double _pGain) = 0;
+
+      public: virtual double FollowPGain() const = 0;
     };
   }
 }

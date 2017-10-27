@@ -282,7 +282,7 @@ void keyboardCB(unsigned char _key, int, int)
   // main node movement control
   double posIncr = 0.03;
   double yawIncr = 0.03;
-  for (ir::NodePtr node: g_nodes)
+  for (ir::NodePtr node : g_nodes)
   {
     if (!node)
     {
@@ -311,6 +311,8 @@ void keyboardCB(unsigned char _key, int, int)
     }
   }
 
+  ignition::math::Vector3d trackOffset(1.0, 0, 0);
+  ignition::math::Vector3d followOffset(-3, 0, 3);
   for (unsigned int i = 0; i < g_cameras.size(); ++i)
   {
     auto cam = g_cameras[i];
@@ -318,32 +320,36 @@ void keyboardCB(unsigned char _key, int, int)
     // fixed camera mode
     if (_key == '1')
     {
-      cam->Track(node);
+      cam->Track(node, trackOffset);
       cam->SetWorldPosition(0, 0, 3);
       cam->Follow(nullptr);
     }
     else if (_key == '2')
     {
-      cam->Track(node);
-      cam->Follow(node, true, ignition::math::Vector3d(-3, 0, 3));
+      cam->Track(node, trackOffset);
+      cam->Follow(node, followOffset, true);
     }
     else if (_key == '3')
     {
-      cam->Track(node);
-      cam->Follow(node, false, ignition::math::Vector3d(-3, 0, 3));
+      cam->Track(node, trackOffset);
+      cam->Follow(node, followOffset, false);
     }
 
     if (_key == 't' || _key == 'T')
     {
-      double trackPGain = 0.01;
-      cam->SetTrackPGain(trackPGain);
-      std::cout << "Track P Gain: " << trackPGain << std::endl;
+      double trackPGain = 0.005;
+      double p = ignition::math::equal(cam->TrackPGain(), 1.0) ?
+          trackPGain : 1.0;
+      cam->SetTrackPGain(p);
+      std::cout << "Track P Gain: " << p << std::endl;
     }
     else if (_key == 'f' || _key == 'F')
     {
       double followPGain = 0.01;
-      cam->SetFollowPGain(followPGain);
-      std::cout << "Follow P Gain: " << followPGain << std::endl;
+      double p = ignition::math::equal(cam->FollowPGain(), 1.0) ?
+          followPGain : 1.0;
+      cam->SetFollowPGain(p);
+      std::cout << "Follow P Gain: " << p << std::endl;
     }
   }
 }

@@ -320,19 +320,19 @@ void keyboardCB(unsigned char _key, int, int)
     // fixed camera mode
     if (_key == '1')
     {
-      cam->Track(node, trackOffset);
+      cam->SetTrackTarget(node, trackOffset);
       cam->SetWorldPosition(0, 0, 3);
-      cam->Follow(nullptr);
+      cam->SetFollowTarget(nullptr);
     }
     else if (_key == '2')
     {
-      cam->Track(node, trackOffset);
-      cam->Follow(node, followOffset, true);
+      cam->SetTrackTarget(node, trackOffset);
+      cam->SetFollowTarget(node, followOffset, true);
     }
     else if (_key == '3')
     {
-      cam->Track(node, trackOffset);
-      cam->Follow(node, followOffset, false);
+      cam->SetTrackTarget(node, trackOffset);
+      cam->SetFollowTarget(node, followOffset, false);
     }
 
     if (_key == 't' || _key == 'T')
@@ -386,6 +386,18 @@ void printUsage()
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
+  std::cout << "                               " << std::endl;
+  std::cout << "  W - Move box forward         " << std::endl;
+  std::cout << "  S - Move box backward        " << std::endl;
+  std::cout << "  A - Rotate box to the left   " << std::endl;
+  std::cout << "  D - Rotate box to the right  " << std::endl;
+  std::cout << "                               " << std::endl;
+  std::cout << "  1 - Fixed camera             " << std::endl;
+  std::cout << "  2 - Tethered camera (fixed)  " << std::endl;
+  std::cout << "  3 - Tethered camera          " << std::endl;
+  std::cout << "                               " << std::endl;
+  std::cout << "  T - Toggle smooth tracking   " << std::endl;
+  std::cout << "  F - Toggle smooth following  " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 

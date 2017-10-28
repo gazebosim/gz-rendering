@@ -97,28 +97,42 @@ namespace ignition
 
       public: virtual RenderWindowPtr CreateRenderWindow();
 
+      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const;
 
+      // Documentation inherited.
       public: virtual math::Matrix4d ViewMatrix() const;
 
       // Documentation inherited.
-/*      public: virtual void SetAutoTrack(const bool _enabled,
-                  const NodePtr &_target = NodePtr(),
-                  const bool _follow = false,
-                  const math::Vector3d &_followOffset = math::Vector3d::Zero);
-*/
-      public: virtual void Track(const NodePtr &_target,
+      public: virtual void SetTrackTarget(const NodePtr &_target,
                   const math::Vector3d &_offset);
 
+      // Documentation inherited.
+      public: virtual NodePtr TrackTarget() const;
+
+      // Documentation inherited.
+      public: virtual math::Vector3d TrackOffset() const;
+
+      // Documentation inherited.
       public: virtual void SetTrackPGain(const double _pGain);
 
+      // Documentation inherited.
       public: virtual double TrackPGain() const;
 
-      public: virtual void Follow(const NodePtr &_target,
-                  const math::Vector3d &_Offset, const bool _fixed);
+      // Documentation inherited.
+      public: virtual void SetFollowTarget(const NodePtr &_target,
+                  const math::Vector3d &_Offset, const bool _worldFixedFrame);
 
+      // Documentation inherited.
+      public: virtual NodePtr FollowTarget() const;
+
+      // Documentation inherited.
+      public: virtual math::Vector3d FollowOffset() const;
+
+      // Documentation inherited.
       public: virtual void SetFollowPGain(const double _pGain);
 
+      // Documentation inherited.
       public: virtual double FollowPGain() const;
 
       protected: virtual void *CreateImageBuffer() const;
@@ -156,21 +170,20 @@ namespace ignition
       /// to look at the target node. Valid range: [0-1]
       protected: double trackPGain = 1.0;
 
-      /// \brief Target node to track if auto following is on.
+      /// \brief Target node to follow
       protected: NodePtr followNode;
 
-      /// \brief Fixed pose follow.
-      protected: bool followFixed = false;
+      /// \brief Fixed pose follow in world frame.
+      protected: bool followWorldFixed = false;
 
       /// \brief P gain for follow mode. Determines how fast the camera moves
       /// to follow the target node. Valid range: [0-1]
       protected: double followPGain = 1.0;
 
-      /// \brief Offset distance between this node and target node being
-      /// followed.
+      /// \brief Offset distance frobetween camera anem target node
       protected: math::Vector3d followOffset;
 
-      /// \brief Offset from target node to track in target nodes' local frame
+      /// \brief Offset from target node to track in target node's local frame
       protected: math::Vector3d trackOffset;
     };
 
@@ -250,7 +263,7 @@ namespace ignition
       if (this->followNode)
       {
         // tether camera fixed in world frame
-        if (this->followFixed)
+        if (this->followWorldFixed)
         {
           math::Vector3d targetCamPos =
               this->followNode->WorldPosition() + this->followOffset;
@@ -524,7 +537,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::Track(const NodePtr &_target,
+    void BaseCamera<T>::SetTrackTarget(const NodePtr &_target,
         const math::Vector3d &_offset)
     {
       this->trackNode = _target;
@@ -533,9 +546,23 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    NodePtr BaseCamera<T>::TrackTarget() const
+    {
+      return this->trackNode;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Vector3d BaseCamera<T>::TrackOffset() const
+    {
+      return this->trackOffset;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseCamera<T>::SetTrackPGain(const double _pGain)
     {
-      this->trackPGain = _pGain;
+      this->trackPGain = math::clamp(_pGain, 0.0, 1.0);
     }
 
     //////////////////////////////////////////////////
@@ -547,19 +574,34 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::Follow(const NodePtr &_target,
-        const math::Vector3d &_offset, const bool _fixed)
+    void BaseCamera<T>::SetFollowTarget(const NodePtr &_target,
+        const math::Vector3d &_offset, const bool _worldFixedFrame)
     {
       this->followNode = _target;
-      this->followFixed = _fixed;
+      this->followWorldFixed = _worldFixedFrame;
       this->followOffset = _offset;
     }
 
     //////////////////////////////////////////////////
     template <class T>
+    NodePtr BaseCamera<T>::FollowTarget() const
+    {
+      return this->followNode;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Vector3d BaseCamera<T>::FollowOffset() const
+    {
+      return this->followOffset;
+    }
+
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseCamera<T>::SetFollowPGain(const double _pGain)
     {
-      this->followPGain = _pGain;
+      this->followPGain = math::clamp(_pGain, 0.0, 1.0);
     }
 
     //////////////////////////////////////////////////

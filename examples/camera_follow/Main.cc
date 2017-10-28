@@ -138,7 +138,7 @@ int main(int _argc, char** _argv)
       if (node)
         nodes.push_back(node);
 
-      camera->Track(node, math::Vector3d(0.5, 0, 0));
+      camera->SetTrackTarget(node, math::Vector3d(0.5, 0, 0));
     }
 
     run(cameras, nodes);

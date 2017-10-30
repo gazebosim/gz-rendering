@@ -58,7 +58,6 @@ void buildScene(ScenePtr _scene)
   grid->SetLocalPosition(3, 0, 0.0);
   root->AddChild(grid);
 
-
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 3.0);

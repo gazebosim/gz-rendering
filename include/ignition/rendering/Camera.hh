@@ -210,10 +210,9 @@ namespace ignition
       /// \param[in] _target Target node to follow
       /// \param[in] _offset Tether the camera at an offset distance from the
       /// target node.
-      /// \param[in] _worldFrame True to use follow the target node at a
+      /// \param[in] _worldFrame True to follow the target node at a
       /// distance that's fixed in world frame. Default is false which means
-      /// the camera follows at fixed fixed distance in target node's local
-      /// frame.
+      /// the camera follows at fixed distance in target node's local frame.
       public: virtual void SetFollowTarget(const NodePtr &_target,
                   const math::Vector3d &_offset = math::Vector3d::Zero,
                   const bool _worldFrame = false) = 0;

@@ -24,6 +24,7 @@ namespace ir = ignition::rendering;
 
 /// \brief Run the demo and render the scene from the cameras
 /// \param[in] _cameras Cameras in the scene
+/// \param[in] _nodes Nodes being tracked / followed in the scene
 void run(std::vector<ir::CameraPtr> _cameras, std::vector<ir::NodePtr> _nodes);
 
 #endif

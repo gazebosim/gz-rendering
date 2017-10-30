@@ -163,7 +163,7 @@ namespace ignition
       /// \brief Anti-aliasing
       protected: unsigned int antiAliasing = 0u;
 
-      /// \brief Target node to track if auto tracking is on.
+      /// \brief Target node to track if camera tracking is on.
       protected: NodePtr trackNode;
 
       /// \brief P gain for tracking. Determines how fast the camera rotates
@@ -180,10 +180,10 @@ namespace ignition
       /// to follow the target node. Valid range: [0-1]
       protected: double followPGain = 1.0;
 
-      /// \brief Offset distance frobetween camera anem target node
+      /// \brief Offset distance between camera and target node being followed
       protected: math::Vector3d followOffset;
 
-      /// \brief Offset from target node to track in target node's local frame
+      /// \brief Set camera to track a point offset in target node's local frame
       protected: math::Vector3d trackOffset;
     };
 
@@ -610,8 +610,6 @@ namespace ignition
     {
       return this->followPGain;
     }
-
-
   }
 }
 #endif

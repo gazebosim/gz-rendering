@@ -437,5 +437,3 @@ void run(std::vector<ir::CameraPtr> _cameras, std::vector<ir::NodePtr> _nodes)
 
   glutMainLoop();
 }
-
-

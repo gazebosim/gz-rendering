@@ -30,8 +30,13 @@ using namespace rendering;
 class CameraTest : public testing::Test,
                    public testing::WithParamInterface<const char*>
 {
+  /// \brief Test camera view and projection matrix
   public: void ViewProjectionMatrix(const std::string &_renderEngine);
+
+  /// \brief Test updating camera render texture properties
   public: void RenderTexture(const std::string &_renderEngine);
+
+  /// \brief Test camera tracking and camera following.
   public: void TrackFollow(const std::string &_renderEngine);
 };
 

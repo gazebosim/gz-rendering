@@ -132,12 +132,13 @@ int main(int _argc, char** _argv)
     {
       CameraPtr camera = createCamera(engineName);
       if (camera)
+      {
         cameras.push_back(camera);
-      NodePtr node = createMainNode(camera->Scene());
-      if (node)
-        nodes.push_back(node);
-
-      camera->SetTrackTarget(node, math::Vector3d(0.5, 0, 0));
+        NodePtr node = createMainNode(camera->Scene());
+        if (node)
+          nodes.push_back(node);
+        camera->SetTrackTarget(node, math::Vector3d(0.5, 0, 0));
+      }
     }
 
     run(cameras, nodes);

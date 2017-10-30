@@ -341,7 +341,6 @@ void keyboardCB(unsigned char _key, int, int)
       double p = ignition::math::equal(cam->TrackPGain(), 1.0) ?
           trackPGain : 1.0;
       cam->SetTrackPGain(p);
-      std::cout << "Track P Gain: " << p << std::endl;
     }
     else if (_key == 'f' || _key == 'F')
     {
@@ -349,7 +348,6 @@ void keyboardCB(unsigned char _key, int, int)
       double p = ignition::math::equal(cam->FollowPGain(), 1.0) ?
           followPGain : 1.0;
       cam->SetFollowPGain(p);
-      std::cout << "Follow P Gain: " << p << std::endl;
     }
   }
 }
@@ -371,7 +369,7 @@ void initContext()
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
-  glutCreateWindow("Camera Follow");
+  glutCreateWindow("Camera Tracking");
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);

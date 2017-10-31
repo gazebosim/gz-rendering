@@ -17,8 +17,6 @@
 #ifndef IGNITION_RENDERING_BASE_BASENODE_HH_
 #define IGNITION_RENDERING_BASE_BASENODE_HH_
 
-#include <ignition/math/Matrix4.hh>
-
 #include "ignition/rendering/Node.hh"
 #include "ignition/rendering/Visual.hh"
 
@@ -87,9 +85,6 @@ namespace ignition
       public: virtual void SetOrigin(const math::Vector3d &_origin);
 
       public: virtual void Destroy();
-
-      // Documentation inherited.
-      public: virtual void PreRender();
 
       protected: virtual math::Pose3d RawLocalPose() const = 0;
 
@@ -314,12 +309,6 @@ namespace ignition
     {
       T::Destroy();
       this->RemoveParent();
-    }
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseNode<T>::PreRender()
-    {
-      T::PreRender();
     }
   }
 }

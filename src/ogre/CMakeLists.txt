@@ -1,6 +1,6 @@
-include (${project_cmake_dir}/Utils.cmake)
+# Turn on C++11 support for the library.
+set(CMAKE_CXX_STANDARD 11)
 
-add_subdirectory(media)
 
 include_directories(SYSTEM
   ${OGRE_INCLUDE_DIRS}
@@ -10,31 +10,23 @@ link_directories(
   ${ogre_library_dirs}
 )
 
-set (sources
-  OgreArrowVisual.cc
-  OgreAxisVisual.cc
-  OgreCamera.cc
-  OgreConversions.cc
-  OgreGeometry.cc
-  OgreGrid.cc
-  OgreLight.cc
-  OgreMaterial.cc
-  OgreMesh.cc
-  OgreMeshFactory.cc
-  OgreNode.cc
-  OgreObject.cc
-  OgreRayQuery.cc
-  OgreRenderEngine.cc
-  OgreRenderTarget.cc
-  OgreRTShaderSystem.cc
-  OgreScene.cc
-  OgreSensor.cc
-  OgreVisual.cc
-)
+# Collect source files into the "sources" variable and unit test files into the
+# "gtest_sources" variable.
+ign_get_libsources_and_unittests(sources gtest_sources)
 
-set (gtest_sources
-)
+# Create the library target.
+# override library target name
+set(TMP_PROJECT_LIBRARY_TARGET_NAME ${PROJECT_LIBRARY_TARGET_NAME})
+set(PROJECT_LIBRARY_TARGET_NAME ${PROJECT_LIBRARY_TARGET_NAME}-ogre)
+ign_add_library(${PROJECT_LIBRARY_TARGET_NAME} ${sources})
 
+#include_directories(SYSTEM
+#  ${OGRE_INCLUDE_DIRS}
+#)
+
+#link_directories(
+#  ${ogre_library_dirs}
+#)
 
 find_package(OpenGL)
 
@@ -45,14 +37,21 @@ set_property(
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
 )
 
-ign_build_tests(${gtest_sources})
-ign_add_library(${PROJECT_NAME_LOWER}-ogre ${sources})
-ign_install_library(${PROJECT_NAME_LOWER}-ogre)
-
-target_link_libraries(${PROJECT_NAME_LOWER}-ogre
-  ignition-rendering-base
-  ${IGNITION-MATH_LIBRARIES}
-  ${IGNITION-COMMON_LIBRARIES}
+target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
+  ignition-rendering0-base
+  ignition-common0::ignition-common0
   ${OPENGL_LIBRARIES}
   ${ogre_libraries}
 )
+
+# Create installation instructions for the library target. This must be called
+# in the same scope that the target is created.
+ign_install_library()
+
+# Build the unit tests
+ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})
+
+#restore library target name
+set(PROJECT_LIBRARY_TARGET_NAME ${TMP_PROJECT_LIBRARY_TARGET_NAME})
+
+add_subdirectory(media)

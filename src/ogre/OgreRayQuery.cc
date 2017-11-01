@@ -70,8 +70,8 @@ void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
 RayQueryResult OgreRayQuery::ClosestPoint()
 {
   RayQueryResult result;
-  OgreScenePtr scene = std::dynamic_pointer_cast<OgreScene>(this->Scene());
-  if (!scene)
+  OgreScenePtr ogreScene = std::dynamic_pointer_cast<OgreScene>(this->Scene());
+  if (!ogreScene)
     return result;
 
   Ogre::Ray mouseRay(OgreConversions::Convert(this->origin),
@@ -80,7 +80,7 @@ RayQueryResult OgreRayQuery::ClosestPoint()
   if (!this->dataPtr->rayQuery)
   {
     this->dataPtr->rayQuery =
-        scene->OgreSceneManager()->createRayQuery(mouseRay);
+        ogreScene->OgreSceneManager()->createRayQuery(mouseRay);
   }
   this->dataPtr->rayQuery->setSortByDistance(true);
   this->dataPtr->rayQuery->setRay(mouseRay);

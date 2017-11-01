@@ -71,17 +71,16 @@ namespace ignition
     void BaseArrowVisual<T>::Init()
     {
       T::Init();
-      ScenePtr scene = this->Scene();
 
-      VisualPtr cone = scene->CreateVisual();
-      cone->AddGeometry(scene->CreateCone());
+      VisualPtr cone = this->Scene()->CreateVisual();
+      cone->AddGeometry(this->Scene()->CreateCone());
       cone->SetOrigin(0, 0, -0.5);
       cone->SetLocalPosition(0, 0, 0);
       cone->SetLocalScale(0.1, 0.1, 0.25);
       this->AddChild(cone);
 
-      VisualPtr cylinder = scene->CreateVisual();
-      cylinder->AddGeometry(scene->CreateCylinder());
+      VisualPtr cylinder = this->Scene()->CreateVisual();
+      cylinder->AddGeometry(this->Scene()->CreateCylinder());
       cylinder->SetOrigin(0, 0, 0.5);
       cylinder->SetLocalPosition(0, 0, 0);
       cylinder->SetLocalScale(0.05, 0.05, 0.5);

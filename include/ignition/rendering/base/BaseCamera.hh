@@ -305,8 +305,8 @@ namespace ignition
     {
       // perspective projection
       double ratio = this->AspectRatio();
-      double hfov = this->HFOV().Radian();
-      double vfov =  2.0 * std::atan(std::tan(hfov / 2.0) / ratio);
+      double vfov =  2.0 * std::atan(
+          std::tan(this->HFOV().Radian() / 2.0) / ratio);
       double f = 1.0;
       double near = this->NearClipPlane();
       double far = this->FarClipPlane();

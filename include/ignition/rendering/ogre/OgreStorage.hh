@@ -18,7 +18,15 @@
 #define IGNITION_RENDERING_OGRE_OGRESTORAGE_HH_
 
 #include "ignition/rendering/base/BaseStorage.hh"
-#include "ignition/rendering/ogre/ogre.hh"
+
+#include "ignition/rendering/ogre/OgreGeometry.hh"
+#include "ignition/rendering/ogre/OgreLight.hh"
+#include "ignition/rendering/ogre/OgreMaterial.hh"
+#include "ignition/rendering/ogre/OgreMesh.hh"
+#include "ignition/rendering/ogre/OgreNode.hh"
+#include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreSensor.hh"
+#include "ignition/rendering/ogre/OgreVisual.hh"
 
 namespace ignition
 {

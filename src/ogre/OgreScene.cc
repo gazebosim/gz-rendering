@@ -17,10 +17,21 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreArrowVisual.hh"
+#include "ignition/rendering/ogre/OgreAxisVisual.hh"
+#include "ignition/rendering/ogre/OgreCamera.hh"
+#include "ignition/rendering/ogre/OgreConversions.hh"
+#include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreGrid.hh"
+#include "ignition/rendering/ogre/OgreMaterial.hh"
+#include "ignition/rendering/ogre/OgreMeshFactory.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
+#include "ignition/rendering/ogre/OgreRenderEngine.hh"
+#include "ignition/rendering/ogre/OgreRenderTarget.hh"
+#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/ogre.hh"
+#include "ignition/rendering/ogre/OgreStorage.hh"
+#include "ignition/rendering/ogre/OgreVisual.hh"
 
 using namespace ignition;
 using namespace rendering;

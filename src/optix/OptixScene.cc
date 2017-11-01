@@ -15,9 +15,23 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/optix/OptixArrowVisual.hh"
+#include "ignition/rendering/optix/OptixAxisVisual.hh"
+#include "ignition/rendering/optix/OptixBox.hh"
+#include "ignition/rendering/optix/OptixCamera.hh"
+#include "ignition/rendering/optix/OptixCone.hh"
+#include "ignition/rendering/optix/OptixCylinder.hh"
+#include "ignition/rendering/optix/OptixGeometry.hh"
 #include "ignition/rendering/optix/OptixGrid.hh"
+#include "ignition/rendering/optix/OptixLightManager.hh"
+#include "ignition/rendering/optix/OptixMeshFactory.hh"
+#include "ignition/rendering/optix/OptixRayTypes.hh"
+#include "ignition/rendering/optix/OptixRenderEngine.hh"
+#include "ignition/rendering/optix/OptixRenderTarget.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/optix.hh"
+#include "ignition/rendering/optix/OptixSphere.hh"
+#include "ignition/rendering/optix/OptixStorage.hh"
+#include "ignition/rendering/optix/OptixVisual.hh"
 
 using namespace ignition;
 using namespace rendering;

@@ -44,10 +44,7 @@ void OptixRenderTarget::Copy(Image &_image) const
   // TODO: handle Bayer conversions
   // TODO: move shared code to base
 
-  unsigned int width = this->Width();
-  unsigned int height = this->Height();
-
-  if (_image.Width() != width || _image.Height() != height)
+  if (_image.Width() != this->width || _image.Height() != this->height)
   {
     ignerr << "Invalid image dimensions" << std::endl;
     return;
@@ -55,7 +52,7 @@ void OptixRenderTarget::Copy(Image &_image) const
 
   float3 *deviceData = static_cast<float3 *>(this->OptixBuffer()->map());
   unsigned char *imageData = _image.Data<unsigned char>();
-  unsigned int count = width * height;
+  unsigned int count = this->width * this->height;
   unsigned int index = 0;
 
   for (unsigned int i = 0; i < count; ++i)

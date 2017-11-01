@@ -54,21 +54,20 @@ namespace ignition
     void BaseAxisVisual<T>::Init()
     {
       T::Init();
-      ScenePtr scene = this->Scene();
 
-      ArrowVisualPtr xArrow = scene->CreateArrowVisual();
+      ArrowVisualPtr xArrow = this->Scene()->CreateArrowVisual();
       xArrow->SetLocalPosition(0, 0, 0);
       xArrow->SetLocalRotation(0, M_PI / 2, 0);
       xArrow->SetMaterial("Default/TransRed");
       this->AddChild(xArrow);
 
-      ArrowVisualPtr yArrow = scene->CreateArrowVisual();
+      ArrowVisualPtr yArrow = this->Scene()->CreateArrowVisual();
       yArrow->SetLocalPosition(0, 0, 0);
       yArrow->SetLocalRotation(-M_PI / 2, 0, 0);
       yArrow->SetMaterial("Default/TransGreen");
       this->AddChild(yArrow);
 
-      ArrowVisualPtr zArrow = scene->CreateArrowVisual();
+      ArrowVisualPtr zArrow = this->Scene()->CreateArrowVisual();
       zArrow->SetLocalPosition(0, 0, 0);
       zArrow->SetLocalRotation(0, 0, 0);
       zArrow->SetMaterial("Default/TransBlue");

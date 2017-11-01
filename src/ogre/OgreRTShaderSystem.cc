@@ -416,9 +416,9 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
           "ogre-rtshader");
       // Get the user
       std::string user = "nobody";
-      const char* env = std::getenv("USER");
-      if (env)
-        user = std::string(env);
+      const char* userEnv = std::getenv("USER");
+      if (userEnv)
+        user = std::string(userEnv);
       cachePath = common::joinPaths(tmpDir, user + "-rtshaderlibcache");
       // Create the directory
       common::createDirectories(cachePath);

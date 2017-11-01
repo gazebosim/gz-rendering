@@ -18,7 +18,15 @@
 #define IGNITION_RENDERING_OPTIX_OPTIXSTORAGE_HH_
 
 #include "ignition/rendering/base/BaseStorage.hh"
-#include "ignition/rendering/optix/optix.hh"
+
+#include "ignition/rendering/optix/OptixGeometry.hh"
+#include "ignition/rendering/optix/OptixLight.hh"
+#include "ignition/rendering/optix/OptixMaterial.hh"
+#include "ignition/rendering/optix/OptixMesh.hh"
+#include "ignition/rendering/optix/OptixNode.hh"
+#include "ignition/rendering/optix/OptixScene.hh"
+#include "ignition/rendering/optix/OptixSensor.hh"
+#include "ignition/rendering/optix/OptixVisual.hh"
 
 namespace ignition
 {

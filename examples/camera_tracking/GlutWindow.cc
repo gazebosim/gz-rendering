@@ -92,6 +92,10 @@ struct mouseButton
 struct mouseButton g_mouse;
 std::mutex g_mouseMutex;
 
+ignition::math::Vector3d g_trackOffset(1.0, 0, 0);
+ignition::math::Vector3d g_followOffset(-3, 0, 3);
+
+
 //////////////////////////////////////////////////
 void mouseCB(int _button, int _state, int _x, int _y)
 {
@@ -311,8 +315,55 @@ void keyboardCB(unsigned char _key, int, int)
     }
   }
 
-  ignition::math::Vector3d trackOffset(1.0, 0, 0);
-  ignition::math::Vector3d followOffset(-3, 0, 3);
+  if (_key == 'u')
+  {
+    g_trackOffset.X() += 0.1;
+  }
+  else if (_key == 'U')
+  {
+    g_trackOffset.X() -= 0.1;
+  }
+  else if (_key == 'i')
+  {
+    g_trackOffset.Y() += 0.1;
+  }
+  else if (_key == 'I')
+  {
+    g_trackOffset.Y() -= 0.1;
+  }
+  else if (_key == 'o')
+  {
+    g_trackOffset.Z() += 0.1;
+  }
+  else if (_key == 'O')
+  {
+    g_trackOffset.Z() -= 0.1;
+  }
+  else if (_key == 'j')
+  {
+    g_followOffset.X() += 0.1;
+  }
+  else if (_key == 'J')
+  {
+    g_followOffset.X() -= 0.1;
+  }
+  else if (_key == 'k')
+  {
+    g_followOffset.Y() += 0.1;
+  }
+  else if (_key == 'K')
+  {
+    g_followOffset.Y() -= 0.1;
+  }
+  else if (_key == 'l')
+  {
+    g_followOffset.Z() += 0.1;
+  }
+  else if (_key == 'L')
+  {
+    g_followOffset.Z() -= 0.1;
+  }
+
   for (unsigned int i = 0; i < g_cameras.size(); ++i)
   {
     auto cam = g_cameras[i];
@@ -320,19 +371,24 @@ void keyboardCB(unsigned char _key, int, int)
     // fixed camera mode
     if (_key == '1')
     {
-      cam->SetTrackTarget(node, trackOffset);
+      cam->SetTrackTarget(node, g_trackOffset);
       cam->SetWorldPosition(0, 0, 3);
       cam->SetFollowTarget(nullptr);
     }
     else if (_key == '2')
     {
-      cam->SetTrackTarget(node, trackOffset);
-      cam->SetFollowTarget(node, followOffset, true);
+      cam->SetTrackTarget(node, g_trackOffset);
+      cam->SetFollowTarget(node, g_followOffset, true);
     }
     else if (_key == '3')
     {
-      cam->SetTrackTarget(node, trackOffset);
-      cam->SetFollowTarget(node, followOffset, false);
+      cam->SetTrackTarget(node, g_trackOffset);
+      cam->SetFollowTarget(node, g_followOffset, false);
+    }
+    else
+    {
+      cam->SetTrackOffset(g_trackOffset);
+      cam->SetFollowOffset(g_followOffset);
     }
 
     if (_key == 't' || _key == 'T')
@@ -396,6 +452,16 @@ void printUsage()
   std::cout << "                               " << std::endl;
   std::cout << "  T - Toggle smooth tracking   " << std::endl;
   std::cout << "  F - Toggle smooth following  " << std::endl;
+  std::cout << "                               " << std::endl;
+  std::cout << "  Track offset                 " << std::endl;
+  std::cout << "  u/U - +- 0.1 on X            " << std::endl;
+  std::cout << "  i/I - +- 0.1 on Y            " << std::endl;
+  std::cout << "  o/O - +- 0.1 on Z            " << std::endl;
+  std::cout << "                               " << std::endl;
+  std::cout << "  Follow offset                " << std::endl;
+  std::cout << "  j/J - +- 0.1 on X            " << std::endl;
+  std::cout << "  k/K - +- 0.1 on Y            " << std::endl;
+  std::cout << "  l/L - +- 0.1 on Z            " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 

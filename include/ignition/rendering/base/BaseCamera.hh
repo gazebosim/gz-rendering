@@ -114,6 +114,9 @@ namespace ignition
       public: virtual math::Vector3d TrackOffset() const;
 
       // Documentation inherited.
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset) override;
+
+      // Documentation inherited.
       public: virtual void SetTrackPGain(const double _pGain);
 
       // Documentation inherited.
@@ -128,6 +131,9 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual math::Vector3d FollowOffset() const;
+
+      // Documentation inherited.
+      public: virtual void SetFollowOffset(const math::Vector3d &_offset) override;
 
       // Documentation inherited.
       public: virtual void SetFollowPGain(const double _pGain);
@@ -560,6 +566,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseCamera<T>::SetTrackOffset(const math::Vector3d &_offset)
+    {
+      this->trackOffset = _offset;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseCamera<T>::SetTrackPGain(const double _pGain)
     {
       this->trackPGain = math::clamp(_pGain, 0.0, 1.0);
@@ -596,6 +609,12 @@ namespace ignition
       return this->followOffset;
     }
 
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetFollowOffset(const math::Vector3d &_offset)
+    {
+      this->followOffset = _offset;
+    }
 
     //////////////////////////////////////////////////
     template <class T>

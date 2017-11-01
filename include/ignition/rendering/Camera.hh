@@ -197,6 +197,10 @@ namespace ignition
       /// \return Point offset from target.
       public: virtual math::Vector3d TrackOffset() const = 0;
 
+      /// \brief Get the track offset vector in target node's local frame
+      /// \return Point offset from target.
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset) = 0;
+
       /// \brief Set track P Gain. Determines how fast the camera rotates
       /// to look at the target node. Valid range: [0-1]
       /// \param[in] _pGain P gain for camera tracking
@@ -224,6 +228,10 @@ namespace ignition
       /// \brief Get the follow offset vector
       /// \return Offset of camera from target.
       public: virtual math::Vector3d FollowOffset() const = 0;
+
+      /// \brief Get the track offset vector in target node's local frame
+      /// \return Point offset from target.
+      public: virtual void SetFollowOffset(const math::Vector3d &_offset) = 0;
 
       /// \brief Set follow P Gain. Determines how fast the camera moves
       /// to follow the target node. Valid range: [0-1]

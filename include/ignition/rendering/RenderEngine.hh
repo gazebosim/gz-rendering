@@ -109,7 +109,8 @@ namespace ignition
 
       /// \brief Get the scene at the given index. If no scenes exist at the
       /// given index, NULL will be returned.
-      /// \param[in] _index Index of scene
+      /// \param[in] _index Index of scene, which is incremented from 0 for
+      /// every new scene created.
       /// \return The specified scene
       public: virtual ScenePtr SceneByIndex(unsigned int _index) const = 0;
 

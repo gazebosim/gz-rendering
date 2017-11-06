@@ -31,7 +31,6 @@ set (gtest_sources_dri
   MeshDescriptor_TEST.cc
   OrbitViewController_TEST.cc
   RayQuery_TEST.cc
-  RenderEngine_TEST.cc
   RenderTarget_TEST.cc
   RenderingIface_TEST.cc
   Scene_TEST.cc

@@ -378,12 +378,12 @@ void keyboardCB(unsigned char _key, int, int)
     else if (_key == '2')
     {
       cam->SetTrackTarget(node, g_trackOffset);
-      cam->SetFollowTarget(node, g_followOffset, true);
+      cam->SetFollowTarget(node, g_followOffset, false);
     }
     else if (_key == '3')
     {
       cam->SetTrackTarget(node, g_trackOffset);
-      cam->SetFollowTarget(node, g_followOffset, false);
+      cam->SetFollowTarget(node, g_followOffset, true);
     }
     else
     {
@@ -441,27 +441,29 @@ void printUsage()
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
   std::cout << "                               " << std::endl;
-  std::cout << "  W - Move box forward         " << std::endl;
-  std::cout << "  S - Move box backward        " << std::endl;
-  std::cout << "  A - Rotate box to the left   " << std::endl;
-  std::cout << "  D - Rotate box to the right  " << std::endl;
+  std::cout << "  W: Move box forward          " << std::endl;
+  std::cout << "  S: Move box backward         " << std::endl;
+  std::cout << "  A: Rotate box to the left    " << std::endl;
+  std::cout << "  D: Rotate box to the right   " << std::endl;
   std::cout << "                               " << std::endl;
-  std::cout << "  1 - Fixed camera             " << std::endl;
-  std::cout << "  2 - Tethered camera (fixed)  " << std::endl;
-  std::cout << "  3 - Tethered camera          " << std::endl;
+  std::cout << "  1: Camera tracking only      " << std::endl;
+  std::cout << "  2: Camera tracking and       " << std::endl;
+  std::cout << "     following                 " << std::endl;
+  std::cout << "  3: Camera tracking and       " << std::endl;
+  std::cout << "     following (world frame)   " << std::endl;
   std::cout << "                               " << std::endl;
-  std::cout << "  T - Toggle smooth tracking   " << std::endl;
-  std::cout << "  F - Toggle smooth following  " << std::endl;
+  std::cout << "  T: Toggle smooth tracking    " << std::endl;
+  std::cout << "  F: Toggle smooth following   " << std::endl;
   std::cout << "                               " << std::endl;
   std::cout << "  Track offset                 " << std::endl;
-  std::cout << "  u/U - +- 0.1 on X            " << std::endl;
-  std::cout << "  i/I - +- 0.1 on Y            " << std::endl;
-  std::cout << "  o/O - +- 0.1 on Z            " << std::endl;
+  std::cout << "  u/U: +- 0.1 on X             " << std::endl;
+  std::cout << "  i/I: +- 0.1 on Y             " << std::endl;
+  std::cout << "  o/O: +- 0.1 on Z             " << std::endl;
   std::cout << "                               " << std::endl;
   std::cout << "  Follow offset                " << std::endl;
-  std::cout << "  j/J - +- 0.1 on X            " << std::endl;
-  std::cout << "  k/K - +- 0.1 on Y            " << std::endl;
-  std::cout << "  l/L - +- 0.1 on Z            " << std::endl;
+  std::cout << "  j/J: +- 0.1 on X             " << std::endl;
+  std::cout << "  k/K: +- 0.1 on Y             " << std::endl;
+  std::cout << "  l/L: +- 0.1 on Z             " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 

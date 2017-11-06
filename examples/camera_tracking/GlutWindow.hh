@@ -18,7 +18,7 @@
 #define IGNITION_RENDERING_EXAMPLES_CAMERA_TRACKING_GLUTWINDOW_HH_
 
 #include <vector>
-#include "ignition/rendering/RenderTypes.hh"
+#include <ignition/rendering/RenderTypes.hh>
 
 namespace ir = ignition::rendering;
 

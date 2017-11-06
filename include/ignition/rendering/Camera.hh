@@ -182,18 +182,32 @@ namespace ignition
       /// \return Camera view matrix
       public: virtual math::Matrix4d ViewMatrix() const = 0;
 
-      /// \brief Set a node for camera to track.
+      /// \brief Set a node for camera to track. The camera will automatically
+      /// change its orientation to face the target being tracked. If null is
+      /// specified, tracking is disabled. In contrast to SetFollowTarget
+      /// the camera does not change its position when tracking is enabled.
       /// \param[in] _target Target node to track
       /// \param[in] _offset Track a point that is at an offset relative
-      // to target node's local frame
+      /// to target.
+      /// \param[in] _worldFrame If true, the offset point to track will be
+      /// in treated in world frame and it's position relative to the target
+      /// node remains fixed regardless of the target node's rotation. Default
+      /// is false, which means the camera tracks the point in target node's
+      /// local frame.
       public: virtual void SetTrackTarget(const NodePtr &_target,
-                  const math::Vector3d &_offset = math::Vector3d::Zero) = 0;
+                  const math::Vector3d &_offset = math::Vector3d::Zero,
+                  const bool _worldFrame = false) = 0;
 
       /// \brief Get the target node being tracked
       /// \return Target node being tracked.
       public: virtual NodePtr TrackTarget() const = 0;
 
-      /// \brief Get the track offset vector in target node's local frame
+      /// \brief Set track offset. Camera will track a point that's at an
+      /// offset from the target node.
+      /// \param[in] _offset Point offset to track
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset) = 0;
+
+      /// \brief Get the track offset vector in the specified frame.
       /// \return Point offset from target.
       public: virtual math::Vector3d TrackOffset() const = 0;
 
@@ -206,7 +220,11 @@ namespace ignition
       /// \return P gain for camera tracking
       public: virtual double TrackPGain() const = 0;
 
-      /// \brief Set a node for camera to follow.
+      /// \brief Set a node for camera to follow. The camera will automatically
+      /// update its position to keep itself at the specified offset distance
+      /// from the target being followed. If null is specified, camera follow is
+      /// disabled. In contrast to SetTrackTarget, the camera does not change
+      /// its orientation when following is enabled.
       /// \param[in] _target Target node to follow
       /// \param[in] _offset Tether the camera at an offset distance from the
       /// target node.
@@ -220,6 +238,10 @@ namespace ignition
       /// \brief Get the target node being followed
       /// \return Target node being tracked.
       public: virtual NodePtr FollowTarget() const = 0;
+
+      /// \brief Set offset of camera from target node being followed.
+      /// \param[in] _offset Offset distance from target node.
+      public: virtual void SetFollowOffset(const math::Vector3d &_offset) = 0;
 
       /// \brief Get the follow offset vector
       /// \return Offset of camera from target.

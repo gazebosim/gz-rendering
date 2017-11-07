@@ -18,6 +18,19 @@ h1, h2, h3 {
     flex-grow: 1;
 }
 
+header {
+ text-align: center;
+ padding: 10px;
+ padding-bottom: 0px;
+}
+
+header .version {
+  color: #000;
+  padding-top: 10px;
+  font-weight: 300;
+  font-size: 1.2em;
+}
+
 .ign-navigation .mdl-navigation__link {
   display: flex !important;
   flex-direction: row;
@@ -28,8 +41,8 @@ h1, h2, h3 {
 }
 
 .ign-navigation .mdl-navigation__link:hover {
-    background-color: #00BCD4;
-      color: #37474F;
+  background-color: #00BCD4;
+  color: #37474F;
 }
 
 .ign-navigation .mdl-navigation__link .material-icons {

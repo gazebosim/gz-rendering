@@ -112,7 +112,6 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetTrackOffset(const math::Vector3d &_offset)
-                  override;
 
       // Documentation inherited.
       public: virtual math::Vector3d TrackOffset() const;
@@ -132,7 +131,6 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetFollowOffset(const math::Vector3d &_offset);
-                  override;
 
       // Documentation inherited.
       public: virtual math::Vector3d FollowOffset() const;

@@ -208,8 +208,8 @@ namespace ignition
       /// \param[in] _offset Point offset to track
       public: virtual void SetTrackOffset(const math::Vector3d &_offset) = 0;
 
-      /// \brief Get the track offset vector in the specified frame
-      /// at the time the target was set.
+      /// \brief Get the track offset vector in the frame specified at the time
+      /// the track target is set.
       /// \return Point offset from target.
       public: virtual math::Vector3d TrackOffset() const = 0;
 
@@ -247,7 +247,8 @@ namespace ignition
       /// \param[in] _offset Offset distance from target node.
       public: virtual void SetFollowOffset(const math::Vector3d &_offset) = 0;
 
-      /// \brief Get the follow offset vector
+      /// \brief Get the follow offset vector in the frame specified at the
+      /// time the follow target is set.
       /// \return Offset of camera from target.
       public: virtual math::Vector3d FollowOffset() const = 0;
 

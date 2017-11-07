@@ -176,7 +176,7 @@ namespace ignition
       protected: bool trackWorldFrame = false;
 
       /// \brief Set camera to track a point offset in target node's local or
-      /// or world frame depending on trackWorldFrame.
+      /// world frame depending on trackWorldFrame.
       protected: math::Vector3d trackOffset;
 
       /// \brief P gain for tracking. Determines how fast the camera rotates

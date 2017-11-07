@@ -111,7 +111,7 @@ namespace ignition
       public: virtual NodePtr TrackTarget() const;
 
       // Documentation inherited.
-      public: virtual void SetTrackOffset(const math::Vector3d &_offset)
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset);
 
       // Documentation inherited.
       public: virtual math::Vector3d TrackOffset() const;

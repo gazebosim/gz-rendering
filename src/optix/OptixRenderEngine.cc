@@ -87,7 +87,9 @@ std::string OptixRenderEngine::PtxFile(const std::string& _fileBase) const
 ScenePtr OptixRenderEngine::CreateSceneImpl(unsigned int _id,
     const std::string &_name)
 {
-  return OptixScenePtr(new OptixScene(_id, _name));
+  auto scene = OptixScenePtr(new OptixScene(_id, _name));
+  this->scenes->Add(scene);
+  return scene;
 }
 
 //////////////////////////////////////////////////

@@ -240,7 +240,9 @@ Ogre::Root *OgreRenderEngine::OgreRoot() const
 ScenePtr OgreRenderEngine::CreateSceneImpl(unsigned int _id,
     const std::string &_name)
 {
-  return OgreScenePtr(new OgreScene(_id, _name));
+  auto scene = OgreScenePtr(new OgreScene(_id, _name));
+  this->scenes->Add(scene);
+  return scene;
 }
 
 //////////////////////////////////////////////////

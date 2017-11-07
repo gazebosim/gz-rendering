@@ -158,9 +158,13 @@ void CameraTest::TrackFollow(const std::string &_renderEngine)
   EXPECT_EQ(math::Vector3d::Zero, camera->TrackOffset());
 
   math::Vector3d trackOffset(1.3, 30.4, -1.3);
-  camera->SetTrackTarget(visual, trackOffset);
+  camera->SetTrackTarget(visual, trackOffset, false);
   EXPECT_EQ(visual, camera->TrackTarget());
   EXPECT_EQ(trackOffset, camera->TrackOffset());
+
+  math::Vector3d newTrackOffset(-1.2, 9.4, 1.7);
+  camera->SetTrackOffset(newTrackOffset);
+  EXPECT_EQ(newTrackOffset, camera->TrackOffset());
 
   camera->SetTrackPGain(0.234);
   EXPECT_DOUBLE_EQ(0.234, camera->TrackPGain());
@@ -181,6 +185,10 @@ void CameraTest::TrackFollow(const std::string &_renderEngine)
   camera->SetFollowTarget(visual, followOffset, true);
   EXPECT_EQ(visual, camera->FollowTarget());
   EXPECT_EQ(followOffset, camera->FollowOffset());
+
+  math::Vector3d newFollowOffset(-0.2, 0.4, 0.7);
+  camera->SetFollowOffset(newFollowOffset);
+  EXPECT_EQ(newFollowOffset, camera->FollowOffset());
 
   camera->SetFollowPGain(0.4);
   EXPECT_DOUBLE_EQ(0.4, camera->FollowPGain());

@@ -60,10 +60,12 @@ void CameraTest::Track(const std::string &_renderEngine)
   ASSERT_TRUE(camera != nullptr);
   root->AddChild(camera);
 
-  // create to be tracked
+  // create visual to be tracked
   VisualPtr visual = scene->CreateVisual();
   visual->AddGeometry(scene->CreateBox());
   visual->SetWorldPosition(0.0, 0.0, 0.0);
+  // rotate visual to test tracking in local and world frames
+  visual->SetWorldRotation(0.0, 0.0, 3.14);
   root->AddChild(visual);
 
   // set camera initial pose
@@ -91,21 +93,41 @@ void CameraTest::Track(const std::string &_renderEngine)
   // later in the test
   math::Pose3d camPoseTrackNormal = camera->WorldPose();
 
-  // track visual with offset
+  // track target with offset in world frame
   math::Vector3d trackOffset(0.0, 1.0, 0.0);
-  camera->SetTrackTarget(visual, trackOffset);
+  camera->SetTrackTarget(visual, trackOffset, true);
   EXPECT_EQ(visual, camera->TrackTarget());
   EXPECT_EQ(trackOffset, camera->TrackOffset());
 
   // render a frame
   camera->Update();
 
+  // verify camera orientation when tracking target with offset
+  // in world frame
+  // camera should be looking down and to the left
   EXPECT_EQ(initPos, camera->WorldPosition());
   EXPECT_NE(initRot, camera->WorldRotation());
   rot = camera->WorldRotation().Euler();
   EXPECT_NEAR(0.0, rot.X(), 1e-6);
   EXPECT_GT(rot.Y(), 0.0);
   EXPECT_GT(rot.Z(), 0.0);
+
+  // track visual with offset in local frame
+  camera->SetTrackTarget(visual, trackOffset, false);
+  EXPECT_EQ(visual, camera->TrackTarget());
+  EXPECT_EQ(trackOffset, camera->TrackOffset());
+
+  // render a frame
+  camera->Update();
+  // verify camera orientation when tracking target with offset
+  // in local frame
+  // camera should be looking down and to the right
+  EXPECT_EQ(initPos, camera->WorldPosition());
+  EXPECT_NE(initRot, camera->WorldRotation());
+  rot = camera->WorldRotation().Euler();
+  EXPECT_NEAR(0.0, rot.X(), 1e-6);
+  EXPECT_GT(rot.Y(), 0.0);
+  EXPECT_LT(rot.Z(), 0.0);
 
   // disable target tracking
   camera->SetTrackTarget(nullptr);

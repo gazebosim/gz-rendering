@@ -111,10 +111,11 @@ namespace ignition
       public: virtual NodePtr TrackTarget() const;
 
       // Documentation inherited.
-      public: virtual math::Vector3d TrackOffset() const;
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset)
+                  override;
 
       // Documentation inherited.
-      public: virtual void SetTrackOffset(const math::Vector3d &_offset) override;
+      public: virtual math::Vector3d TrackOffset() const;
 
       // Documentation inherited.
       public: virtual void SetTrackPGain(const double _pGain);
@@ -130,10 +131,11 @@ namespace ignition
       public: virtual NodePtr FollowTarget() const;
 
       // Documentation inherited.
-      public: virtual math::Vector3d FollowOffset() const;
+      public: virtual void SetFollowOffset(const math::Vector3d &_offset);
+                  override;
 
       // Documentation inherited.
-      public: virtual void SetFollowOffset(const math::Vector3d &_offset) override;
+      public: virtual math::Vector3d FollowOffset() const;
 
       // Documentation inherited.
       public: virtual void SetFollowPGain(const double _pGain);

@@ -190,7 +190,7 @@ namespace ignition
       /// \param[in] _offset Track a point that is at an offset relative
       /// to target.
       /// \param[in] _worldFrame If true, the offset point to track will be
-      /// in treated in world frame and it's position relative to the target
+      /// treated in world frame and its position relative to the target
       /// node remains fixed regardless of the target node's rotation. Default
       /// is false, which means the camera tracks the point in target node's
       /// local frame.

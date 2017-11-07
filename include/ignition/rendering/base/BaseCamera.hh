@@ -172,7 +172,7 @@ namespace ignition
       /// \brief Target node to track if camera tracking is on.
       protected: NodePtr trackNode;
 
-      /// \brief Track point relative to taret in world frame.
+      /// \brief Track point relative to target in world frame.
       protected: bool trackWorldFrame = false;
 
       /// \brief Set camera to track a point offset in target node's local frame

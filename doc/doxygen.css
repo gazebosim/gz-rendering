@@ -6,6 +6,33 @@ html, body{
   color: #444;
 }
 
+.project_title {
+}
+
+header h1 {
+  color: #333;
+  font-weight: 300;
+  font-size: 1.5em;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+header h2 {
+  color: #333;
+  font-weight: 300;
+  font-size: 1.2em!important;
+  margin-bottom: 4px;
+  margin-top: 0px;
+  line-height: 20px!important;
+}
+
+header .version {
+  color: #333;
+  padding-top: 0px;
+  font-weight: 300;
+  font-size: 1.2em;
+}
+
 a {
   text-decoration: none;
 }
@@ -24,12 +51,7 @@ header {
  padding-bottom: 0px;
 }
 
-header .version {
-  color: #000;
-  padding-top: 10px;
-  font-weight: 300;
-  font-size: 1.2em;
-}
+
 
 .ign-navigation .mdl-navigation__link {
   display: flex !important;

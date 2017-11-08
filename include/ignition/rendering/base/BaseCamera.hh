@@ -231,9 +231,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::Capture(Image &_image)
     {
-      this->Scene()->PreRender();
-      this->Render();
-      this->PostRender();
+      this->Update();
       this->Copy(_image);
     }
 

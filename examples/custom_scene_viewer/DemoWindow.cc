@@ -29,6 +29,7 @@
 #endif
 
 #include <ctime>
+#include <string>
 #include <vector>
 
 #include <ignition/rendering.hh>
@@ -43,7 +44,6 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-
 ManualSceneDemoPtr g_demo;
 ImagePtr g_image;
 
@@ -71,31 +71,93 @@ int g_fpsCount = 0;
 clock_t g_prevTime;
 
 //////////////////////////////////////////////////
-void rendering::GlutRun(ManualSceneDemoPtr _demo)
+void printUsage()
 {
-#if not (__APPLE__ || _WIN32)
-  g_context = glXGetCurrentContext();
-  g_display = glXGetCurrentDisplay();
-  g_drawable = glXGetCurrentDrawable();
-#endif
-
-  g_prevTime = clock();
-  g_demo = _demo;
-  GlutInitCamera(_demo->CurrentCamera());
-  GlutInitContext();
-  GlutPrintUsage();
-
-#if not (__APPLE__ || _WIN32)
-  g_glutDisplay = glXGetCurrentDisplay();
-  g_glutDrawable = glXGetCurrentDrawable();
-  g_glutContext = glXGetCurrentContext();
-#endif
-
-  glutMainLoop();
+  std::cout << "===============================" << std::endl;
+  std::cout << "  TAB : Switch render engines  " << std::endl;
+  std::cout << "   -  : Previous scene         " << std::endl;
+  std::cout << "   +  : Next scene             " << std::endl;
+  std::cout << "  0-9 : Select scenes 0-9      " << std::endl;
+  std::cout << "  ESC : Exit                   " << std::endl;
+  std::cout << "===============================" << std::endl;
 }
 
 //////////////////////////////////////////////////
-void rendering::GlutDisplay()
+void printTextImpl(const std::string &_text, const int _x, const int _y)
+{
+  glWindowPos2i(_x, _y);
+  const char *ctext = _text.c_str();
+  while (*ctext) glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *ctext++);
+}
+
+//////////////////////////////////////////////////
+void printTextBack(const std::string &_text, const int _x, const int _y)
+{
+  glColor3f(0, 0, 0);
+
+  for (int i = -2; i < 3; ++i)
+  {
+    for (int j = -2; j < 3; ++j)
+    {
+      printTextImpl(_text, _x + i, _y + j);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void printTextFore(const std::string &_text, const int _x, const int _y)
+{
+  glColor3f(1, 1, 1);
+  printTextImpl(_text, _x, _y);
+}
+
+//////////////////////////////////////////////////
+void printText(const std::string &_text, const int _x, const int _y)
+{
+  printTextBack(_text, _x, _y);
+  printTextFore(_text, _x, _y);
+}
+
+//////////////////////////////////////////////////
+void printEngine()
+{
+  int y = imgh - 20;
+  std::string text = "Engine: " +
+      g_demo->CurrentCamera()->Scene()->Engine()->Name();
+  printText(text, 10, y);
+}
+
+//////////////////////////////////////////////////
+void updateFPS()
+{
+  clock_t currTime = clock();
+  double elapsedTime = static_cast<double>(currTime - g_prevTime)
+      / CLOCKS_PER_SEC;
+  g_fpsQueue[g_fpsIndex] = 1 / elapsedTime;
+  g_fpsCount = (g_fpsCount >= g_fpsSize) ? g_fpsSize : g_fpsCount + 1;
+  g_fpsIndex = (g_fpsIndex + 1) % g_fpsSize;
+  g_prevTime = currTime;
+}
+
+//////////////////////////////////////////////////
+void printFPS()
+{
+  double total = 0;
+  updateFPS();
+
+  for (int i = 0; i < g_fpsCount; ++i)
+  {
+    total += g_fpsQueue[i];
+  }
+
+  int y = imgh - 40;
+  double fps = total / g_fpsCount;
+  std::string fpsText = "FPS: " + std::to_string(fps);
+  printText(fpsText, 10, y);
+}
+
+//////////////////////////////////////////////////
+void displayCB()
 {
 #if not (__APPLE__ || _WIN32)
   if (g_display)
@@ -121,20 +183,20 @@ void rendering::GlutDisplay()
   glRasterPos2f(-1, 1);
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
-  GlutPrintEngine();
-  GlutPrintFPS();
+  printEngine();
+  printFPS();
 
   glutSwapBuffers();
 }
 
 //////////////////////////////////////////////////
-void rendering::GlutIdle()
+void idleCB()
 {
   glutPostRedisplay();
 }
 
 //////////////////////////////////////////////////
-void rendering::GlutKeyboard(unsigned char _key, int, int)
+void keyboardCB(unsigned char _key, int, int)
 {
 #if not (__APPLE__ || _WIN32)
   if (g_display)
@@ -185,12 +247,7 @@ void rendering::GlutKeyboard(unsigned char _key, int, int)
 }
 
 //////////////////////////////////////////////////
-void rendering::GlutReshape(int, int)
-{
-}
-
-//////////////////////////////////////////////////
-void rendering::GlutInitCamera(CameraPtr _camera)
+void initCamera(CameraPtr _camera)
 {
   imgw = _camera->ImageWidth();
   imgh = _camera->ImageHeight();
@@ -200,7 +257,7 @@ void rendering::GlutInitCamera(CameraPtr _camera)
 }
 
 //////////////////////////////////////////////////
-void rendering::GlutInitContext()
+void initContext()
 {
   int argc = 0;
   char **argv = 0;
@@ -208,11 +265,10 @@ void rendering::GlutInitContext()
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
-  glutCreateWindow("Ignition-Rendering");
-  glutDisplayFunc(GlutDisplay);
-  glutIdleFunc(GlutIdle);
-  glutKeyboardFunc(GlutKeyboard);
-  glutReshapeFunc(GlutReshape);
+  glutCreateWindow("Custom Scene Viewer");
+  glutDisplayFunc(displayCB);
+  glutIdleFunc(idleCB);
+  glutKeyboardFunc(keyboardCB);
 
 #if not (__APPLE__ || _WIN32)
   glewInit();
@@ -220,84 +276,25 @@ void rendering::GlutInitContext()
 }
 
 //////////////////////////////////////////////////
-void rendering::GlutPrintUsage()
+void run(ManualSceneDemoPtr _demo)
 {
-  std::cout << "===============================" << std::endl;
-  std::cout << "  TAB : Switch render engines  " << std::endl;
-  std::cout << "   -  : Previous scene         " << std::endl;
-  std::cout << "   +  : Next scene             " << std::endl;
-  std::cout << "  0-9 : Select scenes 0-9      " << std::endl;
-  std::cout << "  ESC : Exit                   " << std::endl;
-  std::cout << "===============================" << std::endl;
-}
+#if not (__APPLE__ || _WIN32)
+  g_context = glXGetCurrentContext();
+  g_display = glXGetCurrentDisplay();
+  g_drawable = glXGetCurrentDrawable();
+#endif
 
-//////////////////////////////////////////////////
-void rendering::GlutPrintEngine()
-{
-  int y = imgh - 20;
-  std::string text = "Engine: " +
-      g_demo->CurrentCamera()->Scene()->Engine()->Name();
-  GlutPrintText(text, 10, y);
-}
+  g_prevTime = clock();
+  g_demo = _demo;
+  initCamera(_demo->CurrentCamera());
+  initContext();
+  printUsage();
 
-//////////////////////////////////////////////////
-void rendering::GlutPrintFPS()
-{
-  double total = 0;
-  GlutUpdateFPS();
+#if not (__APPLE__ || _WIN32)
+  g_glutDisplay = glXGetCurrentDisplay();
+  g_glutDrawable = glXGetCurrentDrawable();
+  g_glutContext = glXGetCurrentContext();
+#endif
 
-  for (int i = 0; i < g_fpsCount; ++i)
-  {
-    total += g_fpsQueue[i];
-  }
-
-  int y = imgh - 40;
-  double fps = total / g_fpsCount;
-  std::string fpsText = "FPS: " + std::to_string(fps);
-  GlutPrintText(fpsText, 10, y);
-}
-
-//////////////////////////////////////////////////
-void rendering::GlutUpdateFPS()
-{
-  clock_t currTime = clock();
-  double elapsedTime = static_cast<double>(currTime - g_prevTime)
-      / CLOCKS_PER_SEC;
-  g_fpsQueue[g_fpsIndex] = 1 / elapsedTime;
-  g_fpsCount = (g_fpsCount >= g_fpsSize) ? g_fpsSize : g_fpsCount + 1;
-  g_fpsIndex = (g_fpsIndex + 1) % g_fpsSize;
-  g_prevTime = currTime;
-}
-
-//////////////////////////////////////////////////
-void rendering::GlutPrintText(const std::string &_text, int x, int y)
-{
-  GlutPrintTextBack(_text, x, y);
-  GlutPrintTextFore(_text, x, y);
-}
-
-void rendering::GlutPrintTextBack(const std::string &_text, int x, int y)
-{
-  glColor3f(0, 0, 0);
-
-  for (int i = -2; i < 3; ++i)
-  {
-    for (int j = -2; j < 3; ++j)
-    {
-      GlutPrintTextImpl(_text, x + i, y + j);
-    }
-  }
-}
-
-void rendering::GlutPrintTextFore(const std::string &_text, int x, int y)
-{
-  glColor3f(1, 1, 1);
-  GlutPrintTextImpl(_text, x, y);
-}
-
-void rendering::GlutPrintTextImpl(const std::string &_text, int x, int y)
-{
-  glWindowPos2i(x, y);
-  const char *ctext = _text.c_str();
-  while (*ctext) glutBitmapCharacter(GLUT_BITMAP_9_BY_15, *ctext++);
+  glutMainLoop();
 }

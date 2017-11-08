@@ -174,18 +174,21 @@ endif ()
 
 ########################################
 # Find ignition math
-set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 3)
+set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 4)
 if (NOT DEFINED IGNITION-MATH_LIBRARY_DIRS AND NOT DEFINED IGNITION-MATH_INCLUDE_DIRS AND NOT DEFINED IGNITION-MATH_LIBRARIES)
   find_package(ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION} QUIET)
   if (NOT ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}_FOUND)
-    message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - not found")
-    BUILD_ERROR ("Missing: Ignition math${IGNITION-MATH_REQUIRED_MAJOR_VERSION} library.")
-  else()
-    message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - found")
-    include_directories(${IGNITION-MATH_INCLUDE_DIRS})
-    link_directories(${IGNITION-MATH_LIBRARY_DIRS})
+    message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - not found, trying ignition-math3 instead")
+    set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 3)
+    find_package(ignition-math3 QUIET)
+    if (NOT ignition-math3_FOUND)
+      BUILD_ERROR ("Missing: Ignition math4 or Ignition math3 library.")
+    endif()
   endif()
 endif()
+
+include_directories(${IGNITION-MATH_INCLUDE_DIRS})
+message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - found")
 
 ########################################
 # Find Ignition Common

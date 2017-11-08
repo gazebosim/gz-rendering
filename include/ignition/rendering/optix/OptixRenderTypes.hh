@@ -31,6 +31,7 @@ namespace ignition
     class OptixCylinder;
     class OptixDirectionalLight;
     class OptixGeometry;
+    class OptixGrid;
     class OptixJointVisual;
     class OptixLight;
     class OptixMaterial;
@@ -49,6 +50,7 @@ namespace ignition
     class OptixVisual;
     class OptixRenderTarget;
     class OptixRenderTexture;
+    class OptixRenderWindow;
     class OptixLightManager;
 
     typedef BaseSceneStore<OptixScene>       OptixSceneStore;
@@ -68,6 +70,7 @@ namespace ignition
     typedef shared_ptr<OptixCylinder>             OptixCylinderPtr;
     typedef shared_ptr<OptixDirectionalLight>     OptixDirectionalLightPtr;
     typedef shared_ptr<OptixGeometry>             OptixGeometryPtr;
+    typedef shared_ptr<OptixGrid>                 OptixGridPtr;
     typedef shared_ptr<OptixJointVisual>          OptixJointVisualPtr;
     typedef shared_ptr<OptixLight>                OptixLightPtr;
     typedef shared_ptr<OptixMaterial>             OptixMaterialPtr;
@@ -93,6 +96,7 @@ namespace ignition
     typedef shared_ptr<OptixMaterialMap>          OptixMaterialMapPtr;
     typedef shared_ptr<OptixRenderTarget>         OptixRenderTargetPtr;
     typedef shared_ptr<OptixRenderTexture>        OptixRenderTexturePtr;
+    typedef shared_ptr<OptixRenderWindow>         OptixRenderWindowPtr;
     typedef shared_ptr<OptixLightManager>         OptixLightManagerPtr;
   }
 }

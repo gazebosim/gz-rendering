@@ -1,5 +1,4 @@
-/*
- * Copyright (C) 2017 Open Source Robotics Foundation
+/* * Copyright (C) 2017 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +19,22 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/RenderingIface.hh"
+#include "ignition/rendering/Grid.hh"
 #include "ignition/rendering/Scene.hh"
 
 using namespace ignition;
 using namespace rendering;
 
-class SceneTest : public testing::Test,
-                  public testing::WithParamInterface<const char *>
+class GridTest : public testing::Test,
+                 public testing::WithParamInterface<const char *>
 {
-  public: void Scene(const std::string &_renderEngine);
+  public: void Grid(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void SceneTest::Scene(const std::string &_renderEngine)
+void GridTest::Grid(const std::string &_renderEngine)
 {
-  // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -46,27 +44,43 @@ void SceneTest::Scene(const std::string &_renderEngine)
   }
   ScenePtr scene = engine->CreateScene("scene");
 
-  EXPECT_EQ(math::Color::Black, scene->BackgroundColor());
-  scene->SetBackgroundColor(0, 1, 0, 1);
-  EXPECT_EQ(math::Color(0, 1, 0, 1), scene->BackgroundColor());
-  math::Color red(1, 0, 0, 1);
-  scene->SetBackgroundColor(red);
-  EXPECT_EQ(red, scene->BackgroundColor());
+  GridPtr grid = scene->CreateGrid();
+  ASSERT_NE(nullptr, grid);
 
+  EXPECT_GT(grid->CellCount(), 0u);
+  EXPECT_GT(grid->CellLength(), 0u);
+  EXPECT_EQ(0u, grid->VerticalCellCount());
 
-  // test creating render window from scene
-  RenderWindowPtr renderWindow = scene->CreateRenderWindow();
-  EXPECT_NE(nullptr, renderWindow->Scene());
-  EXPECT_EQ(scene, renderWindow->Scene());
+  grid->SetCellCount(15u);
+  EXPECT_EQ(15u, grid->CellCount());
+
+  grid->SetCellLength(3.25);
+  EXPECT_DOUBLE_EQ(3.25, grid->CellLength());
+
+  grid->SetVerticalCellCount(2u);
+  EXPECT_EQ(2u, grid->VerticalCellCount());
+
+  // create material
+  MaterialPtr mat = scene->CreateMaterial();
+  mat->SetAmbient(0.6, 0.7, 0.8);
+  mat->SetDiffuse(0.3, 0.8, 0.2);
+  mat->SetSpecular(0.4, 0.9, 1.0);
+
+  grid->SetMaterial(mat);
+  MaterialPtr gridMat = grid->Material();
+  ASSERT_NE(nullptr, gridMat);
+  EXPECT_EQ(math::Color(0.6, 0.7, 0.8), gridMat->Ambient());
+  EXPECT_EQ(math::Color(0.3, 0.8, 0.2), gridMat->Diffuse());
+  EXPECT_EQ(math::Color(0.4, 0.9, 1.0), gridMat->Specular());
 }
 
 /////////////////////////////////////////////////
-TEST_P(SceneTest, Scene)
+TEST_P(GridTest, Grid)
 {
-  Scene(GetParam());
+  Grid(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
+INSTANTIATE_TEST_CASE_P(Grid, GridTest,
     ::testing::Values("ogre", "optix"));
 
 int main(int argc, char **argv)

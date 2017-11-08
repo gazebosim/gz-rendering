@@ -15,6 +15,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/optix/OptixGrid.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/optix.hh"
 
@@ -321,6 +322,24 @@ MeshPtr OptixScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
+GridPtr OptixScene::CreateGridImpl(
+    unsigned int _id, const std::string &_name)
+{
+  // TODO implement optix grid! Use box as stub for now.
+  if (!this->optixBoxGeometry)
+  {
+    this->optixBoxGeometry =
+        OptixBox::CreateOptixGeometry(this->SharedThis());
+  }
+
+  OptixGridPtr grid(new OptixGrid);
+  grid->optixGeometry = this->optixBoxGeometry;
+  bool result = this->InitObject(grid, _id, _name);
+  grid->SetMaterial(this->CreateMaterial());
+  return (result) ? grid: nullptr;
+}
+
+//////////////////////////////////////////////////
 MaterialPtr OptixScene::CreateMaterialImpl(unsigned int _id,
     const std::string &_name)
 {
@@ -336,6 +355,15 @@ RenderTexturePtr OptixScene::CreateRenderTextureImpl(
   OptixRenderTexturePtr renderTexture(new OptixRenderTexture);
   bool result = this->InitObject(renderTexture, _id, _name);
   return (result) ? renderTexture : nullptr;
+}
+
+//////////////////////////////////////////////////
+RenderWindowPtr OptixScene::CreateRenderWindowImpl(
+    unsigned int _id, const std::string &_name)
+{
+  OptixRenderWindowPtr renderWindow(new OptixRenderWindow);
+  bool result = this->InitObject(renderWindow, _id, _name);
+  return (result) ? renderWindow: nullptr;
 }
 
 //////////////////////////////////////////////////

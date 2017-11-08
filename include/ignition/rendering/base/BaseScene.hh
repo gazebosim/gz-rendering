@@ -252,12 +252,18 @@ namespace ignition
 
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc);
 
+      // Documentation inherited.
+      public: virtual GridPtr CreateGrid();
+
       public: virtual MaterialPtr CreateMaterial(const std::string &_name = "");
 
       public: virtual MaterialPtr CreateMaterial(
                   const common::Material &_material);
 
       public: virtual RenderTexturePtr CreateRenderTexture();
+
+      // Documentation inherited.
+      public: virtual RenderWindowPtr CreateRenderWindow();
 
       public: virtual RayQueryPtr CreateRayQuery();
 
@@ -318,10 +324,25 @@ namespace ignition
                      const std::string &_name,
                      const MeshDescriptor &_desc) = 0;
 
+      /// \brief Implementation for creating a grid geometry object
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a grid geometry object
+      protected: virtual GridPtr CreateGridImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
       protected: virtual RenderTexturePtr CreateRenderTextureImpl(
+                     unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Render engine specific implementation for creating a render
+      /// window
+      /// \param[in] _id unique object id
+      /// \param[in] _name object name
+      /// \return  Pointer to the created render window.
+      protected: virtual RenderWindowPtr CreateRenderWindowImpl(
                      unsigned int _id, const std::string &_name) = 0;
 
       protected: virtual RayQueryPtr CreateRayQueryImpl(

@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreGrid.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/ogre.hh"
@@ -271,6 +272,14 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
+GridPtr OgreScene::CreateGridImpl(unsigned int _id, const std::string &_name)
+{
+  OgreGridPtr grid(new OgreGrid);
+  bool result = this->InitObject(grid, _id, _name);
+  return (result) ? grid: nullptr;
+}
+
+//////////////////////////////////////////////////
 MaterialPtr OgreScene::CreateMaterialImpl(unsigned int _id,
     const std::string &_name)
 {
@@ -286,6 +295,15 @@ RenderTexturePtr OgreScene::CreateRenderTextureImpl(unsigned int _id,
   OgreRenderTexturePtr renderTexture(new OgreRenderTexture);
   bool result = this->InitObject(renderTexture, _id, _name);
   return (result) ? renderTexture : nullptr;
+}
+
+//////////////////////////////////////////////////
+RenderWindowPtr OgreScene::CreateRenderWindowImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreRenderWindowPtr renderWindow(new OgreRenderWindow);
+  bool result = this->InitObject(renderWindow, _id, _name);
+  return (result) ? renderWindow: nullptr;
 }
 
 //////////////////////////////////////////////////

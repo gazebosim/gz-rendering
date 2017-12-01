@@ -26,6 +26,14 @@ pipelines:
           - apt-get update
           - apt-get -y install
             libignition-cmake-dev
+          # Dependency: Ignition math
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-math -b ign-math4
+          - cd ign-math
+          - mkdir build
+          - cd build
+          - cmake .. -DENABLE_TESTS_COMPILATION=false
+          - make -j4 install
+          - cd ../..
           # Dependency: Ignition common
           - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b default
           - cd ign-common

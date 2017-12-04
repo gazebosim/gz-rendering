@@ -20,6 +20,7 @@
 #include <string>
 
 #include <ignition/math/Matrix3.hh>
+#include <ignition/math/Pose3.hh>
 
 #include <ignition/common/Event.hh>
 #include <ignition/common/Console.hh>
@@ -96,9 +97,49 @@ namespace ignition
 
       public: virtual RenderWindowPtr CreateRenderWindow();
 
+      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const;
 
+      // Documentation inherited.
       public: virtual math::Matrix4d ViewMatrix() const;
+
+      // Documentation inherited.
+      public: virtual void SetTrackTarget(const NodePtr &_target,
+                  const math::Vector3d &_offset, const bool _worldFrame);
+
+      // Documentation inherited.
+      public: virtual NodePtr TrackTarget() const;
+
+      // Documentation inherited.
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset);
+
+      // Documentation inherited.
+      public: virtual math::Vector3d TrackOffset() const;
+
+      // Documentation inherited.
+      public: virtual void SetTrackPGain(const double _pGain);
+
+      // Documentation inherited.
+      public: virtual double TrackPGain() const;
+
+      // Documentation inherited.
+      public: virtual void SetFollowTarget(const NodePtr &_target,
+                  const math::Vector3d &_Offset, const bool _worldFrame);
+
+      // Documentation inherited.
+      public: virtual NodePtr FollowTarget() const;
+
+      // Documentation inherited.
+      public: virtual void SetFollowOffset(const math::Vector3d &_offset);
+
+      // Documentation inherited.
+      public: virtual math::Vector3d FollowOffset() const;
+
+      // Documentation inherited.
+      public: virtual void SetFollowPGain(const double _pGain);
+
+      // Documentation inherited.
+      public: virtual double FollowPGain() const;
 
       protected: virtual void *CreateImageBuffer() const;
 
@@ -127,6 +168,33 @@ namespace ignition
 
       /// \brief Anti-aliasing
       protected: unsigned int antiAliasing = 0u;
+
+      /// \brief Target node to track if camera tracking is on.
+      protected: NodePtr trackNode;
+
+      /// \brief Track point relative to target in world frame.
+      protected: bool trackWorldFrame = false;
+
+      /// \brief Set camera to track a point offset in target node's local or
+      /// world frame depending on trackWorldFrame.
+      protected: math::Vector3d trackOffset;
+
+      /// \brief P gain for tracking. Determines how fast the camera rotates
+      /// to look at the target node. Valid range: [0-1]
+      protected: double trackPGain = 1.0;
+
+      /// \brief Target node to follow
+      protected: NodePtr followNode;
+
+      /// \brief Follow target in world frame.
+      protected: bool followWorldFrame = false;
+
+      /// \brief P gain for follow mode. Determines how fast the camera moves
+      /// to follow the target node. Valid range: [0-1]
+      protected: double followPGain = 1.0;
+
+      /// \brief Offset distance between camera and target node being followed
+      protected: math::Vector3d followOffset;
     };
 
     //////////////////////////////////////////////////
@@ -198,7 +266,61 @@ namespace ignition
     void BaseCamera<T>::PreRender()
     {
       T::PreRender();
+
       this->RenderTarget()->PreRender();
+
+      // camera following
+      if (this->followNode)
+      {
+        // tether camera fixed in world frame
+        if (this->followWorldFrame)
+        {
+          math::Vector3d targetCamPos =
+              this->followNode->WorldPosition() + this->followOffset;
+          math::Vector3d pos = this->WorldPosition() +
+              (targetCamPos - this->WorldPosition()) * this->followPGain;
+          this->SetWorldPosition(pos);
+        }
+        // tether camera fixed in target's local frame
+        else
+        {
+          math::Pose3d targetCamPose = math::Pose3d(this->followOffset,
+              this->WorldRotation());
+          targetCamPose += this->followNode->WorldPose();
+
+          math::Vector3d pos = this->WorldPosition() +
+              (targetCamPose.Pos() - this->WorldPosition()) * this->followPGain;
+          this->SetWorldPosition(pos);
+        }
+      }
+
+      // camera tracking
+      if (this->trackNode)
+      {
+        math::Vector3d eye = this->WorldPosition();
+        math::Pose3d targetPose = math::Pose3d(this->trackOffset,
+            math::Quaterniond::Identity);
+        if (this->trackWorldFrame)
+        {
+          targetPose.Pos() += this->trackNode->WorldPosition();
+        }
+        else
+        {
+          targetPose += this->trackNode->WorldPose();
+        }
+
+        math::Pose3d p =
+            math::Matrix4d::LookAt(eye, targetPose.Pos()).Pose();
+
+        math::Quaterniond q = p.Rot();
+        // skip slerp if we don't need it
+        if (!math::equal(this->trackPGain, 1.0))
+        {
+          q = math::Quaterniond::Slerp(
+              this->trackPGain, this->WorldRotation(), p.Rot(), true);
+        }
+        this->SetWorldRotation(q);
+      }
     }
 
     //////////////////////////////////////////////////
@@ -428,6 +550,96 @@ namespace ignition
     void BaseCamera<T>::SetNearClipPlane(const double _near)
     {
       this->nearClip = _near;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetTrackTarget(const NodePtr &_target,
+        const math::Vector3d &_offset, const bool _worldFrame)
+    {
+      this->trackNode = _target;
+      this->trackWorldFrame = _worldFrame;
+      this->trackOffset = _offset;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseCamera<T>::TrackTarget() const
+    {
+      return this->trackNode;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Vector3d BaseCamera<T>::TrackOffset() const
+    {
+      return this->trackOffset;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetTrackOffset(const math::Vector3d &_offset)
+    {
+      this->trackOffset = _offset;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetTrackPGain(const double _pGain)
+    {
+      this->trackPGain = math::clamp(_pGain, 0.0, 1.0);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseCamera<T>::TrackPGain() const
+    {
+      return this->trackPGain;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetFollowTarget(const NodePtr &_target,
+        const math::Vector3d &_offset, const bool _worldFrame)
+    {
+      this->followNode = _target;
+      this->followWorldFrame = _worldFrame;
+      this->followOffset = _offset;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseCamera<T>::FollowTarget() const
+    {
+      return this->followNode;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Vector3d BaseCamera<T>::FollowOffset() const
+    {
+      return this->followOffset;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetFollowOffset(const math::Vector3d &_offset)
+    {
+      this->followOffset = _offset;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetFollowPGain(const double _pGain)
+    {
+      this->followPGain = math::clamp(_pGain, 0.0, 1.0);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseCamera<T>::FollowPGain() const
+    {
+      return this->followPGain;
     }
   }
 }

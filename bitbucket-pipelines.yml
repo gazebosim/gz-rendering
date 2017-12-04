@@ -15,11 +15,18 @@ pipelines:
           - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt-get update
           - apt-get -y install
-            cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn libignition-math3-dev
+            cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn
             curl mercurial lcov
             python uuid-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
             libgts-dev libswscale-dev libtinyxml2-dev
           - sh tools/code_check.sh
+          # Ignition cmake/math
+          - echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease xenial main" > /etc/apt/sources.list.d/gazebo-prerelease.list
+          - apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
+          - apt-get update
+          - apt-get -y install
+            libignition-cmake-dev
+            libignition-math4-dev
           # Dependency: Ignition common
           - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b default
           - cd ign-common

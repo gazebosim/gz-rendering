@@ -47,10 +47,10 @@ so that ign-rendering can find Optix, e.g. if you installed in HOME/optix:
 Standard installation can be performed in UNIX systems using the following
 steps:
 
- - mkdir build/
- - cd build/
- - cmake ..
- - sudo make install
+    mkdir build
+    cd build
+    cmake ..
+    sudo make install
 
 
 ### Troubleshooting
@@ -64,8 +64,8 @@ sdk 4.0.2, comment out lines 167-206).
 
 To uninstall the software installed with the previous steps:
 
- - cd build/
- - sudo make uninstall
+    cd build
+    sudo make uninstall
 
 ## Future Work
 
@@ -93,22 +93,19 @@ immediate future:
 
 1. Build documentation
 
-```
-cd build
-make doc
-```
+        cd build
+        make doc
+
+1. View documentation
+
+        firefox doxygen/html/index.html
 
 1. Upload documentation to ignitionrobotics.org.
 
-```
-cd build
-sh upload.sh
-```
+        cd build
+        sh upload.sh
 
 1. If you're creating a new release, then tell ignitionrobotics.org about
    the new version. For example:
 
-```
-curl -k -X POST -d '{"libName":"common", "version":"1.0.0", "releaseDate":"2017-10-09T12:10:13+02:00","password":"secret"}' https://api.ignitionrobotics.org/1.0/versions
-```
-
+        curl -k -X POST -d '{"libName":"common", "version":"1.0.0", "releaseDate":"2017-10-09T12:10:13+02:00","password":"secret"}' https://api.ignitionrobotics.org/1.0/versions

@@ -76,6 +76,9 @@ void OrbitViewControllerTest::OrbitViewControl(const std::string &_renderEngine)
   target.Set(-0.3, -5, 1);
   viewControl.SetTarget(target);
   EXPECT_EQ(target, viewControl.Target());
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////
@@ -89,7 +92,10 @@ void OrbitViewControllerTest::Control(const std::string &_renderEngine)
     return;
   }
   ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
   CameraPtr camera =  scene->CreateCamera("camera");
+  ASSERT_NE(nullptr, camera);
 
   camera->SetImageWidth(320);
   camera->SetImageHeight(240);
@@ -209,6 +215,9 @@ void OrbitViewControllerTest::Control(const std::string &_renderEngine)
   EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
   EXPECT_LT(camera->WorldPose().Rot().Y(), initialPose.Rot().Y());
   EXPECT_DOUBLE_EQ(initialPose.Rot().Z(), camera->WorldPose().Rot().Z());
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////

@@ -31,6 +31,7 @@ class SceneTest : public testing::Test,
                   public testing::WithParamInterface<const char *>
 {
   public: void Scene(const std::string &_renderEngine);
+  public: void Nodes(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -45,6 +46,7 @@ void SceneTest::Scene(const std::string &_renderEngine)
     return;
   }
   ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   EXPECT_EQ(math::Color::Black, scene->BackgroundColor());
   scene->SetBackgroundColor(0, 1, 0, 1);
@@ -53,17 +55,66 @@ void SceneTest::Scene(const std::string &_renderEngine)
   scene->SetBackgroundColor(red);
   EXPECT_EQ(red, scene->BackgroundColor());
 
-
   // test creating render window from scene
   RenderWindowPtr renderWindow = scene->CreateRenderWindow();
   EXPECT_NE(nullptr, renderWindow->Scene());
   EXPECT_EQ(scene, renderWindow->Scene());
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+void SceneTest::Nodes(const std::string &_renderEngine)
+{
+  auto engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return;
+  }
+
+  auto scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  auto root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  // No nodes
+  EXPECT_EQ(0u, scene->NodeCount());
+
+  // Box visual
+  auto box = scene->CreateVisual();
+  ASSERT_NE(nullptr, box);
+
+  box->AddGeometry(scene->CreateBox());
+  root->AddChild(box);
+
+  // Has node
+  EXPECT_EQ(1u, scene->NodeCount());
+  EXPECT_TRUE(scene->HasNode(box));
+  EXPECT_TRUE(scene->HasNodeId(box->Id()));
+  EXPECT_TRUE(scene->HasNodeName(box->Name()));
+
+  // Get node
+  EXPECT_EQ(box, scene->NodeByIndex(0));
+  EXPECT_EQ(box, scene->NodeById(box->Id()));
+  EXPECT_EQ(box, scene->NodeByName(box->Name()));
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////
 TEST_P(SceneTest, Scene)
 {
   Scene(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, Nodes)
+{
+  Nodes(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,

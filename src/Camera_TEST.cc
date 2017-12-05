@@ -52,6 +52,7 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
     return;
   }
   ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   CameraPtr camera = scene->CreateCamera();
   EXPECT_TRUE(camera != nullptr);
@@ -94,6 +95,9 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
   EXPECT_EQ(rot, camera->LocalRotation());
 
   EXPECT_NE(viewMatrix, camera->ViewMatrix());
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////
@@ -108,6 +112,7 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
     return;
   }
   ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   CameraPtr camera = scene->CreateCamera();
   EXPECT_TRUE(camera != nullptr);
@@ -125,6 +130,9 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
   camera->SetImageFormat(PixelFormat::PF_B8G8R8);
   EXPECT_EQ(PixelFormat::PF_B8G8R8, camera->ImageFormat());
   EXPECT_EQ(100u*80u*3u, camera->ImageMemorySize());
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////
@@ -139,6 +147,7 @@ void CameraTest::TrackFollow(const std::string &_renderEngine)
     return;
   }
   ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   CameraPtr camera = scene->CreateCamera();
   EXPECT_TRUE(camera != nullptr);
@@ -192,6 +201,9 @@ void CameraTest::TrackFollow(const std::string &_renderEngine)
 
   camera->SetFollowPGain(0.4);
   EXPECT_DOUBLE_EQ(0.4, camera->FollowPGain());
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////

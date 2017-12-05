@@ -160,6 +160,9 @@ void CameraTest::Track(const std::string &_renderEngine)
   EXPECT_GT(rot.Y(), 0.0);
   EXPECT_LT(rot.Y(), camPoseTrackNormal.Rot().Euler().Y());
   EXPECT_DOUBLE_EQ(0.0, rot.Z());
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////
@@ -273,6 +276,9 @@ void CameraTest::Follow(const std::string &_renderEngine)
   EXPECT_EQ(initRot, camera->WorldRotation());
   math::Vector3d offset = camera->WorldPosition() - visual->WorldPosition();
   EXPECT_GT(offset.Length(), followOffset.Length());
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 /////////////////////////////////////////////////
 TEST_P(CameraTest, Track)

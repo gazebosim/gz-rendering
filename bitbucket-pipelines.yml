@@ -42,4 +42,10 @@ pipelines:
           - make -j4
           - make install
           # Can't make tests - valid display not found
+          # Build an example
+          - cd ../examples/simple_demo
+          - mkdir build
+          - cd build
+          - cmake ..
+          - make -j4
 

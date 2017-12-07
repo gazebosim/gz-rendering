@@ -181,6 +181,85 @@ namespace ignition
       /// \brief Get the view matrix for this camera
       /// \return Camera view matrix
       public: virtual math::Matrix4d ViewMatrix() const = 0;
+
+      /// \brief Set a node for camera to track. The camera will automatically
+      /// change its orientation to face the target being tracked. If null is
+      /// specified, tracking is disabled. In contrast to SetFollowTarget
+      /// the camera does not change its position when tracking is enabled.
+      /// \param[in] _target Target node to track
+      /// \param[in] _offset Track a point that is at an offset relative
+      /// to target.
+      /// \param[in] _worldFrame If true, the offset point to track will be
+      /// treated in world frame and its position relative to the target
+      /// node remains fixed regardless of the target node's rotation. Default
+      /// is false, which means the camera tracks the point in target node's
+      /// local frame.
+      public: virtual void SetTrackTarget(const NodePtr &_target,
+                  const math::Vector3d &_offset = math::Vector3d::Zero,
+                  const bool _worldFrame = false) = 0;
+
+      /// \brief Get the target node being tracked
+      /// \return Target node being tracked.
+      public: virtual NodePtr TrackTarget() const = 0;
+
+      /// \brief Set track offset. Camera will track a point that's at an
+      /// offset from the target node. The offset will be in the frame
+      /// that is specified at the time the track target is set.
+      /// \param[in] _offset Point offset to track
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset) = 0;
+
+      /// \brief Get the track offset vector in the frame specified at the time
+      /// the track target is set.
+      /// \return Point offset from target.
+      public: virtual math::Vector3d TrackOffset() const = 0;
+
+      /// \brief Set track P Gain. Determines how fast the camera rotates
+      /// to look at the target node. Valid range: [0-1]
+      /// \param[in] _pGain P gain for camera tracking
+      public: virtual void SetTrackPGain(const double _pGain) = 0;
+
+      /// \brief Get the camera track rotation P gain.
+      /// \return P gain for camera tracking
+      public: virtual double TrackPGain() const = 0;
+
+      /// \brief Set a node for camera to follow. The camera will automatically
+      /// update its position to keep itself at the specified offset distance
+      /// from the target being followed. If null is specified, camera follow is
+      /// disabled. In contrast to SetTrackTarget, the camera does not change
+      /// its orientation when following is enabled.
+      /// \param[in] _target Target node to follow
+      /// \param[in] _offset Tether the camera at an offset distance from the
+      /// target node.
+      /// \param[in] _worldFrame True to follow the target node at a
+      /// distance that's fixed in world frame. Default is false which means
+      /// the camera follows at fixed distance in target node's local frame.
+      public: virtual void SetFollowTarget(const NodePtr &_target,
+                  const math::Vector3d &_offset = math::Vector3d::Zero,
+                  const bool _worldFrame = false) = 0;
+
+      /// \brief Get the target node being followed
+      /// \return Target node being tracked.
+      public: virtual NodePtr FollowTarget() const = 0;
+
+      /// \brief Set offset of camera from target node being followed. The
+      /// offset will be in the frame that is specified at the time the follow
+      /// target is set.
+      /// \param[in] _offset Offset distance from target node.
+      public: virtual void SetFollowOffset(const math::Vector3d &_offset) = 0;
+
+      /// \brief Get the follow offset vector in the frame specified at the
+      /// time the follow target is set.
+      /// \return Offset of camera from target.
+      public: virtual math::Vector3d FollowOffset() const = 0;
+
+      /// \brief Set follow P Gain. Determines how fast the camera moves
+      /// to follow the target node. Valid range: [0-1]
+      /// \param[in] _pGain P gain for camera following
+      public: virtual void SetFollowPGain(const double _pGain) = 0;
+
+      /// \brief Get the camera follow movement P gain.
+      /// \return P gain for camera following
+      public: virtual double FollowPGain() const = 0;
     };
   }
 }

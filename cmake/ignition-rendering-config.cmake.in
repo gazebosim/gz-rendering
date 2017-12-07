@@ -41,8 +41,8 @@ endforeach()
 
 list(APPEND @PKG_NAME@_LDFLAGS -L@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@)
 
-find_package(ignition-math3 REQUIRED)
-check_required_components(ignition-math3)
+find_package(ignition-math4 REQUIRED)
+check_required_components(ignition-math4)
 list(APPEND @PKG_NAME@_INCLUDE_DIRS ${IGNITION-MATH_INCLUDE_DIRS})
 list(APPEND @PKG_NAME@_LIBRARY_DIRS ${IGNITION-MATH_LIBRARY_DIRS})
 list(APPEND @PKG_NAME@_LIBRARIES ${IGNITION-MATH_LIBRARIES})

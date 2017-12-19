@@ -13,7 +13,7 @@ endif ()
 ign_get_libsources_and_unittests(sources gtest_sources)
 
 # Create the library target.
-ign_add_library(${PROJECT_LIBRARY_TARGET_NAME} ${sources})
+ign_create_main_library(SOURCES ${sources} CXX_STANDARD 11)
 
 # Include the interface directories that we always need.
 #ign_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
@@ -27,7 +27,7 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
 if (HAVE_OGRE)
   target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
     PUBLIC
-      ${OGRE_LIBRARY_TARGET_NAME}
+#      ${OGRE_LIBRARY_TARGET_NAME}
 #      ignition-rendering0-ogre
     PRIVATE
   )

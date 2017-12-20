@@ -132,6 +132,8 @@ endif()
 # ENABLE_TESTS_COMPILATION is set to true
 macro (ign_build_tests)
 endmacro()
+macro (ign_build_dri_tests)
+endmacro()
 
 if (ENABLE_TESTS_COMPILATION)
   include (${project_cmake_dir}/TestUtils.cmake)

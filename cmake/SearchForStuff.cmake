@@ -180,7 +180,7 @@ if (NOT ignition-math4_FOUND)
 else()
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-MATH_CXX_FLAGS}")
   include_directories(${IGNITION-MATH_INCLUDE_DIRS})
-  link_directories(${IGNITION-MATH_LIBRARY_DIRS})
+  link_directories(${IGNITION-MATH_LINK_DIRS})
 endif()
 
 include_directories(${IGNITION-MATH_INCLUDE_DIRS})

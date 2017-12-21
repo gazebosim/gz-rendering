@@ -65,7 +65,9 @@ target_link_libraries(${PROJECT_NAME_LOWER}-optix
   ${optix_LIBRARY}
 )
 
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_20)
+if(${CUDA_VERSION} VERSION_LESS "9")
+  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_20)
+endif()
 
 cuda_compile_ptx(ptx_files ${cuda_sources})
 

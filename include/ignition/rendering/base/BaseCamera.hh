@@ -477,7 +477,7 @@ namespace ignition
       math::Vector3d t = r  * this->WorldPose().Pos() * -1;
       math::Matrix4d result;
       result = r;
-      result.Translate(t);
+      result.SetTranslation(t);
       result(3, 3) = 1.0;
       return result;
     }

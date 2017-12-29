@@ -15,7 +15,7 @@ pipelines:
           - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt-get update
           - apt-get -y install
-            cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn
+            cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn freeglut3-dev libxmu-dev libxi-dev
             curl mercurial lcov
             python uuid-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
             libgts-dev libswscale-dev libtinyxml2-dev
@@ -42,4 +42,10 @@ pipelines:
           - make -j4
           - make install
           # Can't make tests - valid display not found
+          # Build an example
+          - cd ../examples/simple_demo
+          - mkdir build
+          - cd build
+          - cmake ..
+          - make -j4
 

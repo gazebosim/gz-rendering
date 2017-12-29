@@ -58,7 +58,10 @@ ign_install_library()
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})
 
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_20)
+
+if(${CUDA_VERSION} VERSION_LESS "9")
+  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_20)
+endif()
 
 cuda_compile_ptx(ptx_files ${cuda_sources})
 

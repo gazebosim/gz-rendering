@@ -42,16 +42,31 @@ ign_find_package(ignition-common${IGN_COMMON_VER} REQUIRED)
 # Find dependencies that we ignore for Visual Studio
 if(NOT MSVC)
 
- #--------------------------------------
- # Find FreeImage
- ign_find_package(FreeImage VERSION 3.9 REQUIRED PRIVATE PKGCONFIG_IGNORE)
+  #--------------------------------------
+  # Find FreeImage
+  ign_find_package(FreeImage VERSION 3.9
+     REQUIRED_BY optix
+     PRIVATE_FOR optix)
 
- #--------------------------------------
- # Find OGRE
- ign_find_package(OGRE VERSION 1.8.0 REQUIRED PRIVATE)
+  #--------------------------------------
+  # Find OGRE
+  ign_find_package(OGRE VERSION 1.8.0
+     REQUIRED_BY ogre
+     PRIVATE_FOR ogre)
 
- #--------------------------------------
- # Find CUDA
+  #--------------------------------------
+  # Find CUDA
+  ign_find_package(CUDA VERSION 5.5.0
+     REQUIRED_BY optix
+     PRIVATE_FOR optix)
+
+  #--------------------------------------
+  # Find OptiX
+  ign_find_package(OptiX VERSION 3.8.0
+     REQUIRED_BY optix
+     PRIVATE_FOR optix)
+
+
  # ign_find_package(CUDA
  #                  VERSION 5.5.0
  #                  PKGCONFIG_VER_COMPARISON >=
@@ -96,7 +111,8 @@ set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering
 #============================================================================
 # Configure the build
 #============================================================================
-ign_configure_build(QUIT_IF_BUILD_ERRORS)
+ign_configure_build(QUIT_IF_BUILD_ERRORS
+    COMPONENTS ogre optix)
 
 #============================================================================
 # Create package information

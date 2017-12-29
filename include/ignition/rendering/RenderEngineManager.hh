@@ -21,6 +21,7 @@
 #include <string>
 #include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -97,6 +98,22 @@ namespace ignition
       /// \brief required SingletonT friendship
       private: friend class SingletonT<RenderEngineManager>;
     };
+
+    /// \brief Render engine registration macro
+    ///
+    /// Use this macro to register render engines with the manager.
+    /// \param[in] _name Render engine type name
+    /// @param classname C++ class name for the render engine.
+    #define IGN_REGISTER_RENDER_ENGINE(name, classname) \
+    IGNITION_VISIBLE RenderEngine *New##classname() \
+    { \
+      return new ignition::rendering::classname(); \
+    } \
+    IGNITION_VISIBLE \
+    void Register##classname() \
+    {\
+      RenderEngineManager::RegisterEngine(name, New##classname);\
+    }
   }
 }
 #endif

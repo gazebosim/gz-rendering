@@ -23,13 +23,25 @@
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
 
-#if HAVE_OGRE
+/*#if HAVE_OGRE
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #endif
 
 #if HAVE_OPTIX
 #include "ignition/rendering/optix/OptixRenderEngine.hh"
 #endif
+*/
+
+#ifdef HAVE_OGRE
+  IGNITION_VISIBLE
+  void RegisterOgreRenderEngine();
+#endif
+
+#ifdef HAVE_OPTIX
+  IGNITION_VISIBLE
+  void RegisterOptixRenderEngine();
+#endif
+
 
 namespace ignition
 {
@@ -194,10 +206,12 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter) const
 void RenderEngineManagerPrivate::RegisterDefaultEngines()
 {
 #if HAVE_OGRE
-  this->engines["ogre"] = OgreRenderEngine::Instance();
+//  RegisterOgreRenderEngine();
+  // this->engines["ogre"] = OgreRenderEngine::Instance();
 #endif
 #if HAVE_OPTIX
-  this->engines["optix"] = OptixRenderEngine::Instance();
+//  RegisterOptixRenderEngine();
+  // this->engines["optix"] = OptixRenderEngine::Instance();
 #endif
 }
 

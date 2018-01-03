@@ -30,7 +30,11 @@ namespace ignition
       public virtual BaseRenderEngine,
       public common::SingletonT<OptixRenderEngine>
     {
-      private: OptixRenderEngine();
+      /// \brief Constructor
+      /// Note: This needs to be public in order for IGN_REGISTER_RENDER_ENGINE
+      /// to work.
+      public: OptixRenderEngine();
+      // private: OptixRenderEngine();
 
       public: virtual ~OptixRenderEngine();
 

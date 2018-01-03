@@ -16,7 +16,7 @@
  */
 #include <optix.h>
 #include <optix_math.h>
-#include "ignition/rendering/optix/OptixRayTypes.hh"
+#include <ignition/rendering/optix/OptixRayTypes.hh>
 
 // camera variables
 rtDeclareVariable(float3, eye, , );

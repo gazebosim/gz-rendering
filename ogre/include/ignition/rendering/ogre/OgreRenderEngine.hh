@@ -60,7 +60,11 @@ namespace ignition
                 RENDER_PATH_COUNT
               };
 
-      private: OgreRenderEngine();
+      /// \brief Constructor
+      /// Note: This needs to be public in order for IGN_REGISTER_RENDER_ENGINE
+      /// to work.
+      public: OgreRenderEngine();
+      // private: OgreRenderEngine();
 
       public: virtual ~OgreRenderEngine();
 

@@ -16,6 +16,7 @@
  */
 
 #include <vector>
+#include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/OptixStorage.hh"
@@ -23,6 +24,8 @@
 
 using namespace ignition;
 using namespace rendering;
+
+IGN_REGISTER_RENDER_ENGINE("optix", OptixRenderEngine)
 
 //////////////////////////////////////////////////
 

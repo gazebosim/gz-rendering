@@ -35,6 +35,7 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
+#include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
@@ -57,6 +58,10 @@ namespace ignition
 
 using namespace ignition;
 using namespace rendering;
+
+
+IGN_REGISTER_RENDER_ENGINE("ogre", OgreRenderEngine)
+
 
 //////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderEngine() :

@@ -63,8 +63,8 @@ namespace ignition
       /// \brief Constructor
       /// Note: This needs to be public in order for IGN_REGISTER_RENDER_ENGINE
       /// to work.
-      public: OgreRenderEngine();
-      // private: OgreRenderEngine();
+      //public: OgreRenderEngine();
+      private: OgreRenderEngine();
 
       public: virtual ~OgreRenderEngine();
 

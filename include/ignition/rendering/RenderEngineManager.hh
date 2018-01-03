@@ -106,12 +106,12 @@ namespace ignition
     #define IGN_REGISTER_RENDER_ENGINE(name, classname) \
     IGNITION_RENDERING_VISIBLE RenderEngine *New##classname() \
     { \
-      return new ignition::rendering::classname(); \
+      return ignition::rendering::classname::Instance(); \
     } \
     IGNITION_RENDERING_VISIBLE \
     void Register##classname() \
     {\
-      RenderEngineManager::RegisterEngine(name, New##classname);\
+      RenderEngineManager::Instance()->RegisterEngine(name, New##classname());\
     }
   }
 }

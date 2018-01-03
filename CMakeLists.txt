@@ -54,6 +54,11 @@ if(NOT MSVC)
      REQUIRED_BY ogre
      PRIVATE_FOR ogre)
 
+  if (OGRE_FOUND)
+    set(HAVE_OGRE TRUE)
+  endif()
+
+
   #--------------------------------------
   # Find CUDA
   ign_find_package(CUDA VERSION 5.5.0
@@ -65,6 +70,12 @@ if(NOT MSVC)
   ign_find_package(OptiX VERSION 3.8.0
      REQUIRED_BY optix
      PRIVATE_FOR optix)
+
+  if (OptiX_FOUND AND CUDA_FOUND)
+    set(HAVE_OPTIX TRUE)
+  endif()
+
+
 
 
  # ign_find_package(CUDA
@@ -94,14 +105,14 @@ if(NOT MSVC)
  # endif ()
 endif()
 
-if (HAVE_OGRE)
-  set (HAVE_RENDERING TRUE)
-endif()
-
-
-if (NOT HAVE_RENDERING)
-  message(FATAL_ERROR "No rendering engines found")
-endif()
+#if (HAVE_OGRE)
+#  set (HAVE_RENDERING TRUE)
+#endif()
+#
+#
+#if (NOT HAVE_RENDERING)
+#  message(FATAL_ERROR "No rendering engines found")
+#endif()
 
 #####################################
 # Define compile-time default variables

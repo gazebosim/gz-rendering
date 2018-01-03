@@ -1,11 +1,3 @@
-include_directories(SYSTEM
-  ${OGRE_INCLUDE_DIRS}
-)
-
-link_directories(
-  ${OGRE_LIBRARY_DIRS}
-)
-
 # Collect source files into the "sources" variable and unit test files into the
 # "gtest_sources" variable.
 ign_get_libsources_and_unittests(sources gtest_sources)

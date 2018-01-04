@@ -50,13 +50,11 @@ if(NOT MSVC)
 
   #--------------------------------------
   # Find OGRE
-  find_package(OGRE)
-#  ign_find_package(OGRE VERSION 1.8.0
-#     REQUIRED_BY ogre
-#     PRIVATE_FOR ogre)
+  ign_find_package(OGRE VERSION 1.8.0
+     REQUIRED_BY ogre
+     PRIVATE_FOR ogre)
 
   if (OGRE_FOUND)
-    message("ogre found!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     set(HAVE_OGRE TRUE)
   endif()
 
@@ -77,44 +75,7 @@ if(NOT MSVC)
     set(HAVE_OPTIX TRUE)
   endif()
 
-
-
-
- # ign_find_package(CUDA
- #                  VERSION 5.5.0
- #                  PKGCONFIG_VER_COMPARISON >=
- #                  REQUIRED)
- #
- # #--------------------------------------
- # # Find optix
- # include (${project_cmake_dir}/FindOptiX.cmake)
- # find_package(OptiX QUIET)
- #
- # if (NOT OptiX_INCLUDE)
- #   set (OPTIX_FOUND FALSE)
- #   message(STATUS "Looking for OptiX - not found")
- # else()
- #   set (OPTIX_FOUND TRUE)
- #   message(STATUS "Looking for OptiX - found")
- #   include_directories(SYSTEM ${OptiX_INCLUDE})
- # endif()
- #
- # if (CUDA_FOUND AND OPTIX_FOUND)
- #   set (HAVE_OPTIX ON CACHE BOOL "HAVE OPTIX" FORCE)
- #   set (HAVE_RENDERING TRUE)
- # else ()
- #   set (HAVE_OPTIX OFF CACHE BOOL "HAVE OPTIX" FORCE)
- # endif ()
 endif()
-
-#if (HAVE_OGRE)
-#  set (HAVE_RENDERING TRUE)
-#endif()
-#
-#
-#if (NOT HAVE_RENDERING)
-#  message(FATAL_ERROR "No rendering engines found")
-#endif()
 
 #####################################
 # Define compile-time default variables

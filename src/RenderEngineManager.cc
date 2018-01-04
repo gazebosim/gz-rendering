@@ -23,15 +23,6 @@
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
 
-/*#if HAVE_OGRE
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#endif
-
-#if HAVE_OPTIX
-#include "ignition/rendering/optix/OptixRenderEngine.hh"
-#endif
-*/
-
 #ifdef HAVE_OGRE
   IGNITION_RENDERING_VISIBLE
   void RegisterOgreRenderEngine();

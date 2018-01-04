@@ -25,10 +25,17 @@ pipelines:
           - apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
           - apt-get update
           - apt-get -y install
-            libignition-cmake-dev
             libignition-math4-dev
+          # Dependency: Ignition cmake
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b Components
+          - cd ign-cmake
+          - mkdir build
+          - cd build
+          - cmake ..
+          - make -j4 install
+          - cd ../..
           # Dependency: Ignition common
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b Components
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b default
           - cd ign-common
           - mkdir build
           - cd build

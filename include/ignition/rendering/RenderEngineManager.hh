@@ -101,8 +101,8 @@ namespace ignition
     /// \brief Render engine registration macro
     ///
     /// Use this macro to register render engines with the manager.
-    /// \param[in] _name Render engine type name
-    /// @param classname C++ class name for the render engine.
+    /// \param[in] name Render engine type name
+    /// \param[in] classname C++ class name for the render engine.
     #define IGN_REGISTER_RENDER_ENGINE(name, classname) \
     IGNITION_RENDERING_VISIBLE RenderEngine *New##classname() \
     { \

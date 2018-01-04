@@ -28,7 +28,7 @@ pipelines:
             libignition-cmake-dev
             libignition-math4-dev
           # Dependency: Ignition common
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b default
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b Components
           - cd ign-common
           - mkdir build
           - cd build

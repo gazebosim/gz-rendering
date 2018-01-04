@@ -30,7 +30,7 @@ namespace ignition
   {
     /// TODO Not implemented yet!
     /// \brief Optix implementation of a grid geometry
-    class IGNITION_VISIBLE OptixGrid
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixGrid
       : public BaseGrid<OptixPrimitive>
     {
       /// \brief Constructor

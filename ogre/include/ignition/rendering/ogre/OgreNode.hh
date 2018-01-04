@@ -30,7 +30,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreNode :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreNode :
       public BaseNode<OgreObject>
     {
       protected: OgreNode();

@@ -50,11 +50,13 @@ if(NOT MSVC)
 
   #--------------------------------------
   # Find OGRE
-  ign_find_package(OGRE VERSION 1.8.0
-     REQUIRED_BY ogre
-     PRIVATE_FOR ogre)
+  find_package(OGRE)
+#  ign_find_package(OGRE VERSION 1.8.0
+#     REQUIRED_BY ogre
+#     PRIVATE_FOR ogre)
 
   if (OGRE_FOUND)
+    message("ogre found!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     set(HAVE_OGRE TRUE)
   endif()
 

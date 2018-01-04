@@ -33,12 +33,12 @@
 */
 
 #ifdef HAVE_OGRE
-  IGNITION_VISIBLE
+  IGNITION_RENDERING_VISIBLE
   void RegisterOgreRenderEngine();
 #endif
 
 #ifdef HAVE_OPTIX
-  IGNITION_VISIBLE
+  IGNITION_RENDERING_VISIBLE
   void RegisterOptixRenderEngine();
 #endif
 

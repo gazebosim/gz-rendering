@@ -24,7 +24,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreAxisVisual :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreAxisVisual :
       public BaseAxisVisual<OgreVisual>
     {
       protected: OgreAxisVisual();

@@ -25,7 +25,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixVisual :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixVisual :
       public BaseVisual<OptixNode>
     {
       protected: OptixVisual();

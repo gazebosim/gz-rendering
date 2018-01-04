@@ -26,6 +26,7 @@
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/Export.hh"
 
 namespace Ogre
 {
@@ -40,7 +41,7 @@ namespace ignition
     // forward declaration
     class OgreRenderEnginePrivate;
 
-    class IGNITION_VISIBLE OgreRenderEngine :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<OgreRenderEngine>
     {

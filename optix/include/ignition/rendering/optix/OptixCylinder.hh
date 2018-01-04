@@ -23,7 +23,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixCylinder :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixCylinder :
       public OptixPrimitive
     {
       protected: OptixCylinder();

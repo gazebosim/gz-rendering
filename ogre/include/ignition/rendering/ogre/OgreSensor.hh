@@ -24,7 +24,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreSensor :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreSensor :
       public BaseSensor<OgreNode>
     {
       protected: OgreSensor();

@@ -36,7 +36,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_VISIBLE BaseCamera :
+    class IGNITION_RENDERING_VISIBLE BaseCamera :
       public virtual Camera,
       public virtual T
     {

@@ -19,12 +19,13 @@
 
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
+#include "ignition/rendering/optix/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixObject :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixObject :
       public BaseObject
     {
       protected: OptixObject();

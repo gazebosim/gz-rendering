@@ -26,7 +26,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixNode :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixNode :
       public BaseNode<OptixObject>
     {
       protected: OptixNode();

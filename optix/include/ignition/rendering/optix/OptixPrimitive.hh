@@ -24,7 +24,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixPrimitive :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixPrimitive :
       public OptixGeometry
     {
       protected: OptixPrimitive();

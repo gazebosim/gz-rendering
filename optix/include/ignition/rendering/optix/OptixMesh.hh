@@ -28,7 +28,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixMesh :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMesh :
       public BaseMesh<OptixGeometry>
     {
       typedef std::vector<std::string> NameList;
@@ -54,7 +54,7 @@ namespace ignition
       private: friend class OptixMeshFactory;
     };
 
-    class IGNITION_VISIBLE OptixSubMesh :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSubMesh :
       public BaseSubMesh<OptixObject>
     {
       protected: OptixSubMesh();

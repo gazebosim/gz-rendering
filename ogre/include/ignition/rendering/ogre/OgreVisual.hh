@@ -25,7 +25,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreVisual :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreVisual :
       public BaseVisual<OgreNode>
     {
       protected: OgreVisual();

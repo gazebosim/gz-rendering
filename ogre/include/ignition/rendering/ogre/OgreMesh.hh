@@ -34,7 +34,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreMesh :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreMesh :
       public BaseMesh<OgreGeometry>
     {
       typedef std::vector<std::string> NameList;
@@ -56,7 +56,7 @@ namespace ignition
       private: friend class OgreMeshFactory;
     };
 
-    class IGNITION_VISIBLE OgreSubMesh :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMesh :
       public BaseSubMesh<OgreObject>
     {
       protected: OgreSubMesh();

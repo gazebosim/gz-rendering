@@ -29,7 +29,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreGeometry :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreGeometry :
       public BaseGeometry<OgreObject>
     {
       protected: OgreGeometry();

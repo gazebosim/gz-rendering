@@ -22,7 +22,7 @@
 
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/ogre/Export.hh"
 
 namespace Ogre
 {
@@ -33,7 +33,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreMeshFactory
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreMeshFactory
     {
       public: explicit OgreMeshFactory(OgreScenePtr _scene);
 
@@ -57,7 +57,7 @@ namespace ignition
       protected: OgreScenePtr scene;
     };
 
-    class IGNITION_VISIBLE OgreSubMeshStoreFactory
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMeshStoreFactory
     {
       typedef std::vector<std::string> NameList;
 

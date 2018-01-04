@@ -31,7 +31,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreScene :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreScene :
       public BaseScene
     {
       protected: OgreScene(unsigned int _id, const std::string &_name);

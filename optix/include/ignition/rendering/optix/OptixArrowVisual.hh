@@ -24,7 +24,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixArrowVisual :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixArrowVisual :
       public BaseArrowVisual<OptixVisual>
     {
       protected: OptixArrowVisual();

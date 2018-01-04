@@ -19,12 +19,13 @@
 
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreObject :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreObject :
       public BaseObject
     {
       protected: OgreObject();

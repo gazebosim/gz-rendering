@@ -30,7 +30,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreLight :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreLight :
       public BaseLight<OgreNode>
     {
       protected: OgreLight();
@@ -88,7 +88,7 @@ namespace ignition
       protected: Ogre::Light::LightTypes ogreLightType;
     };
 
-    class IGNITION_VISIBLE OgreDirectionalLight :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreDirectionalLight :
       public BaseDirectionalLight<OgreLight>
     {
       protected: OgreDirectionalLight();
@@ -102,7 +102,7 @@ namespace ignition
       private: friend class OgreScene;
     };
 
-    class IGNITION_VISIBLE OgrePointLight :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgrePointLight :
       public BasePointLight<OgreLight>
     {
       protected: OgrePointLight();
@@ -112,7 +112,7 @@ namespace ignition
       private: friend class OgreScene;
     };
 
-    class IGNITION_VISIBLE OgreSpotLight :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreSpotLight :
       public BaseSpotLight<OgreLight>
     {
       protected: OgreSpotLight();

@@ -17,7 +17,6 @@ target_link_libraries(${ogre_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
   PRIVATE
-    ${base_target}
     ${OPENGL_LIBRARIES}
     ${OGRE_LIBRARIES})
 

@@ -24,7 +24,7 @@
 
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/ogre/Export.hh"
 
 namespace ignition
 {
@@ -36,7 +36,7 @@ namespace ignition
     /// \brief Conversions Conversions.hh rendering/Conversions.hh
     /// \brief A set of utility function to convert between Gazebo and Ogre
     /// data types
-    class IGNITION_VISIBLE OgreConversions
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreConversions
     {
       /// \brief Return the equivalent ogre color
       /// \param[in] _color ign-math color to convert

@@ -23,7 +23,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixCone :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixCone :
       public OptixPrimitive
     {
       protected: OptixCone();

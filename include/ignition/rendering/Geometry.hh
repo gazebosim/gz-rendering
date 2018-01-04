@@ -20,7 +20,7 @@
 #include <string>
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -28,7 +28,7 @@ namespace ignition
   {
     /// \class Geometry Geometry.hh ignition/rendering/Geometry.hh
     /// \brief Represents a geometric shape to be rendered
-    class IGNITION_VISIBLE Geometry :
+    class IGNITION_RENDERING_VISIBLE Geometry :
       public virtual Object
     {
       /// \brief Deconstructor

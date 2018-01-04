@@ -36,7 +36,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreRenderTarget :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderTarget :
       public virtual BaseRenderTarget<OgreObject>
     {
       protected: OgreRenderTarget();
@@ -85,7 +85,7 @@ namespace ignition
       protected: unsigned int antiAliasing = 4;
     };
 
-    class IGNITION_VISIBLE OgreRenderTexture :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderTexture :
       public virtual BaseRenderTexture<OgreRenderTarget>
     {
       protected: OgreRenderTexture();
@@ -107,7 +107,7 @@ namespace ignition
       private: friend class OgreScene;
     };
 
-    class IGNITION_VISIBLE OgreRenderWindow :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderWindow :
       public virtual BaseRenderWindow<OgreRenderTarget>
     {
       protected: OgreRenderWindow();

@@ -23,7 +23,7 @@
 #include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/ogre/Export.hh"
 
 namespace ignition
 {
@@ -40,7 +40,7 @@ namespace ignition
     ///
     /// This class allows Gazebo to generate per-pixel shaders for every
     /// material at run-time.
-    class IGNITION_VISIBLE OgreRTShaderSystem :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreRTShaderSystem :
       public common::SingletonT<OgreRTShaderSystem>
     {
       /// \enum LightingModel.

@@ -25,7 +25,7 @@ namespace ignition
   {
     /// \class ArrowVisual ArrowVisual.hh ignition/rendering/ArrowVisual.hh
     /// \brief Represents a arrow composite visual
-    class IGNITION_VISIBLE ArrowVisual :
+    class IGNITION_RENDERING_VISIBLE ArrowVisual :
       public virtual CompositeVisual
     {
       /// \brief Deconstructor

@@ -26,7 +26,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixCamera :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixCamera :
       public BaseCamera<OptixSensor>
     {
       protected: OptixCamera();

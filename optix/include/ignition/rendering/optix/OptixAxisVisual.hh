@@ -24,7 +24,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixAxisVisual :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixAxisVisual :
       public BaseAxisVisual<OptixVisual>
     {
       protected: OptixAxisVisual();

@@ -25,7 +25,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixGeometry :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixGeometry :
       public BaseGeometry<OptixObject>
     {
       protected: OptixGeometry();

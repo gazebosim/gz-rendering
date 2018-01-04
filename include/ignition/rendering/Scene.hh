@@ -29,7 +29,7 @@
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Storage.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -41,7 +41,7 @@ namespace ignition
     /// \brief Manages a single scene-graph. This class updates scene-wide
     /// properties and holds the root scene node. A Scene also serves as a
     /// factory for all scene objects.
-    class IGNITION_VISIBLE Scene
+    class IGNITION_RENDERING_VISIBLE Scene
     {
       /// \brief Deconstructor
       public: virtual ~Scene() { }

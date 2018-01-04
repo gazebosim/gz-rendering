@@ -26,7 +26,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixLight :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixLight :
       public BaseLight<OptixNode>
     {
       protected: OptixLight();
@@ -72,7 +72,7 @@ namespace ignition
       protected: virtual void Init();
     };
 
-    class IGNITION_VISIBLE OptixDirectionalLight :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixDirectionalLight :
       public BaseDirectionalLight<OptixLight>
     {
       protected: OptixDirectionalLight();
@@ -98,7 +98,7 @@ namespace ignition
       private: friend class OptixScene;
     };
 
-    class IGNITION_VISIBLE OptixPointLight :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixPointLight :
       public BasePointLight<OptixLight>
     {
       protected: OptixPointLight();
@@ -120,7 +120,7 @@ namespace ignition
       private: friend class OptixScene;
     };
 
-    class IGNITION_VISIBLE OptixSpotLight :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSpotLight :
       public BaseSpotLight<OptixLight>
     {
       protected: OptixSpotLight();

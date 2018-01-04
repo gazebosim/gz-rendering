@@ -30,7 +30,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixSubMeshStoreFactory
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSubMeshStoreFactory
     {
       public: OptixSubMeshStoreFactory(OptixScenePtr _scene);
 
@@ -49,7 +49,7 @@ namespace ignition
       protected: OptixScenePtr scene;
     };
 
-    class IGNITION_VISIBLE OptixMeshFactory
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMeshFactory
     {
       public: OptixMeshFactory(OptixScenePtr _scene);
 
@@ -64,7 +64,7 @@ namespace ignition
       protected: OptixScenePtr scene;
     };
 
-    class IGNITION_VISIBLE OptixMeshGeometryFactory
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMeshGeometryFactory
     {
       public: OptixMeshGeometryFactory(OptixScenePtr _scene,
                   const common::SubMesh &_subMesh);

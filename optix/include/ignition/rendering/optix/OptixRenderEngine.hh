@@ -26,7 +26,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixRenderEngine :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<OptixRenderEngine>
     {

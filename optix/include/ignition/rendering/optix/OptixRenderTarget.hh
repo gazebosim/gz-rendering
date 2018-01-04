@@ -26,7 +26,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixRenderTarget :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderTarget :
       public virtual BaseRenderTarget<OptixObject>
     {
       protected: OptixRenderTarget();
@@ -42,7 +42,7 @@ namespace ignition
       protected: float *hostData;
     };
 
-    class IGNITION_VISIBLE OptixRenderTexture :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderTexture :
       public virtual BaseRenderTexture<OptixRenderTarget>
     {
       protected: OptixRenderTexture();
@@ -63,7 +63,7 @@ namespace ignition
     };
 
     /// \brief Render window mocked using a render texture.
-    class IGNITION_VISIBLE OptixRenderWindow :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderWindow :
       public virtual BaseRenderWindow<OptixRenderTexture>
     {
       /// \brief Constructor

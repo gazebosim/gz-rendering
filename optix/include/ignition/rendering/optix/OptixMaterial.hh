@@ -26,7 +26,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixMaterial :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMaterial :
       public BaseMaterial<OptixObject>
     {
       protected: OptixMaterial();

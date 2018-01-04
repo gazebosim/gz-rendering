@@ -27,7 +27,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreMaterial :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterial :
       public BaseMaterial<OgreObject>
     {
       protected: OgreMaterial();

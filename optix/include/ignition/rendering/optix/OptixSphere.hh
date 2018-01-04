@@ -23,7 +23,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixSphere :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSphere :
       public OptixPrimitive
     {
       protected: OptixSphere();

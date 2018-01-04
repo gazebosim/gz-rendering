@@ -26,7 +26,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_VISIBLE BaseGeometry :
+    class IGNITION_RENDERING_VISIBLE BaseGeometry :
       public virtual Geometry,
       public virtual T
     {

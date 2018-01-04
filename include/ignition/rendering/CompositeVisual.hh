@@ -26,7 +26,7 @@ namespace ignition
     /// \class CompositeVisual CompositeVisual.hh
     /// ignition/rendering/CompositeVisual.hh
     /// \brief Represents a predefined collection of geometries and visuals
-    class IGNITION_VISIBLE CompositeVisual :
+    class IGNITION_RENDERING_VISIBLE CompositeVisual :
       public virtual Visual
     {
       /// \brief Deconstructor

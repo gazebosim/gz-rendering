@@ -34,7 +34,7 @@ namespace ignition
     /// \class OgreRayQuery OgreRayQuery.hh
     /// ignition/rendering/base/OgreRayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_VISIBLE OgreRayQuery :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreRayQuery :
         public BaseRayQuery<OgreObject>
     {
       /// \brief Constructor

@@ -23,6 +23,7 @@
 
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
+#include "ignition/rendering/optix/Export.hh"
 
 namespace ignition
 {
@@ -34,7 +35,7 @@ namespace ignition
     /// \brief Conversions Conversions.hh rendering/Conversions.hh
     /// \brief A set of utility function to convert between Gazebo and Optix
     /// data types
-    class IGNITION_VISIBLE OptixConversions
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixConversions
     {
       /// \brief Return the equivalent optix color
       /// \param[in] _color Gazebo color to convert

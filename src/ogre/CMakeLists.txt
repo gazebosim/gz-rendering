@@ -42,7 +42,7 @@ set (sources
 set (gtest_sources
 )
 
-
+add_subdirectory(selection_buffer)
 find_package(OpenGL)
 
 ign_build_tests(${gtest_sources})

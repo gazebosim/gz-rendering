@@ -20,6 +20,7 @@
 #include <string>
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
 
 namespace Ogre
 {
@@ -59,6 +60,43 @@ namespace ignition
       public: virtual void Destroy();
 
       public: virtual Ogre::SceneManager *OgreSceneManager() const;
+
+      /// \brief Get a visual at a mouse position.
+      /// \param[in] _camera Pointer to the camera used to project the mouse
+      /// position.
+      /// \param[in] _mousePos The 2d position of the mouse in pixels.
+      /// \return Pointer to the visual, NULL if none found.
+      public: VisualPtr VisualAt(CameraPtr _camera,
+                                 const ignition::math::Vector2i &_mousePos);
+
+      /// \brief Helper function for GetVisualAt functions.
+      /// \param[in] _camera Pointer to the camera.
+      /// \param[in] _mousePos 2D position of the mouse in pixels.
+      /// \param[in] _ignoreSelectionObj True to ignore selection objects,
+      /// which are GUI objects use to manipulate objects.
+      /// \return Pointer to the Ogre::Entity, NULL if none.
+      private: Ogre::Entity *OgreEntityAt(CameraPtr _camera,
+          const ignition::math::Vector2i &_mousePos,
+          const bool _ignoreSelectionObj);
+
+      /// \brief Get the mesh information for the given mesh.
+      /// \param[in] _mesh Mesh to get info about.
+      /// \param[out] _vertexCount Number of vertices in the mesh.
+      /// \param[out] _vertices Array of the vertices.
+      /// \param[out] _indexCount Number if indices.
+      /// \param[out] _indices Array of the indices.
+      /// \param[in] _position Position of the mesh.
+      /// \param[in] _orient Orientation of the mesh.
+      /// \param[in] _scale Scale of the mesh
+      // Code found in Wiki: www.ogre3d.org/wiki/index.php/RetrieveVertexData
+      private: void MeshInformation(const Ogre::Mesh *_mesh,
+                                    size_t &_vertexCount,
+                                    Ogre::Vector3* &_vertices,
+                                    size_t &_indexCount,
+                                    uint64_t* &_indices,
+                                    const ignition::math::Vector3d &_position,
+                                    const ignition::math::Quaterniond &_orient,
+                                    const ignition::math::Vector3d &_scale);
 
       protected: virtual bool LoadImpl();
 

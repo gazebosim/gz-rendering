@@ -14,7 +14,7 @@ find_package(ignition-cmake0 REQUIRED)
 #============================================================================
 # Set up the project
 #============================================================================
-ign_configure_project(rendering 0.1.0)
+ign_configure_project()
 
 #============================================================================
 # Set project-specific options
@@ -45,14 +45,17 @@ if(NOT MSVC)
   #--------------------------------------
   # Find FreeImage
   ign_find_package(FreeImage VERSION 3.9
-     REQUIRED_BY optix
-     PRIVATE_FOR optix)
+      REQUIRED_BY optix
+      PRIVATE_FOR optix)
 
   #--------------------------------------
   # Find OGRE
+#
   ign_find_package(OGRE VERSION 1.8.0
-     REQUIRED_BY ogre
-     PRIVATE_FOR ogre)
+      COMPONENTS RTShaderSystem Terrain Overlay
+      REQUIRED_BY ogre
+      PRIVATE_FOR ogre)
+
 
   if (OGRE_FOUND)
     set(HAVE_OGRE TRUE)
@@ -61,15 +64,15 @@ if(NOT MSVC)
 
   #--------------------------------------
   # Find CUDA
-  ign_find_package(CUDA VERSION 5.5.0
-     REQUIRED_BY optix
-     PRIVATE_FOR optix)
+  find_package(CUDA)
+#      REQUIRED_BY optix
+#      PRIVATE_FOR optix)
 
   #--------------------------------------
   # Find OptiX
   ign_find_package(OptiX VERSION 3.8.0
-     REQUIRED_BY optix
-     PRIVATE_FOR optix)
+      REQUIRED_BY optix
+      PRIVATE_FOR optix)
 
   if (OptiX_FOUND AND CUDA_FOUND)
     set(HAVE_OPTIX TRUE)

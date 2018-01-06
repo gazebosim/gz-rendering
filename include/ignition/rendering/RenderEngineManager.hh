@@ -97,22 +97,6 @@ namespace ignition
       /// \brief required SingletonT friendship
       private: friend class SingletonT<RenderEngineManager>;
     };
-
-    /// \brief Render engine registration macro
-    ///
-    /// Use this macro to register render engines with the manager.
-    /// \param[in] name Render engine type name
-    /// \param[in] classname C++ class name for the render engine.
-    #define IGN_REGISTER_RENDER_ENGINE(name, classname) \
-    IGNITION_RENDERING_VISIBLE RenderEngine *New##classname() \
-    { \
-      return ignition::rendering::classname::Instance(); \
-    } \
-    IGNITION_RENDERING_VISIBLE \
-    void Register##classname() \
-    {\
-      RenderEngineManager::Instance()->RegisterEngine(name, New##classname());\
-    }
   }
 }
 #endif

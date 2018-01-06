@@ -82,7 +82,8 @@ endif()
 
 #####################################
 # Define compile-time default variables
-set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/ignition/rendering-${PROJECT_VERSION_MAJOR}/plugins)
+#set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/ignition/rendering-${PROJECT_VERSION_MAJOR}/plugins)
+set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering-${PROJECT_VERSION_MAJOR})
 
 #============================================================================

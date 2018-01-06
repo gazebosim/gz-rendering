@@ -12,6 +12,12 @@ ign_create_main_library(SOURCES ${sources} CXX_STANDARD 11)
 #ign_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
 #  ignition-math${IGN_MATH_VER})
 
+set_property(
+  SOURCE RenderEngineManager.cc
+  PROPERTY COMPILE_DEFINITIONS
+  IGN_RENDERING_PLUGIN_PATH="${IGN_RENDERING_PLUGIN_PATH}"
+)
+
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
     ${ignition-math${IGN_MATH_VER}_LIBRARIES}

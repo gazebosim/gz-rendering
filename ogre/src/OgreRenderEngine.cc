@@ -59,9 +59,22 @@ namespace ignition
 using namespace ignition;
 using namespace rendering;
 
+//////////////////////////////////////////////////
+OgreRenderEnginePlugin::OgreRenderEnginePlugin()
+{
+}
 
-IGN_REGISTER_RENDER_ENGINE("ogre", OgreRenderEngine)
+//////////////////////////////////////////////////
+std::string OgreRenderEnginePlugin::Name() const
+{
+  return OgreRenderEngine::Instance()->Name();
+}
 
+//////////////////////////////////////////////////
+RenderEngine *OgreRenderEnginePlugin::Engine() const
+{
+  return OgreRenderEngine::Instance();
+}
 
 //////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderEngine() :
@@ -708,3 +721,7 @@ void OgreRenderEngine::InitAttempt()
 
   this->scenes = OgreSceneStorePtr(new OgreSceneStore);
 }
+
+// Register this plugin
+IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
+                                  ignition::rendering::RenderEnginePlugin)

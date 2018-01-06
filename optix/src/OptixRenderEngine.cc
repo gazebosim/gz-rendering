@@ -25,8 +25,6 @@
 using namespace ignition;
 using namespace rendering;
 
-IGN_REGISTER_RENDER_ENGINE("optix", OptixRenderEngine)
-
 //////////////////////////////////////////////////
 
 const std::string OptixRenderEngine::PTX_PREFIX("cuda_compile_ptx_generated_");

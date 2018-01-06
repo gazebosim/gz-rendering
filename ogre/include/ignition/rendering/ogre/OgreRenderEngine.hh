@@ -23,6 +23,7 @@
 
 #include <ignition/common/SingletonT.hh>
 
+#include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -40,6 +41,24 @@ namespace ignition
   {
     // forward declaration
     class OgreRenderEnginePrivate;
+
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEnginePlugin :
+      public RenderEnginePlugin
+    {
+      /// \brief Constructor
+      public: OgreRenderEnginePlugin();
+
+      /// \brief Destructor
+      public: ~OgreRenderEnginePlugin() = default;
+
+      /// \brief Get the name of the render engine loaded by this plugin.
+      /// \return Name of render engine
+      public: std::string Name() const;
+
+      /// \brief Get a pointer to the render engine loaded by this plugin.
+      /// \return Render engine instance
+      public: RenderEngine *Engine() const;
+    };
 
     class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEngine :
       public virtual BaseRenderEngine,

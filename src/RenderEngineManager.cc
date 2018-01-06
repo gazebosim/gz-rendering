@@ -43,7 +43,10 @@ namespace ignition
 
       public: void RegisterDefaultEngines();
 
-      public: bool LoadEnginePlugins(const std::string &_filename);
+      /// \brief Load a render engine plugin
+      /// \param[in] _filename Filename of plugin shared library
+      /// \return True if the plugin is loaded successfully
+      public: bool LoadEnginePlugin(const std::string &_filename);
 
       public: void UnregisterEngine(EngineIter _iter);
 
@@ -191,21 +194,22 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter) const
 //////////////////////////////////////////////////
 void RenderEngineManagerPrivate::RegisterDefaultEngines()
 {
+  // TODO Find a cleaner way to get the default engine library name
   std::vector<std::string> defaultEngines;
 #if HAVE_OGRE
   defaultEngines.push_back("ignition-rendering0-ogre");
 #endif
 #if HAVE_OPTIX
+  defaultEngines.push_back("ignition-rendering0-optix");
 #endif
   for (const auto &engine : defaultEngines)
   {
-    this->LoadEnginePlugins(engine);
+    this->LoadEnginePlugin(engine);
   }
-
 }
 
 //////////////////////////////////////////////////
-bool RenderEngineManagerPrivate::LoadEnginePlugins(
+bool RenderEngineManagerPrivate::LoadEnginePlugin(
     const std::string &_filename)
 {
   ignmsg << "Loading plugin [" << _filename << "]" << std::endl;
@@ -266,6 +270,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugins(
   // this triggers the engine to be instantiated
   std::string engineName = plugin->Name();
   this->engines[engineName] = plugin->Engine();
+
   return true;
 }
 

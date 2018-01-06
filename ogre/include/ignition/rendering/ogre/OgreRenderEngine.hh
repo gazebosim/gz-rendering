@@ -42,6 +42,7 @@ namespace ignition
     // forward declaration
     class OgreRenderEnginePrivate;
 
+    /// \brief Plugin for loading ogre render engine
     class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEnginePlugin :
       public RenderEnginePlugin
     {
@@ -81,9 +82,6 @@ namespace ignition
               };
 
       /// \brief Constructor
-      /// Note: This needs to be public in order for IGN_REGISTER_RENDER_ENGINE
-      /// to work.
-      //public: OgreRenderEngine();
       private: OgreRenderEngine();
 
       public: virtual ~OgreRenderEngine();

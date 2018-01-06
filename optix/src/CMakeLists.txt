@@ -8,8 +8,6 @@ link_directories(${CUDA_LIBRARY_DIRS})
 # Needed by add_custom_target: ${optix_target}-ptx
 include_directories("${PROJECT_SOURCE_DIR}/optix/include")
 include_directories(SYSTEM ${OptiX_INCLUDE_DIRS})
-#link_directories(${OptiX_LIBRARY_DIRS})
-
 
 ign_add_component(optix SOURCES ${sources} GET_TARGET_NAME optix_target)
 
@@ -35,10 +33,10 @@ set_property(
 
 target_link_libraries(${optix_target}
   PUBLIC
-    ${ignition-math${IGN_MATH_VER}_LIBRARIES}
+    ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
   PRIVATE
-#    OptiX::OptiX)
-    ${OptiX_LIBRARIES})
+    OptiX::OptiX)
+#    ${OptiX_LIBRARIES})
 
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})

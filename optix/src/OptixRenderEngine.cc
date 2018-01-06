@@ -32,6 +32,23 @@ const std::string OptixRenderEngine::PTX_PREFIX("cuda_compile_ptx_generated_");
 const std::string OptixRenderEngine::PTX_SUFFIX(".cu.ptx");
 
 //////////////////////////////////////////////////
+OptixRenderEnginePlugin::OptixRenderEnginePlugin()
+{
+}
+
+//////////////////////////////////////////////////
+std::string OptixRenderEnginePlugin::Name() const
+{
+  return OptixRenderEngine::Instance()->Name();
+}
+
+//////////////////////////////////////////////////
+RenderEngine *OptixRenderEnginePlugin::Engine() const
+{
+  return OptixRenderEngine::Instance();
+}
+
+//////////////////////////////////////////////////
 OptixRenderEngine::OptixRenderEngine()
 {
 }
@@ -111,3 +128,7 @@ bool OptixRenderEngine::InitImpl()
   this->scenes = OptixSceneStorePtr(new OptixSceneStore);
   return true;
 }
+
+// Register this plugin
+IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::OptixRenderEnginePlugin,
+                                  ignition::rendering::RenderEnginePlugin)

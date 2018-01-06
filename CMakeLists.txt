@@ -25,7 +25,6 @@ ign_configure_project()
 #============================================================================
 # Search for project-specific dependencies
 #============================================================================
-message(STATUS "\n\n-- ====== Finding Dependencies ======")
 
 #--------------------------------------
 # Find ignition-math
@@ -36,7 +35,6 @@ ign_find_package(ignition-math${IGN_MATH_VER} REQUIRED)
 # Find ignition-common
 set(IGN_COMMON_VER 0)
 ign_find_package(ignition-common${IGN_COMMON_VER} REQUIRED)
-
 
 #--------------------------------------
 # Find dependencies that we ignore for Visual Studio
@@ -50,12 +48,10 @@ if(NOT MSVC)
 
   #--------------------------------------
   # Find OGRE
-#
   ign_find_package(OGRE VERSION 1.8.0
       COMPONENTS RTShaderSystem Terrain Overlay
       REQUIRED_BY ogre
       PRIVATE_FOR ogre)
-
 
   if (OGRE_FOUND)
     set(HAVE_OGRE TRUE)
@@ -65,8 +61,6 @@ if(NOT MSVC)
   #--------------------------------------
   # Find CUDA
   find_package(CUDA)
-#      REQUIRED_BY optix
-#      PRIVATE_FOR optix)
 
   #--------------------------------------
   # Find OptiX
@@ -82,7 +76,6 @@ endif()
 
 #####################################
 # Define compile-time default variables
-#set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/ignition/rendering-${PROJECT_VERSION_MAJOR}/plugins)
 set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering-${PROJECT_VERSION_MAJOR})
 

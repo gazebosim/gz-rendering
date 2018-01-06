@@ -19,6 +19,8 @@
 
 #include <string>
 #include <ignition/common/SingletonT.hh>
+
+#include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 
@@ -26,15 +28,31 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \brief Plugin for loading optix render engine
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderEnginePlugin :
+      public RenderEnginePlugin
+    {
+      /// \brief Constructor
+      public: OptixRenderEnginePlugin();
+
+      /// \brief Destructor
+      public: ~OptixRenderEnginePlugin() = default;
+
+      /// \brief Get the name of the render engine loaded by this plugin.
+      /// \return Name of render engine
+      public: std::string Name() const;
+
+      /// \brief Get a pointer to the render engine loaded by this plugin.
+      /// \return Render engine instance
+      public: RenderEngine *Engine() const;
+    };
+
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<OptixRenderEngine>
     {
       /// \brief Constructor
-      /// Note: This needs to be public in order for IGN_REGISTER_RENDER_ENGINE
-      /// to work.
-      public: OptixRenderEngine();
-      // private: OptixRenderEngine();
+      private: OptixRenderEngine();
 
       public: virtual ~OptixRenderEngine();
 

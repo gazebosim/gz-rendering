@@ -170,24 +170,21 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  try
+  engineNames.push_back("ogre");
+  engineNames.push_back("optix");
+  for (auto engineName : engineNames)
   {
-    engineNames.push_back("ogre");
-    engineNames.push_back("optix");
-
-    for (auto engineName : engineNames)
+    try
     {
       CameraPtr camera = createCamera(engineName);
       if (camera)
         cameras.push_back(camera);
     }
-
+    catch (...)
+    {
+      // std::cout << ex.what() << std::endl;
+    }
     run(cameras);
   }
-  catch (...)
-  {
-    // std::cout << ex.what() << std::endl;
-  }
-
   return 0;
 }

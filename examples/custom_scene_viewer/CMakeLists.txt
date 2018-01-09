@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ignition-rendering-custom-scene-viewer)
 find_package(ignition-rendering0 REQUIRED)
-find_package(ignition-common0 REQUIRED)
-find_package(ignition-math3 REQUIRED)
+find_package(ignition-common1 REQUIRED)
+find_package(ignition-math4 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

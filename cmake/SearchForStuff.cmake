@@ -188,9 +188,9 @@ message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}
 
 ########################################
 # Find Ignition Common
-find_package(ignition-common0 QUIET)
-if (NOT ignition-common0_FOUND)
-  BUILD_ERROR ("Missing: Ignition Common (libignition-common0-dev)")
+find_package(ignition-common1 QUIET)
+if (NOT ignition-common1_FOUND)
+  BUILD_ERROR ("Missing: Ignition Common (libignition-common-dev)")
 else()
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-COMMON_CXX_FLAGS}")
   include_directories(${IGNITION-COMMON_INCLUDE_DIRS})

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ignition-rendering-mesh-viewer)
 find_package(ignition-rendering0 REQUIRED)
-find_package(ignition-common0 REQUIRED)
+find_package(ignition-common1 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

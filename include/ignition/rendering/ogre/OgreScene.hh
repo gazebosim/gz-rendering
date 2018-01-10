@@ -26,6 +26,7 @@ namespace Ogre
 {
   class Root;
   class SceneManager;
+  class raySceneQuery;
 }
 
 namespace ignition
@@ -66,7 +67,7 @@ namespace ignition
       /// position.
       /// \param[in] _mousePos The 2d position of the mouse in pixels.
       /// \return Pointer to the visual, NULL if none found.
-      public: VisualPtr VisualAt(CameraPtr _camera,
+      public: VisualPtr VisualAt(OgreCameraPtr _camera,
                                  const ignition::math::Vector2i &_mousePos);
 
       /// \brief Helper function for GetVisualAt functions.
@@ -75,7 +76,7 @@ namespace ignition
       /// \param[in] _ignoreSelectionObj True to ignore selection objects,
       /// which are GUI objects use to manipulate objects.
       /// \return Pointer to the Ogre::Entity, NULL if none.
-      private: Ogre::Entity *OgreEntityAt(CameraPtr _camera,
+      protected: Ogre::Entity *OgreEntityAt(OgreCameraPtr _camera,
           const ignition::math::Vector2i &_mousePos,
           const bool _ignoreSelectionObj);
 
@@ -89,7 +90,7 @@ namespace ignition
       /// \param[in] _orient Orientation of the mesh.
       /// \param[in] _scale Scale of the mesh
       // Code found in Wiki: www.ogre3d.org/wiki/index.php/RetrieveVertexData
-      private: void MeshInformation(const Ogre::Mesh *_mesh,
+      protected: void MeshInformation(const Ogre::Mesh *_mesh,
                                     size_t &_vertexCount,
                                     Ogre::Vector3* &_vertices,
                                     size_t &_indexCount,
@@ -176,6 +177,9 @@ namespace ignition
       protected: OgreMeshFactoryPtr meshFactory;
 
       protected: math::Color backgroundColor;
+
+      /// \brief A ray query used to locate distances to visuals.
+      public: Ogre::RaySceneQuery *raySceneQuery;
 
       protected: OgreLightStorePtr lights;
 

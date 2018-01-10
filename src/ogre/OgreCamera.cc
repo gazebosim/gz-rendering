@@ -157,3 +157,38 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture->SetCamera(this->ogreCamera);
   this->renderTexture->SetFormat(PF_R8G8B8);
 }
+
+//////////////////////////////////////////////////
+void OgreCamera::CameraToViewportRay(const int _screenx, const int _screeny,
+    ignition::math::Vector3d &_origin,
+    ignition::math::Vector3d &_dir) const
+{
+  Ogre::Ray ray = this->ogreCamera->getCameraToViewportRay(
+      static_cast<float>(_screenx) / this->ViewportWidth(),
+      static_cast<float>(_screeny) / this->ViewportHeight());
+
+  _origin.Set(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z);
+  _dir.Set(ray.getDirection().x, ray.getDirection().y, ray.getDirection().z);
+}
+
+//////////////////////////////////////////////////
+unsigned int OgreCamera::ViewportWidth() const
+{
+  if (this->ogreRenderTarget)
+    return this->ogreRenderTarget->getViewport(0)->getActualWidth();
+  else if (this->ogreCamera && this->ogreCamera->getViewport())
+    return this->ogreCamera->getViewport()->getActualWidth();
+  else
+    return 0;
+}
+
+//////////////////////////////////////////////////
+unsigned int OgreCamera::ViewportHeight() const
+{
+  if (this->ogreRenderTarget)
+    return this->ogreRenderTarget->getViewport(0)->getActualHeight();
+  else if (this->ogreCamera && this->ogreCamera->getViewport())
+    return this->ogreCamera->getViewport()->getActualHeight();
+  else
+    return 0;
+}

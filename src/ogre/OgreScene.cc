@@ -133,6 +133,12 @@ bool OgreScene::InitImpl()
   OgreRTShaderSystem::Instance()->AddScene(this->SharedThis());
   OgreRTShaderSystem::Instance()->ApplyShadows(this->SharedThis());
 
+  // Create ray scene query
+  this->raySceneQuery = ogreSceneManager->createRayQuery(Ogre::Ray());
+  this->raySceneQuery->setSortByDistance(true);
+  this->raySceneQuery->setQueryMask(
+      Ogre::SceneManager::ENTITY_TYPE_MASK);
+
   return true;
 }
 
@@ -361,7 +367,7 @@ OgreScenePtr OgreScene::SharedThis()
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreScene::VisualAt(CameraPtr _camera,
+VisualPtr OgreScene::VisualAt(OgreCameraPtr _camera,
                           const ignition::math::Vector2i &_mousePos)
 {
   VisualPtr visual;
@@ -387,7 +393,7 @@ VisualPtr OgreScene::VisualAt(CameraPtr _camera,
 }
 
 /////////////////////////////////////////////////
-Ogre::Entity *OgreScene::OgreEntityAt(CameraPtr _camera,
+Ogre::Entity *OgreScene::OgreEntityAt(OgreCameraPtr _camera,
                                   const ignition::math::Vector2i &_mousePos,
                                   const bool _ignoreSelectionObj)
 {
@@ -395,17 +401,14 @@ Ogre::Entity *OgreScene::OgreEntityAt(CameraPtr _camera,
 
   ignition::math::Vector3d origin;
   ignition::math::Vector3d dir;
-  // TODO: implement
-  //_camera->CameraToViewportRay(_mousePos.X(), _mousePos.Y(), origin, dir);
+  _camera->CameraToViewportRay(_mousePos.X(), _mousePos.Y(), origin, dir);
   Ogre::Ray mouseRay(OgreConversions::Convert(origin), OgreConversions::Convert(dir));
 
-  // TODO: implement
-  //this->dataPtr->raySceneQuery->setRay(mouseRay);
+  this->raySceneQuery->setRay(mouseRay);
 
   // Perform the scene query
   // TODO: implement
-  //Ogre::RaySceneQueryResult &result= this->dataPtr->raySceneQuery->execute();
-  Ogre::RaySceneQueryResult &result = new Ogre::RaySceneQueryResult();
+  Ogre::RaySceneQueryResult &result= this->raySceneQuery->execute();
   Ogre::RaySceneQueryResult::iterator iter = result.begin();
   Ogre::Entity *closestEntity = NULL;
 
@@ -433,9 +436,9 @@ Ogre::Entity *OgreScene::OgreEntityAt(CameraPtr _camera,
       // Get the mesh information
       this->MeshInformation(ogreEntity->getMesh().get(), vertex_count,
           vertices, index_count, indices,
-          ogreEntity->getParentNode()->_getDerivedPosition(),
-          ogreEntity->getParentNode()->_getDerivedOrientation(),
-          ogreEntity->getParentNode()->_getDerivedScale());
+          OgreConversions::Convert(ogreEntity->getParentNode()->_getDerivedPosition()),
+          OgreConversions::Convert(ogreEntity->getParentNode()->_getDerivedOrientation()),
+          OgreConversions::Convert(ogreEntity->getParentNode()->_getDerivedScale()));
 
       bool new_closest_found = false;
       for (int i = 0; i < static_cast<int>(index_count); i += 3)

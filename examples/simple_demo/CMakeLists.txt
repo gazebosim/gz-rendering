@@ -24,6 +24,6 @@ target_link_libraries(simple_demo
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${ignition-rendering0_LIBRARIES}
+  ${IGNITION-RENDERING_LIBRARIES}
   )
 

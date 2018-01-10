@@ -1,0 +1,59 @@
+/*
+ * Copyright (C) 2018 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#ifndef IGNITION_RENDERING_RENDERENGINEPLUGIN_HH_
+#define IGNITION_RENDERING_RENDERENGINEPLUGIN_HH_
+
+#include <memory>
+
+#include <ignition/common/PluginMacros.hh>
+#include <ignition/rendering/Export.hh>
+
+namespace ignition
+{
+  namespace rendering
+  {
+    // Forward declarations
+    class RenderEngine;
+    class RenderEnginePluginPrivate;
+
+    /// \brief Base plugin class for render engines
+    class IGNITION_RENDERING_VISIBLE RenderEnginePlugin
+    {
+      public: IGN_COMMON_SPECIALIZE_INTERFACE(
+          ignition::rendering::RenderEnginePlugin)
+
+      /// \brief Constructor
+      public: RenderEnginePlugin();
+
+      /// \brief Destructor
+      public: virtual ~RenderEnginePlugin();
+
+      /// \brief Get the name of render engine
+      /// \return Name of render engine
+      public: virtual std::string Name() const = 0;
+
+      /// \brief Get a pointer to the render engine
+      /// \return Render engine instance
+      public: virtual RenderEngine *Engine() const = 0;
+
+      /// \brief Pointer to private data class
+      public: std::unique_ptr<RenderEnginePluginPrivate> dataPtr;
+    };
+  }
+}
+#endif

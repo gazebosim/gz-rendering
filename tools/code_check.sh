@@ -68,10 +68,11 @@ SUPPRESS=/tmp/cpp_check.suppress
 
 # Suppress unused struct member warnings for optix headers. The variables
 # are used by cuda which are not known to cppcheck.
-echo "unusedStructMember:optix/include/ignition/rendering/optix/*.hh" > $SUPPRESS
+#echo "unusedStructMember:optix/include/ignition/rendering/optix/*.hh" > $SUPPRESS
 
 #cppcheck
-CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS --inline-suppr"
+#CPPCHECK_BASE="cppcheck -q --suppressions-list=$SUPPRESS --inline-suppr"
+CPPCHECK_BASE="cppcheck -q  --inline-suppr"
 if [ $CPPCHECK_LT_157 -eq 0 ]; then
   # use --language argument if 1.57 or greater (issue #907)
   CPPCHECK_BASE="$CPPCHECK_BASE --language=c++"

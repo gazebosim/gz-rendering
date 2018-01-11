@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ignition-rendering-simple-demo)
 
-find_package(ignition-rendering0 COMPONENTS ogre)
+find_package(ignition-rendering0)
 
 
 find_package(GLUT REQUIRED)

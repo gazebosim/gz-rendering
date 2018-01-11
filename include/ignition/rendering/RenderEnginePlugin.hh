@@ -19,6 +19,7 @@
 #define IGNITION_RENDERING_RENDERENGINEPLUGIN_HH_
 
 #include <memory>
+#include <string>
 
 #include <ignition/common/PluginMacros.hh>
 #include <ignition/rendering/Export.hh>

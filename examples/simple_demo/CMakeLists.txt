@@ -3,7 +3,6 @@ project(ignition-rendering-simple-demo)
 
 find_package(ignition-rendering0)
 
-
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
 link_directories(${GLUT_LIBRARY_DIRS})

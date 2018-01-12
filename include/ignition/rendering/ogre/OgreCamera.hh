@@ -59,6 +59,8 @@ namespace ignition
 
       public: virtual void Render();
 
+      public: virtual ScenePtr GetScene() const;
+
       protected: virtual RenderTexturePtr RenderTexture() const;
 
       public: virtual void CameraToViewportRay(const int _screenx, const int _screeny,

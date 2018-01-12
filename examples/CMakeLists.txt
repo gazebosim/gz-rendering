@@ -1,4 +1,5 @@
 add_subdirectory(simple_demo)
+add_subdirectory(mouse_picking_demo)
 add_subdirectory(custom_scene_viewer)
 
 ########################################

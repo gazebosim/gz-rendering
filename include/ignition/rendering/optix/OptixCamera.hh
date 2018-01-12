@@ -53,6 +53,8 @@ namespace ignition
 
       public: virtual void Render();
 
+      public: virtual ScenePtr GetScene() const;
+
       protected: virtual RenderTexturePtr RenderTexture() const;
 
       protected: virtual void WriteCameraToDevice();

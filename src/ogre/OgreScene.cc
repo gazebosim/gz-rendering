@@ -371,6 +371,7 @@ VisualPtr OgreScene::VisualAt(OgreCameraPtr _camera,
                           const ignition::math::Vector2i &_mousePos)
 {
   VisualPtr visual;
+  ignwarn << "VisualAt call" << "\n";
 
   Ogre::Entity *closestEntity = this->OgreEntityAt(_camera,
                                                     _mousePos, true);

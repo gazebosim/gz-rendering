@@ -124,6 +124,11 @@ RenderTexturePtr OptixCamera::RenderTexture() const
 }
 
 //////////////////////////////////////////////////
+ScenePtr OptixCamera::GetScene() const
+{
+}
+
+//////////////////////////////////////////////////
 void OptixCamera::WriteCameraToDevice()
 {
   if (this->cameraDirty)

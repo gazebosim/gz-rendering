@@ -115,6 +115,13 @@ void BaseScene::SetSimTime(const common::Time &_time)
 }
 
 //////////////////////////////////////////////////
+VisualPtr BaseScene::VisualAt(CameraPtr _camera,
+                          const ignition::math::Vector2i &_mousePos)
+{
+  return this->VisualAt(_camera, _mousePos);
+}
+
+//////////////////////////////////////////////////
 void BaseScene::SetAmbientLight(double _r, double _g, double _b, double _a)
 {
   this->SetAmbientLight(math::Color(_r, _g, _b, _a));

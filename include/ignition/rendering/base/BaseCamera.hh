@@ -71,6 +71,8 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   Camera::NewFrameListener _listener);
 
+      public: virtual ScenePtr GetScene() const;
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load();
@@ -102,6 +104,13 @@ namespace ignition
     unsigned int BaseCamera<T>::ImageWidth() const
     {
       return this->RenderTexture()->Width();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ScenePtr BaseCamera<T>::GetScene() const
+    {
+      return this->GetScene();
     }
 
     //////////////////////////////////////////////////

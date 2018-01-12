@@ -67,8 +67,8 @@ namespace ignition
       /// position.
       /// \param[in] _mousePos The 2d position of the mouse in pixels.
       /// \return Pointer to the visual, NULL if none found.
-      public: VisualPtr VisualAt(OgreCameraPtr _camera,
-                                 const ignition::math::Vector2i &_mousePos);
+      public: virtual VisualPtr VisualAt(OgreCameraPtr _camera,
+                     const ignition::math::Vector2i &_mousePos);
 
       /// \brief Helper function for GetVisualAt functions.
       /// \param[in] _camera Pointer to the camera.
@@ -76,9 +76,9 @@ namespace ignition
       /// \param[in] _ignoreSelectionObj True to ignore selection objects,
       /// which are GUI objects use to manipulate objects.
       /// \return Pointer to the Ogre::Entity, NULL if none.
-      protected: Ogre::Entity *OgreEntityAt(OgreCameraPtr _camera,
-          const ignition::math::Vector2i &_mousePos,
-          const bool _ignoreSelectionObj);
+      protected: virtual Ogre::Entity *OgreEntityAt(OgreCameraPtr _camera,
+                     const ignition::math::Vector2i &_mousePos,
+                     const bool _ignoreSelectionObj);
 
       /// \brief Get the mesh information for the given mesh.
       /// \param[in] _mesh Mesh to get info about.
@@ -90,14 +90,14 @@ namespace ignition
       /// \param[in] _orient Orientation of the mesh.
       /// \param[in] _scale Scale of the mesh
       // Code found in Wiki: www.ogre3d.org/wiki/index.php/RetrieveVertexData
-      protected: void MeshInformation(const Ogre::Mesh *_mesh,
-                                    size_t &_vertexCount,
-                                    Ogre::Vector3* &_vertices,
-                                    size_t &_indexCount,
-                                    uint64_t* &_indices,
-                                    const ignition::math::Vector3d &_position,
-                                    const ignition::math::Quaterniond &_orient,
-                                    const ignition::math::Vector3d &_scale);
+      protected: virtual void MeshInformation(const Ogre::Mesh *_mesh,
+                     size_t &_vertexCount,
+                     Ogre::Vector3* &_vertices,
+                     size_t &_indexCount,
+                     uint64_t* &_indices,
+                     const ignition::math::Vector3d &_position,
+                     const ignition::math::Quaterniond &_orient,
+                     const ignition::math::Vector3d &_scale);
 
       protected: virtual bool LoadImpl();
 

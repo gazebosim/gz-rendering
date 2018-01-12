@@ -378,9 +378,8 @@ VisualPtr OgreScene::VisualAt(OgreCameraPtr _camera,
   {
     try
     {
-      //visual = this->GetVisual(Ogre::any_cast<std::string>(
-      //      closestEntity->getUserObjectBindings().getUserAny()));
-      visual = this->RootVisual();
+      visual = this->visuals->GetByName(Ogre::any_cast<std::string>(
+            closestEntity->getUserObjectBindings().getUserAny()));
     }
     //catch(boost::bad_any_cast &e)
     catch(const std::exception &e)

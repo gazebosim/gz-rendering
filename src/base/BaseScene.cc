@@ -726,6 +726,21 @@ GridPtr BaseScene::CreateGrid()
 }
 
 //////////////////////////////////////////////////
+TextPtr BaseScene::CreateText()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Text");
+  return this->CreateTextImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+TextPtr BaseScene::CreateTextImpl(const unsigned int /*_id*/,
+    const std::string &/*_name*/)
+{
+  return TextPtr();
+}
+
+//////////////////////////////////////////////////
 MaterialPtr BaseScene::CreateMaterial(const std::string &_name)
 {
   unsigned int objId = this->CreateObjectId();

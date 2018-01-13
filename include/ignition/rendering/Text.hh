@@ -1,0 +1,144 @@
+/*
+ * Copyright (C) 2018 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+#ifndef IGNITION_RENDERING_TEXT_HH_
+#define IGNITION_RENDERING_TEXT_HH_
+
+#include <string>
+
+#include <ignition/math/Box.hh>
+#include <ignition/math/Color.hh>
+
+#include "ignition/rendering/Geometry.hh"
+#include "ignition/rendering/Object.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    /// \class Text Text.hh ignition/rendering/Text
+    /// \brief Represents a billboard text geometry that is always facing the
+    /// camera.
+    class IGNITION_RENDERING_VISIBLE Text :
+      public virtual Geometry
+    {
+      /// \enum HorizontalAlign
+      /// \brief Horizontal alignment
+      public: enum HorizontalAlign {
+                /// \brief Left alignment
+                H_LEFT,
+                /// \brief Center alignment
+                H_CENTER
+              };
+
+      /// \enum VerticalAlign
+      /// \brief vertical alignment
+      public: enum VerticalAlign {
+                /// \brief Align bottom
+                V_BOTTOM,
+                /// \brief Align top
+                V_TOP
+              };
+
+      /// \brief Destructor
+      public: virtual ~Text() { }
+
+      /// \brief Set the font. Valid fonts are defined on
+      /// media/fonts/Gazebo.fontdef
+      /// \param[in] _font Name of the font
+      /// \sa FontName()
+      public: virtual void SetFontName(const std::string &_font) = 0;
+
+      /// \brief Get the font name.
+      /// \return The font name.
+      /// \sa SetFontName()
+      public: virtual std::string FontName() const = 0;
+
+      /// \brief Set the text to display.
+      /// \param[in] _text The text to display.
+      /// \sa Text()
+      public: virtual void SetTextString(const std::string &_text) = 0;
+
+      /// \brief Get the displayed text.
+      /// \return The displayed text.
+      /// \sa SetText()
+      public: virtual std::string TextString() const = 0;
+
+      /// \brief Set the text color.
+      /// \param[in] _color Text color.
+      /// \sa Color()
+      public: virtual void SetColor(const ignition::math::Color &_color) = 0;
+
+      /// \brief Get the text color.
+      /// \return Text color.
+      /// \sa SetColor()
+      public: virtual ignition::math::Color Color() const = 0;
+
+      /// \brief Set the height of the character in meters.
+      /// \param[in] _height Height of the characters.
+      /// \sa CharHeight()
+      public: virtual void SetCharHeight(const float _height) = 0;
+
+      /// \brief Get the height of the characters in meters
+      /// return Height of the characters.
+      /// \sa SetCharHeight()
+      public: virtual float CharHeight() const = 0;
+
+      /// \brief Set the width of spaces between words.
+      /// \param[in] _width Space width
+      /// \sa SpaceWidth()
+      public: virtual void SetSpaceWidth(const float _width) = 0;
+
+      /// \brief Get the width of spaces between words.
+      /// \return Space width
+      /// \sa SetSpaceWidth()
+      public: virtual float SpaceWidth() const = 0;
+
+      /// \brief Set the alignment of the text
+      /// \param[in] _hAlign Horizontal alignment
+      /// \param[in] _vAlign Vertical alignment
+      public: virtual void SetTextAlignment(const HorizontalAlign &_hAlign,
+                                            const VerticalAlign &_vAlign) = 0;
+
+      /// \brief Set the baseline height of the text
+      /// \param[in] _height Baseline height
+      /// \sa Baseline()
+      public: virtual void SetBaseline(const float _height) = 0;
+
+      /// \brief Get the baseline height in meters.
+      /// \return Baseline height
+      /// \sa SetBaseline()
+      public: virtual float Baseline() const;
+
+      /// \brief True = text always is displayed ontop.
+      /// \param[in] _show Set to true to render the text on top of
+      /// all other drawables.
+      /// \sa ShowOnTop()
+      public: virtual void SetShowOnTop(const bool _show) = 0;
+
+      /// \brief Get whether the is displayed above other objects.
+      /// \return True if it is on top.
+      /// \sa SetShowOnTop()
+      public: virtual bool ShowOnTop() const = 0;
+
+      /// \brief Get the axis aligned bounding box of the text.
+      /// \return The axis aligned bounding box.
+      public: virtual ignition::math::Box AABB() = 0;
+    };
+  }
+}
+
+#endif

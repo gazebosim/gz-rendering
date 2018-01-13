@@ -23,6 +23,7 @@
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreGrid.hh"
+#include "ignition/rendering/ogre/OgreText.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreMeshFactory.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
@@ -288,6 +289,14 @@ GridPtr OgreScene::CreateGridImpl(unsigned int _id, const std::string &_name)
   OgreGridPtr grid(new OgreGrid);
   bool result = this->InitObject(grid, _id, _name);
   return (result) ? grid: nullptr;
+}
+
+//////////////////////////////////////////////////
+TextPtr OgreScene::CreateTextImpl(unsigned int _id, const std::string &_name)
+{
+  OgreTextPtr text(new OgreText);
+  bool result = this->InitObject(text, _id, _name);
+  return (result) ? text: nullptr;
 }
 
 //////////////////////////////////////////////////

@@ -177,18 +177,11 @@ void GlutMouse(int _button, int _state, int _mouseX, int _mouseY)
 {
   if (_state == GLUT_DOWN  && _button == GLUT_LEFT_BUTTON)
   {
-    std::cout << "=== Mouse event ====" << std::endl;
-
     VisualPtr visual;
     ignition::math::Vector2i mousePos(_mouseX, _mouseY);
 
-    std::cout << "Get scene" << std::endl;
-    ScenePtr scene = g_cameras[g_cameraIndex]->GetScene();
-    if (scene != NULL)
-    {
-      std::cout << "Get visual" << std::endl;
-      visual = scene->VisualAt(g_cameras[g_cameraIndex], mousePos);
-    }
+    visual = g_cameras[g_cameraIndex]->VisualAt(mousePos);
+    //std::cout << "Selected item " << visual->WorldPose() << "\n";
   }
 }
 

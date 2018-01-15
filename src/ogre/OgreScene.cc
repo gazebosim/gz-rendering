@@ -367,47 +367,41 @@ OgreScenePtr OgreScene::SharedThis()
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreScene::VisualAt(OgreCameraPtr _camera,
-                          const ignition::math::Vector2i &_mousePos)
+VisualPtr OgreScene::VisualAt(const ignition::math::Vector3d &_origin,
+                          const ignition::math::Vector3d &_dir)
+
 {
   VisualPtr visual;
-  ignwarn << "VisualAt call" << "\n";
 
-  Ogre::Entity *closestEntity = this->OgreEntityAt(_camera,
-                                                    _mousePos, true);
+  Ogre::Entity *closestEntity = this->OgreEntityAt(_origin, _dir, true);
   if (closestEntity)
   {
+    ignwarn << "Object close" << "\n";
     try
     {
       visual = this->visuals->GetByName(Ogre::any_cast<std::string>(
             closestEntity->getUserObjectBindings().getUserAny()));
     }
-    //catch(boost::bad_any_cast &e)
-    catch(const std::exception &e)
+    catch(boost::bad_any_cast &e)
+    //catch(const std::exception &e)
     {
       ignerr << "boost any_cast error:" << e.what() << "\n";
     }
   }
-
   return visual;
 }
 
 /////////////////////////////////////////////////
-Ogre::Entity *OgreScene::OgreEntityAt(OgreCameraPtr _camera,
-                                  const ignition::math::Vector2i &_mousePos,
-                                  const bool _ignoreSelectionObj)
+Ogre::Entity *OgreScene::OgreEntityAt(const ignition::math::Vector3d &_origin,
+                          const ignition::math::Vector3d &_dir,
+                          const bool _ignoreSelectionObj)
 {
   Ogre::Real closest_distance = -1.0f;
-
-  ignition::math::Vector3d origin;
-  ignition::math::Vector3d dir;
-  _camera->CameraToViewportRay(_mousePos.X(), _mousePos.Y(), origin, dir);
-  Ogre::Ray mouseRay(OgreConversions::Convert(origin), OgreConversions::Convert(dir));
+  Ogre::Ray mouseRay(OgreConversions::Convert(_origin), OgreConversions::Convert(_dir));
 
   this->raySceneQuery->setRay(mouseRay);
 
   // Perform the scene query
-  // TODO: implement
   Ogre::RaySceneQueryResult &result= this->raySceneQuery->execute();
   Ogre::RaySceneQueryResult::iterator iter = result.begin();
   Ogre::Entity *closestEntity = NULL;
@@ -495,6 +489,7 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
   size_t next_offset = 0;
   size_t index_offset = 0;
 
+  size_t currOffset = 0;
   _vertex_count = _index_count = 0;
 
   // Calculate how many vertices and indices we're going to need
@@ -520,7 +515,6 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
     _index_count += submesh->indexData->indexCount;
   }
 
-
   // Allocate space for the vertices and indices
   _vertices = new Ogre::Vector3[_vertex_count];
   _indices = new uint64_t[_index_count];
@@ -535,6 +529,16 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
     Ogre::VertexData* vertex_data = submesh->useSharedVertices ?
         _mesh->sharedVertexData : submesh->vertexData;
 
+    Ogre::VertexDeclaration* vertex_decl;
+    vertex_decl = vertex_data->vertexDeclaration;
+    // two dimensional texture coordinates
+//    if (submesh->TexCoordCount() > 0)
+//    {
+      vertex_decl->addElement(0, currOffset, Ogre::VET_FLOAT2,
+      Ogre::VES_TEXTURE_COORDINATES, 0);
+      currOffset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
+//    }
+
     if (!submesh->useSharedVertices || !added_shared)
     {
       if (submesh->useSharedVertices)
@@ -546,18 +550,27 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
         vertex_data->vertexDeclaration->findElementBySemantic(
             Ogre::VES_POSITION);
 
-      Ogre::HardwareVertexBufferSharedPtr vbuf =
-        vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
+      Ogre::HardwareVertexBufferSharedPtr vbuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
+                 vertex_decl->getVertexSize(0),
+                 vertex_data->vertexCount,
+                 Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+                 false);
+
+     // Ogre::HardwareVertexBufferSharedPtr vbuf =
+     //   vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
+
 
       unsigned char *vertex =
         static_cast<unsigned char*>(
             vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+
 
       // There is _no_ baseVertexPointerToElement() which takes an
       // Ogre::Real or a double as second argument. So make it float,
       // to avoid trouble when Ogre::Real will be comiled/typedefed as double:
       //      Ogre::Real* pReal;
       float *pReal;
+
 
       for (size_t j = 0; j < vertex_data->vertexCount;
            ++j, vertex += vbuf->getVertexSize())
@@ -578,7 +591,7 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
     if ((ibuf->getType() == Ogre::HardwareIndexBuffer::IT_32BIT))
     {
       uint32_t*  pLong = static_cast<uint32_t*>(
-          ibuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+          ibuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
 
       for (size_t k = 0; k < index_data->indexCount; k++)
       {

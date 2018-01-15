@@ -73,6 +73,8 @@ namespace ignition
 
       public: virtual ScenePtr GetScene() const;
 
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i &_mousePos);
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load();
@@ -139,6 +141,14 @@ namespace ignition
     unsigned int BaseCamera<T>::ImageDepth() const
     {
       return PixelUtil::ChannelCount(this->ImageFormat());
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i &_mousePos)
+    {
+      std::cout << "Calling BaseCamera VisualAt" << "\n";
+      return this->VisualAt(_mousePos);
     }
 
     //////////////////////////////////////////////////

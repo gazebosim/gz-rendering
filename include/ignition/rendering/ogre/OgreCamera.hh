@@ -61,6 +61,8 @@ namespace ignition
 
       public: virtual ScenePtr GetScene() const;
 
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i &_mousePos);
+
       protected: virtual RenderTexturePtr RenderTexture() const;
 
       public: virtual void CameraToViewportRay(const int _screenx, const int _screeny,

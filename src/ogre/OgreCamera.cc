@@ -121,6 +121,16 @@ ScenePtr OgreCamera::GetScene() const
 }
 
 //////////////////////////////////////////////////
+VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i &_mousePos)
+{
+  ignition::math::Vector3d origin;
+  ignition::math::Vector3d dir;
+  this->CameraToViewportRay(_mousePos.X(), _mousePos.Y(), origin, dir);
+  return this->scene->VisualAt(origin, dir);
+}
+
+
+//////////////////////////////////////////////////
 void OgreCamera::Init()
 {
   BaseCamera::Init();
@@ -170,8 +180,8 @@ void OgreCamera::CameraToViewportRay(const int _screenx, const int _screeny,
     ignition::math::Vector3d &_dir) const
 {
   Ogre::Ray ray = this->ogreCamera->getCameraToViewportRay(
-      static_cast<float>(_screenx) / this->ViewportWidth(),
-      static_cast<float>(_screeny) / this->ViewportHeight());
+      static_cast<float>(_screenx) / this->ImageWidth(),
+      static_cast<float>(_screeny) / this->ImageHeight());
 
   _origin.Set(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z);
   _dir.Set(ray.getDirection().x, ray.getDirection().y, ray.getDirection().z);

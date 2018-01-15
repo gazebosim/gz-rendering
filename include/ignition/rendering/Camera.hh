@@ -22,6 +22,7 @@
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Sensor.hh"
+#include "ignition/rendering/Scene.hh"
 
 namespace ignition
 {
@@ -86,6 +87,11 @@ namespace ignition
 
       /// \brief Get the scene that the camera is rendering
       public: virtual ScenePtr GetScene() const = 0;
+
+      /// \brief Get the visual at a given position in the camera render
+      /// \param[in] _mousePos position of the mouse in the current camera
+      // render
+      public: virtual VisualPtr VisualAt(const math::Vector2i &_mousePos) = 0;
 
       /// \brief Set the camera's aspect ratio. This value determines the
       /// cameras vertical field-of-view. It is often the \code image_height /

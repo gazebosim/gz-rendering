@@ -147,8 +147,8 @@ namespace ignition
 
       public: virtual VisualPtr VisualByIndex(unsigned int _index) const;
 
-      public: virtual VisualPtr VisualAt(CameraPtr _camera,
-                     const ignition::math::Vector2i &_mousePos);
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector3d &_origin,
+                  const ignition::math::Vector3d &_dir);
 
       public: virtual void DestroyVisual(VisualPtr _visual);
 

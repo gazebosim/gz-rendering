@@ -97,8 +97,6 @@ namespace ignition
 
       public: virtual ScenePtr GetScene() const;
 
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i &_mousePos);
-
       public: virtual RenderWindowPtr CreateRenderWindow();
 
       // Documentation inherited.
@@ -246,14 +244,6 @@ namespace ignition
     void BaseCamera<T>::SetImageHeight(const unsigned int _height)
     {
       this->RenderTarget()->SetHeight(_height);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i &_mousePos)
-    {
-      std::cout << "Calling BaseCamera VisualAt" << "\n";
-      return this->VisualAt(_mousePos);
     }
 
     //////////////////////////////////////////////////

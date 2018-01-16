@@ -59,8 +59,6 @@ namespace ignition
 
       public: virtual ScenePtr GetScene() const;
 
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i &_mousePos);
-
       public: virtual RenderWindowPtr CreateRenderWindow();
 
       public: virtual math::Matrix4d ProjectionMatrix() const;

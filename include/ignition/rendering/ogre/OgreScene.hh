@@ -61,21 +61,8 @@ namespace ignition
 
       public: virtual Ogre::SceneManager *OgreSceneManager() const;
 
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector3d &_origin,
-                     const ignition::math::Vector3d &_dir);
-
-      protected: virtual Ogre::Entity *OgreEntityAt(const ignition::math::Vector3d &_origin,
-                     const ignition::math::Vector3d &_dir,
-                     const bool _ignoreSelectionObj);
-
-      protected: virtual void MeshInformation(const Ogre::Mesh *_mesh,
-                     size_t &_vertexCount,
-                     Ogre::Vector3* &_vertices,
-                     size_t &_indexCount,
-                     uint64_t* &_indices,
-                     const ignition::math::Vector3d &_position,
-                     const ignition::math::Quaterniond &_orient,
-                     const ignition::math::Vector3d &_scale);
+      public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
+                     const ignition::math::Vector2d &_cameraPos);
 
       protected: virtual bool LoadImpl();
 

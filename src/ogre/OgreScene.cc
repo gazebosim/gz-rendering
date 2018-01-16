@@ -130,12 +130,6 @@ bool OgreScene::InitImpl()
   OgreRTShaderSystem::Instance()->AddScene(this->SharedThis());
   OgreRTShaderSystem::Instance()->ApplyShadows(this->SharedThis());
 
-  // Create ray scene query
-  this->raySceneQuery = ogreSceneManager->createRayQuery(Ogre::Ray());
-  this->raySceneQuery->setSortByDistance(true);
-  this->raySceneQuery->setQueryMask(
-      Ogre::SceneManager::ENTITY_TYPE_MASK);
-
   return true;
 }
 
@@ -390,13 +384,18 @@ OgreScenePtr OgreScene::SharedThis()
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreScene::VisualAt(const ignition::math::Vector3d &_origin,
-                          const ignition::math::Vector3d &_dir)
+VisualPtr OgreScene::VisualAt(const CameraPtr &_camera,
+                          const ignition::math::Vector2d &_mousePos)
 
 {
   VisualPtr visual;
 
-  Ogre::Entity *closestEntity = this->OgreEntityAt(_origin, _dir, true);
+  OgreRayQuery rayQuery;
+
+  rayQuery.SetFromCamera(_camera, _mousePos);
+  RayQueryResult result = rayQuery.ClosestPoint();
+
+ /* Ogre::Entity *closestEntity = this->OgreEntityAt(_origin, _dir, true);
   if (closestEntity)
   {
     ignwarn << "Object close" << "\n";
@@ -410,218 +409,7 @@ VisualPtr OgreScene::VisualAt(const ignition::math::Vector3d &_origin,
     {
       ignerr << "boost any_cast error:" << e.what() << "\n";
     }
-  }
+  }*/
   return visual;
 }
-
-/////////////////////////////////////////////////
-Ogre::Entity *OgreScene::OgreEntityAt(const ignition::math::Vector3d &_origin,
-                          const ignition::math::Vector3d &_dir,
-                          const bool _ignoreSelectionObj)
-{
-  Ogre::Real closest_distance = -1.0f;
-  Ogre::Ray mouseRay(OgreConversions::Convert(_origin), OgreConversions::Convert(_dir));
-
-  this->raySceneQuery->setRay(mouseRay);
-
-  // Perform the scene query
-  Ogre::RaySceneQueryResult &result= this->raySceneQuery->execute();
-  Ogre::RaySceneQueryResult::iterator iter = result.begin();
-  Ogre::Entity *closestEntity = NULL;
-
-  for (iter = result.begin(); iter != result.end(); ++iter)
-  {
-    // is the result a MovableObject
-    if (iter->movable && iter->movable->getMovableType().compare("Entity") == 0)
-    {
-      if (!iter->movable->isVisible() ||
-          iter->movable->getName().find("__COLLISION_VISUAL__") !=
-          std::string::npos)
-        continue;
-      if (_ignoreSelectionObj &&
-          iter->movable->getName().substr(0, 15) == "__SELECTION_OBJ")
-        continue;
-
-      Ogre::Entity *ogreEntity = static_cast<Ogre::Entity*>(iter->movable);
-
-      // mesh data to retrieve
-      size_t vertex_count;
-      size_t index_count;
-      Ogre::Vector3 *vertices;
-      uint64_t *indices;
-
-      // Get the mesh information
-      this->MeshInformation(ogreEntity->getMesh().get(), vertex_count,
-          vertices, index_count, indices,
-          OgreConversions::Convert(ogreEntity->getParentNode()->_getDerivedPosition()),
-          OgreConversions::Convert(ogreEntity->getParentNode()->_getDerivedOrientation()),
-          OgreConversions::Convert(ogreEntity->getParentNode()->_getDerivedScale()));
-
-      bool new_closest_found = false;
-      for (int i = 0; i < static_cast<int>(index_count); i += 3)
-      {
-        // when indices size is not divisible by 3
-        if (i+2 >= static_cast<int>(index_count))
-          break;
-
-        // check for a hit against this triangle
-        std::pair<bool, Ogre::Real> hit = Ogre::Math::intersects(mouseRay,
-            vertices[indices[i]],
-            vertices[indices[i+1]],
-            vertices[indices[i+2]],
-            true, false);
-
-        // if it was a hit check if its the closest
-        if (hit.first)
-        {
-          if ((closest_distance < 0.0f) || (hit.second < closest_distance))
-          {
-            // this is the closest so far, save it off
-            closest_distance = hit.second;
-            new_closest_found = true;
-            std::cout << "Found mesh " << "\n";
-          }
-        }
-        else
-        {
-          std::cout << "Missing mesh " << "\n" ;
-        }
-      }
-
-      delete [] vertices;
-      delete [] indices;
-
-      if (new_closest_found)
-      {
-        closestEntity = ogreEntity;
-        // break;
-      }
-    }
-  }
-
-  return closestEntity;
-}
-
-//////////////////////////////////////////////////
-void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
-                            size_t &_vertex_count,
-                            Ogre::Vector3* &_vertices,
-                            size_t &_index_count,
-                            uint64_t* &_indices,
-                            const ignition::math::Vector3d &_position,
-                            const ignition::math::Quaterniond &_orient,
-                            const ignition::math::Vector3d &_scale)
-{
-  bool added_shared = false;
-  size_t current_offset = 0;
-  size_t next_offset = 0;
-  size_t index_offset = 0;
-
-  _vertex_count = _index_count = 0;
-
-  // Calculate how many vertices and indices we're going to need
-  for (uint16_t i = 0; i < _mesh->getNumSubMeshes(); ++i)
-  {
-    Ogre::SubMesh* submesh = _mesh->getSubMesh(i);
-
-    // We only need to add the shared vertices once
-    if (submesh->useSharedVertices)
-    {
-      if (!added_shared)
-      {
-        _vertex_count += _mesh->sharedVertexData->vertexCount;
-        added_shared = true;
-      }
-    }
-    else
-    {
-      _vertex_count += submesh->vertexData->vertexCount;
-    }
-
-    // Add the indices
-    _index_count += submesh->indexData->indexCount;
-  }
-
-
-  // Allocate space for the vertices and indices
-  _vertices = new Ogre::Vector3[_vertex_count];
-  _indices = new uint64_t[_index_count];
-
-  added_shared = false;
-
-  // Run through the submeshes again, adding the data into the arrays
-  for (uint16_t i = 0; i < _mesh->getNumSubMeshes(); ++i)
-  {
-    Ogre::SubMesh* submesh = _mesh->getSubMesh(i);
-
-    Ogre::VertexData* vertex_data = submesh->useSharedVertices ?
-        _mesh->sharedVertexData : submesh->vertexData;
-
-    if (!submesh->useSharedVertices || !added_shared)
-    {
-      if (submesh->useSharedVertices)
-      {
-        added_shared = true;
-      }
-
-      const Ogre::VertexElement* posElem =
-        vertex_data->vertexDeclaration->findElementBySemantic(
-            Ogre::VES_POSITION);
-
-      Ogre::HardwareVertexBufferSharedPtr vbuf =
-        vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
-
-      unsigned char *vertex =
-        static_cast<unsigned char*>(
-            vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
-
-      // There is _no_ baseVertexPointerToElement() which takes an
-      // Ogre::Real or a double as second argument. So make it float,
-      // to avoid trouble when Ogre::Real will be comiled/typedefed as double:
-      //      Ogre::Real* pReal;
-      float *pReal;
-
-      for (size_t j = 0; j < vertex_data->vertexCount;
-           ++j, vertex += vbuf->getVertexSize())
-      {
-        posElem->baseVertexPointerToElement(vertex, &pReal);
-        ignition::math::Vector3d pt(pReal[0], pReal[1], pReal[2]);
-        _vertices[current_offset + j] =
-            OgreConversions::Convert((_orient * (pt * _scale)) + _position);
-      }
-
-      vbuf->unlock();
-      next_offset += vertex_data->vertexCount;
-    }
-
-    Ogre::IndexData* index_data = submesh->indexData;
-    Ogre::HardwareIndexBufferSharedPtr ibuf = index_data->indexBuffer;
-
-    if ((ibuf->getType() == Ogre::HardwareIndexBuffer::IT_32BIT))
-    {
-      uint32_t*  pLong = static_cast<uint32_t*>(
-          ibuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
-
-      for (size_t k = 0; k < index_data->indexCount; k++)
-      {
-        _indices[index_offset++] = pLong[k];
-      }
-    }
-    else
-    {
-      uint64_t*  pLong = static_cast<uint64_t*>(
-          ibuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
-
-      uint16_t* pShort = reinterpret_cast<uint16_t*>(pLong);
-      for (size_t k = 0; k < index_data->indexCount; k++)
-      {
-        _indices[index_offset++] = static_cast<uint64_t>(pShort[k]);
-      }
-    }
-
-    ibuf->unlock();
-    current_offset = next_offset;
-  }
-}
-
 //////////////////////////////////////////////////

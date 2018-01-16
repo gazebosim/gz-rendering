@@ -100,15 +100,6 @@ ScenePtr OgreCamera::GetScene() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i &_mousePos)
-{
-  ignition::math::Vector3d origin;
-  ignition::math::Vector3d dir;
-  this->CameraToViewportRay(_mousePos.X(), _mousePos.Y(), origin, dir);
-  return this->scene->VisualAt(origin, dir);
-}
-
-//////////////////////////////////////////////////
 void OgreCamera::Init()
 {
   BaseCamera::Init();

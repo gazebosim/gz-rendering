@@ -115,10 +115,10 @@ void BaseScene::SetSimTime(const common::Time &_time)
 }
 
 //////////////////////////////////////////////////
-VisualPtr BaseScene::VisualAt(const ignition::math::Vector3d &_origin,
-                              const ignition::math::Vector3d &_dir)
+VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,
+                              const ignition::math::Vector2d &_mousePos)
 {
-  return this->VisualAt(_origin, _dir);
+  return this->VisualAt(_camera, _mousePos);
 }
 
 //////////////////////////////////////////////////

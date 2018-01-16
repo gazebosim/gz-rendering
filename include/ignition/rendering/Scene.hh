@@ -90,8 +90,8 @@ namespace ignition
       /// \param[in] _origin Origin of the ray
       /// \param[in] _dir Direction of the ray.
       /// \return Pointer to the visual, NULL if none found.
-      public: virtual VisualPtr VisualAt(const math::Vector3d &_origin,
-                  const math::Vector3d &_dir) = 0;
+      public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
+                  const math::Vector2d &_mousePos) = 0;
 
       /// \brief Get the scene ambient light color
       /// \return The scene ambient light color

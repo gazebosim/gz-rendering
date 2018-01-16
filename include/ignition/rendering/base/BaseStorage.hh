@@ -1040,7 +1040,8 @@ namespace ignition
       for (auto store : this->stores)
       {
         unsigned int size = store->Size();
-        if (_index < size) return store->GetById(_index);
+        if (_index < size)
+          return store->GetByIndex(_index);
         _index -= size;
       }
 

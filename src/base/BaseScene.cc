@@ -128,9 +128,21 @@ void BaseScene::SetAmbientLight(double _r, double _g, double _b, double _a)
 }
 
 //////////////////////////////////////////////////
+math::Color BaseScene::BackgroundColor() const
+{
+  return this->backgroundColor;
+}
+
+//////////////////////////////////////////////////
 void BaseScene::SetBackgroundColor(double _r, double _g, double _b, double _a)
 {
   this->SetBackgroundColor(math::Color(_r, _g, _b, _a));
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetBackgroundColor(const math::Color &_color)
+{
+  this->backgroundColor = _color;
 }
 
 //////////////////////////////////////////////////
@@ -437,7 +449,8 @@ MaterialPtr BaseScene::Material(const std::string &_name) const
 void BaseScene::RegisterMaterial(const std::string &_name,
     MaterialPtr _material)
 {
-  this->Materials()->Put(_name, _material);
+  if (_material)
+    this->Materials()->Put(_name, _material);
 }
 
 //////////////////////////////////////////////////
@@ -704,22 +717,43 @@ MeshPtr BaseScene::CreateMesh(const MeshDescriptor &_desc)
 
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Mesh-" + meshName);
-  return this->CreateMeshImpl(objId, name, _desc);
+  return this->CreateMeshImpl(objId, objName, _desc);
 }
 
 //////////////////////////////////////////////////
-MaterialPtr BaseScene::CreateMaterial()
+GridPtr BaseScene::CreateGrid()
 {
   unsigned int objId = this->CreateObjectId();
-  std::string objName = this->CreateObjectName(objId, "Material");
-  return this->CreateMaterialImpl(objId, objName);
+  std::string objName = this->CreateObjectName(objId, "Grid");
+  return this->CreateGridImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+MaterialPtr BaseScene::CreateMaterial(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+
+  std::string objName = _name.empty() ?
+      this->CreateObjectName(objId, "Material") : _name;
+
+  MaterialPtr material = this->CreateMaterialImpl(objId, objName);
+  this->RegisterMaterial(objName, material);
+
+  return material;
 }
 
 //////////////////////////////////////////////////
 MaterialPtr BaseScene::CreateMaterial(const common::Material &_material)
 {
-  MaterialPtr material = this->CreateMaterial();
+  MaterialPtr material;
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = _material.Name().empty() ?
+      this->CreateObjectName(objId, "Material") : _material.Name();
+
+  material = this->CreateMaterialImpl(objId, objName);
   material->CopyFrom(_material);
+  this->RegisterMaterial(objName, material);
+
   return material;
 }
 
@@ -729,6 +763,22 @@ RenderTexturePtr BaseScene::CreateRenderTexture()
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "RenderTexture");
   return this->CreateRenderTextureImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+RenderWindowPtr BaseScene::CreateRenderWindow()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "RenderWindow");
+  return this->CreateRenderWindowImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+RayQueryPtr BaseScene::CreateRayQuery()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "RayQuery");
+  return this->CreateRayQueryImpl(objId, objName);
 }
 
 //////////////////////////////////////////////////
@@ -814,7 +864,7 @@ void BaseScene::CreateMaterials()
 {
   MaterialPtr material;
 
-  material = this->CreateMaterial();
+  material = this->CreateMaterial("Default/TransRed");
   material->SetAmbient(1.0, 0.0, 0.0);
   material->SetDiffuse(1.0, 0.0, 0.0);
   material->SetEmissive(1.0, 0.0, 0.0);
@@ -822,9 +872,8 @@ void BaseScene::CreateMaterials()
   material->SetCastShadows(false);
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
-  this->RegisterMaterial("Default/TransRed", material);
 
-  material = this->CreateMaterial();
+  material = this->CreateMaterial("Default/TransGreen");
   material->SetAmbient(0.0, 1.0, 0.0);
   material->SetDiffuse(0.0, 1.0, 0.0);
   material->SetEmissive(0.0, 1.0, 0.0);
@@ -832,9 +881,8 @@ void BaseScene::CreateMaterials()
   material->SetCastShadows(false);
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
-  this->RegisterMaterial("Default/TransGreen", material);
 
-  material = this->CreateMaterial();
+  material = this->CreateMaterial("Default/TransBlue");
   material->SetAmbient(0.0, 0.0, 1.0);
   material->SetDiffuse(0.0, 0.0, 1.0);
   material->SetEmissive(0.0, 0.0, 1.0);
@@ -842,5 +890,13 @@ void BaseScene::CreateMaterials()
   material->SetCastShadows(false);
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
-  this->RegisterMaterial("Default/TransBlue", material);
+
+  material = this->CreateMaterial("Default/White");
+  material->SetAmbient(1.0, 1.0, 1.0);
+  material->SetDiffuse(1.0, 1.0, 1.0);
+  material->SetEmissive(1.0, 1.0, 1.0);
+  material->SetTransparency(0);
+  material->SetCastShadows(true);
+  material->SetReceiveShadows(true);
+  material->SetLightingEnabled(true);
 }

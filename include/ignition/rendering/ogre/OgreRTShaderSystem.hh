@@ -17,10 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
 #define IGNITION_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
 
-#include <mutex>
-#include <list>
+#include <memory>
 #include <string>
-#include <vector>
 
 #include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/ogre/OgreIncludes.hh"
@@ -31,6 +29,9 @@ namespace ignition
 {
   namespace rendering
   {
+    // forward declaration
+    class OgreRTShaderSystemPrivate;
+
     /// \addtogroup ign_rendering
     /// \{
 
@@ -64,8 +65,10 @@ namespace ignition
       /// \brief Destructor.
       private: virtual ~OgreRTShaderSystem();
 
-      /// \brief Init the run time shader system.
-      public: void Init();
+      /// \brief Initialize the run time shader system.
+      /// \return True if the run time shader system is initialized
+      /// successfully.
+      public: bool Init();
 
       /// \brief Finalize the shader system
       public: void Fini();
@@ -135,34 +138,35 @@ namespace ignition
       private: bool Paths(std::string &_coreLibsPath,
                              std::string &_cachePath);
 
-#if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 7
-      /// \brief The shader generator.
-      private: Ogre::RTShader::ShaderGenerator *shaderGenerator;
+      /// \brief Set the shadow texture size.
+      /// \param[in] _size Size of shadow texture to set to. This must be a
+      /// power of 2. The default size is 1024.
+      /// \return True if size is set successfully, false otherwise.
+      public: bool SetShadowTextureSize(const unsigned int _size);
 
-      /// \brief Used to generate shadows.
-      private: Ogre::RTShader::SubRenderState *shadowRenderState;
-#endif
+      /// \brief Get the shadow texture size.
+      /// \return Size of the shadow texture. The default size is 1024.
+      public: unsigned int ShadowTextureSize() const;
 
-      /// \brief All the entites being used.
-      private: std::list<OgreSubMesh*> entities;
+      /// \brief Get if RTShaderSystem is initialized or not
+      /// \return True if intialized.
+      public: bool IsInitialized() const;
 
-      /// \brief True if initialized.
-      private: bool initialized;
-
-      /// \brief True if shadows have been applied.
-      private: bool shadowsApplied;
-
-      /// \brief All the scenes.
-      private: std::vector<OgreScenePtr> scenes;
-
-      /// \brief Mutex used to protext the entities list.
-      private: std::mutex *entityMutex;
-
-      /// \brief Parallel Split Shadow Map (PSSM) camera setup
-      private: Ogre::ShadowCameraSetupPtr pssmSetup;
+      /// \brief Update the RT shaders. The call will only take effect if
+      /// shadow properties changed, e.g. texture size, or the shaders
+      /// have been marked dirty by UpdateShaders, e.g. when entities are
+      /// added. The function reapplies shadows if properties have changed,
+      /// and iterates through all entities added to RTShaderSystem
+      /// and regenerates shader programs for each entity if shaders are dirty.
+      /// This function is currently called by OgreScene::PreRender
+      /// \sa OgreScene::PreRender
+      public: void Update();
 
       /// \brief Make the RTShader system a singleton.
       private: friend class SingletonT<OgreRTShaderSystem>;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<OgreRTShaderSystemPrivate> dataPtr;
     };
     /// \}
   }

@@ -27,20 +27,22 @@
 #include <iostream>
 #include <vector>
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/rendering.hh"
+#include <ignition/common/Console.hh>
+#include <ignition/rendering.hh>
+
 #include "GlutWindow.hh"
 
 using namespace ignition;
 using namespace rendering;
 
-void BuildScene(ScenePtr _scene)
+//////////////////////////////////////////////////
+void buildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
   VisualPtr root = _scene->RootVisual();
 
-  // create point light
+  // create directional light
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
   light0->SetDirection(-0.5, 0.5, -1);
   light0->SetDiffuseColor(0.5, 0.5, 0.5);
@@ -120,7 +122,7 @@ void BuildScene(ScenePtr _scene)
   white->SetReceiveShadows(true);
   white->SetReflectivity(0);
 
-  // create sphere visual
+  // create plane visual
   VisualPtr plane = _scene->CreateVisual();
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(5, 8, 1);
@@ -140,10 +142,11 @@ void BuildScene(ScenePtr _scene)
   root->AddChild(camera);
 }
 
-CameraPtr CreateCamera(const std::string &_engineName)
+//////////////////////////////////////////////////
+CameraPtr createCamera(const std::string &_engineName)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::get_engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -151,13 +154,14 @@ CameraPtr CreateCamera(const std::string &_engineName)
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  BuildScene(scene);
+  buildScene(scene);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
   return std::dynamic_pointer_cast<Camera>(sensor);
 }
 
+//////////////////////////////////////////////////
 int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
@@ -173,12 +177,12 @@ int main(int _argc, char** _argv)
 
     for (auto engineName : engineNames)
     {
-      CameraPtr camera = CreateCamera(engineName);
+      CameraPtr camera = createCamera(engineName);
       if (camera)
         cameras.push_back(camera);
     }
 
-    GlutRun(cameras);
+    run(cameras);
   }
   catch (...)
   {

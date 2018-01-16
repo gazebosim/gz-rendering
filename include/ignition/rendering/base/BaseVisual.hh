@@ -81,16 +81,16 @@ namespace ignition
       public: virtual void RemoveGeometries();
 
       public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true);
+                  bool _unique = true);
 
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true);
+                  bool _unique = true);
 
       public: virtual void SetChildMaterial(MaterialPtr _material,
-                  bool unique = true);
+                  bool _unique = true);
 
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
-                  bool unique = true);
+                  bool _unique = true);
 
       public: virtual math::Vector3d LocalScale() const = 0;
 
@@ -333,47 +333,47 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetMaterial(const std::string &_name, bool unique)
+    void BaseVisual<T>::SetMaterial(const std::string &_name, bool _unique)
     {
       MaterialPtr material = this->Scene()->Material(_name);
-      if (material) this->SetMaterial(material, unique);
+      if (material) this->SetMaterial(material, _unique);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetMaterial(MaterialPtr _material, bool unique)
+    void BaseVisual<T>::SetMaterial(MaterialPtr _material, bool _unique)
     {
-      _material = (unique) ? _material->Clone() : _material;
+      _material = (_unique) ? _material->Clone() : _material;
       this->SetChildMaterial(_material, false);
       this->SetGeometryMaterial(_material, false);
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetChildMaterial(MaterialPtr _material, bool unique)
+    void BaseVisual<T>::SetChildMaterial(MaterialPtr _material, bool _unique)
     {
-      _material = (unique) ? _material->Clone() : _material;
       unsigned int count = this->ChildCount();
+      _material = (_unique && count > 0) ? _material->Clone() : _material;
 
       for (unsigned int i = 0; i < count; ++i)
       {
         NodePtr child = this->ChildByIndex(i);
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
-        if (visual) visual->SetMaterial(_material);
+        if (visual) visual->SetMaterial(_material, false);
       }
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetGeometryMaterial(MaterialPtr _material, bool unique)
+    void BaseVisual<T>::SetGeometryMaterial(MaterialPtr _material, bool _unique)
     {
-      _material = (unique) ? _material->Clone() : _material;
       unsigned int count = this->GeometryCount();
+      _material = (_unique && count > 0) ? _material->Clone() : _material;
 
       for (unsigned int i = 0; i < count; ++i)
       {
         GeometryPtr geometry = this->GeometryByIndex(i);
-        geometry->SetMaterial(_material);
+        geometry->SetMaterial(_material, false);
       }
     }
 

@@ -6,6 +6,7 @@ set (headers
   OgreCamera.hh
   OgreConversions.hh
   OgreGeometry.hh
+  OgreGrid.hh
   OgreIncludes.hh
   OgreLight.hh
   OgreMaterial.hh
@@ -13,6 +14,7 @@ set (headers
   OgreMesh.hh
   OgreNode.hh
   OgreObject.hh
+  OgreRayQuery.hh
   OgreRenderEngine.hh
   OgreRenderTarget.hh
   OgreRenderTypes.hh
@@ -21,6 +23,9 @@ set (headers
   OgreSensor.hh
   OgreStorage.hh
   OgreVisual.hh
+  selection_buffer/MaterialSwitcher.hh
+  selection_buffer/SelectionBuffer.hh
+  selection_buffer/SelectionRenderListener.hh
 )
 
 #################################################
@@ -36,4 +41,4 @@ set(ign_group_in ${CMAKE_CURRENT_SOURCE_DIR}/ogre.hh.in)
 set(ign_group_header ${CMAKE_CURRENT_BINARY_DIR}/ogre.hh)
 configure_file (${ign_group_in} ${ign_group_header})
 
-ign_install_includes(${IGN_PROJECT_NAME}/ogre ${headers})
+ign_install_includes("${IGN_PROJECT_NAME}${PROJECT_MAJOR_VERSION}/ignition/${IGN_PROJECT_NAME}/ogre" ${headers})

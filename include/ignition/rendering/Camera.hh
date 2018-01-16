@@ -18,7 +18,10 @@
 #define IGNITION_RENDERING_CAMERA_HH_
 
 #include <string>
+
 #include <ignition/common/Event.hh>
+#include <ignition/math/Matrix4.hh>
+
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Sensor.hh"
@@ -65,10 +68,6 @@ namespace ignition
       /// \param[in] _format New image pixel format
       public: virtual void SetImageFormat(PixelFormat _format) = 0;
 
-      /// \brief Get the image channel depth
-      /// \return The image channel depth
-      public: virtual unsigned int ImageDepth() const = 0;
-
       /// \brief Get the total image memory size in bytes
       /// \return The image memory size in bytes
       public: virtual unsigned int ImageMemorySize() const = 0;
@@ -97,7 +96,7 @@ namespace ignition
       /// cameras vertical field-of-view. It is often the \code image_height /
       /// image_width \endcode but this is not necessarily true.
       /// \return The camera's aspect ratio
-      public: virtual void SetAspectRatio(double _ratio) = 0;
+      public: virtual void SetAspectRatio(const double _ratio) = 0;
 
       // TODO: add auto-aspect ratio
 
@@ -110,7 +109,23 @@ namespace ignition
       /// can significantly slow-down rendering times, depending on the
       /// underlying render engine.
       /// \param[in] _aa Level of anti-aliasing used during rendering
-      public: virtual void SetAntiAliasing(unsigned int _aa) = 0;
+      public: virtual void SetAntiAliasing(const unsigned int _aa) = 0;
+
+      /// \brief Get the camera's far clipping plane distance
+      /// \return Far clipping plane distance
+      public: virtual double FarClipPlane() const = 0;
+
+      /// \brief Set the camera's far clipping plane distance
+      /// \param[in] _far Far clipping plane distance
+      public: virtual void SetFarClipPlane(const double _far) = 0;
+
+      /// \brief Get the camera's near clipping plane distance
+      /// \return Near clipping plane distance
+      public: virtual double NearClipPlane() const = 0;
+
+      /// \brief Set the camera's near clipping plane distance
+      /// \param[in] _near Near clipping plane distance
+      public: virtual void SetNearClipPlane(const double _near) = 0;
 
       /// \brief Renders the current scene using this camera. This function
       /// assumes PreRender() has already been called on the parent Scene,
@@ -122,6 +137,13 @@ namespace ignition
       /// This function should only be called after a call to Render has
       /// successfully been executed.
       public: virtual void PostRender() = 0;
+
+      /// \brief Renders a new frame.
+      /// This is a convenience function for single-camera scenes. It wraps the
+      /// pre-render, render, and post-render into a single
+      /// function. This should be used in applications with multiple cameras
+      /// or multiple consumers of a single camera's images.
+      public: virtual void Update() = 0;
 
       /// \brief Created an empty image buffer for capturing images. The
       /// resulting image will have sufficient memory allocated for subsequent
@@ -156,6 +178,97 @@ namespace ignition
       /// \param[in] _listener New camera listener callback
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   NewFrameListener _listener) = 0;
+
+      /// \brief Create a render window.
+      /// \return A pointer to the render window.
+      public: virtual RenderWindowPtr CreateRenderWindow() = 0;
+
+      /// \brief Get the projection matrix for this camera
+      /// \return Camera projection matrix
+      public: virtual math::Matrix4d ProjectionMatrix() const = 0;
+
+      /// \brief Get the view matrix for this camera
+      /// \return Camera view matrix
+      public: virtual math::Matrix4d ViewMatrix() const = 0;
+
+      /// \brief Set a node for camera to track. The camera will automatically
+      /// change its orientation to face the target being tracked. If null is
+      /// specified, tracking is disabled. In contrast to SetFollowTarget
+      /// the camera does not change its position when tracking is enabled.
+      /// \param[in] _target Target node to track
+      /// \param[in] _offset Track a point that is at an offset relative
+      /// to target.
+      /// \param[in] _worldFrame If true, the offset point to track will be
+      /// treated in world frame and its position relative to the target
+      /// node remains fixed regardless of the target node's rotation. Default
+      /// is false, which means the camera tracks the point in target node's
+      /// local frame.
+      public: virtual void SetTrackTarget(const NodePtr &_target,
+                  const math::Vector3d &_offset = math::Vector3d::Zero,
+                  const bool _worldFrame = false) = 0;
+
+      /// \brief Get the target node being tracked
+      /// \return Target node being tracked.
+      public: virtual NodePtr TrackTarget() const = 0;
+
+      /// \brief Set track offset. Camera will track a point that's at an
+      /// offset from the target node. The offset will be in the frame
+      /// that is specified at the time the track target is set.
+      /// \param[in] _offset Point offset to track
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset) = 0;
+
+      /// \brief Get the track offset vector in the frame specified at the time
+      /// the track target is set.
+      /// \return Point offset from target.
+      public: virtual math::Vector3d TrackOffset() const = 0;
+
+      /// \brief Set track P Gain. Determines how fast the camera rotates
+      /// to look at the target node. Valid range: [0-1]
+      /// \param[in] _pGain P gain for camera tracking
+      public: virtual void SetTrackPGain(const double _pGain) = 0;
+
+      /// \brief Get the camera track rotation P gain.
+      /// \return P gain for camera tracking
+      public: virtual double TrackPGain() const = 0;
+
+      /// \brief Set a node for camera to follow. The camera will automatically
+      /// update its position to keep itself at the specified offset distance
+      /// from the target being followed. If null is specified, camera follow is
+      /// disabled. In contrast to SetTrackTarget, the camera does not change
+      /// its orientation when following is enabled.
+      /// \param[in] _target Target node to follow
+      /// \param[in] _offset Tether the camera at an offset distance from the
+      /// target node.
+      /// \param[in] _worldFrame True to follow the target node at a
+      /// distance that's fixed in world frame. Default is false which means
+      /// the camera follows at fixed distance in target node's local frame.
+      public: virtual void SetFollowTarget(const NodePtr &_target,
+                  const math::Vector3d &_offset = math::Vector3d::Zero,
+                  const bool _worldFrame = false) = 0;
+
+      /// \brief Get the target node being followed
+      /// \return Target node being tracked.
+      public: virtual NodePtr FollowTarget() const = 0;
+
+      /// \brief Set offset of camera from target node being followed. The
+      /// offset will be in the frame that is specified at the time the follow
+      /// target is set.
+      /// \param[in] _offset Offset distance from target node.
+      public: virtual void SetFollowOffset(const math::Vector3d &_offset) = 0;
+
+      /// \brief Get the follow offset vector in the frame specified at the
+      /// time the follow target is set.
+      /// \return Offset of camera from target.
+      public: virtual math::Vector3d FollowOffset() const = 0;
+
+      /// \brief Set follow P Gain. Determines how fast the camera moves
+      /// to follow the target node. Valid range: [0-1]
+      /// \param[in] _pGain P gain for camera following
+      public: virtual void SetFollowPGain(const double _pGain) = 0;
+
+      /// \brief Get the camera follow movement P gain.
+      /// \return P gain for camera following
+      public: virtual double FollowPGain() const = 0;
     };
   }
 }

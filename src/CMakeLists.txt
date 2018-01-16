@@ -13,35 +13,43 @@ endif ()
 set (sources
   Image.cc
   MeshDescriptor.cc
+  OrbitViewController.cc
   PixelFormat.cc
   RenderEngineManager.cc
   RenderingIface.cc
   ShaderType.cc
-  SystemPaths.cc
 )
 
 set (gtest_sources
 )
 
-set_property(
-  SOURCE SystemPaths.cc
-  PROPERTY COMPILE_DEFINITIONS
-  IGN_RENDERING_PLUGIN_PATH="${IGN_RENDERING_PLUGIN_PATH}"
-  OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
+set (gtest_sources_dri
+  Camera_TEST.cc
+  Grid_TEST.cc
+  Material_TEST.cc
+  Mesh_TEST.cc
+  MeshDescriptor_TEST.cc
+  OrbitViewController_TEST.cc
+  RayQuery_TEST.cc
+  RenderEngine_TEST.cc
+  RenderTarget_TEST.cc
+  RenderingIface_TEST.cc
+  Scene_TEST.cc
 )
 
 ign_build_tests(${gtest_sources})
-ign_add_library(${PROJECT_NAME_LOWER} ${sources})
-ign_install_library(${PROJECT_NAME_LOWER})
+ign_build_dri_tests(${gtest_sources_dri})
+ign_add_library(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION} ${sources})
+ign_install_library(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION})
 
 if (HAVE_OGRE)
-  target_link_libraries(${PROJECT_NAME_LOWER}
+  target_link_libraries(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}
     ignition-rendering-ogre
 )
 endif ()
 
 if (HAVE_OPTIX)
-  target_link_libraries(${PROJECT_NAME_LOWER}
+  target_link_libraries(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}
     ignition-rendering-optix
 )
 endif ()

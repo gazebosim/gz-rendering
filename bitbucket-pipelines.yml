@@ -1,0 +1,41 @@
+# This is a sample build configuration for C++.
+# Check our guides at https://confluence.atlassian.com/x/VYk8Lw for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: ubuntu:xenial
+
+pipelines:
+  default:
+    - step:
+        script: # Modify the commands below to build your repository.
+          - apt update
+          - apt -y install wget lsb-release
+          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list'
+          - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+          - apt-get update
+          - apt-get -y install
+            cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn freeglut3-dev libxmu-dev libxi-dev
+            curl mercurial lcov
+            python uuid-dev libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
+            libgts-dev libswscale-dev libtinyxml2-dev
+          - sh tools/code_check.sh
+          # Ignition dependencies
+          - apt-get -y install
+            libignition-cmake-dev
+            libignition-math4-dev
+            libignition-common-dev
+          # Ignition rendering
+          - mkdir build
+          - cd build
+          - cmake .. -DCMAKE_BUILD_TYPE=coverage
+          - make -j4
+          - make install
+          # Can't make tests - valid display not found
+          # Build an example
+          - cd ../examples/simple_demo
+          - mkdir build
+          - cd build
+          - cmake ..
+          - make -j4
+

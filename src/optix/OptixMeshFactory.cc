@@ -43,7 +43,8 @@ OptixMeshFactory::~OptixMeshFactory()
 OptixMeshPtr OptixMeshFactory::Create(const MeshDescriptor &_desc)
 {
   OptixSubMeshStorePtr subMeshStore;
-  MeshDescriptor normDesc = _desc.Normalize();
+  MeshDescriptor normDesc = _desc;
+  normDesc.Load();
   subMeshStore = this->subMeshStoreFactory.Create(normDesc);
 
   if (!subMeshStore)
@@ -79,7 +80,6 @@ OptixMeshPtr OptixMeshFactory::Create(OptixSubMeshStorePtr _subMeshes)
   {
     OptixSubMeshPtr subMesh = _subMeshes->DerivedByIndex(i);
     mesh->optixGeomGroup->addChild(subMesh->OptixGeometryInstance());
-    subMesh->SetMaterial(this->scene->CreateMaterial());
   }
 
   return mesh;
@@ -117,9 +117,25 @@ OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
     {
       optix::Geometry optixGeometry = this->Geometry(_desc, i);
       OptixSubMeshPtr sm(new OptixSubMesh);
+      sm->id = i;
+      sm->name = foundName;
+      sm->scene = this->scene;
       sm->optixGeometry = optixGeometry;
       sm->optixGeomInstance = optixContext->createGeometryInstance();
       sm->optixGeomInstance->setGeometry(optixGeometry);
+
+      common::MaterialPtr material;
+      material = _desc.mesh->MaterialByIndex(subMesh->MaterialIndex());
+      if (material)
+      {
+        MaterialPtr mat = this->scene->CreateMaterial(*material);
+        sm->SetMaterial(mat);
+      }
+      else
+      {
+        sm->SetMaterial(this->scene->Material("Default/White"));
+      }
+
       store->Add(sm);
     }
   }
@@ -212,7 +228,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateVertexBuffer()
 {
   // create new buffer
   optix::Context optixContext = this->scene->OptixContext();
-  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
+  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
   buffer->setFormat(RT_FORMAT_FLOAT3);
 
   // update buffer size
@@ -220,13 +236,13 @@ optix::Buffer OptixMeshGeometryFactory::CreateVertexBuffer()
   buffer->setSize(count);
 
   // create host buffer from device buffer
-  float3* array = static_cast<float3*>(buffer->map());
+  float3 *array = static_cast<float3 *>(buffer->map());
 
   // add each vertex to array
   for (unsigned int i = 0; i < count; ++i)
   {
     // copy vertex to host buffer
-    const math::Vector3d& vertex = this->subMesh.Vertex(i);
+    const math::Vector3d &vertex = this->subMesh.Vertex(i);
     array[i].x = vertex.X();
     array[i].y = vertex.Y();
     array[i].z = vertex.Z();
@@ -242,7 +258,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateNormalBuffer()
 {
   // create new buffer
   optix::Context optixContext = this->scene->OptixContext();
-  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
+  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
   buffer->setFormat(RT_FORMAT_FLOAT3);
 
   // update buffer size
@@ -250,13 +266,13 @@ optix::Buffer OptixMeshGeometryFactory::CreateNormalBuffer()
   buffer->setSize(count);
 
   // create host buffer from device buffer
-  float3* array = static_cast<float3*>(buffer->map());
+  float3 *array = static_cast<float3 *>(buffer->map());
 
   // add each vertex to array
   for (unsigned int i = 0; i < count; ++i)
   {
-    // copy vertex to host buffer
-    const math::Vector3d& normal = this->subMesh.Normal(i);
+    // copy normal to host buffer
+    const math::Vector3d &normal = this->subMesh.Normal(i);
     array[i].x = normal.X();
     array[i].y = normal.Y();
     array[i].z = normal.Z();
@@ -272,7 +288,7 @@ optix::Buffer OptixMeshGeometryFactory::CreateTexCoordBuffer()
 {
   // create new buffer
   optix::Context optixContext = this->scene->OptixContext();
-  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
+  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
   buffer->setFormat(RT_FORMAT_FLOAT2);
 
   // update buffer size
@@ -280,15 +296,15 @@ optix::Buffer OptixMeshGeometryFactory::CreateTexCoordBuffer()
   buffer->setSize(count);
 
   // create host buffer from device buffer
-  float2* array = static_cast<float2*>(buffer->map());
+  float2 *array = static_cast<float2 *>(buffer->map());
 
-  // add each vertex to array
+  // add each texcoord to array
   for (unsigned int i = 0; i < count; ++i)
   {
-    // copy vertex to host buffer
-    const math::Vector2d& normal = this->subMesh.TexCoord(i);
-    array[i].x = normal.X();
-    array[i].y = normal.Y();
+    // copy texcoord to host buffer
+    const math::Vector2d &texcoord = this->subMesh.TexCoord(i);
+    array[i].x = texcoord.X();
+    array[i].y = texcoord.Y();
   }
 
   // copy host buffer to device
@@ -301,8 +317,8 @@ optix::Buffer OptixMeshGeometryFactory::CreateIndexBuffer()
 {
   // create new buffer
   optix::Context optixContext = this->scene->OptixContext();
-  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_OUTPUT);
-  buffer->setFormat(RT_FORMAT_UNSIGNED_INT3);
+  optix::Buffer buffer = optixContext->createBuffer(RT_BUFFER_INPUT);
+  buffer->setFormat(RT_FORMAT_INT3);
 
   // TODO: handle quads
 
@@ -311,10 +327,10 @@ optix::Buffer OptixMeshGeometryFactory::CreateIndexBuffer()
   buffer->setSize(count);
 
   // create host buffer from device buffer
-  int3 *array = static_cast<int3*>(buffer->map());
-  unsigned int index = 0;
+  int3 *array = static_cast<int3 *>(buffer->map());
+  int index = 0;
 
-  // add each vertex to array
+  // add each index to array
   for (unsigned int i = 0; i < count; ++i)
   {
     // copy vertex to host buffer

@@ -43,7 +43,7 @@ namespace ignition
 
       /// \brief Specify if lighting affects this material
       /// \param[in] _enabled True if lighting affects this material
-      public: virtual void SetLightingEnabled(bool _enabled) = 0;
+      public: virtual void SetLightingEnabled(const bool _enabled) = 0;
 
       /// \brief Get the ambient color
       /// \return The ambient color
@@ -54,8 +54,8 @@ namespace ignition
       /// \param[in] _g Green value
       /// \param[in] _b Blue value
       /// \param[in] _a Alpha value
-      public: virtual void SetAmbient(double _r, double _g, double _b,
-                  double _a = 1.0) = 0;
+      public: virtual void SetAmbient(const double _r, const double _g,
+                  const double _b, const double _a = 1.0) = 0;
 
       /// \brief Set the ambient color
       /// \param[in] _color New ambient color
@@ -70,8 +70,8 @@ namespace ignition
       /// \param[in] _g Green value
       /// \param[in] _b Blue value
       /// \param[in] _a Alpha value
-      public: virtual void SetDiffuse(double _r, double _g, double _b,
-                  double _a = 1.0) = 0;
+      public: virtual void SetDiffuse(const double _r, const double _g,
+                  const double _b, const double _a = 1.0) = 0;
 
       /// \brief Set the diffuse color
       /// \param[in] _color New diffuse color
@@ -86,8 +86,8 @@ namespace ignition
       /// \param[in] _g Green value
       /// \param[in] _b Blue value
       /// \param[in] _a Alpha value
-      public: virtual void SetSpecular(double _r, double _g, double _b,
-                  double _a = 1.0) = 0;
+      public: virtual void SetSpecular(const double _r, const double _g,
+                  const double _b, const double _a = 1.0) = 0;
 
       /// \brief Set the specular color
       /// \param[in] _color New specular color
@@ -102,8 +102,8 @@ namespace ignition
       /// \param[in] _g Green value
       /// \param[in] _b Blue value
       /// \param[in] _a Alpha value
-      public: virtual void SetEmissive(double _r, double _g, double _b,
-                  double _a = 1.0) = 0;
+      public: virtual void SetEmissive(const double _r, const double _g,
+                  const double _b, const double _a = 1.0) = 0;
 
       /// \brief Set the emissive color
       /// \param[in] _color New emissive color
@@ -115,7 +115,7 @@ namespace ignition
 
       /// \brief Set the shininess value
       /// \param[in] _shininess New shininess value
-      public: virtual void SetShininess(double _shininess) = 0;
+      public: virtual void SetShininess(const double _shininess) = 0;
 
       /// \brief Get the transparency value
       /// \return The transparency value
@@ -123,7 +123,7 @@ namespace ignition
 
       /// \brief Set the transparency value
       /// \param[in] _transparency New transparency value
-      public: virtual void SetTransparency(double _transparency) = 0;
+      public: virtual void SetTransparency(const double _transparency) = 0;
 
       /// \brief Get the reflectivity value
       /// \return The reflectivity value
@@ -131,7 +131,7 @@ namespace ignition
 
       /// \brief Set the reflectivity value
       /// \param[in] _reflectivity New reflectivity value
-      public: virtual void SetReflectivity(double _reflectivity) = 0;
+      public: virtual void SetReflectivity(const double _reflectivity) = 0;
 
       /// \brief Determine if this material casts shadows
       /// \return True if this material casts shadows
@@ -139,7 +139,7 @@ namespace ignition
 
       /// \brief Specify if this material casts shadows
       /// \param[in] _castShadows True if this material casts shadows
-      public: virtual void SetCastShadows(bool _castShadows) = 0;
+      public: virtual void SetCastShadows(const bool _castShadows) = 0;
 
       /// \brief Determine if this material receives shadows
       /// \return True if this material receives shadows
@@ -147,7 +147,7 @@ namespace ignition
 
       /// \brief Specify if this material receives shadows
       /// \param[in] _receiveShadows True if this material receives shadows
-      public: virtual void SetReceiveShadows(bool _receiveShadows) = 0;
+      public: virtual void SetReceiveShadows(const bool _receiveShadows) = 0;
 
       /// \brief Determine if this material has a reflection
       /// \return True if this material has a reflection
@@ -155,7 +155,7 @@ namespace ignition
 
       /// \brief Specify if this material has a reflection
       /// \param[in] _enabled True if this material has a reflection
-      public: virtual void SetReflectionEnabled(bool _enabled) = 0;
+      public: virtual void SetReflectionEnabled(const bool _enabled) = 0;
 
       /// \brief Determine if this material has a texture
       /// \return True if this material has a texture
@@ -197,7 +197,8 @@ namespace ignition
 
       /// \brief Clone this material
       /// \return New cloned material
-      public: virtual MaterialPtr Clone() const = 0;
+      public: virtual MaterialPtr Clone(const std::string &_name = "")
+                const = 0;
 
       /// \brief Copy properties from given Material
       /// \param[in] _material Source Material to be copied from

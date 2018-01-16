@@ -17,6 +17,9 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreCamera.hh"
+#include "ignition/rendering/ogre/OgreGrid.hh"
+#include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/ogre.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
@@ -72,12 +75,6 @@ void OgreScene::SetAmbientLight(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
-math::Color OgreScene::BackgroundColor() const
-{
-  return this->backgroundColor;
-}
-
-//////////////////////////////////////////////////
 void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;
@@ -97,7 +94,7 @@ void OgreScene::SetBackgroundColor(const math::Color &_color)
 void OgreScene::PreRender()
 {
   BaseScene::PreRender();
-  OgreRTShaderSystem::Instance()->UpdateShaders();
+  OgreRTShaderSystem::Instance()->Update();
 }
 
 //////////////////////////////////////////////////
@@ -283,6 +280,14 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
+GridPtr OgreScene::CreateGridImpl(unsigned int _id, const std::string &_name)
+{
+  OgreGridPtr grid(new OgreGrid);
+  bool result = this->InitObject(grid, _id, _name);
+  return (result) ? grid: nullptr;
+}
+
+//////////////////////////////////////////////////
 MaterialPtr OgreScene::CreateMaterialImpl(unsigned int _id,
     const std::string &_name)
 {
@@ -298,6 +303,24 @@ RenderTexturePtr OgreScene::CreateRenderTextureImpl(unsigned int _id,
   OgreRenderTexturePtr renderTexture(new OgreRenderTexture);
   bool result = this->InitObject(renderTexture, _id, _name);
   return (result) ? renderTexture : nullptr;
+}
+
+//////////////////////////////////////////////////
+RenderWindowPtr OgreScene::CreateRenderWindowImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreRenderWindowPtr renderWindow(new OgreRenderWindow);
+  bool result = this->InitObject(renderWindow, _id, _name);
+  return (result) ? renderWindow: nullptr;
+}
+
+//////////////////////////////////////////////////
+RayQueryPtr OgreScene::CreateRayQueryImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreRayQueryPtr rayQuery(new OgreRayQuery);
+  bool result = this->InitObject(rayQuery, _id, _name);
+  return (result) ? rayQuery : nullptr;
 }
 
 //////////////////////////////////////////////////

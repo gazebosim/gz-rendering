@@ -29,7 +29,7 @@ namespace gazebo
     // the compositor MaterialManager.Listener should NOT be running all the
     // time - rather only when we're specifically rendering the target that
     // needs it
-    class DETAIL_IGN_RENDERING_VISIBLE SelectionRenderListener :
+    class SelectionRenderListener :
       public Ogre::RenderTargetListener
     {
       /// \brief Constructor

@@ -19,6 +19,7 @@
 
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 
+#include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
@@ -29,10 +30,7 @@ using namespace rendering;
 //////////////////////////////////////////////////
 // OgreRenderTarget
 //////////////////////////////////////////////////
-OgreRenderTarget::OgreRenderTarget() :
-  ogreCamera(nullptr),
-  ogreViewport(nullptr),
-  colorDirty(true)
+OgreRenderTarget::OgreRenderTarget()
 {
   this->ogreBackgroundColor = Ogre::ColourValue::Black;
 }
@@ -94,6 +92,19 @@ void OgreRenderTarget::SetBackgroundColor(math::Color _color)
 }
 
 //////////////////////////////////////////////////
+unsigned int OgreRenderTarget::AntiAliasing() const
+{
+  return this->antiAliasing;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::SetAntiAliasing(unsigned int _aa)
+{
+  this->antiAliasing = _aa;
+  this->targetDirty = true;
+}
+
+//////////////////////////////////////////////////
 void OgreRenderTarget::PreRender()
 {
   BaseRenderTarget::PreRender();
@@ -136,7 +147,7 @@ void OgreRenderTarget::RebuildViewport()
   ogreRenderTarget->removeAllViewports();
 
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
-  this->ogreViewport->setBackgroundColour(Ogre::ColourValue::Black);
+  this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
   this->ogreViewport->setClearEveryFrame(true);
   this->ogreViewport->setShadowsEnabled(true);
   this->ogreViewport->setOverlaysEnabled(false);
@@ -148,27 +159,13 @@ void OgreRenderTarget::RebuildViewport()
 //////////////////////////////////////////////////
 // OgreRenderTexture
 //////////////////////////////////////////////////
-OgreRenderTexture::OgreRenderTexture() :
-  ogreTexture(nullptr)
+OgreRenderTexture::OgreRenderTexture()
 {
 }
 
 //////////////////////////////////////////////////
 OgreRenderTexture::~OgreRenderTexture()
 {
-}
-
-//////////////////////////////////////////////////
-unsigned int OgreRenderTexture::AntiAliasing() const
-{
-  return this->antiAliasing;
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTexture::SetAntiAliasing(unsigned int _aa)
-{
-  this->antiAliasing = _aa;
-  this->targetDirty = true;
 }
 
 //////////////////////////////////////////////////
@@ -206,4 +203,58 @@ void OgreRenderTexture::BuildTarget()
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
       Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).getPointer();
+}
+
+//////////////////////////////////////////////////
+// OgreRenderWindow
+//////////////////////////////////////////////////
+OgreRenderWindow::OgreRenderWindow()
+{
+}
+
+//////////////////////////////////////////////////
+OgreRenderWindow::~OgreRenderWindow()
+{
+}
+
+//////////////////////////////////////////////////
+Ogre::RenderTarget *OgreRenderWindow::RenderTarget() const
+{
+  return this->ogreRenderWindow;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderWindow::Destroy()
+{
+  // if (this->ogreRenderWindow)
+  //  this->ogreRenderWindow->destroy();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderWindow::RebuildTarget()
+{
+  // TODO determine when to rebuild
+  // ie. only when ratio or handle changes!
+  // e.g. sizeDirty?
+  if (!this->ogreRenderWindow)
+    this->BuildTarget();
+
+  Ogre::RenderWindow *window =
+      dynamic_cast<Ogre::RenderWindow *>(this->ogreRenderWindow);
+  window->resize(this->width, this->height);
+  window->windowMovedOrResized();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderWindow::BuildTarget()
+{
+  auto engine = OgreRenderEngine::Instance();
+  std::string renderTargetName =
+      engine->CreateWindow(this->handle,
+          this->width,
+          this->height,
+          this->ratio,
+          this->antiAliasing);
+  this->ogreRenderWindow =
+      engine->OgreRoot()->getRenderTarget(renderTargetName);
 }

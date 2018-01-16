@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_TEST_TESTYPES_HH_
-#define IGNITION_RENDERING_EXAMPLES_TEST_TESTYPES_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_TESTYPES_HH_
+#define IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_TESTYPES_HH_
 
 #include <vector>
-#include <ignition/rendering/rendering.hh>
+#include <ignition/rendering.hh>
 
 namespace ignition
 {

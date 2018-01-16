@@ -24,45 +24,31 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-MeshDescriptor::MeshDescriptor() :
-  mesh(nullptr),
-  meshName(""),
-  subMeshName(""),
-  centerSubMesh(false)
+MeshDescriptor::MeshDescriptor()
 {
 }
 
 //////////////////////////////////////////////////
 MeshDescriptor::MeshDescriptor(const std::string &_meshName) :
-  mesh(nullptr),
-  meshName(_meshName),
-  subMeshName(""),
-  centerSubMesh(false)
+  meshName(_meshName)
 {
 }
 
 //////////////////////////////////////////////////
 MeshDescriptor::MeshDescriptor(const common::Mesh *_mesh) :
-  mesh(_mesh),
-  meshName(""),
-  subMeshName(""),
-  centerSubMesh(false)
+  mesh(_mesh)
 {
 }
 
 //////////////////////////////////////////////////
-MeshDescriptor MeshDescriptor::Normalize() const
+void MeshDescriptor::Load()
 {
-  MeshDescriptor norm = *this;
-
-  if (norm.mesh)
+  if (this->mesh)
   {
-    norm.meshName = norm.mesh->Name();
+    this->meshName = this->mesh->Name();
   }
   else
   {
-    norm.mesh = common::MeshManager::Instance()->MeshByName(norm.meshName);
+    this->mesh = common::MeshManager::Instance()->MeshByName(this->meshName);
   }
-
-  return norm;
 }

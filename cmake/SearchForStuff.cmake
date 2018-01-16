@@ -174,36 +174,27 @@ endif ()
 
 ########################################
 # Find ignition math
-set(IGNITION-MATH_REQUIRED_MAJOR_VERSION 3)
-if (NOT DEFINED IGNITION-MATH_LIBRARY_DIRS AND NOT DEFINED IGNITION-MATH_INCLUDE_DIRS AND NOT DEFINED IGNITION-MATH_LIBRARIES)
-  find_package(ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION} QUIET)
-  if (NOT ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}_FOUND)
-    message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - not found")
-    BUILD_ERROR ("Missing: Ignition math${IGNITION-MATH_REQUIRED_MAJOR_VERSION} library.")
-  else()
-    message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - found")
-  endif()
+find_package(ignition-math4 QUIET)
+if (NOT ignition-math4_FOUND)
+  BUILD_ERROR ("Missing: Ignition Common (libignition-math4-dev)")
+else()
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-MATH_CXX_FLAGS}")
+  include_directories(${IGNITION-MATH_INCLUDE_DIRS})
+  link_directories(${IGNITION-MATH_LIBRARY_DIRS})
 endif()
+
+include_directories(${IGNITION-MATH_INCLUDE_DIRS})
+message(STATUS "Looking for ignition-math${IGNITION-MATH_REQUIRED_MAJOR_VERSION}-config.cmake - found")
 
 ########################################
 # Find Ignition Common
-find_package(ignition-common0 QUIET)
-if (NOT ignition-common0_FOUND)
-  BUILD_ERROR ("Missing: Ignition Common (libignition-common0-dev)")
+find_package(ignition-common1 QUIET)
+if (NOT ignition-common1_FOUND)
+  BUILD_ERROR ("Missing: Ignition Common (libignition-common-dev)")
 else()
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${IGNITION-COMMON_CXX_FLAGS}")
   include_directories(${IGNITION-COMMON_INCLUDE_DIRS})
   link_directories(${IGNITION-COMMON_LIBRARY_DIRS})
 endif()
 
-#################################################
-# Find ign msgs library
-find_package(ignition-msgs0 QUIET)
-if (NOT ignition-msgs0_FOUND)
-  message(FATAL_ERROR "Looking for ignition-msgs - not found")
-else()
-  message(STATUS "Looking for ignition-msgs - found")
-  include_directories(${IGNITION-MSGS_INCLUDE_DIRS})
-  link_directories(${IGNITION-MSGS_LIBRARY_DIRS})
-endif()
 

@@ -122,3 +122,17 @@ void OptixRenderTexture::Init()
   // this->optixBuffer->setFormat(RT_FORMAT_UNSIGNED_BYTE3);
   this->optixBuffer->setFormat(RT_FORMAT_FLOAT3);
 }
+
+//////////////////////////////////////////////////
+// OptixRenderWindow
+//////////////////////////////////////////////////
+OptixRenderWindow::OptixRenderWindow()
+{
+}
+
+//////////////////////////////////////////////////
+OptixRenderWindow::~OptixRenderWindow()
+{
+}
+
+

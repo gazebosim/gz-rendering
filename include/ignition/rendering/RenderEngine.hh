@@ -82,13 +82,13 @@ namespace ignition
       /// \return True if the scene is managed by this render-engine
       public: virtual bool HasScene(ConstScenePtr _scene) const = 0;
 
-      /// \brief Determine if this render-engine manages the scene with the
+      /// \brief Determine if this render-engine manages a scene with the
       /// given ID.
       /// \param[in] _id ID of scene in question
       /// \return True if this render-engine manages the specified scene
       public: virtual bool HasSceneId(unsigned int _id) const = 0;
 
-      /// \brief Determine if this render-engine manages the scene with the
+      /// \brief Determine if this render-engine manages a scene with the
       /// given name.
       /// \param[in] _name Name of scene in question
       /// \return True if this render-engine manages the specified scene
@@ -109,7 +109,9 @@ namespace ignition
 
       /// \brief Get the scene at the given index. If no scenes exist at the
       /// given index, NULL will be returned.
-      /// \param[in] _index Index of scene
+      /// \param[in] _index Index of scene, which is a number from 0 to
+      /// SceneCount() - 1. Note that the index for a specific scene might
+      /// change as other scenes are destroyed.
       /// \return The specified scene
       public: virtual ScenePtr SceneByIndex(unsigned int _index) const = 0;
 
@@ -118,12 +120,12 @@ namespace ignition
       /// \param[in] _scene Scene to be destroyed
       public: virtual void DestroyScene(ScenePtr _scene) = 0;
 
-      /// \brief Destroy the scene with the given ID. If no scenes exist at the
-      /// given ID, no work will be done.
+      /// \brief Destroy the scene with the given ID. If no scenes exist with
+      /// the given ID, no work will be done.
       /// \param[in] _id ID of the scene to destroy
       public: virtual void DestroySceneById(unsigned int _id) = 0;
 
-      /// \brief Destroy the scene with the given name. If no scenes exist at
+      /// \brief Destroy the scene with the given name. If no scenes exist with
       /// the given name, no work will be done.
       /// \param[in] _name Name of the scene to destroy
       public: virtual void DestroySceneByName(const std::string &_name) = 0;

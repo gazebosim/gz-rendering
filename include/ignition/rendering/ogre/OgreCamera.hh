@@ -37,21 +37,19 @@ namespace ignition
 
       public: virtual ~OgreCamera();
 
-      public: virtual PixelFormat ImageFormat() const;
-
-      public: virtual void SetImageFormat(PixelFormat _format);
-
-      public: virtual math::Angle HFOV() const;
-
       public: virtual void SetHFOV(const math::Angle &_angle);
 
       public: virtual double AspectRatio() const;
 
-      public: virtual void SetAspectRatio(double _ratio);
+      public: virtual void SetAspectRatio(const double _ratio);
 
       public: virtual unsigned int AntiAliasing() const;
 
-      public: virtual void SetAntiAliasing(unsigned int _aa);
+      public: virtual void SetAntiAliasing(const unsigned int _aa);
+
+      public: virtual void SetFarClipPlane(const double _far);
+
+      public: virtual void SetNearClipPlane(const double _near);
 
       public: virtual math::Color BackgroundColor() const;
 
@@ -63,7 +61,13 @@ namespace ignition
 
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i &_mousePos);
 
-      protected: virtual RenderTexturePtr RenderTexture() const;
+      public: virtual RenderWindowPtr CreateRenderWindow();
+
+      public: virtual math::Matrix4d ProjectionMatrix() const;
+
+      public: virtual math::Matrix4d ViewMatrix() const;
+
+      protected: virtual RenderTargetPtr RenderTarget() const;
 
       public: virtual void CameraToViewportRay(const int _screenx, const int _screeny,
                             ignition::math::Vector3d &_origin,
@@ -75,17 +79,16 @@ namespace ignition
 
       protected: virtual void CreateRenderTexture();
 
-      protected: Ogre::Camera *ogreCamera;
+      protected: Ogre::Camera *ogreCamera = nullptr;
 
       protected: OgreRenderTexturePtr renderTexture;
-
-      protected: OgreRenderTarget *ogreRenderTarget;
 
       protected: math::Angle xfov;
 
       protected: math::Color backgroundColor;
 
       private: friend class OgreScene;
+      private: friend class OgreRayQuery;
     };
   }
 }

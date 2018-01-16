@@ -28,6 +28,7 @@
 #include <OGRE/OgreImageCodec.h>
 #include <OGRE/OgreMovableObject.h>
 #include <OGRE/OgreRenderable.h>
+#include <OGRE/OgreRenderWindow.h>
 #include <OGRE/OgrePlugin.h>
 #include <OGRE/OgreDataStream.h>
 #include <OGRE/OgreLogManager.h>
@@ -39,6 +40,7 @@
 #include <OGRE/OgreVector3.h>
 #include <OGRE/OgreManualObject.h>
 #include <OGRE/OgreMaterialManager.h>
+#include <OGRE/OgreMatrix4.h>
 #include <OGRE/OgreColourValue.h>
 #include <OGRE/OgreQuaternion.h>
 #include <OGRE/OgreMesh.h>

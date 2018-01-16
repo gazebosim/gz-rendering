@@ -1,7 +1,19 @@
-include (${project_cmake_dir}/Utils.cmake)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+project(ignition-rendering-custom-scene-viewer)
+find_package(ignition-rendering0 REQUIRED)
+find_package(ignition-common1 REQUIRED)
+find_package(ignition-math4 REQUIRED)
 
-include_directories(.)
-link_directories(${CMAKE_BINARY_DIR}/src)
+include_directories(SYSTEM
+  ${PROJECT_BINARY_DIR}
+  ${IGNITION-COMMON_INCLUDE_DIRS}
+  ${IGNITION-MATH_INCLUDE_DIRS}
+  ${IGNITION-RENDERING_INCLUDE_DIRS}
+)
+
+link_directories(
+  ${IGNITION-RENDERING_LIBRARY_DIRS}
+)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -20,6 +32,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wfatal-errors")
 
+configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
+
 add_executable(custom_scene_viewer
   DemoWindow.cc
   ManualSceneDemo.cc
@@ -30,10 +44,11 @@ target_link_libraries(custom_scene_viewer
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ignition-rendering
+  ${IGNITION-COMMON_LIBRARIES}
+  ${IGNITION-RENDERING_LIBRARIES}
 )
 
 add_custom_command(TARGET custom_scene_viewer POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${CMAKE_SOURCE_DIR}/examples/custom_scene_viewer/media
+  ${CMAKE_SOURCE_DIR}/media
   $<TARGET_FILE_DIR:custom_scene_viewer>/media)

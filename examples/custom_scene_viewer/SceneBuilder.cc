@@ -14,10 +14,15 @@
  * limitations under the License.
  *
  */
+
+#include "example_config.hh"
 #include "SceneBuilder.hh"
 
 using namespace ignition;
 using namespace rendering;
+
+const std::string RESOURCE_PATH = std::string(PROJECT_BINARY_PATH) + "/media";
+
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -116,58 +121,53 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 {
   if (!_scene->MaterialRegistered("Red"))
   {
-    MaterialPtr mat = _scene->CreateMaterial();
+    MaterialPtr mat = _scene->CreateMaterial("Red");
     mat->SetAmbient(0.3, 0.0, 0.0);
     mat->SetDiffuse(0.8, 0.0, 0.0);
     mat->SetSpecular(0.8, 0.8, 0.8);
     mat->SetShininess(50);
     mat->SetReflectivity(0);
-    _scene->RegisterMaterial("Red", mat);
   }
 
   if (!_scene->MaterialRegistered("White"))
   {
-    MaterialPtr mat = _scene->CreateMaterial();
+    MaterialPtr mat = _scene->CreateMaterial("White");
     mat->SetAmbient(0.8, 0.8, 0.8);
     mat->SetDiffuse(0.6, 0.6, 0.6);
     mat->SetSpecular(0.8, 0.8, 0.8);
     mat->SetShininess(50);
     mat->SetReflectivity(0);
-    _scene->RegisterMaterial("White", mat);
   }
 
 
   if (!_scene->MaterialRegistered("Green"))
   {
-    MaterialPtr mat = _scene->CreateMaterial();
+    MaterialPtr mat = _scene->CreateMaterial("Green");
     mat->SetAmbient(0.0, 0.3, 0.0);
     mat->SetDiffuse(0.0, 0.8, 0.0);
     mat->SetSpecular(0.8, 0.8, 0.8);
     mat->SetShininess(50);
     mat->SetReflectivity(0);
-    _scene->RegisterMaterial("Green", mat);
   }
 
   if (!_scene->MaterialRegistered("Blue"))
   {
-    MaterialPtr mat = _scene->CreateMaterial();
+    MaterialPtr mat = _scene->CreateMaterial("Blue");
     mat->SetAmbient(0.0, 0.0, 0.3);
     mat->SetDiffuse(0.0, 0.0, 0.8);
     mat->SetSpecular(0.8, 0.8, 0.8);
     mat->SetShininess(50);
     mat->SetReflectivity(0);
-    _scene->RegisterMaterial("Blue", mat);
   }
 
   if (!_scene->MaterialRegistered("Yellow"))
   {
-    MaterialPtr mat = _scene->CreateMaterial();
+    MaterialPtr mat = _scene->CreateMaterial("Yellow");
     mat->SetAmbient(0.3, 0.3, 0.0);
     mat->SetDiffuse(0.8, 0.8, 0.0);
     mat->SetSpecular(0.8, 0.8, 0.8);
     mat->SetShininess(50);
     mat->SetReflectivity(0);
-    _scene->RegisterMaterial("Yellow", mat);
   }
 
   std::vector<std::string> baseNames;
@@ -184,9 +184,8 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->Material(parentName)->Clone();
-      mat->SetTexture("./examples/custom_scene_viewer/media/tiles.jpg");
-      _scene->RegisterMaterial(childName, mat);
+      MaterialPtr mat = _scene->Material(parentName)->Clone(childName);
+      mat->SetTexture(RESOURCE_PATH + "/tiles.jpg");
     }
   }
 
@@ -197,10 +196,9 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->Material(parentName)->Clone();
+      MaterialPtr mat = _scene->Material(parentName)->Clone(childName);
       mat->SetNormalMap(
-          "./examples/custom_scene_viewer/media/brick_normal.jpg");
-      _scene->RegisterMaterial(childName, mat);
+          RESOURCE_PATH + "/brick_normal.jpg");
     }
   }
 
@@ -211,9 +209,8 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->Material(parentName)->Clone();
+      MaterialPtr mat = _scene->Material(parentName)->Clone(childName);
       mat->SetReflectivity(0.25);
-      _scene->RegisterMaterial(childName, mat);
     }
   }
 
@@ -224,9 +221,8 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->Material(parentName)->Clone();
+      MaterialPtr mat = _scene->Material(parentName)->Clone(childName);
       mat->SetReflectivity(0.25);
-      _scene->RegisterMaterial(childName, mat);
     }
   }
 
@@ -237,9 +233,8 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
 
     if (!_scene->MaterialRegistered(childName))
     {
-      MaterialPtr mat = _scene->Material(parentName)->Clone();
+      MaterialPtr mat = _scene->Material(parentName)->Clone(childName);
       mat->SetTransparency(0.75);
-      _scene->RegisterMaterial(childName, mat);
     }
   }
 }

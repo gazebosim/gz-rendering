@@ -17,8 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/SystemPaths.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
+#include "ignition/rendering/base/BaseRenderEngine.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -203,7 +202,7 @@ void BaseRenderEngine::Destroy()
 //////////////////////////////////////////////////
 void BaseRenderEngine::AddResourcePath(const std::string &_path)
 {
-  SystemPaths::Instance()->AddResourcePaths(_path);
+  this->resourcePaths.push_back(_path);
 }
 
 //////////////////////////////////////////////////

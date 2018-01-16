@@ -45,21 +45,6 @@ if (PACKAGE_SOURCE_ONLY)
   return()
 endif()
 
-#################################################
-# Documentation:
-add_subdirectory(doc)
-
-# Configure documentation uploader
-configure_file("${project_cmake_dir}/upload_doc.sh.in"
-  ${CMAKE_BINARY_DIR}/upload_doc.sh @ONLY)
-
-# If we're configuring only to build docs, stop here
-if (DOC_ONLY)
-  message(WARNING "Configuration was done in DOC_ONLY mode."
-  " You can build documentation (make doc), but nothing else.")
-  return()
-endif()
-
 enable_testing()
 
 # Use GNUInstallDirst to get canonical paths
@@ -128,12 +113,18 @@ include (${project_cmake_dir}/DissectVersion.cmake)
 
 message (STATUS "\n\n====== Finding 3rd Party Packages ======")
 include (${project_cmake_dir}/SearchForStuff.cmake)
+# HACK: include Utils again since ign-cmake has some of the same macros
+include (${project_cmake_dir}/Utils.cmake)
 message (STATUS "----------------------------------------\n")
 
 
 #####################################
 # Define compile-time default variables
-set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/ign-rendering-${PROJECT_MAJOR_VERSION}/plugins)
+set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}/ignition/rendering-${PROJECT_MAJOR_VERSION}/plugins)
+set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering-${PROJECT_MAJOR_VERSION})
+
+# Check for DRI capable Display
+include (${project_cmake_dir}/CheckDRIDisplay.cmake)
 
 #####################################
 MESSAGE(STATUS "Checking ignition build type")
@@ -225,6 +216,21 @@ add_custom_target(uninstall
   "${CMAKE_COMMAND}" -P
   "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake")
 
+#################################################
+# Documentation:
+add_subdirectory(doc)
+
+# Configure documentation uploader
+configure_file("${project_cmake_dir}/upload_doc.sh.in"
+  ${CMAKE_BINARY_DIR}/upload_doc.sh @ONLY)
+
+# If we're configuring only to build docs, stop here
+if (DOC_ONLY)
+  message(WARNING "Configuration was done in DOC_ONLY mode."
+  " You can build documentation (make doc), but nothing else.")
+  return()
+endif()
+
 if (build_errors)
   message(STATUS "BUILD ERRORS: These must be resolved before compiling.")
   foreach (msg ${build_errors})
@@ -239,7 +245,8 @@ else (build_errors)
   # Write the config.h file
   configure_file (${project_cmake_dir}/config.hh.in
     ${PROJECT_BINARY_DIR}/include/ignition/${IGN_PROJECT_NAME}/config.hh)
-  ign_install_includes(${IGN_PROJECT_NAME}
+  ign_install_includes(
+    ${IGN_PROJECT_NAME}${PROJECT_MAJOR_VERSION}/ignition/${IGN_PROJECT_NAME}
     ${PROJECT_BINARY_DIR}/include/ignition/${IGN_PROJECT_NAME}/config.hh)
 
   include_directories(
@@ -261,7 +268,6 @@ else (build_errors)
     add_subdirectory(src)
     add_subdirectory(include)
     add_subdirectory(test)
-    add_subdirectory(examples)
   endif (BUILD_IGNITION)
 
   ########################################

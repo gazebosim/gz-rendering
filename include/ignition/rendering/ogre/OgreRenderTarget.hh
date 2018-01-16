@@ -43,12 +43,17 @@ namespace ignition
 
       public: virtual ~OgreRenderTarget();
 
+      public: virtual unsigned int AntiAliasing() const;
+
+      public: virtual void SetAntiAliasing(unsigned int _aa);
+
       public: virtual void Copy(Image &_image) const;
 
       public: virtual Ogre::Camera *Camera() const;
 
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
+      // Documentation inherited
       public: virtual math::Color BackgroundColor() const;
 
       public: virtual void SetBackgroundColor(math::Color _color);
@@ -71,13 +76,15 @@ namespace ignition
 
       protected: virtual void RebuildViewport();
 
-      protected: Ogre::Camera *ogreCamera;
+      protected: Ogre::Camera *ogreCamera = nullptr;
 
-      protected: Ogre::Viewport *ogreViewport;
+      protected: Ogre::Viewport *ogreViewport = nullptr;
 
       protected: Ogre::ColourValue ogreBackgroundColor;
 
-      protected: bool colorDirty;
+      protected: bool colorDirty = true;
+
+      protected: unsigned int antiAliasing = 4;
     };
 
     class IGNITION_VISIBLE OgreRenderTexture :
@@ -86,10 +93,6 @@ namespace ignition
       protected: OgreRenderTexture();
 
       public: virtual ~OgreRenderTexture();
-
-      public: virtual unsigned int AntiAliasing() const;
-
-      public: virtual void SetAntiAliasing(unsigned int _aa);
 
       public: virtual void Destroy();
 
@@ -101,12 +104,31 @@ namespace ignition
 
       protected: virtual void BuildTarget();
 
-      protected: Ogre::Texture *ogreTexture;
-
-      protected: unsigned int antiAliasing;
+      protected: Ogre::Texture *ogreTexture = nullptr;
 
       private: friend class OgreScene;
     };
+
+    class IGNITION_VISIBLE OgreRenderWindow :
+      public virtual BaseRenderWindow<OgreRenderTarget>
+    {
+      protected: OgreRenderWindow();
+
+      public: virtual ~OgreRenderWindow();
+
+      public: virtual void Destroy();
+
+      protected: virtual Ogre::RenderTarget *RenderTarget() const;
+
+      protected: virtual void RebuildTarget();
+
+      protected: virtual void BuildTarget();
+
+      protected: Ogre::RenderTarget *ogreRenderWindow = nullptr;
+
+      private: friend class OgreScene;
+    };
+
   }
 }
 #endif

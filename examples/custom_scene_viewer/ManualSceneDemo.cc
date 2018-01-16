@@ -83,7 +83,7 @@ unsigned int ManualSceneDemo::CameraCount() const
 //////////////////////////////////////////////////
 void ManualSceneDemo::AddCamera(const std::string &_engineName)
 {
-  RenderEngine *engine = get_engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -150,7 +150,7 @@ void ManualSceneDemo::Run()
 
   this->SelectScene(0);
   this->SelectCamera(0);
-  GlutRun(shared_from_this());
+  run(shared_from_this());
 }
 
 //////////////////////////////////////////////////

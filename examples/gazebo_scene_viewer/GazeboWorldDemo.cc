@@ -18,7 +18,8 @@
 #include <ignition/common/Console.hh>
 #include <gazebo/transport/TransportIface.hh>
 
-#include "ignition/rendering/rendering.hh"
+#include <ignition/rendering.hh>
+
 #include "CameraWindow.hh"
 #include "SceneManager.hh"
 
@@ -38,7 +39,7 @@ void Connect()
 
 ScenePtr CreateScene(const std::string &_engine)
 {
-  RenderEngine *engine = rendering::get_engine(_engine);
+  RenderEngine *engine = rendering::engine(_engine);
   ScenePtr scene = engine->CreateScene("scene");
   SceneManager::Instance()->AddScene(scene);
   return scene;

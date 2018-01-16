@@ -23,8 +23,6 @@
 # include <GL/glx.h>
 #endif
 
-#include <boost/filesystem.hpp>
-
 #ifndef _WIN32
   #include <dirent.h>
 #else
@@ -34,8 +32,8 @@
   #include <ignition/common/win_dirent.h>
 #endif
 #include <ignition/common/Console.hh>
-
-#include "ignition/rendering/SystemPaths.hh"
+#include <ignition/common/Filesystem.hh>
+#include <ignition/common/Util.hh>
 
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -43,6 +41,19 @@
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    class OgreRenderEnginePrivate
+    {
+#if not defined(__APPLE__) && not defined(_WIN32)
+      public: XVisualInfo *dummyVisual = nullptr;
+#endif
+    };
+  }
+}
 
 using namespace ignition;
 using namespace rendering;
@@ -53,17 +64,20 @@ OgreRenderEngine::OgreRenderEngine() :
   initialized(false),
   ogreRoot(nullptr),
   ogreLogManager(nullptr),
-  dummyDisplay(0),
-  dummyContext(0)
+  dataPtr(new OgreRenderEnginePrivate)
 {
 #if not (__APPLE__ || _WIN32)
   this->dummyDisplay = nullptr;
-  this->dummyWindowId = 0;
+  this->dummyContext = 0;
 #endif
+
+  this->dummyWindowId = 0;
 
 #ifdef OGRE_OVERLAY_NEEDED
   this->ogreOverlaySystem = nullptr;
 #endif
+
+  this->ogrePaths.push_back(std::string(OGRE_RESOURCE_PATH));
 }
 
 //////////////////////////////////////////////////
@@ -88,6 +102,8 @@ bool OgreRenderEngine::Fini()
     XDestroyWindow(x11Display, this->dummyWindowId);
     XCloseDisplay(x11Display);
     this->dummyDisplay = nullptr;
+    XFree(this->dataPtr->dummyVisual);
+    this->dataPtr->dummyVisual = nullptr;
   }
 #endif
 
@@ -122,7 +138,7 @@ bool OgreRenderEngine::IsEnabled() const
 //////////////////////////////////////////////////
 std::string OgreRenderEngine::Name() const
 {
-  return "Ogre";
+  return "ogre";
 }
 
 //////////////////////////////////////////////////
@@ -146,6 +162,8 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
     return;
   }
 
+  this->resourcePaths.push_back(path);
+
   try
   {
     if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
@@ -157,30 +175,27 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
       Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
           "General");
       // Parse all material files in the path if any exist
-      boost::filesystem::path dir(path);
-
-      if (boost::filesystem::exists(dir) &&
-          boost::filesystem::is_directory(dir))
+      if (common::isDirectory(path))
       {
-        std::vector<boost::filesystem::path> paths;
+        std::vector<std::string> paths;
 
-        std::copy(boost::filesystem::directory_iterator(dir),
-            boost::filesystem::directory_iterator(),
-            std::back_inserter(paths));
-
+        common::DirIter endIter;
+        for (common::DirIter dirIter(path); dirIter != endIter; ++dirIter)
+        {
+          paths.push_back(*dirIter);
+        }
         std::sort(paths.begin(), paths.end());
 
         // Iterate over all the models in the current ign-rendering path
-        for (std::vector<boost::filesystem::path>::iterator dIter =
-            paths.begin(); dIter != paths.end(); ++dIter)
+        for (auto dIter = paths.begin(); dIter != paths.end(); ++dIter)
         {
-          if (dIter->filename().extension() == ".material")
+          std::string fullPath = *dIter;
+          std::string matExtension = fullPath.substr(fullPath.size()-9);
+          if (matExtension == ".material")
           {
-            boost::filesystem::path fullPath = path / dIter->filename();
-
             Ogre::DataStreamPtr stream =
               Ogre::ResourceGroupManager::getSingleton().openResource(
-                  fullPath.string(), "General");
+                  fullPath, "General");
 
             // There is a material file under there somewhere, read the thing in
             try
@@ -189,7 +204,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
                   stream, "General");
               Ogre::MaterialPtr matPtr =
                 Ogre::MaterialManager::getSingleton().getByName(
-                    fullPath.string());
+                    fullPath);
 
               if (!matPtr.isNull())
               {
@@ -225,7 +240,9 @@ Ogre::Root *OgreRenderEngine::OgreRoot() const
 ScenePtr OgreRenderEngine::CreateSceneImpl(unsigned int _id,
     const std::string &_name)
 {
-  return OgreScenePtr(new OgreScene(_id, _name));
+  auto scene = OgreScenePtr(new OgreScene(_id, _name));
+  this->scenes->Add(scene);
+  return scene;
 }
 
 //////////////////////////////////////////////////
@@ -288,8 +305,11 @@ void OgreRenderEngine::LoadAttempt()
 void OgreRenderEngine::CreateLogger()
 {
   // create log file path
-  std::string logPath = SystemPaths::Instance()->LogPath();
-  logPath += "/ogre.log";
+  std::string logPath;
+  ignition::common::env(IGN_HOMEDIR, logPath);
+  logPath = common::joinPaths(logPath, ".ignition", "rendering");
+  common::createDirectories(logPath);
+  logPath = common::joinPaths(logPath, "ogre.log");
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
@@ -306,7 +326,7 @@ void OgreRenderEngine::CreateContext()
 
   if (!this->dummyDisplay)
   {
-    ignerr << "Unable to open dipslay: " << XDisplayName(0) << std::endl;
+    ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
     return;
   }
 
@@ -316,10 +336,10 @@ void OgreRenderEngine::CreateContext()
   int attributeList[] = { GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, 16,
       GLX_STENCIL_SIZE, 8, None };
 
-  XVisualInfo *dummyVisual =
+  this->dataPtr->dummyVisual =
       glXChooseVisual(x11Display, screenId, attributeList);
 
-  if (!dummyVisual)
+  if (!this->dataPtr->dummyVisual)
   {
     ignerr << "Unable to create glx visual" << std::endl;
     return;
@@ -329,7 +349,8 @@ void OgreRenderEngine::CreateContext()
   this->dummyWindowId = XCreateSimpleWindow(x11Display,
       RootWindow(this->dummyDisplay, screenId), 0, 0, 1, 1, 0, 0, 0);
 
-  this->dummyContext = glXCreateContext(x11Display, dummyVisual, nullptr, 1);
+  this->dummyContext = glXCreateContext(x11Display, this->dataPtr->dummyVisual,
+                                        nullptr, 1);
 
   GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
 
@@ -368,22 +389,12 @@ void OgreRenderEngine::CreateOverlay()
 //////////////////////////////////////////////////
 void OgreRenderEngine::LoadPlugins()
 {
-  std::list<std::string>::iterator iter;
-  std::list<std::string> ogrePaths =
-    SystemPaths::Instance()->OgrePaths();
-
-  for (iter = ogrePaths.begin();
-       iter != ogrePaths.end(); ++iter)
+  for (auto iter = this->ogrePaths.begin();
+       iter != this->ogrePaths.end(); ++iter)
   {
     std::string path(*iter);
-    DIR *dir = opendir(path.c_str());
-
-    if (dir == nullptr)
-    {
+    if (!common::isDirectory(path))
       continue;
-    }
-
-    closedir(dir);
 
     std::vector<std::string> plugins;
     std::vector<std::string>::iterator piter;
@@ -487,65 +498,45 @@ void OgreRenderEngine::CreateRenderSystem()
 void OgreRenderEngine::CreateResources()
 {
   std::vector< std::pair<std::string, std::string> > archNames;
-  std::vector< std::pair<std::string, std::string> >::iterator aiter;
-  std::list<std::string>::const_iterator iter;
-  // std::list<std::string> paths = SystemPaths::Instance()->GetGazeboPaths();
-  // TODO do this in gazebo plugin
-  std::list<std::string> paths;
 
+  // TODO support loading resources from user specified paths
+  std::list<std::string> paths;
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+  resourcePath = common::joinPaths(resourcePath, "ogre");
+  paths.push_back(resourcePath);
 
   std::list<std::string> mediaDirs;
   mediaDirs.push_back("media");
-  mediaDirs.push_back("Media");
 
-  for (iter = paths.begin(); iter != paths.end(); ++iter)
+  for (auto const &p : paths)
   {
-    DIR *dir;
-    if ((dir = opendir((*iter).c_str())) == nullptr)
-    {
+    if (!common::isDirectory(p))
       continue;
-    }
-    closedir(dir);
 
     archNames.push_back(
-        std::make_pair((*iter)+"/", "General"));
+        std::make_pair(p, "General"));
 
-    for (std::list<std::string>::iterator mediaIter = mediaDirs.begin();
-         mediaIter != mediaDirs.end(); ++mediaIter)
+    for (auto const &m : mediaDirs)
     {
-      std::string prefix = (*iter) + "/" + (*mediaIter);
+      std::string prefix = common::joinPaths(p, m);
 
       archNames.push_back(
           std::make_pair(prefix, "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/skyx", "SkyX"));
-      archNames.push_back(
-          std::make_pair(prefix + "/rtshaderlib", "General"));
+      // archNames.push_back(
+      //     std::make_pair(prefix + "/skyx", "SkyX"));
       archNames.push_back(
           std::make_pair(prefix + "/materials/programs", "General"));
       archNames.push_back(
           std::make_pair(prefix + "/materials/scripts", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/materials/textures", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/media/models", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/fonts", "Fonts"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/looknfeel", "LookNFeel"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/schemes", "Schemes"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/imagesets", "Imagesets"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/fonts", "Fonts"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/layouts", "Layouts"));
-      archNames.push_back(
-          std::make_pair(prefix + "/gui/animations", "Animations"));
+      // archNames.push_back(
+      //     std::make_pair(prefix + "/materials/textures", "General"));
+      // archNames.push_back(
+      //     std::make_pair(prefix + "/media/models", "General"));
     }
 
-    for (aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
     {
       try
       {
@@ -564,34 +555,42 @@ void OgreRenderEngine::CreateResources()
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateWindow()
 {
+  // create dummy window
+  this->CreateWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
+}
+
+//////////////////////////////////////////////////
+std::string OgreRenderEngine::CreateWindow(const std::string &_handle,
+    const unsigned int _width, const unsigned int _height,
+    const double _ratio, const unsigned int _antiAliasing)
+{
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
   Ogre::RenderWindow *window = nullptr;
 
   // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
-  params["externalWindowHandle"] = std::to_string(this->dummyWindowId);
+  params["externalWindowHandle"] = _handle;
 #else
-  params["parentWindowHandle"] = std::to_string(this->dummyWindowId);
+  params["parentWindowHandle"] = _handle;
 #endif
-  params["FSAA"] = "4";
+  params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
   // TODO: determine api without qt
 
   // Set the macAPI for Ogre based on the Qt implementation
-// #ifdef QT_MAC_USE_COCOA
   params["macAPI"] = "cocoa";
   params["macAPICocoaUseNSView"] = "true";
-// #else
-//   params["macAPI"] = "carbon";
-// #endif
 
   // Hide window if dimensions are less than or equal to one.
   params["border"] = "none";
 
   std::ostringstream stream;
-  stream << "OgreWindow(0)";
+  stream << "OgreWindow(0)" << "_" << _handle;
+
+  // Needed for retina displays
+  params["contentScalingFactor"] = std::to_string(_ratio);
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
@@ -599,7 +598,7 @@ void OgreRenderEngine::CreateWindow()
     try
     {
       window = this->ogreRoot->createRenderWindow(
-          stream.str(), 1, 1, false, &params);
+          stream.str(), _width, _height, false, &params);
     }
     catch(...)
     {
@@ -611,7 +610,7 @@ void OgreRenderEngine::CreateWindow()
   if (attempts >= 10)
   {
     ignerr << "Unable to create the rendering window\n" << std::endl;
-    return;
+    return std::string();
   }
 
   if (window)
@@ -623,6 +622,7 @@ void OgreRenderEngine::CreateWindow()
     // Windows needs to reposition the render window to 0,0.
     window->reposition(0, 0);
   }
+  return stream.str();
 }
 
 //////////////////////////////////////////////////

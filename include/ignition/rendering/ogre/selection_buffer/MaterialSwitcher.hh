@@ -38,7 +38,7 @@ namespace gazebo
     };*/
 
     class SelectionBuffer;
-    class DETAIL_IGN_RENDERING_VISIBLE MaterialSwitcher :
+    class MaterialSwitcher :
       public Ogre::MaterialManager::Listener
     {
       /// \brief Constructor

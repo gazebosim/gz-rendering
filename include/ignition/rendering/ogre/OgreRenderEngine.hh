@@ -17,7 +17,9 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
 #define IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include <ignition/common/SingletonT.hh>
 
@@ -35,6 +37,9 @@ namespace ignition
 {
   namespace rendering
   {
+    // forward declaration
+    class OgreRenderEnginePrivate;
+
     class IGNITION_VISIBLE OgreRenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<OgreRenderEngine>
@@ -70,6 +75,10 @@ namespace ignition
       public: void AddResourcePath(const std::string &_uri);
 
       public: virtual Ogre::Root *OgreRoot() const;
+
+      public: std::string CreateWindow(const std::string &_handle,
+                  const unsigned int _width, const unsigned int _height,
+                  const double _ratio, const unsigned int antiAliasing);
 
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name);
@@ -114,14 +123,18 @@ namespace ignition
 
       private: Ogre::LogManager *ogreLogManager;
 
+      /// \brief Paths to ogre plugins
+      private: std::vector<std::string> ogrePaths;
+
 #if not (__APPLE__ || _WIN32)
       private: void *dummyDisplay;
 
       private: void *dummyContext;
-
-      private: uint64_t dummyWindowId;
 #endif
 
+      private: uint64_t dummyWindowId;
+
+      private: std::unique_ptr<OgreRenderEnginePrivate> dataPtr;
 #ifdef OGRE_OVERLAY_NEEDED
       private: Ogre::OverlaySystem *ogreOverlaySystem;
 #endif

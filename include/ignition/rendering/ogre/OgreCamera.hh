@@ -69,10 +69,6 @@ namespace ignition
                             ignition::math::Vector3d &_origin,
                             ignition::math::Vector3d &_dir) const;
 
-      protected: virtual unsigned int ViewportHeight() const;
-
-      protected: virtual unsigned int ViewportWidth() const;
-
       protected: virtual void Init();
 
       private: void CreateCamera();

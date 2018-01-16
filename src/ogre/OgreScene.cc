@@ -382,8 +382,8 @@ VisualPtr OgreScene::VisualAt(const ignition::math::Vector3d &_origin,
       visual = this->visuals->GetByName(Ogre::any_cast<std::string>(
             closestEntity->getUserObjectBindings().getUserAny()));
     }
-    catch(boost::bad_any_cast &e)
-    //catch(const std::exception &e)
+    //catch(boost::bad_any_cast &e)
+    catch(const std::exception &e)
     {
       ignerr << "boost any_cast error:" << e.what() << "\n";
     }
@@ -456,7 +456,12 @@ Ogre::Entity *OgreScene::OgreEntityAt(const ignition::math::Vector3d &_origin,
             // this is the closest so far, save it off
             closest_distance = hit.second;
             new_closest_found = true;
+            std::cout << "Found mesh " << "\n";
           }
+        }
+        else
+        {
+          std::cout << "Missing mesh " << "\n" ;
         }
       }
 
@@ -489,7 +494,6 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
   size_t next_offset = 0;
   size_t index_offset = 0;
 
-  size_t currOffset = 0;
   _vertex_count = _index_count = 0;
 
   // Calculate how many vertices and indices we're going to need
@@ -515,6 +519,7 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
     _index_count += submesh->indexData->indexCount;
   }
 
+
   // Allocate space for the vertices and indices
   _vertices = new Ogre::Vector3[_vertex_count];
   _indices = new uint64_t[_index_count];
@@ -529,16 +534,6 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
     Ogre::VertexData* vertex_data = submesh->useSharedVertices ?
         _mesh->sharedVertexData : submesh->vertexData;
 
-    Ogre::VertexDeclaration* vertex_decl;
-    vertex_decl = vertex_data->vertexDeclaration;
-    // two dimensional texture coordinates
-//    if (submesh->TexCoordCount() > 0)
-//    {
-      vertex_decl->addElement(0, currOffset, Ogre::VET_FLOAT2,
-      Ogre::VES_TEXTURE_COORDINATES, 0);
-      currOffset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
-//    }
-
     if (!submesh->useSharedVertices || !added_shared)
     {
       if (submesh->useSharedVertices)
@@ -550,27 +545,18 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
         vertex_data->vertexDeclaration->findElementBySemantic(
             Ogre::VES_POSITION);
 
-      Ogre::HardwareVertexBufferSharedPtr vbuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
-                 vertex_decl->getVertexSize(0),
-                 vertex_data->vertexCount,
-                 Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
-                 false);
-
-     // Ogre::HardwareVertexBufferSharedPtr vbuf =
-     //   vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
-
+      Ogre::HardwareVertexBufferSharedPtr vbuf =
+        vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
 
       unsigned char *vertex =
         static_cast<unsigned char*>(
             vbuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
-
 
       // There is _no_ baseVertexPointerToElement() which takes an
       // Ogre::Real or a double as second argument. So make it float,
       // to avoid trouble when Ogre::Real will be comiled/typedefed as double:
       //      Ogre::Real* pReal;
       float *pReal;
-
 
       for (size_t j = 0; j < vertex_data->vertexCount;
            ++j, vertex += vbuf->getVertexSize())
@@ -591,7 +577,7 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
     if ((ibuf->getType() == Ogre::HardwareIndexBuffer::IT_32BIT))
     {
       uint32_t*  pLong = static_cast<uint32_t*>(
-          ibuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
+          ibuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
 
       for (size_t k = 0; k < index_data->indexCount; k++)
       {
@@ -601,7 +587,7 @@ void OgreScene::MeshInformation(const Ogre::Mesh *_mesh,
     else
     {
       uint64_t*  pLong = static_cast<uint64_t*>(
-          ibuf->lock(Ogre::HardwareBuffer::HBL_READ_ONLY));
+          ibuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
 
       uint16_t* pShort = reinterpret_cast<uint16_t*>(pLong);
       for (size_t k = 0; k < index_data->indexCount; k++)

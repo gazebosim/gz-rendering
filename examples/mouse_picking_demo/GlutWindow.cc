@@ -106,7 +106,7 @@ void UpdateCameras()
     camera->SetLocalPosition(g_offset, g_offset, g_offset);
   }
 
-  g_offset+= 0.001;
+  //g_offset+= 0.001;
 }
 
 //////////////////////////////////////////////////
@@ -181,7 +181,10 @@ void GlutMouse(int _button, int _state, int _mouseX, int _mouseY)
     ignition::math::Vector2i mousePos(_mouseX, _mouseY);
 
     visual = g_cameras[g_cameraIndex]->VisualAt(mousePos);
-    //std::cout << "Selected item " << visual->WorldPose() << "\n";
+    if (visual)
+    {
+      std::cout << "Selected item " << visual->WorldPose() << "\n";
+    }
   }
 }
 

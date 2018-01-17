@@ -19,7 +19,6 @@ set_property(
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
-    ${ignition-math${IGN_MATH_VER}_LIBRARIES}
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES})
 
 # Build the unit tests.

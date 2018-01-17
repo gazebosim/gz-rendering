@@ -24,142 +24,316 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre/OgreMaterial.hh"
+#include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreText.hh"
 
 #define POS_TEX_BINDING    0
 #define COLOUR_BINDING     1
 
+namespace ignition
+{
+  namespace rendering
+  {
+    class OgreMovableText
+      : public Ogre::MovableObject, public Ogre::Renderable
+    {
+      /// \brief Constructor
+      public: OgreMovableText();
+
+      /// \brief Destructor
+      public: virtual ~OgreMovableText();
+
+      // Documentation inherited.
+      public: void SetFontName(const std::string &_font);
+
+      // Documentation inherited.
+      public: void SetTextString(const std::string &_text);
+
+      // Documentation inherited.
+      public: void SetColor(const ignition::math::Color &_color);
+
+      // Documentation inherited.
+      public: void SetCharHeight(const float _height);
+
+      // Documentation inherited.
+      public: void SetSpaceWidth(const float _width);
+
+      // Documentation inherited.
+      public: void SetTextAlignment(const Text::HorizontalAlign &_horizAlign,
+                                    const Text::VerticalAlign &_vertAlign);
+      // Documentation inherited.
+      public: void SetBaseline(const float _baseline);
+
+      // Documentation inherited.
+      public: void SetShowOnTop(const bool _onTop);
+
+      // Documentation inherited.
+      public: ignition::math::Box AABB() const;
+
+      /// \brief Setup the geometry.
+      public: void SetupGeometry();
+
+      /// \brief Update colors.
+      public: void UpdateColors();
+
+      /// \brief Update material.
+      public: void UpdateMaterial();
+
+      /// \brief Update font.
+      public: void UpdateFont();
+
+      /// \brief Update all text properties if dirty.
+      public: void Update();
+
+      /// \brief Set font name implementation.
+      /// \param-in] _font Name of font
+      public: void SetFontNameImpl(const std::string &_font);
+
+      /// \internal
+      /// \brief Method to allow a caller to abstractly iterate over the
+      /// renderable instances.
+      /// \param[in] _visitor Renderable instances to visit
+      /// \param[in] _debug True if set to debug
+      public: virtual void visitRenderables(Ogre::Renderable::Visitor *_visitor,
+          bool _debug = false) override;
+
+      /// \internal
+      /// \brief Get the world transform (from MovableObject)
+      protected: void getWorldTransforms(Ogre::Matrix4 *_xform) const override;
+
+      /// \internal
+      /// \brief Get the bounding radiu (from MovableObject)
+      protected: float getBoundingRadius() const override;
+
+      /// \internal
+      /// \brief Get the squared view depth (from MovableObject)
+      protected: float getSquaredViewDepth(const Ogre::Camera *_cam) const
+          override;
+
+      /// \internal
+      /// \brief Get the render operation
+      protected: void getRenderOperation(Ogre::RenderOperation &_op) override;
+
+      /// \internal
+      /// \brief Get the material
+      protected: const Ogre::MaterialPtr &getMaterial() const override;
+
+      /// \internal
+      /// \brief Get the lights
+      /// \deprecated Function has never returned meaningful values
+      protected: const Ogre::LightList &getLights() const override;
+
+      /// \internal
+      private: const Ogre::AxisAlignedBox &getBoundingBox() const override;
+
+      /// \internal
+      private: const Ogre::String &getMovableType() const override;
+
+      /// \internal
+      private: void _notifyCurrentCamera(Ogre::Camera *_cam) override;
+
+      /// \internal
+      private: void _updateRenderQueue(Ogre::RenderQueue *_queue) override;
+
+      /// \brief Flag to indicate text properties have changed
+      private: bool textDirty = false;
+
+      /// \brief Flag to indicate text color has changed
+      private: bool colorDirty = true;
+
+      /// \brief Flag to indicate text font has changed
+      private: bool fontDirty = true;
+
+      /// \brief Flag to indicate text material has changed
+      private: bool materialDirty = false;
+
+      /// \brief Bounding radius
+      private: float radius = 0;
+
+      /// \brief Viewport aspect coefficient
+      private: float viewportAspectCoef = 0.75;
+
+      /// \brief Ogre render operation
+      private: Ogre::RenderOperation renderOp;
+
+      /// \brief Axis aligned box
+      private: Ogre::AxisAlignedBox *aabb = nullptr;
+
+      /// \brief Pointer to camera which the text is facing - never set.
+      private: Ogre::Camera *camera = nullptr;
+
+      /// \brief Pointer to font
+      private: Ogre::Font *font = nullptr;
+
+      /// \brief Text ogreMaterial
+      private: Ogre::MaterialPtr ogreMaterial;
+
+      /// \brief Keep an empty list of lights.
+      private: Ogre::LightList lightList;
+
+      /// \brief Font name, such as "Arial"
+      private: std::string fontName;
+
+      /// \brief Text being displayed
+      private: std::string text;
+
+      /// \brief Text color
+      private: ignition::math::Color color;
+
+      /// \brief Character height in meters
+      private: float charHeight = 0.0;
+
+      /// \brief Width of space between letters
+      private: float spaceWidth = 0.0;
+
+      /// \brief Horizontal alignment
+      private: Text::HorizontalAlign horizontalAlign;
+
+      /// \brief Vertical alignment
+      private: Text::VerticalAlign verticalAlign;
+
+      /// \brief Baseline height in meters.
+      private: float baseline = 0.0;
+
+      /// \brief True for text to be displayed on top of other objects in the scene.
+      private: bool onTop = false;
+    };
+
+    /// \brief Private data for the OgreText class.
+    class OgreTextPrivate
+    {
+      /// \brief Text materal
+      public: OgreMaterialPtr material;
+
+      /// Pointer to ogre movable text object
+      public: std::unique_ptr<OgreMovableText> ogreObj;
+    };
+  }
+}
+
 using namespace ignition;
 using namespace rendering;
 
-/// \brief Private data for the OgreText class.
-class ignition::rendering::OgreTextPrivate
-{
-  /// \brief Bounding radius
-  public: float radius = 0;
-
-  /// \brief Viewport aspect coefficient
-  public: float viewportAspectCoef = 0.75;
-
-  /// \brief Ogre render operation
-  public: Ogre::RenderOperation renderOp;
-
-  /// \brief Axis aligned box
-  public: Ogre::AxisAlignedBox *aabb = nullptr;
-
-  /// \brief Pointer to camera which the text is facing - never set.
-  public: Ogre::Camera *camera = nullptr;
-
-  /// \brief Pointer to font
-  public: Ogre::Font *font = nullptr;
-
-  /// \brief Text ogreMaterial
-  public: Ogre::MaterialPtr ogreMaterial;
-
-  /// \brief Grid materal
-  public: OgreMaterialPtr material;
-
-  /// \brief Keep an empty list of lights.
-  public: Ogre::LightList lightList;
-
-  /// \brief Flag to indicate text color has changed
-  public: bool colorDirty = true;
-
-  /// \brief Flag to indicate text font has changed
-  public: bool fontDirty = true;
-};
-
 //////////////////////////////////////////////////
-OgreText::OgreText()
-    : dataPtr(new OgreTextPrivate)
+OgreMovableText::OgreMovableText()
 {
-  this->dataPtr->renderOp.vertexData = nullptr;
-
-  this->dataPtr->aabb = new Ogre::AxisAlignedBox;
+  this->renderOp.vertexData = nullptr;
+  this->aabb = new Ogre::AxisAlignedBox;
 }
 
 //////////////////////////////////////////////////
-OgreText::~OgreText()
+OgreMovableText::~OgreMovableText()
 {
-  delete this->dataPtr->renderOp.vertexData;
-  delete this->dataPtr->aabb;
-}
-
-/*//////////////////////////////////////////////////
-void OgreText::Load(const std::string &_name,
-                       const std::string &_text,
-                       const std::string &_,
-                       const float _charHeight,
-                       const ignition::math::Color &_color)
-{
-  {
-    std::lock_guard<std::recursive_mutex> lock(this->dataPtr->mutex);
-
-    this->text = _text;
-    this->color = _color;
-    this->fontName = _fontName;
-    this->charHeight = _charHeight;
-    this->mName = _name;
-
-    if (this->mName == "")
-    {
-      throw Ogre::Exception(Ogre::Exception::ERR_INVALIDPARAMS,
-          "Trying to create OgreText without name",
-          "OgreText::OgreText");
-    }
-
-    if (this->text == "")
-    {
-      throw Ogre::Exception(Ogre::Exception::ERR_INVALIDPARAMS,
-          "Trying to create OgreText without text",
-          "OgreText::OgreText");
-    }
-
-    this->dataPtr->dirty = true;
-  }
-
-  this->SetFontName(this->dataPtr->fontName);
-
-  this->SetupGeometry();
-}*/
-//////////////////////////////////////////////////
-void OgreText::Init()
-{
-  // TODO load ogre font media ogreMaterials
-  this->SetFontNameImpl(this->fontName);
-  this->SetupGeometry();
+  delete this->renderOp.vertexData;
+  delete this->aabb;
 }
 
 //////////////////////////////////////////////////
-void OgreText::PreRender()
-{
-  if (this->dataPtr->fontDirty)
-    this->UpdateFont();
-  if (this->textDirty)
-    this->SetupGeometry();
-  if (this->dataPtr->colorDirty)
-    this->UpdateColors();
-
-}
-
-//////////////////////////////////////////////////
-void OgreText::SetFontName(const std::string &_font)
+void OgreMovableText::SetFontName(const std::string &_font)
 {
   if (this->fontName != _font)
   {
     this->fontName = _font;
-    this->dataPtr->fontDirty = true;
+    this->fontDirty = true;
   }
 }
 
 //////////////////////////////////////////////////
-void OgreText::UpdateFont()
+void OgreMovableText::SetTextString(const std::string &_text)
+{
+  if (this->text != _text)
+  {
+    this->text = _text;
+    this->textDirty = true;
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::SetColor(const ignition::math::Color &_color)
+{
+  if (this->color != _color)
+  {
+    this->color = _color;
+    this->colorDirty = true;
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::SetCharHeight(const float _height)
+{
+  if (!math::equal(this->charHeight, _height))
+  {
+    this->charHeight = _height;
+    this->textDirty = true;
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::SetSpaceWidth(const float _width)
+{
+  if (!math::equal(this->spaceWidth, _width))
+  {
+    this->spaceWidth = _width;
+    this->textDirty = true;
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::SetTextAlignment(const Text::HorizontalAlign &_horizAlign,
+                                       const Text::VerticalAlign &_vertAlign)
+{
+  if (this->horizontalAlign != _horizAlign)
+  {
+    this->horizontalAlign = _horizAlign;
+    this->textDirty = true;
+  }
+  if (this->verticalAlign != _vertAlign)
+  {
+    this->verticalAlign = _vertAlign;
+    this->textDirty = true;
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::SetBaseline(const float _baseline)
+{
+  if (math::equal(this->baseline, _baseline))
+  {
+    this->baseline = _baseline;
+    this->textDirty = true;
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::SetShowOnTop(const bool _onTop)
+{
+  if (this->onTop != _onTop)
+  {
+    this->onTop = _onTop;
+    this->materialDirty = true;
+  }
+}
+
+//////////////////////////////////////////////////
+ignition::math::Box OgreMovableText::AABB() const
+{
+  return ignition::math::Box(
+      ignition::math::Vector3d(this->aabb->getMinimum().x,
+                    this->aabb->getMinimum().y,
+                    this->aabb->getMinimum().z),
+      ignition::math::Vector3d(this->aabb->getMaximum().x,
+                    this->aabb->getMaximum().y,
+                    this->aabb->getMaximum().z));
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::UpdateFont()
 {
   this->SetFontNameImpl(this->fontName);
 }
 
 //////////////////////////////////////////////////
-void OgreText::SetFontNameImpl(const std::string &_newFontName)
+void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 {
   if ((Ogre::MaterialManager::getSingletonPtr()->resourceExists(
           this->mName + "Material")))
@@ -168,75 +342,49 @@ void OgreText::SetFontNameImpl(const std::string &_newFontName)
   }
 
   if (this->fontName != _newFontName ||
-      this->dataPtr->ogreMaterial.isNull() || !this->dataPtr->font)
+      this->ogreMaterial.isNull() || !this->font)
   {
-    auto font = (Ogre::Font*)Ogre::FontManager::getSingleton()
+    auto ogreFont = (Ogre::Font*)Ogre::FontManager::getSingleton()
         .getByName(_newFontName).getPointer();
 
-    if (!font)
+    if (!ogreFont)
     {
       throw Ogre::Exception(Ogre::Exception::ERR_ITEM_NOT_FOUND,
                             "Could not find font " + _newFontName,
-                            "OgreText::setFontName");
+                            "OgreMovableText::setFontName");
     }
-    this->dataPtr->font = font;
+    this->font = ogreFont;
     this->fontName = _newFontName;
 
-    this->dataPtr->font->load();
+    this->font->load();
 
-    if (!this->dataPtr->ogreMaterial.isNull())
+    if (!this->ogreMaterial.isNull())
     {
       Ogre::MaterialManager::getSingletonPtr()->remove(
-          this->dataPtr->ogreMaterial->getName());
-      this->dataPtr->ogreMaterial.setNull();
+          this->ogreMaterial->getName());
+      this->ogreMaterial.setNull();
     }
 
-    this->dataPtr->ogreMaterial = this->dataPtr->font->getMaterial()->clone(
+    this->ogreMaterial = this->font->getMaterial()->clone(
         this->mName + "Material");
 
-    if (!this->dataPtr->ogreMaterial->isLoaded())
-      this->dataPtr->ogreMaterial->load();
+    if (!this->ogreMaterial->isLoaded())
+      this->ogreMaterial->load();
 
-    this->dataPtr->ogreMaterial->setDepthCheckEnabled(!this->onTop);
-    this->dataPtr->ogreMaterial->setDepthBias(!this->onTop, 0);
-    this->dataPtr->ogreMaterial->setDepthWriteEnabled(this->onTop);
-    this->dataPtr->ogreMaterial->setLightingEnabled(false);
+    this->ogreMaterial->setDepthCheckEnabled(!this->onTop);
+    this->ogreMaterial->setDepthBias(!this->onTop, 0);
+    this->ogreMaterial->setDepthWriteEnabled(this->onTop);
+    this->ogreMaterial->setLightingEnabled(false);
 
     this->textDirty = true;
   }
 }
 
 //////////////////////////////////////////////////
-void OgreText::SetShowOnTop(const bool _onTop)
+void OgreMovableText::SetupGeometry()
 {
-  if (this->onTop != _onTop && !this->dataPtr->ogreMaterial.isNull())
-  {
-    this->onTop = _onTop;
-
-    this->dataPtr->ogreMaterial->setDepthBias(!this->onTop, 0);
-    this->dataPtr->ogreMaterial->setDepthCheckEnabled(!this->onTop);
-    this->dataPtr->ogreMaterial->setDepthWriteEnabled(this->onTop);
-  }
-}
-
-
-//////////////////////////////////////////////////
-ignition::math::Box OgreText::AABB()
-{
-  return ignition::math::Box(
-      ignition::math::Vector3d(this->dataPtr->aabb->getMinimum().x,
-                    this->dataPtr->aabb->getMinimum().y,
-                    this->dataPtr->aabb->getMinimum().z),
-      ignition::math::Vector3d(this->dataPtr->aabb->getMaximum().x,
-                    this->dataPtr->aabb->getMaximum().y,
-                    this->dataPtr->aabb->getMaximum().z));
-}
-
-//////////////////////////////////////////////////
-void OgreText::SetupGeometry()
-{
-  IGN_ASSERT(this->dataPtr->font, "font class member is null");
-  IGN_ASSERT(!this->dataPtr->ogreMaterial.isNull(), "ogreMaterial class member is null");
+  IGN_ASSERT(this->font, "font class member is null");
+  IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
 
   Ogre::VertexDeclaration *decl = nullptr;
   Ogre::VertexBufferBinding *bind = nullptr;
@@ -260,31 +408,31 @@ void OgreText::SetupGeometry()
 
   auto vertexCount = static_cast<unsigned int>(this->text.size() * 6);
 
-  if (this->dataPtr->renderOp.vertexData)
+  if (this->renderOp.vertexData)
   {
     // Removed this test as it causes problems when replacing a caption
     // of the same size: replacing "Hello" with "hello"
     // as well as when changing the text alignment
-    // if (this->dataPtr->renderOp.vertexData->vertexCount != vertexCount)
+    // if (this->renderOp.vertexData->vertexCount != vertexCount)
     {
-      delete this->dataPtr->renderOp.vertexData;
-      this->dataPtr->renderOp.vertexData = nullptr;
-      this->dataPtr->colorDirty = true;
+      delete this->renderOp.vertexData;
+      this->renderOp.vertexData = nullptr;
+      this->colorDirty = true;
     }
   }
 
-  if (!this->dataPtr->renderOp.vertexData)
-    this->dataPtr->renderOp.vertexData = new Ogre::VertexData();
+  if (!this->renderOp.vertexData)
+    this->renderOp.vertexData = new Ogre::VertexData();
 
-  this->dataPtr->renderOp.indexData = 0;
-  this->dataPtr->renderOp.vertexData->vertexStart = 0;
-  this->dataPtr->renderOp.vertexData->vertexCount = vertexCount;
-  this->dataPtr->renderOp.operationType =
+  this->renderOp.indexData = 0;
+  this->renderOp.vertexData->vertexStart = 0;
+  this->renderOp.vertexData->vertexCount = vertexCount;
+  this->renderOp.operationType =
       Ogre::RenderOperation::OT_TRIANGLE_LIST;
-  this->dataPtr->renderOp.useIndexes = false;
+  this->renderOp.useIndexes = false;
 
-  decl = this->dataPtr->renderOp.vertexData->vertexDeclaration;
-  bind = this->dataPtr->renderOp.vertexData->vertexBufferBinding;
+  decl = this->renderOp.vertexData->vertexDeclaration;
+  bind = this->renderOp.vertexData->vertexBufferBinding;
 
   // create/bind positions/tex.ccord. buffer
   if (!decl->findElementBySemantic(Ogre::VES_POSITION))
@@ -299,7 +447,7 @@ void OgreText::SetupGeometry()
 
   ptbuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
             decl->getVertexSize(POS_TEX_BINDING),
-            this->dataPtr->renderOp.vertexData->vertexCount,
+            this->renderOp.vertexData->vertexCount,
             Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 
   bind->setBinding(POS_TEX_BINDING, ptbuf);
@@ -310,7 +458,7 @@ void OgreText::SetupGeometry()
 
   cbuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
            decl->getVertexSize(COLOUR_BINDING),
-           this->dataPtr->renderOp.vertexData->vertexCount,
+           this->renderOp.vertexData->vertexCount,
            Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 
   bind->setBinding(COLOUR_BINDING, cbuf);
@@ -320,7 +468,7 @@ void OgreText::SetupGeometry()
   // Derive space width from a capital A
   if (ignition::math::equal(this->spaceWidth, 0.0f))
   {
-    this->spaceWidth = this->dataPtr->font->getGlyphAspectRatio('A') *
+    this->spaceWidth = this->font->getGlyphAspectRatio('A') *
         this->charHeight * 2.0;
   }
 
@@ -355,9 +503,9 @@ void OgreText::SetupGeometry()
         }
         else
         {
-          len += this->dataPtr->font->getGlyphAspectRatio(character) *
+          len += this->font->getGlyphAspectRatio(character) *
                  this->charHeight * 2.0 *
-                 this->dataPtr->viewportAspectCoef;
+                 this->viewportAspectCoef;
         }
       }
 
@@ -373,7 +521,7 @@ void OgreText::SetupGeometry()
       newLine = true;
 
       // Also reduce tri count
-      this->dataPtr->renderOp.vertexData->vertexCount -= 6;
+      this->renderOp.vertexData->vertexCount -= 6;
       continue;
     }
     else if (character == 0x0020)  // space
@@ -382,14 +530,14 @@ void OgreText::SetupGeometry()
       left += this->spaceWidth;
 
       // Also reduce tri count
-      this->dataPtr->renderOp.vertexData->vertexCount -= 6;
+      this->renderOp.vertexData->vertexCount -= 6;
       continue;
     }
 
-    float horiz_height = this->dataPtr->font->getGlyphAspectRatio(character) *
-                         this->dataPtr->viewportAspectCoef;
+    float horiz_height = this->font->getGlyphAspectRatio(character) *
+                         this->viewportAspectCoef;
 
-    auto &uvRect = this->dataPtr->font->getGlyphTexCoords(character);
+    auto &uvRect = this->font->getGlyphTexCoords(character);
 
     // each vert is (x, y, z, u, v)
     //------------------------------------------------------------------------
@@ -551,61 +699,208 @@ void OgreText::SetupGeometry()
   ptbuf->unlock();
 
   // update AABB/Sphere radius
-  this->dataPtr->aabb->setMinimum(min);
-  this->dataPtr->aabb->setMaximum(max);
-  this->dataPtr->radius = Ogre::Math::Sqrt(maxSquaredRadius);
+  this->aabb->setMinimum(min);
+  this->aabb->setMaximum(max);
+  this->radius = Ogre::Math::Sqrt(maxSquaredRadius);
 
-  if (this->dataPtr->colorDirty)
+  if (this->colorDirty)
     this->UpdateColors();
 
   this->textDirty = false;
 }
 
 //////////////////////////////////////////////////
-void OgreText::SetColor(const ignition::math::Color &_color)
-{
-  if (this->color != _color)
-  {
-    this->color = _color;
-    this->dataPtr->colorDirty = true;
-  }
-}
-
-//////////////////////////////////////////////////
-void OgreText::UpdateColors()
+void OgreMovableText::UpdateColors()
 {
   Ogre::RGBA clr;
   Ogre::HardwareVertexBufferSharedPtr vbuf;
   Ogre::RGBA *pDest = nullptr;
   unsigned int i;
 
-  IGN_ASSERT(this->dataPtr->font, "font class member is null");
-  IGN_ASSERT(!this->dataPtr->ogreMaterial.isNull(), "ogreMaterial class member is null");
+  IGN_ASSERT(this->font, "font class member is null");
+  IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
 
   // Convert to system-specific
   Ogre::ColourValue cv(this->color.R(), this->color.G(),
                        this->color.B(), this->color.A());
   Ogre::Root::getSingleton().convertColourValue(cv, &clr);
 
-  vbuf = this->dataPtr->renderOp.vertexData->vertexBufferBinding->getBuffer(
+  vbuf = this->renderOp.vertexData->vertexBufferBinding->getBuffer(
          COLOUR_BINDING);
 
   pDest = static_cast<Ogre::RGBA*>(
       vbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
 
-  for (i = 0; i < this->dataPtr->renderOp.vertexData->vertexCount; ++i)
+  for (i = 0; i < this->renderOp.vertexData->vertexCount; ++i)
   {
     *pDest++ = clr;
   }
 
   vbuf->unlock();
-  this->dataPtr->colorDirty = false;
+  this->colorDirty = false;
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::UpdateMaterial()
+{
+  if (this->ogreMaterial.isNull())
+    return;
+
+  this->ogreMaterial->setDepthBias(!this->onTop, 0);
+  this->ogreMaterial->setDepthCheckEnabled(!this->onTop);
+  this->ogreMaterial->setDepthWriteEnabled(this->onTop);
+
+  this->materialDirty = false;
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::Update()
+{
+  if (this->fontDirty)
+    this->UpdateFont();
+  if (this->textDirty)
+    this->SetupGeometry();
+  if (this->colorDirty)
+    this->UpdateColors();
+  if (this->materialDirty)
+    this->UpdateMaterial();
+}
+
+//////////////////////////////////////////////////
+const Ogre::AxisAlignedBox &OgreMovableText::getBoundingBox(void) const
+{
+  return *this->aabb;
+}
+
+//////////////////////////////////////////////////
+const Ogre::String &OgreMovableText::getMovableType() const
+{
+  static Ogre::String movType = "OgreMovableText";
+  return movType;
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::getWorldTransforms(Ogre::Matrix4 *_xform) const
+{
+  if (this->isVisible() && this->camera)
+  {
+    Ogre::Matrix3 rot3x3, scale3x3 = Ogre::Matrix3::IDENTITY;
+
+    // store rotation in a matrix
+    this->camera->getDerivedOrientation().ToRotationMatrix(rot3x3);
+    // mParentNode->_getDerivedOrientation().ToRotationMatrix(rot3x3);
+
+    // parent node position
+    Ogre::Vector3 ppos = mParentNode->_getDerivedPosition() +
+                         Ogre::Vector3::UNIT_Z * this->baseline;
+
+    // apply scale
+    scale3x3[0][0] = mParentNode->_getDerivedScale().x / 2;
+    scale3x3[1][1] = mParentNode->_getDerivedScale().y / 2;
+    scale3x3[2][2] = mParentNode->_getDerivedScale().z / 2;
+
+    // apply all transforms to xform
+    *_xform = (rot3x3 * scale3x3);
+    _xform->setTrans(ppos);
+  }
+}
+
+//////////////////////////////////////////////////
+float OgreMovableText::getBoundingRadius() const
+{
+  return this->radius;
+}
+
+//////////////////////////////////////////////////
+float OgreMovableText::getSquaredViewDepth(const Ogre::Camera * /*_cam*/) const
+{
+  return 0;
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::getRenderOperation(Ogre::RenderOperation &_op)
+{
+  if (this->isVisible())
+  {
+    this->Update();
+    _op = this->renderOp;
+  }
+}
+
+//////////////////////////////////////////////////
+const Ogre::MaterialPtr &OgreMovableText::getMaterial(void) const
+{
+  IGN_ASSERT(!this->ogreMaterial.isNull(),
+      "ogreMaterial class member is null");
+  return this->ogreMaterial;
+}
+
+//////////////////////////////////////////////////
+const Ogre::LightList &OgreMovableText::getLights(void) const
+{
+  return this->lightList;
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::_notifyCurrentCamera(Ogre::Camera *_cam)
+{
+  this->camera = _cam;
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::_updateRenderQueue(Ogre::RenderQueue* _queue)
+{
+  if (this->isVisible())
+  {
+    this->Update();
+
+    _queue->addRenderable(this, mRenderQueueID,
+                         OGRE_RENDERABLE_DEFAULT_PRIORITY);
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMovableText::visitRenderables(Ogre::Renderable::Visitor * /*_visitor*/,
+                                 bool /*_debug*/)
+{
+  return;
+}
+
+//////////////////////////////////////////////////
+OgreText::OgreText()
+    : dataPtr(new OgreTextPrivate)
+{
+  this->dataPtr->ogreObj.reset(new OgreMovableText());
+}
+
+//////////////////////////////////////////////////
+OgreText::~OgreText()
+{
+}
+
+//////////////////////////////////////////////////
+void OgreText::Init()
+{
+  // set default properties inherited from base
+  this->SetFontName(this->fontName);
+  this->SetCharHeight(this->charHeight);
+  this->SetSpaceWidth(this->spaceWidth);
+  this->SetBaseline(this->baseline);
+  this->SetShowOnTop(this->onTop);
+  this->SetColor(this->color);
+  this->SetTextAlignment(this->horizontalAlign, this->verticalAlign);
+}
+
+//////////////////////////////////////////////////
+void OgreText::PreRender()
+{
+  this->dataPtr->ogreObj->Update();
 }
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreText::OgreObject() const
 {
-  return this;
+  return this->dataPtr->ogreObj.get();
 }
 
 //////////////////////////////////////////////////
@@ -633,11 +928,11 @@ void OgreText::SetMaterialImpl(OgreMaterialPtr _material)
   // TODO
 /*  std::string ogreMaterialName = _ogreMaterial->Name();
   Ogre::MaterialPtr ogreMaterial = _ogreMaterial->Material();
-  this->dataPtr->manualObject->setMaterialName(0, ogreMaterialName);
-  this->dataPtr->ogreMaterial = _ogreMaterial;
+  this->manualObject->setMaterialName(0, ogreMaterialName);
+  this->ogreMaterial = _ogreMaterial;
 
-  this->dataPtr->ogreMaterial->SetReceiveShadows(false);
-  this->dataPtr->ogreMaterial->SetLightingEnabled(false);
+  this->ogreMaterial->SetReceiveShadows(false);
+  this->ogreMaterial->SetLightingEnabled(false);
 */
 }
 
@@ -648,108 +943,64 @@ MaterialPtr OgreText::Material() const
 }
 
 //////////////////////////////////////////////////
-const Ogre::AxisAlignedBox &OgreText::getBoundingBox(void) const
+void OgreText::SetFontName(const std::string &_font)
 {
-  return *this->dataPtr->aabb;
+  BaseText::SetFontName(_font);
+  this->dataPtr->ogreObj->SetFontName(_font);
 }
 
 //////////////////////////////////////////////////
-const Ogre::String &OgreText::getMovableType() const
+void OgreText::SetTextString(const std::string &_text)
 {
-  static Ogre::String movType = "OgreText";
-  return movType;
+  BaseText::SetTextString(_text);
+  this->dataPtr->ogreObj->SetTextString(_text);
 }
 
 //////////////////////////////////////////////////
-void OgreText::getWorldTransforms(Ogre::Matrix4 *_xform) const
+void OgreText::SetColor(const ignition::math::Color &_color)
 {
-  if (this->isVisible() && this->dataPtr->camera)
-  {
-    Ogre::Matrix3 rot3x3, scale3x3 = Ogre::Matrix3::IDENTITY;
-
-    // store rotation in a matrix
-    this->dataPtr->camera->getDerivedOrientation().ToRotationMatrix(rot3x3);
-    // mParentNode->_getDerivedOrientation().ToRotationMatrix(rot3x3);
-
-    // parent node position
-    Ogre::Vector3 ppos = mParentNode->_getDerivedPosition() +
-                         Ogre::Vector3::UNIT_Z * this->baseline;
-
-    // apply scale
-    scale3x3[0][0] = mParentNode->_getDerivedScale().x / 2;
-    scale3x3[1][1] = mParentNode->_getDerivedScale().y / 2;
-    scale3x3[2][2] = mParentNode->_getDerivedScale().z / 2;
-
-    // apply all transforms to xform
-    *_xform = (rot3x3 * scale3x3);
-    _xform->setTrans(ppos);
-  }
+  BaseText::SetColor(_color);
+  this->dataPtr->ogreObj->SetColor(_color);
 }
 
 //////////////////////////////////////////////////
-float OgreText::getBoundingRadius() const
+void OgreText::SetCharHeight(const float _height)
 {
-  return this->dataPtr->radius;
+  BaseText::SetCharHeight(_height);
+  this->dataPtr->ogreObj->SetCharHeight(_height);
 }
 
 //////////////////////////////////////////////////
-float OgreText::getSquaredViewDepth(const Ogre::Camera * /*cam_*/) const
+void OgreText::SetSpaceWidth(const float _width)
 {
-  return 0;
+  BaseText::SetSpaceWidth(_width);
+  this->dataPtr->ogreObj->SetSpaceWidth(_width);
 }
 
 //////////////////////////////////////////////////
-void OgreText::getRenderOperation(Ogre::RenderOperation & op)
+void OgreText::SetTextAlignment(const Text::HorizontalAlign &_horizAlign,
+                                const Text::VerticalAlign &_vertAlign)
 {
-  if (this->isVisible())
-  {
-    if (this->textDirty)
-      this->SetupGeometry();
-    if (this->dataPtr->colorDirty)
-      this->UpdateColors();
-    op = this->dataPtr->renderOp;
-  }
+  BaseText::SetTextAlignment(_horizAlign, _vertAlign);
+  this->dataPtr->ogreObj->SetTextAlignment(_horizAlign, _vertAlign);
 }
 
 //////////////////////////////////////////////////
-const Ogre::MaterialPtr &OgreText::getMaterial(void) const
+void OgreText::SetBaseline(const float _baseline)
 {
-  IGN_ASSERT(!this->dataPtr->ogreMaterial.isNull(),
-      "ogreMaterial class member is null");
-  return this->dataPtr->ogreMaterial;
+  BaseText::SetBaseline(_baseline);
+  this->dataPtr->ogreObj->SetBaseline(_baseline);
 }
 
 //////////////////////////////////////////////////
-const Ogre::LightList &OgreText::getLights(void) const
+void OgreText::SetShowOnTop(const bool _onTop)
 {
-  return this->dataPtr->lightList;
+  BaseText::SetShowOnTop(_onTop);
+  this->dataPtr->ogreObj->SetShowOnTop(_onTop);
 }
 
 //////////////////////////////////////////////////
-void OgreText::_notifyCurrentCamera(Ogre::Camera *cam)
+ignition::math::Box OgreText::AABB() const
 {
-  this->dataPtr->camera = cam;
-}
-
-//////////////////////////////////////////////////
-void OgreText::_updateRenderQueue(Ogre::RenderQueue* queue)
-{
-  if (this->isVisible())
-  {
-    if (this->textDirty)
-      this->SetupGeometry();
-
-    if (this->dataPtr->colorDirty)
-      this->UpdateColors();
-
-    queue->addRenderable(this, mRenderQueueID,
-                         OGRE_RENDERABLE_DEFAULT_PRIORITY);
-  }
-}
-
-//////////////////////////////////////////////////
-void OgreText::visitRenderables(Ogre::Renderable::Visitor* /*visitor*/,
-                                 bool /*debug*/)
-{
-  return;
+  return this->dataPtr->ogreObj->AABB();
 }

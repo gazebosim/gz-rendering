@@ -38,58 +38,59 @@ namespace ignition
       public: virtual ~BaseText();
 
       // Documentation inherited.
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       // Documentation inherited.
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: void SetFontName(const std::string &_font);
+      public: void SetFontName(const std::string &_font) override;
 
       // Documentation inherited.
-      public: std::string FontName() const;
+      public: std::string FontName() const override;
 
       // Documentation inherited.
-      public: void SetTextString(const std::string &_text);
+      public: virtual void SetTextString(const std::string &_text) override;
 
       // Documentation inherited.
-      public: std::string TextString() const;
+      public: virtual std::string TextString() const override;
 
       // Documentation inherited.
-      public: void SetColor(const ignition::math::Color &_color);
+      public: virtual void SetColor(const ignition::math::Color &_color)
+          override;
 
       // Documentation inherited.
-      public: ignition::math::Color Color() const;
+      public: virtual ignition::math::Color Color() const override;
 
       // Documentation inherited.
-      public: void SetCharHeight(const float _height);
+      public: virtual void SetCharHeight(const float _height) override;
 
       // Documentation inherited.
-      public: float CharHeight() const;
+      public: virtual float CharHeight() const override;
 
       // Documentation inherited.
-      public: void SetSpaceWidth(const float _width);
+      public: virtual void SetSpaceWidth(const float _width) override;
 
       // Documentation inherited.
-      public: float SpaceWidth() const;
+      public: virtual float SpaceWidth() const override;
 
       // Documentation inherited.
-      public: void SetTextAlignment(const HorizontalAlign &_horzAlign,
-                                    const VerticalAlign &_vertAlign);
+      public: virtual void SetTextAlignment(const HorizontalAlign &_horzAlign,
+                                    const VerticalAlign &_vertAlign) override;
       // Documentation inherited.
-      public: void SetBaseline(const float _baseline);
+      public: virtual void SetBaseline(const float _baseline) override;
 
       // Documentation inherited.
-      public: float Baseline() const;
+      public: virtual float Baseline() const override;
 
       // Documentation inherited.
-      public: void SetShowOnTop(const bool _onTop);
+      public: void SetShowOnTop(const bool _onTop) override;
 
       // Documentation inherited.
-      public: bool ShowOnTop() const;
+      public: virtual bool ShowOnTop() const override;
 
       // Documentation inherited.
-      public: ignition::math::Box AABB();
+      public: virtual ignition::math::Box AABB() const override;
 
       /// \brief Font name, such as "Arial"
       protected: std::string fontName = "Arial";
@@ -249,6 +250,14 @@ namespace ignition
     {
       this->onTop = _onTop;
       this->textDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Box BaseText<T>::AABB() const
+    {
+      math::Box box;
+      return box;
     }
 
     //////////////////////////////////////////////////

@@ -341,7 +341,6 @@ namespace ignition
       protected: virtual TextPtr CreateTextImpl(unsigned int _id,
                      const std::string &_name);
 
-
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name) = 0;
 

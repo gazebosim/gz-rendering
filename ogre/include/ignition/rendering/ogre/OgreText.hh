@@ -37,111 +37,69 @@ namespace ignition
 
     /// \brief Ogre implementation of text geometry
     class IGNITION_RENDERING_OGRE_VISIBLE OgreText
-      : public Ogre::MovableObject, public Ogre::Renderable,
-        public BaseText<OgreGeometry>
+        : public BaseText<OgreGeometry>
     {
       /// \brief Constructor
-      public: OgreText();
+      protected: OgreText();
 
       /// \brief Destructor
       public: virtual ~OgreText();
 
       // Documentation inherited
-      public: virtual void Init();
+      public: virtual void Init() override;
 
       // Documentation inherited
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       // Documentation inherited
-      public: Ogre::MovableObject *OgreObject() const;
+      public: virtual Ogre::MovableObject *OgreObject() const override;
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() const;
+      public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
+      public: virtual void SetMaterial(MaterialPtr _material, bool _unique)
+          override;
+
+      // Documentation inherited.
+      public: virtual void SetFontName(const std::string &_font) override;
+
+      // Documentation inherited.
+      public: virtual void SetTextString(const std::string &_text) override;
+
+      // Documentation inherited.
+      public: virtual void SetColor(const ignition::math::Color &_color)
+          override;
+
+      // Documentation inherited.
+      public: virtual void SetCharHeight(const float _height) override;
+
+      // Documentation inherited.
+      public: virtual void SetSpaceWidth(const float _width) override;
+
+      // Documentation inherited.
+      public: virtual void SetTextAlignment(const HorizontalAlign &_horizAlign,
+                                    const VerticalAlign &_vertAlign) override;
+      // Documentation inherited.
+      public: virtual void SetBaseline(const float _baseline) override;
+
+      // Documentation inherited.
+      public: virtual void SetShowOnTop(const bool _onTop) override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::Box AABB() const override;
 
       /// \brief Set material to text geometry.
       /// \param[in] _material Ogre material.
       protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
 
-      // Documentation inherited.
-      public: void SetFontName(const std::string &_font);
-
-      // Documentation inherited.
-      public: void SetColor(const ignition::math::Color &_color);
-
-      // Documentation inherited.
-      public: void SetShowOnTop(const bool _onTop);
-
-      // Documentation inherited.
-      public: ignition::math::Box AABB();
-
-
-      /// \internal
-      /// \brief Method to allow a caller to abstractly iterate over the
-      /// renderable instances.
-      /// \param[in] _visitor Renderable instances to visit
-      /// \param[in] _debug True if set to debug
-      public: virtual void visitRenderables(Ogre::Renderable::Visitor *_visitor,
-          bool _debug = false) override;
-
-      /// \brief Setup the geometry.
-      protected: void SetupGeometry();
-
-      /// \brief Update colors.
-      protected: void UpdateColors();
-
-      /// \brief Update font.
-      protected: void UpdateFont();
-
-      /// \brief Set font name implementation.
-      /// \param-in] _font Name of font
-      protected: void SetFontNameImpl(const std::string &_font);
-
-      /// \internal
-      /// \brief Get the world transform (from MovableObject)
-      protected: void getWorldTransforms(Ogre::Matrix4 *_xform) const override;
-
-      /// \internal
-      /// \brief Get the bounding radiu (from MovableObject)
-      protected: float getBoundingRadius() const override;
-
-      /// \internal
-      /// \brief Get the squared view depth (from MovableObject)
-      protected: float getSquaredViewDepth(const Ogre::Camera *_cam) const
-          override;
-
-      /// \internal
-      /// \brief Get the render operation
-      protected: void getRenderOperation(Ogre::RenderOperation &_op) override;
-
-      /// \internal
-      /// \brief Get the material
-      protected: const Ogre::MaterialPtr &getMaterial() const override;
-
-      /// \internal
-      /// \brief Get the lights
-      /// \deprecated Function has never returned meaningful values
-      protected: const Ogre::LightList &getLights() const override;
-
-      /// \internal
-      private: const Ogre::AxisAlignedBox &getBoundingBox() const override;
-
-      /// \internal
-      private: const Ogre::String &getMovableType() const override;
-
-      /// \internal
-      private: void _notifyCurrentCamera(Ogre::Camera *_cam) override;
-
-      /// \internal
-      private: void _updateRenderQueue(Ogre::RenderQueue *_queue) override;
+      /// \brief Text should only be created by scene.
+      private: friend class OgreScene;
 
       /// \internal
       /// \brief Private data pointer
       private: std::unique_ptr<OgreTextPrivate> dataPtr;
     };
-    /// \}
   }
 }
 #endif

@@ -53,6 +53,10 @@ namespace ignition
                 V_TOP
               };
 
+
+      /// \brief Constructor
+      public: Text() { }
+
       /// \brief Destructor
       public: virtual ~Text() { }
 
@@ -112,22 +116,21 @@ namespace ignition
       /// \param[in] _vAlign Vertical alignment
       public: virtual void SetTextAlignment(const HorizontalAlign &_hAlign,
                                             const VerticalAlign &_vAlign) = 0;
-
       /// \brief Set the baseline height of the text
       /// \param[in] _height Baseline height
       /// \sa Baseline()
-      public: virtual void SetBaseline(const float _height) = 0;
+      public: virtual void SetBaseline(const float _baseline) = 0;
 
       /// \brief Get the baseline height in meters.
       /// \return Baseline height
       /// \sa SetBaseline()
-      public: virtual float Baseline() const;
+      public: virtual float Baseline() const = 0;
 
       /// \brief True = text always is displayed ontop.
       /// \param[in] _show Set to true to render the text on top of
       /// all other drawables.
       /// \sa ShowOnTop()
-      public: virtual void SetShowOnTop(const bool _show) = 0;
+      public: virtual void SetShowOnTop(const bool _onTop) = 0;
 
       /// \brief Get whether the is displayed above other objects.
       /// \return True if it is on top.
@@ -136,7 +139,7 @@ namespace ignition
 
       /// \brief Get the axis aligned bounding box of the text.
       /// \return The axis aligned bounding box.
-      public: virtual ignition::math::Box AABB() = 0;
+      public: virtual ignition::math::Box AABB() const = 0;
     };
   }
 }

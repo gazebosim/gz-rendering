@@ -28,6 +28,7 @@
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/Text.hh"
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/base/BaseScene.hh"

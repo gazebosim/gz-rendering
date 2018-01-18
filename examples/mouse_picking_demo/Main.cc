@@ -28,7 +28,7 @@
 #include <vector>
 
 #include "ignition/common/Console.hh"
-#include "ignition/rendering/rendering.hh"
+#include "ignition/rendering.hh"
 #include "GlutWindow.hh"
 
 using namespace ignition;
@@ -60,23 +60,7 @@ void BuildScene(ScenePtr _scene)
   light2->SetSpecularColor(0.5, 0.5, 0.5);
   light2->SetLocalPosition(3, 5, 5);
   root->AddChild(light2);
-/*
-  // create green material
-  MaterialPtr green = _scene->CreateMaterial();
-  green->SetAmbient(0.0, 0.5, 0.0);
-  green->SetDiffuse(0.0, 0.7, 0.0);
-  green->SetSpecular(0.5, 0.5, 0.5);
-  green->SetShininess(50);
-  green->SetReflectivity(0);
 
-  // create green sphere visual
-  VisualPtr center = _scene->CreateVisual();
-  center->AddGeometry(_scene->CreateSphere());
-  center->SetLocalPosition(3, 0, 0);
-  center->SetLocalScale(0.1, 0.1, 0.1);
-  center->SetMaterial(green);
-  root->AddChild(center);
-*/
   // create red material
   MaterialPtr red = _scene->CreateMaterial();
   red->SetAmbient(0.5, 0.0, 0.0);
@@ -86,7 +70,7 @@ void BuildScene(ScenePtr _scene)
   red->SetReflectivity(0);
 
   // create sphere visual
-  VisualPtr sphere = _scene->CreateVisual();
+  VisualPtr sphere = _scene->CreateVisual("sphere");
   sphere->AddGeometry(_scene->CreateSphere());
   sphere->SetOrigin(0.0, -0.5, 0.0);
   sphere->SetLocalPosition(3, 0, 0);
@@ -94,7 +78,7 @@ void BuildScene(ScenePtr _scene)
   sphere->SetLocalScale(1, 2.5, 1);
   sphere->SetMaterial(red);
   root->AddChild(sphere);
-/*
+
   // create blue material
   MaterialPtr blue = _scene->CreateMaterial();
   blue->SetAmbient(0.0, 0.0, 0.3);
@@ -104,7 +88,7 @@ void BuildScene(ScenePtr _scene)
   blue->SetReflectivity(0);
 
   // create box visual
-  VisualPtr box = _scene->CreateVisual();
+  VisualPtr box = _scene->CreateVisual("box");
   box->AddGeometry(_scene->CreateBox());
   box->SetOrigin(0.0, 0.5, 0.0);
   box->SetLocalPosition(3, 0, 0);
@@ -112,7 +96,7 @@ void BuildScene(ScenePtr _scene)
   box->SetLocalScale(1, 2.5, 1);
   box->SetMaterial(blue);
   root->AddChild(box);
-*/
+
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
   white->SetAmbient(0.5, 0.5, 0.5);
@@ -121,7 +105,7 @@ void BuildScene(ScenePtr _scene)
   white->SetReflectivity(0);
 
   // create white plane visual
-  VisualPtr plane = _scene->CreateVisual();
+  VisualPtr plane = _scene->CreateVisual("plane");
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(5, 8, 1);
   plane->SetLocalPosition(3, 0, -0.5);
@@ -143,7 +127,7 @@ void BuildScene(ScenePtr _scene)
 CameraPtr CreateCamera(const std::string &_engineName)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::get_engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -169,7 +153,7 @@ int main(int _argc, char** _argv)
   try
   {
     engineNames.push_back("ogre");
-    //engineNames.push_back("optix");
+    engineNames.push_back("optix");
 
     for (auto engineName : engineNames)
     {
@@ -178,7 +162,7 @@ int main(int _argc, char** _argv)
         cameras.push_back(camera);
     }
 
-    GlutRun(cameras);
+    run(cameras);
   }
   catch (...)
   {

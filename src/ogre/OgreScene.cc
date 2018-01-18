@@ -389,27 +389,25 @@ VisualPtr OgreScene::VisualAt(const CameraPtr &_camera,
 
 {
   VisualPtr visual;
+  RayQueryPtr rayQuery = this->CreateRayQuery();
 
-  OgreRayQuery rayQuery;
+  if (rayQuery) {
+    rayQuery->SetFromCamera(_camera, _mousePos);
+    RayQueryResult result = rayQuery->ClosestPoint();
 
-  rayQuery.SetFromCamera(_camera, _mousePos);
-  RayQueryResult result = rayQuery.ClosestPoint();
-
- /* Ogre::Entity *closestEntity = this->OgreEntityAt(_origin, _dir, true);
-  if (closestEntity)
-  {
-    ignwarn << "Object close" << "\n";
-    try
+    if (result)
     {
-      visual = this->visuals->GetByName(Ogre::any_cast<std::string>(
-            closestEntity->getUserObjectBindings().getUserAny()));
+      try
+      {
+        visual = this->visuals->GetById(result.objectId);
+      }
+      //catch(boost::bad_any_cast &e)
+      catch(const std::exception &e)
+      {
+        ignerr << "boost any_cast error:" << e.what() << "\n";
+      }
     }
-    //catch(boost::bad_any_cast &e)
-    catch(const std::exception &e)
-    {
-      ignerr << "boost any_cast error:" << e.what() << "\n";
-    }
-  }*/
+  }
   return visual;
 }
 //////////////////////////////////////////////////

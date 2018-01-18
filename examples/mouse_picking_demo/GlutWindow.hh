@@ -20,22 +20,22 @@
 #include <vector>
 #include "ignition/rendering/RenderTypes.hh"
 
-namespace gz = ignition::rendering;
+namespace ir = ignition::rendering;
 
-void GlutRun(std::vector<gz::CameraPtr> _cameras);
+void run(std::vector<ir::CameraPtr> _cameras);
 
-void GlutDisplay();
+void displayCB();
 
-void GlutIdle();
+void idleCB();
 
-void GlutKeyboard(unsigned char _key, int _x, int _y);
+void keyboardCB(unsigned char _key, int _x, int _y);
 
-void GlutReshape(int _width, int _height);
+void reshape(int _width, int _height);
 
-void GlutInitCamera(gz::CameraPtr _camera);
+void initCamera(ir::CameraPtr _camera);
 
-void GlutInitContext();
+void initContext();
 
-void GlutPrintUsage();
+void printUsage();
 
 #endif

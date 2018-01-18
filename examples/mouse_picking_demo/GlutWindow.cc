@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-#include "GlutWindow.hh"
 
 #if __APPLE__
   #include <OpenGL/gl.h>
@@ -30,27 +29,31 @@
   #include <GL/glx.h>
 #endif
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/rendering.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/Scene.hh"
+#include <mutex>
+
+#include <ignition/common/Console.hh>
+#include <ignition/rendering/Camera.hh>
+#include <ignition/rendering/Image.hh>
+#include <ignition/rendering/RayQuery.hh>
+#include <ignition/rendering/Scene.hh>
+#include <ignition/rendering/Visual.hh>
+#include <ignition/rendering.hh>
+#include <ignition/rendering/OrbitViewController.hh>
+
+#include "GlutWindow.hh"
 
 #define KEY_ESC 27
 #define KEY_TAB  9
-
-using namespace ignition;
-using namespace rendering;
 
 //////////////////////////////////////////////////
 unsigned int imgw = 0;
 unsigned int imgh = 0;
 
-std::vector<gz::CameraPtr> g_cameras;
-gz::CameraPtr g_camera;
-gz::CameraPtr g_currCamera;
+std::vector<ir::CameraPtr> g_cameras;
+ir::CameraPtr g_camera;
+ir::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
-gz::ImagePtr g_image;
+ir::ImagePtr g_image;
 
 bool g_initContext = false;
 
@@ -68,10 +71,50 @@ bool g_initContext = false;
 #endif
 
 double g_offset = 0.0;
+struct mouseButton
+{
+  int button = 0;
+  int state = GLUT_UP;
+  int x = 0;
+  int y = 0;
+  int motionX = 0;
+  int motionY = 0;
+  int dragX = 0;
+  int dragY = 0;
+  int scroll = 0;
+  bool buttonDirty = false;
+  bool motionDirty = false;
+};
+struct mouseButton g_mouse;
+std::mutex g_mouseMutex;
 
 //////////////////////////////////////////////////
-void GlutRun(std::vector<gz::CameraPtr> _cameras)
+void mouseCB(int _button, int _state, int _x, int _y)
 {
+  // ignore unknown mouse button numbers
+  if (_button >= 5)
+    return;
+
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
+  g_mouse.button = _button;
+  g_mouse.state = _state;
+  g_mouse.x = _x;
+  g_mouse.y = _y;
+  g_mouse.motionX = _x;
+  g_mouse.motionY = _y;
+  g_mouse.buttonDirty = true;
+}
+
+//////////////////////////////////////////////////
+void run(std::vector<ir::CameraPtr> _cameras)
+{
+
+ if (_cameras.empty())
+  {
+    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    return;
+  }
+
 #if __APPLE__
   g_context = CGLGetCurrentContext();
 #elif _WIN32
@@ -82,9 +125,9 @@ void GlutRun(std::vector<gz::CameraPtr> _cameras)
 #endif
 
   g_cameras = _cameras;
-  GlutInitCamera(_cameras[0]);
-  GlutInitContext();
-  GlutPrintUsage();
+  initCamera(_cameras[0]);
+  initContext();
+  printUsage();
 
 #if __APPLE__
   g_glutContext = CGLGetCurrentContext();
@@ -99,18 +142,50 @@ void GlutRun(std::vector<gz::CameraPtr> _cameras)
 }
 
 //////////////////////////////////////////////////
-void UpdateCameras()
+void handleMouse()
 {
-  for (gz::CameraPtr camera : g_cameras)
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
+  // only ogre supports ray query for now so use
+  // ogre camera located at camera index = 0.
+  ir::CameraPtr rayCamera = g_cameras[0];
+  if (g_mouse.buttonDirty)
   {
-    camera->SetLocalPosition(g_offset, g_offset, g_offset);
-  }
+    g_mouse.buttonDirty = false;
 
-  //g_offset+= 0.001;
+    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      ir::VisualPtr visual;
+
+      double nx =
+        2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
+      double ny =
+        1.0 - 2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
+
+      ignition::math::Vector2d mousePos(nx, ny);
+      ir::ScenePtr scene =  rayCamera->GetScene();
+      if (scene)
+      {
+        visual = scene->VisualAt(rayCamera, mousePos);
+        if (visual)
+        {
+          std::cout << "Selected item " << visual->Name() << "\n";
+        }
+      }
+    }
+  }
 }
 
 //////////////////////////////////////////////////
-void GlutDisplay()
+void updateCameras()
+{
+  for (ir::CameraPtr camera : g_cameras)
+  {
+    camera->SetLocalPosition(g_offset, g_offset, g_offset);
+  }
+}
+
+//////////////////////////////////////////////////
+void displayCB()
 {
 #if __APPLE__
   CGLSetCurrentContext(g_context);
@@ -123,6 +198,7 @@ void GlutDisplay()
 #endif
 
   g_cameras[g_cameraIndex]->Capture(*g_image);
+  handleMouse();
 
 #if __APPLE__
   CGLSetCurrentContext(g_glutContext);
@@ -140,22 +216,22 @@ void GlutDisplay()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-  UpdateCameras();
+  updateCameras();
 }
 
 //////////////////////////////////////////////////
-void SwitchContext()
+void switchContext()
 {
 }
 
 //////////////////////////////////////////////////
-void GlutIdle()
+void idleCB()
 {
   glutPostRedisplay();
 }
 
 //////////////////////////////////////////////////
-void GlutKeyboard(unsigned char _key, int, int)
+void keyboardCB(unsigned char _key, int, int)
 {
   if (_key == KEY_ESC || _key == 'q' || _key == 'Q')
   {
@@ -168,40 +244,23 @@ void GlutKeyboard(unsigned char _key, int, int)
 }
 
 //////////////////////////////////////////////////
-void GlutReshape(int, int)
+void reshape(int, int)
 {
 }
 
 //////////////////////////////////////////////////
-void GlutMouse(int _button, int _state, int _mouseX, int _mouseY)
-{
-  if (_state == GLUT_DOWN  && _button == GLUT_LEFT_BUTTON)
-  {
-    VisualPtr visual;
-    ignition::math::Vector2i mousePos(_mouseX, _mouseY);
-
-    ScenePtr scene =  g_cameras[g_cameraIndex]->GetScene();
-    visual = scene->VisualAt(g_cameras[g_cameraIndex], mousePos);
-    if (visual)
-    {
-      std::cout << "Selected item " << visual->WorldPose() << "\n";
-    }
-  }
-}
-
-//////////////////////////////////////////////////
-void GlutInitCamera(gz::CameraPtr _camera)
+void initCamera(ir::CameraPtr _camera)
 {
   g_camera = _camera;
   imgw = g_camera->ImageWidth();
   imgh = g_camera->ImageHeight();
-  gz::Image image = g_camera->CreateImage();
-  g_image = std::make_shared<gz::Image>(image);
+  ir::Image image = g_camera->CreateImage();
+  g_image = std::make_shared<ir::Image>(image);
   g_camera->Capture(*g_image);
 }
 
 //////////////////////////////////////////////////
-void GlutInitContext()
+void initContext()
 {
   // int argc = 0;
   // char **argv = 0;
@@ -210,14 +269,14 @@ void GlutInitContext()
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
   glutCreateWindow("Gazebo");
-  glutDisplayFunc(GlutDisplay);
-  glutIdleFunc(GlutIdle);
-  glutKeyboardFunc(GlutKeyboard);
-  glutReshapeFunc(GlutReshape);
-  glutMouseFunc(GlutMouse);
+  glutDisplayFunc(displayCB);
+  glutIdleFunc(idleCB);
+  glutKeyboardFunc(keyboardCB);
+  glutReshapeFunc(reshape);
+  glutMouseFunc(mouseCB);
 }
 
-void GlutPrintUsage()
+void printUsage()
 {
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;

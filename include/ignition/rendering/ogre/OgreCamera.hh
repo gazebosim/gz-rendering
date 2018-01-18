@@ -67,10 +67,6 @@ namespace ignition
 
       protected: virtual RenderTargetPtr RenderTarget() const;
 
-      public: virtual void CameraToViewportRay(const int _screenx, const int _screeny,
-                            ignition::math::Vector3d &_origin,
-                            ignition::math::Vector3d &_dir) const;
-
       protected: virtual void Init();
 
       private: void CreateCamera();
@@ -80,8 +76,6 @@ namespace ignition
       protected: Ogre::Camera *ogreCamera = nullptr;
 
       protected: OgreRenderTexturePtr renderTexture;
-
-      protected: math::Angle xfov;
 
       protected: math::Color backgroundColor;
 

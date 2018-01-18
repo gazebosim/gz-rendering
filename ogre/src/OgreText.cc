@@ -43,40 +43,53 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~OgreMovableText();
 
-      // Documentation inherited.
+      /// \brief Set the font. Valid fonts are defined in
+      /// media/fonts/ignition-rendering.fontdef
+      /// \param[in] _font Name of the font
       public: void SetFontName(const std::string &_font);
 
-      // Documentation inherited.
+      /// \brief Set the text to display.
+      /// \param[in] _text The text to display.
       public: void SetTextString(const std::string &_text);
 
-      // Documentation inherited.
+      /// \brief Set the text color.
+      /// \param[in] _color Text color.
       public: void SetColor(const ignition::math::Color &_color);
 
-      // Documentation inherited.
+      /// \brief Set the height of the character in meters.
+      /// \param[in] _height Height of the characters.
       public: void SetCharHeight(const float _height);
 
-      // Documentation inherited.
+      /// \brief Set the width of spaces between words.
+      /// \param[in] _width Space width
       public: void SetSpaceWidth(const float _width);
 
-      // Documentation inherited.
+      /// \brief Set the alignment of the text
+      /// \param[in] _horizAlign Horizontal alignment
+      /// \param[in] _vertAlign Vertical alignment
       public: void SetTextAlignment(const Text::HorizontalAlign &_horizAlign,
                                     const Text::VerticalAlign &_vertAlign);
-      // Documentation inherited.
+
+      /// \brief Set the baseline height of the text
+      /// \param[in] _height Baseline height
       public: void SetBaseline(const float _baseline);
 
-      // Documentation inherited.
+      /// \brief True = text always is displayed ontop.
+      /// \param[in] _show Set to true to render the text on top of
+      /// all other drawables.
       public: void SetShowOnTop(const bool _onTop);
 
-      // Documentation inherited.
+      /// \brief Get the axis aligned bounding box of the text.
+      /// \return The axis aligned bounding box.
       public: ignition::math::Box AABB() const;
 
-      /// \brief Setup the geometry.
+      /// \brief Setup the geometry based on input text string.
       public: void SetupGeometry();
 
-      /// \brief Update colors.
+      /// \brief Update color of text.
       public: void UpdateColors();
 
-      /// \brief Update material.
+      /// \brief Update material properties, mainly if onTop has changed.
       public: void UpdateMaterial();
 
       /// \brief Update font.
@@ -195,7 +208,8 @@ namespace ignition
       /// \brief Baseline height in meters.
       private: float baseline = 0.0;
 
-      /// \brief True for text to be displayed on top of other objects in the scene.
+      /// \brief True for text to be displayed on top of other objects in the
+      /// scene.
       private: bool onTop = false;
     };
 
@@ -349,9 +363,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 
     if (!ogreFont)
     {
-      throw Ogre::Exception(Ogre::Exception::ERR_ITEM_NOT_FOUND,
-                            "Could not find font " + _newFontName,
-                            "OgreMovableText::setFontName");
+      ignerr << "Could not find font " + _newFontName << std::endl;
     }
     this->font = ogreFont;
     this->fontName = _newFontName;
@@ -476,7 +488,6 @@ void OgreMovableText::SetupGeometry()
   {
     // Raise the first line of the caption
     top += this->charHeight;
-
     for (i = this->text.begin(); i != this->text.end(); ++i)
     {
       if (*i == '\n')
@@ -534,7 +545,7 @@ void OgreMovableText::SetupGeometry()
       continue;
     }
 
-    float horiz_height = this->font->getGlyphAspectRatio(character) *
+    float horizHeight = this->font->getGlyphAspectRatio(character) *
                          this->viewportAspectCoef;
 
     auto &uvRect = this->font->getGlyphTexCoords(character);
@@ -598,7 +609,7 @@ void OgreMovableText::SetupGeometry()
 
 
     top += this->charHeight * 2.0;
-    left += horiz_height * this->charHeight * 2.0;
+    left += horizHeight * this->charHeight * 2.0;
 
     // Top right
     if (this->horizontalAlign == Text::H_LEFT)
@@ -645,7 +656,7 @@ void OgreMovableText::SetupGeometry()
 
 
     top -= this->charHeight * 2.0;
-    left -= horiz_height  * this->charHeight * 2.0;
+    left -= horizHeight  * this->charHeight * 2.0;
 
     // Bottom left (again)
     if (this->horizontalAlign == Text::H_LEFT)
@@ -664,7 +675,7 @@ void OgreMovableText::SetupGeometry()
     maxSquaredRadius = std::max(maxSquaredRadius, currPos.squaredLength());
 
 
-    left += horiz_height  * this->charHeight * 2.0;
+    left += horizHeight  * this->charHeight * 2.0;
 
     // Bottom right
     if (this->horizontalAlign == Text::H_LEFT)
@@ -788,7 +799,6 @@ void OgreMovableText::getWorldTransforms(Ogre::Matrix4 *_xform) const
 
     // store rotation in a matrix
     this->camera->getDerivedOrientation().ToRotationMatrix(rot3x3);
-    // mParentNode->_getDerivedOrientation().ToRotationMatrix(rot3x3);
 
     // parent node position
     Ogre::Vector3 ppos = mParentNode->_getDerivedPosition() +
@@ -855,7 +865,7 @@ void OgreMovableText::_updateRenderQueue(Ogre::RenderQueue* _queue)
     this->Update();
 
     _queue->addRenderable(this, mRenderQueueID,
-                         OGRE_RENDERABLE_DEFAULT_PRIORITY);
+                          OGRE_RENDERABLE_DEFAULT_PRIORITY);
   }
 }
 
@@ -925,15 +935,9 @@ void OgreText::SetMaterial(MaterialPtr _material, bool _unique)
 //////////////////////////////////////////////////
 void OgreText::SetMaterialImpl(OgreMaterialPtr _material)
 {
-  // TODO
-/*  std::string ogreMaterialName = _ogreMaterial->Name();
-  Ogre::MaterialPtr ogreMaterial = _ogreMaterial->Material();
-  this->manualObject->setMaterialName(0, ogreMaterialName);
-  this->ogreMaterial = _ogreMaterial;
-
-  this->ogreMaterial->SetReceiveShadows(false);
-  this->ogreMaterial->SetLightingEnabled(false);
-*/
+  // only colors are support for now
+  this->SetColor(_material->Diffuse());
+  this->dataPtr->material = _material;
 }
 
 //////////////////////////////////////////////////

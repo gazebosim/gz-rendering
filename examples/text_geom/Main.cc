@@ -65,11 +65,7 @@ void buildScene(ScenePtr _scene)
 
   // create green material
   MaterialPtr green = _scene->CreateMaterial();
-  green->SetAmbient(0.0, 0.5, 0.0);
   green->SetDiffuse(0.0, 0.7, 0.0);
-  green->SetSpecular(0.5, 0.5, 0.5);
-  green->SetShininess(50);
-  green->SetReflectivity(0);
 
   // creat text geometry
   TextPtr textGeom = _scene->CreateText();
@@ -82,7 +78,8 @@ void buildScene(ScenePtr _scene)
   text->AddGeometry(textGeom);
   text->SetLocalPosition(3, 2, 0);
   text->SetLocalRotation(0, 0, 0);
-//  text->SetMaterial(green);
+  // Only diffuse component will be used!
+  text->SetMaterial(green);
   root->AddChild(text);
 
   // create camera
@@ -126,21 +123,21 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
 
   engineNames.push_back("ogre");
-//  engineNames.push_back("optix");
+  engineNames.push_back("optix");
   for (auto engineName : engineNames)
   {
-   // try
-//    {
+    try
+    {
       CameraPtr camera = createCamera(engineName);
       if (camera)
         cameras.push_back(camera);
       else
         std::cerr << "Null camera!" << std::endl;
-//    }
-  //  catch (...)
-//    {
+    }
+    catch (...)
+    {
       // std::cout << ex.what() << std::endl;
-//    }
+    }
     run(cameras);
   }
   return 0;

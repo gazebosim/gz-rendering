@@ -75,8 +75,14 @@ namespace ignition
       public: virtual float SpaceWidth() const override;
 
       // Documentation inherited.
-      public: virtual void SetTextAlignment(const HorizontalAlign &_horzAlign,
-                                    const VerticalAlign &_vertAlign) override;
+      public: virtual void SetTextAlignment(const HorizontalAlign &_hAlign,
+                                    const VerticalAlign &_vAlign) override;
+      // Documentation inherited.
+      public: virtual HorizontalAlign HorizontalAlignment() const override;
+
+      // Documentation inherited.
+      public: virtual VerticalAlign VerticalAlignment() const override;
+
       // Documentation inherited.
       public: virtual void SetBaseline(const float _baseline) override;
 
@@ -116,7 +122,8 @@ namespace ignition
       /// \brief Baseline height in meters.
       protected: float baseline = 0;
 
-      /// \brief True for text to be displayed on top of other objects in the scene.
+      /// \brief True for text to be displayed on top of other objects in the
+      /// scene.
       protected: bool onTop = false;
 
       /// \brief Flag to indicate text properties have changed
@@ -210,6 +217,20 @@ namespace ignition
     {
       this->spaceWidth = _width;
       this->textDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    Text::HorizontalAlign BaseText<T>::HorizontalAlignment() const
+    {
+      return this->horizontalAlign;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    Text::VerticalAlign BaseText<T>::VerticalAlignment() const
+    {
+      return this->verticalAlign;
     }
 
     //////////////////////////////////////////////////

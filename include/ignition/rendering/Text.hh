@@ -41,7 +41,9 @@ namespace ignition
                 /// \brief Left alignment
                 H_LEFT,
                 /// \brief Center alignment
-                H_CENTER
+                H_CENTER,
+                /// \brief Right alignment
+                H_RIGHT
               };
 
       /// \enum VerticalAlign
@@ -49,6 +51,8 @@ namespace ignition
       public: enum VerticalAlign {
                 /// \brief Align bottom
                 V_BOTTOM,
+                /// \brief Align center
+                V_CENTER,
                 /// \brief Align top
                 V_TOP
               };
@@ -60,8 +64,7 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Text() { }
 
-      /// \brief Set the font. Valid fonts are defined on
-      /// media/fonts/Gazebo.fontdef
+      /// \brief Set the font.
       /// \param[in] _font Name of the font
       /// \sa FontName()
       public: virtual void SetFontName(const std::string &_font) = 0;
@@ -116,6 +119,15 @@ namespace ignition
       /// \param[in] _vAlign Vertical alignment
       public: virtual void SetTextAlignment(const HorizontalAlign &_hAlign,
                                             const VerticalAlign &_vAlign) = 0;
+
+      /// \brief Get the horizontal alignment of the text
+      /// \return Text horizontal alignment
+      public: virtual HorizontalAlign HorizontalAlignment() const = 0;
+
+      /// \brief Get the vertical alignment of the text
+      /// \return Text verical alignment
+      public: virtual VerticalAlign VerticalAlignment() const = 0;
+
       /// \brief Set the baseline height of the text
       /// \param[in] _height Baseline height
       /// \sa Baseline()

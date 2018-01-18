@@ -303,7 +303,7 @@ void SelectionBuffer::ShowOverlay(bool _show)
     this->dataPtr->selectionDebugOverlay->hide();
 }
 #else
-void SelectionBuffer::ShowOverlay(bool /*_show*/)
+void SelectionBuffer::ShowOverlay(bool _show)
 {
   ignerr << "Selection debug overlay disabled for Ogre > 1.9\n";
 }

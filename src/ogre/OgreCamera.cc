@@ -152,7 +152,7 @@ RenderWindowPtr OgreCamera::CreateRenderWindow()
   renderWindow->SetCamera(this->ogreCamera);
   renderWindow->SetBackgroundColor(this->scene->BackgroundColor());
 
-  //this->renderTexture = renderWindow;
+  this->renderTexture = renderWindow;
   return base;
 }
 

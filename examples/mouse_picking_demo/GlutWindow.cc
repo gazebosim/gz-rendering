@@ -108,8 +108,7 @@ void mouseCB(int _button, int _state, int _x, int _y)
 //////////////////////////////////////////////////
 void run(std::vector<ir::CameraPtr> _cameras)
 {
-
- if (_cameras.empty())
+  if (_cameras.empty())
   {
     ignerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;

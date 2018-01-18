@@ -118,7 +118,7 @@ void OgreRenderTarget::Render()
 }
 
 //////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTarget::getViewport(unsigned short index)
+Ogre::Viewport *OgreRenderTarget::getViewport(unsigned int index)
 {
   return this->RenderTarget()->getViewport(index);
 }

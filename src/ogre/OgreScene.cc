@@ -397,15 +397,7 @@ VisualPtr OgreScene::VisualAt(const CameraPtr &_camera,
 
     if (result)
     {
-      try
-      {
-        visual = this->visuals->GetById(result.objectId);
-      }
-      //catch(boost::bad_any_cast &e)
-      catch(const std::exception &e)
-      {
-        ignerr << "boost any_cast error:" << e.what() << "\n";
-      }
+      visual = this->visuals->GetById(result.objectId);
     }
   }
   return visual;

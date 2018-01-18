@@ -22,6 +22,7 @@
 #include <string>
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/common/detail/PluginMacros.hh"
 
 namespace gazebo

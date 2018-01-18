@@ -18,7 +18,6 @@
 #define IGNITION_RENDERING_OGRE_OGRESCENE_HH_
 
 #include <string>
-#include <boost/program_options.hpp>
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"

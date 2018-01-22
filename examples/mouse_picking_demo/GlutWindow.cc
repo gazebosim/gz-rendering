@@ -167,7 +167,13 @@ void handleMouse()
         visual = scene->VisualAt(rayCamera, mousePos);
         if (visual)
         {
-          std::cout << "Selected item " << visual->Name() << "\n";
+          std::cout << "Selected item at position " << g_mouse.x << " ";
+          std::cout << g_mouse.y << ": " << visual->Name() << "\n";
+        }
+        else
+        {
+          std::cout << "No selected item at position " << g_mouse.x << " ";
+          std::cout << g_mouse.y << "\n";
         }
       }
     }

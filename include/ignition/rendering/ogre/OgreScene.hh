@@ -151,11 +151,6 @@ namespace ignition
 
       protected: OgreMeshFactoryPtr meshFactory;
 
-      protected: math::Color backgroundColor;
-
-      /// \brief A ray query used to locate distances to visuals.
-      public: Ogre::RaySceneQuery *raySceneQuery;
-
       protected: OgreLightStorePtr lights;
 
       protected: OgreSensorStorePtr sensors;

@@ -117,12 +117,8 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
   CameraPtr camera = scene->CreateCamera();
   EXPECT_TRUE(camera != nullptr);
 
-  // Get scene is not supported in optix
-  if (_renderEngine.compare("ogre") == 0)
-  {
-    ScenePtr scene2 = camera->GetScene();
-    ASSERT_EQ(scene, scene2);
-  }
+  ScenePtr scene2 = camera->GetScene();
+  ASSERT_EQ(scene, scene2);
 
   // render texture parameters
   EXPECT_GT(camera->ImageWidth(), 0u);

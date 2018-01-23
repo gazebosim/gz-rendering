@@ -386,7 +386,6 @@ OgreScenePtr OgreScene::SharedThis()
 //////////////////////////////////////////////////
 VisualPtr OgreScene::VisualAt(const CameraPtr &_camera,
                           const ignition::math::Vector2d &_mousePos)
-
 {
   VisualPtr visual;
   RayQueryPtr rayQuery = this->CreateRayQuery();
@@ -402,4 +401,5 @@ VisualPtr OgreScene::VisualAt(const CameraPtr &_camera,
   }
   return visual;
 }
+
 //////////////////////////////////////////////////

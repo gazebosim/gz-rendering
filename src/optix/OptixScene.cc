@@ -484,3 +484,25 @@ OptixScenePtr OptixScene::SharedThis()
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<OptixScene>(sharedBase);
 }
+
+//////////////////////////////////////////////////
+VisualPtr OptixScene::VisualAt(const CameraPtr &_camera,
+                          const ignition::math::Vector2d &_mousePos)
+{
+  VisualPtr visual;
+  // TODO: implement
+  /*RayQueryPtr rayQuery = this->CreateRayQuery();
+
+  if (rayQuery) {
+    rayQuery->SetFromCamera(_camera, _mousePos);
+    RayQueryResult result = rayQuery->ClosestPoint();
+
+    if (result)
+    {
+      visual = this->visuals->GetById(result.objectId);
+    }
+  }*/
+  return visual;
+}
+
+//////////////////////////////////////////////////

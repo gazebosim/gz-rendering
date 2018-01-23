@@ -144,9 +144,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
 void handleMouse()
 {
   std::lock_guard<std::mutex> lock(g_mouseMutex);
-  // only ogre supports ray query for now so use
-  // ogre camera located at camera index = 0.
-  ir::CameraPtr rayCamera = g_cameras[0];
+  ir::CameraPtr rayCamera = g_cameras[g_cameraIndex];
   if (g_mouse.buttonDirty)
   {
     g_mouse.buttonDirty = false;

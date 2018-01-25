@@ -106,41 +106,6 @@ void mouseCB(int _button, int _state, int _x, int _y)
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr> _cameras)
-{
-  if (_cameras.empty())
-  {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
-    return;
-  }
-
-#if __APPLE__
-  g_context = CGLGetCurrentContext();
-#elif _WIN32
-#else
-  g_context = glXGetCurrentContext();
-  g_display = glXGetCurrentDisplay();
-  g_drawable = glXGetCurrentDrawable();
-#endif
-
-  g_cameras = _cameras;
-  initCamera(_cameras[0]);
-  initContext();
-  printUsage();
-
-#if __APPLE__
-  g_glutContext = CGLGetCurrentContext();
-#elif _WIN32
-#else
-  g_glutDisplay = glXGetCurrentDisplay();
-  g_glutDrawable = glXGetCurrentDrawable();
-  g_glutContext = glXGetCurrentContext();
-#endif
-
-  glutMainLoop();
-}
-
-//////////////////////////////////////////////////
 void handleMouse()
 {
   std::lock_guard<std::mutex> lock(g_mouseMutex);
@@ -179,15 +144,6 @@ void handleMouse()
 }
 
 //////////////////////////////////////////////////
-void updateCameras()
-{
-  for (ir::CameraPtr camera : g_cameras)
-  {
-    camera->SetLocalPosition(g_offset, g_offset, g_offset);
-  }
-}
-
-//////////////////////////////////////////////////
 void displayCB()
 {
 #if __APPLE__
@@ -219,7 +175,6 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-  updateCameras();
 }
 
 //////////////////////////////////////////////////
@@ -265,9 +220,6 @@ void initCamera(ir::CameraPtr _camera)
 //////////////////////////////////////////////////
 void initContext()
 {
-  // int argc = 0;
-  // char **argv = 0;
-  // glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
@@ -275,10 +227,11 @@ void initContext()
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);
-  glutReshapeFunc(reshape);
+  //glutReshapeFunc(reshape);
   glutMouseFunc(mouseCB);
 }
 
+//////////////////////////////////////////////////
 void printUsage()
 {
   std::cout << "===============================" << std::endl;
@@ -286,3 +239,40 @@ void printUsage()
   std::cout << "  ESC - Exit                   " << std::endl;
   std::cout << "===============================" << std::endl;
 }
+
+//////////////////////////////////////////////////
+void run(std::vector<ir::CameraPtr> _cameras)
+{
+  if (_cameras.empty())
+  {
+    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    return;
+  }
+
+#if __APPLE__
+  g_context = CGLGetCurrentContext();
+#elif _WIN32
+#else
+  g_context = glXGetCurrentContext();
+  g_display = glXGetCurrentDisplay();
+  g_drawable = glXGetCurrentDrawable();
+#endif
+
+  g_cameras = _cameras;
+  initCamera(_cameras[0]);
+  initContext();
+  printUsage();
+
+#if __APPLE__
+  g_glutContext = CGLGetCurrentContext();
+#elif _WIN32
+#else
+  g_glutDisplay = glXGetCurrentDisplay();
+  g_glutDrawable = glXGetCurrentDrawable();
+  g_glutContext = glXGetCurrentContext();
+#endif
+
+  glutMainLoop();
+}
+
+

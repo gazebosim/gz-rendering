@@ -27,32 +27,27 @@
 #include <iostream>
 #include <vector>
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering.hh"
+#include <ignition/common/Console.hh>
+#include <ignition/rendering.hh>
+
 #include "GlutWindow.hh"
 
 using namespace ignition;
 using namespace rendering;
 
-void BuildScene(ScenePtr _scene)
+//////////////////////////////////////////////////
+void buildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
   VisualPtr root = _scene->RootVisual();
 
-  // create point light
+  // create directional light
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
   light0->SetDirection(-0.5, 0.5, -1);
   light0->SetDiffuseColor(0.5, 0.5, 0.5);
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
-
-  // // create point light
-  // PointLightPtr light1 = _scene->CreatePointLight();
-  // light1->SetDiffuseColor(0.5, 0.5, 0.5);
-  // light1->SetSpecularColor(0.5, 0.5, 0.5);
-  // light1->SetLocalPosition(5, -5, 10);
-  // root->AddChild(light1);
 
   // create point light
   PointLightPtr light2 = _scene->CreatePointLight();
@@ -101,16 +96,9 @@ void BuildScene(ScenePtr _scene)
   MaterialPtr white = _scene->CreateMaterial();
   white->SetAmbient(0.5, 0.5, 0.5);
   white->SetDiffuse(0.8, 0.8, 0.8);
+  white->SetSpecular(0.7, 0.7, 0.7);
   white->SetReceiveShadows(true);
   white->SetReflectivity(0);
-
-  // create white plane visual
-  VisualPtr plane = _scene->CreateVisual("plane");
-  plane->AddGeometry(_scene->CreatePlane());
-  plane->SetLocalScale(5, 8, 1);
-  plane->SetLocalPosition(3, 0, -0.5);
-  plane->SetMaterial(white);
-  root->AddChild(plane);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
@@ -124,7 +112,7 @@ void BuildScene(ScenePtr _scene)
   root->AddChild(camera);
 }
 
-CameraPtr CreateCamera(const std::string &_engineName)
+CameraPtr createCamera(const std::string &_engineName)
 {
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName);
@@ -135,7 +123,7 @@ CameraPtr CreateCamera(const std::string &_engineName)
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  BuildScene(scene);
+  buildScene(scene);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
@@ -150,24 +138,17 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  try
-  {
-    engineNames.push_back("ogre");
-    engineNames.push_back("optix");
+  engineNames.push_back("ogre");
+  engineNames.push_back("optix");
 
-    for (auto engineName : engineNames)
-    {
-      CameraPtr camera = CreateCamera(engineName);
-      if (camera)
-        cameras.push_back(camera);
-    }
-
-    run(cameras);
-  }
-  catch (...)
+  for (auto engineName : engineNames)
   {
-    // std::cout << ex.what() << std::endl;
+    CameraPtr camera = createCamera(engineName);
+    if (camera)
+      cameras.push_back(camera);
   }
+
+  run(cameras);
 
   return 0;
 }

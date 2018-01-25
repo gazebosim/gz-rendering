@@ -227,7 +227,7 @@ void initContext()
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);
-  //glutReshapeFunc(reshape);
+  glutReshapeFunc(reshape);
   glutMouseFunc(mouseCB);
 }
 

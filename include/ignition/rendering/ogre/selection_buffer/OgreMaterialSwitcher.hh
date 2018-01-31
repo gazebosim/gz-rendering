@@ -18,6 +18,8 @@
 #ifndef IGNITION_RENDERING_SELECTIONBUFFER_MATERIALSWITCHER_HH_
 #define IGNITION_RENDERING_SELECTIONBUFFER_MATERIALSWITCHER_HH_
 
+#include <map>
+#include <string>
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"

@@ -17,6 +17,9 @@
 #ifndef _IGNITION_RENDERING_SELECTION_BUFFER_SELECTIONBUFFER_HH_
 #define _IGNITION_RENDERING_SELECTION_BUFFER_SELECTIONBUFFER_HH_
 
+#include <memory>
+#include <string>
+
 namespace Ogre
 {
   class Entity;

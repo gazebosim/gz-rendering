@@ -21,27 +21,27 @@
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre/selection_buffer/SelectionRenderListener.hh"
-#include "ignition/rendering/ogre/selection_buffer/MaterialSwitcher.hh"
-#include "ignition/rendering/ogre/selection_buffer/SelectionBuffer.hh"
+#include "ignition/rendering/ogre/selection_buffer/OgreSelectionRenderListener.hh"
+#include "ignition/rendering/ogre/selection_buffer/OgreMaterialSwitcher.hh"
+#include "ignition/rendering/ogre/selection_buffer/OgreSelectionBuffer.hh"
 
-using namespace gazebo;
+using namespace ignition;
 using namespace rendering;
 
-namespace gazebo
+namespace ignition
 {
   namespace rendering
   {
-    struct SelectionBufferPrivate
+    struct OgreSelectionBufferPrivate
     {
       /// \brief This is the material listener - Note: it is controlled by a
       /// separate RenderTargetListener, not applied globally to all
       /// targets. The class associates a color to an ogre entity
-      std::unique_ptr<MaterialSwitcher> materialSwitchListener;
+      std::unique_ptr<OgreMaterialSwitcher> materialSwitchListener;
 
       /// \brief A render target listener that sets up the material switcher
       /// to run on every update of this render target.
-      std::unique_ptr<SelectionRenderListener> selectionTargetListener;
+      std::unique_ptr<OgreSelectionRenderListener> selectionTargetListener;
 
       /// \brief Ogre scene manager
       Ogre::SceneManager *sceneMgr = nullptr;
@@ -76,9 +76,9 @@ namespace gazebo
 }
 
 /////////////////////////////////////////////////
-SelectionBuffer::SelectionBuffer(const std::string &_cameraName,
+OgreSelectionBuffer::OgreSelectionBuffer(const std::string &_cameraName,
     Ogre::SceneManager *_mgr, Ogre::RenderTarget *_renderTarget)
-: dataPtr(new SelectionBufferPrivate)
+: dataPtr(new OgreSelectionBufferPrivate)
 {
   this->dataPtr->sceneMgr = _mgr;
   this->dataPtr->renderTarget = _renderTarget;
@@ -88,15 +88,15 @@ SelectionBuffer::SelectionBuffer(const std::string &_cameraName,
   this->dataPtr->selectionCamera =
       this->dataPtr->sceneMgr->createCamera(_cameraName + "_selection_buffer");
 
-  this->dataPtr->materialSwitchListener.reset(new MaterialSwitcher());
-  this->dataPtr->selectionTargetListener.reset(new SelectionRenderListener(
+  this->dataPtr->materialSwitchListener.reset(new OgreMaterialSwitcher());
+  this->dataPtr->selectionTargetListener.reset(new OgreSelectionRenderListener(
       this->dataPtr->materialSwitchListener.get()));
   this->CreateRTTBuffer();
   this->CreateRTTOverlays();
 }
 
 /////////////////////////////////////////////////
-SelectionBuffer::~SelectionBuffer()
+OgreSelectionBuffer::~OgreSelectionBuffer()
 {
   this->DeleteRTTBuffer();
 
@@ -105,7 +105,7 @@ SelectionBuffer::~SelectionBuffer()
 }
 
 /////////////////////////////////////////////////
-void SelectionBuffer::Update()
+void OgreSelectionBuffer::Update()
 {
   if (!this->dataPtr->renderTexture)
     return;
@@ -129,7 +129,7 @@ void SelectionBuffer::Update()
 }
 
 /////////////////////////////////////////////////
-void SelectionBuffer::DeleteRTTBuffer()
+void OgreSelectionBuffer::DeleteRTTBuffer()
 {
   if (!this->dataPtr->texture.isNull() && this->dataPtr->texture->isLoaded())
     this->dataPtr->texture->unload();
@@ -143,7 +143,7 @@ void SelectionBuffer::DeleteRTTBuffer()
 }
 
 /////////////////////////////////////////////////
-void SelectionBuffer::CreateRTTBuffer()
+void OgreSelectionBuffer::CreateRTTBuffer()
 {
   try
   {
@@ -187,7 +187,7 @@ void SelectionBuffer::CreateRTTBuffer()
 }
 
 /////////////////////////////////////////////////
-Ogre::Entity *SelectionBuffer::OnSelectionClick(int _x, int _y)
+Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(int _x, int _y)
 {
   if (!this->dataPtr->renderTexture)
     return NULL;
@@ -251,7 +251,7 @@ Ogre::Entity *SelectionBuffer::OnSelectionClick(int _x, int _y)
 }
 
 /////////////////////////////////////////////////
-void SelectionBuffer::CreateRTTOverlays()
+void OgreSelectionBuffer::CreateRTTOverlays()
 {
   Ogre::OverlayManager *mgr = Ogre::OverlayManager::getSingletonPtr();
 
@@ -295,7 +295,7 @@ void SelectionBuffer::CreateRTTOverlays()
 
 /////////////////////////////////////////////////
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR  <= 9
-void SelectionBuffer::ShowOverlay(bool _show)
+void OgreSelectionBuffer::ShowOverlay(bool _show)
 {
   if (_show)
     this->dataPtr->selectionDebugOverlay->show();
@@ -303,7 +303,7 @@ void SelectionBuffer::ShowOverlay(bool _show)
     this->dataPtr->selectionDebugOverlay->hide();
 }
 #else
-void SelectionBuffer::ShowOverlay(bool _show)
+void OgreSelectionBuffer::ShowOverlay(bool _show)
 {
   ignerr << "Selection debug overlay disabled for Ogre > 1.9\n";
 }

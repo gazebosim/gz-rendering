@@ -1,6 +1,6 @@
 set (sources ${sources}
-  selection_buffer/MaterialSwitcher.cc
-  selection_buffer/SelectionBuffer.cc
-  selection_buffer/SelectionRenderListener.cc
+  selection_buffer/OgreMaterialSwitcher.cc
+  selection_buffer/OgreSelectionBuffer.cc
+  selection_buffer/OgreSelectionRenderListener.cc
   PARENT_SCOPE
 )

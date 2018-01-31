@@ -14,32 +14,32 @@
  * limitations under the License.
  *
 */
-#include "ignition/rendering/ogre/selection_buffer/SelectionRenderListener.hh"
-#include "ignition/rendering/ogre/selection_buffer/MaterialSwitcher.hh"
+#include "ignition/rendering/ogre/selection_buffer/OgreSelectionRenderListener.hh"
+#include "ignition/rendering/ogre/selection_buffer/OgreMaterialSwitcher.hh"
 
-using namespace gazebo;
+using namespace ignition;
 using namespace rendering;
 
 /////////////////////////////////////////////////
-SelectionRenderListener::SelectionRenderListener(MaterialSwitcher *_switcher)
-  : materialListener(_switcher)
+OgreSelectionRenderListener::OgreSelectionRenderListener(
+    OgreMaterialSwitcher *_switcher): materialListener(_switcher)
 {
 }
 
 /////////////////////////////////////////////////
-SelectionRenderListener::~SelectionRenderListener()
+OgreSelectionRenderListener::~OgreSelectionRenderListener()
 {
 }
 
 /////////////////////////////////////////////////
-void SelectionRenderListener::preRenderTargetUpdate(
+void OgreSelectionRenderListener::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent &/*_evt*/)
 {
   Ogre::MaterialManager::getSingleton().addListener(this->materialListener);
 }
 
 /////////////////////////////////////////////////
-void SelectionRenderListener::postRenderTargetUpdate(
+void OgreSelectionRenderListener::postRenderTargetUpdate(
     const Ogre::RenderTargetEvent &/*_evt*/)
 {
   Ogre::MaterialManager::getSingleton().removeListener(this->materialListener);

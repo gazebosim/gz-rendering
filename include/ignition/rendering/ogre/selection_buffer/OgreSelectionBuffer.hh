@@ -14,12 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef _GAZEBO_RENDERING_SELECTION_BUFFER_SELECTIONBUFFER_HH_
-#define _GAZEBO_RENDERING_SELECTION_BUFFER_SELECTIONBUFFER_HH_
-
-#include <memory>
-#include <string>
-#include "ignition/common/detail/PluginMacros.hh"
+#ifndef _IGNITION_RENDERING_SELECTION_BUFFER_SELECTIONBUFFER_HH_
+#define _IGNITION_RENDERING_SELECTION_BUFFER_SELECTIONBUFFER_HH_
 
 namespace Ogre
 {
@@ -28,24 +24,24 @@ namespace Ogre
   class SceneManager;
 }
 
-namespace gazebo
+namespace ignition
 {
   namespace rendering
   {
-    struct SelectionBufferPrivate;
+    struct OgreSelectionBufferPrivate;
 
-    class SelectionBuffer
+    class OgreSelectionBuffer
     {
       /// \brief Constructor
       /// \param[in] _camera Name of the camera to generate a selection
       /// buffer for.
       /// \param[in] _mgr Pointer to the scene manager.
       /// \param[in] _renderTarget Pointer to the render target.
-      public: SelectionBuffer(const std::string &_cameraName,
+      public: OgreSelectionBuffer(const std::string &_cameraName,
                   Ogre::SceneManager *_mgr, Ogre::RenderTarget *_renderTarget);
 
       /// \brief Destructor
-      public: ~SelectionBuffer();
+      public: ~OgreSelectionBuffer();
 
       /// \brief Handle on mouse click
       /// \param[in] _x X coordinate in pixels.
@@ -71,7 +67,7 @@ namespace gazebo
 
       /// \internal
       /// \brief Pointer to private data.
-      private: std::unique_ptr<SelectionBufferPrivate> dataPtr;
+      private: std::unique_ptr<OgreSelectionBufferPrivate> dataPtr;
     };
   }
 }

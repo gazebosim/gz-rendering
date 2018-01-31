@@ -17,26 +17,26 @@
 
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/selection_buffer/MaterialSwitcher.hh"
+#include "ignition/rendering/ogre/selection_buffer/OgreMaterialSwitcher.hh"
 #include "ignition/rendering/RenderTypes.hh"
 
-using namespace gazebo;
+using namespace ignition;
 using namespace rendering;
 
 /////////////////////////////////////////////////
-MaterialSwitcher::MaterialSwitcher()
+OgreMaterialSwitcher::OgreMaterialSwitcher()
 : lastTechnique(nullptr)
 {
   this->currentColor = ignition::math::Color(0.0, 0.0, 0.1);
 }
 
 /////////////////////////////////////////////////
-MaterialSwitcher::~MaterialSwitcher()
+OgreMaterialSwitcher::~OgreMaterialSwitcher()
 {
 }
 
 /////////////////////////////////////////////////
-Ogre::Technique *MaterialSwitcher::handleSchemeNotFound(
+Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
     uint16_t /*_schemeIndex*/, const Ogre::String & /*_schemeName*/,
     Ogre::Material *_originalMaterial, uint16_t /*_lodIndex*/,
     const Ogre::Renderable *_rend)
@@ -145,7 +145,7 @@ Ogre::Technique *MaterialSwitcher::handleSchemeNotFound(
 }
 
 /////////////////////////////////////////////////
-const std::string &MaterialSwitcher::GetEntityName(
+const std::string &OgreMaterialSwitcher::GetEntityName(
     const ignition::math::Color &_color) const
 {
   ColorMapConstIter iter = this->colorDict.find(_color.AsRGBA());
@@ -157,7 +157,7 @@ const std::string &MaterialSwitcher::GetEntityName(
 }
 
 /////////////////////////////////////////////////
-void MaterialSwitcher::GetNextColor()
+void OgreMaterialSwitcher::GetNextColor()
 {
   auto color = this->currentColor.AsARGB();
   color++;
@@ -165,7 +165,7 @@ void MaterialSwitcher::GetNextColor()
 }
 
 /////////////////////////////////////////////////
-void MaterialSwitcher::Reset()
+void OgreMaterialSwitcher::Reset()
 {
   this->currentColor = ignition::math::Color(0.0, 0.0, 0.1);
   this->lastEntity.clear();

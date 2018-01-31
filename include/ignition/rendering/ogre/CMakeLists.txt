@@ -23,9 +23,9 @@ set (headers
   OgreSensor.hh
   OgreStorage.hh
   OgreVisual.hh
-  selection_buffer/MaterialSwitcher.hh
-  selection_buffer/SelectionBuffer.hh
-  selection_buffer/SelectionRenderListener.hh
+  selection_buffer/OgreMaterialSwitcher.hh
+  selection_buffer/OgreSelectionBuffer.hh
+  selection_buffer/OgreSelectionRenderListener.hh
 )
 
 #################################################

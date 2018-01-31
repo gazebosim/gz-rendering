@@ -18,25 +18,25 @@
 #define _SELECTIONRENDERLISTENER_HH_
 
 #include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/common/detail/PluginMacros.hh"
 
-namespace gazebo
+namespace ignition
 {
   namespace rendering
   {
-    class MaterialSwitcher;
+    class OgreMaterialSwitcher;
     // We need this attached to the depth target, otherwise we get problems with
     // the compositor MaterialManager.Listener should NOT be running all the
     // time - rather only when we're specifically rendering the target that
     // needs it
-    class SelectionRenderListener :
+    class OgreSelectionRenderListener :
       public Ogre::RenderTargetListener
     {
       /// \brief Constructor
-      public: explicit SelectionRenderListener(MaterialSwitcher *_switcher);
+      public: explicit OgreSelectionRenderListener(
+                  OgreMaterialSwitcher *_switcher);
 
       /// \brief Destructor
-      public: ~SelectionRenderListener();
+      public: ~OgreSelectionRenderListener();
 
       public: virtual void preRenderTargetUpdate(
                   const Ogre::RenderTargetEvent &_evt);
@@ -44,7 +44,7 @@ namespace gazebo
       public: virtual void postRenderTargetUpdate(
                   const Ogre::RenderTargetEvent &_evt);
 
-      private: MaterialSwitcher *materialListener;
+      private: OgreMaterialSwitcher *materialListener;
     };
   }
 }

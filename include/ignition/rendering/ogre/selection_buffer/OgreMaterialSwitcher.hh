@@ -15,38 +15,26 @@
  *
 */
 
-#ifndef GAZEBO_RENDERING_SELECTIONBUFFER_MATERIALSWITCHER_HH_
-#define GAZEBO_RENDERING_SELECTIONBUFFER_MATERIALSWITCHER_HH_
+#ifndef IGNITION_RENDERING_SELECTIONBUFFER_MATERIALSWITCHER_HH_
+#define IGNITION_RENDERING_SELECTIONBUFFER_MATERIALSWITCHER_HH_
 
-#include <map>
-#include <string>
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/common/detail/PluginMacros.hh"
 
-namespace gazebo
+namespace ignition
 {
   namespace rendering
   {
-    /*struct cmp_color
-    {
-      bool operator()(const ignition::math::Color &_a,
-                      const ignition::math::Color &_b) const
-      {
-        return _a.AsBGRA() < _b.AsBGRA();
-      }
-    };*/
-
-    class SelectionBuffer;
-    class MaterialSwitcher :
+    class OgreSelectionBuffer;
+    class OgreMaterialSwitcher :
       public Ogre::MaterialManager::Listener
     {
       /// \brief Constructor
-      public: MaterialSwitcher();
+      public: OgreMaterialSwitcher();
 
       /// \brief Destructor
-      public: ~MaterialSwitcher();
+      public: ~OgreMaterialSwitcher();
 
       /// \brief Get the entity with a specific color
       /// \param[in] _color The entity's color.
@@ -70,11 +58,11 @@ namespace gazebo
       private: ignition::math::Color currentColor;
       private: std::string lastEntity;
       private: Ogre::Technique *lastTechnique;
-      private: MaterialSwitcher::ColorMap colorDict;
+      private: OgreMaterialSwitcher::ColorMap colorDict;
 
       private: void GetNextColor();
 
-      public: friend class SelectionBuffer;
+      public: friend class OgreSelectionBuffer;
 
       /// \brief Plain material technique
       private: Ogre::Technique *plainTechnique = nullptr;

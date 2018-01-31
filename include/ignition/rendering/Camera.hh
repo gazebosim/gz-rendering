@@ -84,9 +84,6 @@ namespace ignition
       /// \return The camera's aspect ratio
       public: virtual double AspectRatio() const = 0;
 
-      /// \brief Get the scene that the camera is rendering
-      public: virtual ScenePtr GetScene() const = 0;
-
       /// \brief Set the camera's aspect ratio. This value determines the
       /// cameras vertical field-of-view. It is often the \code image_height /
       /// image_width \endcode but this is not necessarily true.

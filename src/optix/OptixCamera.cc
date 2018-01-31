@@ -93,12 +93,6 @@ RenderTargetPtr OptixCamera::RenderTarget() const
 }
 
 //////////////////////////////////////////////////
-ScenePtr OptixCamera::GetScene() const
-{
-  return this->scene;
-}
-
-//////////////////////////////////////////////////
 void OptixCamera::WriteCameraToDevice()
 {
   if (this->cameraDirty)

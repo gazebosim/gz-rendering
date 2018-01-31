@@ -87,8 +87,8 @@ namespace ignition
       public: virtual VisualPtr RootVisual() const = 0;
 
       /// \brief Get a visual at a mouse position.
-      /// \param[in] _origin Origin of the ray
-      /// \param[in] _dir Direction of the ray.
+      /// \param[in] _camera Camera pointer being used
+      /// \param[in] _mousePos position of the mouse
       /// \return Pointer to the visual, NULL if none found.
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
                   const math::Vector2d &_mousePos) = 0;

@@ -62,8 +62,6 @@ namespace ignition
 
       public: virtual void Render();
 
-      public: virtual Ogre::Viewport *getViewport(unsigned int index);
-
       public: virtual void Destroy() = 0;
 
       protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;

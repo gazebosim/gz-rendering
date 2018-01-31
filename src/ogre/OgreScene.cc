@@ -390,7 +390,8 @@ VisualPtr OgreScene::VisualAt(const CameraPtr &_camera,
   VisualPtr visual;
   RayQueryPtr rayQuery = this->CreateRayQuery();
 
-  if (rayQuery) {
+  if (rayQuery)
+  {
     rayQuery->SetFromCamera(_camera, _mousePos);
     RayQueryResult result = rayQuery->ClosestPoint();
 

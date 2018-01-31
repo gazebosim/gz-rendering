@@ -94,12 +94,6 @@ RenderTargetPtr OgreCamera::RenderTarget() const
 }
 
 //////////////////////////////////////////////////
-ScenePtr OgreCamera::GetScene() const
-{
-  return this->scene;
-}
-
-//////////////////////////////////////////////////
 void OgreCamera::Init()
 {
   BaseCamera::Init();

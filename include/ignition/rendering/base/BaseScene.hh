@@ -149,6 +149,7 @@ namespace ignition
 
       public: virtual VisualPtr VisualByIndex(unsigned int _index) const;
 
+      // Documentation inherited
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
                           const ignition::math::Vector2d &_mousePos);
 

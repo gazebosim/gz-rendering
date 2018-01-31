@@ -57,8 +57,6 @@ namespace ignition
 
       public: virtual void Render();
 
-      public: virtual ScenePtr GetScene() const;
-
       public: virtual RenderWindowPtr CreateRenderWindow();
 
       public: virtual math::Matrix4d ProjectionMatrix() const;

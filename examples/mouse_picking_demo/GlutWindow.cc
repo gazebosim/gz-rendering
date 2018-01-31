@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ void handleMouse()
         1.0 - 2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
 
       ignition::math::Vector2d mousePos(nx, ny);
-      ir::ScenePtr scene =  rayCamera->GetScene();
+      ir::ScenePtr scene =  rayCamera->Scene();
       if (scene)
       {
         visual = scene->VisualAt(rayCamera, mousePos);

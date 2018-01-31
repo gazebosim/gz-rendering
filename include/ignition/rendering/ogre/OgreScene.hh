@@ -26,7 +26,6 @@ namespace Ogre
 {
   class Root;
   class SceneManager;
-  class raySceneQuery;
 }
 
 namespace ignition
@@ -60,6 +59,10 @@ namespace ignition
 
       public: virtual Ogre::SceneManager *OgreSceneManager() const;
 
+      /// \brief Get a visual at a mouse position.
+      /// \param[in] _camera Camera pointer being used
+      /// \param[in] _mousePos position of the mouse
+      /// \return Pointer to the visual, NULL if none found.
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
                      const ignition::math::Vector2d &_cameraPos);
 

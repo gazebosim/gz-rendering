@@ -95,8 +95,6 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   Camera::NewFrameListener _listener);
 
-      public: virtual ScenePtr GetScene() const;
-
       public: virtual RenderWindowPtr CreateRenderWindow();
 
       // Documentation inherited.
@@ -216,13 +214,6 @@ namespace ignition
     unsigned int BaseCamera<T>::ImageWidth() const
     {
       return this->RenderTarget()->Width();
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    ScenePtr BaseCamera<T>::GetScene() const
-    {
-      return this->GetScene();
     }
 
     //////////////////////////////////////////////////

@@ -117,9 +117,6 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
   CameraPtr camera = scene->CreateCamera();
   EXPECT_TRUE(camera != nullptr);
 
-  ScenePtr scene2 = camera->GetScene();
-  ASSERT_EQ(scene, scene2);
-
   // render texture parameters
   EXPECT_GT(camera->ImageWidth(), 0u);
   camera->SetImageWidth(100u);

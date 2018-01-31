@@ -118,12 +118,6 @@ void OgreRenderTarget::Render()
 }
 
 //////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTarget::getViewport(unsigned int index)
-{
-  return this->RenderTarget()->getViewport(index);
-}
-
-//////////////////////////////////////////////////
 void OgreRenderTarget::UpdateBackgroundColor()
 {
   if (this->colorDirty && this->ogreViewport)

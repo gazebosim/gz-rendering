@@ -136,7 +136,7 @@ namespace ignition
 
       protected: virtual SensorStorePtr Sensors() const;
 
-      protected: virtual VisualStorePtr Visuals() const;
+      public: virtual VisualStorePtr Visuals() const;
 
       protected: virtual MaterialMapPtr Materials() const;
 

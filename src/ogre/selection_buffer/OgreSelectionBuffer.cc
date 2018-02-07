@@ -53,8 +53,9 @@ namespace ignition
       /// \brief Selection buffer's render to texture camera
       Ogre::Camera *selectionCamera  = nullptr;
 
-      /// \brief Ogre render target
-      Ogre::RenderTarget *renderTarget  = nullptr;
+      const unsigned int width = 0;
+
+      const unsigned int height = 0;
 
       /// \brief Ogre texture
       Ogre::TexturePtr texture;
@@ -77,11 +78,10 @@ namespace ignition
 
 /////////////////////////////////////////////////
 OgreSelectionBuffer::OgreSelectionBuffer(const std::string &_cameraName,
-    Ogre::SceneManager *_mgr, Ogre::RenderTarget *_renderTarget)
+    Ogre::SceneManager *_mgr, const unsigned int width, const unsigned int height)
 : dataPtr(new OgreSelectionBufferPrivate)
 {
   this->dataPtr->sceneMgr = _mgr;
-  this->dataPtr->renderTarget = _renderTarget;
 
   this->dataPtr->camera = this->dataPtr->sceneMgr->getCamera(_cameraName);
 
@@ -192,8 +192,8 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(int _x, int _y)
   if (!this->dataPtr->renderTexture)
     return NULL;
 
-  unsigned int targetWidth = this->dataPtr->renderTarget->getWidth();
-  unsigned int targetHeight = this->dataPtr->renderTarget->getHeight();
+  const unsigned int targetWidth = this->dataPtr->width;
+  const unsigned int targetHeight = this->dataPtr->height;
 
   if (_x < 0 || _y < 0 || _x >= static_cast<int>(targetWidth)
       || _y >= static_cast<int>(targetHeight))
@@ -253,6 +253,7 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(int _x, int _y)
 /////////////////////////////////////////////////
 void OgreSelectionBuffer::CreateRTTOverlays()
 {
+
   Ogre::OverlayManager *mgr = Ogre::OverlayManager::getSingletonPtr();
 
   if (mgr && mgr->getByName("SelectionDebugOverlay"))

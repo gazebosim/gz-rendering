@@ -64,7 +64,7 @@ namespace ignition
 
       public: virtual void Destroy() = 0;
 
-      protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+      public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
       protected: virtual void UpdateBackgroundColor();
 

@@ -99,6 +99,7 @@ void OgreCamera::Init()
   BaseCamera::Init();
   this->CreateCamera();
   this->CreateRenderTexture();
+  this->SetSelectionBuffer();
   this->Reset();
 }
 
@@ -131,7 +132,75 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture = std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);
   this->renderTexture->SetFormat(PF_R8G8B8);
+  this->renderTexture->SetWidth(this->ImageWidth());
+  this->renderTexture->SetHeight(this->ImageHeight());
   this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
+}
+
+
+//////////////////////////////////////////////////
+void OgreCamera::SetSelectionBuffer()
+{
+  this->selectionBuffer = new OgreSelectionBuffer(this->name,
+      this->scene->OgreSceneManager(), this->ImageWidth(), this->ImageHeight());
+}
+
+//////////////////////////////////////////////////
+VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i &_mousePos,
+    std::string &_mod) const
+{
+  VisualPtr result;
+
+  if (!this->selectionBuffer)
+    return result;
+
+  int ratio = 1;// static_cast<int>(this->dataPtr->devicePixelRatio);
+  // math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
+  ignition::math::Vector2i mousePos(
+      ratio * _mousePos.X(), ratio * _mousePos.Y());
+
+  Ogre::Entity *entity = this->selectionBuffer->OnSelectionClick(
+      mousePos.X(), mousePos.Y());
+
+  _mod = "";
+  if (entity)
+  {
+    // Make sure we set the _mod only if we have found a selection object
+    if (entity->getName().substr(0, 15) == "__SELECTION_OBJ" &&
+        !entity->getUserObjectBindings().getUserAny().isEmpty() &&
+        entity->getUserObjectBindings().getUserAny().getType() ==
+        typeid(std::string))
+    {
+      try
+      {
+        _mod = Ogre::any_cast<std::string>(
+            entity->getUserObjectBindings().getUserAny());
+      }
+      catch(Ogre::Exception &e)
+      {
+        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        // ignthrow("Unable to get visual " + _mod);
+      }
+    }
+
+    if (!entity->getUserObjectBindings().getUserAny().isEmpty())
+    {
+      try
+      {
+        VisualStorePtr visuals = this->scene->Visuals();
+        result = visuals->GetByName(
+            Ogre::any_cast<std::string>(
+              entity->getUserObjectBindings().getUserAny()));
+      }
+      catch(Ogre::Exception &e)
+      {
+        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        // ignthrow("Unable to get visual " + _mod);
+      }
+    }
+  }
+
+  return result;
 }
 
 //////////////////////////////////////////////////

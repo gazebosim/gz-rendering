@@ -130,8 +130,18 @@ namespace ignition
       /// successfully been executed.
       public: virtual void PostRender() = 0;
 
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i &_mousePos,
-                  std::string &_mod) const = 0;
+      /// \brief Get the visual for a given mouse position
+      /// param[in] _mousePos mouse position
+      /// param[in] _mod string that is set with the name of the visual
+      //  \return visual for that position, null if no visual was found
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos, std::string &_mod) = 0;
+
+      /// \brief Get the visual for a given mouse position
+      /// param[in] _mousePos mouse position
+      //  \return visual for that position, null if no visual was found
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos) = 0;
 
               /// \brief Renders a new frame.
       /// This is a convenience function for single-camera scenes. It wraps the

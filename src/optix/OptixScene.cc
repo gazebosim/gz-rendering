@@ -487,21 +487,13 @@ OptixScenePtr OptixScene::SharedThis()
 
 //////////////////////////////////////////////////
 VisualPtr OptixScene::VisualAt(const CameraPtr &_camera,
-                          const ignition::math::Vector2d &_mousePos)
+                          const ignition::math::Vector2i &_mousePos)
 {
   VisualPtr visual;
-  // TODO: implement
-  /*RayQueryPtr rayQuery = this->CreateRayQuery();
 
-  if (rayQuery) {
-    rayQuery->SetFromCamera(_camera, _mousePos);
-    RayQueryResult result = rayQuery->ClosestPoint();
-
-    if (result)
-    {
-      visual = this->visuals->GetById(result.objectId);
-    }
-  }*/
+  // TODO: implement, return null for now
+  (void)_camera;
+  (void)_mousePos;
   return visual;
 }
 

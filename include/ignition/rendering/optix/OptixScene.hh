@@ -60,7 +60,7 @@ namespace ignition
                   const std::string &_fileBase, const std::string &_function);
 
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
-                     const ignition::math::Vector2d &_cameraPos);
+                     const ignition::math::Vector2i &_cameraPos);
 
       protected: virtual bool LoadImpl();
 

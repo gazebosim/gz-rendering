@@ -97,8 +97,13 @@ namespace ignition
 
       public: virtual RenderWindowPtr CreateRenderWindow();
 
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i &_mousePos,
-                  std::string &_mod) const;
+      // Documentation inherited.
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos, std::string &_mod);
+
+      // Documentation inherited.
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos);
 
       // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const;
@@ -492,11 +497,20 @@ namespace ignition
       return this->hfov;
     }
 
+    //////////////////////////////////////////////////
     template <class T>
-    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i &_mousePos,
-        std::string &_mod) const
+    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i
+        &_mousePos, std::string &_mod)
     {
       return this->VisualAt(_mousePos, _mod);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i
+        &_mousePos)
+    {
+      return this->VisualAt(_mousePos);
     }
 
     //////////////////////////////////////////////////

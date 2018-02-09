@@ -117,27 +117,25 @@ void handleMouse()
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
     {
       // Get visual using Selection Buffer from Camera
-      //ir::VisualPtr visual1;
-      //ignition::math::Vector2i mousePosI(g_mouse.x, g_mouse.y);
-      //std::string name;
-      //visual1 = rayCamera->VisualAt(mousePosI, name);
+      ir::VisualPtr visual1;
+      ignition::math::Vector2i mousePosI(g_mouse.x, g_mouse.y);
+      std::string name;
+      visual1 = rayCamera->VisualAt(mousePosI, name);
+      if (visual1)
+      {
+        std::cout << "Selected item using Buffer Selection at position " << g_mouse.x << " ";
+        std::cout << g_mouse.y << ": " << visual1->Name() << "\n";
+      }
 
       // Get visual using Ray Tracing from Scene
       ir::ScenePtr scene =  rayCamera->Scene();
       if (scene)
       {
         ir::VisualPtr visual2;
-
-        double nx =
-          2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
-        double ny =
-          1.0 - 2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
-
-        ignition::math::Vector2d mousePos(nx, ny);
-        visual2 = scene->VisualAt(rayCamera, mousePos);
+        visual2 = scene->VisualAt(rayCamera, mousePosI);
         if (visual2)
         {
-          std::cout << "Selected item at position " << g_mouse.x << " ";
+          std::cout << "Selected item using Ray Tracing at position " << g_mouse.x << " ";
           std::cout << g_mouse.y << ": " << visual2->Name() << "\n";
         }
         else

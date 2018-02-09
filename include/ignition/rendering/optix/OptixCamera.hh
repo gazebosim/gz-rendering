@@ -43,6 +43,12 @@ namespace ignition
 
       public: virtual void Render();
 
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos, std::string &_mod);
+
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos);
+
       protected: virtual RenderTargetPtr RenderTarget() const;
 
       protected: virtual void WriteCameraToDevice();

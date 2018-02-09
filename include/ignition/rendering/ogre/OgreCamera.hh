@@ -65,7 +65,10 @@ namespace ignition
       public: virtual math::Matrix4d ViewMatrix() const;
 
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
-                  &_mousePos, std::string &_mod) const;
+                  &_mousePos, std::string &_mod);
+
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos);
 
       protected: virtual RenderTargetPtr RenderTarget() const;
 

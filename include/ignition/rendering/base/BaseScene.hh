@@ -151,7 +151,7 @@ namespace ignition
 
       // Documentation inherited
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
-                          const ignition::math::Vector2d &_mousePos);
+                          const ignition::math::Vector2i &_mousePos);
 
       public: virtual void DestroyVisual(VisualPtr _visual);
 

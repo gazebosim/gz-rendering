@@ -338,6 +338,11 @@ void OgreScene::CreateContext()
 {
   Ogre::Root *root = OgreRenderEngine::Instance()->OgreRoot();
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC);
+
+#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
+  this->ogreSceneManager->addRenderQueueListener(
+      OgreRenderEngine::Instance()->OverlaySystem());
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -385,14 +390,21 @@ OgreScenePtr OgreScene::SharedThis()
 
 //////////////////////////////////////////////////
 VisualPtr OgreScene::VisualAt(const CameraPtr &_camera,
-                          const ignition::math::Vector2d &_mousePos)
+                          const ignition::math::Vector2i &_mousePos)
 {
   VisualPtr visual;
   RayQueryPtr rayQuery = this->CreateRayQuery();
 
+  double nx =
+      2.0 * _mousePos.X() / static_cast<double>(_camera->ImageWidth()) - 1.0;
+  double ny =
+      1.0 - 2.0 * _mousePos.Y() / static_cast<double>(_camera->ImageHeight());
+
+  math::Vector2d mousePos(nx, ny);
+
   if (rayQuery)
   {
-    rayQuery->SetFromCamera(_camera, _mousePos);
+    rayQuery->SetFromCamera(_camera, mousePos);
     RayQueryResult result = rayQuery->ClosestPoint();
 
     if (result)

@@ -89,26 +89,19 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
   camera->Update();
 
   // test get sphere object
-  double sphere_x = 220  *2.0 / static_cast<double>(camera->ImageWidth()) - 1.0;
-  double sphere_y = 1.0 - 2.0 * 307 / static_cast<double>(
-      camera->ImageHeight());
-  ignition::math::Vector2d sphere_position(sphere_x, sphere_y);
+  ignition::math::Vector2i sphere_position(220, 307);
   VisualPtr sphere_visual = scene->VisualAt(camera, sphere_position);
   ASSERT_TRUE(sphere_visual != nullptr);
   EXPECT_EQ("sphere", sphere_visual->Name());
 
   // test get box object
-  double box_x = 452 *2.0 / static_cast<double>(camera->ImageWidth()) - 1.0;
-  double box_y = 1.0 - 2.0 * 338 / static_cast<double>(camera->ImageHeight());
-  ignition::math::Vector2d box_position(box_x, box_y);
+  ignition::math::Vector2i box_position(452, 338);
   VisualPtr box_visual = scene->VisualAt(camera, box_position);
   ASSERT_TRUE(box_visual != nullptr);
   EXPECT_EQ("box", box_visual->Name());
 
   // test get no object
-  double empty_x = 300 *2.0 / static_cast<double>(camera->ImageWidth()) - 1.0;
-  double empty_y = 1.0 - 2.0 * 150 / static_cast<double>(camera->ImageHeight());
-  ignition::math::Vector2d empty_position(empty_x, empty_y);
+  ignition::math::Vector2i empty_position(300, 150);
   VisualPtr empty_visual = scene->VisualAt(camera, empty_position);
   ASSERT_TRUE(empty_visual == nullptr);
 

@@ -172,14 +172,7 @@ void OgreRenderTexture::Destroy()
 //////////////////////////////////////////////////
 Ogre::RenderTarget *OgreRenderTexture::RenderTarget() const
 {
-  if (this->ogreTexture != nullptr)
-  {
-    return this->ogreTexture->getBuffer()->getRenderTarget();
-  }
-  else
-  {
-    std::cout << "null!!!" << std::endl;
-  }
+  return this->ogreTexture->getBuffer()->getRenderTarget();
 }
 
 //////////////////////////////////////////////////

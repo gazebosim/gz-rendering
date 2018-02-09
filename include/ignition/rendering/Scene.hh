@@ -88,10 +88,10 @@ namespace ignition
 
       /// \brief Get a visual at a mouse position.
       /// \param[in] _camera Camera pointer being used
-      /// \param[in] _mousePos position of the mouse
+      /// \param[in] _mousePos position of the mouse in pixels
       /// \return Pointer to the visual, NULL if none found.
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
-                  const math::Vector2d &_mousePos) = 0;
+                  const math::Vector2i &_mousePos) = 0;
 
       /// \brief Get the scene ambient light color
       /// \return The scene ambient light color

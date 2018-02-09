@@ -53,9 +53,11 @@ namespace ignition
       /// \brief Selection buffer's render to texture camera
       Ogre::Camera *selectionCamera  = nullptr;
 
-      const unsigned int width = 0;
+      /// \brief Render width
+      unsigned int width = 0;
 
-      const unsigned int height = 0;
+      /// \brief Render height
+      unsigned int height = 0;
 
       /// \brief Ogre texture
       Ogre::TexturePtr texture;
@@ -78,10 +80,13 @@ namespace ignition
 
 /////////////////////////////////////////////////
 OgreSelectionBuffer::OgreSelectionBuffer(const std::string &_cameraName,
-    Ogre::SceneManager *_mgr, const unsigned int width, const unsigned int height)
+    Ogre::SceneManager *_mgr, const unsigned int _width, const unsigned int _height)
 : dataPtr(new OgreSelectionBufferPrivate)
 {
   this->dataPtr->sceneMgr = _mgr;
+  this->dataPtr->width = _width;
+  this->dataPtr->height = _height;
+
 
   this->dataPtr->camera = this->dataPtr->sceneMgr->getCamera(_cameraName);
 

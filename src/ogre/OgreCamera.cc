@@ -99,8 +99,8 @@ void OgreCamera::Init()
   BaseCamera::Init();
   this->CreateCamera();
   this->CreateRenderTexture();
-  this->SetSelectionBuffer();
   this->Reset();
+
 }
 
 //////////////////////////////////////////////////
@@ -137,25 +137,79 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
 }
 
-
 //////////////////////////////////////////////////
 void OgreCamera::SetSelectionBuffer()
 {
   this->selectionBuffer = new OgreSelectionBuffer(this->name,
-      this->scene->OgreSceneManager(), this->ImageWidth(), this->ImageHeight());
+      this->scene->OgreSceneManager(), this->ImageWidth(),
+      this->ImageHeight());
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i &_mousePos,
-    std::string &_mod) const
+VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i
+    &_mousePos)
 {
   VisualPtr result;
 
   if (!this->selectionBuffer)
-    return result;
+  {
 
-  int ratio = 1;// static_cast<int>(this->dataPtr->devicePixelRatio);
-  // math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
+    this->SetSelectionBuffer();
+
+    if(!this->selectionBuffer)
+    {
+      return result;
+    }
+  }
+
+  int ratio = static_cast<int>(this->AspectRatio());
+
+  ignition::math::Vector2i mousePos(
+      ratio * _mousePos.X(), ratio * _mousePos.Y());
+
+  Ogre::Entity *entity = this->selectionBuffer->OnSelectionClick(
+      mousePos.X(), mousePos.Y());
+
+  if (entity)
+  {
+    if (!entity->getUserObjectBindings().getUserAny().isEmpty() &&
+        entity->getUserObjectBindings().getUserAny().getType() ==
+        typeid(unsigned int))
+    {
+      try
+      {
+        result = this->scene->VisualById(Ogre::any_cast<unsigned int>(
+              entity->getUserObjectBindings().getUserAny()));
+      }
+      catch(Ogre::Exception &e)
+      {
+        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+      }
+    }
+  }
+
+  return result;
+}
+
+//////////////////////////////////////////////////
+VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i &_mousePos,
+    std::string &_mod)
+{
+  VisualPtr result;
+
+  if (!this->selectionBuffer)
+  {
+
+    this->SetSelectionBuffer();
+
+    if(!this->selectionBuffer)
+    {
+      return result;
+    }
+  }
+
+  int ratio = static_cast<int>(this->AspectRatio());
+
   ignition::math::Vector2i mousePos(
       ratio * _mousePos.X(), ratio * _mousePos.Y());
 
@@ -183,13 +237,13 @@ VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i &_mousePos,
       }
     }
 
-    if (!entity->getUserObjectBindings().getUserAny().isEmpty())
+    if (!entity->getUserObjectBindings().getUserAny().isEmpty() &&
+        entity->getUserObjectBindings().getUserAny().getType() ==
+        typeid(unsigned int))
     {
       try
       {
-        VisualStorePtr visuals = this->scene->Visuals();
-        result = visuals->GetByName(
-            Ogre::any_cast<std::string>(
+        result = this->scene->VisualById(Ogre::any_cast<unsigned int>(
               entity->getUserObjectBindings().getUserAny()));
       }
       catch(Ogre::Exception &e)

@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
 #define IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
 
+#include <string>
+
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreSensor.hh"

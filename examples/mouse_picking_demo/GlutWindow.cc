@@ -123,8 +123,9 @@ void handleMouse()
       visual1 = rayCamera->VisualAt(mousePosI, name);
       if (visual1)
       {
-        std::cout << "Selected item using Buffer Selection at position " << g_mouse.x << " ";
-        std::cout << g_mouse.y << ": " << visual1->Name() << "\n";
+        std::cout << "Selected item using Buffer Selection at position ";
+        std::cout << g_mouse.x << " " << g_mouse.y << ": ";
+        std::cout << visual1->Name() << "\n";
       }
 
       // Get visual using Ray Tracing from Scene
@@ -135,8 +136,9 @@ void handleMouse()
         visual2 = scene->VisualAt(rayCamera, mousePosI);
         if (visual2)
         {
-          std::cout << "Selected item using Ray Tracing at position " << g_mouse.x << " ";
-          std::cout << g_mouse.y << ": " << visual2->Name() << "\n";
+          std::cout << "Selected item using Ray Tracing at position ";
+          std::cout << g_mouse.x << " " << g_mouse.y << ": ";
+          std::cout << visual2->Name() << "\n";
         }
         else
         {

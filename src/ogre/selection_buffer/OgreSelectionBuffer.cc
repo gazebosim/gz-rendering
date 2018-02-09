@@ -80,8 +80,8 @@ namespace ignition
 
 /////////////////////////////////////////////////
 OgreSelectionBuffer::OgreSelectionBuffer(const std::string &_cameraName,
-    Ogre::SceneManager *_mgr, const unsigned int _width, const unsigned int _height)
-: dataPtr(new OgreSelectionBufferPrivate)
+    Ogre::SceneManager *_mgr, const unsigned int _width,
+    const unsigned int _height): dataPtr(new OgreSelectionBufferPrivate)
 {
   this->dataPtr->sceneMgr = _mgr;
   this->dataPtr->width = _width;
@@ -258,7 +258,6 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(int _x, int _y)
 /////////////////////////////////////////////////
 void OgreSelectionBuffer::CreateRTTOverlays()
 {
-
   Ogre::OverlayManager *mgr = Ogre::OverlayManager::getSingletonPtr();
 
   if (mgr && mgr->getByName("SelectionDebugOverlay"))

@@ -100,7 +100,6 @@ void OgreCamera::Init()
   this->CreateCamera();
   this->CreateRenderTexture();
   this->Reset();
-
 }
 
 //////////////////////////////////////////////////
@@ -153,10 +152,9 @@ VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i
 
   if (!this->selectionBuffer)
   {
-
     this->SetSelectionBuffer();
 
-    if(!this->selectionBuffer)
+    if (!this->selectionBuffer)
     {
       return result;
     }
@@ -199,10 +197,9 @@ VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i &_mousePos,
 
   if (!this->selectionBuffer)
   {
-
     this->SetSelectionBuffer();
 
-    if(!this->selectionBuffer)
+    if (!this->selectionBuffer)
     {
       return result;
     }

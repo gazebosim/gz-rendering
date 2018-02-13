@@ -1,1 +1,1 @@
-#ign_install_all_headers(COMPONENT)
+ign_install_all_headers(COMPONENT ogre)

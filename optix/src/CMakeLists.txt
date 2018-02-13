@@ -35,7 +35,9 @@ target_link_libraries(${optix_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
   PRIVATE
-    OptiX::OptiX)
+    optix::optix
+    optix::optixu
+    optix::optix_prime)
 
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})

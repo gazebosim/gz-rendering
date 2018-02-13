@@ -123,12 +123,12 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
   std::vector<NodePtr> nodes;
 
-  try
-  {
-    engineNames.push_back("ogre");
-    engineNames.push_back("optix");
+  engineNames.push_back("ogre");
+  engineNames.push_back("optix");
 
-    for (auto engineName : engineNames)
+  for (auto engineName : engineNames)
+  {
+    try
     {
       CameraPtr camera = createCamera(engineName);
       if (camera)
@@ -140,13 +140,11 @@ int main(int _argc, char** _argv)
         camera->SetTrackTarget(node, math::Vector3d(0.5, 0, 0));
       }
     }
-
-    run(cameras, nodes);
+    catch (...)
+    {
+      // std::cout << ex.what() << std::endl;
+    }
   }
-  catch (...)
-  {
-    // std::cout << ex.what() << std::endl;
-  }
-
+  run(cameras, nodes);
   return 0;
 }

@@ -92,6 +92,9 @@ namespace ignition
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
                   bool _unique = true);
 
+      // Documentation inherited.
+      public: virtual MaterialPtr Material();
+
       public: virtual math::Vector3d LocalScale() const = 0;
 
       public: virtual void SetLocalScale(double _scale);
@@ -138,6 +141,9 @@ namespace ignition
 
       protected: virtual void SetLocalScaleImpl(
                      const math::Vector3d &_scale) = 0;
+
+      /// \brief Pointer to material assigned to this visual
+      protected: MaterialPtr material;
     };
 
     //////////////////////////////////////////////////
@@ -335,7 +341,7 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::SetMaterial(const std::string &_name, bool _unique)
     {
-      MaterialPtr material = this->Scene()->Material(_name);
+      MaterialPtr mat = this->Scene()->Material(_name);
       if (material) this->SetMaterial(material, _unique);
     }
 
@@ -346,6 +352,7 @@ namespace ignition
       _material = (_unique) ? _material->Clone() : _material;
       this->SetChildMaterial(_material, false);
       this->SetGeometryMaterial(_material, false);
+      this->material = _material;
     }
 
     //////////////////////////////////////////////////
@@ -375,6 +382,13 @@ namespace ignition
         GeometryPtr geometry = this->GeometryByIndex(i);
         geometry->SetMaterial(_material, false);
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    MaterialPtr BaseVisual<T>::Material()
+    {
+      return this->material;
     }
 
     //////////////////////////////////////////////////

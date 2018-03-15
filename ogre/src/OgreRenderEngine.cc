@@ -522,11 +522,12 @@ void OgreRenderEngine::CreateResources()
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
-  resourcePath = common::joinPaths(resourcePath, "ogre");
-  paths.push_back(resourcePath);
-
-  std::list<std::string> mediaDirs;
-  mediaDirs.push_back("media");
+  // install path
+  std::string mediaPath = common::joinPaths(resourcePath, "ogre", "media");
+  paths.push_back(mediaPath);
+  // src path
+  mediaPath = common::joinPaths(resourcePath, "ogre", "src", "media");
+  paths.push_back(mediaPath);
 
   for (auto const &p : paths)
   {
@@ -535,37 +536,29 @@ void OgreRenderEngine::CreateResources()
 
     archNames.push_back(
         std::make_pair(p, "General"));
+    // archNames.push_back(
+    //     std::make_pair(prefix + "/skyx", "SkyX"));
+    archNames.push_back(
+        std::make_pair(p+ "/materials/programs", "General"));
+    archNames.push_back(
+        std::make_pair(p+ "/materials/scripts", "General"));
+    // archNames.push_back(
+    //     std::make_pair(prefix + "/materials/textures", "General"));
+    // archNames.push_back(
+    //     std::make_pair(prefix + "/media/models", "General"));
+  }
 
-    for (auto const &m : mediaDirs)
+  for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+  {
+    try
     {
-      std::string prefix = common::joinPaths(p, m);
-
-      archNames.push_back(
-          std::make_pair(prefix, "General"));
-      // archNames.push_back(
-      //     std::make_pair(prefix + "/skyx", "SkyX"));
-      archNames.push_back(
-          std::make_pair(prefix + "/materials/programs", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/materials/scripts", "General"));
-      // archNames.push_back(
-      //     std::make_pair(prefix + "/materials/textures", "General"));
-      // archNames.push_back(
-      //     std::make_pair(prefix + "/media/models", "General"));
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+          aiter->first, "FileSystem", aiter->second);
     }
-
-    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+    catch(Ogre::Exception &/*_e*/)
     {
-      try
-      {
-        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-            aiter->first, "FileSystem", aiter->second);
-      }
-      catch(Ogre::Exception &/*_e*/)
-      {
-        ignerr << "Unable to load Ogre Resources. Make sure the resources "
-            "path in the world file is set correctly." << std::endl;
-      }
+      ignerr << "Unable to load Ogre Resources. Make sure the resources "
+          "path in the world file is set correctly." << std::endl;
     }
   }
 }

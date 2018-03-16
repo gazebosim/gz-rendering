@@ -9,7 +9,7 @@ project(ignition-rendering0 VERSION 0.1.0)
 # Find ignition-cmake
 #============================================================================
 # If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake0 REQUIRED)
+find_package(ignition-cmake1 REQUIRED)
 
 #============================================================================
 # Set up the project

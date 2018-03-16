@@ -399,11 +399,18 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
 
-  resourcePath = common::joinPaths(resourcePath, "ogre", "media",
-      "rtshaderlib150");
-
+  // path to look for ogre media files
   std::vector<std::string> paths;
-  paths.push_back(resourcePath);
+
+  // install path
+  std::string mediaPath = common::joinPaths(resourcePath, "ogre", "media",
+      "rtshaderlib150");
+  paths.push_back(mediaPath);
+
+  // src path
+  mediaPath = common::joinPaths(resourcePath, "ogre", "src", "media",
+      "rtshaderlib150");
+  paths.push_back(mediaPath);
 
   for (auto const &p : paths)
   {

@@ -23,7 +23,7 @@ pipelines:
             libignition-common-dev
             libignition-math4-dev
           # Dependency: Ignition cmake
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b components_ogre_optix
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b Components
           - cd ign-cmake
           - mkdir build
           - cd build

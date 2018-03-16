@@ -178,13 +178,16 @@ int main(int _argc, char** _argv)
     {
       CameraPtr camera = createCamera(engineName);
       if (camera)
+      {
         cameras.push_back(camera);
+      }
     }
     catch (...)
     {
       // std::cout << ex.what() << std::endl;
+      std::cerr << "Error starting up: " << engineName << std::endl;
     }
-    run(cameras);
   }
+  run(cameras);
   return 0;
 }

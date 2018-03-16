@@ -143,6 +143,7 @@ int main(int _argc, char** _argv)
     catch (...)
     {
       // std::cout << ex.what() << std::endl;
+      std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }
   run(cameras, nodes);

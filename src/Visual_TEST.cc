@@ -84,7 +84,7 @@ void VisualTest::Material(const std::string &_renderEngine)
   EXPECT_EQ(ambient, cloneMat->Ambient());
   EXPECT_EQ(diffuse, cloneMat->Diffuse());
   EXPECT_EQ(specular, cloneMat->Specular());
-  EXPECT_EQ(transparency, cloneMat->Transparency());
+  EXPECT_DOUBLE_EQ(transparency, cloneMat->Transparency());
 }
 
 /////////////////////////////////////////////////

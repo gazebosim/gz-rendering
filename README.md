@@ -95,17 +95,14 @@ immediate future:
 
         cd build
         make doc
-
-1. View documentation
+2. View documentation
 
         firefox doxygen/html/index.html
-
-1. Upload documentation to ignitionrobotics.org.
+3. Upload documentation to ignitionrobotics.org.
 
         cd build
         sh upload.sh
-
-1. If you're creating a new release, then tell ignitionrobotics.org about
+4. If you're creating a new release, then tell ignitionrobotics.org about
    the new version. For example:
 
         curl -k -X POST -d '{"libName":"common", "version":"1.0.0", "releaseDate":"2017-10-09T12:10:13+02:00","password":"secret"}' https://api.ignitionrobotics.org/1.0/versions

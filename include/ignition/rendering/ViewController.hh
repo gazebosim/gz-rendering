@@ -29,7 +29,7 @@ namespace ignition
     /// \class ViewController ViewController.hh
     ///   ignition/rendering/ViewController.hh
     /// \brief A camera view controller
-    class IGNITION_VISIBLE ViewController
+    class IGNITION_RENDERING_VISIBLE ViewController
     {
       /// \brief Deconstructor
       public: virtual ~ViewController() { }

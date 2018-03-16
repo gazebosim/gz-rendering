@@ -27,7 +27,7 @@
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Material.hh"
 #include "ignition/rendering/Mesh.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 // An X11 header file defines a macro that conflicts with our function name,
 // so undefine it here
@@ -43,7 +43,7 @@ namespace ignition
     /// \brief Storage map from std::string to template class T
     /// \tparam T The storage element type
     template <class T>
-    class IGNITION_VISIBLE Map
+    class IGNITION_RENDERING_VISIBLE Map
     {
       /// \def TPtr
       /// \brief Shared pointer to T
@@ -108,7 +108,7 @@ namespace ignition
     /// will ensure that each element's name and ID are unique.
     /// \tparam T The storage element type
     template <class T>
-    class IGNITION_VISIBLE Store
+    class IGNITION_RENDERING_VISIBLE Store
     {
       /// \def TPtr
       /// \brief Shared pointer to T
@@ -221,7 +221,7 @@ namespace ignition
     /// a single composite store.
     /// \tparam T The storage element type
     template <class T>
-    class IGNITION_VISIBLE CompositeStore :
+    class IGNITION_RENDERING_VISIBLE CompositeStore :
       public Store<T>
     {
       /// \def TPtr
@@ -285,7 +285,7 @@ namespace ignition
     /// \tparam T New storage type
     /// \tparam U Some derived class of T
     template <class T, class U>
-    class IGNITION_VISIBLE StoreWrapper :
+    class IGNITION_RENDERING_VISIBLE StoreWrapper :
       public Store<T>
     {
       public: virtual ~StoreWrapper() { }

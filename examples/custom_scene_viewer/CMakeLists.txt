@@ -1,19 +1,11 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ignition-rendering-custom-scene-viewer)
 find_package(ignition-rendering0 REQUIRED)
-find_package(ignition-common1 REQUIRED)
-find_package(ignition-math4 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
-  ${IGNITION-COMMON_INCLUDE_DIRS}
-  ${IGNITION-MATH_INCLUDE_DIRS}
-  ${IGNITION-RENDERING_INCLUDE_DIRS}
 )
 
-link_directories(
-  ${IGNITION-RENDERING_LIBRARY_DIRS}
-)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -44,7 +36,6 @@ target_link_libraries(custom_scene_viewer
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${IGNITION-COMMON_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )
 

@@ -26,7 +26,7 @@ namespace ignition
   {
     /// \class Light Light.hh ignition/rendering/Light.hh
     /// \brief Represents a light source in the scene graph
-    class IGNITION_VISIBLE Light :
+    class IGNITION_RENDERING_VISIBLE Light :
       public virtual Node
     {
       /// \brief Deconstructor
@@ -107,7 +107,7 @@ namespace ignition
 
     /// \class DirectionalLight Light.hh ignition/rendering/Light.hh
     /// \brief Represents a infinite directional light
-    class IGNITION_VISIBLE DirectionalLight :
+    class IGNITION_RENDERING_VISIBLE DirectionalLight :
       public virtual Light
     {
       /// \brief Deconstructor
@@ -130,7 +130,7 @@ namespace ignition
 
     /// \class PointLight Light.hh ignition/rendering/Light.hh
     /// \brief Represents a point light
-    class IGNITION_VISIBLE PointLight :
+    class IGNITION_RENDERING_VISIBLE PointLight :
       public virtual Light
     {
       /// \brief Deconstructor
@@ -139,7 +139,7 @@ namespace ignition
 
     /// \class SpotLight Light.hh ignition/rendering/Light.hh
     /// \brief Represents a spotlight
-    class IGNITION_VISIBLE SpotLight :
+    class IGNITION_RENDERING_VISIBLE SpotLight :
       public virtual Light
     {
       /// \brief Deconstructor

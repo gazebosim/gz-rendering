@@ -1,55 +1,27 @@
-include (${project_cmake_dir}/Utils.cmake)
+# Collect source files into the "sources" variable and unit test files into the
+# "gtest_sources" variable.
+ign_get_libsources_and_unittests(sources gtest_sources)
 
 add_subdirectory(base)
 
-if (HAVE_OGRE)
-  add_subdirectory(ogre)
-endif ()
+# Create the library target.
+ign_create_core_library(SOURCES ${sources} CXX_STANDARD 11)
 
-if (HAVE_OPTIX)
-  add_subdirectory(optix)
-endif ()
+# Include the interface directories that we always need.
+#ign_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
+#  ignition-math${IGN_MATH_VER})
 
-set (sources
-  Image.cc
-  MeshDescriptor.cc
-  OrbitViewController.cc
-  PixelFormat.cc
-  RenderEngineManager.cc
-  RenderingIface.cc
-  ShaderType.cc
+set_property(
+  SOURCE RenderEngineManager.cc
+  PROPERTY COMPILE_DEFINITIONS
+  IGN_RENDERING_PLUGIN_PATH="${IGN_RENDERING_PLUGIN_PATH}"
 )
 
-set (gtest_sources
-)
+target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
+  PUBLIC
+    ${ignition-math${IGN_MATH_VER}_LIBRARIES}
+    ${ignition-common${IGN_COMMON_VER}_LIBRARIES})
 
-set (gtest_sources_dri
-  Camera_TEST.cc
-  Grid_TEST.cc
-  Material_TEST.cc
-  Mesh_TEST.cc
-  MeshDescriptor_TEST.cc
-  OrbitViewController_TEST.cc
-  RayQuery_TEST.cc
-  RenderEngine_TEST.cc
-  RenderTarget_TEST.cc
-  RenderingIface_TEST.cc
-  Scene_TEST.cc
-)
+# Build the unit tests.
+ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})
 
-ign_build_tests(${gtest_sources})
-ign_build_dri_tests(${gtest_sources_dri})
-ign_add_library(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION} ${sources})
-ign_install_library(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION})
-
-if (HAVE_OGRE)
-  target_link_libraries(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}
-    ignition-rendering-ogre
-)
-endif ()
-
-if (HAVE_OPTIX)
-  target_link_libraries(${PROJECT_NAME_LOWER}${PROJECT_MAJOR_VERSION}
-    ignition-rendering-optix
-)
-endif ()

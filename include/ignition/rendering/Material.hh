@@ -23,7 +23,7 @@
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/ShaderType.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -31,7 +31,7 @@ namespace ignition
   {
     /// \class Material Material.hh ignition/rendering/Material.hh
     /// \brief Represents a surface material of a Geometry
-    class IGNITION_VISIBLE Material :
+    class IGNITION_RENDERING_VISIBLE Material :
       public virtual Object
     {
       /// \brief Deconstructor

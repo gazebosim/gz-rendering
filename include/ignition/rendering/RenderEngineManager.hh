@@ -20,7 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/common/SingletonT.hh>
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -36,7 +36,7 @@ namespace ignition
     /// render-engines available at runtime. RenderEngine objects should not
     /// be access directly, but instead via the RenderEngineManager to maintain
     /// a flexible render-engine agnostic design.
-    class IGNITION_VISIBLE RenderEngineManager :
+    class IGNITION_RENDERING_VISIBLE RenderEngineManager :
       public virtual common::SingletonT<RenderEngineManager>
     {
       /// \brief Constructor

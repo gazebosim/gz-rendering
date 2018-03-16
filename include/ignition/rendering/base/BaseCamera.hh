@@ -36,7 +36,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_VISIBLE BaseCamera :
+    class IGNITION_RENDERING_VISIBLE BaseCamera :
       public virtual Camera,
       public virtual T
     {
@@ -427,8 +427,8 @@ namespace ignition
     {
       // perspective projection
       double ratio = this->AspectRatio();
-      double hfov = this->HFOV().Radian();
-      double vfov =  2.0 * std::atan(std::tan(hfov / 2.0) / ratio);
+      double fov = this->HFOV().Radian();
+      double vfov =  2.0 * std::atan(std::tan(fov / 2.0) / ratio);
       double f = 1.0;
       double near = this->NearClipPlane();
       double far = this->FarClipPlane();

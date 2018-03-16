@@ -24,7 +24,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_VISIBLE BaseSensor :
+    class IGNITION_RENDERING_VISIBLE BaseSensor :
       public virtual Sensor,
       public virtual T
     {

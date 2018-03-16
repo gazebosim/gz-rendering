@@ -27,7 +27,7 @@ namespace ignition
   {
     /// \brief Base implementation of a grid geometry
     template <class T>
-    class IGNITION_VISIBLE BaseGrid :
+    class IGNITION_RENDERING_VISIBLE BaseGrid :
       public virtual Grid,
       public virtual T
     {

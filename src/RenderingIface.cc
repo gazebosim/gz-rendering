@@ -16,7 +16,6 @@
  */
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
 
 using namespace ignition;
 

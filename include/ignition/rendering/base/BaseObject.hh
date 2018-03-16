@@ -24,7 +24,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE BaseObject :
+    class IGNITION_RENDERING_VISIBLE BaseObject :
       public virtual std::enable_shared_from_this<BaseObject>,
       public virtual Object
     {

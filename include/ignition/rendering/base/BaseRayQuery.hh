@@ -31,7 +31,7 @@ namespace ignition
     /// ignition/rendering/base/BaseRayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
     template <class T>
-    class IGNITION_VISIBLE BaseRayQuery :
+    class IGNITION_RENDERING_VISIBLE BaseRayQuery :
         public virtual RayQuery,
         public T
     {

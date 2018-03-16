@@ -26,8 +26,6 @@
 #include <ignition/math/Color.hh>
 #include <ignition/math/Pose3.hh>
 
-#include <ignition/msgs.hh>
-
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ShaderType.hh"
 #include "gazebo/transport/Node.hh"
@@ -149,7 +147,7 @@ namespace ignition
       private: std::mutex poseMutex;
     };
 
-    class IGNITION_VISIBLE SubSceneManager
+    class SubSceneManager
     {
       protected: typedef gazebo::msgs::Geometry::Type GeomType;
 

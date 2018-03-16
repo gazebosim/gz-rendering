@@ -26,7 +26,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE BaseRenderEngine :
+    class IGNITION_RENDERING_VISIBLE BaseRenderEngine :
       public virtual RenderEngine
     {
       protected: BaseRenderEngine();

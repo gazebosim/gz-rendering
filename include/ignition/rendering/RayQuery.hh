@@ -28,7 +28,7 @@ namespace ignition
   namespace rendering
   {
     /// \brief A class that stores ray query intersection results.
-    class IGNITION_VISIBLE RayQueryResult
+    class IGNITION_RENDERING_VISIBLE RayQueryResult
     {
       /// \brief Intersection distance
       public: double distance = -1;
@@ -48,7 +48,7 @@ namespace ignition
 
     /// \class RayQuery RayQuery.hh ignition/rendering/RayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_VISIBLE RayQuery
+    class IGNITION_RENDERING_VISIBLE RayQuery
         : public virtual Object
     {
       /// \brief Destructor

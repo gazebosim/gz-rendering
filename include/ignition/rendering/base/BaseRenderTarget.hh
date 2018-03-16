@@ -28,7 +28,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_VISIBLE BaseRenderTarget :
+    class IGNITION_RENDERING_VISIBLE BaseRenderTarget :
       public virtual RenderTarget,
       public virtual T
     {
@@ -67,7 +67,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_VISIBLE BaseRenderTexture :
+    class IGNITION_RENDERING_VISIBLE BaseRenderTexture :
       public virtual RenderTexture,
       public virtual T
     {
@@ -77,7 +77,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_VISIBLE BaseRenderWindow :
+    class IGNITION_RENDERING_VISIBLE BaseRenderWindow :
       public virtual RenderWindow,
       public virtual T
     {

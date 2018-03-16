@@ -63,7 +63,7 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
   EXPECT_GT(camera->HFOV(), 0);
   math::Angle hfov(1.57);
   camera->SetHFOV(hfov);
-  EXPECT_EQ(hfov.Radian(), camera->HFOV().Radian());
+  EXPECT_DOUBLE_EQ(hfov.Radian(), camera->HFOV().Radian());
 
   EXPECT_GT(camera->AspectRatio(), 0);
   camera->SetAspectRatio(1.7777);
@@ -74,11 +74,11 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
 
   EXPECT_GT(camera->NearClipPlane(), 0);
   camera->SetNearClipPlane(0.1);
-  EXPECT_EQ(0.1, camera->NearClipPlane());
+  EXPECT_DOUBLE_EQ(0.1, camera->NearClipPlane());
 
   EXPECT_GT(camera->FarClipPlane(), 0);
   camera->SetFarClipPlane(800);
-  EXPECT_EQ(800, camera->FarClipPlane());
+  EXPECT_DOUBLE_EQ(800, camera->FarClipPlane());
 
   EXPECT_NE(projMatrix, camera->ProjectionMatrix());
 

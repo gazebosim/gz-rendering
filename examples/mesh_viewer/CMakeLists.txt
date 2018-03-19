@@ -1,17 +1,9 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ignition-rendering-mesh-viewer)
 find_package(ignition-rendering0 REQUIRED)
-find_package(ignition-common0 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
-  ${IGNITION-COMMON_INCLUDE_DIRS}
-  ${IGNITION-RENDERING_INCLUDE_DIRS}
-)
-
-link_directories(
-  ${IGNITION-COMMON_LIBRARY_DIRS}
-  ${IGNITION-RENDERING_LIBRARY_DIRS}
 )
 
 find_package(GLUT REQUIRED)
@@ -36,8 +28,6 @@ target_link_libraries(mesh_viewer
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${IGNITION-COMMON_LIBRARIES}
-  ${IGNITION-MATH_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )
 

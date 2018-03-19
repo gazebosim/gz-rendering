@@ -129,12 +129,20 @@ int main(int _argc, char** _argv)
 
   for (auto engineName : engineNames)
   {
-    CameraPtr camera = createCamera(engineName);
-    if (camera)
-      cameras.push_back(camera);
+    try
+    {
+      CameraPtr camera = createCamera(engineName);
+      if (camera)
+      {
+        cameras.push_back(camera);
+      }
+    }
+    catch (...)
+    {
+      // std::cout << ex.what() << std::endl;
+      std::cerr << "Error starting up: " << engineName << std::endl;
+    }
   }
-
   run(cameras);
-
   return 0;
 }

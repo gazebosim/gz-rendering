@@ -3,13 +3,8 @@ project(ignition-rendering-gazebo-scene-viewer)
 find_package(ignition-rendering0 REQUIRED)
 find_package(gazebo REQUIRED)
 
-include_directories(SYSTEM
-  ${IGNITION-RENDERING_INCLUDE_DIRS}
-)
-
-link_directories(
-  ${IGNITION-RENDERING_LIBRARY_DIRS}
-)
+include_directories(SYSTEM ${GAZEBO_INCLUDE_DIRS})
+ message("gazebo include ================== ${GAZEBO_INCLUDE_DIRS}")
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -36,7 +31,6 @@ target_link_libraries(gazebo_scene_viewer
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
-  ${IGNITION-COMMON_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )
 
@@ -51,6 +45,5 @@ target_link_libraries(gazebo_scene_viewer2_demo
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
-  ${IGNITION-COMMON_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )

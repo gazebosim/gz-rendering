@@ -20,7 +20,6 @@
 #include <string>
 #include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Util.hh"
 
 namespace ignition
 {
@@ -31,7 +30,7 @@ namespace ignition
     /// interface for modifications, allowing multiple scenes to stay
     /// synchronized. This class currently consumes Gazebo-specified protobuf
     /// messages, but will be updated to be Gazebo-agnostic in the future.
-    class IGNITION_VISIBLE SceneManager :
+    class SceneManager :
       public virtual common::SingletonT<SceneManager>
     {
       /// \brief Constructor

@@ -34,7 +34,7 @@ namespace ignition
     /// \class OrbitViewController OrbitViewController.hh
     /// ignition/rendering/OrbitViewController.hh
     /// \brief A camera view controller
-    class IGNITION_VISIBLE OrbitViewController
+    class IGNITION_RENDERING_VISIBLE OrbitViewController
         : public virtual ViewController
     {
       /// \brief Deconstructor

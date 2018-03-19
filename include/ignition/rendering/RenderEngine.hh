@@ -19,7 +19,7 @@
 
 #include <string>
 #include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -29,7 +29,7 @@ namespace ignition
     /// \brief An abstract interface to a concrete render-engine. A
     /// RenderEngine is responsible for initializing a render-engine as well as
     /// creating, storing, and destroying scenes.
-    class IGNITION_VISIBLE RenderEngine
+    class IGNITION_RENDERING_VISIBLE RenderEngine
     {
       /// \brief Deconstructor
       public: virtual ~RenderEngine() { }

@@ -19,7 +19,7 @@
 
 #include <string>
 #include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -28,7 +28,7 @@ namespace ignition
     /// \class Object Object.hh ignition/rendering/Object.hh
     /// \brief Represents an object present in the scene graph. This includes
     /// sub-meshes, materials, render targets, as well as posable nodes.
-    class IGNITION_VISIBLE Object
+    class IGNITION_RENDERING_VISIBLE Object
     {
       /// \brief Deconstructor
       public: virtual ~Object() { }

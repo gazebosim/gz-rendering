@@ -18,7 +18,7 @@
 #define IGNITION_RENDERING_PIXELFORMAT_HH_
 
 #include <string>
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -26,7 +26,7 @@ namespace ignition
   {
     /// \enum PixelFormat PixelFormat.hh ignition/rendering/PixelFormat.hh
     /// \brief Image pixel format types
-    enum IGNITION_VISIBLE PixelFormat
+    enum IGNITION_RENDERING_VISIBLE PixelFormat
     {
       /// < Unknown or errant type
       PF_UNKNOWN      = 0,
@@ -50,7 +50,7 @@ namespace ignition
 
     /// \class PixelUtil PixelFormat.hh ignition/rendering/PixelFormat.hh
     /// \brief Provides supporting functions for PixelFormat enum
-    class IGNITION_VISIBLE PixelUtil
+    class IGNITION_RENDERING_VISIBLE PixelUtil
     {
       /// \brief Determine if given format is valid PixelFormat enum
       /// \param[in] _format Enum value to be evaluated

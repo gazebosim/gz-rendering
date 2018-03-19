@@ -1,5 +1,8 @@
 find_package(Doxygen)
 
+set(IGNITION_DOXYGEN_TAGFILES
+    "\"${CMAKE_SOURCE_DIR}/doc/ogre_1-9.tag.xml.tgz=https://www.ogre3d.org/docs/api/1.9/\"")
+
 if (DOXYGEN_FOUND)
   configure_file(${IGNITION_CMAKE_DOXYGEN_DIR}/api.in
                  ${CMAKE_BINARY_DIR}/api.dox @ONLY)

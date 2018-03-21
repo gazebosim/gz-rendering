@@ -18,7 +18,7 @@
 #define IGNITION_RENDERING_MESHDESCRIPTOR_HH_
 
 #include <string>
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -35,7 +35,7 @@ namespace ignition
     /// \struct MeshDescriptor MeshDescriptor.hh
     /// ignition/rendering/MeshDescriptor.hh
     /// \brief Describes how a Mesh should be loaded
-    struct IGNITION_VISIBLE MeshDescriptor
+    struct IGNITION_RENDERING_VISIBLE MeshDescriptor
     {
       /// \brief Constructor
       public: MeshDescriptor();

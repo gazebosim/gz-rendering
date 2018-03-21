@@ -24,8 +24,12 @@
 #include <ignition/common/MeshManager.hh>
 
 #include "ignition/common/Time.hh"
-#include "ignition/rendering/base/base.hh"
 
+#include "ignition/rendering/ArrowVisual.hh"
+#include "ignition/rendering/AxisVisual.hh"
+#include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/Visual.hh"
+#include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
 
 using namespace ignition;

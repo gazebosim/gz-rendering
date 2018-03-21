@@ -23,7 +23,7 @@
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -31,7 +31,7 @@ namespace ignition
   {
     /// \class Node Node.hh ignition/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
-    class IGNITION_VISIBLE Node :
+    class IGNITION_RENDERING_VISIBLE Node :
       public virtual Object
     {
       /// \brief Deconstructor

@@ -28,7 +28,7 @@ namespace ignition
   {
     //////////////////////////////////////////////////
     template <class T>
-    class IGNITION_VISIBLE BaseMesh :
+    class IGNITION_RENDERING_VISIBLE BaseMesh :
       public virtual Mesh,
       public virtual T
     {
@@ -65,7 +65,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    class IGNITION_VISIBLE BaseSubMesh :
+    class IGNITION_RENDERING_VISIBLE BaseSubMesh :
       public virtual SubMesh,
       public virtual T
     {

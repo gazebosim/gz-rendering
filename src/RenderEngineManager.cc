@@ -18,18 +18,14 @@
 #include <map>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Plugin.hh>
+#include <ignition/common/PluginLoader.hh>
+#include <ignition/common/SystemPaths.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
-
-#if HAVE_OGRE
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#endif
-
-#if HAVE_OPTIX
-#include "ignition/rendering/optix/OptixRenderEngine.hh"
-#endif
+#include "ignition/rendering/RenderEnginePlugin.hh"
 
 namespace ignition
 {
@@ -46,6 +42,11 @@ namespace ignition
       public: RenderEngine *Engine(EngineIter _iter) const;
 
       public: void RegisterDefaultEngines();
+
+      /// \brief Load a render engine plugin
+      /// \param[in] _filename Filename of plugin shared library
+      /// \return True if the plugin is loaded successfully
+      public: bool LoadEnginePlugin(const std::string &_filename);
 
       public: void UnregisterEngine(EngineIter _iter);
 
@@ -193,12 +194,84 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter) const
 //////////////////////////////////////////////////
 void RenderEngineManagerPrivate::RegisterDefaultEngines()
 {
+  // TODO Find a cleaner way to get the default engine library name
+  std::vector<std::string> defaultEngines;
 #if HAVE_OGRE
-  this->engines["ogre"] = OgreRenderEngine::Instance();
+  defaultEngines.push_back("ignition-rendering0-ogre");
 #endif
 #if HAVE_OPTIX
-  this->engines["optix"] = OptixRenderEngine::Instance();
+  defaultEngines.push_back("ignition-rendering0-optix");
 #endif
+  for (const auto &engine : defaultEngines)
+  {
+    this->LoadEnginePlugin(engine);
+  }
+}
+
+//////////////////////////////////////////////////
+bool RenderEngineManagerPrivate::LoadEnginePlugin(
+    const std::string &_filename)
+{
+  ignmsg << "Loading plugin [" << _filename << "]" << std::endl;
+
+  ignition::common::SystemPaths systemPaths;
+
+  // Add default install folder
+  systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
+
+  auto pathToLib = systemPaths.FindSharedLibrary(_filename);
+  if (pathToLib.empty())
+  {
+    ignerr << "Failed to load plugin [" << _filename <<
+              "] : couldn't find shared library." << std::endl;
+    return false;
+  }
+
+  // Load plugin
+  ignition::common::PluginLoader pluginLoader;
+
+  auto pluginNames = pluginLoader.LoadLibrary(pathToLib);
+  if (pluginNames.empty())
+  {
+    ignerr << "Failed to load plugin [" << _filename <<
+              "] : couldn't load library on path [" << pathToLib <<
+              "]." << std::endl;
+    return false;
+  }
+
+  auto pluginName = *pluginNames.begin();
+  if (pluginName.empty())
+  {
+    ignerr << "Failed to load plugin [" << _filename <<
+              "] : couldn't load library on path [" << pathToLib <<
+              "]." << std::endl;
+    return false;
+  }
+
+  auto commonPlugin = pluginLoader.Instantiate(pluginName);
+  if (!commonPlugin)
+  {
+    ignerr << "Failed to load plugin [" << _filename <<
+              "] : couldn't instantiate plugin on path [" << pathToLib <<
+              "]." << std::endl;
+    return false;
+  }
+
+  auto plugin =
+      commonPlugin->QueryInterface<ignition::rendering::RenderEnginePlugin>();
+  if (!plugin)
+  {
+    ignerr << "Failed to load plugin [" << _filename <<
+              "] : couldn't get interface [" << pluginName <<
+              "]." << std::endl;
+    return false;
+  }
+
+  // this triggers the engine to be instantiated
+  std::string engineName = plugin->Name();
+  this->engines[engineName] = plugin->Engine();
+
+  return true;
 }
 
 //////////////////////////////////////////////////

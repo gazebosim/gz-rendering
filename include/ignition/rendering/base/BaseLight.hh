@@ -24,7 +24,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_VISIBLE BaseLight :
+    class IGNITION_RENDERING_VISIBLE BaseLight :
       public virtual Light,
       public virtual T
     {
@@ -56,7 +56,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_VISIBLE BaseDirectionalLight :
+    class IGNITION_RENDERING_VISIBLE BaseDirectionalLight :
       public virtual DirectionalLight,
       public virtual T
     {
@@ -72,7 +72,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_VISIBLE BasePointLight :
+    class IGNITION_RENDERING_VISIBLE BasePointLight :
       public virtual PointLight,
       public virtual T
     {
@@ -82,7 +82,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_VISIBLE BaseSpotLight :
+    class IGNITION_RENDERING_VISIBLE BaseSpotLight :
       public virtual SpotLight,
       public virtual T
     {

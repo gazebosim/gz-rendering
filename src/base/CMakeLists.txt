@@ -1,14 +1,16 @@
-include (${project_cmake_dir}/Utils.cmake)
+# GLOB all the source files
+file(GLOB source_files "*.cc")
+list(SORT source_files)
 
-set (sources
-  BaseObject.cc
-  BaseRenderEngine.cc
-  BaseScene.cc
+set(tmp_sources)
+
+foreach(source_file ${source_files})
+  get_filename_component(source ${source_file} NAME)
+  list(APPEND tmp_sources base/${source})
+endforeach()
+
+set (sources ${sources}
+  ${tmp_sources}
+  PARENT_SCOPE
 )
 
-set (gtest_sources
-)
-
-ign_build_tests(${gtest_sources})
-ign_add_library(${PROJECT_NAME_LOWER}-base ${sources})
-ign_install_library(${PROJECT_NAME_LOWER}-base)

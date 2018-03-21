@@ -19,7 +19,7 @@
 
 #include <memory>
 #include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/Util.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -27,7 +27,7 @@ namespace ignition
   {
     /// \class Image Image.hh ignition/rendering/Image.hh
     /// \brief Encapsulates a raw image buffer and relevant properties
-    class IGNITION_VISIBLE Image
+    class IGNITION_RENDERING_VISIBLE Image
     {
       /// \brief Shared pointer to raw image buffer
       typedef std::shared_ptr<unsigned char> DataPtr;

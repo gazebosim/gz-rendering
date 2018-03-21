@@ -27,7 +27,7 @@ namespace ignition
   {
     /// \class Mesh Mesh.hh ignition/rendering/Mesh
     /// \brief Represents a collection of mesh geometries
-    class IGNITION_VISIBLE Mesh :
+    class IGNITION_RENDERING_VISIBLE Mesh :
       public virtual Geometry
     {
       /// \brief Destructor
@@ -62,7 +62,7 @@ namespace ignition
 
     /// \class SubMesh Mesh.hh ignition/rendering/Mesh.hh
     /// \brief Represents a single mesh geometry
-    class IGNITION_VISIBLE SubMesh :
+    class IGNITION_RENDERING_VISIBLE SubMesh :
       public virtual Object
     {
       /// \brief Deconstructor

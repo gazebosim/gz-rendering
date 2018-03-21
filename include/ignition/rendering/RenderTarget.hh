@@ -31,7 +31,7 @@ namespace ignition
   {
     /// \class RenderTarget RenderTarget.hh ignition/rendering/RenderTarget.hh
     /// \brief Represents a render-target to which cameras can render images.
-    class IGNITION_VISIBLE RenderTarget :
+    class IGNITION_RENDERING_VISIBLE RenderTarget :
       public virtual Object
     {
       /// \brief Deconstructor
@@ -79,7 +79,7 @@ namespace ignition
     /// ignition/rendering/RenderTexture.hh
     /// \brief Represents a off-screen render-texture to which cameras can
     /// render images.
-    class IGNITION_VISIBLE RenderTexture :
+    class IGNITION_RENDERING_VISIBLE RenderTexture :
       public virtual RenderTarget
     {
       /// \brief Deconstructor
@@ -90,7 +90,7 @@ namespace ignition
     /// ignition/rendering/RenderWindow.hh
     /// \brief Represents a on-screen render-window to which cameras can
     /// render images.
-    class IGNITION_VISIBLE RenderWindow :
+    class IGNITION_RENDERING_VISIBLE RenderWindow :
       public virtual RenderTarget
     {
       /// \brief Deconstructor

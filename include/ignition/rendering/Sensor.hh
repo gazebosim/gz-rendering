@@ -26,7 +26,7 @@ namespace ignition
     /// \class Sensor Sensor.hh ignition/rendering/Sensor.hh
     /// \brief Represents a scene sensor. The most obvious example is a camera,
     /// but it can be anything that generates output from the scene.
-    class IGNITION_VISIBLE Sensor :
+    class IGNITION_RENDERING_VISIBLE Sensor :
       public virtual Node
     {
       /// \brief Sensor

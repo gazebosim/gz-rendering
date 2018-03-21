@@ -33,7 +33,7 @@ namespace ignition
   {
     /// \class Camera Camera.hh ignition/rendering/Camera.hh
     /// \brief Posable camera used for rendering the scene graph
-    class IGNITION_VISIBLE Camera :
+    class IGNITION_RENDERING_VISIBLE Camera :
       public virtual Sensor
     {
       /// \brief Callback function for new frame render event listeners

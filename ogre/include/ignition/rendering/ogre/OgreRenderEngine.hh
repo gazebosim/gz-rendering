@@ -133,6 +133,15 @@ namespace ignition
 
       private: void InitAttempt();
 
+#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
+      /// \internal
+      /// \brief Get a pointer to the Ogre overlay system.
+      /// \return Pointer to the OGRE overlay system.
+      public: Ogre::OverlaySystem *OverlaySystem() const;
+
+      private: Ogre::OverlaySystem *ogreOverlaySystem = nullptr;
+
+#endif
       private: bool loaded;
 
       private: bool initialized;
@@ -157,9 +166,6 @@ namespace ignition
       private: uint64_t dummyWindowId;
 
       private: std::unique_ptr<OgreRenderEnginePrivate> dataPtr;
-#ifdef OGRE_OVERLAY_NEEDED
-      private: Ogre::OverlaySystem *ogreOverlaySystem;
-#endif
 
       private: friend class SingletonT<OgreRenderEngine>;
     };

@@ -22,7 +22,7 @@
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreSensor.hh"
-#include "ignition/rendering/ogre/selection_buffer/OgreSelectionBuffer.hh"
+#include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
 
 namespace Ogre
 {

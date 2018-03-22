@@ -18,6 +18,7 @@
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
@@ -79,6 +80,12 @@ math::Color OgreCamera::BackgroundColor() const
 void OgreCamera::SetBackgroundColor(const math::Color &_color)
 {
   this->renderTexture->SetBackgroundColor(_color);
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetMaterial(const MaterialPtr &_material)
+{
+  this->renderTexture->SetMaterial(_material);
 }
 
 //////////////////////////////////////////////////

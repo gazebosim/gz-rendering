@@ -260,6 +260,11 @@ namespace ignition
       /// \brief Get the camera follow movement P gain.
       /// \return P gain for camera following
       public: virtual double FollowPGain() const = 0;
+
+      /// \brief Set a material that the camera should see on all objects
+      /// \param[in] _material a material instance
+      /// \param[in] _material a material instance
+      public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
     };
   }
 }

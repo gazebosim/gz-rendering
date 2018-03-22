@@ -63,6 +63,11 @@ namespace ignition
 
       public: virtual math::Matrix4d ViewMatrix() const;
 
+      // Documentation Inherited.
+      // \sa Camera::SetMaterial(const MaterialPtr &)
+      public: virtual void SetMaterial(
+                  const MaterialPtr &_material) override;
+
       protected: virtual RenderTargetPtr RenderTarget() const;
 
       protected: virtual void Init();

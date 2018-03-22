@@ -33,7 +33,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OgreCamera :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreCamera :
       public BaseCamera<OgreSensor>
     {
       protected: OgreCamera();

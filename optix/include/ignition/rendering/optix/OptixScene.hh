@@ -20,14 +20,16 @@
 #include <string>
 
 #include "ignition/rendering/base/BaseScene.hh"
+
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
+#include "ignition/rendering/optix/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_VISIBLE OptixScene :
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixScene :
       public BaseScene
     {
       protected: OptixScene(unsigned int _id, const std::string &_name);

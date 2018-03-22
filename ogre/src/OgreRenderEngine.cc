@@ -35,9 +35,10 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
-#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
@@ -59,6 +60,23 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
+OgreRenderEnginePlugin::OgreRenderEnginePlugin()
+{
+}
+
+//////////////////////////////////////////////////
+std::string OgreRenderEnginePlugin::Name() const
+{
+  return OgreRenderEngine::Instance()->Name();
+}
+
+//////////////////////////////////////////////////
+RenderEngine *OgreRenderEnginePlugin::Engine() const
+{
+  return OgreRenderEngine::Instance();
+}
+
+//////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderEngine() :
   loaded(false),
   initialized(false),
@@ -72,6 +90,10 @@ OgreRenderEngine::OgreRenderEngine() :
 #endif
 
   this->dummyWindowId = 0;
+
+#ifdef OGRE_OVERLAY_NEEDED
+  this->ogreOverlaySystem = nullptr;
+#endif
 
   this->ogrePaths.push_back(std::string(OGRE_RESOURCE_PATH));
 }
@@ -103,7 +125,7 @@ bool OgreRenderEngine::Fini()
   }
 #endif
 
-#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
+#ifdef OGRE_OVERLAY_NEEDED
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
 #endif
@@ -377,10 +399,7 @@ void OgreRenderEngine::CreateRoot()
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateOverlay()
 {
-#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
-  // OgreOverlay is a component on its own in ogre 1.9 so must manually
-  // initialize it. Must be created after this->dataPtr->root,
-  // but before this->dataPtr->root is initialized.
+#ifdef OGRE_OVERLAY_NEEDED
   this->ogreOverlaySystem = new Ogre::OverlaySystem();
 #endif
 }
@@ -503,11 +522,12 @@ void OgreRenderEngine::CreateResources()
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
-  resourcePath = common::joinPaths(resourcePath, "ogre");
-  paths.push_back(resourcePath);
-
-  std::list<std::string> mediaDirs;
-  mediaDirs.push_back("media");
+  // install path
+  std::string mediaPath = common::joinPaths(resourcePath, "ogre", "media");
+  paths.push_back(mediaPath);
+  // src path
+  mediaPath = common::joinPaths(resourcePath, "ogre", "src", "media");
+  paths.push_back(mediaPath);
 
   for (auto const &p : paths)
   {
@@ -516,37 +536,29 @@ void OgreRenderEngine::CreateResources()
 
     archNames.push_back(
         std::make_pair(p, "General"));
+    // archNames.push_back(
+    //     std::make_pair(prefix + "/skyx", "SkyX"));
+    archNames.push_back(
+        std::make_pair(p+ "/materials/programs", "General"));
+    archNames.push_back(
+        std::make_pair(p+ "/materials/scripts", "General"));
+    // archNames.push_back(
+    //     std::make_pair(prefix + "/materials/textures", "General"));
+    // archNames.push_back(
+    //     std::make_pair(prefix + "/media/models", "General"));
+  }
 
-    for (auto const &m : mediaDirs)
+  for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+  {
+    try
     {
-      std::string prefix = common::joinPaths(p, m);
-
-      archNames.push_back(
-          std::make_pair(prefix, "General"));
-      // archNames.push_back(
-      //     std::make_pair(prefix + "/skyx", "SkyX"));
-      archNames.push_back(
-          std::make_pair(prefix + "/materials/programs", "General"));
-      archNames.push_back(
-          std::make_pair(prefix + "/materials/scripts", "General"));
-      // archNames.push_back(
-      //     std::make_pair(prefix + "/materials/textures", "General"));
-      // archNames.push_back(
-      //     std::make_pair(prefix + "/media/models", "General"));
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+          aiter->first, "FileSystem", aiter->second);
     }
-
-    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+    catch(Ogre::Exception &/*_e*/)
     {
-      try
-      {
-        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-            aiter->first, "FileSystem", aiter->second);
-      }
-      catch(Ogre::Exception &/*_e*/)
-      {
-        ignerr << "Unable to load Ogre Resources. Make sure the resources "
-            "path in the world file is set correctly." << std::endl;
-      }
+      ignerr << "Unable to load Ogre Resources. Make sure the resources "
+          "path in the world file is set correctly." << std::endl;
     }
   }
 }
@@ -703,10 +715,7 @@ void OgreRenderEngine::InitAttempt()
   this->scenes = OgreSceneStorePtr(new OgreSceneStore);
 }
 
-#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
-/////////////////////////////////////////////////
-Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
-{
-  return this->ogreOverlaySystem;
-}
-#endif
+// Register this plugin
+IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
+                                  ignition::rendering::RenderEnginePlugin)
+

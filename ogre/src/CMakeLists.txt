@@ -24,3 +24,4 @@ target_link_libraries(${ogre_target}
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre_target})
 
 add_subdirectory(media)
+add_subdirectory(selection_buffer)

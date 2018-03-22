@@ -26,7 +26,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixCamera :
+    class IGNITION_VISIBLE OptixCamera :
       public BaseCamera<OptixSensor>
     {
       protected: OptixCamera();
@@ -42,6 +42,12 @@ namespace ignition
       public: virtual void PreRender();
 
       public: virtual void Render();
+
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos, std::string &_mod);
+
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos);
 
       protected: virtual RenderTargetPtr RenderTarget() const;
 

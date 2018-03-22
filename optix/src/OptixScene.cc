@@ -15,23 +15,9 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/optix/OptixArrowVisual.hh"
-#include "ignition/rendering/optix/OptixAxisVisual.hh"
-#include "ignition/rendering/optix/OptixBox.hh"
-#include "ignition/rendering/optix/OptixCamera.hh"
-#include "ignition/rendering/optix/OptixCone.hh"
-#include "ignition/rendering/optix/OptixCylinder.hh"
-#include "ignition/rendering/optix/OptixGeometry.hh"
 #include "ignition/rendering/optix/OptixGrid.hh"
-#include "ignition/rendering/optix/OptixLightManager.hh"
-#include "ignition/rendering/optix/OptixMeshFactory.hh"
-#include "ignition/rendering/optix/OptixRayTypes.hh"
-#include "ignition/rendering/optix/OptixRenderEngine.hh"
-#include "ignition/rendering/optix/OptixRenderTarget.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixSphere.hh"
-#include "ignition/rendering/optix/OptixStorage.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
+#include "ignition/rendering/optix/optix.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -498,3 +484,17 @@ OptixScenePtr OptixScene::SharedThis()
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<OptixScene>(sharedBase);
 }
+
+//////////////////////////////////////////////////
+VisualPtr OptixScene::VisualAt(const CameraPtr &_camera,
+                          const ignition::math::Vector2i &_mousePos)
+{
+  VisualPtr visual;
+
+  // TODO: implement, return null for now
+  (void)_camera;
+  (void)_mousePos;
+  return visual;
+}
+
+//////////////////////////////////////////////////

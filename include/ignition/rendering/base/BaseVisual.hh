@@ -342,7 +342,7 @@ namespace ignition
     void BaseVisual<T>::SetMaterial(const std::string &_name, bool _unique)
     {
       MaterialPtr mat = this->Scene()->Material(_name);
-      if (material) this->SetMaterial(material, _unique);
+      if (mat) this->SetMaterial(mat, _unique);
     }
 
     //////////////////////////////////////////////////

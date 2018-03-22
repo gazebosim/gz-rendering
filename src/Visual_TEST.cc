@@ -52,7 +52,7 @@ void VisualTest::Material(const std::string &_renderEngine)
 
   // create visual
   VisualPtr visual = scene->CreateVisual();
-  ASSERT_NE(visual, nullptr);
+  ASSERT_NE(nullptr, visual);
 
   // check initial material
   EXPECT_EQ(nullptr, visual->Material());
@@ -63,7 +63,7 @@ void VisualTest::Material(const std::string &_renderEngine)
   math::Color specular(0.8, 0.7, 0.0, 1.0);
   double transparency = 0.3;
   MaterialPtr material = scene->CreateMaterial("unique");
-  ASSERT_NE(material, nullptr);
+  ASSERT_NE(nullptr, material);
   EXPECT_TRUE(scene->MaterialRegistered("unique"));
   material->SetAmbient(ambient);
   material->SetDiffuse(diffuse);
@@ -85,6 +85,29 @@ void VisualTest::Material(const std::string &_renderEngine)
   EXPECT_EQ(diffuse, cloneMat->Diffuse());
   EXPECT_EQ(specular, cloneMat->Specular());
   EXPECT_DOUBLE_EQ(transparency, cloneMat->Transparency());
+
+  // create another material
+  math::Color ambient2(0.0, 0.0, 1.0, 1.0);
+  math::Color diffuse2(1.0, 0.0, 1.0, 1.0);
+  math::Color specular2(0.0, 1.0, 0.0, 1.0);
+  double transparency2 = 0;
+  MaterialPtr material2 = scene->CreateMaterial("unique2");
+  ASSERT_NE(nullptr, material2);
+  EXPECT_TRUE(scene->MaterialRegistered("unique2"));
+  material2->SetAmbient(ambient2);
+  material2->SetDiffuse(diffuse2);
+  material2->SetSpecular(specular2);
+  material2->SetTransparency(transparency2);
+
+  // Set material to the same visual using its name and verify material changed
+  visual->SetMaterial("unique2", true);
+  MaterialPtr cloneMat2 = visual->Material();
+  EXPECT_NE(material2, cloneMat);
+  EXPECT_NE(material2->Name(), cloneMat2->Name());
+  EXPECT_EQ(ambient2, cloneMat2->Ambient());
+  EXPECT_EQ(diffuse2, cloneMat2->Diffuse());
+  EXPECT_EQ(specular2, cloneMat2->Specular());
+  EXPECT_DOUBLE_EQ(transparency2, cloneMat2->Transparency());
 }
 
 /////////////////////////////////////////////////

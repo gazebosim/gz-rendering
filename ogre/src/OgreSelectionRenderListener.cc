@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#include "ignition/rendering/ogre/selection_buffer/OgreSelectionRenderListener.hh"
-#include "ignition/rendering/ogre/selection_buffer/OgreMaterialSwitcher.hh"
+#include "ignition/rendering/ogre/OgreSelectionRenderListener.hh"
+#include "ignition/rendering/ogre/OgreMaterialSwitcher.hh"
 
 using namespace ignition;
 using namespace rendering;

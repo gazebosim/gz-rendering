@@ -17,7 +17,7 @@
 
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/selection_buffer/OgreMaterialSwitcher.hh"
+#include "ignition/rendering/ogre/OgreMaterialSwitcher.hh"
 #include "ignition/rendering/RenderTypes.hh"
 
 using namespace ignition;

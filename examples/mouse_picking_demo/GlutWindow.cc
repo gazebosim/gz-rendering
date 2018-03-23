@@ -127,6 +127,11 @@ void handleMouse()
         std::cout << g_mouse.x << " " << g_mouse.y << ": ";
         std::cout << visual1->Name() << "\n";
       }
+      else
+      {
+        std::cout << "No object found using Buffer Selection at position ";
+        std::cout << g_mouse.x << " " << g_mouse.y << std::endl;
+      }
 
       // Get visual using Ray Tracing from Scene
       ir::ScenePtr scene =  rayCamera->Scene();
@@ -281,5 +286,3 @@ void run(std::vector<ir::CameraPtr> _cameras)
 
   glutMainLoop();
 }
-
-

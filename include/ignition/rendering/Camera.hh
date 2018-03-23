@@ -143,7 +143,7 @@ namespace ignition
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
                   &_mousePos) = 0;
 
-              /// \brief Renders a new frame.
+      /// \brief Renders a new frame.
       /// This is a convenience function for single-camera scenes. It wraps the
       /// pre-render, render, and post-render into a single
       /// function. This should be used in applications with multiple cameras

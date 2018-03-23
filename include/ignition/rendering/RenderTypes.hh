@@ -19,14 +19,6 @@
 
 #include <memory>
 
-/// \def IGN_VISIBILITY_ALL
-/// \brief Render everything visibility mask.
-#define IGN_VISIBILITY_ALL             0x0FFFFFFF
-
-/// \def IGN_VISIBILITY_GUI
-/// \brief Render GUI visuals mask.
-#define IGN_VISIBILITY_GUI             0x00000001
-
 /// \def IGN_VISIBILITY_SELECTABLE
 /// \brief Render visuals that are selectable mask.
 #define IGN_VISIBILITY_SELECTABLE      0x00000002

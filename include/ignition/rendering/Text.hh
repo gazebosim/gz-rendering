@@ -29,40 +29,41 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \enum TextHorizontalAlign
+    /// \brief Text Horizontal alignment
+    enum class TextHorizontalAlign
+    {
+      /// \brief Left alignment
+      LEFT = 0,
+      /// \brief Center alignment
+      CENTER = 1,
+      /// \brief Right alignment
+      RIGHT = 2
+    };
+
+    /// \enum TextVerticalAlign
+    /// \brief Text vertical alignment
+    enum class TextVerticalAlign
+    {
+      /// \brief Align bottom
+      BOTTOM = 0,
+      /// \brief Align center
+      CENTER = 1,
+      /// \brief Align top
+      TOP = 2
+    };
+
     /// \class Text Text.hh ignition/rendering/Text
     /// \brief Represents a billboard text geometry that is always facing the
     /// camera.
     class IGNITION_RENDERING_VISIBLE Text :
       public virtual Geometry
     {
-      /// \enum HorizontalAlign
-      /// \brief Horizontal alignment
-      public: enum HorizontalAlign {
-                /// \brief Left alignment
-                H_LEFT,
-                /// \brief Center alignment
-                H_CENTER,
-                /// \brief Right alignment
-                H_RIGHT
-              };
-
-      /// \enum VerticalAlign
-      /// \brief vertical alignment
-      public: enum VerticalAlign {
-                /// \brief Align bottom
-                V_BOTTOM,
-                /// \brief Align center
-                V_CENTER,
-                /// \brief Align top
-                V_TOP
-              };
-
-
       /// \brief Constructor
-      public: Text() { }
+      public: Text() = default;
 
       /// \brief Destructor
-      public: virtual ~Text() { }
+      public: virtual ~Text() = default;
 
       /// \brief Set the font.
       /// \param[in] _font Name of the font
@@ -117,16 +118,16 @@ namespace ignition
       /// \brief Set the alignment of the text
       /// \param[in] _hAlign Horizontal alignment
       /// \param[in] _vAlign Vertical alignment
-      public: virtual void SetTextAlignment(const HorizontalAlign &_hAlign,
-                                            const VerticalAlign &_vAlign) = 0;
+      public: virtual void SetTextAlignment(const TextHorizontalAlign &_hAlign,
+                  const TextVerticalAlign &_vAlign) = 0;
 
       /// \brief Get the horizontal alignment of the text
       /// \return Text horizontal alignment
-      public: virtual HorizontalAlign HorizontalAlignment() const = 0;
+      public: virtual TextHorizontalAlign HorizontalAlignment() const = 0;
 
       /// \brief Get the vertical alignment of the text
       /// \return Text verical alignment
-      public: virtual VerticalAlign VerticalAlignment() const = 0;
+      public: virtual TextVerticalAlign VerticalAlignment() const = 0;
 
       /// \brief Set the baseline height of the text
       /// \param[in] _height Baseline height

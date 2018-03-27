@@ -67,8 +67,8 @@ namespace ignition
       /// \brief Set the alignment of the text
       /// \param[in] _horizAlign Horizontal alignment
       /// \param[in] _vertAlign Vertical alignment
-      public: void SetTextAlignment(const Text::HorizontalAlign &_horizAlign,
-                                    const Text::VerticalAlign &_vertAlign);
+      public: void SetTextAlignment(const TextHorizontalAlign &_horizAlign,
+                                    const TextVerticalAlign &_vertAlign);
 
       /// \brief Set the baseline height of the text
       /// \param[in] _height Baseline height
@@ -200,10 +200,10 @@ namespace ignition
       private: float spaceWidth = 0.0;
 
       /// \brief Horizontal alignment
-      private: Text::HorizontalAlign horizontalAlign;
+      private: TextHorizontalAlign horizontalAlign;
 
       /// \brief Vertical alignment
-      private: Text::VerticalAlign verticalAlign;
+      private: TextVerticalAlign verticalAlign;
 
       /// \brief Baseline height in meters.
       private: float baseline = 0.0;
@@ -293,8 +293,8 @@ void OgreMovableText::SetSpaceWidth(const float _width)
 }
 
 //////////////////////////////////////////////////
-void OgreMovableText::SetTextAlignment(const Text::HorizontalAlign &_horizAlign,
-                                       const Text::VerticalAlign &_vertAlign)
+void OgreMovableText::SetTextAlignment(const TextHorizontalAlign &_horizAlign,
+                                       const TextVerticalAlign &_vertAlign)
 {
   if (this->horizontalAlign != _horizAlign)
   {
@@ -484,7 +484,7 @@ void OgreMovableText::SetupGeometry()
         this->charHeight * 2.0;
   }
 
-  if (this->verticalAlign == Text::V_TOP)
+  if (this->verticalAlign == TextVerticalAlign::TOP)
   {
     // Raise the first line of the caption
     top += this->charHeight;
@@ -555,7 +555,7 @@ void OgreMovableText::SetupGeometry()
     // First tri
     //
     // Upper left
-    if (this->horizontalAlign == Text::H_LEFT)
+    if (this->horizontalAlign == TextHorizontalAlign::LEFT)
       *pVert++ = left;
     else
       *pVert++ = left - (len/2.0);
@@ -566,7 +566,7 @@ void OgreMovableText::SetupGeometry()
     *pVert++ = uvRect.top;
 
     // Deal with bounds
-    if (this->horizontalAlign == Text::H_LEFT)
+    if (this->horizontalAlign == TextHorizontalAlign::LEFT)
       currPos = Ogre::Vector3(left, top, 0);
     else
       currPos = Ogre::Vector3(left - (len/2.0), top, 0);
@@ -587,7 +587,7 @@ void OgreMovableText::SetupGeometry()
     top -= this->charHeight * 2.0;
 
     // Bottom left
-    if (this->horizontalAlign == Text::H_LEFT)
+    if (this->horizontalAlign == TextHorizontalAlign::LEFT)
       *pVert++ = left;
     else
       *pVert++ = left - (len / 2.0);
@@ -598,7 +598,7 @@ void OgreMovableText::SetupGeometry()
     *pVert++ = uvRect.bottom;
 
     // Deal with bounds
-    if (this->horizontalAlign == Text::H_LEFT)
+    if (this->horizontalAlign == TextHorizontalAlign::LEFT)
       currPos = Ogre::Vector3(left, top, 0);
     else
       currPos = Ogre::Vector3(left - (len/2), top, 0);
@@ -612,7 +612,7 @@ void OgreMovableText::SetupGeometry()
     left += horizHeight * this->charHeight * 2.0;
 
     // Top right
-    if (this->horizontalAlign == Text::H_LEFT)
+    if (this->horizontalAlign == TextHorizontalAlign::LEFT)
       *pVert++ = left;
     else
       *pVert++ = left - (len/2.0);
@@ -623,7 +623,7 @@ void OgreMovableText::SetupGeometry()
     *pVert++ = uvRect.top;
 
     // Deal with bounds
-    if (this->horizontalAlign == Text::H_LEFT)
+    if (this->horizontalAlign == TextHorizontalAlign::LEFT)
       currPos = Ogre::Vector3(left, top, 0);
     else
       currPos = Ogre::Vector3(left - (len/2), top, 0);
@@ -639,7 +639,7 @@ void OgreMovableText::SetupGeometry()
     // Second tri
     //
     // Top right (again)
-    if (this->horizontalAlign == Text::H_LEFT)
+    if (this->horizontalAlign == TextHorizontalAlign::LEFT)
       *pVert++ = left;
     else
       *pVert++ = left - (len/2.0);
@@ -659,7 +659,7 @@ void OgreMovableText::SetupGeometry()
     left -= horizHeight  * this->charHeight * 2.0;
 
     // Bottom left (again)
-    if (this->horizontalAlign == Text::H_LEFT)
+    if (this->horizontalAlign == TextHorizontalAlign::LEFT)
       *pVert++ = left;
     else
       *pVert++ = left - (len/2.0);
@@ -678,7 +678,7 @@ void OgreMovableText::SetupGeometry()
     left += horizHeight  * this->charHeight * 2.0;
 
     // Bottom right
-    if (this->horizontalAlign == Text::H_LEFT)
+    if (this->horizontalAlign == TextHorizontalAlign::LEFT)
       *pVert++ = left;
     else
       *pVert++ = left - (len/2.0);
@@ -982,8 +982,8 @@ void OgreText::SetSpaceWidth(const float _width)
 }
 
 //////////////////////////////////////////////////
-void OgreText::SetTextAlignment(const Text::HorizontalAlign &_horizAlign,
-                                const Text::VerticalAlign &_vertAlign)
+void OgreText::SetTextAlignment(const TextHorizontalAlign &_horizAlign,
+                                const TextVerticalAlign &_vertAlign)
 {
   BaseText::SetTextAlignment(_horizAlign, _vertAlign);
   this->dataPtr->ogreObj->SetTextAlignment(_horizAlign, _vertAlign);

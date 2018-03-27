@@ -71,7 +71,8 @@ void buildScene(ScenePtr _scene)
   TextPtr textGeom = _scene->CreateText();
   textGeom->SetTextString("Hello World!");
   textGeom->SetShowOnTop(true);
-  textGeom->SetTextAlignment(Text::H_LEFT, Text::V_BOTTOM);
+  textGeom->SetTextAlignment(TextHorizontalAlign::LEFT,
+                             TextVerticalAlign::BOTTOM);
 
   // create text visual
   VisualPtr text = _scene->CreateVisual();

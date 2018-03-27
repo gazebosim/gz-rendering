@@ -78,8 +78,9 @@ namespace ignition
       public: virtual void SetSpaceWidth(const float _width) override;
 
       // Documentation inherited.
-      public: virtual void SetTextAlignment(const HorizontalAlign &_horizAlign,
-                                    const VerticalAlign &_vertAlign) override;
+      public: virtual void SetTextAlignment(
+                  const TextHorizontalAlign &_horizAlign,
+                  const TextVerticalAlign &_vertAlign) override;
       // Documentation inherited.
       public: virtual void SetBaseline(const float _baseline) override;
 

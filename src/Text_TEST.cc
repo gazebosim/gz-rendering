@@ -53,8 +53,8 @@ void TextTest::Text(const std::string &_renderEngine)
   EXPECT_FLOAT_EQ(0.0, text->SpaceWidth());
   EXPECT_FLOAT_EQ(1.0, text->CharHeight());
   EXPECT_FLOAT_EQ(0.0, text->Baseline());
-  EXPECT_EQ(Text::H_LEFT, text->HorizontalAlignment());
-  EXPECT_EQ(Text::V_BOTTOM, text->VerticalAlignment());
+  EXPECT_EQ(TextHorizontalAlign::LEFT, text->HorizontalAlignment());
+  EXPECT_EQ(TextVerticalAlign::BOTTOM, text->VerticalAlignment());
   EXPECT_EQ(math::Color::White, text->Color());
   EXPECT_FALSE(text->ShowOnTop());
   EXPECT_NE(math::Box(), text->AABB());
@@ -75,9 +75,9 @@ void TextTest::Text(const std::string &_renderEngine)
   text->SetBaseline(0.5);
   EXPECT_FLOAT_EQ(0.5, text->Baseline());
 
-  text->SetTextAlignment(Text::H_CENTER, Text::V_TOP);
-  EXPECT_EQ(Text::H_CENTER, text->HorizontalAlignment());
-  EXPECT_EQ(Text::V_TOP, text->VerticalAlignment());
+  text->SetTextAlignment(TextHorizontalAlign::CENTER, TextVerticalAlign::TOP);
+  EXPECT_EQ(TextHorizontalAlign::CENTER, text->HorizontalAlignment());
+  EXPECT_EQ(TextVerticalAlign::TOP, text->VerticalAlignment());
 
   text->SetShowOnTop(true);
   EXPECT_TRUE(text->ShowOnTop());

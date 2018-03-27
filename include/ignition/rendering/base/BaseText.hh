@@ -75,13 +75,13 @@ namespace ignition
       public: virtual float SpaceWidth() const override;
 
       // Documentation inherited.
-      public: virtual void SetTextAlignment(const HorizontalAlign &_hAlign,
-                                    const VerticalAlign &_vAlign) override;
+      public: virtual void SetTextAlignment(const TextHorizontalAlign &_hAlign,
+                  const TextVerticalAlign &_vAlign) override;
       // Documentation inherited.
-      public: virtual HorizontalAlign HorizontalAlignment() const override;
+      public: virtual TextHorizontalAlign HorizontalAlignment() const override;
 
       // Documentation inherited.
-      public: virtual VerticalAlign VerticalAlignment() const override;
+      public: virtual TextVerticalAlign VerticalAlignment() const override;
 
       // Documentation inherited.
       public: virtual void SetBaseline(const float _baseline) override;
@@ -114,10 +114,11 @@ namespace ignition
       protected: float spaceWidth = 0;
 
       /// \brief Horizontal alignment
-      protected: HorizontalAlign horizontalAlign = Text::H_LEFT;
+      protected: TextHorizontalAlign horizontalAlign =
+                 TextHorizontalAlign::LEFT;
 
       /// \brief Vertical alignment
-      protected: VerticalAlign verticalAlign = Text::V_BOTTOM;
+      protected: TextVerticalAlign verticalAlign = TextVerticalAlign::BOTTOM;
 
       /// \brief Baseline height in meters.
       protected: float baseline = 0;
@@ -221,22 +222,22 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    Text::HorizontalAlign BaseText<T>::HorizontalAlignment() const
+    TextHorizontalAlign BaseText<T>::HorizontalAlignment() const
     {
       return this->horizontalAlign;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    Text::VerticalAlign BaseText<T>::VerticalAlignment() const
+    TextVerticalAlign BaseText<T>::VerticalAlignment() const
     {
       return this->verticalAlign;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseText<T>::SetTextAlignment(const HorizontalAlign &_horzAlign,
-                                       const VerticalAlign &_vertAlign)
+    void BaseText<T>::SetTextAlignment(const TextHorizontalAlign &_horzAlign,
+                                       const TextVerticalAlign &_vertAlign)
     {
       this->horizontalAlign = _horzAlign;
       this->verticalAlign = _vertAlign;

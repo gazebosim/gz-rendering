@@ -166,6 +166,12 @@ namespace ignition
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
                   bool unique = true) = 0;
 
+      /// \brief Get the material assigned to attached visuals and geometries.
+      /// \return the Pointer to the material assigned to this visual. If the
+      /// material is cloned at the time it is set to this visual, the cloned
+      /// material will be returned.
+      public: virtual MaterialPtr Material() = 0;
+
       /// \brief Get the local scale
       /// \return The local scale
       public: virtual math::Vector3d LocalScale() const = 0;

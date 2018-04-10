@@ -666,6 +666,10 @@ namespace ignition
       /// \return The created grid
       public: virtual GridPtr CreateGrid() = 0;
 
+      /// \brief Create new text geometry.
+      /// \return The created text
+      public: virtual TextPtr CreateText() = 0;
+
       /// \brief Create new material with the given name. Created material will
       /// have default properties.
       /// \param[in] _name Name for the new material.

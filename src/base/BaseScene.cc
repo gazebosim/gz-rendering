@@ -28,6 +28,7 @@
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/Text.hh"
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
@@ -723,6 +724,21 @@ GridPtr BaseScene::CreateGrid()
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Grid");
   return this->CreateGridImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+TextPtr BaseScene::CreateText()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Text");
+  return this->CreateTextImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+TextPtr BaseScene::CreateTextImpl(const unsigned int /*_id*/,
+    const std::string &/*_name*/)
+{
+  return TextPtr();
 }
 
 //////////////////////////////////////////////////

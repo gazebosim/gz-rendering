@@ -184,7 +184,7 @@ namespace ignition
       /// \brief Keep an empty list of lights.
       private: Ogre::LightList lightList;
 
-      /// \brief Font name, such as "Arial"
+      /// \brief Font name, such as "Liberation Sans"
       private: std::string fontName;
 
       /// \brief Text being displayed

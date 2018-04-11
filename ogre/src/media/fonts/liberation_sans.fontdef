@@ -1,0 +1,8 @@
+Liberation Sans
+{
+  type truetype
+  source liberation-sans/LiberationSans-Regular.ttf
+  size 18
+  resolution 96
+}
+

@@ -60,8 +60,8 @@ void TextTest::Text(const std::string &_renderEngine)
   EXPECT_NE(math::Box(), text->AABB());
 
   // check setting text properties
-  text->SetFontName("Arial");
-  EXPECT_EQ("Arial", text->FontName());
+  text->SetFontName("Liberation Sans");
+  EXPECT_EQ("Liberation Sans", text->FontName());
 
   text->SetTextString("abc def");
   EXPECT_EQ("abc def", text->TextString());

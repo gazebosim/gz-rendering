@@ -69,6 +69,7 @@ void buildScene(ScenePtr _scene)
 
   // creat text geometry
   TextPtr textGeom = _scene->CreateText();
+  textGeom->SetFontName("Liberation Sans");
   textGeom->SetTextString("Hello World!");
   textGeom->SetShowOnTop(true);
   textGeom->SetTextAlignment(TextHorizontalAlign::LEFT,

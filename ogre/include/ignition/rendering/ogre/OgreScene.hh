@@ -115,6 +115,10 @@ namespace ignition
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
                      const std::string &_name);
 
+      // Documentation inherited
+      protected: virtual TextPtr CreateTextImpl(unsigned int _id,
+                     const std::string &_name);
+
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name);
 

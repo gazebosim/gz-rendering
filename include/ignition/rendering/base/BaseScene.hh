@@ -259,6 +259,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual GridPtr CreateGrid();
 
+      // Documentation inherited.
+      public: virtual TextPtr CreateText();
+
       public: virtual MaterialPtr CreateMaterial(const std::string &_name = "");
 
       public: virtual MaterialPtr CreateMaterial(
@@ -334,6 +337,13 @@ namespace ignition
       /// \return Pointer to a grid geometry object
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a text's geometry object
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a text geometry object
+      protected: virtual TextPtr CreateTextImpl(unsigned int _id,
+                     const std::string &_name);
 
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name) = 0;

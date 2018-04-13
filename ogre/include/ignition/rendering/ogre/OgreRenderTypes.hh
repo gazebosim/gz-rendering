@@ -46,6 +46,7 @@ namespace ignition
     class OgreSensor;
     class OgreSpotLight;
     class OgreSubMesh;
+    class OgreText;
     class OgreVisual;
 
     typedef BaseSceneStore<OgreScene>       OgreSceneStore;
@@ -80,6 +81,7 @@ namespace ignition
     typedef shared_ptr<OgreSensor>               OgreSensorPtr;
     typedef shared_ptr<OgreSpotLight>            OgreSpotLightPtr;
     typedef shared_ptr<OgreSubMesh>              OgreSubMeshPtr;
+    typedef shared_ptr<OgreText>                 OgreTextPtr;
     typedef shared_ptr<OgreVisual>               OgreVisualPtr;
     typedef shared_ptr<OgreSceneStore>           OgreSceneStorePtr;
     typedef shared_ptr<OgreNodeStore>            OgreNodeStorePtr;

@@ -54,6 +54,7 @@ namespace ignition
     class Sensor;
     class SpotLight;
     class SubMesh;
+    class Text;
     class Visual;
 
     /// \def ArrowVisualPtr
@@ -147,6 +148,10 @@ namespace ignition
     /// \brief Shared pointer to SubMesh
     typedef shared_ptr<SubMesh> SubMeshPtr;
 
+    /// \def TextPtr
+    /// \brief Shared pointer to Text
+    typedef shared_ptr<Text> TextPtr;
+
     /// \def VisualPtr
     /// \brief Shared pointer to Visual
     typedef shared_ptr<Visual> VisualPtr;
@@ -238,6 +243,10 @@ namespace ignition
     /// \def const SubMeshPtr
     /// \brief Shared pointer to const SubMesh
     typedef shared_ptr<const SubMesh> ConstSubMeshPtr;
+
+    /// \def const SubMeshPtr
+    /// \brief Shared pointer to const SubMesh
+    typedef shared_ptr<const Text> ConstTextPtr;
 
     /// \def const VisualPtr
     /// \brief Shared pointer to const Visual

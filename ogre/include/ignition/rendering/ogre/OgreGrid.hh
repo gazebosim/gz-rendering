@@ -22,7 +22,6 @@
 #include "ignition/rendering/base/BaseGrid.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreGrid.hh"
 
 namespace Ogre
 {

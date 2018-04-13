@@ -396,9 +396,9 @@ void OgreRenderEngine::CreateRoot()
 void OgreRenderEngine::CreateOverlay()
 {
 #if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
-  // OgreOverlay is a component on its own in ogre 1.9 so must manually
-  // initialize it. Must be created after this->dataPtr->root,
-  // but before this->dataPtr->root is initialized.
+    // OgreOverlay is a component on its own in ogre 1.9 so must manually
+    // initialize it. Must be created after this->dataPtr->root,
+    // but before this->dataPtr->root is initialized.
   this->ogreOverlaySystem = new Ogre::OverlaySystem();
 #endif
 }
@@ -538,13 +538,15 @@ void OgreRenderEngine::CreateResources()
     // archNames.push_back(
     //     std::make_pair(prefix + "/skyx", "SkyX"));
     archNames.push_back(
-        std::make_pair(p+ "/materials/programs", "General"));
+        std::make_pair(p + "/materials/programs", "General"));
     archNames.push_back(
-        std::make_pair(p+ "/materials/scripts", "General"));
+        std::make_pair(p + "/materials/scripts", "General"));
     // archNames.push_back(
     //     std::make_pair(prefix + "/materials/textures", "General"));
     // archNames.push_back(
     //     std::make_pair(prefix + "/media/models", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/fonts", "Fonts"));
   }
 
   for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)

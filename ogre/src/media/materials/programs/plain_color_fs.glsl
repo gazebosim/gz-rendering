@@ -7,7 +7,7 @@ uniform vec4 inColor;
 // out vec4 color;
 
 void main()
-{	 
-	//color = inColor;
-	gl_FragColor = inColor;
+{
+  //color = inColor;
+  gl_FragColor = inColor;
 }

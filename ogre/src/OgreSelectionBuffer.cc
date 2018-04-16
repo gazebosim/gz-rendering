@@ -179,8 +179,8 @@ void OgreSelectionBuffer::CreateRTTBuffer()
   this->dataPtr->renderTexture->addListener(
       this->dataPtr->selectionTargetListener.get());
   this->dataPtr->renderTexture->getViewport(0)->setMaterialScheme("aa");
-  this->dataPtr->renderTexture->getViewport(0)->setVisibilityMask(
-      IGN_VISIBILITY_SELECTABLE);
+//  this->dataPtr->renderTexture->getViewport(0)->setVisibilityMask(
+//      IGN_VISIBILITY_SELECTABLE);
   Ogre::HardwarePixelBufferSharedPtr pixelBuffer =
     this->dataPtr->texture->getBuffer();
   size_t bufferSize = pixelBuffer->getSizeInBytes();
@@ -250,7 +250,9 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(int _x, int _y)
     this->dataPtr->materialSwitchListener->GetEntityName(cv);
 
   if (entName.empty())
+  {
     return 0;
+  }
   else
     return this->dataPtr->sceneMgr->getEntity(entName);
 }

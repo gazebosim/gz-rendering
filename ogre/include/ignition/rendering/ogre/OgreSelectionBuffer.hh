@@ -20,6 +20,8 @@
 #include <memory>
 #include <string>
 
+#include "ignition/rendering/ogre/OgreObject.hh"
+
 namespace Ogre
 {
   class Entity;
@@ -33,7 +35,7 @@ namespace ignition
   {
     struct OgreSelectionBufferPrivate;
 
-    class OgreSelectionBuffer
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreSelectionBuffer
     {
       /// \brief Constructor
       /// \param[in] _camera Name of the camera to generate a selection

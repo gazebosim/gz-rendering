@@ -120,7 +120,7 @@ void handleMouse()
       ir::VisualPtr visual1;
       ignition::math::Vector2i mousePosI(g_mouse.x, g_mouse.y);
       std::string name;
-      visual1 = rayCamera->VisualAt(mousePosI, name);
+      visual1 = rayCamera->VisualAt(mousePosI);
       if (visual1)
       {
         std::cout << "Selected item using Buffer Selection at position ";

@@ -18,6 +18,7 @@
 #define _SELECTIONRENDERLISTENER_HH_
 
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreObject.hh"
 
 namespace ignition
 {
@@ -28,7 +29,7 @@ namespace ignition
     // the compositor MaterialManager.Listener should NOT be running all the
     // time - rather only when we're specifically rendering the target that
     // needs it
-    class OgreSelectionRenderListener :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreSelectionRenderListener :
       public Ogre::RenderTargetListener
     {
       /// \brief Constructor

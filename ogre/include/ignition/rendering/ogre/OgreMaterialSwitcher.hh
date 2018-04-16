@@ -20,16 +20,18 @@
 
 #include <map>
 #include <string>
+
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/OgreObject.hh"
 
 namespace ignition
 {
   namespace rendering
   {
     class OgreSelectionBuffer;
-    class OgreMaterialSwitcher :
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterialSwitcher :
       public Ogre::MaterialManager::Listener
     {
       /// \brief Constructor

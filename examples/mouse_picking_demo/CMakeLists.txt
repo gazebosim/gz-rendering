@@ -1,7 +1,10 @@
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
 project(ignition-rendering-mouse-picking-demo)
+find_package(ignition-rendering0 REQUIRED)
 
-find_package(ignition-rendering0)
+include_directories(SYSTEM
+  ${PROJECT_BINARY_DIR}
+)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -25,4 +28,3 @@ target_link_libraries(mouse_picking_demo
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
   )
-

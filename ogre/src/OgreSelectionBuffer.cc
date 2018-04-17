@@ -164,7 +164,7 @@ void OgreSelectionBuffer::CreateRTTBuffer()
   }
   catch(...)
   {
-    this->dataPtr->renderTexture = NULL;
+    this->dataPtr->renderTexture = nullptr;
     ignerr << "Unable to create selection buffer.\n";
     return;
   }
@@ -197,7 +197,7 @@ void OgreSelectionBuffer::CreateRTTBuffer()
 Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(int _x, int _y)
 {
   if (!this->dataPtr->renderTexture)
-    return NULL;
+    return nullptr;
 
   const unsigned int targetWidth = this->dataPtr->width;
   const unsigned int targetHeight = this->dataPtr->height;

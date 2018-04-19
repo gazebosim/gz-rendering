@@ -98,8 +98,8 @@ namespace ignition
       // Documentation inherited.
       public: virtual ignition::math::Box AABB() const override;
 
-      /// \brief Font name, such as "Arial"
-      protected: std::string fontName = "Arial";
+      /// \brief Font name, such as "Liberation Sans"
+      protected: std::string fontName = "Liberation Sans";
 
       /// \brief Text being displayed
       protected: std::string text;

@@ -6,10 +6,10 @@ Console
   resolution 96
 }
 
-Arial
+Liberation Sans
 {
   type truetype
-  source arial.ttf
+  source liberation-sans/LiberationSans-Regular.ttf
   size 18
   resolution 96
 }

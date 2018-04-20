@@ -34,7 +34,7 @@ ign_find_package(ignition-math4 REQUIRED)
 #--------------------------------------
 # Find ignition-common
 set(IGN_COMMON_VER 1)
-ign_find_package(ignition-common${IGN_COMMON_VER} REQUIRED)
+ign_find_package(ignition-common1 REQUIRED)
 
 #--------------------------------------
 # Find dependencies that we ignore for Visual Studio

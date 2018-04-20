@@ -29,7 +29,7 @@ ign_configure_project()
 #--------------------------------------
 # Find ignition-math
 set(IGN_MATH_VER 4)
-ign_find_package(ignition-math${IGN_MATH_VER} REQUIRED)
+ign_find_package(ignition-math4 REQUIRED)
 
 #--------------------------------------
 # Find ignition-common

@@ -91,8 +91,10 @@ namespace ignition
       /// \param[in] _index Index of the render-engine to unregister
       public: void UnregisterEngineAt(unsigned int _index);
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief private implementation details
       private: std::unique_ptr<RenderEngineManagerPrivate> dataPtr;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief required SingletonT friendship
       private: friend class SingletonT<RenderEngineManager>;

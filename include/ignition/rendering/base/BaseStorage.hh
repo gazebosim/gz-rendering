@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/SuppressWarning.hh>
 
 #include "ignition/rendering/Storage.hh"
 

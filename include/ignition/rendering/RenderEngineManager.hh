@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/common/SingletonT.hh>
+#include <ignition/common/SuppressWarning.hh>
 #include "ignition/rendering/Export.hh"
 
 namespace ignition

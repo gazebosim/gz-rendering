@@ -18,6 +18,9 @@
 #define IGNITION_RENDERING_IMAGE_HH_
 
 #include <memory>
+
+#include <ignition/common/SuppressWarning.hh>
+
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Export.hh"
 

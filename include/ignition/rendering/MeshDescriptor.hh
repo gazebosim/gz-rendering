@@ -18,6 +18,9 @@
 #define IGNITION_RENDERING_MESHDESCRIPTOR_HH_
 
 #include <string>
+
+#include <ignition/common/SuppressWarning.hh>
+
 #include "ignition/rendering/Export.hh"
 
 namespace ignition

@@ -205,27 +205,3 @@ void OptixCamera::CreateErrorProgram()
   this->optixErrorProgram["buffer"]->setBuffer(optixBuffer);
   optixContext->setExceptionProgram(this->traceId, this->optixErrorProgram);
 }
-
-//////////////////////////////////////////////////
-VisualPtr OptixCamera::VisualAt(const ignition::math::Vector2i &_mousePos,
-    std::string &_mod)
-{
-  VisualPtr result;
-
-  // TODO: implement, return null for now
-  (void)_mousePos;
-  (void)_mod;
-  return result;
-}
-
-//////////////////////////////////////////////////
-VisualPtr OptixCamera::VisualAt(const ignition::math::Vector2i
-    &_mousePos)
-{
-  VisualPtr result;
-
-  // TODO: implement, return null for now
-  (void)_mousePos;
-  return result;
-}
-//////////////////////////////////////////////////

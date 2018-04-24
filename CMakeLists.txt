@@ -37,41 +37,35 @@ set(IGN_COMMON_VER 1)
 ign_find_package(ignition-common1 REQUIRED)
 
 #--------------------------------------
-# Find dependencies that we ignore for Visual Studio
-if(NOT MSVC)
+# Find FreeImage
+ign_find_package(FreeImage VERSION 3.9
+  REQUIRED_BY optix
+  PRIVATE_FOR optix)
 
-  #--------------------------------------
-  # Find FreeImage
-  ign_find_package(FreeImage VERSION 3.9
-      REQUIRED_BY optix
-      PRIVATE_FOR optix)
+#--------------------------------------
+# Find OGRE
+ign_find_package(OGRE VERSION 1.8.0
+  COMPONENTS RTShaderSystem Terrain Overlay
+  REQUIRED_BY ogre
+  PRIVATE_FOR ogre)
 
-  #--------------------------------------
-  # Find OGRE
-  ign_find_package(OGRE VERSION 1.8.0
-      COMPONENTS RTShaderSystem Terrain Overlay
-      REQUIRED_BY ogre
-      PRIVATE_FOR ogre)
-
-  if (OGRE_FOUND)
-    set(HAVE_OGRE TRUE)
-  endif()
+if (OGRE_FOUND)
+set(HAVE_OGRE TRUE)
+endif()
 
 
-  #--------------------------------------
-  # Find CUDA
-  find_package(CUDA)
+#--------------------------------------
+# Find CUDA
+find_package(CUDA)
 
-  #--------------------------------------
-  # Find OptiX
-  ign_find_package(OptiX VERSION 3.8.0
-      REQUIRED_BY optix
-      PRIVATE_FOR optix)
+#--------------------------------------
+# Find OptiX
+ign_find_package(OptiX VERSION 3.8.0
+  REQUIRED_BY optix
+  PRIVATE_FOR optix)
 
-  if (OptiX_FOUND AND CUDA_FOUND)
-    set(HAVE_OPTIX TRUE)
-  endif()
-
+if (OptiX_FOUND AND CUDA_FOUND)
+set(HAVE_OPTIX TRUE)
 endif()
 
 #####################################

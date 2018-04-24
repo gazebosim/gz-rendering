@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef _IGNITION_RENDERING_SELECTION_BUFFER_SELECTIONBUFFER_HH_
-#define _IGNITION_RENDERING_SELECTION_BUFFER_SELECTIONBUFFER_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGRESELECTIONBUFFER_HH_
+#define IGNITION_RENDERING_OGRE_OGRESELECTIONBUFFER_HH_
 
 #include <memory>
 #include <string>
@@ -33,8 +33,14 @@ namespace ignition
 {
   namespace rendering
   {
+    // forward declaration
     struct OgreSelectionBufferPrivate;
 
+    /// \brief Generates a selection buffer object for a given camera.
+    /// The selection buffer is used of entity selection. On setup, a unique
+    /// color is assigned to each entity. Whenever a selection request is made,
+    /// the selection buffer camera renders to a 1x1 sized offscreen buffer.
+    /// The color value of that pixel gives the identity of the entity.
     class IGNITION_RENDERING_OGRE_VISIBLE OgreSelectionBuffer
     {
       /// \brief Constructor
@@ -53,11 +59,11 @@ namespace ignition
       /// \param[in] _x X coordinate in pixels.
       /// \param[in] _y Y coordinate in pixels.
       /// \return Returns the Ogre entity at the coordinate.
-      public: Ogre::Entity *OnSelectionClick(int _x, int _y);
+      public: Ogre::Entity *OnSelectionClick(const int _x, const int _y);
 
       /// \brief Debug show overlay
       /// \param[in] _show True to show the selection buffer in an overlay.
-      public: void ShowOverlay(bool _show);
+      public: void ShowOverlay(const bool _show);
 
       /// \brief Call this to update the selection buffer contents
       public: void Update();

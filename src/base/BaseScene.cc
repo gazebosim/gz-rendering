@@ -28,6 +28,7 @@
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/Text.hh"
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
@@ -123,7 +124,29 @@ void BaseScene::SetSimTime(const common::Time &_time)
 VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,
                               const ignition::math::Vector2i &_mousePos)
 {
-  return this->VisualAt(_camera, _mousePos);
+  VisualPtr visual;
+  RayQueryPtr rayQuery = this->CreateRayQuery();
+  if (!rayQuery)
+    return visual;
+
+  double nx =
+      2.0 * _mousePos.X() / static_cast<double>(_camera->ImageWidth()) - 1.0;
+  double ny =
+      1.0 - 2.0 * _mousePos.Y() / static_cast<double>(_camera->ImageHeight());
+
+  math::Vector2d mousePos(nx, ny);
+
+  if (rayQuery)
+  {
+    rayQuery->SetFromCamera(_camera, mousePos);
+    RayQueryResult result = rayQuery->ClosestPoint();
+
+    if (result)
+    {
+      visual = this->Visuals()->GetById(result.objectId);
+    }
+  }
+  return visual;
 }
 
 //////////////////////////////////////////////////

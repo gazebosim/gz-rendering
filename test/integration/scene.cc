@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ using namespace ignition;
 using namespace rendering;
 
 class SceneTest: public testing::Test,
-                  public testing::WithParamInterface<const char *>
+                 public testing::WithParamInterface<const char *>
 {
   // Test and verify camera tracking
   public: void VisualAt(const std::string &_renderEngine);
@@ -89,20 +89,20 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
   camera->Update();
 
   // test get sphere object
-  ignition::math::Vector2i sphere_position(220, 307);
-  VisualPtr sphere_visual = scene->VisualAt(camera, sphere_position);
+  ignition::math::Vector2i spherePosition(220, 307);
+  VisualPtr sphere_visual = scene->VisualAt(camera, spherePosition);
   ASSERT_TRUE(sphere_visual != nullptr);
   EXPECT_EQ("sphere", sphere_visual->Name());
 
   // test get box object
-  ignition::math::Vector2i box_position(452, 338);
-  VisualPtr box_visual = scene->VisualAt(camera, box_position);
+  ignition::math::Vector2i boxPosition(452, 338);
+  VisualPtr box_visual = scene->VisualAt(camera, boxPosition);
   ASSERT_TRUE(box_visual != nullptr);
   EXPECT_EQ("box", box_visual->Name());
 
   // test get no object
-  ignition::math::Vector2i empty_position(300, 150);
-  VisualPtr empty_visual = scene->VisualAt(camera, empty_position);
+  ignition::math::Vector2i emptyPosition(300, 150);
+  VisualPtr empty_visual = scene->VisualAt(camera, emptyPosition);
   ASSERT_TRUE(empty_visual == nullptr);
 
   // Clean up

@@ -35,8 +35,8 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
-#include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
@@ -727,4 +727,3 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 // Register this plugin
 IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
                                   ignition::rendering::RenderEnginePlugin)
-

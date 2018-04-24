@@ -99,10 +99,6 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
-                  &_mousePos, std::string &_mod);
-
-      // Documentation inherited.
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
                   &_mousePos);
 
       // Documentation inherited.
@@ -500,17 +496,10 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i
-        &_mousePos, std::string &_mod)
+        &/*_mousePos*/)
     {
-      return this->VisualAt(_mousePos, _mod);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i
-        &_mousePos)
-    {
-      return this->VisualAt(_mousePos);
+      ignerr << "VisualAt not implemented for the render engine" << std::endl;
+      return VisualPtr();
     }
 
     //////////////////////////////////////////////////

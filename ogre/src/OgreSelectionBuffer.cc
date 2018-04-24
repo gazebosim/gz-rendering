@@ -19,9 +19,8 @@
 #include <ignition/math/Color.hh>
 
 #include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre/OgreSelectionRenderListener.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreMaterialSwitcher.hh"
 #include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
 
@@ -34,14 +33,11 @@ namespace ignition
   {
     struct OgreSelectionBufferPrivate
     {
-      /// \brief This is the material listener - Note: it is controlled by a
-      /// separate RenderTargetListener, not applied globally to all
-      /// targets. The class associates a color to an ogre entity
-      std::unique_ptr<OgreMaterialSwitcher> materialSwitchListener;
-
-      /// \brief A render target listener that sets up the material switcher
-      /// to run on every update of this render target.
-      std::unique_ptr<OgreSelectionRenderListener> selectionTargetListener;
+      /// \brief This is a material listener and a RenderTargetListener.
+      /// The material switcher is applied to only the selection camera
+      /// and not applied globally to all targets. The class associates a
+      /// color to an ogre entity
+      std::unique_ptr<OgreMaterialSwitcher> materialSwitcher;
 
       /// \brief Ogre scene manager
       Ogre::SceneManager *sceneMgr = nullptr;
@@ -73,7 +69,7 @@ namespace ignition
 
       /// \brief A 2D overlay used for debugging the selection buffer. It
       /// is hidden by default.
-      Ogre::Overlay *selectionDebugOverlay;
+      Ogre::Overlay *selectionDebugOverlay = nullptr;
     };
   }
 }
@@ -93,9 +89,7 @@ OgreSelectionBuffer::OgreSelectionBuffer(const std::string &_cameraName,
   this->dataPtr->selectionCamera =
       this->dataPtr->sceneMgr->createCamera(_cameraName + "_selection_buffer");
 
-  this->dataPtr->materialSwitchListener.reset(new OgreMaterialSwitcher());
-  this->dataPtr->selectionTargetListener.reset(new OgreSelectionRenderListener(
-      this->dataPtr->materialSwitchListener.get()));
+  this->dataPtr->materialSwitcher.reset(new OgreMaterialSwitcher());
   this->CreateRTTBuffer();
   this->CreateRTTOverlays();
 }
@@ -115,7 +109,7 @@ void OgreSelectionBuffer::Update()
   if (!this->dataPtr->renderTexture)
     return;
 
-  this->dataPtr->materialSwitchListener->Reset();
+  this->dataPtr->materialSwitcher->Reset();
 
   // FIXME: added try-catch block to prevent crash in deferred rendering mode.
   // RTT does not like VPL.material as it references a texture in the compositor
@@ -178,7 +172,7 @@ void OgreSelectionBuffer::CreateRTTBuffer()
   this->dataPtr->renderTexture->getViewport(0)->setShadowsEnabled(false);
   this->dataPtr->renderTexture->getViewport(0)->setClearEveryFrame(true);
   this->dataPtr->renderTexture->addListener(
-      this->dataPtr->selectionTargetListener.get());
+      this->dataPtr->materialSwitcher.get());
   this->dataPtr->renderTexture->getViewport(0)->setMaterialScheme("aa");
   this->dataPtr->renderTexture->getViewport(0)->setVisibilityMask(
       IGN_VISIBILITY_SELECTABLE);
@@ -194,7 +188,7 @@ void OgreSelectionBuffer::CreateRTTBuffer()
 }
 
 /////////////////////////////////////////////////
-Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(int _x, int _y)
+Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(const int _x, const int _y)
 {
   if (!this->dataPtr->renderTexture)
     return nullptr;
@@ -249,7 +243,7 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(int _x, int _y)
   cv.SetFromARGB(color);
   cv.A(1.0);
   const std::string &entName =
-    this->dataPtr->materialSwitchListener->GetEntityName(cv);
+    this->dataPtr->materialSwitcher->EntityName(cv);
 
   if (entName.empty())
   {
@@ -297,14 +291,14 @@ void OgreSelectionBuffer::CreateRTTOverlays()
   else
   {
     ignlog << "Unable to create selection buffer overlay. "
-      "This will not effect Gazebo unless you're trying to debug "
+      "This will not effect ignition-rendering unless you're trying to debug "
       "the selection buffer.\n";
   }
 }
 
 /////////////////////////////////////////////////
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR  <= 9
-void OgreSelectionBuffer::ShowOverlay(bool _show)
+void OgreSelectionBuffer::ShowOverlay(const bool _show)
 {
   if (_show)
     this->dataPtr->selectionDebugOverlay->show();
@@ -312,7 +306,7 @@ void OgreSelectionBuffer::ShowOverlay(bool _show)
     this->dataPtr->selectionDebugOverlay->hide();
 }
 #else
-void OgreSelectionBuffer::ShowOverlay(bool _show)
+void OgreSelectionBuffer::ShowOverlay(const bool _show)
 {
   ignerr << "Selection debug overlay disabled for Ogre > 1.9\n";
 }

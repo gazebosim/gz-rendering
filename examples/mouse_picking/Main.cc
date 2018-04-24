@@ -92,14 +92,6 @@ void buildScene(ScenePtr _scene)
   box->SetMaterial(blue);
   root->AddChild(box);
 
-  // create white material
-  MaterialPtr white = _scene->CreateMaterial();
-  white->SetAmbient(0.5, 0.5, 0.5);
-  white->SetDiffuse(0.8, 0.8, 0.8);
-  white->SetSpecular(0.7, 0.7, 0.7);
-  white->SetReceiveShadows(true);
-  white->SetReflectivity(0);
-
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.0);

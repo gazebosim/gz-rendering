@@ -61,9 +61,6 @@ namespace ignition
       public: virtual optix::Program CreateOptixProgram(
                   const std::string &_fileBase, const std::string &_function);
 
-      public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
-                     const ignition::math::Vector2i &_cameraPos);
-
       protected: virtual bool LoadImpl();
 
       protected: virtual bool InitImpl();

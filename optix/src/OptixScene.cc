@@ -498,17 +498,3 @@ OptixScenePtr OptixScene::SharedThis()
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<OptixScene>(sharedBase);
 }
-
-//////////////////////////////////////////////////
-VisualPtr OptixScene::VisualAt(const CameraPtr &_camera,
-                          const ignition::math::Vector2i &_mousePos)
-{
-  VisualPtr visual;
-
-  // TODO: implement, return null for now
-  (void)_camera;
-  (void)_mousePos;
-  return visual;
-}
-
-//////////////////////////////////////////////////

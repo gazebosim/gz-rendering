@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_SELECTIONBUFFER_MATERIALSWITCHER_HH_
-#define IGNITION_RENDERING_SELECTIONBUFFER_MATERIALSWITCHER_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
+#define IGNITION_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
 
 #include <map>
 #include <string>
@@ -30,9 +30,12 @@ namespace ignition
 {
   namespace rendering
   {
+    // forward declarations
     class OgreSelectionBuffer;
+
+    /// \brief Helper class to assign unique colors to renderables
     class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterialSwitcher :
-      public Ogre::MaterialManager::Listener
+      public Ogre::MaterialManager::Listener, Ogre::RenderTargetListener
     {
       /// \brief Constructor
       public: OgreMaterialSwitcher();
@@ -42,30 +45,58 @@ namespace ignition
 
       /// \brief Get the entity with a specific color
       /// \param[in] _color The entity's color.
-      public: const std::string &GetEntityName(
+      public: std::string EntityName(
               const ignition::math::Color &_color) const;
 
       /// \brief Reset the color value incrementor
       public: void Reset();
 
-      /// \brief Ogre callback that assigns colors to new renderables
+      /// \brief Ogre callback that assigns colors to new renderables when the
+      /// requested scheme is not found
+      /// \param[in] _schemeIndex Index of scheme requested
+      /// \param[in] _schemeName Name of scheme requested
+      /// \param[in] _originalMaterial Orignal material that does not contain
+      /// the requested scheme
+      /// \param[in] _lodIndex The material level-of-detail
+      /// \param[in] _rend Pointer to the Ogre::Renderable object requesting
+      /// the use of the techinique
+      /// \return The Ogre material technique to use when scheme is not found.
       public: virtual Ogre::Technique *handleSchemeNotFound(
                   uint16_t _schemeIndex, const Ogre::String &_schemeName,
                   Ogre::Material *_originalMaterial, uint16_t _lodIndex,
                   const Ogre::Renderable *_rend);
 
-      // private: typedef std::map<unsigned int, std::string, cmp_color>
-      // ColorMap;
-      private: typedef std::map<unsigned int, std::string> ColorMap;
-      private: typedef ColorMap::const_iterator ColorMapConstIter;
-      private: std::string emptyString;
+      /// \brief Ogre's pre render update callback
+      /// \param[in] _evt Ogre render target event containing information about
+      /// the source render target.
+      public: virtual void preRenderTargetUpdate(
+                  const Ogre::RenderTargetEvent &_evt);
+
+      /// \brief Ogre's post render update callback
+      /// \param[in] _evt Ogre render target event containing information about
+      /// the source render target.
+      public: virtual void postRenderTargetUpdate(
+                  const Ogre::RenderTargetEvent &_evt);
+
+      /// \brief Current unique color value
       private: ignition::math::Color currentColor;
+
+      /// \brief last entity assigned an unique color value
       private: std::string lastEntity;
-      private: Ogre::Technique *lastTechnique;
-      private: OgreMaterialSwitcher::ColorMap colorDict;
 
-      private: void GetNextColor();
+      /// \brief last technique assigned to an entity.
+      private: Ogre::Technique *lastTechnique = nullptr;
 
+      /// \brief Color dictionary that maps the unique color value to
+      /// renderable name
+      private: std::map<unsigned int, std::string> colorDict;
+
+      /// \brief Increment unique color value that will be assigned to the
+      /// next renderable
+      private: void NextColor();
+
+      /// \brief Selection Buffer class that make use of this class for
+      /// selecting entitiies
       public: friend class OgreSelectionBuffer;
 
       /// \brief Plain material technique

@@ -100,6 +100,16 @@ void OptixScene::SetBackgroundColor(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
+void OptixScene::SetGradientBackgroundColor(
+    const std::array<math::Color, 4> &_colors)
+{
+  this->gradientBackgroundColor = _colors;
+
+  ignwarn << "SetGradientBackgroundColor not implemented for Optix"
+          << std::endl;
+}
+
+//////////////////////////////////////////////////
 void OptixScene::PreRender()
 {
   this->lightManager->Clear();

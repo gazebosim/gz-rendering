@@ -36,6 +36,67 @@
 using namespace ignition;
 using namespace rendering;
 
+/// \class Subclassing the Ogre Rectangle2D class to create a colored degraded
+/// rectangle.
+/// \ref https://forums.ogre3d.org/viewtopic.php?f=2&t=60677
+class ColouredRectangle2D : public Ogre::Rectangle2D
+{
+  // Documentation inherited
+  public: ColouredRectangle2D(bool _includeTextureCoordinates = false)
+    : Ogre::Rectangle2D(_includeTextureCoordinates)
+  {
+    Ogre::VertexDeclaration* decl = mRenderOp.vertexData->vertexDeclaration;
+
+    decl->addElement(this->kColourBinding, 0,
+        Ogre::VET_COLOUR, Ogre::VES_DIFFUSE);
+    Ogre::VertexBufferBinding* bind = mRenderOp.vertexData->vertexBufferBinding;
+
+    Ogre::HardwareVertexBufferSharedPtr vbuf =
+      Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
+        decl->getVertexSize(this->kColourBinding),
+        mRenderOp.vertexData->vertexCount,
+        Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+
+    // Bind buffer
+    bind->setBinding(this->kColourBinding, vbuf);
+  }
+
+  /// \brief Class destructor.
+  public: ~ColouredRectangle2D()
+  {
+  }
+
+  /// \brief Set the degraded colors of the rectangle
+  /// \param[in] _topLeft Top left color
+  /// \param[in] _bottomLeft Bottom left color
+  /// \param[in] _topRight Top right color
+  /// \param[in] _bottomRight Bottom right color
+  public: void setColours(const Ogre::ColourValue &_topLeft,
+                          const Ogre::ColourValue &_bottomLeft,
+                          const Ogre::ColourValue &_topRight,
+                          const Ogre::ColourValue &_bottomRight)
+  {
+    Ogre::HardwareVertexBufferSharedPtr vbuf =
+        mRenderOp.vertexData->vertexBufferBinding->getBuffer(
+            this->kColourBinding);
+    unsigned int* pUint32 =
+      static_cast<unsigned int*>(vbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
+
+    const Ogre::VertexElementType srcType =
+      Ogre::VertexElement::getBestColourVertexElementType();
+
+    *pUint32++ = Ogre::VertexElement::convertColourValue(_topLeft, srcType);
+    *pUint32++ = Ogre::VertexElement::convertColourValue(_bottomLeft, srcType);
+    *pUint32++ = Ogre::VertexElement::convertColourValue(_topRight, srcType);
+    *pUint32++ = Ogre::VertexElement::convertColourValue(_bottomRight, srcType);
+
+    vbuf->unlock();
+  }
+
+  /// \brief Index associated with the vertex buffer.
+  private: const int kColourBinding = 3;
+};
+
 //////////////////////////////////////////////////
 OgreScene::OgreScene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name),
@@ -88,6 +149,16 @@ void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;
 
+  // If the gradient background color is set, we should make it invisible,
+  // otherwise the background color will not be visible.
+  if (this->ogreSceneManager->hasSceneNode("Background"))
+  {
+    auto backgroundNodePtr = this->ogreSceneManager->getSceneNode("Background");
+    auto colouredRectangle2D = backgroundNodePtr->getAttachedObject(0);
+    if (colouredRectangle2D && colouredRectangle2D->isVisible())
+      colouredRectangle2D->setVisible(false);
+  }
+
   // TODO: clean up code
   unsigned int count = this->SensorCount();
 
@@ -97,6 +168,70 @@ void OgreScene::SetBackgroundColor(const math::Color &_color)
     OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(sensor);
     if (camera) camera->SetBackgroundColor(_color);
   }
+}
+
+//////////////////////////////////////////////////
+void OgreScene::SetGradientBackgroundColor(
+    const std::array<math::Color, 4> &_colors)
+{
+  ColouredRectangle2D* rect = nullptr;
+  Ogre::SceneNode *backgroundNodePtr = nullptr;
+
+  // Check if we have created the scene node to render the gradient background
+  if (!this->ogreSceneManager->hasSceneNode("Background"))
+  {
+    // Create background material
+    Ogre::MaterialPtr material =
+      Ogre::MaterialManager::getSingleton().create("Background", "General");
+    material->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
+    material->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
+    material->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+
+    // Create background rectangle covering the whole screen
+    rect = new ColouredRectangle2D();
+    rect->setCorners(-1.0, 1.0, 1.0, -1.0);
+    rect->setMaterial("Background");
+
+    // Render the background before everything else
+    rect->setRenderQueueGroup(Ogre::RENDER_QUEUE_BACKGROUND);
+
+    // Use infinite AAB to always stay visible
+    Ogre::AxisAlignedBox aabInf;
+    aabInf.setInfinite();
+    rect->setBoundingBox(aabInf);
+
+    // Attach background to the scene
+    backgroundNodePtr = this->ogreSceneManager->getRootSceneNode()->
+        createChildSceneNode("Background");
+    backgroundNodePtr->attachObject(rect);
+  }
+
+  backgroundNodePtr = this->ogreSceneManager->getSceneNode("Background");
+
+  auto colouredRectangle2D = backgroundNodePtr->getAttachedObject(0);
+  if (!colouredRectangle2D)
+  {
+    ignerr << "Unable to find the background attached object" << std::endl;
+    return;
+  }
+
+  rect = dynamic_cast<ColouredRectangle2D *>(colouredRectangle2D);
+  if (!rect)
+  {
+    ignerr << "Unable to cast from Ogre::MovableObject to ColouredRectangle2D"
+           << std::endl;
+    return;
+  }
+
+  // Convert the ignition::math::Color to Ogre::ColourValue.
+  std::array<Ogre::ColourValue, 4> ogreColors;
+  for (auto i = 0u; i < 4; ++i)
+    ogreColors[i].setAsRGBA(_colors[i].AsRGBA());
+
+  rect->setColours(ogreColors[0], ogreColors[1], ogreColors[2], ogreColors[3]);
+  rect->setVisible(true);
+
+  this->gradientBackgroundColor = _colors;
 }
 
 //////////////////////////////////////////////////

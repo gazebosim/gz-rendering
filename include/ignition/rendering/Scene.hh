@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_SCENE_HH_
 #define IGNITION_RENDERING_SCENE_HH_
 
+#include <array>
 #include <string>
 #include <limits>
 
@@ -117,6 +118,16 @@ namespace ignition
       /// \brief Set the scene background color
       /// \param[in] _color The scene background color
       public: virtual void SetBackgroundColor(const math::Color &_color) = 0;
+
+      /// \brief Get the scene gradient background color
+      /// \return The scene gradient background color
+      public: virtual std::array<math::Color, 4>
+                  GradientBackgroundColor() const = 0;
+
+      /// \brief Set the scene gradient background color
+      /// \param[in] _color The scene gradient background color
+      public: virtual void SetGradientBackgroundColor(
+                  const std::array<math::Color, 4> &_colors) = 0;
 
       /// \brief Get the number of nodes managed by this scene. Note these
       /// nodes may not be directly or indirectly attached to the root node.

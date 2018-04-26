@@ -105,7 +105,6 @@ namespace ignition
 
       /// \brief Get the scene background color
       /// \return The scene background color
-      /// \sa bool IsGradientBackgroundColor() const
       public: virtual math::Color BackgroundColor() const = 0;
 
       /// \brief Set the scene background color
@@ -131,10 +130,17 @@ namespace ignition
                   GradientBackgroundColor() const = 0;
 
       /// \brief Set a custom gradient background color on top of the regular
-      /// background.
+      /// background. Default should be black.
+      ///
       /// Important note: Keep in mind that this object will always be rendered
       /// on top of any existing scene or camera background.
-      /// \param[in] _color The scene gradient background color
+      ///
+      /// \param[in] _colors The scene gradient background color.
+      /// Next is the description of how to interpret each value of the array:
+      /// 0: Top left corner color.
+      /// 1: Bottom left corner color.
+      /// 2: Top right corner color.
+      /// 3: Bottom right corner color.
       /// \sa void RemoveGradientBackgroundColor()
       public: virtual void SetGradientBackgroundColor(
                   const std::array<math::Color, 4> &_colors) = 0;

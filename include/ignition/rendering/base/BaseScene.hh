@@ -389,7 +389,7 @@ namespace ignition
       protected: math::Color backgroundColor;
 
       /// \brief The four corners of the gradient background color.
-      /// Next is the description of what index represents:
+      /// Next is the description of how to interpret each value of the array:
       /// 0: Top left corner color.
       /// 1: Bottom left corner color.
       /// 2: Top right corner color.

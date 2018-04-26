@@ -159,12 +159,14 @@ void BaseScene::SetGradientBackgroundColor(
   const std::array<math::Color, 4> &_colors)
 {
   this->gradientBackgroundColor = _colors;
+  this->isGradientBackgroundColor = true;
 }
 
 void BaseScene::RemoveGradientBackgroundColor()
 {
   this->gradientBackgroundColor = {math::Color::Black, math::Color::Black,
       math::Color::Black, math::Color::Black};
+  this->isGradientBackgroundColor = false;
 }
 
 //////////////////////////////////////////////////

@@ -64,11 +64,15 @@ namespace ignition
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
+      public: virtual bool IsGradientBackgroundColor() const;
+
       public: virtual std::array<math::Color, 4> GradientBackgroundColor()
                   const;
 
       public: virtual void SetGradientBackgroundColor(
                   const std::array<math::Color, 4> &_colors);
+
+      public: virtual void RemoveGradientBackgroundColor();
 
       public: virtual unsigned int NodeCount() const;
 
@@ -390,7 +394,11 @@ namespace ignition
       /// 1: Bottom left corner color.
       /// 2: Top right corner color.
       /// 3: Bottom right corner color.
+      /// Default should be black.
       protected: std::array<math::Color, 4> gradientBackgroundColor;
+
+      /// \brief Whether the scene has a gradient background.
+      protected: bool isGradientBackgroundColor = false;
 
       private: unsigned int nextObjectId;
 

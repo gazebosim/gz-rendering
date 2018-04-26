@@ -48,6 +48,8 @@ void SceneTest::Scene(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
+  EXPECT_FALSE(scene->IsGradientBackgroundColor());
+
   // Check background color
   EXPECT_EQ(math::Color::Black, scene->BackgroundColor());
   scene->SetBackgroundColor(0, 1, 0, 1);
@@ -55,6 +57,7 @@ void SceneTest::Scene(const std::string &_renderEngine)
   math::Color red(1, 0, 0, 1);
   scene->SetBackgroundColor(red);
   EXPECT_EQ(red, scene->BackgroundColor());
+  EXPECT_FALSE(scene->IsGradientBackgroundColor());
 
   // Check gradient background color
   std::array<math::Color, 4> gradientBackgroundColor =
@@ -66,6 +69,7 @@ void SceneTest::Scene(const std::string &_renderEngine)
   gradientBackgroundColor[2] = math::Color::Blue;
   gradientBackgroundColor[3] = math::Color::Black;
   scene->SetGradientBackgroundColor(gradientBackgroundColor);
+  EXPECT_TRUE(scene->IsGradientBackgroundColor());
   auto currentGradientBackgroundColor = scene->GradientBackgroundColor();
   EXPECT_EQ(math::Color::Red, currentGradientBackgroundColor[0]);
   EXPECT_EQ(math::Color::Green, currentGradientBackgroundColor[1]);
@@ -78,6 +82,8 @@ void SceneTest::Scene(const std::string &_renderEngine)
   EXPECT_EQ(math::Color::Green, currentGradientBackgroundColor[1]);
   EXPECT_EQ(math::Color::Blue, currentGradientBackgroundColor[2]);
   EXPECT_EQ(math::Color::Black, currentGradientBackgroundColor[3]);
+  scene->RemoveGradientBackgroundColor();
+  EXPECT_FALSE(scene->IsGradientBackgroundColor());
 
   // test creating render window from scene
   RenderWindowPtr renderWindow = scene->CreateRenderWindow();

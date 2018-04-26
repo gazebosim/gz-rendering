@@ -106,6 +106,8 @@ OgreScene::OgreScene(unsigned int _id, const std::string &_name) :
   ogreSceneManager(nullptr)
 {
   this->backgroundColor = math::Color::Black;
+  this->gradientBackgroundColor = {math::Color::Black, math::Color::Black,
+      math::Color::Black, math::Color::Black};
 }
 
 //////////////////////////////////////////////////
@@ -148,16 +150,6 @@ void OgreScene::SetAmbientLight(const math::Color &_color)
 void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;
-
-  // If the gradient background color is set, we should make it invisible,
-  // otherwise the background color will not be visible.
-  if (this->ogreSceneManager->hasSceneNode("Background"))
-  {
-    auto backgroundNodePtr = this->ogreSceneManager->getSceneNode("Background");
-    auto colouredRectangle2D = backgroundNodePtr->getAttachedObject(0);
-    if (colouredRectangle2D && colouredRectangle2D->isVisible())
-      colouredRectangle2D->setVisible(false);
-  }
 
   // TODO: clean up code
   unsigned int count = this->SensorCount();
@@ -232,6 +224,23 @@ void OgreScene::SetGradientBackgroundColor(
   rect->setVisible(true);
 
   this->gradientBackgroundColor = _colors;
+  this->isGradientBackgroundColor = true;
+}
+
+//////////////////////////////////////////////////
+void OgreScene::RemoveGradientBackgroundColor()
+{
+  // If the gradient background color is set, we should make it invisible,
+  // otherwise the background color will not be visible.
+  if (this->ogreSceneManager->hasSceneNode("Background"))
+  {
+    auto backgroundNodePtr = this->ogreSceneManager->getSceneNode("Background");
+    auto colouredRectangle2D = backgroundNodePtr->getAttachedObject(0);
+    if (colouredRectangle2D && colouredRectangle2D->isVisible())
+      colouredRectangle2D->setVisible(false);
+  }
+
+  this->isGradientBackgroundColor = false;
 }
 
 //////////////////////////////////////////////////

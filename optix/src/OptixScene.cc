@@ -51,6 +51,8 @@ OptixScene::OptixScene(unsigned int _id, const std::string &_name) :
   // TODO: move defaults to BaseScene
   this->ambientLight = math::Color::Black;
   this->backgroundColor = math::Color::Black;
+  this->gradientBackgroundColor = {math::Color::Black, math::Color::Black,
+      math::Color::Black, math::Color::Black};
 }
 
 //////////////////////////////////////////////////
@@ -104,8 +106,17 @@ void OptixScene::SetGradientBackgroundColor(
     const std::array<math::Color, 4> &_colors)
 {
   this->gradientBackgroundColor = _colors;
+  this->isGradientBackgroundColor = true;
 
   ignwarn << "SetGradientBackgroundColor not implemented for Optix"
+          << std::endl;
+}
+
+//////////////////////////////////////////////////
+void OptixScene::RemoveGradientBackgroundColor()
+{
+  this->isGradientBackgroundColor = false;
+  ignwarn << "RemoveGradientBackgroundColor not implemented for Optix"
           << std::endl;
 }
 

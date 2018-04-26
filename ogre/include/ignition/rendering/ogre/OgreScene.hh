@@ -54,6 +54,8 @@ namespace ignition
       public: virtual void SetGradientBackgroundColor(
                      const std::array<math::Color, 4> &_colors);
 
+      public: virtual void RemoveGradientBackgroundColor();
+
       public: virtual void PreRender();
 
       public: virtual void Clear();

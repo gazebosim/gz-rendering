@@ -105,6 +105,7 @@ namespace ignition
 
       /// \brief Get the scene background color
       /// \return The scene background color
+      /// \sa bool IsGradientBackgroundColor() const
       public: virtual math::Color BackgroundColor() const = 0;
 
       /// \brief Set the scene background color
@@ -119,15 +120,29 @@ namespace ignition
       /// \param[in] _color The scene background color
       public: virtual void SetBackgroundColor(const math::Color &_color) = 0;
 
+      /// \brief Whether the scene has a gradient background or not (solid)
+      /// \return True if the scene has a gradient background or false otherwise
+      public: virtual bool IsGradientBackgroundColor() const = 0;
+
       /// \brief Get the scene gradient background color
       /// \return The scene gradient background color
+      /// \sa bool IsGradientBackgroundColor() const
       public: virtual std::array<math::Color, 4>
                   GradientBackgroundColor() const = 0;
 
-      /// \brief Set the scene gradient background color
+      /// \brief Set a custom gradient background color on top of the regular
+      /// background.
+      /// Important note: Keep in mind that this object will always be rendered
+      /// on top of any existing scene or camera background.
       /// \param[in] _color The scene gradient background color
+      /// \sa void RemoveGradientBackgroundColor()
       public: virtual void SetGradientBackgroundColor(
                   const std::array<math::Color, 4> &_colors) = 0;
+
+      /// \brief Remove the scene gradient background color
+      /// \sa void SetGradientBackgroundColor(
+      ///            const std::array<math::Color, 4> &_colors)
+      public: virtual void RemoveGradientBackgroundColor() = 0;
 
       /// \brief Get the number of nodes managed by this scene. Note these
       /// nodes may not be directly or indirectly attached to the root node.

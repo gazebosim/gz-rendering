@@ -64,14 +64,18 @@ namespace ignition
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
+      // Documentation inherited.
       public: virtual bool IsGradientBackgroundColor() const;
 
+      // Documentation inherited.
       public: virtual std::array<math::Color, 4> GradientBackgroundColor()
                   const;
 
+      // Documentation inherited.
       public: virtual void SetGradientBackgroundColor(
                   const std::array<math::Color, 4> &_colors);
 
+      // Documentation inherited.
       public: virtual void RemoveGradientBackgroundColor();
 
       public: virtual unsigned int NodeCount() const;

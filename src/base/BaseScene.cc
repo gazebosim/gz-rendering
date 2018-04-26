@@ -162,6 +162,7 @@ void BaseScene::SetGradientBackgroundColor(
   this->isGradientBackgroundColor = true;
 }
 
+//////////////////////////////////////////////////
 void BaseScene::RemoveGradientBackgroundColor()
 {
   this->gradientBackgroundColor = {math::Color::Black, math::Color::Black,

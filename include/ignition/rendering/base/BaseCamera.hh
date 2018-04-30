@@ -98,6 +98,10 @@ namespace ignition
       public: virtual RenderWindowPtr CreateRenderWindow();
 
       // Documentation inherited.
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos);
+
+      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const;
 
       // Documentation inherited.
@@ -492,6 +496,15 @@ namespace ignition
     math::Angle BaseCamera<T>::HFOV() const
     {
       return this->hfov;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i
+        &/*_mousePos*/)
+    {
+      ignerr << "VisualAt not implemented for the render engine" << std::endl;
+      return VisualPtr();
     }
 
     //////////////////////////////////////////////////

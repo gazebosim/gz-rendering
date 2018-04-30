@@ -50,6 +50,7 @@
 #include <OGRE/OgreSimpleRenderable.h>
 #include <OGRE/OgreFrameListener.h>
 #include <OGRE/OgreTexture.h>
+#include <OGRE/OgreRectangle2D.h>
 #include <OGRE/OgreRenderObjectListener.h>
 #include <OGRE/OgreTechnique.h>
 #include <OGRE/OgrePass.h>

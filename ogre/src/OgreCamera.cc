@@ -138,7 +138,62 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture = std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);
   this->renderTexture->SetFormat(PF_R8G8B8);
+  this->renderTexture->SetWidth(this->ImageWidth());
+  this->renderTexture->SetHeight(this->ImageHeight());
   this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetSelectionBuffer()
+{
+  this->selectionBuffer = new OgreSelectionBuffer(this->name,
+      this->scene->OgreSceneManager(), this->ImageWidth(),
+      this->ImageHeight());
+}
+
+//////////////////////////////////////////////////
+VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i
+    &_mousePos)
+{
+  VisualPtr result;
+
+  if (!this->selectionBuffer)
+  {
+    this->SetSelectionBuffer();
+
+    if (!this->selectionBuffer)
+    {
+      return result;
+    }
+  }
+
+  int ratio = static_cast<int>(this->AspectRatio());
+
+  ignition::math::Vector2i mousePos(
+      ratio * _mousePos.X(), ratio * _mousePos.Y());
+
+  Ogre::Entity *entity = this->selectionBuffer->OnSelectionClick(
+      mousePos.X(), mousePos.Y());
+
+  if (entity)
+  {
+    if (!entity->getUserObjectBindings().getUserAny().isEmpty() &&
+        entity->getUserObjectBindings().getUserAny().getType() ==
+        typeid(unsigned int))
+    {
+      try
+      {
+        result = this->scene->VisualById(Ogre::any_cast<unsigned int>(
+              entity->getUserObjectBindings().getUserAny()));
+      }
+      catch(Ogre::Exception &e)
+      {
+        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+      }
+    }
+  }
+
+  return result;
 }
 
 //////////////////////////////////////////////////

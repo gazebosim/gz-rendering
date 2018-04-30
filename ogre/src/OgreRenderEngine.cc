@@ -36,9 +36,9 @@
 #include <ignition/common/Util.hh>
 
 #include "ignition/rendering/RenderEngineManager.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
@@ -91,10 +91,6 @@ OgreRenderEngine::OgreRenderEngine() :
 
   this->dummyWindowId = 0;
 
-#ifdef OGRE_OVERLAY_NEEDED
-  this->ogreOverlaySystem = nullptr;
-#endif
-
   this->ogrePaths.push_back(std::string(OGRE_RESOURCE_PATH));
 }
 
@@ -125,7 +121,7 @@ bool OgreRenderEngine::Fini()
   }
 #endif
 
-#ifdef OGRE_OVERLAY_NEEDED
+#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
 #endif
@@ -399,7 +395,10 @@ void OgreRenderEngine::CreateRoot()
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateOverlay()
 {
-#ifdef OGRE_OVERLAY_NEEDED
+#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
+    // OgreOverlay is a component on its own in ogre 1.9 so must manually
+    // initialize it. Must be created after this->dataPtr->root,
+    // but before this->dataPtr->root is initialized.
   this->ogreOverlaySystem = new Ogre::OverlaySystem();
 #endif
 }
@@ -539,13 +538,15 @@ void OgreRenderEngine::CreateResources()
     // archNames.push_back(
     //     std::make_pair(prefix + "/skyx", "SkyX"));
     archNames.push_back(
-        std::make_pair(p+ "/materials/programs", "General"));
+        std::make_pair(p + "/materials/programs", "General"));
     archNames.push_back(
-        std::make_pair(p+ "/materials/scripts", "General"));
+        std::make_pair(p + "/materials/scripts", "General"));
     // archNames.push_back(
     //     std::make_pair(prefix + "/materials/textures", "General"));
     // archNames.push_back(
     //     std::make_pair(prefix + "/media/models", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/fonts", "Fonts"));
   }
 
   for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
@@ -714,6 +715,14 @@ void OgreRenderEngine::InitAttempt()
 
   this->scenes = OgreSceneStorePtr(new OgreSceneStore);
 }
+
+#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
+/////////////////////////////////////////////////
+Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
+{
+  return this->ogreOverlaySystem;
+}
+#endif
 
 // Register this plugin
 IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,

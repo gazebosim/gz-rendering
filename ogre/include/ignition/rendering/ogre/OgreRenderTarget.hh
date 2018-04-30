@@ -24,6 +24,7 @@
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
+#include "ignition/rendering/ogre/OgreRenderTargetMaterial.hh"
 
 namespace Ogre
 {
@@ -64,6 +65,11 @@ namespace ignition
 
       public: virtual void Destroy() = 0;
 
+      /// \brief Set a material to render on every object. This method is used
+      /// for special cases like the render target of a depth camera.
+      /// \param[in] _material The material to render
+      public: void SetMaterial(MaterialPtr _material);
+
       protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
       protected: virtual void UpdateBackgroundColor();
@@ -74,11 +80,23 @@ namespace ignition
 
       protected: virtual void RebuildViewport();
 
+      /// \brief Re-initializes render target material to apply a material to
+      /// everything in the scene. Does nothing if no material has been set
+      /// \sa OgreRenderTarget::RebuildImpl()
+      /// \sa BaseRenderTarget::Rebuild()
+      protected: void RebuildMaterial();
+
       protected: Ogre::Camera *ogreCamera = nullptr;
 
       protected: Ogre::Viewport *ogreViewport = nullptr;
 
       protected: Ogre::ColourValue ogreBackgroundColor;
+
+      /// \brief a material used by for the render target
+      protected: MaterialPtr material;
+
+      /// \brief Helper class that applies the material to the render target
+      protected: OgreRenderTargetMaterialPtr materialApplicator;
 
       protected: bool colorDirty = true;
 

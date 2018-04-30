@@ -100,6 +100,34 @@ namespace ignition
 
       public: virtual Ogre::MaterialPtr Material() const;
 
+      // Documentation inherited.
+      // \sa Material::SetVertexShader(const std::string &)
+      public: virtual void SetVertexShader(const std::string &_path) override;
+
+      // Documentation inherited.
+      // \sa Material::VertexShader() const
+      public: virtual std::string VertexShader() const override;
+
+      // Documentation inherited.
+      // \sa Material::VertexShaderParams()
+      public: virtual ShaderParamsPtr VertexShaderParams() override;
+
+      // Documentation inherited.
+      // \sa Material::SetFragmentShader(const std::string &)
+      public: virtual void SetFragmentShader(const std::string &_path) override;
+
+      // Documentation inherited.
+      // \sa Material::FragmentShader() const
+      public: virtual std::string FragmentShader() const override;
+
+      // Documentation inherited.
+      // \sa Material::FragmentShaderParams()
+      public: virtual ShaderParamsPtr FragmentShaderParams() override;
+
+      // Documentation inherited.
+      // \sa BaseMaterial::PreRender()
+      public: virtual void PreRender() override;
+
       protected: virtual void LoadImage(const std::string &_name,
                      Ogre::Image &_image);
 
@@ -115,6 +143,15 @@ namespace ignition
       protected: virtual void UpdateTransparency();
 
       protected: virtual void UpdateColorOperation();
+
+      /// \brief bind shader parameters that have changed
+      protected: void UpdateShaderParams();
+
+      /// \brief Transfer params from ign-rendering type to ogre type
+      /// \param[in] _params ignition rendering params
+      /// \param[out] _ogreParams ogre type for holding params
+      protected: void UpdateShaderParams(ConstShaderParamsPtr _params,
+        Ogre::GpuProgramParametersSharedPtr _ogreParams);
 
       protected: virtual void Init();
 
@@ -146,6 +183,18 @@ namespace ignition
       protected: std::string normalMapName;
 
       protected: enum ShaderType shaderType = ST_PIXEL;
+
+      /// \brief Path to vertex shader program.
+      protected: std::string vertexShaderPath;
+
+      /// \brief Path to fragment shader program.
+      protected: std::string fragmentShaderPath;
+
+      /// \brief Parameters to be bound to the vertex shader
+      protected: ShaderParamsPtr vertexShaderParams;
+
+      /// \brief Parameters to be bound to the fragment shader
+      protected: ShaderParamsPtr fragmentShaderParams;
 
       private: friend class OgreScene;
     };

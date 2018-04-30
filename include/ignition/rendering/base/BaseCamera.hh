@@ -108,6 +108,11 @@ namespace ignition
       public: virtual math::Matrix4d ViewMatrix() const;
 
       // Documentation inherited.
+      // \sa Camera::SetMaterial(const MaterialPtr &);
+      public: virtual void SetMaterial(const MaterialPtr &_material)
+                  override;
+
+      // Documentation inherited.
       public: virtual void SetTrackTarget(const NodePtr &_target,
                   const math::Vector3d &_offset, const bool _worldFrame);
 
@@ -653,6 +658,14 @@ namespace ignition
     double BaseCamera<T>::FollowPGain() const
     {
       return this->followPGain;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetMaterial(const MaterialPtr &/*_material*/)
+    {
+      std::cerr << "SetMaterial not implemented for current render"
+          << " engine" << std::endl;
     }
   }
 }

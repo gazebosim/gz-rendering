@@ -52,6 +52,7 @@ namespace ignition
     class RenderWindow;
     class Scene;
     class Sensor;
+    class ShaderParams;
     class SpotLight;
     class SubMesh;
     class Text;
@@ -139,6 +140,9 @@ namespace ignition
     /// \def SensorPtr
     /// \brief Shared pointer to Sensor
     typedef shared_ptr<Sensor> SensorPtr;
+
+    /// \brief Shared pointer to ShaderParams
+    typedef shared_ptr<ShaderParams> ShaderParamsPtr;
 
     /// \def SpotLightPtr
     /// \brief Shared pointer to SpotLight
@@ -235,6 +239,9 @@ namespace ignition
     /// \def const SensorPtr
     /// \brief Shared pointer to const Sensor
     typedef shared_ptr<const Sensor> ConstSensorPtr;
+
+    /// \brief Shared pointer to const ShaderParams
+    typedef shared_ptr<const ShaderParams> ConstShaderParamsPtr;
 
     /// \def const SpotLightPtr
     /// \brief Shared pointer to const SpotLight

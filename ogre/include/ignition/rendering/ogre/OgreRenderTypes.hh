@@ -40,6 +40,7 @@ namespace ignition
     class OgreRayQuery;
     class OgreRenderEngine;
     class OgreRenderTarget;
+    class OgreRenderTargetMaterial;
     class OgreRenderTexture;
     class OgreRenderWindow;
     class OgreScene;
@@ -91,6 +92,7 @@ namespace ignition
     typedef shared_ptr<OgreGeometryStore>        OgreGeometryStorePtr;
     typedef shared_ptr<OgreSubMeshStore>         OgreSubMeshStorePtr;
     typedef shared_ptr<OgreMaterialMap>          OgreMaterialMapPtr;
+    typedef shared_ptr<OgreRenderTargetMaterial> OgreRenderTargetMaterialPtr;
   }
 }
 #endif

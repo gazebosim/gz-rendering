@@ -70,6 +70,11 @@ namespace ignition
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
                   &_mousePos);
 
+      // Documentation Inherited.
+      // \sa Camera::SetMaterial(const MaterialPtr &)
+      public: virtual void SetMaterial(
+                  const MaterialPtr &_material) override;
+
       protected: virtual RenderTargetPtr RenderTarget() const;
 
       protected: virtual void Init();

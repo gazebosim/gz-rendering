@@ -25,6 +25,7 @@
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Sensor.hh"
+#include "ignition/rendering/Scene.hh"
 
 namespace ignition
 {
@@ -128,6 +129,12 @@ namespace ignition
       /// This function should only be called after a call to Render has
       /// successfully been executed.
       public: virtual void PostRender() = 0;
+
+      /// \brief Get the visual for a given mouse position
+      /// param[in] _mousePos mouse position
+      //  \return visual for that position, null if no visual was found
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos) = 0;
 
       /// \brief Renders a new frame.
       /// This is a convenience function for single-camera scenes. It wraps the

@@ -37,6 +37,9 @@ class CameraTest: public testing::Test,
 
   // Test and verify camera following
   public: void Follow(const std::string &_renderEngine);
+
+  // Test and verify camera select function method using Selection Buffer
+  public: void VisualAt(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -166,6 +169,80 @@ void CameraTest::Track(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void CameraTest::VisualAt(const std::string &_renderEngine)
+{
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  // Optix is not supported for this method yet
+  if (!engine || !_renderEngine.compare("optix"))
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+
+  VisualPtr root = scene->RootVisual();
+
+  // create box visual
+  VisualPtr box = scene->CreateVisual("box");
+  ASSERT_TRUE(box != nullptr);
+  box->AddGeometry(scene->CreateBox());
+  box->SetOrigin(0.0, 0.5, 0.0);
+  box->SetLocalPosition(3, 0, 0);
+  box->SetLocalRotation(M_PI / 4, 0, M_PI / 3);
+  box->SetLocalScale(1, 2.5, 1);
+  root->AddChild(box);
+
+  // create sphere visual
+  VisualPtr sphere = scene->CreateVisual("sphere");
+  ASSERT_TRUE(sphere != nullptr);
+  sphere->AddGeometry(scene->CreateSphere());
+  sphere->SetOrigin(0.0, -0.5, 0.0);
+  sphere->SetLocalPosition(3, 0, 0);
+  sphere->SetLocalRotation(0, 0, 0);
+  sphere->SetLocalScale(1, 2.5, 1);
+  root->AddChild(sphere);
+
+  // create camera
+  CameraPtr camera = scene->CreateCamera("camera");
+  ASSERT_TRUE(camera != nullptr);
+  camera->SetLocalPosition(0.0, 0.0, 0.0);
+  camera->SetLocalRotation(0.0, 0.0, 0.0);
+  camera->SetImageWidth(800);
+  camera->SetImageHeight(600);
+  camera->SetAntiAliasing(2);
+  camera->SetAspectRatio(1.333);
+  camera->SetHFOV(M_PI / 2);
+  root->AddChild(camera);
+
+  // render a frame
+  camera->Update();
+
+  // test get sphere object
+  ignition::math::Vector2i sphere_position(220, 307);
+  VisualPtr sphere_visual = camera->VisualAt(sphere_position);
+  ASSERT_TRUE(sphere_visual != nullptr);
+  EXPECT_EQ("sphere", sphere_visual->Name());
+
+  // test get box object
+  ignition::math::Vector2i box_position(452, 338);
+  VisualPtr box_visual = camera->VisualAt(box_position);
+  ASSERT_TRUE(box_visual != nullptr);
+  EXPECT_EQ("box", box_visual->Name());
+
+  // test get no object
+  ignition::math::Vector2i empty_position(300, 150);
+  VisualPtr empty_visual = camera->VisualAt(empty_position);
+  ASSERT_TRUE(empty_visual == nullptr);
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
 void CameraTest::Follow(const std::string &_renderEngine)
 {
   // create and populate scene
@@ -280,6 +357,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
   // Clean up
   engine->DestroyScene(scene);
 }
+
 /////////////////////////////////////////////////
 TEST_P(CameraTest, Track)
 {
@@ -290,6 +368,12 @@ TEST_P(CameraTest, Track)
 TEST_P(CameraTest, Follow)
 {
   Follow(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, VisualAt)
+{
+  VisualAt(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,

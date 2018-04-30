@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,28 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_MESH_VIEWER_GLUTWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_MESH_VIEWER_GLUTWINDOW_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_MOUSE_PICKING_GLUTWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_MOUSE_PICKING_GLUTWINDOW_HH_
 
 #include <vector>
 #include "ignition/rendering/RenderTypes.hh"
 
 namespace ir = ignition::rendering;
 
-/// \brief Run the demo and render the scene from the cameras
-/// \param[in] _cameras Cameras in the scene
 void run(std::vector<ir::CameraPtr> _cameras);
+
+void displayCB();
+
+void idleCB();
+
+void keyboardCB(unsigned char _key, int _x, int _y);
+
+void reshape(int _width, int _height);
+
+void initCamera(ir::CameraPtr _camera);
+
+void initContext();
+
+void printUsage();
 
 #endif

@@ -17,9 +17,12 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
 #define IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
 
+#include <string>
+
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreSensor.hh"
+#include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
 
 namespace Ogre
 {
@@ -63,15 +66,23 @@ namespace ignition
 
       public: virtual math::Matrix4d ViewMatrix() const;
 
+      // Documentation inherited
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos);
+
       protected: virtual RenderTargetPtr RenderTarget() const;
 
       protected: virtual void Init();
+
+      protected: virtual void SetSelectionBuffer();
 
       private: void CreateCamera();
 
       protected: virtual void CreateRenderTexture();
 
       protected: Ogre::Camera *ogreCamera = nullptr;
+
+      protected: OgreSelectionBuffer *selectionBuffer = nullptr;
 
       protected: OgreRenderTargetPtr renderTexture;
 

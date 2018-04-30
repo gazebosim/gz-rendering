@@ -19,6 +19,10 @@
 
 #include <memory>
 
+/// \def IGN_VISIBILITY_SELECTABLE
+/// \brief Render visuals that are selectable mask.
+#define IGN_VISIBILITY_SELECTABLE      0x00000002
+
 namespace ignition
 {
   namespace rendering

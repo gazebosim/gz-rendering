@@ -551,5 +551,3 @@ OgreScenePtr OgreScene::SharedThis()
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<OgreScene>(sharedBase);
 }
-
-//////////////////////////////////////////////////

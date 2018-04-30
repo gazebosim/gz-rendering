@@ -144,6 +144,34 @@ void BaseScene::SetBackgroundColor(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
+bool BaseScene::IsGradientBackgroundColor() const
+{
+  return this->isGradientBackgroundColor;
+}
+
+//////////////////////////////////////////////////
+std::array<math::Color, 4> BaseScene::GradientBackgroundColor() const
+{
+  return this->gradientBackgroundColor;
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetGradientBackgroundColor(
+  const std::array<math::Color, 4> &_colors)
+{
+  this->gradientBackgroundColor = _colors;
+  this->isGradientBackgroundColor = true;
+}
+
+//////////////////////////////////////////////////
+void BaseScene::RemoveGradientBackgroundColor()
+{
+  this->gradientBackgroundColor = {math::Color::Black, math::Color::Black,
+      math::Color::Black, math::Color::Black};
+  this->isGradientBackgroundColor = false;
+}
+
+//////////////////////////////////////////////////
 unsigned int BaseScene::NodeCount() const
 {
   return this->nodes->Size();

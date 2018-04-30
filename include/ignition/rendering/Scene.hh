@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_SCENE_HH_
 #define IGNITION_RENDERING_SCENE_HH_
 
+#include <array>
 #include <string>
 #include <limits>
 
@@ -117,6 +118,37 @@ namespace ignition
       /// \brief Set the scene background color
       /// \param[in] _color The scene background color
       public: virtual void SetBackgroundColor(const math::Color &_color) = 0;
+
+      /// \brief Whether the scene has a gradient background or not (solid)
+      /// \return True if the scene has a gradient background or false otherwise
+      public: virtual bool IsGradientBackgroundColor() const = 0;
+
+      /// \brief Get the scene gradient background color
+      /// \return The scene gradient background color
+      /// \sa bool IsGradientBackgroundColor() const
+      public: virtual std::array<math::Color, 4>
+                  GradientBackgroundColor() const = 0;
+
+      /// \brief Set a custom gradient background color on top of the regular
+      /// background. Default should be black.
+      ///
+      /// Important note: Keep in mind that this object will always be rendered
+      /// on top of any existing scene or camera background.
+      ///
+      /// \param[in] _colors The scene gradient background color.
+      /// Next is the description of how to interpret each value of the array:
+      /// 0: Top left corner color.
+      /// 1: Bottom left corner color.
+      /// 2: Top right corner color.
+      /// 3: Bottom right corner color.
+      /// \sa void RemoveGradientBackgroundColor()
+      public: virtual void SetGradientBackgroundColor(
+                  const std::array<math::Color, 4> &_colors) = 0;
+
+      /// \brief Remove the scene gradient background color
+      /// \sa void SetGradientBackgroundColor(
+      ///            const std::array<math::Color, 4> &_colors)
+      public: virtual void RemoveGradientBackgroundColor() = 0;
 
       /// \brief Get the number of nodes managed by this scene. Note these
       /// nodes may not be directly or indirectly attached to the root node.

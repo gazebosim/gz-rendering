@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRESCENE_HH_
 #define IGNITION_RENDERING_OGRE_OGRESCENE_HH_
 
+#include <array>
 #include <string>
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -49,6 +50,13 @@ namespace ignition
       public: virtual void SetAmbientLight(const math::Color &_color);
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
+
+      // Documentation inherited.
+      public: virtual void SetGradientBackgroundColor(
+                     const std::array<math::Color, 4> &_colors);
+
+      // Documentation inherited.
+      public: virtual void RemoveGradientBackgroundColor();
 
       public: virtual void PreRender();
 

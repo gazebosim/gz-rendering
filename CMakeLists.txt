@@ -28,13 +28,13 @@ ign_configure_project()
 
 #--------------------------------------
 # Find ignition-math
-set(IGN_MATH_VER 4)
-ign_find_package(ignition-math${IGN_MATH_VER} REQUIRED)
+ign_find_package(ignition-math5 REQUIRED)
+set(IGN_MATH_VER ${ignition-math5_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-common
-set(IGN_COMMON_VER 1)
-ign_find_package(ignition-common${IGN_COMMON_VER} REQUIRED)
+ign_find_package(ignition-common2 REQUIRED COMPONENTS graphics events)
+set(IGN_COMMON_VER ${ignition-common2_VERSION_MAJOR})
 
 #--------------------------------------
 # Find dependencies that we ignore for Visual Studio

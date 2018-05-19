@@ -207,6 +207,30 @@ namespace ignition
       /// \brief Copy properties from given Material
       /// \param[in] _material Source Material to be copied from
       public: virtual void CopyFrom(const common::Material &_material) = 0;
+
+      /// \brief Get path to the vertex shader
+      /// \return Path to vertex shader
+      public: virtual std::string VertexShader() const = 0;
+
+      /// \brief Get params for the vertex shader
+      /// \return editable parameters
+      public: virtual ShaderParamsPtr VertexShaderParams() = 0;
+
+      /// \brief Set the vertex shader
+      /// \param[in] _path path to a file containing a glsl shader
+      public: virtual void SetVertexShader(const std::string &_path) = 0;
+
+      /// \brief Get path to the fragment shader
+      /// \return Path to fragment shader
+      public: virtual std::string FragmentShader() const = 0;
+
+      /// \brief Get params for the fragment shader
+      /// \return editable parameters
+      public: virtual ShaderParamsPtr FragmentShaderParams() = 0;
+
+      /// \brief Set the fragment shader
+      /// \param[in] _path path to a file containing a glsl shader
+      public: virtual void SetFragmentShader(const std::string &_path) = 0;
     };
   }
 }

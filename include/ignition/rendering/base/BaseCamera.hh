@@ -98,10 +98,19 @@ namespace ignition
       public: virtual RenderWindowPtr CreateRenderWindow();
 
       // Documentation inherited.
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos);
+
+      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const;
 
       // Documentation inherited.
       public: virtual math::Matrix4d ViewMatrix() const;
+
+      // Documentation inherited.
+      // \sa Camera::SetMaterial(const MaterialPtr &);
+      public: virtual void SetMaterial(const MaterialPtr &_material)
+                  override;
 
       // Documentation inherited.
       public: virtual void SetTrackTarget(const NodePtr &_target,
@@ -491,6 +500,15 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i
+        &/*_mousePos*/)
+    {
+      ignerr << "VisualAt not implemented for the render engine" << std::endl;
+      return VisualPtr();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseCamera<T>::SetHFOV(const math::Angle &_hfov)
     {
       this->hfov= _hfov;
@@ -640,6 +658,14 @@ namespace ignition
     double BaseCamera<T>::FollowPGain() const
     {
       return this->followPGain;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetMaterial(const MaterialPtr &/*_material*/)
+    {
+      std::cerr << "SetMaterial not implemented for current render"
+          << " engine" << std::endl;
     }
   }
 }

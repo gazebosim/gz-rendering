@@ -28,6 +28,8 @@
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/RayQuery.hh"
+#include "ignition/rendering/Text.hh"
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
@@ -119,6 +121,35 @@ void BaseScene::SetSimTime(const common::Time &_time)
 }
 
 //////////////////////////////////////////////////
+VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,
+                              const ignition::math::Vector2i &_mousePos)
+{
+  VisualPtr visual;
+  RayQueryPtr rayQuery = this->CreateRayQuery();
+  if (!rayQuery)
+    return visual;
+
+  double nx =
+      2.0 * _mousePos.X() / static_cast<double>(_camera->ImageWidth()) - 1.0;
+  double ny =
+      1.0 - 2.0 * _mousePos.Y() / static_cast<double>(_camera->ImageHeight());
+
+  math::Vector2d mousePos(nx, ny);
+
+  if (rayQuery)
+  {
+    rayQuery->SetFromCamera(_camera, mousePos);
+    RayQueryResult result = rayQuery->ClosestPoint();
+
+    if (result)
+    {
+      visual = this->Visuals()->GetById(result.objectId);
+    }
+  }
+  return visual;
+}
+
+//////////////////////////////////////////////////
 void BaseScene::SetAmbientLight(double _r, double _g, double _b, double _a)
 {
   this->SetAmbientLight(math::Color(_r, _g, _b, _a));
@@ -140,6 +171,34 @@ void BaseScene::SetBackgroundColor(double _r, double _g, double _b, double _a)
 void BaseScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;
+}
+
+//////////////////////////////////////////////////
+bool BaseScene::IsGradientBackgroundColor() const
+{
+  return this->isGradientBackgroundColor;
+}
+
+//////////////////////////////////////////////////
+std::array<math::Color, 4> BaseScene::GradientBackgroundColor() const
+{
+  return this->gradientBackgroundColor;
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetGradientBackgroundColor(
+  const std::array<math::Color, 4> &_colors)
+{
+  this->gradientBackgroundColor = _colors;
+  this->isGradientBackgroundColor = true;
+}
+
+//////////////////////////////////////////////////
+void BaseScene::RemoveGradientBackgroundColor()
+{
+  this->gradientBackgroundColor = {math::Color::Black, math::Color::Black,
+      math::Color::Black, math::Color::Black};
+  this->isGradientBackgroundColor = false;
 }
 
 //////////////////////////////////////////////////
@@ -723,6 +782,21 @@ GridPtr BaseScene::CreateGrid()
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Grid");
   return this->CreateGridImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+TextPtr BaseScene::CreateText()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Text");
+  return this->CreateTextImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+TextPtr BaseScene::CreateTextImpl(const unsigned int /*_id*/,
+    const std::string &/*_name*/)
+{
+  return TextPtr();
 }
 
 //////////////////////////////////////////////////

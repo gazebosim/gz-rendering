@@ -19,6 +19,10 @@
 
 #include <memory>
 
+/// \def IGN_VISIBILITY_SELECTABLE
+/// \brief Render visuals that are selectable mask.
+#define IGN_VISIBILITY_SELECTABLE      0x00000002
+
 namespace ignition
 {
   namespace rendering
@@ -48,8 +52,10 @@ namespace ignition
     class RenderWindow;
     class Scene;
     class Sensor;
+    class ShaderParams;
     class SpotLight;
     class SubMesh;
+    class Text;
     class Visual;
 
     /// \def ArrowVisualPtr
@@ -135,6 +141,9 @@ namespace ignition
     /// \brief Shared pointer to Sensor
     typedef shared_ptr<Sensor> SensorPtr;
 
+    /// \brief Shared pointer to ShaderParams
+    typedef shared_ptr<ShaderParams> ShaderParamsPtr;
+
     /// \def SpotLightPtr
     /// \brief Shared pointer to SpotLight
     typedef shared_ptr<SpotLight> SpotLightPtr;
@@ -142,6 +151,10 @@ namespace ignition
     /// \def SubMeshPtr
     /// \brief Shared pointer to SubMesh
     typedef shared_ptr<SubMesh> SubMeshPtr;
+
+    /// \def TextPtr
+    /// \brief Shared pointer to Text
+    typedef shared_ptr<Text> TextPtr;
 
     /// \def VisualPtr
     /// \brief Shared pointer to Visual
@@ -227,6 +240,9 @@ namespace ignition
     /// \brief Shared pointer to const Sensor
     typedef shared_ptr<const Sensor> ConstSensorPtr;
 
+    /// \brief Shared pointer to const ShaderParams
+    typedef shared_ptr<const ShaderParams> ConstShaderParamsPtr;
+
     /// \def const SpotLightPtr
     /// \brief Shared pointer to const SpotLight
     typedef shared_ptr<const SpotLight> ConstSpotLightPtr;
@@ -234,6 +250,10 @@ namespace ignition
     /// \def const SubMeshPtr
     /// \brief Shared pointer to const SubMesh
     typedef shared_ptr<const SubMesh> ConstSubMeshPtr;
+
+    /// \def const SubMeshPtr
+    /// \brief Shared pointer to const SubMesh
+    typedef shared_ptr<const Text> ConstTextPtr;
 
     /// \def const VisualPtr
     /// \brief Shared pointer to const Visual

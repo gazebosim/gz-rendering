@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include "ignition/common/Console.hh"
+
 #include "ignition/rendering/Material.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -64,6 +66,30 @@ namespace ignition
       public: virtual void ClearNormalMap() = 0;
 
       public: virtual void SetShaderType(enum ShaderType _type) = 0;
+
+      // Documentation inherited.
+      // \sa Material::VertexShader() const
+      public: virtual std::string VertexShader() const override;
+
+      // Documentation inherited.
+      // \sa Material::VertexShaderParams()
+      public: virtual ShaderParamsPtr VertexShaderParams() override;
+
+      // Documentation inherited.
+      // \sa Material::SetVertexShader(const std::string &)
+      public: virtual void SetVertexShader(const std::string &_path) override;
+
+      // Documentation inherited.
+      // \sa Material::FragmentShader() const
+      public: virtual std::string FragmentShader() const override;
+
+      // Documentation inherited.
+      // \sa Material::FragmentShaderParams()
+      public: virtual ShaderParamsPtr FragmentShaderParams() override;
+
+      // Documentation inherited.
+      // \sa Material::SetFragmentShader(const std::string &)
+      public: virtual void SetFragmentShader(const std::string &_path) override;
 
       public: virtual void CopyFrom(ConstMaterialPtr _material);
 
@@ -120,6 +146,54 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    std::string BaseMaterial<T>::VertexShader() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ShaderParamsPtr BaseMaterial<T>::VertexShaderParams()
+    {
+      ignerr << "Vertex shader is not supported by the current render engine"
+          << std::endl;
+      return nullptr;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetVertexShader(const std::string &/*_path*/)
+    {
+      ignerr << "Vertex shader is not supported by the current render engine"
+          << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::FragmentShader() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ShaderParamsPtr BaseMaterial<T>::FragmentShaderParams()
+    {
+      ignerr << "Fragment shader is not supported by the current render engine"
+          << std::endl;
+      return nullptr;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetFragmentShader(const std::string &/*_path*/)
+    {
+      ignerr << "Fragment shader is not supported by the current render engine"
+          << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     MaterialPtr BaseMaterial<T>::Clone(const std::string &_name) const
     {
       auto baseShared = this->shared_from_this();
@@ -150,6 +224,8 @@ namespace ignition
       this->SetTexture(_material->Texture());
       this->SetNormalMap(_material->NormalMap());
       this->SetShaderType(_material->ShaderType());
+      this->SetVertexShader(_material->VertexShader());
+      this->SetFragmentShader(_material->FragmentShader());
     }
 
     //////////////////////////////////////////////////

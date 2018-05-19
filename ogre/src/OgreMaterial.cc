@@ -16,10 +16,13 @@
  */
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Filesystem.hh>
 
+#include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
+#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
 using namespace ignition;
@@ -256,6 +259,152 @@ enum ShaderType OgreMaterial::ShaderType() const
 void OgreMaterial::SetShaderType(enum ShaderType _type)
 {
   this->shaderType = (ShaderUtil::IsValid(_type)) ? _type : ST_PIXEL;
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::PreRender()
+{
+  this->UpdateShaderParams();
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::UpdateShaderParams()
+{
+  if (this->vertexShaderParams && this->vertexShaderParams->IsDirty())
+  {
+    Ogre::GpuProgramParametersSharedPtr ogreParams;
+    ogreParams = this->ogrePass->getVertexProgramParameters();
+    this->UpdateShaderParams(this->vertexShaderParams, ogreParams);
+    this->vertexShaderParams->ClearDirty();
+  }
+  if (this->fragmentShaderParams && this->fragmentShaderParams->IsDirty())
+  {
+    Ogre::GpuProgramParametersSharedPtr ogreParams;
+    ogreParams = this->ogrePass->getFragmentProgramParameters();
+    this->UpdateShaderParams(this->fragmentShaderParams, ogreParams);
+    this->fragmentShaderParams->ClearDirty();
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
+    Ogre::GpuProgramParametersSharedPtr _ogreParams)
+{
+  for (const auto name_param : *_params)
+  {
+    if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
+    {
+      float value;
+      name_param.second.Value(&value);
+      _ogreParams->setNamedConstant(name_param.first, value);
+    }
+    else if (ShaderParam::PARAM_INT == name_param.second.Type())
+    {
+      int value;
+      name_param.second.Value(&value);
+      _ogreParams->setNamedConstant(name_param.first, value);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetVertexShader(const std::string &_path)
+{
+  if (_path.empty())
+    return;
+
+  if (!common::exists(_path))
+  {
+    ignerr << "Vertex shader path does not exist: " << _path << std::endl;
+    return;
+  }
+
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
+  "FileSystem", "General", false);
+
+  Ogre::HighLevelGpuProgramPtr vertexShader =
+    Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
+        "__ignition_rendering_vertex__" + _path,
+        this->ogreGroup,
+        "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
+
+  vertexShader->setSourceFile(_path);
+  vertexShader->load();
+
+  assert(vertexShader->isLoaded());
+  assert(!(vertexShader->hasCompileError()));
+  assert(vertexShader->isSupported());
+
+  this->ogrePass->setVertexProgram(vertexShader->getName());
+
+  this->ogreMaterial->compile();
+  this->ogreMaterial->load();
+
+  this->vertexShaderPath = _path;
+  this->vertexShaderParams.reset(new ShaderParams);
+}
+
+//////////////////////////////////////////////////
+std::string OgreMaterial::VertexShader() const
+{
+  return this->vertexShaderPath;
+}
+
+//////////////////////////////////////////////////
+ShaderParamsPtr OgreMaterial::VertexShaderParams()
+{
+  return this->vertexShaderParams;
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetFragmentShader(const std::string &_path)
+{
+  if (_path.empty())
+    return;
+
+  if (!common::exists(_path))
+  {
+    ignerr << "Fragment shader path does not exist: " << _path << std::endl;
+    return;
+  }
+
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
+  "FileSystem", "General", false);
+
+  Ogre::HighLevelGpuProgramPtr fragmentShader =
+    Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
+        "__ignition_rendering_fragment__" + _path,
+        this->ogreGroup,
+        "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+
+  fragmentShader->setSourceFile(_path);
+  fragmentShader->load();
+
+  assert(fragmentShader->isLoaded());
+  assert(!(fragmentShader->hasCompileError()));
+  assert(fragmentShader->isSupported());
+
+  this->ogrePass->setFragmentProgram(fragmentShader->getName());
+
+  this->ogreMaterial->setLightingEnabled(false);
+
+  this->ogreMaterial->compile();
+  this->ogreMaterial->load();
+
+  this->fragmentShaderPath = _path;
+  this->fragmentShaderParams.reset(new ShaderParams);
+}
+
+//////////////////////////////////////////////////
+std::string OgreMaterial::FragmentShader() const
+{
+  return this->fragmentShaderPath;
+}
+
+//////////////////////////////////////////////////
+ShaderParamsPtr OgreMaterial::FragmentShaderParams()
+{
+  return this->fragmentShaderParams;
 }
 
 //////////////////////////////////////////////////

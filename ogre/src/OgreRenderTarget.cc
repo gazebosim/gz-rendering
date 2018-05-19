@@ -17,11 +17,14 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreRenderTarget.hh"
+#include "ignition/rendering/Material.hh"
 
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
+#include "ignition/rendering/ogre/OgreMaterial.hh"
+#include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
+#include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
 using namespace ignition;
@@ -106,6 +109,11 @@ void OgreRenderTarget::PreRender()
 {
   BaseRenderTarget::PreRender();
   this->UpdateBackgroundColor();
+
+  if (this->material)
+  {
+    this->material->PreRender();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -129,6 +137,7 @@ void OgreRenderTarget::RebuildImpl()
 {
   this->RebuildTarget();
   this->RebuildViewport();
+  this->RebuildMaterial();
 }
 
 //////////////////////////////////////////////////
@@ -145,6 +154,31 @@ void OgreRenderTarget::RebuildViewport()
 
   OgreRTShaderSystem::Instance()->AttachViewport(this->ogreViewport,
       this->scene);
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::SetMaterial(MaterialPtr _material)
+{
+  this->material = _material;
+
+  // Have to rebuild the target so there is something to apply the applicator to
+  this->targetDirty = true;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::RebuildMaterial()
+{
+  if (this->material)
+  {
+    OgreMaterial *ogreMaterial = dynamic_cast<OgreMaterial*>(
+        this->material.get());
+    Ogre::MaterialPtr matPtr = ogreMaterial->Material();
+
+    Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
+    Ogre::RenderTarget *target = this->RenderTarget();
+    this->materialApplicator.reset(new OgreRenderTargetMaterial(
+        sceneMgr, target, matPtr.get()));
+  }
 }
 
 //////////////////////////////////////////////////

@@ -11,25 +11,17 @@ pipelines:
         script: # Modify the commands below to build your repository.
           - apt update
           - apt -y install wget lsb-release
-          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list'
+          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
           - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt-get update
           - apt-get -y install
             cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn freeglut3-dev libxmu-dev libxi-dev
             curl mercurial lcov
           - sh tools/code_check.sh
-          # Ignition dependencies
+          # Dependency: Ignition packages
           - apt-get -y install
-            libignition-common-dev
-            libignition-math4-dev
-          # Dependency: Ignition cmake
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b Components
-          - cd ign-cmake
-          - mkdir build
-          - cd build
-          - cmake ..
-          - make -j4 install
-          - cd ../..
+            libignition-cmake1-dev libignition-math5-dev libignition-common2-dev
           # Ignition rendering
           - mkdir build
           - cd build

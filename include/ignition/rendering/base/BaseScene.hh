@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASE_BASESCENE_HH_
 #define IGNITION_RENDERING_BASE_BASESCENE_HH_
 
+#include <array>
 #include <string>
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -62,6 +63,20 @@ namespace ignition
                   double _a = 1.0);
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
+
+      // Documentation inherited.
+      public: virtual bool IsGradientBackgroundColor() const;
+
+      // Documentation inherited.
+      public: virtual std::array<math::Color, 4> GradientBackgroundColor()
+                  const;
+
+      // Documentation inherited.
+      public: virtual void SetGradientBackgroundColor(
+                  const std::array<math::Color, 4> &_colors);
+
+      // Documentation inherited.
+      public: virtual void RemoveGradientBackgroundColor();
 
       public: virtual unsigned int NodeCount() const;
 
@@ -148,6 +163,10 @@ namespace ignition
       public: virtual VisualPtr VisualByName(const std::string &_name) const;
 
       public: virtual VisualPtr VisualByIndex(unsigned int _index) const;
+
+      // Documentation inherited
+      public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
+                          const ignition::math::Vector2i &_mousePos);
 
       public: virtual void DestroyVisual(VisualPtr _visual);
 
@@ -255,6 +274,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual GridPtr CreateGrid();
 
+      // Documentation inherited.
+      public: virtual TextPtr CreateText();
+
       public: virtual MaterialPtr CreateMaterial(const std::string &_name = "");
 
       public: virtual MaterialPtr CreateMaterial(
@@ -331,6 +353,13 @@ namespace ignition
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
+      /// \brief Implementation for creating a text's geometry object
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a text geometry object
+      protected: virtual TextPtr CreateTextImpl(unsigned int _id,
+                     const std::string &_name);
+
       protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
@@ -376,6 +405,18 @@ namespace ignition
 
       /// \brief Scene background color. Default should be black.
       protected: math::Color backgroundColor;
+
+      /// \brief The four corners of the gradient background color.
+      /// Next is the description of how to interpret each value of the array:
+      /// 0: Top left corner color.
+      /// 1: Bottom left corner color.
+      /// 2: Top right corner color.
+      /// 3: Bottom right corner color.
+      /// Default should be black.
+      protected: std::array<math::Color, 4> gradientBackgroundColor;
+
+      /// \brief Whether the scene has a gradient background.
+      protected: bool isGradientBackgroundColor = false;
 
       private: unsigned int nextObjectId;
 

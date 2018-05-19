@@ -25,6 +25,7 @@
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Sensor.hh"
+#include "ignition/rendering/Scene.hh"
 
 namespace ignition
 {
@@ -128,6 +129,12 @@ namespace ignition
       /// This function should only be called after a call to Render has
       /// successfully been executed.
       public: virtual void PostRender() = 0;
+
+      /// \brief Get the visual for a given mouse position
+      /// param[in] _mousePos mouse position
+      //  \return visual for that position, null if no visual was found
+      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+                  &_mousePos) = 0;
 
       /// \brief Renders a new frame.
       /// This is a convenience function for single-camera scenes. It wraps the
@@ -260,6 +267,11 @@ namespace ignition
       /// \brief Get the camera follow movement P gain.
       /// \return P gain for camera following
       public: virtual double FollowPGain() const = 0;
+
+      /// \brief Set a material that the camera should see on all objects
+      /// \param[in] _material a material instance
+      /// \param[in] _material a material instance
+      public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
     };
   }
 }

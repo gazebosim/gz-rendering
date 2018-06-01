@@ -82,8 +82,13 @@ set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering
 #============================================================================
 # Configure the build
 #============================================================================
+set(RENDERING_COMPONENTS ogre)
+if (HAVE_OPTIX)
+  list(APPEND RENDERING_COMPONENTS optix)
+endif()
+
 ign_configure_build(QUIT_IF_BUILD_ERRORS
-    COMPONENTS ogre optix)
+    COMPONENTS ${RENDERING_COMPONENTS})
 
 #============================================================================
 # Create package information

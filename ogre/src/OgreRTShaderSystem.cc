@@ -87,7 +87,7 @@ OgreRTShaderSystem::OgreRTShaderSystem()
 {
   this->dataPtr->initialized = false;
   this->dataPtr->shadowsApplied = false;
-  this->dataPtr->pssmSetup.setNull();
+  this->dataPtr->pssmSetup = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -160,7 +160,7 @@ void OgreRTShaderSystem::Fini()
     this->dataPtr->shaderGenerator = nullptr;
   }
 
-  this->dataPtr->pssmSetup.setNull();
+  this->dataPtr->pssmSetup = nullptr;
   this->dataPtr->entities.clear();
   this->dataPtr->scenes.clear();
   this->dataPtr->shadowsApplied = false;

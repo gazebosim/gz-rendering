@@ -25,6 +25,18 @@
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Object.hh"
 
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#else
+#if defined(_WIN32)
+  #include <windows.h>
+#endif /* _WIN32 */
+#include <GL/gl.h>
+#include <GL/glext.h>
+#endif /* __APPLE__ */
+
+
 namespace ignition
 {
   namespace rendering
@@ -84,6 +96,10 @@ namespace ignition
     {
       /// \brief Deconstructor
       public: virtual ~RenderTexture() { }
+
+      /// \brief Returns the OpenGL texture Id. A valid Id is returned only
+      // if this is an OpenGL render texture
+      public: virtual GLuint GLId() const = 0;
     };
 
     /// \class RenderWindow RenderWindow.hh

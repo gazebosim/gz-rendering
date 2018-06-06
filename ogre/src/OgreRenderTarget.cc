@@ -15,6 +15,12 @@
  *
  */
 
+// leave this out of OgreIncludes as it conflicts with other files requiring
+// gl.h
+#include <GL/glew.h>
+#include <OGRE/RenderSystems/GL/OgreGLFBORenderTexture.h>
+
+
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Material.hh"
@@ -229,6 +235,53 @@ void OgreRenderTexture::BuildTarget()
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
       Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).getPointer();
 }
+
+//////////////////////////////////////////////////
+GLuint OgreRenderTexture::GLId()
+{
+  if (!this->ogreTexture)
+    return GLuint(0);
+  
+  GLuint texId;
+  this->ogreTexture->getCustomAttribute("GLID", &texId);
+
+  return texId;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::PreRender()
+{
+  OgreRenderTarget::PreRender();
+  //Ogre::GLFBOManager::getSingleton().bind(this->RenderTarget());
+  if (!this->ogreTexture)
+    return;
+
+
+  Ogre::RenderTarget *rt = this->RenderTarget();
+
+  Ogre::GLFrameBufferObject *ogreFbo = nullptr;
+  rt->getCustomAttribute("FBO", &ogreFbo);
+  Ogre::GLFBOManager *manager = ogreFbo->getManager();
+  manager->bind(rt);
+
+//  Ogre::GLFBOManager::getSingleton().unbind(rt);
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::PostRender()
+{
+  if (!this->ogreTexture)
+    return;
+
+  Ogre::RenderTarget *rt = this->RenderTarget();
+//  Ogre::GLFBOManager::getSingleton().unbind(rt);
+
+  Ogre::GLFrameBufferObject *ogreFbo = nullptr;
+  rt->getCustomAttribute("FBO", &ogreFbo);
+  Ogre::GLFBOManager *manager = ogreFbo->getManager();
+  manager->unbind(rt);
+}
+
 
 //////////////////////////////////////////////////
 // OgreRenderWindow

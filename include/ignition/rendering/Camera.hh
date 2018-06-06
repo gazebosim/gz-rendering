@@ -19,6 +19,19 @@
 
 #include <string>
 
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#else
+#if defined(_WIN32)
+  #include <windows.h>
+#endif /* _WIN32 */
+#include <GL/gl.h>
+#include <GL/glext.h>
+#endif /* __APPLE__ */
+
+
+
 #include <ignition/common/Event.hh>
 #include <ignition/math/Matrix4.hh>
 
@@ -26,6 +39,7 @@
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Sensor.hh"
 #include "ignition/rendering/Scene.hh"
+
 
 namespace ignition
 {
@@ -272,6 +286,11 @@ namespace ignition
       /// \param[in] _material a material instance
       /// \param[in] _material a material instance
       public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
+
+      /// \brief Get the OpenGL texture id associated with the render texture
+      /// used by this camera. A valid id is returned only if the underlying
+      /// render engine is OpenGL based,
+      public: virtual GLuint RenderTextureGLId() const = 0;
     };
   }
 }

@@ -112,6 +112,15 @@ namespace ignition
 
       public: virtual void Destroy();
 
+      // Documentation inherited
+      public: virtual void PreRender();
+
+      // Documentation inherited
+      public: virtual void PostRender();
+
+      // Documentation inherited
+      public: virtual GLuint GLId();
+
       protected: virtual Ogre::RenderTarget *RenderTarget() const;
 
       protected: virtual void RebuildTarget();

@@ -72,7 +72,7 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
         Ogre::MaterialManager::getSingleton().load("ign-rendering/plain_color",
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-      Ogre::MaterialPtr plainMaterial = static_cast<Ogre::MaterialPtr>(res);
+      Ogre::MaterialPtr plainMaterial = res.static_cast<Ogre::MaterialPtr>();
 
       this->plainTechnique = plainMaterial->getTechnique(0);
       Ogre::Pass *plainPass = this->plainTechnique->getPass(0);

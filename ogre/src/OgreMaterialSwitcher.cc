@@ -72,12 +72,7 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
         Ogre::MaterialManager::getSingleton().load("ign-rendering/plain_color",
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-      // OGRE 1.9 changes the shared pointer definition
-      #if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
       Ogre::MaterialPtr plainMaterial = static_cast<Ogre::MaterialPtr>(res);
-      #else
-      Ogre::MaterialPtr plainMaterial = res.staticCast<Ogre::Material>();
-      #endif
 
       this->plainTechnique = plainMaterial->getTechnique(0);
       Ogre::Pass *plainPass = this->plainTechnique->getPass(0);

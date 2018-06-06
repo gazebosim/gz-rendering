@@ -359,7 +359,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
       this->ogreMaterial == nullptr || !this->font)
   {
     auto ogreFont = (Ogre::Font*)Ogre::FontManager::getSingleton()
-        .getByName(_newFontName).getPointer();
+        .getByName(_newFontName).get();
 
     if (!ogreFont)
     {

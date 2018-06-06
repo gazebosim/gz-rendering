@@ -5,6 +5,8 @@ ign_get_libsources_and_unittests(sources gtest_sources)
 ign_add_component(ogre SOURCES ${sources} GET_TARGET_NAME ogre_target)
 
 find_package(OpenGL)
+include_directories(${OGRE_INCLUDE_DIRS})
+message(STATUS "OGRE_INCLUDE_DIRS: ${OGRE_INCLUDE_DIRS}")
 
 include_directories(${OGRE_INCLUDE_DIRS})
 

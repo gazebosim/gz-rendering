@@ -513,7 +513,7 @@ void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
   // pssmCasterPass->setFog(true);
 
   // shadow camera setup
-  if (this->dataPtr->pssmSetup.isNull())
+  if (this->dataPtr->pssmSetup == nullptr)
   {
     this->dataPtr->pssmSetup =
         Ogre::ShadowCameraSetupPtr(new Ogre::PSSMShadowCameraSetup());

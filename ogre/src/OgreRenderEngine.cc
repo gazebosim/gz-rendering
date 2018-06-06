@@ -220,7 +220,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
                 Ogre::MaterialManager::getSingleton().getByName(
                     fullPath);
 
-              if (!matPtr.isNull())
+              if (matPtr)
               {
                 // is this necessary to do here? Someday try it without
                 matPtr->compile();

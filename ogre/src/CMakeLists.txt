@@ -6,6 +6,8 @@ ign_add_component(ogre SOURCES ${sources} GET_TARGET_NAME ogre_target)
 
 find_package(OpenGL)
 
+include_directories(${OGRE_INCLUDE_DIRS})
+
 set_property(
   SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc
   PROPERTY COMPILE_DEFINITIONS

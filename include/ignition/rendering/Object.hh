@@ -54,7 +54,8 @@ namespace ignition
       /// rendering, which can be achieved by a single call to Scene::PreRender
       public: virtual void PreRender() = 0;
 
-      /// \brief Post process this object and any of its children after rendering.
+      /// \brief Post process this object and any of its children after
+      /// rendering.
       public: virtual void PostRender() = 0;
 
       /// \brief Destroy any resources associated with this object. Invoking

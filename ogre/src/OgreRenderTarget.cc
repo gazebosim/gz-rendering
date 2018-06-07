@@ -247,7 +247,7 @@ GLuint OgreRenderTexture::GLId()
 {
   if (!this->ogreTexture)
     return GLuint(0);
-  
+
   GLuint texId;
   this->ogreTexture->getCustomAttribute("GLID", &texId);
 

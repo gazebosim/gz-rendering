@@ -17,13 +17,6 @@
 #ifndef IGNITION_RENDERING_RENDERTARGET_HH_
 #define IGNITION_RENDERING_RENDERTARGET_HH_
 
-#include <string>
-
-#include <ignition/math/Color.hh>
-
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/Object.hh"
 
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
@@ -36,6 +29,13 @@
 #include <GL/glext.h>
 #endif /* __APPLE__ */
 
+#include <string>
+
+#include <ignition/math/Color.hh>
+
+#include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/Image.hh"
+#include "ignition/rendering/Object.hh"
 
 namespace ignition
 {

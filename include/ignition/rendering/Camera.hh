@@ -17,8 +17,6 @@
 #ifndef IGNITION_RENDERING_CAMERA_HH_
 #define IGNITION_RENDERING_CAMERA_HH_
 
-#include <string>
-
 #ifndef GLuint
 
 #if defined(__APPLE__)
@@ -35,6 +33,8 @@
 #else
   typedef unsigned int GLuint;
 #endif
+
+#include <string>
 
 #include <ignition/common/Event.hh>
 #include <ignition/math/Matrix4.hh>

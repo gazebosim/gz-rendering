@@ -154,7 +154,7 @@ GLuint OgreCamera::RenderTextureGLId() const
 
   if (!rt)
     return GLuint(0u);
-    
+
   return rt->GLId();
 }
 

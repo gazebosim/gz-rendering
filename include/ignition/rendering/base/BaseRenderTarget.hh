@@ -36,7 +36,11 @@ namespace ignition
 
       public: virtual ~BaseRenderTarget();
 
+      // Documentation inherited.
       public: virtual void PreRender();
+
+      // Documentation inherited.
+      public: virtual void PostRender();
 
       public: virtual unsigned int Width() const;
 
@@ -127,6 +131,14 @@ namespace ignition
       T::PreRender();
       this->Rebuild();
     }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::PostRender()
+    {
+      T::PostRender();
+    }
+
 
     //////////////////////////////////////////////////
     template <class T>

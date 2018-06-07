@@ -123,6 +123,12 @@ void OgreRenderTarget::PreRender()
 }
 
 //////////////////////////////////////////////////
+void OgreRenderTarget::PostRender()
+{
+  // do nothing by default
+}
+
+//////////////////////////////////////////////////
 void OgreRenderTarget::Render()
 {
   this->RenderTarget()->update();
@@ -252,7 +258,6 @@ GLuint OgreRenderTexture::GLId()
 void OgreRenderTexture::PreRender()
 {
   OgreRenderTarget::PreRender();
-  //Ogre::GLFBOManager::getSingleton().bind(this->RenderTarget());
   if (!this->ogreTexture)
     return;
 
@@ -263,8 +268,6 @@ void OgreRenderTexture::PreRender()
   rt->getCustomAttribute("FBO", &ogreFbo);
   Ogre::GLFBOManager *manager = ogreFbo->getManager();
   manager->bind(rt);
-
-//  Ogre::GLFBOManager::getSingleton().unbind(rt);
 }
 
 //////////////////////////////////////////////////
@@ -274,7 +277,6 @@ void OgreRenderTexture::PostRender()
     return;
 
   Ogre::RenderTarget *rt = this->RenderTarget();
-//  Ogre::GLFBOManager::getSingleton().unbind(rt);
 
   Ogre::GLFrameBufferObject *ogreFbo = nullptr;
   rt->getCustomAttribute("FBO", &ogreFbo);

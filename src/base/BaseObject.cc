@@ -49,6 +49,12 @@ void BaseObject::PreRender()
 }
 
 //////////////////////////////////////////////////
+void BaseObject::PostRender()
+{
+  // do nothing
+}
+
+//////////////////////////////////////////////////
 void BaseObject::Destroy()
 {
   // do nothing

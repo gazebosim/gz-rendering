@@ -59,7 +59,11 @@ namespace ignition
 
       public: virtual void SetBackgroundColor(math::Color _color);
 
+      // Documentation inherited
       public: virtual void PreRender();
+
+      // Documentation inherited
+      public: virtual void PostRender();
 
       public: virtual void Render();
 

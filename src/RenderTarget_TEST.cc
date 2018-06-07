@@ -31,8 +31,45 @@ using namespace rendering;
 class RenderTargetTest : public testing::Test,
                          public testing::WithParamInterface<const char*>
 {
+  /// \brief test RenderTexture properties
+  public: void RenderTexture(const std::string &_renderEngine);
+
+  /// \brief test RenderWindow properties
   public: void RenderWindow(const std::string &_renderEngine);
 };
+
+/////////////////////////////////////////////////
+void RenderTargetTest::RenderTexture(const std::string &_renderEngine)
+{
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+  ScenePtr scene = engine->CreateScene("scene");
+  CameraPtr camera =  scene->CreateCamera("camera");
+
+  RenderTexturePtr renderTexture = scene->CreateRenderTexture();
+
+  // default properties
+  EXPECT_EQ(scene->BackgroundColor(), renderTexture->BackgroundColor());
+  EXPECT_EQ(0u, renderTexture->GLId());
+
+  // test basic properties
+  renderTexture->SetFormat(PF_R8G8B8);
+  renderTexture->SetWidth(800u);
+  renderTexture->SetHeight(600u);
+
+  EXPECT_EQ(PF_R8G8B8, renderTexture->Format());
+  EXPECT_EQ(800u, renderTexture->Width());
+  EXPECT_EQ(600u, renderTexture->Height());
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
 
 /////////////////////////////////////////////////
 void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
@@ -69,6 +106,15 @@ void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
   EXPECT_EQ(640u, renderWindow->Width());
   EXPECT_EQ(480u, renderWindow->Height());
   EXPECT_EQ(math::Color::Red, renderWindow->BackgroundColor());
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_P(RenderTargetTest, RenderTexture)
+{
+  RenderTexture(GetParam());
 }
 
 /////////////////////////////////////////////////

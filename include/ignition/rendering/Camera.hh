@@ -19,6 +19,8 @@
 
 #include <string>
 
+#ifndef GLuint
+
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
@@ -30,7 +32,9 @@
 #include <GL/glext.h>
 #endif /* __APPLE__ */
 
-
+#else
+  typedef unsigned int GLuint;
+#endif
 
 #include <ignition/common/Event.hh>
 #include <ignition/math/Matrix4.hh>

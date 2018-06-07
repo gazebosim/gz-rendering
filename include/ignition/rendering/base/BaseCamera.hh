@@ -339,7 +339,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::PostRender()
     {
-      // do nothing by default
+      this->RenderTarget()->PostRender();
     }
 
     //////////////////////////////////////////////////

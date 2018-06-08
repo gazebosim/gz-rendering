@@ -26,7 +26,7 @@ namespace ignition
 {
   namespace rendering
   {
-    class BaseScene :
+    class IGNITION_RENDERING_VISIBLE BaseScene :
       public std::enable_shared_from_this<BaseScene>,
       public virtual Scene
     {

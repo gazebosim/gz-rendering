@@ -32,10 +32,18 @@ namespace ignition
       public virtual Geometry
     {
       /// \brief Constructor
-      public: Grid() { }
+      public: Grid() = default;
 
       /// \brief Destructor
-      public: virtual ~Grid() { }
+      public: virtual ~Grid() { };
+
+      public: Grid(const Grid /* other*/) = default;
+
+      public: operator=(const Grid& /* other*/) = default;
+
+      public: Grid(Grid /* other*/) = default;
+
+      public: operator=(Grid& /* other*/) = default;
 
       /// \brief Set the number of cells on a planar grid
       /// \param[in] _count The number of cells

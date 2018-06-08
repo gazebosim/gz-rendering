@@ -34,6 +34,9 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE RenderTarget :
       public virtual Object
     {
+      /// \brief Constructor
+      public: RenderTarget() { }
+
       /// \brief Deconstructor
       public: virtual ~RenderTarget() { }
 
@@ -82,6 +85,9 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE RenderTexture :
       public virtual RenderTarget
     {
+      /// \brief Constructor
+      public: RenderTexture() { }
+
       /// \brief Deconstructor
       public: virtual ~RenderTexture() { }
     };
@@ -93,6 +99,9 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE RenderWindow :
       public virtual RenderTarget
     {
+      /// \brief Constructor
+      public: RenderWindow() { }
+
       /// \brief Deconstructor
       public: virtual ~RenderWindow() { }
 

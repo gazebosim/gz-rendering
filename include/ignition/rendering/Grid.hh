@@ -31,6 +31,9 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Grid :
       public virtual Geometry
     {
+      /// \brief Constructor
+      public: Grid() { }
+
       /// \brief Destructor
       public: virtual ~Grid() { }
 

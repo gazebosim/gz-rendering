@@ -39,11 +39,11 @@ namespace ignition
 
       public: Grid(const Grid & /* other*/) = default;
 
-      public: Grid operator=(const Grid& /* other*/) = default;
+      public: Grid operator=(const Grid& /* other*/) { };
 
       public: Grid(Grid && /* other*/) = default;
 
-      public: Grid operator=(Grid && /* other*/) = default;
+      public: Grid operator=(Grid && /* other*/) { };
 
       /// \brief Set the number of cells on a planar grid
       /// \param[in] _count The number of cells

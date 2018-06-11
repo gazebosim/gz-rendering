@@ -32,12 +32,12 @@ namespace ignition
       public virtual Geometry
     {
       /// \brief Constructor
-      public: Grid() = default;
+      public: Grid();
 
       /// \brief Destructor
-      public: virtual ~Grid() { };
+      public: virtual ~Grid();
 
-      public: Grid(const Grid & /* other*/) = default;
+      public: Grid(const Grid & /* other*/);
 
       public: Grid operator=(const Grid& /* other*/) { };
 
@@ -70,7 +70,11 @@ namespace ignition
       /// \return The vertical cell count.
       public: virtual unsigned int VerticalCellCount() const = 0;
     };
+
+    Grid::~Grid() { }
+    Grid::Grid() { }
   }
 }
+
 
 #endif

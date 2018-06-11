@@ -72,8 +72,8 @@ namespace ignition
       public: virtual unsigned int VerticalCellCount() const = 0;
     };
 
-    Grid::Grid();
-    Grid::~Grid();
+    Grid::Grid() { }
+    Grid::~Grid() { }
   }
 }
 

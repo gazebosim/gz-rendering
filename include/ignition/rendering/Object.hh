@@ -63,8 +63,8 @@ namespace ignition
       public: virtual void Destroy() = 0;
     };
 
-    Object::Object();
-    Object::~Object();
+    Object::Object() { }
+    Object::~Object() { }
   }
 }
 #endif

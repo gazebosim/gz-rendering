@@ -62,9 +62,6 @@ namespace ignition
       /// undefined behavior.
       public: virtual void Destroy() = 0;
     };
-
-    Object::Object() { }
-    Object::~Object() { }
   }
 }
 #endif

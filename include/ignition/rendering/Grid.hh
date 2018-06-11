@@ -71,9 +71,6 @@ namespace ignition
       /// \return The vertical cell count.
       public: virtual unsigned int VerticalCellCount() const = 0;
     };
-
-    Grid::Grid() { }
-    Grid::~Grid() { }
   }
 }
 

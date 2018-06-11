@@ -67,9 +67,6 @@ namespace ignition
       /// \return Material used by this geometry
       public: virtual MaterialPtr Material() const = 0;
     };
-
-    Geometry::Geometry() { }
-    Geometry::~Geometry() { }
   }
 }
 #endif

@@ -37,13 +37,14 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Grid();
 
+      /// \brief Copy Constructor
       public: Grid(const Grid & /* other*/);
 
-      public: Grid operator=(const Grid& /* other*/) { };
+      /// \brief Copy assigment operator
+      public: virtual Grid& operator=(const Grid& other) = default;
 
-      public: Grid(Grid && /* other*/) = default;
-
-      public: Grid operator=(Grid && /* other*/) { };
+      /// \brief Move assigment operator
+      public: virtual Grid& operator=(Grid && other) = default;
 
       /// \brief Set the number of cells on a planar grid
       /// \param[in] _count The number of cells

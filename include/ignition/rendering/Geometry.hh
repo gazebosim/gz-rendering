@@ -32,10 +32,10 @@ namespace ignition
       public virtual Object
     {
       /// \brief Constructor
-      public: Geometry() { };
+      public: Geometry();
 
       /// \brief Deconstructor
-      public: virtual ~Geometry() { };
+      public: virtual ~Geometry();
 
       /// \brief Determine if this Geometry is attached to a Visual
       /// \return True if this Geometry has a parent Visual
@@ -67,6 +67,9 @@ namespace ignition
       /// \return Material used by this geometry
       public: virtual MaterialPtr Material() const = 0;
     };
+
+    Geometry::Geometry();
+    Geometry::~Geometry();
   }
 }
 #endif

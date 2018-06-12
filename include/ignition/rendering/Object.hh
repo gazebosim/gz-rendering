@@ -34,7 +34,7 @@ namespace ignition
       public: Object();
 
       /// \brief Deconstructor
-      public: virtual ~Object();
+      public: virtual ~Object() { };
 
       /// \brief Get the object ID. This ID will be unique across all objects
       /// inside a given scene, but necessarily true for objects across

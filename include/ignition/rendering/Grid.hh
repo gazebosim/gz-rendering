@@ -35,7 +35,7 @@ namespace ignition
       public: Grid();
 
       /// \brief Destructor
-      public: virtual ~Grid();
+      public: virtual ~Grid() { };
 
       /// \brief Copy Constructor
       public: Grid(const Grid & /* other*/);

@@ -31,10 +31,19 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Object
     {
       /// \brief Constructor
-      public: Object();
+      public: Object() { };
 
       /// \brief Deconstructor
       public: virtual ~Object() { };
+
+      /// \brief Copy Constructor
+      public: Object(const Object& other) { };
+
+      /// \brief Copy assigment operator
+      public: virtual Object& operator=(const Object& other) = default;
+
+      /// \brief Move assigment operator
+      public: virtual Object& operator=(Object && other) = default;
 
       /// \brief Get the object ID. This ID will be unique across all objects
       /// inside a given scene, but necessarily true for objects across

@@ -40,6 +40,12 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~RenderTarget() { }
 
+      /// \brief Copy assigment operator
+      public: virtual RenderTarget& operator=(const RenderTarget& other) = default;
+
+      /// \brief Move assigment operator
+      public: virtual RenderTarget& operator=(RenderTarget && other) = default;
+
       /// \brief Get render target width in pixels
       /// \return The render target width in pixels
       public: virtual unsigned int Width() const = 0;
@@ -86,10 +92,16 @@ namespace ignition
       public virtual RenderTarget
     {
       /// \brief Constructor
-      public: RenderTexture() { }
+      public: RenderTexture() { };
 
       /// \brief Deconstructor
-      public: virtual ~RenderTexture() { }
+      public: virtual ~RenderTexture() { };
+
+      /// \brief Copy assigment operator
+      public: virtual RenderTexture& operator=(const RenderTexture& other) = default;
+
+      /// \brief Move assigment operator
+      public: virtual RenderTexture& operator=(RenderTexture && other) = default;
     };
 
     /// \class RenderWindow RenderWindow.hh
@@ -100,10 +112,16 @@ namespace ignition
       public virtual RenderTarget
     {
       /// \brief Constructor
-      public: RenderWindow() { }
+      public: RenderWindow() { };
 
       /// \brief Deconstructor
-      public: virtual ~RenderWindow() { }
+      public: virtual ~RenderWindow() { };
+
+      /// \brief Copy assigment operator
+      public: virtual RenderWindow& operator=(const RenderWindow& other) = default;
+
+      /// \brief Move assigment operator
+      public: virtual RenderWindow& operator=(RenderWindow && other) = default;
 
       /// \brief Get the window handle that the render window is attached to.
       /// \return Window handle

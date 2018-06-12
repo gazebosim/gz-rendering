@@ -38,7 +38,7 @@ namespace ignition
       public: virtual ~Grid() { };
 
       /// \brief Copy Constructor
-      public: Grid(const Grid & /* other*/);
+      public: Grid(const Grid& other) { };
 
       /// \brief Copy assigment operator
       public: virtual Grid& operator=(const Grid& other) = default;

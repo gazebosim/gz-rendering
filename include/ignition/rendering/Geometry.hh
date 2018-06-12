@@ -32,10 +32,19 @@ namespace ignition
       public virtual Object
     {
       /// \brief Constructor
-      public: Geometry();
+      public: Geometry() { };
 
       /// \brief Deconstructor
       public: virtual ~Geometry() { };
+
+      /// \brief Copy Constructor
+      public: Geometry(const Geometry& other) { };
+
+      /// \brief Copy assigment operator
+      public: virtual Geometry& operator=(const Geometry& other) = default;
+
+      /// \brief Move assigment operator
+      public: virtual Geometry& operator=(Geometry && other) = default;
 
       /// \brief Determine if this Geometry is attached to a Visual
       /// \return True if this Geometry has a parent Visual

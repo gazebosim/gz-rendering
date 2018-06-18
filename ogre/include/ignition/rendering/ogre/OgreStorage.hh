@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRESTORAGE_HH_
 #define IGNITION_RENDERING_OGRE_OGRESTORAGE_HH_
 
+#include <memory>
 #include "ignition/rendering/base/BaseStorage.hh"
 
 #include "ignition/rendering/ogre/OgreGeometry.hh"

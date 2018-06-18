@@ -869,7 +869,7 @@ void BaseScene::Clear()
 //////////////////////////////////////////////////
 void BaseScene::Destroy()
 {
-  // TODO: destroy context
+  // TODO(anyone): destroy context
   this->Clear();
 }
 

@@ -47,7 +47,7 @@ OgreRenderTarget::OgreRenderTarget()
 //////////////////////////////////////////////////
 OgreRenderTarget::~OgreRenderTarget()
 {
-  // TODO: clean up check null
+  // TODO(anyone): clean up check null
 
   OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
       this->scene);
@@ -56,8 +56,8 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
-  // TODO: handle Bayer conversions
-  // TODO: handle ogre version differences
+  // TODO(anyone): handle Bayer conversions
+  // TODO(anyone): handle ogre version differences
 
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
@@ -228,7 +228,7 @@ void OgreRenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::DestroyTarget()
 {
-  // TODO: implement
+  // TODO(anyone): implement
 }
 
 //////////////////////////////////////////////////
@@ -313,7 +313,7 @@ void OgreRenderWindow::Destroy()
 //////////////////////////////////////////////////
 void OgreRenderWindow::RebuildTarget()
 {
-  // TODO determine when to rebuild
+  // TODO(anyone) determine when to rebuild
   // ie. only when ratio or handle changes!
   // e.g. sizeDirty?
   if (!this->ogreRenderWindow)

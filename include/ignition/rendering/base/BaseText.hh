@@ -108,7 +108,7 @@ namespace ignition
       protected: ignition::math::Color color = ignition::math::Color::White;
 
       /// \brief Character height in meters
-      protected: float charHeight= 1.0;
+      protected: float charHeight = 1.0;
 
       /// \brief Width of space between letters
       protected: float spaceWidth = 0;

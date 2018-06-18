@@ -123,7 +123,7 @@ void OgreCamera::CreateCamera()
   this->ogreCamera->roll(Ogre::Degree(-90.0));
   this->ogreCamera->setFixedYawAxis(false);
 
-  // TODO: provide api access
+  // TODO(anyone): provide api access
   this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setRenderingDistance(0);
   this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);

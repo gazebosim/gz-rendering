@@ -53,7 +53,7 @@ namespace ignition
       /// \brief Initialize the scene
       public: virtual void Init() = 0;
 
-      // TODO: merge with Destroy
+      // TODO(anyone): merge with Destroy
       public: virtual void Fini() = 0;
 
       /// \brief Determine if the scene is initialized

@@ -392,7 +392,7 @@ namespace ignition
     template <class T>
     void *BaseCamera<T>::CreateImageBuffer() const
     {
-      // TODO: determine proper type
+      // TODO(anyone): determine proper type
       unsigned int size = this->ImageMemorySize();
       return new unsigned char *[size];
     }
@@ -466,7 +466,7 @@ namespace ignition
       result(2, 3) = d;
       result(3, 2) = -1;
 
-      // TODO
+      // TODO(anyone)
       // compute projection matrix for orthographic camera
 
       return result;

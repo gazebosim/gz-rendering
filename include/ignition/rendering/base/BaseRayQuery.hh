@@ -142,7 +142,7 @@ namespace ignition
     template <class T>
     RayQueryResult BaseRayQuery<T>::ClosestPoint()
     {
-      // TODO implement a generic ray query here?
+      // TODO(todo) implement a generic ray query here?
       RayQueryResult result;
       result.distance = -1;
       return result;

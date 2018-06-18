@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(ignition-rendering-simple-demo)
 
-find_package(ignition-rendering0)
+find_package(ignition-rendering1)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -25,4 +25,3 @@ target_link_libraries(simple_demo
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
   )
-

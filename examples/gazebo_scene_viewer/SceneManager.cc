@@ -190,7 +190,7 @@ void SceneManagerPrivate::Init()
   this->lightSub = this->transportNode->Subscribe("~/light",
       &SceneManagerPrivate::OnLightUpdate, this);
 
-  // TODO: handle non-local model info
+  // TODO(anyone): handle non-local model info
 
   // listen for to model updates
   this->modelSub = this->transportNode->Subscribe("~/model/info",
@@ -208,7 +208,7 @@ void SceneManagerPrivate::Init()
   this->sensorSub = this->transportNode->Subscribe("~/sensor",
       &SceneManagerPrivate::OnSensorUpdate, this);
 
-  // TODO: handle non-local pose info
+  // TODO(anyone): handle non-local pose info
 
   // listen for to pose updates
   this->poseSub = this->transportNode->Subscribe("~/pose/local/info",
@@ -218,7 +218,7 @@ void SceneManagerPrivate::Init()
 //////////////////////////////////////////////////
 void SceneManagerPrivate::Fini()
 {
-  // TODO: disconnect
+  // TODO(anyone): disconnect
 }
 
 //////////////////////////////////////////////////
@@ -417,7 +417,7 @@ void SceneManagerPrivate::OnSceneResponse(::ConstResponsePtr &_responseMsg)
 //////////////////////////////////////////////////
 void SceneManagerPrivate::OnRemovalResponse(::ConstResponsePtr &_responseMsg)
 {
-  // TODO: check if message sent after scene response
+  // TODO(anyone): check if message sent after scene response
 
   unsigned int requestId = _responseMsg->id();
 
@@ -567,7 +567,7 @@ SubSceneManager::~SubSceneManager()
 //////////////////////////////////////////////////
 unsigned int SubSceneManager::SceneCount() const
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   return this->scenes.size();
 }
@@ -575,7 +575,7 @@ unsigned int SubSceneManager::SceneCount() const
 //////////////////////////////////////////////////
 bool SubSceneManager::HasScene(unsigned int _id) const
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   for (auto scene : this->scenes)
   {
@@ -591,7 +591,7 @@ bool SubSceneManager::HasScene(unsigned int _id) const
 //////////////////////////////////////////////////
 bool SubSceneManager::HasScene(const std::string &_name) const
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   for (auto scene : this->scenes)
   {
@@ -607,7 +607,7 @@ bool SubSceneManager::HasScene(const std::string &_name) const
 //////////////////////////////////////////////////
 bool SubSceneManager::HasScene(ConstScenePtr _scene) const
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   for (auto scene : this->scenes)
   {
@@ -623,7 +623,7 @@ bool SubSceneManager::HasScene(ConstScenePtr _scene) const
 //////////////////////////////////////////////////
 ScenePtr SubSceneManager::Scene(unsigned int _id) const
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   for (auto scene : this->scenes)
   {
@@ -639,7 +639,7 @@ ScenePtr SubSceneManager::Scene(unsigned int _id) const
 //////////////////////////////////////////////////
 ScenePtr SubSceneManager::Scene(const std::string &_name) const
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   for (auto scene : this->scenes)
   {
@@ -655,7 +655,7 @@ ScenePtr SubSceneManager::Scene(const std::string &_name) const
 //////////////////////////////////////////////////
 ScenePtr SubSceneManager::SceneAt(unsigned int _index) const
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   if (_index >= this->SceneCount())
   {
@@ -671,7 +671,7 @@ ScenePtr SubSceneManager::SceneAt(unsigned int _index) const
 //////////////////////////////////////////////////
 void SubSceneManager::AddScene(ScenePtr _scene)
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   if (!_scene)
   {
@@ -691,7 +691,7 @@ void SubSceneManager::AddScene(ScenePtr _scene)
 //////////////////////////////////////////////////
 ScenePtr SubSceneManager::RemoveScene(unsigned int _id)
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   for (auto scene : this->scenes)
   {
@@ -707,7 +707,7 @@ ScenePtr SubSceneManager::RemoveScene(unsigned int _id)
 //////////////////////////////////////////////////
 ScenePtr SubSceneManager::RemoveScene(const std::string &_name)
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   for (auto scene : this->scenes)
   {
@@ -723,7 +723,7 @@ ScenePtr SubSceneManager::RemoveScene(const std::string &_name)
 //////////////////////////////////////////////////
 ScenePtr SubSceneManager::RemoveScene(ScenePtr _scene)
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   for (auto scene : this->scenes)
   {
@@ -739,7 +739,7 @@ ScenePtr SubSceneManager::RemoveScene(ScenePtr _scene)
 //////////////////////////////////////////////////
 ScenePtr SubSceneManager::RemoveSceneAt(unsigned int _index)
 {
-  // TODO: encapsulate
+  // TODO(anyone): encapsulate
 
   if (_index >= this->SceneCount())
   {
@@ -873,7 +873,7 @@ void SubSceneManager::ClearMessages()
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessLight(const gazebo::msgs::Light &_lightMsg)
 {
-  // TODO: get parent when protobuf message is updated
+  // TODO(anyone): get parent when protobuf message is updated
   this->ProcessLight(_lightMsg, this->activeScene->RootVisual());
 }
 
@@ -1152,7 +1152,7 @@ void SubSceneManager::ProcessSensor(const gazebo::msgs::Sensor &_sensorMsg)
 void SubSceneManager::ProcessSensor(const gazebo::msgs::Sensor &_sensorMsg,
     VisualPtr _parent)
 {
-  // TODO: process all types
+  // TODO(anyone): process all types
 
   if (_sensorMsg.has_camera())
   {
@@ -1166,7 +1166,7 @@ void SubSceneManager::ProcessCamera(const gazebo::msgs::Sensor &_sensorMsg,
 {
   CameraPtr camera = this->Camera(_sensorMsg, _parent);
 
-  // TODO: update camera
+  // TODO(anyone): update camera
 }
 
 //////////////////////////////////////////////////
@@ -1308,9 +1308,9 @@ void SubSceneManager::ProcessVisual(const gazebo::msgs::Visual &_visualMsg,
 {
   VisualPtr visual = this->Visual(_visualMsg, _parent);
 
-  // TODO: handle cast shadows
-  // TODO: handle transparency
-  // TODO: handle scale & geom size
+  // TODO(anyone): handle cast shadows
+  // TODO(anyone): handle transparency
+  // TODO(anyone): handle scale & geom size
 
   // set pose if available
   if (_visualMsg.has_pose())
@@ -1447,7 +1447,7 @@ void SubSceneManager::ProcessBox(const gazebo::msgs::Geometry &_geometryMsg,
 void SubSceneManager::ProcessCone(
     const gazebo::msgs::Geometry &/*_geometryMsg*/, VisualPtr _parent)
 {
-  // TODO: needs protobuf msg
+  // TODO(anyone): needs protobuf msg
   GeometryPtr cone = this->activeScene->CreateCone();
   // const gazebo::msgs::ConeGeom &coneMsg = _geometryMsg.cone();
   // double x = coneMsg.radius();
@@ -1518,7 +1518,7 @@ void SubSceneManager::ProcessMesh(const gazebo::msgs::Geometry &_geometryMsg,
 void SubSceneManager::ProcessPlane(const gazebo::msgs::Geometry &_geometryMsg,
     VisualPtr _parent)
 {
-  // TODO: handle plane normal
+  // TODO(anyone): handle plane normal
   GeometryPtr plane = this->activeScene->CreatePlane();
   const gazebo::msgs::PlaneGeom &planeMsg = _geometryMsg.plane();
   const gazebo::msgs::Vector2d planeSize = planeMsg.size();
@@ -1542,7 +1542,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
 {
   MaterialPtr material = this->activeScene->CreateMaterial();
 
-  // TODO: remove after testing
+  // TODO(anyone): remove after testing
   material->SetShininess(50);
   material->SetReflectivity(0.25);
 
@@ -1601,7 +1601,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
     material->SetShaderType(type);
   }
 
-  // TODO: handle scripts
+  // TODO(anyone): handle scripts
 
   return material;
 }
@@ -1739,7 +1739,7 @@ void SubSceneManager::CreateGeometryFunctionMap()
   this->geomFunctions[gazebo::msgs::Geometry::BOX] =
       &SubSceneManager::ProcessBox;
 
-  // TODO: enable when cone protobuf msg created
+  // TODO(anyone): enable when cone protobuf msg created
   // this->geomFunctions[gazebo::msgs::Geometry::CONE] =
   //     &SubSceneManager::ProcessCone;
 
@@ -1906,7 +1906,7 @@ void NewSceneManager::ClearMessages()
 //////////////////////////////////////////////////
 void NewSceneManager::ProcessScene()
 {
-  // TODO: process environment info
+  // TODO(anyone): process environment info
 
   // delete all previous nodes
   this->activeScene->Clear();
@@ -1948,7 +1948,7 @@ void NewSceneManager::ProcessLights()
   // process each light in list
   for (auto &lightMsg : this->lightMsgs)
   {
-    // TODO: check if message sent after scene response
+    // TODO(anyone): check if message sent after scene response
     this->ProcessLight(lightMsg);
   }
 }
@@ -1959,7 +1959,7 @@ void NewSceneManager::ProcessModels()
   // process each model in list
   for (auto &modelMsg : this->modelMsgs)
   {
-    // TODO: check if message sent after scene response
+    // TODO(anyone): check if message sent after scene response
     this->ProcessModel(modelMsg);
   }
 }
@@ -1970,7 +1970,7 @@ void NewSceneManager::ProcessJoints()
   // process each joint in list
   for (auto &jointMsg : this->jointMsgs)
   {
-    // TODO: check if message sent after scene response
+    // TODO(anyone): check if message sent after scene response
     this->ProcessJoint(jointMsg);
   }
 }
@@ -1981,7 +1981,7 @@ void NewSceneManager::ProcessVisuals()
   // process each visual in list
   for (auto &visualMsg : this->visualMsgs)
   {
-    // TODO: check if message sent after scene response
+    // TODO(anyone): check if message sent after scene response
     this->ProcessVisual(visualMsg);
   }
 }
@@ -1992,7 +1992,7 @@ void NewSceneManager::ProcessSensors()
   // process each sensor in list
   for (auto &sensorMsg : this->sensorMsgs)
   {
-    // TODO: check if message sent after scene response
+    // TODO(anyone): check if message sent after scene response
     this->ProcessSensor(sensorMsg);
   }
 }
@@ -2003,7 +2003,7 @@ void NewSceneManager::ProcessPoses()
   // process each poses in list
   for (auto &posesMsg : this->posesMsgs)
   {
-    // TODO: check if message sent after scene response
+    // TODO(anyone): check if message sent after scene response
     this->ProcessPoses(posesMsg);
   }
 }
@@ -2030,7 +2030,7 @@ void NewSceneManager::ProcessRemovals()
   // process each removal in list
   for (auto &removal : this->approvedRemovals)
   {
-    // TODO: check if message sent after scene response
+    // TODO(anyone): check if message sent after scene response
     this->ProcessRemoval(removal);
   }
 }

@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(ignition-rendering-mouse-picking)
-find_package(ignition-rendering0 REQUIRED)
+find_package(ignition-rendering1 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

@@ -40,10 +40,10 @@ namespace ignition
 
       public: virtual void Destroy();
 
-              // TODO: make pure virtual
+              // TODO(anyone): make pure virtual
       protected: virtual void Load();
 
-              // TODO: make pure virtual
+              // TODO(anyone): make pure virtual
       protected: virtual void Init();
 
       protected: unsigned int id;

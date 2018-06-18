@@ -156,7 +156,7 @@ bool OgreMaterial::CastShadows() const
 //////////////////////////////////////////////////
 void OgreMaterial::SetCastShadows(const bool _castShadows)
 {
-  // TODO: update RTShader
+  // TODO(anyone): update RTShader
   this->castShadows = _castShadows;
 }
 
@@ -239,7 +239,7 @@ void OgreMaterial::SetNormalMap(const std::string &_name)
   }
 
   this->normalMapName = _name;
-  // TODO: implement
+  // TODO(anyone): implement
   // this->SetNormalMapImpl(texture);
 }
 
@@ -546,7 +546,7 @@ void OgreMaterial::Init()
   this->ogreTexState->setBlank();
   this->Reset();
 
-  // TODO: provide function interface
+  // TODO(anyone): provide function interface
   this->ogreMaterial->setTextureAnisotropy(8);
 }
 

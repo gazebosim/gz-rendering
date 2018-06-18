@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRERENDERTYPES_HH_
 #define IGNITION_RENDERING_OGRE_OGRERENDERTYPES_HH_
 
+#include <memory>
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
 namespace ignition

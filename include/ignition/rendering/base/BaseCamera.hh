@@ -511,7 +511,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::SetHFOV(const math::Angle &_hfov)
     {
-      this->hfov= _hfov;
+      this->hfov = _hfov;
     }
 
     //////////////////////////////////////////////////

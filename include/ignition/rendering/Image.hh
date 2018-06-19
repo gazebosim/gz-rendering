@@ -96,7 +96,7 @@ namespace ignition
 
       /// \brief Image pixel format
       private: PixelFormat format = PF_UNKNOWN;
-	       
+
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief Pointer to the image data
       private: DataPtr data = nullptr;

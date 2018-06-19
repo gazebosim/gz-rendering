@@ -36,7 +36,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseCamera :
+    class BaseCamera :
       public virtual Camera,
       public virtual T
     {
@@ -439,9 +439,9 @@ namespace ignition
       double fov = this->HFOV().Radian();
       double vfov =  2.0 * std::atan(std::tan(fov / 2.0) / ratio);
       double f = 1.0;
-      double near = this->NearClipPlane();
-      double far = this->FarClipPlane();
-      double top = near * std::tan(0.5*vfov) / f;
+      double _near = this->NearClipPlane();
+      double _far = this->FarClipPlane();
+      double top = _near * std::tan(0.5*vfov) / f;
       double height = 2 * top;
       double width = ratio * height;
       double left = -0.5 * width;
@@ -450,13 +450,13 @@ namespace ignition
 
       double invw = 1.0 / (right - left);
       double invh = 1.0 / (top - bottom);
-      double invd = 1.0 / (far - near);
-      double x = 2 * near * invw;
-      double y = 2 * near * invh;
+      double invd = 1.0 / (_far - _near);
+      double x = 2 * _near * invw;
+      double y = 2 * _near * invh;
       double a = (right + left) * invw;
       double b = (top + bottom) * invh;
-      double c = -(far + near) * invd;
-      double d = -2 * far * near * invd;
+      double c = -(_far + _near) * invd;
+      double d = -2 * _far * _near * invd;
       math::Matrix4d result;
       result(0, 0) = x;
       result(0, 2) = a;

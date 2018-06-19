@@ -40,7 +40,7 @@ namespace ignition
 
       /// \brief Iterator for looping through params
       /// \remarks implements a forward-iterator
-      class Iterator
+      class IGNITION_RENDERING_VISIBLE Iterator
       {
         /// \brief Default constructor
         public: Iterator();

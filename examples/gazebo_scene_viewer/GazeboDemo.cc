@@ -66,7 +66,7 @@ CameraPtr CreateCamera(const std::string &_engine)
   camera->SetImageHeight(480);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(M_PI / 2);
+  camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 
   return camera;

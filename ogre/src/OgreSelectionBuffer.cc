@@ -279,7 +279,7 @@ void OgreSelectionBuffer::CreateRTTOverlays()
 
   if (panel)
   {
-    panel->setMetricsMode(Ogre::GMIGN_PIXELS);
+    panel->setMetricsMode(Ogre::GMM_PIXELS);
     panel->setPosition(10, 10);
     panel->setDimensions(400, 280);
     panel->setMaterialName("SelectionDebugMaterial");

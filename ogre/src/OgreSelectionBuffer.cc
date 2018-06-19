@@ -130,7 +130,7 @@ void OgreSelectionBuffer::Update()
 /////////////////////////////////////////////////
 void OgreSelectionBuffer::DeleteRTTBuffer()
 {
-  if (!this->dataPtr->texture.isNull() && this->dataPtr->texture->isLoaded())
+  if (this->dataPtr->texture && this->dataPtr->texture->isLoaded())
     this->dataPtr->texture->unload();
   if (this->dataPtr->buffer)
   {

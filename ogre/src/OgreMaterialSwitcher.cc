@@ -76,7 +76,7 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
       #if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
       Ogre::MaterialPtr plainMaterial = static_cast<Ogre::MaterialPtr>(res);
       #else
-      Ogre::MaterialPtr plainMaterial = res.staticCast<Ogre::Material>();
+      Ogre::MaterialPtr plainMaterial = std::static_pointer_cast<Ogre::Material>(res);
       #endif
 
       this->plainTechnique = plainMaterial->getTechnique(0);

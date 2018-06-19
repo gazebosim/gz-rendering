@@ -5,6 +5,7 @@ ign_get_libsources_and_unittests(sources gtest_sources)
 ign_add_component(ogre SOURCES ${sources} GET_TARGET_NAME ogre_target)
 
 find_package(OpenGL)
+include_directories(${OGRE_INCLUDE_DIRS})
 
 set_property(
   SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc
@@ -12,6 +13,8 @@ set_property(
   IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
 )
+
+message(STATUS "OGRE_LIBRARIES: ${OGRE_LIBRARIES}")
 
 target_link_libraries(${ogre_target}
   PUBLIC

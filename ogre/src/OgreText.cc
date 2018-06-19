@@ -356,10 +356,10 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
   }
 
   if (this->fontName != _newFontName ||
-      this->ogreMaterial.isNull() || !this->font)
+      this->ogreMaterial == nullptr || !this->font)
   {
     auto ogreFont = (Ogre::Font*)Ogre::FontManager::getSingleton()
-        .getByName(_newFontName).getPointer();
+        .getByName(_newFontName).get();
 
     if (!ogreFont)
     {
@@ -370,11 +370,11 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 
     this->font->load();
 
-    if (!this->ogreMaterial.isNull())
+    if (this->ogreMaterial)
     {
       Ogre::MaterialManager::getSingletonPtr()->remove(
           this->ogreMaterial->getName());
-      this->ogreMaterial.setNull();
+      this->ogreMaterial == nullptr;
     }
 
     this->ogreMaterial = this->font->getMaterial()->clone(
@@ -396,7 +396,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 void OgreMovableText::SetupGeometry()
 {
   IGN_ASSERT(this->font, "font class member is null");
-  IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
+  IGN_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
 
   Ogre::VertexDeclaration *decl = nullptr;
   Ogre::VertexBufferBinding *bind = nullptr;
@@ -729,7 +729,7 @@ void OgreMovableText::UpdateColors()
   unsigned int i;
 
   IGN_ASSERT(this->font, "font class member is null");
-  IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
+  IGN_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
 
   // Convert to system-specific
   Ogre::ColourValue cv(this->color.R(), this->color.G(),
@@ -754,7 +754,7 @@ void OgreMovableText::UpdateColors()
 //////////////////////////////////////////////////
 void OgreMovableText::UpdateMaterial()
 {
-  if (this->ogreMaterial.isNull())
+  if (this->ogreMaterial)
     return;
 
   this->ogreMaterial->setDepthBias(!this->onTop, 0);
@@ -840,7 +840,7 @@ void OgreMovableText::getRenderOperation(Ogre::RenderOperation &_op)
 //////////////////////////////////////////////////
 const Ogre::MaterialPtr &OgreMovableText::getMaterial(void) const
 {
-  IGN_ASSERT(!this->ogreMaterial.isNull(),
+  IGN_ASSERT(this->ogreMaterial,
       "ogreMaterial class member is null");
   return this->ogreMaterial;
 }

@@ -53,8 +53,34 @@ if(NOT MSVC)
       REQUIRED_BY ogre
       PRIVATE_FOR ogre)
 
+message(" == OGRE libs:  ${OGRE_LIBRARIES}")
+message(" == OGRE lib dir:  ${OGRE_LIBRARY_DIRS}")
+#include_directories(${OGRE_INCLUDE_DIRS})
+#link_directories(${OGRE_LIB_DIRS})
+
+
+
   if (OGRE_FOUND)
     set(HAVE_OGRE TRUE)
+  endif()
+
+
+#  ign_find_package(OGRE)
+
+  #--------------------------------------
+  # Find OGRE2
+  ign_find_package(OGRE2 VERSION 2.1.0
+      COMPONENTS HlmsPbs HlmsUnlit Overlay
+      REQUIRED_BY ogre2
+      PRIVATE_FOR ogre2)
+
+message(" == OGRE2 libs:  ${OGRE2_LIBRARIES}")
+message(" == OGRE2 lib dir:  ${OGRE2_LIBRARY_DIRS}")
+#include_directories(${OGRE2_INCLUDE_DIRS})
+#link_directories(${OGRE2_LIB_DIRS})
+
+  if (OGRE2_FOUND)
+    set(HAVE2_OGRE TRUE)
   endif()
 
 
@@ -83,7 +109,7 @@ set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering
 # Configure the build
 #============================================================================
 ign_configure_build(QUIT_IF_BUILD_ERRORS
-    COMPONENTS ogre optix)
+    COMPONENTS ogre optix ogre2)
 
 #============================================================================
 # Create package information

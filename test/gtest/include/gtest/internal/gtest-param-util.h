@@ -634,18 +634,12 @@ class ParameterizedTestCaseInfo : public ParameterizedTestCaseInfoBase {
   static bool IsValidParamName(const std::string& name) {
     // Check for empty string
     if (name.empty())
-    {
-      printf("EMPTY\n");
       return false;
-    }
 
     // Check for invalid characters
     for (std::string::size_type index = 0; index < name.size(); ++index) {
       if (!isalnum(name[index]) && name[index] != '_')
-      {
-        printf("NOT ALNUM[%c]", name[index]);
         return false;
-      }
     }
 
     return true;

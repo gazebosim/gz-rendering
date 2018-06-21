@@ -80,7 +80,7 @@ message(" == OGRE2 lib dir:  ${OGRE2_LIBRARY_DIRS}")
 #link_directories(${OGRE2_LIB_DIRS})
 
   if (OGRE2_FOUND)
-    set(HAVE2_OGRE TRUE)
+    set(HAVE_OGRE2 TRUE)
   endif()
 
 

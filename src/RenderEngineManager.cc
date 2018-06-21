@@ -51,6 +51,10 @@ namespace ignition
       public: void UnregisterEngine(EngineIter _iter);
 
       public: EngineMap engines;
+
+      /// \brief A list of default engines
+      /// Map is engine name to plugin filename
+      public: std::map<std::string, std::string> defaultEngines;
     };
   }
 }
@@ -82,7 +86,12 @@ unsigned int RenderEngineManager::EngineCount() const
 bool RenderEngineManager::HasEngine(const std::string &_name) const
 {
   auto iter = this->dataPtr->engines.find(_name);
-  return iter != this->dataPtr->engines.end();
+  if (iter == this->dataPtr->engines.end())
+  {
+    auto defaultIter = this->dataPtr->defaultEngines.find(_name);
+    return defaultIter != this->dataPtr->defaultEngines.end();
+  }
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -92,8 +101,28 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
 
   if (iter == this->dataPtr->engines.end())
   {
-    ignerr << "No render-engine registered with name: " << _name << std::endl;
-    return nullptr;
+    // try default engines
+    auto defaultEngineIt = this->dataPtr->defaultEngines.find(_name);
+    if (defaultEngineIt != this->dataPtr->defaultEngines.end())
+    {
+      if (!this->dataPtr->LoadEnginePlugin(defaultEngineIt->second))
+      {
+        ignerr << "Unable to load render-engine registered with name: " << _name
+               << std::endl;
+        return nullptr;
+      }
+      else
+      {
+        // the engine should now be registered
+        iter = this->dataPtr->engines.find(_name);
+      }
+    }
+    // check again
+    if (iter == this->dataPtr->engines.end())
+    {
+      ignerr << "No render-engine registered with name: " << _name << std::endl;
+      return nullptr;
+    }
   }
 
   return this->dataPtr->Engine(iter);
@@ -194,18 +223,26 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter) const
 //////////////////////////////////////////////////
 void RenderEngineManagerPrivate::RegisterDefaultEngines()
 {
-  // TODO Find a cleaner way to get the default engine library name
-  std::vector<std::string> defaultEngines;
+  // TODO(anyone) Find a cleaner way to get the default engine library name
+
+  // cppcheck-suppress unreadVariable
+  std::string engineFilename = "ignition-rendering" +
+    std::to_string(IGNITION_RENDERING_MAJOR_VERSION) + "-";
 #if HAVE_OGRE
-  defaultEngines.push_back("ignition-rendering0-ogre");
+  defaultEngines["ogre"] = engineFilename +"ogre";
+#endif
+#if HAVE_OGRE2
+  defaultEngines["ogre2"] = engineFilename +"ogre2";
 #endif
 #if HAVE_OPTIX
-  defaultEngines.push_back("ignition-rendering0-optix");
+  defaultEngines["optix"] = engineFilename + "optix";
 #endif
+/*
   for (const auto &engine : defaultEngines)
   {
     this->LoadEnginePlugin(engine);
   }
+  */
 }
 
 //////////////////////////////////////////////////

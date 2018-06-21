@@ -78,10 +78,6 @@ RenderEngine *OgreRenderEnginePlugin::Engine() const
 
 //////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderEngine() :
-  loaded(false),
-  initialized(false),
-  ogreRoot(nullptr),
-  ogreLogManager(nullptr),
   dataPtr(new OgreRenderEnginePrivate)
 {
 #if not (__APPLE__ || _WIN32)
@@ -271,6 +267,7 @@ bool OgreRenderEngine::LoadImpl()
   try
   {
     this->LoadAttempt();
+    this->loaded = true;
     return true;
   }
   catch (Ogre::Exception &ex)

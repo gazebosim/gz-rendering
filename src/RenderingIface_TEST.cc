@@ -24,16 +24,18 @@
 using namespace ignition;
 using namespace rendering;
 
-
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, GetEngine)
 {
-  // 2 engines now. This will change when engines become plugins
   unsigned int count = 0u;
 #if HAVE_OGRE
+  // load the ogre engine
+  engine("ogre");
   count++;
 #endif
 #if HAVE_OPTIX
+  // load the optix engine
+  engine("optix");
   count++;
 #endif
   EXPECT_EQ(count, engineCount());
@@ -54,11 +56,28 @@ TEST(RenderingIfaceTest, GetEngine)
 
 TEST(RenderingIfaceTest, RegisterEngine)
 {
+  unsigned int count = 0u;
+#if HAVE_OGRE
+  // load the ogre engine
+  engine("ogre");
+  count++;
+#endif
+
+  if (engineCount() == 0u)
+  {
+    std::cerr << "no engine available for testing" << std::endl;
+    return;
+  }
+
   // unregister existing engine by index
   RenderEngine *eng = engine(0u);
   EXPECT_TRUE(hasEngine(eng->Name()));
+
+  // unregistering an engine will shut down the engine
+  // For default built-in engines, they will still remain in the list of
+  // available engines
   EXPECT_NO_THROW(unregisterEngine(0u));
-  EXPECT_FALSE(hasEngine(eng->Name()));
+  EXPECT_TRUE(hasEngine(eng->Name()));
 
   // register engine back with a different name
   EXPECT_NO_THROW(registerEngine("my_new_engine", eng));

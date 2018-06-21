@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
-#define IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERENGINE_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2RENDERENGINE_HH_
 
 #include <memory>
 #include <string>
@@ -26,9 +26,9 @@
 #include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/Export.hh"
+//#include "ignition/rendering/ogre/OgreIncludes.hh"
+//#include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre2/Export.hh"
 
 namespace Ogre
 {
@@ -41,17 +41,17 @@ namespace ignition
   namespace rendering
   {
     // forward declaration
-    class OgreRenderEnginePrivate;
+    class Ogre2RenderEnginePrivate;
 
     /// \brief Plugin for loading ogre render engine
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEnginePlugin :
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderEnginePlugin :
       public RenderEnginePlugin
     {
       /// \brief Constructor
-      public: OgreRenderEnginePlugin();
+      public: Ogre2RenderEnginePlugin();
 
       /// \brief Destructor
-      public: ~OgreRenderEnginePlugin() = default;
+      public: ~Ogre2RenderEnginePlugin() = default;
 
       /// \brief Get the name of the render engine loaded by this plugin.
       /// \return Name of render engine
@@ -62,9 +62,9 @@ namespace ignition
       public: RenderEngine *Engine() const;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEngine :
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderEngine :
       public virtual BaseRenderEngine,
-      public common::SingletonT<OgreRenderEngine>
+      public common::SingletonT<Ogre2RenderEngine>
     {
       /// \enum RenderPathType
       /// \brief The type of rendering path used by the rendering engine.
@@ -83,9 +83,9 @@ namespace ignition
               };
 
       /// \brief Constructor
-      private: OgreRenderEngine();
+      private: Ogre2RenderEngine();
 
-      public: virtual ~OgreRenderEngine();
+      public: virtual ~Ogre2RenderEngine();
 
       public: virtual bool Fini();
 
@@ -93,15 +93,15 @@ namespace ignition
 
       public: virtual std::string Name() const;
 
-      public: OgreRenderPathType RenderPathType() const;
+//      public: OgreRenderPathType RenderPathType() const;
 
-      public: void AddResourcePath(const std::string &_uri);
+//      public: void AddResourcePath(const std::string &_uri);
 
-      public: virtual Ogre::Root *OgreRoot() const;
+//      public: virtual Ogre::Root *OgreRoot() const;
 
-      public: std::string CreateWindow(const std::string &_handle,
-                  const unsigned int _width, const unsigned int _height,
-                  const double _ratio, const unsigned int antiAliasing);
+//      public: std::string CreateWindow(const std::string &_handle,
+//                  const unsigned int _width, const unsigned int _height,
+//                  const double _ratio, const unsigned int antiAliasing);
 
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name);
@@ -115,6 +115,17 @@ namespace ignition
       private: void LoadAttempt();
 
       private: void CreateLogger();
+
+      private: void CreateRoot();
+
+      private: void LoadPlugins();
+
+      private: void CreateRenderSystem();
+
+      private: void CreateResources();
+
+
+/*      private: void CreateLogger();
 
       private: void CreateContext();
 
@@ -131,9 +142,13 @@ namespace ignition
       private: void CreateWindow();
 
       private: void CheckCapabilities();
+      */
 
+      /// \brief Attempt to initialize engine and catch expections if they
+      /// occur
       private: void InitAttempt();
 
+/*
 #if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.
@@ -143,32 +158,39 @@ namespace ignition
       private: Ogre::OverlaySystem *ogreOverlaySystem = nullptr;
 
 #endif
+*/
+      /// \brief Flag to indicate if engine is loaded
       private: bool loaded = false;
 
+      /// \brief Flag to indicate if engine is initialized 
       private: bool initialized = false;
 
-      private: OgreSceneStorePtr scenes;
+//      private: Ogre2SceneStorePtr scenes;
 
-      private: OgreRenderPathType renderPathType;
+//      private: OgreRenderPathType renderPathType;
 
+      /// \brief Ogre root
       private: Ogre::Root *ogreRoot = nullptr;
 
+      /// \brief Ogre log manager
       private: Ogre::LogManager *ogreLogManager = nullptr;
 
       /// \brief Paths to ogre plugins
       private: std::vector<std::string> ogrePaths;
 
+/*
 #if not (__APPLE__ || _WIN32)
       private: void *dummyDisplay;
 
       private: void *dummyContext;
 #endif
 
-      private: uint64_t dummyWindowId;
+*/
+//      private: uint64_t dummyWindowId;
 
-      private: std::unique_ptr<OgreRenderEnginePrivate> dataPtr;
+      private: std::unique_ptr<Ogre2RenderEnginePrivate> dataPtr;
 
-      private: friend class SingletonT<OgreRenderEngine>;
+      private: friend class SingletonT<Ogre2RenderEngine>;
     };
   }
 }

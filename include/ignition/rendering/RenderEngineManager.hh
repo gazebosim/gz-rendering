@@ -45,11 +45,15 @@ namespace ignition
       /// \brief Deconstructor
       public: ~RenderEngineManager();
 
-      /// \brief Get the number of available render-engines
+      /// \brief Get the number of available render-engines. This counts
+      /// engines that that have been registered and loaded by the engine 
+      /// manager. Default engine plugins need to be loaded first using
+      /// Engine(std::string) for them to be available.
       /// \return the number of available render-engines
       public: unsigned int EngineCount() const;
 
       /// \brief Determine if a render-engine with the given name is avaiable
+      /// The function also search through the list of default engines
       /// \param[in] _name Name of the desired render-engine
       /// \return True if the specified render-engine is available
       public: bool HasEngine(const std::string &_name) const;
@@ -76,8 +80,9 @@ namespace ignition
                   RenderEngine *_engine);
 
       /// \brief Unregister a render-engine registered under the given name.
-      /// If the no render-engine is registered under the given name no work
-      /// will be done.
+      /// If no render-engine is registered under the given name no work
+      /// will be done. Unregistering a default engine plugin will cause it
+      /// to shutdown but will not remove it from the list of available engines
       /// \param[in] _name Name of the render-engine to unregister
       public: void UnregisterEngine(const std::string &_name);
 

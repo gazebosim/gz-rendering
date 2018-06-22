@@ -99,9 +99,9 @@ namespace ignition
 
 //      public: virtual Ogre::Root *OgreRoot() const;
 
-//      public: std::string CreateWindow(const std::string &_handle,
-//                  const unsigned int _width, const unsigned int _height,
-//                  const double _ratio, const unsigned int antiAliasing);
+      public: std::string CreateWindow(const std::string &_handle,
+                  const unsigned int _width, const unsigned int _height,
+                  const double _ratio, const unsigned int antiAliasing);
 
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name);
@@ -116,22 +116,26 @@ namespace ignition
 
       private: void CreateLogger();
 
+      private: void CreateContext();
+
       private: void CreateRoot();
+
+      private: void CreateOverlay();
 
       private: void LoadPlugins();
 
       private: void CreateRenderSystem();
+
+      private: void CreateWindow();
 
       private: void CreateResources();
 
 
 /*      private: void CreateLogger();
 
-      private: void CreateContext();
 
       private: void CreateRoot();
 
-      private: void CreateOverlay();
 
       private: void LoadPlugins();
 
@@ -148,6 +152,8 @@ namespace ignition
       /// occur
       private: void InitAttempt();
 
+
+      private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
 /*
 #if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
       /// \internal
@@ -155,7 +161,6 @@ namespace ignition
       /// \return Pointer to the OGRE overlay system.
       public: Ogre::OverlaySystem *OverlaySystem() const;
 
-      private: Ogre::OverlaySystem *ogreOverlaySystem = nullptr;
 
 #endif
 */
@@ -178,15 +183,13 @@ namespace ignition
       /// \brief Paths to ogre plugins
       private: std::vector<std::string> ogrePaths;
 
-/*
 #if not (__APPLE__ || _WIN32)
       private: void *dummyDisplay;
 
       private: void *dummyContext;
 #endif
 
-*/
-//      private: uint64_t dummyWindowId;
+      private: uint64_t dummyWindowId;
 
       private: std::unique_ptr<Ogre2RenderEnginePrivate> dataPtr;
 

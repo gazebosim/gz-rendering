@@ -37,27 +37,25 @@ ign_find_package(ignition-common2 REQUIRED COMPONENTS graphics events)
 set(IGN_COMMON_VER ${ignition-common2_VERSION_MAJOR})
 
 #--------------------------------------
+# Find FreeImage
+ign_find_package(FreeImage VERSION 3.9
+  REQUIRED_BY optix
+  PRIVATE_FOR optix)
+
+#--------------------------------------
+# Find OGRE
+ign_find_package(IgnOGRE VERSION 1.8.0
+  COMPONENTS RTShaderSystem Terrain Overlay
+  REQUIRED_BY ogre
+  PRIVATE_FOR ogre)
+
+if (OGRE_FOUND)
+  set(HAVE_OGRE TRUE)
+endif()
+
+#--------------------------------------
 # Find dependencies that we ignore for Visual Studio
 if(NOT MSVC)
-
-  #--------------------------------------
-  # Find FreeImage
-  ign_find_package(FreeImage VERSION 3.9
-      REQUIRED_BY optix
-      PRIVATE_FOR optix)
-
-  #--------------------------------------
-  # Find OGRE
-  ign_find_package(OGRE VERSION 1.8.0
-      COMPONENTS RTShaderSystem Terrain Overlay
-      REQUIRED_BY ogre
-      PRIVATE_FOR ogre)
-
-  if (OGRE_FOUND)
-    set(HAVE_OGRE TRUE)
-  endif()
-
-
   #--------------------------------------
   # Find CUDA
   find_package(CUDA)
@@ -71,7 +69,6 @@ if(NOT MSVC)
   if (OptiX_FOUND AND CUDA_FOUND)
     set(HAVE_OPTIX TRUE)
   endif()
-
 endif()
 
 #####################################
@@ -82,8 +79,13 @@ set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering
 #============================================================================
 # Configure the build
 #============================================================================
+set(RENDERING_COMPONENTS ogre)
+if (HAVE_OPTIX)
+  list(APPEND RENDERING_COMPONENTS optix)
+endif()
+
 ign_configure_build(QUIT_IF_BUILD_ERRORS
-    COMPONENTS ogre optix)
+    COMPONENTS ${RENDERING_COMPONENTS})
 
 #============================================================================
 # Create package information

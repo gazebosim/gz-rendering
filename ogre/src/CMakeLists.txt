@@ -14,8 +14,6 @@ set_property(
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
 )
 
-message(STATUS "OGRE_LIBRARIES: ${OGRE_LIBRARIES}")
-
 target_link_libraries(${ogre_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}

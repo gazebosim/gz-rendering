@@ -95,7 +95,7 @@ namespace ignition
       private: std::unique_ptr<RenderEngineManagerPrivate> dataPtr;
 
       /// \brief required SingletonT friendship
-      private: friend class SingletonT<RenderEngineManager>;
+      private: friend class ignition::common::SingletonT<RenderEngineManager>;
     };
   }
 }

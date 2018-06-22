@@ -479,7 +479,7 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
 
   if (image.getWidth() == 0)
   {
-    texture.setNull();
+    texture == nullptr;
     return texture;
   }
 

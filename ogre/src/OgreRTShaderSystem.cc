@@ -87,7 +87,7 @@ OgreRTShaderSystem::OgreRTShaderSystem()
 {
   this->dataPtr->initialized = false;
   this->dataPtr->shadowsApplied = false;
-  this->dataPtr->pssmSetup.setNull();
+  this->dataPtr->pssmSetup = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -152,7 +152,7 @@ void OgreRTShaderSystem::Fini()
   if (this->dataPtr->shaderGenerator != nullptr)
   {
     // On Windows, we're using 1.9RC1, which doesn't have a bunch of changes.
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0)) || defined(_WIN32)
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::RTShader::ShaderGenerator::finalize();
 #else
     Ogre::RTShader::ShaderGenerator::destroy();
@@ -160,7 +160,7 @@ void OgreRTShaderSystem::Fini()
     this->dataPtr->shaderGenerator = nullptr;
   }
 
-  this->dataPtr->pssmSetup.setNull();
+  this->dataPtr->pssmSetup = nullptr;
   this->dataPtr->entities.clear();
   this->dataPtr->scenes.clear();
   this->dataPtr->shadowsApplied = false;
@@ -513,7 +513,7 @@ void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
   // pssmCasterPass->setFog(true);
 
   // shadow camera setup
-  if (this->dataPtr->pssmSetup.isNull())
+  if (this->dataPtr->pssmSetup == nullptr)
   {
     this->dataPtr->pssmSetup =
         Ogre::ShadowCameraSetupPtr(new Ogre::PSSMShadowCameraSetup());

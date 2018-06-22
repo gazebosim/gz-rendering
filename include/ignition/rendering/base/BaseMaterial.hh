@@ -29,7 +29,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseMaterial :
+    class BaseMaterial :
       public virtual Material,
       public virtual T
     {

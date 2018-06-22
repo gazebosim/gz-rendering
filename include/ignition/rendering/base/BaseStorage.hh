@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/SuppressWarning.hh>
 
 #include "ignition/rendering/Storage.hh"
 
@@ -56,9 +57,11 @@ namespace ignition
 
       public: virtual bool ContainsValue(ConstTPtr _value) const;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: virtual TPtr Get(const std::string &_key) const;
 
       public: virtual TPtr GetByIndex(unsigned int _index) const;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       public: virtual bool Put(const std::string &_key, TPtr _value);
 
@@ -79,7 +82,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T, class U>
-    class IGNITION_RENDERING_VISIBLE BaseStore :
+    class BaseStore :
       public Store<T>
     {
       typedef std::shared_ptr<T> TPtr;
@@ -182,7 +185,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseCompositeStore :
+    class BaseCompositeStore :
       public CompositeStore<T>
     {
       typedef std::shared_ptr<T> TPtr;
@@ -253,12 +256,14 @@ namespace ignition
 
       public: virtual TStorePtr RemoveStoreImpl(TStoreIter _iter);
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: TStoreList stores;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
 
     //////////////////////////////////////////////////
     template <class T, class U>
-    class IGNITION_RENDERING_VISIBLE BaseStoreWrapper :
+    class BaseStoreWrapper :
       public StoreWrapper<T, U>
     {
       typedef std::shared_ptr<T> TPtr;
@@ -317,55 +322,55 @@ namespace ignition
     };
 
     //////////////////////////////////////////////////
-    class IGNITION_RENDERING_VISIBLE BaseNodeCompositeStore :
+    class  BaseNodeCompositeStore :
       public BaseCompositeStore<Node>
     {
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseSceneStore :
+    class  BaseSceneStore :
       public BaseStore<Scene, T>
     {
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseNodeStore :
+    class  BaseNodeStore :
       public BaseStore<Node, T>
     {
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseLightStore :
+    class  BaseLightStore :
       public BaseStore<Light, T>
     {
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseSensorStore :
+    class  BaseSensorStore :
       public BaseStore<Sensor, T>
     {
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseVisualStore :
+    class  BaseVisualStore :
       public BaseStore<Visual, T>
     {
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseGeometryStore :
+    class  BaseGeometryStore :
       public BaseStore<Geometry, T>
     {
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseSubMeshStore :
+    class  BaseSubMeshStore :
       public BaseStore<SubMesh, T>
     {
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseMaterialMap :
+    class  BaseMaterialMap :
       public BaseMap<Material, T>
     {
     };

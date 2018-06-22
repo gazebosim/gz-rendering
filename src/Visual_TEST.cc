@@ -117,7 +117,8 @@ TEST_P(VisualTest, VisualProperties)
 }
 
 INSTANTIATE_TEST_CASE_P(Visual, VisualTest,
-    ::testing::Values("ogre", "optix"));
+    ::testing::Values("ogre", "optix"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

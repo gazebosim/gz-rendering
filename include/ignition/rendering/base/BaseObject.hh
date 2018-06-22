@@ -36,7 +36,11 @@ namespace ignition
 
       public: virtual std::string Name() const;
 
+      // Documentation inherited
       public: virtual void PreRender();
+
+      // Documentation inherited
+      public: virtual void PostRender();
 
       public: virtual void Destroy();
 

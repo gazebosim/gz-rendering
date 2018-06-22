@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include <ignition/math/Box.hh>
+#include <ignition/math/AxisAlignedBox.hh>
 #include <ignition/math/Color.hh>
 
 #include "ignition/rendering/Geometry.hh"
@@ -152,7 +152,7 @@ namespace ignition
 
       /// \brief Get the axis aligned bounding box of the text.
       /// \return The axis aligned bounding box.
-      public: virtual ignition::math::Box AABB() const = 0;
+      public: virtual ignition::math::AxisAlignedBox AABB() const = 0;
     };
   }
 }

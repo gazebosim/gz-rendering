@@ -19,6 +19,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/OrbitViewController.hh"
 #include "ignition/rendering/RenderEngine.hh"
@@ -233,7 +234,8 @@ TEST_P(OrbitViewControllerTest, Control)
 }
 
 INSTANTIATE_TEST_CASE_P(OrbitViewController, OrbitViewControllerTest,
-    ::testing::Values("ogre", "optix"));
+    ::testing::Values("ogre", "optix"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

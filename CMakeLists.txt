@@ -57,6 +57,13 @@ if(NOT MSVC)
     set(HAVE_OGRE TRUE)
   endif()
 
+  #--------------------------------------
+  # Find OpenGL
+  find_package(OpenGL)
+  if (OpenGL_FOUND)
+    set(HAVE_OPENGL TRUE)
+  endif()
+
 
   #--------------------------------------
   # Find CUDA

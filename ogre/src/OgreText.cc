@@ -81,7 +81,7 @@ namespace ignition
 
       /// \brief Get the axis aligned bounding box of the text.
       /// \return The axis aligned bounding box.
-      public: ignition::math::Box AABB() const;
+      public: ignition::math::Boxd AABB() const;
 
       /// \brief Setup the geometry based on input text string.
       public: void SetupGeometry();
@@ -329,14 +329,11 @@ void OgreMovableText::SetShowOnTop(const bool _onTop)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Box OgreMovableText::AABB() const
+ignition::math::Boxd OgreMovableText::AABB() const
 {
-  return ignition::math::Box(
+  return ignition::math::Boxd(
       ignition::math::Vector3d(this->aabb->getMinimum().x,
                     this->aabb->getMinimum().y,
-                    this->aabb->getMinimum().z),
-      ignition::math::Vector3d(this->aabb->getMaximum().x,
-                    this->aabb->getMaximum().y,
                     this->aabb->getMaximum().z));
 }
 
@@ -1004,7 +1001,7 @@ void OgreText::SetShowOnTop(const bool _onTop)
 }
 
 //////////////////////////////////////////////////
-ignition::math::Box OgreText::AABB() const
+ignition::math::Boxd OgreText::AABB() const
 {
   return this->dataPtr->ogreObj->AABB();
 }

@@ -220,10 +220,8 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
                     fullPath);
 
               #if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MAJOR < 10)
-              // cppcheck-suppress readability/braces
               if (matPtr.isNull())
               #elif
-              // cppcheck-suppress readability/braces
               if (matPtr)
               #endif
               {

@@ -15,7 +15,6 @@
  *
  */
 
-#include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 
 #include "ignition/rendering/ShaderParams.hh"
@@ -159,6 +158,7 @@ void OgreMaterial::SetCastShadows(const bool _castShadows)
   // TODO: update RTShader
   this->castShadows = _castShadows;
 }
+
 
 //////////////////////////////////////////////////
 bool OgreMaterial::ReceiveShadows() const
@@ -479,7 +479,11 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
 
   if (image.getWidth() == 0)
   {
-    texture == nullptr;
+    #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR  <= 10
+    texture.setNull();
+    #else
+    texture = nullptr;
+    #endif
     return texture;
   }
 

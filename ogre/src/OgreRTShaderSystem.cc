@@ -87,7 +87,11 @@ OgreRTShaderSystem::OgreRTShaderSystem()
 {
   this->dataPtr->initialized = false;
   this->dataPtr->shadowsApplied = false;
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+  this->dataPtr->pssmSetup.setNull();
+#else
   this->dataPtr->pssmSetup = nullptr;
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -159,8 +163,11 @@ void OgreRTShaderSystem::Fini()
 #endif
     this->dataPtr->shaderGenerator = nullptr;
   }
-
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+  this->dataPtr->pssmSetup.setNull();
+#else
   this->dataPtr->pssmSetup = nullptr;
+#endif
   this->dataPtr->entities.clear();
   this->dataPtr->scenes.clear();
   this->dataPtr->shadowsApplied = false;
@@ -513,7 +520,11 @@ void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
   // pssmCasterPass->setFog(true);
 
   // shadow camera setup
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+  if (this->dataPtr->pssmSetup.isNull())
+#else
   if (this->dataPtr->pssmSetup == nullptr)
+#endif
   {
     this->dataPtr->pssmSetup =
         Ogre::ShadowCameraSetupPtr(new Ogre::PSSMShadowCameraSetup());

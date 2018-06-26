@@ -160,7 +160,6 @@ void OgreMaterial::SetCastShadows(const bool _castShadows)
   this->castShadows = _castShadows;
 }
 
-
 //////////////////////////////////////////////////
 bool OgreMaterial::ReceiveShadows() const
 {

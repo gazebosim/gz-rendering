@@ -99,7 +99,7 @@ namespace ignition
 
       public: virtual Ogre::Root *OgreRoot() const;
 
-      public: std::string CreateNewWindow(const std::string &_handle,
+      public: std::string CreateWindow(const std::string &_handle,
                   const unsigned int _width, const unsigned int _height,
                   const double _ratio, const unsigned int antiAliasing);
 
@@ -128,7 +128,7 @@ namespace ignition
 
       private: void CreateResources();
 
-      private: void CreateNewWindow();
+      private: void CreateWindow();
 
       private: void CheckCapabilities();
 

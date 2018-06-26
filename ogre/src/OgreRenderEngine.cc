@@ -220,7 +220,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
                     fullPath);
 
               #if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MAJOR < 10)
-              if (matPtr.isNull())
+              if (! matPtr.isNull())
               #elif
               if (matPtr)
               #endif

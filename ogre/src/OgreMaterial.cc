@@ -15,6 +15,7 @@
  *
  */
 
+#include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 
 #include "ignition/rendering/ShaderParams.hh"

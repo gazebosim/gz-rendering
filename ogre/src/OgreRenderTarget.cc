@@ -275,7 +275,7 @@ void OgreRenderWindow::BuildTarget()
 {
   auto engine = OgreRenderEngine::Instance();
   std::string renderTargetName =
-      engine->CreateNewWindow(this->handle,
+      engine->CreateWindow(this->handle,
           this->width,
           this->height,
           this->ratio,

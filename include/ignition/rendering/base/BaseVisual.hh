@@ -22,6 +22,7 @@
 #include "ignition/rendering/Storage.hh"
 
 #include "ignition/rendering/RenderEngine.hh"
+#include "ignition/rendering/base/BaseStorage.hh"
 
 namespace ignition
 {
@@ -277,11 +278,15 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::RemoveChildren()
     {
-      unsigned int count = this->Children()->Size();
-
-      for (unsigned int i = 0; i < count; ++i)
+      auto children =
+          std::dynamic_pointer_cast<BaseStore<Node, T>>(this->Children());
+      if (!children)
+        return;
+      auto it = children->Begin();
+      while (it != children->End())
       {
-        this->RemoveChildByIndex(i);
+        this->RemoveChild(it->second);
+        it = children->Begin();
       }
     }
 
@@ -362,9 +367,13 @@ namespace ignition
       unsigned int count = this->ChildCount();
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 
-      for (unsigned int i = 0; i < count; ++i)
+      auto children =
+          std::dynamic_pointer_cast<BaseStore<Node, T>>(this->Children());
+      if (!children)
+        return;
+      for (auto it = children->Begin(); it != children->End(); ++it)
       {
-        NodePtr child = this->ChildByIndex(i);
+        NodePtr child = it->second;
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
         if (visual) visual->SetMaterial(_material, false);
       }
@@ -493,12 +502,13 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::PreRenderChildren()
     {
-      unsigned int count = this->ChildCount();
-
-      for (unsigned int i = 0; i < count; ++i)
+      auto children =
+          std::dynamic_pointer_cast<BaseStore<Node, T>>(this->Children());
+      if (!children)
+        return;
+      for (auto it = children->Begin(); it != children->End(); ++it)
       {
-        NodePtr child = this->ChildByIndex(i);
-        child->PreRender();
+        it->second->PreRender();
       }
     }
 
@@ -506,15 +516,17 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::PreRenderGeometries()
     {
-      unsigned int count = this->GeometryCount();
+      auto geometries =
+          std::dynamic_pointer_cast<BaseStore<Geometry, Geometry>>(this->Geometries());
 
-      for (unsigned int i = 0; i < count; ++i)
+      if (!geometries)
+        return;
+
+      for (auto it = geometries->Begin(); it != geometries->End(); ++it)
       {
-        GeometryPtr geometry = this->GeometryByIndex(i);
-        geometry->PreRender();
+        it->second->PreRender();
       }
     }
-
   }
 }
 #endif

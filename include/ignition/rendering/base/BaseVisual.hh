@@ -517,7 +517,8 @@ namespace ignition
     void BaseVisual<T>::PreRenderGeometries()
     {
       auto geometries =
-          std::dynamic_pointer_cast<BaseStore<Geometry, Geometry>>(this->Geometries());
+          std::dynamic_pointer_cast<BaseStore<Geometry, Geometry>>(
+          this->Geometries());
 
       if (!geometries)
         return;

@@ -33,17 +33,17 @@ namespace ignition
 {
   namespace rendering
   {
-/*    template class BaseSceneStore<Ogre2Scene>;
-    template class BaseNodeStore<Ogre2Node>;
+    template class BaseSceneStore<Ogre2Scene>;
+/*    template class BaseNodeStore<Ogre2Node>;
     template class BaseLightStore<Ogre2Light>;
     template class BaseSensorStore<Ogre2Sensor>;
     template class BaseVisualStore<Ogre2Visual>;
     template class BaseGeometryStore<Ogre2Geometry>;
     template class BaseSubMeshStore<Ogre2SubMesh>;
     template class BaseMaterialMap<Ogre2Material>;
-
+*/
     typedef BaseSceneStore<Ogre2Scene>       Ogre2SceneStore;
-    typedef BaseNodeStore<Ogre2Node>         Ogre2NodeStore;
+/*    typedef BaseNodeStore<Ogre2Node>         Ogre2NodeStore;
     typedef BaseLightStore<Ogre2Light>       Ogre2LightStore;
     typedef BaseSensorStore<Ogre2Sensor>     Ogre2SensorStore;
     typedef BaseVisualStore<Ogre2Visual>     Ogre2VisualStore;

@@ -68,7 +68,7 @@ namespace ignition
     {
       /// \enum RenderPathType
       /// \brief The type of rendering path used by the rendering engine.
-      public: enum OgreRenderPathType
+/*      public: enum OgreRenderPathType
               {
                 /// \brief No rendering is done.
                 NONE = 0,
@@ -81,6 +81,7 @@ namespace ignition
                 /// \brief Count of the rendering path enums.
                 RENDER_PATH_COUNT
               };
+              */
 
       /// \brief Constructor
       private: Ogre2RenderEngine();
@@ -97,7 +98,7 @@ namespace ignition
 
 //      public: void AddResourcePath(const std::string &_uri);
 
-//      public: virtual Ogre::Root *OgreRoot() const;
+      public: virtual Ogre::Root *OgreRoot() const;
 
       public: std::string CreateWindow(const std::string &_handle,
                   const unsigned int _width, const unsigned int _height,

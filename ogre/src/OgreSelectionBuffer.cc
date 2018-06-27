@@ -131,7 +131,7 @@ void OgreSelectionBuffer::Update()
 void OgreSelectionBuffer::DeleteRTTBuffer()
 {
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10
-  if (! this->dataPtr->texture.isNull() && this->dataPtr->texture->isLoaded())
+  if (!this->dataPtr->texture.isNull() && this->dataPtr->texture->isLoaded())
 #else
   if (this->dataPtr->texture && this->dataPtr->texture->isLoaded())
 #endif

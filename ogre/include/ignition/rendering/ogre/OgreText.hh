@@ -21,7 +21,7 @@
 #include <memory>
 #include <string>
 
-#include <ignition/math/AxisAlignedBox.hh>
+#include <ignition/math/Box.hh>
 #include <ignition/math/Color.hh>
 
 #include "ignition/rendering/base/BaseText.hh"
@@ -88,7 +88,7 @@ namespace ignition
       public: virtual void SetShowOnTop(const bool _onTop) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox AABB() const override;
+      public: virtual ignition::math::Box AABB() const override;
 
       /// \brief Set material to text geometry.
       /// \param[in] _material Ogre material.

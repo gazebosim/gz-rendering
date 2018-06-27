@@ -96,7 +96,7 @@ namespace ignition
       public: virtual bool ShowOnTop() const override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox AABB() const override;
+      public: virtual ignition::math::Box AABB() const override;
 
       /// \brief Font name, such as "Liberation Sans"
       protected: std::string fontName = "Liberation Sans";
@@ -276,9 +276,9 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::AxisAlignedBox BaseText<T>::AABB() const
+    ignition::math::Box BaseText<T>::AABB() const
     {
-      math::AxisAlignedBox box;
+      math::Box box;
       return box;
     }
 

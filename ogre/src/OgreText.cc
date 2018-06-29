@@ -775,9 +775,9 @@ void OgreMovableText::UpdateColors()
 void OgreMovableText::UpdateMaterial()
 {
 #if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
-  if (!this->ogreMaterial.isNull())
+  if (this->ogreMaterial.isNull())
 #else
-  if (this->ogreMaterial)
+  if (!this->ogreMaterial)
 #endif
     return;
 

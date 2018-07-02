@@ -88,7 +88,7 @@ namespace ignition
       public: virtual void SetShowOnTop(const bool _onTop) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Box AABB() const override;
+      public: virtual ignition::math::Boxd AABB() const override;
 
       /// \brief Set material to text geometry.
       /// \param[in] _material Ogre material.

@@ -152,7 +152,7 @@ namespace ignition
 
       /// \brief Get the axis aligned bounding box of the text.
       /// \return The axis aligned bounding box.
-      public: virtual ignition::math::Box AABB() const = 0;
+      public: virtual ignition::math::Boxd AABB() const = 0;
     };
   }
 }

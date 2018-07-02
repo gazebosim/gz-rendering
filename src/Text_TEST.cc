@@ -57,7 +57,7 @@ void TextTest::Text(const std::string &_renderEngine)
   EXPECT_EQ(TextVerticalAlign::BOTTOM, text->VerticalAlignment());
   EXPECT_EQ(math::Color::White, text->Color());
   EXPECT_FALSE(text->ShowOnTop());
-  EXPECT_NE(math::Box(), text->AABB());
+  EXPECT_NE(math::Boxd(), text->AABB());
 
   // check setting text properties
   text->SetFontName("Liberation Sans");

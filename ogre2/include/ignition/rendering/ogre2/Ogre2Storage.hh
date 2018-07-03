@@ -24,10 +24,10 @@
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreNode.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreSensor.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 */
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
 namespace ignition
 {
@@ -49,8 +49,19 @@ namespace ignition
     typedef BaseVisualStore<Ogre2Visual>     Ogre2VisualStore;
     typedef BaseGeometryStore<Ogre2Geometry> Ogre2GeometryStore;
     typedef BaseSubMeshStore<Ogre2SubMesh>   Ogre2SubMeshStore;
+*/
+
+
+/*    typedef std::shared_ptr<Ogre2SceneStore>    Ogre2SceneStorePtr;
+    typedef std::shared_ptr<Ogre2NodeStore>     Ogre2NodeStorePtr;
+    typedef std::shared_ptr<Ogre2LightStore>    Ogre2LightStorePtr;
+    typedef std::shared_ptr<Ogre2SensorStore>   Ogre2SensorStorePtr;
+    typedef std::shared_ptr<Ogre2VisualStore>   Ogre2VisualStorePtr;
+    typedef std::shared_ptr<Ogre2GeometryStore> Ogre2GeometryStorePtr;
+    typedef std::shared_ptr<Ogre2SubMeshStore>  Ogre2SubMeshStorePtr;
     typedef std::shared_ptr<Ogre2MaterialMap>   Ogre2MaterialMapPtr;
 */
+
   }
 }
 #endif

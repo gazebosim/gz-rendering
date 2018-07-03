@@ -27,7 +27,7 @@
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 //#include "ignition/rendering/ogre/OgreIncludes.hh"
-//#include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
 namespace Ogre
@@ -155,23 +155,18 @@ namespace ignition
 
 
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
-/*
-#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.
       /// \return Pointer to the OGRE overlay system.
-      public: Ogre::OverlaySystem *OverlaySystem() const;
+      public: Ogre::v1::OverlaySystem *OverlaySystem() const;
 
-
-#endif
-*/
       /// \brief Flag to indicate if engine is loaded
       private: bool loaded = false;
 
       /// \brief Flag to indicate if engine is initialized 
       private: bool initialized = false;
 
-//      private: Ogre2SceneStorePtr scenes;
+      private: Ogre2SceneStorePtr scenes;
 
 //      private: OgreRenderPathType renderPathType;
 

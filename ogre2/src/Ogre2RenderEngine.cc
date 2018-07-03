@@ -39,8 +39,8 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-//#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-//#include "ignition/rendering/ogre2/OgreStorage.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 namespace ignition
 {
@@ -97,11 +97,10 @@ Ogre2RenderEngine::~Ogre2RenderEngine()
 //////////////////////////////////////////////////
 bool Ogre2RenderEngine::Fini()
 {
-/*  if (this->scenes)
+  if (this->scenes)
   {
     this->scenes->RemoveAll();
   }
-  */
 
 #if not (__APPLE__ || _WIN32)
   if (this->dummyDisplay)
@@ -250,17 +249,15 @@ Ogre::Root *Ogre2RenderEngine::OgreRoot() const
 ScenePtr Ogre2RenderEngine::CreateSceneImpl(unsigned int _id,
     const std::string &_name)
 {
-//  auto scene = OgreScenePtr(new OgreScene(_id, _name));
-//  this->scenes->Add(scene);
-//  return scene;
-  return ScenePtr();
+  Ogre2ScenePtr scene = Ogre2ScenePtr(new Ogre2Scene(_id, _name));
+  this->scenes->Add(scene);
+  return scene;
 }
 
 //////////////////////////////////////////////////
 SceneStorePtr Ogre2RenderEngine::Scenes() const
 {
-//  return this->scenes;
-  return SceneStorePtr();
+  return this->scenes;
 }
 
 //////////////////////////////////////////////////
@@ -734,16 +731,15 @@ void Ogre2RenderEngine::InitAttempt()
 
   OgreRTShaderSystem::Instance()->Init();
 
-  this->scenes = OgreSceneStorePtr(new OgreSceneStore);
   */
+  this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
 }
 
 /////////////////////////////////////////////////
-/*Ogre::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
+Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 {
   return this->ogreOverlaySystem;
 }
-*/
 
 // Register this plugin
 IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::Ogre2RenderEnginePlugin,

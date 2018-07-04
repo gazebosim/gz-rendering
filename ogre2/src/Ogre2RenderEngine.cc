@@ -700,6 +700,7 @@ std::string Ogre2RenderEngine::CreateWindow(const std::string &_handle,
 }
 */
 
+
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::InitAttempt()
 {

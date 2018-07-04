@@ -19,13 +19,16 @@
 
 /*#include "ignition/rendering/ogre2/Ogre2ArrowVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2AxisVisual.hh"
+*/
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
+/*#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
+
 */
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
-/*#include "ignition/rendering/ogre2/Ogre2Text.hh"
+/*
+#include "ignition/rendering/ogre2/Ogre2Text.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
@@ -33,8 +36,8 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 //#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
-///#include "ignition/rendering/ogre/OgreStorage.hh"
-//#include "ignition/rendering/ogre/OgreVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2Storage.hh"
+#include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
 namespace ignition
 {
@@ -528,7 +531,7 @@ RayQueryPtr Ogre2Scene::CreateRayQueryImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-/*bool Ogre2Scene::InitObject(OgreObjectPtr _object, unsigned int _id,
+bool Ogre2Scene::InitObject(Ogre2ObjectPtr _object, unsigned int _id,
     const std::string &_name)
 {
   // assign needed varibles
@@ -542,7 +545,6 @@ RayQueryPtr Ogre2Scene::CreateRayQueryImpl(unsigned int _id,
 
   return true;
 }
-*/
 
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateContext()

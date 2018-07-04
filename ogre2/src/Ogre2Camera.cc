@@ -1,0 +1,247 @@
+/*
+ * Copyright (C) 2018 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include "ignition/rendering/ogre2/Ogre2Camera.hh"
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+//#include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+
+using namespace ignition;
+using namespace rendering;
+
+//////////////////////////////////////////////////
+Ogre2Camera::Ogre2Camera()
+{
+}
+
+//////////////////////////////////////////////////
+Ogre2Camera::~Ogre2Camera()
+{
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetHFOV(const math::Angle &_angle)
+{
+  BaseCamera::SetHFOV(_angle);
+  double angle = _angle.Radian();
+  double vfov = 2.0 * atan(tan(angle / 2.0) / this->aspect);
+  this->ogreCamera->setFOVy(Ogre::Radian(vfov));
+}
+
+//////////////////////////////////////////////////
+double Ogre2Camera::AspectRatio() const
+{
+  return this->ogreCamera->getAspectRatio();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetAspectRatio(const double _ratio)
+{
+  BaseCamera::SetAspectRatio(_ratio);
+  return this->ogreCamera->setAspectRatio(_ratio);
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2Camera::AntiAliasing() const
+{
+  return this->renderTexture->AntiAliasing();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetAntiAliasing(const unsigned int _aa)
+{
+  BaseCamera::SetAntiAliasing(_aa);
+  this->renderTexture->SetAntiAliasing(_aa);
+}
+
+//////////////////////////////////////////////////
+math::Color Ogre2Camera::BackgroundColor() const
+{
+  return this->renderTexture->BackgroundColor();
+  return math::Color::White;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetBackgroundColor(const math::Color &_color)
+{
+  this->renderTexture->SetBackgroundColor(_color);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetMaterial(const MaterialPtr &_material)
+{
+  this->renderTexture->SetMaterial(_material);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::Render()
+{
+  this->renderTexture->Render();
+}
+
+//////////////////////////////////////////////////
+RenderTargetPtr Ogre2Camera::RenderTarget() const
+{
+  return this->renderTexture;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::Init()
+{
+  BaseCamera::Init();
+  this->CreateCamera();
+  this->CreateRenderTexture();
+  this->Reset();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::CreateCamera()
+{
+  // create ogre camera object
+  Ogre::SceneManager *ogreSceneManager;
+  ogreSceneManager = this->scene->OgreSceneManager();
+  this->ogreCamera = ogreSceneManager->createCamera(this->name);
+  this->ogreNode->attachObject(this->ogreCamera);
+
+  // rotate to Gazebo coordinate system
+  this->ogreCamera->yaw(Ogre::Degree(-90.0));
+  this->ogreCamera->roll(Ogre::Degree(-90.0));
+  this->ogreCamera->setFixedYawAxis(false);
+
+  // TODO: provide api access
+  this->ogreCamera->setAutoAspectRatio(true);
+  this->ogreCamera->setRenderingDistance(0);
+//  this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
+  this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
+  this->ogreCamera->setCustomProjectionMatrix(false);
+
+  // creaete compositor
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::CreateRenderTexture()
+{
+  RenderTexturePtr base = this->scene->CreateRenderTexture();
+  this->renderTexture = std::dynamic_pointer_cast<Ogre2RenderTexture>(base);
+  this->renderTexture->SetCamera(this->ogreCamera);
+  this->renderTexture->SetFormat(PF_R8G8B8);
+  this->renderTexture->SetWidth(this->ImageWidth());
+  this->renderTexture->SetHeight(this->ImageHeight());
+  this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetSelectionBuffer()
+{
+/*  this->selectionBuffer = new OgreSelectionBuffer(this->name,
+      this->scene->OgreSceneManager(), this->ImageWidth(),
+      this->ImageHeight());
+      */
+}
+
+//////////////////////////////////////////////////
+VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i
+    &_mousePos)
+{
+/*
+  VisualPtr result;
+
+  if (!this->selectionBuffer)
+  {
+    this->SetSelectionBuffer();
+
+    if (!this->selectionBuffer)
+    {
+      return result;
+    }
+  }
+
+  int ratio = static_cast<int>(this->AspectRatio());
+
+  ignition::math::Vector2i mousePos(
+      ratio * _mousePos.X(), ratio * _mousePos.Y());
+
+  Ogre::Entity *entity = this->selectionBuffer->OnSelectionClick(
+      mousePos.X(), mousePos.Y());
+
+  if (entity)
+  {
+    if (!entity->getUserObjectBindings().getUserAny().isEmpty() &&
+        entity->getUserObjectBindings().getUserAny().getType() ==
+        typeid(unsigned int))
+    {
+      try
+      {
+        result = this->scene->VisualById(Ogre::any_cast<unsigned int>(
+              entity->getUserObjectBindings().getUserAny()));
+      }
+      catch(Ogre::Exception &e)
+      {
+        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+      }
+    }
+  }
+
+  return result;
+  */
+}
+
+//////////////////////////////////////////////////
+RenderWindowPtr Ogre2Camera::CreateRenderWindow()
+{
+/*  RenderWindowPtr base = this->scene->CreateRenderWindow();
+  OgreRenderWindowPtr renderWindow =
+      std::dynamic_pointer_cast<OgreRenderWindow>(base);
+  renderWindow->SetWidth(this->ImageWidth());
+  renderWindow->SetHeight(this->ImageHeight());
+  renderWindow->SetDevicePixelRatio(1);
+  renderWindow->SetCamera(this->ogreCamera);
+  renderWindow->SetBackgroundColor(this->scene->BackgroundColor());
+
+  this->renderTexture = renderWindow;
+  return base;
+  */
+}
+
+//////////////////////////////////////////////////
+math::Matrix4d Ogre2Camera::ProjectionMatrix() const
+{
+  return Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix());
+}
+
+//////////////////////////////////////////////////
+math::Matrix4d Ogre2Camera::ViewMatrix() const
+{
+  return Ogre2Conversions::Convert(this->ogreCamera->getViewMatrix(true));
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetNearClipPlane(const double _near)
+{
+  // this->nearClip = _near;
+  BaseCamera::SetNearClipPlane(_near);
+  this->ogreCamera->setNearClipDistance(_near);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetFarClipPlane(const double _far)
+{
+  BaseCamera::SetFarClipPlane(_far);
+  this->ogreCamera->setFarClipDistance(_far);
+}

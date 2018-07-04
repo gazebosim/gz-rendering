@@ -135,8 +135,8 @@ namespace ignition
       protected: virtual RayQueryPtr CreateRayQueryImpl(
                      unsigned int _id, const std::string &_name);
 
-//      protected: virtual bool InitObject(Ogre2ObjectPtr _object,
-//                     unsigned int _id, const std::string &_name);
+      protected: virtual bool InitObject(Ogre2ObjectPtr _object,
+                     unsigned int _id, const std::string &_name);
 
       protected: virtual LightStorePtr Lights() const;
 

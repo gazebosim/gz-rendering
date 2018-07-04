@@ -73,6 +73,10 @@
 #include <Hlms/Pbs/OgreHlmsPbs.h>
 
 
+#include <OGRE/Compositor/OgreCompositorManager2.h>
+#include <OGRE/Compositor/OgreCompositorWorkspace.h>
+
+#include <OGRE/Overlay/OgreOverlayPrerequisites.h>
 #include <OGRE/Overlay/OgreOverlayManager.h>
 #include <OGRE/Overlay/OgreOverlayElement.h>
 #include <OGRE/Overlay/OgreOverlayContainer.h>

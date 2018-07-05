@@ -479,7 +479,7 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
 
   if (image.getWidth() == 0)
   {
-    #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR  < 10
+    #if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10 && OGRE_VERSION_PATCH < 1)
     texture.setNull();
     #else
     texture = nullptr;

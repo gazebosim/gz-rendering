@@ -356,7 +356,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
   }
 
   if (this->fontName != _newFontName ||
-#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10 && OGRE_VERSION_PATCH < 1)
       this->ogreMaterial.isNull() || !this->font)
 #else
       this->ogreMaterial == nullptr || !this->font)
@@ -374,7 +374,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 
     this->font->load();
 
-#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10 && OGRE_VERSION_PATCH < 1)
     if (!this->ogreMaterial.isNull())
 #else
     if (this->ogreMaterial)
@@ -382,7 +382,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
     {
       Ogre::MaterialManager::getSingletonPtr()->remove(
           this->ogreMaterial->getName());
-#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10 && OGRE_VERSION_PATCH < 1)
       this->ogreMaterial.setNull();
 #else
       this->ogreMaterial == nullptr;
@@ -408,7 +408,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 void OgreMovableText::SetupGeometry()
 {
   IGN_ASSERT(this->font, "font class member is null");
-#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10 && OGRE_VERSION_PATCH < 1)
   IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
 #else
   IGN_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
@@ -745,7 +745,7 @@ void OgreMovableText::UpdateColors()
   unsigned int i;
 
   IGN_ASSERT(this->font, "font class member is null");
-#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10 && OGRE_VERSION_PATCH < 1)
   IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
 #else
   IGN_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
@@ -774,7 +774,7 @@ void OgreMovableText::UpdateColors()
 //////////////////////////////////////////////////
 void OgreMovableText::UpdateMaterial()
 {
-#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10 && OGRE_VERSION_PATCH < 1)
   if (this->ogreMaterial.isNull())
 #else
   if (!this->ogreMaterial)
@@ -864,7 +864,7 @@ void OgreMovableText::getRenderOperation(Ogre::RenderOperation &_op)
 //////////////////////////////////////////////////
 const Ogre::MaterialPtr &OgreMovableText::getMaterial(void) const
 {
-#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10)
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10 && OGRE_VERSION_PATCH < 1)
   IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
 #else
   IGN_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");

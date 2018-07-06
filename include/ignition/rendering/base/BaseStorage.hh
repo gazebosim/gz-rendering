@@ -153,6 +153,14 @@ namespace ignition
 
       public: virtual UPtr RemoveDerivedByIndex(unsigned int _index);
 
+      /// \brief Return an iterator to the beginning
+      /// \returns Iterator to beginning
+      public: virtual UIter Begin();
+
+      /// \brief Return an iterator to the end
+      /// \returns Iterator to end
+      public: virtual UIter End();
+
       protected: virtual ConstUIter ConstIter(ConstTPtr _object) const;
 
       protected: virtual ConstUIter ConstIterById(unsigned int _id) const;
@@ -551,6 +559,22 @@ namespace ignition
     unsigned int BaseStore<T, U>::Size() const
     {
       return this->store.size();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T, class U>
+    typename BaseStore<T, U>::UIter
+    BaseStore<T, U>::Begin()
+    {
+      return this->store.begin();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T, class U>
+    typename BaseStore<T, U>::UIter
+    BaseStore<T, U>::End()
+    {
+      return this->store.end();
     }
 
     //////////////////////////////////////////////////

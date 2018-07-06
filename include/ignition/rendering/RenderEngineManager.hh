@@ -98,7 +98,7 @@ namespace ignition
       IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief required SingletonT friendship
-      private: friend class SingletonT<RenderEngineManager>;
+      private: friend class ignition::common::SingletonT<RenderEngineManager>;
     };
   }
 }

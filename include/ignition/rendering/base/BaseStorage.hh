@@ -79,7 +79,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T, class U>
-    class BaseStore :
+    class IGNITION_RENDERING_VISIBLE BaseStore :
       public Store<T>
     {
       typedef std::shared_ptr<T> TPtr;
@@ -190,7 +190,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    class BaseCompositeStore :
+    class IGNITION_RENDERING_VISIBLE BaseCompositeStore :
       public CompositeStore<T>
     {
       typedef std::shared_ptr<T> TPtr;
@@ -266,7 +266,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T, class U>
-    class BaseStoreWrapper :
+    class IGNITION_RENDERING_VISIBLE BaseStoreWrapper :
       public StoreWrapper<T, U>
     {
       typedef std::shared_ptr<T> TPtr;
@@ -325,55 +325,55 @@ namespace ignition
     };
 
     //////////////////////////////////////////////////
-    class BaseNodeCompositeStore :
+    class IGNITION_RENDERING_VISIBLE BaseNodeCompositeStore :
       public BaseCompositeStore<Node>
     {
     };
 
     template <class T>
-    class BaseSceneStore :
+    class IGNITION_RENDERING_VISIBLE BaseSceneStore :
       public BaseStore<Scene, T>
     {
     };
 
     template <class T>
-    class BaseNodeStore :
+    class IGNITION_RENDERING_VISIBLE BaseNodeStore :
       public BaseStore<Node, T>
     {
     };
 
     template <class T>
-    class BaseLightStore :
+    class IGNITION_RENDERING_VISIBLE BaseLightStore :
       public BaseStore<Light, T>
     {
     };
 
     template <class T>
-    class BaseSensorStore :
+    class IGNITION_RENDERING_VISIBLE BaseSensorStore :
       public BaseStore<Sensor, T>
     {
     };
 
     template <class T>
-    class BaseVisualStore :
+    class IGNITION_RENDERING_VISIBLE BaseVisualStore :
       public BaseStore<Visual, T>
     {
     };
 
     template <class T>
-    class BaseGeometryStore :
+    class IGNITION_RENDERING_VISIBLE BaseGeometryStore :
       public BaseStore<Geometry, T>
     {
     };
 
     template <class T>
-    class BaseSubMeshStore :
+    class IGNITION_RENDERING_VISIBLE BaseSubMeshStore :
       public BaseStore<SubMesh, T>
     {
     };
 
     template <class T>
-    class BaseMaterialMap :
+    class IGNITION_RENDERING_VISIBLE BaseMaterialMap :
       public BaseMap<Material, T>
     {
     };

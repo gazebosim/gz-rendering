@@ -44,115 +44,119 @@ namespace ignition
 
       public: virtual ~BaseCamera();
 
-      public: virtual unsigned int ImageWidth() const;
+      public: virtual unsigned int ImageWidth() const override;
 
-      public: virtual void SetImageWidth(const unsigned int _width);
+      public: virtual void SetImageWidth(const unsigned int _width) override;
 
-      public: virtual unsigned int ImageHeight() const;
+      public: virtual unsigned int ImageHeight() const override;
 
-      public: virtual void SetImageHeight(const unsigned int _height);
+      public: virtual void SetImageHeight(const unsigned int _height) override;
 
-      public: virtual PixelFormat ImageFormat() const;
+      public: virtual PixelFormat ImageFormat() const override;
 
-      public: virtual unsigned int ImageMemorySize() const;
+      public: virtual unsigned int ImageMemorySize() const override;
 
-      public: virtual void SetImageFormat(PixelFormat _format);
+      public: virtual void SetImageFormat(PixelFormat _format) override;
 
-      public: virtual math::Angle HFOV() const;
+      public: virtual math::Angle HFOV() const override;
 
-      public: virtual void SetHFOV(const math::Angle &_hfov);
+      public: virtual void SetHFOV(const math::Angle &_hfov) override;
 
-      public: virtual double AspectRatio() const;
+      public: virtual double AspectRatio() const override;
 
-      public: virtual void SetAspectRatio(const double _ratio);
+      public: virtual void SetAspectRatio(const double _ratio) override;
 
-      public: virtual unsigned int AntiAliasing() const;
+      public: virtual unsigned int AntiAliasing() const override;
 
-      public: virtual void SetAntiAliasing(const unsigned int _aa);
+      public: virtual void SetAntiAliasing(const unsigned int _aa) override;
 
-      public: virtual double FarClipPlane() const;
+      public: virtual double FarClipPlane() const override;
 
-      public: virtual void SetFarClipPlane(const double _far);
+      public: virtual void SetFarClipPlane(const double _far) override;
 
-      public: virtual double NearClipPlane() const;
+      public: virtual double NearClipPlane() const override;
 
-      public: virtual void SetNearClipPlane(const double _near);
+      public: virtual void SetNearClipPlane(const double _near) override;
 
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
-      public: virtual void PostRender();
+      public: virtual void PostRender() override;
 
-      public: virtual void Update();
+      public: virtual void Update() override;
 
-      public: virtual Image CreateImage() const;
+      public: virtual Image CreateImage() const override;
 
-      public: virtual void Capture(Image &_image);
+      public: virtual void Capture(Image &_image) override;
 
-      public: virtual void Copy(Image &_image) const;
+      public: virtual void Copy(Image &_image) const override;
 
-      public: virtual bool SaveFrame(const std::string &_name);
+      public: virtual bool SaveFrame(const std::string &_name) override;
 
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
-                  Camera::NewFrameListener _listener);
+                  Camera::NewFrameListener _listener) override;
 
-      public: virtual RenderWindowPtr CreateRenderWindow();
+      public: virtual RenderWindowPtr CreateRenderWindow() override;
 
       // Documentation inherited.
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
-                  &_mousePos);
+                  &_mousePos) override;
 
       // Documentation inherited.
-      public: virtual math::Matrix4d ProjectionMatrix() const;
+      public: virtual math::Matrix4d ProjectionMatrix() const override;
 
       // Documentation inherited.
-      public: virtual math::Matrix4d ViewMatrix() const;
+      public: virtual math::Matrix4d ViewMatrix() const override;
 
       // Documentation inherited.
-      // \sa Camera::SetMaterial(const MaterialPtr &);
+      // \sa Camera::SetMaterial(const MaterialPtr &) override;
       public: virtual void SetMaterial(const MaterialPtr &_material)
-                  override;
+                  override override;
 
       // Documentation inherited.
       public: virtual void SetTrackTarget(const NodePtr &_target,
-                  const math::Vector3d &_offset, const bool _worldFrame);
+                  const math::Vector3d &_offset,
+                  const bool _worldFrame) override;
 
       // Documentation inherited.
-      public: virtual NodePtr TrackTarget() const;
+      public: virtual NodePtr TrackTarget() const override;
 
       // Documentation inherited.
-      public: virtual void SetTrackOffset(const math::Vector3d &_offset);
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset)
+                  override;
 
       // Documentation inherited.
-      public: virtual math::Vector3d TrackOffset() const;
+      public: virtual math::Vector3d TrackOffset() const override;
 
       // Documentation inherited.
-      public: virtual void SetTrackPGain(const double _pGain);
+      public: virtual void SetTrackPGain(const double _pGain) override;
 
       // Documentation inherited.
-      public: virtual double TrackPGain() const;
+      public: virtual double TrackPGain() const override;
 
       // Documentation inherited.
       public: virtual void SetFollowTarget(const NodePtr &_target,
-                  const math::Vector3d &_Offset, const bool _worldFrame);
+                  const math::Vector3d &_Offset, const bool _worldFrame)
+                  override;
 
       // Documentation inherited.
-      public: virtual NodePtr FollowTarget() const;
+      public: virtual NodePtr FollowTarget() const override;
 
       // Documentation inherited.
-      public: virtual void SetFollowOffset(const math::Vector3d &_offset);
+      public: virtual void SetFollowOffset(const math::Vector3d &_offset)
+                 override;
 
       // Documentation inherited.
-      public: virtual math::Vector3d FollowOffset() const;
+      public: virtual math::Vector3d FollowOffset() const override;
 
       // Documentation inherited.
-      public: virtual void SetFollowPGain(const double _pGain);
+      public: virtual void SetFollowPGain(const double _pGain) override;
 
       // Documentation inherited.
-      public: virtual double FollowPGain() const;
+      public: virtual double FollowPGain() const override;
 
-      protected: virtual void *CreateImageBuffer() const;
+      protected: virtual void *CreateImageBuffer() const override;
 
-      protected: virtual void Load();
+      protected: virtual void Load() override;
 
       protected: virtual void Reset();
 

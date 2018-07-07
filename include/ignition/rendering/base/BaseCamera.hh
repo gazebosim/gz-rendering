@@ -110,7 +110,7 @@ namespace ignition
       // Documentation inherited.
       // \sa Camera::SetMaterial(const MaterialPtr &) override;
       public: virtual void SetMaterial(const MaterialPtr &_material)
-                  override override;
+                  override;
 
       // Documentation inherited.
       public: virtual void SetTrackTarget(const NodePtr &_target,
@@ -154,7 +154,7 @@ namespace ignition
       // Documentation inherited.
       public: virtual double FollowPGain() const override;
 
-      protected: virtual void *CreateImageBuffer() const override;
+      protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load() override;
 

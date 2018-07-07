@@ -43,31 +43,31 @@ namespace ignition
       public: virtual void SetAmbient(const double _r, const double _g,
                   const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetAmbient(const math::Color &_color) = 0 override;
+      public: virtual void SetAmbient(const math::Color &_color) override = 0;
 
       public: virtual void SetDiffuse(const double _r, const double _g,
                   const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetDiffuse(const math::Color &_color) = 0 override;
+      public: virtual void SetDiffuse(const math::Color &_color) override = 0;
 
       public: virtual void SetSpecular(const double _r, const double _g,
                   const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetSpecular(const math::Color &_color) = 0 override;
+      public: virtual void SetSpecular(const math::Color &_color) override = 0;
 
       public: virtual void SetEmissive(const double _r, const double _g,
                   const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetEmissive(const math::Color &_color) = 0 override;
+      public: virtual void SetEmissive(const math::Color &_color) override = 0;
 
-      public: virtual void SetReceiveShadows(const bool _receiveShadows) = 0
-                  override;
+      public: virtual void SetReceiveShadows(const bool _receiveShadows)
+                  override = 0;
 
-      public: virtual void ClearTexture() = 0 override;
+      public: virtual void ClearTexture() override = 0;
 
-      public: virtual void ClearNormalMap() = 0 override;
+      public: virtual void ClearNormalMap() override = 0;
 
-      public: virtual void SetShaderType(enum ShaderType _type) = 0 override;
+      public: virtual void SetShaderType(enum ShaderType _type) override = 0;
 
       // Documentation inherited.
       // \sa Material::VertexShader() const

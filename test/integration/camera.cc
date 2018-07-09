@@ -192,7 +192,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.5, 0.0);
   box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(M_PI / 4, 0, M_PI / 3);
+  box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
   box->SetLocalScale(1, 2.5, 1);
   root->AddChild(box);
 
@@ -215,7 +215,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(M_PI / 2);
+  camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 
   // render a frame

@@ -1,0 +1,113 @@
+/*
+ * Copyright (C) 2015 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include <ignition/common/Console.hh>
+
+#include "ignition/rendering/ogre2/Ogre2Mesh.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2Storage.hh"
+
+using namespace ignition;
+using namespace rendering;
+
+//////////////////////////////////////////////////
+Ogre2Mesh::Ogre2Mesh()
+{
+}
+
+//////////////////////////////////////////////////
+Ogre2Mesh::~Ogre2Mesh()
+{
+}
+
+//////////////////////////////////////////////////
+Ogre::MovableObject *Ogre2Mesh::OgreObject() const
+{
+  return this->ogreEntity;
+}
+
+//////////////////////////////////////////////////
+SubMeshStorePtr Ogre2Mesh::SubMeshes() const
+{
+  return this->subMeshes;
+}
+
+//////////////////////////////////////////////////
+Ogre2SubMesh::Ogre2SubMesh()
+{
+}
+
+//////////////////////////////////////////////////
+Ogre2SubMesh::~Ogre2SubMesh()
+{
+}
+
+//////////////////////////////////////////////////
+MaterialPtr Ogre2SubMesh::Material() const
+{
+  return this->material;
+}
+
+//////////////////////////////////////////////////
+void Ogre2SubMesh::SetMaterial(MaterialPtr _material, bool _unique)
+{
+  _material = (_unique) ? _material->Clone() : _material;
+
+  Ogre2MaterialPtr derived =
+      std::dynamic_pointer_cast<Ogre2Material>(_material);
+
+  if (!derived)
+  {
+    ignerr << "Cannot assign material created by another render-engine"
+        << std::endl;
+
+    return;
+  }
+
+  this->SetMaterialImpl(derived);
+}
+
+//////////////////////////////////////////////////
+Ogre::v1::SubEntity *Ogre2SubMesh::Ogre2SubEntity() const
+{
+  return this->ogreSubEntity;
+}
+
+//////////////////////////////////////////////////
+void Ogre2SubMesh::Destroy()
+{
+}
+
+//////////////////////////////////////////////////
+void Ogre2SubMesh::SetMaterialImpl(Ogre2MaterialPtr _material)
+{
+  std::string materialName = _material->Name();
+  Ogre::MaterialPtr ogreMaterial = _material->Material();
+  //TODO use Hlms datablocks
+  // https://ogrecave.github.io/ogre/api/2.1/TechnicalOverview.html
+//  this->ogreSubEntity->setMaterialName(materialName);
+  this->material = _material;
+}
+
+//////////////////////////////////////////////////
+void Ogre2SubMesh::Init()
+{
+  BaseSubMesh::Init();
+}
+
+//////////////////////////////////////////////////

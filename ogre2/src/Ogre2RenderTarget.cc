@@ -64,16 +64,17 @@ void Ogre2RenderTarget::BuildCompositor()
           this->RenderTarget(), this->ogreCamera, workspaceName, true);
 }
 
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::DestroyCompositor()
 {
-  if (this->ogreCompositorWorkspace)
-  {
-    auto engine = Ogre2RenderEngine::Instance();
-    auto ogreRoot = engine->OgreRoot();
-    Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
-    ogreCompMgr->removeWorkspace(this->ogreCompositorWorkspace);
-    this->ogreCompositorWorkspace = nullptr;
-  }
+  if (!this->ogreCompositorWorkspace)
+    return;
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+  ogreCompMgr->removeWorkspace(this->ogreCompositorWorkspace);
+  this->ogreCompositorWorkspace = nullptr;
 }
 
 //////////////////////////////////////////////////

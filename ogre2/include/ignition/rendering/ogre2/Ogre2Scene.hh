@@ -156,18 +156,17 @@ namespace ignition
 
       private: Ogre2ScenePtr SharedThis();
 
-/*      protected: Ogre2VisualPtr rootVisual;
+      protected: Ogre2VisualPtr rootVisual;
 
-      protected: Ogre2MeshFactoryPtr meshFactory;
+//      protected: Ogre2MeshFactoryPtr meshFactory;
 
-      protected: Ogre2LightStorePtr lights;
+//      protected: Ogre2LightStorePtr lights;
 
       protected: Ogre2SensorStorePtr sensors;
 
       protected: Ogre2VisualStorePtr visuals;
 
-      protected: Ogre2MaterialMapPtr materials;
-      */
+//      protected: Ogre2MaterialMapPtr materials;
 
       protected: Ogre::Root *ogreRoot = nullptr;
 

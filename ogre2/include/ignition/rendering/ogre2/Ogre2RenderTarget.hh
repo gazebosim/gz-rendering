@@ -22,7 +22,6 @@
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
 
@@ -130,7 +129,7 @@ namespace ignition
 
       protected: Ogre::Texture *ogreTexture = nullptr;
 
-      private: friend class OgreScene;
+      private: friend class Ogre2Scene;
     };
 
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderWindow :
@@ -150,7 +149,7 @@ namespace ignition
 
       protected: Ogre::RenderTarget *ogreRenderWindow = nullptr;
 
-      private: friend class OgreScene;
+      private: friend class Ogre2Scene;
     };
 
   }

@@ -117,6 +117,8 @@ void Ogre2Camera::CreateCamera()
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
+  // by default, ogre2 cameras are attached to root scene node
+  this->ogreCamera->detachFromParent();
   this->ogreNode->attachObject(this->ogreCamera);
 
   // rotate to Gazebo coordinate system
@@ -126,7 +128,7 @@ void Ogre2Camera::CreateCamera()
 
   // TODO: provide api access
   this->ogreCamera->setAutoAspectRatio(true);
-  this->ogreCamera->setRenderingDistance(0);
+  // this->ogreCamera->setRenderingDistance(0);
 //  this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);

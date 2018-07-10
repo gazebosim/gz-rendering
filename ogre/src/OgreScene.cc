@@ -357,6 +357,7 @@ SpotLightPtr OgreScene::CreateSpotLightImpl(unsigned int _id,
 CameraPtr OgreScene::CreateCameraImpl(unsigned int _id,
     const std::string &_name)
 {
+  std::cerr << "noooo ogre CreateCameraImpl " << std::endl;
   OgreCameraPtr camera(new OgreCamera);
   bool result = this->InitObject(camera, _id, _name);
   camera->SetBackgroundColor(this->backgroundColor);

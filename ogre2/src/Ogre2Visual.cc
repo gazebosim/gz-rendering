@@ -61,8 +61,7 @@ NodeStorePtr Ogre2Visual::Children() const
 //////////////////////////////////////////////////
 GeometryStorePtr Ogre2Visual::Geometries() const
 {
-//  return this->geometries;
-  return GeometryStorePtr();
+  return this->geometries;
 }
 
 //////////////////////////////////////////////////
@@ -101,8 +100,8 @@ bool Ogre2Visual::DetachChild(NodePtr _child)
 //////////////////////////////////////////////////
 bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
 {
-/*  OgreGeometryPtr derived =
-      std::dynamic_pointer_cast<OgreGeometry>(_geometry);
+  Ogre2GeometryPtr derived =
+      std::dynamic_pointer_cast<Ogre2Geometry>(_geometry);
 
   if (!derived)
   {
@@ -118,15 +117,15 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
 
   derived->SetParent(this->SharedThis());
   this->ogreNode->attachObject(derived->OgreObject());
-  */
+ 
   return true;
 }
 
 //////////////////////////////////////////////////
 bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
 {
-/*  OgreGeometryPtr derived =
-      std::dynamic_pointer_cast<OgreGeometry>(_geometry);
+  Ogre2GeometryPtr derived =
+      std::dynamic_pointer_cast<Ogre2Geometry>(_geometry);
 
   if (!derived)
   {
@@ -137,7 +136,6 @@ bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
   }
 
   this->ogreNode->detachObject(derived->OgreObject());
-  */
   return true;
 }
 
@@ -152,7 +150,7 @@ void Ogre2Visual::Init()
 {
   BaseVisual::Init();
   this->children = Ogre2NodeStorePtr(new Ogre2NodeStore);
-//  this->geometries = OgreGeometryStorePtr(new OgreGeometryStore);
+  this->geometries = Ogre2GeometryStorePtr(new Ogre2GeometryStore);
 }
 
 //////////////////////////////////////////////////

@@ -22,8 +22,8 @@
 */
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-/*#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
-#include "ignition/rendering/ogre2/Ogre2Grid.hh"
+#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
+/*#include "ignition/rendering/ogre2/Ogre2Grid.hh"
 
 */
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
@@ -34,7 +34,7 @@
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 */
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-//#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
@@ -146,8 +146,7 @@ RenderEngine *Ogre2Scene::Engine() const
 //////////////////////////////////////////////////
 VisualPtr Ogre2Scene::RootVisual() const
 {
-//  return this->rootVisual;
-  return VisualPtr();
+  return this->rootVisual;
 }
 
 //////////////////////////////////////////////////
@@ -316,15 +315,13 @@ LightStorePtr Ogre2Scene::Lights() const
 //////////////////////////////////////////////////
 SensorStorePtr Ogre2Scene::Sensors() const
 {
-//  return this->sensors;
-  return SensorStorePtr();
+  return this->sensors;
 }
 
 //////////////////////////////////////////////////
 VisualStorePtr Ogre2Scene::Visuals() const
 {
-  //return this->visuals;
-  return VisualStorePtr();
+  return this->visuals;
 }
 
 //////////////////////////////////////////////////
@@ -371,23 +368,19 @@ SpotLightPtr Ogre2Scene::CreateSpotLightImpl(unsigned int _id,
 CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int _id,
     const std::string &_name)
 {
-/*  OgreCameraPtr camera(new OgreCamera);
+  Ogre2CameraPtr camera(new Ogre2Camera);
   bool result = this->InitObject(camera, _id, _name);
   camera->SetBackgroundColor(this->backgroundColor);
   return (result) ? camera : nullptr;
-  */
-  return CameraPtr();
 }
 
 //////////////////////////////////////////////////
 VisualPtr Ogre2Scene::CreateVisualImpl(unsigned int _id,
     const std::string &_name)
 {
-/*  OgreVisualPtr visual(new OgreVisual);
+  Ogre2VisualPtr visual(new Ogre2Visual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
-  */
-  return VisualPtr();
 }
 
 //////////////////////////////////////////////////
@@ -501,11 +494,9 @@ MaterialPtr Ogre2Scene::CreateMaterialImpl(unsigned int _id,
 RenderTexturePtr Ogre2Scene::CreateRenderTextureImpl(unsigned int _id,
     const std::string &_name)
 {
-/*  OgreRenderTexturePtr renderTexture(new OgreRenderTexture);
+  Ogre2RenderTexturePtr renderTexture(new Ogre2RenderTexture);
   bool result = this->InitObject(renderTexture, _id, _name);
   return (result) ? renderTexture : nullptr;
-  */
-  return RenderTexturePtr();
 }
 
 //////////////////////////////////////////////////
@@ -577,8 +568,8 @@ void Ogre2Scene::CreateContext()
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateRootVisual()
 {
-/*  // create unregistered visual
-  this->rootVisual = OgreVisualPtr(new OgreVisual);
+  // create unregistered visual
+  this->rootVisual = Ogre2VisualPtr(new Ogre2Visual);
   unsigned int rootId = this->CreateObjectId();
   std::string rootName = this->CreateObjectName(rootId, "_ROOT_");
 
@@ -592,7 +583,6 @@ void Ogre2Scene::CreateRootVisual()
   // add visual node to actual ogre root
   Ogre::SceneNode *ogreRootNode = this->rootVisual->Node();
   this->ogreSceneManager->getRootSceneNode()->addChild(ogreRootNode);
-  */
 }
 
 //////////////////////////////////////////////////
@@ -605,11 +595,10 @@ void Ogre2Scene::CreateMeshFactory()
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateStores()
 {
-/*  this->lights = OgreLightStorePtr(new OgreLightStore);
-  this->sensors = OgreSensorStorePtr(new OgreSensorStore);
-  this->visuals = OgreVisualStorePtr(new OgreVisualStore);
-  this->materials = OgreMaterialMapPtr(new OgreMaterialMap);
-  */
+//  this->lights = OgreLightStorePtr(new OgreLightStore);
+  this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
+  this->visuals = Ogre2VisualStorePtr(new Ogre2VisualStore);
+//  this->materials = OgreMaterialMapPtr(new OgreMaterialMap);
 }
 
 //////////////////////////////////////////////////

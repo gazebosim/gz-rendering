@@ -57,11 +57,11 @@ namespace ignition
 
       protected: Ogre2NodeStorePtr children;
 
-//      protected: Ogre2GeometryStorePtr geometries;
+      protected: Ogre2GeometryStorePtr geometries;
 
       private: Ogre2VisualPtr SharedThis();
 
-      private: friend class OgreScene;
+      private: friend class Ogre2Scene;
     };
   }
 }

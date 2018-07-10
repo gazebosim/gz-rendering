@@ -53,6 +53,12 @@ void OgreVisual::SetInheritScale(bool _inherit)
 }
 
 //////////////////////////////////////////////////
+void OgreVisual::SetVisible(bool _visible)
+{
+  this->ogreNode->setVisible(_visible);
+}
+
+//////////////////////////////////////////////////
 NodeStorePtr OgreVisual::Children() const
 {
   return this->children;

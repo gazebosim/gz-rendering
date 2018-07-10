@@ -38,6 +38,8 @@ namespace ignition
 
       public: virtual void SetInheritScale(bool _inherit);
 
+      public: virtual void SetVisible(bool _visible);
+
       protected: virtual NodeStorePtr Children() const;
 
       protected: virtual GeometryStorePtr Geometries() const;

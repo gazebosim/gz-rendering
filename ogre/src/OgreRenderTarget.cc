@@ -177,7 +177,42 @@ void OgreRenderTarget::SetMaterial(MaterialPtr _material)
   this->targetDirty = true;
 }
 
+////////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTarget::GetViewport(int viewportId)
+{
+  return dynamic_cast<Ogre::RenderTarget*>(
+      this->RenderTarget())->getViewport(viewportId);
+}
+
 //////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *viewport)
+{
+  return dynamic_cast<Ogre::RenderTarget*>(
+      this->RenderTarget())->addViewport(viewport);
+}
+
+////////////////////////////////////////////////
+void OgreRenderTarget::SetAutoUpdated(bool value)
+{
+  dynamic_cast<Ogre::RenderTarget*>(
+      this->RenderTarget())->setAutoUpdated(value);
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::SetUpdate(bool value)
+{
+  dynamic_cast<Ogre::RenderTarget*>(
+      this->RenderTarget())->update(value);
+}
+
+///////////////////////////////////////////////////
+void OgreRenderTarget::SwapBuffers()
+{
+  dynamic_cast<Ogre::RenderTarget*>(
+      this->RenderTarget())->swapBuffers();
+}
+
+/////////////////////////////////////////////////
 void OgreRenderTarget::RebuildMaterial()
 {
   if (this->material)

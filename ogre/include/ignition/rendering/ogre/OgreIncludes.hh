@@ -80,7 +80,4 @@
   #include <OgreFontManager.h>
 #endif
 
-#define OGRE_VERSION_LT_1_10_1 (OGRE_VERSION_MAJOR == 1 && \
-                                OGRE_VERSION_MINOR < 10 && \
-                                OGRE_VERSION_PATCH < 1)
 #endif

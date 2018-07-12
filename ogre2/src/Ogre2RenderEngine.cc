@@ -481,7 +481,6 @@ void Ogre2RenderEngine::CreateRenderSystem()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateResources()
 {
-  std::list<std::string> paths;
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
@@ -497,14 +496,12 @@ void Ogre2RenderEngine::CreateResources()
 
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework
-  if( rootHlmsFolder.empty() )
+  if (rootHlmsFolder.empty())
     rootHlmsFolder = "./";
   else if (*(rootHlmsFolder.end() - 1) != '/')
     rootHlmsFolder += "/";
 
   // At this point rootHlmsFolder should be a valid path to the Hlms data folder
-  Ogre::HlmsUnlit *hlmsUnlit = 0;
-  Ogre::HlmsPbs *hlmsPbs = 0;
 
   // For retrieval of the paths to the different folders needed
   Ogre::String mainFolderPath;
@@ -513,8 +510,9 @@ void Ogre2RenderEngine::CreateResources()
   Ogre::StringVector::const_iterator libraryFolderPathEn;
 
   Ogre::ArchiveManager &archiveManager = Ogre::ArchiveManager::getSingleton();
-  
+
   {
+    Ogre::HlmsUnlit *hlmsUnlit = 0;
     // Create & Register HlmsUnlit
     // Get the path to all the subdirectories used by HlmsUnlit
     Ogre::HlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
@@ -539,6 +537,7 @@ void Ogre2RenderEngine::CreateResources()
   }
 
   {
+    Ogre::HlmsPbs *hlmsPbs = 0;
     // Create & Register HlmsPbs
     // Do the same for HlmsPbs:
     Ogre::HlmsPbs::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
@@ -552,7 +551,7 @@ void Ogre2RenderEngine::CreateResources()
     while (libraryFolderPathIt != libraryFolderPathEn)
     {
       Ogre::Archive *archiveLibrary =
-          archiveManager.load( rootHlmsFolder + *libraryFolderPathIt,
+          archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
           "FileSystem", true);
       archivePbsLibraryFolders.push_back(archiveLibrary);
       ++libraryFolderPathIt;

@@ -168,7 +168,7 @@ namespace ignition
 
       private: std::unique_ptr<OgreRenderEnginePrivate> dataPtr;
 
-      private: friend class SingletonT<OgreRenderEngine>;
+      private: friend class common::SingletonT<OgreRenderEngine>;
     };
   }
 }

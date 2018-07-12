@@ -452,12 +452,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
   Ogre::RenderSystem *renderSys;
   const Ogre::RenderSystemList *rsList;
 
-  // Set parameters of render system (window size, etc.)
-#if  OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR == 6
-  rsList = this->ogreRoot->getAvailableRenderers();
-#else
   rsList = &(this->ogreRoot->getAvailableRenderers());
-#endif
 
   int c = 0;
 
@@ -603,13 +598,15 @@ std::string Ogre2RenderEngine::CreateWindow(const std::string &_handle,
   params["parentWindowHandle"] = _handle;
 #endif
   params["FSAA"] = std::to_string(_antiAliasing);
-  params["stereoMode"] = "Frame Sequential";
+//  params["stereoMode"] = "Frame Sequential";
 
   // TODO: determine api without qt
 
+#if defined(__APPLE__)
   // Set the macAPI for Ogre based on the Qt implementation
   params["macAPI"] = "cocoa";
   params["macAPICocoaUseNSView"] = "true";
+#endif
 
   // Hide window if dimensions are less than or equal to one.
   params["border"] = "none";
@@ -618,7 +615,7 @@ std::string Ogre2RenderEngine::CreateWindow(const std::string &_handle,
   stream << "OgreWindow(0)" << "_" << _handle;
 
   // Needed for retina displays
-  params["contentScalingFactor"] = std::to_string(_ratio);
+//  params["contentScalingFactor"] = std::to_string(_ratio);
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
@@ -730,7 +727,6 @@ void Ogre2RenderEngine::InitAttempt()
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(
       Ogre::TFO_ANISOTROPIC);
 
-  OgreRTShaderSystem::Instance()->Init();
 
   */
   this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);

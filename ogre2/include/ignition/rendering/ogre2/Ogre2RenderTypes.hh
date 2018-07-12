@@ -33,7 +33,7 @@ namespace ignition
 //    class Ogre2Light;
     class Ogre2Material;
     class Ogre2Mesh;
-//    class Ogre2MeshFactory;
+    class Ogre2MeshFactory;
 
     class Ogre2Node;
     class Ogre2Object;
@@ -69,8 +69,8 @@ namespace ignition
 //    typedef shared_ptr<Ogre2JointVisual>          Ogre2JointVisualPtr;
 //    typedef shared_ptr<Ogre2Light>                Ogre2LightPtr;
     typedef shared_ptr<Ogre2Material>             Ogre2MaterialPtr;
-    typedef shared_ptr<Ogre2Mesh>                  Ogre2MeshPtr;
-//    typedef shared_ptr<OgreMeshFactory>           OgreMeshFactoryPtr;
+    typedef shared_ptr<Ogre2Mesh>                 Ogre2MeshPtr;
+    typedef shared_ptr<Ogre2MeshFactory>          Ogre2MeshFactoryPtr;
     typedef shared_ptr<Ogre2Node>                 Ogre2NodePtr;
     typedef shared_ptr<Ogre2Object>               Ogre2ObjectPtr;
 /*    typedef shared_ptr<Ogre2PointLight>           Ogre2PointLightPtr;

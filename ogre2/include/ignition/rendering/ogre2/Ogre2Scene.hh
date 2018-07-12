@@ -158,7 +158,7 @@ namespace ignition
 
       protected: Ogre2VisualPtr rootVisual;
 
-//      protected: Ogre2MeshFactoryPtr meshFactory;
+      protected: Ogre2MeshFactoryPtr meshFactory;
 
 //      protected: Ogre2LightStorePtr lights;
 
@@ -166,7 +166,7 @@ namespace ignition
 
       protected: Ogre2VisualStorePtr visuals;
 
-//      protected: Ogre2MaterialMapPtr materials;
+      protected: Ogre2MaterialMapPtr materials;
 
       protected: Ogre::Root *ogreRoot = nullptr;
 

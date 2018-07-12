@@ -44,7 +44,8 @@
 #include <OGRE/OgreMatrix4.h>
 #include <OGRE/OgreColourValue.h>
 #include <OGRE/OgreQuaternion.h>
-#include <OGRE/OgreMesh.h>
+#include <OGRE/OgreMesh2.h>
+#include <OGRE/OgreMeshManager2.h>
 #include <OGRE/OgreHardwareBufferManager.h>
 #include <OGRE/OgreCamera.h>
 #include <OGRE/OgreNode.h>
@@ -55,6 +56,7 @@
 #include <OGRE/OgreRenderObjectListener.h>
 #include <OGRE/OgreTechnique.h>
 #include <OGRE/OgrePass.h>
+#include <OGRE/OgreOldSkeletonManager.h>
 #include <OGRE/OgreTextureUnitState.h>
 #include <OGRE/OgreGpuProgramManager.h>
 #include <OGRE/OgreHighLevelGpuProgramManager.h>

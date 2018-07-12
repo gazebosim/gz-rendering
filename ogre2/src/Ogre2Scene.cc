@@ -27,12 +27,10 @@
 
 */
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
-/*
-#include "ignition/rendering/ogre2/Ogre2Text.hh"
+//#include "ignition/rendering/ogre2/Ogre2Text.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
-#include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
-*/
+//#include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
@@ -327,8 +325,7 @@ VisualStorePtr Ogre2Scene::Visuals() const
 //////////////////////////////////////////////////
 MaterialMapPtr Ogre2Scene::Materials() const
 {
-//  return this->materials;
-  return MaterialMapPtr();
+  return this->materials;
 }
 
 //////////////////////////////////////////////////
@@ -452,11 +449,9 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id, const std::string &_name,
     const MeshDescriptor &_desc)
 {
-/*  OgreMeshPtr mesh = this->meshFactory->Create(_desc);
+  Ogre2MeshPtr mesh = this->meshFactory->Create(_desc);
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
-  */
-  return MeshPtr();
 }
 
 //////////////////////////////////////////////////
@@ -483,11 +478,9 @@ TextPtr Ogre2Scene::CreateTextImpl(unsigned int _id, const std::string &_name)
 MaterialPtr Ogre2Scene::CreateMaterialImpl(unsigned int _id,
     const std::string &_name)
 {
-/*  OgreMaterialPtr material(new OgreMaterial);
+  Ogre2MaterialPtr material(new Ogre2Material);
   bool result = this->InitObject(material, _id, _name);
   return (result) ? material : nullptr;
-  */
-  return MaterialPtr();
 }
 
 //////////////////////////////////////////////////
@@ -563,6 +556,23 @@ void Ogre2Scene::CreateContext()
   this->ogreSceneManager->getRenderQueue()->setSortRenderQueue(
       Ogre::v1::OverlayManager::getSingleton().mDefaultRenderQueueId,
       Ogre::RenderQueue::StableSort);
+
+
+  // TODO remove me!!!!
+  auto sceneManager = this->ogreSceneManager;
+  auto rootNode = sceneManager->getRootSceneNode();
+       Ogre::Light *light = sceneManager->createLight();
+        Ogre::SceneNode *lightNode = rootNode->createChildSceneNode();
+        lightNode->attachObject( light );
+        light->setPowerScale( 1.0f );
+        light->setType( Ogre::Light::LT_DIRECTIONAL );
+        light->setDirection( Ogre::Vector3( -1, -1, -1 ).normalisedCopy() );
+
+
+        sceneManager->setAmbientLight( Ogre::ColourValue( 0.3f, 0.5f, 0.7f ) * 0.1f * 0.75f,
+                                       Ogre::ColourValue( 0.6f, 0.45f, 0.3f ) * 0.065f * 0.75f,
+                                       -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f );
+
 }
 
 //////////////////////////////////////////////////
@@ -588,8 +598,8 @@ void Ogre2Scene::CreateRootVisual()
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateMeshFactory()
 {
-//  Ogre2ScenePtr sharedThis = this->SharedThis();
-//  this->meshFactory = OgreMeshFactoryPtr(new OgreMeshFactory(sharedThis));
+  Ogre2ScenePtr sharedThis = this->SharedThis();
+  this->meshFactory = Ogre2MeshFactoryPtr(new Ogre2MeshFactory(sharedThis));
 }
 
 //////////////////////////////////////////////////
@@ -598,7 +608,7 @@ void Ogre2Scene::CreateStores()
 //  this->lights = OgreLightStorePtr(new OgreLightStore);
   this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
   this->visuals = Ogre2VisualStorePtr(new Ogre2VisualStore);
-//  this->materials = OgreMaterialMapPtr(new OgreMaterialMap);
+  this->materials = Ogre2MaterialMapPtr(new Ogre2MaterialMap);
 }
 
 //////////////////////////////////////////////////

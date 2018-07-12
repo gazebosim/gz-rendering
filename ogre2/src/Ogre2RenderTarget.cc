@@ -34,7 +34,8 @@ using namespace rendering;
 //////////////////////////////////////////////////
 Ogre2RenderTarget::Ogre2RenderTarget()
 {
-  this->ogreBackgroundColor = Ogre::ColourValue::Black;
+  // this->ogreBackgroundColor = Ogre::ColourValue::Black;
+  this->ogreBackgroundColor = Ogre::ColourValue::Red;
 }
 
 //////////////////////////////////////////////////
@@ -61,7 +62,7 @@ void Ogre2RenderTarget::BuildCompositor()
 
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-          this->RenderTarget(), this->ogreCamera, workspaceName, true);
+      this->RenderTarget(), this->ogreCamera, workspaceName, false);
 }
 
 //////////////////////////////////////////////////
@@ -75,6 +76,7 @@ void Ogre2RenderTarget::DestroyCompositor()
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
   ogreCompMgr->removeWorkspace(this->ogreCompositorWorkspace);
   this->ogreCompositorWorkspace = nullptr;
+  std::cerr << "destory compositor " << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -164,9 +166,32 @@ void Ogre2RenderTarget::PreRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
+  // There is current not an easy solution to manually updating
+  // render textures:
+  // https://forums.ogre3d.org/viewtopic.php?t=84687
+  this->ogreCompositorWorkspace->setEnabled(true);
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->OgreRoot()->renderOneFrame();
+  this->ogreCompositorWorkspace->setEnabled(false);
+
+/*
+  this->scene->OgreSceneManager()->updateSceneGraph();
+  this->ogreCompositorWorkspace->_validateFinalTarget();
+  engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
   this->ogreCompositorWorkspace->_beginUpdate(false);
   this->ogreCompositorWorkspace->_update();
   this->ogreCompositorWorkspace->_endUpdate(false);
+
+   this->scene->OgreSceneManager()->_frameEnded();
+	for (size_t i=0; i < Ogre::HLMS_MAX; ++i)
+	{
+    Ogre::Hlms *hlms = engine->OgreRoot()->getHlmsManager()->getHlms(
+        static_cast<Ogre::HlmsTypes>(i));
+    if(hlms)
+      hlms->frameEnded();
+	}
+  engine->OgreRoot()->getRenderSystem()->_update();
+*/
 }
 
 //////////////////////////////////////////////////

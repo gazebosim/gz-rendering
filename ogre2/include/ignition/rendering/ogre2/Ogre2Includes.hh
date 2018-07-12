@@ -23,66 +23,67 @@
 // This prevents some deprecation #warning messages on OSX 10.9
 #pragma clang diagnostic ignored "-W#warnings"
 
-#include <OGRE/Ogre.h>
-#include <OGRE/OgreBillboard.h>
-#include <OGRE/OgreImageCodec.h>
-#include <OGRE/OgreMovableObject.h>
-#include <OGRE/OgreRenderable.h>
-#include <OGRE/OgreRenderWindow.h>
-#include <OGRE/OgrePlugin.h>
-#include <OGRE/OgreDataStream.h>
-#include <OGRE/OgreLogManager.h>
-#include <OGRE/OgreWindowEventUtilities.h>
-#include <OGRE/OgreSceneQuery.h>
-#include <OGRE/OgreRoot.h>
-#include <OGRE/OgreItem.h>
-#include <OGRE/OgreSceneManager.h>
-#include <OGRE/OgreSceneNode.h>
-#include <OGRE/OgreVector3.h>
-#include <OGRE/OgreManualObject.h>
-#include <OGRE/OgreMaterialManager.h>
-#include <OGRE/OgreMatrix4.h>
-#include <OGRE/OgreColourValue.h>
-#include <OGRE/OgreQuaternion.h>
-#include <OGRE/OgreMesh2.h>
-#include <OGRE/OgreMeshManager2.h>
-#include <OGRE/OgreHardwareBufferManager.h>
-#include <OGRE/OgreCamera.h>
-#include <OGRE/OgreNode.h>
-#include <OGRE/OgreSimpleRenderable.h>
-#include <OGRE/OgreFrameListener.h>
-#include <OGRE/OgreTexture.h>
-#include <OGRE/OgreRectangle2D.h>
-#include <OGRE/OgreRenderObjectListener.h>
-#include <OGRE/OgreTechnique.h>
-#include <OGRE/OgrePass.h>
-#include <OGRE/OgreOldSkeletonManager.h>
-#include <OGRE/OgreTextureUnitState.h>
-#include <OGRE/OgreGpuProgramManager.h>
-#include <OGRE/OgreHighLevelGpuProgramManager.h>
-#include <OGRE/OgreHardwarePixelBuffer.h>
-#include <OGRE/OgreShadowCameraSetupPSSM.h>
-/*#include <OGRE/Paging/OgrePageManager.h>
-#include <OGRE/Paging/OgrePagedWorld.h>
-#include <OGRE/Terrain/OgreTerrainPaging.h>
-#include <OGRE/Terrain/OgreTerrainMaterialGeneratorA.h>
-#include <OGRE/Terrain/OgreTerrain.h>
-#include <OGRE/Terrain/OgreTerrainGroup.h>
-*/
+#include <Ogre.h>
+#include <OgreBillboard.h>
+#include <OgreImageCodec.h>
+#include <OgreMovableObject.h>
+#include <OgreRenderable.h>
+#include <OgreRenderWindow.h>
+#include <OgrePlugin.h>
+#include <OgreDataStream.h>
+#include <OgreLogManager.h>
+#include <OgreWindowEventUtilities.h>
+#include <OgreSceneQuery.h>
+#include <OgreRoot.h>
+#include <OgreItem.h>
+#include <OgreSceneManager.h>
+#include <OgreSceneNode.h>
+#include <OgreVector3.h>
+#include <OgreManualObject.h>
+#include <OgreMaterialManager.h>
+#include <OgreMatrix4.h>
+#include <OgreColourValue.h>
+#include <OgreQuaternion.h>
+#include <OgreMesh2.h>
+#include <OgreMeshManager2.h>
+#include <OgreHardwareBufferManager.h>
+#include <OgreCamera.h>
+#include <OgreNode.h>
+#include <OgreSimpleRenderable.h>
+#include <OgreFrameListener.h>
+#include <OgreTexture.h>
+#include <OgreRectangle2D.h>
+#include <OgreRenderObjectListener.h>
+#include <OgreTechnique.h>
+#include <OgrePass.h>
+#include <OgreOldSkeletonManager.h>
+#include <OgreTextureUnitState.h>
+#include <OgreGpuProgramManager.h>
+#include <OgreHighLevelGpuProgramManager.h>
+#include <OgreHardwarePixelBuffer.h>
+#include <OgreShadowCameraSetupPSSM.h>
 
 #include <OgreHlmsManager.h>
 #include <Hlms/Unlit/OgreHlmsUnlit.h>
 #include <Hlms/Pbs/OgreHlmsPbs.h>
 
 
-#include <OGRE/Compositor/OgreCompositorManager2.h>
-#include <OGRE/Compositor/OgreCompositorWorkspace.h>
+#include <Compositor/OgreCompositorManager2.h>
+#include <Compositor/OgreCompositorWorkspace.h>
 
-#include <OGRE/Overlay/OgreOverlayPrerequisites.h>
-#include <OGRE/Overlay/OgreOverlayManager.h>
-#include <OGRE/Overlay/OgreOverlayElement.h>
-#include <OGRE/Overlay/OgreOverlayContainer.h>
-#include <OGRE/Overlay/OgreFontManager.h>
-#include <OGRE/Overlay/OgreOverlaySystem.h>
+#include <Overlay/OgreOverlayPrerequisites.h>
+#include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreOverlayElement.h>
+#include <Overlay/OgreOverlayContainer.h>
+#include <Overlay/OgreFontManager.h>
+#include <Overlay/OgreOverlaySystem.h>
+
+// TODO enable when ogre 2.1 fully supports paging and terrain components
+// #include <Paging/OgrePageManager.h>
+// #include <Paging/OgrePagedWorld.h>
+// #include <Terrain/OgreTerrainPaging.h>
+// #include <Terrain/OgreTerrainMaterialGeneratorA.h>
+// #include <Terrain/OgreTerrain.h>
+// #include <Terrain/OgreTerrainGroup.h>
 
 #endif

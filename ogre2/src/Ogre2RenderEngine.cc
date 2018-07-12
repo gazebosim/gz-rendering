@@ -79,11 +79,8 @@ RenderEngine *Ogre2RenderEnginePlugin::Engine() const
 Ogre2RenderEngine::Ogre2RenderEngine() :
   dataPtr(new Ogre2RenderEnginePrivate)
 {
-#if not (__APPLE__ || _WIN32)
   this->dummyDisplay = nullptr;
   this->dummyContext = 0;
-#endif
-
   this->dummyWindowId = 0;
 
   this->ogrePaths.push_back(std::string(OGRE2_RESOURCE_PATH));

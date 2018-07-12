@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@
 #include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
-//#include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
@@ -34,6 +33,10 @@ namespace Ogre
 {
   class LogManager;
   class Root;
+  namespace v1
+  {
+    class OverlaySystem;
+  }
 }
 
 namespace ignition
@@ -62,103 +65,104 @@ namespace ignition
       public: RenderEngine *Engine() const;
     };
 
+    /// \brief Ogre2 render engine class. A singleton class that manages the
+    /// underlying ogre2 render engine, loads its plugins, and creates
+    /// resources needed for the engine to run
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<Ogre2RenderEngine>
     {
-      /// \enum RenderPathType
-      /// \brief The type of rendering path used by the rendering engine.
-/*      public: enum OgreRenderPathType
-              {
-                /// \brief No rendering is done.
-                NONE = 0,
-                /// \brief Most basic rendering, with least fidelity.
-                VERTEX = 1,
-                /// \brief Utilizes the RTT shader system.
-                FORWARD = 2,
-                /// \brief Utilizes deferred rendering. Best fidelity.
-                DEFERRED = 3,
-                /// \brief Count of the rendering path enums.
-                RENDER_PATH_COUNT
-              };
-              */
-
       /// \brief Constructor
       private: Ogre2RenderEngine();
 
+      /// \brief Destructor
       public: virtual ~Ogre2RenderEngine();
 
+      // Documentation Inherited.
       public: virtual bool Fini();
 
+      // Documentation Inherited.
       public: virtual bool IsEnabled() const;
 
+      // Documentation Inherited.
       public: virtual std::string Name() const;
 
-//      public: OgreRenderPathType RenderPathType() const;
+      public: OgreRenderPathType RenderPathType() const;
 
-//      public: void AddResourcePath(const std::string &_uri);
+      public: void AddResourcePath(const std::string &_uri);
 
+      /// \brief Get the ogre2 root object
+      /// \return ogre2 root object
       public: virtual Ogre::Root *OgreRoot() const;
 
+      /// \brief Create a render window
+      /// \param[in] _handle Handle of native window which the render window
+      ///  will attach
+      /// \param[in] _width Width of render window
+      /// \param[in] _height Height of render window
+      /// \param[in] _ratio Device pixel ratio (typically needed for retina
+      /// displays)
+      /// \param[in] _antiAliasing Anti-aliasing level
       public: std::string CreateWindow(const std::string &_handle,
                   const unsigned int _width, const unsigned int _height,
-                  const double _ratio, const unsigned int antiAliasing);
+                  const double _ratio, const unsigned int _antiAliasing);
 
+      /// \brief Create a scene
+      /// \param[in] _id Unique scene Id
+      /// \parampin] _name Name of scene
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name);
 
+      /// \brief Get a pointer to the list of scenes managed by the render
+      /// engine
+      /// \return list of scenes
       protected: virtual SceneStorePtr Scenes() const;
 
+      /// \brief Load the render engine
+      /// \return True if the operation is successful
       protected: virtual bool LoadImpl();
 
+      /// \brief Initialize the render engine
+      /// \return True if the operation is successful
       protected: virtual bool InitImpl();
 
+      /// \brief Helper function to initialize the render engine
       private: void LoadAttempt();
 
+      /// \brief Create the ogre logger for logging ogre messages to file
       private: void CreateLogger();
 
+      /// \brief Create GL context
       private: void CreateContext();
 
+      /// \brief Create ogre root
       private: void CreateRoot();
 
+      /// \brief Create ogre overlay component
       private: void CreateOverlay();
 
+      /// \brief Create ogre plugins.
       private: void LoadPlugins();
 
+      /// \brief Creat the ogre render system
       private: void CreateRenderSystem();
 
+      /// \brief Create dummy 1x1 render window for the main rendering context
       private: void CreateWindow();
 
+      /// \brief Create the resources needed by ogre
       private: void CreateResources();
 
-
-/*      private: void CreateLogger();
-
-
-      private: void CreateRoot();
-
-
-      private: void LoadPlugins();
-
-      private: void CreateRenderSystem();
-
-      private: void CreateResources();
-
-      private: void CreateWindow();
-
-      private: void CheckCapabilities();
-      */
-
-      /// \brief Attempt to initialize engine and catch expections if they
-      /// occur
+      /// \brief Attempt to initialize engine and catch exeption if they occur
       private: void InitAttempt();
 
-
-      private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.
-      /// \return Pointer to the OGRE overlay system.
+      /// \return Pointer to the ogre overlay system.
       public: Ogre::v1::OverlaySystem *OverlaySystem() const;
+
+      /// \brief Pointer to the ogre's overlay system
+      private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
 
       /// \brief Flag to indicate if engine is loaded
       private: bool loaded = false;
@@ -166,9 +170,8 @@ namespace ignition
       /// \brief Flag to indicate if engine is initialized 
       private: bool initialized = false;
 
+      /// \brief List of scenes managed by the render engine
       private: Ogre2SceneStorePtr scenes;
-
-//      private: OgreRenderPathType renderPathType;
 
       /// \brief Ogre root
       private: Ogre::Root *ogreRoot = nullptr;
@@ -179,16 +182,19 @@ namespace ignition
       /// \brief Paths to ogre plugins
       private: std::vector<std::string> ogrePaths;
 
-#if not (__APPLE__ || _WIN32)
-      private: void *dummyDisplay;
+      /// \brief Dummy display needed for linux platform
+      private: void *dummyDisplay = nullptr;
 
-      private: void *dummyContext;
-#endif
+      /// \brief Dummy context needed for linux platform
+      private: void *dummyContext = nullptr;
 
-      private: uint64_t dummyWindowId;
+      /// \brief Dummy window Id needed for linux platform
+      private: uint64_t dummyWindowId = 0u;
 
+      /// \brief Pointer to private data
       private: std::unique_ptr<Ogre2RenderEnginePrivate> dataPtr;
 
+      /// \brief Singleton setup
       private: friend class SingletonT<Ogre2RenderEngine>;
     };
   }

@@ -56,11 +56,9 @@ TEST(RenderingIfaceTest, GetEngine)
 
 TEST(RenderingIfaceTest, RegisterEngine)
 {
-  unsigned int count = 0u;
 #if HAVE_OGRE
   // load the ogre engine
   engine("ogre");
-  count++;
 #endif
 
   if (engineCount() == 0u)

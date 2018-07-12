@@ -46,7 +46,7 @@ namespace ignition
       public: ~RenderEngineManager();
 
       /// \brief Get the number of available render-engines. This counts
-      /// engines that that have been registered and loaded by the engine 
+      /// engines that that have been registered and loaded by the engine
       /// manager. Default engine plugins need to be loaded first using
       /// Engine(std::string) for them to be available.
       /// \return the number of available render-engines

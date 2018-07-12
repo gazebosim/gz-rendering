@@ -29,7 +29,6 @@
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
-  #include <ignition/common/win_dirent.h>
 #endif
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
@@ -216,7 +215,13 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
                 Ogre::MaterialManager::getSingleton().getByName(
                     fullPath);
 
-              if (!matPtr.isNull())
+              bool matPtrNotNull;
+#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MAJOR < 10)
+              matPtrNotNull = !matPtr.isNull();
+#else
+              matPtrNotNull = matPtr != nullptr;
+#endif
+              if (matPtrNotNull)
               {
                 // is this necessary to do here? Someday try it without
                 matPtr->compile();

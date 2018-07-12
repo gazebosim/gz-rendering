@@ -43,7 +43,7 @@ target_link_libraries(${optix_target}
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})
 
 
-if(${CUDA_VERSION} VERSION_LESS "9")
+if("${CUDA_VERSION}" VERSION_LESS "9")
   set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_20,code=sm_20)
 endif()
 

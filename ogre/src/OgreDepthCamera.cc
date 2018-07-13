@@ -20,45 +20,6 @@
 using namespace ignition;
 using namespace rendering;
 
-/// \internal
-/// \brief Private data for the OgreDepthCamera class
-class ignition::rendering::OgreDepthCameraPrivate
-{
-  /// \brief The depth buffer
-  public: float *depthBuffer = nullptr;
-
-  /// \brief The depth material
-  public: Ogre::Material *depthMaterial = nullptr;
-
-  /// \brief True to generate point clouds
-  public: bool outputPoints = false;
-
-  /// \brief Point cloud data buffer
-  public: float *pcdBuffer = nullptr;
-
-  /// \brief Point cloud view port
-  public: Ogre::Viewport *pcdViewport = nullptr;
-
-  /// \brief Point cloud material
-  public: Ogre::Material *pcdMaterial = nullptr;
-
-  /// \brief Point cloud texture
-  public: Ogre::Texture *pcdTexture = nullptr;
-
-  /// \brief Point cloud texture
-  public: OgreRenderTargetPtr pcdTarget;
-
-  /// \brief Event used to signal rgb point cloud data
-  public: ignition::common::EventT<void(const float *,
-              unsigned int, unsigned int, unsigned int,
-              const std::string &)> newRGBPointCloud;
-
-  /// \brief Event used to signal depth data
-  public: ignition::common::EventT<void(const float *,
-              unsigned int, unsigned int, unsigned int,
-              const std::string &)> newDepthFrame;
-};
-
 //////////////////////////////////////////////////
 OgreDepthCamera::OgreDepthCamera()
   : dataPtr(new OgreDepthCameraPrivate())
@@ -78,6 +39,10 @@ OgreDepthCamera::~OgreDepthCamera()
 //////////////////////////////////////////////////
 void OgreDepthCamera::Init()
 {
+  BaseDepthCamera::Init();
+  //this->CreateDepthCamera();
+  this->CreateDepthTexture(this->Name() + "_RttTex_Depth");
+  this->Reset();
 }
 
 //////////////////////////////////////////////////
@@ -240,7 +205,7 @@ void OgreDepthCamera::PostRender()
   }
 
   // also new image frame for camera texture
-  DepthCamera::PostRender();
+  Camera::PostRender();
 
   this->newData = false;
 }
@@ -349,7 +314,7 @@ void OgreDepthCamera::Render()
   sceneMgr->setShadowTechnique(shadowTech);
 
   // for camera image
-  DepthCamera::Render();
+  Camera::Render();
 
   if (this->dataPtr->outputPoints)
   {
@@ -410,6 +375,12 @@ ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewRGBPointCloud(
       unsigned int, const std::string &)>  _subscriber)
 {
   return this->dataPtr->newRGBPointCloud.Connect(_subscriber);
+}
+
+//////////////////////////////////////////////////
+RenderTargetPtr OgreDepthCamera::RenderTarget() const
+{
+  return this->depthTarget;
 }
 
 //////////////////////////////////////////////////

@@ -227,6 +227,15 @@ namespace ignition
       public: virtual CameraPtr CreateCamera(unsigned int _id,
                   const std::string &_name);
 
+      public: virtual DepthCameraPtr CreateDepthCamera();
+
+      public: virtual DepthCameraPtr CreateDepthCamera(unsigned int _id);
+
+      public: virtual DepthCameraPtr CreateDepthCamera(const std::string &_name);
+
+      public: virtual DepthCameraPtr CreateDepthCamera(unsigned int _id,
+                  const std::string &_name);
+
       public: virtual VisualPtr CreateVisual();
 
       public: virtual VisualPtr CreateVisual(unsigned int _id);
@@ -316,6 +325,9 @@ namespace ignition
                      const std::string &_name) = 0;
 
       protected: virtual CameraPtr CreateCameraImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
+      protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
       protected: virtual VisualPtr CreateVisualImpl(unsigned int _id,

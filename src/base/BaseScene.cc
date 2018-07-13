@@ -28,6 +28,7 @@
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/DepthCamera.hh"
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/Text.hh"
 #include "ignition/rendering/Visual.hh"
@@ -627,6 +628,33 @@ CameraPtr BaseScene::CreateCamera(const std::string &_name)
 CameraPtr BaseScene::CreateCamera(unsigned int _id, const std::string &_name)
 {
   CameraPtr camera = this->CreateCameraImpl(_id, _name);
+  bool result = this->RegisterSensor(camera);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+DepthCameraPtr BaseScene::CreateDepthCamera()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateDepthCamera(objId);
+}
+//////////////////////////////////////////////////
+DepthCameraPtr BaseScene::CreateDepthCamera(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "DepthCamera");
+  return this->CreateDepthCamera(_id, objName);
+}
+//////////////////////////////////////////////////
+DepthCameraPtr BaseScene::CreateDepthCamera(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateDepthCamera(objId, _name);
+}
+//////////////////////////////////////////////////
+DepthCameraPtr BaseScene::CreateDepthCamera(unsigned int _id,
+    const std::string &_name)
+{
+  DepthCameraPtr camera = this->CreateDepthCameraImpl(_id, _name);
   bool result = this->RegisterSensor(camera);
   return (result) ? camera : nullptr;
 }

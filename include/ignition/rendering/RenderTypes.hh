@@ -46,6 +46,7 @@ namespace ignition
     class ArrowVisual;
     class AxisVisual;
     class Camera;
+    class DepthCamera;
     class DirectionalLight;
     class Geometry;
     class Grid;
@@ -82,6 +83,10 @@ namespace ignition
     /// \def CameraPtr
     /// \brief Shared pointer to Camera
     typedef shared_ptr<Camera> CameraPtr;
+
+    /// \def CameraPtr
+    /// \brief Shared pointer to Camera
+    typedef shared_ptr<DepthCamera> DepthCameraPtr;
 
     /// \def DirectionalLightPtr
     /// \brief Shared pointer to DirectionalLight
@@ -184,6 +189,10 @@ namespace ignition
     /// \def const CameraPtr
     /// \brief Shared pointer to const Camera
     typedef shared_ptr<const Camera> ConstCameraPtr;
+
+    /// \def const DepthCameraPtr
+    /// \brief Shared pointer to const Camera
+    typedef shared_ptr<const DepthCamera> ConstDepthCameraPtr;
 
     /// \def const DirectionalLightPtr
     /// \brief Shared pointer to const DirectionalLight

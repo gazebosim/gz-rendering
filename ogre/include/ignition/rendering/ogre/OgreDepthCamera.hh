@@ -57,8 +57,44 @@ namespace ignition
 {
   namespace rendering
   {
-    // Forward declare private data.
-    class OgreDepthCameraPrivate;
+    /// \internal
+    /// \brief Private data for the OgreDepthCamera class
+    class OgreDepthCameraPrivate
+    {
+      /// \brief The depth buffer
+      public: float *depthBuffer = nullptr;
+
+      /// \brief The depth material
+      public: Ogre::Material *depthMaterial = nullptr;
+
+      /// \brief True to generate point clouds
+      public: bool outputPoints = false;
+
+      /// \brief Point cloud data buffer
+      public: float *pcdBuffer = nullptr;
+
+      /// \brief Point cloud view port
+      public: Ogre::Viewport *pcdViewport = nullptr;
+
+      /// \brief Point cloud material
+      public: Ogre::Material *pcdMaterial = nullptr;
+
+      /// \brief Point cloud texture
+      public: Ogre::Texture *pcdTexture = nullptr;
+
+      /// \brief Point cloud texture
+      public: OgreRenderTargetPtr pcdTarget;
+
+      /// \brief Event used to signal rgb point cloud data
+      public: ignition::common::EventT<void(const float *,
+                  unsigned int, unsigned int, unsigned int,
+                  const std::string &)> newRGBPointCloud;
+
+      /// \brief Event used to signal depth data
+      public: ignition::common::EventT<void(const float *,
+                  unsigned int, unsigned int, unsigned int,
+                  const std::string &)> newDepthFrame;
+    };
 
     /// \class DepthCamera DepthCamera.hh rendering/rendering.hh
     /// \brief Depth camera used to render depth data into an image buffer
@@ -123,6 +159,8 @@ namespace ignition
       /// \return valid field of view
       protected: static double LimitFOV(const double _fov);
 
+      protected: virtual RenderTargetPtr RenderTarget() const;
+
       /// \brief Communicates that a frams was rendered
       protected: bool newData = false;
 
@@ -138,11 +176,14 @@ namespace ignition
       protected: Ogre::Viewport *depthViewport = nullptr;
 
       /// \brief Pointer to the ogre camera
-      protected: Ogre::Camera *ogreCamera = nullptr;
+      protected: OgreCameraPtr ogreCamera;
 
       /// \internal
       /// \brief Pointer to private data.
       private: std::unique_ptr<OgreDepthCameraPrivate> dataPtr = nullptr;
+
+      private: friend class OgreScene;
+      private: friend class OgreRayQuery;
     };
   }
 }

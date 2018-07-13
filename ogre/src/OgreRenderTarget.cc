@@ -180,36 +180,31 @@ void OgreRenderTarget::SetMaterial(MaterialPtr _material)
 ////////////////////////////////////////////////////
 Ogre::Viewport *OgreRenderTarget::GetViewport(int viewportId)
 {
-  return dynamic_cast<Ogre::RenderTarget*>(
-      this->RenderTarget())->getViewport(viewportId);
+  return this->RenderTarget()->getViewport(viewportId);
 }
 
 //////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *viewport)
+Ogre::Viewport *OgreRenderTarget::AddViewport(OgreCameraPtr camera)
 {
-  return dynamic_cast<Ogre::RenderTarget*>(
-      this->RenderTarget())->addViewport(viewport);
+  return this->RenderTarget()->addViewport(camera->OgreCameraPointer());
 }
 
 ////////////////////////////////////////////////
 void OgreRenderTarget::SetAutoUpdated(bool value)
 {
-  dynamic_cast<Ogre::RenderTarget*>(
-      this->RenderTarget())->setAutoUpdated(value);
+  this->RenderTarget()->setAutoUpdated(value);
 }
 
 //////////////////////////////////////////////////
 void OgreRenderTarget::SetUpdate(bool value)
 {
-  dynamic_cast<Ogre::RenderTarget*>(
-      this->RenderTarget())->update(value);
+  this->RenderTarget()->update(value);
 }
 
 ///////////////////////////////////////////////////
 void OgreRenderTarget::SwapBuffers()
 {
-  dynamic_cast<Ogre::RenderTarget*>(
-      this->RenderTarget())->swapBuffers();
+  this->RenderTarget()->swapBuffers();
 }
 
 /////////////////////////////////////////////////

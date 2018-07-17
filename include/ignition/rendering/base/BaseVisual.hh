@@ -534,7 +534,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetVisible(bool _visible )
+    void BaseVisual<T>::SetVisible(bool _visible)
     {
       ignerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()

@@ -120,7 +120,7 @@ namespace ignition
 
       public: virtual bool InheritScale() const = 0;
 
-      public: virtual void SetVisible(bool _visible) = 0;
+      public: virtual void SetVisible(bool _visible);
 
       public: virtual void PreRender();
 
@@ -529,6 +529,14 @@ namespace ignition
       {
         it->second->PreRender();
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetVisible(bool /*_visible*/)
+    {
+      ignerr << "SetVisible not supported for render engine: " <<
+          this->Scene()->Engine()->Name() << std::endl;
     }
   }
 }

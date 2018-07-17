@@ -56,12 +56,6 @@ void OptixVisual::SetInheritScale(bool _inherit)
 }
 
 //////////////////////////////////////////////////
-void OgreVisual::SetVisible(bool _visible)
-{
-  ignerr << "SetVisible not supported for Optix visuals." << std::endl;
-}
-
-//////////////////////////////////////////////////
 optix::Group OptixVisual::OptixGroup() const
 {
   return this->optixGroup;

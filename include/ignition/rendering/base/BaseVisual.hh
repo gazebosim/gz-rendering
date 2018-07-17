@@ -119,6 +119,8 @@ namespace ignition
 
       public: virtual bool InheritScale() const = 0;
 
+      public: virtual void SetVisible(bool _visible) = 0;
+
       public: virtual void PreRender();
 
       public: virtual void Destroy();

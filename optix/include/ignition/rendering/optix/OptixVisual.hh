@@ -38,6 +38,8 @@ namespace ignition
 
       public: virtual void SetInheritScale(bool _inherit);
 
+      public: virtual void SetVisible(bool _visible);
+
       public: virtual optix::Group OptixGroup() const;
 
       public: virtual optix::Acceleration OptixAccel() const;

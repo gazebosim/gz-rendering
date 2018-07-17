@@ -234,7 +234,7 @@ namespace ignition
       public: virtual void SetInheritScale(bool _inherit) = 0;
 
       /// \brief Specify if this visual is visible
-      /// \param[in] _inherit True if this visual should be made visible
+      /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;
     };
   }

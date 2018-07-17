@@ -38,6 +38,7 @@ namespace ignition
 
       public: virtual void SetInheritScale(bool _inherit);
 
+      // Documentation inherited.
       public: virtual void SetVisible(bool _visible);
 
       protected: virtual NodeStorePtr Children() const;

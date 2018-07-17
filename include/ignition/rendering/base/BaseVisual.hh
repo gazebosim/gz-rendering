@@ -120,6 +120,7 @@ namespace ignition
 
       public: virtual bool InheritScale() const = 0;
 
+      // Documentation inherited.
       public: virtual void SetVisible(bool _visible);
 
       public: virtual void PreRender();

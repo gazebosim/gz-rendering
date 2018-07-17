@@ -42,16 +42,23 @@ namespace ignition
 
   struct OptixLightAttenuation
   {
+    // cppcheck-suppress unusedStructMember
     float range;
+    // cppcheck-suppress unusedStructMember
     float constant;
+    // cppcheck-suppress unusedStructMember
     float linear;
+    // cppcheck-suppress unusedStructMember
     float quadratic;
   };
 
   struct OptixLightSpot
   {
+    // cppcheck-suppress unusedStructMember
     float innerAngle;
+    // cppcheck-suppress unusedStructMember
     float outerAngle;
+    // cppcheck-suppress unusedStructMember
     float falloff;
   };
 
@@ -60,6 +67,7 @@ namespace ignition
     float3 position;
     OptixLightColor color;
     OptixLightAttenuation atten;
+    // cppcheck-suppress unusedStructMember
     bool castShadows;
   };
 

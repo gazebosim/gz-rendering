@@ -4,7 +4,12 @@ ign_get_libsources_and_unittests(sources gtest_sources)
 
 ign_add_component(ogre SOURCES ${sources} GET_TARGET_NAME ogre_target)
 
+if(OGRE_VERSION VERSION_LESS 1.10.1)
+  add_definitions(-DOGRE_VERSION_LT_1_10_1)
+endif()
+
 find_package(OpenGL)
+include_directories(${OGRE_INCLUDE_DIRS})
 
 set_property(
   SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc

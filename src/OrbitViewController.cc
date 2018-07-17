@@ -48,8 +48,8 @@ namespace ignition
 using namespace ignition;
 using namespace rendering;
 
-static const float PITCH_LIMIT_LOW = -M_PI*0.5 + 0.001;
-static const float PITCH_LIMIT_HIGH = M_PI*0.5 - 0.001;
+static const float PITCH_LIMIT_LOW = -IGN_PI*0.5 + 0.001;
+static const float PITCH_LIMIT_HIGH = IGN_PI*0.5 - 0.001;
 
 //////////////////////////////////////////////////
 OrbitViewController::OrbitViewController()
@@ -158,8 +158,8 @@ void OrbitViewController::Orbit(const math::Vector2d &_value)
     return;
   }
 
-  double dy = 2 * M_PI * _value.X() / this->dataPtr->camera->ImageWidth();
-  double dp = 2 * M_PI * _value.Y() / this->dataPtr->camera->ImageHeight();
+  double dy = 2 * IGN_PI * _value.X() / this->dataPtr->camera->ImageWidth();
+  double dp = 2 * IGN_PI * _value.Y() / this->dataPtr->camera->ImageHeight();
 
   // translate to make target the origin for rotation
   this->dataPtr->camera->SetWorldPosition(
@@ -189,10 +189,10 @@ void OrbitViewController::Orbit(const math::Vector2d &_value)
 //////////////////////////////////////////////////
 double OrbitViewControllerPrivate::NormalizeYaw(double _yaw)
 {
-  _yaw = fmod(_yaw, M_PI*2);
+  _yaw = fmod(_yaw, IGN_PI*2);
   if (_yaw < 0.0f)
   {
-    _yaw = M_PI * 2 + _yaw;
+    _yaw = IGN_PI * 2 + _yaw;
   }
 
   return _yaw;

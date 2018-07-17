@@ -87,8 +87,8 @@ namespace ignition
       // Documentation Inherited.
       public: virtual std::string Name() const;
 
-      public: OgreRenderPathType RenderPathType() const;
-
+      /// \brief Add path to resourcea in ogre2's resource manager
+      /// \param[in] _uri Reousrce path in the form of an uri
       public: void AddResourcePath(const std::string &_uri);
 
       /// \brief Get the ogre2 root object
@@ -195,7 +195,7 @@ namespace ignition
       private: std::unique_ptr<Ogre2RenderEnginePrivate> dataPtr;
 
       /// \brief Singleton setup
-      private: friend class SingletonT<Ogre2RenderEngine>;
+      private: friend class common::SingletonT<Ogre2RenderEngine>;
     };
   }
 }

@@ -15,7 +15,6 @@
  *
  */
 
-
 // Not Apple or Windows
 #if not defined(__APPLE__) && not defined(_WIN32)
 # include <X11/Xlib.h>
@@ -145,16 +144,8 @@ std::string Ogre2RenderEngine::Name() const
   return "ogre2";
 }
 
-/*//////////////////////////////////////////////////
-Ogre2RenderEngine::Ogre2RenderPathType
-    Ogre2RenderEngine::RenderPathType() const
-{
-  return this->renderPathType;
-}
-*/
-
 //////////////////////////////////////////////////
-/*void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
+void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
 {
   if (_uri == "__default__" || _uri.empty())
     return;
@@ -178,7 +169,7 @@ Ogre2RenderEngine::Ogre2RenderPathType
           path, "FileSystem", "General", true);
 
       Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
-          "General");
+          "General", false);
       // Parse all material files in the path if any exist
       if (common::isDirectory(path))
       {
@@ -234,7 +225,6 @@ Ogre2RenderEngine::Ogre2RenderPathType
         "resources path in the world file is set correctly." << std::endl;
   }
 }
-  */
 
 //////////////////////////////////////////////////
 Ogre::Root *Ogre2RenderEngine::OgreRoot() const
@@ -305,7 +295,6 @@ void Ogre2RenderEngine::LoadAttempt()
   this->ogreRoot->initialise(false);
   this->CreateWindow();
   this->CreateResources();
-  //this->CheckCapabilities();
 }
 
 //////////////////////////////////////////////////
@@ -491,9 +480,6 @@ void Ogre2RenderEngine::CreateRenderSystem()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateResources()
 {
-
-  // TODO support loading resources from user specified paths
-  std::list<std::string> paths;
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
@@ -507,68 +493,69 @@ void Ogre2RenderEngine::CreateResources()
 
   Ogre::String rootHlmsFolder = mediaPath;
 
-  if( rootHlmsFolder.empty() )
+  // The following code is taken from the registerHlms() function in ogre2
+  // samples framework
+  if (rootHlmsFolder.empty())
       rootHlmsFolder = "./";
-  else if( *(rootHlmsFolder.end() - 1) != '/' )
+  else if (*(rootHlmsFolder.end() - 1) != '/')
       rootHlmsFolder += "/";
 
-  //At this point rootHlmsFolder should be a valid path to the Hlms data folder
+  // At this point rootHlmsFolder should be a valid path to the Hlms data folder
 
-  Ogre::HlmsUnlit *hlmsUnlit = 0;
-  Ogre::HlmsPbs *hlmsPbs = 0;
-
-  //For retrieval of the paths to the different folders needed
+  // For retrieval of the paths to the different folders needed
   Ogre::String mainFolderPath;
   Ogre::StringVector libraryFoldersPaths;
   Ogre::StringVector::const_iterator libraryFolderPathIt;
   Ogre::StringVector::const_iterator libraryFolderPathEn;
 
   Ogre::ArchiveManager &archiveManager = Ogre::ArchiveManager::getSingleton();
-  
+
   {
-    //Create & Register HlmsUnlit
-    //Get the path to all the subdirectories used by HlmsUnlit
-    Ogre::HlmsUnlit::getDefaultPaths( mainFolderPath, libraryFoldersPaths );
-    Ogre::Archive *archiveUnlit = archiveManager.load( rootHlmsFolder + mainFolderPath,
-                                                       "FileSystem", true );
+    Ogre::HlmsUnlit *hlmsUnlit = 0;
+    // Create & Register HlmsUnlit
+    // Get the path to all the subdirectories used by HlmsUnlit
+    Ogre::HlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Archive *archiveUnlit = archiveManager.load(rootHlmsFolder + mainFolderPath,
+                                                      "FileSystem", true);
     Ogre::ArchiveVec archiveUnlitLibraryFolders;
     libraryFolderPathIt = libraryFoldersPaths.begin();
     libraryFolderPathEn = libraryFoldersPaths.end();
-    while( libraryFolderPathIt != libraryFolderPathEn )
+    while (libraryFolderPathIt != libraryFolderPathEn)
     {
-        Ogre::Archive *archiveLibrary =
-                archiveManager.load( rootHlmsFolder + *libraryFolderPathIt, "FileSystem", true );
-        archiveUnlitLibraryFolders.push_back( archiveLibrary );
-        ++libraryFolderPathIt;
+      Ogre::Archive *archiveLibrary =
+              archiveManager.load(rootHlmsFolder + *libraryFolderPathIt, "FileSystem", true);
+      archiveUnlitLibraryFolders.push_back(archiveLibrary);
+      ++libraryFolderPathIt;
     }
 
     //Create and register the unlit Hlms
-    hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit( archiveUnlit, &archiveUnlitLibraryFolders );
-    Ogre::Root::getSingleton().getHlmsManager()->registerHlms( hlmsUnlit );
+    hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit, &archiveUnlitLibraryFolders);
+    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
   }
 
   {
-    //Create & Register HlmsPbs
-    //Do the same for HlmsPbs:
-    Ogre::HlmsPbs::getDefaultPaths( mainFolderPath, libraryFoldersPaths );
-    Ogre::Archive *archivePbs = archiveManager.load( rootHlmsFolder + mainFolderPath,
-                                                     "FileSystem", true );
+    Ogre::HlmsPbs *hlmsPbs = 0;
+    // Create & Register HlmsPbs
+    // Do the same for HlmsPbs:
+    Ogre::HlmsPbs::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Archive *archivePbs = archiveManager.load(rootHlmsFolder + mainFolderPath,
+                                                    "FileSystem", true);
 
-    //Get the library archive(s)
+    // Get the library archive(s)
     Ogre::ArchiveVec archivePbsLibraryFolders;
     libraryFolderPathIt = libraryFoldersPaths.begin();
     libraryFolderPathEn = libraryFoldersPaths.end();
-    while( libraryFolderPathIt != libraryFolderPathEn )
+    while (libraryFolderPathIt != libraryFolderPathEn)
     {
-        Ogre::Archive *archiveLibrary =
-                archiveManager.load( rootHlmsFolder + *libraryFolderPathIt, "FileSystem", true );
-        archivePbsLibraryFolders.push_back( archiveLibrary );
-        ++libraryFolderPathIt;
+      Ogre::Archive *archiveLibrary =
+              archiveManager.load( rootHlmsFolder + *libraryFolderPathIt, "FileSystem", true);
+      archivePbsLibraryFolders.push_back(archiveLibrary);
+      ++libraryFolderPathIt;
     }
 
-    //Create and register
-    hlmsPbs = OGRE_NEW Ogre::HlmsPbs( archivePbs, &archivePbsLibraryFolders );
-    Ogre::Root::getSingleton().getHlmsManager()->registerHlms( hlmsPbs );
+    // Create and register
+    hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
+    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
   }
 }
 
@@ -595,7 +582,7 @@ std::string Ogre2RenderEngine::CreateWindow(const std::string &_handle,
   params["parentWindowHandle"] = _handle;
 #endif
   params["FSAA"] = std::to_string(_antiAliasing);
-//  params["stereoMode"] = "Frame Sequential";
+  params["stereoMode"] = "Frame Sequential";
 
   // TODO: determine api without qt
 
@@ -612,7 +599,7 @@ std::string Ogre2RenderEngine::CreateWindow(const std::string &_handle,
   stream << "OgreWindow(0)" << "_" << _handle;
 
   // Needed for retina displays
-//  params["contentScalingFactor"] = std::to_string(_ratio);
+  params["contentScalingFactor"] = std::to_string(_ratio);
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
@@ -639,7 +626,6 @@ std::string Ogre2RenderEngine::CreateWindow(const std::string &_handle,
   {
     window->setActive(true);
     window->setVisible(true);
-//    window->setAutoUpdated(false);
 
     // Windows needs to reposition the render window to 0,0.
     window->reposition(0, 0);
@@ -648,84 +634,13 @@ std::string Ogre2RenderEngine::CreateWindow(const std::string &_handle,
 }
 
 //////////////////////////////////////////////////
-/*void Ogre2RenderEngine::CheckCapabilities()
-{
-  const Ogre::RenderSystemCapabilities *capabilities;
-  Ogre::RenderSystemCapabilities::ShaderProfiles profiles;
-  Ogre::RenderSystemCapabilities::ShaderProfiles::const_iterator iter;
-
-  capabilities = this->ogreRoot->getRenderSystem()->getCapabilities();
-  profiles = capabilities->getSupportedShaderProfiles();
-
-  bool hasFragmentPrograms =
-    capabilities->hasCapability(Ogre::RSC_FRAGMENT_PROGRAM);
-
-  bool hasVertexPrograms =
-    capabilities->hasCapability(Ogre::RSC_VERTEX_PROGRAM);
-
-  bool hasFBO =
-    capabilities->hasCapability(Ogre::RSC_FBO);
-
-  bool hasGLSL =
-    std::find(profiles.begin(), profiles.end(), "glsl") != profiles.end();
-
-  if (!hasFragmentPrograms || !hasVertexPrograms)
-    ignwarn << "Vertex and fragment shaders are missing. "
-           << "Fixed function rendering will be used.\n";
-
-  if (!hasGLSL)
-    ignwarn << "GLSL is missing."
-           << "Fixed function rendering will be used.\n";
-
-  if (!hasFBO)
-    ignwarn << "Frame Buffer Objects (FBO) is missing. "
-           << "Rendering will be disabled.\n";
-
-  this->renderPathType = Ogre2RenderEngine::NONE;
-
-  if (hasFBO && hasGLSL && hasVertexPrograms && hasFragmentPrograms)
-  {
-    this->renderPathType = Ogre2RenderEngine::FORWARD;
-  }
-  else if (hasFBO)
-  {
-    this->renderPathType = Ogre2RenderEngine::VERTEX;
-  }
-}
-*/
-
-
-//////////////////////////////////////////////////
 void Ogre2RenderEngine::InitAttempt()
 {
-/*  if (this->renderPathType == NONE)
-  {
-    ignwarn << "Cannot initialize render engine since "
-           << "render path type is NONE. Ignore this warning if"
-           << "rendering has been turned off on purpose.\n";
-    return;
-  }
-  */
-
   this->initialized = false;
 
-  Ogre::ColourValue ambient;
-
-  /// Create a dummy rendering context.
-  /// This will allow ign-rendering to run headless. And it also allows OGRE to
-  /// initialize properly
-
-  // Set default mipmap level (NB some APIs ignore this)
-/*  Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-
   // init the resources
-  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(false);
 
-  Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(
-      Ogre::TFO_ANISOTROPIC);
-
-
-  */
   this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
 }
 

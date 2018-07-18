@@ -54,6 +54,17 @@ if (OGRE_FOUND)
 endif()
 
 #--------------------------------------
+# Find OGRE2
+ign_find_package(OGRE2 VERSION 2.1.0
+    COMPONENTS HlmsPbs HlmsUnlit Overlay
+    REQUIRED_BY ogre2
+    PRIVATE_FOR ogre2)
+
+if (OGRE2_FOUND)
+  set(HAVE_OGRE2 TRUE)
+endif()
+
+#--------------------------------------
 # Find dependencies that we ignore for Visual Studio
 if(NOT MSVC)
   #--------------------------------------
@@ -82,6 +93,10 @@ set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering
 set(RENDERING_COMPONENTS ogre)
 if (HAVE_OPTIX)
   list(APPEND RENDERING_COMPONENTS optix)
+endif()
+
+if (HAVE_OGRE2)
+  list(APPEND RENDERING_COMPONENTS ogre2)
 endif()
 
 ign_configure_build(QUIT_IF_BUILD_ERRORS

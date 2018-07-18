@@ -54,6 +54,9 @@ TEST(RenderingIfaceTest, GetEngine)
 
 TEST(RenderingIfaceTest, RegisterEngine)
 {
+  if (engineCount() <= 0)
+    return;
+
   // unregister existing engine by index
   RenderEngine *eng = engine(0u);
   EXPECT_TRUE(hasEngine(eng->Name()));

@@ -113,7 +113,7 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
     // load the engine
     else if (this->dataPtr->LoadEnginePlugin(defaultIt->second))
     {
-      return this->Engine(_name);  
+      return this->Engine(_name);
     }
   }
 

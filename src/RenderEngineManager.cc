@@ -39,7 +39,7 @@ namespace ignition
 
       typedef EngineMap::iterator EngineIter;
 
-      public: RenderEngine *Engine(EngineIter _iter) const;
+      public: RenderEngine *Engine(EngineIter _iter);
 
       public: void RegisterDefaultEngines();
 
@@ -79,7 +79,6 @@ RenderEngineManager::~RenderEngineManager()
 //////////////////////////////////////////////////
 unsigned int RenderEngineManager::EngineCount() const
 {
-  // return number of engines loaded
   return this->dataPtr->engines.size();
 }
 
@@ -87,35 +86,16 @@ unsigned int RenderEngineManager::EngineCount() const
 bool RenderEngineManager::HasEngine(const std::string &_name) const
 {
   auto iter = this->dataPtr->engines.find(_name);
-  if (iter == this->dataPtr->engines.end())
-  {
-    auto defaultIter = this->dataPtr->defaultEngines.find(_name);
-    return defaultIter != this->dataPtr->defaultEngines.end();
-  }
-  return true;
+  return iter != this->dataPtr->engines.end();
 }
 
 //////////////////////////////////////////////////
 RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
 {
+  // check in the list of available engines
   auto iter = this->dataPtr->engines.find(_name);
-
-  // check in the list of engines that have been loaded
   if (iter == this->dataPtr->engines.end())
-  {
-     // check in the default list of engines
-    auto defaultIt = this->dataPtr->defaultEngines.find(_name);
-    if (defaultIt == this->dataPtr->defaultEngines.end())
-    {
-      ignerr << "No render-engine registered with name: " << _name << std::endl;
-      return nullptr;
-    }
-    // load the engine
-    else if (this->dataPtr->LoadEnginePlugin(defaultIt->second))
-    {
-      return this->Engine(_name);
-    }
-  }
+    return nullptr;
 
   return this->dataPtr->Engine(iter);
 }
@@ -199,9 +179,29 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 //////////////////////////////////////////////////
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter) const
+RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter)
 {
   RenderEngine *engine = _iter->second;
+
+  if (!engine)
+  {
+    // check if it's an engine in the list of default engines provided by
+    // ign-rendering. If so, load it
+    auto defaultIt = this->defaultEngines.find(_iter->first);
+    if (defaultIt != this->defaultEngines.end())
+    {
+      std::string libName = defaultIt->second;
+      if (this->LoadEnginePlugin(libName))
+      {
+        auto engineIt = this->engines.find(_iter->first);
+        if (engineIt != this->engines.end())
+          return engineIt->second;
+      }
+    }
+  }
+
+  if (!engine)
+    return nullptr;
 
   if (!engine->IsInitialized())
   {
@@ -222,10 +222,16 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
     std::to_string(IGNITION_RENDERING_MAJOR_VERSION) + "-";
 
 #if HAVE_OGRE
-  defaultEngines["ogre"] = engineName + "ogre";
+  this->defaultEngines["ogre"] = engineName + "ogre";
+  this->engines["ogre"] = nullptr;
+#endif
+#if HAVE_OGRE2
+  this->defaultEngines["ogre2"] = engineName + "ogre2";
+  this->engines["ogre2"] = nullptr;
 #endif
 #if HAVE_OPTIX
-  defaultEngines["optix"] = engineName + "optix";
+  this->defaultEngines["optix"] = engineName + "optix";
+  this->engines["optix"] = nullptr;
 #endif
 }
 
@@ -290,7 +296,6 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
 
   // this triggers the engine to be instantiated
   std::string engineName = plugin->Name();
-  auto engine = plugin->Engine();
   this->engines[engineName] = plugin->Engine();
 
   return true;

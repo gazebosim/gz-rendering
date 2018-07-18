@@ -27,17 +27,16 @@ using namespace rendering;
 /////////////////////////////////////////////////
 // Load the default engines for this test and
 // return the number of engines loaded
-unsigned int loadDefaultEnginesForTest()
+unsigned int defaultEnginesForTest()
 {
   unsigned int count = 0u;
 #if HAVE_OGRE
-  // load the engine and increment count
-  engine("ogre");
+  count++;
+#endif
+#if HAVE_OGRE2
   count++;
 #endif
 #if HAVE_OPTIX
-  // load the engine and increment count
-  engine("optix");
   count++;
 #endif
   return count;
@@ -46,10 +45,7 @@ unsigned int loadDefaultEnginesForTest()
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, GetEngine)
 {
-  // nothing should be loaded on startup
-  EXPECT_EQ(0u, engineCount());
-
-  unsigned int count = loadDefaultEnginesForTest();
+  unsigned int count = defaultEnginesForTest();
 
   EXPECT_EQ(count, engineCount());
 
@@ -60,6 +56,8 @@ TEST(RenderingIfaceTest, GetEngine)
     EXPECT_NE(nullptr, eng);
     EXPECT_TRUE(hasEngine(eng->Name()));
     EXPECT_EQ(eng, engine(eng->Name()));
+    // unload the engines
+    unregisterEngine(eng->Name());
   }
 
   // non-existent engine
@@ -70,10 +68,7 @@ TEST(RenderingIfaceTest, GetEngine)
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, RegisterEngine)
 {
-  // nothing should be loaded on startup
-  EXPECT_EQ(0u, engineCount());
-
-  unsigned int count = loadDefaultEnginesForTest();
+  unsigned int count = defaultEnginesForTest();
 
   if (count == 0)
     return;

@@ -102,9 +102,6 @@ namespace ignition
       public BaseDepthCamera<OgreSensor>
     {
       /// \brief Constructor
-      /// \param[in] _namePrefix Unique prefix name for the camera.
-      /// \param[in] _scene Scene that will contain the camera
-      /// \param[in] _autoRender Almost everyone should leave this as true.
       protected: OgreDepthCamera();
 
       /// \brief Destructor
@@ -145,6 +142,10 @@ namespace ignition
       /// \brief Implementation of the render call
       public: virtual void Render() override;
 
+      public: virtual void SetFarClipPlane(const double _far) override;
+
+      public: virtual void SetNearClipPlane(const double _near) override;
+
       /// \brief Update a render target
       /// \param[in] _target Render target to update
       /// \param[in] _material Material to use
@@ -160,6 +161,8 @@ namespace ignition
       protected: static double LimitFOV(const double _fov);
 
       protected: virtual RenderTargetPtr RenderTarget() const;
+
+      protected: void CreateCamera();
 
       /// \brief Communicates that a frams was rendered
       protected: bool newData = false;

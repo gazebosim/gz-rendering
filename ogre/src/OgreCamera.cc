@@ -76,7 +76,13 @@ math::Color OgreCamera::BackgroundColor() const
   return this->renderTexture->BackgroundColor();
 }
 
-//////////////////////////////////////////////////
+///////////////////////////////////////////////////
+Ogre::Camera *OgreCamera::OgreCameraPtr() const
+{
+  return this->ogreCamera;
+}
+
+/////////////////////////////////////////////////
 void OgreCamera::SetBackgroundColor(const math::Color &_color)
 {
   this->renderTexture->SetBackgroundColor(_color);
@@ -252,4 +258,22 @@ void OgreCamera::SetFarClipPlane(const double _far)
 {
   BaseCamera::SetFarClipPlane(_far);
   this->ogreCamera->setFarClipDistance(_far);
+}
+
+//////////////////////////////////////////////////
+double OgreCamera::NearClip() const
+{
+  if (this->ogreCamera)
+    return this->ogreCamera->getNearClipDistance();
+  else
+    return 0;
+}
+
+//////////////////////////////////////////////////
+double OgreCamera::FarClip() const
+{
+  if (this->ogreCamera)
+    return this->ogreCamera->getFarClipDistance();
+  else
+    return 0;
 }

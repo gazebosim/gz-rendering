@@ -66,6 +66,18 @@ namespace ignition
 
       public: virtual math::Matrix4d ViewMatrix() const;
 
+      public: Ogre::Camera *OgreCameraPtr() const;
+
+      public: void SetVFOV(double cameraVFOV) const;
+
+      /// \brief Get the near clip distance
+      /// \return Near clip distance
+      public: double NearClip() const;
+
+      /// \brief Get the far clip distance
+      /// \return Far clip distance
+      public: double FarClip() const;
+
       // Documentation inherited
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
                   &_mousePos);
@@ -97,6 +109,7 @@ namespace ignition
       protected: math::Color backgroundColor;
 
       private: friend class OgreScene;
+      private: friend class OgreDepthCamera;
       private: friend class OgreRayQuery;
     };
   }

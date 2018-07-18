@@ -40,12 +40,14 @@ OgreDepthCamera::~OgreDepthCamera()
 void OgreDepthCamera::Init()
 {
   BaseDepthCamera::Init();
-  //this->CreateDepthCamera();
+
+  this->ogreCamera->Init();
+
   this->CreateDepthTexture(this->Name() + "_RttTex_Depth");
   this->Reset();
 }
 
-//////////////////////////////////////////////////
+/////////////////////////////////////////////////
 void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
 {
   // Create the depth buffer
@@ -122,24 +124,6 @@ void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
 
     this->dataPtr->pcdMaterial->load();
   }
-
-/*
-  // Create a custom render queue invocation sequence for the depth
-  // render texture
-  Ogre::RenderQueueInvocationSequence* invocationSequence =
-    Ogre::Root::getSingleton().createRenderQueueInvocationSequence(_textureName
-    + "_DepthMap");
-
-  // Add a render queue invocation to the sequence, and disable shadows for it
-  Ogre::RenderQueueInvocation* invocation =
-    invocationSequence->add(Ogre::RENDER_QUEUE_MAIN, _textureName + "_main");
-  invocation->setSuppressShadows(true);
-
-  // Set the render queue invocation sequence for the depth render texture
-  // viewport
-  this->depthViewport->setRenderQueueInvocationSequenceName(
-  _textureName + "_DepthMap");
-*/
 }
 
 //////////////////////////////////////////////////
@@ -205,7 +189,7 @@ void OgreDepthCamera::PostRender()
   }
 
   // also new image frame for camera texture
-  Camera::PostRender();
+  this->ogreCamera->PostRender();
 
   this->newData = false;
 }
@@ -227,18 +211,18 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTargetPtr &_target,
   // OgreSceneManager::_render function automatically sets farClip to 0.
   // Which normally equates to infinite distance. We don't want this. So
   // we have to set the distance every time.
-  // this->OgreCamera()->setFarClipDistance(this->FarClip());
+  double farClipDistance = this->FarClipPlane();
 
   Ogre::AutoParamDataSource autoParamDataSource;
 
   vp = _target->GetViewport(0);
 
   // return farClip in case no renderable object is inside frustrum
-  // vp->setBackgroundColour(Ogre::ColourValue(this->FarClip(),
-  //    this->FarClip(), this->FarClip()));
+  vp->setBackgroundColour(Ogre::ColourValue(farClipDistance,
+      farClipDistance, farClipDistance));
 
-  Ogre::CompositorManager::getSingleton().setCompositorEnabled(
-                                                vp, _matName, true);
+  Ogre::CompositorManager::getSingleton().setCompositorEnabled(vp,
+      _matName, true);
 
   // Need this line to render the ground plane. No idea why it's necessary.
   renderSys->_setViewport(vp);
@@ -248,15 +232,15 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTargetPtr &_target,
   autoParamDataSource.setCurrentRenderTarget(
       dynamic_cast<Ogre::RenderTarget*>(_target.get()));
   autoParamDataSource.setCurrentSceneManager(sceneMgr);
-  autoParamDataSource.setCurrentCamera(this->ogreCamera, true);
+  autoParamDataSource.setCurrentCamera(this->ogreCamera->OgreCameraPtr(), true);
 
   renderSys->setLightingEnabled(false);
   renderSys->_setFog(Ogre::FOG_NONE);
 
   // These two lines don't seem to do anything useful
   renderSys->_setProjectionMatrix(
-      this->ogreCamera->getProjectionMatrixRS());
-  renderSys->_setViewMatrix(this->ogreCamera->getViewMatrix(true));
+      this->ogreCamera->OgreCameraPtr()->getProjectionMatrixRS());
+  renderSys->_setViewMatrix(this->ogreCamera->OgreCameraPtr()->getViewMatrix(true));
 
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR == 6
   pass->_updateAutoParamsNoLights(&autoParamDataSource);
@@ -314,7 +298,7 @@ void OgreDepthCamera::Render()
   sceneMgr->setShadowTechnique(shadowTech);
 
   // for camera image
-  Camera::Render();
+  this->ogreCamera->Render();
 
   if (this->dataPtr->outputPoints)
   {
@@ -355,9 +339,8 @@ void OgreDepthCamera::SetDepthTarget(OgreRenderTargetPtr &_target)
     double ratio = static_cast<double>(this->depthViewport->getActualWidth()) /
                    static_cast<double>(this->depthViewport->getActualHeight());
 
-    double cameraVFOV = 2.0 * atan(tan(this->HFOV().Radian()/ 2.0) / ratio);
-    this->ogreCamera->setAspectRatio(ratio);
-    this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(cameraVFOV)));
+    this->ogreCamera->SetAspectRatio(ratio);
+    this->ogreCamera->SetHFOV(this->HFOV());
   }
 }
 
@@ -389,3 +372,17 @@ double OgreDepthCamera::LimitFOV(const double _fov)
   return std::min(std::max(0.001, _fov), M_PI * 0.999);
 }
 
+//////////////////////////////////////////////////
+void OgreDepthCamera::SetNearClipPlane(const double _near)
+{
+  // this->nearClip = _near;
+  BaseDepthCamera::SetNearClipPlane(_near);
+  this->ogreCamera->SetNearClipPlane(_near);
+}
+
+//////////////////////////////////////////////////
+void OgreDepthCamera::SetFarClipPlane(const double _far)
+{
+  BaseDepthCamera::SetFarClipPlane(_far);
+  this->ogreCamera->SetFarClipPlane(_far);
+}

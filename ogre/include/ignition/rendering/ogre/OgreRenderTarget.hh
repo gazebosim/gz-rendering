@@ -69,7 +69,7 @@ namespace ignition
 
       public: virtual void Destroy() = 0;
 
-      public: Ogre::Viewport *AddViewport(Ogre::Camera *viewport);
+      public: Ogre::Viewport *AddViewport(OgreCameraPtr viewport);
 
       public: Ogre::Viewport *GetViewport(int viewportId);
 

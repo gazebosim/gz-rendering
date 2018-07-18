@@ -31,6 +31,7 @@
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
 using namespace ignition;
@@ -186,7 +187,7 @@ Ogre::Viewport *OgreRenderTarget::GetViewport(int viewportId)
 //////////////////////////////////////////////////
 Ogre::Viewport *OgreRenderTarget::AddViewport(OgreCameraPtr camera)
 {
-  return this->RenderTarget()->addViewport(camera->OgreCameraPointer());
+  return this->RenderTarget()->addViewport(camera->OgreCameraPtr());
 }
 
 ////////////////////////////////////////////////

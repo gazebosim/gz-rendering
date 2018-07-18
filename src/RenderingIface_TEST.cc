@@ -24,18 +24,33 @@
 using namespace ignition;
 using namespace rendering;
 
+/////////////////////////////////////////////////
+// Load the default engines for this test and
+// return the number of engines loaded
+unsigned int loadDefaultEnginesForTest()
+{
+  unsigned int count = 0u;
+#if HAVE_OGRE
+  // load the engine and increment count
+  engine("ogre");
+  count++;
+#endif
+#if HAVE_OPTIX
+  // load the engine and increment count
+  engine("optix");
+  count++;
+#endif
+  return count;
+}
 
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, GetEngine)
 {
-  // 2 engines now. This will change when engines become plugins
-  unsigned int count = 0u;
-#if HAVE_OGRE
-  count++;
-#endif
-#if HAVE_OPTIX
-  count++;
-#endif
+  // nothing should be loaded on startup
+  EXPECT_EQ(0u, engineCount());
+
+  unsigned int count = loadDefaultEnginesForTest();
+
   EXPECT_EQ(count, engineCount());
 
   // check get engine
@@ -52,8 +67,17 @@ TEST(RenderingIfaceTest, GetEngine)
   EXPECT_EQ(nullptr, engine(1000000));
 }
 
+/////////////////////////////////////////////////
 TEST(RenderingIfaceTest, RegisterEngine)
 {
+  // nothing should be loaded on startup
+  EXPECT_EQ(0u, engineCount());
+
+  unsigned int count = loadDefaultEnginesForTest();
+
+  if (count == 0)
+    return;
+
   // unregister existing engine by index
   RenderEngine *eng = engine(0u);
   EXPECT_TRUE(hasEngine(eng->Name()));

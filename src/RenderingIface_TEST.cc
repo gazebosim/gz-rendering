@@ -25,8 +25,7 @@ using namespace ignition;
 using namespace rendering;
 
 /////////////////////////////////////////////////
-// Load the default engines for this test and
-// return the number of engines loaded
+// get the number of default engines available
 unsigned int defaultEnginesForTest()
 {
   unsigned int count = 0u;

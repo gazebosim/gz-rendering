@@ -61,6 +61,13 @@ ShaderParam::ParamType ShaderParam::Type() const
 }
 
 //////////////////////////////////////////////////
+ShaderParam& ShaderParam::operator=(const ShaderParam &_other)
+{
+  *(this->dataPtr) = *(_other.dataPtr);
+  return *this;
+}
+
+//////////////////////////////////////////////////
 void ShaderParam::operator=(const float _value)
 {
   this->dataPtr->type = PARAM_FLOAT;

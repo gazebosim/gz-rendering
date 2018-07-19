@@ -99,9 +99,9 @@ namespace ignition
 
       public: virtual Ogre::Root *OgreRoot() const;
 
-      public: std::string CreateWindow(const std::string &_handle,
+      public: std::string CreateNewWindow(const std::string &_handle,
                   const unsigned int _width, const unsigned int _height,
-                  const double _ratio, const unsigned int antiAliasing);
+                  const double __ratio, const unsigned int antiAliasing);
 
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name);
@@ -128,7 +128,7 @@ namespace ignition
 
       private: void CreateResources();
 
-      private: void CreateWindow();
+      private: void CreateNewWindow();
 
       private: void CheckCapabilities();
 

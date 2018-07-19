@@ -33,6 +33,7 @@ namespace ignition
   {
     class RenderEngine;
 
+    /// \brief Private implementation of the RenderEngineManager class
     class RenderEngineManagerPrivate
     {
       /// \brief EngineMap that maps engine name to an engine pointer
@@ -42,6 +43,7 @@ namespace ignition
       typedef EngineMap::iterator EngineIter;
 
       /// \brief Get a pointer to the render enginer from an EngineMap iterator
+      /// \brief EngineMap iterator
       public: RenderEngine *Engine(EngineIter _iter);
 
       /// \brief Register default engines supplied by ign-rendering
@@ -52,6 +54,8 @@ namespace ignition
       /// \return True if the plugin is loaded successfully
       public: bool LoadEnginePlugin(const std::string &_filename);
 
+      /// \brief Unregister an engine using an EngineMap iterator
+      /// \brief EngineMap iterator
       public: void UnregisterEngine(EngineIter _iter);
 
       // Engines that have been registered

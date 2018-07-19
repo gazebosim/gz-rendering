@@ -741,7 +741,7 @@ void OgreMovableText::UpdateColors()
 {
   Ogre::RGBA clr;
   Ogre::HardwareVertexBufferSharedPtr vbuf;
-  Ogre::RGBA *pDest = nullptr;
+  Ogre::RGBA *pDest;
   unsigned int i;
 
   IGN_ASSERT(this->font, "font class member is null");

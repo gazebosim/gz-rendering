@@ -56,8 +56,6 @@ TEST(RenderingIfaceTest, GetEngine)
     EXPECT_NE(nullptr, eng);
     EXPECT_TRUE(hasEngine(eng->Name()));
     EXPECT_EQ(eng, engine(eng->Name()));
-    // unload the engines
-    unregisterEngine(eng->Name());
   }
 
   // non-existent engine

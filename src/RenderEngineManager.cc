@@ -195,7 +195,7 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter)
       {
         auto engineIt = this->engines.find(_iter->first);
         if (engineIt != this->engines.end())
-          return engineIt->second;
+          engine = engineIt->second;
       }
     }
   }

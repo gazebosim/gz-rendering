@@ -35,12 +35,16 @@ namespace ignition
 
     class RenderEngineManagerPrivate
     {
+      /// \brief EngineMap that maps engine name to an engine pointer
       typedef std::map<std::string, RenderEngine *> EngineMap;
 
+      /// \brief EngineMap iterator
       typedef EngineMap::iterator EngineIter;
 
+      /// \brief Get a pointer to the render enginer from an EngineMap iterator
       public: RenderEngine *Engine(EngineIter _iter);
 
+      /// \brief Register default engines supplied by ign-rendering
       public: void RegisterDefaultEngines();
 
       /// \brief Load a render engine plugin
@@ -50,10 +54,10 @@ namespace ignition
 
       public: void UnregisterEngine(EngineIter _iter);
 
-      // Engines tha have been registered and loaded
+      // Engines that have been registered
       public: EngineMap engines;
 
-      /// A map of default engine name to its plugin library path
+      /// \brief A map of default engine name to its plugin library path
       public: std::map<std::string, std::string> defaultEngines;
     };
   }
@@ -94,8 +98,12 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
 {
   // check in the list of available engines
   auto iter = this->dataPtr->engines.find(_name);
+
   if (iter == this->dataPtr->engines.end())
+  {
+    ignerr << "No render-engine registered with name: " << _name << std::endl;
     return nullptr;
+  }
 
   return this->dataPtr->Engine(iter);
 }

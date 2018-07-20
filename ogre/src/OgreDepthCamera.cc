@@ -22,7 +22,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreDepthCamera::OgreDepthCamera()
-  : dataPtr(new OgreDepthCameraPrivate())
+  : ogreCamera(new OgreCamera()), dataPtr(new OgreDepthCameraPrivate())
 {
 }
 

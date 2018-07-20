@@ -45,6 +45,8 @@ namespace ignition
 
       public: virtual ~BaseDepthCamera();
 
+      public: virtual void Init();
+
       public: virtual void CreateDepthTexture(const std::string &_textureName);
 
       public: virtual const float *DepthData() const;
@@ -232,6 +234,43 @@ namespace ignition
     template <class T>
     BaseDepthCamera<T>::~BaseDepthCamera()
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseDepthCamera<T>::Init()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseDepthCamera<T>::CreateDepthTexture(const std::string &)
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    const float *BaseDepthCamera<T>::DepthData() const
+    {
+      return nullptr;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::common::ConnectionPtr BaseDepthCamera<T>::ConnectNewDepthFrame(
+          std::function<void(const float *, unsigned int, unsigned int,
+          unsigned int, const std::string &)>)
+    {
+      return nullptr;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::common::ConnectionPtr BaseDepthCamera<T>::ConnectNewRGBPointCloud(
+          std::function<void(const float *, unsigned int, unsigned int,
+          unsigned int, const std::string &)>)
+    {
+      return nullptr;
     }
 
     //////////////////////////////////////////////////

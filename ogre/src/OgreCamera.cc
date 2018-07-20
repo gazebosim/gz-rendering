@@ -109,7 +109,6 @@ RenderTargetPtr OgreCamera::RenderTarget() const
 //////////////////////////////////////////////////
 void OgreCamera::Init()
 {
-  BaseCamera::Init();
   this->CreateCamera();
   this->CreateRenderTexture();
   this->Reset();
@@ -121,6 +120,7 @@ void OgreCamera::CreateCamera()
   // create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
+
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
   this->ogreNode->attachObject(this->ogreCamera);
 

@@ -44,6 +44,9 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~DepthCamera() { }
 
+      /// \brief Initialize Depth Sensor
+      public: virtual void Init() = 0;
+
       /// \brief Create a texture which will hold the depth data
       /// \param[in] _textureName Name of the texture to create
       public: virtual void CreateDepthTexture(const std::string &_textureName) = 0;

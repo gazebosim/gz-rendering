@@ -38,6 +38,24 @@ TEST(ShaderParam, FloatType)
   float val;
   EXPECT_TRUE(p.Value(&val));
   EXPECT_FLOAT_EQ(10.0f, val);
+
+  int badRef;
+  EXPECT_FALSE(p.Value(&badRef));
+
+  // test copy assignment
+  ShaderParam p2;
+  p2 = p;
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT, p2.Type());
+  float val2;
+  EXPECT_TRUE(p.Value(&val2));
+  EXPECT_FLOAT_EQ(10.0f, val2);
+
+  // test copy constructor
+  ShaderParam p3(p);
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT, p3.Type());
+  float val3;
+  EXPECT_TRUE(p.Value(&val3));
+  EXPECT_FLOAT_EQ(10.0f, val3);
 }
 
 /////////////////////////////////////////////////
@@ -49,6 +67,24 @@ TEST(ShaderParam, IntType)
   int val;
   EXPECT_TRUE(p.Value(&val));
   EXPECT_EQ(10, val);
+
+  float badRef = 20.0f;
+  EXPECT_FALSE(p.Value(&badRef));
+
+  // test copy assignment
+  ShaderParam p2;
+  p2 = p;
+  EXPECT_EQ(ShaderParam::PARAM_INT, p2.Type());
+  int val2;
+  EXPECT_TRUE(p.Value(&val2));
+  EXPECT_EQ(10, val2);
+
+  // test copy constructor
+  ShaderParam p3(p);
+  EXPECT_EQ(ShaderParam::PARAM_INT, p3.Type());
+  int val3;
+  EXPECT_TRUE(p.Value(&val3));
+  EXPECT_EQ(10, val3);
 }
 
 //////////////////////////////////////////////////

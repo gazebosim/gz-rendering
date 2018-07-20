@@ -53,13 +53,6 @@ if (OGRE_FOUND)
   set(HAVE_OGRE TRUE)
 endif()
 
-  if (OGRE_FOUND)
-    set(HAVE_OGRE TRUE)
-  endif()
-
-
-#  ign_find_package(OGRE)
-
 #--------------------------------------
 # Find OGRE2
 ign_find_package(OGRE2 VERSION 2.1.0
@@ -67,15 +60,9 @@ ign_find_package(OGRE2 VERSION 2.1.0
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
 
-message(" == OGRE2 libs:  ${OGRE2_LIBRARIES}")
-message(" == OGRE2 lib dir:  ${OGRE2_LIBRARY_DIRS}")
-#include_directories(${OGRE2_INCLUDE_DIRS})
-#link_directories(${OGRE2_LIB_DIRS})
-
-  if (OGRE2_FOUND)
-    set(HAVE_OGRE2 TRUE)
-  endif()
-
+if (OGRE2_FOUND)
+  set(HAVE_OGRE2 TRUE)
+endif()
 
 #--------------------------------------
 # Find dependencies that we ignore for Visual Studio
@@ -111,7 +98,6 @@ endif()
 if (HAVE_OGRE2)
   list(APPEND RENDERING_COMPONENTS ogre2)
 endif()
-
 
 ign_configure_build(QUIT_IF_BUILD_ERRORS
     COMPONENTS ${RENDERING_COMPONENTS})

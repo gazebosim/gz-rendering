@@ -4,10 +4,6 @@ ign_get_libsources_and_unittests(sources gtest_sources)
 
 ign_add_component(ogre2 SOURCES ${sources} GET_TARGET_NAME ogre2_target)
 
-#set(CMAKE_MODULE_PATH
-#${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-#ign_find_package(OGRE2)
 find_package(OpenGL)
 
 set_property(
@@ -16,9 +12,6 @@ set_property(
   IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
   OGRE2_RESOURCE_PATH="${OGRE2_RESOURCE_PATH}"
 )
-
-message("ogre 2 libraries: ${OGRE2_LIBRARIES}")
-message("ogre 2 library dirs: ${OGRE2_LIBRARY_DIRS}")
 
 link_directories(${OGRE2_LIBRARY_DIRS})
 

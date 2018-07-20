@@ -167,7 +167,7 @@ namespace ignition
       /// \brief Flag to indicate if engine is loaded
       private: bool loaded = false;
 
-      /// \brief Flag to indicate if engine is initialized 
+      /// \brief Flag to indicate if engine is initialized
       private: bool initialized = false;
 
       /// \brief List of scenes managed by the render engine

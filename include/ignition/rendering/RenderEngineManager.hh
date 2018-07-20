@@ -45,15 +45,12 @@ namespace ignition
       /// \brief Deconstructor
       public: ~RenderEngineManager();
 
-      /// \brief Get the number of available render-engines. This counts
-      /// engines that that have been registered and loaded by the engine
-      /// manager. Default engine plugins need to be loaded first using
-      /// Engine(std::string) for them to be available.
-      /// \return the number of available render-engines
+      /// \brief Get the number of available render-engines
+      /// \return The number of available render-engines
       public: unsigned int EngineCount() const;
 
-      /// \brief Determine if a render-engine with the given name is avaiable
-      /// The function also search through the list of default engines
+      /// \brief Determine if a render-engine with the given name is avaiable.
+      /// It also checks the list of default engines supplied by ign-rendering.
       /// \param[in] _name Name of the desired render-engine
       /// \return True if the specified render-engine is available
       public: bool HasEngine(const std::string &_name) const;
@@ -65,7 +62,7 @@ namespace ignition
       /// \return The specified render-engine
       public: RenderEngine *Engine(const std::string &_name) const;
 
-      /// \brief Get the render-engine at the given index. If the no
+      /// \brief Get the render-engine registered at the given index. If no
       /// render-engine is exists at the given index, NULL will be returned.
       /// \param[in] _index Index of the desired render-engine
       /// \return The specified render-engine
@@ -81,8 +78,7 @@ namespace ignition
 
       /// \brief Unregister a render-engine registered under the given name.
       /// If no render-engine is registered under the given name no work
-      /// will be done. Unregistering a default engine plugin will cause it
-      /// to shutdown but will not remove it from the list of available engines
+      /// will be done.
       /// \param[in] _name Name of the render-engine to unregister
       public: void UnregisterEngine(const std::string &_name);
 

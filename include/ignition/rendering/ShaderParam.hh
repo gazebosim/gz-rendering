@@ -61,7 +61,8 @@ namespace ignition
 
       /// \brief Set from another ShaderParam.
       /// \param[in] _other Another ShaderParam.
-      public: ShaderParam& operator=(const ShaderParam &_other);
+      /// \return Reference to this ShaderParam.
+      public: ShaderParam &operator=(const ShaderParam &_other);
 
       /// \brief Set this to be a float param
       /// \param[in] _value Value to set this param to.

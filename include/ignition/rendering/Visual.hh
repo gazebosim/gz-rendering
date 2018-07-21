@@ -232,6 +232,10 @@ namespace ignition
       /// \brief Specify if this visual inherits scale from its parent
       /// \param[in] _inherit True if this visual inherits scale from its parent
       public: virtual void SetInheritScale(bool _inherit) = 0;
+
+      /// \brief Specify if this visual is visible
+      /// \param[in] _visible True if this visual should be made visible
+      public: virtual void SetVisible(bool _visible) = 0;
     };
   }
 }

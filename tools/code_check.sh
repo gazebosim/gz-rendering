@@ -46,7 +46,7 @@ then
   QUICK_TMP=`mktemp -t asdfXXXXXXXXXX`
 else
   CHECK_DIRS="./src ./include ./test/integration ./test/regression\
-    ./test/performance ./examples ./ogre ./optix"
+    ./test/performance ./examples ./ogre ./optix ./ogre2"
   if [ $CPPCHECK_LT_157 -eq 1 ]; then
     # cppcheck is older than 1.57, so don't check header files (issue #907)
     CPPCHECK_FILES=`find $CHECK_DIRS -name "*.cc"`

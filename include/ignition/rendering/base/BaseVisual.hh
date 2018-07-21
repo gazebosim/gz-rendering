@@ -120,6 +120,9 @@ namespace ignition
 
       public: virtual bool InheritScale() const = 0;
 
+      // Documentation inherited.
+      public: virtual void SetVisible(bool _visible);
+
       public: virtual void PreRender();
 
       public: virtual void Destroy();
@@ -516,17 +519,22 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::PreRenderGeometries()
     {
-      auto geometries =
-          std::dynamic_pointer_cast<BaseStore<Geometry, Geometry>>(
-          this->Geometries());
+      unsigned int count = this->GeometryCount();
 
-      if (!geometries)
-        return;
-
-      for (auto it = geometries->Begin(); it != geometries->End(); ++it)
+      for (unsigned int i = 0; i < count; ++i)
       {
-        it->second->PreRender();
+        GeometryPtr geometry = this->GeometryByIndex(i);
+        geometry->PreRender();
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetVisible(bool _visible)
+    {
+      ignerr << "SetVisible(" << _visible << ") not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
     }
   }
 }

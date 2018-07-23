@@ -177,7 +177,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       if (_desc.centerSubMesh)
         subMesh.Center(math::Vector3d::Zero);
 
-      //ogreSubMesh = ogreMesh->createSubMesh(subMesh.Name());
+      // ogreSubMesh = ogreMesh->createSubMesh(subMesh.Name());
       ogreSubMesh = ogreMesh->createSubMesh("asdf");
       ogreSubMesh->useSharedVertices = false;
       if (subMesh.SubMeshPrimitiveType() == common::SubMesh::TRIANGLES)
@@ -213,7 +213,8 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       }
 
       ogreSubMesh->vertexData[Ogre::VpNormal] = new Ogre::v1::VertexData();
-      ogreSubMesh->vertexData[Ogre::VpShadow] = ogreSubMesh->vertexData[Ogre::VpNormal];
+      ogreSubMesh->vertexData[Ogre::VpShadow] =
+          ogreSubMesh->vertexData[Ogre::VpNormal];
       vertexData = ogreSubMesh->vertexData[Ogre::VpNormal];
       vertexDecl = vertexData->vertexDeclaration;
 

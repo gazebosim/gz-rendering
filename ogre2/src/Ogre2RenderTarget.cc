@@ -22,7 +22,7 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-//#include "ignition/rendering/ogre2/Ogre2Material.hh"
+// #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
@@ -54,7 +54,7 @@ void Ogre2RenderTarget::BuildCompositor()
   const Ogre::String workspaceName(
       this->ogreCamera->getName() + "_" + this->RenderTarget()->getName()
       + "_workspace");
-  if (!ogreCompMgr->hasWorkspaceDefinition(workspaceName)) 
+  if (!ogreCompMgr->hasWorkspaceDefinition(workspaceName))
   {
     ogreCompMgr->createBasicWorkspaceDef(workspaceName,
         this->ogreBackgroundColor,  Ogre::IdString());

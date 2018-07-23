@@ -18,7 +18,7 @@
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
-//#include "ignition/rendering/ogre2/Ogre2Material.hh"
+// #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
@@ -74,7 +74,6 @@ void Ogre2Camera::SetAntiAliasing(const unsigned int _aa)
 math::Color Ogre2Camera::BackgroundColor() const
 {
   return this->renderTexture->BackgroundColor();
-  return math::Color::White;
 }
 
 //////////////////////////////////////////////////

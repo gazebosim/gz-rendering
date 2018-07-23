@@ -96,11 +96,11 @@ void Ogre2SubMesh::Destroy()
 //////////////////////////////////////////////////
 void Ogre2SubMesh::SetMaterialImpl(Ogre2MaterialPtr _material)
 {
-  std::string materialName = _material->Name();
+//  std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
-  //TODO use Hlms datablocks
+  // TODO use Hlms datablocks
   // https://ogrecave.github.io/ogre/api/2.1/TechnicalOverview.html
-//  this->ogreSubEntity->setMaterialName(materialName);
+  // this->ogreSubEntity->setMaterialName(materialName);
   this->material = _material;
 }
 

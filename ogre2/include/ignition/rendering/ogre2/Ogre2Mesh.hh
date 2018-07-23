@@ -26,7 +26,7 @@
 
 namespace Ogre
 {
-  namespace v1 
+  namespace v1
   {
     class Entity;
     class SubEntity;

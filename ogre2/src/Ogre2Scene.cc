@@ -27,10 +27,10 @@
 
 */
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
-//#include "ignition/rendering/ogre2/Ogre2Text.hh"
+// #include "ignition/rendering/ogre2/Ogre2Text.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
-//#include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
+// #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
@@ -537,7 +537,7 @@ void Ogre2Scene::CreateContext()
 
   Ogre::InstancingThreadedCullingMethod threadedCullingMethod =
       Ogre::INSTANCING_CULLING_SINGLETHREAD;
-  //getNumLogicalCores() may return 0 if couldn't detect
+  // getNumLogicalCores() may return 0 if couldn't detect
   const size_t numThreads = std::max<size_t>(
       1, Ogre::PlatformInformation::getNumLogicalCores());
 
@@ -563,16 +563,16 @@ void Ogre2Scene::CreateContext()
   auto rootNode = sceneManager->getRootSceneNode();
        Ogre::Light *light = sceneManager->createLight();
         Ogre::SceneNode *lightNode = rootNode->createChildSceneNode();
-        lightNode->attachObject( light );
-        light->setPowerScale( 1.0f );
-        light->setType( Ogre::Light::LT_DIRECTIONAL );
-        light->setDirection( Ogre::Vector3( -1, -1, -1 ).normalisedCopy() );
+        lightNode->attachObject(light);
+        light->setPowerScale(1.0f);
+        light->setType(Ogre::Light::LT_DIRECTIONAL);
+        light->setDirection(Ogre::Vector3(-1, -1, -1).normalisedCopy());
 
 
-        sceneManager->setAmbientLight( Ogre::ColourValue( 0.3f, 0.5f, 0.7f ) * 0.1f * 0.75f,
-                                       Ogre::ColourValue( 0.6f, 0.45f, 0.3f ) * 0.065f * 0.75f,
-                                       -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f );
-
+        sceneManager->setAmbientLight(
+            Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f,
+            Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f,
+            -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
 }
 
 //////////////////////////////////////////////////

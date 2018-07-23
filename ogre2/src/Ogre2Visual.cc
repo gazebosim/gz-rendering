@@ -117,7 +117,7 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
 
   derived->SetParent(this->SharedThis());
   this->ogreNode->attachObject(derived->OgreObject());
- 
+
   return true;
 }
 

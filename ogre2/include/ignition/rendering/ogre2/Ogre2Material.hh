@@ -72,7 +72,8 @@ namespace ignition
 
       public: virtual bool ReceiveShadows() const override;
 
-      public: virtual void SetReceiveShadows(const bool _receiveShadows) override;
+      public: virtual void SetReceiveShadows(const bool _receiveShadows)
+          override;
 
       public: virtual bool ReflectionEnabled() const override;
 

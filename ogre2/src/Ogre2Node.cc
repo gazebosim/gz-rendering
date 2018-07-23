@@ -21,7 +21,6 @@
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -43,7 +42,7 @@ bool Ogre2Node::HasParent() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr Ogre2Node::Parent() const
+NodePtr Ogre2Node::Parent() const
 {
   return this->parent;
 }
@@ -103,7 +102,7 @@ void Ogre2Node::SetRawLocalRotation(const math::Quaterniond &_rotation)
 }
 
 //////////////////////////////////////////////////
-void Ogre2Node::SetParent(Ogre2VisualPtr _parent)
+void Ogre2Node::SetParent(Ogre2NodePtr _parent)
 {
   this->parent = _parent;
 }

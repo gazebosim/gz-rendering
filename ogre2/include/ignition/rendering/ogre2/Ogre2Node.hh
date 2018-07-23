@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr Parent() const;
+      public: virtual NodePtr Parent() const;
 
       public: virtual Ogre::SceneNode *Node() const;
 
@@ -59,16 +59,17 @@ namespace ignition
       protected: virtual void SetRawLocalRotation(
                      const math::Quaterniond &_rotation);
 
-      protected: virtual void SetParent(Ogre2VisualPtr _parent);
+      protected: virtual void SetParent(Ogre2NodePtr _parent);
 
       protected: virtual void Load();
 
       protected: virtual void Init();
 
-      protected: Ogre2VisualPtr parent;
+      protected: Ogre2NodePtr parent;
 
-      protected: Ogre::SceneNode *ogreNode;
+      protected: Ogre::SceneNode *ogreNode = nullptr;
 
+      // TODO remove the need for a visual friend class
       private: friend class Ogre2Visual;
     };
   }

@@ -219,6 +219,7 @@ RenderWindowPtr Ogre2Camera::CreateRenderWindow()
   this->renderTexture = renderWindow;
   return base;
   */
+  return RenderWindowPtr();
 }
 
 //////////////////////////////////////////////////

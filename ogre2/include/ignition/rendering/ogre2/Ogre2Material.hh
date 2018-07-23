@@ -34,69 +34,69 @@ namespace ignition
 
       public: virtual ~Ogre2Material();
 
-      public: virtual bool LightingEnabled() const;
+      public: virtual bool LightingEnabled() const override;
 
-      public: virtual void SetLightingEnabled(const bool _enabled);
+      public: virtual void SetLightingEnabled(const bool _enabled) override;
 
-      public: virtual math::Color Ambient() const;
+      public: virtual math::Color Ambient() const override;
 
-      public: virtual void SetAmbient(const math::Color &_color);
+      public: virtual void SetAmbient(const math::Color &_color) override;
 
-      public: virtual math::Color Diffuse() const;
+      public: virtual math::Color Diffuse() const override;
 
-      public: virtual void SetDiffuse(const math::Color &_color);
+      public: virtual void SetDiffuse(const math::Color &_color) override;
 
-      public: virtual math::Color Specular() const;
+      public: virtual math::Color Specular() const override;
 
-      public: virtual void SetSpecular(const math::Color &_color);
+      public: virtual void SetSpecular(const math::Color &_color) override;
 
-      public: virtual math::Color Emissive() const;
+      public: virtual math::Color Emissive() const override;
 
-      public: virtual void SetEmissive(const math::Color &_color);
+      public: virtual void SetEmissive(const math::Color &_color) override;
 
-      public: virtual double Shininess() const;
+      public: virtual double Shininess() const override;
 
-      public: virtual void SetShininess(const double _shininess);
+      public: virtual void SetShininess(const double _shininess) override;
 
-      public: virtual double Transparency() const;
+      public: virtual double Transparency() const override;
 
-      public: virtual void SetTransparency(const double _transparency);
+      public: virtual void SetTransparency(const double _transparency) override;
 
-      public: virtual double Reflectivity() const;
+      public: virtual double Reflectivity() const override;
 
-      public: virtual void SetReflectivity(const double _reflectivity);
+      public: virtual void SetReflectivity(const double _reflectivity) override;
 
-      public: virtual bool CastShadows() const;
+      public: virtual bool CastShadows() const override;
 
-      public: virtual void SetCastShadows(const bool _castShadows);
+      public: virtual void SetCastShadows(const bool _castShadows) override;
 
-      public: virtual bool ReceiveShadows() const;
+      public: virtual bool ReceiveShadows() const override;
 
-      public: virtual void SetReceiveShadows(const bool _receiveShadows);
+      public: virtual void SetReceiveShadows(const bool _receiveShadows) override;
 
-      public: virtual bool ReflectionEnabled() const;
+      public: virtual bool ReflectionEnabled() const override;
 
-      public: virtual void SetReflectionEnabled(const bool _enabled);
+      public: virtual void SetReflectionEnabled(const bool _enabled) override;
 
-      public: virtual bool HasTexture() const;
+      public: virtual bool HasTexture() const override;
 
-      public: virtual std::string Texture() const;
+      public: virtual std::string Texture() const override;
 
-      public: virtual void SetTexture(const std::string &_name);
+      public: virtual void SetTexture(const std::string &_name) override;
 
-      public: virtual void ClearTexture();
+      public: virtual void ClearTexture() override;
 
-      public: virtual bool HasNormalMap() const;
+      public: virtual bool HasNormalMap() const override;
 
-      public: virtual std::string NormalMap() const;
+      public: virtual std::string NormalMap() const override;
 
-      public: virtual void SetNormalMap(const std::string &_name);
+      public: virtual void SetNormalMap(const std::string &_name) override;
 
-      public: virtual void ClearNormalMap();
+      public: virtual void ClearNormalMap() override;
 
-      public: virtual enum ShaderType ShaderType() const;
+      public: virtual enum ShaderType ShaderType() const override;
 
-      public: virtual void SetShaderType(enum ShaderType _type);
+      public: virtual void SetShaderType(enum ShaderType _type) override;
 
       public: virtual Ogre::MaterialPtr Material() const;
 
@@ -153,7 +153,7 @@ namespace ignition
       protected: void UpdateShaderParams(ConstShaderParamsPtr _params,
         Ogre::GpuProgramParametersSharedPtr _ogreParams);
 
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
       protected: Ogre::MaterialPtr ogreMaterial;
 

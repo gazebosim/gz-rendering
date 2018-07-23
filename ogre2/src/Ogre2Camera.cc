@@ -202,6 +202,7 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i
 
   return result;
   */
+  return VisualPtr();
 }
 
 //////////////////////////////////////////////////

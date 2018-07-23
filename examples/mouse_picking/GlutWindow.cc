@@ -119,7 +119,6 @@ void handleMouse()
       // Get visual using Selection Buffer from Camera
       ir::VisualPtr visual1;
       ignition::math::Vector2i mousePosI(g_mouse.x, g_mouse.y);
-      std::string name;
       visual1 = rayCamera->VisualAt(mousePosI);
       if (visual1)
       {

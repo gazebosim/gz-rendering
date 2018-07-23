@@ -26,7 +26,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseAxisVisual :
+    class BaseAxisVisual :
       public virtual AxisVisual,
       public virtual T
     {

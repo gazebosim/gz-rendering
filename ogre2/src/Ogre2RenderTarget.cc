@@ -349,7 +349,7 @@ void Ogre2RenderWindow::BuildTarget()
 {
   auto engine = Ogre2RenderEngine::Instance();
   std::string renderTargetName =
-      engine->CreateWindow(this->handle,
+      engine->CreateRenderWindow(this->handle,
           this->width,
           this->height,
           this->ratio,

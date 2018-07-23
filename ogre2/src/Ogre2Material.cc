@@ -41,6 +41,7 @@ Ogre2Material::~Ogre2Material()
 bool Ogre2Material::LightingEnabled() const
 {
 //  return this->ogrePass->getLightingEnabled();
+  return true;
 }
 
 //////////////////////////////////////////////////

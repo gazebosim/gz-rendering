@@ -25,17 +25,23 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \brief Ogre2.x implementation of the Object class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Object :
       public BaseObject
     {
+      /// \brief Constructor
       protected: Ogre2Object();
 
+      /// \brief Destructor
       public: virtual ~Ogre2Object();
 
-      public: virtual ScenePtr Scene() const;
+      // Documentation inherited
+      public: virtual ScenePtr Scene() const override;
 
+      /// \brief Pointer to the ogre scene
       protected: Ogre2ScenePtr scene;
 
+      /// \brief Make ogre scene our friend so it is able to create objects
       private: friend class Ogre2Scene;
     };
   }

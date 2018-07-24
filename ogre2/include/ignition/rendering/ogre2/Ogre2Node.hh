@@ -30,43 +30,68 @@ namespace ignition
 {
   namespace rendering
   {
+    /// \brief Ogre2.x implementation of the Node class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Node :
       public BaseNode<Ogre2Object>
     {
+      /// \brief Constructor
       protected: Ogre2Node();
 
+      /// \brief Destructor
       public: virtual ~Ogre2Node();
 
-      public: virtual bool HasParent() const;
+      // Documentation inherited.
+      public: virtual bool HasParent() const override;
 
-      public: virtual NodePtr Parent() const;
+      // Documentation inherited.
+      public: virtual NodePtr Parent() const override;
 
+      /// \brief Get a pointer to the underlying scene node
+      /// \return Ogre scene node pointer
       public: virtual Ogre::SceneNode *Node() const;
 
-      public: virtual void Destroy();
+      // Documentation inherited.
+      public: virtual void Destroy() override;
 
-      protected: virtual math::Pose3d RawLocalPose() const;
+      // Documentation inherited.
+      protected: virtual math::Pose3d RawLocalPose() const override;
 
-      protected: virtual void SetRawLocalPose(const math::Pose3d &_Pose3d);
+      // Documentation inherited.
+      protected: virtual void SetRawLocalPose(const math::Pose3d &_Pose3d)
+                     override;
 
+      /// \brief Get the raw local position of the node
+      /// \return Local position
       protected: virtual math::Vector3d RawLocalPosition() const;
 
+      /// \brief Set the raw local position of the node
+      /// \param[in] _position Local position to set the node to
       protected: virtual void SetRawLocalPosition(
                      const math::Vector3d &_position);
 
+      /// \brief Get the raw local rotation of the node
+      /// \return Local rotation
       protected: virtual math::Quaterniond RawLocalRotation() const;
 
+      /// \brief Set the raw local rotation of the node
+      /// \param[in] _position Local rotation to set the node to
       protected: virtual void SetRawLocalRotation(
                      const math::Quaterniond &_rotation);
 
+      /// \brief Set the parent node
+      /// \param[in] _parent The parent ogre node
       protected: virtual void SetParent(Ogre2NodePtr _parent);
 
-      protected: virtual void Load();
+      // Documentation inherited.
+      protected: virtual void Load() override;
 
-      protected: virtual void Init();
+      // Documentation inherited.
+      protected: virtual void Init() override;
 
+      /// \brief Pointer to the parent ogre node
       protected: Ogre2NodePtr parent;
 
+      /// \brief The underlying ogre scene node
       protected: Ogre::SceneNode *ogreNode = nullptr;
 
       // TODO remove the need for a visual friend class

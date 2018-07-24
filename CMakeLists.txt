@@ -45,7 +45,7 @@ ign_find_package(FreeImage VERSION 3.9
 #--------------------------------------
 # Find OGRE
 ign_find_package(IgnOGRE VERSION 1.8.0
-  COMPONENTS RTShaderSystem Terrain Overlay Bites
+  COMPONENTS RTShaderSystem Terrain Overlay
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
 

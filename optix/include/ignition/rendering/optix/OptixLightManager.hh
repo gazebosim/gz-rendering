@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/optix/OptixLightTypes.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"

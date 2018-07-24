@@ -19,6 +19,7 @@
 
 #include <vector>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/Export.hh"
 

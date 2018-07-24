@@ -22,9 +22,10 @@
 #include <string>
 
 #include <ignition/math/Color.hh>
+#include "ignition/rendering/config.hh"
+#include "ignition/rendering/ogre/Export.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
 
 namespace ignition
 {

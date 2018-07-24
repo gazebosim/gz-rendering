@@ -37,12 +37,12 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~Node() { }
 
-      /// \brief Determine if this Node is attached to another Node. 
-      /// \return True if this Node has a parent Node 
+      /// \brief Determine if this Node is attached to another Node.
+      /// \return True if this Node has a parent Node
       public: virtual bool HasParent() const = 0;
 
-      /// \brief Get the parent Node 
-      /// \return the parent Node 
+      /// \brief Get the parent Node
+      /// \return the parent Node
       public: virtual NodePtr Parent() const = 0;
 
       /// \brief Detach this Node from its parent. If this

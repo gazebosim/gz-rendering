@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRENODE_HH_
-#define IGNITION_RENDERING_OGRE_OGRENODE_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2NODE_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2NODE_HH_
 
 #include "ignition/rendering/base/BaseNode.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Object.hh"
 
 namespace Ogre
 {
@@ -30,12 +30,12 @@ namespace ignition
 {
   namespace rendering
   {
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreNode :
-      public BaseNode<OgreObject>
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Node :
+      public BaseNode<Ogre2Object>
     {
-      protected: OgreNode();
+      protected: Ogre2Node();
 
-      public: virtual ~OgreNode();
+      public: virtual ~Ogre2Node();
 
       public: virtual bool HasParent() const;
 
@@ -59,18 +59,18 @@ namespace ignition
       protected: virtual void SetRawLocalRotation(
                      const math::Quaterniond &_rotation);
 
-      protected: virtual void SetParent(OgreNodePtr _parent);
+      protected: virtual void SetParent(Ogre2NodePtr _parent);
 
       protected: virtual void Load();
 
       protected: virtual void Init();
 
-      protected: OgreNodePtr parent;
+      protected: Ogre2NodePtr parent;
 
       protected: Ogre::SceneNode *ogreNode = nullptr;
 
       // TODO remove the need for a visual friend class
-      private: friend class OgreVisual;
+      private: friend class Ogre2Visual;
     };
   }
 }

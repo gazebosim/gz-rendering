@@ -17,12 +17,15 @@
 #ifndef IGNITION_RENDERING_AXISVISUAL_HH_
 #define IGNITION_RENDERING_AXISVISUAL_HH_
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/CompositeVisual.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \class AxisVisual AxisVisual.hh ignition/rendering/AxisVisual.hh
     /// \brief Represents a axis composite visual
     class IGNITION_RENDERING_VISIBLE AxisVisual :
@@ -31,6 +34,7 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~AxisVisual() { }
     };
+    }
   }
 }
 #endif

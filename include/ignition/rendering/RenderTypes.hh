@@ -27,6 +27,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     template <class T>
     using shared_ptr = std::shared_ptr<T>;
 
@@ -258,6 +260,7 @@ namespace ignition
     /// \def const VisualPtr
     /// \brief Shared pointer to const Visual
     typedef shared_ptr<const Visual> ConstVisualPtr;
+    }
   }
 }
 #endif

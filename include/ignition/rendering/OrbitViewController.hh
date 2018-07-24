@@ -21,6 +21,7 @@
 
 #include <ignition/math/Vector3.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/ViewController.hh"
 
@@ -28,6 +29,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     // forward declarations
     class OrbitViewControllerPrivate;
 
@@ -77,6 +80,7 @@ namespace ignition
       /// \brief Private data pointer
       public: std::unique_ptr<OrbitViewControllerPrivate> dataPtr;
     };
+    }
   }
 }
 #endif

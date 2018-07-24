@@ -30,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     // forward declarations
     class OgreSelectionBuffer;
 
@@ -105,6 +107,7 @@ namespace ignition
       /// \brief Overlay material technique
       private: Ogre::Technique *overlayTechnique = nullptr;
     };
+    }
   }
 }
 #endif

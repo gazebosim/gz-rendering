@@ -18,12 +18,15 @@
 #define IGNITION_RENDERING_SHADERTYPE_HH_
 
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \enum ShaderType ShaderType.hh ignition/rendering/ShaderType.hh
     /// \brief Available types of shaders. Note that not all rendering-engines
     /// will be able to use each type. They will instead default to the closest
@@ -80,6 +83,7 @@ namespace ignition
       /// \brief Array of human-readable names for each ShaderType
       private: static const char *names[ST_COUNT];
     };
+    }
   }
 }
 #endif

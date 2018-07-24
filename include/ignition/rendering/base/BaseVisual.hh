@@ -28,6 +28,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     template <class T>
     class BaseVisual :
       public virtual Visual,
@@ -538,6 +540,7 @@ namespace ignition
       ignerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
+    }
     }
   }
 }

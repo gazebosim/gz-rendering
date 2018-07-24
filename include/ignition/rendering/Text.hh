@@ -22,6 +22,7 @@
 #include <ignition/math/AxisAlignedBox.hh>
 #include <ignition/math/Color.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Object.hh"
 
@@ -29,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \enum TextHorizontalAlign
     /// \brief Text Horizontal alignment
     enum class TextHorizontalAlign
@@ -154,6 +157,7 @@ namespace ignition
       /// \return The axis aligned bounding box.
       public: virtual ignition::math::AxisAlignedBox AABB() const = 0;
     };
+    }
   }
 }
 

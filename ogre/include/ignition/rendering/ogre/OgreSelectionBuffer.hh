@@ -33,6 +33,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     // forward declaration
     struct OgreSelectionBufferPrivate;
 
@@ -81,6 +83,7 @@ namespace ignition
       /// \brief Pointer to private data.
       private: std::unique_ptr<OgreSelectionBufferPrivate> dataPtr;
     };
+    }
   }
 }
 #endif

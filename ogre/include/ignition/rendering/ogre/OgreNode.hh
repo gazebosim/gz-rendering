@@ -30,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     class IGNITION_RENDERING_OGRE_VISIBLE OgreNode :
       public BaseNode<OgreObject>
     {
@@ -71,6 +73,7 @@ namespace ignition
 
       private: friend class OgreVisual;
     };
+    }
   }
 }
 #endif

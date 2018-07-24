@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_GEOMETRY_HH_
 
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/Export.hh"
@@ -26,6 +27,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \class Geometry Geometry.hh ignition/rendering/Geometry.hh
     /// \brief Represents a geometric shape to be rendered
     class IGNITION_RENDERING_VISIBLE Geometry :
@@ -64,6 +67,7 @@ namespace ignition
       /// \return Material used by this geometry
       public: virtual MaterialPtr Material() const = 0;
     };
+    }
   }
 }
 #endif

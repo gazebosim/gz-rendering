@@ -21,12 +21,15 @@
 #include <cstdint>
 #include <memory>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \brief forward declaration
     class ShaderParamPrivate;
 
@@ -85,6 +88,7 @@ namespace ignition
       /// \brief private implementation
       private: std::unique_ptr<ShaderParamPrivate> dataPtr;
     };
+    }
   }
 }
 

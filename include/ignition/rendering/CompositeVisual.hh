@@ -17,12 +17,15 @@
 #ifndef IGNITION_RENDERING_COMPOSITEVISUAL_HH_
 #define IGNITION_RENDERING_COMPOSITEVISUAL_HH_
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Visual.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \class CompositeVisual CompositeVisual.hh
     /// ignition/rendering/CompositeVisual.hh
     /// \brief Represents a predefined collection of geometries and visuals
@@ -32,6 +35,7 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~CompositeVisual() { }
     };
+    }
   }
 }
 #endif

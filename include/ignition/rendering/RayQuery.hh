@@ -19,6 +19,7 @@
 
 #include <ignition/math/Vector3.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Visual.hh"
@@ -27,6 +28,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \brief A class that stores ray query intersection results.
     class IGNITION_RENDERING_VISIBLE RayQueryResult
     {
@@ -81,6 +84,7 @@ namespace ignition
       /// \return True if results are not empty
       public: virtual RayQueryResult ClosestPoint() = 0;
     };
+    }
   }
 }
 #endif

@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Node.hh"
 #include "ignition/rendering/Light.hh"
@@ -39,6 +40,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \class Map Storage.hh ignition/rendering/Storage.hh
     /// \brief Storage map from std::string to template class T
     /// \tparam T The storage element type
@@ -372,6 +375,7 @@ namespace ignition
     /// \def NodeCompositeStorePtr
     /// \brief Shared pointer to NodeCompositeStore
     typedef std::shared_ptr<NodeCompositeStore> NodeCompositeStorePtr;
+    }
   }
 }
 #endif

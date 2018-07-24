@@ -26,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     //////////////////////////////////////////////////
     template <class T>
     class BaseMesh :
@@ -215,6 +217,7 @@ namespace ignition
     {
       T::PreRender();
       this->Material()->PreRender();
+    }
     }
   }
 }

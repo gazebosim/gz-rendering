@@ -40,6 +40,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     // forward declaration
     class OgreRenderEnginePrivate;
 
@@ -170,6 +172,7 @@ namespace ignition
 
       private: friend class common::SingletonT<OgreRenderEngine>;
     };
+    }
   }
 }
 #endif

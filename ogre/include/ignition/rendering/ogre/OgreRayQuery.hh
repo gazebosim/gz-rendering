@@ -28,6 +28,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     // forward declaration
     class OgreRayQueryPrivate;
 
@@ -75,6 +77,7 @@ namespace ignition
       /// \brief Pointer to friend scene class for creating ray query
       private: friend class OgreScene;
     };
+    }
   }
 }
 #endif

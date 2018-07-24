@@ -32,6 +32,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     // Forward declaration
     class OgreGridPrivate;
 
@@ -73,6 +75,7 @@ namespace ignition
       /// \brief Private data class
       private: std::unique_ptr<OgreGridPrivate> dataPtr;
     };
+    }
   }
 }
 #endif

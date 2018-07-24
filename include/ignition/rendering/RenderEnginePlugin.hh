@@ -22,12 +22,15 @@
 #include <string>
 
 #include <ignition/common/PluginMacros.hh>
-#include <ignition/rendering/Export.hh>
+#include "ignition/rendering/config.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     // Forward declarations
     class RenderEngine;
     class RenderEnginePluginPrivate;
@@ -55,6 +58,7 @@ namespace ignition
       /// \brief Pointer to private data class
       public: std::unique_ptr<RenderEnginePluginPrivate> dataPtr;
     };
+    }
   }
 }
 #endif

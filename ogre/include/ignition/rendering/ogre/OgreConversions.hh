@@ -30,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \addtogroup ign_rendering
     /// \{
 
@@ -97,8 +99,8 @@ namespace ignition
 
       private: static const Ogre::PixelFormat ogrePixelFormats[PF_COUNT];
     };
-
     /// \}
+    }
   }
 }
 #endif

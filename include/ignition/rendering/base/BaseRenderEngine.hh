@@ -26,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     class IGNITION_RENDERING_VISIBLE BaseRenderEngine :
       public virtual RenderEngine
     {
@@ -102,6 +104,7 @@ namespace ignition
       /// resources
       protected: std::vector<std::string> resourcePaths;
     };
+    }
   }
 }
 #endif

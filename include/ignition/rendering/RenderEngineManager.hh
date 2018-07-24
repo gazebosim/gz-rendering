@@ -21,12 +21,15 @@
 #include <string>
 #include <ignition/common/SingletonT.hh>
 #include <ignition/common/SuppressWarning.hh>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     // forward declarations.
     class RenderEngine;
     class RenderEngineManagerPrivate;
@@ -100,6 +103,7 @@ namespace ignition
       /// \brief required SingletonT friendship
       private: friend class ignition::common::SingletonT<RenderEngineManager>;
     };
+    }
   }
 }
 #endif

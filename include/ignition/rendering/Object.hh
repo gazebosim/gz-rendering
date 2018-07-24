@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_OBJECT_HH_
 
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Export.hh"
 
@@ -25,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \class Object Object.hh ignition/rendering/Object.hh
     /// \brief Represents an object present in the scene graph. This includes
     /// sub-meshes, materials, render targets, as well as posable nodes.
@@ -59,6 +62,7 @@ namespace ignition
       /// undefined behavior.
       public: virtual void Destroy() = 0;
     };
+    }
   }
 }
 #endif

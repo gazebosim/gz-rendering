@@ -21,6 +21,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Quaternion.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/Export.hh"
@@ -29,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \class Node Node.hh ignition/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
     class IGNITION_RENDERING_VISIBLE Node :
@@ -166,6 +169,7 @@ namespace ignition
       /// \param[in] _origin New origin position
       public: virtual void SetOrigin(const math::Vector3d &_origin) = 0;
     };
+    }
   }
 }
 #endif

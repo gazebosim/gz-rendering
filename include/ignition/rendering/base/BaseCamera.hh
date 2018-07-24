@@ -35,6 +35,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     template <class T>
     class BaseCamera :
       public virtual Camera,
@@ -670,6 +672,7 @@ namespace ignition
     {
       std::cerr << "SetMaterial not implemented for current render"
           << " engine" << std::endl;
+    }
     }
   }
 }

@@ -20,12 +20,15 @@
 #include <ignition/math/Vector2.hh>
 #include <ignition/math/Vector3.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Camera.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \class ViewController ViewController.hh
     ///   ignition/rendering/ViewController.hh
     /// \brief A camera view controller
@@ -54,6 +57,7 @@ namespace ignition
       /// \param[in] _value robit amount in image plane, e.g. mouse drag delta
       public: virtual void Orbit(const math::Vector2d &_value) = 0;
     };
+    }
   }
 }
 #endif

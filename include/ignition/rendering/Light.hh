@@ -18,12 +18,15 @@
 #define IGNITION_RENDERING_LIGHT_HH_
 
 #include "ignition/math/Color.hh"
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Node.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \class Light Light.hh ignition/rendering/Light.hh
     /// \brief Represents a light source in the scene graph
     class IGNITION_RENDERING_VISIBLE Light :
@@ -191,6 +194,7 @@ namespace ignition
       /// \param[in] _falloff New falloff of the spotlight
       public: virtual void SetFalloff(double _falloff) = 0;
     };
+    }
   }
 }
 #endif

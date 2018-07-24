@@ -28,6 +28,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     template <class T>
     class BaseMaterial :
       public virtual Material,
@@ -281,6 +283,7 @@ namespace ignition
       this->ClearTexture();
       this->ClearNormalMap();
       this->SetShaderType(ST_PIXEL);
+    }
     }
   }
 }

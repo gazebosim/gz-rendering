@@ -29,6 +29,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     // forward declaration
     class OgreRTShaderSystemPrivate;
 
@@ -169,6 +171,7 @@ namespace ignition
       private: std::unique_ptr<OgreRTShaderSystemPrivate> dataPtr;
     };
     /// \}
+    }
   }
 }
 #endif

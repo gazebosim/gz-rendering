@@ -27,33 +27,27 @@
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/RenderEnginePlugin.hh"
 
-namespace ignition
+
+class ignition::rendering::RenderEngineManagerPrivate
 {
-  namespace rendering
-  {
-    class RenderEngine;
+  typedef std::map<std::string, RenderEngine *> EngineMap;
 
-    class RenderEngineManagerPrivate
-    {
-      typedef std::map<std::string, RenderEngine *> EngineMap;
+  typedef EngineMap::iterator EngineIter;
 
-      typedef EngineMap::iterator EngineIter;
+  public: ignition::rendering::RenderEngine *Engine(EngineIter _iter) const;
 
-      public: RenderEngine *Engine(EngineIter _iter) const;
+  public: void RegisterDefaultEngines();
 
-      public: void RegisterDefaultEngines();
+  /// \brief Load a render engine plugin
+  /// \param[in] _filename Filename of plugin shared library
+  /// \return True if the plugin is loaded successfully
+  public: bool LoadEnginePlugin(const std::string &_filename);
 
-      /// \brief Load a render engine plugin
-      /// \param[in] _filename Filename of plugin shared library
-      /// \return True if the plugin is loaded successfully
-      public: bool LoadEnginePlugin(const std::string &_filename);
+  public: void UnregisterEngine(EngineIter _iter);
 
-      public: void UnregisterEngine(EngineIter _iter);
+  public: EngineMap engines;
+};
 
-      public: EngineMap engines;
-    };
-  }
-}
 
 using namespace ignition;
 using namespace rendering;

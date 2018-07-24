@@ -41,18 +41,13 @@
 // #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 // #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
-namespace ignition
+
+class ignition::rendering::Ogre2RenderEnginePrivate
 {
-  namespace rendering
-  {
-    class Ogre2RenderEnginePrivate
-    {
 #if not defined(__APPLE__) && not defined(_WIN32)
-      public: XVisualInfo *dummyVisual = nullptr;
+  public: XVisualInfo *dummyVisual = nullptr;
 #endif
-    };
-  }
-}
+};
 
 using namespace ignition;
 using namespace rendering;

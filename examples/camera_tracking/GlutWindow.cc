@@ -468,7 +468,8 @@ void printUsage()
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr> _cameras, std::vector<ir::NodePtr> _nodes)
+void run(std::vector<ir::CameraPtr> _cameras,
+         const std::vector<ir::NodePtr> &_nodes)
 {
   if (_cameras.empty())
   {

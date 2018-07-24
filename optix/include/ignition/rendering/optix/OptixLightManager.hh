@@ -28,6 +28,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixLightManager
     {
       public: explicit OptixLightManager(OptixScenePtr _scene);
@@ -73,6 +75,7 @@ namespace ignition
 
       protected: optix::Buffer spotBuffer;
     };
+    }
   }
 }
 #endif

@@ -29,6 +29,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixScene :
       public BaseScene
     {
@@ -190,6 +192,7 @@ namespace ignition
 
       private: friend class OptixRenderEngine;
     };
+    }
   }
 }
 #endif

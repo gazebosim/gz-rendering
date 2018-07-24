@@ -28,6 +28,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \brief Plugin for loading optix render engine
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderEnginePlugin :
       public RenderEnginePlugin
@@ -79,6 +81,7 @@ namespace ignition
 
       private: friend class SingletonT<OptixRenderEngine>;
     };
+    }
   }
 }
 #endif

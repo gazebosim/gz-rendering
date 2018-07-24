@@ -26,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixNode :
       public BaseNode<OptixObject>
     {
@@ -67,6 +69,7 @@ namespace ignition
 
       private: friend class OptixVisual;
     };
+    }
   }
 }
 #endif

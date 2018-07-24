@@ -26,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixTextureFactory
     {
       public: explicit OptixTextureFactory(OptixScenePtr _scene);
@@ -44,6 +46,7 @@ namespace ignition
 
       protected: OptixScenePtr scene;
     };
+    }
   }
 }
 #endif

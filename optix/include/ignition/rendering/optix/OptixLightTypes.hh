@@ -24,6 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
+  inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+  {
 #endif
 
   typedef enum OptixLightType_t
@@ -90,6 +92,7 @@ namespace ignition
   };
 
 #ifndef __CUDA_ARCH__
+  }
   }
 }
 #endif

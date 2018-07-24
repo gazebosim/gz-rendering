@@ -29,6 +29,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \addtogroup ign_rendering
     /// \{
 
@@ -57,8 +59,8 @@ namespace ignition
       /// \return Gazebo vector
       public: static math::Vector3d ConvertVector(const float3 &_vector);
     };
-
     /// \}
+    }
   }
 }
 #endif

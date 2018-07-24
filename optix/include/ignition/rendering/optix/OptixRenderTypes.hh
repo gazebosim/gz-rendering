@@ -23,6 +23,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     class OptixArrowVisual;
     class OptixAxisVisual;
     class OptixBox;
@@ -98,6 +100,7 @@ namespace ignition
     typedef shared_ptr<OptixRenderTexture>        OptixRenderTexturePtr;
     typedef shared_ptr<OptixRenderWindow>         OptixRenderWindowPtr;
     typedef shared_ptr<OptixLightManager>         OptixLightManagerPtr;
+    }
   }
 }
 #endif

@@ -316,7 +316,7 @@ void OgreRenderEngine::LoadAttempt()
   this->CreateRenderSystem();
   this->ogreRoot->initialise(false);
   this->CreateResources();
-  this->CreateNewWindow();
+  this->CreateRenderWindow();
   this->CheckCapabilities();
 }
 
@@ -570,14 +570,14 @@ void OgreRenderEngine::CreateResources()
 }
 
 //////////////////////////////////////////////////
-void OgreRenderEngine::CreateNewWindow()
+void OgreRenderEngine::CreateRenderWindow()
 {
   // create dummy window
-  this->CreateNewWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
+  this->CreateRenderWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
 }
 
 //////////////////////////////////////////////////
-std::string OgreRenderEngine::CreateNewWindow(const std::string &_handle,
+std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     const unsigned int _width, const unsigned int _height,
     const double _ratio, const unsigned int _antiAliasing)
 {

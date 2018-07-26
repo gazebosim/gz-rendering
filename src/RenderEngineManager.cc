@@ -42,7 +42,7 @@ namespace ignition
       /// \brief EngineMap iterator
       typedef EngineMap::iterator EngineIter;
 
-      /// \brief Get a pointer to the render enginer from an EngineMap iterator
+      /// \brief Get a pointer to the render engine from an EngineMap iterator
       /// \brief EngineMap iterator
       public: RenderEngine *Engine(EngineIter _iter);
 

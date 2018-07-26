@@ -402,15 +402,13 @@ void Ogre2RenderEngine::LoadPlugins()
     std::vector<std::string>::iterator piter;
 
 #ifdef __APPLE__
-    std::string prefix = "";
     std::string extension = ".dylib";
 #else
-    std::string prefix = "";
     std::string extension = ".so";
 #endif
-    std::string p = common::joinPaths(path, prefix+"RenderSystem_GL3Plus");
+    std::string p = common::joinPaths(path, "RenderSystem_GL3Plus");
     plugins.push_back(p);
-    p = common::joinPaths(path, prefix+"Plugin_ParticleFX");
+    p = common::joinPaths(path, "Plugin_ParticleFX");
     plugins.push_back(p);
 
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)

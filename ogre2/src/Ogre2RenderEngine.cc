@@ -402,7 +402,7 @@ void Ogre2RenderEngine::LoadPlugins()
     std::vector<std::string>::iterator piter;
 
 #ifdef __APPLE__
-    std::string prefix = "lib";
+    std::string prefix = "";
     std::string extension = ".dylib";
 #else
     std::string prefix = "";

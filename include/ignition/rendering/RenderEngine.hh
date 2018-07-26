@@ -26,8 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class RenderEngine RenderEngine.hh ignition/rendering/RenderEngine.hh
     /// \brief An abstract interface to a concrete render-engine. A
     /// RenderEngine is responsible for initializing a render-engine as well as

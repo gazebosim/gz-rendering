@@ -30,8 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Node Node.hh ignition/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
     class IGNITION_RENDERING_VISIBLE Node :

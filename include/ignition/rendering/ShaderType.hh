@@ -25,8 +25,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \enum ShaderType ShaderType.hh ignition/rendering/ShaderType.hh
     /// \brief Available types of shaders. Note that not all rendering-engines
     /// will be able to use each type. They will instead default to the closest

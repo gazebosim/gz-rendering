@@ -32,8 +32,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Camera Camera.hh ignition/rendering/Camera.hh
     /// \brief Posable camera used for rendering the scene graph
     class IGNITION_RENDERING_VISIBLE Camera :

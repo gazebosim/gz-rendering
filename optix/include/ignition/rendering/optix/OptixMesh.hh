@@ -28,8 +28,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixMesh :
       public BaseMesh<OptixGeometry>
     {

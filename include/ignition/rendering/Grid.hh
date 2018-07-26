@@ -26,8 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Grid Grid.hh ignition/rendering/Grid
     /// \brief Represents a grid geometry drawn along the XY plane.
     /// If vertical cell count is specified then the grid becomes 3D.

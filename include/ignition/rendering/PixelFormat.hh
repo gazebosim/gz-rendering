@@ -25,8 +25,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \enum PixelFormat PixelFormat.hh ignition/rendering/PixelFormat.hh
     /// \brief Image pixel format types
     enum IGNITION_RENDERING_VISIBLE PixelFormat

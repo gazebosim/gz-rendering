@@ -24,8 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class CompositeVisual CompositeVisual.hh
     /// ignition/rendering/CompositeVisual.hh
     /// \brief Represents a predefined collection of geometries and visuals

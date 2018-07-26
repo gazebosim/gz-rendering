@@ -24,8 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class AxisVisual AxisVisual.hh ignition/rendering/AxisVisual.hh
     /// \brief Represents a axis composite visual
     class IGNITION_RENDERING_VISIBLE AxisVisual :

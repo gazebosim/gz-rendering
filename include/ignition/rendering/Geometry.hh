@@ -27,8 +27,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Geometry Geometry.hh ignition/rendering/Geometry.hh
     /// \brief Represents a geometric shape to be rendered
     class IGNITION_RENDERING_VISIBLE Geometry :

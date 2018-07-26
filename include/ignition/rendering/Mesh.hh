@@ -26,8 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Mesh Mesh.hh ignition/rendering/Mesh
     /// \brief Represents a collection of mesh geometries
     class IGNITION_RENDERING_VISIBLE Mesh :

@@ -30,8 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Material Material.hh ignition/rendering/Material.hh
     /// \brief Represents a surface material of a Geometry
     class IGNITION_RENDERING_VISIBLE Material :

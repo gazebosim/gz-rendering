@@ -24,8 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class ArrowVisual ArrowVisual.hh ignition/rendering/ArrowVisual.hh
     /// \brief Represents a arrow composite visual
     class IGNITION_RENDERING_VISIBLE ArrowVisual :

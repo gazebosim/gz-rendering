@@ -24,8 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Sensor Sensor.hh ignition/rendering/Sensor.hh
     /// \brief Represents a scene sensor. The most obvious example is a camera,
     /// but it can be anything that generates output from the scene.

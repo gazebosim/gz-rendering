@@ -30,8 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class RenderTarget RenderTarget.hh ignition/rendering/RenderTarget.hh
     /// \brief Represents a render-target to which cameras can render images.
     class IGNITION_RENDERING_VISIBLE RenderTarget :

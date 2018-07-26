@@ -26,8 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Object Object.hh ignition/rendering/Object.hh
     /// \brief Represents an object present in the scene graph. This includes
     /// sub-meshes, materials, render targets, as well as posable nodes.

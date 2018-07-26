@@ -27,8 +27,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class ViewController ViewController.hh
     ///   ignition/rendering/ViewController.hh
     /// \brief A camera view controller

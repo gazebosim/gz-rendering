@@ -28,8 +28,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// TODO Not implemented yet!
     /// \brief Optix implementation of a grid geometry
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixGrid

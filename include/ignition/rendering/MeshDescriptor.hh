@@ -36,8 +36,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \struct MeshDescriptor MeshDescriptor.hh
     /// ignition/rendering/MeshDescriptor.hh
     /// \brief Describes how a Mesh should be loaded

@@ -25,8 +25,8 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Light Light.hh ignition/rendering/Light.hh
     /// \brief Represents a light source in the scene graph
     class IGNITION_RENDERING_VISIBLE Light :

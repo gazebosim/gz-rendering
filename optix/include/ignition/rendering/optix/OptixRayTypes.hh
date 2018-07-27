@@ -36,7 +36,9 @@ namespace ignition
   struct OptixRadianceRayData
   {
     float3 color;
+    // cppcheck-suppress unusedStructMember
     float importance;
+    // cppcheck-suppress unusedStructMember
     int depth;
   };
 

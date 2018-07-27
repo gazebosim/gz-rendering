@@ -29,7 +29,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseVisual :
+    class BaseVisual :
       public virtual Visual,
       public virtual T
     {
@@ -119,6 +119,9 @@ namespace ignition
       public: virtual void Scale(const math::Vector3d &_scale);
 
       public: virtual bool InheritScale() const = 0;
+
+      // Documentation inherited.
+      public: virtual void SetVisible(bool _visible);
 
       public: virtual void PreRender();
 
@@ -279,7 +282,8 @@ namespace ignition
     void BaseVisual<T>::RemoveChildren()
     {
       auto children =
-          std::dynamic_pointer_cast<BaseStore<Node, T>>(this->Children());
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
       if (!children)
         return;
       auto it = children->Begin();
@@ -368,7 +372,8 @@ namespace ignition
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 
       auto children =
-          std::dynamic_pointer_cast<BaseStore<Node, T>>(this->Children());
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
       if (!children)
         return;
       for (auto it = children->Begin(); it != children->End(); ++it)
@@ -503,7 +508,8 @@ namespace ignition
     void BaseVisual<T>::PreRenderChildren()
     {
       auto children =
-          std::dynamic_pointer_cast<BaseStore<Node, T>>(this->Children());
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
       if (!children)
         return;
       for (auto it = children->Begin(); it != children->End(); ++it)
@@ -516,17 +522,22 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::PreRenderGeometries()
     {
-      auto geometries =
-          std::dynamic_pointer_cast<BaseStore<Geometry, Geometry>>(
-          this->Geometries());
+      unsigned int count = this->GeometryCount();
 
-      if (!geometries)
-        return;
-
-      for (auto it = geometries->Begin(); it != geometries->End(); ++it)
+      for (unsigned int i = 0; i < count; ++i)
       {
-        it->second->PreRender();
+        GeometryPtr geometry = this->GeometryByIndex(i);
+        geometry->PreRender();
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetVisible(bool _visible)
+    {
+      ignerr << "SetVisible(" << _visible << ") not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
     }
   }
 }

@@ -40,53 +40,50 @@ namespace ignition
 
       public: virtual ~OgreCamera();
 
-      public: virtual void SetHFOV(const math::Angle &_angle);
+      public: virtual void SetHFOV(const math::Angle &_angle) override;
 
-      public: virtual double AspectRatio() const;
+      public: virtual double AspectRatio() const override;
 
-      public: virtual void SetAspectRatio(const double _ratio);
+      public: virtual void SetAspectRatio(const double _ratio) override;
 
-      public: virtual unsigned int AntiAliasing() const;
+      public: virtual unsigned int AntiAliasing() const override;
 
-      public: virtual void SetAntiAliasing(const unsigned int _aa);
+      public: virtual void SetAntiAliasing(const unsigned int _aa) override;
 
-      public: virtual void SetFarClipPlane(const double _far);
+      public: virtual void SetFarClipPlane(const double _far) override;
 
-      public: virtual void SetNearClipPlane(const double _near);
+      public: virtual void SetNearClipPlane(const double _near) override;
 
       public: virtual math::Color BackgroundColor() const;
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
-      public: virtual void Render();
+      public: virtual void Render() override;
 
-      public: virtual RenderWindowPtr CreateRenderWindow();
+      public: virtual RenderWindowPtr CreateRenderWindow() override;
 
-      public: virtual math::Matrix4d ProjectionMatrix() const;
+      public: virtual math::Matrix4d ProjectionMatrix() const override;
 
-      public: virtual math::Matrix4d ViewMatrix() const;
+      public: virtual math::Matrix4d ViewMatrix() const override;
 
       // Documentation inherited
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
-                  &_mousePos);
+                  &_mousePos) override;
 
       // Documentation Inherited.
       // \sa Camera::SetMaterial(const MaterialPtr &)
       public: virtual void SetMaterial(
                   const MaterialPtr &_material) override;
 
-      // Documentation inherited.
-      public: virtual GLuint RenderTextureGLId() const;
+      protected: virtual RenderTargetPtr RenderTarget() const override;
 
-      protected: virtual RenderTargetPtr RenderTarget() const;
-
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
       protected: virtual void SetSelectionBuffer();
 
-      protected: virtual void CreateRenderTexture();
-
       private: void CreateCamera();
+
+      protected: virtual void CreateRenderTexture();
 
       protected: Ogre::Camera *ogreCamera = nullptr;
 

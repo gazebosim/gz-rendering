@@ -36,7 +36,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseCamera :
+    class BaseCamera :
       public virtual Camera,
       public virtual T
     {
@@ -44,118 +44,122 @@ namespace ignition
 
       public: virtual ~BaseCamera();
 
-      public: virtual unsigned int ImageWidth() const;
+      public: virtual unsigned int ImageWidth() const override;
 
-      public: virtual void SetImageWidth(const unsigned int _width);
+      public: virtual void SetImageWidth(const unsigned int _width) override;
 
-      public: virtual unsigned int ImageHeight() const;
+      public: virtual unsigned int ImageHeight() const override;
 
-      public: virtual void SetImageHeight(const unsigned int _height);
+      public: virtual void SetImageHeight(const unsigned int _height) override;
 
-      public: virtual PixelFormat ImageFormat() const;
+      public: virtual PixelFormat ImageFormat() const override;
 
-      public: virtual unsigned int ImageMemorySize() const;
+      public: virtual unsigned int ImageMemorySize() const override;
 
-      public: virtual void SetImageFormat(PixelFormat _format);
+      public: virtual void SetImageFormat(PixelFormat _format) override;
 
-      public: virtual math::Angle HFOV() const;
+      public: virtual math::Angle HFOV() const override;
 
-      public: virtual void SetHFOV(const math::Angle &_hfov);
+      public: virtual void SetHFOV(const math::Angle &_hfov) override;
 
-      public: virtual double AspectRatio() const;
+      public: virtual double AspectRatio() const override;
 
-      public: virtual void SetAspectRatio(const double _ratio);
+      public: virtual void SetAspectRatio(const double _ratio) override;
 
-      public: virtual unsigned int AntiAliasing() const;
+      public: virtual unsigned int AntiAliasing() const override;
 
-      public: virtual void SetAntiAliasing(const unsigned int _aa);
+      public: virtual void SetAntiAliasing(const unsigned int _aa) override;
 
-      public: virtual double FarClipPlane() const;
+      public: virtual double FarClipPlane() const override;
 
-      public: virtual void SetFarClipPlane(const double _far);
+      public: virtual void SetFarClipPlane(const double _far) override;
 
-      public: virtual double NearClipPlane() const;
+      public: virtual double NearClipPlane() const override;
 
-      public: virtual void SetNearClipPlane(const double _near);
+      public: virtual void SetNearClipPlane(const double _near) override;
 
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
-      public: virtual void PostRender();
+      public: virtual void PostRender() override;
 
-      public: virtual void Update();
+      public: virtual void Update() override;
 
-      public: virtual Image CreateImage() const;
+      public: virtual Image CreateImage() const override;
 
-      public: virtual void Capture(Image &_image);
+      public: virtual void Capture(Image &_image) override;
 
-      public: virtual void Copy(Image &_image) const;
+      public: virtual void Copy(Image &_image) const override;
 
-      public: virtual bool SaveFrame(const std::string &_name);
+      public: virtual bool SaveFrame(const std::string &_name) override;
 
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
-                  Camera::NewFrameListener _listener);
+                  Camera::NewFrameListener _listener) override;
 
-      public: virtual RenderWindowPtr CreateRenderWindow();
+      public: virtual RenderWindowPtr CreateRenderWindow() override;
 
       // Documentation inherited.
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
-                  &_mousePos);
+                  &_mousePos) override;
 
       // Documentation inherited.
-      public: virtual math::Matrix4d ProjectionMatrix() const;
+      public: virtual math::Matrix4d ProjectionMatrix() const override;
 
       // Documentation inherited.
-      public: virtual math::Matrix4d ViewMatrix() const;
+      public: virtual math::Matrix4d ViewMatrix() const override;
 
       // Documentation inherited.
-      // \sa Camera::SetMaterial(const MaterialPtr &);
+      // \sa Camera::SetMaterial(const MaterialPtr &) override;
       public: virtual void SetMaterial(const MaterialPtr &_material)
                   override;
 
       // Documentation inherited.
       public: virtual void SetTrackTarget(const NodePtr &_target,
-                  const math::Vector3d &_offset, const bool _worldFrame);
+                  const math::Vector3d &_offset,
+                  const bool _worldFrame) override;
 
       // Documentation inherited.
-      public: virtual NodePtr TrackTarget() const;
+      public: virtual NodePtr TrackTarget() const override;
 
       // Documentation inherited.
-      public: virtual void SetTrackOffset(const math::Vector3d &_offset);
+      public: virtual void SetTrackOffset(const math::Vector3d &_offset)
+                  override;
 
       // Documentation inherited.
-      public: virtual math::Vector3d TrackOffset() const;
+      public: virtual math::Vector3d TrackOffset() const override;
 
       // Documentation inherited.
-      public: virtual void SetTrackPGain(const double _pGain);
+      public: virtual void SetTrackPGain(const double _pGain) override;
 
       // Documentation inherited.
-      public: virtual double TrackPGain() const;
+      public: virtual double TrackPGain() const override;
 
       // Documentation inherited.
       public: virtual void SetFollowTarget(const NodePtr &_target,
-                  const math::Vector3d &_Offset, const bool _worldFrame);
+                  const math::Vector3d &_Offset, const bool _worldFrame)
+                  override;
 
       // Documentation inherited.
-      public: virtual NodePtr FollowTarget() const;
+      public: virtual NodePtr FollowTarget() const override;
 
       // Documentation inherited.
-      public: virtual void SetFollowOffset(const math::Vector3d &_offset);
+      public: virtual void SetFollowOffset(const math::Vector3d &_offset)
+                 override;
 
       // Documentation inherited.
-      public: virtual math::Vector3d FollowOffset() const;
+      public: virtual math::Vector3d FollowOffset() const override;
 
       // Documentation inherited.
-      public: virtual void SetFollowPGain(const double _pGain);
+      public: virtual void SetFollowPGain(const double _pGain) override;
 
       // Documentation inherited.
-      public: virtual double FollowPGain() const;
+      public: virtual double FollowPGain() const override;
 
       // Documentation inherited.
       public: virtual GLuint RenderTextureGLId() const;
 
       protected: virtual void *CreateImageBuffer() const;
 
-      protected: virtual void Load();
+      protected: virtual void Load() override;
 
       protected: virtual void Reset();
 
@@ -442,9 +446,9 @@ namespace ignition
       double fov = this->HFOV().Radian();
       double vfov =  2.0 * std::atan(std::tan(fov / 2.0) / ratio);
       double f = 1.0;
-      double near = this->NearClipPlane();
-      double far = this->FarClipPlane();
-      double top = near * std::tan(0.5*vfov) / f;
+      double _near = this->NearClipPlane();
+      double _far = this->FarClipPlane();
+      double top = _near * std::tan(0.5*vfov) / f;
       double height = 2 * top;
       double width = ratio * height;
       double left = -0.5 * width;
@@ -453,13 +457,13 @@ namespace ignition
 
       double invw = 1.0 / (right - left);
       double invh = 1.0 / (top - bottom);
-      double invd = 1.0 / (far - near);
-      double x = 2 * near * invw;
-      double y = 2 * near * invh;
+      double invd = 1.0 / (_far - _near);
+      double x = 2 * _near * invw;
+      double y = 2 * _near * invh;
       double a = (right + left) * invw;
       double b = (top + bottom) * invh;
-      double c = -(far + near) * invd;
-      double d = -2 * far * near * invd;
+      double c = -(_far + _near) * invd;
+      double d = -2 * _far * _near * invd;
       math::Matrix4d result;
       result(0, 0) = x;
       result(0, 2) = a;

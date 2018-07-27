@@ -29,7 +29,7 @@ namespace ignition
   namespace rendering
   {
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseMaterial :
+    class BaseMaterial :
       public virtual Material,
       public virtual T
     {
@@ -37,35 +37,37 @@ namespace ignition
 
       public: virtual ~BaseMaterial();
 
-      public: virtual MaterialPtr Clone(const std::string &_name = "") const;
+      public: virtual MaterialPtr Clone(const std::string &_name = "") const
+                  override;
 
       public: virtual void SetAmbient(const double _r, const double _g,
-                  const double _b, const double _a = 1.0);
+                  const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetAmbient(const math::Color &_color) = 0;
+      public: virtual void SetAmbient(const math::Color &_color) override = 0;
 
       public: virtual void SetDiffuse(const double _r, const double _g,
-                  const double _b, const double _a = 1.0);
+                  const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetDiffuse(const math::Color &_color) = 0;
+      public: virtual void SetDiffuse(const math::Color &_color) override = 0;
 
       public: virtual void SetSpecular(const double _r, const double _g,
-                  const double _b, const double _a = 1.0);
+                  const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetSpecular(const math::Color &_color) = 0;
+      public: virtual void SetSpecular(const math::Color &_color) override = 0;
 
       public: virtual void SetEmissive(const double _r, const double _g,
-                  const double _b, const double _a = 1.0);
+                  const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetEmissive(const math::Color &_color) = 0;
+      public: virtual void SetEmissive(const math::Color &_color) override = 0;
 
-      public: virtual void SetReceiveShadows(const bool _receiveShadows) = 0;
+      public: virtual void SetReceiveShadows(const bool _receiveShadows)
+                  override = 0;
 
-      public: virtual void ClearTexture() = 0;
+      public: virtual void ClearTexture() override = 0;
 
-      public: virtual void ClearNormalMap() = 0;
+      public: virtual void ClearNormalMap() override = 0;
 
-      public: virtual void SetShaderType(enum ShaderType _type) = 0;
+      public: virtual void SetShaderType(enum ShaderType _type) override = 0;
 
       // Documentation inherited.
       // \sa Material::VertexShader() const
@@ -91,11 +93,11 @@ namespace ignition
       // \sa Material::SetFragmentShader(const std::string &)
       public: virtual void SetFragmentShader(const std::string &_path) override;
 
-      public: virtual void CopyFrom(ConstMaterialPtr _material);
+      public: virtual void CopyFrom(ConstMaterialPtr _material) override;
 
-      public: virtual void CopyFrom(const common::Material &_material);
+      public: virtual void CopyFrom(const common::Material &_material) override;
 
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       protected: virtual void Reset();
     };

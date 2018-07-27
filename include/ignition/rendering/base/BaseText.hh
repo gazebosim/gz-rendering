@@ -27,7 +27,7 @@ namespace ignition
   {
     /// \brief Base implementation of a text geometry
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseText :
+    class BaseText :
       public virtual Text,
       public virtual T
     {

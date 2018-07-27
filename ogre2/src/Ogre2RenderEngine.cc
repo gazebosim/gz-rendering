@@ -403,6 +403,8 @@ void Ogre2RenderEngine::LoadPlugins()
 
 #ifdef __APPLE__
     std::string extension = ".dylib";
+#elif _WIN32
+    std::string extension = ".dll";
 #else
     std::string extension = ".so";
 #endif

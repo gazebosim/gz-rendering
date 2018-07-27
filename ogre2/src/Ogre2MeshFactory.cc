@@ -54,22 +54,22 @@ Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
   Ogre2MeshPtr mesh(new Ogre2Mesh);
   MeshDescriptor normDesc = _desc;
   normDesc.Load();
-  mesh->ogreEntity = this->OgreEntity(normDesc);
+  mesh->ogreItem = this->OgreItem(normDesc);
 
   // check if invalid mesh
-  if (!mesh->ogreEntity)
+  if (!mesh->ogreItem)
   {
     return nullptr;
   }
 
   // create sub-mesh store
-  Ogre2SubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreEntity);
+  Ogre2SubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreItem);
   mesh->subMeshes = subMeshFactory.Create();
   return mesh;
 }
 
 //////////////////////////////////////////////////
-Ogre::v1::Entity *Ogre2MeshFactory::OgreEntity(const MeshDescriptor &_desc)
+Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
 {
   if (!this->Load(_desc))
   {
@@ -78,7 +78,18 @@ Ogre::v1::Entity *Ogre2MeshFactory::OgreEntity(const MeshDescriptor &_desc)
 
   std::string name = this->MeshName(_desc);
   Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
-  return sceneManager->createEntity(name);
+
+  Ogre::v1::MeshPtr v1Mesh =
+      Ogre::v1::MeshManager::getSingleton().getByName(name);
+  if (!v1Mesh)
+    return nullptr;
+
+  Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual(
+              name, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+  mesh->importV1(v1Mesh.get(), true, true, true);
+
+  return sceneManager->createItem(mesh, Ogre::SCENE_DYNAMIC);
 }
 
 //////////////////////////////////////////////////
@@ -101,7 +112,7 @@ bool Ogre2MeshFactory::Load(const MeshDescriptor &_desc)
 bool Ogre2MeshFactory::IsLoaded(const MeshDescriptor &_desc)
 {
   std::string name = this->MeshName(_desc);
-  return Ogre::v1::MeshManager::getSingleton().resourceExists(name);
+  return Ogre::MeshManager::getSingleton().resourceExists(name);
 }
 
 //////////////////////////////////////////////////
@@ -362,7 +373,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
           false);
 
     // this line makes clear the mesh is loaded (avoids memory leaks)
-    ogreMesh->load();
+    // ogreMesh->load();
   }
   catch(Ogre::Exception &e)
   {
@@ -410,9 +421,9 @@ bool Ogre2MeshFactory::Validate(const MeshDescriptor &_desc)
 
 //////////////////////////////////////////////////
 Ogre2SubMeshStoreFactory::Ogre2SubMeshStoreFactory(Ogre2ScenePtr _scene,
-    Ogre::v1::Entity *_entity) :
+    Ogre::Item *_item) :
   scene(_scene),
-  ogreEntity(_entity)
+  ogreItem(_item)
 {
   this->CreateNameList();
 }
@@ -426,7 +437,7 @@ Ogre2SubMeshStoreFactory::~Ogre2SubMeshStoreFactory()
 Ogre2SubMeshStorePtr Ogre2SubMeshStoreFactory::Create()
 {
   Ogre2SubMeshStorePtr subMeshes(new Ogre2SubMeshStore);
-  unsigned int count = this->ogreEntity->getNumSubEntities();
+  unsigned int count = this->ogreItem->getNumSubItems();
 
   for (unsigned int i = 0; i < count; ++i)
   {
@@ -445,9 +456,9 @@ Ogre2SubMeshPtr Ogre2SubMeshStoreFactory::CreateSubMesh(unsigned int _index)
   subMesh->id = _index;
   subMesh->name = this->names[_index];
   subMesh->scene = this->scene;
-  subMesh->ogreSubEntity = this->ogreEntity->getSubEntity(_index);
+  subMesh->ogreSubItem = this->ogreItem->getSubItem(_index);
   MaterialPtr mat;
-  Ogre::MaterialPtr ogreMat = subMesh->ogreSubEntity->getMaterial();
+  Ogre::MaterialPtr ogreMat = subMesh->ogreSubItem->getMaterial();
   if (ogreMat)
     mat = this->scene->Material(ogreMat->getName());
   if (!mat)
@@ -472,7 +483,7 @@ void Ogre2SubMeshStoreFactory::CreateNameList()
 //////////////////////////////////////////////////
 void Ogre2SubMeshStoreFactory::PopulateDefaultNames()
 {
-  unsigned int count = this->ogreEntity->getNumSubEntities();
+  unsigned int count = this->ogreItem->getNumSubItems();
   this->names.reserve(count);
 
   for (unsigned int i = 0; i < count; ++i)
@@ -484,10 +495,9 @@ void Ogre2SubMeshStoreFactory::PopulateDefaultNames()
 //////////////////////////////////////////////////
 void Ogre2SubMeshStoreFactory::PopulateGivenNames()
 {
-  const Ogre::v1::MeshPtr ogreMesh = this->ogreEntity->getMesh();
-  const Ogre::v1::Mesh::SubMeshNameMap &ogreMap = ogreMesh->getSubMeshNameMap();
+  const Ogre::MeshPtr ogreMesh = this->ogreItem->getMesh();
 
-  for (auto pair : ogreMap)
+  for (auto pair : ogreMesh->getSubMeshNameMap())
   {
     std::string name = pair.first;
     unsigned int index = pair.second;

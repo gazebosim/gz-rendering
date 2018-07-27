@@ -44,14 +44,14 @@ ign_find_package(FreeImage VERSION 3.9
 
 #--------------------------------------
 # Find OGRE
-ign_find_package(OGRE VERSION 1.8.0
-  COMPONENTS RTShaderSystem Terrain Overlay
-  REQUIRED_BY ogre
-  PRIVATE_FOR ogre)
-
-if (OGRE_FOUND)
-  set(HAVE_OGRE TRUE)
-endif()
+#ign_find_package(OGRE VERSION 1.8.0
+#  COMPONENTS RTShaderSystem Terrain Overlay
+#  REQUIRED_BY ogre
+#  PRIVATE_FOR ogre)
+#
+#if (OGRE_FOUND)
+#  set(HAVE_OGRE TRUE)
+#endif()
 
 #--------------------------------------
 # Find OGRE2
@@ -90,7 +90,9 @@ set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering
 #============================================================================
 # Configure the build
 #============================================================================
-set(RENDERING_COMPONENTS ogre)
+if (HAVE_OGRE)
+  list(APPEND RENDERING_COMPONENTS ogre)
+endif()
 if (HAVE_OPTIX)
   list(APPEND RENDERING_COMPONENTS optix)
 endif()

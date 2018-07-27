@@ -39,14 +39,14 @@ using namespace rendering;
 void buildScene(ScenePtr _scene)
 {
   // initialize _scene
-  _scene->SetAmbientLight(0.3, 0.3, 0.3);
+  _scene->SetAmbientLight(0.8, 0.8, 0.8);
   VisualPtr root = _scene->RootVisual();
 
   // create center visual
   VisualPtr center = _scene->CreateVisual();
   center->AddGeometry(_scene->CreateSphere());
   center->SetLocalPosition(3, 0, 0);
-  center->SetLocalScale(0.1, 0.1, 0.1);
+  center->SetLocalScale(1.5, 2, 3);
 //  center->SetMaterial(green);
   root->AddChild(center);
 

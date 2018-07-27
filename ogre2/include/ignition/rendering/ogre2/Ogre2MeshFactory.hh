@@ -44,7 +44,10 @@ namespace ignition
 
       public: virtual Ogre2MeshPtr Create(const MeshDescriptor &_desc);
 
-      protected: virtual Ogre::v1::Entity *OgreEntity(
+//      protected: virtual Ogre::v1::Entity *OgreEntity(
+//                     const MeshDescriptor &_desc);
+
+      protected: virtual Ogre::Item *OgreItem(
                      const MeshDescriptor &_desc);
 
       protected: virtual bool Load(const MeshDescriptor &_desc);
@@ -65,7 +68,7 @@ namespace ignition
       typedef std::vector<std::string> NameList;
 
       public: Ogre2SubMeshStoreFactory(Ogre2ScenePtr _scene,
-                  Ogre::v1::Entity *_entity);
+                  Ogre::Item *_item);
 
       public: virtual ~Ogre2SubMeshStoreFactory();
 
@@ -81,7 +84,7 @@ namespace ignition
 
       protected: Ogre2ScenePtr scene;
 
-      protected: Ogre::v1::Entity *ogreEntity = nullptr;
+      protected: Ogre::Item *ogreItem = nullptr;
 
       protected: NameList names;
     };

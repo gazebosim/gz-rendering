@@ -38,7 +38,7 @@ Ogre2Mesh::~Ogre2Mesh()
 //////////////////////////////////////////////////
 Ogre::MovableObject *Ogre2Mesh::OgreObject() const
 {
-  return this->ogreEntity;
+  return this->ogreItem;
 }
 
 //////////////////////////////////////////////////
@@ -83,9 +83,9 @@ void Ogre2SubMesh::SetMaterial(MaterialPtr _material, bool _unique)
 }
 
 //////////////////////////////////////////////////
-Ogre::v1::SubEntity *Ogre2SubMesh::Ogre2SubEntity() const
+Ogre::SubItem *Ogre2SubMesh::Ogre2SubItem() const
 {
-  return this->ogreSubEntity;
+  return this->ogreSubItem;
 }
 
 //////////////////////////////////////////////////

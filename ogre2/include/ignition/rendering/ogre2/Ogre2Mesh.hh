@@ -26,11 +26,8 @@
 
 namespace Ogre
 {
-  namespace v1
-  {
-    class Entity;
-    class SubEntity;
-  }
+  class Item;
+  class SubItem;
 }
 
 namespace ignition
@@ -52,7 +49,7 @@ namespace ignition
 
       protected: Ogre2SubMeshStorePtr subMeshes;
 
-      protected: Ogre::v1::Entity *ogreEntity = nullptr;
+      protected: Ogre::Item *ogreItem = nullptr;
 
       private: friend class Ogre2Scene;
 
@@ -71,7 +68,7 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true);
 
-      public: virtual Ogre::v1::SubEntity *Ogre2SubEntity() const;
+      public: virtual Ogre::SubItem *Ogre2SubItem() const;
 
       public: virtual void Destroy();
 
@@ -81,7 +78,7 @@ namespace ignition
 
       protected: Ogre2MaterialPtr material;
 
-      protected: Ogre::v1::SubEntity *ogreSubEntity = nullptr;
+      protected: Ogre::SubItem *ogreSubItem = nullptr;
 
       private: friend class Ogre2Scene;
 

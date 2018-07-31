@@ -39,7 +39,7 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr Parent() const;
+      public: virtual NodePtr Parent() const;
 
       public: virtual Ogre::SceneNode *Node() const;
 
@@ -59,16 +59,17 @@ namespace ignition
       protected: virtual void SetRawLocalRotation(
                      const math::Quaterniond &_rotation);
 
-      protected: virtual void SetParent(OgreVisualPtr _parent);
+      protected: virtual void SetParent(OgreNodePtr _parent);
 
       protected: virtual void Load();
 
       protected: virtual void Init();
 
-      protected: OgreVisualPtr parent;
+      protected: OgreNodePtr parent;
 
-      protected: Ogre::SceneNode *ogreNode;
+      protected: Ogre::SceneNode *ogreNode = nullptr;
 
+      // TODO remove the need for a visual friend class
       private: friend class OgreVisual;
     };
   }

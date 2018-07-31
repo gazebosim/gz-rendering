@@ -37,17 +37,22 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~Node() { }
 
-      /// \brief Determine if this Geometry is attached to a Visual
-      /// \return True if this Geometry has a parent Visual
+      /// \brief Determine if this Node is attached to another Node.
+      /// \return True if this Node has a parent Node
       public: virtual bool HasParent() const = 0;
 
-      /// \brief Get the parent Visual
-      /// \return the parent Visual
-      public: virtual VisualPtr Parent() const = 0;
+      /// \brief Get the parent Node
+      /// \return the parent Node
+      public: virtual NodePtr Parent() const = 0;
 
-      /// \brief Detach this Geometry from its parent Visual. If this
-      /// Geometry does not have a parent, no work will be done.
+      /// \brief Detach this Node from its parent. If this
+      /// Node does not have a parent, no work will be done.
       public: virtual void RemoveParent() = 0;
+
+      /// \brief Remove a child from this Node.
+      /// \param[in] _node Node to be removed.
+      /// \return The removed child node
+      public: virtual NodePtr RemoveChild(NodePtr _node) = 0;
 
       /// \brief Get the local pose
       /// \return The local pose

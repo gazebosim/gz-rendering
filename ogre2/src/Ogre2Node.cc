@@ -17,44 +17,44 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreNode.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre2/Ogre2Node.hh"
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OgreNode::OgreNode()
+Ogre2Node::Ogre2Node()
 {
 }
 
 //////////////////////////////////////////////////
-OgreNode::~OgreNode()
+Ogre2Node::~Ogre2Node()
 {
 }
 
 //////////////////////////////////////////////////
-bool OgreNode::HasParent() const
+bool Ogre2Node::HasParent() const
 {
   return this->parent != nullptr;
 }
 
 //////////////////////////////////////////////////
-NodePtr OgreNode::Parent() const
+NodePtr Ogre2Node::Parent() const
 {
   return this->parent;
 }
 
 //////////////////////////////////////////////////
-Ogre::SceneNode *OgreNode::Node() const
+Ogre::SceneNode *Ogre2Node::Node() const
 {
   return this->ogreNode;
 }
 
 //////////////////////////////////////////////////
-void OgreNode::Destroy()
+void Ogre2Node::Destroy()
 {
   BaseNode::Destroy();
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
@@ -62,7 +62,7 @@ void OgreNode::Destroy()
 }
 
 //////////////////////////////////////////////////
-math::Pose3d OgreNode::RawLocalPose() const
+math::Pose3d Ogre2Node::RawLocalPose() const
 {
   math::Pose3d Pose3d;
   Pose3d.Pos() = this->RawLocalPosition();
@@ -71,52 +71,52 @@ math::Pose3d OgreNode::RawLocalPose() const
 }
 
 //////////////////////////////////////////////////
-void OgreNode::SetRawLocalPose(const math::Pose3d &_Pose3d)
+void Ogre2Node::SetRawLocalPose(const math::Pose3d &_Pose3d)
 {
   this->SetRawLocalPosition(_Pose3d.Pos());
   this->SetRawLocalRotation(_Pose3d.Rot());
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OgreNode::RawLocalPosition() const
+math::Vector3d Ogre2Node::RawLocalPosition() const
 {
-  return OgreConversions::Convert(this->ogreNode->getPosition());
+  return Ogre2Conversions::Convert(this->ogreNode->getPosition());
 }
 
 //////////////////////////////////////////////////
-void OgreNode::SetRawLocalPosition(const math::Vector3d &_position)
+void Ogre2Node::SetRawLocalPosition(const math::Vector3d &_position)
 {
-  this->ogreNode->setPosition(OgreConversions::Convert(_position));
+  this->ogreNode->setPosition(Ogre2Conversions::Convert(_position));
 }
 
 //////////////////////////////////////////////////
-math::Quaterniond OgreNode::RawLocalRotation() const
+math::Quaterniond Ogre2Node::RawLocalRotation() const
 {
-  return OgreConversions::Convert(this->ogreNode->getOrientation());
+  return Ogre2Conversions::Convert(this->ogreNode->getOrientation());
 }
 
 //////////////////////////////////////////////////
-void OgreNode::SetRawLocalRotation(const math::Quaterniond &_rotation)
+void Ogre2Node::SetRawLocalRotation(const math::Quaterniond &_rotation)
 {
-  this->ogreNode->setOrientation(OgreConversions::Convert(_rotation));
+  this->ogreNode->setOrientation(Ogre2Conversions::Convert(_rotation));
 }
 
 //////////////////////////////////////////////////
-void OgreNode::SetParent(OgreNodePtr _parent)
+void Ogre2Node::SetParent(Ogre2NodePtr _parent)
 {
   this->parent = _parent;
 }
 
 //////////////////////////////////////////////////
-void OgreNode::Load()
+void Ogre2Node::Load()
 {
 }
 
 //////////////////////////////////////////////////
-void OgreNode::Init()
+void Ogre2Node::Init()
 {
   Ogre::SceneManager *sceneManager;
   sceneManager = this->scene->OgreSceneManager();
-  this->ogreNode = sceneManager->createSceneNode(this->name);
+  this->ogreNode = sceneManager->createSceneNode();
   this->ogreNode->setInheritScale(true);
 }

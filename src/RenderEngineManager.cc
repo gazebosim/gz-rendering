@@ -228,7 +228,9 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   std::string libName = "ignition-rendering" +
     std::to_string(IGNITION_RENDERING_MAJOR_VERSION) + "-";
 
+  // cppcheck-suppress unusedVariable
   std::string engineName;
+
 #if HAVE_OGRE
   engineName = "ogre";
   this->defaultEngines[engineName] = libName + engineName;

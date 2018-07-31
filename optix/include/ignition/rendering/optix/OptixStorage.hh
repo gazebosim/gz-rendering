@@ -32,6 +32,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template class BaseSceneStore<OptixScene>;
     template class BaseNodeStore<OptixNode>;
     template class BaseLightStore<OptixLight>;
@@ -58,6 +60,7 @@ namespace ignition
     typedef std::shared_ptr<OptixGeometryStore> OptixGeometryStorePtr;
     typedef std::shared_ptr<OptixSubMeshStore>  OptixSubMeshStorePtr;
     typedef std::shared_ptr<OptixMaterialMap>   OptixMaterialMapPtr;
+    }
   }
 }
 #endif

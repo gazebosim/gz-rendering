@@ -23,6 +23,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class BaseNodeCompositeStore;
     typedef shared_ptr<BaseNodeCompositeStore>   BaseNodeCompositeStorePtr;
 
@@ -34,6 +36,7 @@ namespace ignition
     template <class T> class BaseGeometryStore;
     template <class T> class BaseSubMeshStore;
     template <class T> class BaseMaterialMap;
+    }
   }
 }
 #endif

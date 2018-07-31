@@ -21,6 +21,7 @@
 
 #include <ignition/common/SuppressWarning.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
 namespace ignition
@@ -35,6 +36,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \struct MeshDescriptor MeshDescriptor.hh
     /// ignition/rendering/MeshDescriptor.hh
     /// \brief Describes how a Mesh should be loaded
@@ -72,6 +75,7 @@ namespace ignition
       /// \brief Denotes if the loaded sub-mesh vertices should be centered
       public: bool centerSubMesh = false;
     };
+    }
   }
 }
 #endif

@@ -24,6 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_VISIBLE BaseObject :
       public virtual std::enable_shared_from_this<BaseObject>,
       public virtual Object
@@ -50,6 +52,7 @@ namespace ignition
 
       protected: std::string name;
     };
+    }
   }
 }
 #endif

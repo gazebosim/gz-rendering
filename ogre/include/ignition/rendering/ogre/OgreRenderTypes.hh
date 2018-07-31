@@ -23,6 +23,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class OgreArrowVisual;
     class OgreAxisVisual;
     class OgreCamera;
@@ -93,6 +95,7 @@ namespace ignition
     typedef shared_ptr<OgreSubMeshStore>         OgreSubMeshStorePtr;
     typedef shared_ptr<OgreMaterialMap>          OgreMaterialMapPtr;
     typedef shared_ptr<OgreRenderTargetMaterial> OgreRenderTargetMaterialPtr;
+    }
   }
 }
 #endif

@@ -27,45 +27,37 @@
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/RenderEnginePlugin.hh"
 
-namespace ignition
+/// \brief Private implementation of the RenderEngineManager class
+class ignition::rendering::RenderEngineManagerPrivate
 {
-  namespace rendering
-  {
-    class RenderEngine;
+  /// \brief EngineMap that maps engine name to an engine pointer
+  typedef std::map<std::string, RenderEngine *> EngineMap;
 
-    /// \brief Private implementation of the RenderEngineManager class
-    class RenderEngineManagerPrivate
-    {
-      /// \brief EngineMap that maps engine name to an engine pointer
-      typedef std::map<std::string, RenderEngine *> EngineMap;
+  /// \brief EngineMap iterator
+  typedef EngineMap::iterator EngineIter;
 
-      /// \brief EngineMap iterator
-      typedef EngineMap::iterator EngineIter;
+  /// \brief Get a pointer to the render engine from an EngineMap iterator
+  /// \param[in] _iter EngineMap iterator
+  public: RenderEngine *Engine(EngineIter _iter);
 
-      /// \brief Get a pointer to the render engine from an EngineMap iterator
-      /// \brief EngineMap iterator
-      public: RenderEngine *Engine(EngineIter _iter);
+  /// \brief Register default engines supplied by ign-rendering
+  public: void RegisterDefaultEngines();
 
-      /// \brief Register default engines supplied by ign-rendering
-      public: void RegisterDefaultEngines();
+  /// \brief Load a render engine plugin
+  /// \param[in] _filename Filename of plugin shared library
+  /// \return True if the plugin is loaded successfully
+  public: bool LoadEnginePlugin(const std::string &_filename);
 
-      /// \brief Load a render engine plugin
-      /// \param[in] _filename Filename of plugin shared library
-      /// \return True if the plugin is loaded successfully
-      public: bool LoadEnginePlugin(const std::string &_filename);
+  /// \brief Unregister an engine using an EngineMap iterator
+  /// \param[in] _iter EngineMap iterator
+  public: void UnregisterEngine(EngineIter _iter);
 
-      /// \brief Unregister an engine using an EngineMap iterator
-      /// \brief EngineMap iterator
-      public: void UnregisterEngine(EngineIter _iter);
+  // Engines that have been registered
+  public: EngineMap engines;
 
-      // Engines that have been registered
-      public: EngineMap engines;
-
-      /// \brief A map of default engine name to its plugin library path
-      public: std::map<std::string, std::string> defaultEngines;
-    };
-  }
-}
+  /// \brief A map of default engine name to its plugin library path
+  public: std::map<std::string, std::string> defaultEngines;
+};
 
 using namespace ignition;
 using namespace rendering;
@@ -161,6 +153,9 @@ void RenderEngineManager::UnregisterEngine(const std::string &_name)
 //////////////////////////////////////////////////
 void RenderEngineManager::UnregisterEngine(RenderEngine *_engine)
 {
+  if (!_engine)
+    return;
+
   auto begin = this->dataPtr->engines.begin();
   auto end = this->dataPtr->engines.end();
 

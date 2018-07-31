@@ -33,6 +33,9 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    class OgreMovableText;
     class OgreTextPrivate;
 
     /// \brief Ogre implementation of text geometry
@@ -101,6 +104,7 @@ namespace ignition
       /// \brief Private data pointer
       private: std::unique_ptr<OgreTextPrivate> dataPtr;
     };
+    }
   }
 }
 #endif

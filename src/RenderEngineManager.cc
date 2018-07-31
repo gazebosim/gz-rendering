@@ -225,20 +225,27 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   // TODO(anyone) Find a cleaner way to get the default engine library name
 
   // cppcheck-suppress unreadVariable
-  std::string engineName = "ignition-rendering" +
+  std::string libName = "ignition-rendering" +
     std::to_string(IGNITION_RENDERING_MAJOR_VERSION) + "-";
 
+  std::string engineName;
 #if HAVE_OGRE
-  this->defaultEngines["ogre"] = engineName + "ogre";
-  this->engines["ogre"] = nullptr;
+  engineName = "ogre";
+  this->defaultEngines[engineName] = libName + engineName;
+  if (this->engines.find(engineName) == this->engines.end())
+    this->engines[engineName] = nullptr;
 #endif
 #if HAVE_OGRE2
-  this->defaultEngines["ogre2"] = engineName + "ogre2";
-  this->engines["ogre2"] = nullptr;
+  engineName = "ogre2";
+  this->defaultEngines[engineName] = libName + engineName;
+  if (this->engines.find(engineName) == this->engines.end())
+    this->engines[engineName] = nullptr;
 #endif
 #if HAVE_OPTIX
-  this->defaultEngines["optix"] = engineName + "optix";
-  this->engines["optix"] = nullptr;
+  engineName = "optix";
+  this->defaultEngines[engineName] = libName + engineName;
+  if (this->engines.find(engineName) == this->engines.end())
+    this->engines[engineName] = nullptr;
 #endif
 }
 

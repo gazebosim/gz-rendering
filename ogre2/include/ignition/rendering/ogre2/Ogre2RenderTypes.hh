@@ -17,12 +17,15 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERTYPES_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2RENDERTYPES_HH_
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class Ogre2Node;
     class Ogre2Object;
     class Ogre2RenderEngine;
@@ -38,6 +41,7 @@ namespace ignition
 
     typedef shared_ptr<Ogre2SceneStore>           Ogre2SceneStorePtr;
     typedef shared_ptr<Ogre2NodeStore>            Ogre2NodeStorePtr;
+    }
   }
 }
 #endif

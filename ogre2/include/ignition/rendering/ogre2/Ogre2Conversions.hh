@@ -22,6 +22,7 @@
 #include <ignition/math/Quaternion.hh>
 #include <ignition/math/Vector3.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
@@ -30,6 +31,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \addtogroup ign_rendering
     /// \{
 
@@ -98,8 +101,8 @@ namespace ignition
       /// \brief A list of ogre pixel formats
       private: static const Ogre::PixelFormat ogrePixelFormats[PF_COUNT];
     };
-
     /// \}
+    }
   }
 }
 #endif

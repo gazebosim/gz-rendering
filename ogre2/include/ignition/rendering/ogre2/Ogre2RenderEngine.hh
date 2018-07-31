@@ -26,7 +26,7 @@
 #include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
-// #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
 namespace Ogre
@@ -43,6 +43,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     // forward declaration
     class Ogre2RenderEnginePrivate;
 
@@ -198,6 +200,7 @@ namespace ignition
       /// \brief Singleton setup
       private: friend class common::SingletonT<Ogre2RenderEngine>;
     };
+    }
   }
 }
 #endif

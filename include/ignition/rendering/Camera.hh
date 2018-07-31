@@ -22,6 +22,7 @@
 #include <ignition/common/Event.hh>
 #include <ignition/math/Matrix4.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Sensor.hh"
@@ -31,6 +32,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Camera Camera.hh ignition/rendering/Camera.hh
     /// \brief Posable camera used for rendering the scene graph
     class IGNITION_RENDERING_VISIBLE Camera :
@@ -273,6 +276,7 @@ namespace ignition
       /// \param[in] _material a material instance
       public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
     };
+    }
   }
 }
 #endif

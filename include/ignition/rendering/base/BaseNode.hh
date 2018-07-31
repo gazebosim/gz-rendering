@@ -23,6 +23,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
     class BaseNode :
       public virtual Node,
@@ -322,6 +324,7 @@ namespace ignition
     {
       T::Destroy();
       this->RemoveParent();
+    }
     }
   }
 }

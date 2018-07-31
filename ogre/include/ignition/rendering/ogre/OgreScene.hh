@@ -32,6 +32,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OGRE_VISIBLE OgreScene :
       public BaseScene
     {
@@ -172,6 +174,7 @@ namespace ignition
 
       private: friend class OgreRenderEngine;
     };
+    }
   }
 }
 #endif

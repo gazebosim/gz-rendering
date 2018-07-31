@@ -35,6 +35,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief Ogre2.x implementation of the scene class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Scene :
       public BaseScene
@@ -206,6 +208,7 @@ namespace ignition
       /// \brief Make the render engine our friend
       private: friend class Ogre2RenderEngine;
     };
+    }
   }
 }
 #endif

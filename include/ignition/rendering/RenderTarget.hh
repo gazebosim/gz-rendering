@@ -21,6 +21,7 @@
 
 #include <ignition/math/Color.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/Object.hh"
@@ -29,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class RenderTarget RenderTarget.hh ignition/rendering/RenderTarget.hh
     /// \brief Represents a render-target to which cameras can render images.
     class IGNITION_RENDERING_VISIBLE RenderTarget :
@@ -121,6 +124,7 @@ namespace ignition
       /// \brief Alert the window of a window move event
       public: virtual void OnMove() = 0;
     };
+    }
   }
 }
 #endif

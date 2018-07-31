@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2OBJECT_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2OBJECT_HH_
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
@@ -25,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief Ogre2.x implementation of the Object class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Object :
       public BaseObject
@@ -44,6 +47,7 @@ namespace ignition
       /// \brief Make ogre scene our friend so it is able to create objects
       private: friend class Ogre2Scene;
     };
+    }
   }
 }
 #endif

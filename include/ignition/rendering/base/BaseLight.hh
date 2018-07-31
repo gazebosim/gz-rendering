@@ -23,6 +23,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
     class BaseLight :
       public virtual Light,
@@ -230,7 +232,7 @@ namespace ignition
       this->SetOuterAngle(IGN_PI / 4.0);
       this->SetFalloff(1.0);
     }
-
+    }
   }
 }
 #endif

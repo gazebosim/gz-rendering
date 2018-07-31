@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_RENDERTYPES_HH_
 
 #include <memory>
+#include <ignition/rendering/config.hh>
 
 /// \def IGN_VISIBILITY_SELECTABLE
 /// \brief Render visuals that are selectable mask.

@@ -26,7 +26,7 @@
 #include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
-// #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
 namespace Ogre
@@ -105,7 +105,7 @@ namespace ignition
       /// \param[in] _ratio Device pixel ratio (typically needed for retina
       /// displays)
       /// \param[in] _antiAliasing Anti-aliasing level
-      public: std::string CreateWindow(const std::string &_handle,
+      public: std::string CreateRenderWindow(const std::string &_handle,
                   const unsigned int _width, const unsigned int _height,
                   const double _ratio, const unsigned int _antiAliasing);
 
@@ -150,7 +150,7 @@ namespace ignition
       private: void CreateRenderSystem();
 
       /// \brief Create dummy 1x1 render window for the main rendering context
-      private: void CreateWindow();
+      private: void CreateRenderWindow();
 
       /// \brief Create the resources needed by ogre
       private: void CreateResources();

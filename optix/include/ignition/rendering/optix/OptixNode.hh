@@ -37,7 +37,7 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr Parent() const;
+      public: virtual NodePtr Parent() const;
 
       public: virtual void PreRender();
 
@@ -51,11 +51,11 @@ namespace ignition
 
       protected: virtual void WritePoseToDeviceImpl();
 
-      protected: virtual void SetParent(OptixVisualPtr _parent);
+      protected: virtual void SetParent(OptixNodePtr _parent);
 
       protected: virtual void Init();
 
-      protected: OptixVisualPtr parent;
+      protected: OptixNodePtr parent;
 
       protected: optix::Transform optixTransform;
 
@@ -67,6 +67,7 @@ namespace ignition
 
       protected: bool poseDirty;
 
+      // TODO remove the need for a visual friend class
       private: friend class OptixVisual;
     };
     }

@@ -18,7 +18,6 @@
 #define IGNITION_RENDERING_BASE_BASENODE_HH_
 
 #include "ignition/rendering/Node.hh"
-#include "ignition/rendering/Visual.hh"
 
 namespace ignition
 {
@@ -35,9 +34,13 @@ namespace ignition
 
       public: virtual ~BaseNode();
 
-      public: virtual VisualPtr Parent() const = 0;
+      public: virtual NodePtr Parent() const = 0;
 
+      // Documentation inherited
       public: virtual void RemoveParent();
+
+      // Documentation inherited
+      public: virtual NodePtr RemoveChild(NodePtr _node);
 
       public: virtual math::Pose3d LocalPose() const;
 
@@ -111,7 +114,7 @@ namespace ignition
     template <class T>
     void BaseNode<T>::RemoveParent()
     {
-      VisualPtr parent = this->Parent();
+      NodePtr parent = this->Parent();
 
       if (parent)
       {
@@ -119,6 +122,16 @@ namespace ignition
         auto thisShared = std::dynamic_pointer_cast<BaseNode<T>>(baseShared);
         parent->RemoveChild(thisShared);
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChild(NodePtr /*_node*/)
+    {
+      // By default, do nothing
+      // not all nodes have child, e.g. Cameras
+      // This function mainly applies to Visual classes.
+      return NodePtr();
     }
 
     //////////////////////////////////////////////////
@@ -197,7 +210,7 @@ namespace ignition
     template <class T>
     math::Pose3d BaseNode<T>::WorldPose() const
     {
-      VisualPtr parent = this->Parent();
+      NodePtr parent = this->Parent();
       math::Pose3d pose = this->LocalPose();
 
       if (!parent)
@@ -274,7 +287,7 @@ namespace ignition
     template <class T>
     math::Pose3d BaseNode<T>::WorldToLocal(const math::Pose3d &_pose) const
     {
-      VisualPtr parent = this->Parent();
+      NodePtr parent = this->Parent();
 
       if (!parent)
       {

@@ -441,7 +441,8 @@ namespace ignition
         return scale;
       }
 
-      return scale * this->Parent()->WorldScale();
+      VisualPtr derived = std::dynamic_pointer_cast<Visual>(this->Parent());
+      return scale * derived->WorldScale();
     }
 
     //////////////////////////////////////////////////

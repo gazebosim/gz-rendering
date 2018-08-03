@@ -18,12 +18,15 @@
 #define IGNITION_RENDERING_RENDERINGIFACE_HH_
 
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class RenderEngine;
 
     /// \brief Load shared render-engine resources
@@ -98,6 +101,7 @@ namespace ignition
     /// \param[in] _index Index of the render-engine to unregister
     IGNITION_RENDERING_VISIBLE
     void unregisterEngine(const unsigned int _index);
+    }
   }
 }
 #endif

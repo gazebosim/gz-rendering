@@ -24,6 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
+  inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+  //
 #endif
 
   typedef enum OptixRayType_t
@@ -48,6 +50,7 @@ namespace ignition
   };
 
 #ifndef __CUDA_ARCH__
+  }
   }
 }
 #endif

@@ -34,6 +34,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Mesh :
       public BaseMesh<Ogre2Geometry>
     {
@@ -84,6 +86,7 @@ namespace ignition
 
       private: friend class Ogre2SubMeshStoreFactory;
     };
+    }
   }
 }
 #endif

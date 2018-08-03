@@ -18,12 +18,15 @@
 #define IGNITION_RENDERING_PIXELFORMAT_HH_
 
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \enum PixelFormat PixelFormat.hh ignition/rendering/PixelFormat.hh
     /// \brief Image pixel format types
     enum IGNITION_RENDERING_VISIBLE PixelFormat
@@ -113,6 +116,7 @@ namespace ignition
       /// \brief Array of bytes per channel for each PixelFormat
       private: static const unsigned char channelByteCounts[PF_COUNT];
     };
+    }
   }
 }
 #endif

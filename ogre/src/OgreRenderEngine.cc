@@ -42,18 +42,12 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
 
-namespace ignition
+class ignition::rendering::OgreRenderEnginePrivate
 {
-  namespace rendering
-  {
-    class OgreRenderEnginePrivate
-    {
 #if not defined(__APPLE__) && not defined(_WIN32)
-      public: XVisualInfo *dummyVisual = nullptr;
+  public: XVisualInfo *dummyVisual = nullptr;
 #endif
-    };
-  }
-}
+};
 
 using namespace ignition;
 using namespace rendering;
@@ -216,7 +210,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
                     fullPath);
 
               bool matPtrNotNull;
-#if (OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MAJOR < 10)
+#if OGRE_VERSION_LT_1_10_1
               matPtrNotNull = !matPtr.isNull();
 #else
               matPtrNotNull = matPtr != nullptr;
@@ -313,7 +307,7 @@ void OgreRenderEngine::LoadAttempt()
   this->CreateRenderSystem();
   this->ogreRoot->initialise(false);
   this->CreateResources();
-  this->CreateWindow();
+  this->CreateRenderWindow();
   this->CheckCapabilities();
 }
 
@@ -567,14 +561,14 @@ void OgreRenderEngine::CreateResources()
 }
 
 //////////////////////////////////////////////////
-void OgreRenderEngine::CreateWindow()
+void OgreRenderEngine::CreateRenderWindow()
 {
   // create dummy window
-  this->CreateWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
+  this->CreateRenderWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
 }
 
 //////////////////////////////////////////////////
-std::string OgreRenderEngine::CreateWindow(const std::string &_handle,
+std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     const unsigned int _width, const unsigned int _height,
     const double _ratio, const unsigned int _antiAliasing)
 {

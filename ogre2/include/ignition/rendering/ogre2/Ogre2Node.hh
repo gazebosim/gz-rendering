@@ -30,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief Ogre2.x implementation of the Node class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Node :
       public BaseNode<Ogre2Object>
@@ -97,6 +99,7 @@ namespace ignition
       // TODO remove the need for a visual friend class
       private: friend class Ogre2Visual;
     };
+    }
   }
 }
 #endif

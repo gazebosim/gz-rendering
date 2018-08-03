@@ -18,6 +18,8 @@
 #define IGNITION_RENDERING_OGRE2_OGRE2SCENE_HH_
 
 #include <string>
+
+#include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 
@@ -33,6 +35,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief Ogre2.x implementation of the scene class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Scene :
       public BaseScene
@@ -233,6 +237,7 @@ namespace ignition
       /// \brief Make the render engine our friend
       private: friend class Ogre2RenderEngine;
     };
+    }
   }
 }
 #endif

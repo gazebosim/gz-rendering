@@ -14,8 +14,9 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
 
+#include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Object.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
 using namespace ignition;

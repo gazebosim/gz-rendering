@@ -26,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderTarget :
       public virtual BaseRenderTarget<OptixObject>
     {
@@ -75,7 +77,7 @@ namespace ignition
       /// \brief Render windows should only be created by the scene class
       private: friend class OptixScene;
     };
-
+    }
   }
 }
 #endif

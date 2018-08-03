@@ -25,8 +25,7 @@ using namespace ignition;
 using namespace rendering;
 
 /////////////////////////////////////////////////
-// Load the default engines for this test and
-// return the number of engines loaded
+// get the number of default engines available
 unsigned int defaultEnginesForTest()
 {
   unsigned int count = 0u;
@@ -56,8 +55,12 @@ TEST(RenderingIfaceTest, GetEngine)
     EXPECT_NE(nullptr, eng);
     EXPECT_TRUE(hasEngine(eng->Name()));
     EXPECT_EQ(eng, engine(eng->Name()));
-    // unload the engines
-    unregisterEngine(eng->Name());
+#if HAVE_OGRE && HAVE_OGRE2
+    // TODO ogre and ogre2 cannot be loaded at the same time
+    // so for now only test rendering engine API with one ogre version
+    if (eng->Name() == "ogre" || eng->Name() == "ogre2")
+      ++i;
+#endif
   }
 
   // non-existent engine

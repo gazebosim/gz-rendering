@@ -20,7 +20,8 @@
 #include <memory>
 #include <string>
 
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "ignition/rendering/config.hh"
+#include "ignition/rendering/ogre/Export.hh"
 
 namespace Ogre
 {
@@ -33,6 +34,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     // forward declaration
     struct OgreSelectionBufferPrivate;
 
@@ -81,6 +84,7 @@ namespace ignition
       /// \brief Pointer to private data.
       private: std::unique_ptr<OgreSelectionBufferPrivate> dataPtr;
     };
+    }
   }
 }
 #endif

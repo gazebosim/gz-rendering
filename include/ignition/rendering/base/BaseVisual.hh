@@ -28,6 +28,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
     class BaseVisual :
       public virtual Visual,
@@ -282,7 +284,8 @@ namespace ignition
     void BaseVisual<T>::RemoveChildren()
     {
       auto children =
-          std::dynamic_pointer_cast<BaseStore<Node, T>>(this->Children());
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
       if (!children)
         return;
       auto it = children->Begin();
@@ -371,7 +374,8 @@ namespace ignition
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 
       auto children =
-          std::dynamic_pointer_cast<BaseStore<Node, T>>(this->Children());
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
       if (!children)
         return;
       for (auto it = children->Begin(); it != children->End(); ++it)
@@ -507,7 +511,8 @@ namespace ignition
     void BaseVisual<T>::PreRenderChildren()
     {
       auto children =
-          std::dynamic_pointer_cast<BaseStore<Node, T>>(this->Children());
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
       if (!children)
         return;
       for (auto it = children->Begin(); it != children->End(); ++it)
@@ -536,6 +541,7 @@ namespace ignition
       ignerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
+    }
     }
   }
 }

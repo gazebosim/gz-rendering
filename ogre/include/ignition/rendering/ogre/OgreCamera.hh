@@ -33,6 +33,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     class IGNITION_RENDERING_OGRE_VISIBLE OgreCamera :
       public BaseCamera<OgreSensor>
     {
@@ -96,6 +98,7 @@ namespace ignition
       private: friend class OgreScene;
       private: friend class OgreRayQuery;
     };
+    }
   }
 }
 #endif

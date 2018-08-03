@@ -17,12 +17,15 @@
 #ifndef IGNITION_RENDERING_ARROWVISUAL_HH_
 #define IGNITION_RENDERING_ARROWVISUAL_HH_
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/CompositeVisual.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class ArrowVisual ArrowVisual.hh ignition/rendering/ArrowVisual.hh
     /// \brief Represents a arrow composite visual
     class IGNITION_RENDERING_VISIBLE ArrowVisual :
@@ -39,6 +42,7 @@ namespace ignition
       /// \return The arrow-shaft visual
       public: virtual VisualPtr Shaft() const = 0;
     };
+    }
   }
 }
 

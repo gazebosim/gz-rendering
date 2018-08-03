@@ -17,12 +17,15 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERTYPES_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2RENDERTYPES_HH_
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
 //    class Ogre2ArrowVisual;
 //    class Ogre2AxisVisual;
     class Ogre2Camera;
@@ -96,6 +99,7 @@ namespace ignition
     typedef shared_ptr<Ogre2MaterialMap>          Ogre2MaterialMapPtr;
 
     typedef shared_ptr<Ogre2RenderTargetMaterial> Ogre2RenderTargetMaterialPtr;
+    }
   }
 }
 #endif

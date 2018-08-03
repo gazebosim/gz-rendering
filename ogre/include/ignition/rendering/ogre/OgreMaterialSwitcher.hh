@@ -22,14 +22,17 @@
 #include <string>
 
 #include <ignition/math/Color.hh>
+#include "ignition/rendering/config.hh"
+#include "ignition/rendering/ogre/Export.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     // forward declarations
     class OgreSelectionBuffer;
 
@@ -105,6 +108,7 @@ namespace ignition
       /// \brief Overlay material technique
       private: Ogre::Technique *overlayTechnique = nullptr;
     };
+    }
   }
 }
 #endif

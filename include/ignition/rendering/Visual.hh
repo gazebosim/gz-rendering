@@ -18,12 +18,15 @@
 #define IGNITION_RENDERING_VISUAL_HH_
 
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Node.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Visual Visual.hh ignition/rendering/Visual.hh
     /// \brief Represents a visual node in a scene graph. A Visual is the only
     /// node that can have Geometry and other Visual children.
@@ -237,6 +240,7 @@ namespace ignition
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;
     };
+    }
   }
 }
 #endif

@@ -19,6 +19,7 @@
 
 #include <vector>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
@@ -26,6 +27,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief Causes all objects in a scene to be rendered with the same
     /// material when rendered by a given RenderTarget.
     /// \internal
@@ -91,6 +94,7 @@ namespace ignition
       /// \brief name of the material scheme used by this applicator
       private: Ogre::String schemeName;
     };
+    }
   }
 }
 

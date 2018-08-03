@@ -24,6 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Sensor :
       public BaseSensor<Ogre2Node>
     {
@@ -31,6 +33,7 @@ namespace ignition
 
       public: virtual ~Ogre2Sensor();
     };
+    }
   }
 }
 #endif

@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
@@ -36,6 +37,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2MeshFactory
     {
       public: explicit Ogre2MeshFactory(Ogre2ScenePtr _scene);
@@ -88,6 +91,7 @@ namespace ignition
 
       protected: NameList names;
     };
+    }
   }
 }
 #endif

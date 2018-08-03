@@ -17,16 +17,9 @@
 
 #include "ignition/rendering/RenderEnginePlugin.hh"
 
-namespace ignition
+class ignition::rendering::RenderEnginePluginPrivate
 {
-  namespace rendering
-  {
-    class RenderEnginePluginPrivate
-    {
-    };
-  }
-}
-
+};
 
 using namespace ignition;
 using namespace rendering;

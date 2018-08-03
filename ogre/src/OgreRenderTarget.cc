@@ -185,9 +185,9 @@ Ogre::Viewport *OgreRenderTarget::GetViewport(int viewportId)
 }
 
 //////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTarget::AddViewport(OgreCameraPtr camera)
+Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *camera)
 {
-  return this->RenderTarget()->addViewport(camera->OgreCameraPtr());
+  return this->RenderTarget()->addViewport(camera);
 }
 
 ////////////////////////////////////////////////

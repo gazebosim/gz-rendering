@@ -147,6 +147,9 @@ namespace ignition
 
       protected: virtual MaterialMapPtr Materials() const;
 
+      public: OgreCameraPtr CreateOgreCamera(unsigned int _id,
+                     const std::string &_name);
+
       private: void CreateContext();
 
       private: void CreateRootVisual();

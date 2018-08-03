@@ -32,7 +32,6 @@
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/base/BaseDepthCamera.hh"
-#include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
@@ -83,7 +82,7 @@ namespace ignition
       public: Ogre::Texture *pcdTexture = nullptr;
 
       /// \brief Point cloud texture
-      public: OgreRenderTargetPtr pcdTarget;
+      public: Ogre::RenderTarget *pcdTarget;
 
       /// \brief Event used to signal rgb point cloud data
       public: ignition::common::EventT<void(const float *,
@@ -123,7 +122,7 @@ namespace ignition
 
       /// \brief Set the render target, which renders the depth data
       /// \param[in] _target Pointer to the render target
-      public: virtual void SetDepthTarget(OgreRenderTargetPtr &_target);
+      public: virtual void SetDepthTarget(Ogre::RenderTarget *_target);
 
       /// \brief Connect a to the new depth image signal
       /// \param[in] _subscriber Subscriber callback function
@@ -150,7 +149,7 @@ namespace ignition
       /// \param[in] _target Render target to update
       /// \param[in] _material Material to use
       /// \param[in] _matName Material name
-      protected: void UpdateRenderTarget(OgreRenderTargetPtr &_target,
+      protected: void UpdateRenderTarget(Ogre::RenderTarget *_target,
                                        Ogre::Material *_material,
                                        const std::string &_matName);
 
@@ -173,13 +172,13 @@ namespace ignition
       protected: Ogre::Texture *depthTexture = nullptr;
 
       /// \brief Pointer to the depth target
-      protected: OgreRenderTargetPtr depthTarget;
+      protected: Ogre::RenderTarget *depthTarget;
 
       /// \brief Pointer to the depth viewport
       protected: Ogre::Viewport *depthViewport = nullptr;
 
       /// \brief Pointer to the ogre camera
-      protected: OgreCameraPtr ogreCamera;
+      protected: Ogre::Camera *ogreCamera;
 
       /// \internal
       /// \brief Pointer to private data.

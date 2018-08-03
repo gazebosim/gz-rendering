@@ -66,8 +66,6 @@ namespace ignition
 
       public: virtual math::Matrix4d ViewMatrix() const;
 
-      public: Ogre::Camera *OgreCameraPtr() const;
-
       public: void SetVFOV(double cameraVFOV) const;
 
       /// \brief Get the near clip distance
@@ -109,7 +107,6 @@ namespace ignition
       protected: math::Color backgroundColor;
 
       private: friend class OgreScene;
-      private: friend class OgreDepthCamera;
       private: friend class OgreRayQuery;
     };
   }

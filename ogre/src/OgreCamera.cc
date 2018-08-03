@@ -76,12 +76,6 @@ math::Color OgreCamera::BackgroundColor() const
   return this->renderTexture->BackgroundColor();
 }
 
-///////////////////////////////////////////////////
-Ogre::Camera *OgreCamera::OgreCameraPtr() const
-{
-  return this->ogreCamera;
-}
-
 /////////////////////////////////////////////////
 void OgreCamera::SetBackgroundColor(const math::Color &_color)
 {
@@ -109,6 +103,7 @@ RenderTargetPtr OgreCamera::RenderTarget() const
 //////////////////////////////////////////////////
 void OgreCamera::Init()
 {
+  BaseCamera::Init();
   this->CreateCamera();
   this->CreateRenderTexture();
   this->Reset();
@@ -120,8 +115,17 @@ void OgreCamera::CreateCamera()
   // create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
+  if (ogreSceneManager == nullptr)
+  {
+    ignerr << "Scene manager cannot be obtained" << std::endl;
+  }
 
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
+  if (ogreCamera == nullptr)
+  {
+    ignerr << "Ogre camera cannot be created" << std::endl;
+  }
+
   this->ogreNode->attachObject(this->ogreCamera);
 
   // rotate to Gazebo coordinate system

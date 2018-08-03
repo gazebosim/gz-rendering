@@ -26,11 +26,14 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Ogre2.x implementation of the sensor classs
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Sensor :
       public BaseSensor<Ogre2Node>
     {
+      /// \brief Constructor
       protected: Ogre2Sensor();
 
+      /// \brief Destructor
       public: virtual ~Ogre2Sensor();
     };
     }

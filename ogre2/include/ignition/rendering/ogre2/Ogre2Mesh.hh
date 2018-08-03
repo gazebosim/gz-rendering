@@ -36,54 +36,76 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Ogre2.x implementation of the mesh class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Mesh :
       public BaseMesh<Ogre2Geometry>
     {
-      typedef std::vector<std::string> NameList;
-
+      /// \brief Constructor
       protected: Ogre2Mesh();
 
+      /// \brief Destructor
       public: virtual ~Ogre2Mesh();
 
+      /// \brief Get the internal ogre movable object (ogre item)
       public: virtual Ogre::MovableObject *OgreObject() const;
 
+      /// \brief Get a list of submeshes in this mesh
       protected: virtual SubMeshStorePtr SubMeshes() const;
 
+      /// \brief Store containing all the submeshes
       protected: Ogre2SubMeshStorePtr subMeshes;
 
+      /// \brief Pointer to the ogre item object
       protected: Ogre::Item *ogreItem = nullptr;
 
+      /// \brief Make scene our friend so it can create an ogre2 mesh
       private: friend class Ogre2Scene;
 
+      /// \brief Make mesh factory our friend so it can create an ogre2 mesh
       private: friend class Ogre2MeshFactory;
     };
 
+    /// \brief Ogre2.x implementation of the submesh class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SubMesh :
       public BaseSubMesh<Ogre2Object>
     {
+      /// \brief Constructor
       protected: Ogre2SubMesh();
 
+      /// \brief Destructor
       public: virtual ~Ogre2SubMesh();
 
-      public: virtual MaterialPtr Material() const;
+      // Documentation inherited
+      public: virtual MaterialPtr Material() const override;
 
+      // Documentation inherited
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool _unique = true);
+                  bool _unique = true) override;
 
+      /// \brief Get internal ogre subitem created from this submesh
       public: virtual Ogre::SubItem *Ogre2SubItem() const;
 
+      /// \brief Destroty the submesh
       public: virtual void Destroy();
 
+      /// \brief Helper function for setting the material to use
+      /// \param[in] _material Material to be assigned to the submesh
       protected: virtual void SetMaterialImpl(Ogre2MaterialPtr _material);
 
+      /// \brief Initialize the submesh
       protected: virtual void Init();
 
+      /// \brief Submesh's material
       protected: Ogre2MaterialPtr material;
 
+      /// \brief Ogre subitem representing the submesh
       protected: Ogre::SubItem *ogreSubItem = nullptr;
 
+      /// \brief Make scene our friend so it can create an ogre2 mesh
       private: friend class Ogre2Scene;
 
+      /// \brief Make submesh factory our friend so it can create an
+      /// ogre2 submesh
       private: friend class Ogre2SubMeshStoreFactory;
     };
     }

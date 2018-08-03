@@ -38,32 +38,49 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Ogre2.x implementation of the render target class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderTarget :
       public virtual BaseRenderTarget<Ogre2Object>
     {
+      /// \brief Constructor
       protected: Ogre2RenderTarget();
 
+      /// \brief Destructor
       public: virtual ~Ogre2RenderTarget();
 
+      /// \brief Get the anti-aliasing level
       public: virtual unsigned int AntiAliasing() const;
 
+      /// \brief set the anti-aliasing level
+      /// \param[in] _aa Anti-aliasing level
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
+      /// \brief Copy the render target buffer data to an image
+      /// \param[in] _image Image to copy the data to
       public: virtual void Copy(Image &_image) const;
 
+      /// \brief Get a pointer to the internal ogre camera
+      /// \return Pointer to ogre camera
       public: virtual Ogre::Camera *Camera() const;
 
+      /// \brief Set the ogre camera to use for this render target
+      /// \param[in] _camera Pointer to ogre camera
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
       // Documentation inherited
-      public: virtual math::Color BackgroundColor() const;
+      public: virtual math::Color BackgroundColor() const override;
 
+      /// \brief Set the background color of the render target
+      /// \param[in] _color Color to set the background to
       public: virtual void SetBackgroundColor(math::Color _color);
 
+      /// \brief Prerender - called before Render
       public: virtual void PreRender();
 
+      /// \brief Main render call
       public: virtual void Render();
 
+      /// \brief Destroy the render target
       public: virtual void Destroy() = 0;
 
       /// \brief Set a material to render on every object. This method is used
@@ -71,20 +88,25 @@ namespace ignition
       /// \param[in] _material The material to render
       public: void SetMaterial(MaterialPtr _material);
 
+      /// \brief Get a pointer to the ogre render target
       protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
+      /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
 
+      /// \brief Implementation of the Rebuild function
       protected: virtual void RebuildImpl();
 
+      /// \brief Rebuild the render target
       protected: virtual void RebuildTarget() = 0;
 
+      /// \brief Rebuild the compositor
       protected: virtual void RebuildCompositor();
 
-      protected: virtual void RebuildViewport();
-
+      /// \brief Build the comopsitor
       protected: virtual void BuildCompositor();
 
+      /// \brief Destroy the compositor
       protected: virtual void DestroyCompositor();
 
       /// \brief Re-initializes render target material to apply a material to
@@ -93,12 +115,14 @@ namespace ignition
       /// \sa BaseRenderTarget::Rebuild()
       protected: void RebuildMaterial();
 
+      /// \brief Pointer to the internal ogre camera
       protected: Ogre::Camera *ogreCamera = nullptr;
 
-      // protected: Ogre::Viewport *ogreViewport = nullptr;
-
+      /// \brief Ogre's compositor workspace - the main interface to render
+      /// into a render target or render texture.
       protected: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
 
+      /// \brief Stores the background color of the render target
       protected: Ogre::ColourValue ogreBackgroundColor;
 
       /// \brief a material used by for the render target
@@ -107,50 +131,71 @@ namespace ignition
       /// \brief Helper class that applies the material to the render target
       protected: Ogre2RenderTargetMaterialPtr materialApplicator;
 
+      /// \brief Flag to indicate if the render target color has changed
       protected: bool colorDirty = true;
 
+      /// \brief Anti-aliasing level
       protected: unsigned int antiAliasing = 4;
     };
 
+    /// \brief Ogre2.x implementation of the render texture class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderTexture :
       public virtual BaseRenderTexture<Ogre2RenderTarget>
     {
+      /// \brief Constructor
       protected: Ogre2RenderTexture();
 
+      /// \brief Destructor
       public: virtual ~Ogre2RenderTexture();
 
-      public: virtual void Destroy();
+      // Documentation inherited.
+      public: virtual void Destroy() override;
 
-      protected: virtual Ogre::RenderTarget *RenderTarget() const;
+      // Documentation inherited.
+      protected: virtual Ogre::RenderTarget *RenderTarget() const override;
 
-      protected: virtual void RebuildTarget();
+      // Documentation inherited.
+      protected: virtual void RebuildTarget() override;
 
+      /// \brief Destroy the render texture
       protected: virtual void DestroyTarget();
 
+      /// \brief Build the render texture
       protected: virtual void BuildTarget();
 
+      /// \brief Pointer to the internal ogre render texture object
       protected: Ogre::Texture *ogreTexture = nullptr;
 
+      /// \brief Make scene our friend so it can create a ogre2 render texture
       private: friend class Ogre2Scene;
     };
 
+    /// \brief Ogre2.x implementation of the render window class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderWindow :
       public virtual BaseRenderWindow<Ogre2RenderTarget>
     {
+      /// \brief Constructor
       protected: Ogre2RenderWindow();
 
+      /// \brief Destructor
       public: virtual ~Ogre2RenderWindow();
 
+      // Documentation inherited.
       public: virtual void Destroy();
 
-      protected: virtual Ogre::RenderTarget *RenderTarget() const;
+      // Documentation inherited.
+      protected: virtual Ogre::RenderTarget *RenderTarget() const override;
 
-      protected: virtual void RebuildTarget();
+      // Documentation inherited.
+      protected: virtual void RebuildTarget() override;
 
+      /// \brief Build the render window
       protected: virtual void BuildTarget();
 
+      /// \brief Pointer to the internal ogre render target object
       protected: Ogre::RenderTarget *ogreRenderWindow = nullptr;
 
+      /// \brief Make scene our friend so it can create a ogre2 render window
       private: friend class Ogre2Scene;
     };
     }

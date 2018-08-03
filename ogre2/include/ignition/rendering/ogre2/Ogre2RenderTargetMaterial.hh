@@ -83,13 +83,13 @@ namespace ignition
                   const Ogre::Renderable *_rend) override;
 
       /// \brief scene manager responsible for rendering
-      private: Ogre::SceneManager *scene;
+      private: Ogre::SceneManager *scene = nullptr;
 
       /// \brief render target that should see a uniform material
-      private: Ogre::RenderTarget *renderTarget;
+      private: Ogre::RenderTarget *renderTarget = nullptr;
 
       /// \brief material that should be applied to all objects
-      private: Ogre::Material *material;
+      private: Ogre::Material *material = nullptr;
 
       /// \brief name of the material scheme used by this applicator
       private: Ogre::String schemeName;

@@ -42,7 +42,6 @@ Ogre2RenderTargetMaterial::~Ogre2RenderTargetMaterial()
 void Ogre2RenderTargetMaterial::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent & /*_evt*/)
 {
-  // this->scene->addRenderQueueListener(this);
   Ogre::MaterialManager::getSingleton().addListener(this);
 }
 

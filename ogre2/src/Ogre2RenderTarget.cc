@@ -22,7 +22,7 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-// #include "ignition/rendering/ogre2/Ogre2Material.hh"
+ #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
@@ -34,14 +34,13 @@ using namespace rendering;
 //////////////////////////////////////////////////
 Ogre2RenderTarget::Ogre2RenderTarget()
 {
-  // this->ogreBackgroundColor = Ogre::ColourValue::Black;
-  this->ogreBackgroundColor = Ogre::ColourValue::Red;
+  this->ogreBackgroundColor = Ogre::ColourValue::Black;
 }
 
 //////////////////////////////////////////////////
 Ogre2RenderTarget::~Ogre2RenderTarget()
 {
-  // TODO: clean up check null
+  // TODO(anyone)
 }
 
 //////////////////////////////////////////////////
@@ -76,7 +75,6 @@ void Ogre2RenderTarget::DestroyCompositor()
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
   ogreCompMgr->removeWorkspace(this->ogreCompositorWorkspace);
   this->ogreCompositorWorkspace = nullptr;
-  std::cerr << "destory compositor " << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -86,19 +84,11 @@ void Ogre2RenderTarget::RebuildCompositor()
   this->BuildCompositor();
 }
 
-/*
-//////////////////////////////////////////////////
-Ogre::CompositorWorkspace *Ogre2RenderTarget::CompositorWorkspace() const
-{
-  return this->ogreCompositorWorkspace;
-}
-*/
-
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
-  // TODO: handle Bayer conversions
-  // TODO: handle ogre version differences
+  // TODO(anyone) handle Bayer conversions
+  // TODO(anyone) handle ogre version differences
 
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
@@ -166,6 +156,7 @@ void Ogre2RenderTarget::PreRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
+  // TODO(anyone)
   // There is current not an easy solution to manually updating
   // render textures:
   // https://forums.ogre3d.org/viewtopic.php?t=84687
@@ -174,32 +165,31 @@ void Ogre2RenderTarget::Render()
   engine->OgreRoot()->renderOneFrame();
   this->ogreCompositorWorkspace->setEnabled(false);
 
-/*
-  this->scene->OgreSceneManager()->updateSceneGraph();
-  this->ogreCompositorWorkspace->_validateFinalTarget();
-  engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
-  this->ogreCompositorWorkspace->_beginUpdate(false);
-  this->ogreCompositorWorkspace->_update();
-  this->ogreCompositorWorkspace->_endUpdate(false);
+  // The code below for manual updating render textures was suggested in ogre
+  // forum but it does not seem to work
+  // this->scene->OgreSceneManager()->updateSceneGraph();
+  // this->ogreCompositorWorkspace->_validateFinalTarget();
+  // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
+  // this->ogreCompositorWorkspace->_beginUpdate(false);
+  // this->ogreCompositorWorkspace->_update();
+  // this->ogreCompositorWorkspace->_endUpdate(false);
 
-   this->scene->OgreSceneManager()->_frameEnded();
-	for (size_t i=0; i < Ogre::HLMS_MAX; ++i)
-	{
-    Ogre::Hlms *hlms = engine->OgreRoot()->getHlmsManager()->getHlms(
-        static_cast<Ogre::HlmsTypes>(i));
-    if(hlms)
-      hlms->frameEnded();
-	}
-  engine->OgreRoot()->getRenderSystem()->_update();
-*/
+  // this->scene->OgreSceneManager()->_frameEnded();
+	// for (size_t i=0; i < Ogre::HLMS_MAX; ++i)
+	// {
+  //   Ogre::Hlms *hlms = engine->OgreRoot()->getHlmsManager()->getHlms(
+  //       static_cast<Ogre::HlmsTypes>(i));
+  //   if(hlms)
+  //     hlms->frameEnded();
+	// }
+  // engine->OgreRoot()->getRenderSystem()->_update();
 }
 
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::UpdateBackgroundColor()
 {
-  if (this->colorDirty /*&& this->ogreViewport*/)
+  if (this->colorDirty)
   {
-//    this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
     this->colorDirty = false;
   }
 }
@@ -208,24 +198,8 @@ void Ogre2RenderTarget::UpdateBackgroundColor()
 void Ogre2RenderTarget::RebuildImpl()
 {
   this->RebuildTarget();
-  this->RebuildViewport();
   this->RebuildMaterial();
   this->RebuildCompositor();
-}
-
-//////////////////////////////////////////////////
-void Ogre2RenderTarget::RebuildViewport()
-{
-/*
-  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
-  ogreRenderTarget->removeAllViewports();
-
-  this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
-  this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
-  this->ogreViewport->setClearEveryFrame(true);
-  this->ogreViewport->setShadowsEnabled(true);
-  this->ogreViewport->setOverlaysEnabled(false);
-  */
 }
 
 //////////////////////////////////////////////////
@@ -242,7 +216,7 @@ void Ogre2RenderTarget::RebuildMaterial()
 {
   if (this->material)
   {
-/*    Ogre2Material *ogreMaterial = dynamic_cast<Ogre2Material*>(
+    Ogre2Material *ogreMaterial = dynamic_cast<Ogre2Material*>(
         this->material.get());
     Ogre::MaterialPtr matPtr = ogreMaterial->Material();
 
@@ -250,7 +224,6 @@ void Ogre2RenderTarget::RebuildMaterial()
     Ogre::RenderTarget *target = this->RenderTarget();
     this->materialApplicator.reset(new Ogre2RenderTargetMaterial(
         sceneMgr, target, matPtr.get()));
-        */
   }
 }
 
@@ -290,7 +263,7 @@ void Ogre2RenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::DestroyTarget()
 {
-  // TODO: implement
+  // TODO(anyone)
 }
 
 //////////////////////////////////////////////////
@@ -325,8 +298,7 @@ Ogre::RenderTarget *Ogre2RenderWindow::RenderTarget() const
 //////////////////////////////////////////////////
 void Ogre2RenderWindow::Destroy()
 {
-  // if (this->ogreRenderWindow)
-  //  this->ogreRenderWindow->destroy();
+  // TODO(anyone)
 }
 
 //////////////////////////////////////////////////

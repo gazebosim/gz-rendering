@@ -127,12 +127,8 @@ void Ogre2Camera::CreateCamera()
 
   // TODO: provide api access
   this->ogreCamera->setAutoAspectRatio(true);
-  // this->ogreCamera->setRenderingDistance(0);
-//  this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
-
-  // creaete compositor
 }
 
 //////////////////////////////////////////////////
@@ -150,75 +146,22 @@ void Ogre2Camera::CreateRenderTexture()
 //////////////////////////////////////////////////
 void Ogre2Camera::SetSelectionBuffer()
 {
-/*  this->selectionBuffer = new OgreSelectionBuffer(this->name,
-      this->scene->OgreSceneManager(), this->ImageWidth(),
-      this->ImageHeight());
-      */
+  // TODO(anyone)
 }
 
 //////////////////////////////////////////////////
 VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i
     &_mousePos)
 {
-/*
-  VisualPtr result;
-
-  if (!this->selectionBuffer)
-  {
-    this->SetSelectionBuffer();
-
-    if (!this->selectionBuffer)
-    {
-      return result;
-    }
-  }
-
-  int ratio = static_cast<int>(this->AspectRatio());
-
-  ignition::math::Vector2i mousePos(
-      ratio * _mousePos.X(), ratio * _mousePos.Y());
-
-  Ogre::Entity *entity = this->selectionBuffer->OnSelectionClick(
-      mousePos.X(), mousePos.Y());
-
-  if (entity)
-  {
-    if (!entity->getUserObjectBindings().getUserAny().isEmpty() &&
-        entity->getUserObjectBindings().getUserAny().getType() ==
-        typeid(unsigned int))
-    {
-      try
-      {
-        result = this->scene->VisualById(Ogre::any_cast<unsigned int>(
-              entity->getUserObjectBindings().getUserAny()));
-      }
-      catch(Ogre::Exception &e)
-      {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
-      }
-    }
-  }
-
-  return result;
-  */
+  // TODO(anyone)
+  // need to port selection buffer
   return VisualPtr();
 }
 
 //////////////////////////////////////////////////
 RenderWindowPtr Ogre2Camera::CreateRenderWindow()
 {
-/*  RenderWindowPtr base = this->scene->CreateRenderWindow();
-  OgreRenderWindowPtr renderWindow =
-      std::dynamic_pointer_cast<OgreRenderWindow>(base);
-  renderWindow->SetWidth(this->ImageWidth());
-  renderWindow->SetHeight(this->ImageHeight());
-  renderWindow->SetDevicePixelRatio(1);
-  renderWindow->SetCamera(this->ogreCamera);
-  renderWindow->SetBackgroundColor(this->scene->BackgroundColor());
-
-  this->renderTexture = renderWindow;
-  return base;
-  */
+  // TODO(anyone)
   return RenderWindowPtr();
 }
 

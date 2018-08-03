@@ -27,10 +27,7 @@
 
 namespace Ogre
 {
-  namespace v1
-  {
-    class Entity;
-  }
+  class Item;
 }
 
 namespace ignition
@@ -39,57 +36,91 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Ogre2.x implementation of the mesh factory class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2MeshFactory
     {
+      /// \brief Constructor
+      /// \param[in] _scene Pointer to the scene
       public: explicit Ogre2MeshFactory(Ogre2ScenePtr _scene);
 
+      /// \brief Destructor
       public: virtual ~Ogre2MeshFactory();
 
+      /// \brief Create a mesh from a descriptor
+      /// \param[in] _desc Mesh descriptor containing data needed to create a
+      /// mesh
       public: virtual Ogre2MeshPtr Create(const MeshDescriptor &_desc);
 
-//      protected: virtual Ogre::v1::Entity *OgreEntity(
-//                     const MeshDescriptor &_desc);
-
+      /// \brief Get the ogre item based on the mesh descriptor
+      /// \param[in] _desc Descriptor describing the target mesh
       protected: virtual Ogre::Item *OgreItem(
                      const MeshDescriptor &_desc);
 
+      /// \brief Load a mesh using a mesh descriptor
+      /// \param[in] _desc Mesh descriptor
       protected: virtual bool Load(const MeshDescriptor &_desc);
 
+      /// \brief Check if the mesh is loaded using a mesh descriptor
+      /// \param[in] _desc Mesh descriptor containing the mesh name used
+      /// by this function for checking the loaded state
       protected: virtual bool IsLoaded(const MeshDescriptor &_desc);
 
+      /// \brief Helper function to load the mesh from the input mesh descriptor
+      /// \param[in] _desc Input mesh descriptor
       protected: virtual bool LoadImpl(const MeshDescriptor &_desc);
 
+      /// \brief Get the mesh name from the mesh descriptor
+      /// \param[in] _desc Mesh descriptor containing the mesh name
       protected: virtual std::string MeshName(const MeshDescriptor &_desc);
 
+      /// \brief Validate the mesh descriptor to make sure it contains all the
+      /// needed information to create a mesh
+      /// \param[in] _desc Mesh descriptor to be validated
       protected: virtual bool Validate(const MeshDescriptor &_desc);
 
+      /// \brief Pointer to the scene object
       protected: Ogre2ScenePtr scene;
     };
 
+    /// \brief Ogre2.x implementation of a submesh store factory class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SubMeshStoreFactory
     {
-      typedef std::vector<std::string> NameList;
-
+      /// \brief Constructor
+      /// \param[in] _scene Pointer to the scene object
+      /// \param[in] _item Parent ogre item
       public: Ogre2SubMeshStoreFactory(Ogre2ScenePtr _scene,
                   Ogre::Item *_item);
 
+      /// \brief Destructor
       public: virtual ~Ogre2SubMeshStoreFactory();
 
+      /// \brief Create the submeshes
+      /// \return A store containing all the submeshes
       public: virtual Ogre2SubMeshStorePtr Create();
 
+      /// \brief Helper function to create submesh at the given index
+      /// \param[in] _index Index of the ogre subitem. The subitem is then used
+      /// to create the submesh.
       protected: virtual Ogre2SubMeshPtr CreateSubMesh(unsigned int _index);
 
+      /// \brief Create a list of names and the corresponding submesh object
       protected: virtual void CreateNameList();
 
+      /// \brief Populate the name list with default generated names
       protected: virtual void PopulateDefaultNames();
 
+      /// \brief Populate the name list with names associated with each ogre
+      /// subitem
       protected: virtual void PopulateGivenNames();
 
+      /// \brief Pointer to the scene object
       protected: Ogre2ScenePtr scene;
 
+      /// \brief Pointer to the parent ogre item
       protected: Ogre::Item *ogreItem = nullptr;
 
-      protected: NameList names;
+      /// \brief A list of names associated with each ogre subitem / submesh
+      protected: std::vector<std::string> names;
     };
     }
   }

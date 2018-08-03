@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,9 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2CAMERA_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2CAMERA_HH_
 
-#include <string>
-
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
-// #include "ignition/rendering/ogre2/OgreSelectionBuffer.hh"
 
 namespace Ogre
 {
@@ -35,37 +32,51 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Ogre2.x implementation of the camera class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Camera :
       public BaseCamera<Ogre2Sensor>
     {
+      /// \brief Constructor
       protected: Ogre2Camera();
 
+      /// \brief Destructor
       public: virtual ~Ogre2Camera();
 
+      // Documenation inherited.
       public: virtual void SetHFOV(const math::Angle &_angle) override;
 
+      // Documenation inherited.
       public: virtual double AspectRatio() const override;
 
+      // Documenation inherited.
       public: virtual void SetAspectRatio(const double _ratio) override;
 
+      // Documenation inherited.
       public: virtual unsigned int AntiAliasing() const override;
 
+      // Documenation inherited.
       public: virtual void SetAntiAliasing(const unsigned int _aa) override;
 
+      // Documenation inherited.
       public: virtual void SetFarClipPlane(const double _far) override;
 
+      // Documenation inherited.
       public: virtual void SetNearClipPlane(const double _near) override;
 
       public: virtual math::Color BackgroundColor() const;
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
+      // Documenation inherited.
       public: virtual void Render() override;
 
+      // Documenation inherited.
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
+      // Documenation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
+      // Documenation inherited.
       public: virtual math::Matrix4d ViewMatrix() const override;
 
       // Documentation inherited
@@ -77,26 +88,33 @@ namespace ignition
       public: virtual void SetMaterial(
                   const MaterialPtr &_material) override;
 
+      // Documenation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
+      // Documenation inherited.
       protected: virtual void Init() override;
 
-      protected: virtual void SetSelectionBuffer();
-
-      private: void CreateCamera();
-
+      /// \brief Create a render texture for the camera for offscreen rendering
       protected: virtual void CreateRenderTexture();
 
+      /// \brief Create and set selection buffer object
+      /// TODO(anyone) to be implemented
+      protected: virtual void SetSelectionBuffer();
+
+      /// \brief Create internal camera object
+      private: void CreateCamera();
+
+      /// \brief Pointer to ogre camera object
       protected: Ogre::Camera *ogreCamera = nullptr;
 
-//      protected: OgreSelectionBuffer *selectionBuffer = nullptr;
-
+      /// \brief Pointer to render texture
       protected: Ogre2RenderTargetPtr renderTexture;
 
+      /// \brief Color of background
       protected: math::Color backgroundColor;
 
+      /// \brief Make scene our friend so it can create a camera
       private: friend class Ogre2Scene;
-      // private: friend class Ogre2RayQuery;
     };
     }
   }

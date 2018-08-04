@@ -306,84 +306,99 @@ bool Ogre2Scene::InitImpl()
 //////////////////////////////////////////////////
 LightStorePtr Ogre2Scene::Lights() const
 {
-  // TODO(anyone)
+//  return this->lights;
   return LightStorePtr();
 }
 
 //////////////////////////////////////////////////
 SensorStorePtr Ogre2Scene::Sensors() const
 {
-  // TODO(anyone)
-  return SensorStorePtr();
+  return this->sensors;
 }
 
 //////////////////////////////////////////////////
 VisualStorePtr Ogre2Scene::Visuals() const
 {
-  // TODO(anyone)
-  return VisualStorePtr();
+  return this->visuals;
 }
 
 //////////////////////////////////////////////////
 MaterialMapPtr Ogre2Scene::Materials() const
 {
-  // TODO(anyone)
-  return MaterialMapPtr();
+  return this->materials;
 }
 
 //////////////////////////////////////////////////
-DirectionalLightPtr Ogre2Scene::CreateDirectionalLightImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+DirectionalLightPtr Ogre2Scene::CreateDirectionalLightImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
+/*  OgreDirectionalLightPtr light(new OgreDirectionalLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
+  */
   return DirectionalLightPtr();
 }
 
 //////////////////////////////////////////////////
-PointLightPtr Ogre2Scene::CreatePointLightImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+PointLightPtr Ogre2Scene::CreatePointLightImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
+/*  OgrePointLightPtr light(new OgrePointLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
+  */
   return PointLightPtr();
 }
 
 //////////////////////////////////////////////////
-SpotLightPtr Ogre2Scene::CreateSpotLightImpl(unsigned int /*_id*/,
-    const std::string &/*`_name*/)
+SpotLightPtr Ogre2Scene::CreateSpotLightImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
+/*  OgreSpotLightPtr light(new OgreSpotLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
+  */
   return SpotLightPtr();
 }
 
 //////////////////////////////////////////////////
-CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return CameraPtr();
+  Ogre2CameraPtr camera(new Ogre2Camera);
+  bool result = this->InitObject(camera, _id, _name);
+  camera->SetBackgroundColor(this->backgroundColor);
+  return (result) ? camera : nullptr;
 }
 
 //////////////////////////////////////////////////
-VisualPtr Ogre2Scene::CreateVisualImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+VisualPtr Ogre2Scene::CreateVisualImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return VisualPtr();
+  Ogre2VisualPtr visual(new Ogre2Visual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
-ArrowVisualPtr Ogre2Scene::CreateArrowVisualImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+ArrowVisualPtr Ogre2Scene::CreateArrowVisualImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
+/*  OgreArrowVisualPtr visual(new OgreArrowVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+  */
   return ArrowVisualPtr();
 }
 
 //////////////////////////////////////////////////
-AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
+/*  OgreAxisVisualPtr visual(new OgreAxisVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+  */
   return AxisVisualPtr();
 }
 
@@ -431,58 +446,71 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/, const MeshDescriptor &/*_desc*/)
+MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id, const std::string &_name,
+    const MeshDescriptor &_desc)
 {
-  // TODO(anyone)
-  return MeshPtr();
+  Ogre2MeshPtr mesh = this->meshFactory->Create(_desc);
+  bool result = this->InitObject(mesh, _id, _name);
+  return (result) ? mesh : nullptr;
 }
 
 //////////////////////////////////////////////////
-GridPtr Ogre2Scene::CreateGridImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+GridPtr Ogre2Scene::CreateGridImpl(unsigned int _id, const std::string &_name)
 {
-  // TODO(anyone)
+/*  OgreGridPtr grid(new OgreGrid);
+  bool result = this->InitObject(grid, _id, _name);
+  return (result) ? grid: nullptr;
+  */
   return GridPtr();
 }
 
 //////////////////////////////////////////////////
-TextPtr Ogre2Scene::CreateTextImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+TextPtr Ogre2Scene::CreateTextImpl(unsigned int _id, const std::string &_name)
 {
-  // TODO(anyone)
+/*  OgreTextPtr text(new OgreText);
+  bool result = this->InitObject(text, _id, _name);
+  return (result) ? text: nullptr;
+  */
   return TextPtr();
 }
 
 //////////////////////////////////////////////////
-MaterialPtr Ogre2Scene::CreateMaterialImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+MaterialPtr Ogre2Scene::CreateMaterialImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return MaterialPtr();
+  Ogre2MaterialPtr material(new Ogre2Material);
+  bool result = this->InitObject(material, _id, _name);
+  return (result) ? material : nullptr;
 }
 
 //////////////////////////////////////////////////
-RenderTexturePtr Ogre2Scene::CreateRenderTextureImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+RenderTexturePtr Ogre2Scene::CreateRenderTextureImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return RenderTexturePtr();
+  Ogre2RenderTexturePtr renderTexture(new Ogre2RenderTexture);
+  bool result = this->InitObject(renderTexture, _id, _name);
+  return (result) ? renderTexture : nullptr;
 }
 
 //////////////////////////////////////////////////
-RenderWindowPtr Ogre2Scene::CreateRenderWindowImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+RenderWindowPtr Ogre2Scene::CreateRenderWindowImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
+/*  OgreRenderWindowPtr renderWindow(new OgreRenderWindow);
+  bool result = this->InitObject(renderWindow, _id, _name);
+  return (result) ? renderWindow: nullptr;
+  */
   return RenderWindowPtr();
 }
 
 //////////////////////////////////////////////////
-RayQueryPtr Ogre2Scene::CreateRayQueryImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+RayQueryPtr Ogre2Scene::CreateRayQueryImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
+/*  OgreRayQueryPtr rayQuery(new OgreRayQuery);
+  bool result = this->InitObject(rayQuery, _id, _name);
+  return (result) ? rayQuery : nullptr;
+  */
   return RayQueryPtr();
 }
 
@@ -528,24 +556,59 @@ void Ogre2Scene::CreateContext()
   this->ogreSceneManager->getRenderQueue()->setSortRenderQueue(
       Ogre::v1::OverlayManager::getSingleton().mDefaultRenderQueueId,
       Ogre::RenderQueue::StableSort);
+
+
+  // TODO remove me!!!!
+  auto sceneManager = this->ogreSceneManager;
+  auto rootNode = sceneManager->getRootSceneNode();
+       Ogre::Light *light = sceneManager->createLight();
+        Ogre::SceneNode *lightNode = rootNode->createChildSceneNode();
+        lightNode->attachObject(light);
+        light->setPowerScale(1.0f);
+        light->setType(Ogre::Light::LT_DIRECTIONAL);
+        light->setDirection(Ogre::Vector3(-1, -1, -1).normalisedCopy());
+
+
+        sceneManager->setAmbientLight(
+            Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f,
+            Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f,
+            -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateRootVisual()
 {
-  // TODO(anyone)
+  // create unregistered visual
+  this->rootVisual = Ogre2VisualPtr(new Ogre2Visual);
+  unsigned int rootId = this->CreateObjectId();
+  std::string rootName = this->CreateObjectName(rootId, "_ROOT_");
+
+  // check if root visual created successfully
+  if (!this->InitObject(this->rootVisual, rootId, rootName))
+  {
+    ignerr << "Unable to create root visual" << std::endl;
+    this->rootVisual = nullptr;
+  }
+
+  // add visual node to actual ogre root
+  Ogre::SceneNode *ogreRootNode = this->rootVisual->Node();
+  this->ogreSceneManager->getRootSceneNode()->addChild(ogreRootNode);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateMeshFactory()
 {
-  // TODO(anyone)
+  Ogre2ScenePtr sharedThis = this->SharedThis();
+  this->meshFactory = Ogre2MeshFactoryPtr(new Ogre2MeshFactory(sharedThis));
 }
 
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateStores()
 {
-  // TODO(anyone)
+//  this->lights = OgreLightStorePtr(new OgreLightStore);
+  this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
+  this->visuals = Ogre2VisualStorePtr(new Ogre2VisualStore);
+  this->materials = Ogre2MaterialMapPtr(new Ogre2MaterialMap);
 }
 
 //////////////////////////////////////////////////

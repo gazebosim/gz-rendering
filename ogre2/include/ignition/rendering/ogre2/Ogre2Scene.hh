@@ -22,6 +22,7 @@
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "ignition/rendering/ogre2/Export.hh"
 
@@ -198,6 +199,9 @@ namespace ignition
 
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();
+
+      /// \brief A list of ogre sensors, e.g. cameras
+      protected: Ogre2SensorStorePtr sensors;
 
       /// \brief Pointer to the ogre root object
       protected: Ogre::Root *ogreRoot = nullptr;

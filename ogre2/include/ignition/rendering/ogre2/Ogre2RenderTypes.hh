@@ -26,21 +26,33 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    class Ogre2Camera;
     class Ogre2Node;
     class Ogre2Object;
     class Ogre2RenderEngine;
+    class Ogre2RenderTarget;
+    class Ogre2RenderTexture;
+    class Ogre2RenderWindow;
     class Ogre2Scene;
     class Ogre2Sensor;
 
     typedef BaseSceneStore<Ogre2Scene>            Ogre2SceneStore;
     typedef BaseNodeStore<Ogre2Node>              Ogre2NodeStore;
+    typedef BaseSensorStore<Ogre2Sensor>          Ogre2SensorStore;
+
+    typedef shared_ptr<Ogre2Camera>               Ogre2CameraPtr;
     typedef shared_ptr<Ogre2Node>                 Ogre2NodePtr;
     typedef shared_ptr<Ogre2Object>               Ogre2ObjectPtr;
     typedef shared_ptr<Ogre2RenderEngine>         Ogre2RenderEnginePtr;
+    typedef shared_ptr<Ogre2RenderTarget>         Ogre2RenderTargetPtr;
+    typedef shared_ptr<Ogre2RenderTexture>        Ogre2RenderTexturePtr;
+    typedef shared_ptr<Ogre2RenderWindow>         Ogre2RenderWindowPtr;
     typedef shared_ptr<Ogre2Scene>                Ogre2ScenePtr;
+    typedef shared_ptr<Ogre2Sensor>               Ogre2SensorPtr;
 
-    typedef shared_ptr<Ogre2SceneStore>           Ogre2SceneStorePtr;
     typedef shared_ptr<Ogre2NodeStore>            Ogre2NodeStorePtr;
+    typedef shared_ptr<Ogre2SceneStore>           Ogre2SceneStorePtr;
+    typedef shared_ptr<Ogre2SensorStore>          Ogre2SensorStorePtr;
     }
   }
 }

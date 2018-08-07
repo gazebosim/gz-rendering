@@ -55,13 +55,13 @@ void BaseObject::Destroy()
 }
 
 //////////////////////////////////////////////////
-// TODO: make pure virtual
+// TODO(anyone): make pure virtual
 void BaseObject::Load()
 {
 }
 
 //////////////////////////////////////////////////
-// TODO: make pure virtual
+// TODO(anyone): make pure virtual
 void BaseObject::Init()
 {
 }

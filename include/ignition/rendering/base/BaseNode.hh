@@ -248,7 +248,7 @@ namespace ignition
     void BaseNode<T>::SetWorldPosition(const math::Vector3d &_position)
     {
       math::Pose3d pose = this->WorldPose();
-      pose.Pos() =_position;
+      pose.Pos() = _position;
       this->SetWorldPose(pose);
     }
 

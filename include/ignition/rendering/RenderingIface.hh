@@ -46,8 +46,7 @@ namespace ignition
 
     /// \brief Get the number of available render-engines
     /// \return The number of available render-engines
-    IGNITION_RENDERING_VISIBLE
-    unsigned int engineCount();
+    unsigned int IGNITION_RENDERING_VISIBLE engineCount();
 
     /// \brief Determine if a render-engine is registered under the given name
     /// \param[in] _name Name of the desired render-engine
@@ -60,8 +59,7 @@ namespace ignition
     /// returned.
     /// \param[in] _name Name of the desired render-engine
     /// \return The specified render-engine
-    IGNITION_RENDERING_VISIBLE
-    RenderEngine *engine(const std::string &_name);
+    RenderEngine IGNITION_RENDERING_VISIBLE *engine(const std::string &_name);
 
     /// \brief Get the render-engine registered at the given index. If no
     /// render-engine is registered at the given index, NULL will be returned.

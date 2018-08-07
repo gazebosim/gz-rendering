@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BASE_BASESTORAGE_HH_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 

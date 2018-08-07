@@ -222,7 +222,7 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter)
 //////////////////////////////////////////////////
 void RenderEngineManagerPrivate::RegisterDefaultEngines()
 {
-  // TODO(anyone) Find a cleaner way to get the default engine library name
+  // TODO(anyone): Find a cleaner way to get the default engine library name
 
   // cppcheck-suppress unreadVariable
   std::string libName = "ignition-rendering" +

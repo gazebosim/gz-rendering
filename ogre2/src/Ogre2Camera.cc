@@ -125,7 +125,7 @@ void Ogre2Camera::CreateCamera()
   this->ogreCamera->roll(Ogre::Degree(-90.0));
   this->ogreCamera->setFixedYawAxis(false);
 
-  // TODO: provide api access
+  // TODO(anyone): provide api access
   this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);

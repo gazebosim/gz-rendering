@@ -294,7 +294,7 @@ void Ogre2RenderWindow::Destroy()
 //////////////////////////////////////////////////
 void Ogre2RenderWindow::RebuildTarget()
 {
-  // TODO determine when to rebuild
+  // TODO(anyone): determine when to rebuild
   // ie. only when ratio or handle changes!
   // e.g. sizeDirty?
   if (!this->ogreRenderWindow)

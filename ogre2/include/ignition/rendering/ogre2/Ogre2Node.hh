@@ -96,7 +96,7 @@ namespace ignition
       /// \brief The underlying ogre scene node
       protected: Ogre::SceneNode *ogreNode = nullptr;
 
-      // TODO remove the need for a visual friend class
+      // TODO(anyone): remove the need for a visual friend class
       private: friend class Ogre2Visual;
     };
     }

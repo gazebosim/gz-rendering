@@ -96,7 +96,7 @@ void Ogre2RenderTarget::Copy(Image &_image) const
     return;
   }
 
-  void* data = _image.Data();
+  void *data = _image.Data();
   Ogre::PixelFormat imageFormat = Ogre2Conversions::Convert(_image.Format());
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
   this->RenderTarget()->copyContentsToMemory(ogrePixelBox);

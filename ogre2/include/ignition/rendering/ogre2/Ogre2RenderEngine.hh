@@ -166,12 +166,6 @@ namespace ignition
       /// \brief Pointer to the ogre's overlay system
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
 
-      /// \brief Flag to indicate if engine is loaded
-      private: bool loaded = false;
-
-      /// \brief Flag to indicate if engine is initialized
-      private: bool initialized = false;
-
       /// \brief List of scenes managed by the render engine
       // private: Ogre2SceneStorePtr scenes;
       private: SceneStorePtr scenes;

@@ -288,7 +288,7 @@ namespace ignition
 
       typedef std::shared_ptr<UStore> UStorePtr;
 
-      public: BaseStoreWrapper(UStorePtr _store);
+      public: explicit BaseStoreWrapper(UStorePtr _store);
 
       public: virtual ~BaseStoreWrapper();
 

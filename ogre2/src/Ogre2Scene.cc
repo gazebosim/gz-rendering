@@ -355,6 +355,8 @@ void Ogre2Scene::CreateMeshFactory()
 void Ogre2Scene::CreateStores()
 {
   // TODO(anyone)
+  // there will be a few more stores added to this class,
+  // e.g. to store visuals, lights, materials, etc
   this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
 }
 

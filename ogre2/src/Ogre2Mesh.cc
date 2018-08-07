@@ -15,6 +15,10 @@
  *
  */
 
+// Note this include is placed in the src file because
+// otherwise ogre produces compile errors
+#include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
+
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
@@ -96,12 +100,9 @@ void Ogre2SubMesh::Destroy()
 //////////////////////////////////////////////////
 void Ogre2SubMesh::SetMaterialImpl(Ogre2MaterialPtr _material)
 {
-//  std::string materialName = _material->Name();
-  Ogre::MaterialPtr ogreMaterial = _material->Material();
-  // TODO use Hlms datablocks
-  // https://ogrecave.github.io/ogre/api/2.1/TechnicalOverview.html
-  // this->ogreSubEntity->setMaterialName(materialName);
   this->material = _material;
+  this->ogreSubItem->setDatablock(
+      dynamic_cast<Ogre::HlmsDatablock *>(this->material->Datablock()));
 }
 
 //////////////////////////////////////////////////

@@ -15,6 +15,10 @@
  *
  */
 
+// Note this include is placed in the src file because
+// otherwise ogre produces compile errors
+#include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
+
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 
@@ -40,69 +44,71 @@ Ogre2Material::~Ogre2Material()
 //////////////////////////////////////////////////
 bool Ogre2Material::LightingEnabled() const
 {
-//  return this->ogrePass->getLightingEnabled();
   return true;
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetLightingEnabled(bool _enabled)
+void Ogre2Material::SetLightingEnabled(bool /*_enabled*/)
 {
-//  this->ogrePass->setLightingEnabled(_enabled);
-//  this->UpdateColorOperation();
+  // Not supported in Ogre2
 }
 
 //////////////////////////////////////////////////
 math::Color Ogre2Material::Ambient() const
 {
-//  return OgreConversions::Convert(this->ogrePass->getAmbient());
+  // Not supported in Ogre2
   return math::Color::White;
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetAmbient(const math::Color &_color)
+void Ogre2Material::SetAmbient(const math::Color &/*_color*/)
 {
-//  this->ogrePass->setAmbient(OgreConversions::Convert(_color));
-//  this->UpdateColorOperation();
-//  this->UpdateTransparency();
+  // Not supported in Ogre2
 }
 
 //////////////////////////////////////////////////
 math::Color Ogre2Material::Diffuse() const
 {
-//  return OgreConversions::Convert(this->ogrePass->getDiffuse());
-  return math::Color::White;
+  Ogre::Vector3 diffuse =
+      this->ogreDatablock->getDiffuse();
+  return math::Color(diffuse.x, diffuse.y, diffuse.z, 1.0);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetDiffuse(const math::Color &_color)
 {
-//  this->ogrePass->setDiffuse(OgreConversions::Convert(_color));
+  this->ogreDatablock->setDiffuse(
+      Ogre::Vector3(_color.R(), _color.G(), _color.B()));
 }
 
 //////////////////////////////////////////////////
 math::Color Ogre2Material::Specular() const
 {
-//  return OgreConversions::Convert(this->ogrePass->getSpecular());
-  return math::Color::White;
+  Ogre::Vector3 specular =
+      this->ogreDatablock->getSpecular();
+  return math::Color(specular.x, specular.y, specular.z, 1.0);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetSpecular(const math::Color &_color)
 {
-//  this->ogrePass->setSpecular(OgreConversions::Convert(_color));
+  this->ogreDatablock->setSpecular(
+      Ogre::Vector3(_color.R(), _color.G(), _color.B()));
 }
 
 //////////////////////////////////////////////////
 math::Color Ogre2Material::Emissive() const
 {
-//  return OgreConversions::Convert(this->ogrePass->getEmissive());
-  return math::Color::White;
+  Ogre::Vector3 emissive =
+      this->ogreDatablock->getEmissive();
+  return math::Color(emissive.x, emissive.y, emissive.z, 1.0);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetEmissive(const math::Color &_color)
 {
-//  this->ogrePass->setEmissive(OgreConversions::Convert(_color));
+  this->ogreDatablock->setEmissive(
+      Ogre::Vector3(_color.R(), _color.G(), _color.B()));
 }
 
 //////////////////////////////////////////////////
@@ -115,7 +121,6 @@ double Ogre2Material::Shininess() const
 void Ogre2Material::SetShininess(const double _shininess)
 {
   this->shininess = _shininess;
-//  this->ogrePass->setShininess(this->shininess);
 }
 
 //////////////////////////////////////////////////
@@ -128,7 +133,8 @@ double Ogre2Material::Transparency() const
 void Ogre2Material::SetTransparency(const double _transparency)
 {
   this->transparency = std::min(std::max(_transparency, 0.0), 1.0);
-  this->UpdateTransparency();
+  // from ogre documentation: 0 = full transparency and 1 = fully opaque
+  this->ogreDatablock->setTransparency(1-this->transparency);
 }
 
 //////////////////////////////////////////////////
@@ -152,21 +158,19 @@ bool Ogre2Material::CastShadows() const
 //////////////////////////////////////////////////
 void Ogre2Material::SetCastShadows(const bool _castShadows)
 {
-  // TODO: update RTShader
   this->castShadows = _castShadows;
 }
 
 //////////////////////////////////////////////////
 bool Ogre2Material::ReceiveShadows() const
 {
-//  return this->ogreMaterial->getReceiveShadows();
-  return true;
+  return this->ogreDatablock->getReceiveShadows();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetReceiveShadows(const bool _receiveShadows)
 {
-//  this->ogreMaterial->setReceiveShadows(_receiveShadows);
+  this->ogreDatablock->setReceiveShadows(_receiveShadows);
 }
 
 //////////////////////////////////////////////////
@@ -211,8 +215,10 @@ void Ogre2Material::SetTexture(const std::string &_name)
 void Ogre2Material::ClearTexture()
 {
   this->textureName = "";
-//  this->ogreTexState->setBlank();
-  this->UpdateColorOperation();
+  Ogre::HlmsTextureManager *hlmsTextureManager =
+      this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
+  this->ogreDatablock->setTexture(Ogre::PBSM_DIFFUSE, 0,
+      hlmsTextureManager->getBlankTexture().texture);
 }
 
 //////////////////////////////////////////////////
@@ -237,16 +243,26 @@ void Ogre2Material::SetNormalMap(const std::string &_name)
   }
 
   this->normalMapName = _name;
-  // TODO: implement
-  // this->SetNormalMapImpl(texture);
+  this->SetNormalMapImpl(this->normalMapName);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearNormalMap()
 {
   this->normalMapName = "";
+
+  Ogre::HlmsTextureManager *hlmsTextureManager =
+      this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
+  this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, 0,
+      hlmsTextureManager->getBlankTexture().texture);
 }
 
+//////////////////////////////////////////////////
+void Ogre2Material::PreRender()
+{
+  // this->UpdateShaderParams();
+}
+/*
 //////////////////////////////////////////////////
 enum ShaderType Ogre2Material::ShaderType() const
 {
@@ -258,17 +274,10 @@ void Ogre2Material::SetShaderType(enum ShaderType _type)
 {
   this->shaderType = (ShaderUtil::IsValid(_type)) ? _type : ST_PIXEL;
 }
-
-//////////////////////////////////////////////////
-void Ogre2Material::PreRender()
-{
-  this->UpdateShaderParams();
-}
-
 //////////////////////////////////////////////////
 void Ogre2Material::UpdateShaderParams()
 {
-/*  if (this->vertexShaderParams && this->vertexShaderParams->IsDirty())
+  if (this->vertexShaderParams && this->vertexShaderParams->IsDirty())
   {
     Ogre::GpuProgramParametersSharedPtr ogreParams;
     ogreParams = this->ogrePass->getVertexProgramParameters();
@@ -282,14 +291,13 @@ void Ogre2Material::UpdateShaderParams()
     this->UpdateShaderParams(this->fragmentShaderParams, ogreParams);
     this->fragmentShaderParams->ClearDirty();
   }
-  */
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
     Ogre::GpuProgramParametersSharedPtr _ogreParams)
 {
-/*  for (const auto name_param : *_params)
+  for (const auto name_param : *_params)
   {
     if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
     {
@@ -304,13 +312,12 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       _ogreParams->setNamedConstant(name_param.first, value);
     }
   }
-  */
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetVertexShader(const std::string &_path)
 {
-/*  if (_path.empty())
+  if (_path.empty())
     return;
 
   if (!common::exists(_path))
@@ -342,7 +349,6 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
 
   this->vertexShaderPath = _path;
   this->vertexShaderParams.reset(new ShaderParams);
-  */
 }
 
 //////////////////////////////////////////////////
@@ -361,7 +367,7 @@ ShaderParamsPtr Ogre2Material::VertexShaderParams()
 //////////////////////////////////////////////////
 void Ogre2Material::SetFragmentShader(const std::string &_path)
 {
-/*  if (_path.empty())
+  if (_path.empty())
     return;
 
   if (!common::exists(_path))
@@ -395,7 +401,6 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
 
   this->fragmentShaderPath = _path;
   this->fragmentShaderParams.reset(new ShaderParams);
-  */
 }
 
 //////////////////////////////////////////////////
@@ -410,7 +415,7 @@ ShaderParamsPtr Ogre2Material::FragmentShaderParams()
 //  return this->fragmentShaderParams;
   return ShaderParamsPtr();
 }
-
+*/
 //////////////////////////////////////////////////
 Ogre::MaterialPtr Ogre2Material::Material() const
 {
@@ -418,9 +423,15 @@ Ogre::MaterialPtr Ogre2Material::Material() const
 }
 
 //////////////////////////////////////////////////
+Ogre::HlmsPbsDatablock *Ogre2Material::Datablock() const
+{
+  return this->ogreDatablock;
+}
+/*
+//////////////////////////////////////////////////
 void Ogre2Material::LoadImage(const std::string &_name, Ogre::Image &_image)
 {
-/*  try
+  try
   {
     if (Ogre::ResourceGroupManager::getSingleton().resourceExists(
         this->ogreGroup, _name))
@@ -444,9 +455,9 @@ void Ogre2Material::LoadImage(const std::string &_name, Ogre::Image &_image)
   {
     ignerr << "Unable to load texture image: " << ex.what() << std::endl;
   }
-  */
 }
 
+  */
 //////////////////////////////////////////////////
 void Ogre2Material::SetTextureImpl(const std::string &_texture)
 {
@@ -460,12 +471,34 @@ void Ogre2Material::SetTextureImpl(const std::string &_texture)
   this->ogreTexState->setTextureName(_texture);
   this->UpdateColorOperation();
   */
+  Ogre::HlmsTextureManager *hlmsTextureManager =
+      this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
+  Ogre::HlmsTextureManager::TextureLocation texLocation =
+      hlmsTextureManager->createOrRetrieveTexture(_texture,
+      Ogre::HlmsTextureManager::TEXTURE_TYPE_DIFFUSE);
+
+  this->ogreDatablock->setTexture(Ogre::PBSM_DIFFUSE, texLocation.xIdx,
+      texLocation.texture);
 }
 
 //////////////////////////////////////////////////
+void Ogre2Material::SetNormalMapImpl(const std::string &_normalMap)
+{
+  Ogre::HlmsTextureManager *hlmsTextureManager =
+      this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
+  Ogre::HlmsTextureManager::TextureLocation texLocation =
+      hlmsTextureManager->createOrRetrieveTexture(_normalMap,
+      Ogre::HlmsTextureManager::TEXTURE_TYPE_NORMALS);
+
+  this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, texLocation.xIdx,
+      texLocation.texture);
+}
+
+/*
+//////////////////////////////////////////////////
 Ogre::TexturePtr Ogre2Material::Texture(const std::string &_name)
 {
-/*  Ogre::TextureManager &texManager = Ogre::TextureManager::getSingleton();
+  Ogre::TextureManager &texManager = Ogre::TextureManager::getSingleton();
 
   if (texManager.resourceExists(_name))
   {
@@ -473,14 +506,14 @@ Ogre::TexturePtr Ogre2Material::Texture(const std::string &_name)
   }
 
   return this->CreateTexture(_name);
-  */
-  return Ogre::TexturePtr();
+  // return Ogre::TexturePtr();
 }
-
+  */
+/*
 //////////////////////////////////////////////////
 Ogre::TexturePtr Ogre2Material::CreateTexture(const std::string &_name)
 {
-/*  Ogre::Image image;
+  Ogre::Image image;
   Ogre::TexturePtr texture;
 
   this->LoadImage(_name, image);
@@ -497,38 +530,15 @@ Ogre::TexturePtr Ogre2Material::CreateTexture(const std::string &_name)
 
   texture->loadImage(image);
   return texture;
-  */
-  return Ogre::TexturePtr();
+  // return Ogre::TexturePtr();
 }
 
-//////////////////////////////////////////////////
-void Ogre2Material::UpdateTransparency()
-{
-/*  Ogre::ColourValue ambient = this->ogrePass->getAmbient();
-  double alpha = (1 - this->transparency) * ambient.a;
-
-  if (alpha < 1)
-  {
-    this->ogrePass->setDepthWriteEnabled(false);
-    this->ogrePass->setDepthCheckEnabled(true);
-    this->ogrePass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
-
-    this->ogreTexState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL,
-        Ogre::LBS_CURRENT, alpha);
-  }
-  else
-  {
-    this->ogrePass->setDepthWriteEnabled(true);
-    this->ogrePass->setDepthCheckEnabled(true);
-    this->ogrePass->setSceneBlending(Ogre::SBT_REPLACE);
-  }
   */
-}
-
+/*
 //////////////////////////////////////////////////
 void Ogre2Material::UpdateColorOperation()
 {
-/*  Ogre::LayerBlendOperationEx operation;
+  Ogre::LayerBlendOperationEx operation;
   Ogre::LayerBlendSource source1;
   Ogre::LayerBlendSource source2;
   Ogre::ColourValue color;
@@ -542,13 +552,35 @@ void Ogre2Material::UpdateColorOperation()
   color = this->ogrePass->getAmbient();
 
   this->ogreTexState->setColourOperationEx(operation, source1, source2, color);
-  */
 }
+
+  */
 
 //////////////////////////////////////////////////
 void Ogre2Material::Init()
 {
   BaseMaterial::Init();
+
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::HlmsManager *hlmsManager = root->getHlmsManager();
+  this->ogreHlmsPbs = static_cast<Ogre::HlmsPbs*>(
+      hlmsManager->getHlms(Ogre::HLMS_PBS));
+
+  if (!this->ogreHlmsPbs)
+  {
+    ignerr << "Ogre HLMS PBS not ready. Is Ogre2 Render Engine initiallized?"
+           << std::endl;
+    return;
+  }
+  this->ogreDatablock =  static_cast<Ogre::HlmsPbsDatablock*>(
+      this->ogreHlmsPbs->createDatablock(this->name,
+                                     this->name,
+                                     Ogre::HlmsMacroblock(),
+                                     Ogre::HlmsBlendblock(),
+                                     Ogre::HlmsParamVec()));
+
+  this->Reset();
+
 /*  this->ogreGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
   Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
   this->ogreMaterial = matManager.create(this->name, this->ogreGroup);

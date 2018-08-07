@@ -79,15 +79,23 @@ Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
   std::string name = this->MeshName(_desc);
   Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
 
-  Ogre::v1::MeshPtr v1Mesh =
-      Ogre::v1::MeshManager::getSingleton().getByName(name);
-  if (!v1Mesh)
-    return nullptr;
+  Ogre::MeshPtr mesh =
+      Ogre::MeshManager::getSingleton().getByName(name);
+  if (!mesh)
+  {
+    Ogre::v1::MeshPtr v1Mesh =
+        Ogre::v1::MeshManager::getSingleton().getByName(name);
+    if (!v1Mesh)
+    {
+      ignerr << "Ogre v1 mesh was not created: " << name << std::endl;
+      return nullptr;
+    }
 
-  Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual(
-              name, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual(
+        name, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-  mesh->importV1(v1Mesh.get(), true, true, true);
+    mesh->importV1(v1Mesh.get(), true, true, true);
+  }
 
   return sceneManager->createItem(mesh, Ogre::SCENE_DYNAMIC);
 }

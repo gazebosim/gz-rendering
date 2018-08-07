@@ -95,10 +95,6 @@ namespace ignition
 
       public: virtual void ClearNormalMap();
 
-      public: virtual enum ShaderType ShaderType() const;
-
-      public: virtual void SetShaderType(enum ShaderType _type);
-
       public: virtual void PreRender();
 
       public: virtual void Destroy();

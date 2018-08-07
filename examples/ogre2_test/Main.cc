@@ -50,6 +50,26 @@ void buildScene(ScenePtr _scene)
 //  center->SetMaterial(green);
   root->AddChild(center);
 
+  // create red material
+  MaterialPtr red = _scene->CreateMaterial();
+  red->SetAmbient(0.5, 0.0, 0.0);
+  red->SetDiffuse(1.0, 0.0, 0.0);
+  red->SetSpecular(0.5, 0.5, 0.5);
+  red->SetShininess(50);
+  red->SetReflectivity(0);
+
+  // create sphere visual
+/*  VisualPtr sphere = _scene->CreateVisual();
+  sphere->AddGeometry(_scene->CreateSphere());
+  sphere->SetOrigin(0.0, 0.0, 0.0);
+  sphere->SetLocalPosition(3, 2, 0);
+  sphere->SetLocalRotation(0, 0, 0);
+  sphere->SetLocalScale(1, 1, 1);
+  sphere->SetMaterial(red);
+  root->AddChild(sphere);
+*/
+
+
 
 /*
   // create directional light

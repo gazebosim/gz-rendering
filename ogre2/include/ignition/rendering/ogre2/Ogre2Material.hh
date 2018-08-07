@@ -97,76 +97,88 @@ namespace ignition
 
       public: virtual void ClearNormalMap() override;
 
-      public: virtual enum ShaderType ShaderType() const override;
+//      public: virtual enum ShaderType ShaderType() const override;
 
-      public: virtual void SetShaderType(enum ShaderType _type) override;
+//      public: virtual void SetShaderType(enum ShaderType _type) override;
 
+      /// \brief Return ogre low level material
+      /// \return Ogre material pointer
       public: virtual Ogre::MaterialPtr Material() const;
+
+      /// \brief Return ogre Hlms material datablock
+      /// \return Ogre Hlms datablock
+      public: virtual Ogre::HlmsPbsDatablock *Datablock() const;
 
       // Documentation inherited.
       // \sa Material::SetVertexShader(const std::string &)
-      public: virtual void SetVertexShader(const std::string &_path) override;
+//      public: virtual void SetVertexShader(const std::string &_path) override;
 
       // Documentation inherited.
       // \sa Material::VertexShader() const
-      public: virtual std::string VertexShader() const override;
+//      public: virtual std::string VertexShader() const override;
 
       // Documentation inherited.
       // \sa Material::VertexShaderParams()
-      public: virtual ShaderParamsPtr VertexShaderParams() override;
+//      public: virtual ShaderParamsPtr VertexShaderParams() override;
 
       // Documentation inherited.
       // \sa Material::SetFragmentShader(const std::string &)
-      public: virtual void SetFragmentShader(const std::string &_path) override;
+//      public: virtual void SetFragmentShader(const std::string &_path) override;
 
       // Documentation inherited.
       // \sa Material::FragmentShader() const
-      public: virtual std::string FragmentShader() const override;
+//      public: virtual std::string FragmentShader() const override;
 
       // Documentation inherited.
       // \sa Material::FragmentShaderParams()
-      public: virtual ShaderParamsPtr FragmentShaderParams() override;
+//      public: virtual ShaderParamsPtr FragmentShaderParams() override;
 
       // Documentation inherited.
       // \sa BaseMaterial::PreRender()
       public: virtual void PreRender() override;
 
-      protected: virtual void LoadImage(const std::string &_name,
-                     Ogre::Image &_image);
+//      protected: virtual void LoadImage(const std::string &_name,
+//                     Ogre::Image &_image);
 
       /// \brief Set the texture for this material
       /// \param[in] _texture Name of the texture.
       protected: virtual void SetTextureImpl(const std::string &_texture);
 
-      protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
+      protected: virtual void SetNormalMapImpl(const std::string &_normalMap);
 
-      protected: virtual Ogre::TexturePtr CreateTexture(
-                     const std::string &_name);
+//      protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
 
-      protected: virtual void UpdateTransparency();
+//      protected: virtual Ogre::TexturePtr CreateTexture(
+//                     const std::string &_name);
 
-      protected: virtual void UpdateColorOperation();
+//      protected: virtual void UpdateTransparency();
+
+//      protected: virtual void UpdateColorOperation();
 
       /// \brief bind shader parameters that have changed
-      protected: void UpdateShaderParams();
+//      protected: void UpdateShaderParams();
 
       /// \brief Transfer params from ign-rendering type to ogre type
       /// \param[in] _params ignition rendering params
       /// \param[out] _ogreParams ogre type for holding params
-      protected: void UpdateShaderParams(ConstShaderParamsPtr _params,
-        Ogre::GpuProgramParametersSharedPtr _ogreParams);
+//      protected: void UpdateShaderParams(ConstShaderParamsPtr _params,
+//        Ogre::GpuProgramParametersSharedPtr _ogreParams);
 
       protected: virtual void Init() override;
 
       protected: Ogre::MaterialPtr ogreMaterial;
 
-      protected: Ogre::Technique *ogreTechnique = nullptr;
+//      protected: Ogre::Technique *ogreTechnique = nullptr;
 
-      protected: Ogre::Pass *ogrePass = nullptr;
+//      protected: Ogre::Pass *ogrePass = nullptr;
 
-      protected: Ogre::TextureUnitState *ogreTexState = nullptr;
+//      protected: Ogre::TextureUnitState *ogreTexState = nullptr;
 
-      protected: Ogre::String ogreGroup;
+//      protected: Ogre::String ogreGroup;
+
+      protected: Ogre::HlmsPbsDatablock *ogreDatablock = nullptr;
+
+      protected: Ogre::HlmsPbs *ogreHlmsPbs= nullptr;
 
       protected: double shininess = 0.0;
 
@@ -182,19 +194,19 @@ namespace ignition
 
       protected: std::string normalMapName;
 
-      protected: enum ShaderType shaderType = ST_PIXEL;
+//      protected: enum ShaderType shaderType = ST_PIXEL;
 
       /// \brief Path to vertex shader program.
-      protected: std::string vertexShaderPath;
+//      protected: std::string vertexShaderPath;
 
       /// \brief Path to fragment shader program.
-      protected: std::string fragmentShaderPath;
+//      protected: std::string fragmentShaderPath;
 
       /// \brief Parameters to be bound to the vertex shader
-      protected: ShaderParamsPtr vertexShaderParams;
+//      protected: ShaderParamsPtr vertexShaderParams;
 
       /// \brief Parameters to be bound to the fragment shader
-      protected: ShaderParamsPtr fragmentShaderParams;
+//      protected: ShaderParamsPtr fragmentShaderParams;
 
       private: friend class Ogre2Scene;
     };

@@ -69,7 +69,9 @@ namespace ignition
 
       public: virtual void ClearNormalMap() override = 0;
 
-      public: virtual void SetShaderType(enum ShaderType _type) override = 0;
+      public: virtual void SetShaderType(enum ShaderType _type) override;
+
+      public: virtual enum ShaderType ShaderType() const;
 
       // Documentation inherited.
       // \sa Material::VertexShader() const
@@ -146,6 +148,23 @@ namespace ignition
         const double _b, const double _a)
     {
       this->SetEmissive(math::Color(_r, _g, _b, _a));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetShaderType(enum ShaderType /*_type*/)
+    {
+      ignerr << "Shaders are not supported by: "
+             << this->Scene()->Engine()->Name() << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    enum ShaderType BaseMaterial<T>::ShaderType() const
+    {
+      ignerr << "Shaders are not supported by: "
+             << this->Scene()->Engine()->Name() << std::endl;
+      return ST_PIXEL;
     }
 
     //////////////////////////////////////////////////

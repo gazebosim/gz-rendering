@@ -18,11 +18,13 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
 using namespace ignition;
@@ -119,8 +121,7 @@ LightStorePtr Ogre2Scene::Lights() const
 //////////////////////////////////////////////////
 SensorStorePtr Ogre2Scene::Sensors() const
 {
-  // TODO(anyone)
-  return SensorStorePtr();
+  return this->sensors;
 }
 
 //////////////////////////////////////////////////
@@ -162,11 +163,13 @@ SpotLightPtr Ogre2Scene::CreateSpotLightImpl(unsigned int /*_id*/,
 }
 
 //////////////////////////////////////////////////
-CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return CameraPtr();
+  Ogre2CameraPtr camera(new Ogre2Camera);
+  bool result = this->InitObject(camera, _id, _name);
+  camera->SetBackgroundColor(this->backgroundColor);
+  return (result) ? camera : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -352,6 +355,9 @@ void Ogre2Scene::CreateMeshFactory()
 void Ogre2Scene::CreateStores()
 {
   // TODO(anyone)
+  // there will be a few more stores added to this class,
+  // e.g. to store visuals, lights, materials, etc
+  this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
 }
 
 //////////////////////////////////////////////////

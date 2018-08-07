@@ -145,10 +145,6 @@ namespace ignition
       private: Ogre::OverlaySystem *ogreOverlaySystem = nullptr;
 
 #endif
-      private: bool loaded;
-
-      private: bool initialized;
-
       private: OgreSceneStorePtr scenes;
 
       private: OgreRenderPathType renderPathType;

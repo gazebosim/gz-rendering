@@ -71,8 +71,6 @@ RenderEngine *OgreRenderEnginePlugin::Engine() const
 
 //////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderEngine() :
-  loaded(false),
-  initialized(false),
   ogreRoot(nullptr),
   ogreLogManager(nullptr),
   dataPtr(new OgreRenderEnginePrivate)

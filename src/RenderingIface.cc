@@ -17,74 +17,81 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
 
-// using namespace ignition;
-
-/*//////////////////////////////////////////////////
-bool ignition::rendering::load()
+namespace ignition
 {
-  SceneManager::Instance()->Load();
-  return true;
-}
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-//////////////////////////////////////////////////
-bool ignition::rendering::init()
-{
-  SceneManager::Instance()->Init();
-  return true;
-}
+    /*//////////////////////////////////////////////////
+    bool load()
+    {
+      SceneManager::Instance()->Load();
+      return true;
+    }
 
-//////////////////////////////////////////////////
-bool ignition::rendering::fini()
-{
-  SceneManager::Instance()->Fini();
-  return true;
-}*/
+    //////////////////////////////////////////////////
+    bool init()
+    {
+      SceneManager::Instance()->Init();
+      return true;
+    }
 
-//////////////////////////////////////////////////
-unsigned int ignition::rendering::engineCount()
-{
-  return RenderEngineManager::Instance()->EngineCount();
-}
+    //////////////////////////////////////////////////
+    bool fini()
+    {
+      SceneManager::Instance()->Fini();
+      return true;
+    }*/
 
-//////////////////////////////////////////////////
-bool ignition::rendering::hasEngine(const std::string &_name)
-{
-  return RenderEngineManager::Instance()->HasEngine(_name);
-}
+    //////////////////////////////////////////////////
+    unsigned int engineCount()
+    {
+      return RenderEngineManager::Instance()->EngineCount();
+    }
 
-//////////////////////////////////////////////////
-ignition::rendering::RenderEngine *ignition::rendering::engine(const std::string &_name)
-{
-  return RenderEngineManager::Instance()->Engine(_name);
-}
+    //////////////////////////////////////////////////
+    bool hasEngine(const std::string &_name)
+    {
+      return RenderEngineManager::Instance()->HasEngine(_name);
+    }
 
-//////////////////////////////////////////////////
-ignition::rendering::RenderEngine *ignition::rendering::engine(const unsigned int _index)
-{
-  return RenderEngineManager::Instance()->EngineAt(_index);
-}
+    //////////////////////////////////////////////////
+    RenderEngine *engine(const std::string &_name)
+    {
+      return RenderEngineManager::Instance()->Engine(_name);
+    }
 
-//////////////////////////////////////////////////
-void ignition::rendering::registerEngine(const std::string &_name,
-    ignition::rendering::RenderEngine *_engine)
-{
-  RenderEngineManager::Instance()->RegisterEngine(_name, _engine);
-}
+    //////////////////////////////////////////////////
+    RenderEngine *engine(const unsigned int _index)
+    {
+      return RenderEngineManager::Instance()->EngineAt(_index);
+    }
 
-//////////////////////////////////////////////////
-void ignition::rendering::unregisterEngine(const std::string &_name)
-{
-  RenderEngineManager::Instance()->UnregisterEngine(_name);
-}
+    //////////////////////////////////////////////////
+    void registerEngine(const std::string &_name,
+        RenderEngine *_engine)
+    {
+      RenderEngineManager::Instance()->RegisterEngine(_name, _engine);
+    }
 
-//////////////////////////////////////////////////
-void ignition::rendering::unregisterEngine(ignition::rendering::RenderEngine *_engine)
-{
-  RenderEngineManager::Instance()->UnregisterEngine(_engine);
-}
+    //////////////////////////////////////////////////
+    void unregisterEngine(const std::string &_name)
+    {
+      RenderEngineManager::Instance()->UnregisterEngine(_name);
+    }
 
-//////////////////////////////////////////////////
-void ignition::rendering::unregisterEngine(const unsigned int _index)
-{
-  RenderEngineManager::Instance()->UnregisterEngineAt(_index);
+    //////////////////////////////////////////////////
+    void unregisterEngine(RenderEngine *_engine)
+    {
+      RenderEngineManager::Instance()->UnregisterEngine(_engine);
+    }
+
+    //////////////////////////////////////////////////
+    void unregisterEngine(const unsigned int _index)
+    {
+      RenderEngineManager::Instance()->UnregisterEngineAt(_index);
+    }
+    }
+  }
 }

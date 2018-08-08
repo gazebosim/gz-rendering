@@ -101,6 +101,8 @@ void Ogre2SubMesh::Destroy()
 void Ogre2SubMesh::SetMaterialImpl(Ogre2MaterialPtr _material)
 {
   this->material = _material;
+  std::cerr << "ogre 2 submesh set material " << this->name
+    << ", mat: " << _material->Name() << " diffuse " << _material->Diffuse() << std::endl;
   this->ogreSubItem->setDatablock(
       dynamic_cast<Ogre::HlmsDatablock *>(this->material->Datablock()));
 }

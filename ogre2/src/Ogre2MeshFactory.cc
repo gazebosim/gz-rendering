@@ -83,6 +83,7 @@ Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
       Ogre::MeshManager::getSingleton().getByName(name);
   if (!mesh)
   {
+    std::cerr << "no mesh  creating one " << name << std::endl;
     Ogre::v1::MeshPtr v1Mesh =
         Ogre::v1::MeshManager::getSingleton().getByName(name);
     if (!v1Mesh)
@@ -91,10 +92,14 @@ Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
       return nullptr;
     }
 
-    Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual(
+    mesh = Ogre::MeshManager::getSingleton().createManual(
         name, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
     mesh->importV1(v1Mesh.get(), true, true, true);
+  }
+  else
+  {
+    std::cerr << "got mesh  creating item " << name << std::endl;
   }
 
   return sceneManager->createItem(mesh, Ogre::SCENE_DYNAMIC);
@@ -465,6 +470,37 @@ Ogre2SubMeshPtr Ogre2SubMeshStoreFactory::CreateSubMesh(unsigned int _index)
   subMesh->name = this->names[_index];
   subMesh->scene = this->scene;
   subMesh->ogreSubItem = this->ogreItem->getSubItem(_index);
+
+  MaterialPtr mat;
+  Ogre::HlmsDatablock *ogreDatablock = subMesh->ogreSubItem->getDatablock();
+  if (ogreDatablock)
+  {
+    mat = this->scene->Material(
+        std::string(*ogreDatablock->getNameStr()));
+    std::cerr << "subMesh " << subMesh->name << " block exists: "
+        << std::string(*ogreDatablock->getNameStr()) << std::endl;
+  }
+  else
+  {
+    Ogre::MaterialPtr ogreMat = subMesh->ogreSubItem->getMaterial();
+    if (ogreMat)
+    {
+
+      std::cerr << "subMesh " << subMesh->name << " mat exists: "
+         << ogreMat->getName() << std::endl;
+      mat = this->scene->Material(ogreMat->getName());
+    }
+    else
+
+      std::cerr << "subMesh " << subMesh->name << " mat does not exists" << std::endl;
+  }
+  if (!mat)
+  {
+    mat = this->scene->CreateMaterial();
+    std::cerr << "subMesh " << subMesh->name << " no mat" << std::endl;
+  }
+  subMesh->SetMaterial(mat);
+/*
   MaterialPtr mat;
   Ogre::MaterialPtr ogreMat = subMesh->ogreSubItem->getMaterial();
   if (ogreMat)
@@ -474,6 +510,7 @@ Ogre2SubMeshPtr Ogre2SubMeshStoreFactory::CreateSubMesh(unsigned int _index)
     mat = this->scene->CreateMaterial();
   }
   subMesh->SetMaterial(mat);
+*/
 
   subMesh->Load();
   subMesh->Init();

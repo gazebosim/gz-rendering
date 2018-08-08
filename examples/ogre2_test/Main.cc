@@ -28,12 +28,19 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/MeshManager.hh>
 #include <ignition/rendering.hh>
 
+#include "example_config.hh"
 #include "GlutWindow.hh"
 
 using namespace ignition;
 using namespace rendering;
+
+
+const std::string RESOURCE_PATH =
+    common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
+
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
@@ -41,15 +48,7 @@ void buildScene(ScenePtr _scene)
   // initialize _scene
   _scene->SetAmbientLight(0.8, 0.8, 0.8);
   VisualPtr root = _scene->RootVisual();
-
-  // create center visual
-  VisualPtr center = _scene->CreateVisual();
-  center->AddGeometry(_scene->CreateSphere());
-  center->SetLocalPosition(3, 0, 0);
-  center->SetLocalScale(1.5, 2, 3);
-//  center->SetMaterial(green);
-  root->AddChild(center);
-
+/*
   // create red material
   MaterialPtr red = _scene->CreateMaterial();
   red->SetAmbient(0.5, 0.0, 0.0);
@@ -58,16 +57,46 @@ void buildScene(ScenePtr _scene)
   red->SetShininess(50);
   red->SetReflectivity(0);
 
-  // create sphere visual
-/*  VisualPtr sphere = _scene->CreateVisual();
-  sphere->AddGeometry(_scene->CreateSphere());
-  sphere->SetOrigin(0.0, 0.0, 0.0);
-  sphere->SetLocalPosition(3, 2, 0);
-  sphere->SetLocalRotation(0, 0, 0);
-  sphere->SetLocalScale(1, 1, 1);
-  sphere->SetMaterial(red);
-  root->AddChild(sphere);
+  // create center visual
+  VisualPtr center = _scene->CreateVisual();
+  center->AddGeometry(_scene->CreateSphere());
+  center->SetLocalPosition(3, 0, 1);
+  center->SetLocalScale(1, 1, 1);
+  center->SetMaterial(red);
+  root->AddChild(center);
+
+  // create green material
+  MaterialPtr green = _scene->CreateMaterial();
+  green->SetAmbient(0.0, 1.0, 0.0);
+  green->SetDiffuse(0.0, 1.0, 0.0);
+  green->SetSpecular(0.5, 0.5, 0.5);
+  green->SetShininess(50);
+  green->SetReflectivity(0);
+
+
+  // create cylinder visual
+  VisualPtr box = _scene->CreateVisual();
+  box->AddGeometry(_scene->CreateCylinder());
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(3, 0, 2);
+  box->SetLocalRotation(0, 0, 0);
+  box->SetLocalScale(1, 1, 1);
+  box->SetMaterial(green);
+  root->AddChild(box);
 */
+
+  // create a mesh
+  VisualPtr mesh = _scene->CreateVisual();
+  mesh->SetLocalPosition(3, 0, 0);
+  mesh->SetLocalRotation(1.5708, 0, 2.0);
+  MeshDescriptor descriptor;
+  descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
+  common::MeshManager *meshManager = common::MeshManager::Instance();
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+  mesh->AddGeometry(meshGeom);
+  root->AddChild(mesh);
+
 
 
 

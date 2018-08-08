@@ -154,16 +154,13 @@ namespace ignition
     template <class T>
     void BaseMaterial<T>::SetShaderType(enum ShaderType /*_type*/)
     {
-      ignerr << "Shaders are not supported by: "
-             << this->Scene()->Engine()->Name() << std::endl;
+      // no op
     }
 
     //////////////////////////////////////////////////
     template <class T>
     enum ShaderType BaseMaterial<T>::ShaderType() const
     {
-      ignerr << "Shaders are not supported by: "
-             << this->Scene()->Engine()->Name() << std::endl;
       return ST_PIXEL;
     }
 

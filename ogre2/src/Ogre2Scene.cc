@@ -564,15 +564,15 @@ void Ogre2Scene::CreateContext()
        Ogre::Light *light = sceneManager->createLight();
         Ogre::SceneNode *lightNode = rootNode->createChildSceneNode();
         lightNode->attachObject(light);
-        light->setPowerScale(1.0f);
+        light->setPowerScale(8.0f);
         light->setType(Ogre::Light::LT_DIRECTIONAL);
-        light->setDirection(Ogre::Vector3(-1, -1, -1).normalisedCopy());
+        light->setDirection(Ogre::Vector3(1, 0, -1).normalisedCopy());
 
 
         sceneManager->setAmbientLight(
             Ogre::ColourValue(0.3f, 0.5f, 0.7f) * 0.1f * 0.75f,
             Ogre::ColourValue(0.6f, 0.45f, 0.3f) * 0.065f * 0.75f,
-            -light->getDirection() + Ogre::Vector3::UNIT_Y * 0.2f);
+            -light->getDirection() + Ogre::Vector3::UNIT_Z * 0.2f);
 }
 
 //////////////////////////////////////////////////

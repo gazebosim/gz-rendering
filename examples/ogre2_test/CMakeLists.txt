@@ -3,6 +3,10 @@ project(ignition-rendering-simple-demo)
 
 find_package(ignition-rendering0)
 
+include_directories(SYSTEM
+  ${PROJECT_BINARY_DIR}
+)
+
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
 link_directories(${GLUT_LIBRARY_DIRS})
@@ -17,6 +21,8 @@ link_directories(${GLEW_LIBRARY_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
+configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
+
 add_executable(ogre2_test Main.cc GlutWindow.cc)
 
 target_link_libraries(ogre2_test
@@ -26,3 +32,7 @@ target_link_libraries(ogre2_test
   ${IGNITION-RENDERING_LIBRARIES}
   )
 
+add_custom_command(TARGET ogre2_test POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${CMAKE_SOURCE_DIR}/media
+  $<TARGET_FILE_DIR:ogre2_test>/media)

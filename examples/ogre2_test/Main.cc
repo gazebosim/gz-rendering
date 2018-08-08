@@ -64,6 +64,7 @@ void buildScene(ScenePtr _scene)
   center->SetLocalScale(1, 1, 1);
   center->SetMaterial(red);
   root->AddChild(center);
+*/
 
   // create green material
   MaterialPtr green = _scene->CreateMaterial();
@@ -83,10 +84,9 @@ void buildScene(ScenePtr _scene)
   box->SetLocalScale(1, 1, 1);
   box->SetMaterial(green);
   root->AddChild(box);
-*/
 
   // create a mesh
-  VisualPtr mesh = _scene->CreateVisual();
+ /* VisualPtr mesh = _scene->CreateVisual();
   mesh->SetLocalPosition(3, 0, 0);
   mesh->SetLocalRotation(1.5708, 0, 2.0);
   MeshDescriptor descriptor;
@@ -96,6 +96,7 @@ void buildScene(ScenePtr _scene)
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
+*/
 
 
 

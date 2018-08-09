@@ -45,13 +45,15 @@ namespace ignition
 
       public: virtual ~OgreMesh();
 
-      public: virtual Ogre::MovableObject *OgreObject() const;
+      /// \brief Get the master movable object, which is equivalent to the
+      /// first submesh.
+      /// \return A pointer to the master movable object, which is the first
+      /// submesh.
+      public: virtual Ogre::MovableObject *OgreObject() const override final;
 
-      protected: virtual SubMeshStorePtr SubMeshes() const;
+      public: virtual SubMeshStorePtr SubMeshes() const override final;
 
       protected: OgreSubMeshStorePtr subMeshes;
-
-      protected: Ogre::Entity *ogreEntity;
 
       private: friend class OgreScene;
 
@@ -70,7 +72,7 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true);
 
-      public: virtual Ogre::SubEntity *OgreSubEntity() const;
+      public: Ogre::MovableObject *OgreSubEntity() const;
 
       public: virtual void Destroy();
 
@@ -80,7 +82,7 @@ namespace ignition
 
       protected: OgreMaterialPtr material;
 
-      protected: Ogre::SubEntity *ogreSubEntity;
+      protected: Ogre::MovableObject *ogreSubEntity;
 
       private: friend class OgreScene;
 

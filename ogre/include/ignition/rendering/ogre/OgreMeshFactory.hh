@@ -27,6 +27,7 @@
 namespace Ogre
 {
   class Entity;
+  class MovableObject;
 }
 
 namespace ignition
@@ -43,20 +44,20 @@ namespace ignition
 
       public: virtual OgreMeshPtr Create(const MeshDescriptor &_desc);
 
-      protected: virtual Ogre::Entity *OgreEntity(
+      public: static std::string MeshName(const MeshDescriptor &_desc);
+
+      private: virtual Ogre::MovableObject *OgreEntity(
                      const MeshDescriptor &_desc);
 
-      protected: virtual bool Load(const MeshDescriptor &_desc);
+      private: virtual bool Load(const MeshDescriptor &_desc);
 
-      protected: virtual bool IsLoaded(const MeshDescriptor &_desc);
+      private: virtual bool IsLoaded(const MeshDescriptor &_desc);
 
-      protected: virtual bool LoadImpl(const MeshDescriptor &_desc);
+      private: virtual bool LoadImpl(const MeshDescriptor &_desc);
 
-      protected: virtual std::string MeshName(const MeshDescriptor &_desc);
+      private: virtual bool Validate(const MeshDescriptor &_desc);
 
-      protected: virtual bool Validate(const MeshDescriptor &_desc);
-
-      protected: OgreScenePtr scene;
+      private: OgreScenePtr scene;
     };
 
     class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMeshStoreFactory
@@ -64,25 +65,27 @@ namespace ignition
       typedef std::vector<std::string> NameList;
 
       public: OgreSubMeshStoreFactory(OgreScenePtr _scene,
-                  Ogre::Entity *_entity);
+                  const MeshDescriptor &_desc);
 
       public: virtual ~OgreSubMeshStoreFactory();
 
       public: virtual OgreSubMeshStorePtr Create();
 
-      protected: virtual OgreSubMeshPtr CreateSubMesh(unsigned int _index);
+      private: virtual OgreSubMeshPtr CreateSubMesh(unsigned int _index);
 
-      protected: virtual void CreateNameList();
+      private: virtual void CreateNameList();
 
-      protected: virtual void PopulateDefaultNames();
+      private: virtual void PopulateDefaultNames();
 
-      protected: virtual void PopulateGivenNames();
+      private: virtual void PopulateGivenNames();
 
-      protected: OgreScenePtr scene;
+      private: OgreScenePtr scene;
 
-      protected: Ogre::Entity *ogreEntity;
+      private: Ogre::MovableObject *ogreEntity;
 
-      protected: NameList names;
+      private: const MeshDescriptor &desc;
+
+      private: NameList names;
     };
     }
   }

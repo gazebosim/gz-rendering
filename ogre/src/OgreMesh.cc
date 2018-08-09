@@ -39,7 +39,7 @@ OgreMesh::~OgreMesh()
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreMesh::OgreObject() const
 {
-  return this->ogreEntity;
+  return this->subMeshes->DerivedByIndex(0)->OgreSubEntity();
 }
 
 //////////////////////////////////////////////////
@@ -85,7 +85,7 @@ void OgreSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
 }
 
 //////////////////////////////////////////////////
-Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
+Ogre::MovableObject *OgreSubMesh::OgreSubEntity() const
 {
   return this->ogreSubEntity;
 }
@@ -101,7 +101,7 @@ void OgreSubMesh::SetMaterialImpl(OgreMaterialPtr _material)
 {
   std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
-  this->ogreSubEntity->setMaterialName(materialName);
+  // this->ogreSubEntity->setMaterialName(materialName);
   this->material = _material;
 }
 
@@ -111,5 +111,3 @@ void OgreSubMesh::Init()
   BaseSubMesh::Init();
   OgreRTShaderSystem::Instance()->AttachEntity(this);
 }
-
-//////////////////////////////////////////////////

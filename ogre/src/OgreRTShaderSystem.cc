@@ -279,13 +279,13 @@ void OgreRTShaderSystem::UpdateShaders()
 }
 
 //////////////////////////////////////////////////
-void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
+void OgreRTShaderSystem::GenerateShaders(OgreSubMesh * /*subMesh*/)
 {
   if (!this->dataPtr->initialized)
   {
     return;
   }
-
+/*
   Ogre::SubEntity* curSubEntity = subMesh->OgreSubEntity();
 
   OgreMaterialPtr material =
@@ -390,6 +390,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
           curMaterialName);
     }
   }
+*/
 }
 
 //////////////////////////////////////////////////

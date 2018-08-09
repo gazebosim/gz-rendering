@@ -121,8 +121,26 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
   derived->OgreObject()->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
 
+
   derived->SetParent(this->SharedThis());
-  this->ogreNode->attachObject(derived->OgreObject());
+
+  OgreMeshPtr mesh = std::dynamic_pointer_cast<OgreMesh>(derived);
+  // Add all submeshes, if there are submeshes
+  if (mesh && mesh->SubMeshes())
+  {
+    OgreSubMeshStorePtr submeshes = std::dynamic_pointer_cast<OgreSubMeshStore>(
+        mesh->SubMeshes());
+    for (unsigned int i = 0; i < submeshes->Size(); ++i)
+    {
+      this->ogreNode->attachObject(
+          submeshes->DerivedByIndex(i)->OgreSubEntity());
+    }
+  }
+  else
+  {
+    this->ogreNode->attachObject(derived->OgreObject());
+  }
+
   return true;
 }
 

@@ -216,7 +216,7 @@ namespace ignition
     void BaseSubMesh<T>::PreRender()
     {
       T::PreRender();
-      this->Material()->PreRender();
+      // NEED THIS! this->Material()->PreRender();
     }
     }
   }

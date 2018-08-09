@@ -21,11 +21,13 @@
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -55,8 +57,7 @@ RenderEngine *Ogre2Scene::Engine() const
 //////////////////////////////////////////////////
 VisualPtr Ogre2Scene::RootVisual() const
 {
-  // TODO(anyone)
-  return VisualPtr();
+  return this->rootVisual;
 }
 
 //////////////////////////////////////////////////
@@ -127,8 +128,7 @@ SensorStorePtr Ogre2Scene::Sensors() const
 //////////////////////////////////////////////////
 VisualStorePtr Ogre2Scene::Visuals() const
 {
-  // TODO(anyone)
-  return VisualStorePtr();
+  return this->visuals;
 }
 
 //////////////////////////////////////////////////
@@ -173,11 +173,12 @@ CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-VisualPtr Ogre2Scene::CreateVisualImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+VisualPtr Ogre2Scene::CreateVisualImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return VisualPtr();
+  Ogre2VisualPtr visual(new Ogre2Visual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -240,11 +241,12 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/, const MeshDescriptor &/*_desc*/)
+MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
+    const std::string &_name, const MeshDescriptor &_desc)
 {
-  // TODO(anyone)
-  return MeshPtr();
+  Ogre2MeshPtr mesh = this->meshFactory->Create(_desc);
+  bool result = this->InitObject(mesh, _id, _name);
+  return (result) ? mesh : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -342,13 +344,28 @@ void Ogre2Scene::CreateContext()
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateRootVisual()
 {
-  // TODO(anyone)
+  // create unregistered visual
+  this->rootVisual = Ogre2VisualPtr(new Ogre2Visual);
+  unsigned int rootId = this->CreateObjectId();
+  std::string rootName = this->CreateObjectName(rootId, "_ROOT_");
+
+  // check if root visual created successfully
+  if (!this->InitObject(this->rootVisual, rootId, rootName))
+  {
+    ignerr << "Unable to create root visual" << std::endl;
+    this->rootVisual = nullptr;
+  }
+
+  // add visual node to actual ogre root
+  Ogre::SceneNode *ogreRootNode = this->rootVisual->Node();
+  this->ogreSceneManager->getRootSceneNode()->addChild(ogreRootNode);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateMeshFactory()
 {
-  // TODO(anyone)
+  Ogre2ScenePtr sharedThis = this->SharedThis();
+  this->meshFactory = Ogre2MeshFactoryPtr(new Ogre2MeshFactory(sharedThis));
 }
 
 //////////////////////////////////////////////////
@@ -356,8 +373,9 @@ void Ogre2Scene::CreateStores()
 {
   // TODO(anyone)
   // there will be a few more stores added to this class,
-  // e.g. to store visuals, lights, materials, etc
+  // e.g. to store lights, materials, etc
   this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
+  this->visuals = Ogre2VisualStorePtr(new Ogre2VisualStore);
 }
 
 //////////////////////////////////////////////////

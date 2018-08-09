@@ -151,7 +151,7 @@ void Ogre2Camera::SetSelectionBuffer()
 
 //////////////////////////////////////////////////
 VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i
-    &_mousePos)
+    &/*_mousePos*/)
 {
   // TODO(anyone)
   // need to port selection buffer

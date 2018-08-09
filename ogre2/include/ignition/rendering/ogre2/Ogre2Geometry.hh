@@ -31,23 +31,35 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Ogre2.x implementation of the geometry class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Geometry :
       public BaseGeometry<Ogre2Object>
     {
+      /// \brief Constructor
       protected: Ogre2Geometry();
 
+      /// \brief Destructor
       public: virtual ~Ogre2Geometry();
 
-      public: virtual bool HasParent() const;
+      // Documentation inherited.
+      public: virtual bool HasParent() const override;
 
-      public: virtual VisualPtr Parent() const;
+      // Documentation inherited.
+      public: virtual VisualPtr Parent() const override;
 
+      /// \brief Get the ogre object representing this geometry
+      /// \return Pointer to an ogre movable object
       public: virtual Ogre::MovableObject *OgreObject() const = 0;
 
+      /// \brief Set the parent of this ogre geometry
+      /// \param[in] _parent Parent visual
       protected: virtual void SetParent(Ogre2VisualPtr _parent);
 
+      /// \brief Parent visual
       protected: Ogre2VisualPtr parent;
 
+      /// \brief Make ogre2 visual our friend so it can it can access function
+      /// for setting the parent of this geometry
       private: friend class Ogre2Visual;
     };
     }

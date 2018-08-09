@@ -46,8 +46,8 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Ogre2Mesh();
 
-      /// \brief Get the internal ogre movable object (ogre item)
-      public: virtual Ogre::MovableObject *OgreObject() const;
+      // Documentation inherited
+      public: virtual Ogre::MovableObject *OgreObject() const override;
 
       /// \brief Get a list of submeshes in this mesh
       protected: virtual SubMeshStorePtr SubMeshes() const;

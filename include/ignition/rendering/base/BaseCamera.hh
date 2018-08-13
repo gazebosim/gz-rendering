@@ -157,7 +157,7 @@ namespace ignition
       public: virtual double FollowPGain() const override;
 
       // Documentation inherited.
-      public: virtual GLuint RenderTextureGLId() const;
+      public: virtual GLuint RenderTextureGLId() const override;
 
       protected: virtual void *CreateImageBuffer() const;
 

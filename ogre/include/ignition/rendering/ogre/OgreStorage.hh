@@ -33,6 +33,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template class BaseSceneStore<OgreScene>;
     template class BaseNodeStore<OgreNode>;
     template class BaseLightStore<OgreLight>;
@@ -59,6 +61,7 @@ namespace ignition
     typedef std::shared_ptr<OgreGeometryStore> OgreGeometryStorePtr;
     typedef std::shared_ptr<OgreSubMeshStore>  OgreSubMeshStorePtr;
     typedef std::shared_ptr<OgreMaterialMap>   OgreMaterialMapPtr;
+    }
   }
 }
 #endif

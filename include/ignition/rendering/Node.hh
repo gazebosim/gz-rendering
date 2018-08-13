@@ -21,6 +21,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Quaternion.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/Export.hh"
@@ -29,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Node Node.hh ignition/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
     class IGNITION_RENDERING_VISIBLE Node :
@@ -37,17 +40,22 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~Node() { }
 
-      /// \brief Determine if this Geometry is attached to a Visual
-      /// \return True if this Geometry has a parent Visual
+      /// \brief Determine if this Node is attached to another Node.
+      /// \return True if this Node has a parent Node
       public: virtual bool HasParent() const = 0;
 
-      /// \brief Get the parent Visual
-      /// \return the parent Visual
-      public: virtual VisualPtr Parent() const = 0;
+      /// \brief Get the parent Node
+      /// \return the parent Node
+      public: virtual NodePtr Parent() const = 0;
 
-      /// \brief Detach this Geometry from its parent Visual. If this
-      /// Geometry does not have a parent, no work will be done.
+      /// \brief Detach this Node from its parent. If this
+      /// Node does not have a parent, no work will be done.
       public: virtual void RemoveParent() = 0;
+
+      /// \brief Remove a child from this Node.
+      /// \param[in] _node Node to be removed.
+      /// \return The removed child node
+      public: virtual NodePtr RemoveChild(NodePtr _node) = 0;
 
       /// \brief Get the local pose
       /// \return The local pose
@@ -166,6 +174,7 @@ namespace ignition
       /// \param[in] _origin New origin position
       public: virtual void SetOrigin(const math::Vector3d &_origin) = 0;
     };
+    }
   }
 }
 #endif

@@ -40,6 +40,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     // forward declaration
     class OgreRenderEnginePrivate;
 
@@ -143,10 +145,6 @@ namespace ignition
       private: Ogre::OverlaySystem *ogreOverlaySystem = nullptr;
 
 #endif
-      private: bool loaded;
-
-      private: bool initialized;
-
       private: OgreSceneStorePtr scenes;
 
       private: OgreRenderPathType renderPathType;
@@ -170,6 +168,7 @@ namespace ignition
 
       private: friend class common::SingletonT<OgreRenderEngine>;
     };
+    }
   }
 }
 #endif

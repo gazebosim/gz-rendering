@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_RENDERENGINE_HH_
 
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Export.hh"
 
@@ -25,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class RenderEngine RenderEngine.hh ignition/rendering/RenderEngine.hh
     /// \brief An abstract interface to a concrete render-engine. A
     /// RenderEngine is responsible for initializing a render-engine as well as
@@ -160,6 +163,7 @@ namespace ignition
       /// \param[in] _paths Absolute path to resource location
       public: virtual void AddResourcePath(const std::string &_path) = 0;
     };
+    }
   }
 }
 #endif

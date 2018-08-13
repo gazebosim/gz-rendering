@@ -41,18 +41,13 @@
 // #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 // #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
-namespace ignition
+
+class ignition::rendering::Ogre2RenderEnginePrivate
 {
-  namespace rendering
-  {
-    class Ogre2RenderEnginePrivate
-    {
 #if not defined(__APPLE__) && not defined(_WIN32)
-      public: XVisualInfo *dummyVisual = nullptr;
+  public: XVisualInfo *dummyVisual = nullptr;
 #endif
-    };
-  }
-}
+};
 
 using namespace ignition;
 using namespace rendering;
@@ -82,7 +77,14 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   this->dummyContext = 0;
   this->dummyWindowId = 0;
 
-  this->ogrePaths.push_back(std::string(OGRE2_RESOURCE_PATH));
+  std::string ogrePath = std::string(OGRE2_RESOURCE_PATH);
+  this->ogrePaths.push_back(ogrePath);
+
+#ifdef __APPLE__
+  // on OSX the plugins may be placed in the parent lib directory
+  if (ogrePath.rfind("OGRE") == ogrePath.size()-4u)
+    this->ogrePaths.push_back(ogrePath.substr(0, ogrePath.size()-5));
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -118,7 +120,7 @@ bool Ogre2RenderEngine::Fini()
   if (ogreRoot)
   {
     this->ogreRoot->shutdown();
-    // TODO: fix segfault on delete
+    // TODO(anyone): fix segfault on delete
     // delete this->ogreRoot;
     this->ogreRoot = nullptr;
   }
@@ -294,7 +296,7 @@ void Ogre2RenderEngine::LoadAttempt()
   this->LoadPlugins();
   this->CreateRenderSystem();
   this->ogreRoot->initialise(false);
-  this->CreateWindow();
+  this->CreateRenderWindow();
   this->CreateResources();
 }
 
@@ -367,7 +369,7 @@ void Ogre2RenderEngine::CreateRoot()
 {
   try
   {
-    this->ogreRoot = new Ogre::Root();
+    this->ogreRoot = new Ogre::Root("", "", "");
   }
   catch (Ogre::Exception &ex)
   {
@@ -395,15 +397,16 @@ void Ogre2RenderEngine::LoadPlugins()
     std::vector<std::string>::iterator piter;
 
 #ifdef __APPLE__
-    std::string prefix = "lib";
     std::string extension = ".dylib";
+#elif _WIN32
+    std::string extension = ".dll";
 #else
-    std::string prefix = "";
     std::string extension = ".so";
 #endif
-
-    plugins.push_back(path+"/"+prefix+"RenderSystem_GL3Plus");
-    plugins.push_back(path+"/"+prefix+"Plugin_ParticleFX");
+    std::string p = common::joinPaths(path, "RenderSystem_GL3Plus");
+    plugins.push_back(p);
+    p = common::joinPaths(path, "Plugin_ParticleFX");
+    plugins.push_back(p);
 
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
@@ -564,14 +567,14 @@ void Ogre2RenderEngine::CreateResources()
 }
 
 //////////////////////////////////////////////////
-void Ogre2RenderEngine::CreateWindow()
+void Ogre2RenderEngine::CreateRenderWindow()
 {
   // create dummy window
-  this->CreateWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
+  this->CreateRenderWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
 }
 
 //////////////////////////////////////////////////
-std::string Ogre2RenderEngine::CreateWindow(const std::string &_handle,
+std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     const unsigned int _width, const unsigned int _height,
     const double _ratio, const unsigned int _antiAliasing)
 {
@@ -588,7 +591,7 @@ std::string Ogre2RenderEngine::CreateWindow(const std::string &_handle,
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
-  // TODO: determine api without qt
+  // TODO(anyone): determine api without qt
 
 #if defined(__APPLE__)
   // Set the macAPI for Ogre based on the Qt implementation

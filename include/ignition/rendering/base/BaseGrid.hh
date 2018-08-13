@@ -25,6 +25,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief Base implementation of a grid geometry
     template <class T>
     class BaseGrid :
@@ -148,6 +150,7 @@ namespace ignition
     void BaseGrid<T>::Destroy()
     {
       T::Destroy();
+    }
     }
   }
 }

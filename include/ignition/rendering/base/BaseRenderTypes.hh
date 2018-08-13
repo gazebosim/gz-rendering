@@ -18,12 +18,15 @@
 #define IGNITION_RENDERING_BASE_BASERENDERTYPES_HH_
 
 #include <memory>
+
 #include "ignition/rendering/RenderTypes.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class BaseNodeCompositeStore;
     typedef shared_ptr<BaseNodeCompositeStore>   BaseNodeCompositeStorePtr;
 
@@ -35,6 +38,7 @@ namespace ignition
     template <class T> class BaseGeometryStore;
     template <class T> class BaseSubMeshStore;
     template <class T> class BaseMaterialMap;
+    }
   }
 }
 #endif

@@ -23,6 +23,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
     class BaseSensor :
       public virtual Sensor,
@@ -43,6 +45,7 @@ namespace ignition
     template <class T>
     BaseSensor<T>::~BaseSensor()
     {
+    }
     }
   }
 }

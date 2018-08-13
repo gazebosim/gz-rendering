@@ -27,52 +27,46 @@
 using namespace ignition;
 using namespace rendering;
 
-namespace ignition
+class ignition::rendering::OgreSelectionBufferPrivate
 {
-  namespace rendering
-  {
-    struct OgreSelectionBufferPrivate
-    {
-      /// \brief This is a material listener and a RenderTargetListener.
-      /// The material switcher is applied to only the selection camera
-      /// and not applied globally to all targets. The class associates a
-      /// color to an ogre entity
-      std::unique_ptr<OgreMaterialSwitcher> materialSwitcher;
+  /// \brief This is a material listener and a RenderTargetListener.
+  /// The material switcher is applied to only the selection camera
+  /// and not applied globally to all targets. The class associates a
+  /// color to an ogre entity
+  public: std::unique_ptr<OgreMaterialSwitcher> materialSwitcher;
 
-      /// \brief Ogre scene manager
-      Ogre::SceneManager *sceneMgr = nullptr;
+  /// \brief Ogre scene manager
+  public: Ogre::SceneManager *sceneMgr = nullptr;
 
-      /// \brief Pointer to the camera that will be used as the reference
-      /// for selection
-      Ogre::Camera *camera = nullptr;
+  /// \brief Pointer to the camera that will be used as the reference
+  /// for selection
+  public: Ogre::Camera *camera = nullptr;
 
-      /// \brief Selection buffer's render to texture camera
-      Ogre::Camera *selectionCamera  = nullptr;
+  /// \brief Selection buffer's render to texture camera
+  public: Ogre::Camera *selectionCamera  = nullptr;
 
-      /// \brief Render width
-      unsigned int width = 0;
+  /// \brief Render width
+  public: unsigned int width = 0;
 
-      /// \brief Render height
-      unsigned int height = 0;
+  /// \brief Render height
+  public: unsigned int height = 0;
 
-      /// \brief Ogre texture
-      Ogre::TexturePtr texture;
+  /// \brief Ogre texture
+  public: Ogre::TexturePtr texture;
 
-      /// \brief Ogre render texture
-      Ogre::RenderTexture *renderTexture  = nullptr;
+  /// \brief Ogre render texture
+  public: Ogre::RenderTexture *renderTexture  = nullptr;
 
-      /// \brief Render texture data buffer
-      uint8_t *buffer = nullptr;
+  /// \brief Render texture data buffer
+  public: uint8_t *buffer = nullptr;
 
-      /// \brief Ogre pixel box that contains description of the data buffer
-      Ogre::PixelBox *pixelBox = nullptr;
+  /// \brief Ogre pixel box that contains description of the data buffer
+  public: Ogre::PixelBox *pixelBox = nullptr;
 
-      /// \brief A 2D overlay used for debugging the selection buffer. It
-      /// is hidden by default.
-      Ogre::Overlay *selectionDebugOverlay = nullptr;
-    };
-  }
-}
+  /// \brief A 2D overlay used for debugging the selection buffer. It
+  /// is hidden by default.
+  public: Ogre::Overlay *selectionDebugOverlay = nullptr;
+};
 
 /////////////////////////////////////////////////
 OgreSelectionBuffer::OgreSelectionBuffer(const std::string &_cameraName,

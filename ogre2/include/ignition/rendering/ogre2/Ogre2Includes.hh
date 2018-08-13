@@ -78,7 +78,8 @@
 #include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreOverlaySystem.h>
 
-// TODO enable when ogre 2.1 fully supports paging and terrain components
+// TODO(anyone): enable when ogre 2.1 fully supports paging
+// and terrain components
 // #include <Paging/OgrePageManager.h>
 // #include <Paging/OgrePagedWorld.h>
 // #include <Terrain/OgreTerrainPaging.h>

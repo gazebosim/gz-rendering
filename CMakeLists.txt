@@ -90,7 +90,10 @@ set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering
 #============================================================================
 # Configure the build
 #============================================================================
-set(RENDERING_COMPONENTS ogre)
+if (HAVE_OGRE)
+  list(APPEND RENDERING_COMPONENTS ogre)
+endif()
+
 if (HAVE_OPTIX)
   list(APPEND RENDERING_COMPONENTS optix)
 endif()

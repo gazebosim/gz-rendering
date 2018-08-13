@@ -30,200 +30,194 @@
 #define POS_TEX_BINDING    0
 #define COLOUR_BINDING     1
 
-namespace ignition
+class ignition::rendering::OgreMovableText
+  : public Ogre::MovableObject, public Ogre::Renderable
 {
-  namespace rendering
-  {
-    class OgreMovableText
-      : public Ogre::MovableObject, public Ogre::Renderable
-    {
-      /// \brief Constructor
-      public: OgreMovableText();
+  /// \brief Constructor
+  public: OgreMovableText();
 
-      /// \brief Destructor
-      public: virtual ~OgreMovableText();
+  /// \brief Destructor
+  public: virtual ~OgreMovableText();
 
-      /// \brief Set the font. Valid fonts are defined in
-      /// media/fonts/ignition-rendering.fontdef
-      /// \param[in] _font Name of the font
-      public: void SetFontName(const std::string &_font);
+  /// \brief Set the font. Valid fonts are defined in
+  /// media/fonts/ignition-rendering.fontdef
+  /// \param[in] _font Name of the font
+  public: void SetFontName(const std::string &_font);
 
-      /// \brief Set the text to display.
-      /// \param[in] _text The text to display.
-      public: void SetTextString(const std::string &_text);
+  /// \brief Set the text to display.
+  /// \param[in] _text The text to display.
+  public: void SetTextString(const std::string &_text);
 
-      /// \brief Set the text color.
-      /// \param[in] _color Text color.
-      public: void SetColor(const ignition::math::Color &_color);
+  /// \brief Set the text color.
+  /// \param[in] _color Text color.
+  public: void SetColor(const ignition::math::Color &_color);
 
-      /// \brief Set the height of the character in meters.
-      /// \param[in] _height Height of the characters.
-      public: void SetCharHeight(const float _height);
+  /// \brief Set the height of the character in meters.
+  /// \param[in] _height Height of the characters.
+  public: void SetCharHeight(const float _height);
 
-      /// \brief Set the width of spaces between words.
-      /// \param[in] _width Space width
-      public: void SetSpaceWidth(const float _width);
+  /// \brief Set the width of spaces between words.
+  /// \param[in] _width Space width
+  public: void SetSpaceWidth(const float _width);
 
-      /// \brief Set the alignment of the text
-      /// \param[in] _horizAlign Horizontal alignment
-      /// \param[in] _vertAlign Vertical alignment
-      public: void SetTextAlignment(const TextHorizontalAlign &_horizAlign,
-                                    const TextVerticalAlign &_vertAlign);
+  /// \brief Set the alignment of the text
+  /// \param[in] _horizAlign Horizontal alignment
+  /// \param[in] _vertAlign Vertical alignment
+  public: void SetTextAlignment(const TextHorizontalAlign &_horizAlign,
+                                const TextVerticalAlign &_vertAlign);
 
-      /// \brief Set the baseline height of the text
-      /// \param[in] _height Baseline height
-      public: void SetBaseline(const float _baseline);
+  /// \brief Set the baseline height of the text
+  /// \param[in] _height Baseline height
+  public: void SetBaseline(const float _baseline);
 
-      /// \brief True = text always is displayed ontop.
-      /// \param[in] _show Set to true to render the text on top of
-      /// all other drawables.
-      public: void SetShowOnTop(const bool _onTop);
+  /// \brief True = text always is displayed ontop.
+  /// \param[in] _show Set to true to render the text on top of
+  /// all other drawables.
+  public: void SetShowOnTop(const bool _onTop);
 
-      /// \brief Get the axis aligned bounding box of the text.
-      /// \return The axis aligned bounding box.
-      public: ignition::math::AxisAlignedBox AABB() const;
+  /// \brief Get the axis aligned bounding box of the text.
+  /// \return The axis aligned bounding box.
+  public: ignition::math::AxisAlignedBox AABB() const;
 
-      /// \brief Setup the geometry based on input text string.
-      public: void SetupGeometry();
+  /// \brief Setup the geometry based on input text string.
+  public: void SetupGeometry();
 
-      /// \brief Update color of text.
-      public: void UpdateColors();
+  /// \brief Update color of text.
+  public: void UpdateColors();
 
-      /// \brief Update material properties, mainly if onTop has changed.
-      public: void UpdateMaterial();
+  /// \brief Update material properties, mainly if onTop has changed.
+  public: void UpdateMaterial();
 
-      /// \brief Update font.
-      public: void UpdateFont();
+  /// \brief Update font.
+  public: void UpdateFont();
 
-      /// \brief Update all text properties if dirty.
-      public: void Update();
+  /// \brief Update all text properties if dirty.
+  public: void Update();
 
-      /// \brief Set font name implementation.
-      /// \param-in] _font Name of font
-      public: void SetFontNameImpl(const std::string &_font);
+  /// \brief Set font name implementation.
+  /// \param-in] _font Name of font
+  public: void SetFontNameImpl(const std::string &_font);
 
-      /// \internal
-      /// \brief Method to allow a caller to abstractly iterate over the
-      /// renderable instances.
-      /// \param[in] _visitor Renderable instances to visit
-      /// \param[in] _debug True if set to debug
-      public: virtual void visitRenderables(Ogre::Renderable::Visitor *_visitor,
-          bool _debug = false) override;
+  /// \internal
+  /// \brief Method to allow a caller to abstractly iterate over the
+  /// renderable instances.
+  /// \param[in] _visitor Renderable instances to visit
+  /// \param[in] _debug True if set to debug
+  public: virtual void visitRenderables(Ogre::Renderable::Visitor *_visitor,
+      bool _debug = false) override;
 
-      /// \internal
-      /// \brief Get the world transform (from MovableObject)
-      protected: void getWorldTransforms(Ogre::Matrix4 *_xform) const override;
+  /// \internal
+  /// \brief Get the world transform (from MovableObject)
+  protected: void getWorldTransforms(Ogre::Matrix4 *_xform) const override;
 
-      /// \internal
-      /// \brief Get the bounding radiu (from MovableObject)
-      protected: float getBoundingRadius() const override;
+  /// \internal
+  /// \brief Get the bounding radiu (from MovableObject)
+  protected: float getBoundingRadius() const override;
 
-      /// \internal
-      /// \brief Get the squared view depth (from MovableObject)
-      protected: float getSquaredViewDepth(const Ogre::Camera *_cam) const
-          override;
+  /// \internal
+  /// \brief Get the squared view depth (from MovableObject)
+  protected: float getSquaredViewDepth(const Ogre::Camera *_cam) const
+      override;
 
-      /// \internal
-      /// \brief Get the render operation
-      protected: void getRenderOperation(Ogre::RenderOperation &_op) override;
+  /// \internal
+  /// \brief Get the render operation
+  protected: void getRenderOperation(Ogre::RenderOperation &_op) override;
 
-      /// \internal
-      /// \brief Get the material
-      protected: const Ogre::MaterialPtr &getMaterial() const override;
+  /// \internal
+  /// \brief Get the material
+  protected: const Ogre::MaterialPtr &getMaterial() const override;
 
-      /// \internal
-      /// \brief Get the lights
-      /// \deprecated Function has never returned meaningful values
-      protected: const Ogre::LightList &getLights() const override;
+  /// \internal
+  /// \brief Get the lights
+  /// \deprecated Function has never returned meaningful values
+  protected: const Ogre::LightList &getLights() const override;
 
-      /// \internal
-      private: const Ogre::AxisAlignedBox &getBoundingBox() const override;
+  /// \internal
+  private: const Ogre::AxisAlignedBox &getBoundingBox() const override;
 
-      /// \internal
-      private: const Ogre::String &getMovableType() const override;
+  /// \internal
+  private: const Ogre::String &getMovableType() const override;
 
-      /// \internal
-      private: void _notifyCurrentCamera(Ogre::Camera *_cam) override;
+  /// \internal
+  private: void _notifyCurrentCamera(Ogre::Camera *_cam) override;
 
-      /// \internal
-      private: void _updateRenderQueue(Ogre::RenderQueue *_queue) override;
+  /// \internal
+  private: void _updateRenderQueue(Ogre::RenderQueue *_queue) override;
 
-      /// \brief Flag to indicate text properties have changed
-      private: bool textDirty = false;
+  /// \brief Flag to indicate text properties have changed
+  private: bool textDirty = false;
 
-      /// \brief Flag to indicate text color has changed
-      private: bool colorDirty = true;
+  /// \brief Flag to indicate text color has changed
+  private: bool colorDirty = true;
 
-      /// \brief Flag to indicate text font has changed
-      private: bool fontDirty = true;
+  /// \brief Flag to indicate text font has changed
+  private: bool fontDirty = true;
 
-      /// \brief Flag to indicate text material has changed
-      private: bool materialDirty = false;
+  /// \brief Flag to indicate text material has changed
+  private: bool materialDirty = false;
 
-      /// \brief Bounding radius
-      private: float radius = 0;
+  /// \brief Bounding radius
+  private: float radius = 0;
 
-      /// \brief Viewport aspect coefficient
-      private: float viewportAspectCoef = 0.75;
+  /// \brief Viewport aspect coefficient
+  private: float viewportAspectCoef = 0.75;
 
-      /// \brief Ogre render operation
-      private: Ogre::RenderOperation renderOp;
+  /// \brief Ogre render operation
+  private: Ogre::RenderOperation renderOp;
 
-      /// \brief Axis aligned box
-      private: Ogre::AxisAlignedBox *aabb = nullptr;
+  /// \brief Axis aligned box
+  private: Ogre::AxisAlignedBox *aabb = nullptr;
 
-      /// \brief Pointer to camera which the text is facing - never set.
-      private: Ogre::Camera *camera = nullptr;
+  /// \brief Pointer to camera which the text is facing - never set.
+  private: Ogre::Camera *camera = nullptr;
 
-      /// \brief Pointer to font
-      private: Ogre::Font *font = nullptr;
+  /// \brief Pointer to font
+  private: Ogre::Font *font = nullptr;
 
-      /// \brief Text ogreMaterial
-      private: Ogre::MaterialPtr ogreMaterial;
+  /// \brief Text ogreMaterial
+  private: Ogre::MaterialPtr ogreMaterial;
 
-      /// \brief Keep an empty list of lights.
-      private: Ogre::LightList lightList;
+  /// \brief Keep an empty list of lights.
+  private: Ogre::LightList lightList;
 
-      /// \brief Font name, such as "Liberation Sans"
-      private: std::string fontName;
+  /// \brief Font name, such as "Liberation Sans"
+  private: std::string fontName;
 
-      /// \brief Text being displayed
-      private: std::string text;
+  /// \brief Text being displayed
+  private: std::string text;
 
-      /// \brief Text color
-      private: ignition::math::Color color;
+  /// \brief Text color
+  private: ignition::math::Color color;
 
-      /// \brief Character height in meters
-      private: float charHeight = 0.0;
+  /// \brief Character height in meters
+  private: float charHeight = 0.0;
 
-      /// \brief Width of space between letters
-      private: float spaceWidth = 0.0;
+  /// \brief Width of space between letters
+  private: float spaceWidth = 0.0;
 
-      /// \brief Horizontal alignment
-      private: TextHorizontalAlign horizontalAlign;
+  /// \brief Horizontal alignment
+  private: TextHorizontalAlign horizontalAlign;
 
-      /// \brief Vertical alignment
-      private: TextVerticalAlign verticalAlign;
+  /// \brief Vertical alignment
+  private: TextVerticalAlign verticalAlign;
 
-      /// \brief Baseline height in meters.
-      private: float baseline = 0.0;
+  /// \brief Baseline height in meters.
+  private: float baseline = 0.0;
 
-      /// \brief True for text to be displayed on top of other objects in the
-      /// scene.
-      private: bool onTop = false;
-    };
+  /// \brief True for text to be displayed on top of other objects in the
+  /// scene.
+  private: bool onTop = false;
+};
 
-    /// \brief Private data for the OgreText class.
-    class OgreTextPrivate
-    {
-      /// \brief Text materal
-      public: OgreMaterialPtr material;
+/// \brief Private data for the OgreText class.
+class ignition::rendering::OgreTextPrivate
+{
+  /// \brief Text materal
+  public: OgreMaterialPtr material;
 
-      /// Pointer to ogre movable text object
-      public: std::unique_ptr<OgreMovableText> ogreObj;
-    };
-  }
-}
+  /// Pointer to ogre movable text object
+  public: std::unique_ptr<OgreMovableText> ogreObj;
+};
 
 using namespace ignition;
 using namespace rendering;

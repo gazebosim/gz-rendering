@@ -42,18 +42,12 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
 
-namespace ignition
+class ignition::rendering::OgreRenderEnginePrivate
 {
-  namespace rendering
-  {
-    class OgreRenderEnginePrivate
-    {
 #if not defined(__APPLE__) && not defined(_WIN32)
-      public: XVisualInfo *dummyVisual = nullptr;
+  public: XVisualInfo *dummyVisual = nullptr;
 #endif
-    };
-  }
-}
+};
 
 using namespace ignition;
 using namespace rendering;
@@ -77,8 +71,6 @@ RenderEngine *OgreRenderEnginePlugin::Engine() const
 
 //////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderEngine() :
-  loaded(false),
-  initialized(false),
   ogreRoot(nullptr),
   ogreLogManager(nullptr),
   dataPtr(new OgreRenderEnginePrivate)

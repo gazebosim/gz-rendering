@@ -31,7 +31,6 @@
 #endif /* __APPLE__ */
 
 #else
-  // cppcheck-suppress ConfigurationNotChecked
   typedef unsigned int GLuint;
 #endif
 
@@ -298,7 +297,6 @@ namespace ignition
       /// \brief Get the OpenGL texture id associated with the render texture
       /// used by this camera. A valid id is returned only if the underlying
       /// render engine is OpenGL based,
-      // cppcheck-suppress ConfigurationNotChecked
       public: virtual GLuint RenderTextureGLId() const = 0;
     };
     }

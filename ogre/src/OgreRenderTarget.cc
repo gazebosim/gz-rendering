@@ -17,12 +17,6 @@
 
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
-#if defined(__APPLE__)
-  #include <OpenGL/gl.h>
-#elif not defined(_WIN32)
-  #include <GL/glew.h>
-#endif
-
 #include <OGRE/RenderSystems/GL/OgreGLFBORenderTexture.h>
 
 

@@ -74,8 +74,11 @@ namespace ignition
       /// \param[in] _color Color to set the background to
       public: virtual void SetBackgroundColor(math::Color _color);
 
-      /// \brief Prerender - called before Render
-      public: virtual void PreRender();
+      // Documentation inherited
+      public: virtual void PreRender() override;
+
+      // Documentation inherited
+      public: virtual void PostRender() override;
 
       /// \brief Main render call
       public: virtual void Render();
@@ -150,6 +153,15 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void Destroy() override;
+
+      // Documentation inherited
+      public: virtual void PreRender() override;
+
+      // Documentation inherited
+      public: virtual void PostRender() override;
+
+      // Documentation inherited
+      public: virtual GLuint GLId() const override;
 
       // Documentation inherited.
       protected: virtual Ogre::RenderTarget *RenderTarget() const override;

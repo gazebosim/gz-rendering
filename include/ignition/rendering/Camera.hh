@@ -17,6 +17,24 @@
 #ifndef IGNITION_RENDERING_CAMERA_HH_
 #define IGNITION_RENDERING_CAMERA_HH_
 
+#ifndef GLuint
+
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#else
+#if defined(_WIN32)
+  #include <windows.h>
+#endif /* _WIN32 */
+#include <GL/gl.h>
+#include <GL/glext.h>
+#endif /* __APPLE__ */
+
+#else
+  // cppcheck-suppress ConfigurationNotChecked
+  typedef unsigned int GLuint;
+#endif
+
 #include <string>
 
 #include <ignition/common/Event.hh>
@@ -275,6 +293,12 @@ namespace ignition
       /// \param[in] _material a material instance
       /// \param[in] _material a material instance
       public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
+
+      /// \brief Get the OpenGL texture id associated with the render texture
+      /// used by this camera. A valid id is returned only if the underlying
+      /// render engine is OpenGL based,
+      // cppcheck-suppress ConfigurationNotChecked
+      public: virtual GLuint RenderTextureGLId() const = 0;
     };
     }
   }

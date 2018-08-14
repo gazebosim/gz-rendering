@@ -9,7 +9,7 @@ project(ignition-rendering0 VERSION 0.1.0)
 # Find ignition-cmake
 #============================================================================
 # If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake1 REQUIRED)
+find_package(ignition-cmake2 REQUIRED)
 
 #============================================================================
 # Set up the project
@@ -28,19 +28,25 @@ ign_configure_project()
 
 #--------------------------------------
 # Find ignition-math
-ign_find_package(ignition-math5 REQUIRED)
-set(IGN_MATH_VER ${ignition-math5_VERSION_MAJOR})
+ign_find_package(ignition-math6 REQUIRED)
+set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-common
-ign_find_package(ignition-common2 REQUIRED COMPONENTS graphics events)
-set(IGN_COMMON_VER ${ignition-common2_VERSION_MAJOR})
+ign_find_package(ignition-common3 REQUIRED COMPONENTS graphics events)
+set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
 
 #--------------------------------------
 # Find FreeImage
 ign_find_package(FreeImage VERSION 3.9
   REQUIRED_BY optix
   PRIVATE_FOR optix)
+#--------------------------------------
+# Find OpenGL
+find_package(OpenGL)
+if (OpenGL_FOUND)
+  set(HAVE_OPENGL TRUE)
+endif()
 
 #--------------------------------------
 # Find OGRE
@@ -50,6 +56,21 @@ ign_find_package(IgnOGRE VERSION 1.8.0
   PRIVATE_FOR ogre)
 
 if (OGRE_FOUND)
+  #  there is a problem with finding gl/glew.h on macOS
+  # TODO move this logic to FindIgnOGRE.cmake?
+#  if (APPLE)
+    foreach (dir ${OGRE_INCLUDE_DIRS})
+      get_filename_component(dir_name "${dir}" NAME)
+      if ("${dir_name}" STREQUAL "OGRE")
+        set(dir_include "${dir}/RenderSystems/GL")
+      else()
+        set(dir_include "${dir}")
+      endif()
+      list(APPEND OGRE_INCLUDES ${dir_include})
+    endforeach()
+    include_directories(${OGRE_INCLUDES})
+#  endif()
+
   set(HAVE_OGRE TRUE)
 endif()
 
@@ -61,6 +82,23 @@ ign_find_package(OGRE2 VERSION 2.1.0
     PRIVATE_FOR ogre2)
 
 if (OGRE2_FOUND)
+
+  #  there is a problem with finding gl/glew.h on macOS
+  # TODO move this logic to FindIgnOGRE.cmake?
+#  if (APPLE)
+    foreach (dir ${OGRE2_INCLUDE_DIRS})
+      get_filename_component(dir_name "${dir}" NAME)
+      if ("${dir_name}" STREQUAL "OGRE")
+        set(dir_include "${dir}/RenderSystems/GL3Plus")
+      else()
+        set(dir_include "${dir}")
+      endif()
+      list(APPEND OGRE2_INCLUDES ${dir_include})
+    endforeach()
+    include_directories(${OGRE2_INCLUDES})
+#  endif()
+
+
   set(HAVE_OGRE2 TRUE)
 endif()
 

@@ -252,6 +252,7 @@ SceneStorePtr Ogre2RenderEngine::Scenes() const
 //////////////////////////////////////////////////
 bool Ogre2RenderEngine::LoadImpl()
 {
+  ignerr << " ogre2 render engine  before loadimp" <<std::endl;
   try
   {
     this->LoadAttempt();
@@ -268,11 +269,14 @@ bool Ogre2RenderEngine::LoadImpl()
     ignerr << "Failed to load render-engine" << std::endl;
     return false;
   }
+
+  ignerr << " ogre2 render engine  done loadimp" <<std::endl;
 }
 
 //////////////////////////////////////////////////
 bool Ogre2RenderEngine::InitImpl()
 {
+  ignerr << " ogre2 render engine  before init " <<std::endl;
   try
   {
     this->InitAttempt();
@@ -283,20 +287,31 @@ bool Ogre2RenderEngine::InitImpl()
     ignerr << "Failed to initialize render-engine" << std::endl;
     return false;
   }
+  ignerr << " ogre2 render engine  done init " <<std::endl;
 }
 
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::LoadAttempt()
 {
+  ignerr << "  - ogre2 render engine load attempt 0" <<std::endl;
   this->CreateLogger();
+  ignerr << "  - ogre2 render engine load attempt 1" <<std::endl;
   this->CreateContext();
+  ignerr << "  - ogre2 render engine load attempt 2" <<std::endl;
   this->CreateRoot();
+  ignerr << "  - ogre2 render engine load attempt 3" <<std::endl;
   this->CreateOverlay();
+  ignerr << "  - ogre2 render engine load attempt 4" <<std::endl;
   this->LoadPlugins();
+  ignerr << "  - ogre2 render engine load attempt 5" <<std::endl;
   this->CreateRenderSystem();
+  ignerr << "  - ogre2 render engine load attempt 6" <<std::endl;
   this->ogreRoot->initialise(false);
+  ignerr << "  - ogre2 render engine load attempt 7" <<std::endl;
   this->CreateRenderWindow();
+  ignerr << "  - ogre2 render engine load attempt 8" <<std::endl;
   this->CreateResources();
+  ignerr << "  - ogre2 render engine load attempt done " <<std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -606,6 +621,10 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
+
+
+  params["externalGLControl"] = "true";
+  params["currentGLContext"] = "true";
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)

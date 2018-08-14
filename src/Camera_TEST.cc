@@ -131,6 +131,14 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
   EXPECT_EQ(PixelFormat::PF_B8G8R8, camera->ImageFormat());
   EXPECT_EQ(100u*80u*3u, camera->ImageMemorySize());
 
+  // verify render texture GL Id
+  EXPECT_EQ(0u, camera->RenderTextureGLId());
+#ifdef HAVE_OPENGL
+  // PreRender - creates the render texture
+  camera->PreRender();
+  EXPECT_NE(0u, camera->RenderTextureGLId());
+#endif
+
   // Clean up
   engine->DestroyScene(scene);
 }

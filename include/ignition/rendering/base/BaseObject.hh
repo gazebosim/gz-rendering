@@ -38,14 +38,18 @@ namespace ignition
 
       public: virtual std::string Name() const;
 
-      public: virtual void PreRender();
+      // Documentation inherited.
+      public: virtual void PreRender() override;
+
+      // Documentation inherited.
+      public: virtual void PostRender() override;
 
       public: virtual void Destroy();
 
-              // TODO: make pure virtual
+      // TODO: make pure virtual
       protected: virtual void Load();
 
-              // TODO: make pure virtual
+      // TODO: make pure virtual
       protected: virtual void Init();
 
       protected: unsigned int id;

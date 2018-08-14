@@ -15,6 +15,10 @@
  *
  */
 
+// leave this out of OgreIncludes as it conflicts with other files requiring
+// gl.h
+#include <OGRE/RenderSystems/GL3Plus/OgreGL3PlusFBORenderTexture.h>
+
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Material.hh"
@@ -154,8 +158,15 @@ void Ogre2RenderTarget::PreRender()
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTarget::PostRender()
+{
+  // do nothing by default
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
+  std::cerr << "ogre2rendertarget render " << std::endl;
   // TODO(anyone)
   // There is current not an easy solution to manually updating
   // render textures:
@@ -183,6 +194,7 @@ void Ogre2RenderTarget::Render()
   //     hlms->frameEnded();
 	// }
   // engine->OgreRoot()->getRenderSystem()->_update();
+  std::cerr << "ogre2rendertarget render done " << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -275,6 +287,47 @@ void Ogre2RenderTexture::BuildTarget()
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
       Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).getPointer();
+}
+
+//////////////////////////////////////////////////
+GLuint Ogre2RenderTexture::GLId() const
+{
+  if (!this->ogreTexture)
+    return GLuint(0);
+
+  GLuint texId;
+  this->ogreTexture->getCustomAttribute("GLID", &texId);
+
+  return texId;
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::PreRender()
+{
+  Ogre2RenderTarget::PreRender();
+  if (!this->ogreTexture)
+    return;
+
+  Ogre::RenderTarget *rt = this->RenderTarget();
+
+  Ogre::GL3PlusFrameBufferObject *ogreFbo = nullptr;
+  rt->getCustomAttribute("FBO", &ogreFbo);
+  Ogre::GL3PlusFBOManager *manager = ogreFbo->getManager();
+  manager->bind(rt);
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::PostRender()
+{
+  if (!this->ogreTexture)
+    return;
+
+  Ogre::RenderTarget *rt = this->RenderTarget();
+
+  Ogre::GL3PlusFrameBufferObject *ogreFbo = nullptr;
+  rt->getCustomAttribute("FBO", &ogreFbo);
+  Ogre::GL3PlusFBOManager *manager = ogreFbo->getManager();
+  manager->unbind(rt);
 }
 
 //////////////////////////////////////////////////

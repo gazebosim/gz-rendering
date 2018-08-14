@@ -77,15 +77,18 @@ namespace ignition
       public: virtual void SetMaterial(
                   const MaterialPtr &_material) override;
 
+      // Documentation inherited.
+      public: virtual GLuint RenderTextureGLId() const override;
+
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       protected: virtual void Init() override;
 
       protected: virtual void SetSelectionBuffer();
 
-      private: void CreateCamera();
-
       protected: virtual void CreateRenderTexture();
+
+      private: void CreateCamera();
 
       protected: Ogre::Camera *ogreCamera = nullptr;
 

@@ -50,6 +50,21 @@ ign_find_package(IgnOGRE VERSION 1.8.0
   PRIVATE_FOR ogre)
 
 if (OGRE_FOUND)
+  #  there is a problem with finding gl/glew.h on macOS
+  # TODO move this logic to FindIgnOGRE.cmake?
+  if (APPLE)
+    foreach (dir ${OGRE_INCLUDE_DIRS})
+      get_filename_component(dir_name "${dir}" NAME)
+      if ("${dir_name}" STREQUAL "OGRE")
+        set(dir_include "${dir}/RenderSystems/GL")
+      else()
+        set(dir_include "${dir}")
+      endif()
+      list(APPEND OGRE_INCLUDES ${dir_include})
+    endforeach()
+    include_directories(${OGRE_INCLUDES})
+  endif()
+
   set(HAVE_OGRE TRUE)
 endif()
 

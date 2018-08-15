@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/optix/OptixLightTypes.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
@@ -28,6 +29,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixLightManager
     {
       public: explicit OptixLightManager(OptixScenePtr _scene);
@@ -73,6 +76,7 @@ namespace ignition
 
       protected: optix::Buffer spotBuffer;
     };
+    }
   }
 }
 #endif

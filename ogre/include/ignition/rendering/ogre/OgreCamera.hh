@@ -33,6 +33,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     class IGNITION_RENDERING_OGRE_VISIBLE OgreCamera :
       public BaseCamera<OgreSensor>
     {
@@ -76,7 +78,7 @@ namespace ignition
                   const MaterialPtr &_material) override;
 
       // Documentation Inherited.
-      public: GLuint RenderTextureGLId() const;
+      public: GLuint RenderTextureGLId() const override;
 
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
@@ -100,6 +102,7 @@ namespace ignition
       private: friend class OgreScene;
       private: friend class OgreRayQuery;
     };
+    }
   }
 }
 #endif

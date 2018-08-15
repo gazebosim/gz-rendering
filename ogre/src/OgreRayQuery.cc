@@ -25,18 +25,11 @@
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
-namespace ignition
+class ignition::rendering::OgreRayQueryPrivate
 {
-  namespace rendering
-  {
-    class OgreRayQueryPrivate
-    {
-      /// \brief Ogre ray scene query object for computing intersection.
-      public: Ogre::RaySceneQuery *rayQuery = nullptr;
-    };
-  }
-}
-
+  /// \brief Ogre ray scene query object for computing intersection.
+  public: Ogre::RaySceneQuery *rayQuery = nullptr;
+};
 
 using namespace ignition;
 using namespace rendering;

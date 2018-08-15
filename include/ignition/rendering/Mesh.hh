@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_MESH_HH_
 
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Object.hh"
 
@@ -25,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Mesh Mesh.hh ignition/rendering/Mesh
     /// \brief Represents a collection of mesh geometries
     class IGNITION_RENDERING_VISIBLE Mesh :
@@ -86,6 +89,7 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true) = 0;
     };
+    }
   }
 }
 #endif

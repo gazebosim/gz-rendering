@@ -30,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixSubMeshStoreFactory
     {
       // cppcheck-suppress noExplicitConstructor
@@ -91,6 +93,7 @@ namespace ignition
 
       protected: optix::Geometry optixGeometry;
     };
+    }
   }
 }
 #endif

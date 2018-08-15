@@ -35,6 +35,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
     class BaseCamera :
       public virtual Camera,
@@ -155,7 +157,7 @@ namespace ignition
       public: virtual double FollowPGain() const override;
 
       // Documentation inherited.
-      public: virtual GLuint RenderTextureGLId() const;
+      public: virtual GLuint RenderTextureGLId() const override;
 
       protected: virtual void *CreateImageBuffer() const;
 
@@ -473,8 +475,7 @@ namespace ignition
       result(2, 3) = d;
       result(3, 2) = -1;
 
-      // TODO(anyone)
-      // compute projection matrix for orthographic camera
+      // TODO(anyone): compute projection matrix for orthographic camera
 
       return result;
     }
@@ -682,6 +683,7 @@ namespace ignition
       std::cerr << "RenderTextureGLId is not supported by current render"
           << " engine" << std::endl;
       return GLuint(0u);
+    }
     }
   }
 }

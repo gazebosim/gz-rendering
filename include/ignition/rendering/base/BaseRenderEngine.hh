@@ -26,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_VISIBLE BaseRenderEngine :
       public virtual RenderEngine
     {
@@ -92,9 +94,9 @@ namespace ignition
 
       protected: virtual SceneStorePtr Scenes() const = 0;
 
-      protected: bool loaded;
+      protected: bool loaded = false;
 
-      protected: bool initialized;
+      protected: bool initialized = false;
 
       protected: unsigned int nextSceneId;
 
@@ -102,6 +104,7 @@ namespace ignition
       /// resources
       protected: std::vector<std::string> resourcePaths;
     };
+    }
   }
 }
 #endif

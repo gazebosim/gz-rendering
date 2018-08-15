@@ -24,6 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixAxisVisual :
       public BaseAxisVisual<OptixVisual>
     {
@@ -33,6 +35,7 @@ namespace ignition
 
       private: friend class OptixScene;
     };
+    }
   }
 }
 #endif

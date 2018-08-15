@@ -29,6 +29,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief forward declaration
     class ShaderParamsPrivate;
 
@@ -125,6 +127,7 @@ namespace ignition
       /// \brief private implementation
       private: std::unique_ptr<ShaderParamsPrivate> dataPtr;
     };
+    }
   }
 }
 

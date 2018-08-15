@@ -31,6 +31,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     //////////////////////////////////////////////////
     template <class T, class U>
     class BaseMap :
@@ -1452,6 +1454,7 @@ namespace ignition
     void BaseStoreWrapper<T, U>::DestroyAll()
     {
       this->store->DestroyAll();
+    }
     }
   }
 }

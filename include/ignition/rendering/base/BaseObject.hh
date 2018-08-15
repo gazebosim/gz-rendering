@@ -24,6 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_VISIBLE BaseObject :
       public virtual std::enable_shared_from_this<BaseObject>,
       public virtual Object
@@ -44,16 +46,17 @@ namespace ignition
 
       public: virtual void Destroy();
 
-              // TODO(anyone): make pure virtual
+      // TODO(anyone): make pure virtual
       protected: virtual void Load();
 
-              // TODO(anyone): make pure virtual
+      // TODO(anyone): make pure virtual
       protected: virtual void Init();
 
       protected: unsigned int id;
 
       protected: std::string name;
     };
+    }
   }
 }
 #endif

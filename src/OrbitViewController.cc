@@ -21,29 +21,22 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Visual.hh"
 
-namespace ignition
+class ignition::rendering::OrbitViewControllerPrivate
 {
-  namespace rendering
-  {
-    class OrbitViewControllerPrivate
-    {
-      /// \brief Pointer to camera
-      public: CameraPtr camera;
+  /// \brief Pointer to camera
+  public: CameraPtr camera;
 
-      /// \brief Target point for camera movements
-      public: math::Vector3d target;
+  /// \brief Target point for camera movements
+  public: math::Vector3d target;
 
-      /// \brief Keep yaw within limits
-      /// \return Normalized yaw
-      public: double NormalizeYaw(double _yaw);
+  /// \brief Keep yaw within limits
+  /// \return Normalized yaw
+  public: double NormalizeYaw(double _yaw);
 
-      /// \brief Keep pitch within limits
-      /// \return Normalized pitch
-      public: double NormalizePitch(double _pitch);
-    };
-  }
-}
-
+  /// \brief Keep pitch within limits
+  /// \return Normalized pitch
+  public: double NormalizePitch(double _pitch);
+};
 
 using namespace ignition;
 using namespace rendering;

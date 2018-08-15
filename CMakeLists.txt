@@ -9,7 +9,7 @@ project(ignition-rendering0 VERSION 0.1.0)
 # Find ignition-cmake
 #============================================================================
 # If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake1 REQUIRED)
+find_package(ignition-cmake2 REQUIRED)
 
 #============================================================================
 # Set up the project
@@ -28,13 +28,13 @@ ign_configure_project()
 
 #--------------------------------------
 # Find ignition-math
-ign_find_package(ignition-math5 REQUIRED)
-set(IGN_MATH_VER ${ignition-math5_VERSION_MAJOR})
+ign_find_package(ignition-math6 REQUIRED)
+set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-common
-ign_find_package(ignition-common2 REQUIRED COMPONENTS graphics events)
-set(IGN_COMMON_VER ${ignition-common2_VERSION_MAJOR})
+ign_find_package(ignition-common3 REQUIRED COMPONENTS graphics events)
+set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
 
 #--------------------------------------
 # Find FreeImage

@@ -120,7 +120,7 @@ bool OgreRenderEngine::Fini()
   if (ogreRoot)
   {
     this->ogreRoot->shutdown();
-    // TODO: fix segfault on delete
+    // TODO(anyone): fix segfault on delete
     // delete this->ogreRoot;
     this->ogreRoot = nullptr;
   }
@@ -513,7 +513,7 @@ void OgreRenderEngine::CreateResources()
 {
   std::vector< std::pair<std::string, std::string> > archNames;
 
-  // TODO support loading resources from user specified paths
+  // TODO(anyone) support loading resources from user specified paths
   std::list<std::string> paths;
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
@@ -586,7 +586,7 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
-  // TODO: determine api without qt
+  // TODO(anyone): determine api without qt
 
   // Set the macAPI for Ogre based on the Qt implementation
   params["macAPI"] = "cocoa";

@@ -19,6 +19,8 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
+
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/RenderEngine.hh"
@@ -99,7 +101,8 @@ TEST_P(RayQueryTest, RayQuery)
 }
 
 INSTANTIATE_TEST_CASE_P(RayQuery, RayQueryTest,
-    ::testing::Values("ogre"));
+    ::testing::Values("ogre"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

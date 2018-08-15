@@ -123,7 +123,7 @@ void OgreCamera::CreateCamera()
   this->ogreCamera->roll(Ogre::Degree(-90.0));
   this->ogreCamera->setFixedYawAxis(false);
 
-  // TODO: provide api access
+  // TODO(anyone): provide api access
   this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setRenderingDistance(0);
   this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
@@ -141,6 +141,21 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture->SetWidth(this->ImageWidth());
   this->renderTexture->SetHeight(this->ImageHeight());
   this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
+}
+
+//////////////////////////////////////////////////
+GLuint OgreCamera::RenderTextureGLId() const
+{
+  if (!this->renderTexture)
+    return GLuint(0u);
+
+  OgreRenderTexturePtr rt =
+      std::dynamic_pointer_cast<OgreRenderTexture>(this->renderTexture);
+
+  if (!rt)
+    return GLuint(0u);
+
+  return rt->GLId();
 }
 
 //////////////////////////////////////////////////

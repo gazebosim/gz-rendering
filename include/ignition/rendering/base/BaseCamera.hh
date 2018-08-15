@@ -156,6 +156,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual double FollowPGain() const override;
 
+      // Documentation inherited.
+      public: virtual GLuint RenderTextureGLId() const override;
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load() override;
@@ -342,7 +345,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::PostRender()
     {
-      // do nothing by default
+      this->RenderTarget()->PostRender();
     }
 
     //////////////////////////////////////////////////
@@ -671,6 +674,15 @@ namespace ignition
     {
       std::cerr << "SetMaterial not implemented for current render"
           << " engine" << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    GLuint BaseCamera<T>::RenderTextureGLId() const
+    {
+      std::cerr << "RenderTextureGLId is not supported by current render"
+          << " engine" << std::endl;
+      return GLuint(0u);
     }
     }
   }

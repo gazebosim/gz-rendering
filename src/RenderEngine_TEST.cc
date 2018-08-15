@@ -19,6 +19,8 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
+
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/RenderEngine.hh"
@@ -135,7 +137,8 @@ TEST_P(RenderEngineTest, RenderEngine)
 }
 
 INSTANTIATE_TEST_CASE_P(RenderEngine, RenderEngineTest,
-    ::testing::Values("ogre", "optix"));
+    ::testing::Values("ogre", "optix"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -21,6 +21,8 @@
 #include <ignition/common/Console.hh>
 #include <ignition/common/MeshManager.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
+
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/RenderEngine.hh"
@@ -88,7 +90,8 @@ TEST_P(MeshDescriptorTest, Descriptor)
 }
 
 INSTANTIATE_TEST_CASE_P(MeshDescriptor, MeshDescriptorTest,
-    ::testing::Values("ogre", "optix"));
+    ::testing::Values("ogre", "optix"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

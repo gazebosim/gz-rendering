@@ -15,6 +15,11 @@
  *
  */
 
+// leave this out of OgreIncludes as it conflicts with other files requiring
+// gl.h
+#include <OGRE/RenderSystems/GL/OgreGLFBORenderTexture.h>
+
+
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Material.hh"
@@ -41,7 +46,7 @@ OgreRenderTarget::OgreRenderTarget()
 //////////////////////////////////////////////////
 OgreRenderTarget::~OgreRenderTarget()
 {
-  // TODO: clean up check null
+  // TODO(anyone): clean up check null
 
   OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
       this->scene);
@@ -50,8 +55,8 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
-  // TODO: handle Bayer conversions
-  // TODO: handle ogre version differences
+  // TODO(anyone): handle Bayer conversions
+  // TODO(anyone): handle ogre version differences
 
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
@@ -114,6 +119,12 @@ void OgreRenderTarget::PreRender()
   {
     this->material->PreRender();
   }
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::PostRender()
+{
+  // do nothing by default
 }
 
 //////////////////////////////////////////////////
@@ -216,7 +227,7 @@ void OgreRenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::DestroyTarget()
 {
-  // TODO: implement
+  // TODO(anyone): implement
 }
 
 //////////////////////////////////////////////////
@@ -229,6 +240,49 @@ void OgreRenderTexture::BuildTarget()
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
       Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).get();
 }
+
+//////////////////////////////////////////////////
+GLuint OgreRenderTexture::GLId()
+{
+  if (!this->ogreTexture)
+    return GLuint(0);
+
+  GLuint texId;
+  this->ogreTexture->getCustomAttribute("GLID", &texId);
+
+  return texId;
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::PreRender()
+{
+  OgreRenderTarget::PreRender();
+  if (!this->ogreTexture)
+    return;
+
+
+  Ogre::RenderTarget *rt = this->RenderTarget();
+
+  Ogre::GLFrameBufferObject *ogreFbo = nullptr;
+  rt->getCustomAttribute("FBO", &ogreFbo);
+  Ogre::GLFBOManager *manager = ogreFbo->getManager();
+  manager->bind(rt);
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::PostRender()
+{
+  if (!this->ogreTexture)
+    return;
+
+  Ogre::RenderTarget *rt = this->RenderTarget();
+
+  Ogre::GLFrameBufferObject *ogreFbo = nullptr;
+  rt->getCustomAttribute("FBO", &ogreFbo);
+  Ogre::GLFBOManager *manager = ogreFbo->getManager();
+  manager->unbind(rt);
+}
+
 
 //////////////////////////////////////////////////
 // OgreRenderWindow
@@ -258,7 +312,7 @@ void OgreRenderWindow::Destroy()
 //////////////////////////////////////////////////
 void OgreRenderWindow::RebuildTarget()
 {
-  // TODO determine when to rebuild
+  // TODO(anyone) determine when to rebuild
   // ie. only when ratio or handle changes!
   // e.g. sizeDirty?
   if (!this->ogreRenderWindow)

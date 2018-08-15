@@ -153,7 +153,8 @@ TEST_P(ShadowsTest, Shadows)
 }
 
 INSTANTIATE_TEST_CASE_P(Shadows, ShadowsTest,
-    ::testing::Values("ogre", "optix"));
+    ::testing::Values("ogre", "optix"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

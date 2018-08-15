@@ -1,8 +1,3 @@
-# This is a sample build configuration for C++.
-# Check our guides at https://confluence.atlassian.com/x/VYk8Lw for more examples.
-# Only use spaces to indent your .yml configuration.
-# -----
-# You can specify a custom docker image from Docker Hub as your build environment.
 image: ubuntu:bionic
 
 pipelines:
@@ -17,16 +12,22 @@ pipelines:
           - apt-get update
           - apt-get -y install
             cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn freeglut3-dev libxmu-dev libxi-dev
-            curl mercurial lcov
-          - sh tools/code_check.sh
+            libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
+            libfreeimage-dev libgts-dev libswscale-dev libtinyxml2-dev
+            curl git mercurial g++-8 uuid-dev
+          - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
+          - gcc -v
+          - g++ -v
+          - gcov -v
           # Dependency: Ignition packages
           - apt-get -y install
             libignition-cmake2-dev libignition-math6-dev
+          # lcov
+          - git clone https://github.com/linux-test-project/lcov.git
+          - cd lcov
+          - make install
+          - cd ..
           # Ignition common
-          - apt install -y
-            uuid-dev
-            libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
-            libfreeimage-dev libgts-dev libswscale-dev
           - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b gz11
           - cd ign-common
           - mkdir build
@@ -39,6 +40,7 @@ pipelines:
           - cd build
           - cmake .. -DCMAKE_BUILD_TYPE=coverage
           - make -j4
+          - make codecheck
           - make install
           # Can't make tests - valid display not found
           # Build an example
@@ -47,4 +49,3 @@ pipelines:
           - cd build
           - cmake ..
           - make -j4
-

@@ -61,7 +61,11 @@ namespace ignition
 
       public: virtual void SetBackgroundColor(math::Color _color);
 
+      // Documentation inherited
       public: virtual void PreRender();
+
+      // Documentation inherited
+      public: virtual void PostRender();
 
       public: virtual void Render();
 
@@ -113,6 +117,15 @@ namespace ignition
       public: virtual ~OgreRenderTexture();
 
       public: virtual void Destroy();
+
+      // Documentation inherited
+      public: virtual void PreRender();
+
+      // Documentation inherited
+      public: virtual void PostRender();
+
+      // Documentation inherited
+      public: virtual GLuint GLId();
 
       protected: virtual Ogre::RenderTarget *RenderTarget() const;
 

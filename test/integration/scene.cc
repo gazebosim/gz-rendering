@@ -117,7 +117,8 @@ TEST_P(SceneTest, VisualAt)
 
 // It doesn't suppot optix just yet
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
-    ::testing::Values("ogre"));
+    ::testing::Values("ogre"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

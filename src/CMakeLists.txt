@@ -1,3 +1,10 @@
+# set compile definitions for tests
+set_property(
+  SOURCE Camera_TEST.cc RenderTarget.cc
+  PROPERTY COMPILE_DEFINITIONS
+  HAVE_OPENGL="${HAVE_OPENGL}"
+)
+
 # Collect source files into the "sources" variable and unit test files into the
 # "gtest_sources" variable.
 ign_get_libsources_and_unittests(sources gtest_sources)
@@ -5,7 +12,7 @@ ign_get_libsources_and_unittests(sources gtest_sources)
 add_subdirectory(base)
 
 # Create the library target.
-ign_create_core_library(SOURCES ${sources} CXX_STANDARD 11)
+ign_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
 
 # Include the interface directories that we always need.
 #ign_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}

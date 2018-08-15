@@ -21,7 +21,19 @@ pipelines:
           - sh tools/code_check.sh
           # Dependency: Ignition packages
           - apt-get -y install
-            libignition-cmake1-dev libignition-math5-dev libignition-common2-dev
+            libignition-cmake2-dev libignition-math6-dev
+          # Ignition common
+          - apt install -y
+            uuid-dev
+            libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
+            libfreeimage-dev libgts-dev libswscale-dev
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b gz11
+          - cd ign-common
+          - mkdir build
+          - cd build
+          - cmake ..
+          - make -j4 install
+          - cd ../..
           # Ignition rendering
           - mkdir build
           - cd build

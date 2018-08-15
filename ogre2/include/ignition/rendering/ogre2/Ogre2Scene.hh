@@ -203,6 +203,9 @@ namespace ignition
       /// \brief A list of ogre sensors, e.g. cameras
       protected: Ogre2SensorStorePtr sensors;
 
+      /// \brief A list of ogre lights
+      protected: Ogre2LightStorePtr lights;
+
       /// \brief Pointer to the ogre root object
       protected: Ogre::Root *ogreRoot = nullptr;
 

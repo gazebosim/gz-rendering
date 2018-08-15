@@ -37,10 +37,15 @@ namespace ignition
     class Ogre2RenderWindow;
     class Ogre2Scene;
     class Ogre2Sensor;
+    class Ogre2DirectionalLight;
+    class Ogre2Light;
+    class Ogre2PointLight;
+    class Ogre2SpotLight;
 
     typedef BaseSceneStore<Ogre2Scene>            Ogre2SceneStore;
     typedef BaseNodeStore<Ogre2Node>              Ogre2NodeStore;
     typedef BaseSensorStore<Ogre2Sensor>          Ogre2SensorStore;
+    typedef BaseLightStore<Ogre2Light>            Ogre2LightStore;
 
     typedef shared_ptr<Ogre2Camera>               Ogre2CameraPtr;
     typedef shared_ptr<Ogre2Node>                 Ogre2NodePtr;
@@ -51,10 +56,15 @@ namespace ignition
     typedef shared_ptr<Ogre2RenderWindow>         Ogre2RenderWindowPtr;
     typedef shared_ptr<Ogre2Scene>                Ogre2ScenePtr;
     typedef shared_ptr<Ogre2Sensor>               Ogre2SensorPtr;
+    typedef shared_ptr<Ogre2DirectionalLight>     Ogre2DirectionalLightPtr;
+    typedef shared_ptr<Ogre2Light>                Ogre2LightPtr;
+    typedef shared_ptr<Ogre2PointLight>           Ogre2PointLightPtr;
+    typedef shared_ptr<Ogre2SpotLight>            Ogre2SpotLightPtr;
 
     typedef shared_ptr<Ogre2NodeStore>            Ogre2NodeStorePtr;
     typedef shared_ptr<Ogre2SceneStore>           Ogre2SceneStorePtr;
     typedef shared_ptr<Ogre2SensorStore>          Ogre2SensorStorePtr;
+    typedef shared_ptr<Ogre2LightStore>           Ogre2LightStorePtr;
     }
   }
 }

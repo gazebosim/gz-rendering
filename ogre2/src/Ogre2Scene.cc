@@ -26,6 +26,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Light.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -62,14 +63,24 @@ VisualPtr Ogre2Scene::RootVisual() const
 //////////////////////////////////////////////////
 math::Color Ogre2Scene::AmbientLight() const
 {
-  // TODO(anyone)
-  return math::Color::White;
+  // This method considers that the ambient upper hemisphere and
+  // the lower hemisphere light configurations are the same. For
+  // more info check Ogre2Scene::SetAmbientLight documentation.
+  Ogre::ColourValue ogreColor =
+    this->ogreSceneManager->getAmbientLightUpperHemisphere();
+  return Ogre2Conversions::Convert(ogreColor);
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::SetAmbientLight(const math::Color &/*_color*/)
+void Ogre2Scene::SetAmbientLight(const math::Color &_color)
 {
-  // TODO(anyone)
+  // We set the same ambient light for both hemispheres for a
+  // traditional fixed-colour ambient light.
+  // https://ogrecave.github.io/ogre/api/2.1/class_ogre_1_1_scene
+  // _manager.html#a56cd9aa2c4dee4eec9eb07ce1372fb52
+  Ogre::ColourValue ogreColor = Ogre2Conversions::Convert(_color);
+  this->ogreSceneManager->setAmbientLight(ogreColor, ogreColor,
+      Ogre::Vector3());
 }
 
 //////////////////////////////////////////////////
@@ -114,8 +125,7 @@ bool Ogre2Scene::InitImpl()
 //////////////////////////////////////////////////
 LightStorePtr Ogre2Scene::Lights() const
 {
-  // TODO(anyone)
-  return LightStorePtr();
+  return this->lights;
 }
 
 //////////////////////////////////////////////////
@@ -139,27 +149,30 @@ MaterialMapPtr Ogre2Scene::Materials() const
 }
 
 //////////////////////////////////////////////////
-DirectionalLightPtr Ogre2Scene::CreateDirectionalLightImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+DirectionalLightPtr Ogre2Scene::CreateDirectionalLightImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return DirectionalLightPtr();
+  Ogre2DirectionalLightPtr light(new Ogre2DirectionalLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
-PointLightPtr Ogre2Scene::CreatePointLightImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+PointLightPtr Ogre2Scene::CreatePointLightImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return PointLightPtr();
+  Ogre2PointLightPtr light(new Ogre2PointLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
-SpotLightPtr Ogre2Scene::CreateSpotLightImpl(unsigned int /*_id*/,
-    const std::string &/*`_name*/)
+SpotLightPtr Ogre2Scene::CreateSpotLightImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return SpotLightPtr();
+  Ogre2SpotLightPtr light(new Ogre2SpotLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -356,7 +369,8 @@ void Ogre2Scene::CreateStores()
 {
   // TODO(anyone)
   // there will be a few more stores added to this class,
-  // e.g. to store visuals, lights, materials, etc
+  // e.g. to store visuals, materials, etc
+  this->lights = Ogre2LightStorePtr(new Ogre2LightStore);
   this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
 }
 

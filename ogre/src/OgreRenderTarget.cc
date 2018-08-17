@@ -178,7 +178,7 @@ void OgreRenderTarget::SetMaterial(MaterialPtr _material)
   this->targetDirty = true;
 }
 
-/////////////////////////////////////////////////
+//////////////////////////////////////////////////
 void OgreRenderTarget::RebuildMaterial()
 {
   if (this->material)
@@ -193,6 +193,42 @@ void OgreRenderTarget::RebuildMaterial()
         sceneMgr, target, matPtr.get()));
   }
 }
+
+////////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTarget::GetViewport(int viewportId)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  return ogreRenderTarget->getViewport(viewportId);
+}
+
+////////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *camera)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  return ogreRenderTarget->addViewport(camera);
+}
+
+////////////////////////////////////////////////////
+void OgreRenderTarget::SetAutoUpdated(bool value)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->setAutoUpdated(value);
+}
+
+////////////////////////////////////////////////////
+void OgreRenderTarget::SetUpdate(bool value)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->update(value);
+}
+
+////////////////////////////////////////////////////
+void OgreRenderTarget::SwapBuffers()
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->swapBuffers();
+}
+
 
 //////////////////////////////////////////////////
 // OgreRenderTexture
@@ -216,7 +252,7 @@ void OgreRenderTexture::Destroy()
 //////////////////////////////////////////////////
 Ogre::RenderTarget *OgreRenderTexture::RenderTarget() const
 {
-  this->ogreTexture->getBuffer()->getRenderTarget();
+  return this->ogreTexture->getBuffer()->getRenderTarget();
 }
 
 //////////////////////////////////////////////////
@@ -306,41 +342,6 @@ float *OgreRenderTexture::Buffer()
   pcdPixelBuffer->unlock();
 
   return buffer;
-}
-
-////////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTexture::GetViewport(int viewportId)
-{
-  Ogre::RenderTarget *rt = this->RenderTarget();
-  return rt->getViewport(viewportId);
-}
-
-//////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTexture::AddViewport(Ogre::Camera *camera)
-{
-  Ogre::RenderTarget *rt = this->ogreTexture->getBuffer()->getRenderTarget();
-  return rt->addViewport(camera);
-}
-
-////////////////////////////////////////////////
-void OgreRenderTexture::SetAutoUpdated(bool value)
-{
-  Ogre::RenderTarget *rt = this->RenderTarget();
-  rt->setAutoUpdated(value);
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTexture::SetUpdate(bool value)
-{
-  Ogre::RenderTarget *rt = this->RenderTarget();
-  rt->update(value);
-}
-
-///////////////////////////////////////////////////
-void OgreRenderTexture::SwapBuffers()
-{
-  Ogre::RenderTarget *rt = this->RenderTarget();
-  rt->swapBuffers();
 }
 
 

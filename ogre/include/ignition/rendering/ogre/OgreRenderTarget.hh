@@ -76,6 +76,16 @@ namespace ignition
 
       public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
+      public: Ogre::Viewport *AddViewport(Ogre::Camera *viewport);
+
+      public: Ogre::Viewport *GetViewport(int viewportId);
+
+      public: void SwapBuffers();
+
+      public: void SetUpdate(bool value);
+
+      public: void SetAutoUpdated(bool value);
+
       protected: virtual void UpdateBackgroundColor();
 
       protected: virtual void RebuildImpl();
@@ -126,16 +136,6 @@ namespace ignition
       public: virtual GLuint GLId();
 
       public: float *Buffer();
-
-      public: Ogre::Viewport *AddViewport(Ogre::Camera *viewport);
-
-      public: Ogre::Viewport *GetViewport(int viewportId);
-
-      public: void SwapBuffers();
-
-      public: void SetAutoUpdated(bool value);
-
-      public: void SetUpdate(bool value);
 
       public: virtual Ogre::RenderTarget *RenderTarget() const;
 

@@ -365,16 +365,6 @@ CameraPtr OgreScene::CreateCameraImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-OgreCameraPtr OgreScene::CreateOgreCamera(unsigned int _id,
-    const std::string &_name)
-{
-  OgreCameraPtr camera(new OgreCamera);
-  bool result = this->InitObject(camera, _id, _name);
-  camera->SetBackgroundColor(this->backgroundColor);
-  return (result) ? camera : nullptr;
-}
-
-//////////////////////////////////////////////////
 DepthCameraPtr OgreScene::CreateDepthCameraImpl(unsigned int _id,
     const std::string &_name)
 {

@@ -31,13 +31,13 @@ const double height = 512;
 const int bytesPerPixel = 3;
 
 const std::string vertex_shader_path =
-  PROJECT_SOURCE_PATH "/vertex_shader.glsl";
+  "/usr/local/share/ignition/rendering-1/ogre/media/materials/programs/vertex_shader.glsl";
 const std::string fragment_shader_path =
-  PROJECT_SOURCE_PATH "/fragment_shader.glsl";
+  "/usr/local/share/ignition/rendering-1/ogre/media/materials/programs/fragment_shader.glsl";
 const std::string depth_vertex_shader_path =
-  PROJECT_SOURCE_PATH "/depth_vertex_shader.glsl";
+  "/usr/local/share/ignition/rendering-1/ogre/media/materials/programs/depth_vertex_shader.glsl";
 const std::string depth_fragment_shader_path =
-  PROJECT_SOURCE_PATH "/depth_fragment_shader.glsl";
+  "/usr/local/share/ignition/rendering-1/ogre/media/materials/programs/depth_fragment_shader.glsl";
 
 
 //////////////////////////////////////////////////

@@ -515,6 +515,16 @@ void OgreMaterial::UpdateTransparency()
 }
 
 //////////////////////////////////////////////////
+void OgreMaterial::SetDepthMaterial()
+{
+  this->ogrePass->setDepthCheckEnabled(false);
+  this->ogrePass->setDepthWriteEnabled(false);
+  this->ogrePass->setLightingEnabled(false);
+  this->SetVertexShader(depth_vertex_shader_path);
+  this->SetFragmentShader(depth_fragment_shader_path);
+}
+
+//////////////////////////////////////////////////
 void OgreMaterial::UpdateColorOperation()
 {
   Ogre::LayerBlendOperationEx operation;

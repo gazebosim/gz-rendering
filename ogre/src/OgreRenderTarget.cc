@@ -178,36 +178,6 @@ void OgreRenderTarget::SetMaterial(MaterialPtr _material)
   this->targetDirty = true;
 }
 
-////////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTarget::GetViewport(int viewportId)
-{
-  return this->RenderTarget()->getViewport(viewportId);
-}
-
-//////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *camera)
-{
-  return this->RenderTarget()->addViewport(camera);
-}
-
-////////////////////////////////////////////////
-void OgreRenderTarget::SetAutoUpdated(bool value)
-{
-  this->RenderTarget()->setAutoUpdated(value);
-}
-
-//////////////////////////////////////////////////
-void OgreRenderTarget::SetUpdate(bool value)
-{
-  this->RenderTarget()->update(value);
-}
-
-///////////////////////////////////////////////////
-void OgreRenderTarget::SwapBuffers()
-{
-  this->RenderTarget()->swapBuffers();
-}
-
 /////////////////////////////////////////////////
 void OgreRenderTarget::RebuildMaterial()
 {
@@ -246,7 +216,7 @@ void OgreRenderTexture::Destroy()
 //////////////////////////////////////////////////
 Ogre::RenderTarget *OgreRenderTexture::RenderTarget() const
 {
-  return this->ogreTexture->getBuffer()->getRenderTarget();
+  this->ogreTexture->getBuffer()->getRenderTarget();
 }
 
 //////////////////////////////////////////////////
@@ -313,6 +283,64 @@ void OgreRenderTexture::PostRender()
   rt->getCustomAttribute("FBO", &ogreFbo);
   Ogre::GLFBOManager *manager = ogreFbo->getManager();
   manager->unbind(rt);
+}
+
+//////////////////////////////////////////////////
+float *OgreRenderTexture::Buffer()
+{
+  Ogre::HardwarePixelBufferSharedPtr pcdPixelBuffer;
+  pcdPixelBuffer = this->ogreTexture->getBuffer();
+
+  float *buffer = new float[this->width * this->height * 4];
+
+  memset(buffer, 0, this->width * this->height * 4);
+
+  Ogre::PixelFormat imageFormat = OgreConversions::Convert(this->Format());
+
+  Ogre::Box pcd_src_box(0, 0, this->width, this->height);
+  Ogre::PixelBox pcd_dst_box(this->width, this->height,
+      1, imageFormat, buffer);
+
+  pcdPixelBuffer->lock(Ogre::HardwarePixelBuffer::HBL_NORMAL);
+  pcdPixelBuffer->blitToMemory(pcd_src_box, pcd_dst_box);
+  pcdPixelBuffer->unlock();
+
+  return buffer;
+}
+
+////////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTexture::GetViewport(int viewportId)
+{
+  Ogre::RenderTarget *rt = this->RenderTarget();
+  return rt->getViewport(viewportId);
+}
+
+//////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTexture::AddViewport(Ogre::Camera *camera)
+{
+  Ogre::RenderTarget *rt = this->ogreTexture->getBuffer()->getRenderTarget();
+  return rt->addViewport(camera);
+}
+
+////////////////////////////////////////////////
+void OgreRenderTexture::SetAutoUpdated(bool value)
+{
+  Ogre::RenderTarget *rt = this->RenderTarget();
+  rt->setAutoUpdated(value);
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::SetUpdate(bool value)
+{
+  Ogre::RenderTarget *rt = this->RenderTarget();
+  rt->update(value);
+}
+
+///////////////////////////////////////////////////
+void OgreRenderTexture::SwapBuffers()
+{
+  Ogre::RenderTarget *rt = this->RenderTarget();
+  rt->swapBuffers();
 }
 
 

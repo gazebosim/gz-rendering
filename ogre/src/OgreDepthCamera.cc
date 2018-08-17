@@ -41,14 +41,14 @@ void OgreDepthCamera::Init()
 {
   BaseDepthCamera::Init();
 
+  this->CreateCamera();
   this->CreateDepthTexture("_RttTex_Depth");
   this->Reset();
 }
 
-/////////////////////////////////////////////////
-void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
+//////////////////////////////////////////////////
+void OgreDepthCamera::CreateCamera()
 {
-
   // create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
@@ -63,57 +63,76 @@ void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
     ignerr << "Ogre camera cannot be created" << std::endl;
   }
 
-  // Create the depth buffer
-  std::string depthMaterialName = this->Name() + "_RttMat_Camera_Depth";
+  this->ogreNode->attachObject(this->ogreCamera);
 
-  this->depthTexture = Ogre::TextureManager::getSingleton().createManual(
-      _textureName,
-      Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-      Ogre::TEX_TYPE_2D, 640, 480, 0,
-      Ogre::PF_FLOAT32_R,
-      Ogre::TU_RENDERTARGET).getPointer();
+  // rotate to Gazebo coordinate system
+  this->ogreCamera->yaw(Ogre::Degree(-90.0));
+  this->ogreCamera->roll(Ogre::Degree(-90.0));
+  this->ogreCamera->setFixedYawAxis(false);
 
-  this->SetDepthTarget(this->depthTexture->getBuffer()->getRenderTarget());
-  this->depthTarget->setAutoUpdated(false);
+  // TODO(anyone): provide api access
+  this->ogreCamera->setAutoAspectRatio(true);
+  this->ogreCamera->setRenderingDistance(0);
+  this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
+  this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
+  this->ogreCamera->setCustomProjectionMatrix(false);
+}
 
-  this->depthViewport->setOverlaysEnabled(false);
-  this->depthViewport->setBackgroundColour(
-      Ogre::ColourValue(Ogre::ColourValue(0, 0, 0)));
+/////////////////////////////////////////////////
+void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
+{
+  // create ogre camera object
+  Ogre::SceneManager *ogreSceneManager;
+  ogreSceneManager = this->scene->OgreSceneManager();
+  if (ogreSceneManager == nullptr)
+  {
+    ignerr << "Scene manager cannot be obtained" << std::endl;
+  }
 
-  // Create materials for all the render textures.
-  Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingleton().create(
-      depthMaterialName,
-      Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  this->ogreCamera = ogreSceneManager->createCamera(this->name + "_Depth_Camera");
+  if (ogreCamera == nullptr)
+  {
+    ignerr << "Ogre camera cannot be created" << std::endl;
+  }
 
-  matPtr->getTechnique(0)->getPass(0)->setDepthCheckEnabled(false);
-  matPtr->getTechnique(0)->getPass(0)->setDepthWriteEnabled(false);
-  matPtr->getTechnique(0)->getPass(0)->setLightingEnabled(false);
+  RenderTexturePtr depthTextureBase = this->scene->CreateRenderTexture();
+  this->depthTexture = std::dynamic_pointer_cast<OgreRenderTexture>(depthTextureBase);
+  this->depthTexture->SetCamera(this->ogreCamera);
+  this->depthTexture->SetFormat(PF_FLOAT32_R);
+  this->depthTexture->SetWidth(this->ImageWidth());
+  this->depthTexture->SetHeight(this->ImageHeight());
+  this->depthTexture->SetBackgroundColor(this->scene->BackgroundColor());
+  //this->depthTexture->SetAutoUpdated(false);
 
-  matPtr->getTechnique(0)->getPass(0)->createTextureUnitState(
-      _textureName);
+  double ratio = static_cast<double>(this->ImageWidth()) /
+                 static_cast<double>(this->ImageHeight());
 
-  this->dataPtr->depthMaterial = (Ogre::Material*)(
-      Ogre::MaterialManager::getSingleton().getByName(
-        "Ignition/DepthMap").get());
+  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
+  this->ogreCamera->setAspectRatio(ratio);
+  this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
 
-  this->dataPtr->depthMaterial->load();
+  // this->depthViewport->setVisibilityMask(
+  //     IGN_VISIBILITY_ALL & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
+
+  MaterialPtr depthMat = this->scene->CreateMaterial();
+  depthMat->SetDepthMaterial();
+  //(*(depthMat->FragmentShaderParams()))["maxRange"] = 10.0f;
+  this->depthTexture->SetMaterial(depthMat);
 
   if (this->dataPtr->outputPoints)
   {
-    this->dataPtr->pcdTexture =
-        Ogre::TextureManager::getSingleton().createManual(
-        _textureName + "_pcd",
-        "General",
-        Ogre::TEX_TYPE_2D,
-        this->ImageWidth(), this->ImageHeight(), 0,
-        Ogre::PF_FLOAT32_RGBA,
-        Ogre::TU_RENDERTARGET).getPointer();
+    RenderTexturePtr pcdTextureBase = this->scene->CreateRenderTexture();
+    this->dataPtr->pcdTexture = std::dynamic_pointer_cast<OgreRenderTexture>(pcdTextureBase);
+    this->dataPtr->pcdTexture->SetCamera(this->ogreCamera);
+    this->dataPtr->pcdTexture->SetFormat(PF_FLOAT32_RGBA);
+    this->dataPtr->pcdTexture->SetWidth(this->ImageWidth());
+    this->dataPtr->pcdTexture->SetHeight(this->ImageHeight());
+    this->dataPtr->pcdTexture->SetBackgroundColor(this->scene->BackgroundColor());
 
-    this->dataPtr->pcdTarget = this->dataPtr->pcdTexture->getBuffer()->getRenderTarget();
-    this->dataPtr->pcdTarget->setAutoUpdated(false);
+    this->dataPtr->pcdTexture->SetAutoUpdated(false);
 
     this->dataPtr->pcdViewport =
-        this->dataPtr->pcdTarget->addViewport(this->ogreCamera);
+        this->dataPtr->pcdTexture->AddViewport(this->ogreCamera);
     this->dataPtr->pcdViewport->setClearEveryFrame(true);
 
     auto const &ignBG = this->scene->BackgroundColor();
@@ -137,9 +156,9 @@ void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
 //////////////////////////////////////////////////
 void OgreDepthCamera::PostRender()
 {
-  this->depthTarget->swapBuffers();
+  this->depthTexture->SwapBuffers();
   if (this->dataPtr->outputPoints)
-    this->dataPtr->pcdTarget->swapBuffers();
+    this->dataPtr->pcdTexture->SwapBuffers();
 
   if (this->newData && this->captureData)
   {
@@ -148,48 +167,16 @@ void OgreDepthCamera::PostRender()
 
     if (!this->dataPtr->outputPoints)
     {
-      Ogre::HardwarePixelBufferSharedPtr pixelBuffer;
-
-      // Get access to the buffer and make an image and write it to file
-      pixelBuffer = this->depthTexture->getBuffer();
-
-      size_t size = Ogre::PixelUtil::getMemorySize(width, height, 1,
-          Ogre::PF_FLOAT32_R);
-
-      // Blit the depth buffer if needed
       if (!this->dataPtr->depthBuffer)
-        this->dataPtr->depthBuffer = new float[size];
-
-      Ogre::PixelBox dstBox(width, height,
-          1, Ogre::PF_FLOAT32_R, this->dataPtr->depthBuffer);
-
-      pixelBuffer->lock(Ogre::HardwarePixelBuffer::HBL_NORMAL);
-      pixelBuffer->blitToMemory(dstBox);
-      pixelBuffer->unlock();  // FIXME: do we need to lock/unlock still?
+        this->dataPtr->depthBuffer = this->depthTexture->Buffer();
 
       this->dataPtr->newDepthFrame(
           this->dataPtr->depthBuffer, width, height, 1, "FLOAT32");
     }
     else
     {
-      Ogre::HardwarePixelBufferSharedPtr pcdPixelBuffer;
-
-      // Get access to the buffer and make an image and write it to file
-      pcdPixelBuffer = this->dataPtr->pcdTexture->getBuffer();
-
-      // Blit the depth buffer if needed
       if (!this->dataPtr->pcdBuffer)
-        this->dataPtr->pcdBuffer = new float[width * height * 4];
-
-      memset(this->dataPtr->pcdBuffer, 0, width * height * 4);
-
-      Ogre::Box pcd_src_box(0, 0, width, height);
-      Ogre::PixelBox pcd_dst_box(width, height,
-          1, Ogre::PF_FLOAT32_RGBA, this->dataPtr->pcdBuffer);
-
-      pcdPixelBuffer->lock(Ogre::HardwarePixelBuffer::HBL_NORMAL);
-      pcdPixelBuffer->blitToMemory(pcd_src_box, pcd_dst_box);
-      pcdPixelBuffer->unlock();
+        this->dataPtr->pcdBuffer = this->dataPtr->pcdTexture->Buffer();
 
       this->dataPtr->newRGBPointCloud(
           this->dataPtr->pcdBuffer, width, height, 1, "RGBPOINTS");
@@ -197,13 +184,13 @@ void OgreDepthCamera::PostRender()
   }
 
   // also new image frame for camera texture
-  DepthCamera::PostRender();
+  //DepthCamera::PostRender();
 
   this->newData = false;
 }
 
 //////////////////////////////////////////////////
-void OgreDepthCamera::UpdateRenderTarget(Ogre::RenderTarget *_target,
+void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
           Ogre::Material *_material, const std::string &_matName)
 {
   Ogre::RenderSystem *renderSys;
@@ -223,7 +210,7 @@ void OgreDepthCamera::UpdateRenderTarget(Ogre::RenderTarget *_target,
 
   Ogre::AutoParamDataSource autoParamDataSource;
 
-  vp = _target->getViewport(0);
+  vp = _target->GetViewport(0);
 
   // return farClip in case no renderable object is inside frustrum
   vp->setBackgroundColour(Ogre::ColourValue(farClipDistance,
@@ -237,7 +224,7 @@ void OgreDepthCamera::UpdateRenderTarget(Ogre::RenderTarget *_target,
   sceneMgr->_setPass(pass, true, false);
   autoParamDataSource.setCurrentPass(pass);
   autoParamDataSource.setCurrentViewport(vp);
-  autoParamDataSource.setCurrentRenderTarget(_target);
+  autoParamDataSource.setCurrentRenderTarget(_target->RenderTarget());
   autoParamDataSource.setCurrentSceneManager(sceneMgr);
   autoParamDataSource.setCurrentCamera(this->ogreCamera, true);
 
@@ -295,27 +282,27 @@ void OgreDepthCamera::Render()
   sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   sceneMgr->_suppressRenderStateChanges(true);
 
-  this->UpdateRenderTarget(this->depthTarget,
+  this->UpdateRenderTarget(this->depthTexture,
                   this->dataPtr->depthMaterial, "Ignition/DepthMap");
 
   // Does actual rendering
-  this->depthTarget->setAutoUpdated(false);
+  this->depthTexture->SetAutoUpdated(false);
 
   sceneMgr->_suppressRenderStateChanges(false);
   sceneMgr->setShadowTechnique(shadowTech);
 
   // for camera image
-  DepthCamera::Render();
+  //DepthCamera::Render();
 
   if (this->dataPtr->outputPoints)
   {
     sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
     sceneMgr->_suppressRenderStateChanges(true);
 
-    this->UpdateRenderTarget(this->dataPtr->pcdTarget,
+    this->UpdateRenderTarget(this->dataPtr->pcdTexture,
                   this->dataPtr->pcdMaterial, "Ignition/XYZPoints");
 
-    this->dataPtr->pcdTarget->setAutoUpdated(false);
+    this->dataPtr->pcdTexture->SetAutoUpdated(false);
 
     sceneMgr->_suppressRenderStateChanges(false);
     sceneMgr->setShadowTechnique(shadowTech);
@@ -326,34 +313,6 @@ void OgreDepthCamera::Render()
 const float* OgreDepthCamera::DepthData() const
 {
   return this->dataPtr->depthBuffer;
-}
-
-//////////////////////////////////////////////////
-void OgreDepthCamera::SetDepthTarget(Ogre::RenderTarget *_target)
-{
-  this->depthTarget = _target;
-
-  if (this->depthTarget != nullptr)
-  {
-    // Setup the viewport to use the texture
-    this->depthViewport = this->depthTarget->addViewport(this->ogreCamera);
-    this->depthViewport->setClearEveryFrame(true);
-    auto const &ignBG = this->scene->BackgroundColor();
-    this->depthViewport->setBackgroundColour(OgreConversions::Convert(ignBG));
-    this->depthViewport->setVisibilityMask(
-        IGN_VISIBILITY_ALL & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
-
-    double ratio = static_cast<double>(this->depthViewport->getActualWidth()) /
-                   static_cast<double>(this->depthViewport->getActualHeight());
-
-    double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
-    this->ogreCamera->setAspectRatio(ratio);
-    this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
-  }
-  else
-  {
-    ignerr << " No depth target generated" << std::endl;
-  }
 }
 
 //////////////////////////////////////////////////
@@ -375,7 +334,7 @@ ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewRGBPointCloud(
 //////////////////////////////////////////////////
 RenderTargetPtr OgreDepthCamera::RenderTarget() const
 {
-  //return this->depthTarget;
+  return this->depthTexture;
 }
 
 //////////////////////////////////////////////////

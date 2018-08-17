@@ -44,8 +44,12 @@ namespace ignition
       PF_BAYER_GBGR8  = 6,
       /// < Bayer GRGB, 1-byte per channel
       PF_BAYER_GRGB8  = 7,
+      // Float format one channel
+      PF_FLOAT32_R    = 8,
+      // Float format and RGB
+      PF_FLOAT32_RGBA = 9,
       /// < Number of pixel format types
-      PF_COUNT        = 8
+      PF_COUNT        = 10
     };
 
     /// \class PixelUtil PixelFormat.hh ignition/rendering/PixelFormat.hh

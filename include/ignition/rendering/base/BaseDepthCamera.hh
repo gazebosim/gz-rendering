@@ -39,14 +39,12 @@ namespace ignition
     template <class T>
     class IGNITION_RENDERING_VISIBLE BaseDepthCamera :
       public virtual DepthCamera,
-      public virtual BaseCamera<T>,
+      protected virtual BaseCamera<T>,
       public virtual T
     {
       protected: BaseDepthCamera();
 
       public: virtual ~BaseDepthCamera();
-
-      public: virtual void Init();
 
       public: virtual void CreateDepthTexture(const std::string &_textureName);
 
@@ -70,12 +68,6 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     BaseDepthCamera<T>::~BaseDepthCamera()
-    {
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseDepthCamera<T>::Init()
     {
     }
 

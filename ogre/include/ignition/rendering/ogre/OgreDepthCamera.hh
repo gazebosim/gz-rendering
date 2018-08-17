@@ -79,10 +79,7 @@ namespace ignition
       public: Ogre::Material *pcdMaterial = nullptr;
 
       /// \brief Point cloud texture
-      public: Ogre::Texture *pcdTexture = nullptr;
-
-      /// \brief Point cloud texture
-      public: Ogre::RenderTarget *pcdTarget;
+      public: OgreRenderTexturePtr pcdTexture;
 
       /// \brief Event used to signal rgb point cloud data
       public: ignition::common::EventT<void(const float *,
@@ -120,10 +117,6 @@ namespace ignition
       /// \return The z-buffer as a float array
       public: virtual const float *DepthData() const override;
 
-      /// \brief Set the render target, which renders the depth data
-      /// \param[in] _target Pointer to the render target
-      public: virtual void SetDepthTarget(Ogre::RenderTarget *_target);
-
       /// \brief Connect a to the new depth image signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
@@ -149,17 +142,17 @@ namespace ignition
       /// \param[in] _target Render target to update
       /// \param[in] _material Material to use
       /// \param[in] _matName Material name
-      protected: void UpdateRenderTarget(Ogre::RenderTarget *_target,
+      protected: void UpdateRenderTarget(OgreRenderTexturePtr _target,
                                        Ogre::Material *_material,
                                        const std::string &_matName);
+
+      protected: virtual RenderTargetPtr RenderTarget() const;
 
       /// \brief Limit field of view taking care of using a valid value for
       /// an OGRE camera.
       /// \param[in] _fov expected field of view
       /// \return valid field of view
       protected: static double LimitFOV(const double _fov);
-
-      protected: virtual RenderTargetPtr RenderTarget() const;
 
       protected: void CreateCamera();
 
@@ -169,10 +162,7 @@ namespace ignition
       protected: bool captureData = false;
 
       /// \brief Pointer to the depth texture
-      protected: Ogre::Texture *depthTexture = nullptr;
-
-      /// \brief Pointer to the depth target
-      protected: Ogre::RenderTarget *depthTarget;
+      protected: OgreRenderTexturePtr depthTexture;
 
       /// \brief Pointer to the depth viewport
       protected: Ogre::Viewport *depthViewport = nullptr;

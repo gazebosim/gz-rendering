@@ -121,6 +121,9 @@ namespace ignition
       /// \return The transparency value
       public: virtual double Transparency() const = 0;
 
+      /// \brief Configuration for Depth Material
+      public: virtual void SetDepthMaterial() = 0;
+
       /// \brief Set the transparency value
       /// \param[in] _transparency New transparency value
       public: virtual void SetTransparency(const double _transparency) = 0;

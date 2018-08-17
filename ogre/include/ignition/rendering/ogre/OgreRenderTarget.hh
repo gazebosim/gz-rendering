@@ -69,22 +69,12 @@ namespace ignition
 
       public: virtual void Destroy() = 0;
 
-      public: Ogre::Viewport *AddViewport(Ogre::Camera *viewport);
-
-      public: Ogre::Viewport *GetViewport(int viewportId);
-
-      public: void SwapBuffers();
-
       /// \brief Set a material to render on every object. This method is used
       /// for special cases like the render target of a depth camera.
       /// \param[in] _material The material to render
       public: void SetMaterial(MaterialPtr _material);
 
-      public: void SetAutoUpdated(bool value);
-
-      public: void SetUpdate(bool value);
-
-      protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+      public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
       protected: virtual void UpdateBackgroundColor();
 
@@ -135,7 +125,19 @@ namespace ignition
       // Documentation inherited
       public: virtual GLuint GLId();
 
-      protected: virtual Ogre::RenderTarget *RenderTarget() const;
+      public: float *Buffer();
+
+      public: Ogre::Viewport *AddViewport(Ogre::Camera *viewport);
+
+      public: Ogre::Viewport *GetViewport(int viewportId);
+
+      public: void SwapBuffers();
+
+      public: void SetAutoUpdated(bool value);
+
+      public: void SetUpdate(bool value);
+
+      public: virtual Ogre::RenderTarget *RenderTarget() const;
 
       protected: virtual void RebuildTarget();
 

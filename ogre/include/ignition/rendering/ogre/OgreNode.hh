@@ -47,6 +47,12 @@ namespace ignition
 
       public: virtual void Destroy();
 
+      protected: virtual NodeStorePtr Children() const;
+
+      protected: virtual bool AttachChild(NodePtr _child);
+
+      protected: virtual bool DetachChild(NodePtr _child);
+
       protected: virtual math::Pose3d RawLocalPose() const;
 
       protected: virtual void SetRawLocalPose(const math::Pose3d &_Pose3d);
@@ -70,6 +76,10 @@ namespace ignition
       protected: OgreNodePtr parent;
 
       protected: Ogre::SceneNode *ogreNode = nullptr;
+
+      protected: OgreNodeStorePtr children;
+
+      private: OgreNodePtr SharedThis();
 
       // TODO remove the need for a visual friend class
       private: friend class OgreVisual;

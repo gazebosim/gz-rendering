@@ -19,6 +19,7 @@
 
 #include "ignition/rendering/Node.hh"
 #include "ignition/rendering/Storage.hh"
+#include "ignition/rendering/base/BaseStorage.hh"
 
 namespace ignition
 {
@@ -113,7 +114,11 @@ namespace ignition
 
       public: virtual NodePtr RemoveChildByIndex(unsigned int _index);
 
-      public: virtual void RemoveChildren();
+      //public: virtual void RemoveChildren();
+
+      public: virtual void PreRender();
+
+      protected: virtual void PreRenderChildren();
 
       protected: virtual math::Pose3d RawLocalPose() const = 0;
 
@@ -154,12 +159,108 @@ namespace ignition
       }
     }
 
+
     //////////////////////////////////////////////////
     template <class T>
-    NodePtr BaseNode<T>::RemoveChild(NodePtr /*_node*/)
+    void BaseNode<T>::AddChild(NodePtr _child)
+    {
+      if (this->AttachChild(_child))
+      {
+        fprintf(stderr, "attached\n");
+        this->Children()->Add(_child);
+        fprintf(stderr, "added\n");
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChild(NodePtr _child)
+    {
+      NodePtr child = this->Children()->Remove(_child);
+      if (child) this->DetachChild(child);
+      return child;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChildById(unsigned int _id)
+    {
+      NodePtr child = this->Children()->RemoveById(_id);
+      if (child) this->DetachChild(child);
+      return child;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChildByName(const std::string &_name)
+    {
+      NodePtr child = this->Children()->RemoveByName(_name);
+      if (child) this->DetachChild(child);
+      return child;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChildByIndex(unsigned int _index)
+    {
+      NodePtr child = this->Children()->RemoveByIndex(_index);
+      if (child) this->DetachChild(child);
+      return child;
+    }
+
+    //////////////////////////////////////////////////
+    /*
+    template <class T>
+    void BaseNode<T>::RemoveChildren()
+    {
+      auto children_ =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!children_)
+        return;
+      auto it = children_->Begin();
+      while (it != children_->End())
+      {
+        // FIXME: it->second has type std::shared_ptr<ignition::rendering::v0::OgreObject>&
+        // but is expected to have type NodePtr.
+        this->RemoveChild(it->second);
+        it = children_->Begin();
+      }
+    }
+    */
+
+    /*
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChild(NodePtr _node)
     {
       // By default, do nothing
       return NodePtr();
+    }
+    */
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::PreRender()
+    {
+      fprintf(stderr, "base node prerender\n");
+      T::PreRender();
+      this->PreRenderChildren();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::PreRenderChildren()
+    {
+      auto children =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!children)
+        return;
+      for (auto it = children->Begin(); it != children->End(); ++it)
+      {
+        it->second->PreRender();
+      }
     }
 
     //////////////////////////////////////////////////

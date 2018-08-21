@@ -236,7 +236,7 @@ namespace ignition
       public: virtual NodePtr RemoveChildByIndex(unsigned int _index) = 0;
 
       /// \brief Remove all child nodes from this node
-      public: virtual void RemoveChildren() = 0;
+//      public: virtual void RemoveChildren() = 0;
 
     };
     }

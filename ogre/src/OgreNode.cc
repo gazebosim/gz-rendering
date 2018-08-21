@@ -140,6 +140,7 @@ bool OgreNode::AttachChild(NodePtr _child)
     return false;
   }
 
+  fprintf(stderr, "Attached\n");
   derived->SetParent(this->SharedThis());
   this->ogreNode->addChild(derived->Node());
   return true;

@@ -47,6 +47,8 @@ OgreGrid::~OgreGrid()
 //////////////////////////////////////////////////
 void OgreGrid::PreRender()
 {
+  fprintf(stderr, "Grid prerender\n");
+
   if (this->gridDirty)
   {
     this->Create();

@@ -166,9 +166,7 @@ namespace ignition
     {
       if (this->AttachChild(_child))
       {
-        fprintf(stderr, "attached\n");
         this->Children()->Add(_child);
-        fprintf(stderr, "added\n");
       }
     }
 
@@ -243,7 +241,6 @@ namespace ignition
     template <class T>
     void BaseNode<T>::PreRender()
     {
-      fprintf(stderr, "base node prerender\n");
       T::PreRender();
       this->PreRenderChildren();
     }

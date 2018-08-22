@@ -279,8 +279,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseCamera<T>::PreRender()
-    {      fprintf(stderr, "base camera prerender\n");
-
+    {
       T::PreRender();
 
       this->RenderTarget()->PreRender();

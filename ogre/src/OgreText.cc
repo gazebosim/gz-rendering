@@ -925,7 +925,6 @@ void OgreText::Init()
 //////////////////////////////////////////////////
 void OgreText::PreRender()
 {
-  fprintf(stderr, "Text prerender\n");
   this->dataPtr->ogreObj->Update();
 }
 

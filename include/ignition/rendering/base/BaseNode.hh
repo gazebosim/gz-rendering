@@ -227,16 +227,6 @@ namespace ignition
     }
     */
 
-    /*
-    //////////////////////////////////////////////////
-    template <class T>
-    NodePtr BaseNode<T>::RemoveChild(NodePtr _node)
-    {
-      // By default, do nothing
-      return NodePtr();
-    }
-    */
-
     //////////////////////////////////////////////////
     template <class T>
     void BaseNode<T>::PreRender()

@@ -55,6 +55,8 @@ namespace ignition
 
       protected: OgreSubMeshStorePtr subMeshes;
 
+      protected: Ogre::MovableObject *ogreEntity = nullptr;
+
       private: friend class OgreScene;
 
       private: friend class OgreMeshFactory;
@@ -72,7 +74,9 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true);
 
-      public: Ogre::MovableObject *OgreSubEntity() const;
+      public: Ogre::SubEntity *OgreSubEntity() const;
+
+      public: Ogre::MovableObject *OgreObject() const;
 
       public: virtual void Destroy();
 
@@ -82,7 +86,9 @@ namespace ignition
 
       protected: OgreMaterialPtr material;
 
-      protected: Ogre::MovableObject *ogreSubEntity;
+      protected: Ogre::SubEntity *ogreSubEntity = nullptr;
+
+      protected: Ogre::MovableObject *ogreObject = nullptr;
 
       private: friend class OgreScene;
 

@@ -52,12 +52,12 @@ OgreMeshFactory::~OgreMeshFactory()
 OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
 {
   // create ogre entity
-  OgreMeshPtr mesh;
-  //MeshDescriptor normDesc = _desc;
-  //normDesc.Load();
-//  mesh->ogreEntity = this->OgreEntity(normDesc);
+  OgreMeshPtr mesh(new OgreMesh);
+  MeshDescriptor normDesc = _desc;
+  normDesc.Load();
+  mesh->ogreEntity = this->OgreEntity(normDesc);
 
-  if (this->Load(_desc))
+/*  if (this->Load(_desc))
   {
     mesh.reset(new OgreMesh);
 
@@ -90,12 +90,18 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
     OgreSubMeshStoreFactory subMeshFactory(this->scene, _desc);
     mesh->subMeshes = subMeshFactory.Create();
   }
+*/
 
   // check if invalid mesh
-  // if (!mesh->ogreEntity)
-  // {
-  //   return nullptr;
-  // }
+  /* if (!mesh->ogreEntity)
+  {
+    return nullptr;
+  }
+*/
+  // create sub-mesh store
+  OgreSubMeshStoreFactory subMeshFactory(this->scene, _desc, mesh->ogreEntity);
+  mesh->subMeshes = subMeshFactory.Create();
+
 
   return mesh;
 }
@@ -110,33 +116,11 @@ Ogre::MovableObject *OgreMeshFactory::OgreEntity(const MeshDescriptor &_desc)
 
   std::string name = this->MeshName(_desc);
   Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
+  if (!_desc.instanced)
+    return sceneManager->createEntity(name);
 
-  unsigned int subMeshCount = _desc.mesh->SubMeshCount();
-  std::cout << "SubMeshCount[" << subMeshCount << "]\n";
-
-  // Create an instance manager for each submesh
-  unsigned int index = 0;
-  do
-  {
-    std::string subMeshIndexStr = std::to_string(index);
-    if (!sceneManager->hasInstanceManager(
-          "InstanceManager" + name + subMeshIndexStr))
-    {
-      std::cout << "Creating instance manager["
-        << "InstanceManager" + name + subMeshIndexStr << "]\n";
-
-      sceneManager->createInstanceManager(
-          "InstanceManager" + name + subMeshIndexStr,
-          name, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-          Ogre::InstanceManager::HWInstancingBasic, 100, 0, index);
-    }
-    ++index;
-  }
-  while (index < subMeshCount);
-
-  std::cout << "Instance of[" <<  "InstanceManager" + name + "0" << "]\n";
-  return sceneManager->createInstancedEntity("Instancing/HWBasic",
-      "InstanceManager" + name + "0");
+  // instanced entities are created later in SubMeshFactory
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -169,14 +153,23 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
   std::string name;
   std::string group;
 
+  name = this->MeshName(_desc);
+  group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+
+  ogreMesh = Ogre::MeshManager::getSingleton().getByName(name, group);
+
+#if OGRE_VERSION_LT_1_10_1
+  if (!ogreMesh.isNull())
+#else
+  if (ogreMesh)
+#endif
+    return true;
+
   OgreRenderEngine::Instance()->AddResourcePath(_desc.mesh->Path());
 
   try
   {
-    name = this->MeshName(_desc);
-    group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
     ogreMesh = Ogre::MeshManager::getSingleton().createManual(name, group);
-
     Ogre::SkeletonPtr ogreSkeleton;
 
     if (_desc.mesh->HasSkeleton())
@@ -446,9 +439,10 @@ bool OgreMeshFactory::Validate(const MeshDescriptor &_desc)
 
 //////////////////////////////////////////////////
 OgreSubMeshStoreFactory::OgreSubMeshStoreFactory(OgreScenePtr _scene,
-    const MeshDescriptor &_desc)
+    const MeshDescriptor &_desc, Ogre::MovableObject *_entity)
   : scene(_scene),
-    desc(_desc)
+    desc(_desc),
+    ogreEntity(_entity)
 {
   this->CreateNameList();
 }
@@ -485,27 +479,93 @@ OgreSubMeshPtr OgreSubMeshStoreFactory::CreateSubMesh(unsigned int _index)
 
   Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
   std::string meshName = OgreMeshFactory::MeshName(this->desc);
+  std::string group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
 
-  std::string instanceManagerName =
-    "InstanceManager" + meshName + std::to_string(_index);
 
-  std::cout << "SubMeshInstance[" <<
-    "InstanceManager" + meshName + std::to_string(_index) << "]\n";
-
-  subMesh->ogreSubEntity =
-    sceneManager->createInstancedEntity("Instancing/HWBasic",
-        instanceManagerName);
-
-  /*
-  subMesh->ogreSubEntity = this->ogreEntity->getSubEntity(_index);
-  MaterialPtr mat = this->scene->Material(
-      subMesh->ogreSubEntity->getMaterialName());
-  if (!mat)
+  if (!this->desc.instanced)
   {
-    mat = this->scene->CreateMaterial();
+    if (!this->ogreEntity)
+    {
+      ignerr << "Null ogre entity" << std::endl;
+      return subMesh;
+    }
+    Ogre::Entity *ent = dynamic_cast<Ogre::Entity *>(this->ogreEntity);
+    subMesh->ogreSubEntity = ent->getSubEntity(_index);
+    MaterialPtr mat = this->scene->Material(
+        subMesh->ogreSubEntity->getMaterialName());
+    if (!mat)
+    {
+      mat = this->scene->CreateMaterial();
+    }
+    subMesh->SetMaterial(mat);
   }
-  subMesh->SetMaterial(mat);
-  */
+  else
+  {
+    // Create an instance manager for each submesh
+    std::string subMeshIndexStr = std::to_string(_index);
+    std::string instancedMgrName = "InstanceManager" + meshName + subMeshIndexStr;
+    if (!sceneManager->hasInstanceManager(instancedMgrName))
+    {
+      std::cout << "Creating instance manager["
+        << instancedMgrName << "]\n";
+
+      sceneManager->createInstanceManager(instancedMgrName,
+          meshName, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+          Ogre::InstanceManager::HWInstancingBasic, 100, 0, _index);
+    }
+
+    std::string baseMat = "Instancing/HWBasic";
+    std::string instancedMat = baseMat + "/" + instancedMgrName;
+    Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingleton().getByName(instancedMat);
+
+#if OGRE_VERSION_LT_1_10_1
+    if (matPtr.isNull())
+#else
+    if (!matPtr)
+#endif
+    {
+      Ogre::MaterialPtr baseMatPtr = Ogre::MaterialManager::getSingleton().getByName(baseMat);
+#if OGRE_VERSION_LT_1_10_1
+      if (!baseMatPtr.isNull())
+#else
+      if (baseMatPtr)
+#endif
+      {
+        std::string textureName;
+        Ogre::MeshPtr ogreMesh = Ogre::MeshManager::getSingleton().getByName(meshName, group);
+        std::string targetMat = ogreMesh->getSubMesh(_index)->getMaterialName();
+        Ogre::MaterialPtr targetMatPtr = Ogre::MaterialManager::getSingleton().getByName(targetMat);
+        for (unsigned int i = 0u;
+            i < targetMatPtr->getNumTechniques() && textureName.empty(); ++i)
+        {
+          Ogre::Technique *t = targetMatPtr->getTechnique(i);
+          for (unsigned int j = 0u;
+              j < t->getNumPasses() && textureName.empty(); ++j)
+          {
+            Ogre::Pass *p = t->getPass(j);
+            for (unsigned int k = 0u;
+                k < p->getNumTextureUnitStates() && textureName.empty(); ++k)
+            {
+              Ogre::TextureUnitState *tu = p->getTextureUnitState(k);
+              textureName = tu->getTextureName();
+            }
+          }
+        }
+        Ogre::MaterialPtr clonedMatPtr = baseMatPtr->clone(instancedMat);
+        Ogre::Technique *t = clonedMatPtr->getTechnique(0u);
+        Ogre::Pass *p = t->getPass(0u);
+        Ogre::TextureUnitState *tu = p->getTextureUnitState("Diffuse");
+        tu->setTextureName(textureName);
+      }
+      else
+      {
+        ignerr << "Instanced material is null!" << std::endl;
+      }
+    }
+
+    subMesh->ogreObject =
+      sceneManager->createInstancedEntity(instancedMat, instancedMgrName);
+  }
 
   subMesh->Load();
   subMesh->Init();

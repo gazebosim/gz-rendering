@@ -117,12 +117,15 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  // set user data for mouse queries
-  derived->OgreObject()->getUserObjectBindings().setUserAny(
-      Ogre::Any(this->Id()));
-
-
   derived->SetParent(this->SharedThis());
+  if (derived->OgreObject())
+  {
+    // set user data for mouse queries
+    derived->OgreObject()->getUserObjectBindings().setUserAny(
+        Ogre::Any(this->Id()));
+    this->ogreNode->attachObject(derived->OgreObject());
+    return true;
+  }
 
   OgreMeshPtr mesh = std::dynamic_pointer_cast<OgreMesh>(derived);
   // Add all submeshes, if there are submeshes
@@ -132,16 +135,14 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
         mesh->SubMeshes());
     for (unsigned int i = 0; i < submeshes->Size(); ++i)
     {
-      this->ogreNode->attachObject(
-          submeshes->DerivedByIndex(i)->OgreSubEntity());
+      Ogre::MovableObject *obj = submeshes->DerivedByIndex(i)->OgreObject();
+      obj->getUserObjectBindings().setUserAny(
+          Ogre::Any(this->Id()));
+      this->ogreNode->attachObject(obj);
     }
+    return true;
   }
-  else
-  {
-    this->ogreNode->attachObject(derived->OgreObject());
-  }
-
-  return true;
+  return false;
 }
 
 //////////////////////////////////////////////////

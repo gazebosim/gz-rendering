@@ -65,7 +65,7 @@ namespace ignition
       typedef std::vector<std::string> NameList;
 
       public: OgreSubMeshStoreFactory(OgreScenePtr _scene,
-                  const MeshDescriptor &_desc);
+                  const MeshDescriptor &_desc, Ogre::MovableObject *_entity);
 
       public: virtual ~OgreSubMeshStoreFactory();
 
@@ -81,9 +81,9 @@ namespace ignition
 
       private: OgreScenePtr scene;
 
-      private: Ogre::MovableObject *ogreEntity;
-
       private: const MeshDescriptor &desc;
+
+      private: Ogre::MovableObject *ogreEntity;
 
       private: NameList names;
     };

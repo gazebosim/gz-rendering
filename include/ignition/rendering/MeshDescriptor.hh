@@ -74,6 +74,9 @@ namespace ignition
 
       /// \brief Denotes if the loaded sub-mesh vertices should be centered
       public: bool centerSubMesh = false;
+
+      /// \brief True if mesh should be instanced. Engine-specific param.
+      public: bool instanced = true;
     };
     }
   }

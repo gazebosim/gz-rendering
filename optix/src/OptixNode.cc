@@ -42,7 +42,7 @@ bool OptixNode::HasParent() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr OptixNode::Parent() const
+NodePtr OptixNode::Parent() const
 {
   return this->parent;
 }
@@ -119,7 +119,7 @@ void OptixNode::WritePoseToDeviceImpl()
 }
 
 //////////////////////////////////////////////////
-void OptixNode::SetParent(OptixVisualPtr _parent)
+void OptixNode::SetParent(OptixNodePtr _parent)
 {
   this->parent = _parent;
 }

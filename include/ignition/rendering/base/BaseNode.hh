@@ -114,7 +114,7 @@ namespace ignition
 
       public: virtual NodePtr RemoveChildByIndex(unsigned int _index);
 
-      //public: virtual void RemoveChildren();
+      public: virtual void RemoveChildren();
 
       public: virtual void PreRender();
 
@@ -207,25 +207,21 @@ namespace ignition
     }
 
     //////////////////////////////////////////////////
-    /*
     template <class T>
     void BaseNode<T>::RemoveChildren()
     {
       auto children_ =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<Node, Node>>(
           this->Children());
       if (!children_)
         return;
       auto it = children_->Begin();
       while (it != children_->End())
       {
-        // FIXME: it->second has type std::shared_ptr<ignition::rendering::v0::OgreObject>&
-        // but is expected to have type NodePtr.
         this->RemoveChild(it->second);
         it = children_->Begin();
       }
     }
-    */
 
     //////////////////////////////////////////////////
     template <class T>

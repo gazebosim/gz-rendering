@@ -252,14 +252,11 @@ namespace ignition
     template <class T>
     void BaseNode<T>::PreRenderChildren()
     {
-      auto children =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
-          this->Children());
-      if (!children)
-        return;
-      for (auto it = children->Begin(); it != children->End(); ++it)
+      unsigned int count = this->ChildCount();
+
+      for (unsigned int i = 0; i < count; ++i)
       {
-        it->second->PreRender();
+        this->ChildByIndex(i)->PreRender();
       }
     }
 

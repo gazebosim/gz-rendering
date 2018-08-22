@@ -237,7 +237,6 @@ namespace ignition
 
       /// \brief Remove all child nodes from this node
       public: virtual void RemoveChildren() = 0;
-
     };
     }
   }

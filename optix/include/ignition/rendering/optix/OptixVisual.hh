@@ -46,14 +46,7 @@ namespace ignition
 
       public: virtual void PreRender();
 
-      protected: virtual NodeStorePtr Children() const;
-
       protected: virtual GeometryStorePtr Geometries() const;
-
-      protected: virtual bool AttachChild(NodePtr _child);
-
-      protected: virtual bool DetachChild(NodePtr _child);
-
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry);
@@ -66,8 +59,6 @@ namespace ignition
       private: void CreateStorage();
 
       private: OptixVisualPtr SharedThis();
-
-      protected: OptixNodeStorePtr children;
 
       protected: OptixGeometryStorePtr geometries;
 

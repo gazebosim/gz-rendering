@@ -416,10 +416,13 @@ void OgreMaterial::SetCulling(CullMode _mode)
   {
     case CM_NONE:
       mode = Ogre::CULL_NONE;
+      break;
     case CM_BACK:
       mode = Ogre::CULL_CLOCKWISE;
+      break;
     case CM_FRONT:
       mode = Ogre::CULL_ANTICLOCKWISE;
+      break;
     default:
       mode = Ogre::CULL_CLOCKWISE;
   }

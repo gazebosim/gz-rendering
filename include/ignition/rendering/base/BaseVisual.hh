@@ -39,35 +39,9 @@ namespace ignition
 
       public: virtual ~BaseVisual();
 
-      public: virtual unsigned int ChildCount() const;
-
       public: virtual math::Pose3d LocalPose() const;
 
       public: virtual void SetLocalPose(const math::Pose3d &_pose);
-
-      public: virtual bool HasChild(ConstNodePtr _child) const;
-
-      public: virtual bool HasChildId(unsigned int _id) const;
-
-      public: virtual bool HasChildName(const std::string &_name) const;
-
-      public: virtual NodePtr ChildById(unsigned int _id) const;
-
-      public: virtual NodePtr ChildByName(const std::string &_name) const;
-
-      public: virtual NodePtr ChildByIndex(unsigned int _index) const;
-
-      public: virtual void AddChild(NodePtr _child);
-
-      public: virtual NodePtr RemoveChild(NodePtr _child);
-
-      public: virtual NodePtr RemoveChildById(unsigned int _id);
-
-      public: virtual NodePtr RemoveChildByName(const std::string &_name);
-
-      public: virtual NodePtr RemoveChildByIndex(unsigned int _index);
-
-      public: virtual void RemoveChildren();
 
       public: virtual unsigned int GeometryCount() const;
 
@@ -133,13 +107,7 @@ namespace ignition
 
       protected: virtual void PreRenderGeometries();
 
-      protected: virtual NodeStorePtr Children() const = 0;
-
       protected: virtual GeometryStorePtr Geometries() const = 0;
-
-      protected: virtual bool AttachChild(NodePtr _child) = 0;
-
-      protected: virtual bool DetachChild(NodePtr _child) = 0;
 
       protected: virtual bool AttachGeometry(GeometryPtr _geometry) = 0;
 
@@ -182,118 +150,6 @@ namespace ignition
       math::Vector3d scale = this->LocalScale();
       rawPose.Pos() -= rawPose.Rot() * (scale * this->origin);
       this->SetRawLocalPose(rawPose);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    unsigned int BaseVisual<T>::ChildCount() const
-    {
-      return this->Children()->Size();
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    bool BaseVisual<T>::HasChild(ConstNodePtr _child) const
-    {
-      return this->Children()->Contains(_child);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    bool BaseVisual<T>::HasChildId(unsigned int _id) const
-    {
-      return this->Children()->ContainsId(_id);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    bool BaseVisual<T>::HasChildName(const std::string &_name) const
-    {
-      return this->Children()->ContainsName(_name);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    NodePtr BaseVisual<T>::ChildById(unsigned int _id) const
-    {
-      return this->Children()->GetById(_id);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    NodePtr BaseVisual<T>::ChildByName(const std::string &_name) const
-    {
-      return this->Children()->GetByName(_name);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    NodePtr BaseVisual<T>::ChildByIndex(unsigned int _index) const
-    {
-      return this->Children()->GetByIndex(_index);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::AddChild(NodePtr _child)
-    {
-      if (this->AttachChild(_child))
-      {
-        this->Children()->Add(_child);
-      }
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    NodePtr BaseVisual<T>::RemoveChild(NodePtr _child)
-    {
-      NodePtr child = this->Children()->Remove(_child);
-      if (child) this->DetachChild(child);
-      return child;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    NodePtr BaseVisual<T>::RemoveChildById(unsigned int _id)
-    {
-      NodePtr child = this->Children()->RemoveById(_id);
-      if (child) this->DetachChild(child);
-      return child;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    NodePtr BaseVisual<T>::RemoveChildByName(const std::string &_name)
-    {
-      NodePtr child = this->Children()->RemoveByName(_name);
-      if (child) this->DetachChild(child);
-      return child;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    NodePtr BaseVisual<T>::RemoveChildByIndex(unsigned int _index)
-    {
-      NodePtr child = this->Children()->RemoveByIndex(_index);
-      if (child) this->DetachChild(child);
-      return child;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::RemoveChildren()
-    {
-      auto children =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
-          this->Children());
-      if (!children)
-        return;
-      auto it = children->Begin();
-      while (it != children->End())
-      {
-        this->RemoveChild(it->second);
-        it = children->Begin();
-      }
     }
 
     //////////////////////////////////////////////////
@@ -373,12 +229,15 @@ namespace ignition
       unsigned int count = this->ChildCount();
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 
-      auto children =
+      auto children_ =
           std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
           this->Children());
-      if (!children)
+      if (!children_)
+      {
+        ignerr << "Cast failed in BaseVisual::SetChildMaterial" << std::endl;
         return;
-      for (auto it = children->Begin(); it != children->End(); ++it)
+      }
+      for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
         NodePtr child = it->second;
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
@@ -510,12 +369,15 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::PreRenderChildren()
     {
-      auto children =
+      auto children_ =
           std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
           this->Children());
-      if (!children)
+      if (!children_)
+      {
+        ignerr << "Cast failed in BaseVisual::PreRenderChildren" << std::endl;
         return;
-      for (auto it = children->Begin(); it != children->End(); ++it)
+      }
+      for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
         it->second->PreRender();
       }

@@ -331,7 +331,6 @@ namespace ignition
     template <class T>
     GeometryPtr BaseVisual<T>::RemoveGeometry(GeometryPtr _geometry)
     {
-
       if (this->DetachGeometry(_geometry))
       {
         this->Geometries()->Remove(_geometry);

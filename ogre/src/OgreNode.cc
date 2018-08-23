@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreStorage.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -119,4 +120,51 @@ void OgreNode::Init()
   sceneManager = this->scene->OgreSceneManager();
   this->ogreNode = sceneManager->createSceneNode(this->name);
   this->ogreNode->setInheritScale(true);
+  this->children = OgreNodeStorePtr(new OgreNodeStore);
 }
+//////////////////////////////////////////////////
+NodeStorePtr OgreNode::Children() const
+{
+  return this->children;
+}
+
+//////////////////////////////////////////////////
+bool OgreNode::AttachChild(NodePtr _child)
+{
+  OgreNodePtr derived = std::dynamic_pointer_cast<OgreNode>(_child);
+
+  if (!derived)
+  {
+    ignerr << "Cannot attach node created by another render-engine"
+        << std::endl;
+    return false;
+  }
+
+  derived->SetParent(this->SharedThis());
+  this->ogreNode->addChild(derived->Node());
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool OgreNode::DetachChild(NodePtr _child)
+{
+  OgreNodePtr derived = std::dynamic_pointer_cast<OgreNode>(_child);
+
+  if (!derived)
+  {
+    ignerr << "Cannot detach node created by another render-engine"
+        << std::endl;
+    return false;
+  }
+
+  this->ogreNode->removeChild(derived->Node());
+  return true;
+}
+
+//////////////////////////////////////////////////
+OgreNodePtr OgreNode::SharedThis()
+{
+  ObjectPtr object = shared_from_this();
+  return std::dynamic_pointer_cast<OgreNode>(object);
+}
+

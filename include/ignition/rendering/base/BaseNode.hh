@@ -211,19 +211,9 @@ namespace ignition
     template <class T>
     void BaseNode<T>::RemoveChildren()
     {
-      auto children_ =
-          std::dynamic_pointer_cast<BaseStore<Node, Node>>(
-          this->Children());
-      if (!children_)
+      for (unsigned int i = this->ChildCount(); i > 0; --i)
       {
-        ignerr << "Cast failed in BaseNode::RemoveChildren" << std::endl;
-        return;
-      }
-      auto it = children_->Begin();
-      while (it != children_->End())
-      {
-        this->RemoveChild(it->second);
-        it = children_->Begin();
+        this->RemoveChildByIndex(i - 1);
       }
     }
 

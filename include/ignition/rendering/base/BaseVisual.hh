@@ -229,12 +229,12 @@ namespace ignition
       unsigned int count = this->ChildCount();
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 
-      auto children =
+      auto children_ =
           std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
           this->Children());
-      if (!children)
+      if (!children_)
         return;
-      for (auto it = children->Begin(); it != children->End(); ++it)
+      for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
         NodePtr child = it->second;
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
@@ -366,12 +366,12 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::PreRenderChildren()
     {
-      auto children =
+      auto children_ =
           std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
           this->Children());
-      if (!children)
+      if (!children_)
         return;
-      for (auto it = children->Begin(); it != children->End(); ++it)
+      for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
         it->second->PreRender();
       }

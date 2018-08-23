@@ -18,6 +18,7 @@
 #include "ignition/rendering/optix/OptixConversions.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
+#include "ignition/rendering/optix/OptixStorage.hh"
 
 using namespace ignition;
 using namespace rendering;

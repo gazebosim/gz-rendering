@@ -53,7 +53,7 @@ namespace ignition
       /// \return True if the render-engine was successfully destroyed
       public: virtual void Destroy() = 0;
 
-      // TODO: merge with Destroy
+      // TODO(anyone): merge with Destroy
       public: virtual bool Fini() = 0;
 
       /// \brief Determines if the render-engine has been loaded.

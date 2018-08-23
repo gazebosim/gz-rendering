@@ -94,9 +94,9 @@ namespace ignition
 
       protected: virtual SceneStorePtr Scenes() const = 0;
 
-      protected: bool loaded;
+      protected: bool loaded = false;
 
-      protected: bool initialized;
+      protected: bool initialized = false;
 
       protected: unsigned int nextSceneId;
 

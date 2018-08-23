@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASERENDERTYPES_HH_
-#define IGNITION_RENDERING_BASE_BASERENDERTYPES_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2SENSOR_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2SENSOR_HH_
 
-#include <memory>
-
-#include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/base/BaseSensor.hh"
+#include "ignition/rendering/ogre2/Ogre2Node.hh"
 
 namespace ignition
 {
@@ -27,17 +26,16 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    class BaseNodeCompositeStore;
-    typedef shared_ptr<BaseNodeCompositeStore>   BaseNodeCompositeStorePtr;
+    /// \brief Ogre2.x implementation of the sensor classs
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Sensor :
+      public BaseSensor<Ogre2Node>
+    {
+      /// \brief Constructor
+      protected: Ogre2Sensor();
 
-    template <class T> class BaseSceneStore;
-    template <class T> class BaseNodeStore;
-    template <class T> class BaseLightStore;
-    template <class T> class BaseSensorStore;
-    template <class T> class BaseVisualStore;
-    template <class T> class BaseGeometryStore;
-    template <class T> class BaseSubMeshStore;
-    template <class T> class BaseMaterialMap;
+      /// \brief Destructor
+      public: virtual ~Ogre2Sensor();
+    };
     }
   }
 }

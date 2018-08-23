@@ -53,7 +53,8 @@ namespace ignition
       /// \return the number of available render-engines
       public: unsigned int EngineCount() const;
 
-      /// \brief Determine if a render-engine with the given name is avaiable
+      /// \brief Determine if a render-engine with the given name is avaiable.
+      /// It also checks the list of default engines supplied by ign-rendering.
       /// \param[in] _name Name of the desired render-engine
       /// \return True if the specified render-engine is available
       public: bool HasEngine(const std::string &_name) const;
@@ -65,7 +66,7 @@ namespace ignition
       /// \return The specified render-engine
       public: RenderEngine *Engine(const std::string &_name) const;
 
-      /// \brief Get the render-engine at the given index. If the no
+      /// \brief Get the render-engine at the given index. If no
       /// render-engine is exists at the given index, NULL will be returned.
       /// \param[in] _index Index of the desired render-engine
       /// \return The specified render-engine

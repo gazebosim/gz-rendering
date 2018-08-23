@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BASE_BASESTORAGE_HH_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -288,7 +289,7 @@ namespace ignition
 
       typedef std::shared_ptr<UStore> UStorePtr;
 
-      public: BaseStoreWrapper(UStorePtr _store);
+      public: explicit BaseStoreWrapper(UStorePtr _store);
 
       public: virtual ~BaseStoreWrapper();
 

@@ -77,7 +77,14 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   this->dummyContext = 0;
   this->dummyWindowId = 0;
 
-  this->ogrePaths.push_back(std::string(OGRE2_RESOURCE_PATH));
+  std::string ogrePath = std::string(OGRE2_RESOURCE_PATH);
+  this->ogrePaths.push_back(ogrePath);
+
+#ifdef __APPLE__
+  // on OSX the plugins may be placed in the parent lib directory
+  if (ogrePath.rfind("OGRE") == ogrePath.size()-4u)
+    this->ogrePaths.push_back(ogrePath.substr(0, ogrePath.size()-5));
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -113,7 +120,7 @@ bool Ogre2RenderEngine::Fini()
   if (ogreRoot)
   {
     this->ogreRoot->shutdown();
-    // TODO: fix segfault on delete
+    // TODO(anyone): fix segfault on delete
     // delete this->ogreRoot;
     this->ogreRoot = nullptr;
   }
@@ -362,7 +369,7 @@ void Ogre2RenderEngine::CreateRoot()
 {
   try
   {
-    this->ogreRoot = new Ogre::Root();
+    this->ogreRoot = new Ogre::Root("", "", "");
   }
   catch (Ogre::Exception &ex)
   {
@@ -390,15 +397,16 @@ void Ogre2RenderEngine::LoadPlugins()
     std::vector<std::string>::iterator piter;
 
 #ifdef __APPLE__
-    std::string prefix = "lib";
     std::string extension = ".dylib";
+#elif _WIN32
+    std::string extension = ".dll";
 #else
-    std::string prefix = "";
     std::string extension = ".so";
 #endif
-
-    plugins.push_back(path+"/"+prefix+"RenderSystem_GL3Plus");
-    plugins.push_back(path+"/"+prefix+"Plugin_ParticleFX");
+    std::string p = common::joinPaths(path, "RenderSystem_GL3Plus");
+    plugins.push_back(p);
+    p = common::joinPaths(path, "Plugin_ParticleFX");
+    plugins.push_back(p);
 
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
@@ -583,7 +591,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
-  // TODO: determine api without qt
+  // TODO(anyone): determine api without qt
 
 #if defined(__APPLE__)
   // Set the macAPI for Ogre based on the Qt implementation

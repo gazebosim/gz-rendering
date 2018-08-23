@@ -18,7 +18,6 @@
 #include "ignition/rendering/optix/OptixConversions.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -42,7 +41,7 @@ bool OptixNode::HasParent() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr OptixNode::Parent() const
+NodePtr OptixNode::Parent() const
 {
   return this->parent;
 }
@@ -119,7 +118,7 @@ void OptixNode::WritePoseToDeviceImpl()
 }
 
 //////////////////////////////////////////////////
-void OptixNode::SetParent(OptixVisualPtr _parent)
+void OptixNode::SetParent(OptixNodePtr _parent)
 {
   this->parent = _parent;
 }

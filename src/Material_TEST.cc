@@ -171,6 +171,12 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   enum ShaderType shaderType = ShaderType::ST_PIXEL;
   material->SetShaderType(shaderType);
   EXPECT_EQ(shaderType, material->ShaderType());
+
+  // culling
+  EXPECT_EQ(CullMode::CM_BACK, material->Culling());
+  enum CullMode mode = CullMode::CM_NONE;
+  material->SetCulling(mode);
+  EXPECT_EQ(mode, material->Culling());
 }
 
 /////////////////////////////////////////////////

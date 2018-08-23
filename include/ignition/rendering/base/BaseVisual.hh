@@ -233,7 +233,10 @@ namespace ignition
           std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
           this->Children());
       if (!children_)
+      {
+        ignerr << "Cast failed in BaseVisual::SetChildMaterial" << std::endl;
         return;
+      }
       for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
         NodePtr child = it->second;
@@ -370,7 +373,10 @@ namespace ignition
           std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
           this->Children());
       if (!children_)
+      {
+        ignerr << "Cast failed in BaseVisual::PreRenderChildren" << std::endl;
         return;
+      }
       for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
         it->second->PreRender();

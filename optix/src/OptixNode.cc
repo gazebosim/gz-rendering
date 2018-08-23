@@ -135,4 +135,52 @@ void OptixNode::Init()
   this->optixGroup = optixContext->createGroup();
   this->optixGroup->setAcceleration(this->optixAccel);
   this->optixTransform->setChild(this->optixGroup);
+  this->children = OptixNodeStorePtr(new OptixNodeStore);
 }
+
+//////////////////////////////////////////////////
+NodeStorePtr OptixNode::Children() const
+{
+  return this->children;
+}
+
+//////////////////////////////////////////////////
+bool OptixNode::AttachChild(NodePtr _child)
+{
+  OptixNodePtr derived = std::dynamic_pointer_cast<OptixNode>(_child);
+
+  if (!derived)
+  {
+    ignerr << "Cannot attach node created by another render-engine"
+        << std::endl;
+    return false;
+  }
+
+  derived->SetParent(this->SharedThis());
+  optix::Transform childTransform = derived->OptixTransform();
+  this->optixGroup->addChild(childTransform);
+  this->optixAccel->markDirty();
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool OptixNode::DetachChild(NodePtr _child)
+{
+  OptixNodePtr derived = std::dynamic_pointer_cast<OptixNode>(_child);
+
+  if (!derived)
+  {
+    return false;
+  }
+
+  this->optixGroup->removeChild(derived->OptixTransform());
+  this->optixAccel->markDirty();
+  return true;
+}
+
+//////////////////////////////////////////////////
+OptixNodePtr OptixNode::SharedThis()
+{
+  return std::dynamic_pointer_cast<OptixNode>(shared_from_this());
+}
+

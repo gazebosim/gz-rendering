@@ -215,7 +215,10 @@ namespace ignition
           std::dynamic_pointer_cast<BaseStore<Node, Node>>(
           this->Children());
       if (!children_)
+      {
+        ignerr << "Cast failed in BaseNode::RemoveChildren" << std::endl;
         return;
+      }
       auto it = children_->Begin();
       while (it != children_->End())
       {

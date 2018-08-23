@@ -336,7 +336,6 @@ namespace ignition
         }
         this->SetWorldRotation(q);
       }
-      this->PreRenderChildren();
     }
 
     //////////////////////////////////////////////////

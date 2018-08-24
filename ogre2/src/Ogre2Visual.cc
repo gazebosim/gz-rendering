@@ -53,48 +53,9 @@ void Ogre2Visual::SetInheritScale(bool _inherit)
 }
 
 //////////////////////////////////////////////////
-NodeStorePtr Ogre2Visual::Children() const
-{
-  return this->children;
-}
-
-//////////////////////////////////////////////////
 GeometryStorePtr Ogre2Visual::Geometries() const
 {
   return this->geometries;
-}
-
-//////////////////////////////////////////////////
-bool Ogre2Visual::AttachChild(NodePtr _child)
-{
-  Ogre2NodePtr derived = std::dynamic_pointer_cast<Ogre2Node>(_child);
-
-  if (!derived)
-  {
-    ignerr << "Cannot attach node created by another render-engine"
-        << std::endl;
-    return false;
-  }
-
-  derived->SetParent(this->SharedThis());
-  this->ogreNode->addChild(derived->Node());
-  return true;
-}
-
-//////////////////////////////////////////////////
-bool Ogre2Visual::DetachChild(NodePtr _child)
-{
-  Ogre2NodePtr derived = std::dynamic_pointer_cast<Ogre2Node>(_child);
-
-  if (!derived)
-  {
-    ignerr << "Cannot detach node created by another render-engine"
-        << std::endl;
-    return false;
-  }
-
-  this->ogreNode->removeChild(derived->Node());
-  return true;
 }
 
 //////////////////////////////////////////////////
@@ -149,7 +110,6 @@ void Ogre2Visual::SetLocalScaleImpl(const math::Vector3d &_scale)
 void Ogre2Visual::Init()
 {
   BaseVisual::Init();
-  this->children = Ogre2NodeStorePtr(new Ogre2NodeStore);
   this->geometries = Ogre2GeometryStorePtr(new Ogre2GeometryStore);
 }
 

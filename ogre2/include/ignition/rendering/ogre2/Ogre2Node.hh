@@ -56,6 +56,15 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
+      protected: virtual NodeStorePtr Children() const override;
+
+      // Documentation inherited.
+      protected: virtual bool AttachChild(NodePtr _child) override;
+
+      // Documentation inherited.
+      protected: virtual bool DetachChild(NodePtr _child) override;
+
+      // Documentation inherited.
       protected: virtual math::Pose3d RawLocalPose() const override;
 
       // Documentation inherited.
@@ -90,11 +99,17 @@ namespace ignition
       // Documentation inherited.
       protected: virtual void Init() override;
 
+      /// \brief get a shared pointer to this
+      private: Ogre2NodePtr SharedThis();
+
       /// \brief Pointer to the parent ogre node
       protected: Ogre2NodePtr parent;
 
       /// \brief The underlying ogre scene node
       protected: Ogre::SceneNode *ogreNode = nullptr;
+
+      /// \brief A list of child nodes
+      protected: Ogre2NodeStorePtr children;
 
       // TODO(anyone): remove the need for a visual friend class
       private: friend class Ogre2Visual;

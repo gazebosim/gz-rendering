@@ -83,49 +83,9 @@ void OptixVisual::PreRender()
 }
 
 //////////////////////////////////////////////////
-NodeStorePtr OptixVisual::Children() const
-{
-  return this->children;
-}
-
-//////////////////////////////////////////////////
 GeometryStorePtr OptixVisual::Geometries() const
 {
   return this->geometries;
-}
-
-//////////////////////////////////////////////////
-bool OptixVisual::AttachChild(NodePtr _child)
-{
-  OptixNodePtr derived = std::dynamic_pointer_cast<OptixNode>(_child);
-
-  if (!derived)
-  {
-    ignerr << "Cannot attach node created by another render-engine"
-        << std::endl;
-    return false;
-  }
-
-  derived->SetParent(this->SharedThis());
-  optix::Transform childTransform = derived->OptixTransform();
-  this->optixGroup->addChild(childTransform);
-  this->optixAccel->markDirty();
-  return true;
-}
-
-//////////////////////////////////////////////////
-bool OptixVisual::DetachChild(NodePtr _child)
-{
-  OptixNodePtr derived = std::dynamic_pointer_cast<OptixNode>(_child);
-
-  if (!derived)
-  {
-    return false;
-  }
-
-  this->optixGroup->removeChild(derived->OptixTransform());
-  this->optixAccel->markDirty();
-  return true;
 }
 
 //////////////////////////////////////////////////
@@ -184,7 +144,6 @@ void OptixVisual::Init()
 //////////////////////////////////////////////////
 void OptixVisual::CreateStorage()
 {
-  this->children = OptixNodeStorePtr(new OptixNodeStore);
   this->geometries = OptixGeometryStorePtr(new OptixGeometryStore);
 }
 

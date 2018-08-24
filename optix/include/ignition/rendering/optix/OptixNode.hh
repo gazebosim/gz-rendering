@@ -55,6 +55,12 @@ namespace ignition
 
       protected: virtual void Init();
 
+      protected: virtual NodeStorePtr Children() const;
+
+      protected: virtual bool AttachChild(NodePtr _child);
+
+      protected: virtual bool DetachChild(NodePtr _child);
+
       protected: OptixNodePtr parent;
 
       protected: optix::Transform optixTransform;
@@ -66,6 +72,10 @@ namespace ignition
       protected: math::Pose3d pose;
 
       protected: bool poseDirty;
+
+      protected: OptixNodeStorePtr children;
+
+      private: OptixNodePtr SharedThis();
 
       // TODO remove the need for a visual friend class
       private: friend class OptixVisual;

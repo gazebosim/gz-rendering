@@ -43,13 +43,7 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible);
 
-      protected: virtual NodeStorePtr Children() const;
-
       protected: virtual GeometryStorePtr Geometries() const;
-
-      protected: virtual bool AttachChild(NodePtr _child);
-
-      protected: virtual bool DetachChild(NodePtr _child);
 
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);
 
@@ -59,8 +53,6 @@ namespace ignition
                      const math::Vector3d &_scale);
 
       protected: virtual void Init();
-
-      protected: OgreNodeStorePtr children;
 
       protected: OgreGeometryStorePtr geometries;
 

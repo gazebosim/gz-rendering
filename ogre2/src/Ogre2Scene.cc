@@ -80,7 +80,7 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
   // _manager.html#a56cd9aa2c4dee4eec9eb07ce1372fb52
   Ogre::ColourValue ogreColor = Ogre2Conversions::Convert(_color);
   this->ogreSceneManager->setAmbientLight(ogreColor, ogreColor,
-      Ogre::Vector3());
+      Ogre::Vector3::UNIT_Z);
 }
 
 //////////////////////////////////////////////////

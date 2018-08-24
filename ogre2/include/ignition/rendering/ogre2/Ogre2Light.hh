@@ -41,11 +41,13 @@ namespace ignition
 
       public: virtual math::Color DiffuseColor() const;
 
-      public: virtual void SetDiffuseColor(const math::Color &_color);
+      // Documentation Inherited
+      public: virtual void SetDiffuseColor(const math::Color &_color) override;
 
       public: virtual math::Color SpecularColor() const;
 
-      public: virtual void SetSpecularColor(const math::Color &_color);
+      // Documentation Inherited
+      public: virtual void SetSpecularColor(const math::Color &_color) override;
 
       public: virtual double AttenuationConstant() const;
 
@@ -99,7 +101,8 @@ namespace ignition
 
       public: virtual math::Vector3d Direction() const;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir);
+      // Documentation Inherited
+      public: virtual void SetDirection(const math::Vector3d &_dir) override;
 
       private: friend class Ogre2Scene;
     };
@@ -123,15 +126,18 @@ namespace ignition
 
       public: virtual math::Vector3d Direction() const;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir);
+      // Documentation Inherited
+      public: virtual void SetDirection(const math::Vector3d &_dir) override;
 
       public: virtual math::Angle InnerAngle() const;
 
-      public: virtual void SetInnerAngle(const math::Angle &_angle);
+      // Documentation Inherited
+      public: virtual void SetInnerAngle(const math::Angle &_angle) override;
 
       public: virtual math::Angle OuterAngle() const;
 
-      public: virtual void SetOuterAngle(const math::Angle &_angle);
+      // Documentation Inherited
+      public: virtual void SetOuterAngle(const math::Angle &_angle) override;
 
       public: virtual double Falloff() const;
 

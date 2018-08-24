@@ -187,21 +187,28 @@ namespace ignition
     template <class T>
     GeometryPtr BaseVisual<T>::RemoveGeometry(GeometryPtr _geometry)
     {
-      return this->Geometries()->Remove(_geometry);
+      if (this->DetachGeometry(_geometry))
+      {
+        this->Geometries()->Remove(_geometry);
+      }
+      return _geometry;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     GeometryPtr BaseVisual<T>::RemoveGeometryByIndex(unsigned int _index)
     {
-      return this->Geometries()->RemoveByIndex(_index);
+      return this->RemoveGeometry(this->GeometryByIndex(_index));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::RemoveGeometries()
     {
-      this->Geometries()->RemoveAll();
+      for (unsigned int i = this->GeometryCount(); i > 0; --i)
+      {
+        this->RemoveGeometryByIndex(i-1);
+      }
     }
 
     //////////////////////////////////////////////////

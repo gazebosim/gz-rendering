@@ -17,7 +17,10 @@
 #ifndef IGNITION_RENDERING_BASE_BASENODE_HH_
 #define IGNITION_RENDERING_BASE_BASENODE_HH_
 
+#include <string>
 #include "ignition/rendering/Node.hh"
+#include "ignition/rendering/Storage.hh"
+#include "ignition/rendering/base/BaseStorage.hh"
 
 namespace ignition
 {
@@ -39,14 +42,11 @@ namespace ignition
       // Documentation inherited
       public: virtual void RemoveParent();
 
-      // Documentation inherited
-      public: virtual NodePtr RemoveChild(NodePtr _node);
+      public: virtual math::Vector3d LocalPosition() const;
 
       public: virtual math::Pose3d LocalPose() const;
 
       public: virtual void SetLocalPose(const math::Pose3d &_pose);
-
-      public: virtual math::Vector3d LocalPosition() const;
 
       public: virtual void SetLocalPosition(double _x, double _y, double _z);
 
@@ -91,9 +91,45 @@ namespace ignition
 
       public: virtual void Destroy();
 
+      public: virtual unsigned int ChildCount() const;
+
+      public: virtual bool HasChild(ConstNodePtr _child) const;
+
+      public: virtual bool HasChildId(unsigned int _id) const;
+
+      public: virtual bool HasChildName(const std::string &_name) const;
+
+      public: virtual NodePtr ChildById(unsigned int _id) const;
+
+      public: virtual NodePtr ChildByName(const std::string &_name) const;
+
+      public: virtual NodePtr ChildByIndex(unsigned int _index) const;
+
+      public: virtual void AddChild(NodePtr _child);
+
+      public: virtual NodePtr RemoveChild(NodePtr _child);
+
+      public: virtual NodePtr RemoveChildById(unsigned int _id);
+
+      public: virtual NodePtr RemoveChildByName(const std::string &_name);
+
+      public: virtual NodePtr RemoveChildByIndex(unsigned int _index);
+
+      public: virtual void RemoveChildren();
+
+      public: virtual void PreRender();
+
+      protected: virtual void PreRenderChildren();
+
       protected: virtual math::Pose3d RawLocalPose() const = 0;
 
       protected: virtual void SetRawLocalPose(const math::Pose3d &_pose) = 0;
+
+      protected: virtual NodeStorePtr Children() const = 0;
+
+      protected: virtual bool AttachChild(NodePtr _child) = 0;
+
+      protected: virtual bool DetachChild(NodePtr _child) = 0;
 
       protected: math::Vector3d origin;
     };
@@ -124,14 +160,81 @@ namespace ignition
       }
     }
 
+
     //////////////////////////////////////////////////
     template <class T>
-    NodePtr BaseNode<T>::RemoveChild(NodePtr /*_node*/)
+    void BaseNode<T>::AddChild(NodePtr _child)
     {
-      // By default, do nothing
-      // not all nodes have child, e.g. Cameras
-      // This function mainly applies to Visual classes.
-      return NodePtr();
+      if (this->AttachChild(_child))
+      {
+        this->Children()->Add(_child);
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChild(NodePtr _child)
+    {
+      NodePtr child = this->Children()->Remove(_child);
+      if (child) this->DetachChild(child);
+      return child;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChildById(unsigned int _id)
+    {
+      NodePtr child = this->Children()->RemoveById(_id);
+      if (child) this->DetachChild(child);
+      return child;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChildByName(const std::string &_name)
+    {
+      NodePtr child = this->Children()->RemoveByName(_name);
+      if (child) this->DetachChild(child);
+      return child;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::RemoveChildByIndex(unsigned int _index)
+    {
+      NodePtr child = this->Children()->RemoveByIndex(_index);
+      if (child) this->DetachChild(child);
+      return child;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::RemoveChildren()
+    {
+      for (unsigned int i = this->ChildCount(); i > 0; --i)
+      {
+        this->RemoveChildByIndex(i - 1);
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::PreRender()
+    {
+      T::PreRender();
+      this->PreRenderChildren();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::PreRenderChildren()
+    {
+      unsigned int count = this->ChildCount();
+
+      for (unsigned int i = 0; i < count; ++i)
+      {
+        this->ChildByIndex(i)->PreRender();
+      }
     }
 
     //////////////////////////////////////////////////
@@ -324,6 +427,55 @@ namespace ignition
     {
       T::Destroy();
       this->RemoveParent();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseNode<T>::ChildCount() const
+    {
+      return this->Children()->Size();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseNode<T>::HasChild(ConstNodePtr _child) const
+    {
+      return this->Children()->Contains(_child);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseNode<T>::HasChildId(unsigned int _id) const
+    {
+      return this->Children()->ContainsId(_id);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseNode<T>::HasChildName(const std::string &_name) const
+    {
+      return this->Children()->ContainsName(_name);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::ChildById(unsigned int _id) const
+    {
+      return this->Children()->GetById(_id);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::ChildByName(const std::string &_name) const
+    {
+      return this->Children()->GetByName(_name);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    NodePtr BaseNode<T>::ChildByIndex(unsigned int _index) const
+    {
+      return this->Children()->GetByIndex(_index);
     }
     }
   }

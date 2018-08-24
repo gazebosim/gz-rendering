@@ -78,6 +78,8 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
   // traditional fixed-colour ambient light.
   // https://ogrecave.github.io/ogre/api/2.1/class_ogre_1_1_scene
   // _manager.html#a56cd9aa2c4dee4eec9eb07ce1372fb52
+  // It's preferred to set the hemisphereDir arg to the up axis,
+  // which in our case would be Ogre::Vector3::UNIT_Z
   Ogre::ColourValue ogreColor = Ogre2Conversions::Convert(_color);
   this->ogreSceneManager->setAmbientLight(ogreColor, ogreColor,
       Ogre::Vector3::UNIT_Z);

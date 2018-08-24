@@ -200,8 +200,17 @@ namespace ignition
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();
 
+      /// \brief Root visual in the scene
+      protected: Ogre2VisualPtr rootVisual;
+
+      /// \brief Mesh factory for generating ogre meshes
+      protected: Ogre2MeshFactoryPtr meshFactory;
+
       /// \brief A list of ogre sensors, e.g. cameras
       protected: Ogre2SensorStorePtr sensors;
+
+      /// \brief A list of ogre visuals
+      protected: Ogre2VisualStorePtr visuals;
 
       /// \brief Pointer to the ogre root object
       protected: Ogre::Root *ogreRoot = nullptr;

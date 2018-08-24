@@ -29,6 +29,9 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     class Ogre2Camera;
+    class Ogre2Geometry;
+    class Ogre2Mesh;
+    class Ogre2MeshFactory;
     class Ogre2Node;
     class Ogre2Object;
     class Ogre2RenderEngine;
@@ -37,12 +40,20 @@ namespace ignition
     class Ogre2RenderWindow;
     class Ogre2Scene;
     class Ogre2Sensor;
+    class Ogre2SubMesh;
+    class Ogre2Visual;
 
-    typedef BaseSceneStore<Ogre2Scene>            Ogre2SceneStore;
+    typedef BaseGeometryStore<Ogre2Geometry>      Ogre2GeometryStore;
     typedef BaseNodeStore<Ogre2Node>              Ogre2NodeStore;
+    typedef BaseSceneStore<Ogre2Scene>            Ogre2SceneStore;
     typedef BaseSensorStore<Ogre2Sensor>          Ogre2SensorStore;
+    typedef BaseSubMeshStore<Ogre2SubMesh>        Ogre2SubMeshStore;
+    typedef BaseVisualStore<Ogre2Visual>          Ogre2VisualStore;
 
     typedef shared_ptr<Ogre2Camera>               Ogre2CameraPtr;
+    typedef shared_ptr<Ogre2Geometry>             Ogre2GeometryPtr;
+    typedef shared_ptr<Ogre2Mesh>                 Ogre2MeshPtr;
+    typedef shared_ptr<Ogre2MeshFactory>          Ogre2MeshFactoryPtr;
     typedef shared_ptr<Ogre2Node>                 Ogre2NodePtr;
     typedef shared_ptr<Ogre2Object>               Ogre2ObjectPtr;
     typedef shared_ptr<Ogre2RenderEngine>         Ogre2RenderEnginePtr;
@@ -51,10 +62,15 @@ namespace ignition
     typedef shared_ptr<Ogre2RenderWindow>         Ogre2RenderWindowPtr;
     typedef shared_ptr<Ogre2Scene>                Ogre2ScenePtr;
     typedef shared_ptr<Ogre2Sensor>               Ogre2SensorPtr;
+    typedef shared_ptr<Ogre2SubMesh>              Ogre2SubMeshPtr;
+    typedef shared_ptr<Ogre2Visual>               Ogre2VisualPtr;
 
+    typedef shared_ptr<Ogre2GeometryStore>        Ogre2GeometryStorePtr;
     typedef shared_ptr<Ogre2NodeStore>            Ogre2NodeStorePtr;
     typedef shared_ptr<Ogre2SceneStore>           Ogre2SceneStorePtr;
     typedef shared_ptr<Ogre2SensorStore>          Ogre2SensorStorePtr;
+    typedef shared_ptr<Ogre2SubMeshStore>         Ogre2SubMeshStorePtr;
+    typedef shared_ptr<Ogre2VisualStore>          Ogre2VisualStorePtr;
     }
   }
 }

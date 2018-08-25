@@ -127,6 +127,7 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
     return true;
   }
 
+  // attach submeshes - needed for instanced entities
   OgreMeshPtr mesh = std::dynamic_pointer_cast<OgreMesh>(derived);
   // Add all submeshes, if there are submeshes
   if (mesh && mesh->SubMeshes())

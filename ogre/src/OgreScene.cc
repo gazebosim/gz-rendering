@@ -117,6 +117,8 @@ namespace ignition
 using namespace ignition;
 using namespace rendering;
 
+common::Time p;
+
 //////////////////////////////////////////////////
 OgreScene::OgreScene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name),
@@ -266,8 +268,18 @@ void OgreScene::RemoveGradientBackgroundColor()
 //////////////////////////////////////////////////
 void OgreScene::PreRender()
 {
+  // renderOneFrame is required for updating bounds of instanced entities
+  Ogre::Root *root = OgreRenderEngine::Instance()->OgreRoot();
+  root->renderOneFrame();
+
   BaseScene::PreRender();
   OgreRTShaderSystem::Instance()->Update();
+
+/*  auto now = common::Time::SystemTime();
+  auto t = (now - p).Double();
+  p = now;
+  std::cerr << t << std::endl;
+*/
 }
 
 //////////////////////////////////////////////////
@@ -278,6 +290,7 @@ void OgreScene::Clear()
 //////////////////////////////////////////////////
 void OgreScene::Destroy()
 {
+  this->ogreSceneManager->destroyAllInstanceManagers();
 }
 
 //////////////////////////////////////////////////

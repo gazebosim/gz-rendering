@@ -248,7 +248,9 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(const int _x, const int _y)
     return 0;
   }
   else
+  {
     return this->dataPtr->sceneMgr->getEntity(entName);
+  }
 }
 
 /////////////////////////////////////////////////

@@ -57,51 +57,9 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
   normDesc.Load();
   mesh->ogreEntity = this->OgreEntity(normDesc);
 
-/*  if (this->Load(_desc))
-  {
-    mesh.reset(new OgreMesh);
-
-    std::string meshName = this->MeshName(_desc);
-    Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
-
-    unsigned int subMeshCount = _desc.mesh->SubMeshCount();
-    std::cout << "SubMeshCount[" << subMeshCount << "]\n";
-
-    // Create an instance manager for each submesh
-    unsigned int index = 0;
-    do
-    {
-      std::string instanceMgrName =
-        "InstanceManager" + meshName + std::to_string(index);
-
-      if (!sceneManager->hasInstanceManager(instanceMgrName))
-      {
-        std::cout << "Creating instance manager[" << instanceMgrName << "]\n";
-
-        sceneManager->createInstanceManager(instanceMgrName, meshName,
-            Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-            Ogre::InstanceManager::HWInstancingBasic, 100, 0, index);
-      }
-      ++index;
-    }
-    while (index < subMeshCount);
-
-    // create sub-mesh store
-    OgreSubMeshStoreFactory subMeshFactory(this->scene, _desc);
-    mesh->subMeshes = subMeshFactory.Create();
-  }
-*/
-
-  // check if invalid mesh
-  /* if (!mesh->ogreEntity)
-  {
-    return nullptr;
-  }
-*/
   // create sub-mesh store
-  OgreSubMeshStoreFactory subMeshFactory(this->scene, _desc, mesh->ogreEntity);
+  OgreSubMeshStoreFactory subMeshFactory(this->scene, normDesc, mesh->ogreEntity);
   mesh->subMeshes = subMeshFactory.Create();
-
 
   return mesh;
 }
@@ -503,19 +461,19 @@ OgreSubMeshPtr OgreSubMeshStoreFactory::CreateSubMesh(unsigned int _index)
   {
     // Create an instance manager for each submesh
     std::string subMeshIndexStr = std::to_string(_index);
-    std::string instancedMgrName = "InstanceManager" + meshName + subMeshIndexStr;
-    if (!sceneManager->hasInstanceManager(instancedMgrName))
+    std::string instanceMgrName = "InstanceManager" + meshName + subMeshIndexStr;
+    if (!sceneManager->hasInstanceManager(instanceMgrName))
     {
       std::cout << "Creating instance manager["
-        << instancedMgrName << "]\n";
+        << instanceMgrName << "]\n";
 
-      sceneManager->createInstanceManager(instancedMgrName,
+      sceneManager->createInstanceManager(instanceMgrName,
           meshName, Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-          Ogre::InstanceManager::HWInstancingBasic, 100, 0, _index);
+          Ogre::InstanceManager::HWInstancingBasic, 50, Ogre::IM_USEALL, _index);
     }
 
     std::string baseMat = "Instancing/HWBasic";
-    std::string instancedMat = baseMat + "/" + instancedMgrName;
+    std::string instancedMat = baseMat + "/" + instanceMgrName;
     Ogre::MaterialPtr matPtr = Ogre::MaterialManager::getSingleton().getByName(instancedMat);
 
 #if OGRE_VERSION_LT_1_10_1
@@ -564,7 +522,18 @@ OgreSubMeshPtr OgreSubMeshStoreFactory::CreateSubMesh(unsigned int _index)
     }
 
     subMesh->ogreObject =
-      sceneManager->createInstancedEntity(instancedMat, instancedMgrName);
+        sceneManager->createInstancedEntity(instancedMat, instanceMgrName);
+/*    std::cerr << " instanced enitty bbox " << subMesh->ogreObject->getBoundingBox() << std::endl;
+    Ogre::InstancedEntity *e = dynamic_cast<Ogre::InstancedEntity *>(subMesh->ogreObject);
+    e->_getOwner()->_updateBounds();
+    std::cerr << " instanced batch bbox " << e->_getOwner()->getBoundingBox() << " static: "
+              << e->_getOwner()->isStatic() << std::endl;
+
+    /// TODO remove me
+    auto s = sceneManager->getInstanceManager(instanceMgrName);
+    s->setSetting( Ogre::InstanceManager::SHOW_BOUNDINGBOX, true);
+*/
+
   }
 
   subMesh->Load();
@@ -601,7 +570,10 @@ void OgreSubMeshStoreFactory::PopulateDefaultNames()
 //////////////////////////////////////////////////
 void OgreSubMeshStoreFactory::PopulateGivenNames()
 {
-  /*const Ogre::MeshPtr ogreMesh = this->ogreEntity->getMesh();
+  Ogre::Entity * ent = dynamic_cast<Ogre::Entity *>(this->ogreEntity);
+  if (!ent)
+    return;
+  const Ogre::MeshPtr ogreMesh = ent->getMesh();
   const Ogre::Mesh::SubMeshNameMap &ogreMap = ogreMesh->getSubMeshNameMap();
 
   for (auto pair : ogreMap)
@@ -609,5 +581,5 @@ void OgreSubMeshStoreFactory::PopulateGivenNames()
     std::string name = pair.first;
     unsigned int index = pair.second;
     this->names[index] = name;
-  }*/
+  }
 }

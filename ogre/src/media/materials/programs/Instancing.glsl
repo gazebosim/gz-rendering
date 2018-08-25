@@ -34,11 +34,11 @@ varying vec3 oVPos;
 //---------------------------------------------
 void main(void)
 {
-	vec4 color = texture2D( diffuseMap, _uv0 );
+	// vec4 color = texture2D( diffuseMap, _uv0 );
 
 	float fShadow = 1.0;
 #if DEPTH_SHADOWRECEIVER
-	fShadow = calcDepthShadow( shadowMap, oLightSpacePos, invShadowMapSize );
+	// fShadow = calcDepthShadow( shadowMap, oLightSpacePos, invShadowMapSize );
 #endif
 
 	vec4 baseColour = texture2D( diffuseMap, _uv0 );
@@ -54,7 +54,7 @@ void main(void)
 	float NdotL	= max( 0.0, dot( normal, lightDir ) );
 	vec3 halfVector		= normalize(lightDir + eyeDir);
 	float HdotN	= max( 0.0, dot( halfVector, normal ) );
-	
+
 	vec3 ambient  = lightAmbient * baseColour.xyz;
 	vec3 diffuse  = lightDiffuse * NdotL * baseColour.xyz;
 	vec3 specular = lightSpecular * pow( HdotN, lightGloss );

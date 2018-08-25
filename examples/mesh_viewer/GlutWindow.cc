@@ -221,6 +221,10 @@ void handleMouse()
       }
     }
   }
+
+//  auto s =  rayCamera->Scene();
+//  auto v = s->VisualById(65529);
+//  v->SetLocalPosition(v->LocalPosition() + ignition::math::Vector3d(0.0, 0.01, 0));
 }
 
 

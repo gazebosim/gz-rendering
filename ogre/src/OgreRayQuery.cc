@@ -92,10 +92,30 @@ RayQueryResult OgreRayQuery::ClosestPoint()
     if (iter->movable && iter->movable->getVisible())
     {
       auto userAny = iter->movable->getUserObjectBindings().getUserAny();
-      if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int) &&
-          iter->movable->getMovableType() == "Entity")
+      if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
       {
-        Ogre::Entity *ogreEntity = static_cast<Ogre::Entity*>(iter->movable);
+        Ogre::Mesh *ogreMesh = nullptr;
+        Ogre::Node *ogreNode = nullptr;
+        Ogre::Entity *ogreEntity = dynamic_cast<Ogre::Entity *>(iter->movable);
+        if (!ogreEntity)
+        {
+           Ogre::InstancedEntity *ogreInstancedEntity =
+               dynamic_cast<Ogre::InstancedEntity*>(iter->movable);
+           if (!ogreInstancedEntity)
+             continue;
+           else
+           {
+             ogreMesh = ogreInstancedEntity->_getOwner()->_getMeshRef().get();
+             ogreNode = ogreInstancedEntity->getParentNode();
+           }
+        }
+        else
+        {
+          ogreMesh = ogreEntity->getMesh().get();
+          ogreNode = ogreEntity->getParentNode();
+        }
+        if (!ogreMesh)
+          continue;
 
         // mesh data to retrieve
         size_t vertexCount;
@@ -104,14 +124,11 @@ RayQueryResult OgreRayQuery::ClosestPoint()
         uint64_t *indices;
 
        // Get the mesh information
-        this->MeshInformation(ogreEntity->getMesh().get(), vertexCount,
+        this->MeshInformation(ogreMesh, vertexCount,
             vertices, indexCount, indices,
-            OgreConversions::Convert(
-              ogreEntity->getParentNode()->_getDerivedPosition()),
-            OgreConversions::Convert(
-            ogreEntity->getParentNode()->_getDerivedOrientation()),
-            OgreConversions::Convert(
-            ogreEntity->getParentNode()->_getDerivedScale()));
+            OgreConversions::Convert(ogreNode->_getDerivedPosition()),
+            OgreConversions::Convert(ogreNode->_getDerivedOrientation()),
+            OgreConversions::Convert(ogreNode->_getDerivedScale()));
 
         for (unsigned int i = 0; i < indexCount; i += 3)
         {

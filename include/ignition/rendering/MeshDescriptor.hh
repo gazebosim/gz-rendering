@@ -76,7 +76,7 @@ namespace ignition
       public: bool centerSubMesh = false;
 
       /// \brief True if mesh should be instanced. Engine-specific param.
-      public: bool instanced = true;
+      public: bool instanced = false;
     };
     }
   }

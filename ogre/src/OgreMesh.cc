@@ -34,12 +34,15 @@ OgreMesh::OgreMesh()
 //////////////////////////////////////////////////
 OgreMesh::~OgreMesh()
 {
+  if (this->ogreEntity)
+  {
+    this->scene->OgreSceneManager()->destroyMovableObject(this->ogreEntity);
+  }
 }
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreMesh::OgreObject() const
 {
-//  return this->subMeshes->DerivedByIndex(0)->OgreSubEntity();
   return this->ogreEntity;
 }
 
@@ -57,7 +60,7 @@ OgreSubMesh::OgreSubMesh()
 //////////////////////////////////////////////////
 OgreSubMesh::~OgreSubMesh()
 {
-  OgreRTShaderSystem::Instance()->DetachEntity(this);
+  this->Destroy();
 }
 
 //////////////////////////////////////////////////
@@ -100,7 +103,21 @@ Ogre::MovableObject *OgreSubMesh::OgreObject() const
 //////////////////////////////////////////////////
 void OgreSubMesh::Destroy()
 {
-  OgreRTShaderSystem::Instance()->DetachEntity(this);
+  if (this->ogreSubEntity)
+  {
+    OgreRTShaderSystem::Instance()->DetachEntity(this);
+  }
+
+  if (this->ogreObject)
+  {
+    Ogre::InstancedEntity *obj =
+        dynamic_cast<Ogre::InstancedEntity *>(this->ogreObject);
+    if (obj)
+    {
+      this->scene->OgreSceneManager()->destroyInstancedEntity(obj);
+      this->ogreObject = nullptr;
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -118,5 +135,9 @@ void OgreSubMesh::SetMaterialImpl(OgreMaterialPtr _material)
 void OgreSubMesh::Init()
 {
   BaseSubMesh::Init();
+
+  if (!this->ogreSubEntity)
+    return;
+
   OgreRTShaderSystem::Instance()->AttachEntity(this);
 }

@@ -58,45 +58,47 @@ void buildScene(ScenePtr _scene)
   common::MeshManager *meshManager = common::MeshManager::Instance();
   // create a mesh
   for (int y = -10; y < 10; ++y)
+//  for (int y = 1; y < 2; ++y)
   {
     for (int x = -10; x < 10; ++x)
+//    for (int x = 1; x < 2; ++x)
     {
+
       VisualPtr mesh = _scene->CreateVisual();
-      mesh->SetLocalPosition(x, y, 0);
-      mesh->SetLocalRotation(1.5708, 0, 2.0);
       MeshDescriptor descriptor;
       descriptor.meshName = common::joinPaths(RESOURCE_PATH, "polaris.dae");
+      //descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
       descriptor.mesh = meshManager->Load(descriptor.meshName);
+      descriptor.instanced = true;
       MeshPtr meshGeom = _scene->CreateMesh(descriptor);
       mesh->AddGeometry(meshGeom);
+      mesh->SetLocalPosition(x*2, y*2, 0);
+      mesh->SetLocalRotation(1.5708, 0, 2.0);
       root->AddChild(mesh);
     }
   }
 
-  printf("1\n");
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();
   gray->SetAmbient(0.7, 0.7, 0.7);
   gray->SetDiffuse(0.7, 0.7, 0.7);
   gray->SetSpecular(0.7, 0.7, 0.7);
 
-  printf("2\n");
   // create grid visual
   VisualPtr grid = _scene->CreateVisual();
   GridPtr gridGeom = _scene->CreateGrid();
   gridGeom->SetCellCount(20);
   gridGeom->SetCellLength(1);
   gridGeom->SetVerticalCellCount(0);
-  printf("3\n");
   grid->AddGeometry(gridGeom);
-  printf("4\n");
   grid->SetLocalPosition(3, 0, 0.0);
   grid->SetMaterial(gray);
   root->AddChild(grid);
 
+
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.5);
+  camera->SetLocalPosition(-3.0, 0.0, 3.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);

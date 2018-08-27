@@ -27,6 +27,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+
     // TODO(anyone): use a better way to find shader configurations
     const std::string vertex_shader_path =
         "/usr/local/share/ignition/rendering-1/ogre/media/materials/programs/vertex_shader.glsl";
@@ -37,8 +39,6 @@ namespace ignition
     const std::string depth_fragment_shader_path =
         "/usr/local/share/ignition/rendering-1/ogre/media/materials/programs/depth_fragment_shader.glsl";
 
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
- 
     class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterial :
       public BaseMaterial<OgreObject>
     {

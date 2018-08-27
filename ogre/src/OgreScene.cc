@@ -40,6 +40,9 @@ namespace ignition
 {
   namespace rendering
   {
+
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Subclassing the Ogre Rectangle2D class to create a gradient
     /// colored rectangle. The class is setting colors at the four vertices
     /// (corners) of the rectangle and Ogre/OpenGL then interpolates the colors
@@ -108,6 +111,7 @@ namespace ignition
       /// \brief Index associated with the vertex buffer.
       private: const int kColorBinding = 3;
     };
+    }
   }
 }
 

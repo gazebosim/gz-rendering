@@ -35,48 +35,42 @@
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 
-namespace ignition
+class ignition::rendering::OgreRTShaderSystemPrivate
 {
-  namespace rendering
-  {
-    class OgreRTShaderSystemPrivate
-    {
-      /// \brief The shader generator.
-      public: Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
+  /// \brief The shader generator.
+  public: Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
 
-      /// \brief Used to generate shadows.
-      public: Ogre::RTShader::SubRenderState *shadowRenderState = nullptr;
+  /// \brief Used to generate shadows.
+  public: Ogre::RTShader::SubRenderState *shadowRenderState = nullptr;
 
-      /// \brief All the entites being used.
-      public: std::list<OgreSubMesh*> entities;
+  /// \brief All the entites being used.
+  public: std::list<OgreSubMesh*> entities;
 
-      /// \brief True if initialized.
-      public: bool initialized;
+  /// \brief True if initialized.
+  public: bool initialized;
 
-      /// \brief True if shadows have been applied.
-      public: bool shadowsApplied;
+  /// \brief True if shadows have been applied.
+  public: bool shadowsApplied;
 
-      /// \brief All the scenes.
-      public: std::vector<OgreScenePtr> scenes;
+  /// \brief All the scenes.
+  public: std::vector<OgreScenePtr> scenes;
 
-      /// \brief Mutex used to protext the entities list.
-      public: std::mutex entityMutex;
+  /// \brief Mutex used to protext the entities list.
+  public: std::mutex entityMutex;
 
-      /// \brief Parallel Split Shadow Map (PSSM) camera setup
-      public: Ogre::ShadowCameraSetupPtr pssmSetup;
+  /// \brief Parallel Split Shadow Map (PSSM) camera setup
+  public: Ogre::ShadowCameraSetupPtr pssmSetup;
 
-      /// \brief Flag to indicate that shaders need to be updated.
-      public: bool updateShaders = false;
+  /// \brief Flag to indicate that shaders need to be updated.
+  public: bool updateShaders = false;
 
-      /// \brief Size of the Parallel Split Shadow Map (PSSM) shadow texture
-      /// at closest layer.
-      public: unsigned int shadowTextureSize = 1024u;
+  /// \brief Size of the Parallel Split Shadow Map (PSSM) shadow texture
+  /// at closest layer.
+  public: unsigned int shadowTextureSize = 1024u;
 
-      /// \brief Flag to indicate shadows need to be reapplied
-      public: bool resetShadows = false;
-    };
-  }
-}
+  /// \brief Flag to indicate shadows need to be reapplied
+  public: bool resetShadows = false;
+};
 
 using namespace ignition;
 using namespace rendering;
@@ -87,7 +81,11 @@ OgreRTShaderSystem::OgreRTShaderSystem()
 {
   this->dataPtr->initialized = false;
   this->dataPtr->shadowsApplied = false;
+#if OGRE_VERSION_LT_1_10_1
   this->dataPtr->pssmSetup.setNull();
+#else
+  this->dataPtr->pssmSetup = nullptr;
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -152,15 +150,18 @@ void OgreRTShaderSystem::Fini()
   if (this->dataPtr->shaderGenerator != nullptr)
   {
     // On Windows, we're using 1.9RC1, which doesn't have a bunch of changes.
-#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0)) || defined(_WIN32)
+#if (OGRE_VERSION < ((1 << 16) | (9 << 8) | 0))
     Ogre::RTShader::ShaderGenerator::finalize();
 #else
     Ogre::RTShader::ShaderGenerator::destroy();
 #endif
     this->dataPtr->shaderGenerator = nullptr;
   }
-
+#if OGRE_VERSION_LT_1_10_1
   this->dataPtr->pssmSetup.setNull();
+#else
+  this->dataPtr->pssmSetup = nullptr;
+#endif
   this->dataPtr->entities.clear();
   this->dataPtr->scenes.clear();
   this->dataPtr->shadowsApplied = false;
@@ -513,7 +514,11 @@ void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
   // pssmCasterPass->setFog(true);
 
   // shadow camera setup
+#if OGRE_VERSION_LT_1_10_1
   if (this->dataPtr->pssmSetup.isNull())
+#else
+  if (this->dataPtr->pssmSetup == nullptr)
+#endif
   {
     this->dataPtr->pssmSetup =
         Ogre::ShadowCameraSetupPtr(new Ogre::PSSMShadowCameraSetup());

@@ -29,6 +29,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief forward declaration
     class ShaderParamsPrivate;
 
@@ -40,7 +42,7 @@ namespace ignition
 
       /// \brief Iterator for looping through params
       /// \remarks implements a forward-iterator
-      class Iterator
+      class IGNITION_RENDERING_VISIBLE Iterator
       {
         /// \brief Default constructor
         public: Iterator();
@@ -125,6 +127,7 @@ namespace ignition
       /// \brief private implementation
       private: std::unique_ptr<ShaderParamsPrivate> dataPtr;
     };
+    }
   }
 }
 

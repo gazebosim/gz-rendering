@@ -21,12 +21,15 @@
 #include <cstdint>
 #include <memory>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief forward declaration
     class ShaderParamPrivate;
 
@@ -59,6 +62,11 @@ namespace ignition
       /// \return Type of this parameter
       public: ParamType Type() const;
 
+      /// \brief Set from another ShaderParam.
+      /// \param[in] _other Another ShaderParam.
+      /// \return Reference to this ShaderParam.
+      public: ShaderParam &operator=(const ShaderParam &_other);
+
       /// \brief Set this to be a float param
       /// \param[in] _value Value to set this param to.
       public: void operator=(const float _value);
@@ -80,6 +88,7 @@ namespace ignition
       /// \brief private implementation
       private: std::unique_ptr<ShaderParamPrivate> dataPtr;
     };
+    }
   }
 }
 

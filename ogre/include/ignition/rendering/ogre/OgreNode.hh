@@ -30,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OGRE_VISIBLE OgreNode :
       public BaseNode<OgreObject>
     {
@@ -39,11 +41,17 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr Parent() const;
+      public: virtual NodePtr Parent() const;
 
       public: virtual Ogre::SceneNode *Node() const;
 
       public: virtual void Destroy();
+
+      protected: virtual NodeStorePtr Children() const;
+
+      protected: virtual bool AttachChild(NodePtr _child);
+
+      protected: virtual bool DetachChild(NodePtr _child);
 
       protected: virtual math::Pose3d RawLocalPose() const;
 
@@ -59,18 +67,24 @@ namespace ignition
       protected: virtual void SetRawLocalRotation(
                      const math::Quaterniond &_rotation);
 
-      protected: virtual void SetParent(OgreVisualPtr _parent);
+      protected: virtual void SetParent(OgreNodePtr _parent);
 
       protected: virtual void Load();
 
       protected: virtual void Init();
 
-      protected: OgreVisualPtr parent;
+      protected: OgreNodePtr parent;
 
-      protected: Ogre::SceneNode *ogreNode;
+      protected: Ogre::SceneNode *ogreNode = nullptr;
 
+      protected: OgreNodeStorePtr children;
+
+      private: OgreNodePtr SharedThis();
+
+      // TODO(anyone): remove the need for a visual friend class
       private: friend class OgreVisual;
     };
+    }
   }
 }
 #endif

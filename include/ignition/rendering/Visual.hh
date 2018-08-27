@@ -18,12 +18,15 @@
 #define IGNITION_RENDERING_VISUAL_HH_
 
 #include <string>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Node.hh"
 
 namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Visual Visual.hh ignition/rendering/Visual.hh
     /// \brief Represents a visual node in a scene graph. A Visual is the only
     /// node that can have Geometry and other Visual children.
@@ -32,75 +35,6 @@ namespace ignition
     {
       /// \brief Deconstructor
       public: virtual ~Visual() { }
-
-      /// \brief Get number of child nodes
-      /// \return The number of child nodes
-      public: virtual unsigned int ChildCount() const = 0;
-
-      /// \brief Determine if given node is an attached child
-      /// \return True if given node is an attached child
-      public: virtual bool HasChild(ConstNodePtr _child) const = 0;
-
-      /// \brief Determine if node with given ID is an attached child
-      /// \param[in] _id ID of the node in question
-      /// \return True if node with given ID is an attached child
-      public: virtual bool HasChildId(unsigned int _id) const = 0;
-
-      /// \brief Determine if node with given name is an attached child
-      /// \param[in] _name Name of the node in question
-      /// \return True if node with given name is an attached child
-      public: virtual bool HasChildName(const std::string &_name) const = 0;
-
-      /// \brief Get node with given ID. If no child exists with given ID, NULL
-      /// will be returned.
-      /// \param[in] _id ID of the desired node
-      /// \return The specified node
-      public: virtual NodePtr ChildById(unsigned int _id) const = 0;
-
-      /// \brief Get node with given name. If no child exists with given name,
-      /// NULL will be returned.
-      /// \param[in] _name Name of the desired node
-      /// \return The specified node
-      public: virtual NodePtr ChildByName(
-                  const std::string &_name) const = 0;
-
-      /// \brief Get node at given index. If no child exists at given index,
-      /// NULL will be returned.
-      /// \param[in] _index Index of the desired node
-      /// \return The specified node
-      public: virtual NodePtr ChildByIndex(unsigned int _index) const = 0;
-
-      /// \brief Add the given node to this visual. If the given node is
-      /// already a child, no work will be done.
-      /// \param[in] _child Child node to be added
-      public: virtual void AddChild(NodePtr _child) = 0;
-
-      /// \brief Remove the given node from this visual. If the given node is
-      /// not a child of this visual, no work will be done.
-      /// \param[in] _child Child node to be removed
-      /// \return The removed child node
-      public: virtual NodePtr RemoveChild(NodePtr _child) = 0;
-
-      /// \brief Remove the node with the given ID from this visual. If the
-      /// specified node is not a child of this visual, no work will be done.
-      /// \param[in] _id ID of the child node to be removed
-      /// \return The removed child node
-      public: virtual NodePtr RemoveChildById(unsigned int _id) = 0;
-
-      /// \brief Remove the node with the given name from this visual. If the
-      /// specified node is not a child of this visual, no work will be done.
-      /// \param[in] _name Name of the child node to be removed
-      /// \return The removed child node
-      public: virtual NodePtr RemoveChildByName(const std::string &_name) = 0;
-
-      /// \brief Remove the node at the given index from this visual. If the
-      /// specified node is not a child of this visual, no work will be done.
-      /// \param[in] _index Index of the child node to be removed
-      /// \return The removed child node
-      public: virtual NodePtr RemoveChildByIndex(unsigned int _index) = 0;
-
-      /// \brief Remove all child nodes from this visual
-      public: virtual void RemoveChildren() = 0;
 
       /// \brief Get the number of geometries attached to this visual
       /// \return The number of geometries attached to this visual
@@ -232,7 +166,12 @@ namespace ignition
       /// \brief Specify if this visual inherits scale from its parent
       /// \param[in] _inherit True if this visual inherits scale from its parent
       public: virtual void SetInheritScale(bool _inherit) = 0;
+
+      /// \brief Specify if this visual is visible
+      /// \param[in] _visible True if this visual should be made visible
+      public: virtual void SetVisible(bool _visible) = 0;
     };
+    }
   }
 }
 #endif

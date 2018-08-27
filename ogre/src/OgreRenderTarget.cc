@@ -17,7 +17,6 @@
 
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
-#include <GL/glew.h>
 #include <OGRE/RenderSystems/GL/OgreGLFBORenderTexture.h>
 
 
@@ -276,7 +275,7 @@ void OgreRenderTexture::BuildTarget()
 
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-      Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).getPointer();
+      Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).get();
 }
 
 //////////////////////////////////////////////////
@@ -390,7 +389,7 @@ void OgreRenderWindow::BuildTarget()
 {
   auto engine = OgreRenderEngine::Instance();
   std::string renderTargetName =
-      engine->CreateWindow(this->handle,
+      engine->CreateRenderWindow(this->handle,
           this->width,
           this->height,
           this->ratio,

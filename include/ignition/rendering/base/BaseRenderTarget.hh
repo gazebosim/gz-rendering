@@ -27,8 +27,10 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseRenderTarget :
+    class BaseRenderTarget :
       public virtual RenderTarget,
       public virtual T
     {
@@ -71,7 +73,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseRenderTexture :
+    class BaseRenderTexture :
       public virtual RenderTexture,
       public virtual T
     {
@@ -84,7 +86,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseRenderWindow :
+    class BaseRenderWindow :
       public virtual RenderWindow,
       public virtual T
     {
@@ -284,6 +286,7 @@ namespace ignition
     void BaseRenderWindow<T>::OnMove()
     {
       this->targetDirty = true;
+    }
     }
   }
 }

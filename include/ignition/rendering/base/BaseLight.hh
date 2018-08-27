@@ -23,8 +23,10 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseLight :
+    class BaseLight :
       public virtual Light,
       public virtual T
     {
@@ -56,7 +58,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseDirectionalLight :
+    class BaseDirectionalLight :
       public virtual DirectionalLight,
       public virtual T
     {
@@ -72,7 +74,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BasePointLight :
+    class BasePointLight :
       public virtual PointLight,
       public virtual T
     {
@@ -82,7 +84,7 @@ namespace ignition
     };
 
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseSpotLight :
+    class  BaseSpotLight :
       public virtual SpotLight,
       public virtual T
     {
@@ -230,7 +232,7 @@ namespace ignition
       this->SetOuterAngle(IGN_PI / 4.0);
       this->SetFalloff(1.0);
     }
-
+    }
   }
 }
 #endif

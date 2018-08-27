@@ -5,6 +5,11 @@ pipelines:
     - step:
         script: # Modify the commands below to build your repository.
           - apt update
+          - apt -y install wget lsb-release gnupg
+          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+          - sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
+          - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+          - apt-get update
           - apt-get -y install
             cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn freeglut3-dev libxmu-dev libxi-dev
             libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
@@ -14,33 +19,20 @@ pipelines:
           - gcc -v
           - g++ -v
           - gcov -v
+          # Dependency: Ignition packages
+          - apt-get -y install
+            libignition-cmake2-dev libignition-math6-dev
           # lcov
           - git clone https://github.com/linux-test-project/lcov.git
           - cd lcov
           - make install
           - cd ..
-          # Ignition cmake
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b gz11
-          - cd ign-cmake
-          - mkdir build
-          - cd build
-          - cmake .. # -DENABLE_TESTS_COMPILATION=false
-          - make -j4 install
-          - cd ../..
-          # Ignition math
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-math -b gz11
-          - cd ign-math
-          - mkdir build
-          - cd build
-          - cmake .. # -DENABLE_TESTS_COMPILATION=false
-          - make -j4 install
-          - cd ../..
           # Ignition common
           - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b gz11
           - cd ign-common
           - mkdir build
           - cd build
-          - cmake .. # -DENABLE_TESTS_COMPILATION=false
+          - cmake ..
           - make -j4 install
           - cd ../..
           # Ignition rendering

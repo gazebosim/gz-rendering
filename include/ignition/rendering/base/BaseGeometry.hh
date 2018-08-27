@@ -25,8 +25,10 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseGeometry :
+    class BaseGeometry :
       public virtual Geometry,
       public virtual T
     {
@@ -90,6 +92,7 @@ namespace ignition
     {
       T::Destroy();
       this->RemoveParent();
+    }
     }
   }
 }

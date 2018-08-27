@@ -25,8 +25,10 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseAxisVisual :
+    class BaseAxisVisual :
       public virtual AxisVisual,
       public virtual T
     {
@@ -72,6 +74,7 @@ namespace ignition
       zArrow->SetLocalRotation(0, 0, 0);
       zArrow->SetMaterial("Default/TransBlue");
       this->AddChild(zArrow);
+    }
     }
   }
 }

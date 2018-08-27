@@ -25,9 +25,11 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \brief Base implementation of a text geometry
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseText :
+    class BaseText :
       public virtual Text,
       public virtual T
     {
@@ -294,6 +296,7 @@ namespace ignition
     void BaseText<T>::Destroy()
     {
       T::Destroy();
+    }
     }
   }
 }

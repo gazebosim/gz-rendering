@@ -24,6 +24,8 @@ namespace ignition
 {
   namespace rendering
   {
+  inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+  //
 #endif
 
   typedef enum OptixRayType_t
@@ -36,7 +38,9 @@ namespace ignition
   struct OptixRadianceRayData
   {
     float3 color;
+    // cppcheck-suppress unusedStructMember
     float importance;
+    // cppcheck-suppress unusedStructMember
     int depth;
   };
 
@@ -46,6 +50,7 @@ namespace ignition
   };
 
 #ifndef __CUDA_ARCH__
+  }
   }
 }
 #endif

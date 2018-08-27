@@ -24,8 +24,10 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseArrowVisual :
+    class BaseArrowVisual :
       public virtual ArrowVisual,
       public virtual T
     {
@@ -88,7 +90,7 @@ namespace ignition
 
       this->SetOrigin(0, 0, -0.5);
     }
-
+    }
   }
 }
 #endif

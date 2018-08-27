@@ -21,20 +21,14 @@
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
-namespace ignition
+class ignition::rendering::OgreGridPrivate
 {
-  namespace rendering
-  {
-    class OgreGridPrivate
-    {
-      /// \brief Grid materal
-      public: OgreMaterialPtr material;
+  /// \brief Grid materal
+  public: OgreMaterialPtr material;
 
-      /// \brief Ogre manual object used to render the grid.
-      public: Ogre::ManualObject *manualObject = nullptr;
-    };
-  }
-}
+  /// \brief Ogre manual object used to render the grid.
+  public: Ogre::ManualObject *manualObject = nullptr;
+};
 
 using namespace ignition;
 using namespace rendering;

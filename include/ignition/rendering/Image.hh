@@ -18,6 +18,10 @@
 #define IGNITION_RENDERING_IMAGE_HH_
 
 #include <memory>
+
+#include <ignition/common/SuppressWarning.hh>
+
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Export.hh"
 
@@ -25,6 +29,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Image Image.hh ignition/rendering/Image.hh
     /// \brief Encapsulates a raw image buffer and relevant properties
     class IGNITION_RENDERING_VISIBLE Image
@@ -94,8 +100,10 @@ namespace ignition
       /// \brief Image pixel format
       private: PixelFormat format = PF_UNKNOWN;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief Pointer to the image data
       private: DataPtr data = nullptr;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
 
     //////////////////////////////////////////////////
@@ -110,6 +118,7 @@ namespace ignition
     T *Image::Data()
     {
       return static_cast<T *>(this->data.get());
+    }
     }
   }
 }

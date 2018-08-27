@@ -36,6 +36,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+
     template <class T>
     class IGNITION_RENDERING_VISIBLE BaseDepthCamera :
       public virtual DepthCamera,
@@ -101,6 +103,7 @@ namespace ignition
     {
       return nullptr;
     }
+  }
   }
 }
 #endif

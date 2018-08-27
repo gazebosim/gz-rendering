@@ -18,6 +18,10 @@
 #define IGNITION_RENDERING_MESHDESCRIPTOR_HH_
 
 #include <string>
+
+#include <ignition/common/SuppressWarning.hh>
+
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
 namespace ignition
@@ -32,6 +36,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \struct MeshDescriptor MeshDescriptor.hh
     /// ignition/rendering/MeshDescriptor.hh
     /// \brief Describes how a Mesh should be loaded
@@ -54,8 +60,10 @@ namespace ignition
       /// of meshName.
       public: void Load();
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief common::Mesh object
       public: const common::Mesh *mesh = nullptr;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Name of the registered Mesh
       public: std::string meshName;
@@ -67,6 +75,7 @@ namespace ignition
       /// \brief Denotes if the loaded sub-mesh vertices should be centered
       public: bool centerSubMesh = false;
     };
+    }
   }
 }
 #endif

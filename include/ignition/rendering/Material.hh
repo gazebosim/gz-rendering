@@ -20,6 +20,7 @@
 #include <string>
 #include <ignition/math/Color.hh>
 #include <ignition/common/Material.hh>
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/ShaderType.hh"
@@ -29,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Material Material.hh ignition/rendering/Material.hh
     /// \brief Represents a surface material of a Geometry
     class IGNITION_RENDERING_VISIBLE Material :
@@ -235,6 +238,7 @@ namespace ignition
       /// \param[in] _path path to a file containing a glsl shader
       public: virtual void SetFragmentShader(const std::string &_path) = 0;
     };
+    }
   }
 }
 #endif

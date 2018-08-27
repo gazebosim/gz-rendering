@@ -26,6 +26,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixNode :
       public BaseNode<OptixObject>
     {
@@ -35,7 +37,7 @@ namespace ignition
 
       public: virtual bool HasParent() const;
 
-      public: virtual VisualPtr Parent() const;
+      public: virtual NodePtr Parent() const;
 
       public: virtual void PreRender();
 
@@ -49,11 +51,17 @@ namespace ignition
 
       protected: virtual void WritePoseToDeviceImpl();
 
-      protected: virtual void SetParent(OptixVisualPtr _parent);
+      protected: virtual void SetParent(OptixNodePtr _parent);
 
       protected: virtual void Init();
 
-      protected: OptixVisualPtr parent;
+      protected: virtual NodeStorePtr Children() const;
+
+      protected: virtual bool AttachChild(NodePtr _child);
+
+      protected: virtual bool DetachChild(NodePtr _child);
+
+      protected: OptixNodePtr parent;
 
       protected: optix::Transform optixTransform;
 
@@ -65,8 +73,14 @@ namespace ignition
 
       protected: bool poseDirty;
 
+      protected: OptixNodeStorePtr children;
+
+      private: OptixNodePtr SharedThis();
+
+      // TODO remove the need for a visual friend class
       private: friend class OptixVisual;
     };
+    }
   }
 }
 #endif

@@ -37,34 +37,51 @@ ign_find_package(ignition-common3 REQUIRED COMPONENTS graphics events)
 set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
 
 #--------------------------------------
+# Find FreeImage
+ign_find_package(FreeImage VERSION 3.9
+  REQUIRED_BY optix
+  PRIVATE_FOR optix)
+
+#--------------------------------------
+# Find OGRE
+ign_find_package(IgnOGRE VERSION 1.8.0
+  COMPONENTS RTShaderSystem Terrain Overlay
+  REQUIRED_BY ogre
+  PRIVATE_FOR ogre)
+
+if (OGRE_FOUND)
+  #  there is a problem with finding gl/glew.h on macOS
+  # TODO move this logic to FindIgnOGRE.cmake?
+  if (APPLE)
+    foreach (dir ${OGRE_INCLUDE_DIRS})
+      get_filename_component(dir_name "${dir}" NAME)
+      if ("${dir_name}" STREQUAL "OGRE")
+        set(dir_include "${dir}/RenderSystems/GL")
+      else()
+        set(dir_include "${dir}")
+      endif()
+      list(APPEND OGRE_INCLUDES ${dir_include})
+    endforeach()
+    include_directories(${OGRE_INCLUDES})
+  endif()
+
+  set(HAVE_OGRE TRUE)
+endif()
+
+#--------------------------------------
+# Find OGRE2
+ign_find_package(OGRE2 VERSION 2.1.0
+    COMPONENTS HlmsPbs HlmsUnlit Overlay
+    REQUIRED_BY ogre2
+    PRIVATE_FOR ogre2)
+
+if (OGRE2_FOUND)
+  set(HAVE_OGRE2 TRUE)
+endif()
+
+#--------------------------------------
 # Find dependencies that we ignore for Visual Studio
 if(NOT MSVC)
-
-  #--------------------------------------
-  # Find FreeImage
-  ign_find_package(FreeImage VERSION 3.9
-      REQUIRED_BY optix
-      PRIVATE_FOR optix)
-
-  #--------------------------------------
-  # Find OGRE
-  ign_find_package(OGRE VERSION 1.8.0
-      COMPONENTS RTShaderSystem Terrain Overlay
-      REQUIRED_BY ogre
-      PRIVATE_FOR ogre)
-
-  if (OGRE_FOUND)
-    set(HAVE_OGRE TRUE)
-  endif()
-
-  #--------------------------------------
-  # Find OpenGL
-  find_package(OpenGL)
-  if (OpenGL_FOUND)
-    set(HAVE_OPENGL TRUE)
-  endif()
-
-
   #--------------------------------------
   # Find CUDA
   find_package(CUDA)
@@ -78,7 +95,6 @@ if(NOT MSVC)
   if (OptiX_FOUND AND CUDA_FOUND)
     set(HAVE_OPTIX TRUE)
   endif()
-
 endif()
 
 #####################################
@@ -89,10 +105,32 @@ set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering
 #============================================================================
 # Configure the build
 #============================================================================
+if (HAVE_OGRE)
+  list(APPEND RENDERING_COMPONENTS ogre)
+endif()
+
+if (HAVE_OPTIX)
+  list(APPEND RENDERING_COMPONENTS optix)
+endif()
+
+if (HAVE_OGRE2)
+  list(APPEND RENDERING_COMPONENTS ogre2)
+endif()
+
 ign_configure_build(QUIT_IF_BUILD_ERRORS
-    COMPONENTS ogre optix)
+    COMPONENTS ${RENDERING_COMPONENTS})
 
 #============================================================================
 # Create package information
 #============================================================================
 ign_create_packages()
+
+#============================================================================
+# Configure documentation
+#============================================================================
+configure_file(${CMAKE_SOURCE_DIR}/api.md.in ${CMAKE_BINARY_DIR}/api.md)
+configure_file(${CMAKE_SOURCE_DIR}/tutorials.md.in ${CMAKE_BINARY_DIR}/tutorials.md)
+
+ign_create_docs(
+  API_MAINPAGE_MD "${CMAKE_BINARY_DIR}/api.md"
+  TUTORIALS_MAINPAGE_MD "${CMAKE_BINARY_DIR}/tutorials.md")

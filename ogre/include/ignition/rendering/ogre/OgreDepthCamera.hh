@@ -56,6 +56,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    {
     /// \internal
     /// \brief Private data for the OgreDepthCamera class
     class OgreDepthCameraPrivate
@@ -176,6 +178,7 @@ namespace ignition
       private: friend class OgreScene;
       private: friend class OgreRayQuery;
     };
+    }
   }
 }
 #endif

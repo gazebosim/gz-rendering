@@ -25,6 +25,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixVisual :
       public BaseVisual<OptixNode>
     {
@@ -44,14 +46,7 @@ namespace ignition
 
       public: virtual void PreRender();
 
-      protected: virtual NodeStorePtr Children() const;
-
       protected: virtual GeometryStorePtr Geometries() const;
-
-      protected: virtual bool AttachChild(NodePtr _child);
-
-      protected: virtual bool DetachChild(NodePtr _child);
-
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry);
@@ -65,8 +60,6 @@ namespace ignition
 
       private: OptixVisualPtr SharedThis();
 
-      protected: OptixNodeStorePtr children;
-
       protected: OptixGeometryStorePtr geometries;
 
       protected: math::Vector3d scale;
@@ -75,6 +68,7 @@ namespace ignition
 
       private: friend class OptixScene;
     };
+    }
   }
 }
 #endif

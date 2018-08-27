@@ -28,8 +28,14 @@
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/Camera.hh"
+<<<<<<< local
 #include "ignition/rendering/DepthCamera.hh"
+||||||| base
+=======
+#include "ignition/rendering/Grid.hh"
+>>>>>>> other
 #include "ignition/rendering/RayQuery.hh"
+#include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Text.hh"
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/base/BaseStorage.hh"

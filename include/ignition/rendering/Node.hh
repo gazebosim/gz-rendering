@@ -21,6 +21,7 @@
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Quaternion.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/Export.hh"
@@ -29,6 +30,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class Node Node.hh ignition/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
     class IGNITION_RENDERING_VISIBLE Node :
@@ -37,16 +40,16 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~Node() { }
 
-      /// \brief Determine if this Geometry is attached to a Visual
-      /// \return True if this Geometry has a parent Visual
+      /// \brief Determine if this Node is attached to another Node.
+      /// \return True if this Node has a parent Node
       public: virtual bool HasParent() const = 0;
 
-      /// \brief Get the parent Visual
-      /// \return the parent Visual
-      public: virtual VisualPtr Parent() const = 0;
+      /// \brief Get the parent Node
+      /// \return the parent Node
+      public: virtual NodePtr Parent() const = 0;
 
-      /// \brief Detach this Geometry from its parent Visual. If this
-      /// Geometry does not have a parent, no work will be done.
+      /// \brief Detach this Node from its parent. If this
+      /// Node does not have a parent, no work will be done.
       public: virtual void RemoveParent() = 0;
 
       /// \brief Get the local pose
@@ -165,7 +168,77 @@ namespace ignition
       /// original origin of the geometry.
       /// \param[in] _origin New origin position
       public: virtual void SetOrigin(const math::Vector3d &_origin) = 0;
+
+      /// \brief Get number of child nodes
+      /// \return The number of child nodes
+      public: virtual unsigned int ChildCount() const = 0;
+
+      /// \brief Determine if given node is an attached child
+      /// \return True if given node is an attached child
+      public: virtual bool HasChild(ConstNodePtr _child) const = 0;
+
+      /// \brief Determine if node with given ID is an attached child
+      /// \param[in] _id ID of the node in question
+      /// \return True if node with given ID is an attached child
+      public: virtual bool HasChildId(unsigned int _id) const = 0;
+
+      /// \brief Determine if node with given name is an attached child
+      /// \param[in] _name Name of the node in question
+      /// \return True if node with given name is an attached child
+      public: virtual bool HasChildName(const std::string &_name) const = 0;
+
+      /// \brief Get node with given ID. If no child exists with given ID, NULL
+      /// will be returned.
+      /// \param[in] _id ID of the desired node
+      /// \return The specified node
+      public: virtual NodePtr ChildById(unsigned int _id) const = 0;
+
+      /// \brief Get node with given name. If no child exists with given name,
+      /// NULL will be returned.
+      /// \param[in] _name Name of the desired node
+      /// \return The specified node
+      public: virtual NodePtr ChildByName(
+                  const std::string &_name) const = 0;
+
+      /// \brief Get node at given index. If no child exists at given index,
+      /// NULL will be returned.
+      /// \param[in] _index Index of the desired node
+      /// \return The specified node
+      public: virtual NodePtr ChildByIndex(unsigned int _index) const = 0;
+
+      /// \brief Add the given node to this node. If the given node is
+      /// already a child, no work will be done.
+      /// \param[in] _child Child node to be added
+      public: virtual void AddChild(NodePtr _child) = 0;
+
+      /// \brief Remove the given node from this node. If the given node is
+      /// not a child of this node, no work will be done.
+      /// \param[in] _child Child node to be removed
+      /// \return The removed child node
+      public: virtual NodePtr RemoveChild(NodePtr _child) = 0;
+
+      /// \brief Remove the node with the given ID from this node. If the
+      /// specified node is not a child of this node, no work will be done.
+      /// \param[in] _id ID of the child node to be removed
+      /// \return The removed child node
+      public: virtual NodePtr RemoveChildById(unsigned int _id) = 0;
+
+      /// \brief Remove the node with the given name from this node. If the
+      /// specified node is not a child of this node, no work will be done.
+      /// \param[in] _name Name of the child node to be removed
+      /// \return The removed child node
+      public: virtual NodePtr RemoveChildByName(const std::string &_name) = 0;
+
+      /// \brief Remove the node at the given index from this node. If the
+      /// specified node is not a child of this node, no work will be done.
+      /// \param[in] _index Index of the child node to be removed
+      /// \return The removed child node
+      public: virtual NodePtr RemoveChildByIndex(unsigned int _index) = 0;
+
+      /// \brief Remove all child nodes from this node
+      public: virtual void RemoveChildren() = 0;
     };
+    }
   }
 }
 #endif

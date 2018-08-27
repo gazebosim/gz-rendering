@@ -27,11 +27,13 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class BaseRayQuery BaseRayQuery.hh
     /// ignition/rendering/base/BaseRayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseRayQuery :
+    class BaseRayQuery :
         public virtual RayQuery,
         public T
     {
@@ -142,12 +144,12 @@ namespace ignition
     template <class T>
     RayQueryResult BaseRayQuery<T>::ClosestPoint()
     {
-      // TODO(todo) implement a generic ray query here?
+      // TODO(anyone): implement a generic ray query here?
       RayQueryResult result;
       result.distance = -1;
       return result;
     }
-
+    }
   }
 }
 #endif

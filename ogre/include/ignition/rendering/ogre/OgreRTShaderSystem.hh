@@ -29,6 +29,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     // forward declaration
     class OgreRTShaderSystemPrivate;
 
@@ -163,12 +165,13 @@ namespace ignition
       public: void Update();
 
       /// \brief Make the RTShader system a singleton.
-      private: friend class SingletonT<OgreRTShaderSystem>;
+      private: friend class common::SingletonT<OgreRTShaderSystem>;
 
       /// \brief Pointer to private data class
       private: std::unique_ptr<OgreRTShaderSystemPrivate> dataPtr;
     };
     /// \}
+    }
   }
 }
 #endif

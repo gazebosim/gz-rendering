@@ -27,6 +27,7 @@
 
 #include <ignition/math/Color.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Storage.hh"
@@ -36,6 +37,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class RenderEngine;
 
     /// \class Scene Scene.hh ignition/rendering/Scene.hh
@@ -779,6 +782,7 @@ namespace ignition
       /// behavior.
       public: virtual void Destroy() = 0;
     };
+    }
   }
 }
 #endif

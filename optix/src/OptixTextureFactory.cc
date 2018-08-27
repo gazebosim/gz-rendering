@@ -17,6 +17,7 @@
 #include <FreeImage.h>
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/optix/OptixTextureFactory.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 

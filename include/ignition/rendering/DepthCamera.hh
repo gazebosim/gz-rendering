@@ -32,6 +32,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+
     /// \class Camera Camera.hh ignition/rendering/Camera.hh
     /// \brief Posable camera used for rendering the scene graph
     class IGNITION_RENDERING_VISIBLE DepthCamera :
@@ -65,6 +67,7 @@ namespace ignition
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;
     };
+  }
   }
 }
 #endif

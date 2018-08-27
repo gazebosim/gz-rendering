@@ -25,6 +25,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OGRE_VISIBLE OgreVisual :
       public BaseVisual<OgreNode>
     {
@@ -38,13 +40,10 @@ namespace ignition
 
       public: virtual void SetInheritScale(bool _inherit);
 
-      protected: virtual NodeStorePtr Children() const;
+      // Documentation inherited.
+      public: virtual void SetVisible(bool _visible);
 
       protected: virtual GeometryStorePtr Geometries() const;
-
-      protected: virtual bool AttachChild(NodePtr _child);
-
-      protected: virtual bool DetachChild(NodePtr _child);
 
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);
 
@@ -55,14 +54,13 @@ namespace ignition
 
       protected: virtual void Init();
 
-      protected: OgreNodeStorePtr children;
-
       protected: OgreGeometryStorePtr geometries;
 
       private: OgreVisualPtr SharedThis();
 
       private: friend class OgreScene;
     };
+    }
   }
 }
 #endif

@@ -33,6 +33,8 @@ namespace ignition
 {
   namespace rendering
   {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     class IGNITION_RENDERING_OGRE_VISIBLE OgreMeshFactory
     {
       public: explicit OgreMeshFactory(OgreScenePtr _scene);
@@ -82,6 +84,7 @@ namespace ignition
 
       protected: NameList names;
     };
+    }
   }
 }
 #endif

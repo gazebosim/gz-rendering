@@ -40,9 +40,8 @@ OgreDepthCamera::~OgreDepthCamera()
 void OgreDepthCamera::Init()
 {
   BaseDepthCamera::Init();
-
   this->CreateCamera();
-  this->CreateDepthTexture("_RttTex_Depth");
+  this->CreateDepthTexture();
   this->Reset();
 }
 
@@ -57,11 +56,13 @@ void OgreDepthCamera::CreateCamera()
     ignerr << "Scene manager cannot be obtained" << std::endl;
   }
 
-  this->ogreCamera = ogreSceneManager->createCamera(this->name);
+  this->ogreCamera = ogreSceneManager->createCamera(
+      this->name + "_Depth_Camera");
   if (ogreCamera == nullptr)
   {
     ignerr << "Ogre camera cannot be created" << std::endl;
   }
+
 
   this->ogreNode->attachObject(this->ogreCamera);
 
@@ -79,7 +80,7 @@ void OgreDepthCamera::CreateCamera()
 }
 
 /////////////////////////////////////////////////
-void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
+void OgreDepthCamera::CreateDepthTexture()
 {
   // create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
@@ -89,23 +90,32 @@ void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
     ignerr << "Scene manager cannot be obtained" << std::endl;
   }
 
-  this->ogreCamera = ogreSceneManager->createCamera(
-      this->name + "_Depth_Camera");
   if (ogreCamera == nullptr)
   {
     ignerr << "Ogre camera cannot be created" << std::endl;
   }
 
-  RenderTexturePtr depthTextureBase =
-    this->scene->CreateRenderTexture();
-  this->depthTexture = std::dynamic_pointer_cast<OgreRenderTexture>(
-      depthTextureBase);
-  this->depthTexture->SetCamera(this->ogreCamera);
-  this->depthTexture->SetFormat(PF_FLOAT32_R);
-  this->depthTexture->SetWidth(this->ImageWidth());
-  this->depthTexture->SetHeight(this->ImageHeight());
-  this->depthTexture->SetBackgroundColor(this->scene->BackgroundColor());
-  // this->depthTexture->SetAutoUpdated(false);
+  if (this->depthTexture == nullptr)
+  {
+    RenderTexturePtr depthTextureBase =
+        this->scene->CreateRenderTexture();
+    this->depthTexture = std::dynamic_pointer_cast<OgreRenderTexture>(
+        depthTextureBase);
+    this->depthTexture->SetCamera(this->ogreCamera);
+    this->depthTexture->SetFormat(PF_FLOAT32_R);
+
+    this->depthTexture->SetBackgroundColor(this->scene->BackgroundColor());
+    // this->depthTexture->SetAutoUpdated(false);
+
+    MaterialPtr depthMat = this->scene->CreateMaterial();
+    depthMat->SetDepthMaterial();
+    // (*(depthMat->FragmentShaderParams()))["maxRange"] = 10.0f;
+    this->depthTexture->SetMaterial(depthMat);
+
+    // Set default values for image size
+    this->SetImageWidth(640);
+    this->SetImageHeight(480);
+  }
 
   double ratio = static_cast<double>(this->ImageWidth()) /
                  static_cast<double>(this->ImageHeight());
@@ -116,13 +126,7 @@ void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
 
   // this->depthViewport->setVisibilityMask(
   // IGN_VISIBILITY_ALL & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
-
-  MaterialPtr depthMat = this->scene->CreateMaterial();
-  depthMat->SetDepthMaterial();
-  // (*(depthMat->FragmentShaderParams()))["maxRange"] = 10.0f;
-  this->depthTexture->SetMaterial(depthMat);
-
-  if (this->dataPtr->outputPoints)
+  if (this->dataPtr->outputPoints && this->dataPtr->pcdTexture == nullptr)
   {
     RenderTexturePtr pcdTextureBase = this->scene->CreateRenderTexture();
     this->dataPtr->pcdTexture = std::dynamic_pointer_cast<OgreRenderTexture>(
@@ -156,42 +160,6 @@ void OgreDepthCamera::CreateDepthTexture(const std::string &_textureName)
 
     this->dataPtr->pcdMaterial->load();
   }
-}
-
-//////////////////////////////////////////////////
-void OgreDepthCamera::PostRender()
-{
-  this->depthTexture->SwapBuffers();
-  if (this->dataPtr->outputPoints)
-    this->dataPtr->pcdTexture->SwapBuffers();
-
-  if (this->newData && this->captureData)
-  {
-    unsigned int width = this->ImageWidth();
-    unsigned int height = this->ImageHeight();
-
-    if (!this->dataPtr->outputPoints)
-    {
-      if (!this->dataPtr->depthBuffer)
-        this->dataPtr->depthBuffer = this->depthTexture->Buffer();
-
-      this->dataPtr->newDepthFrame(
-          this->dataPtr->depthBuffer, width, height, 1, "FLOAT32");
-    }
-    else
-    {
-      if (!this->dataPtr->pcdBuffer)
-        this->dataPtr->pcdBuffer = this->dataPtr->pcdTexture->Buffer();
-
-      this->dataPtr->newRGBPointCloud(
-          this->dataPtr->pcdBuffer, width, height, 1, "RGBPOINTS");
-    }
-  }
-
-  // also new image frame for camera texture
-  // DepthCamera::PostRender();
-
-  this->newData = false;
 }
 
 //////////////////////////////////////////////////
@@ -287,31 +255,61 @@ void OgreDepthCamera::Render()
   sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   sceneMgr->_suppressRenderStateChanges(true);
 
-  this->UpdateRenderTarget(this->depthTexture,
-                  this->dataPtr->depthMaterial, "Ignition/DepthMap");
+  // TODO: move this rendering configuration to RenderTarget
+//  this->UpdateRenderTarget(this->depthTexture,
+//                  this->dataPtr->depthMaterial, "Ignition/DepthMap");
 
   // Does actual rendering
   this->depthTexture->SetAutoUpdated(false);
+  this->depthTexture->Render();
 
   sceneMgr->_suppressRenderStateChanges(false);
   sceneMgr->setShadowTechnique(shadowTech);
-
-  // for camera image
-  // DepthCamera::Render();
 
   if (this->dataPtr->outputPoints)
   {
     sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
     sceneMgr->_suppressRenderStateChanges(true);
 
-    this->UpdateRenderTarget(this->dataPtr->pcdTexture,
-                  this->dataPtr->pcdMaterial, "Ignition/XYZPoints");
+//    this->UpdateRenderTarget(this->dataPtr->pcdTexture,
+//                  this->dataPtr->pcdMaterial, "Ignition/XYZPoints");
 
     this->dataPtr->pcdTexture->SetAutoUpdated(false);
 
     sceneMgr->_suppressRenderStateChanges(false);
     sceneMgr->setShadowTechnique(shadowTech);
   }
+
+}
+
+//////////////////////////////////////////////////
+void OgreDepthCamera::PostRender()
+{
+  this->depthTexture->SwapBuffers();
+  if (this->dataPtr->outputPoints)
+    this->dataPtr->pcdTexture->SwapBuffers();
+
+  unsigned int width = this->ImageWidth();
+  unsigned int height = this->ImageHeight();
+
+  if (!this->dataPtr->outputPoints)
+  {
+    if (!this->dataPtr->depthBuffer)
+      this->dataPtr->depthBuffer = this->depthTexture->Buffer();
+
+    this->dataPtr->newDepthFrame(
+        this->dataPtr->depthBuffer, width, height, 1, "FLOAT32");
+  }
+  else
+  {
+    if (!this->dataPtr->pcdBuffer)
+      this->dataPtr->pcdBuffer = this->dataPtr->pcdTexture->Buffer();
+
+    this->dataPtr->newRGBPointCloud(
+        this->dataPtr->pcdBuffer, width, height, 1, "RGBPOINTS");
+  }
+
+  this->newData = false;
 }
 
 //////////////////////////////////////////////////

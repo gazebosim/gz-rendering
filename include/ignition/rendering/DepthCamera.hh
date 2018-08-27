@@ -45,9 +45,7 @@ namespace ignition
       public: virtual ~DepthCamera() { }
 
       /// \brief Create a texture which will hold the depth data
-      /// \param[in] _textureName Name of the texture to create
-      public: virtual void CreateDepthTexture(
-                  const std::string &_textureName) = 0;
+      public: virtual void CreateDepthTexture() = 0;
 
       /// \brief All things needed to get back z buffer for depth data
       /// \return The z-buffer as a float array

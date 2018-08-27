@@ -46,7 +46,7 @@ namespace ignition
 
       public: virtual ~BaseDepthCamera();
 
-      public: virtual void CreateDepthTexture(const std::string &_textureName);
+      public: virtual void CreateDepthTexture();
 
       public: virtual const float *DepthData() const;
 
@@ -73,7 +73,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseDepthCamera<T>::CreateDepthTexture(const std::string &)
+    void BaseDepthCamera<T>::CreateDepthTexture()
     {
     }
 

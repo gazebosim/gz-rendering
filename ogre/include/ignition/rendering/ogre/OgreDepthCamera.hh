@@ -107,8 +107,7 @@ namespace ignition
       public: virtual void Init() override;
 
       /// \brief Create a texture which will hold the depth data
-      /// \param[in] _textureName Name of the texture to create
-      public: virtual void CreateDepthTexture(const std::string &_textureName);
+      public: virtual void CreateDepthTexture() override;
 
       /// \brief Render the camera
       public: virtual void PostRender();

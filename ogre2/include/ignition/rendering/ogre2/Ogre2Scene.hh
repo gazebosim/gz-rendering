@@ -212,6 +212,9 @@ namespace ignition
       /// \brief A list of ogre visuals
       protected: Ogre2VisualStorePtr visuals;
 
+      /// \brief A list of ogre lights
+      protected: Ogre2LightStorePtr lights;
+
       /// \brief Pointer to the ogre root object
       protected: Ogre::Root *ogreRoot = nullptr;
 

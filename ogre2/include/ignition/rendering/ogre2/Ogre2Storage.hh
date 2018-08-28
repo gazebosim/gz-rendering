@@ -23,6 +23,7 @@
 
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
 namespace ignition
@@ -32,14 +33,17 @@ namespace ignition
     template class BaseSceneStore<Ogre2Scene>;
     template class BaseNodeStore<Ogre2Node>;
     template class BaseSensorStore<Ogre2Sensor>;
+    template class BaseLightStore<Ogre2Light>;
 
     typedef BaseSceneStore<Ogre2Scene>       Ogre2SceneStore;
     typedef BaseNodeStore<Ogre2Node>         Ogre2NodeStore;
     typedef BaseSensorStore<Ogre2Sensor>     Ogre2SensorStore;
+    typedef BaseLightStore<Ogre2Light>       Ogre2LightStore;
 
     typedef std::shared_ptr<Ogre2SceneStore>    Ogre2SceneStorePtr;
     typedef std::shared_ptr<Ogre2NodeStore>     Ogre2NodeStorePtr;
     typedef std::shared_ptr<Ogre2SensorStore>   Ogre2SensorStorePtr;
+    typedef std::shared_ptr<Ogre2LightStore>    Ogre2LightStorePtr;
   }
 }
 #endif

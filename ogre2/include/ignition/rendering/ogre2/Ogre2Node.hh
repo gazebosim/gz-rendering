@@ -76,7 +76,7 @@ namespace ignition
       protected: virtual math::Vector3d RawLocalPosition() const;
 
       /// \brief Set the raw local position of the node
-      /// \param[in] _position
+      /// \param[in] _position Local position to set the node to
       protected: virtual void SetRawLocalPosition(
                      const math::Vector3d &_position);
 

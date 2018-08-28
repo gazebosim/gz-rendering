@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,13 +85,6 @@ void buildScene(ScenePtr _scene)
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
-  // // create point light
-  // PointLightPtr light1 = _scene->CreatePointLight();
-  // light1->SetDiffuseColor(0.5, 0.5, 0.5);
-  // light1->SetSpecularColor(0.5, 0.5, 0.5);
-  // light1->SetLocalPosition(5, -5, 10);
-  // root->AddChild(light1);
-
   // create point light
   PointLightPtr light2 = _scene->CreatePointLight();
   light2->SetDiffuseColor(0.5, 0.5, 0.5);
@@ -112,25 +105,6 @@ void buildScene(ScenePtr _scene)
   sphere->SetLocalScale(0.5, 0.5, 0.5);
   sphere->SetMaterial(red);
   root->AddChild(sphere);
-
-/*  // create blue material
-  MaterialPtr blue = _scene->CreateMaterial();
-  blue->SetAmbient(0.0, 0.0, 0.3);
-  blue->SetDiffuse(0.0, 0.0, 0.8);
-  blue->SetSpecular(0.5, 0.5, 0.5);
-  blue->SetShininess(50);
-  blue->SetReflectivity(0);
-
-  // create box visual
-  VisualPtr box = _scene->CreateVisual();
-  box->AddGeometry(_scene->CreateBox());
-  box->SetOrigin(0.0, 0.5, 0.0);
-  box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(M_PI / 4, 0, M_PI / 3);
-  box->SetLocalScale(1, 2.5, 1);
-  box->SetMaterial(blue);
-  root->AddChild(box);
-*/
 
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
@@ -188,7 +162,6 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
 
   engineNames.push_back("ogre2");
-//  engineNames.push_back("optix");
   for (auto engineName : engineNames)
   {
     try

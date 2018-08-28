@@ -23,7 +23,7 @@
 
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
-// #include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 using namespace ignition;
@@ -64,14 +64,26 @@ Ogre2SubMesh::~Ogre2SubMesh()
 //////////////////////////////////////////////////
 MaterialPtr Ogre2SubMesh::Material() const
 {
-  // TODO(anyone)
-  return MaterialPtr();
+  return this->material;
 }
 
 //////////////////////////////////////////////////
-void Ogre2SubMesh::SetMaterial(MaterialPtr /*_material*/, bool /*_unique*/)
+void Ogre2SubMesh::SetMaterial(MaterialPtr _material, bool _unique)
 {
-  // TODO(anyone)
+  _material = (_unique) ? _material->Clone() : _material;
+
+  Ogre2MaterialPtr derived =
+      std::dynamic_pointer_cast<Ogre2Material>(_material);
+
+  if (!derived)
+  {
+    ignerr << "Cannot assign material created by another render-engine"
+        << std::endl;
+
+    return;
+  }
+
+  this->SetMaterialImpl(derived);
 }
 
 //////////////////////////////////////////////////
@@ -83,6 +95,14 @@ Ogre::SubItem *Ogre2SubMesh::Ogre2SubItem() const
 //////////////////////////////////////////////////
 void Ogre2SubMesh::Destroy()
 {
+}
+
+//////////////////////////////////////////////////
+void Ogre2SubMesh::SetMaterialImpl(Ogre2MaterialPtr _material)
+{
+  this->material = _material;
+  this->ogreSubItem->setDatablock(
+      dynamic_cast<Ogre::HlmsDatablock *>(this->material->Datablock()));
 }
 
 //////////////////////////////////////////////////

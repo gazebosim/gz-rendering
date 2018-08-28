@@ -32,6 +32,7 @@ namespace ignition
     class Ogre2DirectionalLight;
     class Ogre2Geometry;
     class Ogre2Light;
+    class Ogre2Material;
     class Ogre2Mesh;
     class Ogre2MeshFactory;
     class Ogre2Node;
@@ -39,6 +40,7 @@ namespace ignition
     class Ogre2PointLight;
     class Ogre2RenderEngine;
     class Ogre2RenderTarget;
+    class Ogre2RenderTargetMaterial;
     class Ogre2RenderTexture;
     class Ogre2RenderWindow;
     class Ogre2Scene;
@@ -55,10 +57,13 @@ namespace ignition
     typedef BaseSubMeshStore<Ogre2SubMesh>        Ogre2SubMeshStore;
     typedef BaseVisualStore<Ogre2Visual>          Ogre2VisualStore;
 
+    typedef BaseMaterialMap<Ogre2Material>        Ogre2MaterialMap;
+
     typedef shared_ptr<Ogre2Camera>               Ogre2CameraPtr;
     typedef shared_ptr<Ogre2DirectionalLight>     Ogre2DirectionalLightPtr;
     typedef shared_ptr<Ogre2Geometry>             Ogre2GeometryPtr;
     typedef shared_ptr<Ogre2Light>                Ogre2LightPtr;
+    typedef shared_ptr<Ogre2Material>             Ogre2MaterialPtr;
     typedef shared_ptr<Ogre2Mesh>                 Ogre2MeshPtr;
     typedef shared_ptr<Ogre2MeshFactory>          Ogre2MeshFactoryPtr;
     typedef shared_ptr<Ogre2Node>                 Ogre2NodePtr;
@@ -77,10 +82,13 @@ namespace ignition
     typedef shared_ptr<Ogre2GeometryStore>        Ogre2GeometryStorePtr;
     typedef shared_ptr<Ogre2LightStore>           Ogre2LightStorePtr;
     typedef shared_ptr<Ogre2NodeStore>            Ogre2NodeStorePtr;
+    typedef shared_ptr<Ogre2RenderTargetMaterial> Ogre2RenderTargetMaterialPtr;
     typedef shared_ptr<Ogre2SceneStore>           Ogre2SceneStorePtr;
     typedef shared_ptr<Ogre2SensorStore>          Ogre2SensorStorePtr;
     typedef shared_ptr<Ogre2SubMeshStore>         Ogre2SubMeshStorePtr;
     typedef shared_ptr<Ogre2VisualStore>          Ogre2VisualStorePtr;
+
+    typedef shared_ptr<Ogre2MaterialMap>          Ogre2MaterialMapPtr;
     }
   }
 }

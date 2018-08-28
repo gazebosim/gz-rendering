@@ -22,7 +22,7 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-// #include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
@@ -214,7 +214,17 @@ void Ogre2RenderTarget::SetMaterial(MaterialPtr _material)
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::RebuildMaterial()
 {
-  // TODO(anyone)
+  if (this->material)
+  {
+    Ogre2Material *ogreMaterial = dynamic_cast<Ogre2Material *>(
+        this->material.get());
+    Ogre::MaterialPtr matPtr = ogreMaterial->Material();
+
+    Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
+    Ogre::RenderTarget *target = this->RenderTarget();
+    this->materialApplicator.reset(new Ogre2RenderTargetMaterial(
+        sceneMgr, target, matPtr.get()));
+  }
 }
 
 //////////////////////////////////////////////////

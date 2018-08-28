@@ -32,117 +32,161 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Ogre 2.x implementation of the light class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Light :
       public BaseLight<Ogre2Node>
     {
+      /// \brief Constructor
       protected: Ogre2Light();
 
+      /// \brief Destructor
       public: virtual ~Ogre2Light();
 
-      public: virtual math::Color DiffuseColor() const;
+      // Documentation Inherited
+      public: virtual math::Color DiffuseColor() const override;
 
       // Documentation Inherited
       public: virtual void SetDiffuseColor(const math::Color &_color) override;
 
-      public: virtual math::Color SpecularColor() const;
+      // Documentation Inherited
+      public: virtual math::Color SpecularColor() const override;
 
       // Documentation Inherited
       public: virtual void SetSpecularColor(const math::Color &_color) override;
 
-      public: virtual double AttenuationConstant() const;
+      // Documentation Inherited
+      public: virtual double AttenuationConstant() const override;
 
-      public: virtual void SetAttenuationConstant(double _value);
+      // Documentation Inherited
+      public: virtual void SetAttenuationConstant(double _value) override;
 
-      public: virtual double AttenuationLinear() const;
+      // Documentation Inherited
+      public: virtual double AttenuationLinear() const override;
 
-      public: virtual void SetAttenuationLinear(double _value);
+      // Documentation Inherited
+      public: virtual void SetAttenuationLinear(double _value) override;
 
-      public: virtual double AttenuationQuadratic() const;
+      // Documentation Inherited
+      public: virtual double AttenuationQuadratic() const override;
 
-      public: virtual void SetAttenuationQuadratic(double _value);
+      // Documentation Inherited
+      public: virtual void SetAttenuationQuadratic(double _value) override;
 
-      public: virtual double AttenuationRange() const;
+      // Documentation Inherited
+      public: virtual double AttenuationRange() const override;
 
-      public: virtual void SetAttenuationRange(double _range);
+      // Documentation Inherited
+      public: virtual void SetAttenuationRange(double _range) override;
 
-      public: virtual bool CastShadows() const;
+      // Documentation Inherited
+      public: virtual bool CastShadows() const override;
 
-      public: virtual void SetCastShadows(bool _castShadows);
+      // Documentation Inherited
+      public: virtual void SetCastShadows(bool _castShadows) override;
 
+      /// \brief Get a pointer to ogre light
       public: virtual Ogre::Light *Light() const;
 
+      /// \brief Destroy the light
       public: virtual void Destroy();
 
+      /// \brief Initialize the light
       protected: virtual void Init();
 
+      /// \brief Create the light
       private: void CreateLight();
 
+      /// \brief Update the attenuation based on the values specified.
       private: void UpdateAttenuation();
 
+      /// \brief Attenuation constant value
       protected: double attenConstant;
 
+      /// \brief Attenuation linear factor
       protected: double attenLinear;
 
+      /// \brief Attenuation quadratic factor
       protected: double attenQuadratic;
 
+      /// \brief Attenuation range
       protected: double attenRange;
 
-      protected: Ogre::Light *ogreLight;
+      /// \brief Pointer to ogre light
+      protected: Ogre::Light *ogreLight = nullptr;
 
+      /// \brief Light type
       protected: Ogre::Light::LightTypes ogreLightType;
     };
 
+    /// \brief Ogre 2.x implementation of the directional light class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2DirectionalLight :
       public BaseDirectionalLight<Ogre2Light>
     {
+      /// \brief Constructor
       protected: Ogre2DirectionalLight();
 
+      /// \brief Destructor
       public: virtual ~Ogre2DirectionalLight();
 
-      public: virtual math::Vector3d Direction() const;
+      // Documentation Inherited
+      public: virtual math::Vector3d Direction() const override;
 
       // Documentation Inherited
       public: virtual void SetDirection(const math::Vector3d &_dir) override;
 
+    /// \brief Ogre 2.x implementation of the directional light class
       private: friend class Ogre2Scene;
     };
 
+    /// \brief Ogre 2.x implementation of the point light class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2PointLight :
       public BasePointLight<Ogre2Light>
     {
+      /// \brief Constructor
       protected: Ogre2PointLight();
 
+      /// \brief Destructor
       public: virtual ~Ogre2PointLight();
 
+      /// \brief Only an ogre scene can create an ogre point light
       private: friend class Ogre2Scene;
     };
 
+    /// \brief Ogre 2.x implementation of the spot light class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SpotLight :
       public BaseSpotLight<Ogre2Light>
     {
+      /// \brief Constructor
       protected: Ogre2SpotLight();
 
+      /// \brief Destructor
       public: virtual ~Ogre2SpotLight();
 
-      public: virtual math::Vector3d Direction() const;
+      // Documentation inherited.
+      public: virtual math::Vector3d Direction() const override;
 
       // Documentation Inherited
       public: virtual void SetDirection(const math::Vector3d &_dir) override;
 
-      public: virtual math::Angle InnerAngle() const;
+      // Documentation Inherited
+      public: virtual math::Angle InnerAngle() const override;
 
       // Documentation Inherited
       public: virtual void SetInnerAngle(const math::Angle &_angle) override;
 
-      public: virtual math::Angle OuterAngle() const;
+      // Documentation Inherited
+      public: virtual math::Angle OuterAngle() const override;
 
       // Documentation Inherited
       public: virtual void SetOuterAngle(const math::Angle &_angle) override;
 
-      public: virtual double Falloff() const;
+      // Documentation Inherited
+      public: virtual double Falloff() const override;
 
-      public: virtual void SetFalloff(double _falloff);
+      // Documentation Inherited
+      public: virtual void SetFalloff(double _falloff) override;
 
+      /// \brief Only an ogre scene can create an ogre spot light
       private: friend class Ogre2Scene;
     };
     }

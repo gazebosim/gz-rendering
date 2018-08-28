@@ -30,7 +30,6 @@ using namespace rendering;
 // Ogre2Light
 //////////////////////////////////////////////////
 Ogre2Light::Ogre2Light() :
-  ogreLight(nullptr),
   ogreLightType(Ogre::Light::LT_POINT)
 {
 }

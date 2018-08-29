@@ -46,14 +46,13 @@ const std::string RESOURCE_PATH =
 void buildScene(ScenePtr _scene)
 {
   // initialize _scene
-  _scene->SetAmbientLight(0.8, 0.8, 0.8);
+  _scene->SetAmbientLight(0.4, 0.4, 0.4);
   VisualPtr root = _scene->RootVisual();
 
   // create green material
   MaterialPtr green = _scene->CreateMaterial();
   green->SetAmbient(0.0, 1.0, 0.0);
   green->SetDiffuse(0.0, 1.0, 0.0);
-  green->SetSpecular(0.5, 0.5, 0.5);
 
   // create cylinder visual
   VisualPtr cylinder = _scene->CreateVisual();
@@ -95,7 +94,6 @@ void buildScene(ScenePtr _scene)
   MaterialPtr red = _scene->CreateMaterial();
   red->SetAmbient(0.3, 0.0, 0.0);
   red->SetDiffuse(0.8, 0.0, 0.0);
-  red->SetSpecular(0.5, 0.5, 0.5);
 
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual();

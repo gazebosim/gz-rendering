@@ -86,9 +86,9 @@ namespace ignition
 
       protected: virtual void SetSelectionBuffer();
 
-      protected: virtual void CreateRenderTexture();
-
       private: void CreateCamera();
+
+      protected: virtual void CreateRenderTexture();
 
       protected: Ogre::Camera *ogreCamera = nullptr;
 

@@ -302,7 +302,8 @@ TEST_P(MaterialTest, Copy)
 }
 
 INSTANTIATE_TEST_CASE_P(Material, MaterialTest,
-    ::testing::Values("ogre", "optix"));
+    ::testing::Values("ogre", "optix"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -35,6 +35,9 @@ class VisualTest : public testing::Test,
 {
   /// \brief Test visual material
   public: void Material(const std::string &_renderEngine);
+
+  /// \brief Test adding removing children
+  public: void Children(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -116,8 +119,69 @@ TEST_P(VisualTest, VisualProperties)
   Material(GetParam());
 }
 
+/////////////////////////////////////////////////
+void VisualTest::Children(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene2");
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+
+  VisualPtr child = scene->CreateVisual();
+  ASSERT_NE(nullptr, child);
+
+  // no child by default
+  EXPECT_EQ(0u, visual->ChildCount());
+
+  // attach child and verify
+  visual->AddChild(child);
+  EXPECT_EQ(1u, visual->ChildCount());
+  EXPECT_TRUE(visual->HasChild(child));
+  EXPECT_TRUE(visual->HasChildId(child->Id()));
+  EXPECT_TRUE(visual->HasChildName(child->Name()));
+
+  EXPECT_EQ(child, visual->ChildById(child->Id()));
+  EXPECT_EQ(child, visual->ChildByName(child->Name()));
+  EXPECT_EQ(child, visual->ChildByIndex(0u));
+
+  // attach more than one child
+  VisualPtr child2 = scene->CreateVisual();
+  ASSERT_NE(nullptr, child2);
+  visual->AddChild(child2);
+  EXPECT_EQ(2u, visual->ChildCount());
+  VisualPtr child3 = scene->CreateVisual();
+  ASSERT_NE(nullptr, child3);
+  visual->AddChild(child3);
+  EXPECT_EQ(3u, visual->ChildCount());
+
+  // test different child removal methods
+  EXPECT_EQ(child, visual->RemoveChild(child));
+  EXPECT_EQ(child2, visual->RemoveChildById(child2->Id()));
+  EXPECT_EQ(child3, visual->RemoveChildByName(child3->Name()));
+
+  // attach previously removed child and remove again
+  visual->AddChild(child);
+  EXPECT_EQ(child, visual->RemoveChildByIndex(0u));
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, Children)
+{
+  Children(GetParam());
+}
+
 INSTANTIATE_TEST_CASE_P(Visual, VisualTest,
-    ::testing::Values("ogre", "optix"));
+    ::testing::Values("ogre", "optix"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

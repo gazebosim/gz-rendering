@@ -56,7 +56,7 @@ TEST(RenderingIfaceTest, GetEngine)
     EXPECT_TRUE(hasEngine(eng->Name()));
     EXPECT_EQ(eng, engine(eng->Name()));
 #if HAVE_OGRE && HAVE_OGRE2
-    // TODO ogre and ogre2 cannot be loaded at the same time
+    // TODO(anyone): ogre and ogre2 cannot be loaded at the same time
     // so for now only test rendering engine API with one ogre version
     if (eng->Name() == "ogre" || eng->Name() == "ogre2")
       ++i;

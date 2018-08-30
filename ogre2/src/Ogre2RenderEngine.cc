@@ -120,7 +120,7 @@ bool Ogre2RenderEngine::Fini()
   if (ogreRoot)
   {
     this->ogreRoot->shutdown();
-    // TODO: fix segfault on delete
+    // TODO(anyone): fix segfault on delete
     // delete this->ogreRoot;
     this->ogreRoot = nullptr;
   }
@@ -605,7 +605,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
-  // TODO: determine api without qt
+  // TODO(anyone): determine api without qt
 
 #if defined(__APPLE__)
   // Set the macAPI for Ogre based on the Qt implementation

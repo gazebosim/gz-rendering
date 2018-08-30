@@ -19,6 +19,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
@@ -130,6 +131,7 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
   camera->SetImageFormat(PixelFormat::PF_B8G8R8);
   EXPECT_EQ(PixelFormat::PF_B8G8R8, camera->ImageFormat());
   EXPECT_EQ(100u*80u*3u, camera->ImageMemorySize());
+
 
   // verify render texture GL Id
   EXPECT_EQ(0u, camera->RenderTextureGLId());

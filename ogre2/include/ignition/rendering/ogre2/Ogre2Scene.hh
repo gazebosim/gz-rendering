@@ -22,6 +22,7 @@
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "ignition/rendering/ogre2/Export.hh"
 
@@ -63,17 +64,6 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetAmbientLight(const math::Color &_color) override;
-
-      // Documentation inherited.
-      public: virtual void SetBackgroundColor(const math::Color &_color)
-          override;
-
-      // Documentation inherited.
-      public: virtual void SetGradientBackgroundColor(
-                     const std::array<math::Color, 4> &_colors) override;
-
-      // Documentation inherited.
-      public: virtual void RemoveGradientBackgroundColor() override;
 
       // Documentation inherited
       public: virtual void PreRender() override;
@@ -216,14 +206,14 @@ namespace ignition
       /// \brief Mesh factory for generating ogre meshes
       protected: Ogre2MeshFactoryPtr meshFactory;
 
-      /// \brief A list of ogre lights
-//      protected: Ogre2LightStorePtr lights;
-
-      /// \brief A list of ogre sensors
+      /// \brief A list of ogre sensors, e.g. cameras
       protected: Ogre2SensorStorePtr sensors;
 
       /// \brief A list of ogre visuals
       protected: Ogre2VisualStorePtr visuals;
+
+      /// \brief A list of ogre lights
+      protected: Ogre2LightStorePtr lights;
 
       /// \brief A list of ogre materials
       protected: Ogre2MaterialMapPtr materials;

@@ -1,2 +1,23 @@
+#ifndef IGNITION_RENDERING_TEST_CONFIG_HH_
+#define IGNITION_RENDERING_TEST_CONFIG_HH_
+
 #define PROJECT_SOURCE_PATH "${PROJECT_SOURCE_DIR}"
 #define PROJECT_BUILD_PATH "${PROJECT_BINARY_DIR}"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    // Helper function used with INSTANTIATE_TEST_CASE_P.
+    struct PrintToStringParam
+    {
+      template<class T>
+      std::string operator()(const ::testing::TestParamInfo<T> &_info) const
+      {
+        return static_cast<std::string>(_info.param);
+      }
+    };
+  }
+}
+
+#endif

@@ -17,11 +17,11 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2STORAGE_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2STORAGE_HH_
 
+#include <memory>
+
 #include "ignition/rendering/base/BaseStorage.hh"
 
-#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
-// #include "ignition/rendering/ogre/OgreLight.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
@@ -32,8 +32,10 @@ namespace ignition
 {
   namespace rendering
   {
+    template class BaseGeometryStore<Ogre2Geometry>;
+    template class BaseLightStore<Ogre2Light>;
     template class BaseNodeStore<Ogre2Node>;
-    // template class BaseLightStore<Ogre2Light>;
+    template class BaseSceneStore<Ogre2Scene>;
     template class BaseSensorStore<Ogre2Sensor>;
     template class BaseGeometryStore<Ogre2Geometry>;
     template class BaseSceneStore<Ogre2Scene>;
@@ -41,18 +43,22 @@ namespace ignition
     template class BaseMaterialMap<Ogre2Material>;
     template class BaseVisualStore<Ogre2Visual>;
 
-    typedef BaseNodeStore<Ogre2Node>         Ogre2NodeStore;
-    // typedef BaseLightStore<Ogre2Light>       Ogre2LightStore;
-    typedef BaseSensorStore<Ogre2Sensor>     Ogre2SensorStore;
-    typedef BaseVisualStore<Ogre2Visual>     Ogre2VisualStore;
-    typedef BaseGeometryStore<Ogre2Geometry> Ogre2GeometryStore;
-    typedef BaseSceneStore<Ogre2Scene>       Ogre2SceneStore;
-    typedef BaseSubMeshStore<Ogre2SubMesh>   Ogre2SubMeshStore;
+    typedef BaseGeometryStore<Ogre2Geometry>    Ogre2GeometryStore;
+    typedef BaseLightStore<Ogre2Light>          Ogre2LightStore;
+    typedef BaseNodeStore<Ogre2Node>            Ogre2NodeStore;
+    typedef BaseSceneStore<Ogre2Scene>          Ogre2SceneStore;
+    typedef BaseSensorStore<Ogre2Sensor>        Ogre2SensorStore;
+    typedef BaseSubMeshStore<Ogre2SubMesh>      Ogre2SubMeshStore;
+    typedef BaseVisualStore<Ogre2Visual>        Ogre2VisualStore;
 
+    typedef std::shared_ptr<Ogre2GeometryStore> Ogre2GeometryStorePtr;
+    typedef std::shared_ptr<Ogre2LightStore>    Ogre2LightStorePtr;
+    typedef std::shared_ptr<Ogre2NodeStore>     Ogre2NodeStorePtr;
     typedef std::shared_ptr<Ogre2SceneStore>    Ogre2SceneStorePtr;
     typedef std::shared_ptr<Ogre2NodeStore>     Ogre2NodeStorePtr;
     // typedef std::shared_ptr<Ogre2LightStore>    Ogre2LightStorePtr;
     typedef std::shared_ptr<Ogre2SensorStore>   Ogre2SensorStorePtr;
+    typedef std::shared_ptr<Ogre2SubMeshStore>  Ogre2SubMeshStorePtr;
     typedef std::shared_ptr<Ogre2VisualStore>   Ogre2VisualStorePtr;
     typedef std::shared_ptr<Ogre2GeometryStore> Ogre2GeometryStorePtr;
     typedef std::shared_ptr<Ogre2SubMeshStore>  Ogre2SubMeshStorePtr;

@@ -171,7 +171,7 @@ void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;
 
-  // TODO: clean up code
+  // TODO(anyone): clean up code
   unsigned int count = this->SensorCount();
 
   for (unsigned int i = 0; i < count; ++i)

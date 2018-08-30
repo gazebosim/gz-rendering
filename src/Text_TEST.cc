@@ -18,6 +18,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Text.hh"
@@ -109,7 +110,8 @@ TEST_P(TextTest, Text)
 }
 
 INSTANTIATE_TEST_CASE_P(Text, TextTest,
-    ::testing::Values("ogre", "optix"));
+    ::testing::Values("ogre", "optix"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

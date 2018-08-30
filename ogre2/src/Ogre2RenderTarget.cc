@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ void Ogre2RenderTarget::Copy(Image &_image) const
     return;
   }
 
-  void* data = _image.Data();
+  void *data = _image.Data();
   Ogre::PixelFormat imageFormat = Ogre2Conversions::Convert(_image.Format());
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
   this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
@@ -186,13 +186,13 @@ void Ogre2RenderTarget::Render()
   // this->ogreCompositorWorkspace->_endUpdate(false);
 
   // this->scene->OgreSceneManager()->_frameEnded();
-	// for (size_t i=0; i < Ogre::HLMS_MAX; ++i)
-	// {
+  // for (size_t i=0; i < Ogre::HLMS_MAX; ++i)
+  // {
   //   Ogre::Hlms *hlms = engine->OgreRoot()->getHlmsManager()->getHlms(
   //       static_cast<Ogre::HlmsTypes>(i));
   //   if(hlms)
   //     hlms->frameEnded();
-	// }
+  // }
   // engine->OgreRoot()->getRenderSystem()->_update();
   std::cerr << "ogre2rendertarget render done " << std::endl;
 }
@@ -357,7 +357,7 @@ void Ogre2RenderWindow::Destroy()
 //////////////////////////////////////////////////
 void Ogre2RenderWindow::RebuildTarget()
 {
-  // TODO determine when to rebuild
+  // TODO(anyone): determine when to rebuild
   // ie. only when ratio or handle changes!
   // e.g. sizeDirty?
   if (!this->ogreRenderWindow)

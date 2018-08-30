@@ -131,7 +131,6 @@ namespace ignition
       /// \brief a material used by for the render target
       protected: MaterialPtr material;
 
-      /// TODO(anyone)
       /// \brief Helper class that applies the material to the render target
       protected: Ogre2RenderTargetMaterialPtr materialApplicator;
 

@@ -22,7 +22,6 @@
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "ignition/rendering/ogre2/Export.hh"
 

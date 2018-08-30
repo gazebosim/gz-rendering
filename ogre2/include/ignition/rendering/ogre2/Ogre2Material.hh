@@ -29,185 +29,159 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Ogre 2.x implementation of the material class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Material :
       public BaseMaterial<Ogre2Object>
     {
+      /// \brief Constructor
       protected: Ogre2Material();
 
+      /// \brief Destructor
       public: virtual ~Ogre2Material();
 
+      // Documentation inherited
       public: virtual bool LightingEnabled() const override;
 
+      // Documentation inherited
       public: virtual void SetLightingEnabled(const bool _enabled) override;
 
+      // Documentation inherited
       public: virtual math::Color Ambient() const override;
 
+      // Documentation inherited
       public: virtual void SetAmbient(const math::Color &_color) override;
 
+      // Documentation inherited
       public: virtual math::Color Diffuse() const override;
 
+      // Documentation inherited
       public: virtual void SetDiffuse(const math::Color &_color) override;
 
+      // Documentation inherited
       public: virtual math::Color Specular() const override;
 
+      // Documentation inherited
       public: virtual void SetSpecular(const math::Color &_color) override;
 
+      // Documentation inherited
       public: virtual math::Color Emissive() const override;
 
+      // Documentation inherited
       public: virtual void SetEmissive(const math::Color &_color) override;
 
+      // Documentation inherited
       public: virtual double Shininess() const override;
 
+      // Documentation inherited
       public: virtual void SetShininess(const double _shininess) override;
 
+      // Documentation inherited
       public: virtual double Transparency() const override;
 
+      // Documentation inherited
       public: virtual void SetTransparency(const double _transparency) override;
 
+      // Documentation inherited
       public: virtual double Reflectivity() const override;
 
+      // Documentation inherited
       public: virtual void SetReflectivity(const double _reflectivity) override;
 
+      // Documentation inherited
       public: virtual bool CastShadows() const override;
 
+      // Documentation inherited
       public: virtual void SetCastShadows(const bool _castShadows) override;
 
+      // Documentation inherited
       public: virtual bool ReceiveShadows() const override;
 
+      // Documentation inherited
       public: virtual void SetReceiveShadows(const bool _receiveShadows)
           override;
 
+      // Documentation inherited
       public: virtual bool ReflectionEnabled() const override;
 
+      // Documentation inherited
       public: virtual void SetReflectionEnabled(const bool _enabled) override;
 
+      // Documentation inherited
       public: virtual bool HasTexture() const override;
 
+      // Documentation inherited
       public: virtual std::string Texture() const override;
 
+      // Documentation inherited
       public: virtual void SetTexture(const std::string &_name) override;
 
+      // Documentation inherited
       public: virtual void ClearTexture() override;
 
+      // Documentation inherited
       public: virtual bool HasNormalMap() const override;
 
+      // Documentation inherited
       public: virtual std::string NormalMap() const override;
 
+      // Documentation inherited
       public: virtual void SetNormalMap(const std::string &_name) override;
 
+      // Documentation inherited
       public: virtual void ClearNormalMap() override;
-
-//      public: virtual enum ShaderType ShaderType() const override;
-
-//      public: virtual void SetShaderType(enum ShaderType _type) override;
 
       /// \brief Return ogre low level material
       /// \return Ogre material pointer
-      public: virtual Ogre::MaterialPtr Material() const;
+      public: virtual Ogre::MaterialPtr Material();
 
       /// \brief Return ogre Hlms material datablock
       /// \return Ogre Hlms datablock
       public: virtual Ogre::HlmsPbsDatablock *Datablock() const;
 
-      // Documentation inherited.
-      // \sa Material::SetVertexShader(const std::string &)
-//      public: virtual void SetVertexShader(const std::string &_path) override;
-
-      // Documentation inherited.
-      // \sa Material::VertexShader() const
-//      public: virtual std::string VertexShader() const override;
-
-      // Documentation inherited.
-      // \sa Material::VertexShaderParams()
-//      public: virtual ShaderParamsPtr VertexShaderParams() override;
-
-      // Documentation inherited.
-      // \sa Material::SetFragmentShader(const std::string &)
-//      public: virtual void SetFragmentShader(const std::string &_path) override;
-
-      // Documentation inherited.
-      // \sa Material::FragmentShader() const
-//      public: virtual std::string FragmentShader() const override;
-
-      // Documentation inherited.
-      // \sa Material::FragmentShaderParams()
-//      public: virtual ShaderParamsPtr FragmentShaderParams() override;
-
-      // Documentation inherited.
+     // Documentation inherited.
       // \sa BaseMaterial::PreRender()
       public: virtual void PreRender() override;
-
-//      protected: virtual void LoadImage(const std::string &_name,
-//                     Ogre::Image &_image);
 
       /// \brief Set the texture for this material
       /// \param[in] _texture Name of the texture.
       protected: virtual void SetTextureImpl(const std::string &_texture);
 
+      /// \brief Set the normal map for this material
+      /// \param[in] _normalMap Name of the normal map.
       protected: virtual void SetNormalMapImpl(const std::string &_normalMap);
 
-//      protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
+      /// \brief Get a pointer to the ogre texture by name
+      /// \return Ogre texture
+      protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
 
-//      protected: virtual Ogre::TexturePtr CreateTexture(
-//                     const std::string &_name);
-
-//      protected: virtual void UpdateTransparency();
-
-//      protected: virtual void UpdateColorOperation();
-
-      /// \brief bind shader parameters that have changed
-//      protected: void UpdateShaderParams();
-
-      /// \brief Transfer params from ign-rendering type to ogre type
-      /// \param[in] _params ignition rendering params
-      /// \param[out] _ogreParams ogre type for holding params
-//      protected: void UpdateShaderParams(ConstShaderParamsPtr _params,
-//        Ogre::GpuProgramParametersSharedPtr _ogreParams);
-
+      // Documentation inherited.
       protected: virtual void Init() override;
 
+      /// \brief  Ogre material. Mainly used for render targets.
       protected: Ogre::MaterialPtr ogreMaterial;
 
-//      protected: Ogre::Technique *ogreTechnique = nullptr;
-
-//      protected: Ogre::Pass *ogrePass = nullptr;
-
-//      protected: Ogre::TextureUnitState *ogreTexState = nullptr;
-
-//      protected: Ogre::String ogreGroup;
-
+      /// \brief  Ogre data block containing all material properties
       protected: Ogre::HlmsPbsDatablock *ogreDatablock = nullptr;
 
+      /// \brief  Ogre high level physical based shading object
       protected: Ogre::HlmsPbs *ogreHlmsPbs= nullptr;
 
-      protected: double shininess = 0.0;
-
+      /// \brief Material transparency
       protected: double transparency = 0.0;
 
-      protected: double reflectivity = 0.0;
-
+      /// \brief Flag to indicate if material casts shadows
       protected: bool castShadows = true;
 
-      protected: bool reflectionEnabled = true;
+      /// \brief Flag to indicate if lighting is enabled for this material.
+      protected: bool lightingEnabled = true;
 
+      /// \brief Name of the texture
       protected: std::string textureName;
 
+      /// \brief Name of the normal map
       protected: std::string normalMapName;
 
-//      protected: enum ShaderType shaderType = ST_PIXEL;
-
-      /// \brief Path to vertex shader program.
-//      protected: std::string vertexShaderPath;
-
-      /// \brief Path to fragment shader program.
-//      protected: std::string fragmentShaderPath;
-
-      /// \brief Parameters to be bound to the vertex shader
-//      protected: ShaderParamsPtr vertexShaderParams;
-
-      /// \brief Parameters to be bound to the fragment shader
-//      protected: ShaderParamsPtr fragmentShaderParams;
-
+      /// \brief Only an ogre scene can create an ogre material
       private: friend class Ogre2Scene;
     };
     }

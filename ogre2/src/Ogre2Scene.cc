@@ -24,6 +24,7 @@
 
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -283,19 +284,21 @@ TextPtr Ogre2Scene::CreateTextImpl(unsigned int /*_id*/,
 }
 
 //////////////////////////////////////////////////
-MaterialPtr Ogre2Scene::CreateMaterialImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+MaterialPtr Ogre2Scene::CreateMaterialImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return MaterialPtr();
+  Ogre2MaterialPtr material(new Ogre2Material);
+  bool result = this->InitObject(material, _id, _name);
+  return (result) ? material : nullptr;
 }
 
 //////////////////////////////////////////////////
-RenderTexturePtr Ogre2Scene::CreateRenderTextureImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+RenderTexturePtr Ogre2Scene::CreateRenderTextureImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return RenderTexturePtr();
+  Ogre2RenderTexturePtr renderTexture(new Ogre2RenderTexture);
+  bool result = this->InitObject(renderTexture, _id, _name);
+  return (result) ? renderTexture : nullptr;
 }
 
 //////////////////////////////////////////////////

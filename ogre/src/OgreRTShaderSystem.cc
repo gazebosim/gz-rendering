@@ -334,7 +334,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
       // Remove all sub render states.
       renderState->reset();
 
-                if (shaderTypeName == "normal_map_object_space")
+      if (shaderTypeName == "normal_map_object_space")
       {
         Ogre::RTShader::SubRenderState* subRenderState =
           this->dataPtr->shaderGenerator->createSubRenderState(

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-
     template <class T>
     class IGNITION_RENDERING_VISIBLE BaseDepthCamera :
       public virtual DepthCamera,

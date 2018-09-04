@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -166,8 +166,7 @@ void OgreDepthCamera::Render()
   sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
 
   // return farClip in case no renderable object is inside frustrum
-  Ogre::Viewport *vp = nullptr;
-  vp = this->depthTexture->GetViewport(0);
+  Ogre::Viewport *vp = this->depthTexture->GetViewport(0);
   vp->setBackgroundColour(Ogre::ColourValue(this->FarClipPlane(),
       this->FarClipPlane(), this->FarClipPlane()));
 
@@ -183,7 +182,6 @@ void OgreDepthCamera::Render()
     sceneMgr->_suppressRenderStateChanges(true);
 
     // return farClip in case no renderable object is inside frustrum
-    vp = nullptr;
     vp = this->dataPtr->pcdTexture->GetViewport(0);
     vp->setBackgroundColour(Ogre::ColourValue(this->FarClipPlane(),
       this->FarClipPlane(), this->FarClipPlane()));
@@ -204,7 +202,7 @@ void OgreDepthCamera::PostRender()
 
   if (!this->dataPtr->outputPoints)
   {
-    if(!this->dataPtr->depthBuffer)
+    if (!this->dataPtr->depthBuffer)
     {
       Ogre::PixelFormat imageFormat = OgreConversions::Convert(
         this->depthTexture->Format());
@@ -220,7 +218,7 @@ void OgreDepthCamera::PostRender()
   }
   else
   {
-    if(!this->dataPtr->pcdBuffer)
+    if (!this->dataPtr->pcdBuffer)
     {
       Ogre::PixelFormat imageFormat = OgreConversions::Convert(
         this->depthTexture->Format());

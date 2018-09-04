@@ -1,21 +1,13 @@
-uniform float maxRange;
+uniform float pNear;
+uniform float pFar;
 
-varying vec4 point;
+varying float depth;
 
 void main()
 {
-  float l = min(maxRange, length(point.xyz));
+  // This normalizes the depth value
+  // gl_FragColor = vec4(vec3(depth / (pFar - pNear)), 1.0);
 
-  float r = 0.0;
-  float g = 0.0;
-  float b = 0.0;
-  float a = 1.0;
-
-  r = l / maxRange;
-  g = l / 2.0 / maxRange;
-  b = l / 4.0 / maxRange;
-  // Currently no pixel format grants access to alpha
-  a = l / 8.0 / maxRange;
-
-  gl_FragColor = vec4(r, g, b, a);
+  // This returns the world position
+  gl_FragColor = vec4(vec3(depth), 1.0);
 }

@@ -524,8 +524,11 @@ void OgreMaterial::SetDepthMaterial()
   this->ogrePass->setDepthCheckEnabled(false);
   this->ogrePass->setDepthWriteEnabled(false);
   this->ogrePass->setLightingEnabled(false);
+  this->ogrePass->setFog(true, Ogre::FOG_NONE);
   this->SetVertexShader(depth_vertex_shader_path);
   this->SetFragmentShader(depth_fragment_shader_path);
+  (*this->fragmentShaderParams)["pFar"] = 10.0f;
+  (*this->fragmentShaderParams)["pNear"] = 0.01f;
 }
 
 //////////////////////////////////////////////////

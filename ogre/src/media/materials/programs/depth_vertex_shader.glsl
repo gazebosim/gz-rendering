@@ -1,9 +1,11 @@
-varying vec4 point;
+uniform vec4 texelOffsets;
+
+varying float depth;
 
 void main()
 {
   gl_Position = ftransform();
-
-  // Vertex in world space
-  point = gl_ModelViewMatrix * gl_Vertex;
+  gl_Position.xy += texelOffsets.zw * gl_Position.w;
+  depth = gl_Position.w; // copied from old gazebo
 }
+

@@ -139,6 +139,14 @@ namespace ignition
 
       public: virtual void SetNearClipPlane(const double _near) override;
 
+      /// \brief Get the near clip distance
+      /// \return Near clip distance
+      public: double NearClipPlane() const override;
+
+      /// \brief Get the far clip distance
+      /// \return Far clip distance
+      public: double FarClipPlane() const override;
+
       /// \brief Update a render target
       /// \param[in] _target Render target to update
       /// \param[in] _material Material to use
@@ -147,7 +155,7 @@ namespace ignition
                                        Ogre::Material *_material,
                                        const std::string &_matName);
 
-      protected: virtual RenderTargetPtr RenderTarget() const;
+      protected: virtual RenderTargetPtr RenderTarget() const override;
 
       /// \brief Limit field of view taking care of using a valid value for
       /// an OGRE camera.

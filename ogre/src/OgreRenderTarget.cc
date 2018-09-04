@@ -221,14 +221,6 @@ void OgreRenderTarget::SetUpdate(bool value)
   ogreRenderTarget->update(value);
 }
 
-////////////////////////////////////////////////////
-void OgreRenderTarget::SwapBuffers()
-{
-  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
-  ogreRenderTarget->swapBuffers();
-}
-
-
 //////////////////////////////////////////////////
 // OgreRenderTexture
 //////////////////////////////////////////////////
@@ -321,26 +313,20 @@ void OgreRenderTexture::PostRender()
 }
 
 //////////////////////////////////////////////////
-float *OgreRenderTexture::Buffer()
+void OgreRenderTexture::Buffer(float * buffer)
 {
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->swapBuffers();
+
   Ogre::HardwarePixelBufferSharedPtr pcdPixelBuffer;
   pcdPixelBuffer = this->ogreTexture->getBuffer();
 
-  float *buffer = new float[this->width * this->height * 4];
+  Ogre::PixelFormat imageFormat = OgreConversions::Convert(
+      this->Format());
 
-  memset(buffer, 0, this->width * this->height * 4);
-
-  Ogre::PixelFormat imageFormat = OgreConversions::Convert(this->Format());
-
-  Ogre::Box pcd_src_box(0, 0, this->width, this->height);
-  Ogre::PixelBox pcd_dst_box(this->width, this->height,
-      1, imageFormat, buffer);
-
-  pcdPixelBuffer->lock(Ogre::HardwarePixelBuffer::HBL_NORMAL);
-  pcdPixelBuffer->blitToMemory(pcd_src_box, pcd_dst_box);
-  pcdPixelBuffer->unlock();
-
-  return buffer;
+  Ogre::PixelBox ogrePixelBox(this->width, this->height, 1,
+      imageFormat, buffer);
+  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
 }
 
 

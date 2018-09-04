@@ -82,8 +82,6 @@ namespace ignition
 
       public: Ogre::Viewport *GetViewport(int viewportId);
 
-      public: void SwapBuffers();
-
       public: void SetUpdate(bool value);
 
       public: void SetAutoUpdated(bool value);
@@ -137,7 +135,7 @@ namespace ignition
       // Documentation inherited
       public: virtual GLuint GLId();
 
-      public: float *Buffer();
+      public: virtual void Buffer(float *buffer);
 
       public: virtual Ogre::RenderTarget *RenderTarget() const;
 

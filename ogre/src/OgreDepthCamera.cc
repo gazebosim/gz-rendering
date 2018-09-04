@@ -101,15 +101,12 @@ void OgreDepthCamera::CreateDepthTexture()
         this->scene->CreateRenderTexture();
     this->depthTexture = std::dynamic_pointer_cast<OgreRenderTexture>(
         depthTextureBase);
-    this->depthTexture->SetCamera(this->ogreCamera);
     this->depthTexture->SetFormat(PF_FLOAT32_R);
-
+    this->depthTexture->SetCamera(this->ogreCamera);
     this->depthTexture->SetBackgroundColor(this->scene->BackgroundColor());
-    // this->depthTexture->SetAutoUpdated(false);
 
     MaterialPtr depthMat = this->scene->CreateMaterial();
     depthMat->SetDepthMaterial();
-    // (*(depthMat->FragmentShaderParams()))["maxRange"] = 10.0f;
     this->depthTexture->SetMaterial(depthMat);
 
     // Set default values for image size
@@ -138,8 +135,6 @@ void OgreDepthCamera::CreateDepthTexture()
     this->dataPtr->pcdTexture->SetBackgroundColor(
         this->scene->BackgroundColor());
 
-    this->dataPtr->pcdTexture->SetAutoUpdated(false);
-
     this->dataPtr->pcdViewport =
         this->dataPtr->pcdTexture->AddViewport(this->ogreCamera);
     this->dataPtr->pcdViewport->setClearEveryFrame(true);
@@ -163,107 +158,23 @@ void OgreDepthCamera::CreateDepthTexture()
 }
 
 //////////////////////////////////////////////////
-void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
-          Ogre::Material *_material, const std::string &_matName)
-{
-  Ogre::RenderSystem *renderSys;
-  Ogre::Viewport *vp = NULL;
-  Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
-  Ogre::Pass *pass;
-
-  renderSys = this->scene->OgreSceneManager()->getDestinationRenderSystem();
-  // Get pointer to the material pass
-  pass = _material->getBestTechnique()->getPass(0);
-
-  // Render the depth texture
-  // OgreSceneManager::_render function automatically sets farClip to 0.
-  // Which normally equates to infinite distance. We don't want this. So
-  // we have to set the distance every time.
-  double farClipDistance = this->FarClipPlane();
-
-  Ogre::AutoParamDataSource autoParamDataSource;
-
-  vp = _target->GetViewport(0);
-
-  // return farClip in case no renderable object is inside frustrum
-  vp->setBackgroundColour(Ogre::ColourValue(farClipDistance,
-      farClipDistance, farClipDistance));
-
-  Ogre::CompositorManager::getSingleton().setCompositorEnabled(vp,
-      _matName, true);
-
-  // Need this line to render the ground plane. No idea why it's necessary.
-  renderSys->_setViewport(vp);
-  sceneMgr->_setPass(pass, true, false);
-  autoParamDataSource.setCurrentPass(pass);
-  autoParamDataSource.setCurrentViewport(vp);
-  autoParamDataSource.setCurrentRenderTarget(_target->RenderTarget());
-  autoParamDataSource.setCurrentSceneManager(sceneMgr);
-  autoParamDataSource.setCurrentCamera(this->ogreCamera, true);
-
-  renderSys->setLightingEnabled(false);
-  renderSys->_setFog(Ogre::FOG_NONE);
-
-  // These two lines don't seem to do anything useful
-  renderSys->_setProjectionMatrix(
-      this->ogreCamera->getProjectionMatrixRS());
-  renderSys->_setViewMatrix(this->ogreCamera->getViewMatrix(true));
-
-#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR == 6
-  pass->_updateAutoParamsNoLights(&autoParamDataSource);
-#else
-  pass->_updateAutoParams(&autoParamDataSource, 1);
-#endif
-
-  // NOTE: We MUST bind parameters AFTER updating the autos
-  if (pass->hasVertexProgram())
-  {
-    renderSys->bindGpuProgram(
-    pass->getVertexProgram()->_getBindingDelegate());
-
-#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR == 6
-    renderSys->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM,
-    pass->getVertexProgramParameters());
-#else
-    renderSys->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM,
-      pass->getVertexProgramParameters(), 1);
-#endif
-  }
-
-  if (pass->hasFragmentProgram())
-  {
-    renderSys->bindGpuProgram(
-    pass->getFragmentProgram()->_getBindingDelegate());
-
-#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR == 6
-    renderSys->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM,
-    pass->getFragmentProgramParameters());
-#else
-      renderSys->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM,
-      pass->getFragmentProgramParameters(), 1);
-#endif
-  }
-}
-
-//////////////////////////////////////////////////
 void OgreDepthCamera::Render()
 {
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
 
   Ogre::ShadowTechnique shadowTech = sceneMgr->getShadowTechnique();
-
   sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  sceneMgr->_suppressRenderStateChanges(true);
 
-  // TODO: move this rendering configuration to RenderTarget
-//  this->UpdateRenderTarget(this->depthTexture,
-//                  this->dataPtr->depthMaterial, "Ignition/DepthMap");
+  // return farClip in case no renderable object is inside frustrum
+  Ogre::Viewport *vp = nullptr;
+  vp = this->depthTexture->GetViewport(0);
+  vp->setBackgroundColour(Ogre::ColourValue(this->FarClipPlane(),
+      this->FarClipPlane(), this->FarClipPlane()));
 
   // Does actual rendering
   this->depthTexture->SetAutoUpdated(false);
   this->depthTexture->Render();
 
-  sceneMgr->_suppressRenderStateChanges(false);
   sceneMgr->setShadowTechnique(shadowTech);
 
   if (this->dataPtr->outputPoints)
@@ -271,45 +182,58 @@ void OgreDepthCamera::Render()
     sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
     sceneMgr->_suppressRenderStateChanges(true);
 
-//    this->UpdateRenderTarget(this->dataPtr->pcdTexture,
-//                  this->dataPtr->pcdMaterial, "Ignition/XYZPoints");
+    // return farClip in case no renderable object is inside frustrum
+    vp = nullptr;
+    vp = this->dataPtr->pcdTexture->GetViewport(0);
+    vp->setBackgroundColour(Ogre::ColourValue(this->FarClipPlane(),
+      this->FarClipPlane(), this->FarClipPlane()));
 
     this->dataPtr->pcdTexture->SetAutoUpdated(false);
+    this->dataPtr->pcdTexture->Render();
 
     sceneMgr->_suppressRenderStateChanges(false);
     sceneMgr->setShadowTechnique(shadowTech);
   }
-
 }
 
 //////////////////////////////////////////////////
 void OgreDepthCamera::PostRender()
 {
-  this->depthTexture->SwapBuffers();
-  if (this->dataPtr->outputPoints)
-    this->dataPtr->pcdTexture->SwapBuffers();
-
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();
 
   if (!this->dataPtr->outputPoints)
   {
-    if (!this->dataPtr->depthBuffer)
-      this->dataPtr->depthBuffer = this->depthTexture->Buffer();
+    if(!this->dataPtr->depthBuffer)
+    {
+      Ogre::PixelFormat imageFormat = OgreConversions::Convert(
+        this->depthTexture->Format());
+      size_t size = Ogre::PixelUtil::getMemorySize(
+        width, height, 1, imageFormat);
+      this->dataPtr->depthBuffer = new float[size];
+    }
+
+    this->depthTexture->Buffer(this->dataPtr->depthBuffer);
 
     this->dataPtr->newDepthFrame(
         this->dataPtr->depthBuffer, width, height, 1, "FLOAT32");
   }
   else
   {
-    if (!this->dataPtr->pcdBuffer)
-      this->dataPtr->pcdBuffer = this->dataPtr->pcdTexture->Buffer();
+    if(!this->dataPtr->pcdBuffer)
+    {
+      Ogre::PixelFormat imageFormat = OgreConversions::Convert(
+        this->depthTexture->Format());
+      size_t size = Ogre::PixelUtil::getMemorySize(
+        width, height, 1, imageFormat);
+      this->dataPtr->pcdBuffer = new float[size];
+    }
+
+    this->dataPtr->pcdTexture->Buffer(this->dataPtr->pcdBuffer);
 
     this->dataPtr->newRGBPointCloud(
         this->dataPtr->pcdBuffer, width, height, 1, "RGBPOINTS");
   }
-
-  this->newData = false;
 }
 
 //////////////////////////////////////////////////
@@ -359,4 +283,22 @@ void OgreDepthCamera::SetFarClipPlane(const double _far)
 {
   BaseDepthCamera::SetFarClipPlane(_far);
   this->ogreCamera->setFarClipDistance(_far);
+}
+
+//////////////////////////////////////////////////
+double OgreDepthCamera::NearClipPlane() const
+{
+  if (this->ogreCamera)
+    return this->ogreCamera->getNearClipDistance();
+  else
+    return 0;
+}
+
+//////////////////////////////////////////////////
+double OgreDepthCamera::FarClipPlane() const
+{
+  if (this->ogreCamera)
+    return this->ogreCamera->getFarClipDistance();
+  else
+    return 0;
 }

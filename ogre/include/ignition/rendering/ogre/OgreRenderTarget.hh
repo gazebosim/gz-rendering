@@ -78,13 +78,13 @@ namespace ignition
 
       public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
-      public: Ogre::Viewport *AddViewport(Ogre::Camera *viewport);
+      public: Ogre::Viewport *AddViewport(Ogre::Camera *_viewport);
 
-      public: Ogre::Viewport *GetViewport(int viewportId);
+      public: Ogre::Viewport *Viewport(const int _viewportId) const;
 
-      public: void SetUpdate(bool value);
+      public: void SetUpdate(const bool _value);
 
-      public: void SetAutoUpdated(bool value);
+      public: void SetAutoUpdated(const bool _value);
 
       protected: virtual void UpdateBackgroundColor();
 

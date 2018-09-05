@@ -54,15 +54,16 @@ void OgreDepthCamera::CreateCamera()
   if (ogreSceneManager == nullptr)
   {
     ignerr << "Scene manager cannot be obtained" << std::endl;
+    return;
   }
 
   this->ogreCamera = ogreSceneManager->createCamera(
       this->name + "_Depth_Camera");
-  if (ogreCamera == nullptr)
+  if (this->ogreCamera == nullptr)
   {
     ignerr << "Ogre camera cannot be created" << std::endl;
+    return;
   }
-
 
   this->ogreNode->attachObject(this->ogreCamera);
 
@@ -82,15 +83,7 @@ void OgreDepthCamera::CreateCamera()
 /////////////////////////////////////////////////
 void OgreDepthCamera::CreateDepthTexture()
 {
-  // create ogre camera object
-  Ogre::SceneManager *ogreSceneManager;
-  ogreSceneManager = this->scene->OgreSceneManager();
-  if (ogreSceneManager == nullptr)
-  {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
-  }
-
-  if (ogreCamera == nullptr)
+  if (this->ogreCamera == nullptr)
   {
     ignerr << "Ogre camera cannot be created" << std::endl;
   }
@@ -166,7 +159,7 @@ void OgreDepthCamera::Render()
   sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
 
   // return farClip in case no renderable object is inside frustrum
-  Ogre::Viewport *vp = this->depthTexture->GetViewport(0);
+  Ogre::Viewport *vp = this->depthTexture->Viewport(0);
   vp->setBackgroundColour(Ogre::ColourValue(this->FarClipPlane(),
       this->FarClipPlane(), this->FarClipPlane()));
 
@@ -182,7 +175,7 @@ void OgreDepthCamera::Render()
     sceneMgr->_suppressRenderStateChanges(true);
 
     // return farClip in case no renderable object is inside frustrum
-    vp = this->dataPtr->pcdTexture->GetViewport(0);
+    vp = this->dataPtr->pcdTexture->Viewport(0);
     vp->setBackgroundColour(Ogre::ColourValue(this->FarClipPlane(),
       this->FarClipPlane(), this->FarClipPlane()));
 
@@ -229,13 +222,13 @@ void OgreDepthCamera::PostRender()
 
     this->dataPtr->pcdTexture->Buffer(this->dataPtr->pcdBuffer);
 
-    this->dataPtr->newRGBPointCloud(
+    this->dataPtr->newRgbPointCloud(
         this->dataPtr->pcdBuffer, width, height, 1, "RGBPOINTS");
   }
 }
 
 //////////////////////////////////////////////////
-const float* OgreDepthCamera::DepthData() const
+const float *OgreDepthCamera::DepthData() const
 {
   return this->dataPtr->depthBuffer;
 }
@@ -249,11 +242,11 @@ ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewRGBPointCloud(
+ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewRgbPointCloud(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {
-  return this->dataPtr->newRGBPointCloud.Connect(_subscriber);
+  return this->dataPtr->newRgbPointCloud.Connect(_subscriber);
 }
 
 //////////////////////////////////////////////////
@@ -271,7 +264,6 @@ double OgreDepthCamera::LimitFOV(const double _fov)
 //////////////////////////////////////////////////
 void OgreDepthCamera::SetNearClipPlane(const double _near)
 {
-  // this->nearClip = _near;
   BaseDepthCamera::SetNearClipPlane(_near);
   this->ogreCamera->setNearClipDistance(_near);
 }

@@ -641,7 +641,7 @@ DepthCameraPtr BaseScene::CreateDepthCamera()
   return this->CreateDepthCamera(objId);
 }
 //////////////////////////////////////////////////
-DepthCameraPtr BaseScene::CreateDepthCamera(unsigned int _id)
+DepthCameraPtr BaseScene::CreateDepthCamera(const unsigned int _id)
 {
   std::string objName = this->CreateObjectName(_id, "DepthCamera");
   return this->CreateDepthCamera(_id, objName);
@@ -653,7 +653,7 @@ DepthCameraPtr BaseScene::CreateDepthCamera(const std::string &_name)
   return this->CreateDepthCamera(objId, _name);
 }
 //////////////////////////////////////////////////
-DepthCameraPtr BaseScene::CreateDepthCamera(unsigned int _id,
+DepthCameraPtr BaseScene::CreateDepthCamera(const unsigned int _id,
     const std::string &_name)
 {
   DepthCameraPtr camera = this->CreateDepthCameraImpl(_id, _name);

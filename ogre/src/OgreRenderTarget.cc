@@ -194,31 +194,31 @@ void OgreRenderTarget::RebuildMaterial()
 }
 
 ////////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTarget::GetViewport(int viewportId)
+Ogre::Viewport *OgreRenderTarget::Viewport(const int _viewportId) const
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
-  return ogreRenderTarget->getViewport(viewportId);
+  return ogreRenderTarget->getViewport(_viewportId);
 }
 
 ////////////////////////////////////////////////////
-Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *camera)
+Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *_camera)
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
-  return ogreRenderTarget->addViewport(camera);
+  return ogreRenderTarget->addViewport(_camera);
 }
 
 ////////////////////////////////////////////////////
-void OgreRenderTarget::SetAutoUpdated(bool value)
+void OgreRenderTarget::SetAutoUpdated(const bool _value)
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
-  ogreRenderTarget->setAutoUpdated(value);
+  ogreRenderTarget->setAutoUpdated(_value);
 }
 
 ////////////////////////////////////////////////////
-void OgreRenderTarget::SetUpdate(bool value)
+void OgreRenderTarget::SetUpdate(const bool _value)
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
-  ogreRenderTarget->update(value);
+  ogreRenderTarget->update(_value);
 }
 
 //////////////////////////////////////////////////
@@ -313,7 +313,7 @@ void OgreRenderTexture::PostRender()
 }
 
 //////////////////////////////////////////////////
-void OgreRenderTexture::Buffer(float * buffer)
+void OgreRenderTexture::Buffer(float *_buffer)
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
   ogreRenderTarget->swapBuffers();
@@ -325,7 +325,7 @@ void OgreRenderTexture::Buffer(float * buffer)
       this->Format());
 
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1,
-      imageFormat, buffer);
+      imageFormat, _buffer);
   this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
 }
 

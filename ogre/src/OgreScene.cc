@@ -369,7 +369,7 @@ CameraPtr OgreScene::CreateCameraImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-DepthCameraPtr OgreScene::CreateDepthCameraImpl(unsigned int _id,
+DepthCameraPtr OgreScene::CreateDepthCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
   OgreDepthCameraPtr camera(new OgreDepthCamera());

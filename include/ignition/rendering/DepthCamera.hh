@@ -34,7 +34,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \class Camera Camera.hh ignition/rendering/Camera.hh
-    /// \brief Posable camera used for rendering the scene graph
+    /// \brief Poseable depth camera used for rendering the scene graph.
+    /// This camera is designed to produced depth data, instead of a 2D
+    /// image.
     class IGNITION_RENDERING_VISIBLE DepthCamera :
       public virtual Camera
     {
@@ -52,17 +54,17 @@ namespace ignition
       /// \return The z-buffer as a float array
       public: virtual const float *DepthData() const = 0;
 
-      /// \brief Connect a to the new depth image signal
+      /// \brief Connect to the new depth image signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
       public: virtual ignition::common::ConnectionPtr ConnectNewDepthFrame(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;
 
-      /// \brief Connect a to the new rgb point cloud signal
+      /// \brief Connect to the new rgb point cloud signal.
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewRGBPointCloud(
+      public: virtual ignition::common::ConnectionPtr ConnectNewRgbPointCloud(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;
     };

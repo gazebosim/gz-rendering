@@ -86,7 +86,7 @@ namespace ignition
       /// \brief Event used to signal rgb point cloud data
       public: ignition::common::EventT<void(const float *,
                   unsigned int, unsigned int, unsigned int,
-                  const std::string &)> newRGBPointCloud;
+                  const std::string &)> newRgbPointCloud;
 
       /// \brief Event used to signal depth data
       public: ignition::common::EventT<void(const float *,
@@ -94,7 +94,9 @@ namespace ignition
                   const std::string &)> newDepthFrame;
     };
 
-    /// \class DepthCamera DepthCamera.hh rendering/rendering.hh
+    /** \class OgreDepthCamera OgreDepthCamera.hh\
+     * rendering/ogre/OgreDepthCamera.hh
+    **/
     /// \brief Depth camera used to render depth data into an image buffer
     class IGNITION_RENDERING_OGRE_VISIBLE OgreDepthCamera :
       public BaseDepthCamera<OgreSensor>
@@ -128,23 +130,29 @@ namespace ignition
       /// \brief Connect a to the new rgb point cloud signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewRGBPointCloud(
+      public: virtual ignition::common::ConnectionPtr ConnectNewRgbPointCloud(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
       /// \brief Implementation of the render call
       public: virtual void Render() override;
 
+      /// \brief Set the far clip distance
+      /// \param[in] _far far clip distance
       public: virtual void SetFarClipPlane(const double _far) override;
 
+      /// \brief Set the near clip distance
+      /// \param[in] _near Near clip distance
       public: virtual void SetNearClipPlane(const double _near) override;
 
       /// \brief Get the near clip distance
-      /// \return Near clip distance
+      /// \return Near clip distance. A value of zero is returned if the
+      /// ogre camera has not been created.
       public: double NearClipPlane() const override;
 
       /// \brief Get the far clip distance
-      /// \return Far clip distance
+      /// \return Far clip distance. A value of zero is returned if the
+      /// ogre camera has not been created.
       public: double FarClipPlane() const override;
 
       /// \brief Update a render target
@@ -155,6 +163,8 @@ namespace ignition
                                        Ogre::Material *_material,
                                        const std::string &_matName);
 
+      /// \brief Get a pointer to the render target.
+      /// \return Pointer to the render target
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       /// \brief Limit field of view taking care of using a valid value for
@@ -163,6 +173,7 @@ namespace ignition
       /// \return valid field of view
       protected: static double LimitFOV(const double _fov);
 
+      /// \brief Create the camera.
       protected: void CreateCamera();
 
       /// \brief Communicates that a frams was rendered

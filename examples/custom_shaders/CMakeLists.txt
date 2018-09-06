@@ -21,6 +21,14 @@ link_directories(${GLEW_LIBRARY_DIRS})
 
 configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
 
+set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering-${PROJECT_VERSION_MAJOR})
+set_property(
+  SOURCE custom_shaders.cc
+  PROPERTY COMPILE_DEFINITIONS
+  IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
+  OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
+)
+
 add_executable(custom_shaders custom_shaders.cc)
 
 target_link_libraries(custom_shaders

@@ -36,9 +36,11 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
     template <class T>
-    class BaseCamera :
+    class BaseDepthCamera;
+
+    template <class T>
+    class IGNITION_RENDERING_VISIBLE BaseCamera :
       public virtual Camera,
       public virtual T
     {
@@ -213,6 +215,8 @@ namespace ignition
 
       /// \brief Offset distance between camera and target node being followed
       protected: math::Vector3d followOffset;
+
+      friend class BaseDepthCamera<T>;
     };
 
     //////////////////////////////////////////////////

@@ -38,6 +38,10 @@ const Ogre::PixelFormat OgreConversions::ogrePixelFormats[PF_COUNT] =
       Ogre::PF_BYTE_RGB,
       // BAYER_GRGB8
       Ogre::PF_BYTE_RGB,
+      // PF_FLOAT32_R
+      Ogre::PF_FLOAT32_R,
+      // PF_FLOAT32_RGBA
+      Ogre::PF_FLOAT32_RGBA,
     };
 
 //////////////////////////////////////////////////

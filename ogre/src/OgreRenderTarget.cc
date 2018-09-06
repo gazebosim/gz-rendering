@@ -30,6 +30,7 @@
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
 using namespace ignition;
@@ -192,6 +193,34 @@ void OgreRenderTarget::RebuildMaterial()
   }
 }
 
+////////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTarget::Viewport(const int _viewportId) const
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  return ogreRenderTarget->getViewport(_viewportId);
+}
+
+////////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *_camera)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  return ogreRenderTarget->addViewport(_camera);
+}
+
+////////////////////////////////////////////////////
+void OgreRenderTarget::SetAutoUpdated(const bool _value)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->setAutoUpdated(_value);
+}
+
+////////////////////////////////////////////////////
+void OgreRenderTarget::SetUpdate(const bool _value)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->update(_value);
+}
+
 //////////////////////////////////////////////////
 // OgreRenderTexture
 //////////////////////////////////////////////////
@@ -281,6 +310,23 @@ void OgreRenderTexture::PostRender()
   rt->getCustomAttribute("FBO", &ogreFbo);
   Ogre::GLFBOManager *manager = ogreFbo->getManager();
   manager->unbind(rt);
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::Buffer(float *_buffer)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->swapBuffers();
+
+  Ogre::HardwarePixelBufferSharedPtr pcdPixelBuffer;
+  pcdPixelBuffer = this->ogreTexture->getBuffer();
+
+  Ogre::PixelFormat imageFormat = OgreConversions::Convert(
+      this->Format());
+
+  Ogre::PixelBox ogrePixelBox(this->width, this->height, 1,
+      imageFormat, _buffer);
+  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
 }
 
 

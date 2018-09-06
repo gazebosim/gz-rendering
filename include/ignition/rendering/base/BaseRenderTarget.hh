@@ -141,7 +141,6 @@ namespace ignition
       T::PostRender();
     }
 
-
     //////////////////////////////////////////////////
     template <class T>
     void BaseRenderTarget<T>::Rebuild()

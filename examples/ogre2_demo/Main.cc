@@ -46,12 +46,12 @@ const std::string RESOURCE_PATH =
 void buildScene(ScenePtr _scene)
 {
   // initialize _scene
-  _scene->SetAmbientLight(0.4, 0.4, 0.4);
+  _scene->SetAmbientLight(0.2, 0.2, 0.2);
   VisualPtr root = _scene->RootVisual();
 
   // create green material
   MaterialPtr green = _scene->CreateMaterial();
-  green->SetDiffuse(0.0, 1.0, 0.0);
+  green->SetDiffuse(0.0, 0.8, 0.0);
   green->SetSpecular(0.2, 0.4, 0.2);
 
   // create cylinder visual
@@ -74,9 +74,10 @@ void buildScene(ScenePtr _scene)
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
 
+  // create red material
   MaterialPtr red = _scene->CreateMaterial();
-  red->SetAmbient(0.3, 0.0, 0.0);
   red->SetDiffuse(0.8, 0.0, 0.0);
+  red->SetSpecular(0.5, 0.2, 0.2);
 
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual();
@@ -89,8 +90,8 @@ void buildScene(ScenePtr _scene)
 
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
-  white->SetAmbient(0.5, 0.5, 0.5);
   white->SetDiffuse(0.8, 0.8, 0.8);
+  white->SetSpecular(0.4, 0.4, 0.4);
 
   // create plane visual
   VisualPtr plane = _scene->CreateVisual();
@@ -103,13 +104,13 @@ void buildScene(ScenePtr _scene)
   // create directional light
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
   light0->SetDirection(0.5, 0.5, -1);
-  light0->SetDiffuseColor(0.7, 0.5, 0.5);
+  light0->SetDiffuseColor(0.8, 0.7, 0.6);
   light0->SetSpecularColor(0.2, 0.2, 0.2);
   root->AddChild(light0);
 
   // create spot light
   SpotLightPtr light1 = _scene->CreateSpotLight();
-  light1->SetDiffuseColor(0.3, 0.3, 0.8);
+  light1->SetDiffuseColor(0.8, 0.8, 0.3);
   light1->SetSpecularColor(0.2, 0.2, 0.2);
   light1->SetLocalPosition(0, 3, 3);
   light1->SetDirection(1, -1, -1);
@@ -117,7 +118,7 @@ void buildScene(ScenePtr _scene)
 
   // create point light
   PointLightPtr light2 = _scene->CreatePointLight();
-  light2->SetDiffuseColor(0.8, 0.4, 0.4);
+  light2->SetDiffuseColor(0.2, 0.4, 0.8);
   light2->SetSpecularColor(0.2, 0.2, 0.2);
   light2->SetLocalPosition(3, 0, 2);
   root->AddChild(light2);

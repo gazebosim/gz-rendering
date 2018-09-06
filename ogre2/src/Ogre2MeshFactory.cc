@@ -241,7 +241,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
                              Ogre::VES_POSITION);
       currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
 
-      // TODO: blending weights
+      // TODO(anyone): blending weights
 
       // normals
       if (subMesh.NormalCount() > 0)
@@ -251,9 +251,9 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
         currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
       }
 
-      // TODO: diffuse colors
+      // TODO(anyone): diffuse colors
 
-      // TODO: specular colors
+      // TODO(anyone): specular colors
 
       // two dimensional texture coordinates
       if (subMesh.TexCoordCount() > 0)

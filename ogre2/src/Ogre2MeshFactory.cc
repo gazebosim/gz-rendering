@@ -66,7 +66,6 @@ Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
   // create sub-mesh store
   Ogre2SubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreItem);
   mesh->subMeshes = subMeshFactory.Create();
-
   return mesh;
 }
 
@@ -87,7 +86,6 @@ Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
   {
     Ogre::v1::MeshPtr v1Mesh =
         Ogre::v1::MeshManager::getSingleton().getByName(name);
-
     if (!v1Mesh)
       return nullptr;
 
@@ -136,7 +134,6 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
   {
     name = this->MeshName(_desc);
     group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
-
     ogreMesh = Ogre::v1::MeshManager::getSingleton().createManual(name, group);
 
     Ogre::v1::SkeletonPtr ogreSkeleton;
@@ -331,7 +328,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
 
       for (unsigned int j = 0; j < subMesh.IndexCount(); ++j)
-        *indices++ = subMesh.Index(j);
+        *indices++ = static_cast<uint16_t>(subMesh.Index(j));
 
       iBuf->unlock();
 

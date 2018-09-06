@@ -569,7 +569,6 @@ void Ogre2RenderEngine::CreateResources()
       Ogre::Archive *archiveLibrary =
           archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
           "FileSystem", true);
-
       archivePbsLibraryFolders.push_back(archiveLibrary);
       ++libraryFolderPathIt;
     }

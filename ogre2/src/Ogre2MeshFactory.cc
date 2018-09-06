@@ -30,6 +30,7 @@
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
@@ -193,8 +194,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       if (_desc.centerSubMesh)
         subMesh.Center(math::Vector3d::Zero);
 
-      // ogreSubMesh = ogreMesh->createSubMesh(subMesh.Name());
-      ogreSubMesh = ogreMesh->createSubMesh("asdf");
+      ogreSubMesh = ogreMesh->createSubMesh(subMesh.Name());
       ogreSubMesh->useSharedVertices = false;
       if (subMesh.SubMeshPrimitiveType() == common::SubMesh::TRIANGLES)
       {
@@ -240,7 +240,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
                              Ogre::VES_POSITION);
       currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
 
-      // TODO: blending weights
+      // TODO(anyone): blending weights
 
       // normals
       if (subMesh.NormalCount() > 0)
@@ -250,9 +250,9 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
         currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
       }
 
-      // TODO: diffuse colors
+      // TODO(anyone): diffuse colors
 
-      // TODO: specular colors
+      // TODO(anyone): specular colors
 
       // two dimensional texture coordinates
       if (subMesh.TexCoordCount() > 0)
@@ -268,7 +268,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       vBuf = Ogre::v1::HardwareBufferManager::getSingleton().createVertexBuffer(
                  vertexDecl->getVertexSize(0),
                  vertexData->vertexCount,
-                 Ogre::v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+                 Ogre::v1::HardwareBuffer::HBU_STATIC,
                  false);
 
       vertexData->vertexBufferBinding->setBinding(0, vBuf);
@@ -299,7 +299,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
         Ogre::v1::HardwareBufferManager::getSingleton().createIndexBuffer(
             Ogre::v1::HardwareIndexBuffer::IT_32BIT,
             ogreSubMesh->indexData[Ogre::VpNormal]->indexCount,
-            Ogre::v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+            Ogre::v1::HardwareBuffer::HBU_STATIC,
             false);
 
       iBuf = ogreSubMesh->indexData[Ogre::VpNormal]->indexBuffer;

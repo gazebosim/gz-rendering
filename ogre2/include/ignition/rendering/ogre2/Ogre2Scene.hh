@@ -22,7 +22,6 @@
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "ignition/rendering/ogre2/Export.hh"
 
@@ -214,6 +213,9 @@ namespace ignition
 
       /// \brief A list of ogre lights
       protected: Ogre2LightStorePtr lights;
+
+      /// \brief A list of ogre materials
+      protected: Ogre2MaterialMapPtr materials;
 
       /// \brief Pointer to the ogre root object
       protected: Ogre::Root *ogreRoot = nullptr;

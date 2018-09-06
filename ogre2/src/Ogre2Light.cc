@@ -162,6 +162,7 @@ void Ogre2Light::CreateLight()
     this->ogreLight->setType(this->ogreLightType);
     this->ogreNode->attachObject(this->ogreLight);
     this->ogreLight->setCastShadows(true);
+    this->ogreLight->setPowerScale(Ogre::Math::PI);
     this->UpdateAttenuation();
   }
   catch (Ogre::Exception &ex)

@@ -64,6 +64,7 @@
 #include <OgreShadowCameraSetupPSSM.h>
 
 #include <OgreHlmsManager.h>
+#include <OgreHlmsTextureManager.h>
 #include <Hlms/Unlit/OgreHlmsUnlit.h>
 #include <Hlms/Pbs/OgreHlmsPbs.h>
 

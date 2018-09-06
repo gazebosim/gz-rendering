@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,9 +37,9 @@
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-// #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-// #include "ignition/rendering/ogre2/Ogre2Scene.hh"
-// #include "ignition/rendering/ogre2/Ogre2Storage.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 
 class ignition::rendering::Ogre2RenderEnginePrivate
@@ -235,13 +235,12 @@ Ogre::Root *Ogre2RenderEngine::OgreRoot() const
 }
 
 //////////////////////////////////////////////////
-ScenePtr Ogre2RenderEngine::CreateSceneImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+ScenePtr Ogre2RenderEngine::CreateSceneImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // Ogre2ScenePtr scene = Ogre2ScenePtr(new Ogre2Scene(_id, _name));
-  // this->scenes->Add(scene);
-  // return scene;
-  return ScenePtr();
+  Ogre2ScenePtr scene = Ogre2ScenePtr(new Ogre2Scene(_id, _name));
+  this->scenes->Add(scene);
+  return scene;
 }
 
 //////////////////////////////////////////////////
@@ -608,6 +607,9 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
 
+  // Ogre 2 PBS expects gamma correction
+  params["gamma"] = "true";
+
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
   {
@@ -648,7 +650,7 @@ void Ogre2RenderEngine::InitAttempt()
   // init the resources
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(false);
 
-  // this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
+  this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
 }
 
 /////////////////////////////////////////////////

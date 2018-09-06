@@ -29,11 +29,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     // TODO(anyone): use a better way to find shader configurations
-    const std::string depth_vertex_shader_path = "/usr/local/share/"
-      "ignition/rendering-1/ogre/media/materials/programs/"
+    const std::string depth_vertex_shader_file =
       "depth_vertex_shader.glsl";
-    const std::string depth_fragment_shader_path = "/usr/local/share/"
-      "ignition/rendering-1/ogre/media/materials/programs/"
+    const std::string depth_fragment_shader_file =
       "depth_fragment_shader.glsl";
 
     class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterial :
@@ -114,7 +112,8 @@ namespace ignition
 
       // Documentation inherited.
       // \sa Material::Set3DMaterial()
-      public: virtual void SetDepthMaterial() override;
+      public: virtual void SetDepthMaterial(const double far,
+                const double near) override;
 
       // Documentation inherited.
       // \sa Material::SetVertexShader(const std::string &)

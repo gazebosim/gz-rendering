@@ -125,7 +125,10 @@ namespace ignition
       public: virtual double Transparency() const = 0;
 
       /// \brief Configuration for Depth Material
-      public: virtual void SetDepthMaterial() = 0;
+      /// \param[in] far Far distance for normalized output
+      /// \param[in] near Near distance for normalized output
+      public: virtual void SetDepthMaterial(const double far,
+            const double near) = 0;
 
       /// \brief Set the transparency value
       /// \param[in] _transparency New transparency value

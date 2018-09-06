@@ -99,7 +99,7 @@ void OgreDepthCamera::CreateDepthTexture()
     this->depthTexture->SetBackgroundColor(this->scene->BackgroundColor());
 
     MaterialPtr depthMat = this->scene->CreateMaterial();
-    depthMat->SetDepthMaterial();
+    depthMat->SetDepthMaterial(this->FarClipPlane(), this->NearClipPlane());
     this->depthTexture->SetMaterial(depthMat);
 
     // Set default values for image size

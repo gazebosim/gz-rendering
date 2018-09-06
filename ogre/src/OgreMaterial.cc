@@ -519,16 +519,36 @@ void OgreMaterial::UpdateTransparency()
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetDepthMaterial()
+void OgreMaterial::SetDepthMaterial(const double far,
+  const double near)
 {
+  // Configure Ogre Pass settings for Depth
   this->ogrePass->setDepthCheckEnabled(false);
   this->ogrePass->setDepthWriteEnabled(false);
   this->ogrePass->setLightingEnabled(false);
   this->ogrePass->setFog(true, Ogre::FOG_NONE);
+
+  // TODO(anyone): convert depth configuration into a ShaderType
+  // Get shader parameters path
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+
+  // path to look for vertex and fragment shader parameters
+  std::string depth_vertex_shader_path = common::joinPaths(
+      resourcePath, "ogre", "media", "materials", "programs",
+      depth_vertex_shader_file);
+
+  std::string depth_fragment_shader_path = common::joinPaths(
+      resourcePath, "ogre", "media", "materials", "programs",
+      depth_fragment_shader_file);
+
   this->SetVertexShader(depth_vertex_shader_path);
   this->SetFragmentShader(depth_fragment_shader_path);
-  (*this->fragmentShaderParams)["pFar"] = 10.0f;
-  (*this->fragmentShaderParams)["pNear"] = 0.01f;
+
+  // Configure fragment shader variables
+  (*this->fragmentShaderParams)["pFar"] = (float)far;
+  (*this->fragmentShaderParams)["pNear"] = (float)near;
 }
 
 //////////////////////////////////////////////////

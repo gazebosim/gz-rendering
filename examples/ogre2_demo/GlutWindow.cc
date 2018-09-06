@@ -77,7 +77,7 @@ void updateCameras()
   }
 
   // for testing only, move camera
-  g_offset += 0.0001;
+  g_offset += 0.0005;
   if (std::fabs(g_offset) > 1)
     g_offset *= -1;
 }

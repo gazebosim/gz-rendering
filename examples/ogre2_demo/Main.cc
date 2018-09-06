@@ -51,15 +51,13 @@ void buildScene(ScenePtr _scene)
 
   // create green material
   MaterialPtr green = _scene->CreateMaterial();
-  green->SetAmbient(0.0, 1.0, 0.0);
   green->SetDiffuse(0.0, 1.0, 0.0);
+  green->SetSpecular(0.2, 0.4, 0.2);
 
   // create cylinder visual
   VisualPtr cylinder = _scene->CreateVisual();
   cylinder->AddGeometry(_scene->CreateCylinder());
-  cylinder->SetOrigin(0.0, 0.0, 0.0);
-  cylinder->SetLocalPosition(3, 1, 0);
-  cylinder->SetLocalRotation(0, 0, 0);
+  cylinder->SetLocalPosition(3, 0.5, 0.5);
   cylinder->SetLocalScale(1, 1, 1);
   cylinder->SetMaterial(green);
   root->AddChild(cylinder);
@@ -76,21 +74,6 @@ void buildScene(ScenePtr _scene)
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
 
-
-  // create directional light
-  DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
-  light0->SetDirection(-0.5, 0.5, -1);
-  light0->SetDiffuseColor(0.5, 0.5, 0.5);
-  light0->SetSpecularColor(0.5, 0.5, 0.5);
-  root->AddChild(light0);
-
-  // create point light
-  PointLightPtr light2 = _scene->CreatePointLight();
-  light2->SetDiffuseColor(0.5, 0.5, 0.5);
-  light2->SetSpecularColor(0.5, 0.5, 0.5);
-  light2->SetLocalPosition(3, 5, 5);
-  root->AddChild(light2);
-
   MaterialPtr red = _scene->CreateMaterial();
   red->SetAmbient(0.3, 0.0, 0.0);
   red->SetDiffuse(0.8, 0.0, 0.0);
@@ -98,7 +81,7 @@ void buildScene(ScenePtr _scene)
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual();
   sphere->AddGeometry(_scene->CreateSphere());
-  sphere->SetLocalPosition(3, 0, 0);
+  sphere->SetLocalPosition(2.5, 0, 0.3);
   sphere->SetLocalRotation(0, 0, 0);
   sphere->SetLocalScale(0.5, 0.5, 0.5);
   sphere->SetMaterial(red);
@@ -108,8 +91,6 @@ void buildScene(ScenePtr _scene)
   MaterialPtr white = _scene->CreateMaterial();
   white->SetAmbient(0.5, 0.5, 0.5);
   white->SetDiffuse(0.8, 0.8, 0.8);
-  white->SetReceiveShadows(true);
-  white->SetReflectivity(0);
 
   // create plane visual
   VisualPtr plane = _scene->CreateVisual();
@@ -118,6 +99,28 @@ void buildScene(ScenePtr _scene)
   plane->SetLocalPosition(3, 0, -0.5);
   plane->SetMaterial(white);
   root->AddChild(plane);
+
+  // create directional light
+  DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
+  light0->SetDirection(0.5, 0.5, -1);
+  light0->SetDiffuseColor(0.7, 0.5, 0.5);
+  light0->SetSpecularColor(0.2, 0.2, 0.2);
+  root->AddChild(light0);
+
+  // create spot light
+  SpotLightPtr light1 = _scene->CreateSpotLight();
+  light1->SetDiffuseColor(0.3, 0.3, 0.8);
+  light1->SetSpecularColor(0.2, 0.2, 0.2);
+  light1->SetLocalPosition(0, 3, 3);
+  light1->SetDirection(1, -1, -1);
+  root->AddChild(light1);
+
+  // create point light
+  PointLightPtr light2 = _scene->CreatePointLight();
+  light2->SetDiffuseColor(0.8, 0.4, 0.4);
+  light2->SetSpecularColor(0.2, 0.2, 0.2);
+  light2->SetLocalPosition(3, 0, 2);
+  root->AddChild(light2);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

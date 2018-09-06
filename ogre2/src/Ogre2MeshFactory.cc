@@ -66,6 +66,7 @@ Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
   // create sub-mesh store
   Ogre2SubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreItem);
   mesh->subMeshes = subMeshFactory.Create();
+
   return mesh;
 }
 
@@ -86,6 +87,7 @@ Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
   {
     Ogre::v1::MeshPtr v1Mesh =
         Ogre::v1::MeshManager::getSingleton().getByName(name);
+
     if (!v1Mesh)
       return nullptr;
 
@@ -134,6 +136,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
   {
     name = this->MeshName(_desc);
     group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+
     ogreMesh = Ogre::v1::MeshManager::getSingleton().createManual(name, group);
 
     Ogre::v1::SkeletonPtr ogreSkeleton;
@@ -182,7 +185,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       Ogre::v1::HardwareVertexBufferSharedPtr vBuf;
       Ogre::v1::HardwareIndexBufferSharedPtr iBuf;
       float *vertices;
-      uint32_t *indices;
+      uint16_t *indices;
 
       size_t currOffset = 0;
 
@@ -229,8 +232,6 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       }
 
       ogreSubMesh->vertexData[Ogre::VpNormal] = new Ogre::v1::VertexData();
-      ogreSubMesh->vertexData[Ogre::VpShadow] =
-          ogreSubMesh->vertexData[Ogre::VpNormal];
       vertexData = ogreSubMesh->vertexData[Ogre::VpNormal];
       vertexDecl = vertexData->vertexDeclaration;
 
@@ -268,8 +269,8 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       vBuf = Ogre::v1::HardwareBufferManager::getSingleton().createVertexBuffer(
                  vertexDecl->getVertexSize(0),
                  vertexData->vertexCount,
-                 Ogre::v1::HardwareBuffer::HBU_STATIC,
-                 false);
+                 Ogre::v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+                 true);
 
       vertexData->vertexBufferBinding->setBinding(0, vBuf);
       vertices = static_cast<float*>(vBuf->lock(
@@ -290,26 +291,8 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
         }
       }
 
-      // allocate index buffer
-      ogreSubMesh->indexData[Ogre::VpShadow] =
-          ogreSubMesh->indexData[Ogre::VpNormal];
-      ogreSubMesh->indexData[Ogre::VpNormal]->indexCount = subMesh.IndexCount();
-
-      ogreSubMesh->indexData[Ogre::VpNormal]->indexBuffer =
-        Ogre::v1::HardwareBufferManager::getSingleton().createIndexBuffer(
-            Ogre::v1::HardwareIndexBuffer::IT_32BIT,
-            ogreSubMesh->indexData[Ogre::VpNormal]->indexCount,
-            Ogre::v1::HardwareBuffer::HBU_STATIC,
-            false);
-
-      iBuf = ogreSubMesh->indexData[Ogre::VpNormal]->indexBuffer;
-      indices = static_cast<uint32_t*>(
-          iBuf->lock(Ogre::v1::HardwareBuffer::HBL_DISCARD));
-
-      unsigned int j;
-
       // Add all the vertices
-      for (j = 0; j < subMesh.VertexCount(); j++)
+      for (unsigned int j = 0; j < subMesh.VertexCount(); ++j)
       {
         *vertices++ = subMesh.Vertex(j).X();
         *vertices++ = subMesh.Vertex(j).Y();
@@ -329,9 +312,28 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
         }
       }
 
+      vBuf->unlock();
+
       // Add all the indices
-      for (j = 0; j < subMesh.IndexCount(); j++)
+      // allocate index buffer
+      ogreSubMesh->indexData[Ogre::VpNormal]->indexCount = subMesh.IndexCount();
+
+      ogreSubMesh->indexData[Ogre::VpNormal]->indexBuffer =
+        Ogre::v1::HardwareBufferManager::getSingleton().createIndexBuffer(
+            Ogre::v1::HardwareIndexBuffer::IT_16BIT,
+            ogreSubMesh->indexData[Ogre::VpNormal]->indexCount,
+            Ogre::v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+            true);
+
+      iBuf = ogreSubMesh->indexData[Ogre::VpNormal]->indexBuffer;
+      indices = static_cast<uint16_t*>(
+          iBuf->lock(Ogre::v1::HardwareBuffer::HBL_DISCARD));
+
+
+      for (unsigned int j = 0; j < subMesh.IndexCount(); ++j)
         *indices++ = subMesh.Index(j);
+
+      iBuf->unlock();
 
       common::MaterialPtr material;
       material = _desc.mesh->MaterialByIndex(subMesh.MaterialIndex());
@@ -345,10 +347,6 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       {
         ogreSubMesh->setMaterialName("Default/White");
       }
-
-      // Unlock
-      vBuf->unlock();
-      iBuf->unlock();
     }
 
     math::Vector3d max = _desc.mesh->Max();
@@ -372,10 +370,14 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       return false;
     }
 
+    if (!ogreMesh->hasValidShadowMappingBuffers())
+      ogreMesh->prepareForShadowMapping(false);
+
     ogreMesh->_setBounds(Ogre::AxisAlignedBox(
           Ogre::Vector3(min.X(), min.Y(), min.Z()),
           Ogre::Vector3(max.X(), max.Y(), max.Z())),
           false);
+    ogreMesh->_setBoundingSphereRadius((max - min).Length());
 
     // this line makes clear the mesh is loaded (avoids memory leaks)
     // ogreMesh->load();
@@ -482,7 +484,7 @@ Ogre2SubMeshPtr Ogre2SubMeshStoreFactory::CreateSubMesh(unsigned int _index)
   {
     mat = this->scene->CreateMaterial();
   }
-  subMesh->SetMaterial(mat);
+  subMesh->SetMaterial(mat, false);
 
   subMesh->Load();
   subMesh->Init();

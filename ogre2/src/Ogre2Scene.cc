@@ -356,11 +356,18 @@ void Ogre2Scene::CreateContext()
   this->ogreSceneManager->getRenderQueue()->setSortRenderQueue(
       Ogre::v1::OverlayManager::getSingleton().mDefaultRenderQueueId,
       Ogre::RenderQueue::StableSort);
+
+  // Set sane defaults for proper shadow mapping
+  this->ogreSceneManager->setShadowDirectionalLightExtrusionDistance(500.0f);
+  this->ogreSceneManager->setShadowFarDistance(500.0f);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateRootVisual()
 {
+  if (this->rootVisual)
+    return;
+
   // create unregistered visual
   this->rootVisual = Ogre2VisualPtr(new Ogre2Visual);
   unsigned int rootId = this->CreateObjectId();
@@ -371,6 +378,7 @@ void Ogre2Scene::CreateRootVisual()
   {
     ignerr << "Unable to create root visual" << std::endl;
     this->rootVisual = nullptr;
+    return;
   }
 
   // add visual node to actual ogre root

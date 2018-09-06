@@ -496,6 +496,20 @@ void Ogre2RenderEngine::CreateResources()
 
   Ogre::String rootHlmsFolder = mediaPath;
 
+  // register PbsMaterial resources
+  Ogre::String pbsCompositorFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "Compositors");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      pbsCompositorFolder, "FileSystem", "General");
+  Ogre::String commonMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonMaterialFolder, "FileSystem", "General");
+  Ogre::String commonGLSLMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSL");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonGLSLMaterialFolder, "FileSystem", "General");
+
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework
   if (rootHlmsFolder.empty())
@@ -555,6 +569,7 @@ void Ogre2RenderEngine::CreateResources()
       Ogre::Archive *archiveLibrary =
           archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
           "FileSystem", true);
+
       archivePbsLibraryFolders.push_back(archiveLibrary);
       ++libraryFolderPathIt;
     }

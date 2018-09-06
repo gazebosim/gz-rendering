@@ -547,8 +547,8 @@ void OgreMaterial::SetDepthMaterial(const double far,
   this->SetFragmentShader(depth_fragment_shader_path);
 
   // Configure fragment shader variables
-  (*this->fragmentShaderParams)["pFar"] = (float)far;
-  (*this->fragmentShaderParams)["pNear"] = (float)near;
+  (*this->fragmentShaderParams)["pFar"] = static_cast<float>(far);
+  (*this->fragmentShaderParams)["pNear"] = static_cast<float>(near);
 }
 
 //////////////////////////////////////////////////

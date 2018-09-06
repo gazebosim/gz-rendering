@@ -216,10 +216,7 @@ void Ogre2Material::SetTexture(const std::string &_name)
 void Ogre2Material::ClearTexture()
 {
   this->textureName = "";
-  Ogre::HlmsTextureManager *hlmsTextureManager =
-      this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
-  this->ogreDatablock->setTexture(Ogre::PBSM_DIFFUSE, 0,
-      hlmsTextureManager->getBlankTexture().texture);
+  this->ogreDatablock->setTexture(Ogre::PBSM_DIFFUSE, 0, Ogre::TexturePtr());
 }
 
 //////////////////////////////////////////////////
@@ -251,11 +248,7 @@ void Ogre2Material::SetNormalMap(const std::string &_name)
 void Ogre2Material::ClearNormalMap()
 {
   this->normalMapName = "";
-
-  Ogre::HlmsTextureManager *hlmsTextureManager =
-      this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
-  this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, 0,
-      hlmsTextureManager->getBlankTexture().texture);
+  this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, 0, Ogre::TexturePtr());
 }
 
 //////////////////////////////////////////////////

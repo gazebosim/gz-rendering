@@ -164,7 +164,7 @@ namespace ignition
       protected: Ogre::HlmsPbsDatablock *ogreDatablock = nullptr;
 
       /// \brief  Ogre high level physical based shading object
-      protected: Ogre::HlmsPbs *ogreHlmsPbs= nullptr;
+      protected: Ogre::HlmsPbs *ogreHlmsPbs = nullptr;
 
       /// \brief Material transparency
       protected: double transparency = 0.0;

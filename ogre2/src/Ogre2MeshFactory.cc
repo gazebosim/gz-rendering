@@ -266,7 +266,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       vBuf = Ogre::v1::HardwareBufferManager::getSingleton().createVertexBuffer(
                  vertexDecl->getVertexSize(0),
                  vertexData->vertexCount,
-                 Ogre::v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+                 Ogre::v1::HardwareBuffer::HBU_STATIC,
                  true);
 
       vertexData->vertexBufferBinding->setBinding(0, vBuf);
@@ -319,7 +319,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
         Ogre::v1::HardwareBufferManager::getSingleton().createIndexBuffer(
             Ogre::v1::HardwareIndexBuffer::IT_16BIT,
             ogreSubMesh->indexData[Ogre::VpNormal]->indexCount,
-            Ogre::v1::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+            Ogre::v1::HardwareBuffer::HBU_STATIC,
             true);
 
       iBuf = ogreSubMesh->indexData[Ogre::VpNormal]->indexBuffer;

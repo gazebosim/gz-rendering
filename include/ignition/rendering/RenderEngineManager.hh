@@ -63,14 +63,18 @@ namespace ignition
       /// render-engine is registered under the given name, NULL will be
       /// returned.
       /// \param[name] _name Name of the desired render-engine
+      /// \param[in] _path Another search path for rendering engine plugin.
       /// \return The specified render-engine
-      public: RenderEngine *Engine(const std::string &_name) const;
+      public: RenderEngine *Engine(const std::string &_name,
+                  const std::string &_path) const;
 
       /// \brief Get the render-engine at the given index. If no
       /// render-engine is exists at the given index, NULL will be returned.
       /// \param[in] _index Index of the desired render-engine
+      /// \param[in] _path Another search path for rendering engine plugin.
       /// \return The specified render-engine
-      public: RenderEngine *EngineAt(unsigned int _index) const;
+      public: RenderEngine *EngineAt(unsigned int _index,
+                  const std::string &_path) const;
 
       /// \brief Register a new render-engine under the given name. If the
       /// given name is already in use, the render-engine will not be

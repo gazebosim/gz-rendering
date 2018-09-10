@@ -11,30 +11,19 @@ pipelines:
           - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt-get update
           - apt-get -y install
-            cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn freeglut3-dev libxmu-dev libxi-dev
-            libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
-            libfreeimage-dev libgts-dev libswscale-dev libtinyxml2-dev
-            curl git mercurial g++-8 uuid-dev
+            cmake pkg-config cppcheck libogre-1.9-dev libglew-dev libfreeimage-dev doxygen ruby-ronn freeglut3-dev libxmu-dev libxi-dev curl git mercurial g++-8 uuid-dev
           - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
           - gcc -v
           - g++ -v
           - gcov -v
           # Dependency: Ignition packages
           - apt-get -y install
-            libignition-cmake2-dev libignition-math6-dev
+            libignition-cmake2-dev libignition-common3-dev libignition-math6-dev
           # lcov
           - git clone https://github.com/linux-test-project/lcov.git
           - cd lcov
           - make install
           - cd ..
-          # Ignition common
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b gz11
-          - cd ign-common
-          - mkdir build
-          - cd build
-          - cmake ..
-          - make -j4 install
-          - cd ../..
           # Ignition rendering
           - mkdir build
           - cd build

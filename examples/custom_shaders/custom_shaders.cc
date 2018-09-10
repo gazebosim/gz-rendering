@@ -182,7 +182,7 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
       resourcePath, "ogre", "media", "materials", "programs",
       fragment_shader_file);
 
- ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
+  ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
   shader->SetVertexShader(vertex_shader_path);
   shader->SetFragmentShader(fragment_shader_path);
 

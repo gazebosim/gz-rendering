@@ -250,9 +250,14 @@ SceneStorePtr Ogre2RenderEngine::Scenes() const
 }
 
 //////////////////////////////////////////////////
-bool Ogre2RenderEngine::LoadImpl()
+bool Ogre2RenderEngine::LoadImpl(
+    const std::map<std::string, std::string> &_params)
 {
-  ignerr << " ogre2 render engine  before loadimp" <<std::endl;
+  // parse params
+  auto it = _params.find("useCurrentGLContext");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->useCurrentGLContext;
+
   try
   {
     this->LoadAttempt();
@@ -269,14 +274,11 @@ bool Ogre2RenderEngine::LoadImpl()
     ignerr << "Failed to load render-engine" << std::endl;
     return false;
   }
-
-  ignerr << " ogre2 render engine  done loadimp" <<std::endl;
 }
 
 //////////////////////////////////////////////////
 bool Ogre2RenderEngine::InitImpl()
 {
-  ignerr << " ogre2 render engine  before init " <<std::endl;
   try
   {
     this->InitAttempt();
@@ -287,14 +289,14 @@ bool Ogre2RenderEngine::InitImpl()
     ignerr << "Failed to initialize render-engine" << std::endl;
     return false;
   }
-  ignerr << " ogre2 render engine  done init " <<std::endl;
 }
 
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-//  this->CreateContext();
+  if (!this->useCurrentGLContext)
+    this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -601,14 +603,16 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   Ogre::RenderWindow *window = nullptr;
 
   // if use current gl then don't include window handle params
-/*
-  // Mac and Windows *must* use externalWindow handle.
+  if (!this->useCurrentGLContext)
+  {
+    // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
-  params["externalWindowHandle"] = _handle;
+    params["externalWindowHandle"] = _handle;
 #else
-  params["parentWindowHandle"] = _handle;
+    params["parentWindowHandle"] = _handle;
 #endif
-*/
+  }
+
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
@@ -633,8 +637,11 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "true";
 
-  params["externalGLControl"] = "true";
-  params["currentGLContext"] = "true";
+  if (this->useCurrentGLContext)
+  {
+    params["externalGLControl"] = "true";
+    params["currentGLContext"] = "true";
+  }
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)

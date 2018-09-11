@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
 #define IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -110,7 +111,9 @@ namespace ignition
 
       protected: virtual SceneStorePtr Scenes() const;
 
-      protected: virtual bool LoadImpl();
+      // Documentation Inherited.
+      protected: virtual bool LoadImpl(
+          const std::map<std::string, std::string> &_params) override;
 
       protected: virtual bool InitImpl();
 
@@ -164,7 +167,8 @@ namespace ignition
 
       private: uint64_t dummyWindowId = 0u;
 
-      private: bool useCurrentGLContext = true;
+      /// \brief True to use the current opengl context
+      private: bool useCurrentGLContext = false;
 
       private: std::unique_ptr<OgreRenderEnginePrivate> dataPtr;
 

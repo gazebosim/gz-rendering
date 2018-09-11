@@ -39,7 +39,9 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \brief Get a pointer to the render engine from an EngineMap iterator
   /// \param[in] _iter EngineMap iterator
   /// \param[in] _path Another search path for rendering engine plugin.
-  public: RenderEngine *Engine(EngineIter _iter, const std::string &_path);
+  public: RenderEngine *Engine(EngineIter _iter,
+      const std::map<std::string, std::string> &_params,
+      const std::string &_path);
 
   /// \brief Register default engines supplied by ign-rendering
   public: void RegisterDefaultEngines();
@@ -94,6 +96,7 @@ bool RenderEngineManager::HasEngine(const std::string &_name) const
 
 //////////////////////////////////////////////////
 RenderEngine *RenderEngineManager::Engine(const std::string &_name,
+    const std::map<std::string, std::string> &_params,
     const std::string &_path) const
 {
   // check in the list of available engines
@@ -105,11 +108,12 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name,
     return nullptr;
   }
 
-  return this->dataPtr->Engine(iter, _path);
+  return this->dataPtr->Engine(iter, _params, _path);
 }
 
 //////////////////////////////////////////////////
 RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
+    const std::map<std::string, std::string> &_params,
     const std::string &_path) const
 {
   if (_index >= this->EngineCount())
@@ -120,7 +124,7 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
 
   auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
-  return this->dataPtr->Engine(iter, _path);
+  return this->dataPtr->Engine(iter, _params, _path);
 }
 
 //////////////////////////////////////////////////
@@ -192,6 +196,7 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
 RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter,
+    const std::map<std::string, std::string> &_params,
     const std::string &_path)
 {
   RenderEngine *engine = _iter->second;
@@ -218,7 +223,7 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter,
 
   if (!engine->IsInitialized())
   {
-    engine->Load();
+    engine->Load(_params);
     engine->Init();
   }
 

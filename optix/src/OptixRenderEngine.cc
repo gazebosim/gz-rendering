@@ -117,7 +117,8 @@ SceneStorePtr OptixRenderEngine::Scenes() const
 }
 
 //////////////////////////////////////////////////
-bool OptixRenderEngine::LoadImpl()
+bool OptixRenderEngine::LoadImpl(
+    const std::map<std::string, std::string> &/*_params*/)
 {
   return true;
 }

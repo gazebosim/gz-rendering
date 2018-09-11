@@ -255,16 +255,13 @@ SceneStorePtr OgreRenderEngine::Scenes() const
 }
 
 //////////////////////////////////////////////////
-bool OgreRenderEngine::LoadImpl()
-//    const std::map<std::string, std::string>_&_params)
+bool OgreRenderEngine::LoadImpl(
+    const std::map<std::string, std::string> &_params)
 {
-/*  // parse params
-  if (_params.find("useCurrentGLContext") != _params.end())
-  {
-    istringstream(_params["useCurrentGLContext"]) >> b;
-    this->useCurrentGLContext = b;
-  }
-*/
+  // parse params
+  auto it = _params.find("useCurrentGLContext");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->useCurrentGLContext;
 
   try
   {

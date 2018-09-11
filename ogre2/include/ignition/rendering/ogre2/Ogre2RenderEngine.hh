@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERENGINE_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2RENDERENGINE_HH_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -120,9 +121,9 @@ namespace ignition
       /// \return list of scenes
       protected: virtual SceneStorePtr Scenes() const;
 
-      /// \brief Load the render engine
-      /// \return True if the operation is successful
-      protected: virtual bool LoadImpl();
+      // Documentation Inherited.
+      protected: virtual bool LoadImpl(
+          const std::map<std::string, std::string> &_params) override;
 
       /// \brief Initialize the render engine
       /// \return True if the operation is successful
@@ -186,6 +187,9 @@ namespace ignition
 
       /// \brief Dummy window Id needed for linux platform
       private: uint64_t dummyWindowId = 0u;
+
+      /// \brief True to use the current opengl context
+      private: bool useCurrentGLContext = false;
 
       /// \brief Pointer to private data
       private: std::unique_ptr<Ogre2RenderEnginePrivate> dataPtr;

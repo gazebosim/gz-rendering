@@ -41,18 +41,15 @@ set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
 ign_find_package(FreeImage VERSION 3.9
   REQUIRED_BY optix
   PRIVATE_FOR optix)
-#--------------------------------------
-# Find OpenGL
-find_package(OpenGL)
-if (OpenGL_FOUND)
-  set(HAVE_OPENGL TRUE)
-endif()
 
-#--------------------------------------
 # Find OpenGL
 ign_find_package(OpenGL
   REQUIRED_BY ogre ogre2
   PKGCONFIG gl)
+
+if (OpenGL_FOUND)
+  set(HAVE_OPENGL TRUE)
+endif()
 
 #--------------------------------------
 # Find OGRE
@@ -62,20 +59,18 @@ ign_find_package(IgnOGRE VERSION 1.8.0
   PRIVATE_FOR ogre)
 
 if (OGRE_FOUND)
-  #  there is a problem with finding gl/glew.h on macOS
+  # there is a problem with finding gl/glew.h
   # TODO move this logic to FindIgnOGRE.cmake?
-#  if (APPLE)
-    foreach (dir ${OGRE_INCLUDE_DIRS})
-      get_filename_component(dir_name "${dir}" NAME)
-      if ("${dir_name}" STREQUAL "OGRE")
-        set(dir_include "${dir}/RenderSystems/GL")
-      else()
-        set(dir_include "${dir}")
-      endif()
-      list(APPEND OGRE_INCLUDES ${dir_include})
-    endforeach()
-    include_directories(${OGRE_INCLUDES})
-#  endif()
+  foreach (dir ${OGRE_INCLUDE_DIRS})
+    get_filename_component(dir_name "${dir}" NAME)
+    if ("${dir_name}" STREQUAL "OGRE")
+      set(dir_include "${dir}/RenderSystems/GL")
+    else()
+      set(dir_include "${dir}")
+    endif()
+    list(APPEND OGRE_INCLUDES ${dir_include})
+  endforeach()
+  include_directories(${OGRE_INCLUDES})
 
   set(HAVE_OGRE TRUE)
 endif()
@@ -88,22 +83,18 @@ ign_find_package(OGRE2 VERSION 2.1.0
     PRIVATE_FOR ogre2)
 
 if (OGRE2_FOUND)
-
-  #  there is a problem with finding gl/glew.h on macOS
+  # there is a problem with finding gl/glew.h on macOS
   # TODO move this logic to FindIgnOGRE.cmake?
-#  if (APPLE)
-    foreach (dir ${OGRE2_INCLUDE_DIRS})
-      get_filename_component(dir_name "${dir}" NAME)
-      if ("${dir_name}" STREQUAL "OGRE")
-        set(dir_include "${dir}/RenderSystems/GL3Plus")
-      else()
-        set(dir_include "${dir}")
-      endif()
-      list(APPEND OGRE2_INCLUDES ${dir_include})
-    endforeach()
-    include_directories(${OGRE2_INCLUDES})
-#  endif()
-
+  foreach (dir ${OGRE2_INCLUDE_DIRS})
+    get_filename_component(dir_name "${dir}" NAME)
+    if ("${dir_name}" STREQUAL "OGRE")
+      set(dir_include "${dir}/RenderSystems/GL3Plus")
+    else()
+      set(dir_include "${dir}")
+    endif()
+    list(APPEND OGRE2_INCLUDES ${dir_include})
+  endforeach()
+  include_directories(${OGRE2_INCLUDES})
 
   set(HAVE_OGRE2 TRUE)
 endif()

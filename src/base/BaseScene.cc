@@ -966,50 +966,38 @@ void BaseScene::CreateMaterials()
   MaterialPtr material;
 
   material = this->CreateMaterial("Default/TransRed");
-  if (material)
-  {
-    material->SetAmbient(1.0, 0.0, 0.0);
-    material->SetDiffuse(1.0, 0.0, 0.0);
-    material->SetEmissive(1.0, 0.0, 0.0);
-    material->SetTransparency(0.5);
-    material->SetCastShadows(false);
-    material->SetReceiveShadows(false);
-    material->SetLightingEnabled(false);
-  }
+  material->SetAmbient(1.0, 0.0, 0.0);
+  material->SetDiffuse(1.0, 0.0, 0.0);
+  material->SetEmissive(1.0, 0.0, 0.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
 
   material = this->CreateMaterial("Default/TransGreen");
-  if (material)
-  {
-    material->SetAmbient(0.0, 1.0, 0.0);
-    material->SetDiffuse(0.0, 1.0, 0.0);
-    material->SetEmissive(0.0, 1.0, 0.0);
-    material->SetTransparency(0.5);
-    material->SetCastShadows(false);
-    material->SetReceiveShadows(false);
-    material->SetLightingEnabled(false);
-  }
+  material->SetAmbient(0.0, 1.0, 0.0);
+  material->SetDiffuse(0.0, 1.0, 0.0);
+  material->SetEmissive(0.0, 1.0, 0.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
 
   material = this->CreateMaterial("Default/TransBlue");
-  if (material)
-  {
-    material->SetAmbient(0.0, 0.0, 1.0);
-    material->SetDiffuse(0.0, 0.0, 1.0);
-    material->SetEmissive(0.0, 0.0, 1.0);
-    material->SetTransparency(0.5);
-    material->SetCastShadows(false);
-    material->SetReceiveShadows(false);
-    material->SetLightingEnabled(false);
-  }
+  material->SetAmbient(0.0, 0.0, 1.0);
+  material->SetDiffuse(0.0, 0.0, 1.0);
+  material->SetEmissive(0.0, 0.0, 1.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
 
   material = this->CreateMaterial("Default/White");
-  if (material)
-  {
-    material->SetAmbient(1.0, 1.0, 1.0);
-    material->SetDiffuse(1.0, 1.0, 1.0);
-    material->SetEmissive(1.0, 1.0, 1.0);
-    material->SetTransparency(0);
-    material->SetCastShadows(true);
-    material->SetReceiveShadows(true);
-    material->SetLightingEnabled(true);
-  }
+  material->SetAmbient(1.0, 1.0, 1.0);
+  material->SetDiffuse(1.0, 1.0, 1.0);
+  material->SetEmissive(1.0, 1.0, 1.0);
+  material->SetTransparency(0);
+  material->SetCastShadows(true);
+  material->SetReceiveShadows(true);
+  material->SetLightingEnabled(true);
 }

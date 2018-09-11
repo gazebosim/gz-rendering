@@ -235,7 +235,8 @@ TEST_P(CameraTest, TrackFollow)
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
-    ::testing::Values("ogre", "optix"));
+    ::testing::Values("ogre", "optix"),
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -666,12 +666,12 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   if (window)
   {
-//    window->setActive(true);
-//    window->setVisible(true);
+    window->setActive(true);
+    window->setVisible(true);
     window->setVisible(false);
 
     // Windows needs to reposition the render window to 0,0.
-//    window->reposition(0, 0);
+    window->reposition(0, 0);
   }
   return stream.str();
 }

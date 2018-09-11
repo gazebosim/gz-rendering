@@ -266,7 +266,6 @@ bool OgreRenderEngine::LoadImpl(
   try
   {
     this->LoadAttempt();
-    this->loaded = true;
     return true;
   }
   catch (Ogre::Exception &ex)

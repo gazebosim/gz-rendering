@@ -50,15 +50,7 @@ void Ogre2RenderTarget::BuildCompositor()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  const Ogre::String workspaceName(
-      this->ogreCamera->getName() + "_" + this->RenderTarget()->getName()
-      + "_workspace");
-  if (!ogreCompMgr->hasWorkspaceDefinition(workspaceName))
-  {
-    ogreCompMgr->createBasicWorkspaceDef(workspaceName,
-        this->ogreBackgroundColor,  Ogre::IdString());
-  }
-
+  const Ogre::String workspaceName = "PbsMaterialsWorkspace";
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
       this->RenderTarget(), this->ogreCamera, workspaceName, false);

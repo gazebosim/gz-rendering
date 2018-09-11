@@ -135,8 +135,16 @@ double Ogre2Material::Transparency() const
 void Ogre2Material::SetTransparency(const double _transparency)
 {
   this->transparency = std::min(std::max(_transparency, 0.0), 1.0);
+
+  Ogre::HlmsPbsDatablock::TransparencyModes mode;
+  double opacity = 1.0-this->transparency;
+  if (math::equal(opacity, 1.0))
+     mode = Ogre::HlmsPbsDatablock::None;
+  else
+    mode = Ogre::HlmsPbsDatablock::Transparent;
+
   // from ogre documentation: 0 = full transparency and 1 = fully opaque
-  this->ogreDatablock->setTransparency(1-this->transparency);
+  this->ogreDatablock->setTransparency(opacity, mode);
 }
 
 //////////////////////////////////////////////////
@@ -331,7 +339,7 @@ void Ogre2Material::Init()
            << std::endl;
     return;
   }
-  this->ogreDatablock =  static_cast<Ogre::HlmsPbsDatablock*>(
+  this->ogreDatablock = static_cast<Ogre::HlmsPbsDatablock *>(
       this->ogreHlmsPbs->createDatablock(this->name, this->name,
       Ogre::HlmsMacroblock(), Ogre::HlmsBlendblock(), Ogre::HlmsParamVec()));
 

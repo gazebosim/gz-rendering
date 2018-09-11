@@ -164,7 +164,7 @@ namespace ignition
 
       private: uint64_t dummyWindowId = 0u;
 
-      private: bool useCurrentGLContext = false;
+      private: bool useCurrentGLContext = true;
 
       private: std::unique_ptr<OgreRenderEnginePrivate> dataPtr;
 

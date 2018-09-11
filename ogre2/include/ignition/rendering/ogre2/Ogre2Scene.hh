@@ -217,9 +217,6 @@ namespace ignition
       /// \brief A list of ogre materials
       protected: Ogre2MaterialMapPtr materials;
 
-      /// \brief Pointer to the ogre root object
-      protected: Ogre::Root *ogreRoot = nullptr;
-
       /// \brief Pointer to the ogre scene manager
       protected: Ogre::SceneManager *ogreSceneManager = nullptr;
 

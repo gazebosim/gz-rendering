@@ -102,7 +102,7 @@ void Ogre2SubMesh::SetMaterialImpl(Ogre2MaterialPtr _material)
 {
   this->material = _material;
   this->ogreSubItem->setDatablock(
-      dynamic_cast<Ogre::HlmsDatablock *>(this->material->Datablock()));
+      static_cast<Ogre::HlmsPbsDatablock *>(this->material->Datablock()));
 }
 
 //////////////////////////////////////////////////

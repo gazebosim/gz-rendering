@@ -45,6 +45,7 @@
 #include <OgreColourValue.h>
 #include <OgreQuaternion.h>
 #include <OgreMesh2.h>
+#include <OgreSubMesh2.h>
 #include <OgreMeshManager2.h>
 #include <OgreHardwareBufferManager.h>
 #include <OgreCamera.h>

@@ -29,6 +29,7 @@ pipelines:
           - cd build
           - cmake .. -DCMAKE_BUILD_TYPE=coverage
           - make -j4
+          - make install
           - make codecheck
           # Can't make tests - valid display not found
           # Build an example

@@ -100,16 +100,16 @@ namespace ignition
       private: void UpdateAttenuation();
 
       /// \brief Attenuation constant value
-      protected: double attenConstant;
+      protected: double attenConstant = 1.0;
 
       /// \brief Attenuation linear factor
-      protected: double attenLinear;
+      protected: double attenLinear = 0.0;
 
       /// \brief Attenuation quadratic factor
-      protected: double attenQuadratic;
+      protected: double attenQuadratic = 0.0;
 
       /// \brief Attenuation range
-      protected: double attenRange;
+      protected: double attenRange = 100.0;
 
       /// \brief Pointer to ogre light
       protected: Ogre::Light *ogreLight = nullptr;

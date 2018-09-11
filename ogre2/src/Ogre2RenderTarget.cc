@@ -166,7 +166,6 @@ void Ogre2RenderTarget::PostRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
-  std::cerr << "ogre2rendertarget render " << std::endl;
   // TODO(anyone)
   // There is current not an easy solution to manually updating
   // render textures:
@@ -194,7 +193,6 @@ void Ogre2RenderTarget::Render()
   //     hlms->frameEnded();
   // }
   // engine->OgreRoot()->getRenderSystem()->_update();
-  std::cerr << "ogre2rendertarget render done " << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -306,29 +304,12 @@ GLuint Ogre2RenderTexture::GLId() const
 void Ogre2RenderTexture::PreRender()
 {
   Ogre2RenderTarget::PreRender();
-  if (!this->ogreTexture)
-    return;
-
-  Ogre::RenderTarget *rt = this->RenderTarget();
-
-  Ogre::GL3PlusFrameBufferObject *ogreFbo = nullptr;
-  rt->getCustomAttribute("FBO", &ogreFbo);
-  Ogre::GL3PlusFBOManager *manager = ogreFbo->getManager();
-  manager->bind(rt);
 }
 
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::PostRender()
 {
-  if (!this->ogreTexture)
-    return;
-
-  Ogre::RenderTarget *rt = this->RenderTarget();
-
-  Ogre::GL3PlusFrameBufferObject *ogreFbo = nullptr;
-  rt->getCustomAttribute("FBO", &ogreFbo);
-  Ogre::GL3PlusFBOManager *manager = ogreFbo->getManager();
-  manager->unbind(rt);
+  Ogre2RenderTarget::PostRender();
 }
 
 //////////////////////////////////////////////////

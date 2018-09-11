@@ -39,10 +39,7 @@ namespace ignition
     template class BaseNodeStore<Ogre2Node>;
     template class BaseSceneStore<Ogre2Scene>;
     template class BaseSensorStore<Ogre2Sensor>;
-    template class BaseGeometryStore<Ogre2Geometry>;
-    template class BaseSceneStore<Ogre2Scene>;
     template class BaseSubMeshStore<Ogre2SubMesh>;
-    template class BaseMaterialMap<Ogre2Material>;
     template class BaseVisualStore<Ogre2Visual>;
 
     typedef BaseGeometryStore<Ogre2Geometry>    Ogre2GeometryStore;
@@ -57,14 +54,9 @@ namespace ignition
     typedef std::shared_ptr<Ogre2LightStore>    Ogre2LightStorePtr;
     typedef std::shared_ptr<Ogre2NodeStore>     Ogre2NodeStorePtr;
     typedef std::shared_ptr<Ogre2SceneStore>    Ogre2SceneStorePtr;
-    typedef std::shared_ptr<Ogre2NodeStore>     Ogre2NodeStorePtr;
-    typedef std::shared_ptr<Ogre2LightStore>    Ogre2LightStorePtr;
     typedef std::shared_ptr<Ogre2SensorStore>   Ogre2SensorStorePtr;
     typedef std::shared_ptr<Ogre2SubMeshStore>  Ogre2SubMeshStorePtr;
     typedef std::shared_ptr<Ogre2VisualStore>   Ogre2VisualStorePtr;
-    typedef std::shared_ptr<Ogre2GeometryStore> Ogre2GeometryStorePtr;
-    typedef std::shared_ptr<Ogre2SubMeshStore>  Ogre2SubMeshStorePtr;
-    typedef std::shared_ptr<Ogre2MaterialMap>   Ogre2MaterialMapPtr;
     }
   }
 }

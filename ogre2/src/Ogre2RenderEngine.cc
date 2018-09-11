@@ -294,7 +294,7 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  this->CreateContext();
+//  this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -586,12 +586,15 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   Ogre::NameValuePairList params;
   Ogre::RenderWindow *window = nullptr;
 
+  // if use current gl then don't include window handle params
+/*
   // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
   params["externalWindowHandle"] = _handle;
 #else
   params["parentWindowHandle"] = _handle;
 #endif
+*/
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
@@ -611,6 +614,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
+
 
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "true";
@@ -641,11 +645,12 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   if (window)
   {
-    window->setActive(true);
-    window->setVisible(true);
+//    window->setActive(true);
+//    window->setVisible(true);
+    window->setVisible(false);
 
     // Windows needs to reposition the render window to 0,0.
-    window->reposition(0, 0);
+//    window->reposition(0, 0);
   }
   return stream.str();
 }

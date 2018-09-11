@@ -76,7 +76,7 @@ math::Color OgreCamera::BackgroundColor() const
   return this->renderTexture->BackgroundColor();
 }
 
-//////////////////////////////////////////////////
+/////////////////////////////////////////////////
 void OgreCamera::SetBackgroundColor(const math::Color &_color)
 {
   this->renderTexture->SetBackgroundColor(_color);
@@ -115,7 +115,17 @@ void OgreCamera::CreateCamera()
   // create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
+  if (ogreSceneManager == nullptr)
+  {
+    ignerr << "Scene manager cannot be obtained" << std::endl;
+  }
+
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
+  if (ogreCamera == nullptr)
+  {
+    ignerr << "Ogre camera cannot be created" << std::endl;
+  }
+
   this->ogreNode->attachObject(this->ogreCamera);
 
   // rotate to Gazebo coordinate system
@@ -252,4 +262,22 @@ void OgreCamera::SetFarClipPlane(const double _far)
 {
   BaseCamera::SetFarClipPlane(_far);
   this->ogreCamera->setFarClipDistance(_far);
+}
+
+//////////////////////////////////////////////////
+double OgreCamera::NearClip() const
+{
+  if (this->ogreCamera)
+    return this->ogreCamera->getNearClipDistance();
+  else
+    return 0;
+}
+
+//////////////////////////////////////////////////
+double OgreCamera::FarClip() const
+{
+  if (this->ogreCamera)
+    return this->ogreCamera->getFarClipDistance();
+  else
+    return 0;
 }

@@ -76,7 +76,15 @@ namespace ignition
       /// \param[in] _material The material to render
       public: void SetMaterial(MaterialPtr _material);
 
-      protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+      public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+
+      public: Ogre::Viewport *AddViewport(Ogre::Camera *_viewport);
+
+      public: Ogre::Viewport *Viewport(const int _viewportId) const;
+
+      public: void SetUpdate(const bool _value);
+
+      public: void SetAutoUpdated(const bool _value);
 
       protected: virtual void UpdateBackgroundColor();
 
@@ -127,7 +135,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual GLuint GLId();
 
-      protected: virtual Ogre::RenderTarget *RenderTarget() const;
+      public: virtual void Buffer(float *buffer);
+
+      public: virtual Ogre::RenderTarget *RenderTarget() const;
 
       protected: virtual void RebuildTarget();
 

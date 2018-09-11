@@ -79,8 +79,8 @@ void buildScene(ScenePtr _scene)
 
   // create directional light
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
-  light0->SetDirection(-0.5, 0.5, -1);
-  light0->SetDiffuseColor(0.5, 0.5, 0.5);
+  light0->SetDirection(0.5, 0.5, -1);
+  light0->SetDiffuseColor(0.8, 0.8, 0.8);
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 

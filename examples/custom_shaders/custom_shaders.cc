@@ -15,6 +15,7 @@
  *
 */
 #include <ignition/common/Image.hh>
+#include <ignition/common/Filesystem.hh>
 #include <ignition/rendering.hh>
 
 #include "example_config.hh"
@@ -30,14 +31,12 @@ const double width = 512;
 const double height = 512;
 const int bytesPerPixel = 3;
 
-const std::string vertex_shader_path =
-  PROJECT_SOURCE_PATH "/vertex_shader.glsl";
-const std::string fragment_shader_path =
-  PROJECT_SOURCE_PATH "/fragment_shader.glsl";
-const std::string depth_vertex_shader_path =
-  PROJECT_SOURCE_PATH "/depth_vertex_shader.glsl";
-const std::string depth_fragment_shader_path =
-  PROJECT_SOURCE_PATH "/depth_fragment_shader.glsl";
+const std::string depth_vertex_shader_file =
+  "depth_vertex_shader.glsl";
+const std::string depth_fragment_shader_file =
+  "depth_fragment_shader.glsl";
+const std::string vertex_shader_file = "vertex_shader.glsl";
+const std::string fragment_shader_file = "fragment_shader.glsl";
 
 
 //////////////////////////////////////////////////
@@ -86,6 +85,23 @@ int main()
   // Render to an in-memory image
 
   // Call set a custom shader on all objects viewed through depthCamera
+
+
+  // TODO(anyone): convert depth configuration into a ShaderType
+  // Get shader parameters path
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+
+  // path to look for vertex and fragment shader parameters
+  std::string depth_vertex_shader_path = ignition::common::joinPaths(
+      resourcePath, "ogre", "media", "materials", "programs",
+      depth_vertex_shader_file);
+
+  std::string depth_fragment_shader_path = ignition::common::joinPaths(
+      resourcePath, "ogre", "media", "materials", "programs",
+      depth_fragment_shader_file);
+
   ignition::rendering::MaterialPtr depthMat = scene->CreateMaterial();
   depthMat->SetVertexShader(depth_vertex_shader_path);
   depthMat->SetFragmentShader(depth_fragment_shader_path);
@@ -152,7 +168,21 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
   root->AddChild(plane);
 
   // create shader material
-  ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
+  // Get shader parameters path
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+
+  // path to look for vertex and fragment shader parameters
+  std::string vertex_shader_path = ignition::common::joinPaths(
+      resourcePath, "ogre", "media", "materials", "programs",
+      vertex_shader_file);
+
+  std::string fragment_shader_path = ignition::common::joinPaths(
+      resourcePath, "ogre", "media", "materials", "programs",
+      fragment_shader_file);
+
+ ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
   shader->SetVertexShader(vertex_shader_path);
   shader->SetFragmentShader(fragment_shader_path);
 

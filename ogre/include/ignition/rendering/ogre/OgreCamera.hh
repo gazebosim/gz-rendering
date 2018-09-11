@@ -68,6 +68,16 @@ namespace ignition
 
       public: virtual math::Matrix4d ViewMatrix() const override;
 
+      public: void SetVFOV(double cameraVFOV) const;
+
+      /// \brief Get the near clip distance
+      /// \return Near clip distance
+      public: double NearClip() const;
+
+      /// \brief Get the far clip distance
+      /// \return Far clip distance
+      public: double FarClip() const;
+
       // Documentation inherited
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
                   &_mousePos) override;

@@ -77,6 +77,11 @@ namespace ignition
       public: virtual enum ShaderType ShaderType() const override;
 
       // Documentation inherited.
+      // \sa Material::SetDepthMaterial()
+      public: virtual void SetDepthMaterial(const double far,
+                  const double near) override;
+
+      // Documentation inherited.
       // \sa Material::VertexShader() const
       public: virtual std::string VertexShader() const override;
 
@@ -274,6 +279,14 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseMaterial<T>::PreRender()
+    {
+      // do nothing
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetDepthMaterial(const double /*far*/,
+          const double /*near*/)
     {
       // do nothing
     }

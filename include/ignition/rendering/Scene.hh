@@ -575,6 +575,35 @@ namespace ignition
       public: virtual CameraPtr CreateCamera(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new depth camera. A unique ID and name will
+      /// automatically be assigned to the camera.
+      /// \return The created camera
+      public: virtual DepthCameraPtr CreateDepthCamera() = 0;
+
+      /// \brief Create new depth camera with the given ID. A unique name
+      /// will automatically be assigned to the camera. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new camera
+      /// \return The created camera
+      public: virtual DepthCameraPtr CreateDepthCamera(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new depth camera with the given name. A unique ID
+      /// will automatically be assigned to the camera. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new camera
+      /// \return The created camera
+      public: virtual DepthCameraPtr CreateDepthCamera(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new depth camera with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new camera
+      /// \param[in] _name Name of the new camera
+      /// \return The created camera
+      public: virtual DepthCameraPtr CreateDepthCamera(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new visual. A unique ID and name will
       /// automatically be assigned to the visual.
       /// \return The created visual

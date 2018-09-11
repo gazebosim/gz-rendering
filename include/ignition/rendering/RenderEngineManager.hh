@@ -66,7 +66,7 @@ namespace ignition
       /// \param[in] _path Another search path for rendering engine plugin.
       /// \return The specified render-engine
       public: RenderEngine *Engine(const std::string &_name,
-                  const std::string &_path) const;
+                  const std::string &_path = "") const;
 
       /// \brief Get the render-engine at the given index. If no
       /// render-engine is exists at the given index, NULL will be returned.
@@ -74,7 +74,7 @@ namespace ignition
       /// \param[in] _path Another search path for rendering engine plugin.
       /// \return The specified render-engine
       public: RenderEngine *EngineAt(unsigned int _index,
-                  const std::string &_path) const;
+                  const std::string &_path = "") const;
 
       /// \brief Register a new render-engine under the given name. If the
       /// given name is already in use, the render-engine will not be

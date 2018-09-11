@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 
+#include "test_config.h"
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
@@ -51,7 +52,7 @@ TEST(RenderingIfaceTest, GetEngine)
   // check get engine
   for (unsigned int i = 0; i < count; ++i)
   {
-    RenderEngine *eng = engine(i);
+    RenderEngine *eng = engine(i, IGN_RENDERING_TEST_PLUGIN_PATH);
     EXPECT_NE(nullptr, eng);
     EXPECT_TRUE(hasEngine(eng->Name()));
     EXPECT_EQ(eng, engine(eng->Name()));

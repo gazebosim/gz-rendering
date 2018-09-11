@@ -15,6 +15,7 @@
  *
  */
 
+# include <sstream>
 
 // Not Apple or Windows
 #if not defined(__APPLE__) && not defined(_WIN32)
@@ -73,13 +74,6 @@ RenderEngine *OgreRenderEnginePlugin::Engine() const
 OgreRenderEngine::OgreRenderEngine() :
   dataPtr(new OgreRenderEnginePrivate)
 {
-#if not (__APPLE__ || _WIN32)
-  this->dummyDisplay = nullptr;
-  this->dummyContext = 0;
-#endif
-
-  this->dummyWindowId = 0;
-
   this->ogrePaths.push_back(std::string(OGRE_RESOURCE_PATH));
 }
 
@@ -262,7 +256,16 @@ SceneStorePtr OgreRenderEngine::Scenes() const
 
 //////////////////////////////////////////////////
 bool OgreRenderEngine::LoadImpl()
+//    const std::map<std::string, std::string>_&_params)
 {
+/*  // parse params
+  if (_params.find("useCurrentGLContext") != _params.end())
+  {
+    istringstream(_params["useCurrentGLContext"]) >> b;
+    this->useCurrentGLContext = b;
+  }
+*/
+
   try
   {
     this->LoadAttempt();
@@ -300,7 +303,8 @@ bool OgreRenderEngine::InitImpl()
 void OgreRenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-//  this->CreateContext();
+  if (!this->useCurrentGLContext)
+    this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -380,7 +384,7 @@ void OgreRenderEngine::CreateRoot()
 {
   try
   {
-    this->ogreRoot = new Ogre::Root();
+    this->ogreRoot = new Ogre::Root("", "", "");
   }
   catch (Ogre::Exception &ex)
   {
@@ -576,15 +580,18 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
   Ogre::NameValuePairList params;
   Ogre::RenderWindow *window = nullptr;
 
-/*  // Mac and Windows *must* use externalWindow handle.
+  if (!this->useCurrentGLContext)
+  {
+    // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
-  params["externalWindowHandle"] = _handle;
+    params["externalWindowHandle"] = _handle;
 #else
-  params["parentWindowHandle"] = _handle;
+    params["parentWindowHandle"] = _handle;
 #endif
+  }
+
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
-*/
 
   // TODO(anyone): determine api without qt
 
@@ -601,8 +608,11 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
 
-  params["externalGLControl"] = "true";
-  params["currentGLContext"] = "true";
+  if (this->useCurrentGLContext)
+  {
+    params["externalGLControl"] = "true";
+    params["currentGLContext"] = "true";
+  }
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)

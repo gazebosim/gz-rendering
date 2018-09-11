@@ -157,12 +157,14 @@ namespace ignition
       private: std::vector<std::string> ogrePaths;
 
 #if not (__APPLE__ || _WIN32)
-      private: void *dummyDisplay;
+      private: void *dummyDisplay = nullptr;
 
-      private: void *dummyContext;
+      private: void *dummyContext = nullptr;
 #endif
 
-      private: uint64_t dummyWindowId;
+      private: uint64_t dummyWindowId = 0u;
+
+      private: bool useCurrentGLContext = false;
 
       private: std::unique_ptr<OgreRenderEnginePrivate> dataPtr;
 

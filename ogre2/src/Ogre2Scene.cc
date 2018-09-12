@@ -20,7 +20,6 @@
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -186,6 +185,14 @@ CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int _id,
   bool result = this->InitObject(camera, _id, _name);
   camera->SetBackgroundColor(this->backgroundColor);
   return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+DepthCameraPtr Ogre2Scene::CreateDepthCameraImpl(unsigned int /*_id*/,
+    const std::string &/*_name*/)
+{
+  // TODO(anyone)
+  return DepthCameraPtr();
 }
 
 //////////////////////////////////////////////////

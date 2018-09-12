@@ -42,6 +42,7 @@ ign_find_package(FreeImage VERSION 3.9
   REQUIRED_BY optix
   PRIVATE_FOR optix)
 
+#--------------------------------------
 # Find OpenGL
 ign_find_package(OpenGL
   REQUIRED_BY ogre ogre2

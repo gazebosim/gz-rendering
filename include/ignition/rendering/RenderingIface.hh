@@ -47,15 +47,11 @@ namespace ignition
     bool fini();
 
     /// \brief Get the number of available render-engines. This counts
-    /// engines that that have been registered and loaded by the engine
-    /// manager. Default engine plugins need to be loaded first using
-    /// Engine(std::string) for them to be available.
     /// \return The number of available render-engines
     IGNITION_RENDERING_VISIBLE
     unsigned int engineCount();
 
     /// \brief Determine if a render-engine is registered under the given name
-    /// The function also search through the list of default engines
     /// \param[in] _name Name of the desired render-engine
     /// \return True if a render-engine is registered under the given name
     IGNITION_RENDERING_VISIBLE
@@ -99,9 +95,7 @@ namespace ignition
     void unregisterEngine(const std::string &_name);
 
     /// \brief Unregister the given render-engine. If the given render-engine
-    /// is not currently registered, no work will be done. Unregistering a
-    /// default engine plugin will cause it to shutdown but will not remove it
-    // from the list of available engines
+    /// is not currently registered, no work will be done.
     /// \param[in] _engine Render-engine to unregister
     IGNITION_RENDERING_VISIBLE
     void unregisterEngine(RenderEngine *_engine);

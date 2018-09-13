@@ -40,7 +40,8 @@ namespace ignition
 
       /// \brief Load any necessary resources to set up render-engine. This
       /// should called before any other function.
-      /// \param[in] _params Parameters to be passed to the underlying rendering engine.
+      /// \param[in] _params Parameters to be passed to the underlying
+      /// rendering engine.
       /// \return True if the render-engine was successfully loaded
       public: virtual bool Load(
           const std::map<std::string, std::string> &_params = {}) = 0;

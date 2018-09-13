@@ -46,7 +46,7 @@ namespace ignition
     IGNITION_RENDERING_VISIBLE
     bool fini();
 
-    /// \brief Get the number of available render-engines. This counts
+    /// \brief Get the number of available render-engines.
     /// \return The number of available render-engines
     IGNITION_RENDERING_VISIBLE
     unsigned int engineCount();

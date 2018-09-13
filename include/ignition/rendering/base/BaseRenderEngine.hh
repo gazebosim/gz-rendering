@@ -88,7 +88,7 @@ namespace ignition
 
       protected: virtual unsigned int NextSceneId();
 
-      /// Engine implementation of Load function.
+      /// \brief Engine implementation of Load function.
       /// \param[in] _params Parameters to be passed to the render engine.
       protected: virtual bool LoadImpl(
           const std::map<std::string, std::string> &_params) = 0;

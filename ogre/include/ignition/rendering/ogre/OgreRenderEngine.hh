@@ -111,7 +111,11 @@ namespace ignition
 
       protected: virtual SceneStorePtr Scenes() const;
 
-      // Documentation Inherited.
+      /// \brief Engine implementation of Load function.
+      /// \param[in] _params Parameters to be passed to the render engine.
+      /// Current accepts the following parameters and values:
+      /// "useCurrentGLContext" : "1" or "0". Use current OpenGL context for
+      ///                                     rendering
       protected: virtual bool LoadImpl(
           const std::map<std::string, std::string> &_params) override;
 

@@ -262,19 +262,6 @@ void OptixMaterial::ClearNormalMap()
 }
 
 //////////////////////////////////////////////////
-enum ShaderType OptixMaterial::ShaderType() const
-{
-  return this->shaderType;
-}
-
-//////////////////////////////////////////////////
-void OptixMaterial::SetShaderType(enum ShaderType _type)
-{
-  this->shaderType = (ShaderUtil::IsValid(_type)) ? _type : ST_PIXEL;
-  // TODO: update normal space
-}
-
-//////////////////////////////////////////////////
 void OptixMaterial::PreRender()
 {
   this->WriteColorToDevice();

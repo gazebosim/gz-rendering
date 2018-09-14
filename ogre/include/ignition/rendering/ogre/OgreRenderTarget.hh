@@ -61,11 +61,11 @@ namespace ignition
 
       public: virtual void SetBackgroundColor(math::Color _color);
 
-      // Documentation inherited
-      public: virtual void PreRender();
+      // Documentation inherited.
+      public: virtual void PreRender() override;
 
-      // Documentation inherited
-      public: virtual void PostRender();
+      // Documentation inherited.
+      public: virtual void PostRender() override;
 
       public: virtual void Render();
 
@@ -126,13 +126,13 @@ namespace ignition
 
       public: virtual void Destroy();
 
-      // Documentation inherited
-      public: virtual void PreRender();
+      // Documentation inherited.
+      public: virtual void PreRender() override;
 
-      // Documentation inherited
-      public: virtual void PostRender();
+      // Documentation inherited.
+      public: virtual void PostRender() override;
 
-      // Documentation inherited
+      // Documentation inherited.
       public: virtual GLuint GLId();
 
       public: virtual void Buffer(float *buffer);

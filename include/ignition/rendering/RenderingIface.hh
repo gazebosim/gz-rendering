@@ -17,7 +17,9 @@
 #ifndef IGNITION_RENDERING_RENDERINGIFACE_HH_
 #define IGNITION_RENDERING_RENDERINGIFACE_HH_
 
+#include <map>
 #include <string>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
@@ -44,7 +46,7 @@ namespace ignition
     IGNITION_RENDERING_VISIBLE
     bool fini();
 
-    /// \brief Get the number of available render-engines
+    /// \brief Get the number of available render-engines.
     /// \return The number of available render-engines
     IGNITION_RENDERING_VISIBLE
     unsigned int engineCount();
@@ -59,19 +61,23 @@ namespace ignition
     /// render-engine is registered under the given name, NULL will be
     /// returned.
     /// \param[in] _name Name of the desired render-engine
+    /// \param[in] _params Parameters to be passed to the render engine.
     /// \param[in] _path Another search path for rendering engine plugin.
     /// \return The specified render-engine
     IGNITION_RENDERING_VISIBLE
     RenderEngine *engine(const std::string &_name,
+        const std::map<std::string, std::string> &_params = {},
         const std::string &_path = "");
 
     /// \brief Get the render-engine registered at the given index. If no
     /// render-engine is registered at the given index, NULL will be returned.
     /// \param[in] _index Index of the desired render-engine
+    /// \param[in] _params Parameters to be passed to the render engine.
     /// \param[in] _path Another search path for rendering engine plugin.
     /// \return The specified render-engine
     IGNITION_RENDERING_VISIBLE
     RenderEngine *engine(const unsigned int _index,
+        const std::map<std::string, std::string> &_params = {},
         const std::string &_path = "");
 
     /// \brief Register a new render-engine under the given name. If the given

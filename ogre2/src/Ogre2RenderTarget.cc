@@ -15,6 +15,10 @@
  *
  */
 
+// leave this out of OgreIncludes as it conflicts with other files requiring
+// gl.h
+#include <OGRE/RenderSystems/GL3Plus/OgreGL3PlusFBORenderTexture.h>
+
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Material.hh"
@@ -146,6 +150,12 @@ void Ogre2RenderTarget::PreRender()
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTarget::PostRender()
+{
+  // do nothing by default
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
   // TODO(anyone)
@@ -268,6 +278,30 @@ void Ogre2RenderTexture::BuildTarget()
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
       Ogre::TU_RENDERTARGET, 0, true, this->antiAliasing)).getPointer();
+}
+
+//////////////////////////////////////////////////
+GLuint Ogre2RenderTexture::GLId() const
+{
+  if (!this->ogreTexture)
+    return GLuint(0);
+
+  GLuint texId;
+  this->ogreTexture->getCustomAttribute("GLID", &texId);
+
+  return texId;
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::PreRender()
+{
+  Ogre2RenderTarget::PreRender();
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::PostRender()
+{
+  Ogre2RenderTarget::PostRender();
 }
 
 //////////////////////////////////////////////////

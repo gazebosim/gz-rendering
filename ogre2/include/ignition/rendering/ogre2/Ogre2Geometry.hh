@@ -42,10 +42,10 @@ namespace ignition
       public: virtual ~Ogre2Geometry();
 
       // Documentation inherited.
-      public: virtual bool HasParent() const;
+      public: virtual bool HasParent() const override;
 
       // Documentation inherited.
-      public: virtual VisualPtr Parent() const;
+      public: virtual VisualPtr Parent() const override;
 
       /// \brief Get the ogre object representing this geometry
       /// \return Pointer to an ogre movable object

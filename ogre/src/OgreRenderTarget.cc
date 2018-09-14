@@ -289,7 +289,6 @@ void OgreRenderTexture::PreRender()
   if (!this->ogreTexture)
     return;
 
-
   Ogre::RenderTarget *rt = this->RenderTarget();
 
   Ogre::GLFrameBufferObject *ogreFbo = nullptr;

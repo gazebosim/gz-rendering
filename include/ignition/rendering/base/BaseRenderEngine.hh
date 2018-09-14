@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASE_BASERENDERENGINE_HH_
 #define IGNITION_RENDERING_BASE_BASERENDERENGINE_HH_
 
+#include <map>
 #include <string>
 #include <vector>
 #include "ignition/rendering/RenderEngine.hh"
@@ -35,7 +36,9 @@ namespace ignition
 
       public: virtual ~BaseRenderEngine();
 
-      public: virtual bool Load();
+      // Documentation Inherited.
+      public: virtual bool Load(
+          const std::map<std::string, std::string> &_params = {}) override;
 
       public: virtual bool Init();
 
@@ -85,7 +88,10 @@ namespace ignition
 
       protected: virtual unsigned int NextSceneId();
 
-      protected: virtual bool LoadImpl() = 0;
+      /// \brief Engine implementation of Load function.
+      /// \param[in] _params Parameters to be passed to the render engine.
+      protected: virtual bool LoadImpl(
+          const std::map<std::string, std::string> &_params) = 0;
 
       protected: virtual bool InitImpl() = 0;
 

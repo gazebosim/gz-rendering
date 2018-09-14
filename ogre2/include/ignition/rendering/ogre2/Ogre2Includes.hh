@@ -69,7 +69,6 @@
 #include <Hlms/Unlit/OgreHlmsUnlit.h>
 #include <Hlms/Pbs/OgreHlmsPbs.h>
 
-
 #include <Compositor/OgreCompositorManager2.h>
 #include <Compositor/OgreCompositorWorkspace.h>
 

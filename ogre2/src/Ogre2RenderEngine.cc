@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -250,8 +250,14 @@ SceneStorePtr Ogre2RenderEngine::Scenes() const
 }
 
 //////////////////////////////////////////////////
-bool Ogre2RenderEngine::LoadImpl()
+bool Ogre2RenderEngine::LoadImpl(
+    const std::map<std::string, std::string> &_params)
 {
+  // parse params
+  auto it = _params.find("useCurrentGLContext");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->useCurrentGLContext;
+
   try
   {
     this->LoadAttempt();
@@ -289,7 +295,8 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  this->CreateContext();
+  if (!this->useCurrentGLContext)
+    this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -595,12 +602,17 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   Ogre::NameValuePairList params;
   Ogre::RenderWindow *window = nullptr;
 
-  // Mac and Windows *must* use externalWindow handle.
+  // if use current gl then don't include window handle params
+  if (!this->useCurrentGLContext)
+  {
+    // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
-  params["externalWindowHandle"] = _handle;
+    params["externalWindowHandle"] = _handle;
 #else
-  params["parentWindowHandle"] = _handle;
+    params["parentWindowHandle"] = _handle;
 #endif
+  }
+
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
@@ -621,8 +633,15 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
 
+
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "true";
+
+  if (this->useCurrentGLContext)
+  {
+    params["externalGLControl"] = "true";
+    params["currentGLContext"] = "true";
+  }
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)

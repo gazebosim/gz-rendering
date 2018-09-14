@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_RENDERENGINE_HH_
 #define IGNITION_RENDERING_RENDERENGINE_HH_
 
+#include <map>
 #include <string>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
@@ -39,8 +40,11 @@ namespace ignition
 
       /// \brief Load any necessary resources to set up render-engine. This
       /// should called before any other function.
+      /// \param[in] _params Parameters to be passed to the underlying
+      /// rendering engine.
       /// \return True if the render-engine was successfully loaded
-      public: virtual bool Load() = 0;
+      public: virtual bool Load(
+          const std::map<std::string, std::string> &_params = {}) = 0;
 
       /// \brief Initialize the render-engine. This should be called immediately
       /// after a successful call to Load.

@@ -98,6 +98,9 @@ namespace ignition
       // Documentation inherited
       protected: virtual CameraPtr CreateCameraImpl(unsigned int _id,
                      const std::string &_name) override;
+      // Documentation inherited
+      protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
+                     const std::string &_name) override;
 
       // Documentation inherited
       protected: virtual VisualPtr CreateVisualImpl(unsigned int _id,

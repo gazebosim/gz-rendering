@@ -188,6 +188,14 @@ CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+DepthCameraPtr Ogre2Scene::CreateDepthCameraImpl(unsigned int /*_id*/,
+    const std::string &/*_name*/)
+{
+  // TODO(anyone)
+  return DepthCameraPtr();
+}
+
+//////////////////////////////////////////////////
 VisualPtr Ogre2Scene::CreateVisualImpl(unsigned int _id,
     const std::string &_name)
 {

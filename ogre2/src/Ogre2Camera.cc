@@ -144,6 +144,21 @@ void Ogre2Camera::CreateRenderTexture()
 }
 
 //////////////////////////////////////////////////
+GLuint Ogre2Camera::RenderTextureGLId() const
+{
+  if (!this->renderTexture)
+    return GLuint(0u);
+
+  Ogre2RenderTexturePtr rt =
+      std::dynamic_pointer_cast<Ogre2RenderTexture>(this->renderTexture);
+
+  if (!rt)
+    return GLuint(0u);
+
+  return rt->GLId();
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::SetSelectionBuffer()
 {
   // TODO(anyone)

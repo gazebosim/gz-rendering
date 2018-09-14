@@ -52,7 +52,8 @@ TEST(RenderingIfaceTest, GetEngine)
   // check get engine
   for (unsigned int i = 0; i < count; ++i)
   {
-    RenderEngine *eng = engine(i, IGN_RENDERING_TEST_PLUGIN_PATH);
+    RenderEngine *eng = engine(i, std::map<std::string, std::string>(),
+        IGN_RENDERING_TEST_PLUGIN_PATH);
     EXPECT_NE(nullptr, eng);
     EXPECT_TRUE(hasEngine(eng->Name()));
     EXPECT_EQ(eng, engine(eng->Name()));

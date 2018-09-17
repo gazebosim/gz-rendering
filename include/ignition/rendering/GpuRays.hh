@@ -45,7 +45,6 @@ namespace ignition
       public: virtual ~GpuRays() { }
 
       /// \brief Create the texture which is used to render laser data.
-      /// \param[in] _textureName Name of the new texture.
       public: virtual void CreateLaserTexture() = 0;
 
       /// \brief All things needed to get back z buffer for laser data.
@@ -61,13 +60,6 @@ namespace ignition
                   std::function<void (const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
                   const std::string &_format)> _subscriber) = 0;
-
-      /// \brief Set the number of samples in the width and height for the
-      /// first pass texture.
-      /// \param[in] _w Number of samples in the horizontal sweep
-      /// \param[in] _h Number of samples in the vertical sweep
-      public: virtual void SetRangeCount(const unsigned int _w,
-          const unsigned int _h = 1) = 0;
 
       /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
       /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5

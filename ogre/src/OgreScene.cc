@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre/OgreAxisVisual.hh"
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
+#include "ignition/rendering/ogre/OgreGpuRays.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreGrid.hh"
@@ -372,12 +373,21 @@ CameraPtr OgreScene::CreateCameraImpl(unsigned int _id,
 DepthCameraPtr OgreScene::CreateDepthCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
-  OgreDepthCameraPtr camera(new OgreDepthCamera());
+  OgreDepthCameraPtr camera(new OgreDepthCamera);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }
 
-/////////////////////////////////////////////////
+///////////////////////////////////////////////////
+GpuRaysPtr OgreScene::CreateGpuRaysImpl(const unsigned int _id,
+    const std::string &_name)
+{
+  OgreGpuRaysPtr gpuRays(new OgreGpuRays);
+  bool result = this->InitObject(gpuRays, _id, _name);
+  return (result) ? gpuRays : nullptr;
+}
+
+////////////////////////////////////////////////
 VisualPtr OgreScene::CreateVisualImpl(unsigned int _id,
     const std::string &_name)
 {

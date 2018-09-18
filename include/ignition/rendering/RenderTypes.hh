@@ -52,6 +52,7 @@ namespace ignition
     class DepthCamera;
     class DirectionalLight;
     class Geometry;
+    class GpuRays;
     class Grid;
     class JointVisual;
     class Image;
@@ -87,9 +88,13 @@ namespace ignition
     /// \brief Shared pointer to Camera
     typedef shared_ptr<Camera> CameraPtr;
 
-    /// \def CameraPtr
-    /// \brief Shared pointer to Camera
+    /// \def DepthCameraPtr
+    /// \brief Shared pointer to DepthCamera
     typedef shared_ptr<DepthCamera> DepthCameraPtr;
+
+    /// \def GpuRaysPtr
+    /// \brief Shared pointer to GpuRays
+    typedef shared_ptr<GpuRays> GpuRaysPtr;
 
     /// \def DirectionalLightPtr
     /// \brief Shared pointer to DirectionalLight
@@ -194,8 +199,12 @@ namespace ignition
     typedef shared_ptr<const Camera> ConstCameraPtr;
 
     /// \def const DepthCameraPtr
-    /// \brief Shared pointer to const Camera
+    /// \brief Shared pointer to const DepthCamera
     typedef shared_ptr<const DepthCamera> ConstDepthCameraPtr;
+
+    /// \def const GpuRaysPtr
+    /// \brief Shared pointer to const GpuRays
+    typedef shared_ptr<const GpuRays> ConstGpuRaysPtr;
 
     /// \def const DirectionalLightPtr
     /// \brief Shared pointer to const DirectionalLight

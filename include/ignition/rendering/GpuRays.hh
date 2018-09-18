@@ -57,7 +57,7 @@ namespace ignition
       /// generated
       /// \return A pointer to the connection. This must be kept in scope.
       public: virtual common::ConnectionPtr ConnectNewLaserFrame(
-                  std::function<void (const float *_frame, unsigned int _width,
+                  std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
                   const std::string &_format)> _subscriber) = 0;
 

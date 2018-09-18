@@ -1,6 +1,7 @@
 set(TEST_TYPE "INTEGRATION")
 
 set(tests
+  gpu_rays.cc
   camera.cc
   shadows.cc
   scene.cc

@@ -604,6 +604,34 @@ namespace ignition
       public: virtual DepthCameraPtr CreateDepthCamera(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new gpu rays caster. A unique ID and name will
+      /// automatically be assigned to the gpu rays caster.
+      /// \return The created gpu rays caster
+      public: virtual GpuRaysPtr CreateGpuRays() = 0;
+
+      /// \brief Create new gpu rays caster with the given ID. A unique name
+      /// will automatically be assigned to the gpu rays caster. If the given
+      /// ID is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new gpu rays caster
+      /// \return The created gpu rays caster
+      public: virtual GpuRaysPtr CreateGpuRays(unsigned int _id) = 0;
+
+      /// \brief Create new gpu rays caster with the given name. A unique ID
+      /// will automatically be assigned to the gpu rays caster. If the given
+      /// name is already in use, NULL will be returned.
+      /// \param[in] _name Name of the new gpu rays caster
+      /// \return The created gpu ray caster
+      public: virtual GpuRaysPtr CreateGpuRays(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new gpu rays caster with the given name. If either
+      /// the given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the gpu ray caster
+      /// \param[in] _name Name of the new gpu ray caster
+      /// \return The created Gpu ray caster
+      public: virtual GpuRaysPtr CreateGpuRays(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new visual. A unique ID and name will
       /// automatically be assigned to the visual.
       /// \return The created visual

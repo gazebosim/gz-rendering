@@ -88,6 +88,10 @@ namespace ignition
                      const unsigned int _id,
                      const std::string &_name);
 
+      protected: virtual GpuRaysPtr CreateGpuRaysImpl(
+                     const unsigned int _id,
+                     const std::string &_name);
+
       protected: virtual VisualPtr CreateVisualImpl(unsigned int _id,
                      const std::string &_name);
 

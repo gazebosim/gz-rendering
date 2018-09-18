@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_BASE_BASEGPURAYS_HH_
 #define IGNITION_RENDERING_BASE_BASEGPURAYS_HH_
 
+#include <string>
+
 #include <ignition/common/Event.hh>
 #include <ignition/common/Console.hh>
 
@@ -26,9 +28,8 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/base/BaseCamera.hh"
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Visual.hh>
-#include <ignition/rendering/RenderTypes.hh>
+#include "ignition/rendering/Visual.hh"
+#include "ignition/rendering/RenderTypes.hh"
 
 
 namespace ignition
@@ -61,9 +62,12 @@ namespace ignition
       /// generated
       /// \return A pointer to the connection. This must be kept in scope.
       public: virtual common::ConnectionPtr ConnectNewLaserFrame(
-                  std::function<void (const float *_frame, unsigned int _width,
+                  std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
                   const std::string &_format)> _subscriber) override;
+
+      /// \return Pointer to the render target
+      public: virtual RenderTargetPtr RenderTarget() const = 0;
 
       /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
       /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
@@ -128,7 +132,8 @@ namespace ignition
       /// \brief Set the number of cameras required
       /// \param[in] _cameraCount The number of cameras required to generate
       /// the rays
-      public: virtual void SetCameraCount(const unsigned int _cameraCount) override;
+      public: virtual void SetCameraCount(
+                  const unsigned int _cameraCount) override;
 
       /// \brief Get the ray count ratio (equivalent to aspect ratio)
       /// \return The ray count ratio (equivalent to aspect ratio)
@@ -136,7 +141,8 @@ namespace ignition
 
       /// \brief Sets the ray count ratio (equivalent to aspect ratio)
       /// \param[in] _rayCountRatio ray count ratio (equivalent to aspect ratio)
-      public: virtual void SetRayCountRatio(const double _rayCountRatio) override;
+      public: virtual void SetRayCountRatio(
+                  const double _rayCountRatio) override;
 
       /// \brief Horizontal half angle.
       protected: double horzHalfAngle = 0;
@@ -248,6 +254,34 @@ namespace ignition
     bool BaseGpuRays<T>::IsHorizontal() const
     {
       return this->isHorizontal;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseGpuRays<T>::CameraCount() const
+    {
+      return this->cameraCount;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGpuRays<T>::SetCameraCount(const unsigned int _cameraCount)
+    {
+      this->cameraCount = _cameraCount;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseGpuRays<T>::RayCountRatio() const
+    {
+      return this->rayCountRatio;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGpuRays<T>::SetRayCountRatio(const double _rayCountRatio)
+    {
+      this->rayCountRatio = _rayCountRatio;
     }
 
     //////////////////////////////////////////////////

@@ -48,7 +48,6 @@ namespace Ogre
   class Material;
   class RenderTarget;
   class Texture;
-  class Viewport;
 }
 
 namespace ignition
@@ -83,46 +82,40 @@ namespace ignition
       /// \brief Pointer to Ogre material for the sencod rendering pass.
       public: MaterialPtr matSecondPass;
 
+      /// \brief Temporary pointer to the current material.
+      public: MaterialPtr currentMat;
+
       /// \brief An array of first pass textures.
       public: OgreRenderTexturePtr firstPassTextures[3];
 
       /// \brief Second pass texture.
       public: OgreRenderTexturePtr secondPassTexture;
 
-      /// \brief First pass viewports.
-      public: Ogre::Viewport *firstPassViewports[3];
-
-      /// \brief Second pass viewport
-      public: Ogre::Viewport *secondPassViewport;
-
-      /// \brief Number of first pass textures.
-      public: unsigned int textureCount = 0;
-
-      /// \brief A list of camera angles for first pass rendering.
-      public: double cameraYaws[4];
-
       /// \brief Temporary pointer to the current render target.
       public: OgreRenderTexturePtr currentTexture;
-
-      /// \brief Temporary pointer to the current material.
-      public: MaterialPtr currentMat;
 
       /// \brief Ogre orthorgraphic camera used in the second pass for
       /// undistortion.
       public: Ogre::Camera *orthoCam = nullptr;
+
+      /// \brief Pointer to the ogre camera
+      public: Ogre::Camera *ogreCamera = nullptr;
 
       /// \brief Ogre scenenode where the orthorgraphic camera is attached to.
       public: Ogre::SceneNode *pitchNodeOrtho;
 
       /// \brief Ogre mesh used to create a canvas for undistorting range values
       /// in the second rendering pass.
-      public: common::MeshPtr undistMesh;
-
-      /// \brief Ogre movable object created from the canvas mesh.
-      public: Ogre::MovableObject *object;
+      public: common::Mesh *undistMesh;
 
       /// \brief Pointer to visual that holds the canvas.
       public: VisualPtr visual;
+
+      /// \brief Number of first pass textures.
+      public: unsigned int textureCount = 0;
+
+      /// \brief A list of camera angles for first pass rendering.
+      public: double cameraYaws[4];
 
       /// \brief Image width of second pass.
       public: unsigned int w2nd = 0;
@@ -196,14 +189,17 @@ namespace ignition
       /// first pass texture.
       /// \param[in] _w Number of samples in the horizontal sweep
       /// \param[in] _h Number of samples in the vertical sweep
-      private: virtual void SetRangeCount(const unsigned int _w,
-          const unsigned int _h = 1);
+      public: virtual void SetRangeCount(const unsigned int _w,
+          const unsigned int _h = 1) override;
 
       /// \brief Create a canvas.
       private: void CreateCanvas();
 
       /// \brief Create an ortho camera.
       private: void CreateOrthoCam();
+
+      /// \brief Create an ortho camera.
+      private: void CreateCamera();
 
       /// \brief Builds scaled Orthogonal Matrix from parameters.
       /// \param[in] _left Left clip.
@@ -226,9 +222,6 @@ namespace ignition
       // /// \brief Sets second pass target.
       // /// \param[in] _target Render target for the second pass.
       // private: virtual void Set2ndPassTarget(Ogre::RenderTarget *_target);
-
-      /// \brief Pointer to the ogre camera
-      protected: Ogre::Camera *ogreCamera;
 
       /// \internal
       /// \brief Pointer to private data.

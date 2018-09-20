@@ -69,6 +69,13 @@ namespace ignition
       /// \return Pointer to the render target
       public: virtual RenderTargetPtr RenderTarget() const = 0;
 
+      /// \brief Set the number of samples in the width and height for the
+      /// first pass texture.
+      /// \param[in] _w Number of samples in the horizontal sweep
+      /// \param[in] _h Number of samples in the vertical sweep
+      public: virtual void SetRangeCount(const unsigned int _w,
+          const unsigned int _h = 1) override;
+
       /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
       /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
       public: virtual double HorzHalfAngle() const override;
@@ -212,6 +219,12 @@ namespace ignition
           unsigned int, const std::string &)>)
     {
       return nullptr;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseGpuRays<T>::SetRangeCount(const unsigned int /*_w*/, const unsigned int /*_h*/)
+    {
     }
 
     //////////////////////////////////////////////////

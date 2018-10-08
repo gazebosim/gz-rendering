@@ -17,8 +17,8 @@
 
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
-#include <OGRE/RenderSystems/GL/OgreGLFBORenderTexture.h>
-
+// Not present in Windows version
+// #include <OGRE/RenderSystems/GL/OgreGLFBORenderTexture.h>
 
 #include <ignition/common/Console.hh>
 

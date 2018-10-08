@@ -16,6 +16,7 @@
 */
 
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
+#include <ignition/math/Helpers.hh>
 
 using namespace ignition;
 using namespace rendering;
@@ -258,7 +259,7 @@ RenderTargetPtr OgreDepthCamera::RenderTarget() const
 //////////////////////////////////////////////////
 double OgreDepthCamera::LimitFOV(const double _fov)
 {
-  return std::min(std::max(0.001, _fov), M_PI * 0.999);
+  return std::min(std::max(0.001, _fov), IGN_PI * 0.999);
 }
 
 //////////////////////////////////////////////////

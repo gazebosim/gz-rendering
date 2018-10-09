@@ -69,13 +69,6 @@ namespace ignition
       /// \return Pointer to the render target
       public: virtual RenderTargetPtr RenderTarget() const = 0;
 
-      /// \brief Set the number of samples in the width and height for the
-      /// first pass texture.
-      /// \param[in] _w Number of samples in the horizontal sweep
-      /// \param[in] _h Number of samples in the vertical sweep
-      public: virtual void SetRangeCount(const unsigned int _w,
-          const unsigned int _h = 1) override;
-
       /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
       /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
       public: virtual double HorzHalfAngle() const override;
@@ -151,6 +144,42 @@ namespace ignition
       public: virtual void SetRayCountRatio(
                   const double _rayCountRatio) override;
 
+      // Documentation inherited.
+      public: virtual ignition::math::Angle AngleMin() const override;
+
+      // Documentation inherited.
+      public: virtual void SetAngleMin(double _angle) override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::Angle AngleMax() const override;
+
+      // Documentation inherited.
+      public: virtual void SetAngleMax(double _angle) override;
+
+      // Documentation inherited.
+      public: virtual void SetVerticalRayCount(int _samples) override;
+
+      // Documentation inherited.
+      public: virtual void SetRayCount(int _samples) override;
+
+      // Documentation inherited.
+      public: virtual int RayCount() const override;
+
+      // Documentation inherited.
+      public: virtual int VerticalRayCount() const override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::Angle VerticalAngleMin() const override;
+
+      // Documentation inherited.
+      public: virtual void SetVerticalAngleMin(const double _angle) override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::Angle VerticalAngleMax() const override;
+
+      // Documentation inherited.
+      public: virtual void SetVerticalAngleMax(const double _angle) override;
+
       /// \brief Horizontal half angle.
       protected: double horzHalfAngle = 0;
 
@@ -182,7 +211,25 @@ namespace ignition
       protected: bool isHorizontal = true;
 
       /// \brief Number of cameras needed to generate the rays.
-      protected: unsigned int cameraCount = 0;
+      protected: unsigned int cameraCount = 1;
+
+      /// \brief Horizontal minimal angle
+      protected: double minAngle = 0;
+
+      /// \brief Horizontal maximal angle
+      protected: double maxAngle = 0;
+
+      /// \brief Vertical minimal angle
+      protected: double vMinAngle = 0;
+
+      /// \brief Vertical maximal angle
+      protected: double vMaxAngle = 0;
+
+      /// \brief Quantity of horizontal rays
+      protected: int hSamples = 0;
+
+      /// \brief Quantity of vertical rays
+      protected: int vSamples = 0;
 
       private: friend class OgreScene;
     };
@@ -219,12 +266,6 @@ namespace ignition
           unsigned int, const std::string &)>)
     {
       return nullptr;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseGpuRays<T>::SetRangeCount(const unsigned int /*_w*/, const unsigned int /*_h*/)
-    {
     }
 
     //////////////////////////////////////////////////
@@ -267,6 +308,13 @@ namespace ignition
     bool BaseGpuRays<T>::IsHorizontal() const
     {
       return this->isHorizontal;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGpuRays<T>::SetCosVertFOV(const double _cvfov)
+    {
+      this->cvfov = _cvfov;
     }
 
     //////////////////////////////////////////////////
@@ -346,11 +394,91 @@ namespace ignition
       return this->cvfov;
     }
 
-    //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::SetCosVertFOV(const double _cvfov)
+    //////////////////////////////////////////////////
+    ignition::math::Angle BaseGpuRays<T>::AngleMin() const
     {
-      this->cvfov = _cvfov;
+      return this->minAngle;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    void BaseGpuRays<T>::SetAngleMin(double _angle)
+    {
+      this->minAngle = _angle;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    ignition::math::Angle BaseGpuRays<T>::AngleMax() const
+    {
+      return this->maxAngle;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    void BaseGpuRays<T>::SetAngleMax(double _angle)
+    {
+      this->maxAngle = _angle;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    int BaseGpuRays<T>::RayCount() const
+    {
+      return this->hSamples;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    void BaseGpuRays<T>::SetRayCount(int _samples)
+    {
+      this->hSamples = _samples;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    void BaseGpuRays<T>::SetVerticalRayCount(int _samples)
+    {
+      this->vSamples = _samples;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    int BaseGpuRays<T>::VerticalRayCount() const
+    {
+      if (this->vfov > 0)
+        return this->vSamples;
+      else
+        return 1;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    ignition::math::Angle BaseGpuRays<T>::VerticalAngleMin() const
+    {
+      return this->vMinAngle;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    void BaseGpuRays<T>::SetVerticalAngleMin(const double _angle)
+    {
+        this->vMinAngle = _angle;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    ignition::math::Angle BaseGpuRays<T>::VerticalAngleMax() const
+    {
+      return this->vMaxAngle;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    void BaseGpuRays<T>::SetVerticalAngleMax(const double _angle)
+    {
+        this->vMaxAngle = _angle;
     }
     }
   }

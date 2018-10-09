@@ -60,6 +60,16 @@ namespace ignition
     /// \brief Private data for the OgreGpuRays class
     class OgreGpuRaysPrivate
     {
+      public: const std::string laser_scan1st_vertex_shader_file =
+        "laser_scan1st_vertex_shader.glsl";
+      public: const std::string laser_scan1st_fragment_shader_file =
+        "laser_scan1st_fragment_shader.glsl";
+
+      public: const std::string laser_scan2nd_vertex_shader_file =
+        "laser_scan2nd_vertex_shader.glsl";
+      public: const std::string laser_scan2nd_fragment_shader_file =
+        "laser_scan2nd_fragment_shader.glsl";
+
       /// \brief Event triggered when new laser range data are available.
       /// \param[in] _frame New frame containing raw laser data.
       /// \param[in] _width Width of frame.
@@ -77,13 +87,13 @@ namespace ignition
       public: float *laserScan = nullptr;
 
       /// \brief Pointer to Ogre material for the first rendering pass.
-      public: MaterialPtr matFirstPass;
+      public: OgreMaterialPtr matFirstPass;
 
       /// \brief Pointer to Ogre material for the sencod rendering pass.
-      public: MaterialPtr matSecondPass;
+      public: OgreMaterialPtr matSecondPass;
 
       /// \brief Temporary pointer to the current material.
-      public: MaterialPtr currentMat;
+      public: OgreMaterialPtr currentMat;
 
       /// \brief An array of first pass textures.
       public: OgreRenderTexturePtr firstPassTextures[3];
@@ -100,6 +110,12 @@ namespace ignition
 
       /// \brief Pointer to the ogre camera
       public: Ogre::Camera *ogreCamera = nullptr;
+
+      /// \brief First pass viewports.
+      public: Ogre::Viewport *firstPassViewports[3];
+
+      /// \brief Second pass viewport
+      public: Ogre::Viewport *secondPassViewport;
 
       /// \brief Ogre scenenode where the orthorgraphic camera is attached to.
       public: Ogre::SceneNode *pitchNodeOrtho;
@@ -153,6 +169,13 @@ namespace ignition
       /// \brief Create the texture which is used to render laser data.
       public: virtual void CreateLaserTexture() override;
 
+      /// \brief Set the number of samples in the width and height for the
+      /// first pass texture.
+      /// \param[in] _w Number of samples in the horizontal sweep
+      /// \param[in] _h Number of samples in the vertical sweep
+      public: virtual void SetSecondPassTextureSize(const unsigned int _w,
+          const unsigned int _h = 1);
+
       // Documentation inherited
       public: virtual void PostRender() override;
 
@@ -185,12 +208,8 @@ namespace ignition
       /// \brief Create a mesh.
       private: void CreateMesh();
 
-      /// \brief Set the number of samples in the width and height for the
-      /// first pass texture.
-      /// \param[in] _w Number of samples in the horizontal sweep
-      /// \param[in] _h Number of samples in the vertical sweep
-      public: virtual void SetRangeCount(const unsigned int _w,
-          const unsigned int _h = 1) override;
+      /// \brief Create first and second pass materials.
+      private: void CreateMaterials();
 
       /// \brief Create a canvas.
       private: void CreateCanvas();
@@ -213,15 +232,26 @@ namespace ignition
           const float _right, const float _bottom, const float _top,
           const float _near, const float _far);
 
-      // /// \brief Sets first pass target.
-      // /// \param[in] _target Render target for the first pass.
-      // /// \param[in] _index Index of the texture.
-      // private: virtual void Set1stPassTarget(Ogre::RenderTarget *_target,
-      //                                        const unsigned int _index);
-      //
-      // /// \brief Sets second pass target.
-      // /// \param[in] _target Render target for the second pass.
-      // private: virtual void Set2ndPassTarget(Ogre::RenderTarget *_target);
+      /// \brief Configure render target.
+      /// \param[in] _target texture target.
+      /// \param[in] _material material used for the texture.
+      /// \param[in] _camera ogre camera.
+      /// \param[in] _color background color.
+      /// \param[in] _format pixel format.
+      /// \param[in] _width width of the texture.
+      /// \param[in] _height height of the texture.
+      private: void SetRenderTexture(OgreRenderTexturePtr _target,
+                                     OgreMaterialPtr _material,
+                                     Ogre::Camera *_camera,
+                                     Ogre::ColourValue _color,
+                                     PixelFormat _format,
+                                     const unsigned int _width,
+                                     const unsigned int _height);
+
+      private: void UpdateRenderTarget(Ogre::RenderTarget *_target,
+                                        Ogre::MaterialPtr _material,
+                                        Ogre::Camera *_cam,
+                                        bool _updateTex);
 
       /// \internal
       /// \brief Pointer to private data.

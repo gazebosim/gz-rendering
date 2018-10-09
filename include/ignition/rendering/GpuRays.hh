@@ -61,13 +61,6 @@ namespace ignition
                   unsigned int _height, unsigned int _depth,
                   const std::string &_format)> _subscriber) = 0;
 
-      /// \brief Set the number of samples in the width and height for the
-      /// first pass texture.
-      /// \param[in] _w Number of samples in the horizontal sweep
-      /// \param[in] _h Number of samples in the vertical sweep
-      public: virtual void SetRangeCount(const unsigned int _w,
-          const unsigned int _h = 1) = 0;
-
       /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
       /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
       public: virtual double HorzHalfAngle() const = 0;
@@ -140,6 +133,49 @@ namespace ignition
       /// \brief Sets the ray count ratio (equivalent to aspect ratio)
       /// \param[in] _rayCountRatio ray count ratio (equivalent to aspect ratio)
       public: virtual void SetRayCountRatio(const double _rayCountRatio) = 0;
+
+      /// \brief Get minimal horizontal angle value
+      // \return minimal horizontal angle value
+      public: virtual ignition::math::Angle AngleMin() const = 0;
+
+      /// \brief Set minimal horizontal angle value
+      public: virtual void SetAngleMin(double _angle) = 0;
+
+      /// \brief Get maximal horizontal angle value
+      // \return maximal horizontal angle value
+      public: virtual ignition::math::Angle AngleMax() const = 0;
+
+      /// \brief Set maximal horizontal angle value
+      public: virtual void SetAngleMax(double _angle) = 0;
+
+      /// \brief Get horizontal quantity of rays
+      // \return horizontal quantity of rays
+      public: virtual int RayCount() const = 0;
+
+      /// \brief Set horizontal quantity of rays
+      public: virtual void SetRayCount(int _samples) = 0;
+
+      /// \brief Get vertical quantity of rays
+      // \return vertical quantity of rays
+      public: virtual int VerticalRayCount() const = 0;
+
+      /// \brief Set vertical quantity of rays
+      public: virtual void SetVerticalRayCount(int _samples) = 0;
+
+      /// \brief Get minimal vertical angle value
+      // \return minimal vertical angle value
+      public: virtual ignition::math::Angle VerticalAngleMin() const = 0;
+
+      /// \brief Set minimal vertical angle value
+      public: virtual void SetVerticalAngleMin(const double _angle) = 0;
+
+      /// \brief Get maximal vertical angle value
+      // \return maximal vertical angle value
+      public: virtual ignition::math::Angle VerticalAngleMax() const = 0;
+
+      /// \brief Set maximal vertical angle value
+      // \return minimal vertical angle value
+      public: virtual void SetVerticalAngleMax(const double _angle) = 0;
     };
   }
   }

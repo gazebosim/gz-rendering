@@ -12,7 +12,7 @@ find_package(OpenGL)
 include_directories(${OGRE_INCLUDE_DIRS})
 
 set_property(
-  SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc OgreMaterial.cc
+  SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc OgreGpuRays.cc OgreMaterial.cc
   PROPERTY COMPILE_DEFINITIONS
   IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"

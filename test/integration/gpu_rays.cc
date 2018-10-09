@@ -18,6 +18,8 @@
 #include <gtest/gtest.h>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Image.hh>
+#include <ignition/common/Filesystem.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
@@ -25,6 +27,13 @@
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
+
+#define LASER_TOL 1e-4
+#define DOUBLE_TOL 1e-6
+
+// vertical range values seem to be less accurate
+#define VERTICAL_LASER_TOL 1e-3
+
 
 using namespace ignition;
 using namespace rendering;
@@ -35,10 +44,24 @@ void OnNewLaserFrame(int *_scanCounter, float *_scanDest,
                   unsigned int _depth,
                   const std::string &/*_format*/)
 {
- // memcpy(_scanDest, _scan, _width * _height * _depth);
+  memcpy(_scanDest, _scan, _width * _height * _depth);
   *_scanCounter += 1;
 }
 
+//////////////////////////////////////////////////
+void PresentImage(ignition::rendering::ImagePtr _image,
+    const std::string &_name, const int width, const int height)
+{
+  // Present the data
+  unsigned char *data = _image->Data<unsigned char>();
+
+  ignition::common::Image image;
+  image.SetFromData(data, width, height, ignition::common::Image::RGB_INT8);
+
+  image.SavePNG(_name);
+
+  std::cout << "Image saved: " << _name << std::endl;
+}
 
 class GpuRaysTest: public testing::Test,
                   public testing::WithParamInterface<const char *>
@@ -125,11 +148,10 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   const double hMinAngle = -M_PI/2.0;
   const double hMaxAngle = M_PI/2.0;
   const double minRange = 0.1;
-  const double maxRange = 5.0;
-  const int hRangeCount = 320;
-  const int vRangeCount = 320;
-  const double rangeResolution = 0.02;
-  const unsigned int samples = 320;
+  const double maxRange = 10.0;
+  const int hRayCount = 320;
+  const int vRayCount = 1;
+  const unsigned int samples = hRayCount;
 
   common::Time waitTime = common::Time(0.01);
 
@@ -158,8 +180,11 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays->SetWorldRotation(testPose.Rot());
   gpuRays->SetNearClipPlane(minRange);
   gpuRays->SetFarClipPlane(maxRange);
-  gpuRays->SetRangeCount(hRangeCount, vRangeCount);
-  gpuRays->SetHorzFOV(hMaxAngle - hMinAngle);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  gpuRays->CreateLaserTexture();
 
   // Create a second ray caster rotated
   ignition::math::Pose3d testPose2(ignition::math::Vector3d(0, 0, 0.1),
@@ -172,11 +197,15 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->SetWorldRotation(testPose2.Rot());
   gpuRays2->SetNearClipPlane(minRange);
   gpuRays2->SetFarClipPlane(maxRange);
-  gpuRays2->SetHorzFOV(hMaxAngle - hMinAngle);
+  gpuRays2->SetAngleMin(hMinAngle);
+  gpuRays2->SetAngleMax(hMaxAngle);
+  gpuRays2->SetRayCount(hRayCount);
+  gpuRays2->SetVerticalRayCount(vRayCount);
+  gpuRays2->CreateLaserTexture();
 
   // Create testing boxes
   // box in the center
-  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(1, 0, 0.5),
+  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(4, 0, 0.5),
                                    ignition::math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual();
   visualBox1->AddGeometry(scene->CreateBox());
@@ -205,9 +234,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Verify ray sensor 1 range readings
   // listen to new laser frames
-  // float *scan = new float[gpuRays->RayCount()
-  //     * gpuRays->VerticalRayCount() * 3];
-  float *scan = new float[3];
+  float *scan = new float[hRayCount * vRayCount * 3];
   int scanCount = 0;
   common::ConnectionPtr c =
     gpuRays->ConnectNewLaserFrame(
@@ -229,16 +256,13 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   double unitBoxSize = 1.0;
   double expectedRangeAtMidPoint = box01Pose.Pos().X() - unitBoxSize/2;
 
-  // // ray sensor 1 should see box01 and box02
-  // EXPECT_NEAR(raySensor->Range(mid), expectedRangeAtMidPoint, LASER_TOL);
-  // EXPECT_NEAR(raySensor->Range(0), expectedRangeAtMidPoint, LASER_TOL);
-  // EXPECT_DOUBLE_EQ(raySensor->Range(samples-1), ignition::math::INF_D);
+  // ray sensor 1 should see box01 and box02
+  EXPECT_NEAR(scan[mid], expectedRangeAtMidPoint, LASER_TOL);
+  EXPECT_NEAR(scan[0], expectedRangeAtMidPoint, LASER_TOL);
 
   // Verify ray sensor 2 range readings
   // listen to new laser frames
-  // float *scan2 = new float[raySensor2->RayCount()
-  //     * raySensor2->VerticalRayCount() * 3];
-  float *scan2 = new float[3];
+  float *scan2 = new float[hRayCount * vRayCount * 3];
   int scanCount2 = 0;
   common::ConnectionPtr c2 =
     gpuRays2->ConnectNewLaserFrame(
@@ -246,48 +270,44 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
           std::placeholders::_4, std::placeholders::_5));
 
-  // wait for a few laser scans
-  i = 0;
-  scanCount2 = 0;
-  while (scanCount2 < 10 && i < 300)
-  {
-    common::Time::Sleep(waitTime);
-    gpuRays2->Update();
-    i++;
-  }
-  EXPECT_LT(i, 300);
-
+  // // wait for a few laser scans
+  // i = 0;
+  // scanCount2 = 0;
+  // while (scanCount2 < 10 && i < 300)
+  // {
+  //   common::Time::Sleep(waitTime);
+  //   gpuRays2->Update();
+  //   i++;
+  // }
+  // EXPECT_LT(i, 300);
+  //
   // // Only box01 should be visible to ray sensor 2
   // EXPECT_NEAR(raySensor2->Range(mid), expectedRangeAtMidPoint, LASER_TOL);
-  // EXPECT_DOUBLE_EQ(raySensor2->Range(0), ignition::math::INF_D);
-  // EXPECT_DOUBLE_EQ(raySensor->Range(samples-1), ignition::math::INF_D);
-
-  // // Move all boxes out of range
+  //
+  // Move all boxes out of range
   // world->ModelByName(box01)->SetWorldPose(ignition::math::Pose3d(
   //     ignition::math::Vector3d(maxRange + 1, 0, 0),
   //     ignition::math::Quaterniond::Identity));
   // world->ModelByName(box02)->SetWorldPose(ignition::math::Pose3d(
   //     ignition::math::Vector3d(0, -(maxRange + 1), 0),
   //     ignition::math::Quaterniond::Identity));
-
-  // wait for a few more laser scans
-  i = 0;
-  scanCount = 0;
-  scanCount2 = 0;
-  while ((scanCount < 10 ||scanCount2 < 10) && i < 300)
-  {
-    common::Time::Sleep(waitTime);
-    gpuRays->Update();
-    gpuRays2->Update();
-    i++;
-  }
-  EXPECT_LT(i, 300);
-
-  // for (int i = 0; i < raySensor->RayCount(); ++i)
-  //   EXPECT_DOUBLE_EQ(raySensor->Range(i), ignition::math::INF_D);
+  //
+  // // wait for a few more laser scans
+  // i = 0;
+  // scanCount = 0;
+  // scanCount2 = 0;
+  // while ((scanCount < 10 ||scanCount2 < 10) && i < 300)
+  // {
+  //   common::Time::Sleep(waitTime);
+  //   gpuRays->Update();
+  //   gpuRays2->Update();
+  //   i++;
+  // }
+  // EXPECT_LT(i, 300);
   //
   // for (int i = 0; i < raySensor->RayCount(); ++i)
-  //   EXPECT_DOUBLE_EQ(raySensor2->Range(i), ignition::math::INF_D);
+  //
+  // for (int i = 0; i < raySensor->RayCount(); ++i)
 
   c.reset();
   c2.reset();

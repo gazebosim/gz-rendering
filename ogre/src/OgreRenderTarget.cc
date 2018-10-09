@@ -222,6 +222,13 @@ void OgreRenderTarget::SetUpdate(const bool _value)
 }
 
 //////////////////////////////////////////////////
+void OgreRenderTarget::SwapBuffers() const
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->swapBuffers();
+}
+
+//////////////////////////////////////////////////
 // OgreRenderTexture
 //////////////////////////////////////////////////
 OgreRenderTexture::OgreRenderTexture()
@@ -243,6 +250,10 @@ void OgreRenderTexture::Destroy()
 //////////////////////////////////////////////////
 Ogre::RenderTarget *OgreRenderTexture::RenderTarget() const
 {
+  if (ogreTexture == nullptr)
+  {
+    return nullptr;
+  }
   return this->ogreTexture->getBuffer()->getRenderTarget();
 }
 
@@ -328,7 +339,6 @@ void OgreRenderTexture::Buffer(float *_buffer)
       imageFormat, _buffer);
   this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
 }
-
 
 //////////////////////////////////////////////////
 // OgreRenderWindow

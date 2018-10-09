@@ -157,6 +157,7 @@ void OgreRenderTarget::RebuildViewport()
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
   ogreRenderTarget->removeAllViewports();
+  ogreRenderTarget->removeAllListeners();
 
   // (louise) This causes a crash on a subsequent update. Is it correct to do this?
   // OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
@@ -263,6 +264,7 @@ void OgreRenderTexture::DestroyTarget()
     return;
 
   auto &manager = Ogre::TextureManager::getSingleton();
+  manager.unload(this->ogreTexture->getName());
   manager.remove(this->ogreTexture->getName());
   this->ogreTexture = nullptr;
 }

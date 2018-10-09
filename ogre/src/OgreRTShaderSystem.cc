@@ -268,6 +268,7 @@ void OgreRTShaderSystem::DetachViewport(Ogre::Viewport *_viewport,
   if (!OgreRTShaderSystem::Instance()->IsInitialized())
     return;
 
+  // (louise) Is this "detaching" the viewport?
   if (_viewport && _scene && _scene->IsInitialized())
     _viewport->setMaterialScheme(_scene->Name());
 }

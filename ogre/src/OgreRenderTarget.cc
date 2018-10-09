@@ -158,6 +158,10 @@ void OgreRenderTarget::RebuildViewport()
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
   ogreRenderTarget->removeAllViewports();
 
+  // (louise) This causes a crash on a subsequent update. Is it correct to do this?
+  // OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
+  //     this->scene);
+
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
   this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
   this->ogreViewport->setClearEveryFrame(true);
@@ -236,8 +240,7 @@ OgreRenderTexture::~OgreRenderTexture()
 //////////////////////////////////////////////////
 void OgreRenderTexture::Destroy()
 {
-  std::string ogreName = this->ogreTexture->getName();
-  Ogre::TextureManager::getSingleton().remove(ogreName);
+  this->DestroyTarget();
 }
 
 //////////////////////////////////////////////////
@@ -256,7 +259,12 @@ void OgreRenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::DestroyTarget()
 {
-  // TODO(anyone): implement
+  if (nullptr == this->ogreTexture)
+    return;
+
+  auto &manager = Ogre::TextureManager::getSingleton();
+  manager.remove(this->ogreTexture->getName());
+  this->ogreTexture = nullptr;
 }
 
 //////////////////////////////////////////////////

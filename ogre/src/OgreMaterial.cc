@@ -519,8 +519,8 @@ void OgreMaterial::UpdateTransparency()
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetDepthMaterial(const double far,
-  const double near)
+void OgreMaterial::SetDepthMaterial(const double _far,
+  const double _near)
 {
   // Configure Ogre Pass settings for Depth
   this->ogrePass->setDepthCheckEnabled(false);
@@ -548,8 +548,9 @@ void OgreMaterial::SetDepthMaterial(const double far,
 
   // Configure fragment shader variables
   auto shader_params= *this->fragmentShaderParams;
-  shader_params["pFar"] = static_cast<float>(far);
-  shader_params["pNear"] = static_cast<float>(near);
+  shader_params["pFar"] = (float)(_far);
+  shader_params["pFar"] = static_cast<float>(_far);
+  shader_params["pNear"] = static_cast<float>(_near);
 }
 
 //////////////////////////////////////////////////

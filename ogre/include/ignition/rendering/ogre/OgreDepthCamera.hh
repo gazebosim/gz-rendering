@@ -114,7 +114,7 @@ namespace ignition
       public: virtual void CreateDepthTexture() override;
 
       /// \brief Render the camera
-      public: virtual void PostRender();
+      public: virtual void PostRender() override;
 
       /// \brief All things needed to get back z buffer for depth data
       /// \return The z-buffer as a float array

@@ -50,14 +50,14 @@ namespace ignition
 
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
-      public: virtual void Copy(Image &_image) const;
+      public: virtual void Copy(Image &_image) const override;
 
       public: virtual Ogre::Camera *Camera() const;
 
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
       // Documentation inherited
-      public: virtual math::Color BackgroundColor() const;
+      public: virtual math::Color BackgroundColor() const override;
 
       public: virtual void SetBackgroundColor(math::Color _color);
 
@@ -69,7 +69,7 @@ namespace ignition
 
       public: virtual void Render();
 
-      public: virtual void Destroy() = 0;
+      public: virtual void Destroy() override = 0;
 
       /// \brief Set a material to render on every object. This method is used
       /// for special cases like the render target of a depth camera.
@@ -88,7 +88,7 @@ namespace ignition
 
       protected: virtual void UpdateBackgroundColor();
 
-      protected: virtual void RebuildImpl();
+      protected: virtual void RebuildImpl() override;
 
       protected: virtual void RebuildTarget() = 0;
 
@@ -124,7 +124,7 @@ namespace ignition
 
       public: virtual ~OgreRenderTexture();
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       // Documentation inherited.
       public: virtual void PreRender() override;
@@ -137,9 +137,9 @@ namespace ignition
 
       public: virtual void Buffer(float *buffer);
 
-      public: virtual Ogre::RenderTarget *RenderTarget() const;
+      public: virtual Ogre::RenderTarget *RenderTarget() const override;
 
-      protected: virtual void RebuildTarget();
+      protected: virtual void RebuildTarget() override;
 
       protected: virtual void DestroyTarget();
 

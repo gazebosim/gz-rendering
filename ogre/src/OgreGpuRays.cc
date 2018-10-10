@@ -28,6 +28,7 @@
 #include <ignition/math/Angle.hh>
 
 #include "ignition/rendering/ogre/OgreGpuRays.hh"
+#include "ignition/rendering/ShaderParams.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -72,7 +73,7 @@ void OgreGpuRays::CreateMaterials()
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
 
-  // path to look for vertex and fragment shader parameters
+  // Path to look for vertex and fragment shader parameters
   std::string laser_scan1st_vertex_shader_path = common::joinPaths(
       resourcePath, "ogre", "media", "materials", "programs",
       this->dataPtr->laser_scan1st_vertex_shader_file);
@@ -80,7 +81,7 @@ void OgreGpuRays::CreateMaterials()
       resourcePath, "ogre", "media", "materials", "programs",
       this->dataPtr->laser_scan1st_fragment_shader_file);
 
-  // path to look for vertex and fragment shader parameters
+  // Path to look for vertex and fragment shader parameters
   std::string laser_scan2nd_vertex_shader_path = common::joinPaths(
       resourcePath, "ogre", "media", "materials", "programs",
       this->dataPtr->laser_scan2nd_vertex_shader_file);
@@ -112,9 +113,30 @@ void OgreGpuRays::CreateMaterials()
 }
 
 /////////////////////////////////////////////////
+void OgreGpuRays::SetFragmentShadersParams()
+{
+  ShaderParamsPtr matFirstParams =
+    this->dataPtr->matFirstPass->FragmentShaderParams();
+
+  // Configure fragment shader variables
+  (*matFirstParams)["far"] = static_cast<float>(this->FarClipPlane());
+  (*matFirstParams)["near"] = static_cast<float>(this->NearClipPlane());
+  (*matFirstParams)["retro"] = static_cast<float>(0.0);
+
+  ShaderParamsPtr matSecondParams =
+    this->dataPtr->matSecondPass->FragmentShaderParams();
+
+  // Configure fragment shader variables
+  (*matSecondParams)["tex1"] = static_cast<int>(0);
+  (*matSecondParams)["tex2"] = static_cast<int>(1);
+  (*matSecondParams)["tex3"] = static_cast<int>(2);
+  (*matSecondParams)["texSize"] = static_cast<int>(this->dataPtr->w2nd * this->dataPtr->h2nd);
+}
+
+/////////////////////////////////////////////////
 void OgreGpuRays::CreateCamera()
 {
-  // create ogre camera object
+  // Create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
@@ -250,10 +272,6 @@ void OgreGpuRays::CreateLaserTexture()
     this->SetRayCountRatio(horzRayCountPerCamera);
   }
 
-  // Configure first pass texture size
-  this->SetImageWidth(horzRayCountPerCamera);
-  this->SetImageHeight(vertRayCountPerCamera);
-
   // Configure second pass texture size
   this->SetSecondPassTextureSize(this->RayCount(), this->VerticalRayCount());
 
@@ -280,7 +298,7 @@ void OgreGpuRays::CreateLaserTexture()
   this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(this->CosVertFOV()));
 
   // Configure first pass textures that are not yet configured properly
-  for (unsigned int i = 1; i < this->dataPtr->textureCount; ++i)
+  for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
   {
     RenderTexturePtr firstTextureBase =
         this->scene->CreateRenderTexture();
@@ -292,8 +310,8 @@ void OgreGpuRays::CreateLaserTexture()
                           this->dataPtr->ogreCamera,
                           Ogre::ColourValue(this->farClip, 0.0, 1.0),
                           PF_FLOAT32_RGB,
-                          this->ImageWidth(),
-                          this->ImageHeight());
+                          horzRayCountPerCamera,
+                          vertRayCountPerCamera);
   }
 
   // Configure second pass texture
@@ -311,6 +329,13 @@ void OgreGpuRays::CreateLaserTexture()
                         this->dataPtr->h2nd);
   this->dataPtr->secondPassTexture->SetBackgroundColor(
       this->scene->BackgroundColor());
+
+  Ogre::Matrix4 p = this->BuildScaledOrthoMatrix(
+      0, static_cast<float>(this->dataPtr->w2nd / 10.0),
+      0, static_cast<float>(this->dataPtr->h2nd / 10.0),
+      0.01, 0.02);
+
+  this->dataPtr->orthoCam->setCustomProjectionMatrix(true, p);
 
   Ogre::TextureUnitState *texUnit;
   for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
@@ -338,6 +363,7 @@ void OgreGpuRays::CreateLaserTexture()
     }
   }
 
+  this->SetFragmentShadersParams();
   this->CreateCanvas();
 }
 
@@ -396,8 +422,6 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
   // NOTE: We MUST bind parameters AFTER updating the autos
   if (pass->hasVertexProgram())
   {
-    std::cout << "Has texture" << std::endl;
-
     renderSys->bindGpuProgram(
         pass->getVertexProgram()->_getBindingDelegate());
 
@@ -407,8 +431,6 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
 
   if (pass->hasFragmentProgram())
   {
-    std::cout << "Has fragment" << std::endl;
-
     renderSys->bindGpuProgram(
     pass->getFragmentProgram()->_getBindingDelegate());
 
@@ -443,7 +465,7 @@ void OgreGpuRays::Render()
     this->dataPtr->currentMat = this->dataPtr->matFirstPass;
     this->dataPtr->currentTexture = this->dataPtr->firstPassTextures[i];
 
-    std::cout << "Texture first pass " << i << " " << this->dataPtr->textureCount << std::endl;
+    //this->dataPtr->currentTexture->Render();
     this->UpdateRenderTarget(this->dataPtr->firstPassTextures[i]->RenderTarget(),
                              this->dataPtr->matFirstPass->Material(),
                              this->dataPtr->ogreCamera, false);
@@ -459,8 +481,6 @@ void OgreGpuRays::Render()
 
   this->dataPtr->visual->SetVisible(true);
 
-  //this->dataPtr->secondPassTexture->Render();
-  std::cout << "Texture second pass" << std::endl;
   this->UpdateRenderTarget(this->dataPtr->secondPassTexture->RenderTarget(),
                            this->dataPtr->matSecondPass->Material(),
                            this->dataPtr->orthoCam, true);
@@ -595,12 +615,7 @@ void OgreGpuRays::CreateOrthoCam()
     this->dataPtr->orthoCam->setFarClipDistance(0.02);
     this->dataPtr->orthoCam->setRenderingDistance(0.02);
 
-    Ogre::Matrix4 p = this->BuildScaledOrthoMatrix(
-        0, static_cast<float>(this->dataPtr->w2nd / 10.0),
-        0, static_cast<float>(this->dataPtr->h2nd / 10.0),
-        0.01, 0.02);
-
-    this->dataPtr->orthoCam->setCustomProjectionMatrix(true, p);
+    this->dataPtr->orthoCam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
   }
 }
 
@@ -798,6 +813,7 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
     _rend->setCustomParameter(1, Ogre::Vector4(0, 0, 0, 0));
   }
 
+  std::cout << "Material notify " << this->dataPtr->currentMat->Material()->getName() << std::endl;
   Ogre::Pass *pass =
     this->dataPtr->currentMat->Material()->getBestTechnique()->getPass(0);
   Ogre::RenderSystem *renderSys =

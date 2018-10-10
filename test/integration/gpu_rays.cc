@@ -145,8 +145,8 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 {
-  const double hMinAngle = -M_PI/2.0;
-  const double hMaxAngle = M_PI/2.0;
+  const double hMinAngle = -M_PI/4.0;
+  const double hMaxAngle = M_PI/4.0;
   const double minRange = 0.1;
   const double maxRange = 10.0;
   const int hRayCount = 320;

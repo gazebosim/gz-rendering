@@ -46,8 +46,11 @@
 namespace Ogre
 {
   class Material;
-  class RenderTarget;
-  class Texture;
+  class Renderable;
+  class Pass;
+  class AutoParamDataSource;
+  class Matrix4;
+  class MovableObject;
 }
 
 namespace ignition
@@ -252,6 +255,8 @@ namespace ignition
                                         Ogre::MaterialPtr _material,
                                         Ogre::Camera *_cam,
                                         bool _updateTex);
+
+      private: void SetFragmentShadersParams();
 
       /// \internal
       /// \brief Pointer to private data.

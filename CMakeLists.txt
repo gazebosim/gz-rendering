@@ -55,7 +55,7 @@ endif()
 #--------------------------------------
 # Find OGRE
 ign_find_package(IgnOGRE VERSION 1.8.0
-  COMPONENTS RTShaderSystem Terrain Overlay
+  COMPONENTS RTShaderSystem Terrain Overlay RenderSystem_GL
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
 

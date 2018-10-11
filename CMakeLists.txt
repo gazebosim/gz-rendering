@@ -54,7 +54,7 @@ endif()
 
 #--------------------------------------
 # Find OGRE
-list(APPEND ign_ogre_components "RTShaderSystem" "Terrain")
+list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
 
 if (WIN32)
   list(APPEND ign_ogre_components "RenderSystem_GL")

@@ -34,9 +34,9 @@ namespace ignition
 
       public: virtual ~BaseObject();
 
-      public: virtual unsigned int Id() const;
+      public: virtual unsigned int Id() const override;
 
-      public: virtual std::string Name() const;
+      public: virtual std::string Name() const override;
 
       // Documentation inherited.
       public: virtual void PreRender() override;
@@ -44,7 +44,7 @@ namespace ignition
       // Documentation inherited.
       public: virtual void PostRender() override;
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       // TODO(anyone): make pure virtual
       protected: virtual void Load();

@@ -79,6 +79,12 @@ if (OGRE_FOUND)
   endforeach()
   include_directories(${OGRE_INCLUDES})
 
+  # find boost - mainly needed on macOS and also by the terrain component
+  find_package(Boost)
+  if (Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+  endif()
+
   set(HAVE_OGRE TRUE)
 endif()
 

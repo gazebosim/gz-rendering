@@ -54,8 +54,14 @@ endif()
 
 #--------------------------------------
 # Find OGRE
+list(APPEND ign_ogre_components "RTShaderSystem" "Terrain")
+
+if (WIN32)
+  list(APPEND ign_ogre_components "RenderSystem_GL")
+endif()
+
 ign_find_package(IgnOGRE VERSION 1.8.0
-  COMPONENTS RTShaderSystem Terrain Overlay 
+  COMPONENTS ${ign_ogre_components}
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
 

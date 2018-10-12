@@ -135,6 +135,24 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 
     gpuRays->SetCameraCount(4u);
     EXPECT_EQ(gpuRays->CameraCount(), 4u);
+
+    gpuRays->SetNearClipPlane(0.04);
+    EXPECT_NEAR(gpuRays->NearClipPlane(), 0.04, 1e-6);
+
+    gpuRays->SetFarClipPlane(5.4);
+    EXPECT_NEAR(gpuRays->FarClipPlane(), 05.4, 1e-6);
+
+    gpuRays->SetAngleMin(-1.47);
+    EXPECT_NEAR(gpuRays->AngleMin().Radian(), -1.47, 1e-6);
+
+    gpuRays->SetAngleMax(1.56);
+    EXPECT_NEAR(gpuRays->AngleMax().Radian(), 1.56, 1e-6);
+
+    gpuRays->SetRayCount(123);
+    EXPECT_NEAR(gpuRays->RayCount(), 123, 1e-6);
+
+    gpuRays->SetVerticalRayCount(23);
+    EXPECT_NEAR(gpuRays->VerticalRayCount(), 23, 1e-6);
   }
 
   // Clean up

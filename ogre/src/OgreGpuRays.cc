@@ -533,9 +533,9 @@ void OgreGpuRays::PostRender()
 }
 
 //////////////////////////////////////////////////
-const float* OgreGpuRays::LaserData() const
+const float* OgreGpuRays::RaysData() const
 {
-  return this->dataPtr->laserBuffer;
+  return this->dataPtr->laserScan;
 }
 
 //////////////////////////////////////////////////

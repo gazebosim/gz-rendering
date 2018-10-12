@@ -50,7 +50,7 @@ namespace ignition
       /// \brief All things needed to get back z buffer for laser data.
       /// \return Array of laser data.
       /// \deprecated use LaserDataBegin() and LaserDataEnd() instead
-      public: virtual const float *LaserData() const = 0;
+      public: virtual const float *RaysData() const = 0;
 
       /// \brief Connect to a laser frame signal
       /// \param[in] _subscriber Callback that is called when a new image is

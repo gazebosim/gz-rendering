@@ -39,25 +39,25 @@ namespace ignition
       public: virtual ~BaseRenderTarget();
 
       // Documentation inherited.
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       // Documentation inherited.
-      public: virtual void PostRender();
+      public: virtual void PostRender() override;
 
-      public: virtual unsigned int Width() const;
+      public: virtual unsigned int Width() const override;
 
-      public: virtual void SetWidth(const unsigned int _width);
+      public: virtual void SetWidth(const unsigned int _width) override;
 
-      public: virtual unsigned int Height() const;
+      public: virtual unsigned int Height() const override;
 
-      public: virtual void SetHeight(const unsigned int _height);
+      public: virtual void SetHeight(const unsigned int _height) override;
 
-      public: virtual PixelFormat Format() const;
+      public: virtual PixelFormat Format() const override;
 
-      public: virtual void SetFormat(PixelFormat _format);
+      public: virtual void SetFormat(PixelFormat _format) override;
 
       // Documentation inherited
-      public: virtual math::Color BackgroundColor() const;
+      public: virtual math::Color BackgroundColor() const override;
 
       protected: virtual void Rebuild();
 
@@ -82,7 +82,7 @@ namespace ignition
       public: virtual ~BaseRenderTexture();
 
       // Documentation inherited.
-      public: virtual GLuint GLId() const;
+      public: virtual GLuint GLId() const override;
     };
 
     template <class T>
@@ -225,7 +225,6 @@ namespace ignition
     {
       return GLuint(0u);
     }
-
 
     //////////////////////////////////////////////////
     // BaseRenderWindow

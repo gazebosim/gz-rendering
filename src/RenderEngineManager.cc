@@ -38,15 +38,20 @@ class ignition::rendering::RenderEngineManagerPrivate
 
   /// \brief Get a pointer to the render engine from an EngineMap iterator
   /// \param[in] _iter EngineMap iterator
-  public: RenderEngine *Engine(EngineIter _iter);
+  /// \param[in] _path Another search path for rendering engine plugin.
+  public: RenderEngine *Engine(EngineIter _iter,
+      const std::map<std::string, std::string> &_params,
+      const std::string &_path);
 
   /// \brief Register default engines supplied by ign-rendering
   public: void RegisterDefaultEngines();
 
   /// \brief Load a render engine plugin
   /// \param[in] _filename Filename of plugin shared library
+  /// \param[in] _path Another search path for rendering engine plugin.
   /// \return True if the plugin is loaded successfully
-  public: bool LoadEnginePlugin(const std::string &_filename);
+  public: bool LoadEnginePlugin(const std::string &_filename,
+              const std::string &_path);
 
   /// \brief Unregister an engine using an EngineMap iterator
   /// \param[in] _iter EngineMap iterator
@@ -90,7 +95,9 @@ bool RenderEngineManager::HasEngine(const std::string &_name) const
 }
 
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
+RenderEngine *RenderEngineManager::Engine(const std::string &_name,
+    const std::map<std::string, std::string> &_params,
+    const std::string &_path) const
 {
   // check in the list of available engines
   auto iter = this->dataPtr->engines.find(_name);
@@ -101,11 +108,13 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
     return nullptr;
   }
 
-  return this->dataPtr->Engine(iter);
+  return this->dataPtr->Engine(iter, _params, _path);
 }
 
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManager::EngineAt(unsigned int _index) const
+RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
+    const std::map<std::string, std::string> &_params,
+    const std::string &_path) const
 {
   if (_index >= this->EngineCount())
   {
@@ -115,7 +124,7 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index) const
 
   auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
-  return this->dataPtr->Engine(iter);
+  return this->dataPtr->Engine(iter, _params, _path);
 }
 
 //////////////////////////////////////////////////
@@ -186,7 +195,9 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 //////////////////////////////////////////////////
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter)
+RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter,
+    const std::map<std::string, std::string> &_params,
+    const std::string &_path)
 {
   RenderEngine *engine = _iter->second;
 
@@ -198,7 +209,7 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter)
     if (defaultIt != this->defaultEngines.end())
     {
       std::string libName = defaultIt->second;
-      if (this->LoadEnginePlugin(libName))
+      if (this->LoadEnginePlugin(libName, _path))
       {
         auto engineIt = this->engines.find(_iter->first);
         if (engineIt != this->engines.end())
@@ -212,7 +223,7 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter)
 
   if (!engine->IsInitialized())
   {
-    engine->Load();
+    engine->Load(_params);
     engine->Init();
   }
 
@@ -253,14 +264,16 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
 
 //////////////////////////////////////////////////
 bool RenderEngineManagerPrivate::LoadEnginePlugin(
-    const std::string &_filename)
+    const std::string &_filename, const std::string &_path)
 {
   ignmsg << "Loading plugin [" << _filename << "]" << std::endl;
 
   ignition::common::SystemPaths systemPaths;
 
-  // Add default install folder
+  // Add default install folder.
   systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
+  // Add extra search path.
+  systemPaths.AddPluginPaths(_path);
 
   auto pathToLib = systemPaths.FindSharedLibrary(_filename);
   if (pathToLib.empty())

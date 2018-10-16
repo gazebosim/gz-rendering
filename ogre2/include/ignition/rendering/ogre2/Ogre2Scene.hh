@@ -22,7 +22,6 @@
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "ignition/rendering/ogre2/Export.hh"
 
@@ -98,6 +97,9 @@ namespace ignition
 
       // Documentation inherited
       protected: virtual CameraPtr CreateCameraImpl(unsigned int _id,
+                     const std::string &_name) override;
+      // Documentation inherited
+      protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
                      const std::string &_name) override;
 
       // Documentation inherited
@@ -212,8 +214,11 @@ namespace ignition
       /// \brief A list of ogre visuals
       protected: Ogre2VisualStorePtr visuals;
 
-      /// \brief Pointer to the ogre root object
-      protected: Ogre::Root *ogreRoot = nullptr;
+      /// \brief A list of ogre lights
+      protected: Ogre2LightStorePtr lights;
+
+      /// \brief A list of ogre materials
+      protected: Ogre2MaterialMapPtr materials;
 
       /// \brief Pointer to the ogre scene manager
       protected: Ogre::SceneManager *ogreSceneManager = nullptr;

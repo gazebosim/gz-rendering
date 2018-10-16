@@ -23,7 +23,7 @@
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
-// #include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
 
 namespace Ogre
 {
@@ -74,8 +74,11 @@ namespace ignition
       /// \param[in] _color Color to set the background to
       public: virtual void SetBackgroundColor(math::Color _color);
 
-      /// \brief Prerender - called before Render
-      public: virtual void PreRender();
+      // Documentation inherited
+      public: virtual void PreRender() override;
+
+      // Documentation inherited
+      public: virtual void PostRender() override;
 
       /// \brief Main render call
       public: virtual void Render();
@@ -128,9 +131,8 @@ namespace ignition
       /// \brief a material used by for the render target
       protected: MaterialPtr material;
 
-      /// TODO(anyone)
       /// \brief Helper class that applies the material to the render target
-      // protected: Ogre2RenderTargetMaterialPtr materialApplicator;
+      protected: Ogre2RenderTargetMaterialPtr materialApplicator;
 
       /// \brief Flag to indicate if the render target color has changed
       protected: bool colorDirty = true;
@@ -151,6 +153,15 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void Destroy() override;
+
+      // Documentation inherited
+      public: virtual void PreRender() override;
+
+      // Documentation inherited
+      public: virtual void PostRender() override;
+
+      // Documentation inherited
+      public: virtual GLuint GLId() const override;
 
       // Documentation inherited.
       protected: virtual Ogre::RenderTarget *RenderTarget() const override;

@@ -23,6 +23,7 @@
 
 #include "ignition/rendering/Material.hh"
 #include "ignition/rendering/Scene.hh"
+#include "ignition/rendering/ShaderType.hh"
 
 namespace ignition
 {
@@ -69,7 +70,11 @@ namespace ignition
 
       public: virtual void ClearNormalMap() override = 0;
 
-      public: virtual void SetShaderType(enum ShaderType _type) override = 0;
+      // Documentation inherited
+      public: virtual void SetShaderType(enum ShaderType _type) override;
+
+      // Documentation inherited
+      public: virtual enum ShaderType ShaderType() const override;
 
       // Documentation inherited.
       // \sa Material::SetDepthMaterial()
@@ -155,6 +160,20 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMaterial<T>::SetShaderType(enum ShaderType /*_type*/)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    enum ShaderType BaseMaterial<T>::ShaderType() const
+    {
+      return ST_PIXEL;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     std::string BaseMaterial<T>::VertexShader() const
     {
       return std::string();
@@ -164,8 +183,6 @@ namespace ignition
     template <class T>
     ShaderParamsPtr BaseMaterial<T>::VertexShaderParams()
     {
-      ignerr << "Vertex shader is not supported by the current render engine"
-          << std::endl;
       return nullptr;
     }
 
@@ -173,8 +190,7 @@ namespace ignition
     template <class T>
     void BaseMaterial<T>::SetVertexShader(const std::string &/*_path*/)
     {
-      ignerr << "Vertex shader is not supported by the current render engine"
-          << std::endl;
+      // no op
     }
 
     //////////////////////////////////////////////////
@@ -188,8 +204,6 @@ namespace ignition
     template <class T>
     ShaderParamsPtr BaseMaterial<T>::FragmentShaderParams()
     {
-      ignerr << "Fragment shader is not supported by the current render engine"
-          << std::endl;
       return nullptr;
     }
 
@@ -197,8 +211,7 @@ namespace ignition
     template <class T>
     void BaseMaterial<T>::SetFragmentShader(const std::string &/*_path*/)
     {
-      ignerr << "Fragment shader is not supported by the current render engine"
-          << std::endl;
+      // no op
     }
 
     //////////////////////////////////////////////////

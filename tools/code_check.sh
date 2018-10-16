@@ -79,7 +79,7 @@ if [ $CPPCHECK_LT_157 -eq 0 ]; then
 fi
 CPPCHECK_INCLUDES="-I . -I $builddir -I test -I include"
 CPPCHECK_RULES="-DIGNITION_VISIBLE"
-CPPCHECK_CMD1A="-j 4 --enable=style,performance,portability,information"
+CPPCHECK_CMD1A="-j 4 --enable=style,performance,portability"
 CPPCHECK_CMD1B="$CPPCHECK_RULES $CPPCHECK_FILES"
 CPPCHECK_CMD1="$CPPCHECK_CMD1A $CPPCHECK_CMD1B -I include"
 CPPCHECK_CMD2="--enable=unusedFunction $CPPCHECK_FILES"

@@ -36,10 +36,10 @@ namespace ignition
       /// \brief Unknown or errant type
       ST_UNKNOWN  = 0,
 
-      /// \brief Shader shader
+      /// \brief Per pixel lighting shader
       ST_PIXEL    = 1,
 
-      /// \brief Vertex shader
+      /// \brief Per vertex lighting shader
       ST_VERTEX   = 2,
 
       /// \brief Object-space normal map shader

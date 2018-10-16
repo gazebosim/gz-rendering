@@ -17,7 +17,6 @@
 #ifndef IGNITION_RENDERING_RENDERTARGET_HH_
 #define IGNITION_RENDERING_RENDERTARGET_HH_
 
-
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>

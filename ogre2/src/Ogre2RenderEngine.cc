@@ -37,9 +37,9 @@
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-// #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-// #include "ignition/rendering/ogre2/Ogre2Scene.hh"
-// #include "ignition/rendering/ogre2/Ogre2Storage.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 
 class ignition::rendering::Ogre2RenderEnginePrivate
@@ -235,13 +235,12 @@ Ogre::Root *Ogre2RenderEngine::OgreRoot() const
 }
 
 //////////////////////////////////////////////////
-ScenePtr Ogre2RenderEngine::CreateSceneImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+ScenePtr Ogre2RenderEngine::CreateSceneImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // Ogre2ScenePtr scene = Ogre2ScenePtr(new Ogre2Scene(_id, _name));
-  // this->scenes->Add(scene);
-  // return scene;
-  return ScenePtr();
+  Ogre2ScenePtr scene = Ogre2ScenePtr(new Ogre2Scene(_id, _name));
+  this->scenes->Add(scene);
+  return scene;
 }
 
 //////////////////////////////////////////////////
@@ -251,8 +250,14 @@ SceneStorePtr Ogre2RenderEngine::Scenes() const
 }
 
 //////////////////////////////////////////////////
-bool Ogre2RenderEngine::LoadImpl()
+bool Ogre2RenderEngine::LoadImpl(
+    const std::map<std::string, std::string> &_params)
 {
+  // parse params
+  auto it = _params.find("useCurrentGLContext");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->useCurrentGLContext;
+
   try
   {
     this->LoadAttempt();
@@ -290,7 +295,8 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  this->CreateContext();
+  if (!this->useCurrentGLContext)
+    this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -497,6 +503,20 @@ void Ogre2RenderEngine::CreateResources()
 
   Ogre::String rootHlmsFolder = mediaPath;
 
+  // register PbsMaterial resources
+  Ogre::String pbsCompositorFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "Compositors");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      pbsCompositorFolder, "FileSystem", "General");
+  Ogre::String commonMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonMaterialFolder, "FileSystem", "General");
+  Ogre::String commonGLSLMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSL");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonGLSLMaterialFolder, "FileSystem", "General");
+
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework
   if (rootHlmsFolder.empty())
@@ -582,12 +602,17 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   Ogre::NameValuePairList params;
   Ogre::RenderWindow *window = nullptr;
 
-  // Mac and Windows *must* use externalWindow handle.
+  // if use current gl then don't include window handle params
+  if (!this->useCurrentGLContext)
+  {
+    // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
-  params["externalWindowHandle"] = _handle;
+    params["externalWindowHandle"] = _handle;
 #else
-  params["parentWindowHandle"] = _handle;
+    params["parentWindowHandle"] = _handle;
 #endif
+  }
+
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
@@ -607,6 +632,16 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
+
+
+  // Ogre 2 PBS expects gamma correction
+  params["gamma"] = "true";
+
+  if (this->useCurrentGLContext)
+  {
+    params["externalGLControl"] = "true";
+    params["currentGLContext"] = "true";
+  }
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
@@ -648,7 +683,7 @@ void Ogre2RenderEngine::InitAttempt()
   // init the resources
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(false);
 
-  // this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
+  this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
 }
 
 /////////////////////////////////////////////////

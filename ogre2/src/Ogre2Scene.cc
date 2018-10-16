@@ -21,6 +21,8 @@
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2Light.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -63,14 +65,26 @@ VisualPtr Ogre2Scene::RootVisual() const
 //////////////////////////////////////////////////
 math::Color Ogre2Scene::AmbientLight() const
 {
-  // TODO(anyone)
-  return math::Color::White;
+  // This method considers that the ambient upper hemisphere and
+  // the lower hemisphere light configurations are the same. For
+  // more info check Ogre2Scene::SetAmbientLight documentation.
+  Ogre::ColourValue ogreColor =
+    this->ogreSceneManager->getAmbientLightUpperHemisphere();
+  return Ogre2Conversions::Convert(ogreColor);
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::SetAmbientLight(const math::Color &/*_color*/)
+void Ogre2Scene::SetAmbientLight(const math::Color &_color)
 {
-  // TODO(anyone)
+  // We set the same ambient light for both hemispheres for a
+  // traditional fixed-colour ambient light.
+  // https://ogrecave.github.io/ogre/api/2.1/class_ogre_1_1_scene
+  // _manager.html#a56cd9aa2c4dee4eec9eb07ce1372fb52
+  // It's preferred to set the hemisphereDir arg to the up axis,
+  // which in our case would be Ogre::Vector3::UNIT_Z
+  Ogre::ColourValue ogreColor = Ogre2Conversions::Convert(_color);
+  this->ogreSceneManager->setAmbientLight(ogreColor, ogreColor,
+      Ogre::Vector3::UNIT_Z);
 }
 
 //////////////////////////////////////////////////
@@ -115,8 +129,7 @@ bool Ogre2Scene::InitImpl()
 //////////////////////////////////////////////////
 LightStorePtr Ogre2Scene::Lights() const
 {
-  // TODO(anyone)
-  return LightStorePtr();
+  return this->lights;
 }
 
 //////////////////////////////////////////////////
@@ -134,32 +147,34 @@ VisualStorePtr Ogre2Scene::Visuals() const
 //////////////////////////////////////////////////
 MaterialMapPtr Ogre2Scene::Materials() const
 {
-  // TODO(anyone)
-  return MaterialMapPtr();
+  return this->materials;
 }
 
 //////////////////////////////////////////////////
-DirectionalLightPtr Ogre2Scene::CreateDirectionalLightImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+DirectionalLightPtr Ogre2Scene::CreateDirectionalLightImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return DirectionalLightPtr();
+  Ogre2DirectionalLightPtr light(new Ogre2DirectionalLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
-PointLightPtr Ogre2Scene::CreatePointLightImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+PointLightPtr Ogre2Scene::CreatePointLightImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return PointLightPtr();
+  Ogre2PointLightPtr light(new Ogre2PointLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
-SpotLightPtr Ogre2Scene::CreateSpotLightImpl(unsigned int /*_id*/,
-    const std::string &/*`_name*/)
+SpotLightPtr Ogre2Scene::CreateSpotLightImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return SpotLightPtr();
+  Ogre2SpotLightPtr light(new Ogre2SpotLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -170,6 +185,14 @@ CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int _id,
   bool result = this->InitObject(camera, _id, _name);
   camera->SetBackgroundColor(this->backgroundColor);
   return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+DepthCameraPtr Ogre2Scene::CreateDepthCameraImpl(unsigned int /*_id*/,
+    const std::string &/*_name*/)
+{
+  // TODO(anyone)
+  return DepthCameraPtr();
 }
 
 //////////////////////////////////////////////////
@@ -266,19 +289,21 @@ TextPtr Ogre2Scene::CreateTextImpl(unsigned int /*_id*/,
 }
 
 //////////////////////////////////////////////////
-MaterialPtr Ogre2Scene::CreateMaterialImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+MaterialPtr Ogre2Scene::CreateMaterialImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return MaterialPtr();
+  Ogre2MaterialPtr material(new Ogre2Material);
+  bool result = this->InitObject(material, _id, _name);
+  return (result) ? material : nullptr;
 }
 
 //////////////////////////////////////////////////
-RenderTexturePtr Ogre2Scene::CreateRenderTextureImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+RenderTexturePtr Ogre2Scene::CreateRenderTextureImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return RenderTexturePtr();
+  Ogre2RenderTexturePtr renderTexture(new Ogre2RenderTexture);
+  bool result = this->InitObject(renderTexture, _id, _name);
+  return (result) ? renderTexture : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -339,11 +364,18 @@ void Ogre2Scene::CreateContext()
   this->ogreSceneManager->getRenderQueue()->setSortRenderQueue(
       Ogre::v1::OverlayManager::getSingleton().mDefaultRenderQueueId,
       Ogre::RenderQueue::StableSort);
+
+  // Set sane defaults for proper shadow mapping
+  this->ogreSceneManager->setShadowDirectionalLightExtrusionDistance(500.0f);
+  this->ogreSceneManager->setShadowFarDistance(500.0f);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateRootVisual()
 {
+  if (this->rootVisual)
+    return;
+
   // create unregistered visual
   this->rootVisual = Ogre2VisualPtr(new Ogre2Visual);
   unsigned int rootId = this->CreateObjectId();
@@ -354,6 +386,7 @@ void Ogre2Scene::CreateRootVisual()
   {
     ignerr << "Unable to create root visual" << std::endl;
     this->rootVisual = nullptr;
+    return;
   }
 
   // add visual node to actual ogre root
@@ -371,11 +404,10 @@ void Ogre2Scene::CreateMeshFactory()
 //////////////////////////////////////////////////
 void Ogre2Scene::CreateStores()
 {
-  // TODO(anyone)
-  // there will be a few more stores added to this class,
-  // e.g. to store lights, materials, etc
+  this->lights = Ogre2LightStorePtr(new Ogre2LightStore);
   this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
   this->visuals = Ogre2VisualStorePtr(new Ogre2VisualStore);
+  this->materials = Ogre2MaterialMapPtr(new Ogre2MaterialMap);
 }
 
 //////////////////////////////////////////////////

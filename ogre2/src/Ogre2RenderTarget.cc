@@ -15,6 +15,10 @@
  *
  */
 
+// leave this out of OgreIncludes as it conflicts with other files requiring
+// gl.h
+#include <OGRE/RenderSystems/GL3Plus/OgreGL3PlusFBORenderTexture.h>
+
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Material.hh"
@@ -22,7 +26,7 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-// #include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
@@ -50,15 +54,7 @@ void Ogre2RenderTarget::BuildCompositor()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  const Ogre::String workspaceName(
-      this->ogreCamera->getName() + "_" + this->RenderTarget()->getName()
-      + "_workspace");
-  if (!ogreCompMgr->hasWorkspaceDefinition(workspaceName))
-  {
-    ogreCompMgr->createBasicWorkspaceDef(workspaceName,
-        this->ogreBackgroundColor,  Ogre::IdString());
-  }
-
+  const Ogre::String workspaceName = "PbsMaterialsWorkspace";
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
       this->RenderTarget(), this->ogreCamera, workspaceName, false);
@@ -154,6 +150,12 @@ void Ogre2RenderTarget::PreRender()
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTarget::PostRender()
+{
+  // do nothing by default
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
   // TODO(anyone)
@@ -214,7 +216,17 @@ void Ogre2RenderTarget::SetMaterial(MaterialPtr _material)
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::RebuildMaterial()
 {
-  // TODO(anyone)
+  if (this->material)
+  {
+    Ogre2Material *ogreMaterial = dynamic_cast<Ogre2Material *>(
+        this->material.get());
+    Ogre::MaterialPtr matPtr = ogreMaterial->Material();
+
+    Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
+    Ogre::RenderTarget *target = this->RenderTarget();
+    this->materialApplicator.reset(new Ogre2RenderTargetMaterial(
+        sceneMgr, target, matPtr.get()));
+  }
 }
 
 //////////////////////////////////////////////////
@@ -262,9 +274,34 @@ void Ogre2RenderTexture::BuildTarget()
   Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
   Ogre::PixelFormat ogreFormat = Ogre2Conversions::Convert(this->format);
 
+  // Ogre 2 PBS expects gamma correction to be enabled
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-      Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).getPointer();
+      Ogre::TU_RENDERTARGET, 0, true, this->antiAliasing)).getPointer();
+}
+
+//////////////////////////////////////////////////
+GLuint Ogre2RenderTexture::GLId() const
+{
+  if (!this->ogreTexture)
+    return GLuint(0);
+
+  GLuint texId;
+  this->ogreTexture->getCustomAttribute("GLID", &texId);
+
+  return texId;
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::PreRender()
+{
+  Ogre2RenderTarget::PreRender();
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::PostRender()
+{
+  Ogre2RenderTarget::PostRender();
 }
 
 //////////////////////////////////////////////////

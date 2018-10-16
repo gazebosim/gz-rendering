@@ -17,7 +17,8 @@
 
 #include <gtest/gtest.h>
 
-#include "test_config.h"
+#include "test_config.h" // NOLINT(build/include)
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"

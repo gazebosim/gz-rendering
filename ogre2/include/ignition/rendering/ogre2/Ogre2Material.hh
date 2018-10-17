@@ -130,6 +130,30 @@ namespace ignition
       // Documentation inherited
       public: virtual void ClearNormalMap() override;
 
+      // Documentation inherited
+      public: virtual bool HasRoughnessMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string RoughnessMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetRoughnessMap(const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual void ClearRoughnessMap() override;
+
+      // Documentation inherited
+      public: virtual bool HasMetalnessMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string MetalnessMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetMetalnessMap(const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual void ClearMetalnessMap() override;
+
       /// \brief Return ogre low level material
       /// \return Ogre material pointer
       public: virtual Ogre::MaterialPtr Material();
@@ -142,13 +166,15 @@ namespace ignition
       // \sa BaseMaterial::PreRender()
       public: virtual void PreRender() override;
 
-      /// \brief Set the texture for this material
-      /// \param[in] _texture Name of the texture.
-      protected: virtual void SetTextureImpl(const std::string &_texture);
+      // Documentation inherited.
+      public: virtual enum MaterialType Type() const override;
 
-      /// \brief Set the normal map for this material
-      /// \param[in] _normalMap Name of the normal map.
-      protected: virtual void SetNormalMapImpl(const std::string &_normalMap);
+      /// \brief Set the texture map for this material
+      /// \param[in] _texture Name of the texture.
+      /// \param[in] _type Type of texture, i.e. diffuse, normal, roughness,
+      /// metalness
+      protected: virtual void SetTextureMapImpl(const std::string &_texture,
+          Ogre::PbsTextureTypes _type);
 
       /// \brief Get a pointer to the ogre texture by name
       /// \return Ogre texture
@@ -180,6 +206,12 @@ namespace ignition
 
       /// \brief Name of the normal map
       protected: std::string normalMapName;
+
+      /// \brief Name of the roughness map
+      protected: std::string roughnessMapName;
+
+      /// \brief Name of the metalness map
+      protected: std::string metalnessMapName;
 
       /// \brief Only an ogre scene can create an ogre material
       private: friend class Ogre2Scene;

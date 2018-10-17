@@ -167,6 +167,37 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   EXPECT_EQ(noSuchNormalMapName, material->NormalMap());
   EXPECT_TRUE(material->HasNormalMap());
 
+  if (material->Type() == MaterialType::MT_PBS)
+  {
+    // metalness map
+    std::string metalnessMapName = textureName;
+    material->SetMetalnessMap(metalnessMapName);
+    EXPECT_EQ(metalnessMapName, material->MetalnessMap());
+    EXPECT_TRUE(material->HasMetalnessMap());
+
+    material->ClearMetalnessMap();
+    EXPECT_FALSE(material->HasMetalnessMap());
+
+    std::string noSuchMetalnessMapName = "no_such_metalness.png";
+    material->SetMetalnessMap(noSuchMetalnessMapName);
+    EXPECT_EQ(noSuchMetalnessMapName, material->MetalnessMap());
+    EXPECT_TRUE(material->HasMetalnessMap());
+
+    // roughness map
+    std::string roughnessMapName = textureName;
+    material->SetRoughnessMap(roughnessMapName);
+    EXPECT_EQ(roughnessMapName, material->RoughnessMap());
+    EXPECT_TRUE(material->HasRoughnessMap());
+
+    material->ClearRoughnessMap();
+    EXPECT_FALSE(material->HasRoughnessMap());
+
+    std::string noSuchRoughnessMapName = "no_such_roughness.png";
+    material->SetRoughnessMap(noSuchRoughnessMapName);
+    EXPECT_EQ(noSuchRoughnessMapName, material->RoughnessMap());
+    EXPECT_TRUE(material->HasRoughnessMap());
+  }
+
   // shader type
   enum ShaderType shaderType = ShaderType::ST_PIXEL;
   material->SetShaderType(shaderType);

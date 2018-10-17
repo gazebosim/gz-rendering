@@ -32,6 +32,16 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief An enum for the type of material
+    enum IGNITION_RENDERING_VISIBLE MaterialType
+    {
+      /// \brief Classic shading, i.e. variants of Phong
+      MT_CLASSIC = 0,
+
+      /// \brief Physically Based Shading
+      MT_PBS = 1
+    };
+
     /// \class Material Material.hh ignition/rendering/Material.hh
     /// \brief Represents a surface material of a Geometry
     class IGNITION_RENDERING_VISIBLE Material :
@@ -195,6 +205,39 @@ namespace ignition
 
       /// \brief Removes any normal map mapped to this material
       public: virtual void ClearNormalMap() = 0;
+
+      /// \brief Determine if this material has a roughness map
+      /// \return True if this material has a roughness map
+      public: virtual bool HasRoughnessMap() const = 0;
+
+      /// \brief Get the URI of the roughness map file
+      /// \return URI of the roughness map file
+      public: virtual std::string RoughnessMap() const = 0;
+
+      /// \brief Set the material roughness map
+      /// \param[in] _name URI of the new roughness map file
+      public: virtual void SetRoughnessMap(const std::string &_name) = 0;
+
+      /// \brief Removes any roughness map mapped to this material
+      public: virtual void ClearRoughnessMap() = 0;
+
+      /// \brief Determine if this material has a metalness map
+      /// \return True if this material has a metalness map
+      public: virtual bool HasMetalnessMap() const = 0;
+
+      /// \brief Get the URI of the metalness map file
+      /// \return URI of the metalness map file
+      public: virtual std::string MetalnessMap() const = 0;
+
+      /// \brief Set the material metalness map
+      /// \param[in] _name URI of the new metalness map file
+      public: virtual void SetMetalnessMap(const std::string &_name) = 0;
+
+      /// \brief Removes any metalness map mapped to this material
+      public: virtual void ClearMetalnessMap() = 0;
+
+      /// \brief Removes any metalness map mapped to this material
+      public: virtual enum MaterialType Type() const = 0;
 
       /// \brief Get the ShaderType value
       /// \return The ShaderType value

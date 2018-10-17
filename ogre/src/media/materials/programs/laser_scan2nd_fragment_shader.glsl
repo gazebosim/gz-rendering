@@ -14,7 +14,7 @@ void main()
   {
     int int_tex = int(tex * 1000.0);
     if (int_tex == 0)
-      //gl_FragColor=vec4(1,0,0,1);
+      //gl_FragColor=vec4(12,34,56,1);
       gl_FragColor = texture2D( tex1, gl_TexCoord[0].st);
     else 
       if (int_tex == 1)

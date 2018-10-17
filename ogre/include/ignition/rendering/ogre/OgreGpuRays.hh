@@ -46,6 +46,7 @@
 namespace Ogre
 {
   class Material;
+  class Camera;
   class Renderable;
   class Pass;
   class AutoParamDataSource;
@@ -203,7 +204,7 @@ namespace ignition
       /// \brief Implementation of Ogre::RenderObjectListener
       public: virtual void notifyRenderSingleObject(Ogre::Renderable *_rend,
               const Ogre::Pass *_p, const Ogre::AutoParamDataSource *_s,
-              const Ogre::LightList *_ll, bool _supp);
+              const Ogre::LightList *_ll, bool _supp) override;
 
       // Documentation inherited.
       private: virtual void Render();

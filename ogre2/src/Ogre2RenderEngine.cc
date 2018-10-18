@@ -633,7 +633,6 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
 
-
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "true";
 

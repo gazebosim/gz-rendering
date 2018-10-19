@@ -147,6 +147,28 @@ void handleMouse()
   if (g_mouse.buttonDirty)
   {
     g_mouse.buttonDirty = false;
+
+    // test mouse picking
+    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      // Get visual using Selection Buffer from Camera
+      ir::VisualPtr visual1;
+      ignition::math::Vector2i mousePosI(g_mouse.x, g_mouse.y);
+      visual1 = rayCamera->VisualAt(mousePosI);
+      if (visual1)
+      {
+        std::cout << "Selected item using Selection Buffer at position ";
+        std::cout << g_mouse.x << " " << g_mouse.y << ": ";
+        std::cout << visual1->Name() << "\n";
+      }
+      else
+      {
+        std::cout << "No object found using Selection Buffer at position ";
+        std::cout << g_mouse.x << " " << g_mouse.y << std::endl;
+      }
+    }
+
+    // camera orbit
     double nx =
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -

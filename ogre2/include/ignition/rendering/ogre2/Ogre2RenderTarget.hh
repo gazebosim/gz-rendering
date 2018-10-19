@@ -92,7 +92,7 @@ namespace ignition
       public: void SetMaterial(MaterialPtr _material);
 
       /// \brief Get a pointer to the ogre render target
-      protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+      public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
@@ -164,7 +164,7 @@ namespace ignition
       public: virtual GLuint GLId() const override;
 
       // Documentation inherited.
-      protected: virtual Ogre::RenderTarget *RenderTarget() const override;
+      public: virtual Ogre::RenderTarget *RenderTarget() const override;
 
       // Documentation inherited.
       protected: virtual void RebuildTarget() override;
@@ -196,7 +196,7 @@ namespace ignition
       public: virtual void Destroy();
 
       // Documentation inherited.
-      protected: virtual Ogre::RenderTarget *RenderTarget() const override;
+      public: virtual Ogre::RenderTarget *RenderTarget() const override;
 
       // Documentation inherited.
       protected: virtual void RebuildTarget() override;

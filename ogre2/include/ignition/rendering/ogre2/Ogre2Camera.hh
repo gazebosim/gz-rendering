@@ -32,6 +32,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2SelectionBuffer;
+
     /// \brief Ogre2.x implementation of the camera class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Camera :
       public BaseCamera<Ogre2Sensor>
@@ -109,6 +112,9 @@ namespace ignition
 
       /// \brief Pointer to ogre camera object
       protected: Ogre::Camera *ogreCamera = nullptr;
+
+      /// \brief Selection buffer object for entity picking
+      protected: Ogre2SelectionBuffer *selectionBuffer = nullptr;
 
       /// \brief Pointer to render texture
       protected: Ogre2RenderTargetPtr renderTexture;

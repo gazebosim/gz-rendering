@@ -157,13 +157,13 @@ void handleMouse()
       visual = rayCamera->VisualAt(mousePos);
       if (visual)
       {
-        std::cout << "Selected item at position: ";
+        std::cout << "Selected visual at position: ";
         std::cout << g_mouse.x << " " << g_mouse.y << ": ";
         std::cout << visual->Name() << "\n";
       }
       else
       {
-        std::cout << "No object found at position: ";
+        std::cout << "No visual found at position: ";
         std::cout << g_mouse.x << " " << g_mouse.y << std::endl;
       }
     }

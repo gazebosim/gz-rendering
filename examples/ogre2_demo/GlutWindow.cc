@@ -152,18 +152,18 @@ void handleMouse()
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
     {
       // Get visual using Selection Buffer from Camera
-      ir::VisualPtr visual1;
-      ignition::math::Vector2i mousePosI(g_mouse.x, g_mouse.y);
-      visual1 = rayCamera->VisualAt(mousePosI);
-      if (visual1)
+      ir::VisualPtr visual;
+      ignition::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
+      visual = rayCamera->VisualAt(mousePos);
+      if (visual)
       {
-        std::cout << "Selected item using Selection Buffer at position ";
+        std::cout << "Selected item at position: ";
         std::cout << g_mouse.x << " " << g_mouse.y << ": ";
-        std::cout << visual1->Name() << "\n";
+        std::cout << visual->Name() << "\n";
       }
       else
       {
-        std::cout << "No object found using Selection Buffer at position ";
+        std::cout << "No object found at position: ";
         std::cout << g_mouse.x << " " << g_mouse.y << std::endl;
       }
     }
@@ -278,6 +278,12 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
+
+  // Uncomment to print FPS
+  // static ignition::common::Time previous;
+  // auto now = ignition::common::Time::SystemTime();
+  // std::cerr << (now - previous).Double() << std::endl;
+  // previous = now;
 }
 
 //////////////////////////////////////////////////

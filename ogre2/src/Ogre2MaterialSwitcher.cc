@@ -50,9 +50,12 @@ void Ogre2MaterialSwitcher::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent &_evt)
 {
   // swap item to use v1 shader material
+  // Note: keep an eye out for performance impact on switching materials
+  // on the fly. We are doing this often so should be ok.
   this->datablockMap.clear();
-  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator("Item");
-  while(itor.hasMoreElements())
+  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
+      Ogre::ItemFactory::FACTORY_TYPE_NAME);
+  while (itor.hasMoreElements())
   {
       Ogre::MovableObject *object = itor.peekNext();
       Ogre::Item *item = static_cast<Ogre::Item *>(object);
@@ -81,8 +84,9 @@ void Ogre2MaterialSwitcher::postRenderTargetUpdate(
     const Ogre::RenderTargetEvent &/*_evt*/)
 {
   // restore item to use hlms material
-  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator("Item");
-  while(itor.hasMoreElements())
+  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
+      Ogre::ItemFactory::FACTORY_TYPE_NAME);
+  while (itor.hasMoreElements())
   {
       Ogre::MovableObject *object = itor.peekNext();
       Ogre::Item *item = static_cast<Ogre::Item *>(object);

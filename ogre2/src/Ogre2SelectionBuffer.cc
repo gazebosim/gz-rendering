@@ -147,45 +147,15 @@ void Ogre2SelectionBuffer::DeleteRTTBuffer()
 /////////////////////////////////////////////////
 void Ogre2SelectionBuffer::CreateRTTBuffer()
 {
-  // 1x1 pixel buffer
+  // create a 1x1 pixel buffer
   unsigned int width = 1;
   unsigned int height = 1;
   Ogre::PixelFormat format = Ogre::PF_R8G8B8;
-
-/*  RenderTexturePtr base = this->dataPtr->scene->CreateRenderTexture();
-  this->dataPtr->renderTexture =
-      std::dynamic_pointer_cast<Ogre2RenderTexture>(base);
-  this->dataPtr->renderTexture->SetCamera(this->dataPtr->selectionCamera);
-  this->dataPtr->renderTexture->SetFormat(PF_R8G8B8);
-  this->dataPtr->renderTexture->SetWidth(width);
-  this->dataPtr->renderTexture->SetHeight(height);
-  this->dataPtr->renderTexture->PreRender();
-
-  Ogre::Viewport *vp =
-      this->dataPtr->renderTexture->RenderTarget()->getViewport(0);
-  vp->setOverlaysEnabled(false);
-//  vp->setClearEveryFrame(true);
-  vp->setMaterialScheme("aa");
-  vp->_setVisibilityMask(IGN_VISIBILITY_SELECTABLE,
-      vp->getLightVisibilityMask());
-
-  this->dataPtr->renderTexture->RenderTarget()->addListener(
-      this->dataPtr->materialSwitcher.get());
-*/
-  try
-  {
-    this->dataPtr->texture = Ogre::TextureManager::getSingleton().createManual(
+  this->dataPtr->texture = Ogre::TextureManager::getSingleton().createManual(
         "SelectionPassTex",
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         Ogre::TEX_TYPE_2D, width, height, 0, Ogre::PF_R8G8B8,
         Ogre::TU_RENDERTARGET);
-  }
-  catch(...)
-  {
-    this->dataPtr->renderTexture = nullptr;
-    ignerr << "Unable to create selection buffer.\n";
-    return;
-  }
 
   this->dataPtr->renderTexture =
       this->dataPtr->texture->getBuffer()->getRenderTarget();
@@ -213,25 +183,7 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   const_cast<Ogre::CompositorPassSceneDef *>(scenePass)->mVisibilityMask =
       IGN_VISIBILITY_SELECTABLE;
 
-
-/*  this->dataPtr->renderTexture =
-    this->dataPtr->texture->getBuffer()->getRenderTarget();
-  // this->dataPtr->renderTexture->setAutoUpdated(false);
-  this->dataPtr->renderTexture->setPriority(0);
-  this->dataPtr->renderTexture->addViewport(this->dataPtr->selectionCamera);
-  this->dataPtr->renderTexture->getViewport(0)->setOverlaysEnabled(false);
-  // this->dataPtr->renderTexture->getViewport(0)->setShadowsEnabled(false);
-  this->dataPtr->renderTexture->getViewport(0)->setClearEveryFrame(true);
-  this->dataPtr->renderTexture->addListener(
-      this->dataPtr->materialSwitcher.get());
-  this->dataPtr->renderTexture->getViewport(0)->setMaterialScheme("aa");
-  this->dataPtr->renderTexture->getViewport(0)->setVisibilityMask(
-      IGN_VISIBILITY_SELECTABLE);
-//  Ogre::HardwarePixelBufferSharedPtr pixelBuffer =
-//    this->dataPtr->texture->getBuffer();
-//  size_t bufferSize = pixelBuffer->getSizeInBytes();
-
-*/
+  // buffer to store render texture data
   size_t bufferSize = Ogre::PixelUtil::getMemorySize(width, height, 1, format);
   this->dataPtr->buffer = new uint8_t[bufferSize];
   this->dataPtr->pixelBox = new Ogre::PixelBox(width,
@@ -283,11 +235,10 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
   this->Update();
 
   size_t posInStream = 0;
-
   ignition::math::Color::BGRA color(0);
   if (!this->dataPtr->buffer)
   {
-    ignerr << "Selection buffer is null.\n";
+    ignerr << "Selection buffer is null." << std::endl;
     return nullptr;
   }
   memcpy(static_cast<void *>(&color), this->dataPtr->buffer + posInStream, 4);

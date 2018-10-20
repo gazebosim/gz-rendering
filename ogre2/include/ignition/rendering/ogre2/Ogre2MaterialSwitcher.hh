@@ -41,7 +41,7 @@ namespace ignition
       public Ogre::RenderTargetListener
     {
       /// \brief Constructor
-      public: Ogre2MaterialSwitcher(Ogre2ScenePtr _scene);
+      public: explicit Ogre2MaterialSwitcher(Ogre2ScenePtr _scene);
 
       /// \brief Destructor
       public: ~Ogre2MaterialSwitcher();

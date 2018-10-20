@@ -55,7 +55,6 @@ void Ogre2RenderTarget::BuildCompositor()
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
   const Ogre::String workspaceName = "PbsMaterialsWorkspace";
-//  const Ogre::String workspaceName = "SelectionBufferWorkspace";
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
       this->RenderTarget(), this->ogreCamera, workspaceName, false);
@@ -165,10 +164,7 @@ void Ogre2RenderTarget::Render()
   // https://forums.ogre3d.org/viewtopic.php?t=84687
   this->ogreCompositorWorkspace->setEnabled(true);
   auto engine = Ogre2RenderEngine::Instance();
-//  std::cerr << " render one frame " << std::endl;
   engine->OgreRoot()->renderOneFrame();
-
-//  std::cerr << " render one frame done " << std::endl;
   this->ogreCompositorWorkspace->setEnabled(false);
 
   // The code below for manual updating render textures was suggested in ogre

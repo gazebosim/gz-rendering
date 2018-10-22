@@ -59,7 +59,7 @@ void OgreGpuRays::Init()
   BaseGpuRays::Init();
   this->CreateMaterials();
   this->CreateCamera();
-  this->Reset();
+//  this->Reset();
 }
 
 /////////////////////////////////////////////////
@@ -372,6 +372,7 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
                    Ogre::MaterialPtr _material, Ogre::Camera *_cam,
                    bool _updateTex)
 {
+  std::cerr << " ogregpuray update render target " << std::endl;
   Ogre::RenderSystem *renderSys;
   Ogre::Viewport *vp = NULL;
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
@@ -381,11 +382,14 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
   // Get pointer to the material pass
   pass = _material->getBestTechnique()->getPass(0);
 
+  std::cerr << "_material name " << _material->getName() << " " << _material->isLoaded() << std::endl;
+
   // Render the depth texture
   // OgreSceneManager::_render function automatically sets farClip to 0.
   // Which normally equates to infinite distance. We don't want this. So
   // we have to set the distance every time.
   _cam->setFarClipDistance(this->FarClipPlane());
+  std::cerr << "this->far " << this->FarClipPlane() << std::endl;
 
   Ogre::AutoParamDataSource autoParamDataSource;
 
@@ -439,11 +443,14 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
   }
 
   _target->update(false);
+
+  std::cerr << " ogregpuray update render target done" << std::endl;
 }
 
 //////////////////////////////////////////////////
 void OgreGpuRays::Render()
 {
+  std::cerr << " ogre gpu rays render " << this->dataPtr->textureCount << std::endl;
   ignition::common::Timer firstPassTimer, secondPassTimer;
 
   firstPassTimer.Start();
@@ -491,6 +498,8 @@ void OgreGpuRays::Render()
 
   double secondPassDur = secondPassTimer.Elapsed().Double();
   this->dataPtr->lastRenderDuration = firstPassDur + secondPassDur;
+
+  std::cerr << " ogre gpu rays render done" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -550,10 +559,10 @@ void OgreGpuRays::SetRenderTexture(OgreRenderTexturePtr _texture,
   // Configure material pass
   Ogre::Technique *technique = _material->Material()->getTechnique(0);
   Ogre::Pass *pass = technique->getPass(0);
-  pass->setDepthCheckEnabled(false);
-  pass->setDepthWriteEnabled(false);
-  pass->setLightingEnabled(false);
-  pass->setFog(true, Ogre::FOG_NONE);
+//  pass->setDepthCheckEnabled(false);
+//  pass->setDepthWriteEnabled(false);
+//  pass->setLightingEnabled(false);
+//  pass->setFog(true, Ogre::FOG_NONE);
   // pass->setCullingMode(Ogre::CULL_NONE);
 
   // Configure the texture
@@ -572,8 +581,8 @@ void OgreGpuRays::SetRenderTexture(OgreRenderTexturePtr _texture,
   vp->setShadowsEnabled(false);
   vp->setSkiesEnabled(false);
   vp->setBackgroundColour(_color);
-  vp->setVisibilityMask(
-      IGN_VISIBILITY_ALL & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
+//  vp->setVisibilityMask(
+//      IGN_VISIBILITY_ALL & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
 }
 
 /////////////////////////////////////////////////
@@ -803,6 +812,8 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
       const Ogre::Pass* /*pass*/, const Ogre::AutoParamDataSource* /*source*/,
       const Ogre::LightList* /*lights*/, bool /*supp*/)
 {
+  std::cerr << " notify render single object " << std::endl;
+
   Ogre::Vector4 retro = Ogre::Vector4(0, 0, 0, 0);
   try
   {

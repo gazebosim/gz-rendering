@@ -131,7 +131,9 @@ void OgreRenderTarget::PostRender()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Render()
 {
+  std::cerr << "render target update " << std::endl;
   this->RenderTarget()->update();
+  std::cerr << "render target update done " << std::endl;
 }
 
 //////////////////////////////////////////////////

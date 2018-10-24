@@ -71,7 +71,9 @@ namespace ignition
       public: virtual void ClearNormalMap() override = 0;
 
       // Documentation inherited
-      public: virtual void SetShaderType(enum ShaderType _type) override {
+      public: virtual void SetShaderType(enum ShaderType /*_type*/) override
+             {
+               // no op
              }
 
       // Documentation inherited

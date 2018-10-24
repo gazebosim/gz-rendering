@@ -15,9 +15,17 @@
  *
  */
 
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
 #include <OgreGLFBORenderTexture.h>
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
+
 
 #include <ignition/common/Console.hh>
 
@@ -285,29 +293,12 @@ GLuint OgreRenderTexture::GLId()
 void OgreRenderTexture::PreRender()
 {
   OgreRenderTarget::PreRender();
-  if (!this->ogreTexture)
-    return;
-
-  Ogre::RenderTarget *rt = this->RenderTarget();
-
-  Ogre::GLFrameBufferObject *ogreFbo = nullptr;
-  rt->getCustomAttribute("FBO", &ogreFbo);
-  Ogre::GLFBOManager *manager = ogreFbo->getManager();
-  manager->bind(rt);
 }
 
 //////////////////////////////////////////////////
 void OgreRenderTexture::PostRender()
 {
-  if (!this->ogreTexture)
-    return;
-
-  Ogre::RenderTarget *rt = this->RenderTarget();
-
-  Ogre::GLFrameBufferObject *ogreFbo = nullptr;
-  rt->getCustomAttribute("FBO", &ogreFbo);
-  Ogre::GLFBOManager *manager = ogreFbo->getManager();
-  manager->unbind(rt);
+  OgreRenderTarget::PostRender();
 }
 
 //////////////////////////////////////////////////

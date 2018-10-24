@@ -54,8 +54,14 @@ endif()
 
 #--------------------------------------
 # Find OGRE
+list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
+
+if (WIN32)
+  list(APPEND ign_ogre_components "RenderSystem_GL")
+endif()
+
 ign_find_package(IgnOGRE VERSION 1.8.0
-  COMPONENTS RTShaderSystem Terrain Overlay RenderSystem_GL
+  COMPONENTS ${ign_ogre_components}
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
 
@@ -72,6 +78,12 @@ if (OGRE_FOUND)
     list(APPEND OGRE_INCLUDES ${dir_include})
   endforeach()
   include_directories(${OGRE_INCLUDES})
+
+  # find boost - mainly needed on macOS and also by the terrain component
+  find_package(Boost)
+  if (Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+  endif()
 
   set(HAVE_OGRE TRUE)
 endif()

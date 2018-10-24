@@ -24,6 +24,7 @@
 #include "ignition/rendering/ogre/OgreGpuRays.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
+#include "ignition/rendering/ogre/OgreGpuRays.hh"
 #include "ignition/rendering/ogre/OgreGrid.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreText.hh"

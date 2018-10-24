@@ -59,7 +59,7 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewLaserFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
-                  const std::string &_format)> _subscriber) = 0;
+                  PixelFormat)> _subscriber) = 0;
 
       /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
       /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5

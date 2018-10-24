@@ -64,7 +64,7 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewLaserFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
-                  const std::string &_format)> _subscriber) override;
+                  PixelFormat _format)> _subscriber) override;
 
       /// \return Pointer to the render target
       public: virtual RenderTargetPtr RenderTarget() const = 0;
@@ -263,7 +263,7 @@ namespace ignition
     template <class T>
     ignition::common::ConnectionPtr BaseGpuRays<T>::ConnectNewLaserFrame(
           std::function<void(const float *, unsigned int, unsigned int,
-          unsigned int, const std::string &)>)
+          unsigned int, PixelFormat)>)
     {
       return nullptr;
     }

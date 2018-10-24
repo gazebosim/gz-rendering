@@ -28,4 +28,12 @@ target_link_libraries(${ogre_target}
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre_target})
 
+if(WIN32)
+  # tests needs .dll in the same directory
+  add_custom_command(TARGET ${ogre_target} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    $<TARGET_FILE:${ogre_target}> ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+
 add_subdirectory(media)

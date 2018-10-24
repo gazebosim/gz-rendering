@@ -38,6 +38,7 @@ namespace ignition
     class Ogre2Node;
     class Ogre2Object;
     class Ogre2PointLight;
+    class Ogre2RayQuery;
     class Ogre2RenderEngine;
     class Ogre2RenderTarget;
     class Ogre2RenderTargetMaterial;
@@ -69,6 +70,7 @@ namespace ignition
     typedef shared_ptr<Ogre2Node>                 Ogre2NodePtr;
     typedef shared_ptr<Ogre2Object>               Ogre2ObjectPtr;
     typedef shared_ptr<Ogre2PointLight>           Ogre2PointLightPtr;
+    typedef shared_ptr<Ogre2RayQuery>             Ogre2RayQueryPtr;
     typedef shared_ptr<Ogre2RenderEngine>         Ogre2RenderEnginePtr;
     typedef shared_ptr<Ogre2RenderTarget>         Ogre2RenderTargetPtr;
     typedef shared_ptr<Ogre2RenderTexture>        Ogre2RenderTexturePtr;

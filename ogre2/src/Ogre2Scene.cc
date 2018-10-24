@@ -25,6 +25,7 @@
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
+#include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -315,11 +316,12 @@ RenderWindowPtr Ogre2Scene::CreateRenderWindowImpl(unsigned int /*_id*/,
 }
 
 //////////////////////////////////////////////////
-RayQueryPtr Ogre2Scene::CreateRayQueryImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+RayQueryPtr Ogre2Scene::CreateRayQueryImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return RayQueryPtr();
+  Ogre2RayQueryPtr rayQuery(new Ogre2RayQuery);
+  bool result = this->InitObject(rayQuery, _id, _name);
+  return (result) ? rayQuery : nullptr;
 }
 
 //////////////////////////////////////////////////

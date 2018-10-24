@@ -47,7 +47,7 @@ Ogre2MaterialSwitcher::~Ogre2MaterialSwitcher()
 
 ////////////////////////////////////////////////
 void Ogre2MaterialSwitcher::preRenderTargetUpdate(
-    const Ogre::RenderTargetEvent &_evt)
+    const Ogre::RenderTargetEvent &/*_evt*/)
 {
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials

@@ -519,8 +519,8 @@ void OgreMaterial::UpdateTransparency()
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetDepthMaterial(const double far,
-  const double near)
+void OgreMaterial::SetDepthMaterial(const double _far,
+  const double _near)
 {
   // Configure Ogre Pass settings for Depth
   this->ogrePass->setDepthCheckEnabled(false);
@@ -547,8 +547,12 @@ void OgreMaterial::SetDepthMaterial(const double far,
   this->SetFragmentShader(depth_fragment_shader_path);
 
   // Configure fragment shader variables
-  (*this->fragmentShaderParams)["pFar"] = static_cast<float>(far);
-  (*this->fragmentShaderParams)["pNear"] = static_cast<float>(near);
+  // Note: MSVC was not happy with one line commands, be sure
+  // of checking it if you change the lines below
+  auto farShaderParams = (*this->fragmentShaderParams)["pfar"];
+  auto nearShaderParams = (*this->fragmentShaderParams)["pnear"];
+  farShaderParams = static_cast<float>(_far);
+  nearShaderParams = static_cast<float>(_near);
 }
 
 //////////////////////////////////////////////////

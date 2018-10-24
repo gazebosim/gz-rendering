@@ -71,10 +71,14 @@ namespace ignition
       public: virtual void ClearNormalMap() override = 0;
 
       // Documentation inherited
-      public: virtual void SetShaderType(enum ShaderType _type) override;
+      public: virtual void SetShaderType(enum ShaderType _type) override {
+             }
 
       // Documentation inherited
-      public: virtual enum ShaderType ShaderType() const override;
+      public: virtual enum ShaderType ShaderType() const override
+             {
+               return ST_PIXEL;
+             }
 
       // Documentation inherited.
       // \sa Material::SetDepthMaterial()
@@ -156,20 +160,6 @@ namespace ignition
         const double _b, const double _a)
     {
       this->SetEmissive(math::Color(_r, _g, _b, _a));
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseMaterial<T>::SetShaderType(enum ShaderType /*_type*/)
-    {
-      // no op
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    enum ShaderType BaseMaterial<T>::ShaderType() const
-    {
-      return ST_PIXEL;
     }
 
     //////////////////////////////////////////////////

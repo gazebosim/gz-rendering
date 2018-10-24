@@ -549,10 +549,10 @@ void OgreMaterial::SetDepthMaterial(const double _far,
   // Configure fragment shader variables
   // Note: MSVC was not happy with one line commands, be sure
   // of checking it if you change the lines below
-  auto pfar_shader_params = (*this->fragmentShaderParams)["pfar"];
-  auto pnear_shader_params = (*this->fragmentShaderParams)["pnear"];
-  pfar_shader_params = static_cast<float>(_far);
-  pnear_shader_params = static_cast<float>(_near);
+  auto farShaderParams = (*this->fragmentShaderParams)["pfar"];
+  auto nearShaderParams = (*this->fragmentShaderParams)["pnear"];
+  farShaderParams = static_cast<float>(_far);
+  nearShaderParams = static_cast<float>(_near);
 }
 
 //////////////////////////////////////////////////

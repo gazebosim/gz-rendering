@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
 
 using namespace ignition;
 using namespace rendering;

@@ -15,13 +15,13 @@
  *
 */
 
-#include "ignition/rendering/ogre/OgreDepthCamera.hh"
-#include <ignition/math/Helpers.hh>
 #if (_WIN32)
   /* Needed for std::min */
   #define NOMINMAX
-  #include "windef.h"
+  #include <windef.h>
 #endif
+#include <ignition/math/Helpers.hh>
+#include "ignition/rendering/ogre/OgreDepthCamera.hh"
 
 using namespace ignition;
 using namespace rendering;

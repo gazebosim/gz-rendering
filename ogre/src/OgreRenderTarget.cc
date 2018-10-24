@@ -15,9 +15,17 @@
  *
  */
 
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
 #include <OgreGLFBORenderTexture.h>
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
+
 
 #include <ignition/common/Console.hh>
 

@@ -50,6 +50,12 @@ ign_find_package(IgnOGRE VERSION 1.8.0
   PRIVATE_FOR ogre)
 
 if (OGRE_FOUND)
+  # find boost - mainly needed on macOS and also by the terrain component
+  find_package(Boost)
+  if (Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+  endif()
+
   set(HAVE_OGRE TRUE)
 endif()
 

@@ -22,13 +22,10 @@
 # include <GL/glx.h>
 #endif
 
-#ifndef _WIN32
-  #include <dirent.h>
-#else
+#ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
-  #include <ignition/common/win_dirent.h>
 #endif
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
@@ -632,7 +629,6 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
-
 
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "true";

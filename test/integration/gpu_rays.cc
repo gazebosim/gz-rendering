@@ -205,7 +205,6 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays->SetAngleMax(hMaxAngle);
   gpuRays->SetRayCount(hRayCount);
   gpuRays->SetVerticalRayCount(vRayCount);
-  gpuRays->CreateLaserTexture();
   root->AddChild(gpuRays);
 
   // Create a second ray caster rotated
@@ -221,12 +220,11 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   // gpuRays2->SetAngleMax(hMaxAngle);
   // gpuRays2->SetRayCount(hRayCount);
   // gpuRays2->SetVerticalRayCount(vRayCount);
-  // gpuRays2->CreateLaserTexture();
   // root->AddChild(gpuRays2);
 
   // Create testing boxes
   // box in the center
-  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(1, 0, 0.5),
+  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(4, 0, 0.5),
                                    ignition::math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual();
   visualBox1->AddGeometry(scene->CreateBox());

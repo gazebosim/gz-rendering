@@ -125,9 +125,6 @@ namespace ignition
       /// \brief Create a mesh.
       private: void CreateMesh();
 
-      /// \brief Create first and second pass materials.
-      private: void CreateMaterials();
-
       /// \brief Create a canvas.
       private: void CreateCanvas();
 

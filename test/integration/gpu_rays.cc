@@ -44,7 +44,8 @@ void OnNewLaserFrame(int *_scanCounter, float *_scanDest,
                   unsigned int _channels,
                   PixelFormat /*_format*/)
 {
-  memcpy(_scanDest, _scan, _width * _height * _channels);
+  float f;
+  memcpy(_scanDest, _scan, _width * _height * _channels * sizeof(f));
   *_scanCounter += 1;
 }
 
@@ -164,15 +165,11 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 {
-//  const double hMinAngle = -M_PI/4.0;
-//  const double hMaxAngle = M_PI/4.0;
-  const double hMinAngle = -0.1;
-  const double hMaxAngle = 0.1;
-
+  const double hMinAngle = -M_PI/4.0;
+  const double hMaxAngle = M_PI/4.0;
   const double minRange = 0.1;
-  const double maxRange = 20.0;
-//  const int hRayCount = 320;
-  const int hRayCount = 10;
+  const double maxRange = 10.0;
+  const int hRayCount = 320;
   const int vRayCount = 1;
   const unsigned int samples = hRayCount;
 
@@ -253,7 +250,8 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Verify ray sensor 1 range readings
   // listen to new laser frames
-  float *scan = new float[hRayCount * vRayCount * 3];
+  unsigned int channels = 3;
+  float *scan = new float[hRayCount * vRayCount * channels];
   int scanCount = 0;
   common::ConnectionPtr c =
     gpuRays->ConnectNewLaserFrame(
@@ -271,7 +269,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   }
   EXPECT_LT(i, 300);
 
-  int mid = samples * 3 / 2;
+  int mid = samples * channels / 2;
   double unitBoxSize = 1.0;
   double expectedRangeAtMidPoint = box01Pose.Pos().X() - unitBoxSize/2;
 

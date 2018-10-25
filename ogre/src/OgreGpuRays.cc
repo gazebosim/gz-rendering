@@ -15,23 +15,17 @@
  *
 */
 
-#include <ignition/common/Time.hh>
-#include <ignition/common/Timer.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/SubMesh.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
-#include <ignition/common/PluginMacros.hh>
+#include <ignition/common/SubMesh.hh>
 
 #include <ignition/math/Color.hh>
 #include <ignition/math/Helpers.hh>
 #include <ignition/math/Vector3.hh>
-#include <ignition/math/Angle.hh>
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreGpuRays.hh"
-#include "ignition/rendering/ShaderParams.hh"
 
 /// \internal
 /// \brief Private data for the OgreGpuRays class
@@ -78,12 +72,6 @@ class ignition::rendering::OgreGpuRaysPrivate
   /// \brief Pointer to the ogre camera
   public: Ogre::Camera *ogreCamera = nullptr;
 
-  /// \brief First pass viewports.
-//  public: Ogre::Viewport *firstPassViewports[3];
-
-  /// \brief Second pass viewport
-//  public: Ogre::Viewport *secondPassViewport = nullptr;
-
   /// \brief Ogre scenenode where the orthorgraphic camera is attached to.
   public: Ogre::SceneNode *pitchNodeOrtho = nullptr;
 
@@ -95,23 +83,23 @@ class ignition::rendering::OgreGpuRaysPrivate
   public: VisualPtr visual;
 
   /// \brief Number of first pass textures.
-  public: unsigned int textureCount = 0;
+  public: unsigned int textureCount = 0u;
 
   /// \brief A list of camera angles for first pass rendering.
   public: double cameraYaws[4];
 
   /// \brief Image width of second pass.
-  public: unsigned int w2nd = 0;
+  public: unsigned int w2nd = 0u;
 
   /// \brief Image height of second pass.
-  public: unsigned int h2nd = 0;
+  public: unsigned int h2nd = 0u;
 
   /// \brief List of texture unit indices used during the second
   /// rendering pass.
   public: std::vector<int> texIdx;
 
   /// Number of second pass texture units created.
-  public: int texCount = 0;
+  public: unsigned int texCount = 0;
 
   /// \brief Dummy render texture for the gpu laser
   public: RenderTexturePtr renderTexture;
@@ -155,16 +143,15 @@ OgreGpuRays::~OgreGpuRays()
 
   this->dataPtr->visual.reset();
   this->dataPtr->texIdx.clear();
-  this->dataPtr->texCount = 0;
+  this->dataPtr->texCount = 0u;
 }
 
 //////////////////////////////////////////////////
 void OgreGpuRays::Init()
 {
   BaseGpuRays::Init();
-  
-//  this->CreateMaterials();
 
+  // create internal camera for 1st pass
   this->CreateCamera();
 
   // create dummy render texture
@@ -177,7 +164,6 @@ void OgreGpuRays::CreateRenderTexture()
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->dataPtr->renderTexture =
       std::dynamic_pointer_cast<OgreRenderTexture>(base);
-  // this->dataPtr->renderTexture->SetCamera(this->ogreCamera);
   this->dataPtr->renderTexture->SetWidth(1);
   this->dataPtr->renderTexture->SetHeight(1);
 }
@@ -311,7 +297,7 @@ void OgreGpuRays::CreateLaserTexture()
   // Configure second pass texture size
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());
 
-  // Set ogre cam properties 
+  // Set ogre cam properties
   double ratio = horzRangeCountPerCamera/vertRangeCountPerCamera;
   double vfov = 2.0 * atan(tan(this->hfov/ 2.0) / ratio);
   this->dataPtr->ogreCamera->setAspectRatio(ratio);
@@ -354,11 +340,11 @@ void OgreGpuRays::CreateLaserTexture()
 //      this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
       horzRangeCountPerCamera, vertRangeCountPerCamera, 0,
       Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET).getPointer();
-    
-    Ogre::RenderTarget *rt = 
+
+    Ogre::RenderTarget *rt =
         this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget();
     rt->setAutoUpdated(false);
-   
+
     // Setup the viewport to use the texture
     Ogre::Viewport *vp =
         rt->addViewport(this->dataPtr->ogreCamera);
@@ -371,16 +357,6 @@ void OgreGpuRays::CreateLaserTexture()
         Ogre::ColourValue(this->FarClipPlane(), 0.0, 1.0));
     vp->setVisibilityMask(IGN_VISIBILITY_ALL &
         ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
-/*    if (i == 0)
-    {
-      this->dataPtr->ogreCamera->setAspectRatio(this->RayCountRatio());
-      this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(this->CosVertFOV()));
-      std::cerr << " set 1st pass rt: " << this->RayCountRatio() << " " 
-          << this->CosVertFOV() << " " << horzRangeCountPerCamera << " "
-          << vertRangeCountPerCamera << " " 
-          << this->dataPtr->ogreCamera->getFOVy().valueRadians() << std::endl;
-    }
-    */
   }
 
   this->dataPtr->matFirstPass = dynamic_cast<Ogre::Material *>(
@@ -398,7 +374,7 @@ void OgreGpuRays::CreateLaserTexture()
       Ogre::PF_FLOAT32_RGB,
       Ogre::TU_RENDERTARGET).getPointer();
 
-  Ogre::RenderTarget *rt = 
+  Ogre::RenderTarget *rt =
       this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
   rt->setAutoUpdated(false);
 
@@ -450,7 +426,6 @@ void OgreGpuRays::CreateLaserTexture()
     }
   }
 
-//  this->SetFragmentShadersParams();
   this->CreateCanvas();
 }
 
@@ -464,10 +439,6 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
   // Get pointer to the material pass
   Ogre::Pass *pass = _material->getBestTechnique()->getPass(0);
 
-  std::cerr << " n: " << _cam->getName() 
-            << " " << _cam->getFarClipDistance()  << " " 
-            << _cam->getFOVy().valueRadians() << " "
-            << _cam->getAspectRatio() << std::endl;
   // Render the depth texture
   // OgreSceneManager::_render function automatically sets farClip to 0.
   // Which normally equates to infinite distance. We don't want this. So
@@ -601,7 +572,7 @@ void OgreGpuRays::PostRender()
 
   if (!this->dataPtr->laserBuffer)
     this->dataPtr->laserBuffer = new float[len];
-    
+
   Ogre::PixelBox dstBox(width, height,
         1, Ogre::PF_FLOAT32_RGB, this->dataPtr->laserBuffer);
 
@@ -615,47 +586,8 @@ void OgreGpuRays::PostRender()
 
   memcpy(this->dataPtr->laserScan, this->dataPtr->laserBuffer, size);
 
-  for (unsigned int i = 0; i < width*3; i=i+3)
-    std::cerr << "(" << this->dataPtr->laserBuffer[i] << " " 
-            << this->dataPtr->laserBuffer[i+1] << " "
-            << this->dataPtr->laserBuffer[i+2] << ") ";
-  std::cerr << std::endl;
-
-
-/*  const Ogre::Viewport *firstPassViewport =
-    this->dataPtr->firstPassTextures[0]->getBuffer()->getRenderTarget()->getViewport(0);
-  unsigned int width = firstPassViewport->getActualWidth();
-  unsigned int height = firstPassViewport->getActualHeight();
-
-  size_t size = Ogre::PixelUtil::getMemorySize(
-    width, height, 1, Ogre::PF_FLOAT32_RGB);
-  int len = width * height * 3;
-
-  if (!this->dataPtr->laserBuffer)
-    this->dataPtr->laserBuffer = new float[len];
-    
-  Ogre::PixelBox dstBox(width, height,
-        1, Ogre::PF_FLOAT32_RGB, this->dataPtr->laserBuffer);
-
-  auto pixelBuffer = this->dataPtr->firstPassTextures[0]->getBuffer();
-  pixelBuffer->blitToMemory(dstBox);
-
-  if (!this->dataPtr->laserScan)
-  {
-    this->dataPtr->laserScan = new float[len];
-  }
-
-  memcpy(this->dataPtr->laserScan, this->dataPtr->laserBuffer, size);
-
-  for (unsigned int i = 0; i < width*3; i=i+3)
-    std::cerr << "(" << this->dataPtr->laserBuffer[i] << " " 
-            << this->dataPtr->laserBuffer[i+1] << " "
-            << this->dataPtr->laserBuffer[i+2] << ") ";
-  std::cerr << std::endl;
-      */
-
   this->dataPtr->newLaserFrame(this->dataPtr->laserScan,
-      width, height, 3, 
+      width, height, 3,
       PixelFormat::PF_FLOAT32_RGB);
 }
 
@@ -686,7 +618,7 @@ void OgreGpuRays::CreateOrthoCam()
   }
 
   Ogre::SceneNode *rootSceneNode = std::dynamic_pointer_cast<
-    ignition::rendering::OgreNode>(this->scene->RootVisual())->Node();
+      ignition::rendering::OgreNode>(this->scene->RootVisual())->Node();
   this->dataPtr->pitchNodeOrtho = rootSceneNode->createChildSceneNode();
   this->dataPtr->pitchNodeOrtho->attachObject(this->dataPtr->orthoCam);
 
@@ -892,6 +824,9 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
       const Ogre::Pass* /*pass*/, const Ogre::AutoParamDataSource* /*source*/,
       const Ogre::LightList* /*lights*/, bool /*supp*/)
 {
+  // TODO this function sets the retro for each obj
+  // but currently just sets it to 0
+
   Ogre::Vector4 retro = Ogre::Vector4(0, 0, 0, 0);
   if (!_rend->hasCustomParameter(1))
   {

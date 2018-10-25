@@ -44,9 +44,6 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~GpuRays() { }
 
-      /// \brief Create the texture which is used to render laser data.
-      public: virtual void CreateLaserTexture() = 0;
-
       /// \brief All things needed to get back z buffer for laser data.
       /// \return Array of laser data.
       /// \deprecated use LaserDataBegin() and LaserDataEnd() instead
@@ -54,7 +51,17 @@ namespace ignition
 
       /// \brief Connect to a laser frame signal
       /// \param[in] _subscriber Callback that is called when a new image is
-      /// generated
+      /// generated. The callback function parameters are:
+      ///   _frame:   Image frame is an array of floats. Size is equal
+      ///             to width * height * channels
+      ///             Each laser reading occupies 3 floats
+      ///             Index 0: depth value
+      ///             Index 1: retro value
+      ///             Index 2: 0. Not used
+      ///   _width:   Width of image, i.e. number of data in the horizonal scan
+      ///   _height:  Height o image, i.e. number of scans in vertical direction
+      ///   _channels: Number of channels, i.e. 3 floats per laser reading
+      ///   _format:  Pixel format of the image frame.
       /// \return A pointer to the connection. This must be kept in scope.
       public: virtual common::ConnectionPtr ConnectNewLaserFrame(
                   std::function<void(const float *_frame, unsigned int _width,

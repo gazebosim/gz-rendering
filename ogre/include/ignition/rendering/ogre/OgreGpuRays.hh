@@ -40,17 +40,6 @@
   #include <Winsock2.h>
 #endif
 
-namespace Ogre
-{
-  class Material;
-  class Camera;
-  class Renderable;
-  class Pass;
-  class AutoParamDataSource;
-  class Matrix4;
-  class MovableObject;
-}
-
 namespace ignition
 {
   namespace rendering
@@ -59,7 +48,7 @@ namespace ignition
     //
     // Forward declaration
     class OgreGpuRaysPrivate;
-     
+
     /** \class OgreGpuRays OgreGpuRays.hh\
      * rendering/ogre/OgreGpuRays.hh
     **/
@@ -76,9 +65,6 @@ namespace ignition
       // Documentation inherited
       public: virtual void Init() override;
 
-      /// \brief Create the texture which is used to render laser data.
-      public: virtual void CreateLaserTexture() override;
-      
       /// \brief Create dummy render texture. Needed to satify inheritance
       public: virtual void CreateRenderTexture();
 
@@ -96,15 +82,10 @@ namespace ignition
       // Documentation inherited
       public: virtual void PostRender() override;
 
-      /// \brief All things needed to get back z buffer for laser data.
-      /// \return Array of laser data.
-      /// \deprecated use LaserDataBegin() and LaserDataEnd() instead
+      // Documentation inherited
       public: virtual const float *RaysData() const override;
 
-      /// \brief Connect to a laser frame signal
-      /// \param[in] _subscriber Callback that is called when a new image is
-      /// generated
-      /// \return A pointer to the connection. This must be kept in scope.
+      // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewLaserFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _channels,
@@ -134,6 +115,9 @@ namespace ignition
       /// \brief Create an ortho camera.
       private: void CreateCamera();
 
+      /// \brief Create the texture which is used to render laser data.
+      private: virtual void CreateLaserTexture();
+
       /// \brief Builds scaled Orthogonal Matrix from parameters.
       /// \param[in] _left Left clip.
       /// \param[in] _right Right clip.
@@ -146,29 +130,10 @@ namespace ignition
           const float _right, const float _bottom, const float _top,
           const float _near, const float _far);
 
-      /// \brief Configure render target.
-      /// \param[in] _target texture target.
-      /// \param[in] _material material used for the texture.
-      /// \param[in] _camera ogre camera.
-      /// \param[in] _color background color.
-      /// \param[in] _format pixel format.
-      /// \param[in] _width width of the texture.
-      /// \param[in] _height height of the texture.
-/*      private: void SetRenderTexture(OgreRenderTexturePtr _target,
-                                     OgreMaterialPtr _material,
-                                     Ogre::Camera *_camera,
-                                     Ogre::ColourValue _color,
-                                     PixelFormat _format,
-                                     const unsigned int _width,
-                                     const unsigned int _height);
-                                     */
-
       private: void UpdateRenderTarget(Ogre::RenderTarget *_target,
                                        Ogre::Material *_material,
                                        Ogre::Camera *_cam,
                                        const bool _updateTex);
-
-//      private: void SetFragmentShadersParams();
 
       /// \internal
       /// \brief Pointer to private data.

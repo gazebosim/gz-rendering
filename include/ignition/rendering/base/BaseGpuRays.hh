@@ -49,9 +49,6 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~BaseGpuRays();
 
-      /// \brief Create the texture which is used to render laser data.
-      public: virtual void CreateLaserTexture() override;
-
       /// \brief All things needed to get back z buffer for laser data.
       /// \return Array of laser data.
       /// \deprecated use LaserDataBegin() and LaserDataEnd() instead
@@ -244,10 +241,10 @@ namespace ignition
       /// \brief Quantity of verical rays
       protected: int vSamples = 0;
 
-      /// \brief Resolution of horizontal rays 
+      /// \brief Resolution of horizontal rays
       protected: int hResolution = 1;
 
-      /// \brief Resolution of vertical rays 
+      /// \brief Resolution of vertical rays
       protected: int vResolution = 1;
 
       private: friend class OgreScene;
@@ -262,12 +259,6 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     BaseGpuRays<T>::~BaseGpuRays()
-    {
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseGpuRays<T>::CreateLaserTexture()
     {
     }
 
@@ -454,7 +445,7 @@ namespace ignition
     {
       return this->hSamples;
     }
-    
+
     template <class T>
     //////////////////////////////////////////////////
     void BaseGpuRays<T>::SetRayCount(int _samples)

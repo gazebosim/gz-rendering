@@ -29,6 +29,7 @@
 #include <ignition/math/Angle.hh>
 
 #include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreGpuRays.hh"
 #include "ignition/rendering/ShaderParams.hh"
 
@@ -287,10 +288,6 @@ void OgreGpuRays::CreateCamera()
 
   this->dataPtr->ogreCamera = ogreSceneManager->createCamera(
       this->Name() + "_Camera");
-  this->dataPtr->ogreCamera->setFixedYawAxis(false);
-  this->dataPtr->ogreCamera->yaw(Ogre::Degree(-90));
-  this->dataPtr->ogreCamera->roll(Ogre::Degree(-90));
-
   if (this->dataPtr->ogreCamera == nullptr)
   {
     ignerr << "Ogre camera cannot be created" << std::endl;
@@ -298,6 +295,12 @@ void OgreGpuRays::CreateCamera()
   }
 
   this->ogreNode->attachObject(this->dataPtr->ogreCamera);
+  this->dataPtr->ogreCamera->setFixedYawAxis(false);
+  this->dataPtr->ogreCamera->yaw(Ogre::Degree(-90));
+  this->dataPtr->ogreCamera->roll(Ogre::Degree(-90));
+  this->dataPtr->ogreCamera->setAutoAspectRatio(true);
+
+
 
   // Create first pass texture which is going to be used as initial
   // render texture. If more render texture are used will be initiated
@@ -357,11 +360,11 @@ void OgreGpuRays::CreateLaserTexture()
   // Fixed minimum resolution of texture to reduce steps in ranges
   // when hitting surfaces where the angle between ray and surface is small.
   // Also have to keep in mind the GPU's max. texture size
-  unsigned int horzRayCountPerCamera =
+  unsigned int horzRangeCountPerCamera =
 // TODO
-//      std::max(2048U, this->hSamples / cameraCount);
-      this->hSamples / cameraCount;
-  unsigned int vertRayCountPerCamera = this->vSamples;
+//      std::max(2048U, this->RangeCount() / cameraCount);
+      this->RangeCount() / cameraCount;
+  unsigned int vertRangeCountPerCamera = this->VerticalRangeCount();
 
   // vertical laser setup
   this->vfov = (this->VerticalAngleMax() - this->VerticalAngleMin()).Radian();
@@ -396,32 +399,44 @@ void OgreGpuRays::CreateLaserTexture()
   // ray count to maintain aspect ratio
   if (this->vSamples > 1)
   {
-    double cameraAspectRatio = tan(hfov / 2.0) / tan(vfovCamera / 2.0);
+    double cameraAspectRatio = tan(this->hfov / 2.0) / tan(vfovCamera / 2.0);
 
     this->SetRayCountRatio(cameraAspectRatio);
-    this->rayCountRatio = cameraAspectRatio;
+    this->rangeCountRatio = cameraAspectRatio;
 
-    if ((horzRayCountPerCamera / this->RayCountRatio()) >
-         vertRayCountPerCamera)
+    if ((horzRangeCountPerCamera / this->RangeCountRatio()) >
+         vertRangeCountPerCamera)
     {
-      vertRayCountPerCamera =
-          round(horzRayCountPerCamera / this->RayCountRatio());
+      vertRangeCountPerCamera =
+          std::round(horzRangeCountPerCamera / this->RangeCountRatio());
     }
     else
     {
-      horzRayCountPerCamera =
-          round(vertRayCountPerCamera * this->RayCountRatio());
+      horzRangeCountPerCamera =
+          round(vertRangeCountPerCamera * this->RangeCountRatio());
     }
   }
   else
   {
     // In case of 1 vert. ray, set a very small vertical FOV for camera
-    this->SetRayCountRatio(horzRayCountPerCamera);
+    this->SetRayCountRatio(horzRangeCountPerCamera);
   }
+  //////////////////////////////////////////////////////
 
   // Configure second pass texture size
-  this->SetSecondPassTextureSize(this->RayCount(), this->VerticalRayCount());
+  this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());
 
+  // Set FOV
+  double ratio = horzRangeCountPerCamera/vertRangeCountPerCamera;
+  double vfov = 2.0 * atan(tan(this->hfov/ 2.0) / ratio);
+  this->dataPtr->ogreCamera->setAspectRatio(ratio);
+  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(vfov));
+
+  std::cerr << " ====  set fovy " << vfov <<
+    " vs " << this->dataPtr->ogreCamera->getFOVy().valueRadians() << std::endl;
+
+  /////////////////////////////////////////////////////////
+  // CreateLaserTexture
   this->dataPtr->ogreCamera->yaw(Ogre::Radian(this->horzHalfAngle));
 
   this->CreateOrthoCam();
@@ -451,9 +466,9 @@ void OgreGpuRays::CreateLaserTexture()
     this->dataPtr->firstPassTextures[i] =
       Ogre::TextureManager::getSingleton().createManual(
       texName.str(), "General", Ogre::TEX_TYPE_2D,
-      horzRayCountPerCamera, vertRayCountPerCamera, 0,
+//      this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
+      horzRangeCountPerCamera, vertRangeCountPerCamera, 0,
       Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET).getPointer();
-
     
     Ogre::RenderTarget *rt = 
         this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget();
@@ -462,6 +477,7 @@ void OgreGpuRays::CreateLaserTexture()
     // Setup the viewport to use the texture
     Ogre::Viewport *vp =
         rt->addViewport(this->dataPtr->ogreCamera);
+//        rt->addViewport(this->dataPtr->orthoCam);
     vp->setClearEveryFrame(true);
     vp->setOverlaysEnabled(false);
     vp->setShadowsEnabled(false);
@@ -470,19 +486,22 @@ void OgreGpuRays::CreateLaserTexture()
         Ogre::ColourValue(this->FarClipPlane(), 0.0, 1.0));
     vp->setVisibilityMask(IGN_VISIBILITY_ALL &
         ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
-    if (i == 0)
+/*    if (i == 0)
     {
       this->dataPtr->ogreCamera->setAspectRatio(this->RayCountRatio());
       this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(this->CosVertFOV()));
       std::cerr << " set 1st pass rt: " << this->RayCountRatio() << " " 
-          << this->CosVertFOV() << std::endl;
+          << this->CosVertFOV() << " " << horzRangeCountPerCamera << " "
+          << vertRangeCountPerCamera << " " 
+          << this->dataPtr->ogreCamera->getFOVy().valueRadians() << std::endl;
     }
+    */
   }
 
   this->dataPtr->matFirstPass = dynamic_cast<Ogre::Material *>(
       Ogre::MaterialManager::getSingleton().getByName("LaserScan1st").get());
   this->dataPtr->matFirstPass->load();
-  this->dataPtr->matFirstPass->setCullingMode(Ogre::CULL_NONE);
+//  this->dataPtr->matFirstPass->setCullingMode(Ogre::CULL_NONE);
 
 
   // Configure second pass texture
@@ -564,7 +583,11 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
 
   std::cerr << "_material name " << _material->getName()
       << " " << _material->isLoaded() 
-      << " " << pass->getFragmentProgramName() << std::endl;
+      << " " << pass->getFragmentProgram()->hasCompileError() << std::endl;
+  std::cerr << " n: " << _cam->getName() 
+            << " " << _cam->getFarClipDistance()  << " " 
+            << _cam->getFOVy().valueRadians() << " "
+            << _cam->getAspectRatio() << std::endl;
 //  if (!_material->isLoaded())
 //    _material->load();
 
@@ -578,6 +601,9 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
   Ogre::AutoParamDataSource autoParamDataSource;
 
   Ogre::Viewport *vp = _target->getViewport(0);
+
+  std::cerr << "vp: " << vp << " vs " << _cam->getViewport() << " " 
+      <<vp->getActualWidth() << " "  << " " << vp->getActualHeight() << std::endl;
 
   // Need this line to render the ground plane. No idea why it's necessary.
   renderSys->_setViewport(vp);
@@ -658,9 +684,10 @@ void OgreGpuRays::Render()
 
     //this->dataPtr->currentTexture->Render();
     this->UpdateRenderTarget(
-        this->dataPtr->currentTexture->getBuffer()->getRenderTarget(),
-        this->dataPtr->currentMat,
+        this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget(),
+        this->dataPtr->matFirstPass,
         this->dataPtr->ogreCamera, false);
+//        this->dataPtr->orthoCam, true);
   }
 
   if (this->dataPtr->textureCount > 1)
@@ -699,7 +726,7 @@ void OgreGpuRays::PostRender()
   auto rt = this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
   rt->swapBuffers();
 
-/*  const Ogre::Viewport *secondPassViewport = rt->getViewport(0);
+  const Ogre::Viewport *secondPassViewport = rt->getViewport(0);
   unsigned int width = secondPassViewport->getActualWidth();
   unsigned int height = secondPassViewport->getActualHeight();
 
@@ -732,10 +759,9 @@ void OgreGpuRays::PostRender()
             << this->dataPtr->laserBuffer[i+1] << " "
             << this->dataPtr->laserBuffer[i+2] << ") ";
   std::cerr << std::endl;
-  */
 
 
-  const Ogre::Viewport *firstPassViewport =
+/*  const Ogre::Viewport *firstPassViewport =
     this->dataPtr->firstPassTextures[0]->getBuffer()->getRenderTarget()->getViewport(0);
   unsigned int width = firstPassViewport->getActualWidth();
   unsigned int height = firstPassViewport->getActualHeight();
@@ -765,6 +791,7 @@ void OgreGpuRays::PostRender()
             << this->dataPtr->laserBuffer[i+1] << " "
             << this->dataPtr->laserBuffer[i+2] << ") ";
   std::cerr << std::endl;
+      */
 
   this->dataPtr->newLaserFrame(this->dataPtr->laserScan,
       width, height, 3, 
@@ -873,7 +900,7 @@ Ogre::Matrix4 OgreGpuRays::BuildScaledOrthoMatrix(const float _left,
 }
 
 /////////////////////////////////////////////////
-void OgreGpuRays::SetSecondPassTextureSize(
+void OgreGpuRays::SetRangeCount(
     const unsigned int _w, const unsigned int _h)
 {
   this->dataPtr->w2nd = _w;

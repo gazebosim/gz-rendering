@@ -40,7 +40,7 @@ namespace ignition
     template <class T>
     class IGNITION_RENDERING_VISIBLE BaseGpuRays :
       public virtual GpuRays,
-      protected virtual BaseCamera<T>,
+      public virtual BaseCamera<T>,
       public virtual T
     {
       /// \brief Constructor
@@ -139,6 +139,10 @@ namespace ignition
       /// \return The ray count ratio (equivalent to aspect ratio)
       public: virtual double RayCountRatio() const override;
 
+      /// \brief Get the ray count ratio (equivalent to aspect ratio)
+      /// \return The ray count ratio (equivalent to aspect ratio)
+      public: virtual double RangeCountRatio() const override;
+
       /// \brief Sets the ray count ratio (equivalent to aspect ratio)
       /// \param[in] _rayCountRatio ray count ratio (equivalent to aspect ratio)
       public: virtual void SetRayCountRatio(
@@ -166,7 +170,13 @@ namespace ignition
       public: virtual int RayCount() const override;
 
       // Documentation inherited.
+      public: virtual int RangeCount() const override;
+
+      // Documentation inherited.
       public: virtual int VerticalRayCount() const override;
+
+      // Documentation inherited.
+      public: virtual int VerticalRangeCount() const override;
 
       // Documentation inherited.
       public: virtual ignition::math::Angle VerticalAngleMin() const override;
@@ -188,6 +198,9 @@ namespace ignition
 
       /// \brief Ray count ratio.
       protected: double rayCountRatio = 0;
+
+      /// \brief Range count ratio.
+      protected: double rangeCountRatio = 0;
 
       /// \brief Horizontal field-of-view.
       protected: double hfov = 0;
@@ -228,8 +241,14 @@ namespace ignition
       /// \brief Quantity of horizontal rays
       protected: int hSamples = 0;
 
-      /// \brief Quantity of vertical rays
+      /// \brief Quantity of verical rays
       protected: int vSamples = 0;
+
+      /// \brief Resolution of horizontal rays 
+      protected: int hResolution = 1;
+
+      /// \brief Resolution of vertical rays 
+      protected: int vResolution = 1;
 
       private: friend class OgreScene;
     };
@@ -347,6 +366,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    double BaseGpuRays<T>::RangeCountRatio() const
+    {
+      return this->rangeCountRatio;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     double BaseGpuRays<T>::HorzFOV() const
     {
       return this->hfov;
@@ -428,12 +454,29 @@ namespace ignition
     {
       return this->hSamples;
     }
-
+    
     template <class T>
     //////////////////////////////////////////////////
     void BaseGpuRays<T>::SetRayCount(int _samples)
     {
       this->hSamples = _samples;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    int BaseGpuRays<T>::RangeCount() const
+    {
+      return this->RayCount() * this->hResolution;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    int BaseGpuRays<T>::VerticalRayCount() const
+    {
+      if (this->vfov > 0)
+        return this->vSamples;
+      else
+        return 1;
     }
 
     template <class T>
@@ -445,12 +488,9 @@ namespace ignition
 
     template <class T>
     //////////////////////////////////////////////////
-    int BaseGpuRays<T>::VerticalRayCount() const
+    int BaseGpuRays<T>::VerticalRangeCount() const
     {
-      if (this->vfov > 0)
-        return this->vSamples;
-      else
-        return 1;
+      return this->VerticalRayCount() * this->vResolution;
     }
 
     template <class T>

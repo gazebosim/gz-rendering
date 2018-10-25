@@ -83,10 +83,10 @@ namespace ignition
       public: virtual void CreateRenderTexture();
 
       /// \brief Set the number of samples in the width and height for the
-      /// first pass texture.
+      /// second pass texture.
       /// \param[in] _w Number of samples in the horizontal sweep
       /// \param[in] _h Number of samples in the vertical sweep
-      public: virtual void SetSecondPassTextureSize(const unsigned int _w,
+      public: virtual void SetRangeCount(const unsigned int _w,
           const unsigned int _h = 1);
 
       // Documentation inherited

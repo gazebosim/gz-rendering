@@ -41,6 +41,8 @@ void OgreCamera::SetHFOV(const math::Angle &_angle)
   BaseCamera::SetHFOV(_angle);
   double angle = _angle.Radian();
   double vfov = 2.0 * atan(tan(angle / 2.0) / this->aspect);
+
+  std::cerr  << " OgreCamera " << _angle << " " << this->aspect << " " << vfov << std::endl;
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
 }
 

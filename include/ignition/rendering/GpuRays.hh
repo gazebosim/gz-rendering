@@ -130,6 +130,10 @@ namespace ignition
       /// \return The ray count ratio (equivalent to aspect ratio)
       public: virtual double RayCountRatio() const = 0;
 
+      /// \brief Get the ray count ratio (equivalent to aspect ratio)
+      /// \return The ray count ratio (equivalent to aspect ratio)
+      public: virtual double RangeCountRatio() const = 0;
+
       /// \brief Sets the ray count ratio (equivalent to aspect ratio)
       /// \param[in] _rayCountRatio ray count ratio (equivalent to aspect ratio)
       public: virtual void SetRayCountRatio(const double _rayCountRatio) = 0;
@@ -155,12 +159,20 @@ namespace ignition
       /// \brief Set horizontal quantity of rays
       public: virtual void SetRayCount(int _samples) = 0;
 
+      /// \brief Get hoizontal range count, i.e. ray count * horz resolution
+      // \return horizontal range count
+      public: virtual int RangeCount() const = 0;
+
       /// \brief Get vertical quantity of rays
       // \return vertical quantity of rays
       public: virtual int VerticalRayCount() const = 0;
 
       /// \brief Set vertical quantity of rays
       public: virtual void SetVerticalRayCount(int _samples) = 0;
+
+      /// \brief Get vertical range count, i.e. ray count * vert resolution
+      // \return Vertical range count
+      public: virtual int VerticalRangeCount() const = 0;
 
       /// \brief Get minimal vertical angle value
       // \return minimal vertical angle value

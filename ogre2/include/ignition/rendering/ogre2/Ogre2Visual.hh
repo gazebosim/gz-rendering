@@ -47,16 +47,7 @@ namespace ignition
       public: virtual void SetInheritScale(bool _inherit) override;
 
       // Documentation inherited.
-      protected: virtual NodeStorePtr Children() const override;
-
-      // Documentation inherited.
       protected: virtual GeometryStorePtr Geometries() const override;
-
-      // Documentation inherited.
-      protected: virtual bool AttachChild(NodePtr _child) override;
-
-      // Documentation inherited.
-      protected: virtual bool DetachChild(NodePtr _child) override;
 
       // Documentation inherited.
       protected: virtual bool AttachGeometry(GeometryPtr _geometry) override;
@@ -75,9 +66,6 @@ namespace ignition
       /// \brief Get a shared pointer to this.
       /// \return Shared pointer to this
       private: Ogre2VisualPtr SharedThis();
-
-      /// \brief Pointer to the child nodes
-      protected: Ogre2NodeStorePtr children;
 
       /// \brief Pointer to the attached geometries
       protected: Ogre2GeometryStorePtr geometries;

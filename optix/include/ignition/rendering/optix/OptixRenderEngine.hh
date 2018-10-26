@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OPTIX_OPTIXRENDERENGINE_HH_
 #define IGNITION_RENDERING_OPTIX_OPTIXRENDERENGINE_HH_
 
+#include <map>
 #include <string>
 #include <ignition/common/SingletonT.hh>
 
@@ -69,7 +70,9 @@ namespace ignition
 
       protected: virtual SceneStorePtr Scenes() const;
 
-      protected: virtual bool LoadImpl();
+      // Documentation Inherited
+      protected: virtual bool LoadImpl(
+          const std::map<std::string, std::string> &_params) override;
 
       protected: virtual bool InitImpl();
 

@@ -91,12 +91,12 @@ namespace ignition
       /// \param[in] _value New attenuation quadratic value
       public: virtual void SetAttenuationQuadratic(double _value) = 0;
 
-      /// \brief Get the attenuation ranage
-      /// \return The attenuation ranage
+      /// \brief Get the attenuation range
+      /// \return The attenuation range
       public: virtual double AttenuationRange() const = 0;
 
-      /// \brief Set the attenuation ranage
-      /// \param[in] _value New attenuation ranage
+      /// \brief Set the attenuation range
+      /// \param[in] _value New attenuation range
       public: virtual void SetAttenuationRange(double _range) = 0;
 
       /// \brief Determine if this light cast shadows

@@ -40,7 +40,7 @@ namespace ignition
     template <class T>
     class IGNITION_RENDERING_VISIBLE BaseGpuRays :
       public virtual GpuRays,
-      protected virtual BaseCamera<T>,
+      public virtual BaseCamera<T>,
       public virtual T
     {
       /// \brief Constructor
@@ -48,9 +48,6 @@ namespace ignition
 
       /// \brief Destructor
       public: virtual ~BaseGpuRays();
-
-      /// \brief Create the texture which is used to render laser data.
-      public: virtual void CreateLaserTexture() override;
 
       /// \brief All things needed to get back z buffer for laser data.
       /// \return Array of laser data.
@@ -64,7 +61,7 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewLaserFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
-                  const std::string &_format)> _subscriber) override;
+                  PixelFormat _format)> _subscriber) override;
 
       /// \return Pointer to the render target
       public: virtual RenderTargetPtr RenderTarget() const = 0;
@@ -139,6 +136,10 @@ namespace ignition
       /// \return The ray count ratio (equivalent to aspect ratio)
       public: virtual double RayCountRatio() const override;
 
+      /// \brief Get the ray count ratio (equivalent to aspect ratio)
+      /// \return The ray count ratio (equivalent to aspect ratio)
+      public: virtual double RangeCountRatio() const override;
+
       /// \brief Sets the ray count ratio (equivalent to aspect ratio)
       /// \param[in] _rayCountRatio ray count ratio (equivalent to aspect ratio)
       public: virtual void SetRayCountRatio(
@@ -166,7 +167,13 @@ namespace ignition
       public: virtual int RayCount() const override;
 
       // Documentation inherited.
+      public: virtual int RangeCount() const override;
+
+      // Documentation inherited.
       public: virtual int VerticalRayCount() const override;
+
+      // Documentation inherited.
+      public: virtual int VerticalRangeCount() const override;
 
       // Documentation inherited.
       public: virtual ignition::math::Angle VerticalAngleMin() const override;
@@ -188,6 +195,9 @@ namespace ignition
 
       /// \brief Ray count ratio.
       protected: double rayCountRatio = 0;
+
+      /// \brief Range count ratio.
+      protected: double rangeCountRatio = 0;
 
       /// \brief Horizontal field-of-view.
       protected: double hfov = 0;
@@ -228,8 +238,14 @@ namespace ignition
       /// \brief Quantity of horizontal rays
       protected: int hSamples = 0;
 
-      /// \brief Quantity of vertical rays
+      /// \brief Quantity of verical rays
       protected: int vSamples = 0;
+
+      /// \brief Resolution of horizontal rays
+      protected: int hResolution = 1;
+
+      /// \brief Resolution of vertical rays
+      protected: int vResolution = 1;
 
       private: friend class OgreScene;
     };
@@ -248,12 +264,6 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::CreateLaserTexture()
-    {
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
     const float *BaseGpuRays<T>::RaysData() const
     {
       return nullptr;
@@ -263,7 +273,7 @@ namespace ignition
     template <class T>
     ignition::common::ConnectionPtr BaseGpuRays<T>::ConnectNewLaserFrame(
           std::function<void(const float *, unsigned int, unsigned int,
-          unsigned int, const std::string &)>)
+          unsigned int, PixelFormat)>)
     {
       return nullptr;
     }
@@ -343,6 +353,13 @@ namespace ignition
     void BaseGpuRays<T>::SetRayCountRatio(const double _rayCountRatio)
     {
       this->rayCountRatio = _rayCountRatio;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseGpuRays<T>::RangeCountRatio() const
+    {
+      return this->rangeCountRatio;
     }
 
     //////////////////////////////////////////////////
@@ -438,9 +455,9 @@ namespace ignition
 
     template <class T>
     //////////////////////////////////////////////////
-    void BaseGpuRays<T>::SetVerticalRayCount(int _samples)
+    int BaseGpuRays<T>::RangeCount() const
     {
-      this->vSamples = _samples;
+      return this->RayCount() * this->hResolution;
     }
 
     template <class T>
@@ -451,6 +468,20 @@ namespace ignition
         return this->vSamples;
       else
         return 1;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    void BaseGpuRays<T>::SetVerticalRayCount(int _samples)
+    {
+      this->vSamples = _samples;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    int BaseGpuRays<T>::VerticalRangeCount() const
+    {
+      return this->VerticalRayCount() * this->vResolution;
     }
 
     template <class T>

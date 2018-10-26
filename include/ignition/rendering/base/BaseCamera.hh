@@ -82,8 +82,10 @@ namespace ignition
 
       public: virtual void SetNearClipPlane(const double _near) override;
 
+      // Documentation inherited.
       public: virtual void PreRender() override;
 
+      // Documentation inherited.
       public: virtual void PostRender() override;
 
       public: virtual void Update() override;

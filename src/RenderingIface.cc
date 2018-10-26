@@ -57,15 +57,19 @@ bool hasEngine(const std::string &_name)
 }
 
 //////////////////////////////////////////////////
-RenderEngine *engine(const std::string &_name)
+RenderEngine *engine(const std::string &_name,
+    const std::map<std::string, std::string> &_params,
+    const std::string &_path)
 {
-  return RenderEngineManager::Instance()->Engine(_name);
+  return RenderEngineManager::Instance()->Engine(_name, _params, _path);
 }
 
 //////////////////////////////////////////////////
-RenderEngine *engine(const unsigned int _index)
+RenderEngine *engine(const unsigned int _index,
+    const std::map<std::string, std::string> &_params,
+    const std::string &_path)
 {
-  return RenderEngineManager::Instance()->EngineAt(_index);
+  return RenderEngineManager::Instance()->EngineAt(_index, _params, _path);
 }
 
 //////////////////////////////////////////////////

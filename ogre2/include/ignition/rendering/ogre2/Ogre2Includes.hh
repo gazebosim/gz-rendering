@@ -45,6 +45,7 @@
 #include <OgreColourValue.h>
 #include <OgreQuaternion.h>
 #include <OgreMesh2.h>
+#include <OgreSubMesh2.h>
 #include <OgreMeshManager2.h>
 #include <OgreHardwareBufferManager.h>
 #include <OgreCamera.h>
@@ -64,9 +65,9 @@
 #include <OgreShadowCameraSetupPSSM.h>
 
 #include <OgreHlmsManager.h>
+#include <OgreHlmsTextureManager.h>
 #include <Hlms/Unlit/OgreHlmsUnlit.h>
 #include <Hlms/Pbs/OgreHlmsPbs.h>
-
 
 #include <Compositor/OgreCompositorManager2.h>
 #include <Compositor/OgreCompositorWorkspace.h>

@@ -15,27 +15,102 @@
  *
 */
 
-#include <ignition/common/Time.hh>
-#include <ignition/common/Timer.hh>
 #include <ignition/common/Mesh.hh>
-#include <ignition/common/SubMesh.hh>
 #include <ignition/common/MeshManager.hh>
-#include <ignition/common/PluginMacros.hh>
+#include <ignition/common/SubMesh.hh>
 
 #include <ignition/math/Color.hh>
 #include <ignition/math/Helpers.hh>
 #include <ignition/math/Vector3.hh>
-#include <ignition/math/Angle.hh>
 
+#include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreGpuRays.hh"
-#include "ignition/rendering/ShaderParams.hh"
+
+/// \internal
+/// \brief Private data for the OgreGpuRays class
+class ignition::rendering::OgreGpuRaysPrivate
+{
+  /// \brief Event triggered when new laser range data are available.
+  /// \param[in] _frame New frame containing raw laser data.
+  /// \param[in] _width Width of frame.
+  /// \param[in] _height Height of frame.
+  /// \param[in] _depth Max depth of frame.
+  /// \param[in] _format Format of frame.
+  public: ignition::common::EventT<void(const float *,
+               unsigned int, unsigned int, unsigned int,
+               PixelFormat)> newLaserFrame;
+
+  /// \brief Raw buffer of laser data.
+  public: float *laserBuffer = nullptr;
+
+  /// \brief Outgoing laser data, used by newLaserFrame event.
+  public: float *laserScan = nullptr;
+
+  /// \brief Pointer to Ogre material for the first rendering pass.
+  public: Ogre::Material *matFirstPass = nullptr;
+
+  /// \brief Pointer to Ogre material for the sencod rendering pass.
+  public: Ogre::Material *matSecondPass = nullptr;
+
+  /// \brief Temporary pointer to the current material.
+  public: Ogre::Material *currentMat = nullptr;
+
+  /// \brief An array of first pass textures.
+  public: Ogre::Texture *firstPassTextures[3];
+
+  /// \brief Second pass texture.
+  public: Ogre::Texture *secondPassTexture = nullptr;
+
+  /// \brief Temporary pointer to the current render target.
+  public: Ogre::Texture *currentTexture = nullptr;
+
+  /// \brief Ogre orthorgraphic camera used in the second pass for
+  /// undistortion.
+  public: Ogre::Camera *orthoCam = nullptr;
+
+  /// \brief Pointer to the ogre camera
+  public: Ogre::Camera *ogreCamera = nullptr;
+
+  /// \brief Ogre scenenode where the orthorgraphic camera is attached to.
+  public: Ogre::SceneNode *pitchNodeOrtho = nullptr;
+
+  /// \brief Ogre mesh used to create a canvas for undistorting range values
+  /// in the second rendering pass.
+  public: common::Mesh *undistMesh = nullptr;
+
+  /// \brief Pointer to visual that holds the canvas.
+  public: VisualPtr visual;
+
+  /// \brief Number of first pass textures.
+  public: unsigned int textureCount = 0u;
+
+  /// \brief A list of camera angles for first pass rendering.
+  public: double cameraYaws[4];
+
+  /// \brief Image width of second pass.
+  public: unsigned int w2nd = 0u;
+
+  /// \brief Image height of second pass.
+  public: unsigned int h2nd = 0u;
+
+  /// \brief List of texture unit indices used during the second
+  /// rendering pass.
+  public: std::vector<int> texIdx;
+
+  /// Number of second pass texture units created.
+  public: unsigned int texCount = 0;
+
+  /// \brief Dummy render texture for the gpu laser
+  public: RenderTexturePtr renderTexture;
+};
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreGpuRays::OgreGpuRays()
-  : dataPtr(new OgreGpuRaysPrivate())
+  : dataPtr(new OgreGpuRaysPrivate)
 {
 }
 
@@ -48,96 +123,56 @@ OgreGpuRays::~OgreGpuRays()
   if (this->dataPtr->laserScan)
     delete [] this->dataPtr->laserScan;
 
+  for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
+  {
+    if (this->dataPtr->firstPassTextures[i])
+    {
+      Ogre::TextureManager::getSingleton().remove(
+          this->dataPtr->firstPassTextures[i]->getName());
+    }
+  }
+  if (this->dataPtr->secondPassTexture)
+  {
+    Ogre::TextureManager::getSingleton().remove(
+        this->dataPtr->secondPassTexture->getName());
+  }
+
+  if (this->scene && this->dataPtr->orthoCam)
+    this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->orthoCam);
+
+
   this->dataPtr->visual.reset();
   this->dataPtr->texIdx.clear();
-  this->dataPtr->texCount = 0;
+  this->dataPtr->texCount = 0u;
 }
 
 //////////////////////////////////////////////////
 void OgreGpuRays::Init()
 {
   BaseGpuRays::Init();
-  this->CreateMaterials();
+
+  // create internal camera for 1st pass
   this->CreateCamera();
-  //this->Reset();
+
+  // create dummy render texture
+  this->CreateRenderTexture();
 }
 
 /////////////////////////////////////////////////
-void OgreGpuRays::CreateMaterials()
+void OgreGpuRays::CreateRenderTexture()
 {
-  // Get shader parameters path
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
-  std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
-
-  // Path to look for vertex and fragment shader parameters
-  std::string laser_scan1st_vertex_shader_path = common::joinPaths(
-      resourcePath, "ogre", "media", "materials", "programs",
-      this->dataPtr->laser_scan1st_vertex_shader_file);
-  std::string laser_scan1st_fragment_shader_path = common::joinPaths(
-      resourcePath, "ogre", "media", "materials", "programs",
-      this->dataPtr->laser_scan1st_fragment_shader_file);
-
-  // Path to look for vertex and fragment shader parameters
-  std::string laser_scan2nd_vertex_shader_path = common::joinPaths(
-      resourcePath, "ogre", "media", "materials", "programs",
-      this->dataPtr->laser_scan2nd_vertex_shader_file);
-  std::string laser_scan2nd_fragment_shader_path = common::joinPaths(
-      resourcePath, "ogre", "media", "materials", "programs",
-      this->dataPtr->laser_scan2nd_fragment_shader_file);
-
-  // Set LaserScan1st material
-  MaterialPtr baseMaterial1stPass = this->scene->CreateMaterial(
-      this->Name() + "_first_pass_material");
-  this->dataPtr->matFirstPass =
-    std::dynamic_pointer_cast<OgreMaterial>(baseMaterial1stPass);
-  this->dataPtr->matFirstPass->SetVertexShader(
-      laser_scan1st_vertex_shader_path);
-  this->dataPtr->matFirstPass->SetFragmentShader(
-      laser_scan1st_fragment_shader_path);
-
-  Ogre::Pass *pass =
-      this->dataPtr->matFirstPass->Material()->getBestTechnique()->getPass(0);
-  pass->setCullingMode(Ogre::CULL_NONE);
-
-  // Set LaserScan2nd material
-  MaterialPtr baseMaterial2ndPass = this->scene->CreateMaterial(
-      this->Name() + "_second_pass_material");
-  this->dataPtr->matSecondPass =
-    std::dynamic_pointer_cast<OgreMaterial>(baseMaterial2ndPass);
-  this->dataPtr->matSecondPass->SetVertexShader(
-      laser_scan2nd_vertex_shader_path);
-  this->dataPtr->matSecondPass->SetFragmentShader(
-      laser_scan2nd_fragment_shader_path);
-}
-
-/////////////////////////////////////////////////
-void OgreGpuRays::SetFragmentShadersParams()
-{
-  ShaderParamsPtr matFirstParams =
-    this->dataPtr->matFirstPass->FragmentShaderParams();
-
-  // Configure fragment shader variables
-  (*matFirstParams)["far"] = static_cast<float>(this->FarClipPlane());
-  (*matFirstParams)["near"] = static_cast<float>(this->NearClipPlane());
-  (*matFirstParams)["retro"] = static_cast<float>(0.0);
-
-  ShaderParamsPtr matSecondParams =
-    this->dataPtr->matSecondPass->FragmentShaderParams();
-
-  // Configure fragment shader variables
-  (*matSecondParams)["tex1"] = static_cast<int>(0);
-  (*matSecondParams)["tex2"] = static_cast<int>(1);
-  (*matSecondParams)["tex3"] = static_cast<int>(2);
-  (*matSecondParams)["texSize"] = static_cast<int>(this->dataPtr->w2nd * this->dataPtr->h2nd);
+  RenderTexturePtr base = this->scene->CreateRenderTexture();
+  this->dataPtr->renderTexture =
+      std::dynamic_pointer_cast<OgreRenderTexture>(base);
+  this->dataPtr->renderTexture->SetWidth(1);
+  this->dataPtr->renderTexture->SetHeight(1);
 }
 
 /////////////////////////////////////////////////
 void OgreGpuRays::CreateCamera()
 {
   // Create ogre camera object
-  Ogre::SceneManager *ogreSceneManager;
-  ogreSceneManager = this->scene->OgreSceneManager();
+  Ogre::SceneManager *ogreSceneManager  = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
     ignerr << "Scene manager cannot be obtained" << std::endl;
@@ -153,23 +188,10 @@ void OgreGpuRays::CreateCamera()
   }
 
   this->ogreNode->attachObject(this->dataPtr->ogreCamera);
-
-  // Create first pass texture which is going to be used as initial
-  // render texture. If more render texture are used will be initiated
-  // later with the same parameters than the first one.
-  if (this->dataPtr->firstPassTextures[0] == nullptr)
-  {
-    RenderTexturePtr firstTextureBase =
-        this->scene->CreateRenderTexture();
-    this->dataPtr->firstPassTextures[0] =
-      std::dynamic_pointer_cast<OgreRenderTexture>(firstTextureBase);
-
-    this->SetRenderTexture(this->dataPtr->firstPassTextures[0],
-                          this->dataPtr->matFirstPass,
-                          this->dataPtr->ogreCamera,
-                          Ogre::ColourValue(this->farClip, 0.0, 1.0),
-                          PF_FLOAT32_RGB, 320, 1);
-  }
+  this->dataPtr->ogreCamera->setFixedYawAxis(false);
+  this->dataPtr->ogreCamera->yaw(Ogre::Degree(-90));
+  this->dataPtr->ogreCamera->roll(Ogre::Degree(-90));
+  this->dataPtr->ogreCamera->setAutoAspectRatio(true);
 }
 
 /////////////////////////////////////////////////
@@ -211,9 +233,9 @@ void OgreGpuRays::CreateLaserTexture()
   // Fixed minimum resolution of texture to reduce steps in ranges
   // when hitting surfaces where the angle between ray and surface is small.
   // Also have to keep in mind the GPU's max. texture size
-  unsigned int horzRayCountPerCamera =
-      std::max(2048U, this->hSamples / cameraCount);
-  unsigned int vertRayCountPerCamera = this->vSamples;
+  unsigned int horzRangeCountPerCamera =
+      std::max(2048U, this->RangeCount() / cameraCount);
+  unsigned int vertRangeCountPerCamera = this->VerticalRangeCount();
 
   // vertical laser setup
   this->vfov = (this->VerticalAngleMax() - this->VerticalAngleMin()).Radian();
@@ -248,35 +270,50 @@ void OgreGpuRays::CreateLaserTexture()
   // ray count to maintain aspect ratio
   if (this->vSamples > 1)
   {
-    double cameraAspectRatio = tan(hfov / 2.0) / tan(vfovCamera / 2.0);
+    double cameraAspectRatio = tan(this->hfov / 2.0) / tan(vfovCamera / 2.0);
 
     this->SetRayCountRatio(cameraAspectRatio);
-    this->rayCountRatio = cameraAspectRatio;
+    this->rangeCountRatio = cameraAspectRatio;
 
-    if ((horzRayCountPerCamera / this->RayCountRatio()) >
-         vertRayCountPerCamera)
+    if ((horzRangeCountPerCamera / this->RangeCountRatio()) >
+         vertRangeCountPerCamera)
     {
-      vertRayCountPerCamera =
-          round(horzRayCountPerCamera / this->RayCountRatio());
+      vertRangeCountPerCamera =
+          std::round(horzRangeCountPerCamera / this->RangeCountRatio());
     }
     else
     {
-      horzRayCountPerCamera =
-          round(vertRayCountPerCamera * this->RayCountRatio());
+      horzRangeCountPerCamera =
+          round(vertRangeCountPerCamera * this->RangeCountRatio());
     }
   }
   else
   {
     // In case of 1 vert. ray, set a very small vertical FOV for camera
-    this->SetRayCountRatio(horzRayCountPerCamera);
+    this->SetRayCountRatio(horzRangeCountPerCamera);
   }
+  //////////////////////////////////////////////////////
 
   // Configure second pass texture size
-  this->SetSecondPassTextureSize(this->RayCount(), this->VerticalRayCount());
+  this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());
+
+  // Set ogre cam properties
+  double ratio = horzRangeCountPerCamera/vertRangeCountPerCamera;
+  double vfov = 2.0 * atan(tan(this->hfov/ 2.0) / ratio);
+  this->dataPtr->ogreCamera->setAspectRatio(ratio);
+  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(vfov));
+  this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
+  this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
+  this->dataPtr->ogreCamera->setRenderingDistance(0.);
+
+  /////////////////////////////////////////////////////////
+  // CreateLaserTexture
+  this->dataPtr->ogreCamera->yaw(Ogre::Radian(this->horzHalfAngle));
 
   this->CreateOrthoCam();
 
   this->dataPtr->textureCount = this->cameraCount;
+
   if (this->dataPtr->textureCount == 2)
   {
     this->dataPtr->cameraYaws[0] = -this->hfov/2;
@@ -292,45 +329,64 @@ void OgreGpuRays::CreateLaserTexture()
     this->dataPtr->cameraYaws[3] = -this->hfov;
   }
 
-  this->dataPtr->ogreCamera->yaw(Ogre::Radian(this->horzHalfAngle));
-  this->dataPtr->ogreCamera->setAspectRatio(this->RayCountRatio());
-  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(this->CosVertFOV()));
-
   // Configure first pass textures that are not yet configured properly
   for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
   {
-    if (this->dataPtr->firstPassTextures[i] == nullptr)
-    {
-      RenderTexturePtr firstTextureBase =
-          this->scene->CreateRenderTexture();
-      this->dataPtr->firstPassTextures[i] =
-        std::dynamic_pointer_cast<OgreRenderTexture>(firstTextureBase);
+    std::stringstream texName;
+    texName << this->Name() << "_first_pass_" << i;
+    this->dataPtr->firstPassTextures[i] =
+      Ogre::TextureManager::getSingleton().createManual(
+      texName.str(), "General", Ogre::TEX_TYPE_2D,
+//      this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
+      horzRangeCountPerCamera, vertRangeCountPerCamera, 0,
+      Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET).getPointer();
 
-      this->SetRenderTexture(this->dataPtr->firstPassTextures[i],
-                            this->dataPtr->matFirstPass,
-                            this->dataPtr->ogreCamera,
-                            Ogre::ColourValue(this->farClip, 0.0, 1.0),
-                            PF_FLOAT32_RGB,
-                            horzRayCountPerCamera,
-                            vertRayCountPerCamera);
-    }
+    Ogre::RenderTarget *rt =
+        this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget();
+    rt->setAutoUpdated(false);
+
+    // Setup the viewport to use the texture
+    Ogre::Viewport *vp =
+        rt->addViewport(this->dataPtr->ogreCamera);
+//        rt->addViewport(this->dataPtr->orthoCam);
+    vp->setClearEveryFrame(true);
+    vp->setOverlaysEnabled(false);
+    vp->setShadowsEnabled(false);
+    vp->setSkiesEnabled(false);
+    vp->setBackgroundColour(
+        Ogre::ColourValue(this->FarClipPlane(), 0.0, 1.0));
+    vp->setVisibilityMask(IGN_VISIBILITY_ALL &
+        ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
   }
 
-  // Configure second pass texture
-  RenderTexturePtr secondTextureBase =
-      this->scene->CreateRenderTexture();
-  this->dataPtr->secondPassTexture =
-    std::dynamic_pointer_cast<OgreRenderTexture>(secondTextureBase);
+  this->dataPtr->matFirstPass = dynamic_cast<Ogre::Material *>(
+      Ogre::MaterialManager::getSingleton().getByName("LaserScan1st").get());
+  this->dataPtr->matFirstPass->load();
+  this->dataPtr->matFirstPass->setCullingMode(Ogre::CULL_NONE);
 
-  this->SetRenderTexture(this->dataPtr->secondPassTexture,
-                        this->dataPtr->matSecondPass,
-                        this->dataPtr->orthoCam,
-                        Ogre::ColourValue(0.0, 0.0, 1.0),
-                        PF_FLOAT32_RGB,
-                        this->dataPtr->w2nd,
-                        this->dataPtr->h2nd);
-  this->dataPtr->secondPassTexture->SetBackgroundColor(
-      this->scene->BackgroundColor());
+  // Configure second pass texture
+  this->dataPtr->secondPassTexture =
+      Ogre::TextureManager::getSingleton().createManual(
+      this->Name() + "_second_pass",
+      "General",
+      Ogre::TEX_TYPE_2D,
+      this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
+      Ogre::PF_FLOAT32_RGB,
+      Ogre::TU_RENDERTARGET).getPointer();
+
+  Ogre::RenderTarget *rt =
+      this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
+  rt->setAutoUpdated(false);
+
+  // Setup the viewport to use the texture
+  Ogre::Viewport *vp = rt->addViewport(this->dataPtr->orthoCam);
+  vp->setClearEveryFrame(true);
+  vp->setOverlaysEnabled(false);
+  vp->setShadowsEnabled(false);
+  vp->setSkiesEnabled(false);
+  vp->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
+  vp->setVisibilityMask(
+      IGN_VISIBILITY_ALL & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
 
   Ogre::Matrix4 p = this->BuildScaledOrthoMatrix(
       0, static_cast<float>(this->dataPtr->w2nd / 10.0),
@@ -339,12 +395,17 @@ void OgreGpuRays::CreateLaserTexture()
 
   this->dataPtr->orthoCam->setCustomProjectionMatrix(true, p);
 
-  Ogre::TextureUnitState *texUnit;
+  // Set LaserScan2nd material
+  this->dataPtr->matSecondPass = dynamic_cast<Ogre::Material *>(
+      Ogre::MaterialManager::getSingleton().getByName("LaserScan2nd").get());
+  this->dataPtr->matSecondPass->load();
+
+  Ogre::TextureUnitState *texUnit = nullptr;
   for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
   {
     unsigned int texIndex = this->dataPtr->texCount++;
     Ogre::Technique *technique =
-      this->dataPtr->matSecondPass->Material()->getTechnique(0);
+      this->dataPtr->matSecondPass->getTechnique(0);
     IGN_ASSERT(technique,
         "OgreGpuRays material script error: technique not found");
 
@@ -353,10 +414,10 @@ void OgreGpuRays::CreateLaserTexture()
         "OgreGpuRays material script error: pass not found");
 
     if (!pass->getTextureUnitState(
-        this->dataPtr->firstPassTextures[i]->Name()))
+        this->dataPtr->firstPassTextures[i]->getName()))
     {
       texUnit = pass->createTextureUnitState(
-            this->dataPtr->firstPassTextures[i]->Name(), texIndex);
+            this->dataPtr->firstPassTextures[i]->getName(), texIndex);
 
       this->dataPtr->texIdx.push_back(texIndex);
 
@@ -365,23 +426,18 @@ void OgreGpuRays::CreateLaserTexture()
     }
   }
 
-  this->SetFragmentShadersParams();
   this->CreateCanvas();
 }
 
 /////////////////////////////////////////////////
 void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
-                   Ogre::MaterialPtr _material, Ogre::Camera *_cam,
-                   bool _updateTex)
+                   Ogre::Material *_material, Ogre::Camera *_cam,
+                   const bool _updateTex)
 {
-  Ogre::RenderSystem *renderSys;
-  Ogre::Viewport *vp = NULL;
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
-  Ogre::Pass *pass;
-
-  renderSys = this->scene->OgreSceneManager()->getDestinationRenderSystem();
+  Ogre::RenderSystem *renderSys = sceneMgr->getDestinationRenderSystem();
   // Get pointer to the material pass
-  pass = _material->getBestTechnique()->getPass(0);
+  Ogre::Pass *pass = _material->getBestTechnique()->getPass(0);
 
   // Render the depth texture
   // OgreSceneManager::_render function automatically sets farClip to 0.
@@ -391,7 +447,7 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
 
   Ogre::AutoParamDataSource autoParamDataSource;
 
-  vp = _target->getViewport(0);
+  Ogre::Viewport *vp = _target->getViewport(0);
 
   // Need this line to render the ground plane. No idea why it's necessary.
   renderSys->_setViewport(vp);
@@ -446,10 +502,6 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
 //////////////////////////////////////////////////
 void OgreGpuRays::Render()
 {
-  ignition::common::Timer firstPassTimer, secondPassTimer;
-
-  firstPassTimer.Start();
-
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
 
   sceneMgr->_suppressRenderStateChanges(true);
@@ -468,31 +520,34 @@ void OgreGpuRays::Render()
     this->dataPtr->currentTexture = this->dataPtr->firstPassTextures[i];
 
     //this->dataPtr->currentTexture->Render();
-    this->UpdateRenderTarget(this->dataPtr->currentTexture->RenderTarget(),
-                             this->dataPtr->currentMat->Material(),
-                             this->dataPtr->ogreCamera, false);
+    this->UpdateRenderTarget(
+        this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget(),
+        this->dataPtr->matFirstPass,
+        this->dataPtr->ogreCamera, false);
   }
 
   if (this->dataPtr->textureCount > 1)
       this->Node()->roll(Ogre::Radian(this->dataPtr->cameraYaws[3]));
 
-  //sceneMgr->removeRenderObjectListener(this);
-
-  double firstPassDur = firstPassTimer.Elapsed().Double();
-  secondPassTimer.Start();
+  sceneMgr->removeRenderObjectListener(this);
 
   this->dataPtr->visual->SetVisible(true);
 
-  this->UpdateRenderTarget(this->dataPtr->secondPassTexture->RenderTarget(),
-                           this->dataPtr->matSecondPass->Material(),
-                           this->dataPtr->orthoCam, true);
+  this->UpdateRenderTarget(
+      this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget(),
+      this->dataPtr->matSecondPass,
+      this->dataPtr->orthoCam, true);
 
   this->dataPtr->visual->SetVisible(false);
 
   sceneMgr->_suppressRenderStateChanges(false);
+}
 
-  double secondPassDur = secondPassTimer.Elapsed().Double();
-  this->dataPtr->lastRenderDuration = firstPassDur + secondPassDur;
+//////////////////////////////////////////////////
+void OgreGpuRays::PreRender()
+{
+  if (this->dataPtr->textureCount == 0)
+    this->CreateLaserTexture();
 }
 
 //////////////////////////////////////////////////
@@ -500,73 +555,46 @@ void OgreGpuRays::PostRender()
 {
   for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
   {
-    this->dataPtr->firstPassTextures[i]->SwapBuffers();
+    auto rt =
+        this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget();
+    rt->swapBuffers();
   }
-  this->dataPtr->secondPassTexture->SwapBuffers();
+  auto rt = this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
+  rt->swapBuffers();
 
-  const Ogre::Viewport *secondPassViewport =
-    this->dataPtr->secondPassTexture->Viewport(0);
+  const Ogre::Viewport *secondPassViewport = rt->getViewport(0);
   unsigned int width = secondPassViewport->getActualWidth();
   unsigned int height = secondPassViewport->getActualHeight();
 
-  Ogre::PixelFormat imageFormat = OgreConversions::Convert(
-    this->dataPtr->secondPassTexture->Format());
   size_t size = Ogre::PixelUtil::getMemorySize(
-    width, height, 1, imageFormat);
+    width, height, 1, Ogre::PF_FLOAT32_RGB);
+  int len = this->dataPtr->w2nd * this->dataPtr->h2nd * 3;
 
   if (!this->dataPtr->laserBuffer)
-    this->dataPtr->laserBuffer = new float[size];
+    this->dataPtr->laserBuffer = new float[len];
 
-  this->dataPtr->secondPassTexture->Buffer(
-      this->dataPtr->laserBuffer);
+  Ogre::PixelBox dstBox(width, height,
+        1, Ogre::PF_FLOAT32_RGB, this->dataPtr->laserBuffer);
+
+ auto pixelBuffer = this->dataPtr->secondPassTexture->getBuffer();
+  pixelBuffer->blitToMemory(dstBox);
 
   if (!this->dataPtr->laserScan)
   {
-    int len = this->dataPtr->w2nd * this->dataPtr->h2nd * 3;
     this->dataPtr->laserScan = new float[len];
   }
 
-  memcpy(this->dataPtr->laserScan, this->dataPtr->laserBuffer,
-         this->dataPtr->w2nd * this->dataPtr->h2nd * 3 *
-         sizeof(this->dataPtr->laserScan[0]));
+  memcpy(this->dataPtr->laserScan, this->dataPtr->laserBuffer, size);
 
   this->dataPtr->newLaserFrame(this->dataPtr->laserScan,
-      this->dataPtr->w2nd, this->dataPtr->h2nd, 3, "BLABLA");
+      width, height, 3,
+      PixelFormat::PF_FLOAT32_RGB);
 }
 
 //////////////////////////////////////////////////
 const float* OgreGpuRays::RaysData() const
 {
   return this->dataPtr->laserScan;
-}
-
-//////////////////////////////////////////////////
-void OgreGpuRays::SetRenderTexture(OgreRenderTexturePtr _texture,
-                                   OgreMaterialPtr _material,
-                                   Ogre::Camera *_camera,
-                                   Ogre::ColourValue _color,
-                                   PixelFormat _format,
-                                   const unsigned int _width,
-                                   const unsigned int _height)
-{
-  // Configure the texture
-  _texture->SetCamera(_camera);
-  _texture->SetFormat(_format);
-  _texture->SetWidth(_width);
-  _texture->SetHeight(_height);
-  _texture->PreRender();
-  _texture->SetMaterial(_material);
-  _texture->SetAutoUpdated(false);
-
-  // Setup the viewport to use the texture
-  Ogre::Viewport *vp = _texture->RenderTarget()->getViewport(0);
-  vp->setClearEveryFrame(true);
-  vp->setOverlaysEnabled(false);
-  vp->setShadowsEnabled(false);
-  vp->setSkiesEnabled(false);
-  vp->setBackgroundColour(_color);
-  vp->setVisibilityMask(
-      IGN_VISIBILITY_ALL & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
 }
 
 /////////////////////////////////////////////////
@@ -590,7 +618,7 @@ void OgreGpuRays::CreateOrthoCam()
   }
 
   Ogre::SceneNode *rootSceneNode = std::dynamic_pointer_cast<
-    ignition::rendering::OgreNode>(this->scene->RootVisual())->Node();
+      ignition::rendering::OgreNode>(this->scene->RootVisual())->Node();
   this->dataPtr->pitchNodeOrtho = rootSceneNode->createChildSceneNode();
   this->dataPtr->pitchNodeOrtho->attachObject(this->dataPtr->orthoCam);
 
@@ -634,7 +662,7 @@ Ogre::Matrix4 OgreGpuRays::BuildScaledOrthoMatrix(const float _left,
 }
 
 /////////////////////////////////////////////////
-void OgreGpuRays::SetSecondPassTextureSize(
+void OgreGpuRays::SetRangeCount(
     const unsigned int _w, const unsigned int _h)
 {
   this->dataPtr->w2nd = _w;
@@ -796,60 +824,57 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
       const Ogre::Pass* /*pass*/, const Ogre::AutoParamDataSource* /*source*/,
       const Ogre::LightList* /*lights*/, bool /*supp*/)
 {
-  std::cout << "@@@@ Material notify " << this->dataPtr->currentMat->Material()->getName() << std::endl;
-  std::cout << "@@@@ Material loaded " << this->dataPtr->currentMat->Material()->isLoaded() << std::endl;
+  // TODO this function sets the retro for each obj
+  // but currently just sets it to 0
+
   Ogre::Vector4 retro = Ogre::Vector4(0, 0, 0, 0);
-  try
-  {
-    retro = _rend->getCustomParameter(1);
-  }
-  catch(Ogre::ItemIdentityException& e)
+  if (!_rend->hasCustomParameter(1))
   {
     _rend->setCustomParameter(1, Ogre::Vector4(0, 0, 0, 0));
   }
 
   Ogre::Pass *pass =
-    this->dataPtr->currentMat->Material()->getBestTechnique()->getPass(0);
+    this->dataPtr->currentMat->getBestTechnique()->getPass(0);
   Ogre::RenderSystem *renderSys =
     this->scene->OgreSceneManager()->getDestinationRenderSystem();
 
   Ogre::AutoParamDataSource autoParamDataSource;
 
-  Ogre::Viewport *vp =
-    this->dataPtr->currentTexture->RenderTarget()->getViewport(0);
+  Ogre::RenderTarget *rt =
+    this->dataPtr->currentTexture->getBuffer()->getRenderTarget();
+  Ogre::Viewport *vp = rt->getViewport(0);
 
   renderSys->_setViewport(vp);
   autoParamDataSource.setCurrentRenderable(_rend);
   autoParamDataSource.setCurrentPass(pass);
   autoParamDataSource.setCurrentViewport(vp);
-  autoParamDataSource.setCurrentRenderTarget(
-      this->dataPtr->currentTexture->RenderTarget());
+  autoParamDataSource.setCurrentRenderTarget(rt);
   autoParamDataSource.setCurrentSceneManager(this->scene->OgreSceneManager());
   autoParamDataSource.setCurrentCamera(this->dataPtr->ogreCamera, true);
 
   pass->_updateAutoParams(&autoParamDataSource,
-      Ogre::GPV_GLOBAL || Ogre::GPV_PER_OBJECT);
+      Ogre::GPV_GLOBAL | Ogre::GPV_PER_OBJECT);
   pass->getFragmentProgramParameters()->setNamedConstant("retro", retro[0]);
   renderSys->bindGpuProgram(
       pass->getVertexProgram()->_getBindingDelegate());
 
   renderSys->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM,
       pass->getVertexProgramParameters(),
-      Ogre::GPV_GLOBAL || Ogre::GPV_PER_OBJECT);
+      Ogre::GPV_GLOBAL | Ogre::GPV_PER_OBJECT);
 
   renderSys->bindGpuProgram(
       pass->getFragmentProgram()->_getBindingDelegate());
 
   renderSys->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM,
       pass->getFragmentProgramParameters(),
-      (Ogre::GPV_GLOBAL || Ogre::GPV_PER_OBJECT));
+      (Ogre::GPV_GLOBAL | Ogre::GPV_PER_OBJECT));
 }
 
 //////////////////////////////////////////////////
 ignition::common::ConnectionPtr OgreGpuRays::ConnectNewLaserFrame(
     std::function<void(const float *_frame, unsigned int _width,
-    unsigned int _height, unsigned int _depth,
-    const std::string &_format)> _subscriber)
+    unsigned int _height, unsigned int _channels,
+    PixelFormat _format)> _subscriber)
 {
   return this->dataPtr->newLaserFrame.Connect(_subscriber);
 }
@@ -857,6 +882,6 @@ ignition::common::ConnectionPtr OgreGpuRays::ConnectNewLaserFrame(
 //////////////////////////////////////////////////
 RenderTargetPtr OgreGpuRays::RenderTarget() const
 {
-  return this->dataPtr->firstPassTextures[0];
+  return this->dataPtr->renderTexture;
 }
 

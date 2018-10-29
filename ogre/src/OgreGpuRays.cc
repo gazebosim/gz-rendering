@@ -254,16 +254,20 @@ void OgreGpuRays::ConfigureCameras()
 
   this->SetVertHalfAngle((this->VerticalAngleMax() +
         this->VerticalAngleMin()).Radian() / 2.0);
-  this->SetVerticalAngleMin(this->VertHalfAngle() - (this->VFOV().Radian() / 2.0));
-  this->SetVerticalAngleMax(this->VertHalfAngle() + (this->VFOV().Radian() / 2.0));
+  this->SetVerticalAngleMin(
+      this->VertHalfAngle() - (this->VFOV().Radian() / 2.0));
+  this->SetVerticalAngleMax(
+      this->VertHalfAngle() + (this->VFOV().Radian() / 2.0));
 
   // Assume camera always stays horizontally even if vert. half angle of
   // gpu rays is not 0. Add padding to camera vfov.
-  double vfovCamera = this->VFOV().Radian() + 2.0 * std::abs(this->VertHalfAngle());
+  double vfovCamera =
+    this->VFOV().Radian() + 2.0 * std::abs(this->VertHalfAngle());
 
   // Add padding to vertical camera FOV to cover all possible rays
   // for given gpu rays vert. and horiz. FOV
-  vfovCamera = 2.0 * atan(tan(vfovCamera / 2.0) / cos(this->HFOV().Radian() / 2.0));
+  vfovCamera =
+    2.0 * atan(tan(vfovCamera / 2.0) / cos(this->HFOV().Radian() / 2.0));
 
   if (vfovCamera > 2.8)
   {
@@ -276,7 +280,8 @@ void OgreGpuRays::ConfigureCameras()
   // ray count to maintain aspect ratio
   if (this->vSamples > 1)
   {
-    double cameraAspectRatio = tan(this->HFOV().Radian() / 2.0) / tan(vfovCamera / 2.0);
+    double cameraAspectRatio =
+      tan(this->HFOV().Radian() / 2.0) / tan(vfovCamera / 2.0);
 
     this->SetRayCountRatio(cameraAspectRatio);
     this->rangeCountRatio = cameraAspectRatio;
@@ -529,7 +534,6 @@ void OgreGpuRays::Render()
     this->dataPtr->currentMat = this->dataPtr->matFirstPass;
     this->dataPtr->currentTexture = this->dataPtr->firstPassTextures[i];
 
-    //this->dataPtr->currentTexture->Render();
     this->UpdateRenderTarget(
         this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget(),
         this->dataPtr->matFirstPass,
@@ -586,7 +590,7 @@ void OgreGpuRays::PostRender()
   Ogre::PixelBox dstBox(width, height,
         1, Ogre::PF_FLOAT32_RGB, this->dataPtr->gpuRaysBuffer);
 
- auto pixelBuffer = this->dataPtr->secondPassTexture->getBuffer();
+  auto pixelBuffer = this->dataPtr->secondPassTexture->getBuffer();
   pixelBuffer->blitToMemory(dstBox);
 
   if (!this->dataPtr->gpuRaysScan)
@@ -816,7 +820,6 @@ void OgreGpuRays::CreateCanvas()
   if (visualParent != nullptr)
   {
     visualParent->removeChild(visualSceneNode);
-
   }
   this->dataPtr->pitchNodeOrtho->addChild(visualSceneNode);
 
@@ -842,7 +845,7 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
       const Ogre::Pass* /*pass*/, const Ogre::AutoParamDataSource* /*source*/,
       const Ogre::LightList* /*lights*/, bool /*supp*/)
 {
-  // TODO this function sets the retro for each obj
+  // TODO(anyone): this function sets the retro for each obj
   // but currently just sets it to 0
 
   Ogre::Vector4 retro = Ogre::Vector4(0, 0, 0, 0);

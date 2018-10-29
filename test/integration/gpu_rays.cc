@@ -259,7 +259,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   EXPECT_NEAR(scan2[mid], expectedRangeAtMidPoint, LASER_TOL);
   EXPECT_DOUBLE_EQ(scan2[last], ignition::math::INF_D);
 
-  //Move all boxes out of range
+  // Move all boxes out of range
   visualBox1->SetWorldPosition(
       ignition::math::Vector3d(maxRange + 1, 0, 0));
   visualBox1->SetWorldRotation(box01Pose.Rot());

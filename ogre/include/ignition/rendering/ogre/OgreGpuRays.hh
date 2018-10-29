@@ -68,16 +68,8 @@ namespace ignition
       /// \brief Create dummy render texture. Needed to satify inheritance
       public: virtual void CreateRenderTexture();
 
-      /// \brief Set the number of samples in the width and height for the
-      /// second pass texture.
-      /// \param[in] _w Number of samples in the horizontal sweep
-      /// \param[in] _h Number of samples in the vertical sweep
-      public: virtual void SetRangeCount(const unsigned int _w,
-          const unsigned int _h = 1);
-
       // Documentation inherited
       public: virtual void PreRender() override;
-
 
       // Documentation inherited
       public: virtual void PostRender() override;
@@ -86,7 +78,7 @@ namespace ignition
       public: virtual const float *RaysData() const override;
 
       // Documentation inherited.
-      public: virtual common::ConnectionPtr ConnectNewLaserFrame(
+      public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _channels,
                   PixelFormat _format)> _subscriber) override;
@@ -100,8 +92,25 @@ namespace ignition
               const Ogre::Pass *_p, const Ogre::AutoParamDataSource *_s,
               const Ogre::LightList *_ll, bool _supp) override;
 
+      /// \brief Set the number of samples in the width and height for the
+      /// first pass texture.
+      /// \param[in] _w Number of samples in the horizontal sweep
+      /// \param[in] _h Number of samples in the vertical sweep
+      private: virtual void Set1stTextureSize(const unsigned int _w,
+          const unsigned int _h = 1);
+
+      /// \brief Set the number of samples in the width and height for the
+      /// second pass texture.
+      /// \param[in] _w Number of samples in the horizontal sweep
+      /// \param[in] _h Number of samples in the vertical sweep
+      private: virtual void SetRangeCount(const unsigned int _w,
+          const unsigned int _h = 1);
+
       // Documentation inherited.
       private: virtual void Render();
+
+      /// \brief Configure cameras.
+      private: void ConfigureCameras();
 
       /// \brief Create a mesh.
       private: void CreateMesh();
@@ -115,8 +124,8 @@ namespace ignition
       /// \brief Create an ortho camera.
       private: void CreateCamera();
 
-      /// \brief Create the texture which is used to render laser data.
-      private: virtual void CreateLaserTexture();
+      /// \brief Create the texture which is used to render gpu rays data.
+      private: virtual void CreateGpuRaysTextures();
 
       /// \brief Builds scaled Orthogonal Matrix from parameters.
       /// \param[in] _left Left clip.

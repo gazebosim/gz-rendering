@@ -44,45 +44,28 @@ namespace ignition
       /// \brief Deconstructor
       public: virtual ~GpuRays() { }
 
-      /// \brief All things needed to get back z buffer for laser data.
-      /// \return Array of laser data.
-      /// \deprecated use LaserDataBegin() and LaserDataEnd() instead
+      /// \brief All things needed to get back z buffer for gpu rays data.
+      /// \return Array of gpu rays data.
       public: virtual const float *RaysData() const = 0;
 
-      /// \brief Connect to a laser frame signal
+      /// \brief Connect to a gpu rays frame signal
       /// \param[in] _subscriber Callback that is called when a new image is
       /// generated. The callback function parameters are:
       ///   _frame:   Image frame is an array of floats. Size is equal
       ///             to width * height * channels
-      ///             Each laser reading occupies 3 floats
+      ///             Each gpu rays reading occupies 3 floats
       ///             Index 0: depth value
       ///             Index 1: retro value
       ///             Index 2: 0. Not used
       ///   _width:   Width of image, i.e. number of data in the horizonal scan
       ///   _height:  Height o image, i.e. number of scans in vertical direction
-      ///   _channels: Number of channels, i.e. 3 floats per laser reading
+      ///   _channels: Number of channels, i.e. 3 floats per gpu rays reading
       ///   _format:  Pixel format of the image frame.
       /// \return A pointer to the connection. This must be kept in scope.
-      public: virtual common::ConnectionPtr ConnectNewLaserFrame(
+      public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
                   PixelFormat)> _subscriber) = 0;
-
-      /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
-      /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
-      public: virtual double HorzHalfAngle() const = 0;
-
-      /// \brief Get (vertical_max_angle + vertical_min_angle) * 0.5
-      /// \return (vertical_max_angle + vertical_min_angle) * 0.5
-      public: virtual double VertHalfAngle() const = 0;
-
-      /// \brief Set the horizontal half angle
-      /// \param[in] _angle horizontal half angle
-      public: virtual void SetHorzHalfAngle(const double _angle) = 0;
-
-      /// \brief Set the vertical half angle
-      /// \param[in] _angle vertical half angle
-      public: virtual void SetVertHalfAngle(const double _angle) = 0;
 
       /// \brief Set sensor horizontal or vertical
       /// \param[in] _horizontal True if horizontal, false if not
@@ -92,46 +75,13 @@ namespace ignition
       /// \return True if horizontal, false if not
       public: virtual bool IsHorizontal() const = 0;
 
-      /// \brief Get the horizontal field of view of the laser sensor.
-      /// \return The horizontal field of view of the laser sensor.
-      public: virtual double HorzFOV() const = 0;
-
-      /// \brief Get Cos Horz field-of-view
-      /// \return 2 * atan(tan(this->hfov/2) / cos(this->vfov/2))
-      public: virtual double CosHorzFOV() const = 0;
-
-      /// \brief Set the Cos Horz FOV
-      /// \param[in] _chfov Cos Horz FOV
-      public: virtual void SetCosHorzFOV(const double _chfov) = 0;
-
       /// \brief Get the vertical field-of-view.
-      /// \return The vertical field of view of the laser sensor.
-      public: virtual double VertFOV() const = 0;
-
-      /// \brief Get Cos Vert field-of-view
-      /// \return 2 * atan(tan(this->vfov/2) / cos(this->hfov/2))
-      public: virtual double CosVertFOV() const = 0;
-
-      /// \brief Set the Cos Horz FOV
-      /// \param[in] _cvfov Cos Horz FOV
-      public: virtual void SetCosVertFOV(const double _cvfov) = 0;
-
-      /// \brief Set the horizontal fov
-      /// \param[in] _hfov horizontal fov
-      public: virtual void SetHorzFOV(const double _hfov) = 0;
+      /// \return The vertical field of view of the gpu rays.
+      public: virtual math::Angle VFOV() const = 0;
 
       /// \brief Set the vertical fov
       /// \param[in] _vfov vertical fov
-      public: virtual void SetVertFOV(const double _vfov) = 0;
-
-      /// \brief Get the number of cameras required
-      /// \return Number of cameras needed to generate the rays
-      public: virtual unsigned int CameraCount() const = 0;
-
-      /// \brief Set the number of cameras required
-      /// \param[in] _cameraCount The number of cameras required to generate
-      /// the rays
-      public: virtual void SetCameraCount(const unsigned int _cameraCount) = 0;
+      public: virtual void SetVFOV(const math::Angle _vfov) = 0;
 
       /// \brief Get the ray count ratio (equivalent to aspect ratio)
       /// \return The ray count ratio (equivalent to aspect ratio)

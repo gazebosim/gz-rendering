@@ -147,6 +147,28 @@ void handleMouse()
   if (g_mouse.buttonDirty)
   {
     g_mouse.buttonDirty = false;
+
+    // test mouse picking
+    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      // Get visual using Selection Buffer from Camera
+      ir::VisualPtr visual;
+      ignition::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
+      visual = rayCamera->VisualAt(mousePos);
+      if (visual)
+      {
+        std::cout << "Selected visual at position: ";
+        std::cout << g_mouse.x << " " << g_mouse.y << ": ";
+        std::cout << visual->Name() << "\n";
+      }
+      else
+      {
+        std::cout << "No visual found at position: ";
+        std::cout << g_mouse.x << " " << g_mouse.y << std::endl;
+      }
+    }
+
+    // camera orbit
     double nx =
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
@@ -256,6 +278,12 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
+
+  // Uncomment to print FPS
+  // static ignition::common::Time previous;
+  // auto now = ignition::common::Time::SystemTime();
+  // std::cerr << (now - previous).Double() << std::endl;
+  // previous = now;
 }
 
 //////////////////////////////////////////////////

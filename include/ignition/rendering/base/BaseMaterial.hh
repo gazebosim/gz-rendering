@@ -120,11 +120,16 @@ namespace ignition
       // Documentation inherited
       public: virtual enum MaterialType Type() const override;
 
-      // Documentation inherited
-      public: virtual void SetShaderType(enum ShaderType _type) override;
+      public: virtual void SetShaderType(enum ShaderType /*_type*/) override
+             {
+               // no op
+             }
 
       // Documentation inherited
-      public: virtual enum ShaderType ShaderType() const override;
+      public: virtual enum ShaderType ShaderType() const override
+             {
+               return ST_PIXEL;
+             }
 
       // Documentation inherited.
       // \sa Material::SetDepthMaterial()
@@ -213,20 +218,6 @@ namespace ignition
     enum MaterialType BaseMaterial<T>::Type() const
     {
       return MT_CLASSIC;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseMaterial<T>::SetShaderType(enum ShaderType /*_type*/)
-    {
-      // no op
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    enum ShaderType BaseMaterial<T>::ShaderType() const
-    {
-      return ST_PIXEL;
     }
 
     //////////////////////////////////////////////////

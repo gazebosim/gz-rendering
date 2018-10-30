@@ -15,8 +15,6 @@
  *
  */
 
-#include <typeinfo>
-
 #include <ignition/common/Console.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
@@ -28,6 +26,7 @@
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
+/// \brief Private data class for Ogre2RayQuery
 class ignition::rendering::Ogre2RayQueryPrivate
 {
   /// \brief Ogre ray scene query object for computing intersection.

@@ -90,15 +90,15 @@ namespace ignition
 
       public: virtual ~OgreRenderEngine();
 
-      public: virtual bool Fini();
+      public: virtual bool Fini() override;
 
-      public: virtual bool IsEnabled() const;
+      public: virtual bool IsEnabled() const override;
 
-      public: virtual std::string Name() const;
+      public: virtual std::string Name() const override;
 
       public: OgreRenderPathType RenderPathType() const;
 
-      public: void AddResourcePath(const std::string &_uri);
+      public: void AddResourcePath(const std::string &_uri) override;
 
       public: virtual Ogre::Root *OgreRoot() const;
 
@@ -107,9 +107,9 @@ namespace ignition
                   const double _ratio, const unsigned int _antiAliasing);
 
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
-                  const std::string &_name);
+                  const std::string &_name) override;
 
-      protected: virtual SceneStorePtr Scenes() const;
+      protected: virtual SceneStorePtr Scenes() const override;
 
       /// \brief Engine implementation of Load function.
       /// \param[in] _params Parameters to be passed to the render engine.
@@ -119,7 +119,7 @@ namespace ignition
       protected: virtual bool LoadImpl(
           const std::map<std::string, std::string> &_params) override;
 
-      protected: virtual bool InitImpl();
+      protected: virtual bool InitImpl() override;
 
       private: void LoadAttempt();
 

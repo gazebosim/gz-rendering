@@ -70,7 +70,9 @@
 #include <Hlms/Pbs/OgreHlmsPbs.h>
 
 #include <Compositor/OgreCompositorManager2.h>
+#include <Compositor/OgreCompositorNode.h>
 #include <Compositor/OgreCompositorWorkspace.h>
+#include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 
 #include <Overlay/OgreOverlayPrerequisites.h>
 #include <Overlay/OgreOverlayManager.h>

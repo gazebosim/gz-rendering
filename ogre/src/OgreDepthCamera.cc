@@ -15,6 +15,12 @@
  *
 */
 
+#if (_WIN32)
+  /* Needed for std::min */
+  #define NOMINMAX
+  #include <windef.h>
+#endif
+#include <ignition/math/Helpers.hh>
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
 
 using namespace ignition;
@@ -258,7 +264,7 @@ RenderTargetPtr OgreDepthCamera::RenderTarget() const
 //////////////////////////////////////////////////
 double OgreDepthCamera::LimitFOV(const double _fov)
 {
-  return std::min(std::max(0.001, _fov), M_PI * 0.999);
+  return std::min(std::max(0.001, _fov), IGN_PI * 0.999);
 }
 
 //////////////////////////////////////////////////

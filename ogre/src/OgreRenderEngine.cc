@@ -15,8 +15,6 @@
  *
  */
 
-# include <sstream>
-
 // Not Apple or Windows
 #if not defined(__APPLE__) && not defined(_WIN32)
 # include <X11/Xlib.h>
@@ -24,13 +22,14 @@
 # include <GL/glx.h>
 #endif
 
-#ifndef _WIN32
-  #include <dirent.h>
-#else
+#ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
 #endif
+
+# include <sstream>
+
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>

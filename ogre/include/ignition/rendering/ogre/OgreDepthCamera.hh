@@ -18,13 +18,10 @@
 #ifndef IGNITION_RENDERING_OGRE_OGREDEPTHCAMERA_HH_
 #define IGNITION_RENDERING_OGRE_OGREDEPTHCAMERA_HH_
 
-#ifndef _WIN32
-  #include <dirent.h>
-#else
+#ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
-  #include "ignition/common/win_dirent.h"
 #endif
 
 #include <memory>
@@ -114,7 +111,7 @@ namespace ignition
       public: virtual void CreateDepthTexture() override;
 
       /// \brief Render the camera
-      public: virtual void PostRender();
+      public: virtual void PostRender() override;
 
       /// \brief All things needed to get back z buffer for depth data
       /// \return The z-buffer as a float array

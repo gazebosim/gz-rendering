@@ -172,7 +172,7 @@ void OgreRenderTarget::RebuildViewport()
   ogreRenderTarget->removeAllViewports();
   ogreRenderTarget->removeAllListeners();
 
-  // (louise) This causes a crash on a subsequent update. Is it correct to do this?
+  // (louise) This causes a crash on a subsequent update. Is it ok to do this?
   // OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
   //     this->scene);
 

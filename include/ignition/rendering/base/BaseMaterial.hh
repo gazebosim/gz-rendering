@@ -429,7 +429,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetRoughness(const float _roughness)
+    void BaseMaterial<T>::SetRoughness(const float)
     {
       // no op
     }
@@ -443,7 +443,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetMetalness(const float _metalness)
+    void BaseMaterial<T>::SetMetalness(const float)
     {
       // no op
     }
@@ -543,8 +543,8 @@ namespace ignition
     {
       this->SetLightingEnabled(true);
       this->SetAmbient(0.3, 0.3, 0.3);
-      this->SetDiffuse(0.7, 0.7, 0.7);
-      this->SetSpecular(0.01, 0.01, 0.01);
+      this->SetDiffuse(1.0, 1.0, 1.0);
+      this->SetSpecular(0.2, 0.2, 0.2);
       this->SetEmissive(0, 0, 0);
       this->SetShininess(1.5);
       this->SetTransparency(0);

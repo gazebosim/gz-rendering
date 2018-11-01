@@ -470,7 +470,7 @@ void Ogre2Material::Init()
   // use metal workflow as default
   this->ogreDatablock->setWorkflow(Ogre::HlmsPbsDatablock::MetallicWorkflow);
 
-//  this->Reset();
+  this->Reset();
 }
 
 //////////////////////////////////////////////////

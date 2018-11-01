@@ -138,6 +138,9 @@ void OgreRenderTarget::PostRender()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Render()
 {
+  if (nullptr == this->RenderTarget())
+    return;
+
   this->RenderTarget()->update();
 }
 
@@ -254,6 +257,9 @@ void OgreRenderTexture::Destroy()
 //////////////////////////////////////////////////
 Ogre::RenderTarget *OgreRenderTexture::RenderTarget() const
 {
+  if (nullptr == this->ogreTexture)
+    return nullptr;
+
   return this->ogreTexture->getBuffer()->getRenderTarget();
 }
 

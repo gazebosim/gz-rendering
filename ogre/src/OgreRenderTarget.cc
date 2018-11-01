@@ -165,6 +165,9 @@ void OgreRenderTarget::RebuildImpl()
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildViewport()
 {
+  if (nullptr == this->RenderTarget())
+    return;
+
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
   ogreRenderTarget->removeAllViewports();
   ogreRenderTarget->removeAllListeners();

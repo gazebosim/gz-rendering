@@ -154,6 +154,30 @@ namespace ignition
       // Documentation inherited
       public: virtual void ClearMetalnessMap() override;
 
+      // Documentation inherited
+      public: virtual bool HasEnvironmentMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string EnvironmentMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetEnvironmentMap(const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual void ClearEnvironmentMap() override;
+
+      // Documentation inherited
+      public: virtual void SetRoughness(const float _roughness) override;
+
+      // Documentation inherited
+      public: virtual float Roughness() const override;
+
+      // Documentation inherited
+      public: virtual void SetMetalness(const float _roughness) override;
+
+      // Documentation inherited
+      public: virtual float Metalness() const override;
+
       /// \brief Return ogre low level material
       /// \return Ogre material pointer
       public: virtual Ogre::MaterialPtr Material();
@@ -212,6 +236,9 @@ namespace ignition
 
       /// \brief Name of the metalness map
       protected: std::string metalnessMapName;
+
+      /// \brief Name of the environment map
+      protected: std::string environmentMapName;
 
       /// \brief Only an ogre scene can create an ogre material
       private: friend class Ogre2Scene;

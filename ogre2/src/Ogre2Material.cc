@@ -324,6 +324,62 @@ void Ogre2Material::ClearMetalnessMap()
 }
 
 //////////////////////////////////////////////////
+bool Ogre2Material::HasEnvironmentMap() const
+{
+  return !this->environmentMapName.empty();
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2Material::EnvironmentMap() const
+{
+  return this->environmentMapName;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetEnvironmentMap(const std::string &_name)
+{
+  if (_name.empty())
+  {
+    this->ClearEnvironmentMap();
+    return;
+  }
+
+  this->environmentMapName = _name;
+  this->SetTextureMapImpl(this->environmentMapName, Ogre::PBSM_REFLECTION);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::ClearEnvironmentMap()
+{
+  this->environmentMapName = "";
+  this->ogreDatablock->setTexture(Ogre::PBSM_REFLECTION, 0, Ogre::TexturePtr());
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetRoughness(const float _roughness)
+{
+  this->ogreDatablock->setRoughness(_roughness);
+}
+
+//////////////////////////////////////////////////
+float Ogre2Material::Roughness() const
+{
+  return this->ogreDatablock->getRoughness();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetMetalness(const float _metalness)
+{
+  this->ogreDatablock->setMetalness(_metalness);
+}
+
+//////////////////////////////////////////////////
+float Ogre2Material::Metalness() const
+{
+  return this->ogreDatablock->getMetalness();
+}
+
+//////////////////////////////////////////////////
 void Ogre2Material::PreRender()
 {
 }
@@ -352,10 +408,28 @@ Ogre::HlmsPbsDatablock *Ogre2Material::Datablock() const
 void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   Ogre::PbsTextureTypes _type)
 {
+  std::string baseName = _texture;
+  if (common::isFile(_texture))
+  {
+    baseName = common::basename(_texture);
+    size_t idx = _texture.rfind(baseName);
+    if (idx != std::string::npos)
+    {
+      std::string dirPath = _texture.substr(0, idx);
+      if (!dirPath.empty() &&
+          !Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+          dirPath))
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            dirPath, "FileSystem", "General");
+      }
+    }
+  }
+
   Ogre::HlmsTextureManager *hlmsTextureManager =
       this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
   Ogre::HlmsTextureManager::TextureLocation texLocation =
-      hlmsTextureManager->createOrRetrieveTexture(_texture,
+      hlmsTextureManager->createOrRetrieveTexture(baseName,
       this->ogreDatablock->suggestMapTypeBasedOnTextureType(_type));
 
   this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture);
@@ -393,7 +467,10 @@ void Ogre2Material::Init()
       this->ogreHlmsPbs->createDatablock(this->name, this->name,
       Ogre::HlmsMacroblock(), Ogre::HlmsBlendblock(), Ogre::HlmsParamVec()));
 
-  this->Reset();
+  // use metal workflow as default
+  this->ogreDatablock->setWorkflow(Ogre::HlmsPbsDatablock::MetallicWorkflow);
+
+//  this->Reset();
 }
 
 //////////////////////////////////////////////////

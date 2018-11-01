@@ -236,6 +236,37 @@ namespace ignition
       /// \brief Removes any metalness map mapped to this material
       public: virtual void ClearMetalnessMap() = 0;
 
+      /// \brief Determine if this material has a environment map
+      /// \return True if this material has a environment map
+      public: virtual bool HasEnvironmentMap() const = 0;
+
+      /// \brief Get the URI of the environment map file
+      /// \return URI of the environment map file
+      public: virtual std::string EnvironmentMap() const = 0;
+
+      /// \brief Set the material environment map
+      /// \param[in] _name URI of the new environment map file
+      public: virtual void SetEnvironmentMap(const std::string &_name) = 0;
+
+      /// \brief Removes any environment map mapped to this material
+      public: virtual void ClearEnvironmentMap() = 0;
+
+      /// \brief Set the roughness value. Only affects material of type MT_PBS
+      /// \param[in] _roughness Roughness to set to
+      public: virtual void SetRoughness(const float _roughness) = 0;
+
+      /// \brief Get the roughness value of this material.
+      /// \return Material roughness
+      public: virtual float Roughness() const = 0;
+
+      /// \brief Set the metalness value. Only affects material of type MT_PBS
+      /// \param[in] _metalness Metalness to set to
+      public: virtual void SetMetalness(const float _metalness) = 0;
+
+      /// \brief Get the metalness value of this material
+      /// \return Material metalness
+      public: virtual float Metalness() const = 0;
+
       /// \brief Removes any metalness map mapped to this material
       public: virtual enum MaterialType Type() const = 0;
 

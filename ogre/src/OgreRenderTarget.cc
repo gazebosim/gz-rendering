@@ -138,6 +138,9 @@ void OgreRenderTarget::PostRender()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Render()
 {
+  if (nullptr == this->RenderTarget())
+    return;
+
   this->RenderTarget()->update();
 }
 
@@ -162,8 +165,16 @@ void OgreRenderTarget::RebuildImpl()
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildViewport()
 {
+  if (nullptr == this->RenderTarget())
+    return;
+
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
   ogreRenderTarget->removeAllViewports();
+  ogreRenderTarget->removeAllListeners();
+
+  // (louise) This causes a crash on a subsequent update. Is it ok to do this?
+  // OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
+  //     this->scene);
 
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
   this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
@@ -243,13 +254,15 @@ OgreRenderTexture::~OgreRenderTexture()
 //////////////////////////////////////////////////
 void OgreRenderTexture::Destroy()
 {
-  std::string ogreName = this->ogreTexture->getName();
-  Ogre::TextureManager::getSingleton().remove(ogreName);
+  this->DestroyTarget();
 }
 
 //////////////////////////////////////////////////
 Ogre::RenderTarget *OgreRenderTexture::RenderTarget() const
 {
+  if (nullptr == this->ogreTexture)
+    return nullptr;
+
   return this->ogreTexture->getBuffer()->getRenderTarget();
 }
 
@@ -263,7 +276,13 @@ void OgreRenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::DestroyTarget()
 {
-  // TODO(anyone): implement
+  if (nullptr == this->ogreTexture)
+    return;
+
+  auto &manager = Ogre::TextureManager::getSingleton();
+  manager.unload(this->ogreTexture->getName());
+  manager.remove(this->ogreTexture->getName());
+  this->ogreTexture = nullptr;
 }
 
 //////////////////////////////////////////////////

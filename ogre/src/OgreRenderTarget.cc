@@ -172,10 +172,6 @@ void OgreRenderTarget::RebuildViewport()
   ogreRenderTarget->removeAllViewports();
   ogreRenderTarget->removeAllListeners();
 
-  // (louise) This causes a crash on a subsequent update. Is it ok to do this?
-  // OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
-  //     this->scene);
-
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
   this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
   this->ogreViewport->setClearEveryFrame(true);
@@ -279,9 +275,18 @@ void OgreRenderTexture::DestroyTarget()
   if (nullptr == this->ogreTexture)
     return;
 
+  OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
+      this->scene);
+
   auto &manager = Ogre::TextureManager::getSingleton();
   manager.unload(this->ogreTexture->getName());
   manager.remove(this->ogreTexture->getName());
+
+  // clean up OGRE depth buffers on RTT resize.
+  // see https://forums.ogre3d.org/viewtopic.php?t=92111#p535220
+  auto engine = OgreRenderEngine::Instance();
+  engine->OgreRoot()->getRenderSystem()->_cleanupDepthBuffers(false);
+
   this->ogreTexture = nullptr;
 }
 

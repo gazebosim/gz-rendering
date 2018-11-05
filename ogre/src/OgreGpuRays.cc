@@ -146,7 +146,6 @@ OgreGpuRays::~OgreGpuRays()
   if (this->scene && this->dataPtr->orthoCam)
     this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->orthoCam);
 
-
   this->dataPtr->visual.reset();
   this->dataPtr->texIdx.clear();
   this->dataPtr->texCount = 0u;
@@ -243,31 +242,46 @@ void OgreGpuRays::ConfigureCameras()
       std::max(2048U, this->RangeCount() / cameraCount);
   unsigned int vertRangeCountPerCamera = this->VerticalRangeCount();
 
-  // vertical gpu rays setup
-  this->SetVFOV(this->VerticalAngleMax() - this->VerticalAngleMin());
+  // vertical laser setup
+  double vfovAngle;
 
-  if (this->VFOV().Radian() > M_PI / 2.0)
+  if (this->VerticalRangeCount() > 1)
   {
-    this->SetVFOV(math::Angle(M_PI / 2.0));
-    ignwarn << "Vertical FOV for GPU rays is capped at 90 degrees.\n";
+    vfovAngle = (this->VerticalAngleMax() - this->VerticalAngleMin()).Radian();
+  }
+  else
+  {
+    vfovAngle = 0;
+
+    if (this->VerticalAngleMax() != this->VerticalAngleMin())
+    {
+      ignwarn << "Only one vertical ray but vertical min. and max. angle "
+          "are not equal. Min. angle is used.\n";
+      this->SetVerticalAngleMax(this->VerticalAngleMin().Radian());
+    }
   }
 
-  this->SetVertHalfAngle((this->VerticalAngleMax() +
-        this->VerticalAngleMin()).Radian() / 2.0);
-  this->SetVerticalAngleMin(
-      this->VertHalfAngle() - (this->VFOV().Radian() / 2.0));
-  this->SetVerticalAngleMax(
-      this->VertHalfAngle() + (this->VFOV().Radian() / 2.0));
+  if (vfovAngle > M_PI / 2.0)
+  {
+    vfovAngle = M_PI / 2.0;
+    ignwarn << "Vertical FOV for GPU laser is capped at 90 degrees.\n";
+  }
+
+  this->SetVFOV(vfovAngle);
+  this->SetVertHalfAngle((this->VerticalAngleMax()
+                   + this->VerticalAngleMin()).Radian() / 2.0);
+
+  this->SetVerticalAngleMin(this->VertHalfAngle() - (vfovAngle / 2));
+  this->SetVerticalAngleMax(this->VertHalfAngle() + (vfovAngle / 2));
 
   // Assume camera always stays horizontally even if vert. half angle of
-  // gpu rays is not 0. Add padding to camera vfov.
-  double vfovCamera =
-    this->VFOV().Radian() + 2.0 * std::abs(this->VertHalfAngle());
+  // laser is not 0. Add padding to camera vfov.
+  double vfovCamera = vfovAngle + 2.0 * std::abs(this->VertHalfAngle());
 
   // Add padding to vertical camera FOV to cover all possible rays
-  // for given gpu rays vert. and horiz. FOV
-  vfovCamera =
-    2.0 * atan(tan(vfovCamera / 2.0) / cos(this->HFOV().Radian() / 2.0));
+  // for given laser vert. and horiz. FOV
+  vfovCamera = 2.0 * atan(tan(vfovCamera / 2.0) / cos(
+        this->HFOV().Radian() / 2.0));
 
   if (vfovCamera > 2.8)
   {
@@ -286,46 +300,45 @@ void OgreGpuRays::ConfigureCameras()
     this->SetRayCountRatio(cameraAspectRatio);
     this->rangeCountRatio = cameraAspectRatio;
 
-    if ((horzRangeCountPerCamera / this->RangeCountRatio()) >
+    if ((horzRangeCountPerCamera / this->rangeCountRatio) >
          vertRangeCountPerCamera)
     {
       vertRangeCountPerCamera =
-          std::round(horzRangeCountPerCamera / this->RangeCountRatio());
+          std::round(horzRangeCountPerCamera / this->rangeCountRatio);
     }
     else
     {
       horzRangeCountPerCamera =
-          round(vertRangeCountPerCamera * this->RangeCountRatio());
+          round(vertRangeCountPerCamera * this->rangeCountRatio);
     }
   }
   else
   {
     // In case of 1 vert. ray, set a very small vertical FOV for camera
     this->SetRayCountRatio(horzRangeCountPerCamera);
+    double camVFOV = 2.0 * atan(tan(
+          this->HFOV().Radian() / 2.0) / this->RayCountRatio());
+    this->SetCosVertFOV(camVFOV);
   }
-  //////////////////////////////////////////////////////
 
+  // Configure first pass texture size
+  this->Set1stTextureSize(horzRangeCountPerCamera, vertRangeCountPerCamera);
   // Configure second pass texture size
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());
-  this->Set1stTextureSize(horzRangeCountPerCamera, vertRangeCountPerCamera);
 
   // Set ogre cam properties
-  double ratio = horzRangeCountPerCamera/vertRangeCountPerCamera;
-  double camVFOV = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
-  this->dataPtr->ogreCamera->setAspectRatio(ratio);
-  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(camVFOV));
+  this->dataPtr->ogreCamera->setAspectRatio(this->RayCountRatio());
+  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian((this->CosVertFOV())));
   this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
   this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
-  this->dataPtr->ogreCamera->setRenderingDistance(0.);
+  this->dataPtr->ogreCamera->setRenderingDistance(this->FarClipPlane());
+  this->dataPtr->ogreCamera->yaw(Ogre::Radian(this->horzHalfAngle));
 }
 
 /////////////////////////////////////////////////////////
 void OgreGpuRays::CreateGpuRaysTextures()
 {
   this->ConfigureCameras();
-
-  // CreateGpuRaysTexture
-  this->dataPtr->ogreCamera->yaw(Ogre::Radian(this->horzHalfAngle));
 
   this->CreateOrthoCam();
 
@@ -585,7 +598,9 @@ void OgreGpuRays::PostRender()
   int len = this->dataPtr->w2nd * this->dataPtr->h2nd * 3;
 
   if (!this->dataPtr->gpuRaysBuffer)
+  {
     this->dataPtr->gpuRaysBuffer = new float[len];
+  }
 
   Ogre::PixelBox dstBox(width, height,
         1, Ogre::PF_FLOAT32_RGB, this->dataPtr->gpuRaysBuffer);
@@ -601,8 +616,7 @@ void OgreGpuRays::PostRender()
   memcpy(this->dataPtr->gpuRaysScan, this->dataPtr->gpuRaysBuffer, size);
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
-      width, height, 3,
-      PixelFormat::PF_FLOAT32_RGB);
+      width, height, 3, PixelFormat::PF_FLOAT32_RGB);
 }
 
 //////////////////////////////////////////////////
@@ -722,11 +736,11 @@ void OgreGpuRays::CreateMesh()
   double startY = this->dataPtr->h2nd/10.0;
 
   // half of actual camera vertical FOV without padding
-  double phi = this->VFOV().Radian() / 2;
+  double phi = this->VFOV().Radian() / 2.0;
   double phiCamera = phi + std::abs(this->VertHalfAngle());
-  double theta = this->CosHorzFOV() / 2;
+  double theta = this->CosHorzFOV() / 2.0;
 
-  if (this->ImageHeight() == 1)
+  if (this->dataPtr->h2nd == 1)
   {
     phi = 0;
   }
@@ -737,7 +751,7 @@ void OgreGpuRays::CreateMesh()
   // total gpu rays hfov
   double thfov = this->dataPtr->textureCount * this->CosHorzFOV();
   double hstep = thfov / (this->dataPtr->w2nd - 1);
-  double vstep = 2 * phi / (this->dataPtr->h2nd - 1);
+  double vstep = 2.0 * phi / (this->dataPtr->h2nd - 1);
 
   if (this->dataPtr->h2nd == 1)
   {

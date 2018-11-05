@@ -443,10 +443,7 @@ namespace ignition
     //////////////////////////////////////////////////
     int BaseGpuRays<T>::VerticalRayCount() const
     {
-      if (this->vfov > 0)
-        return this->vSamples;
-      else
-        return 1;
+      return this->vSamples;
     }
 
     template <class T>

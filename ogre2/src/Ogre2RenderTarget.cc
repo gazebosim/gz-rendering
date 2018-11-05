@@ -244,8 +244,7 @@ Ogre2RenderTexture::~Ogre2RenderTexture()
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::Destroy()
 {
-  std::string ogreName = this->ogreTexture->getName();
-  Ogre::TextureManager::getSingleton().remove(ogreName);
+  this->DestroyTarget();
 }
 
 //////////////////////////////////////////////////
@@ -265,7 +264,18 @@ void Ogre2RenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::DestroyTarget()
 {
-  // TODO(anyone)
+  if (nullptr == this->ogreTexture)
+    return;
+
+  auto &manager = Ogre::TextureManager::getSingleton();
+  manager.unload(this->ogreTexture->getName());
+  manager.remove(this->ogreTexture->getName());
+
+  // TODO(anyone) there is memory leak when a render texture is destroyed.
+  // The RenderSystem::_cleanupDepthBuffers method used in ogre1 does not
+  // seem to work in ogre2
+
+  this->ogreTexture = nullptr;
 }
 
 //////////////////////////////////////////////////

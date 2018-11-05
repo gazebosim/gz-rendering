@@ -40,7 +40,7 @@ namespace ignition
     template <class T>
     class IGNITION_RENDERING_VISIBLE BaseDepthCamera :
       public virtual DepthCamera,
-      protected virtual BaseCamera<T>,
+      public virtual BaseCamera<T>,
       public virtual T
     {
       protected: BaseDepthCamera();

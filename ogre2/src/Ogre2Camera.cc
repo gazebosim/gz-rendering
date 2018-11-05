@@ -21,6 +21,7 @@
 // #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -161,15 +162,52 @@ GLuint Ogre2Camera::RenderTextureGLId() const
 //////////////////////////////////////////////////
 void Ogre2Camera::SetSelectionBuffer()
 {
-  // TODO(anyone)
+  this->selectionBuffer = new Ogre2SelectionBuffer(this->name,
+      this->scene, this->ImageWidth(), this->ImageHeight());
 }
 
 //////////////////////////////////////////////////
-VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &/*_mousePos*/)
+VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
 {
-  // TODO(anyone)
-  // need to port selection buffer
-  return VisualPtr();
+  VisualPtr result;
+
+  if (!this->selectionBuffer)
+  {
+    this->SetSelectionBuffer();
+
+    if (!this->selectionBuffer)
+    {
+      return result;
+    }
+  }
+
+  int ratio = static_cast<int>(this->AspectRatio());
+
+  ignition::math::Vector2i mousePos(
+      ratio * _mousePos.X(), ratio * _mousePos.Y());
+
+  Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(
+      mousePos.X(), mousePos.Y());
+
+  if (ogreItem)
+  {
+    if (!ogreItem->getUserObjectBindings().getUserAny().isEmpty() &&
+        ogreItem->getUserObjectBindings().getUserAny().getType() ==
+        typeid(unsigned int))
+    {
+      try
+      {
+        result = this->scene->VisualById(Ogre::any_cast<unsigned int>(
+              ogreItem->getUserObjectBindings().getUserAny()));
+      }
+      catch(Ogre::Exception &e)
+      {
+        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+      }
+    }
+  }
+
+  return result;
 }
 
 //////////////////////////////////////////////////

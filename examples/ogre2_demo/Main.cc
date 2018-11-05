@@ -55,7 +55,7 @@ void buildScene(ScenePtr _scene)
   green->SetSpecular(0.2, 0.4, 0.2);
 
   // create cylinder visual
-  VisualPtr cylinder = _scene->CreateVisual();
+  VisualPtr cylinder = _scene->CreateVisual("cylinder");
   cylinder->AddGeometry(_scene->CreateCylinder());
   cylinder->SetLocalPosition(3, 0.5, 0.5);
   cylinder->SetLocalScale(1, 1, 1);
@@ -63,7 +63,7 @@ void buildScene(ScenePtr _scene)
   root->AddChild(cylinder);
 
   // create a mesh
-  VisualPtr mesh = _scene->CreateVisual();
+  VisualPtr mesh = _scene->CreateVisual("duck");
   mesh->SetLocalPosition(3, -1, 0);
   mesh->SetLocalRotation(1.5708, 0, 2.0);
   MeshDescriptor descriptor;
@@ -80,7 +80,7 @@ void buildScene(ScenePtr _scene)
   red->SetSpecular(0.5, 0.2, 0.2);
 
   // create sphere visual
-  VisualPtr sphere = _scene->CreateVisual();
+  VisualPtr sphere = _scene->CreateVisual("sphere");
   sphere->AddGeometry(_scene->CreateSphere());
   sphere->SetLocalPosition(2.5, 0, 0.3);
   sphere->SetLocalRotation(0, 0, 0);
@@ -94,7 +94,7 @@ void buildScene(ScenePtr _scene)
   white->SetSpecular(0.4, 0.4, 0.4);
 
   // create plane visual
-  VisualPtr plane = _scene->CreateVisual();
+  VisualPtr plane = _scene->CreateVisual("plane");
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(5, 8, 1);
   plane->SetLocalPosition(3, 0, -0.5);

@@ -49,28 +49,65 @@ void buildScene(ScenePtr _scene)
   _scene->SetAmbientLight(0.2, 0.2, 0.2);
   VisualPtr root = _scene->RootVisual();
 
+  // create PBR material
+  MaterialPtr matPBR = _scene->CreateMaterial();
+  std::string textureMap = common::joinPaths(RESOURCE_PATH, "pump_albedo.png");
+  std::string normalMap = common::joinPaths(RESOURCE_PATH, "pump_normal.png");
+  std::string roughnessMap =
+      common::joinPaths(RESOURCE_PATH, "pump_roughness.png");
+  std::string metalnessMap =
+      common::joinPaths(RESOURCE_PATH, "pump_metallic.png");
+  std::string environmentMap =
+      common::joinPaths(RESOURCE_PATH, "fort_point.dds");
+  matPBR->SetTexture(textureMap);
+  matPBR->SetNormalMap(normalMap);
+  matPBR->SetRoughnessMap(roughnessMap);
+  matPBR->SetMetalnessMap(metalnessMap);
+  matPBR->SetEnvironmentMap(environmentMap);
+
+  // create mesh for PBR
+  VisualPtr meshPBR = _scene->CreateVisual("pump");
+  meshPBR->SetLocalPosition(2, 0.0, -0.3);
+  meshPBR->SetLocalRotation(0, 0, 0);
+  MeshDescriptor descriptorPBR;
+  descriptorPBR.meshName = common::joinPaths(RESOURCE_PATH, "pump.dae");
+  common::MeshManager *meshManager = common::MeshManager::Instance();
+  descriptorPBR.mesh = meshManager->Load(descriptorPBR.meshName);
+  MeshPtr meshPBRGeom = _scene->CreateMesh(descriptorPBR);
+  meshPBRGeom->SetMaterial(matPBR);
+  meshPBR->AddGeometry(meshPBRGeom);
+  root->AddChild(meshPBR);
+
   // create green material
   MaterialPtr green = _scene->CreateMaterial();
   green->SetDiffuse(0.0, 0.8, 0.0);
   green->SetSpecular(0.2, 0.4, 0.2);
+  green->SetMetalness(0.5);
+  green->SetRoughness(0.8);
 
   // create cylinder visual
   VisualPtr cylinder = _scene->CreateVisual("cylinder");
   cylinder->AddGeometry(_scene->CreateCylinder());
-  cylinder->SetLocalPosition(3, 0.5, 0.5);
-  cylinder->SetLocalScale(1, 1, 1);
+  cylinder->SetLocalPosition(3, -0.5, 0.3);
+  cylinder->SetLocalScale(0.7, 0.7, 0.7);
   cylinder->SetMaterial(green);
   root->AddChild(cylinder);
 
+  // create duck material
+  MaterialPtr duckMat = _scene->CreateMaterial();
+  duckMat->SetTexture(common::joinPaths(RESOURCE_PATH, "duck.png"));
+  duckMat->SetRoughness(0.3f);
+  duckMat->SetMetalness(0.3f);
+
   // create a mesh
   VisualPtr mesh = _scene->CreateVisual("duck");
-  mesh->SetLocalPosition(3, -1, 0);
+  mesh->SetLocalPosition(4, 0, 0);
   mesh->SetLocalRotation(1.5708, 0, 2.0);
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
-  common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+  meshGeom->SetMaterial(duckMat);
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
 
@@ -78,6 +115,8 @@ void buildScene(ScenePtr _scene)
   MaterialPtr red = _scene->CreateMaterial();
   red->SetDiffuse(0.8, 0.0, 0.0);
   red->SetSpecular(0.5, 0.2, 0.2);
+  red->SetRoughness(0.2);
+  red->SetMetalness(1.0);
 
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual("sphere");
@@ -88,10 +127,24 @@ void buildScene(ScenePtr _scene)
   sphere->SetMaterial(red);
   root->AddChild(sphere);
 
+  // create mirror material
+  MaterialPtr mirrorMat = _scene->CreateMaterial();
+  mirrorMat->SetRoughness(0.01);
+  mirrorMat->SetEnvironmentMap(environmentMap);
+
+  // create box visual
+  VisualPtr box = _scene->CreateVisual("box");
+  box->AddGeometry(_scene->CreateBox());
+  box->SetLocalPosition(3.0, 0.5, 0.3);
+  box->SetLocalRotation(0, 0, 0);
+  box->SetLocalScale(0.5, 0.5, 0.5);
+  box->SetMaterial(mirrorMat);
+  root->AddChild(box);
+
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
-  white->SetDiffuse(0.8, 0.8, 0.8);
-  white->SetSpecular(0.4, 0.4, 0.4);
+  white->SetDiffuse(1.0, 1.0, 1.0);
+  white->SetSpecular(1.0, 1.0, 1.0);
 
   // create plane visual
   VisualPtr plane = _scene->CreateVisual("plane");
@@ -105,7 +158,7 @@ void buildScene(ScenePtr _scene)
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
   light0->SetDirection(0.5, 0.5, -1);
   light0->SetDiffuseColor(0.8, 0.7, 0.6);
-  light0->SetSpecularColor(0.2, 0.2, 0.2);
+  light0->SetSpecularColor(0.3, 0.3, 0.3);
   root->AddChild(light0);
 
   // create spot light

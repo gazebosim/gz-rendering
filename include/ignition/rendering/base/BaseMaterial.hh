@@ -66,11 +66,85 @@ namespace ignition
       public: virtual void SetReceiveShadows(const bool _receiveShadows)
                   override = 0;
 
-      public: virtual void ClearTexture() override = 0;
-
-      public: virtual void ClearNormalMap() override = 0;
+      // Documentation inherited
+      public: virtual bool HasTexture() const override;
 
       // Documentation inherited
+      public: virtual std::string Texture() const override;
+
+      // Documentation inherited
+      public: virtual void SetTexture(const std::string &_texture) override;
+
+      // Documentation inherited
+      public: virtual void ClearTexture() override;
+
+      // Documentation inherited
+      public: virtual bool HasNormalMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string NormalMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetNormalMap(const std::string &_normalMap)
+          override;
+
+      // Documentation inherited
+      public: virtual void ClearNormalMap() override;
+
+      // Documentation inherited
+      public: virtual bool HasRoughnessMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string RoughnessMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetRoughnessMap(const std::string &_roughnessMap)
+          override;
+
+      // Documentation inherited
+      public: virtual void ClearRoughnessMap() override;
+
+      // Documentation inherited
+      public: virtual bool HasMetalnessMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string MetalnessMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetMetalnessMap(const std::string &_metalnessMap)
+          override;
+
+      // Documentation inherited
+      public: virtual void ClearMetalnessMap() override;
+
+      // Documentation inherited
+      public: virtual bool HasEnvironmentMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string EnvironmentMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetEnvironmentMap(const std::string &_metalnessMap)
+          override;
+
+      // Documentation inherited
+      public: virtual void ClearEnvironmentMap() override;
+
+      // Documentation inherited
+      public: virtual void SetRoughness(const float _roughness) override;
+
+      // Documentation inherited
+      public: virtual float Roughness() const override;
+
+      // Documentation inherited
+      public: virtual void SetMetalness(const float _metalness) override;
+
+      // Documentation inherited
+      public: virtual float Metalness() const override;
+
+      // Documentation inherited
+      public: virtual enum MaterialType Type() const override;
+
       public: virtual void SetShaderType(enum ShaderType /*_type*/) override
              {
                // no op
@@ -166,6 +240,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    enum MaterialType BaseMaterial<T>::Type() const
+    {
+      return MT_CLASSIC;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     std::string BaseMaterial<T>::VertexShader() const
     {
       return std::string();
@@ -208,6 +289,174 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    bool BaseMaterial<T>::HasTexture() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::Texture() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetTexture(const std::string &)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::ClearTexture()
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::HasNormalMap() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::NormalMap() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetNormalMap(const std::string &)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::ClearNormalMap()
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::HasRoughnessMap() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::RoughnessMap() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetRoughnessMap(const std::string &)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::ClearRoughnessMap()
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::HasMetalnessMap() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::MetalnessMap() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetMetalnessMap(const std::string &)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::ClearMetalnessMap()
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::HasEnvironmentMap() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::EnvironmentMap() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetEnvironmentMap(const std::string &)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::ClearEnvironmentMap()
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetRoughness(const float)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    float BaseMaterial<T>::Roughness() const
+    {
+      return 0.0f;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetMetalness(const float)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    float BaseMaterial<T>::Metalness() const
+    {
+      return 0.0f;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     MaterialPtr BaseMaterial<T>::Clone(const std::string &_name) const
     {
       auto baseShared = this->shared_from_this();
@@ -237,6 +486,11 @@ namespace ignition
       this->SetReflectionEnabled(_material->ReflectionEnabled());
       this->SetTexture(_material->Texture());
       this->SetNormalMap(_material->NormalMap());
+      this->SetRoughnessMap(_material->RoughnessMap());
+      this->SetMetalnessMap(_material->MetalnessMap());
+      this->SetRoughness(_material->Roughness());
+      this->SetMetalness(_material->Metalness());
+      this->SetEnvironmentMap(_material->EnvironmentMap());
       this->SetShaderType(_material->ShaderType());
       this->SetVertexShader(_material->VertexShader());
       this->SetFragmentShader(_material->FragmentShader());
@@ -289,8 +543,8 @@ namespace ignition
     {
       this->SetLightingEnabled(true);
       this->SetAmbient(0.3, 0.3, 0.3);
-      this->SetDiffuse(0.7, 0.7, 0.7);
-      this->SetSpecular(0.01, 0.01, 0.01);
+      this->SetDiffuse(1.0, 1.0, 1.0);
+      this->SetSpecular(0.2, 0.2, 0.2);
       this->SetEmissive(0, 0, 0);
       this->SetShininess(1.5);
       this->SetTransparency(0);
@@ -300,6 +554,10 @@ namespace ignition
       this->SetReflectionEnabled(true);
       this->ClearTexture();
       this->ClearNormalMap();
+      this->ClearRoughnessMap();
+      this->ClearMetalnessMap();
+      this->SetRoughness(1.0);
+      this->SetMetalness(0.8);
       this->SetShaderType(ST_PIXEL);
     }
     }

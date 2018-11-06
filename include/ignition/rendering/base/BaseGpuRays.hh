@@ -37,6 +37,7 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     template <class T>
     class IGNITION_RENDERING_VISIBLE BaseGpuRays :
       public virtual GpuRays,
@@ -72,6 +73,10 @@ namespace ignition
       /// \brief Gets if sensor is horizontal
       /// \return True if horizontal, false if not
       public: virtual bool IsHorizontal() const override;
+
+      /// \brief Set the vertical fov
+      /// \param[in] _vfov vertical fov
+      public: virtual void SetVFOV(const math::Angle &_vfov) override;
 
       /// \brief Get the vertical field-of-view.
       /// \return The vertical field of view of the gpu rays.
@@ -132,69 +137,6 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVerticalAngleMax(const double _angle) override;
 
-      /// \internal
-      /// \brief Get Cos Horz field-of-view
-      /// \return 2 * atan(tan(this->hfov/2) / cos(this->vfov/2))
-      public: virtual double CosHorzFOV() const;
-
-      /// \internal
-      /// \brief Set the Cos Horz FOV
-      /// \param[in] _chfov Cos Horz FOV
-      public: virtual void SetCosHorzFOV(const double _chfov);
-
-      /// \internal
-      /// \brief Set the vertical fov
-      /// \param[in] _vfov vertical fov
-      public: virtual void SetVFOV(const math::Angle _vfov);
-
-      /// \internal
-      /// \brief Get Cos Vert field-of-view
-      /// \return 2 * atan(tan(this->vfov/2) / cos(this->hfov/2))
-      public: virtual double CosVertFOV() const;
-
-      /// \internal
-      /// \brief Set the Cos Horz FOV
-      /// \param[in] _cvfov Cos Horz FOV
-      public: virtual void SetCosVertFOV(const double _cvfov);
-
-      /// \internal
-      /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
-      /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
-      public: virtual double HorzHalfAngle() const;
-
-      /// \internal
-      /// \brief Get (vertical_max_angle + vertical_min_angle) * 0.5
-      /// \return (vertical_max_angle + vertical_min_angle) * 0.5
-      public: virtual double VertHalfAngle() const;
-
-      /// \internal
-      /// \brief Set the horizontal half angle
-      /// \param[in] _angle horizontal half angle
-      public: virtual void SetHorzHalfAngle(const double _angle);
-
-      /// \internal
-      /// \brief Set the vertical half angle
-      /// \param[in] _angle vertical half angle
-      public: virtual void SetVertHalfAngle(const double _angle);
-
-      /// \internal
-      /// \brief Get the number of cameras required
-      /// \return Number of cameras needed to generate the rays
-      public: virtual unsigned int CameraCount() const;
-
-      /// \internal
-      /// \brief Set the number of cameras required
-      /// \param[in] _cameraCount The number of cameras required to generate
-      /// the rays
-      public: virtual void SetCameraCount(
-                  const unsigned int _cameraCount);
-
-      /// \brief Horizontal half angle.
-      protected: double horzHalfAngle = 0;
-
-      /// \brief Vertical half angle.
-      protected: double vertHalfAngle = 0;
-
       /// \brief Ray count ratio.
       protected: double rayCountRatio = 0;
 
@@ -204,17 +146,8 @@ namespace ignition
       /// \brief Vertical field-of-view.
       protected: math::Angle vfov;
 
-      /// \brief Cos horizontal field-of-view.
-      protected: double chfov = 0;
-
-      /// \brief Cos vertical field-of-view.
-      protected: double cvfov = 0;
-
       /// \brief True if the sensor is horizontal only.
       protected: bool isHorizontal = true;
-
-      /// \brief Number of cameras needed to generate the rays.
-      protected: unsigned int cameraCount = 1;
 
       /// \brief Horizontal minimal angle
       protected: double minAngle = 0;
@@ -273,34 +206,6 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::SetHorzHalfAngle(const double _angle)
-    {
-      this->horzHalfAngle = _angle;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseGpuRays<T>::SetVertHalfAngle(const double _angle)
-    {
-      this->vertHalfAngle = _angle;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    double BaseGpuRays<T>::HorzHalfAngle() const
-    {
-      return this->horzHalfAngle;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    double BaseGpuRays<T>::VertHalfAngle() const
-    {
-      return this->vertHalfAngle;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
     void BaseGpuRays<T>::SetIsHorizontal(const bool _horizontal)
     {
       this->isHorizontal = _horizontal;
@@ -311,27 +216,6 @@ namespace ignition
     bool BaseGpuRays<T>::IsHorizontal() const
     {
       return this->isHorizontal;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseGpuRays<T>::SetCosVertFOV(const double _cvfov)
-    {
-      this->cvfov = _cvfov;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    unsigned int BaseGpuRays<T>::CameraCount() const
-    {
-      return this->cameraCount;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseGpuRays<T>::SetCameraCount(const unsigned int _cameraCount)
-    {
-      this->cameraCount = _cameraCount;
     }
 
     //////////////////////////////////////////////////
@@ -364,30 +248,9 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::SetVFOV(const math::Angle _vfov)
+    void BaseGpuRays<T>::SetVFOV(const math::Angle &_vfov)
     {
       this->vfov = _vfov;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    double BaseGpuRays<T>::CosHorzFOV() const
-    {
-      return this->chfov;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseGpuRays<T>::SetCosHorzFOV(const double _chfov)
-    {
-      this->chfov = _chfov;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    double BaseGpuRays<T>::CosVertFOV() const
-    {
-      return this->cvfov;
     }
 
     template <class T>

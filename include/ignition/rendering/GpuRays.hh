@@ -32,6 +32,7 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class GpuRays GpuRays.hh ignition/rendering/GpuRays.hh
     /// \brief Generate depth ray data.
     class IGNITION_RENDERING_VISIBLE GpuRays :
@@ -81,7 +82,7 @@ namespace ignition
 
       /// \brief Set the vertical fov
       /// \param[in] _vfov vertical fov
-      public: virtual void SetVFOV(const math::Angle _vfov) = 0;
+      public: virtual void SetVFOV(const math::Angle &_vfov) = 0;
 
       /// \brief Get the ray count ratio (equivalent to aspect ratio)
       /// \return The ray count ratio (equivalent to aspect ratio)

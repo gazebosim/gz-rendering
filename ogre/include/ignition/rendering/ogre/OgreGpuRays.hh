@@ -144,6 +144,38 @@ namespace ignition
                                        Ogre::Camera *_cam,
                                        const bool _updateTex);
 
+      /// \brief Get Cos Horz field-of-view
+      /// \return 2 * atan(tan(this->hfov/2) / cos(this->vfov/2))
+      private: virtual double CosHorzFOV() const;
+
+      /// \brief Set the Cos Horz FOV
+      /// \param[in] _chfov Cos Horz FOV
+      private: virtual void SetCosHorzFOV(const double _chfov);
+
+      /// \brief Get Cos Vert field-of-view
+      /// \return 2 * atan(tan(this->vfov/2) / cos(this->hfov/2))
+      private: virtual double CosVertFOV() const;
+
+      /// \brief Set the Cos Horz FOV
+      /// \param[in] _cvfov Cos Horz FOV
+      private: virtual void SetCosVertFOV(const double _cvfov);
+
+      /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
+      /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
+      private: virtual double HorzHalfAngle() const;
+
+      /// \brief Get (vertical_max_angle + vertical_min_angle) * 0.5
+      /// \return (vertical_max_angle + vertical_min_angle) * 0.5
+      private: virtual double VertHalfAngle() const;
+
+      /// \brief Set the horizontal half angle
+      /// \param[in] _angle horizontal half angle
+      private: virtual void SetHorzHalfAngle(const double _angle);
+
+      /// \brief Set the vertical half angle
+      /// \param[in] _angle vertical half angle
+      private: virtual void SetVertHalfAngle(const double _angle);
+
       /// \internal
       /// \brief Pointer to private data.
       private: std::unique_ptr<OgreGpuRaysPrivate> dataPtr;

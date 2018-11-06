@@ -109,6 +109,21 @@ class ignition::rendering::OgreGpuRaysPrivate
 
   /// \brief Dummy render texture for the gpu rays
   public: RenderTexturePtr renderTexture;
+
+  /// \brief Cos horizontal field-of-view.
+  public: double chfov = 0;
+
+  /// \brief Cos vertical field-of-view.
+  public: double cvfov = 0;
+
+  /// \brief Horizontal half angle.
+  public: double horzHalfAngle = 0;
+
+  /// \brief Vertical half angle.
+  public: double vertHalfAngle = 0;
+
+  /// \brief Number of cameras needed to generate the rays.
+  public: unsigned int cameraCount = 1;
 };
 
 using namespace ignition;
@@ -205,9 +220,9 @@ void OgreGpuRays::ConfigureCameras()
   // horizontal gpu rays setup
   this->SetHFOV(this->AngleMax() - this->AngleMin());
 
-  if (this->HFOV().Radian() > 2.0 * M_PI)
+  if (this->HFOV().Radian() > 2.0 * IGN_PI)
   {
-    this->SetHFOV(2.0 * M_PI);
+    this->SetHFOV(2.0 * IGN_PI);
     ignwarn << "Horizontal FOV for GPU rays is capped at 180 degrees.\n";
   }
 
@@ -218,28 +233,27 @@ void OgreGpuRays::ConfigureCameras()
   {
     if (this->HFOV().Radian()  > 5.6)
     {
-      this->cameraCount = 3;
+      this->dataPtr->cameraCount = 3;
     }
     else
     {
-      this->cameraCount = 2;
+      this->dataPtr->cameraCount = 2;
     }
   }
   else
   {
-    this->cameraCount = 1;
+    this->dataPtr->cameraCount = 1;
   }
-  this->SetCameraCount(cameraCount);
 
   // horizontal fov of single frame
-  this->SetHFOV(this->HFOV().Radian() / cameraCount);
+  this->SetHFOV(this->HFOV().Radian() / this->dataPtr->cameraCount);
   this->SetCosHorzFOV(this->HFOV().Radian());
 
   // Fixed minimum resolution of texture to reduce steps in ranges
   // when hitting surfaces where the angle between ray and surface is small.
   // Also have to keep in mind the GPU's max. texture size
   unsigned int horzRangeCountPerCamera =
-      std::max(2048U, this->RangeCount() / cameraCount);
+      std::max(2048U, this->RangeCount() / this->dataPtr->cameraCount);
   unsigned int vertRangeCountPerCamera = this->VerticalRangeCount();
 
   // vertical laser setup
@@ -261,9 +275,9 @@ void OgreGpuRays::ConfigureCameras()
     }
   }
 
-  if (vfovAngle > M_PI / 2.0)
+  if (vfovAngle > IGN_PI / 2.0)
   {
-    vfovAngle = M_PI / 2.0;
+    vfovAngle = IGN_PI / 2.0;
     ignwarn << "Vertical FOV for GPU laser is capped at 90 degrees.\n";
   }
 
@@ -332,7 +346,7 @@ void OgreGpuRays::ConfigureCameras()
   this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
   this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
   this->dataPtr->ogreCamera->setRenderingDistance(this->FarClipPlane());
-  this->dataPtr->ogreCamera->yaw(Ogre::Radian(this->horzHalfAngle));
+  this->dataPtr->ogreCamera->yaw(Ogre::Radian(this->HorzHalfAngle()));
 }
 
 /////////////////////////////////////////////////////////
@@ -342,7 +356,7 @@ void OgreGpuRays::CreateGpuRaysTextures()
 
   this->CreateOrthoCam();
 
-  this->dataPtr->textureCount = this->cameraCount;
+  this->dataPtr->textureCount = this->dataPtr->cameraCount;
 
   if (this->dataPtr->textureCount == 2)
   {
@@ -922,3 +936,50 @@ RenderTargetPtr OgreGpuRays::RenderTarget() const
   return this->dataPtr->renderTexture;
 }
 
+//////////////////////////////////////////////////
+double OgreGpuRays::CosHorzFOV() const
+{
+  return this->dataPtr->chfov;
+}
+
+//////////////////////////////////////////////////
+void OgreGpuRays::SetCosHorzFOV(const double _chfov)
+{
+  this->dataPtr->chfov = _chfov;
+}
+
+//////////////////////////////////////////////////
+double OgreGpuRays::CosVertFOV() const
+{
+  return this->dataPtr->cvfov;
+}
+
+//////////////////////////////////////////////////
+void OgreGpuRays::SetCosVertFOV(const double _cvfov)
+{
+  this->dataPtr->cvfov = _cvfov;
+}
+
+//////////////////////////////////////////////////
+void OgreGpuRays::SetHorzHalfAngle(const double _angle)
+{
+  this->dataPtr->horzHalfAngle = _angle;
+}
+
+//////////////////////////////////////////////////
+void OgreGpuRays::SetVertHalfAngle(const double _angle)
+{
+  this->dataPtr->vertHalfAngle = _angle;
+}
+
+//////////////////////////////////////////////////
+double OgreGpuRays::HorzHalfAngle() const
+{
+  return this->dataPtr->horzHalfAngle;
+}
+
+//////////////////////////////////////////////////
+double OgreGpuRays::VertHalfAngle() const
+{
+  return this->dataPtr->vertHalfAngle;
+}

@@ -19,6 +19,10 @@
 
 #include <array>
 #include <string>
+
+#include <ignition/common/Console.hh>
+
+#include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
@@ -343,8 +347,13 @@ namespace ignition
       protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
-      protected: virtual GpuRaysPtr CreateGpuRaysImpl(unsigned int _id,
-                     const std::string &_name) = 0;
+      protected: virtual GpuRaysPtr CreateGpuRaysImpl(unsigned int /*_id*/,
+                     const std::string & /*_name*/)
+                 {
+                   ignerr << "GpuRays not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return GpuRaysPtr();
+                 }
 
       protected: virtual VisualPtr CreateVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;

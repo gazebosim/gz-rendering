@@ -33,8 +33,11 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    // forward declaration
+    class OgreSelectionBuffer;
+
     class IGNITION_RENDERING_OGRE_VISIBLE OgreCamera :
       public BaseCamera<OgreSensor>
     {

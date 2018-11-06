@@ -40,7 +40,7 @@ namespace ignition
     template <class T>
     class IGNITION_RENDERING_VISIBLE BaseGpuRays :
       public virtual GpuRays,
-      protected virtual BaseCamera<T>,
+      public virtual BaseCamera<T>,
       public virtual T
     {
       /// \brief Constructor
@@ -49,41 +49,21 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~BaseGpuRays();
 
-      /// \brief Create the texture which is used to render laser data.
-      public: virtual void CreateLaserTexture() override;
-
-      /// \brief All things needed to get back z buffer for laser data.
-      /// \return Array of laser data.
-      /// \deprecated use LaserDataBegin() and LaserDataEnd() instead
+      /// \brief All things needed to get back z buffer for gpu rays data.
+      /// \return Array of gpu rays data.
       public: virtual const float *RaysData() const override;
 
-      /// \brief Connect to a laser frame signal
+      /// \brief Connect to a gpu rays frame signal
       /// \param[in] _subscriber Callback that is called when a new image is
       /// generated
       /// \return A pointer to the connection. This must be kept in scope.
-      public: virtual common::ConnectionPtr ConnectNewLaserFrame(
+      public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
                   PixelFormat _format)> _subscriber) override;
 
       /// \return Pointer to the render target
       public: virtual RenderTargetPtr RenderTarget() const = 0;
-
-      /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
-      /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
-      public: virtual double HorzHalfAngle() const override;
-
-      /// \brief Get (vertical_max_angle + vertical_min_angle) * 0.5
-      /// \return (vertical_max_angle + vertical_min_angle) * 0.5
-      public: virtual double VertHalfAngle() const override;
-
-      /// \brief Set the horizontal half angle
-      /// \param[in] _angle horizontal half angle
-      public: virtual void SetHorzHalfAngle(const double _angle) override;
-
-      /// \brief Set the vertical half angle
-      /// \param[in] _angle vertical half angle
-      public: virtual void SetVertHalfAngle(const double _angle) override;
 
       /// \brief Set sensor horizontal or vertical
       /// \param[in] _horizontal True if horizontal, false if not
@@ -93,51 +73,17 @@ namespace ignition
       /// \return True if horizontal, false if not
       public: virtual bool IsHorizontal() const override;
 
-      /// \brief Get the horizontal field of view of the laser sensor.
-      /// \return The horizontal field of view of the laser sensor.
-      public: virtual double HorzFOV() const override;
-
-      /// \brief Get Cos Horz field-of-view
-      /// \return 2 * atan(tan(this->hfov/2) / cos(this->vfov/2))
-      public: virtual double CosHorzFOV() const override;
-
-      /// \brief Set the Cos Horz FOV
-      /// \param[in] _chfov Cos Horz FOV
-      public: virtual void SetCosHorzFOV(const double _chfov) override;
-
       /// \brief Get the vertical field-of-view.
-      /// \return The vertical field of view of the laser sensor.
-      public: virtual double VertFOV() const override;
-
-      /// \brief Get Cos Vert field-of-view
-      /// \return 2 * atan(tan(this->vfov/2) / cos(this->hfov/2))
-      public: virtual double CosVertFOV() const override;
-
-      /// \brief Set the Cos Horz FOV
-      /// \param[in] _cvfov Cos Horz FOV
-      public: virtual void SetCosVertFOV(const double _cvfov) override;
-
-      /// \brief Set the horizontal fov
-      /// \param[in] _hfov horizontal fov
-      public: virtual void SetHorzFOV(const double _hfov) override;
-
-      /// \brief Set the vertical fov
-      /// \param[in] _vfov vertical fov
-      public: virtual void SetVertFOV(const double _vfov) override;
-
-      /// \brief Get the number of cameras required
-      /// \return Number of cameras needed to generate the rays
-      public: virtual unsigned int CameraCount() const override;
-
-      /// \brief Set the number of cameras required
-      /// \param[in] _cameraCount The number of cameras required to generate
-      /// the rays
-      public: virtual void SetCameraCount(
-                  const unsigned int _cameraCount) override;
+      /// \return The vertical field of view of the gpu rays.
+      public: virtual math::Angle VFOV() const override;
 
       /// \brief Get the ray count ratio (equivalent to aspect ratio)
       /// \return The ray count ratio (equivalent to aspect ratio)
       public: virtual double RayCountRatio() const override;
+
+      /// \brief Get the ray count ratio (equivalent to aspect ratio)
+      /// \return The ray count ratio (equivalent to aspect ratio)
+      public: virtual double RangeCountRatio() const override;
 
       /// \brief Sets the ray count ratio (equivalent to aspect ratio)
       /// \param[in] _rayCountRatio ray count ratio (equivalent to aspect ratio)
@@ -166,7 +112,13 @@ namespace ignition
       public: virtual int RayCount() const override;
 
       // Documentation inherited.
+      public: virtual int RangeCount() const override;
+
+      // Documentation inherited.
       public: virtual int VerticalRayCount() const override;
+
+      // Documentation inherited.
+      public: virtual int VerticalRangeCount() const override;
 
       // Documentation inherited.
       public: virtual ignition::math::Angle VerticalAngleMin() const override;
@@ -180,6 +132,63 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVerticalAngleMax(const double _angle) override;
 
+      /// \internal
+      /// \brief Get Cos Horz field-of-view
+      /// \return 2 * atan(tan(this->hfov/2) / cos(this->vfov/2))
+      public: virtual double CosHorzFOV() const;
+
+      /// \internal
+      /// \brief Set the Cos Horz FOV
+      /// \param[in] _chfov Cos Horz FOV
+      public: virtual void SetCosHorzFOV(const double _chfov);
+
+      /// \internal
+      /// \brief Set the vertical fov
+      /// \param[in] _vfov vertical fov
+      public: virtual void SetVFOV(const math::Angle _vfov);
+
+      /// \internal
+      /// \brief Get Cos Vert field-of-view
+      /// \return 2 * atan(tan(this->vfov/2) / cos(this->hfov/2))
+      public: virtual double CosVertFOV() const;
+
+      /// \internal
+      /// \brief Set the Cos Horz FOV
+      /// \param[in] _cvfov Cos Horz FOV
+      public: virtual void SetCosVertFOV(const double _cvfov);
+
+      /// \internal
+      /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
+      /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
+      public: virtual double HorzHalfAngle() const;
+
+      /// \internal
+      /// \brief Get (vertical_max_angle + vertical_min_angle) * 0.5
+      /// \return (vertical_max_angle + vertical_min_angle) * 0.5
+      public: virtual double VertHalfAngle() const;
+
+      /// \internal
+      /// \brief Set the horizontal half angle
+      /// \param[in] _angle horizontal half angle
+      public: virtual void SetHorzHalfAngle(const double _angle);
+
+      /// \internal
+      /// \brief Set the vertical half angle
+      /// \param[in] _angle vertical half angle
+      public: virtual void SetVertHalfAngle(const double _angle);
+
+      /// \internal
+      /// \brief Get the number of cameras required
+      /// \return Number of cameras needed to generate the rays
+      public: virtual unsigned int CameraCount() const;
+
+      /// \internal
+      /// \brief Set the number of cameras required
+      /// \param[in] _cameraCount The number of cameras required to generate
+      /// the rays
+      public: virtual void SetCameraCount(
+                  const unsigned int _cameraCount);
+
       /// \brief Horizontal half angle.
       protected: double horzHalfAngle = 0;
 
@@ -189,23 +198,17 @@ namespace ignition
       /// \brief Ray count ratio.
       protected: double rayCountRatio = 0;
 
-      /// \brief Horizontal field-of-view.
-      protected: double hfov = 0;
+      /// \brief Range count ratio.
+      protected: double rangeCountRatio = 0;
 
       /// \brief Vertical field-of-view.
-      protected: double vfov = 0;
+      protected: math::Angle vfov;
 
       /// \brief Cos horizontal field-of-view.
       protected: double chfov = 0;
 
       /// \brief Cos vertical field-of-view.
       protected: double cvfov = 0;
-
-      /// \brief Near clip plane.
-      protected: double nearClip = 0;
-
-      /// \brief Far clip plane.
-      protected: double farClip = 0;
 
       /// \brief True if the sensor is horizontal only.
       protected: bool isHorizontal = true;
@@ -228,8 +231,14 @@ namespace ignition
       /// \brief Quantity of horizontal rays
       protected: int hSamples = 0;
 
-      /// \brief Quantity of vertical rays
+      /// \brief Quantity of verical rays
       protected: int vSamples = 0;
+
+      /// \brief Resolution of horizontal rays
+      protected: int hResolution = 1;
+
+      /// \brief Resolution of vertical rays
+      protected: int vResolution = 1;
 
       private: friend class OgreScene;
     };
@@ -248,12 +257,6 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::CreateLaserTexture()
-    {
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
     const float *BaseGpuRays<T>::RaysData() const
     {
       return nullptr;
@@ -261,7 +264,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::common::ConnectionPtr BaseGpuRays<T>::ConnectNewLaserFrame(
+    ignition::common::ConnectionPtr BaseGpuRays<T>::ConnectNewGpuRaysFrame(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, PixelFormat)>)
     {
@@ -347,28 +350,21 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    double BaseGpuRays<T>::HorzFOV() const
+    double BaseGpuRays<T>::RangeCountRatio() const
     {
-      return this->hfov;
+      return this->rangeCountRatio;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    double BaseGpuRays<T>::VertFOV() const
+    math::Angle BaseGpuRays<T>::VFOV() const
     {
       return this->vfov;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::SetHorzFOV(const double _hfov)
-    {
-      this->hfov = _hfov;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseGpuRays<T>::SetVertFOV(const double _vfov)
+    void BaseGpuRays<T>::SetVFOV(const math::Angle _vfov)
     {
       this->vfov = _vfov;
     }
@@ -438,6 +434,20 @@ namespace ignition
 
     template <class T>
     //////////////////////////////////////////////////
+    int BaseGpuRays<T>::RangeCount() const
+    {
+      return this->RayCount() * this->hResolution;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    int BaseGpuRays<T>::VerticalRayCount() const
+    {
+      return this->vSamples;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
     void BaseGpuRays<T>::SetVerticalRayCount(int _samples)
     {
       this->vSamples = _samples;
@@ -445,12 +455,9 @@ namespace ignition
 
     template <class T>
     //////////////////////////////////////////////////
-    int BaseGpuRays<T>::VerticalRayCount() const
+    int BaseGpuRays<T>::VerticalRangeCount() const
     {
-      if (this->vfov > 0)
-        return this->vSamples;
-      else
-        return 1;
+      return this->VerticalRayCount() * this->vResolution;
     }
 
     template <class T>

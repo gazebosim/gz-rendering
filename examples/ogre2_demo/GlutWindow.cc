@@ -34,7 +34,9 @@
 #include <ignition/common/Console.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
+#include <ignition/rendering/RayQuery.hh>
 #include <ignition/rendering/Scene.hh>
+#include <ignition/rendering/OrbitViewController.hh>
 
 #include "GlutWindow.hh"
 
@@ -66,21 +68,183 @@ bool g_initContext = false;
   GLXDrawable g_glutDrawable;
 #endif
 
-double g_offset = 0.0;
+// view control variables
+ir::RayQueryPtr g_rayQuery;
+ir::OrbitViewController g_viewControl;
+ir::RayQueryResult g_target;
+struct mouseButton
+{
+  int button = 0;
+  int state = GLUT_UP;
+  int x = 0;
+  int y = 0;
+  int motionX = 0;
+  int motionY = 0;
+  int dragX = 0;
+  int dragY = 0;
+  int scroll = 0;
+  bool buttonDirty = false;
+  bool motionDirty = false;
+};
+struct mouseButton g_mouse;
+std::mutex g_mouseMutex;
 
 //////////////////////////////////////////////////
-void updateCameras()
+void mouseCB(int _button, int _state, int _x, int _y)
 {
-  for (ir::CameraPtr camera : g_cameras)
+  // ignore unknown mouse button numbers
+  if (_button >= 5)
+    return;
+
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
+  g_mouse.button = _button;
+  g_mouse.state = _state;
+  g_mouse.x = _x;
+  g_mouse.y = _y;
+  g_mouse.motionX = _x;
+  g_mouse.motionY = _y;
+  g_mouse.buttonDirty = true;
+}
+
+//////////////////////////////////////////////////
+void motionCB(int _x, int _y)
+{
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
+  int deltaX = _x - g_mouse.motionX;
+  int deltaY = _y - g_mouse.motionY;
+  g_mouse.motionX = _x;
+  g_mouse.motionY = _y;
+
+  if (g_mouse.motionDirty)
   {
-    camera->SetLocalPosition(g_offset, g_offset, g_offset);
+    g_mouse.dragX += deltaX;
+    g_mouse.dragY += deltaY;
+  }
+  else
+  {
+    g_mouse.dragX = deltaX;
+    g_mouse.dragY = deltaY;
+  }
+  g_mouse.motionDirty = true;
+}
+
+//////////////////////////////////////////////////
+void handleMouse()
+{
+  std::lock_guard<std::mutex> lock(g_mouseMutex);
+  // only ogre supports ray query for now so use
+  // ogre camera located at camera index = 0.
+  ir::CameraPtr rayCamera = g_cameras[0];
+  if (!g_rayQuery)
+  {
+    g_rayQuery = rayCamera->Scene()->CreateRayQuery();
+    if (!g_rayQuery)
+    {
+      ignerr << "Failed to create Ray Query" << std::endl;
+      return;
+    }
+  }
+  if (g_mouse.buttonDirty)
+  {
+    g_mouse.buttonDirty = false;
+
+    // test mouse picking
+    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      // Get visual using Selection Buffer from Camera
+      ir::VisualPtr visual;
+      ignition::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
+      visual = rayCamera->VisualAt(mousePos);
+      if (visual)
+      {
+        std::cout << "Selected visual at position: ";
+        std::cout << g_mouse.x << " " << g_mouse.y << ": ";
+        std::cout << visual->Name() << "\n";
+      }
+      else
+      {
+        std::cout << "No visual found at position: ";
+        std::cout << g_mouse.x << " " << g_mouse.y << std::endl;
+      }
+    }
+
+    // camera orbit
+    double nx =
+        2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
+    double ny = 1.0 -
+        2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
+    g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
+    g_target  = g_rayQuery->ClosestPoint();
+    if (!g_target)
+    {
+      // set point to be 10m away if no intersection found
+      g_target.point = g_rayQuery->Origin() + g_rayQuery->Direction() * 10;
+      return;
+    }
+
+    // mouse wheel scroll zoom
+    if ((g_mouse.button == 3 || g_mouse.button == 4) &&
+        g_mouse.state == GLUT_UP)
+    {
+      double scroll = (g_mouse.button == 3) ? -1.0 : 1.0;
+      double distance = rayCamera->WorldPosition().Distance(
+          g_target.point);
+      int factor = 1;
+      double amount = -(scroll * factor) * (distance / 5.0);
+      for (ir::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Zoom(amount);
+      }
+    }
   }
 
-  // for testing only, move camera
-  g_offset += 0.0005;
-  if (std::fabs(g_offset) > 1)
-    g_offset *= -1;
+  if (g_mouse.motionDirty)
+  {
+    g_mouse.motionDirty = false;
+    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+
+    // left mouse button pan
+    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      for (ir::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Pan(drag);
+      }
+    }
+    else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      for (ir::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Orbit(drag);
+      }
+    }
+    // right mouse button zoom
+    else if (g_mouse.button == GLUT_RIGHT_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      double hfov = rayCamera->HFOV().Radian();
+      double vfov = 2.0f * atan(tan(hfov / 2.0f) /
+          rayCamera->AspectRatio());
+      double distance = rayCamera->WorldPosition().Distance(
+          g_target.point);
+      double amount = ((-g_mouse.dragY /
+          static_cast<double>(rayCamera->ImageHeight()))
+          * distance * tan(vfov/2.0) * 6.0);
+      for (ir::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Zoom(amount);
+      }
+    }
+  }
 }
+
 
 //////////////////////////////////////////////////
 void displayCB()
@@ -96,6 +260,7 @@ void displayCB()
 #endif
 
   g_cameras[g_cameraIndex]->Capture(*g_image);
+  handleMouse();
 
 #if __APPLE__
   CGLSetCurrentContext(g_glutContext);
@@ -113,7 +278,12 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-  updateCameras();
+
+  // Uncomment to print FPS
+  // static ignition::common::Time previous;
+  // auto now = ignition::common::Time::SystemTime();
+  // std::cerr << (now - previous).Double() << std::endl;
+  // previous = now;
 }
 
 //////////////////////////////////////////////////
@@ -156,6 +326,9 @@ void initContext()
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);
+
+  glutMouseFunc(mouseCB);
+  glutMotionFunc(motionCB);
 }
 
 //////////////////////////////////////////////////

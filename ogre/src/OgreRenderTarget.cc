@@ -15,9 +15,16 @@
  *
  */
 
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
-#include <OGRE/RenderSystems/GL/OgreGLFBORenderTexture.h>
+#include <OgreGLFBORenderTexture.h>
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
 
 
 #include <ignition/common/Console.hh>
@@ -131,9 +138,10 @@ void OgreRenderTarget::PostRender()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Render()
 {
-  std::cerr << "render target update " << std::endl;
+  if (nullptr == this->RenderTarget())
+    return;
+
   this->RenderTarget()->update();
-  std::cerr << "render target update done " << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -157,8 +165,12 @@ void OgreRenderTarget::RebuildImpl()
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildViewport()
 {
+  if (nullptr == this->RenderTarget())
+    return;
+
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
   ogreRenderTarget->removeAllViewports();
+  ogreRenderTarget->removeAllListeners();
 
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
   this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
@@ -245,17 +257,15 @@ OgreRenderTexture::~OgreRenderTexture()
 //////////////////////////////////////////////////
 void OgreRenderTexture::Destroy()
 {
-  std::string ogreName = this->ogreTexture->getName();
-  Ogre::TextureManager::getSingleton().remove(ogreName);
+  this->DestroyTarget();
 }
 
 //////////////////////////////////////////////////
 Ogre::RenderTarget *OgreRenderTexture::RenderTarget() const
 {
-  if (ogreTexture == nullptr)
-  {
+  if (nullptr == this->ogreTexture)
     return nullptr;
-  }
+
   return this->ogreTexture->getBuffer()->getRenderTarget();
 }
 
@@ -269,7 +279,22 @@ void OgreRenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::DestroyTarget()
 {
-  // TODO(anyone): implement
+  if (nullptr == this->ogreTexture)
+    return;
+
+  OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
+      this->scene);
+
+  auto &manager = Ogre::TextureManager::getSingleton();
+  manager.unload(this->ogreTexture->getName());
+  manager.remove(this->ogreTexture->getName());
+
+  // clean up OGRE depth buffers on RTT resize.
+  // see https://forums.ogre3d.org/viewtopic.php?t=92111#p535220
+  auto engine = OgreRenderEngine::Instance();
+  engine->OgreRoot()->getRenderSystem()->_cleanupDepthBuffers(false);
+
+  this->ogreTexture = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -299,29 +324,12 @@ GLuint OgreRenderTexture::GLId()
 void OgreRenderTexture::PreRender()
 {
   OgreRenderTarget::PreRender();
-  if (!this->ogreTexture)
-    return;
-
-  Ogre::RenderTarget *rt = this->RenderTarget();
-
-  Ogre::GLFrameBufferObject *ogreFbo = nullptr;
-  rt->getCustomAttribute("FBO", &ogreFbo);
-  Ogre::GLFBOManager *manager = ogreFbo->getManager();
-  manager->bind(rt);
 }
 
 //////////////////////////////////////////////////
 void OgreRenderTexture::PostRender()
 {
-  if (!this->ogreTexture)
-    return;
-
-  Ogre::RenderTarget *rt = this->RenderTarget();
-
-  Ogre::GLFrameBufferObject *ogreFbo = nullptr;
-  rt->getCustomAttribute("FBO", &ogreFbo);
-  Ogre::GLFBOManager *manager = ogreFbo->getManager();
-  manager->unbind(rt);
+  OgreRenderTarget::PostRender();
 }
 
 //////////////////////////////////////////////////

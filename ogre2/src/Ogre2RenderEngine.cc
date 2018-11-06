@@ -22,13 +22,10 @@
 # include <GL/glx.h>
 #endif
 
-#ifndef _WIN32
-  #include <dirent.h>
-#else
+#ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
-  #include <ignition/common/win_dirent.h>
 #endif
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
@@ -501,9 +498,35 @@ void Ogre2RenderEngine::CreateResources()
     mediaPath = common::joinPaths(resourcePath, "ogre2", "src", "media");
   }
 
-  Ogre::String rootHlmsFolder = mediaPath;
+  // register low level materials (ogre v1 materials)
+  std::vector< std::pair<std::string, std::string> > archNames;
+  std::string p = mediaPath;
+  if (common::isDirectory(p))
+  {
+    archNames.push_back(
+        std::make_pair(p, "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/programs", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/scripts", "General"));
+
+    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+    {
+      try
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            aiter->first, "FileSystem", aiter->second);
+      }
+      catch(Ogre::Exception &/*_e*/)
+      {
+        ignerr << "Unable to load Ogre Resources. Make sure the resources "
+            "path in the world file is set correctly." << std::endl;
+      }
+    }
+  }
 
   // register PbsMaterial resources
+  Ogre::String rootHlmsFolder = mediaPath;
   Ogre::String pbsCompositorFolder = common::joinPaths(
       rootHlmsFolder, "2.0", "scripts", "Compositors");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
@@ -632,7 +655,6 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
-
 
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "true";

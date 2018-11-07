@@ -22,7 +22,6 @@
 #include <ignition/common/Event.hh>
 
 #include "ignition/rendering/Image.hh"
-#include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Sensor.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Camera.hh"
@@ -46,7 +45,9 @@ namespace ignition
 
       /// \brief All things needed to get back z buffer for gpu rays data.
       /// \return Array of gpu rays data.
-      public: virtual const float *RaysData() const = 0;
+      public: virtual float * Data() const = 0;
+
+      public: virtual void CopyData(float *_data) = 0;
 
       /// \brief Connect to a gpu rays frame signal
       /// \param[in] _subscriber Callback that is called when a new image is
@@ -65,7 +66,7 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
-                  PixelFormat)> _subscriber) = 0;
+                  const std::string &)> _subscriber) = 0;
 
       /// \brief Set sensor horizontal or vertical
       /// \param[in] _horizontal True if horizontal, false if not

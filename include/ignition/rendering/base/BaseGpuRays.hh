@@ -51,7 +51,9 @@ namespace ignition
 
       /// \brief All things needed to get back z buffer for gpu rays data.
       /// \return Array of gpu rays data.
-      public: virtual const float *RaysData() const override;
+      public: virtual float * Data() const override;
+
+      public: virtual void CopyData(float *_data) override;
 
       /// \brief Connect to a gpu rays frame signal
       /// \param[in] _subscriber Callback that is called when a new image is
@@ -60,7 +62,7 @@ namespace ignition
       public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
-                  PixelFormat _format)> _subscriber) override;
+                  const std::string &_format)> _subscriber) override;
 
       /// \return Pointer to the render target
       public: virtual RenderTargetPtr RenderTarget() const = 0;
@@ -257,16 +259,22 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    const float *BaseGpuRays<T>::RaysData() const
+    float *  BaseGpuRays<T>::Data() const
     {
       return nullptr;
     }
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseGpuRays<T>::CopyData(float * /*_dataDest*/)
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     ignition::common::ConnectionPtr BaseGpuRays<T>::ConnectNewGpuRaysFrame(
           std::function<void(const float *, unsigned int, unsigned int,
-          unsigned int, PixelFormat)>)
+          unsigned int, const std::string &)>)
     {
       return nullptr;
     }

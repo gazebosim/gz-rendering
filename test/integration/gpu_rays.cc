@@ -43,7 +43,7 @@ void OnNewGpuRaysFrame(int *_scanCounter, float *_scanDest,
                   const float *_scan,
                   unsigned int _width, unsigned int _height,
                   unsigned int _channels,
-                  PixelFormat /*_format*/)
+                  const std::string &/*_format*/)
 {
   float f;
   int size =  _width * _height * _channels;

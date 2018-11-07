@@ -39,7 +39,7 @@ class ignition::rendering::OgreGpuRaysPrivate
   /// \param[in] _format Format of frame.
   public: ignition::common::EventT<void(const float *,
                unsigned int, unsigned int, unsigned int,
-               PixelFormat)> newGpuRaysFrame;
+               const std::string &)> newGpuRaysFrame;
 
   /// \brief Raw buffer of gpu rays data.
   public: float *gpuRaysBuffer = nullptr;
@@ -99,6 +99,10 @@ class ignition::rendering::OgreGpuRaysPrivate
 
   /// \brief Image height of second pass.
   public: unsigned int h2nd = 0u;
+
+  /// \brief Amount of channels used to store the data
+  // r = depth, g = retro, and b = n/a
+  public: unsigned int channels = 3u;
 
   /// \brief List of texture unit indices used during the second
   /// rendering pass.
@@ -595,7 +599,7 @@ void OgreGpuRays::PostRender()
 
   size_t size = Ogre::PixelUtil::getMemorySize(
     width, height, 1, Ogre::PF_FLOAT32_RGB);
-  int len = this->dataPtr->w2nd * this->dataPtr->h2nd * 3;
+  int len = width * height * this->dataPtr->channels;
 
   if (!this->dataPtr->gpuRaysBuffer)
   {
@@ -616,13 +620,27 @@ void OgreGpuRays::PostRender()
   memcpy(this->dataPtr->gpuRaysScan, this->dataPtr->gpuRaysBuffer, size);
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
-      width, height, 3, PixelFormat::PF_FLOAT32_RGB);
+      width, height, this->dataPtr->channels, "PF_FLOAT32_RGB");
 }
 
 //////////////////////////////////////////////////
-const float* OgreGpuRays::RaysData() const
+float * OgreGpuRays::Data() const
 {
   return this->dataPtr->gpuRaysScan;
+}
+
+//////////////////////////////////////////////////
+void OgreGpuRays::CopyData(float *_dataDest)
+{
+  auto rt = this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
+  const Ogre::Viewport *secondPassViewport = rt->getViewport(0);
+  unsigned int width = secondPassViewport->getActualWidth();
+  unsigned int height = secondPassViewport->getActualHeight();
+
+  size_t size = Ogre::PixelUtil::getMemorySize(
+    width, height, 1, Ogre::PF_FLOAT32_RGB);
+
+  memcpy(_dataDest, this->dataPtr->gpuRaysScan, size);
 }
 
 /////////////////////////////////////////////////
@@ -911,7 +929,7 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
 ignition::common::ConnectionPtr OgreGpuRays::ConnectNewGpuRaysFrame(
     std::function<void(const float *_frame, unsigned int _width,
     unsigned int _height, unsigned int _channels,
-    PixelFormat _format)> _subscriber)
+    const std::string &/*_format*/)> _subscriber)
 {
   return this->dataPtr->newGpuRaysFrame.Connect(_subscriber);
 }

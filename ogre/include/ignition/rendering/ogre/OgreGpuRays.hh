@@ -75,13 +75,14 @@ namespace ignition
       public: virtual void PostRender() override;
 
       // Documentation inherited
-      public: virtual const float *RaysData() const override;
+      public: virtual float * Data() const override;
+      public: virtual void CopyData(float *_data) override;
 
       // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _channels,
-                  PixelFormat _format)> _subscriber) override;
+                  const std::string &_format)> _subscriber) override;
 
       /// \return Pointer to the render target
       public: virtual RenderTargetPtr RenderTarget() const override;

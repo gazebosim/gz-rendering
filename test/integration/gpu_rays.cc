@@ -401,7 +401,6 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
     common::Time::Sleep(waitTime);
     gpuRays->Update();
     iter++;
-
   }
   EXPECT_LT(iter, 300);
 

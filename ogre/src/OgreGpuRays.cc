@@ -138,32 +138,7 @@ OgreGpuRays::OgreGpuRays()
 //////////////////////////////////////////////////
 OgreGpuRays::~OgreGpuRays()
 {
-  if (this->dataPtr->gpuRaysBuffer)
-    delete [] this->dataPtr->gpuRaysBuffer;
-
-  if (this->dataPtr->gpuRaysScan)
-    delete [] this->dataPtr->gpuRaysScan;
-
-  for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
-  {
-    if (this->dataPtr->firstPassTextures[i])
-    {
-      Ogre::TextureManager::getSingleton().remove(
-          this->dataPtr->firstPassTextures[i]->getName());
-    }
-  }
-  if (this->dataPtr->secondPassTexture)
-  {
-    Ogre::TextureManager::getSingleton().remove(
-        this->dataPtr->secondPassTexture->getName());
-  }
-
-  if (this->scene && this->dataPtr->orthoCam)
-    this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->orthoCam);
-
-  this->dataPtr->visual.reset();
-  this->dataPtr->texIdx.clear();
-  this->dataPtr->texCount = 0u;
+  this->Destroy();
 }
 
 //////////////////////////////////////////////////
@@ -176,6 +151,56 @@ void OgreGpuRays::Init()
 
   // create dummy render texture
   this->CreateRenderTexture();
+}
+
+//////////////////////////////////////////////////
+void OgreGpuRays::Destroy()
+{
+  if (this->dataPtr->gpuRaysBuffer)
+  {
+    delete [] this->dataPtr->gpuRaysBuffer;
+    this->dataPtr->gpuRaysBuffer = nullptr;
+  }
+
+  if (this->dataPtr->gpuRaysScan)
+  {
+    delete [] this->dataPtr->gpuRaysScan;
+    this->dataPtr->gpuRaysScan = nullptr;
+  }
+
+  for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
+  {
+    if (this->dataPtr->firstPassTextures[i])
+    {
+      Ogre::TextureManager::getSingleton().remove(
+          this->dataPtr->firstPassTextures[i]->getName());
+      this->dataPtr->firstPassTextures[i] = nullptr;
+    }
+  }
+
+  if (this->dataPtr->secondPassTexture)
+  {
+    Ogre::TextureManager::getSingleton().remove(
+        this->dataPtr->secondPassTexture->getName());
+    this->dataPtr->secondPassTexture = nullptr;
+  }
+
+  if (this->dataPtr->matSecondPass)
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        this->dataPtr->matSecondPass->getName());
+    this->dataPtr->matSecondPass = nullptr;
+  }
+
+  if (this->scene && this->dataPtr->orthoCam)
+  {
+    this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->orthoCam);
+    this->dataPtr->orthoCam = nullptr;
+  }
+
+  this->dataPtr->visual.reset();
+  this->dataPtr->texIdx.clear();
+  this->dataPtr->texCount = 0u;
 }
 
 /////////////////////////////////////////////////
@@ -440,23 +465,24 @@ void OgreGpuRays::CreateGpuRaysTextures()
   // Set GpuRaysScan2nd material
   this->dataPtr->matSecondPass = dynamic_cast<Ogre::Material *>(
       Ogre::MaterialManager::getSingleton().getByName("GpuRaysScan2nd").get());
+  // clone the material since we're modifying it's definitions
+  this->dataPtr->matSecondPass = this->dataPtr->matSecondPass->clone(
+      this->Name() + "_" + this->dataPtr->matSecondPass->getName()).get();
   this->dataPtr->matSecondPass->load();
 
+  Ogre::Technique *technique =
+    this->dataPtr->matSecondPass->getTechnique(0);
+  IGN_ASSERT(technique,
+      "OgreGpuRays material script error: technique not found");
+
+  Ogre::Pass *pass = technique->getPass(0);
+  IGN_ASSERT(pass,
+      "OgreGpuRays material script error: pass not found");
+  pass->removeAllTextureUnitStates();
   Ogre::TextureUnitState *texUnit = nullptr;
   for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
   {
     unsigned int texIndex = this->dataPtr->texCount++;
-    Ogre::Technique *technique =
-      this->dataPtr->matSecondPass->getTechnique(0);
-    IGN_ASSERT(technique,
-        "OgreGpuRays material script error: technique not found");
-
-    Ogre::Pass *pass = technique->getPass(0);
-    IGN_ASSERT(pass,
-        "OgreGpuRays material script error: pass not found");
-
-    if (!pass->getTextureUnitState(
-        this->dataPtr->firstPassTextures[i]->getName()))
     {
       texUnit = pass->createTextureUnitState(
             this->dataPtr->firstPassTextures[i]->getName(), texIndex);
@@ -634,7 +660,7 @@ void OgreGpuRays::PostRender()
 }
 
 //////////////////////////////////////////////////
-const float* OgreGpuRays::RaysData() const
+const float* OgreGpuRays::Data() const
 {
   return this->dataPtr->gpuRaysScan;
 }

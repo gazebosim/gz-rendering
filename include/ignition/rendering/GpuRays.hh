@@ -42,12 +42,12 @@ namespace ignition
       public: typedef std::function<void(const void*, unsigned int,
           unsigned int, unsigned int, const std::string&)> NewFrameListener;
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~GpuRays() { }
 
       /// \brief All things needed to get back z buffer for gpu rays data.
       /// \return Array of gpu rays data.
-      public: virtual const float *RaysData() const = 0;
+      public: virtual const float *Data() const = 0;
 
       /// \brief Connect to a gpu rays frame signal
       /// \param[in] _subscriber Callback that is called when a new image is

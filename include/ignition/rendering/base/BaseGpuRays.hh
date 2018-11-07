@@ -50,48 +50,37 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~BaseGpuRays();
 
-      /// \brief All things needed to get back z buffer for gpu rays data.
-      /// \return Array of gpu rays data.
-      public: virtual const float *RaysData() const override;
+      // Documentation inherited.
+      public: virtual const float *Data() const override;
 
-      /// \brief Connect to a gpu rays frame signal
-      /// \param[in] _subscriber Callback that is called when a new image is
-      /// generated
-      /// \return A pointer to the connection. This must be kept in scope.
+      // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
                   PixelFormat _format)> _subscriber) override;
 
-      /// \return Pointer to the render target
+      // Documentation inherited.
       public: virtual RenderTargetPtr RenderTarget() const = 0;
 
-      /// \brief Set sensor horizontal or vertical
-      /// \param[in] _horizontal True if horizontal, false if not
+      // Documentation inherited.
       public: virtual void SetIsHorizontal(const bool _horizontal) override;
 
-      /// \brief Gets if sensor is horizontal
-      /// \return True if horizontal, false if not
+      // Documentation inherited.
       public: virtual bool IsHorizontal() const override;
 
-      /// \brief Set the vertical fov
-      /// \param[in] _vfov vertical fov
+      // Documentation inherited.
       public: virtual void SetVFOV(const math::Angle &_vfov) override;
 
-      /// \brief Get the vertical field-of-view.
-      /// \return The vertical field of view of the gpu rays.
+      // Documentation inherited.
       public: virtual math::Angle VFOV() const override;
 
-      /// \brief Get the ray count ratio (equivalent to aspect ratio)
-      /// \return The ray count ratio (equivalent to aspect ratio)
+      // Documentation inherited.
       public: virtual double RayCountRatio() const override;
 
-      /// \brief Get the ray count ratio (equivalent to aspect ratio)
-      /// \return The ray count ratio (equivalent to aspect ratio)
+      // Documentation inherited.
       public: virtual double RangeCountRatio() const override;
 
-      /// \brief Sets the ray count ratio (equivalent to aspect ratio)
-      /// \param[in] _rayCountRatio ray count ratio (equivalent to aspect ratio)
+      // Documentation inherited.
       public: virtual void SetRayCountRatio(
                   const double _rayCountRatio) override;
 
@@ -190,7 +179,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    const float *BaseGpuRays<T>::RaysData() const
+    const float *BaseGpuRays<T>::Data() const
     {
       return nullptr;
     }

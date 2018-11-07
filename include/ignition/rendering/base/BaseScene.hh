@@ -44,7 +44,7 @@ namespace ignition
 
       public: virtual void Init();
 
-      public: virtual void Fini();
+      public: virtual void Fini() override;
 
       public: virtual bool IsLoaded() const;
 
@@ -319,7 +319,7 @@ namespace ignition
 
       public: virtual void Clear();
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       protected: virtual unsigned int CreateObjectId();
 

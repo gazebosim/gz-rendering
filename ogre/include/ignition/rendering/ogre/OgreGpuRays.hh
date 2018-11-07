@@ -65,7 +65,10 @@ namespace ignition
       // Documentation inherited
       public: virtual void Init() override;
 
-      /// \brief Create dummy render texture. Needed to satify inheritance
+      // Documentation inherited
+      public: virtual void Destroy() override;
+
+      /// \brief Create dummy render texture. Needed to satisfy inheritance
       public: virtual void CreateRenderTexture();
 
       // Documentation inherited
@@ -75,7 +78,7 @@ namespace ignition
       public: virtual void PostRender() override;
 
       // Documentation inherited
-      public: virtual const float *RaysData() const override;
+      public: virtual const float *Data() const override;
 
       // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
@@ -83,7 +86,7 @@ namespace ignition
                   unsigned int _height, unsigned int _channels,
                   PixelFormat _format)> _subscriber) override;
 
-      /// \return Pointer to the render target
+      // Documentation inherited.
       public: virtual RenderTargetPtr RenderTarget() const override;
 
       /// \internal

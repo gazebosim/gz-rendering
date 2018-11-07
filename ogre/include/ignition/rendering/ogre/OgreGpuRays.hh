@@ -108,7 +108,7 @@ namespace ignition
           const unsigned int _h = 1);
 
       // Documentation inherited.
-      private: virtual void Render();
+      private: virtual void Render() override;
 
       /// \brief Configure cameras.
       private: void ConfigureCameras();

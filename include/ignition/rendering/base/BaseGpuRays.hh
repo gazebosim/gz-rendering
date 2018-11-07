@@ -65,7 +65,7 @@ namespace ignition
                   const std::string &_format)> _subscriber) override;
 
       /// \return Pointer to the render target
-      public: virtual RenderTargetPtr RenderTarget() const = 0;
+      public: virtual RenderTargetPtr RenderTarget() const override = 0;
 
       /// \brief Set sensor horizontal or vertical
       /// \param[in] _horizontal True if horizontal, false if not
@@ -147,7 +147,7 @@ namespace ignition
       /// \internal
       /// \brief Set the vertical fov
       /// \param[in] _vfov vertical fov
-      public: virtual void SetVFOV(const math::Angle _vfov);
+      public: virtual void SetVFOV(const math::Angle _vfov) override;
 
       /// \internal
       /// \brief Get Cos Vert field-of-view

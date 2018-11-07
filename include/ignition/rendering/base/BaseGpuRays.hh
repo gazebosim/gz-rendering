@@ -266,8 +266,10 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::CopyData(float * /*_dataDest*/)
+    void BaseGpuRays<T>::CopyData(float *_dataDest)
     {
+      // Unused
+      (void)_dataDest;
     }
 
     //////////////////////////////////////////////////

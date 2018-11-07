@@ -31,6 +31,7 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
     /// \class GpuRays GpuRays.hh ignition/rendering/GpuRays.hh
     /// \brief Generate depth ray data.
     class IGNITION_RENDERING_VISIBLE GpuRays :
@@ -40,13 +41,14 @@ namespace ignition
       public: typedef std::function<void(const void*, unsigned int,
           unsigned int, unsigned int, const std::string&)> NewFrameListener;
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~GpuRays() { }
 
       /// \brief All things needed to get back z buffer for gpu rays data.
       /// \return Array of gpu rays data.
-      public: virtual float * Data() const = 0;
+      public: virtual const float *Data() const = 0;
 
+      /// \brief Copy to the specified memory direction the gpu rays data.
       public: virtual void CopyData(float *_data) = 0;
 
       /// \brief Connect to a gpu rays frame signal
@@ -82,7 +84,7 @@ namespace ignition
 
       /// \brief Set the vertical fov
       /// \param[in] _vfov vertical fov
-      public: virtual void SetVFOV(const math::Angle _vfov) = 0;
+      public: virtual void SetVFOV(const math::Angle &_vfov) = 0;
 
       /// \brief Get the ray count ratio (equivalent to aspect ratio)
       /// \return The ray count ratio (equivalent to aspect ratio)

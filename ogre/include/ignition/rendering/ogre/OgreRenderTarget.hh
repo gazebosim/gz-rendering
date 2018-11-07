@@ -86,8 +86,6 @@ namespace ignition
 
       public: void SetAutoUpdated(const bool _value);
 
-      public: void SwapBuffers() const;
-
       protected: virtual void UpdateBackgroundColor();
 
       protected: virtual void RebuildImpl() override;

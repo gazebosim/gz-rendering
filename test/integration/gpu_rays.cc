@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@
 using namespace ignition;
 using namespace rendering;
 
-void OnNewGpuRaysFrame(int *_scanCounter, float *_scanDest,
-                  const float *_scan,
+void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
                   unsigned int _width, unsigned int _height,
                   unsigned int _channels,
                   const std::string &/*_format*/)
@@ -48,7 +47,6 @@ void OnNewGpuRaysFrame(int *_scanCounter, float *_scanDest,
   float f;
   int size =  _width * _height * _channels;
   memcpy(_scanDest, _scan, size * sizeof(f));
-  *_scanCounter += 1;
 }
 
 class GpuRaysTest: public testing::Test,
@@ -229,22 +227,13 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   // listen to new gpu rays frames
   unsigned int channels = 3;
   float *scan = new float[hRayCount * vRayCount * channels];
-  int scanCount = 0;
   common::ConnectionPtr c =
     gpuRays->ConnectNewGpuRaysFrame(
-        std::bind(&::OnNewGpuRaysFrame, &scanCount, scan,
+        std::bind(&::OnNewGpuRaysFrame, scan,
           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
           std::placeholders::_4, std::placeholders::_5));
 
-  // wait for a few gpu rays scans
-  int i = 0;
-  while (scanCount < 10 && i < 300)
-  {
-    common::Time::Sleep(waitTime);
-    gpuRays->Update();
-    i++;
-  }
-  EXPECT_LT(i, 300);
+  gpuRays->Update();
 
   int mid = hRayCount * channels / 2;
   int last = (hRayCount - 1) * channels;
@@ -260,26 +249,16 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   // Verify rays caster 2 range readings
   // listen to new gpu rays frames
   float *scan2 = new float[hRayCount * vRayCount * 3];
-  int scanCount2 = 0;
   common::ConnectionPtr c2 =
     gpuRays2->ConnectNewGpuRaysFrame(
-        std::bind(&::OnNewGpuRaysFrame, &scanCount2, scan2,
+        std::bind(&::OnNewGpuRaysFrame, scan2,
           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
           std::placeholders::_4, std::placeholders::_5));
 
-  // wait for a few gpu rays scans
-  i = 0;
-  scanCount2 = 0;
-  while (scanCount2 < 10 && i < 300)
-  {
-    common::Time::Sleep(waitTime);
-    gpuRays2->Update();
-    i++;
-  }
-  EXPECT_LT(i, 600);
+  gpuRays2->Update();
 
   // Only box01 should be visible to rays caster 2
-  EXPECT_NEAR(scan2[0], expectedRangeAtMidPointBox2, LASER_TOL);
+  EXPECT_DOUBLE_EQ(scan2[0], ignition::math::INF_D);
   EXPECT_NEAR(scan2[mid], expectedRangeAtMidPointBox1, LASER_TOL);
   EXPECT_DOUBLE_EQ(scan2[last], ignition::math::INF_D);
 
@@ -291,23 +270,13 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
       ignition::math::Vector3d(0, -(maxRange + 1), 0));
   visualBox2->SetWorldRotation(box02Pose.Rot());
 
-  // wait for a few more gpu rays scans
-  i = 0;
-  scanCount = 0;
-  scanCount2 = 0;
-  while ((scanCount < 10 && scanCount2 < 10) && i < 300)
-  {
-    common::Time::Sleep(waitTime);
-    gpuRays->Update();
-    gpuRays2->Update();
-    i++;
-  }
-  EXPECT_LT(i, 300);
+  gpuRays->Update();
+  gpuRays2->Update();
 
-  for (i = 0; i < gpuRays->RayCount(); ++i)
+  for (int i = 0; i < gpuRays->RayCount(); ++i)
     EXPECT_DOUBLE_EQ(scan[i * 3], ignition::math::INF_D);
 
-  for (i = 0; i < gpuRays2->RayCount(); ++i)
+  for (int i = 0; i < gpuRays2->RayCount(); ++i)
     EXPECT_DOUBLE_EQ(scan2[i * 3], ignition::math::INF_D);
 
   c.reset();
@@ -384,25 +353,14 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   root->AddChild(visualBox1);
 
   unsigned int channels = 3;
-  int iter = 0;
-  int scanCount = 0;
   float *scan = new float[hRayCount * vRayCount * channels];
   common::ConnectionPtr c =
     gpuRays->ConnectNewGpuRaysFrame(
-        std::bind(&::OnNewGpuRaysFrame, &scanCount, scan,
+        std::bind(&::OnNewGpuRaysFrame, scan,
           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
           std::placeholders::_4, std::placeholders::_5));
 
-  // wait for a few laser scans
-  iter = 0;
-  scanCount = 0;
-  while (scanCount < 10 && iter < 300)
-  {
-    common::Time::Sleep(waitTime);
-    gpuRays->Update();
-    iter++;
-  }
-  EXPECT_LT(iter, 300);
+  gpuRays->Update();
 
   unsigned int mid = hRayCount * channels / 2;
   double unitBoxSize = 1.0;
@@ -436,15 +394,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
       ignition::math::Quaterniond::Identity);
 
   // wait for a few more laser scans
-  iter = 0;
-  scanCount = 0;
-  while (scanCount < 10 && iter < 300)
-  {
-    common::Time::Sleep(waitTime);
-    gpuRays->Update();
-    iter++;
-  }
-  EXPECT_LT(iter, 300);
+  gpuRays->Update();
 
   for (int j = 0; j < gpuRays->VerticalRayCount(); ++j)
   {

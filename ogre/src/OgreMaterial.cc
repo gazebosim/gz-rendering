@@ -36,6 +36,8 @@ OgreMaterial::OgreMaterial()
 //////////////////////////////////////////////////
 OgreMaterial::~OgreMaterial()
 {
+  Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
+  matManager.remove(this->name);
 }
 
 //////////////////////////////////////////////////
@@ -386,7 +388,7 @@ void OgreMaterial::SetFragmentShader(const std::string &_path)
 
   this->ogrePass->setFragmentProgram(fragmentShader->getName());
 
-//  this->ogreMaterial->setLightingEnabled(false);
+  this->ogreMaterial->setLightingEnabled(false);
 
   this->ogreMaterial->compile();
   this->ogreMaterial->load();

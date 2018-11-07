@@ -120,8 +120,9 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
     gpuRays->SetVerticalAngleMax(1.58);
     EXPECT_NEAR(gpuRays->VerticalAngleMax().Radian(), 1.58, 1e-6);
 
-    gpuRays->SetRayCount(100);
-    EXPECT_NEAR(gpuRays->RayCount(), 100, 1e-6);
+    EXPECT_EQ(gpuRays->Clamping(), false);
+    gpuRays->SetClamping(true);
+    EXPECT_EQ(gpuRays->Clamping(), true);
 
     gpuRays->SetVerticalRayCount(67);
     EXPECT_NEAR(gpuRays->VerticalRayCount(), 67, 1e-6);
@@ -176,6 +177,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays->SetAngleMin(hMinAngle);
   gpuRays->SetAngleMax(hMaxAngle);
   gpuRays->SetRayCount(hRayCount);
+
   gpuRays->SetVerticalRayCount(vRayCount);
   root->AddChild(gpuRays);
 
@@ -188,6 +190,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->SetWorldRotation(testPose2.Rot());
   gpuRays2->SetNearClipPlane(minRange);
   gpuRays2->SetFarClipPlane(maxRange);
+  gpuRays2->SetClamping(true);
   gpuRays2->SetAngleMin(hMinAngle);
   gpuRays2->SetAngleMax(hMaxAngle);
   gpuRays2->SetRayCount(hRayCount);
@@ -258,9 +261,9 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->Update();
 
   // Only box01 should be visible to rays caster 2
-  EXPECT_DOUBLE_EQ(scan2[0], ignition::math::INF_D);
+  EXPECT_DOUBLE_EQ(scan2[0], maxRange);
   EXPECT_NEAR(scan2[mid], expectedRangeAtMidPointBox1, LASER_TOL);
-  EXPECT_DOUBLE_EQ(scan2[last], ignition::math::INF_D);
+  EXPECT_DOUBLE_EQ(scan2[last], maxRange);
 
   // Move all boxes out of range
   visualBox1->SetWorldPosition(
@@ -277,7 +280,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
     EXPECT_DOUBLE_EQ(scan[i * 3], ignition::math::INF_D);
 
   for (int i = 0; i < gpuRays2->RayCount(); ++i)
-    EXPECT_DOUBLE_EQ(scan2[i * 3], ignition::math::INF_D);
+    EXPECT_DOUBLE_EQ(scan2[i * 3], maxRange);
 
   c.reset();
   c2.reset();

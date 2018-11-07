@@ -57,6 +57,12 @@ namespace ignition
       public: virtual void CopyData(float *_data) override;
 
       // Documentation inherited.
+      public: virtual void SetClamping(bool _value) override;
+
+      // Documentation inherited.
+      public: virtual bool Clamping() const override;
+
+      // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
                   std::function<void(const float *_frame, unsigned int _width,
                   unsigned int _height, unsigned int _depth,
@@ -129,6 +135,16 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVerticalAngleMax(const double _angle) override;
 
+      /// \brief maximum value used for data outside sensor range
+      public: float dataMaxVal = ignition::math::INF_D;
+
+      /// \brief minimum value used for data outside sensor range
+      public: float dataMinVal = -ignition::math::INF_D;
+
+      /// \brief True if clamping values are defined to camera values,
+      // false if data outside range is +/- inf
+      public: bool clamping = false;
+
       /// \brief Ray count ratio.
       protected: double rayCountRatio = 0;
 
@@ -191,6 +207,32 @@ namespace ignition
     template <class T>
     void BaseGpuRays<T>::CopyData(float * /*_dataDest*/)
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGpuRays<T>::SetClamping(bool _value)
+    {
+      this->clamping = _value;
+
+      if (this->clamping)
+      {
+        this->dataMinVal = this->NearClipPlane();
+        this->dataMaxVal = this->FarClipPlane();
+      }
+      else
+      {
+        this->dataMinVal = -ignition::math::INF_D;
+        this->dataMaxVal = ignition::math::INF_D;
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseGpuRays<T>::Clamping() const
+
+    {
+      return this->clamping;
     }
 
     //////////////////////////////////////////////////

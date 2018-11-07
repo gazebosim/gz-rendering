@@ -425,7 +425,7 @@ void OgreGpuRays::CreateGpuRaysTextures()
     vp->setShadowsEnabled(false);
     vp->setSkiesEnabled(false);
     vp->setBackgroundColour(
-        Ogre::ColourValue(ignition::math::INF_D, 0.0, 1.0));
+        Ogre::ColourValue(this->dataMaxVal, 0.0, 1.0));
     vp->setVisibilityMask(IGN_VISIBILITY_ALL &
         ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
   }
@@ -949,7 +949,9 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
       Ogre::GPV_GLOBAL | Ogre::GPV_PER_OBJECT);
   pass->getFragmentProgramParameters()->setNamedConstant("retro", retro[0]);
   pass->getFragmentProgramParameters()->setNamedConstant(
-      "max", static_cast<float>(ignition::math::INF_D));
+      "max", static_cast<float>(this->dataMaxVal));
+  pass->getFragmentProgramParameters()->setNamedConstant(
+      "min", static_cast<float>(this->dataMinVal));
   renderSys->bindGpuProgram(
       pass->getVertexProgram()->_getBindingDelegate());
 

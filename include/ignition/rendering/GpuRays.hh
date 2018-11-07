@@ -51,6 +51,16 @@ namespace ignition
       /// \brief Copy to the specified memory direction the gpu rays data.
       public: virtual void CopyData(float *_data) = 0;
 
+      /// \brief Configure behaviour for data outside camera range
+      /// \param[in] _horizontal True if clamping is set to clip distances,
+      // false if not
+      public: virtual void SetClamping(bool _value) = 0;
+
+      /// \brief Get behaviour for data outside camera range
+      /// \return True if clamping values are defined to camera values,
+      // false if data outside range is +/- inf
+      public: virtual bool Clamping() const = 0;
+
       /// \brief Connect to a gpu rays frame signal
       /// \param[in] _subscriber Callback that is called when a new image is
       /// generated. The callback function parameters are:

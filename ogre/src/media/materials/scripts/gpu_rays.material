@@ -11,6 +11,7 @@ fragment_program GpuRaysScan1stFS glsl
   {
     param_named retro float 0.0
     param_named max float 0.0
+    param_named min float 0.0
     param_named_auto near near_clip_distance
     param_named_auto far far_clip_distance
   }

@@ -217,7 +217,7 @@ void Ogre2Material::SetTexture(const std::string &_name)
   }
 
   this->textureName = _name;
-  this->SetTextureImpl(this->textureName);
+  this->SetTextureMapImpl(this->textureName, Ogre::PBSM_DIFFUSE);
 }
 
 //////////////////////////////////////////////////
@@ -249,7 +249,7 @@ void Ogre2Material::SetNormalMap(const std::string &_name)
   }
 
   this->normalMapName = _name;
-  this->SetNormalMapImpl(this->normalMapName);
+  this->SetTextureMapImpl(this->normalMapName, Ogre::PBSM_NORMAL);
 }
 
 //////////////////////////////////////////////////
@@ -257,6 +257,126 @@ void Ogre2Material::ClearNormalMap()
 {
   this->normalMapName = "";
   this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, 0, Ogre::TexturePtr());
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Material::HasRoughnessMap() const
+{
+  return !this->roughnessMapName.empty();
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2Material::RoughnessMap() const
+{
+  return this->roughnessMapName;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetRoughnessMap(const std::string &_name)
+{
+  if (_name.empty())
+  {
+    this->ClearRoughnessMap();
+    return;
+  }
+
+  this->roughnessMapName = _name;
+  this->SetTextureMapImpl(this->roughnessMapName, Ogre::PBSM_ROUGHNESS);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::ClearRoughnessMap()
+{
+  this->roughnessMapName = "";
+  this->ogreDatablock->setTexture(Ogre::PBSM_ROUGHNESS, 0, Ogre::TexturePtr());
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Material::HasMetalnessMap() const
+{
+  return !this->metalnessMapName.empty();
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2Material::MetalnessMap() const
+{
+  return this->metalnessMapName;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetMetalnessMap(const std::string &_name)
+{
+  if (_name.empty())
+  {
+    this->ClearMetalnessMap();
+    return;
+  }
+
+  this->metalnessMapName = _name;
+  this->SetTextureMapImpl(this->metalnessMapName, Ogre::PBSM_METALLIC);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::ClearMetalnessMap()
+{
+  this->metalnessMapName = "";
+  this->ogreDatablock->setTexture(Ogre::PBSM_METALLIC, 0, Ogre::TexturePtr());
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Material::HasEnvironmentMap() const
+{
+  return !this->environmentMapName.empty();
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2Material::EnvironmentMap() const
+{
+  return this->environmentMapName;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetEnvironmentMap(const std::string &_name)
+{
+  if (_name.empty())
+  {
+    this->ClearEnvironmentMap();
+    return;
+  }
+
+  this->environmentMapName = _name;
+  this->SetTextureMapImpl(this->environmentMapName, Ogre::PBSM_REFLECTION);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::ClearEnvironmentMap()
+{
+  this->environmentMapName = "";
+  this->ogreDatablock->setTexture(Ogre::PBSM_REFLECTION, 0, Ogre::TexturePtr());
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetRoughness(const float _roughness)
+{
+  this->ogreDatablock->setRoughness(_roughness);
+}
+
+//////////////////////////////////////////////////
+float Ogre2Material::Roughness() const
+{
+  return this->ogreDatablock->getRoughness();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetMetalness(const float _metalness)
+{
+  this->ogreDatablock->setMetalness(_metalness);
+}
+
+//////////////////////////////////////////////////
+float Ogre2Material::Metalness() const
+{
+  return this->ogreDatablock->getMetalness();
 }
 
 //////////////////////////////////////////////////
@@ -285,31 +405,35 @@ Ogre::HlmsPbsDatablock *Ogre2Material::Datablock() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetTextureImpl(const std::string &_texture)
+void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
+  Ogre::PbsTextureTypes _type)
 {
+  std::string baseName = _texture;
+  if (common::isFile(_texture))
+  {
+    baseName = common::basename(_texture);
+    size_t idx = _texture.rfind(baseName);
+    if (idx != std::string::npos)
+    {
+      std::string dirPath = _texture.substr(0, idx);
+      if (!dirPath.empty() &&
+          !Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+          dirPath))
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            dirPath, "FileSystem", "General");
+      }
+    }
+  }
+
   Ogre::HlmsTextureManager *hlmsTextureManager =
       this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
   Ogre::HlmsTextureManager::TextureLocation texLocation =
-      hlmsTextureManager->createOrRetrieveTexture(_texture,
-      Ogre::HlmsTextureManager::TEXTURE_TYPE_DIFFUSE);
+      hlmsTextureManager->createOrRetrieveTexture(baseName,
+      this->ogreDatablock->suggestMapTypeBasedOnTextureType(_type));
 
-  this->ogreDatablock->setTexture(Ogre::PBSM_DIFFUSE, texLocation.xIdx,
-      texLocation.texture);
+  this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture);
 }
-
-//////////////////////////////////////////////////
-void Ogre2Material::SetNormalMapImpl(const std::string &_normalMap)
-{
-  Ogre::HlmsTextureManager *hlmsTextureManager =
-      this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
-  Ogre::HlmsTextureManager::TextureLocation texLocation =
-      hlmsTextureManager->createOrRetrieveTexture(_normalMap,
-      Ogre::HlmsTextureManager::TEXTURE_TYPE_NORMALS);
-
-  this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, texLocation.xIdx,
-      texLocation.texture);
-}
-
 
 //////////////////////////////////////////////////
 Ogre::TexturePtr Ogre2Material::Texture(const std::string &_name)
@@ -343,5 +467,14 @@ void Ogre2Material::Init()
       this->ogreHlmsPbs->createDatablock(this->name, this->name,
       Ogre::HlmsMacroblock(), Ogre::HlmsBlendblock(), Ogre::HlmsParamVec()));
 
+  // use metal workflow as default
+  this->ogreDatablock->setWorkflow(Ogre::HlmsPbsDatablock::MetallicWorkflow);
+
   this->Reset();
+}
+
+//////////////////////////////////////////////////
+enum MaterialType Ogre2Material::Type() const
+{
+  return MaterialType::MT_PBS;
 }

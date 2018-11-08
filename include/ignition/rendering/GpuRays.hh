@@ -54,7 +54,7 @@ namespace ignition
       /// \brief Configure behaviour for data outside camera range
       /// \param[in] _horizontal True if clamping is set to clip distances,
       // false if not
-      public: virtual void SetClamping(bool _value) = 0;
+      public: virtual void SetClamping(const bool _value) = 0;
 
       /// \brief Get behaviour for data outside camera range
       /// \return True if clamping values are defined to camera values,

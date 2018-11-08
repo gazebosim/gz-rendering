@@ -68,8 +68,8 @@ namespace ignition
                   unsigned int _height, unsigned int _depth,
                   const std::string &_format)> _subscriber) override;
 
-      // Documentation inherited.
-      public: virtual RenderTargetPtr RenderTarget() const = 0;
+      /// \return Pointer to the render target
+      public: virtual RenderTargetPtr RenderTarget() const override = 0;
 
       // Documentation inherited.
       public: virtual void SetIsHorizontal(const bool _horizontal) override;
@@ -205,8 +205,10 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::CopyData(float * /*_dataDest*/)
+    void BaseGpuRays<T>::CopyData(float *_dataDest)
     {
+      // Unused
+      (void)_dataDest;
     }
 
     //////////////////////////////////////////////////

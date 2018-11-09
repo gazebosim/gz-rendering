@@ -49,17 +49,17 @@ namespace ignition
       public: virtual const float *Data() const = 0;
 
       /// \brief Copy to the specified memory direction the gpu rays data.
-      public: virtual void CopyData(float *_data) = 0;
+      public: virtual void Copy(float *_data) = 0;
 
-      /// \brief Configure behaviour for data outside camera range
-      /// \param[in] _horizontal True if clamping is set to clip distances,
-      // false if not
-      public: virtual void SetClamping(const bool _value) = 0;
+      /// \brief Configure behaviour for data values outside of camera range
+      /// \param[in] _clamp True to clamp data to camera clip distances,
+      // false to leave data values as +/-inf when out of camera range
+      public: virtual void SetClamp(const bool _value) = 0;
 
-      /// \brief Get behaviour for data outside camera range
-      /// \return True if clamping values are defined to camera values,
-      // false if data outside range is +/- inf
-      public: virtual bool Clamping() const = 0;
+      /// \brief Get behaviour for data values outside of camera range
+      /// \return True if data values are clampped to camera clip distances,
+      // false if data values outside of camera range are returned as +/-inf
+      public: virtual bool Clamp() const = 0;
 
       /// \brief Connect to a gpu rays frame signal
       /// \param[in] _subscriber Callback that is called when a new image is

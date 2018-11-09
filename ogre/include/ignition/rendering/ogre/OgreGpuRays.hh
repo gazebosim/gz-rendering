@@ -81,7 +81,7 @@ namespace ignition
       public: virtual const float *Data() const override;
 
       // Documentation inherited.
-      public: virtual void CopyData(float *_data) override;
+      public: virtual void Copy(float *_data) override;
 
       // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(

@@ -120,9 +120,9 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
     gpuRays->SetVerticalAngleMax(1.58);
     EXPECT_NEAR(gpuRays->VerticalAngleMax().Radian(), 1.58, 1e-6);
 
-    EXPECT_EQ(gpuRays->Clamping(), false);
-    gpuRays->SetClamping(true);
-    EXPECT_EQ(gpuRays->Clamping(), true);
+    EXPECT_EQ(gpuRays->Clamp(), false);
+    gpuRays->SetClamp(true);
+    EXPECT_EQ(gpuRays->Clamp(), true);
 
     gpuRays->SetVerticalRayCount(67);
     EXPECT_NEAR(gpuRays->VerticalRayCount(), 67, 1e-6);
@@ -190,7 +190,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->SetWorldRotation(testPose2.Rot());
   gpuRays2->SetNearClipPlane(minRange);
   gpuRays2->SetFarClipPlane(maxRange);
-  gpuRays2->SetClamping(true);
+  gpuRays2->SetClamp(true);
   gpuRays2->SetAngleMin(hMinAngle);
   gpuRays2->SetAngleMax(hMaxAngle);
   gpuRays2->SetRayCount(hRayCount);

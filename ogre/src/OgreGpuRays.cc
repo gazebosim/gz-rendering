@@ -670,7 +670,7 @@ const float* OgreGpuRays::Data() const
 }
 
 //////////////////////////////////////////////////
-void OgreGpuRays::CopyData(float *_dataDest)
+void OgreGpuRays::Copy(float *_dataDest)
 {
   auto rt = this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
   const Ogre::Viewport *secondPassViewport = rt->getViewport(0);

@@ -243,15 +243,19 @@ namespace ignition
       public: virtual DepthCameraPtr CreateDepthCamera(const unsigned int _id,
                   const std::string &_name);
 
-      public: virtual GpuRaysPtr CreateGpuRays();
+      // Documentation inherited.
+      public: virtual GpuRaysPtr CreateGpuRays() override;
 
-      public: virtual GpuRaysPtr CreateGpuRays(const unsigned int _id);
+      // Documentation inherited.
+      public: virtual GpuRaysPtr CreateGpuRays(const unsigned int _id) override;
 
+      // Documentation inherited.
       public: virtual GpuRaysPtr CreateGpuRays(
-                  const std::string &_name);
+                  const std::string &_name) override;
 
+      // Documentation inherited.
       public: virtual GpuRaysPtr CreateGpuRays(const unsigned int _id,
-                  const std::string &_name);
+                  const std::string &_name) override;
 
       public: virtual VisualPtr CreateVisual();
 
@@ -347,6 +351,9 @@ namespace ignition
       protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
+      /// \brief Implementation for creating GpuRays sensor.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of GpuRays sensor
       protected: virtual GpuRaysPtr CreateGpuRaysImpl(unsigned int /*_id*/,
                      const std::string & /*_name*/)
                  {

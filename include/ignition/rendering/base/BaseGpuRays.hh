@@ -54,13 +54,13 @@ namespace ignition
       public: virtual const float *Data() const override;
 
       // Documentation inherited.
-      public: virtual void CopyData(float *_data) override;
+      public: virtual void Copy(float *_data) override;
 
       // Documentation inherited.
-      public: virtual void SetClamping(bool _value) override;
+      public: virtual void SetClamp(bool _enable) override;
 
       // Documentation inherited.
-      public: virtual bool Clamping() const override;
+      public: virtual bool Clamp() const override;
 
       // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewGpuRaysFrame(
@@ -68,7 +68,7 @@ namespace ignition
                   unsigned int _height, unsigned int _depth,
                   const std::string &_format)> _subscriber) override;
 
-      /// \return Pointer to the render target
+      /// \brief Pointer to the render target
       public: virtual RenderTargetPtr RenderTarget() const override = 0;
 
       // Documentation inherited.
@@ -141,8 +141,8 @@ namespace ignition
       /// \brief minimum value used for data outside sensor range
       public: float dataMinVal = -ignition::math::INF_D;
 
-      /// \brief True if clamping values are defined to camera values,
-      // false if data outside range is +/- inf
+      /// \brief True if data values are clamped to camera clip distances,
+      // false if data outside of camera range is +/- inf
       public: bool clamping = false;
 
       /// \brief Ray count ratio.
@@ -205,7 +205,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::CopyData(float *_dataDest)
+    void BaseGpuRays<T>::Copy(float *_dataDest)
     {
       // Unused
       (void)_dataDest;
@@ -213,9 +213,9 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::SetClamping(bool _value)
+    void BaseGpuRays<T>::SetClamp(bool _enable)
     {
-      this->clamping = _value;
+      this->clamping = _enable;
 
       if (this->clamping)
       {
@@ -231,7 +231,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    bool BaseGpuRays<T>::Clamping() const
+    bool BaseGpuRays<T>::Clamp() const
 
     {
       return this->clamping;

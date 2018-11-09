@@ -36,6 +36,8 @@ OgreMaterial::OgreMaterial()
 //////////////////////////////////////////////////
 OgreMaterial::~OgreMaterial()
 {
+  Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
+  matManager.remove(this->name);
 }
 
 //////////////////////////////////////////////////

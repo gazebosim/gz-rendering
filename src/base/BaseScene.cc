@@ -29,6 +29,7 @@
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/DepthCamera.hh"
+#include "ignition/rendering/GpuRays.hh"
 #include "ignition/rendering/Grid.hh"
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/RenderTarget.hh"
@@ -85,6 +86,7 @@ void BaseScene::Init()
 //////////////////////////////////////////////////
 void BaseScene::Fini()
 {
+  this->Destroy();
 }
 
 //////////////////////////////////////////////////
@@ -659,6 +661,33 @@ DepthCameraPtr BaseScene::CreateDepthCamera(const unsigned int _id,
   DepthCameraPtr camera = this->CreateDepthCameraImpl(_id, _name);
   bool result = this->RegisterSensor(camera);
   return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+GpuRaysPtr BaseScene::CreateGpuRays()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGpuRays(objId);
+}
+//////////////////////////////////////////////////
+GpuRaysPtr BaseScene::CreateGpuRays(const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "GpuRays");
+  return this->CreateGpuRays(_id, objName);
+}
+//////////////////////////////////////////////////
+GpuRaysPtr BaseScene::CreateGpuRays(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGpuRays(objId, _name);
+}
+//////////////////////////////////////////////////
+GpuRaysPtr BaseScene::CreateGpuRays(const unsigned int _id,
+    const std::string &_name)
+{
+  GpuRaysPtr gpuRays = this->CreateGpuRaysImpl(_id, _name);
+  bool result = this->RegisterSensor(gpuRays);
+  return (result) ? gpuRays : nullptr;
 }
 
 //////////////////////////////////////////////////

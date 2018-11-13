@@ -375,7 +375,7 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
   // Create and add more child visuals to parent
   // visual tree: root > parent > child_a > child_aa
   //                            > child_b
-  auto childA= scene->CreateVisual("child_a");
+  auto childA = scene->CreateVisual("child_a");
   ASSERT_NE(nullptr, childA);
   childA->AddGeometry(scene->CreateBox());
   EXPECT_TRUE(scene->HasVisual(childA));
@@ -420,7 +420,7 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
   EXPECT_EQ(1u, childA->ChildCount());
   EXPECT_EQ(4u, scene->VisualCount());
 
-  // Recusive destroy - all child visuals should also be destroyed
+  // Recursive destroy - all child visuals should also be destroyed
   scene->DestroyVisual(parent02, true);
   EXPECT_FALSE(scene->HasVisual(parent02));
   EXPECT_FALSE(scene->HasVisual(childA));

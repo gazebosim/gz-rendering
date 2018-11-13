@@ -211,31 +211,34 @@ namespace ignition
       /// \param[in] _child Child node to be added
       public: virtual void AddChild(NodePtr _child) = 0;
 
-      /// \brief Remove the given node from this node. If the given node is
-      /// not a child of this node, no work will be done.
+      /// \brief Remove (detach) the given node from this node. If the given
+      /// node is not a child of this node, no work will be done.
       /// \param[in] _child Child node to be removed
       /// \return The removed child node
       public: virtual NodePtr RemoveChild(NodePtr _child) = 0;
 
-      /// \brief Remove the node with the given ID from this node. If the
-      /// specified node is not a child of this node, no work will be done.
+      /// \brief Remove (detach) the node with the given ID from this node.
+      /// If the specified node is not a child of this node, no work will be
+      /// done.
       /// \param[in] _id ID of the child node to be removed
       /// \return The removed child node
       public: virtual NodePtr RemoveChildById(unsigned int _id) = 0;
 
-      /// \brief Remove the node with the given name from this node. If the
-      /// specified node is not a child of this node, no work will be done.
+      /// \brief Remove (detach) the node with the given name from this node.
+      /// If the specified node is not a child of this node, no work will be
+      /// done.
       /// \param[in] _name Name of the child node to be removed
       /// \return The removed child node
       public: virtual NodePtr RemoveChildByName(const std::string &_name) = 0;
 
-      /// \brief Remove the node at the given index from this node. If the
+      /// \brief Remove (detach) the node at the given index from this node. If the
       /// specified node is not a child of this node, no work will be done.
       /// \param[in] _index Index of the child node to be removed
       /// \return The removed child node
       public: virtual NodePtr RemoveChildByIndex(unsigned int _index) = 0;
 
       /// \brief Remove all child nodes from this node
+      /// This detaches all the child nodes but does not destroy them
       public: virtual void RemoveChildren() = 0;
     };
     }

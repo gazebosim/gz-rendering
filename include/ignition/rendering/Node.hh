@@ -231,8 +231,9 @@ namespace ignition
       /// \return The removed child node
       public: virtual NodePtr RemoveChildByName(const std::string &_name) = 0;
 
-      /// \brief Remove (detach) the node at the given index from this node. If the
-      /// specified node is not a child of this node, no work will be done.
+      /// \brief Remove (detach) the node at the given index from this node.
+      /// If the specified node is not a child of this node, no work will be
+      /// done.
       /// \param[in] _index Index of the child node to be removed
       /// \return The removed child node
       public: virtual NodePtr RemoveChildByIndex(unsigned int _index) = 0;

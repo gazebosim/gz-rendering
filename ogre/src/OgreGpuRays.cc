@@ -411,7 +411,11 @@ void OgreGpuRays::CreateGpuRaysTextures()
       Ogre::TextureManager::getSingleton().createManual(
       texName.str(), "General", Ogre::TEX_TYPE_2D,
       this->dataPtr->w1st, this->dataPtr->h1st, 0,
+#if OGRE_VERSION_LT_1_10_1
       Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET).getPointer();
+#else
+      Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET).get();
+#endif
 
     Ogre::RenderTarget *rt =
         this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget();
@@ -443,7 +447,11 @@ void OgreGpuRays::CreateGpuRaysTextures()
       Ogre::TEX_TYPE_2D,
       this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
       Ogre::PF_FLOAT32_RGB,
+#if OGRE_VERSION_LT_1_10_1
       Ogre::TU_RENDERTARGET).getPointer();
+#else
+      Ogre::TU_RENDERTARGET).get();
+#endif
 
   Ogre::RenderTarget *rt =
       this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();

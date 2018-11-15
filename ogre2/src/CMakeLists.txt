@@ -19,7 +19,7 @@ target_link_libraries(${ogre2_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
   PRIVATE
-    ${ignition-plugin${IGN_PLUGIN_VER}_LIBRARIES}
+    ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
     ${OGRE2_LIBRARIES})
 

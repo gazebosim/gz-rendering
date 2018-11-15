@@ -92,6 +92,10 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
   EXPECT_LT(result.distance, 0.0);
   EXPECT_EQ(0u, result.objectId);
   EXPECT_FALSE((result));
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

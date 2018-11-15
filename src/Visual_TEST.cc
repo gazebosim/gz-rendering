@@ -111,6 +111,10 @@ void VisualTest::Material(const std::string &_renderEngine)
   EXPECT_EQ(diffuse2, cloneMat2->Diffuse());
   EXPECT_EQ(specular2, cloneMat2->Specular());
   EXPECT_DOUBLE_EQ(transparency2, cloneMat2->Transparency());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -171,6 +175,10 @@ void VisualTest::Children(const std::string &_renderEngine)
   // attach previously removed child and remove again
   visual->AddChild(child);
   EXPECT_EQ(child, visual->RemoveChildByIndex(0u));
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

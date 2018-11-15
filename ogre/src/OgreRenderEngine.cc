@@ -30,6 +30,8 @@
 
 # include <sstream>
 
+#include <ignition/plugin/Register.hh>
+
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
@@ -82,12 +84,37 @@ OgreRenderEngine::~OgreRenderEngine()
 }
 
 //////////////////////////////////////////////////
-bool OgreRenderEngine::Fini()
+void OgreRenderEngine::Destroy()
 {
+  BaseRenderEngine::Destroy();
+
   if (this->scenes)
   {
     this->scenes->RemoveAll();
   }
+
+#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
+  delete this->ogreOverlaySystem;
+  this->ogreOverlaySystem = nullptr;
+#endif
+
+  OgreRTShaderSystem::Instance()->Fini();
+
+  if (ogreRoot)
+  {
+    try
+    {
+      // TODO(anyone): do we need to catch segfault on delete?
+      delete this->ogreRoot;
+    }
+    catch (...)
+    {
+    }
+    this->ogreRoot = nullptr;
+  }
+
+  delete this->ogreLogManager;
+  this->ogreLogManager = nullptr;
 
 #if not (__APPLE__ || _WIN32)
   if (this->dummyDisplay)
@@ -102,27 +129,6 @@ bool OgreRenderEngine::Fini()
     this->dataPtr->dummyVisual = nullptr;
   }
 #endif
-
-#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
-  delete this->ogreOverlaySystem;
-  this->ogreOverlaySystem = nullptr;
-#endif
-
-  if (ogreRoot)
-  {
-    this->ogreRoot->shutdown();
-    // TODO(anyone): fix segfault on delete
-    // delete this->ogreRoot;
-    this->ogreRoot = nullptr;
-  }
-
-  delete this->ogreLogManager;
-  this->ogreLogManager = nullptr;
-
-  this->loaded = false;
-  this->initialized = false;
-
-  return true;
 }
 
 //////////////////////////////////////////////////
@@ -730,5 +736,5 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 #endif
 
 // Register this plugin
-IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
-                                  ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
+                    ignition::rendering::RenderEnginePlugin)

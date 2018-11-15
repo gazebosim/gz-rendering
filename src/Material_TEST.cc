@@ -226,6 +226,10 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   enum ShaderType shaderType = ShaderType::ST_PIXEL;
   material->SetShaderType(shaderType);
   EXPECT_EQ(shaderType, material->ShaderType());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -368,6 +372,10 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(lightingEnabled, comCopy->LightingEnabled());
   EXPECT_EQ(textureName, comCopy->Texture());
   EXPECT_TRUE(comCopy->HasTexture());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

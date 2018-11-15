@@ -82,7 +82,7 @@ namespace ignition
       public: virtual ~Ogre2RenderEngine();
 
       // Documentation Inherited.
-      public: virtual bool Fini();
+      public: virtual void Destroy() override;
 
       // Documentation Inherited.
       public: virtual bool IsEnabled() const;

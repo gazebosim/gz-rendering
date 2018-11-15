@@ -69,7 +69,7 @@ namespace ignition
       /// \return The specified render-engine
       public: RenderEngine *Engine(const std::string &_name,
                   const std::map<std::string, std::string> &_params = {},
-                  const std::string &_path = "") const;
+                  const std::string &_path = "");
 
       /// \brief Get the render-engine at the given index. If no
       /// render-engine is exists at the given index, NULL will be returned.
@@ -79,7 +79,21 @@ namespace ignition
       /// \return The specified render-engine
       public: RenderEngine *EngineAt(unsigned int _index,
                   const std::map<std::string, std::string> &_params = {},
-                  const std::string &_path = "") const;
+                  const std::string &_path = "");
+
+      /// \brief Unload the render-engine with the given name. If the no
+      /// render-engine is registered under the given name, false will be
+      /// returned.
+      /// \param[in] _name Name of the desired render-engine
+      /// \return  True if the engine is unloaded
+      public: bool UnloadEngine(const std::string &_name);
+
+      /// \brief Unload the render-engine at the given index. If the no
+      /// render-engine is registered under the given name, false will be
+      /// returned.
+      /// \param[in] _index Index of the desired render-engine
+      /// \return  True if the engine is unloaded
+      public: bool UnloadEngineAt(unsigned int _index);
 
       /// \brief Register a new render-engine under the given name. If the
       /// given name is already in use, the render-engine will not be

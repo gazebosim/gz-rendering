@@ -80,6 +80,7 @@ void OrbitViewControllerTest::OrbitViewControl(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -219,6 +220,7 @@ void OrbitViewControllerTest::Control(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

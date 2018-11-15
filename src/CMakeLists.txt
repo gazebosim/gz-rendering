@@ -26,7 +26,9 @@ set_property(
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
-  ignition-common${IGN_COMMON_VER}::requested)
+  ignition-common${IGN_COMMON_VER}::requested
+  PRIVATE
+  ignition-plugin${IGN_PLUGIN_VER}::loader)
 
 # Build the unit tests.
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})

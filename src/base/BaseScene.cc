@@ -921,7 +921,13 @@ void BaseScene::PreRender()
 void BaseScene::Clear()
 {
   this->nodes->DestroyAll();
+  for (unsigned int i = 0; i < this->Materials()->Size(); ++i)
+  {
+    auto m = this->Materials()->GetByIndex(i);
+    m->Destroy();
+  }
   this->Materials()->RemoveAll();
+
   this->nextObjectId = ignition::math::MAX_UI16;
 }
 
@@ -930,6 +936,8 @@ void BaseScene::Destroy()
 {
   // TODO(anyone): destroy context
   this->Clear();
+  this->loaded = false;
+  this->initialized = false;
 }
 
 //////////////////////////////////////////////////

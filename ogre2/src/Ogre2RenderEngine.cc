@@ -31,6 +31,8 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
+#include <ignition/plugin/Register.hh>
+
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -90,12 +92,31 @@ Ogre2RenderEngine::~Ogre2RenderEngine()
 }
 
 //////////////////////////////////////////////////
-bool Ogre2RenderEngine::Fini()
+void Ogre2RenderEngine::Destroy()
 {
   if (this->scenes)
   {
     this->scenes->RemoveAll();
   }
+
+  delete this->ogreOverlaySystem;
+  this->ogreOverlaySystem = nullptr;
+
+  if (ogreRoot)
+  {
+    try
+    {
+      // TODO(anyone): do we need to catch segfault on delete?
+      delete this->ogreRoot;
+    }
+    catch (...)
+    {
+    }
+    this->ogreRoot = nullptr;
+  }
+
+  delete this->ogreLogManager;
+  this->ogreLogManager = nullptr;
 
 #if not (__APPLE__ || _WIN32)
   if (this->dummyDisplay)
@@ -110,25 +131,6 @@ bool Ogre2RenderEngine::Fini()
     this->dataPtr->dummyVisual = nullptr;
   }
 #endif
-
-  delete this->ogreOverlaySystem;
-  this->ogreOverlaySystem = nullptr;
-
-  if (ogreRoot)
-  {
-    this->ogreRoot->shutdown();
-    // TODO(anyone): fix segfault on delete
-    // delete this->ogreRoot;
-    this->ogreRoot = nullptr;
-  }
-
-  delete this->ogreLogManager;
-  this->ogreLogManager = nullptr;
-
-  this->loaded = false;
-  this->initialized = false;
-
-  return true;
 }
 
 //////////////////////////////////////////////////
@@ -715,5 +717,5 @@ Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 }
 
 // Register this plugin
-IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::Ogre2RenderEnginePlugin,
-                                  ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(ignition::rendering::Ogre2RenderEnginePlugin,
+                    ignition::rendering::RenderEnginePlugin)

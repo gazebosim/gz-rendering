@@ -84,6 +84,10 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
   // unique material
   submesh->SetMaterial(matClone, true);
   EXPECT_NE(matClone, submesh->Material());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

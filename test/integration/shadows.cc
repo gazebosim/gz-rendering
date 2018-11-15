@@ -144,6 +144,10 @@ void ShadowsTest::Shadows(const std::string &_renderEngine)
     EXPECT_LT(shaded, unshaded);
 #endif
   }
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

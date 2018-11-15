@@ -80,6 +80,12 @@ namespace ignition
         const std::map<std::string, std::string> &_params = {},
         const std::string &_path = "");
 
+    /// \brief Unload the render-engine registered under the given name.
+    /// \param[in] _name Name of the desired render-engine
+    /// \return True if the engine is unloaded
+    IGNITION_RENDERING_VISIBLE
+    bool unloadEngine(const std::string &_name);
+
     /// \brief Register a new render-engine under the given name. If the given
     /// name is already in use, the render-engine will not be registered.
     /// \param[in] _name Name the render-engine will be registered under

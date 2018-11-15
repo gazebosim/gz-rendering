@@ -678,7 +678,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::SetMaterial(const MaterialPtr &/*_material*/)
     {
-      std::cerr << "SetMaterial not implemented for current render"
+      ignerr << "SetMaterial not implemented for current render"
           << " engine" << std::endl;
     }
 
@@ -686,7 +686,7 @@ namespace ignition
     template <class T>
     GLuint BaseCamera<T>::RenderTextureGLId() const
     {
-      std::cerr << "RenderTextureGLId is not supported by current render"
+      ignerr << "RenderTextureGLId is not supported by current render"
           << " engine" << std::endl;
       return GLuint(0u);
     }

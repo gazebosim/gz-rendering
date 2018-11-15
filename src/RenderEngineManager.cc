@@ -67,17 +67,17 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \return True if the plugin is unloaded successfully
   public: bool UnloadEnginePlugin(const std::string &_engineName);
 
-  // Engines that have been registered
+  /// \brief Engines that have been registered
   public: EngineMap engines;
 
   /// \brief A map of default engine name to its plugin library name
   public: std::map<std::string, std::string> defaultEngines;
 
-  /// \brief A map of loaded engine plugins to its plugin library path
+  /// \brief A map of loaded engine plugins to its plugin name and library path
   public: std::map<std::string, std::pair<std::string, std::string>>
       enginePlugins;
 
-  // Plugin loader
+  /// \brief Plugin loader for managing render engine plugin libraries
   public: ignition::plugin::Loader pluginLoader;
 };
 

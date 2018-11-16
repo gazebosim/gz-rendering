@@ -73,7 +73,7 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \brief A map of default engine name to its plugin library name
   public: std::map<std::string, std::string> defaultEngines;
 
-  /// \brief A map of loaded engine plugins to its plugin name and library path
+  /// \brief A map of loaded engine plugins to its plugin name
   public: std::map<std::string, std::string> enginePlugins;
 
   /// \brief Plugin loader for managing render engine plugin libraries

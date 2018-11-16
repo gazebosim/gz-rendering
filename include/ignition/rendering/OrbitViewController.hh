@@ -19,6 +19,8 @@
 
 #include <memory>
 
+#include <ignition/common/SuppressWarning.hh>
+
 #include <ignition/math/Vector3.hh>
 
 #include "ignition/rendering/config.hh"

@@ -177,10 +177,6 @@ namespace ignition
       /// \brief  Ogre high level physical based shading object
       protected: Ogre::HlmsPbs *ogreHlmsPbs = nullptr;
 
-      /// \brief Ambient color - not used by ogre2's PBS material system.
-      /// The variable is only meant to keep track of user specified value
-      protected: math::Color ambient;
-
       /// \brief Name of the texture
       protected: std::string textureName;
 

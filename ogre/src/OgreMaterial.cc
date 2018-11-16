@@ -45,17 +45,19 @@ void OgreMaterial::Destroy()
   if (!this->Scene()->IsInitialized())
     return;
 
-  bool matPtrNotNull;
 #if OGRE_VERSION_LT_1_10_1
-  matPtrNotNull = !this->ogreMaterial.isNull();
-#else
-  matPtrNotNull = this->ogreMaterial != nullptr;
-#endif
-  if (matPtrNotNull)
+  if (!this->ogreMaterial.isNull())
   {
     this->ogreMaterial->unload();
     this->ogreMaterial.setNull();
   }
+#else
+  if (this->ogreMaterial)
+  {
+    this->ogreMaterial->unload();
+    this->ogreMaterial = nullptr;
+  }
+#endif
 }
 
 //////////////////////////////////////////////////

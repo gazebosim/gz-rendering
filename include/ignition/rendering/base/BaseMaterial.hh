@@ -40,31 +40,92 @@ namespace ignition
 
       public: virtual ~BaseMaterial();
 
+      // Documentation inherited
       public: virtual MaterialPtr Clone(const std::string &_name = "") const
                   override;
 
+      // Documentation inherited
       public: virtual void SetAmbient(const double _r, const double _g,
                   const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetAmbient(const math::Color &_color) override = 0;
+      // Documentation inherited
+      public: virtual void SetAmbient(const math::Color &_color) override;
 
+      // Documentation inherited
       public: virtual void SetDiffuse(const double _r, const double _g,
                   const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetDiffuse(const math::Color &_color) override = 0;
+      // Documentation inherited
+      public: virtual void SetDiffuse(const math::Color &_color) override;
 
+      // Documentation inherited
       public: virtual void SetSpecular(const double _r, const double _g,
                   const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetSpecular(const math::Color &_color) override = 0;
+      // Documentation inherited
+      public: virtual void SetSpecular(const math::Color &_color) override;
 
+      // Documentation inherited
       public: virtual void SetEmissive(const double _r, const double _g,
                   const double _b, const double _a = 1.0) override;
 
-      public: virtual void SetEmissive(const math::Color &_color) override = 0;
+      // Documentation inherited
+      public: virtual void SetEmissive(const math::Color &_color) override;
 
+      // Documentation inherited
+      public: virtual void SetTransparency(const double _transparency) override;
+
+      // Documentation inherited
+      public: virtual void SetShininess(const double _shininess) override;
+
+      // Documentation inherited
+      public: virtual void SetReflectivity(const double _reflectivity) override;
+
+      // Documentation inherited
+      public: virtual void SetCastShadows(const bool _cast) override;
+
+      // Documentation inherited
       public: virtual void SetReceiveShadows(const bool _receiveShadows)
-                  override = 0;
+                  override;
+
+      // Documentation inherited
+      public: virtual void SetReflectionEnabled(const bool _enabled) override;
+
+      // Documentation inherited
+      public: virtual void SetLightingEnabled(const bool _enabled) override;
+
+      // Documentation inherited
+      public: virtual math::Color Ambient() const override;
+
+      // Documentation inherited
+      public: virtual math::Color Diffuse() const override;
+
+      // Documentation inherited
+      public: virtual math::Color Specular() const override;
+
+       // Documentation inherited
+      public: virtual math::Color Emissive() const override;
+
+      // Documentation inherited
+      public: virtual double Transparency() const override;
+
+      // Documentation inherited
+      public: virtual double Reflectivity() const override;
+
+      // Documentation inherited
+      public: virtual double Shininess() const override;
+
+      // Documentation inherited
+      public: virtual bool CastShadows() const override;
+
+      // Documentation inherited
+      public: virtual bool ReceiveShadows() const override;
+
+      // Documentation inherited
+      public: virtual bool LightingEnabled() const override;
+
+      // Documentation inherited
+      public: virtual bool ReflectionEnabled() const override;
 
       // Documentation inherited
       public: virtual bool HasTexture() const override;
@@ -192,6 +253,28 @@ namespace ignition
       public: virtual void PreRender() override;
 
       protected: virtual void Reset();
+
+      protected: math::Color ambient;
+
+      protected: math::Color diffuse;
+
+      protected: math::Color specular;
+
+      protected: math::Color emissive;
+
+      protected: double transparency = 0.0;
+
+      protected: double shininess = 0.0;
+
+      protected: double reflectivity = 0.0;
+
+      protected: bool lightingEnabled = false;
+
+      protected: bool reflectionEnabled = false;
+
+      protected: bool receiveShadows = true;
+
+      protected: bool castShadows = true;
     };
 
     //////////////////////////////////////////////////
@@ -216,10 +299,24 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMaterial<T>::SetAmbient(const math::Color &_color)
+    {
+      this->ambient = _color;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMaterial<T>::SetDiffuse(const double _r, const double _g,
         const double _b, const double _a)
     {
       this->SetDiffuse(math::Color(_r, _g, _b, _a));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetDiffuse(const math::Color &_color)
+    {
+      this->diffuse = _color;
     }
 
     //////////////////////////////////////////////////
@@ -232,10 +329,150 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMaterial<T>::SetSpecular(const math::Color &_color)
+    {
+      this->specular = _color;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMaterial<T>::SetEmissive(const double _r, const double _g,
         const double _b, const double _a)
     {
       this->SetEmissive(math::Color(_r, _g, _b, _a));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetEmissive(const math::Color &_color)
+    {
+      this->emissive = _color;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetShininess(const double _shininess)
+    {
+      this->shininess = _shininess;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetTransparency(const double _transparency)
+    {
+      this->transparency = _transparency;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetReflectivity(const double _reflectivity)
+    {
+      this->reflectivity = _reflectivity;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetReflectionEnabled(const bool  _enabled)
+    {
+      this->reflectionEnabled = _enabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetLightingEnabled(const bool _enabled)
+    {
+      this->lightingEnabled = _enabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetCastShadows(const bool _cast)
+    {
+      this->castShadows = _cast;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetReceiveShadows(const bool _receive)
+    {
+      this->receiveShadows = _receive;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Color BaseMaterial<T>::Ambient() const
+    {
+      return this->ambient;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Color BaseMaterial<T>::Diffuse() const
+    {
+      return this->diffuse;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Color BaseMaterial<T>::Specular() const
+    {
+      return this->specular;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Color BaseMaterial<T>::Emissive() const
+    {
+      return this->emissive;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseMaterial<T>::Shininess() const
+    {
+      return this->shininess;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseMaterial<T>::Transparency() const
+    {
+      return this->transparency;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseMaterial<T>::Reflectivity() const
+    {
+      return this->reflectivity;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::CastShadows() const
+    {
+      return this->castShadows;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::ReceiveShadows() const
+    {
+      return this->receiveShadows;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::LightingEnabled() const
+    {
+      return this->lightingEnabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::ReflectionEnabled() const
+    {
+      return this->reflectionEnabled;
     }
 
     //////////////////////////////////////////////////

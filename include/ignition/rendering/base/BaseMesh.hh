@@ -60,7 +60,8 @@ namespace ignition
 
       public: virtual void PreRender();
 
-      public: virtual void Destroy();
+      // Documentation inherited
+      public: virtual void Destroy() override;
 
       protected: virtual SubMeshStorePtr SubMeshes() const = 0;
     };

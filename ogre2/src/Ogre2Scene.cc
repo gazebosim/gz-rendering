@@ -97,11 +97,18 @@ void Ogre2Scene::PreRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::Clear()
 {
+  BaseScene::Clear();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Scene::Destroy()
 {
+  BaseScene::Destroy();
+  if (this->ogreSceneManager)
+  {
+    this->ogreSceneManager->removeRenderQueueListener(
+        Ogre2RenderEngine::Instance()->OverlaySystem());
+  }
 }
 
 //////////////////////////////////////////////////
@@ -357,8 +364,8 @@ void Ogre2Scene::CreateContext()
   //   threadedCullingMethod = Ogre::INSTANCING_CULLING_THREADED;
   // Create the SceneManager, in this case a generic one
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC,
-                                                   numThreads,
-                                                   threadedCullingMethod);
+                                                    numThreads,
+                                                    threadedCullingMethod);
 
   this->ogreSceneManager->addRenderQueueListener(
       Ogre2RenderEngine::Instance()->OverlaySystem());

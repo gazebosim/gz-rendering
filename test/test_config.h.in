@@ -5,6 +5,9 @@
 #define PROJECT_BUILD_PATH "${PROJECT_BINARY_DIR}"
 #define IGN_RENDERING_TEST_PLUGIN_PATH "${CMAKE_BINARY_DIR}/lib"
 
+/// \brief Helper macro to instantiate gtest for different engines
+#define RENDER_ENGINE_VALUES ::testing::Values("ogre", "ogre2", "optix")
+
 namespace ignition
 {
   namespace rendering

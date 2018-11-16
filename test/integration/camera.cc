@@ -172,10 +172,16 @@ void CameraTest::Track(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void CameraTest::VisualAt(const std::string &_renderEngine)
 {
+  if (_renderEngine == "optix")
+  {
+    igndbg << "VisualAt not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
-  // Optix is not supported for this method yet
-  if (!engine || !_renderEngine.compare("optix"))
+  if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
@@ -380,7 +386,7 @@ TEST_P(CameraTest, VisualAt)
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
-    ::testing::Values("ogre", "optix"),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)

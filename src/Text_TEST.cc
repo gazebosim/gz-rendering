@@ -36,6 +36,13 @@ class TextTest : public testing::Test,
 /////////////////////////////////////////////////
 void TextTest::Text(const std::string &_renderEngine)
 {
+  if (_renderEngine != "ogre")
+  {
+    igndbg << "Text not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -114,7 +121,7 @@ TEST_P(TextTest, Text)
 }
 
 INSTANTIATE_TEST_CASE_P(Text, TextTest,
-    ::testing::Values("ogre", "optix"),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)

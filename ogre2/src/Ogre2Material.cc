@@ -43,37 +43,11 @@ Ogre2Material::~Ogre2Material()
 }
 
 //////////////////////////////////////////////////
-bool Ogre2Material::LightingEnabled() const
-{
-  return this->lightingEnabled;
-}
-
-//////////////////////////////////////////////////
-void Ogre2Material::SetLightingEnabled(bool  _enabled)
-{
-  this->lightingEnabled = _enabled;
-  // TODO(anyone) figure out how to disable lighting in ogre2
-}
-
-//////////////////////////////////////////////////
-math::Color Ogre2Material::Ambient() const
-{
-  // Not supported in Ogre2
-  return math::Color::White;
-}
-
-//////////////////////////////////////////////////
-void Ogre2Material::SetAmbient(const math::Color &/*_color*/)
-{
-  // Not supported in Ogre2
-}
-
-//////////////////////////////////////////////////
 math::Color Ogre2Material::Diffuse() const
 {
-  Ogre::Vector3 diffuse =
+  Ogre::Vector3 color =
       this->ogreDatablock->getDiffuse();
-  return math::Color(diffuse.x, diffuse.y, diffuse.z, 1.0);
+  return math::Color(color.x, color.y, color.z, 1.0);
 }
 
 //////////////////////////////////////////////////
@@ -86,9 +60,9 @@ void Ogre2Material::SetDiffuse(const math::Color &_color)
 //////////////////////////////////////////////////
 math::Color Ogre2Material::Specular() const
 {
-  Ogre::Vector3 specular =
+  Ogre::Vector3 color =
       this->ogreDatablock->getSpecular();
-  return math::Color(specular.x, specular.y, specular.z, 1.0);
+  return math::Color(color.x, color.y, color.z, 1.0);
 }
 
 //////////////////////////////////////////////////
@@ -101,9 +75,9 @@ void Ogre2Material::SetSpecular(const math::Color &_color)
 //////////////////////////////////////////////////
 math::Color Ogre2Material::Emissive() const
 {
-  Ogre::Vector3 emissive =
+  Ogre::Vector3 color =
       this->ogreDatablock->getEmissive();
-  return math::Color(emissive.x, emissive.y, emissive.z, 1.0);
+  return math::Color(color.x, color.y, color.z, 1.0);
 }
 
 //////////////////////////////////////////////////
@@ -111,24 +85,6 @@ void Ogre2Material::SetEmissive(const math::Color &_color)
 {
   this->ogreDatablock->setEmissive(
       Ogre::Vector3(_color.R(), _color.G(), _color.B()));
-}
-
-//////////////////////////////////////////////////
-double Ogre2Material::Shininess() const
-{
-  return 0.0;
-}
-
-//////////////////////////////////////////////////
-void Ogre2Material::SetShininess(const double /*_shininess*/)
-{
-  // not supported
-}
-
-//////////////////////////////////////////////////
-double Ogre2Material::Transparency() const
-{
-  return this->transparency;
 }
 
 //////////////////////////////////////////////////
@@ -148,30 +104,6 @@ void Ogre2Material::SetTransparency(const double _transparency)
 }
 
 //////////////////////////////////////////////////
-double Ogre2Material::Reflectivity() const
-{
-  return 0.0;
-}
-
-//////////////////////////////////////////////////
-void Ogre2Material::SetReflectivity(const double /*_reflectivity*/)
-{
-  // no supported
-}
-
-//////////////////////////////////////////////////
-bool Ogre2Material::CastShadows() const
-{
-  return this->castShadows;
-}
-
-//////////////////////////////////////////////////
-void Ogre2Material::SetCastShadows(const bool _castShadows)
-{
-  this->castShadows = _castShadows;
-}
-
-//////////////////////////////////////////////////
 bool Ogre2Material::ReceiveShadows() const
 {
   return this->ogreDatablock->getReceiveShadows();
@@ -181,18 +113,6 @@ bool Ogre2Material::ReceiveShadows() const
 void Ogre2Material::SetReceiveShadows(const bool _receiveShadows)
 {
   this->ogreDatablock->setReceiveShadows(_receiveShadows);
-}
-
-//////////////////////////////////////////////////
-bool Ogre2Material::ReflectionEnabled() const
-{
-  return false;
-}
-
-//////////////////////////////////////////////////
-void Ogre2Material::SetReflectionEnabled(const bool /*_enabled*/)
-{
-  // not supported.
 }
 
 //////////////////////////////////////////////////

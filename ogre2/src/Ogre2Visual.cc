@@ -89,6 +89,7 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
 //////////////////////////////////////////////////
 bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
 {
+  std::cerr << " ogre 2 visual detach geometry " << std::endl;
   Ogre2GeometryPtr derived =
       std::dynamic_pointer_cast<Ogre2Geometry>(_geometry);
 

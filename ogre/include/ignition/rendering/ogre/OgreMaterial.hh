@@ -187,16 +187,6 @@ namespace ignition
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
       protected: math::Color emissiveColor;
 #endif
-      protected: double shininess = 0.0;
-
-      protected: double transparency = 0.0;
-
-      protected: double reflectivity = 0.0;
-
-      protected: bool castShadows = true;
-
-      protected: bool reflectionEnabled = true;
-
       protected: std::string textureName;
 
       protected: std::string normalMapName;

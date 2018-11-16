@@ -94,6 +94,8 @@ Ogre2RenderEngine::~Ogre2RenderEngine()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::Destroy()
 {
+  BaseRenderEngine::Destroy();
+
   if (this->scenes)
   {
     this->scenes->RemoveAll();

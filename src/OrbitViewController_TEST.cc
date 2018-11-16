@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/SuppressWarning.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/Camera.hh"

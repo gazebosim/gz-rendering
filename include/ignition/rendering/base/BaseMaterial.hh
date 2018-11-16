@@ -254,26 +254,37 @@ namespace ignition
 
       protected: virtual void Reset();
 
+      /// \brief Ambient color
       protected: math::Color ambient;
 
+      /// \brief Diffuse color
       protected: math::Color diffuse;
 
+      /// \brief Specular color
       protected: math::Color specular;
 
+      /// \brief Emissive color
       protected: math::Color emissive;
 
+      /// \brief Transparent. 1: fully transparent, 0: opaque
       protected: double transparency = 0.0;
 
+      /// \brief Shininess factor
       protected: double shininess = 0.0;
 
+      /// \brief Reflectivity
       protected: double reflectivity = 0.0;
 
+      /// \brief Flag to indicate if dynamic lighting is enabled
       protected: bool lightingEnabled = false;
 
+      /// \brief Flag to indicate if reflection is enabled
       protected: bool reflectionEnabled = false;
 
+      /// \brief True if material receives shadows
       protected: bool receiveShadows = true;
 
+      /// \brief Set to true to enable object with this material to cast shadows
       protected: bool castShadows = true;
     };
 

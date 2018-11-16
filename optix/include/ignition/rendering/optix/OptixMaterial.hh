@@ -121,8 +121,6 @@ namespace ignition
 
       protected: bool normalMapDirty = true;
 
-      protected: bool lightingEnabled = true;
-
       protected: std::string textureName;
 
       protected: std::string normalMapName;

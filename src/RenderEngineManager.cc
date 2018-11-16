@@ -397,7 +397,7 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
   auto it = this->enginePlugins.find(_engineName);
   if (it == this->enginePlugins.end())
   {
-    ignmsg << "Skip unloadng engine plugin. [" << _engineName << "] "
+    ignmsg << "Skip unloading engine plugin. [" << _engineName << "] "
            << "not loaded from plugin." << std::endl;
     return false;
   }

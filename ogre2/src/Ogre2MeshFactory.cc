@@ -337,8 +337,9 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
       if (material)
       {
-        this->scene->CreateMaterial(*material);
-        ogreSubMesh->setMaterialName(material->Name());
+        MaterialPtr mat = this->scene->CreateMaterial();
+        mat->CopyFrom(*material);
+        ogreSubMesh->setMaterialName(mat->Name());
       }
       else
       {

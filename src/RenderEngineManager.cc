@@ -73,9 +73,8 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \brief A map of default engine name to its plugin library name
   public: std::map<std::string, std::string> defaultEngines;
 
-  /// \brief A map of loaded engine plugins to its plugin name and library path
-  public: std::map<std::string, std::pair<std::string, std::string>>
-      enginePlugins;
+  /// \brief A map of loaded engine plugins to its plugin name
+  public: std::map<std::string, std::string> enginePlugins;
 
   /// \brief Plugin loader for managing render engine plugin libraries
   public: ignition::plugin::Loader pluginLoader;
@@ -385,7 +384,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   this->engines[engineName] = plugin->Engine();
 
   // store engine plugin data so plugin can be unloaded later
-  this->enginePlugins[engineName] = std::make_pair(pluginName, pathToLib);
+  this->enginePlugins[engineName] = pluginName;
 
   return true;
 }
@@ -397,25 +396,18 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
   auto it = this->enginePlugins.find(_engineName);
   if (it == this->enginePlugins.end())
   {
-    ignmsg << "Skip unloadng engine plugin. [" << _engineName << "] "
+    ignmsg << "Skip unloading engine plugin. [" << _engineName << "] "
            << "not loaded from plugin." << std::endl;
     return false;
   }
 
-  std::string pluginName = it->second.first;
-  std::string pathToLib = it->second.first;
+  std::string pluginName = it->second;
   this->enginePlugins.erase(it);
 
-  this->pluginLoader.ForgetLibraryOfPlugin(pluginName);
-
-  if (pathToLib.empty())
+  if (!this->pluginLoader.ForgetLibraryOfPlugin(pluginName))
   {
-    ignerr << "Failed to unload plugin path [" << pathToLib <<
-              "] : Path empty." << std::endl;
-    return false;
+    ignerr << "Failed to unload plugin: " << pluginName << std::endl;
   }
-
-  this->pluginLoader.ForgetLibrary(pathToLib);
 
   auto engineIt = this->engines.find(_engineName);
   if (engineIt == this->engines.end())

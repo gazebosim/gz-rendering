@@ -385,7 +385,7 @@ void Ogre2Material::Init()
   }
   this->ogreDatablock = static_cast<Ogre::HlmsPbsDatablock *>(
       this->ogreHlmsPbs->createDatablock(
-      this->Scene()->Name() + "_" + this->name, this->name,
+      this->Scene()->Name() + "::" + this->name, this->name,
       Ogre::HlmsMacroblock(), Ogre::HlmsBlendblock(), Ogre::HlmsParamVec()));
 
   // use metal workflow as default

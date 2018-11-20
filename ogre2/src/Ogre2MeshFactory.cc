@@ -339,7 +339,11 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       {
         MaterialPtr mat = this->scene->CreateMaterial();
         mat->CopyFrom(*material);
-        ogreSubMesh->setMaterialName(mat->Name());
+        // Note the name has to match the one given to the HlmsPbsDatablock in
+        // Ogre2Material::Init function
+        std::string matName =
+            this->scene->Name() + "::" + mat->Name();
+        ogreSubMesh->setMaterialName(matName);
       }
       else
       {

@@ -24,7 +24,8 @@ target_link_libraries(${ogre_target}
   PRIVATE
     ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
-    ${OGRE_LIBRARIES})
+    IgnOGRE::IgnOGRE
+    )
 
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre_target})

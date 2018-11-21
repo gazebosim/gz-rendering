@@ -17,7 +17,7 @@
 
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
-#include <OGRE/RenderSystems/GL3Plus/OgreGL3PlusFBORenderTexture.h>
+#include <OgreGL3PlusFBORenderTexture.h>
 
 #include <ignition/common/Console.hh>
 

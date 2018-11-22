@@ -513,12 +513,12 @@ void OgreMovableText::SetupGeometry()
       for (std::string::iterator j = i; j != this->text.end(); ++j)
       {
         Ogre::Font::CodePoint character = *j;
-        if (character == 0x000D  // CR
-            || character == 0x0085)  // NEL
+        if (character == '\n')
         {
           break;
         }
-        else if (character == 0x0020)  // space
+        // space
+        else if (character == ' ')
         {
           len += this->spaceWidth;
         }
@@ -534,10 +534,9 @@ void OgreMovableText::SetupGeometry()
     }
 
     Ogre::Font::CodePoint character = (*i);
-
-    if (character == 0x000D  // CR
-        || character == 0x0085)  // NEL
+    if (character == '\n')
     {
+      left = 0.0;
       top -= this->charHeight * 2.0;
       newLine = true;
 
@@ -545,7 +544,8 @@ void OgreMovableText::SetupGeometry()
       this->renderOp.vertexData->vertexCount -= 6;
       continue;
     }
-    else if (character == 0x0020)  // space
+    // space
+    else if (character == ' ')
     {
       // Just leave a gap, no tris
       left += this->spaceWidth;

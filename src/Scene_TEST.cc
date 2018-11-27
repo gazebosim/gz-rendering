@@ -33,6 +33,9 @@ class SceneTest : public testing::Test,
 {
   public: void Scene(const std::string &_renderEngine);
   public: void Nodes(const std::string &_renderEngine);
+
+  /// \brief Test creating and destroying materials
+  public: void Materials(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -145,6 +148,194 @@ void SceneTest::Nodes(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void SceneTest::Materials(const std::string &_renderEngine)
+{
+  auto engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return;
+  }
+
+  auto scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+ // Create mesh for testing
+  auto root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+
+  const size_t numCycles = 4;
+  for (size_t j = 0; j < numCycles; ++j) {
+    std::cout << j << std::endl;
+
+    // parent visual
+    auto parent = scene->CreateVisual();
+    // Create a N visuals
+    const size_t numVisuals = 5000;
+    for (size_t i = 0; i < numVisuals; ++i) {
+      std::stringstream ss;
+      ss << "child" << i;
+      auto child = scene->CreateVisual();
+      // todo: create different types of geometry
+      auto box = scene->CreateBox();
+      child->AddGeometry(box);
+      parent->AddChild(child);
+    }
+
+    // Recursive destroy - all child visuals should also be destroyed
+//    scene->DestroyVisual(parent, true);
+    for (unsigned int i = 0; i < parent->ChildCount(); ++i)
+    {
+      auto v = parent->ChildByIndex(i);
+      scene->DestroyNode(v);
+    }
+    scene->DestroyNode(parent);
+  }
+
+/*  std::cerr << " ------------------ before create visual " << std::endl;
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+  MeshPtr mesh = std::dynamic_pointer_cast<Mesh>(scene->CreateBox());
+  visual->AddGeometry(mesh);
+  root->AddChild(visual);
+
+  std::cerr << " ------------------ before destroty visual " << std::endl;
+  scene->DestroyVisual(visual);
+
+  std::cerr << " ------------------ before create visual " << std::endl;
+  VisualPtr visual2 = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual2);
+  MeshPtr mesh2 = std::dynamic_pointer_cast<Mesh>(scene->CreateBox());
+  visual2->AddGeometry(mesh2);
+  root->AddChild(visual2);
+
+  std::cerr << " ------------------ before destroty visual " << std::endl;
+  scene->DestroyVisual(visual2);
+
+  std::cerr << " ------------------ done destroty visual " << std::endl;
+*/
+
+
+/*  // create and destroy material
+  MaterialPtr mat = scene->CreateMaterial();
+  ASSERT_NE(nullptr, mat);
+  std::string matName = mat->Name();
+  ASSERT_TRUE(scene->MaterialRegistered(matName));
+  ASSERT_EQ(mat, scene->Material(matName));
+  scene->DestroyMaterial(mat);
+  ASSERT_FALSE(scene->MaterialRegistered(matName));
+
+  // create and destroy material with user-specified name
+  std::string mat2Name = "another_material";
+  MaterialPtr mat2 = scene->CreateMaterial(mat2Name);
+  ASSERT_NE(nullptr, mat2);
+  ASSERT_EQ(mat2Name, mat2->Name());
+  ASSERT_TRUE(scene->MaterialRegistered(mat2Name));
+  ASSERT_EQ(mat2, scene->Material(mat2Name));
+  scene->DestroyMaterial(mat2);
+  ASSERT_FALSE(scene->MaterialRegistered(mat2Name));
+
+  // Create mesh for testing
+  auto root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+  MeshPtr mesh = std::dynamic_pointer_cast<Mesh>(scene->CreateBox());
+  visual->AddGeometry(mesh);
+  root->AddChild(visual);
+
+  // verify mesh default material is registered with scene
+  ASSERT_EQ(1u, mesh->SubMeshCount());
+  SubMeshPtr submesh = mesh->SubMeshByIndex(0u);
+  ASSERT_NE(nullptr, submesh);
+  MaterialPtr defaultMeshMat = submesh->Material();
+  ASSERT_NE(nullptr, defaultMeshMat);
+  std::string defaultMeshMatName = defaultMeshMat->Name();
+  ASSERT_TRUE(scene->MaterialRegistered(defaultMeshMatName));
+
+  // create new material for testing
+  std::string newMeshMatName = "mesh_material";
+  MaterialPtr newMeshMat = scene->CreateMaterial(newMeshMatName);
+  ASSERT_NE(nullptr, newMeshMat);
+
+  // test assigning material to mesh. The second param (false) tells the mesh
+  // not to clone the material
+  mesh->SetMaterial(newMeshMat, false);
+  MaterialPtr retMeshMat = submesh->Material();
+  ASSERT_EQ(newMeshMat, retMeshMat);
+
+  // verify default mesh material is removed from scene
+  ASSERT_FALSE(scene->MaterialRegistered(defaultMeshMatName));
+
+  // create another material for testing
+  std::string newMeshMat2Name = "mesh_material2";
+  MaterialPtr newMeshMat2 = scene->CreateMaterial(newMeshMat2Name);
+  ASSERT_NE(nullptr, newMeshMat2);
+
+  // test assigning material to mesh. The second param (true) tells the mesh
+  // to make a unique copy of the material and the mesh will take ownership of
+  // the cloned material
+  mesh->SetMaterial(newMeshMat2, true);
+  MaterialPtr retMeshMat2 = submesh->Material();
+  ASSERT_NE(newMeshMat2, retMeshMat2);
+  ASSERT_NE(nullptr, retMeshMat2);
+
+  // verify previous mesh material is not removed from scene
+  ASSERT_TRUE(scene->MaterialRegistered(newMeshMatName));
+
+  // create another material for testing
+  std::string subMeshMatName = "submesh_material";
+  MaterialPtr subMeshMat = scene->CreateMaterial(subMeshMatName);
+  ASSERT_NE(nullptr, subMeshMat);
+
+  // test assigning material to submesh. The second param (false) tells the
+  // submesh not to clone the material
+  submesh->SetMaterial(subMeshMat, false);
+  MaterialPtr retSubMeshMat = submesh->Material();
+  ASSERT_EQ(subMeshMat, retSubMeshMat);
+
+  // verify parent mesh material is not removed from scene as the parent mesh
+  // material is shared with other sibling submeshes
+  ASSERT_TRUE(scene->MaterialRegistered(newMeshMatName));
+
+  // create another material for testing
+  std::string subMeshMat2Name = "submesh_material2";
+  MaterialPtr subMeshMat2 = scene->CreateMaterial(subMeshMat2Name);
+  ASSERT_NE(nullptr, subMeshMat2);
+
+  // test assigning material to submesh. The second param (true) tells the
+  // submesh to make a unique copy of the material and submesh will take
+  // ownership of the cloned material
+  submesh->SetMaterial(subMeshMat2, true);
+  MaterialPtr retSubMeshMat2 = submesh->Material();
+  ASSERT_NE(subMeshMat2, retSubMeshMat2);
+  ASSERT_NE(nullptr, retSubMeshMat2);
+
+  // verify previous submesh material is not removed from scene
+  ASSERT_TRUE(scene->MaterialRegistered(subMeshMatName));
+
+  // remove visual and its mesh and submesh
+  // verify cloned materials are also be removed from the scene as they are
+  // unique to the mesh and submesh
+  scene->DestroyVisual(visual);
+  ASSERT_FALSE(scene->MaterialRegistered(retMeshMat2->Name()));
+  ASSERT_FALSE(scene->MaterialRegistered(retSubMeshMat2->Name()));
+
+  // destroy all scene materials and verify
+  scene->DestroyMaterials();
+  ASSERT_FALSE(scene->MaterialRegistered(newMeshMatName));
+  ASSERT_FALSE(scene->MaterialRegistered(newMeshMat2Name));
+  ASSERT_FALSE(scene->MaterialRegistered(subMeshMatName));
+  ASSERT_FALSE(scene->MaterialRegistered(subMeshMat2Name));
+*/
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
 TEST_P(SceneTest, Scene)
 {
   Scene(GetParam());
@@ -155,6 +346,13 @@ TEST_P(SceneTest, Nodes)
 {
   Nodes(GetParam());
 }
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, Materials)
+{
+  Materials(GetParam());
+}
+
 
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
     RENDER_ENGINE_VALUES,

@@ -511,19 +511,45 @@ void BaseScene::RegisterMaterial(const std::string &_name,
     MaterialPtr _material)
 {
   if (_material)
+  {
     this->Materials()->Put(_name, _material);
+    std::cerr << "register material: " << _name << " " << this->Materials()->Size() << std::endl;
+  }
 }
 
 //////////////////////////////////////////////////
 void BaseScene::UnregisterMaterial(const std::string &_name)
 {
   this->Materials()->Remove(_name);
+  std::cerr << "  unregister material: " << _name << " " << this->Materials()->Size() << std::endl;
 }
 
 //////////////////////////////////////////////////
 void BaseScene::UnregisterMaterials()
 {
   this->Materials()->RemoveAll();
+}
+
+//////////////////////////////////////////////////
+void BaseScene::DestroyMaterial(MaterialPtr _material)
+{
+  if (!_material)
+    return;
+
+  std::string matName = _material->Name();
+  _material->Destroy();
+  this->UnregisterMaterial(matName);
+}
+
+//////////////////////////////////////////////////
+void BaseScene::DestroyMaterials()
+{
+  for (unsigned int i = 0; i < this->Materials()->Size(); ++i)
+  {
+    auto m = this->Materials()->GetByIndex(i);
+    m->Destroy();
+  }
+  this->UnregisterMaterials();
 }
 
 //////////////////////////////////////////////////
@@ -921,13 +947,7 @@ void BaseScene::PreRender()
 void BaseScene::Clear()
 {
   this->nodes->DestroyAll();
-  for (unsigned int i = 0; i < this->Materials()->Size(); ++i)
-  {
-    auto m = this->Materials()->GetByIndex(i);
-    m->Destroy();
-  }
-  this->Materials()->RemoveAll();
-
+  this->DestroyMaterials();
   this->nextObjectId = ignition::math::MAX_UI16;
 }
 

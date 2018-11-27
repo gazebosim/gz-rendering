@@ -65,20 +65,14 @@ namespace ignition
 
       public: virtual ~OgreSubMesh();
 
-      public: virtual MaterialPtr Material() const;
-
-      public: virtual void SetMaterial(MaterialPtr _material,
-                  bool _unique = true);
-
       public: virtual Ogre::SubEntity *OgreSubEntity() const;
 
       public: virtual void Destroy();
 
-      protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
+      // Documentation inherited
+      protected: virtual void SetMaterialImpl(MaterialPtr _material) override;
 
       protected: virtual void Init();
-
-      protected: OgreMaterialPtr material;
 
       protected: Ogre::SubEntity *ogreSubEntity;
 

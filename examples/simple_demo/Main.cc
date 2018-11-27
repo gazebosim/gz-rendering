@@ -63,6 +63,7 @@ void buildScene(ScenePtr _scene)
   light2->SetLocalPosition(3, 5, 5);
   root->AddChild(light2);
 
+  std::cerr << "===== create green mat " << std::endl;
   // create green material
   MaterialPtr green = _scene->CreateMaterial();
   green->SetAmbient(0.0, 0.5, 0.0);
@@ -71,13 +72,18 @@ void buildScene(ScenePtr _scene)
   green->SetShininess(50);
   green->SetReflectivity(0);
 
+  std::cerr << "====== create center visual " << std::endl;
   // create center visual
   VisualPtr center = _scene->CreateVisual();
   center->AddGeometry(_scene->CreateSphere());
   center->SetLocalPosition(3, 0, 0);
   center->SetLocalScale(0.1, 0.1, 0.1);
+  std::cerr << "======   center visual begin set mat green " << std::endl;
   center->SetMaterial(green);
+  std::cerr << "======   center visual begin done set mat green " << std::endl;
   root->AddChild(center);
+
+  std::cerr << "====== done create center visual " << std::endl;
 
   // create red material
   MaterialPtr red = _scene->CreateMaterial();

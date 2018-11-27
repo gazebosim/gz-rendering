@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,16 +63,14 @@ Ogre2SubMesh::~Ogre2SubMesh()
 }
 
 //////////////////////////////////////////////////
-MaterialPtr Ogre2SubMesh::Material() const
+Ogre::SubItem *Ogre2SubMesh::Ogre2SubItem() const
 {
-  return this->material;
+  return this->ogreSubItem;
 }
 
 //////////////////////////////////////////////////
-void Ogre2SubMesh::SetMaterial(MaterialPtr _material, bool _unique)
+void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
 {
-  _material = (_unique) ? _material->Clone() : _material;
-
   Ogre2MaterialPtr derived =
       std::dynamic_pointer_cast<Ogre2Material>(_material);
 
@@ -84,26 +82,8 @@ void Ogre2SubMesh::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
-  this->SetMaterialImpl(derived);
-}
-
-//////////////////////////////////////////////////
-Ogre::SubItem *Ogre2SubMesh::Ogre2SubItem() const
-{
-  return this->ogreSubItem;
-}
-
-//////////////////////////////////////////////////
-void Ogre2SubMesh::Destroy()
-{
-}
-
-//////////////////////////////////////////////////
-void Ogre2SubMesh::SetMaterialImpl(Ogre2MaterialPtr _material)
-{
-  this->material = _material;
   this->ogreSubItem->setDatablock(
-      static_cast<Ogre::HlmsPbsDatablock *>(this->material->Datablock()));
+      static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock()));
 }
 
 //////////////////////////////////////////////////

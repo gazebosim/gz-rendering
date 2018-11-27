@@ -59,13 +59,7 @@ OgreSubMesh::~OgreSubMesh()
   this->Destroy();
 }
 
-//////////////////////////////////////////////////
-MaterialPtr OgreSubMesh::Material() const
-{
-  return this->material;
-}
-
-//////////////////////////////////////////////////
+/*//////////////////////////////////////////////////
 void OgreSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
 {
   _material = (_unique) ? _material->Clone() : _material;
@@ -83,6 +77,7 @@ void OgreSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
 
   this->SetMaterialImpl(derived);
 }
+*/
 
 //////////////////////////////////////////////////
 Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
@@ -93,17 +88,30 @@ Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
 //////////////////////////////////////////////////
 void OgreSubMesh::Destroy()
 {
+  BaseSubMesh::Destroy();
   OgreRTShaderSystem::Instance()->DetachEntity(this);
-  this->material.reset();
+  std::cerr << " ------------- ogre submesh destroy " << std::endl;
+//  this->material.reset();
 }
 
 //////////////////////////////////////////////////
-void OgreSubMesh::SetMaterialImpl(OgreMaterialPtr _material)
+void OgreSubMesh::SetMaterialImpl(MaterialPtr _material)
 {
-  std::string materialName = _material->Name();
-  Ogre::MaterialPtr ogreMaterial = _material->Material();
+  OgreMaterialPtr derived =
+      std::dynamic_pointer_cast<OgreMaterial>(_material);
+
+  if (!derived)
+  {
+    ignerr << "Cannot assign material created by another render-engine"
+        << std::endl;
+
+    return;
+  }
+
+  std::string materialName = derived->Name();
+  Ogre::MaterialPtr ogreMaterial = derived->Material();
   this->ogreSubEntity->setMaterialName(materialName);
-  this->material = _material;
+//  this->material = derived;
 }
 
 //////////////////////////////////////////////////

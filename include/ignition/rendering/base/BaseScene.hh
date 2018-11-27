@@ -195,6 +195,12 @@ namespace ignition
 
       public: virtual void UnregisterMaterials();
 
+      // Documentation inherited
+      public: virtual void DestroyMaterial(MaterialPtr _material);
+
+      // Documentation inherited
+      public: virtual void DestroyMaterials();
+
       public: virtual DirectionalLightPtr CreateDirectionalLight();
 
       public: virtual DirectionalLightPtr CreateDirectionalLight(

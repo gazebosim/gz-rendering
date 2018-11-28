@@ -49,7 +49,7 @@ void Ogre2Material::Destroy()
   if (!this->Scene()->IsInitialized())
     return;
 
- if (!this->ogreDatablock)
+  if (!this->ogreDatablock)
     return;
 
   this->ogreHlmsPbs->destroyDatablock(this->ogreDatablockId);

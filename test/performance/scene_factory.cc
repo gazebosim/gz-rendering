@@ -34,10 +34,10 @@ using namespace rendering;
 class SceneFactoryTest: public testing::Test,
                      public testing::WithParamInterface<const char *>
 {
-  ///\brief Test creating and destroying materials
+  /// \brief Test creating and destroying materials
   public: void MaterialMemoryLeak(const std::string &_renderEngine);
 
-  ///\brief Test creating and destroying visuals
+  /// \brief Test creating and destroying visuals
   public: void VisualMemoryLeak(const std::string &_renderEngine);
 };
 

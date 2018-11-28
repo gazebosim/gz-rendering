@@ -98,7 +98,8 @@ namespace ignition
 
       public: virtual NodePtr NodeByIndex(unsigned int _index) const;
 
-      public: virtual void DestroyNode(NodePtr _node);
+      // Documentation inherited.
+      public: virtual void DestroyNode(NodePtr _node, bool _recursive = false);
 
       public: virtual void DestroyNodeById(unsigned int _id);
 
@@ -122,7 +123,9 @@ namespace ignition
 
       public: virtual LightPtr LightByIndex(unsigned int _index) const;
 
-      public: virtual void DestroyLight(LightPtr _light);
+      // Documentation inherited.
+      public: virtual void DestroyLight(LightPtr _light,
+          bool _recursive = false);
 
       public: virtual void DestroyLightById(unsigned int _id);
 
@@ -146,7 +149,9 @@ namespace ignition
 
       public: virtual SensorPtr SensorByIndex(unsigned int _index) const;
 
-      public: virtual void DestroySensor(SensorPtr _sensor);
+      // Documentation inherited.
+      public: virtual void DestroySensor(SensorPtr _sensor,
+          bool _recursive = false);
 
       public: virtual void DestroySensorById(unsigned int _id);
 
@@ -174,7 +179,9 @@ namespace ignition
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
                           const ignition::math::Vector2i &_mousePos);
 
-      public: virtual void DestroyVisual(VisualPtr _visual);
+      // Documentation inherited.
+      public: virtual void DestroyVisual(VisualPtr _visual,
+          bool _recursive = false);
 
       public: virtual void DestroyVisualById(unsigned int _id);
 

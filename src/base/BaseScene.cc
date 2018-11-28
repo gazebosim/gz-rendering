@@ -249,8 +249,18 @@ NodePtr BaseScene::NodeByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroyNode(NodePtr _node)
+void BaseScene::DestroyNode(NodePtr _node, bool _recursive)
 {
+  if (!_node)
+    return;
+
+  if (_recursive)
+  {
+    while (_node->ChildCount() > 0u)
+    {
+      this->DestroyNode(_node->ChildByIndex(0u), _recursive);
+    }
+  }
   this->nodes->Destroy(_node);
 }
 
@@ -321,9 +331,16 @@ LightPtr BaseScene::LightByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroyLight(LightPtr _light)
+void BaseScene::DestroyLight(LightPtr _light, bool _recursive)
 {
-  this->Lights()->Destroy(_light);
+  if (_recursive)
+  {
+    this->DestroyNode(_light, _recursive);
+  }
+  else
+  {
+    this->Lights()->Destroy(_light);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -393,9 +410,16 @@ SensorPtr BaseScene::SensorByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroySensor(SensorPtr _sensor)
+void BaseScene::DestroySensor(SensorPtr _sensor, bool _recursive)
 {
-  this->Sensors()->Destroy(_sensor);
+  if (_recursive)
+  {
+    this->DestroyNode(_sensor, _recursive);
+  }
+  else
+  {
+    this->Sensors()->Destroy(_sensor);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -465,9 +489,16 @@ VisualPtr BaseScene::VisualByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroyVisual(VisualPtr _visual)
+void BaseScene::DestroyVisual(VisualPtr _visual, bool _recursive)
 {
-  this->Visuals()->Destroy(_visual);
+  if (_recursive)
+  {
+    this->DestroyNode(_visual, _recursive);
+  }
+  else
+  {
+    this->Visuals()->Destroy(_visual);
+  }
 }
 
 //////////////////////////////////////////////////

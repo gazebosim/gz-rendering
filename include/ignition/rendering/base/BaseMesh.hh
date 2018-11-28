@@ -245,7 +245,6 @@ namespace ignition
       if (this->material && this->ownsMaterial)
         this->Scene()->DestroyMaterial(this->material);
       this->material.reset();
-      std::cerr << " ------   --- base submesh destroy " << std::endl;
     }
 
 
@@ -262,18 +261,6 @@ namespace ignition
     void BaseSubMesh<T>::SetMaterial(MaterialPtr _material, bool _unique)
     {
       _material = (_unique) ? _material->Clone() : _material;
-
-/*      OgreMaterialPtr derived =
-          std::dynamic_pointer_cast<OgreMaterial>(_material);
-
-      if (!derived)
-      {
-        ignerr << "Cannot assign material created by another render-engine"
-            << std::endl;
-
-        return;
-      }
-*/
 
       MaterialPtr origMaterial = this->material;
       bool origUnique = this->ownsMaterial;

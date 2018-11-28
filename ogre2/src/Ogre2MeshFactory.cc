@@ -335,20 +335,22 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       common::MaterialPtr material;
       material = _desc.mesh->MaterialByIndex(subMesh.MaterialIndex());
 
+      MaterialPtr mat = this->scene->CreateMaterial();
       if (material)
       {
-        MaterialPtr mat = this->scene->CreateMaterial();
         mat->CopyFrom(*material);
         // Note the name has to match the one given to the HlmsPbsDatablock in
         // Ogre2Material::Init function
         std::string matName =
             this->scene->Name() + "::" + mat->Name();
-        ogreSubMesh->setMaterialName(matName);
       }
       else
       {
-        ogreSubMesh->setMaterialName("Default/White");
+        MaterialPtr defaultMat = this->scene->Material("Default/White");
+        mat->CopyFrom(defaultMat);
       }
+
+      ogreSubMesh->setMaterialName("Default/White");
     }
 
     math::Vector3d max = _desc.mesh->Max();
@@ -482,11 +484,11 @@ Ogre2SubMeshPtr Ogre2SubMeshStoreFactory::CreateSubMesh(unsigned int _index)
     if (ogreMat)
       mat = this->scene->Material(ogreMat->getName());
   }
-  if (!mat)
+  if (mat)
   {
-    mat = this->scene->CreateMaterial();
+    // assign material to submesh who will make a copy of this material
+    subMesh->SetMaterial(mat);
   }
-  subMesh->SetMaterial(mat, false);
 
   subMesh->Load();
   subMesh->Init();

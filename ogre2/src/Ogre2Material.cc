@@ -40,6 +40,16 @@ Ogre2Material::Ogre2Material()
 //////////////////////////////////////////////////
 Ogre2Material::~Ogre2Material()
 {
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::Destroy()
+{
+  if (!this->Scene()->IsInitialized())
+    return;
+
+  this->ogreHlmsPbs->destroyDatablock(this->ogreDatablock->getName());
 }
 
 //////////////////////////////////////////////////

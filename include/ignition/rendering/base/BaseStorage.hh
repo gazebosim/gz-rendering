@@ -1169,7 +1169,11 @@ namespace ignition
     {
       for (auto store : this->stores)
       {
-        store->Destroy(_object);
+        if (store->Contains(_object))
+        {
+          store->Destroy(_object);
+          return;
+        }
       }
     }
 

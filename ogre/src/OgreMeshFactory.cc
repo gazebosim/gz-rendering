@@ -427,14 +427,13 @@ OgreSubMeshPtr OgreSubMeshStoreFactory::CreateSubMesh(unsigned int _index)
   subMesh->name = this->names[_index];
   subMesh->scene = this->scene;
   subMesh->ogreSubEntity = this->ogreEntity->getSubEntity(_index);
+
   MaterialPtr mat = this->scene->Material(
       subMesh->ogreSubEntity->getMaterialName());
   if (mat)
   {
     // assign material to submesh who will make a copy of this material
     subMesh->SetMaterial(mat);
-    // clean up the material created by factory
-    this->scene->DestroyMaterial(mat);
   }
 
   subMesh->Load();

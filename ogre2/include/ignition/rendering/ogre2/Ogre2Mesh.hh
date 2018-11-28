@@ -47,6 +47,9 @@ namespace ignition
       public: virtual ~Ogre2Mesh();
 
       // Documentation inherited
+      public: virtual void Destroy() override;
+
+      // Documentation inherited
       public: virtual Ogre::MovableObject *OgreObject() const override;
 
       /// \brief Get a list of submeshes in this mesh

@@ -40,7 +40,7 @@ OgreMesh::~OgreMesh()
 //////////////////////////////////////////////////
 void OgreMesh::Destroy()
 {
-  if (!ogreEntity)
+  if (!this->ogreEntity)
     return;
 
   BaseMesh::Destroy();

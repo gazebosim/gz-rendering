@@ -40,6 +40,36 @@ Ogre2Mesh::~Ogre2Mesh()
 }
 
 //////////////////////////////////////////////////
+void Ogre2Mesh::Destroy()
+{
+  if (!this->ogreItem)
+    return;
+
+  std::cerr << "ogre2mesh destroy " << this->Name() << std::endl;
+
+  // We need to override BaseMesh::Destroy for ogre2 implementation to control
+  // the order in which ogre items and materials are destroyed.
+  // Items must be destroyed before materials otherwise ogre throws an exception
+  // when unlinking an renderable from a hlms datablock
+
+  // Remove this object from parent
+  BaseGeometry::Destroy();
+
+  // destroy mesh (ogre item)
+  auto ogreScene = std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+  ogreScene->OgreSceneManager()->destroyItem(this->ogreItem);
+  this->ogreItem = nullptr;
+
+  // destroy submeshes (ogre subitems)
+  this->SubMeshes()->DestroyAll();
+
+  // destroy material (ogre hlms datablock) - this needs to be done last!
+  if (this->material && this->ownsMaterial)
+    this->Scene()->DestroyMaterial(this->material);
+  this->material.reset();
+}
+
+//////////////////////////////////////////////////
 Ogre::MovableObject *Ogre2Mesh::OgreObject() const
 {
   return this->ogreItem;

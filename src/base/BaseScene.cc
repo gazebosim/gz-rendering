@@ -544,7 +544,6 @@ void BaseScene::RegisterMaterial(const std::string &_name,
   if (_material)
   {
     this->Materials()->Put(_name, _material);
-    std::cerr << "register material: " << _name << " " << this->Materials()->Size() << std::endl;
   }
 }
 
@@ -552,7 +551,6 @@ void BaseScene::RegisterMaterial(const std::string &_name,
 void BaseScene::UnregisterMaterial(const std::string &_name)
 {
   this->Materials()->Remove(_name);
-  std::cerr << "  unregister material: " << _name << " " << this->Materials()->Size() << std::endl;
 }
 
 //////////////////////////////////////////////////

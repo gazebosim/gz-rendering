@@ -39,6 +39,9 @@ class SceneTest : public testing::Test,
 
   /// \brief Test destroying nodes
   public: void DestroyNodes(const std::string &_renderEngine);
+
+  /// \brief Test if node cycles (child pointing to parent) are handled properly
+  public: void NodeCycle(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -434,6 +437,71 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void SceneTest::NodeCycle(const std::string &_renderEngine)
+{
+  auto engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return;
+  }
+
+  auto scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  auto root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  // No nodes
+  EXPECT_EQ(0u, scene->NodeCount());
+
+  {
+    // parent visual
+    auto parent = scene->CreateVisual("parent");
+    ASSERT_NE(nullptr, parent);
+    EXPECT_TRUE(scene->HasVisual(parent));
+
+    // Set child = parent on purpose to create a cycle of size 1
+    const auto child = parent;
+    ASSERT_NE(nullptr, child);
+    parent->AddChild(child);
+    // Adding the child should have failed
+    EXPECT_FALSE(parent->HasChild(child));
+
+    // Try Removing child. This should do nothing
+    parent->RemoveChild(child);
+    ASSERT_NE(nullptr, parent);
+
+    // add child again and try to destroy
+    parent->AddChild(child);
+    scene->DestroyVisual(parent, true);
+    EXPECT_EQ(0u, scene->VisualCount());
+  }
+
+  {
+    // Add another parent and create a longer cycle
+    auto parent = scene->CreateVisual("parent");
+    ASSERT_NE(nullptr, parent);
+    EXPECT_TRUE(scene->HasVisual(parent));
+
+    auto childA = scene->CreateVisual("child_A");
+    ASSERT_NE(nullptr, childA);
+    parent->AddChild(childA);
+
+    // set childAA to parent so the cycle is "parent->childA->parent"
+    auto childAA = parent;
+    childA->AddChild(childAA);
+
+    // This should not crash
+    scene->DestroyVisual(parent, true);
+    EXPECT_EQ(0u, scene->VisualCount());
+  }
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
 TEST_P(SceneTest, Scene)
 {
   Scene(GetParam());
@@ -455,6 +523,12 @@ TEST_P(SceneTest, RemoveNodes)
 TEST_P(SceneTest, DestroyNodes)
 {
   DestroyNodes(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, NodeCycle)
+{
+  NodeCycle(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,

@@ -16,7 +16,7 @@ Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/ico
 Windows 7     | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-windows7-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-windows7-amd64)
 
 Ignition Rendering is a C++ library designed to provide an abstraction
-for different rendering engines. It offers a unified set of APIs for creating
+for different rendering engines. It offers unified APIs for creating
 3D graphics applications.
 
 Ignition Rendering is a component in the ignition framework, a set
@@ -54,8 +54,9 @@ of libraries designed to rapidly develop robot applications.
 
 # Features
 
-* Support for different rendering engines, including OGRE and OptiX
-* Plugin-based rendering engine architecture. Mulitple engines can be loaded at run time.
+* Support for rendering engines including OGRE and OptiX
+* Plugin-based architecture. Mulitple rendering engine plugins can be loaded at run time.
+* Object-oriented scene management.
 
 # Install
 
@@ -71,9 +72,10 @@ On Ubuntu Bionic, it's possible to install Ignition Rendering's version 1 pre-re
 
 Add OSRF packages:
 
-    echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable bionic main" > /etc/apt/sources.list.d/gazebo-stable.list
-    echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease bionic main" > /etc/apt/sources.list.d/gazebo-prerelease.list
-    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
+    sudo apt -y install wget lsb-release gnupg
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
+    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
     sudo apt update
 
 Install Ignition Rendering:
@@ -82,22 +84,21 @@ Install Ignition Rendering:
 
 ## Source Install
 
-There are two versions of Ign-Rendering:
+There are two versions of Ign Rendering:
 
 * Version 0: Supports OGRE 1.8+ and OptiX
 * Version 1: Adds support for OGRE 2.1
 
 ### Prerequisites
 
-#### Version 0
+#### Version 0 (Requires Ubuntu Xenial 16.04 or above)
 
 Install dependencies:
 
-    sudo apt update
     sudo apt -y install wget lsb-release gnupg
-    sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-    sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
-    wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
+    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
     sudo apt update
     sudo apt install -y \
         cmake \
@@ -116,15 +117,14 @@ Clone source code, note you'll need the `default` branch:
 
     hg clone http://bitbucket.org/ignitionrobotics/ign-rendering -b default
 
-#### Version 1
+#### Version 1 (Requires Ubuntu Bionic 18.04 or above)
 
 Install dependencies:
 
-    sudo apt update
     sudo apt -y install wget lsb-release gnupg
-    sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-    sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
-    wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
+    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
     sudo apt update
     sudo apt install -y \
         g++-8 \
@@ -154,25 +154,22 @@ build the relevant plugins if the rendering library is found.
 
 **OGRE 1.x**
 
-Ubuntu:
-
     # this installs ogre 1.9. Alternatively, you can install 1.8
     sudo apt-get install libogre-1.9-dev
 
 **OGRE 2.x (available in Version 1)**
 
-Ubuntu:
+Add OSRF packages if you have not done so already.
 
-Add OSRF packages if you have not done so already:
-
-    echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable bionic main" > /etc/apt/sources.list.d/gazebo-stable.list
-    echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease bionic main" > /etc/apt/sources.list.d/gazebo-prerelease.list
-    sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys D2486D2DD83DB69272AFE98867170598AF249743
+    sudo apt -y install wget lsb-release gnupg
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
+    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
     sudo apt update
 
 Install OGRE 2.1 debs
 
-    sudo apt-get install libogre-2.1-dev
+    sudo apt install libogre-2.1-dev
 
 **OptiX (experimental)**
 
@@ -192,8 +189,9 @@ so that ign-rendering can find Optix, e.g. if you installed version 4.0.2 in HOM
     export LD_LIBRARY_PATH=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64/lib64:${LD_LIBRARY_PATH}
     export OPTIX_INSTALL_DIR=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64
 
-> Troubleshooting: If you encounter errors about different exception specifiers in optix math,
-edit `[optix_install_dir]/include/optixu/optixu_math_namespace.h` and comment
+Note: If you encounter errors about different exception specifiers in optix math
+when building Ign Rendering OptiX plugin, edit
+`[optix_install_dir]/include/optixu/optixu_math_namespace.h` and comment
 out the section that defines `fminf`, fmaxf, and `copysignf` (for optix
 sdk 4.0.2, comment out lines 167-206).
 
@@ -213,22 +211,24 @@ Replace `/path/to/install/dir` to whatever directory you want to install this pa
 
 # Usage
 
-The Ign Rendering APIs can be found in the documentation. See the
-[Documentation](markdown-header-documentation) section on how to build the
+The Ign Rendering API can be found in the documentation. See the
+[Documentation](#markdown-header-documentation) section on how to build the
 documentation files using Doxygen.
+
+You can also take a look at the sample applications in the `examples` folder.
 
 # Documentation
 
 API documentation can be generated using Doxygen
 
-1. Build documentation
+Build documentation
 
     sudo apt install -y doxygen
 
     cd build
     make doc
 
-2. View documentation
+View documentation
 
     firefox doxygen/html/index.html
 

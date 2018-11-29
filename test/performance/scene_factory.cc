@@ -15,6 +15,11 @@
  *
 */
 
+// The following is needed to enable the GetMemInfo function for OSX
+#ifdef __MACH__
+# include <mach/mach.h>
+#endif  // __MACH__
+
 #include <gtest/gtest.h>
 
 #include <ignition/common/Console.hh>

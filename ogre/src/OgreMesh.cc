@@ -43,6 +43,9 @@ void OgreMesh::Destroy()
   if (!this->ogreEntity)
     return;
 
+  if (!this->Scene()->IsInitialized())
+    return;
+
   BaseMesh::Destroy();
 
   auto ogreScene = std::dynamic_pointer_cast<OgreScene>(this->Scene());

@@ -45,8 +45,6 @@ void Ogre2Mesh::Destroy()
   if (!this->ogreItem)
     return;
 
-  std::cerr << "ogre2mesh destroy " << this->Name() << std::endl;
-
   // We need to override BaseMesh::Destroy for ogre2 implementation to control
   // the order in which ogre items and materials are destroyed.
   // Items must be destroyed before materials otherwise ogre throws an exception

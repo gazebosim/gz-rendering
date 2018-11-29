@@ -345,9 +345,9 @@ namespace ignition
       public: virtual SensorPtr SensorByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given sensor. If the given sensor is not managed by
-      /// this scene, no work will be done. Depending on the _recursive argument,
-      /// this function will either detach all child nodes from the scene graph
-      /// or recursively destroy them.
+      /// this scene, no work will be done. Depending on the _recursive
+      /// argument, this function will either detach all child nodes from the
+      /// scene graph or recursively destroy them.
       /// \param[in] _id ID of the sensor to destroy
       /// \param[in] _recursive True to recursively destroy the node and its
       /// children, false to destroy only this node and detach the children

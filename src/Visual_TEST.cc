@@ -153,6 +153,11 @@ void VisualTest::Children(const std::string &_renderEngine)
   EXPECT_EQ(child, visual->ChildByName(child->Name()));
   EXPECT_EQ(child, visual->ChildByIndex(0u));
 
+  // attempt to attach itself and verify self not added
+  visual->AddChild(visual);
+  EXPECT_EQ(1u, visual->ChildCount());
+  EXPECT_FALSE(visual->HasChild(visual));
+
   // attach more than one child
   VisualPtr child2 = scene->CreateVisual();
   ASSERT_NE(nullptr, child2);

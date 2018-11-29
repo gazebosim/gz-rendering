@@ -154,7 +154,7 @@ void SceneTest::Nodes(const std::string &_renderEngine)
   ASSERT_NE(nullptr, child);
   auto geom = scene->CreateBox();
   child->AddGeometry(geom);
-  child->HasGeometry(geom);
+  EXPECT_TRUE(child->HasGeometry(geom));
   EXPECT_TRUE(scene->HasVisual(child));
 
   // scene visuals
@@ -258,7 +258,7 @@ void SceneTest::RemoveNodes(const std::string &_renderEngine)
   EXPECT_EQ(5u, scene->VisualCount());
 
   // Remove child by name
-  parent->RemoveChildById(child04->Id());
+  parent->RemoveChildByName(child04->Name());
   EXPECT_FALSE(parent->HasChild(child04));
   EXPECT_EQ(0u, parent->ChildCount());
   EXPECT_EQ(5u, scene->VisualCount());
@@ -366,7 +366,7 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
   EXPECT_EQ(2u, scene->VisualCount());
 
   // Destroy a child visual by name
-  scene->DestroyVisualById(child04->Id());
+  scene->DestroyVisualByName(child04->Name());
   EXPECT_FALSE(parent->HasChild(child04));
   EXPECT_FALSE(scene->HasVisual(child04));
   EXPECT_EQ(0u, parent->ChildCount());

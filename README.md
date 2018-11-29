@@ -150,16 +150,16 @@ Clone source code, note you'll need the `gz11` branch:
 #### Supported Rendering Engines
 
 Ignition Rendering will look for rendering libraries installed in the system and
-build the relevant plugins if the rendering library is found.
+build the relevant plugins if dependencies are found.
 
 **OGRE 1.x**
 
     # this installs ogre 1.9. Alternatively, you can install 1.8
     sudo apt-get install libogre-1.9-dev
 
-**OGRE 2.x (available in Version 1)**
+**OGRE 2.x (supported in Version 1)**
 
-Add OSRF packages if you have not done so already.
+Add OSRF packages if you have not done so already:
 
     sudo apt -y install wget lsb-release gnupg
     sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
@@ -221,9 +221,9 @@ You can also take a look at the sample applications in the `examples` folder.
 
 API documentation can be generated using Doxygen
 
-Build documentation
-
     sudo apt install -y doxygen
+
+Build documentation
 
     cd build
     make doc

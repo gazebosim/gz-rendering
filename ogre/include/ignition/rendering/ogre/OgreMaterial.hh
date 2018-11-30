@@ -42,7 +42,7 @@ namespace ignition
       public: virtual ~OgreMaterial();
 
       // Documentation inherited
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       public: virtual bool LightingEnabled() const override;
 

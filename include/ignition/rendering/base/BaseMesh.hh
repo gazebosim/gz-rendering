@@ -38,16 +38,18 @@ namespace ignition
 
       public: virtual ~BaseMesh();
 
-      public: virtual unsigned int SubMeshCount() const;
+      public: virtual unsigned int SubMeshCount() const override;
 
-      public: virtual bool HasSubMesh(ConstSubMeshPtr _subMesh) const;
+      public: virtual bool HasSubMesh(ConstSubMeshPtr _subMesh) const override;
 
-      public: virtual bool HasSubMeshName(const std::string &_name) const;
+      public: virtual bool HasSubMeshName(const std::string &_name) const
+                      override;
 
       public: virtual SubMeshPtr SubMeshByName(
-                  const std::string &_name) const;
+                  const std::string &_name) const override;
 
-      public: virtual SubMeshPtr SubMeshByIndex(unsigned int _index) const;
+      public: virtual SubMeshPtr SubMeshByIndex(unsigned int _index) const
+                      override;
 
       // Documentation inherited.
       public: virtual MaterialPtr Material() const override;
@@ -58,7 +60,7 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true) override;
 
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
@@ -98,7 +100,7 @@ namespace ignition
       /// \param[in] _material New Material to be assigned
       public: virtual void SetMaterialImpl(MaterialPtr _material) = 0;
 
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       // Documentation inherited
       public: virtual void Destroy() override;

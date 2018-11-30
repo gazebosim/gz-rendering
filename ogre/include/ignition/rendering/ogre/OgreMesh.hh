@@ -48,9 +48,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
-      public: virtual Ogre::MovableObject *OgreObject() const;
+      public: virtual Ogre::MovableObject *OgreObject() const override;
 
-      protected: virtual SubMeshStorePtr SubMeshes() const;
+      protected: virtual SubMeshStorePtr SubMeshes() const override;
 
       protected: OgreSubMeshStorePtr subMeshes;
 
@@ -70,12 +70,12 @@ namespace ignition
 
       public: virtual Ogre::SubEntity *OgreSubEntity() const;
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       // Documentation inherited
       protected: virtual void SetMaterialImpl(MaterialPtr _material) override;
 
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
       protected: Ogre::SubEntity *ogreSubEntity;
 

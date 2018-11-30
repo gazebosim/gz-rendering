@@ -142,8 +142,8 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   // First place 2 of 3 boxes within range and verify range values.
   // then move all 3 boxes out of range and verify range values
 
-  const double hMinAngle = -M_PI/2.0;
-  const double hMaxAngle = M_PI/2.0;
+  const double hMinAngle = -IGN_PI/2.0;
+  const double hMaxAngle = IGN_PI/2.0;
   const double minRange = 0.1;
   const double maxRange = 10.0;
   const int hRayCount = 320;
@@ -183,7 +183,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Create a second ray caster rotated
   ignition::math::Pose3d testPose2(ignition::math::Vector3d(0, 0, 0.1),
-      ignition::math::Quaterniond(M_PI/2.0, 0, 0));
+      ignition::math::Quaterniond(IGN_PI/2.0, 0, 0));
 
   GpuRaysPtr gpuRays2 = scene->CreateGpuRays("gpu_rays_2");
   gpuRays2->SetWorldPosition(testPose2.Pos());
@@ -303,10 +303,10 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   // Place a box within range and verify range values,
   // then move the box out of range and verify range values
 
-  double hMinAngle = -M_PI/2.0;
-  double hMaxAngle = M_PI/2.0;
-  double vMinAngle = -M_PI/4.0;
-  double vMaxAngle = M_PI/4.0;
+  double hMinAngle = -IGN_PI/2.0;
+  double hMaxAngle = IGN_PI/2.0;
+  double vMinAngle = -IGN_PI/4.0;
+  double vMaxAngle = IGN_PI/4.0;
   double minRange = 0.1;
   double maxRange = 5.0;
   unsigned int hRayCount = 640;

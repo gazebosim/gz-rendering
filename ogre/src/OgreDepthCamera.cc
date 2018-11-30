@@ -18,7 +18,7 @@
 #if (_WIN32)
   /* Needed for std::min */
   #define NOMINMAX
-  #include <windef.h>
+  #include <windows.h>
 #endif
 #include <ignition/math/Helpers.hh>
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"

@@ -287,7 +287,11 @@ void Ogre2RenderTexture::BuildTarget()
   // Ogre 2 PBS expects gamma correction to be enabled
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
+#if OGRE_VERSION_LT_1_10_1
       Ogre::TU_RENDERTARGET, 0, true, this->antiAliasing)).getPointer();
+#else
+      Ogre::TU_RENDERTARGET, 0, true, this->antiAliasing)).get();
+#endif
 }
 
 //////////////////////////////////////////////////

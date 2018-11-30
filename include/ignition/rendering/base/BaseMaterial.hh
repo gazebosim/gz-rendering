@@ -143,7 +143,7 @@ namespace ignition
       public: virtual float Metalness() const override;
 
       // Documentation inherited
-      public: virtual enum MaterialType Type() const override;
+      public: virtual MaterialType Type() const override;
 
       public: virtual void SetShaderType(enum ShaderType /*_type*/) override
              {
@@ -240,7 +240,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    enum MaterialType BaseMaterial<T>::Type() const
+    MaterialType BaseMaterial<T>::Type() const
     {
       return MT_CLASSIC;
     }

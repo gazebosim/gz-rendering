@@ -68,16 +68,14 @@ OptixSubMesh::~OptixSubMesh()
 }
 
 //////////////////////////////////////////////////
-MaterialPtr OptixSubMesh::Material() const
+optix::GeometryInstance OptixSubMesh::OptixGeometryInstance() const
 {
-  return this->material;
+  return this->optixGeomInstance;
 }
 
 //////////////////////////////////////////////////
-void OptixSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
+void OptixSubMesh::SetMaterialImpl(MaterialPtr _material)
 {
-  _material = (_unique) ? _material->Clone() : _material;
-
   OptixMaterialPtr derived =
       std::dynamic_pointer_cast<OptixMaterial>(_material);
 
@@ -89,20 +87,7 @@ void OptixSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
-  this->SetMaterialImpl(derived);
-}
-
-//////////////////////////////////////////////////
-optix::GeometryInstance OptixSubMesh::OptixGeometryInstance() const
-{
-  return this->optixGeomInstance;
-}
-
-//////////////////////////////////////////////////
-void OptixSubMesh::SetMaterialImpl(OptixMaterialPtr _material)
-{
-  optix::Material optixMaterial = _material->Material();
+  optix::Material optixMaterial = derived->Material();
   this->optixGeomInstance->setMaterialCount(0);
   this->optixGeomInstance->addMaterial(optixMaterial);
-  this->material = _material;
 }

@@ -52,6 +52,10 @@ namespace ignition
       /// mesh
       public: virtual Ogre2MeshPtr Create(const MeshDescriptor &_desc);
 
+      /// \brief Cleanup and clear all internal ogre v2 meshes created by this
+      /// factory
+      public: virtual void Clear();
+
       /// \brief Get the ogre item based on the mesh descriptor
       /// \param[in] _desc Descriptor describing the target mesh
       protected: virtual Ogre::Item *OgreItem(
@@ -78,6 +82,9 @@ namespace ignition
       /// needed information to create a mesh
       /// \param[in] _desc Mesh descriptor to be validated
       protected: virtual bool Validate(const MeshDescriptor &_desc);
+
+      /// \brief A list of ogre meshes created by this factory
+      protected: std::vector<std::string> ogreMeshes;
 
       /// \brief Pointer to the scene object
       protected: Ogre2ScenePtr scene;

@@ -101,7 +101,9 @@ namespace ignition
 
       public: virtual NodePtr NodeByIndex(unsigned int _index) const override;
 
-      public: virtual void DestroyNode(NodePtr _node) override;
+      // Documentation inherited.
+      public: virtual void DestroyNode(NodePtr _node, bool _recursive = false)
+                      override;
 
       public: virtual void DestroyNodeById(unsigned int _id) override;
 
@@ -127,7 +129,9 @@ namespace ignition
 
       public: virtual LightPtr LightByIndex(unsigned int _index) const override;
 
-      public: virtual void DestroyLight(LightPtr _light) override;
+      // Documentation inherited.
+      public: virtual void DestroyLight(LightPtr _light,
+          bool _recursive = false) override;
 
       public: virtual void DestroyLightById(unsigned int _id) override;
 
@@ -155,7 +159,9 @@ namespace ignition
       public: virtual SensorPtr SensorByIndex(unsigned int _index) const
                       override;
 
-      public: virtual void DestroySensor(SensorPtr _sensor) override;
+      // Documentation inherited.
+      public: virtual void DestroySensor(SensorPtr _sensor,
+          bool _recursive = false) override;
 
       public: virtual void DestroySensorById(unsigned int _id) override;
 
@@ -187,7 +193,9 @@ namespace ignition
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
                           const ignition::math::Vector2i &_mousePos) override;
 
-      public: virtual void DestroyVisual(VisualPtr _visual) override;
+      // Documentation inherited.
+      public: virtual void DestroyVisual(VisualPtr _visual,
+          bool _recursive = false) override;
 
       public: virtual void DestroyVisualById(unsigned int _id) override;
 
@@ -211,6 +219,12 @@ namespace ignition
                       override;
 
       public: virtual void UnregisterMaterials() override;
+
+      // Documentation inherited
+      public: virtual void DestroyMaterial(MaterialPtr _material) override;
+
+      // Documentation inherited
+      public: virtual void DestroyMaterials() override;
 
       public: virtual DirectionalLightPtr CreateDirectionalLight() override;
 

@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BASE_BASESCENE_HH_
 
 #include <array>
+#include <set>
 #include <string>
 
 #include <ignition/common/Console.hh>
@@ -467,6 +468,14 @@ namespace ignition
       private: virtual void CreateNodeStore();
 
       private: virtual void CreateMaterials();
+
+      /// \brief Helper function to recursively destory nodes while checking
+      /// for loops.
+      /// \param[in] _node Node to be destroyed
+      /// \param[in] _nodeId Holds all node ids that have been visited in the
+      /// tree during the destroy process. Used for loop detection.
+      private: void DestroyNodeRecursive(NodePtr _node,
+          std::set<unsigned int> &_nodeIds);
 
       protected: unsigned int id;
 

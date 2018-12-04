@@ -130,6 +130,7 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 

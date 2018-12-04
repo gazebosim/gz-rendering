@@ -46,6 +46,12 @@ unsigned int defaultEnginesForTest()
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, GetEngine)
 {
+#ifdef _WIN32
+  // issue #40
+  return;
+#endif
+
+
   unsigned int count = defaultEnginesForTest();
 
   EXPECT_EQ(count, engineCount());
@@ -74,6 +80,11 @@ TEST(RenderingIfaceTest, GetEngine)
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, RegisterEngine)
 {
+#ifdef _WIN32
+  // issue #40
+  return;
+#endif
+
   unsigned int count = defaultEnginesForTest();
 
   if (count == 0)

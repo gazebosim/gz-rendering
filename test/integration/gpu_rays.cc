@@ -137,6 +137,11 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 /// \brief Test detection of different boxes
 void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 {
+#ifdef __APPLE__
+  // issue #35
+  return;
+#endif
+
   // Test GPU rays with 3 boxes in the world.
   // First GPU rays at identity orientation, second at 90 degree roll
   // First place 2 of 3 boxes within range and verify range values.
@@ -299,6 +304,11 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 /// \brief Test GPU rays vertical component
 void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 {
+#ifdef __APPLE__
+  // issue #35
+  return;
+#endif
+
   // Test a rays that has a vertical range component.
   // Place a box within range and verify range values,
   // then move the box out of range and verify range values

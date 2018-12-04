@@ -138,7 +138,7 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 {
 #ifdef __APPLE__
-  // issue #35
+  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
 
@@ -305,7 +305,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 {
 #ifdef __APPLE__
-  // issue #35
+  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
 

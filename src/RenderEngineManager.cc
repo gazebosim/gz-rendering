@@ -43,7 +43,8 @@ class ignition::rendering::RenderEngineManagerPrivate
       const std::map<std::string, std::string> &_params,
       const std::string &_path);
 
-  /// \brief Unload the given render engine from an EngineMap iterator
+  /// \brief Unload the given render engine from an EngineMap iterator.
+  /// The engine will remain registered and can be loaded again later.
   /// \param[in] _iter EngineMap iterator
   /// \return True if the engine is unloaded
   public: bool UnloadEngine(EngineIter _iter);
@@ -51,7 +52,10 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \brief Register default engines supplied by ign-rendering
   public: void RegisterDefaultEngines();
 
-  /// \brief Unregister an engine using an EngineMap iterator
+  /// \brief Unregister an engine using an EngineMap iterator.
+  /// Once an engine is unregistered, it can no longer be loaded. Use
+  /// RenderEngineManagerPrivate::UnloadEngine to unload the engine without
+  /// unregistering it if you wish to load the engine again
   /// \param[in] _iter EngineMap iterator
   public: void UnregisterEngine(EngineIter _iter);
 
@@ -62,7 +66,7 @@ class ignition::rendering::RenderEngineManagerPrivate
   public: bool LoadEnginePlugin(const std::string &_filename,
               const std::string &_path);
 
-  /// \brief Unload a render engine plugin
+  /// \brief Unload a render engine plugin.
   /// \param[in] _engineName Name of engine associated with this plugin
   /// \return True if the plugin is unloaded successfully
   public: bool UnloadEnginePlugin(const std::string &_engineName);

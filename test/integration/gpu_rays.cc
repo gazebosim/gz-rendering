@@ -137,6 +137,7 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 
@@ -144,6 +145,11 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 /// \brief Test detection of different boxes
 void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 {
+#ifdef __APPLE__
+  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  return;
+#endif
+
   if (_renderEngine != "ogre")
   {
     igndbg << "GpuRays not supported yet in rendering engine: "
@@ -314,6 +320,11 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 /// \brief Test GPU rays vertical component
 void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 {
+#ifdef __APPLE__
+  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  return;
+#endif
+
   if (_renderEngine != "ogre")
   {
     igndbg << "GpuRays not supported yet in rendering engine: "

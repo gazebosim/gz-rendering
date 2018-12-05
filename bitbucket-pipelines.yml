@@ -18,7 +18,7 @@ pipelines:
           - gcov -v
           # Dependency: Ignition packages
           - apt-get -y install
-            libignition-cmake2-dev libignition-common3-dev libignition-math6-dev
+            libignition-cmake2-dev libignition-common3-dev libignition-math6-dev libignition-plugin-dev
           # lcov
           - git clone https://github.com/linux-test-project/lcov.git
           - cd lcov

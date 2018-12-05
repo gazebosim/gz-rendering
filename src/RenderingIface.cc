@@ -73,6 +73,12 @@ RenderEngine *engine(const unsigned int _index,
 }
 
 //////////////////////////////////////////////////
+bool unloadEngine(const std::string &_name)
+{
+  return RenderEngineManager::Instance()->UnloadEngine(_name);
+}
+
+//////////////////////////////////////////////////
 void registerEngine(const std::string &_name,
     RenderEngine *_engine)
 {

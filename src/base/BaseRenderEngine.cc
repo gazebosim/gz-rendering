@@ -67,6 +67,7 @@ bool BaseRenderEngine::Init()
 //////////////////////////////////////////////////
 bool BaseRenderEngine::Fini()
 {
+  this->Destroy();
   return true;
 }
 
@@ -197,6 +198,9 @@ ScenePtr BaseRenderEngine::CreateScene(unsigned int _id,
 //////////////////////////////////////////////////
 void BaseRenderEngine::Destroy()
 {
+  this->DestroyScenes();
+  this->loaded = false;
+  this->initialized = false;
 }
 
 //////////////////////////////////////////////////

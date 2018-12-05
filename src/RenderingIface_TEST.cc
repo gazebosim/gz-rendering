@@ -70,6 +70,7 @@ TEST(RenderingIfaceTest, GetEngine)
     if (eng->Name() == "ogre" || eng->Name() == "ogre2")
       ++i;
 #endif
+    rendering::unloadEngine(eng->Name());
   }
 
   // non-existent engine

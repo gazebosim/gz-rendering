@@ -128,6 +128,9 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
 
   engine->DestroyScenes();
   EXPECT_EQ(engine->SceneCount(), 0u);
+
+  // Clean up
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

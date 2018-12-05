@@ -101,6 +101,10 @@ void TextTest::Text(const std::string &_renderEngine)
 
   // color is affected by material but currently only by the diffuse component
   EXPECT_EQ(math::Color(0.3, 0.8, 0.2, 1.0), text->Color());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

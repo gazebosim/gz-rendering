@@ -370,6 +370,7 @@ namespace ignition
       T::Destroy();
       this->Geometries()->DestroyAll();
       this->Children()->RemoveAll();
+      this->material.reset();
     }
 
     //////////////////////////////////////////////////

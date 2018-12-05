@@ -90,7 +90,7 @@ namespace ignition
 
       public: virtual ~OgreRenderEngine();
 
-      public: virtual bool Fini() override;
+      public: virtual void Destroy() override;
 
       public: virtual bool IsEnabled() const override;
 

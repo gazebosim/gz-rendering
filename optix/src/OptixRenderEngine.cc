@@ -16,6 +16,9 @@
  */
 
 #include <vector>
+
+#include <ignition/plugin/Register.hh>
+
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
@@ -131,5 +134,5 @@ bool OptixRenderEngine::InitImpl()
 }
 
 // Register this plugin
-IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::OptixRenderEnginePlugin,
-                                  ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(ignition::rendering::OptixRenderEnginePlugin,
+                    ignition::rendering::RenderEnginePlugin)

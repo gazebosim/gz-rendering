@@ -21,7 +21,6 @@
 #include <memory>
 #include <string>
 
-#include <ignition/common/PluginMacros.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
@@ -38,9 +37,6 @@ namespace ignition
     /// \brief Base plugin class for render engines
     class IGNITION_RENDERING_VISIBLE RenderEnginePlugin
     {
-      public: IGN_COMMON_SPECIALIZE_INTERFACE(
-          ignition::rendering::RenderEnginePlugin)
-
       /// \brief Constructor
       public: RenderEnginePlugin();
 

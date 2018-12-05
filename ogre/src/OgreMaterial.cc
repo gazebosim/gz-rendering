@@ -36,8 +36,28 @@ OgreMaterial::OgreMaterial()
 //////////////////////////////////////////////////
 OgreMaterial::~OgreMaterial()
 {
-  Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-  matManager.remove(this->name);
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::Destroy()
+{
+  if (!this->Scene()->IsInitialized())
+    return;
+
+#if OGRE_VERSION_LT_1_10_1
+  if (!this->ogreMaterial.isNull())
+  {
+    this->ogreMaterial->unload();
+    this->ogreMaterial.setNull();
+  }
+#else
+  if (this->ogreMaterial)
+  {
+    this->ogreMaterial->unload();
+    this->ogreMaterial = nullptr;
+  }
+#endif
 }
 
 //////////////////////////////////////////////////

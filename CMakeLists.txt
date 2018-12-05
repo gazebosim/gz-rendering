@@ -37,6 +37,11 @@ ign_find_package(ignition-common3 REQUIRED COMPONENTS graphics events)
 set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
 
 #--------------------------------------
+# Find ignition-plugin
+ign_find_package(ignition-plugin1 REQUIRED COMPONENTS all)
+set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
+
+#--------------------------------------
 # Find FreeImage
 ign_find_package(FreeImage VERSION 3.9
   REQUIRED_BY optix

@@ -73,6 +73,10 @@ void GridTest::Grid(const std::string &_renderEngine)
   EXPECT_EQ(math::Color(0.6, 0.7, 0.8), gridMat->Ambient());
   EXPECT_EQ(math::Color(0.3, 0.8, 0.2), gridMat->Diffuse());
   EXPECT_EQ(math::Color(0.4, 0.9, 1.0), gridMat->Specular());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

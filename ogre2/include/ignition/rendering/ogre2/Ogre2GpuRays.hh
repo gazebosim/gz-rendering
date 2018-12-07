@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGREGPURAYS_HH_
-#define IGNITION_RENDERING_OGRE_OGREGPURAYS_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2GPURAYS_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2GPURAYS_HH_
 
 #include <string>
 #include <vector>
@@ -25,13 +25,13 @@
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/base/BaseGpuRays.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderTarget.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreSensor.hh"
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
@@ -46,20 +46,20 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
-    class OgreGpuRaysPrivate;
+    class Ogre2GpuRaysPrivate;
 
-    /** \class OgreGpuRays OgreGpuRays.hh\
-     * rendering/ogre/OgreGpuRays.hh
+    /** \class Ogre2GpuRays Ogre2GpuRays.hh\
+     * rendering/ogre/Ogre2GpuRays.hh
     **/
     /// \brief Gpu Rays used to render depth data into an image buffer
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGpuRays :
-      public BaseGpuRays<OgreSensor>, public Ogre::RenderObjectListener
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2GpuRays :
+      public BaseGpuRays<Ogre2Sensor>
     {
       /// \brief Constructor
-      protected: OgreGpuRays();
+      protected: Ogre2GpuRays();
 
       /// \brief Destructor
-      public: virtual ~OgreGpuRays();
+      public: virtual ~Ogre2GpuRays();
 
       // Documentation inherited
       public: virtual void Init() override;
@@ -90,12 +90,6 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual RenderTargetPtr RenderTarget() const override;
-
-      /// \internal
-      /// \brief Implementation of Ogre::RenderObjectListener
-      public: virtual void notifyRenderSingleObject(Ogre::Renderable *_rend,
-              const Ogre::Pass *_p, const Ogre::AutoParamDataSource *_s,
-              const Ogre::LightList *_ll, bool _supp) override;
 
       /// \brief Set the number of samples in the width and height for the
       /// first pass texture.
@@ -183,9 +177,9 @@ namespace ignition
 
       /// \internal
       /// \brief Pointer to private data.
-      private: std::unique_ptr<OgreGpuRaysPrivate> dataPtr;
+      private: std::unique_ptr<Ogre2GpuRaysPrivate> dataPtr;
 
-      private: friend class OgreScene;
+      private: friend class Ogre2Scene;
     };
     }
   }

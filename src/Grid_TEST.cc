@@ -36,6 +36,14 @@ class GridTest : public testing::Test,
 /////////////////////////////////////////////////
 void GridTest::Grid(const std::string &_renderEngine)
 {
+  if (_renderEngine != "ogre")
+  {
+    igndbg << "Grid not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
+
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -43,6 +51,7 @@ void GridTest::Grid(const std::string &_renderEngine)
            << "' is not supported" << std::endl;
     return;
   }
+
   ScenePtr scene = engine->CreateScene("scene");
 
   GridPtr grid = scene->CreateGrid();
@@ -86,7 +95,7 @@ TEST_P(GridTest, Grid)
 }
 
 INSTANTIATE_TEST_CASE_P(Grid, GridTest,
-    ::testing::Values("ogre", "optix"),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)

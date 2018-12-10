@@ -121,28 +121,6 @@ namespace ignition
 
       protected: bool normalMapDirty = true;
 
-      protected: bool lightingEnabled = true;
-
-      protected: math::Color ambient;
-
-      protected: math::Color diffuse;
-
-      protected: math::Color specular;
-
-      protected: math::Color emissive;
-
-      protected: double shininess = 0.0;
-
-      protected: double transparency = 0.0;
-
-      protected: double reflectivity = 0.0;
-
-      protected: bool castShadows = true;
-
-      protected: bool receiveShadows = true;
-
-      protected: bool reflectionEnabled = true;
-
       protected: std::string textureName;
 
       protected: std::string normalMapName;

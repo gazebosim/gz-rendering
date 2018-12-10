@@ -101,7 +101,8 @@ namespace ignition
 
       public: virtual void PreRender();
 
-      public: virtual void Destroy();
+      // Documentation inherited
+      public: virtual void Destroy() override;
 
       protected: virtual void PreRenderChildren();
 
@@ -367,10 +368,10 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::Destroy()
     {
-      T::Destroy();
       this->Geometries()->DestroyAll();
       this->Children()->RemoveAll();
       this->material.reset();
+      T::Destroy();
     }
 
     //////////////////////////////////////////////////

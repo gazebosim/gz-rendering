@@ -236,7 +236,7 @@ TEST_P(OrbitViewControllerTest, Control)
 }
 
 INSTANTIATE_TEST_CASE_P(OrbitViewController, OrbitViewControllerTest,
-    ::testing::Values("ogre", "optix"),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)

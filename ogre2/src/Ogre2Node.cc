@@ -60,6 +60,7 @@ void Ogre2Node::Destroy()
   BaseNode::Destroy();
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   ogreSceneManager->destroySceneNode(this->ogreNode);
+  this->ogreNode = nullptr;
 }
 
 //////////////////////////////////////////////////

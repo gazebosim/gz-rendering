@@ -40,6 +40,13 @@ class RayQueryTest : public testing::Test,
 /////////////////////////////////////////////////
 void RayQueryTest::RayQuery(const std::string &_renderEngine)
 {
+  if (_renderEngine == "optix")
+  {
+    igndbg << "RayQuery not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -105,7 +112,7 @@ TEST_P(RayQueryTest, RayQuery)
 }
 
 INSTANTIATE_TEST_CASE_P(RayQuery, RayQueryTest,
-    ::testing::Values("ogre"),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)

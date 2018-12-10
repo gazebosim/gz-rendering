@@ -140,7 +140,7 @@ TEST_P(RenderEngineTest, RenderEngine)
 }
 
 INSTANTIATE_TEST_CASE_P(RenderEngine, RenderEngineTest,
-    ::testing::Values("ogre", "optix"),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)

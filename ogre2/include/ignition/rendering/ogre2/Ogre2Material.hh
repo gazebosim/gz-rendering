@@ -40,18 +40,6 @@ namespace ignition
       public: virtual ~Ogre2Material();
 
       // Documentation inherited
-      public: virtual bool LightingEnabled() const override;
-
-      // Documentation inherited
-      public: virtual void SetLightingEnabled(const bool _enabled) override;
-
-      // Documentation inherited
-      public: virtual math::Color Ambient() const override;
-
-      // Documentation inherited
-      public: virtual void SetAmbient(const math::Color &_color) override;
-
-      // Documentation inherited
       public: virtual math::Color Diffuse() const override;
 
       // Documentation inherited
@@ -70,28 +58,7 @@ namespace ignition
       public: virtual void SetEmissive(const math::Color &_color) override;
 
       // Documentation inherited
-      public: virtual double Shininess() const override;
-
-      // Documentation inherited
-      public: virtual void SetShininess(const double _shininess) override;
-
-      // Documentation inherited
-      public: virtual double Transparency() const override;
-
-      // Documentation inherited
       public: virtual void SetTransparency(const double _transparency) override;
-
-      // Documentation inherited
-      public: virtual double Reflectivity() const override;
-
-      // Documentation inherited
-      public: virtual void SetReflectivity(const double _reflectivity) override;
-
-      // Documentation inherited
-      public: virtual bool CastShadows() const override;
-
-      // Documentation inherited
-      public: virtual void SetCastShadows(const bool _castShadows) override;
 
       // Documentation inherited
       public: virtual bool ReceiveShadows() const override;
@@ -99,12 +66,6 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetReceiveShadows(const bool _receiveShadows)
           override;
-
-      // Documentation inherited
-      public: virtual bool ReflectionEnabled() const override;
-
-      // Documentation inherited
-      public: virtual void SetReflectionEnabled(const bool _enabled) override;
 
       // Documentation inherited
       public: virtual bool HasTexture() const override;
@@ -215,15 +176,6 @@ namespace ignition
 
       /// \brief  Ogre high level physical based shading object
       protected: Ogre::HlmsPbs *ogreHlmsPbs = nullptr;
-
-      /// \brief Material transparency
-      protected: double transparency = 0.0;
-
-      /// \brief Flag to indicate if material casts shadows
-      protected: bool castShadows = true;
-
-      /// \brief Flag to indicate if lighting is enabled for this material.
-      protected: bool lightingEnabled = true;
 
       /// \brief Name of the texture
       protected: std::string textureName;

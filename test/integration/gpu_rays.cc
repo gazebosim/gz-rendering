@@ -66,6 +66,13 @@ class GpuRaysTest: public testing::Test,
 /// \brief Test GPU rays configuraions
 void GpuRaysTest::Configure(const std::string &_renderEngine)
 {
+  if (_renderEngine != "ogre")
+  {
+    igndbg << "GpuRays not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -142,6 +149,13 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   std::cerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
+
+  if (_renderEngine != "ogre")
+  {
+    igndbg << "GpuRays not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
 
   // Test GPU rays with 3 boxes in the world.
   // First GPU rays at identity orientation, second at 90 degree roll
@@ -311,6 +325,13 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   return;
 #endif
 
+  if (_renderEngine != "ogre")
+  {
+    igndbg << "GpuRays not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
   // Test a rays that has a vertical range component.
   // Place a box within range and verify range values,
   // then move the box out of range and verify range values
@@ -449,7 +470,7 @@ TEST_P(GpuRaysTest, LaserVertical)
 }
 
 INSTANTIATE_TEST_CASE_P(GpuRays, GpuRaysTest,
-    ::testing::Values("ogre"),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)

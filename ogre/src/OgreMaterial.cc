@@ -520,8 +520,8 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
 //////////////////////////////////////////////////
 void OgreMaterial::UpdateTransparency()
 {
-  Ogre::ColourValue ambient = this->ogrePass->getAmbient();
-  double alpha = (1 - this->transparency) * ambient.a;
+  Ogre::ColourValue color = this->ogrePass->getAmbient();
+  double alpha = (1 - this->transparency) * color.a;
 
   if (alpha < 1)
   {

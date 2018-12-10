@@ -46,7 +46,8 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true) = 0;
 
-      public: virtual void Destroy();
+      // Documentation inherited
+      public: virtual void Destroy() override;
     };
 
     //////////////////////////////////////////////////

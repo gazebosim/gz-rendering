@@ -39,6 +39,13 @@ class SceneTest: public testing::Test,
 /////////////////////////////////////////////////
 void SceneTest::VisualAt(const std::string &_renderEngine)
 {
+  if (_renderEngine == "optix")
+  {
+    igndbg << "RayQuery not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -118,7 +125,7 @@ TEST_P(SceneTest, VisualAt)
 
 // It doesn't suppot optix just yet
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
-    ::testing::Values("ogre"),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)

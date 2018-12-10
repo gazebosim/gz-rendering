@@ -94,7 +94,7 @@ TEST_P(MeshDescriptorTest, Descriptor)
 }
 
 INSTANTIATE_TEST_CASE_P(MeshDescriptor, MeshDescriptorTest,
-    ::testing::Values("ogre", "optix"),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)

@@ -256,11 +256,34 @@ void BaseScene::DestroyNode(NodePtr _node, bool _recursive)
 
   if (_recursive)
   {
-    while (_node->ChildCount() > 0u)
-    {
-      this->DestroyNode(_node->ChildByIndex(0u), _recursive);
-    }
+    std::set<unsigned int> nodeIds;
+    this->DestroyNodeRecursive(_node, nodeIds);
   }
+  else
+    this->nodes->Destroy(_node);
+}
+
+//////////////////////////////////////////////////
+void BaseScene::DestroyNodeRecursive(NodePtr _node,
+    std::set<unsigned int> &_nodeIds)
+{
+  // check if we have visited this node before
+  if (_nodeIds.find(_node->Id()) != _nodeIds.end())
+  {
+    ignwarn << "Detected loop in scene tree while recursively destroying nodes."
+            << " Breaking loop." << std::endl;
+    _node->RemoveParent();
+    return;
+  }
+  _nodeIds.insert(_node->Id());
+
+  // destroy child nodes first
+  while (_node->ChildCount() > 0u)
+  {
+    this->DestroyNodeRecursive(_node->ChildByIndex(0u), _nodeIds);
+  }
+
+  // destroy node
   this->nodes->Destroy(_node);
 }
 
@@ -542,9 +565,7 @@ void BaseScene::RegisterMaterial(const std::string &_name,
     MaterialPtr _material)
 {
   if (_material)
-  {
     this->Materials()->Put(_name, _material);
-  }
 }
 
 //////////////////////////////////////////////////

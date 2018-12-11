@@ -473,8 +473,15 @@ namespace ignition
       /// \param[in] _name Name of the material to unregistered
       public: virtual void UnregisterMaterial(const std::string &_name) = 0;
 
-      /// \brief Unregister material all registered materials
+      /// \brief Unregister all registered materials
       public: virtual void UnregisterMaterials() = 0;
+
+      /// \brief Unregister and destroy a material
+      /// \param[in] _material Material to be unregistered and destroyed
+      public: virtual void DestroyMaterial(MaterialPtr _material) = 0;
+
+      /// \brief Unregister and destroys all registered materials
+      public: virtual void DestroyMaterials() = 0;
 
       /// \brief Create new directional light. A unique ID and name will
       /// automatically be assigned to the light.

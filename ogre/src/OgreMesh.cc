@@ -34,6 +34,24 @@ OgreMesh::OgreMesh()
 //////////////////////////////////////////////////
 OgreMesh::~OgreMesh()
 {
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void OgreMesh::Destroy()
+{
+  if (!this->ogreEntity)
+    return;
+
+  if (!this->Scene()->IsInitialized())
+    return;
+
+  BaseMesh::Destroy();
+
+  auto ogreScene = std::dynamic_pointer_cast<OgreScene>(this->Scene());
+
+  ogreScene->OgreSceneManager()->destroyEntity(this->ogreEntity);
+  this->ogreEntity = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -60,16 +78,21 @@ OgreSubMesh::~OgreSubMesh()
 }
 
 //////////////////////////////////////////////////
-MaterialPtr OgreSubMesh::Material() const
+Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
 {
-  return this->material;
+  return this->ogreSubEntity;
 }
 
 //////////////////////////////////////////////////
-void OgreSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
+void OgreSubMesh::Destroy()
 {
-  _material = (_unique) ? _material->Clone() : _material;
+  BaseSubMesh::Destroy();
+  OgreRTShaderSystem::Instance()->DetachEntity(this);
+}
 
+//////////////////////////////////////////////////
+void OgreSubMesh::SetMaterialImpl(MaterialPtr _material)
+{
   OgreMaterialPtr derived =
       std::dynamic_pointer_cast<OgreMaterial>(_material);
 
@@ -81,29 +104,9 @@ void OgreSubMesh::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
-  this->SetMaterialImpl(derived);
-}
-
-//////////////////////////////////////////////////
-Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
-{
-  return this->ogreSubEntity;
-}
-
-//////////////////////////////////////////////////
-void OgreSubMesh::Destroy()
-{
-  OgreRTShaderSystem::Instance()->DetachEntity(this);
-  this->material.reset();
-}
-
-//////////////////////////////////////////////////
-void OgreSubMesh::SetMaterialImpl(OgreMaterialPtr _material)
-{
-  std::string materialName = _material->Name();
-  Ogre::MaterialPtr ogreMaterial = _material->Material();
+  std::string materialName = derived->Name();
+  Ogre::MaterialPtr ogreMaterial = derived->Material();
   this->ogreSubEntity->setMaterialName(materialName);
-  this->material = _material;
 }
 
 //////////////////////////////////////////////////

@@ -581,6 +581,28 @@ void BaseScene::UnregisterMaterials()
 }
 
 //////////////////////////////////////////////////
+void BaseScene::DestroyMaterial(MaterialPtr _material)
+{
+  if (!_material)
+    return;
+
+  std::string matName = _material->Name();
+  _material->Destroy();
+  this->UnregisterMaterial(matName);
+}
+
+//////////////////////////////////////////////////
+void BaseScene::DestroyMaterials()
+{
+  for (unsigned int i = 0; i < this->Materials()->Size(); ++i)
+  {
+    auto m = this->Materials()->GetByIndex(i);
+    m->Destroy();
+  }
+  this->UnregisterMaterials();
+}
+
+//////////////////////////////////////////////////
 DirectionalLightPtr BaseScene::CreateDirectionalLight()
 {
   unsigned int objId = this->CreateObjectId();
@@ -975,13 +997,7 @@ void BaseScene::PreRender()
 void BaseScene::Clear()
 {
   this->nodes->DestroyAll();
-  for (unsigned int i = 0; i < this->Materials()->Size(); ++i)
-  {
-    auto m = this->Materials()->GetByIndex(i);
-    m->Destroy();
-  }
-  this->Materials()->RemoveAll();
-
+  this->DestroyMaterials();
   this->nextObjectId = ignition::math::MAX_UI16;
 }
 

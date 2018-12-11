@@ -63,16 +63,9 @@ namespace ignition
 
       public: virtual ~OptixSubMesh();
 
-      public: virtual MaterialPtr Material() const;
-
-      public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true);
-
       public: virtual optix::GeometryInstance OptixGeometryInstance() const;
 
-      protected: virtual void SetMaterialImpl(OptixMaterialPtr _material);
-
-      protected: OptixMaterialPtr material;
+      protected: virtual void SetMaterialImpl(MaterialPtr _material) override;
 
       protected: optix::GeometryInstance optixGeomInstance;
 

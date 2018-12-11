@@ -299,15 +299,17 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       common::MaterialPtr material;
       material = _desc.mesh->MaterialByIndex(subMesh.MaterialIndex());
 
+      MaterialPtr mat = this->scene->CreateMaterial();
       if (material)
       {
-        this->scene->CreateMaterial(*material);
-        ogreSubMesh->setMaterialName(material->Name());
+        mat->CopyFrom(*material);
       }
       else
       {
-        ogreSubMesh->setMaterialName("Default/White");
+        MaterialPtr defaultMat = this->scene->Material("Default/White");
+        mat->CopyFrom(defaultMat);
       }
+      ogreSubMesh->setMaterialName(mat->Name());
 
       // Unlock
       vBuf->unlock();
@@ -425,13 +427,14 @@ OgreSubMeshPtr OgreSubMeshStoreFactory::CreateSubMesh(unsigned int _index)
   subMesh->name = this->names[_index];
   subMesh->scene = this->scene;
   subMesh->ogreSubEntity = this->ogreEntity->getSubEntity(_index);
+
   MaterialPtr mat = this->scene->Material(
       subMesh->ogreSubEntity->getMaterialName());
-  if (!mat)
+  if (mat)
   {
-    mat = this->scene->CreateMaterial();
+    // assign material to submesh who will make a copy of this material
+    subMesh->SetMaterial(mat);
   }
-  subMesh->SetMaterial(mat);
 
   subMesh->Load();
   subMesh->Init();

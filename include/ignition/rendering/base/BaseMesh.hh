@@ -38,32 +38,41 @@ namespace ignition
 
       public: virtual ~BaseMesh();
 
-      public: virtual unsigned int SubMeshCount() const;
+      public: virtual unsigned int SubMeshCount() const override;
 
-      public: virtual bool HasSubMesh(ConstSubMeshPtr _subMesh) const;
+      public: virtual bool HasSubMesh(ConstSubMeshPtr _subMesh) const override;
 
-      public: virtual bool HasSubMeshName(const std::string &_name) const;
+      public: virtual bool HasSubMeshName(const std::string &_name) const
+                      override;
 
       public: virtual SubMeshPtr SubMeshByName(
-                  const std::string &_name) const;
+                  const std::string &_name) const override;
 
-      public: virtual SubMeshPtr SubMeshByIndex(unsigned int _index) const;
+      public: virtual SubMeshPtr SubMeshByIndex(unsigned int _index) const
+                      override;
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() const;
+      public: virtual MaterialPtr Material() const override;
 
       public: virtual void SetMaterial(const std::string &_name,
-                  bool _unique = true);
+                  bool _unique = true) override;
 
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool _unique = true);
+                  bool _unique = true) override;
 
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
 
       protected: virtual SubMeshStorePtr SubMeshes() const = 0;
+
+      /// \brief Flag to indicate whether or not this mesh should be
+      /// responsible for destroying the material
+      protected: bool ownsMaterial = false;
+
+      /// \brief Pointer to currently assigned material
+      protected: MaterialPtr material;
     };
 
     //////////////////////////////////////////////////
@@ -76,15 +85,32 @@ namespace ignition
 
       public: virtual ~BaseSubMesh();
 
-      public: virtual MaterialPtr Material() const = 0;
+      // Documentation inherited
+      public: virtual MaterialPtr Material() const override;
 
+      // Documentation inherited
       public: virtual void SetMaterial(const std::string &_name,
-                  bool _unique = true);
+                  bool _unique = true) override;
 
+      // Documentation inherited
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool _unique = true) = 0;
+                  bool _unique = true) override;
 
-      public: virtual void PreRender();
+      /// \brief Engine implementation for setting the material of this SubMesh.
+      /// \param[in] _material New Material to be assigned
+      public: virtual void SetMaterialImpl(MaterialPtr _material) = 0;
+
+      public: virtual void PreRender() override;
+
+      // Documentation inherited
+      public: virtual void Destroy() override;
+
+      /// \brief Flag to indicate whether or not this submesh should be
+      /// responsible for destroying the material
+      protected: bool ownsMaterial = false;
+
+      /// \brief Pointer to currently assigned material
+      protected: MaterialPtr material;
     };
 
     //////////////////////////////////////////////////
@@ -149,8 +175,8 @@ namespace ignition
     template <class T>
     void BaseMesh<T>::SetMaterial(const std::string &_name, bool _unique)
     {
-      MaterialPtr material = this->Scene()->Material(_name);
-      if (material) this->SetMaterial(material, _unique);
+      MaterialPtr mat = this->Scene()->Material(_name);
+      if (mat) this->SetMaterial(mat, _unique);
     }
 
     //////////////////////////////////////////////////
@@ -165,6 +191,12 @@ namespace ignition
         SubMeshPtr subMesh = this->SubMeshByIndex(i);
         subMesh->SetMaterial(_material, false);
       }
+
+      if (this->material && this->ownsMaterial)
+        this->Scene()->DestroyMaterial(this->material);
+
+      this->ownsMaterial = _unique;
+      this->material = _material;
     }
 
     //////////////////////////////////////////////////
@@ -188,6 +220,9 @@ namespace ignition
     {
       T::Destroy();
       this->SubMeshes()->DestroyAll();
+      if (this->material && this->ownsMaterial)
+        this->Scene()->DestroyMaterial(this->material);
+      this->material.reset();
     }
 
     //////////////////////////////////////////////////
@@ -206,10 +241,46 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseSubMesh<T>::Destroy()
+    {
+      T::Destroy();
+      if (this->material && this->ownsMaterial)
+        this->Scene()->DestroyMaterial(this->material);
+      this->material.reset();
+    }
+
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseSubMesh<T>::SetMaterial(const std::string &_name, bool _unique)
     {
-      MaterialPtr material = this->Scene()->Material(_name);
-      if (material) this->SetMaterial(material, _unique);
+      MaterialPtr mat = this->Scene()->Material(_name);
+      if (mat) this->SetMaterial(mat, _unique);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseSubMesh<T>::SetMaterial(MaterialPtr _material, bool _unique)
+    {
+      _material = (_unique) ? _material->Clone() : _material;
+
+      MaterialPtr origMaterial = this->material;
+      bool origUnique = this->ownsMaterial;
+
+      this->SetMaterialImpl(_material);
+
+      if (origMaterial && origUnique)
+        this->Scene()->DestroyMaterial(origMaterial);
+
+      this->material = _material;
+      this->ownsMaterial = _unique;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    MaterialPtr BaseSubMesh<T>::Material() const
+    {
+      return this->material;
     }
 
     //////////////////////////////////////////////////

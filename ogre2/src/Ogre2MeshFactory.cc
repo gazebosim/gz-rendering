@@ -49,6 +49,15 @@ Ogre2MeshFactory::~Ogre2MeshFactory()
 }
 
 //////////////////////////////////////////////////
+void Ogre2MeshFactory::Clear()
+{
+  for (auto &m : this->ogreMeshes)
+    Ogre::MeshManager::getSingleton().remove(m);
+
+  this->ogreMeshes.clear();
+}
+
+//////////////////////////////////////////////////
 Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
 {
   // create ogre entity
@@ -80,8 +89,11 @@ Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
   std::string name = this->MeshName(_desc);
   Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
 
+  // check if a v2 mesh already exists
   Ogre::MeshPtr mesh =
       Ogre::MeshManager::getSingleton().getByName(name);
+
+  // if not, it probably has not been imported from v1 yet
   if (!mesh)
   {
     Ogre::v1::MeshPtr v1Mesh =
@@ -89,10 +101,11 @@ Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
     if (!v1Mesh)
       return nullptr;
 
+    // create v2 mesh from v1
     mesh = Ogre::MeshManager::getSingleton().createManual(
         name, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
     mesh->importV1(v1Mesh.get(), true, true, true);
+    this->ogreMeshes.push_back(name);
   }
 
   return sceneManager->createItem(mesh, Ogre::SCENE_DYNAMIC);
@@ -168,7 +181,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
     for (unsigned int i = 0; i < _desc.mesh->SubMeshCount(); i++)
     {
-      // if submesh is specified then load only that particualr submesh
+      // if submesh is specified then load only that particular submesh
       auto s = _desc.mesh->SubMeshByIndex(i).lock();
       if (!_desc.subMeshName.empty() && s &&
           s->Name() != _desc.subMeshName)
@@ -335,20 +348,18 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       common::MaterialPtr material;
       material = _desc.mesh->MaterialByIndex(subMesh.MaterialIndex());
 
+      MaterialPtr mat = this->scene->CreateMaterial();
       if (material)
       {
-        MaterialPtr mat = this->scene->CreateMaterial();
         mat->CopyFrom(*material);
-        // Note the name has to match the one given to the HlmsPbsDatablock in
-        // Ogre2Material::Init function
-        std::string matName =
-            this->scene->Name() + "::" + mat->Name();
-        ogreSubMesh->setMaterialName(matName);
       }
       else
       {
-        ogreSubMesh->setMaterialName("Default/White");
+        MaterialPtr defaultMat = this->scene->Material("Default/White");
+        mat->CopyFrom(defaultMat);
       }
+
+      ogreSubMesh->setMaterialName(mat->Name());
     }
 
     math::Vector3d max = _desc.mesh->Max();
@@ -471,22 +482,15 @@ Ogre2SubMeshPtr Ogre2SubMeshStoreFactory::CreateSubMesh(unsigned int _index)
   Ogre::HlmsDatablock *ogreDatablock = subMesh->ogreSubItem->getDatablock();
   if (ogreDatablock)
   {
-    mat = this->scene->Material(
-        std::string(*ogreDatablock->getNameStr()));
+    std::string matName = subMesh->ogreSubItem->getSubMesh()->getMaterialName();
+    mat = this->scene->Material(matName);
   }
-  else
+
+  if (mat)
   {
-    // this is probably not needed as an ogre [sub]item's material pass
-    // encapsulates a datablock
-    Ogre::MaterialPtr ogreMat = subMesh->ogreSubItem->getMaterial();
-    if (ogreMat)
-      mat = this->scene->Material(ogreMat->getName());
+    // assign material to submesh who will make a copy of this material
+    subMesh->SetMaterial(mat);
   }
-  if (!mat)
-  {
-    mat = this->scene->CreateMaterial();
-  }
-  subMesh->SetMaterial(mat, false);
 
   subMesh->Load();
   subMesh->Init();
@@ -498,7 +502,7 @@ Ogre2SubMeshPtr Ogre2SubMeshStoreFactory::CreateSubMesh(unsigned int _index)
 void Ogre2SubMeshStoreFactory::CreateNameList()
 {
   this->PopulateDefaultNames();
-//  this->PopulateGivenNames();
+  // this->PopulateGivenNames();
 }
 
 //////////////////////////////////////////////////

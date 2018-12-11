@@ -45,16 +45,17 @@ void OgreMaterial::Destroy()
   if (!this->Scene()->IsInitialized())
     return;
 
+  Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
 #if OGRE_VERSION_LT_1_10_1
   if (!this->ogreMaterial.isNull())
   {
-    this->ogreMaterial->unload();
+    matManager.remove(this->ogreMaterial->getName());
     this->ogreMaterial.setNull();
   }
 #else
   if (this->ogreMaterial)
   {
-    this->ogreMaterial->unload();
+    matManager.remove(this->ogreMaterial->getName());
     this->ogreMaterial = nullptr;
   }
 #endif

@@ -82,7 +82,7 @@ endif()
 
 #--------------------------------------
 # Find OGRE2
-ign_find_package(OGRE2 VERSION 2.1.0
+ign_find_package(IgnOGRE2 VERSION 2.1.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)

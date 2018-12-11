@@ -249,8 +249,41 @@ NodePtr BaseScene::NodeByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroyNode(NodePtr _node)
+void BaseScene::DestroyNode(NodePtr _node, bool _recursive)
 {
+  if (!_node)
+    return;
+
+  if (_recursive)
+  {
+    std::set<unsigned int> nodeIds;
+    this->DestroyNodeRecursive(_node, nodeIds);
+  }
+  else
+    this->nodes->Destroy(_node);
+}
+
+//////////////////////////////////////////////////
+void BaseScene::DestroyNodeRecursive(NodePtr _node,
+    std::set<unsigned int> &_nodeIds)
+{
+  // check if we have visited this node before
+  if (_nodeIds.find(_node->Id()) != _nodeIds.end())
+  {
+    ignwarn << "Detected loop in scene tree while recursively destroying nodes."
+            << " Breaking loop." << std::endl;
+    _node->RemoveParent();
+    return;
+  }
+  _nodeIds.insert(_node->Id());
+
+  // destroy child nodes first
+  while (_node->ChildCount() > 0u)
+  {
+    this->DestroyNodeRecursive(_node->ChildByIndex(0u), _nodeIds);
+  }
+
+  // destroy node
   this->nodes->Destroy(_node);
 }
 
@@ -321,9 +354,16 @@ LightPtr BaseScene::LightByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroyLight(LightPtr _light)
+void BaseScene::DestroyLight(LightPtr _light, bool _recursive)
 {
-  this->Lights()->Destroy(_light);
+  if (_recursive)
+  {
+    this->DestroyNode(_light, _recursive);
+  }
+  else
+  {
+    this->Lights()->Destroy(_light);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -393,9 +433,16 @@ SensorPtr BaseScene::SensorByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroySensor(SensorPtr _sensor)
+void BaseScene::DestroySensor(SensorPtr _sensor, bool _recursive)
 {
-  this->Sensors()->Destroy(_sensor);
+  if (_recursive)
+  {
+    this->DestroyNode(_sensor, _recursive);
+  }
+  else
+  {
+    this->Sensors()->Destroy(_sensor);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -465,9 +512,16 @@ VisualPtr BaseScene::VisualByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroyVisual(VisualPtr _visual)
+void BaseScene::DestroyVisual(VisualPtr _visual, bool _recursive)
 {
-  this->Visuals()->Destroy(_visual);
+  if (_recursive)
+  {
+    this->DestroyNode(_visual, _recursive);
+  }
+  else
+  {
+    this->Visuals()->Destroy(_visual);
+  }
 }
 
 //////////////////////////////////////////////////

@@ -201,10 +201,14 @@ namespace ignition
       public: virtual NodePtr NodeByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given node. If the given node is not managed by this
-      /// scene, no work will be done. All children of the node will
-      /// consequently be detached from the scene graph, but not destroyed.
+      /// scene, no work will be done. Depending on the _recursive argument,
+      /// this function will either detach all child nodes from the scene graph
+      /// or recursively destroy them.
       /// \param[in] _id ID of the node to destroy
-      public: virtual void DestroyNode(NodePtr _node) = 0;
+      /// \param[in] _recursive True to recursively destroy the node and its
+      /// children, false to destroy only this node and detach the children
+      public: virtual void DestroyNode(NodePtr _node,
+          bool _recursive = false) = 0;
 
       /// \brief Destroy node with the given id. If no node exists with the
       /// given id, no work will be done. All children of the node will
@@ -269,10 +273,14 @@ namespace ignition
       public: virtual LightPtr LightByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given light. If the given light is not managed by this
-      /// scene, no work will be done. All children of the light will
-      /// consequently be detached from the scene graph, but not destroyed.
+      /// scene, no work will be done. Depending on the _recursive argument,
+      /// this function will either detach all child nodes from the scene graph
+      /// or recursively destroy them.
       /// \param[in] _id ID of the light to destroy
-      public: virtual void DestroyLight(LightPtr _light) = 0;
+      /// \param[in] _recursive True to recursively destroy the node and its
+      /// children, false to destroy only this node and detach the children
+      public: virtual void DestroyLight(LightPtr _light,
+          bool _recursive = false) = 0;
 
       /// \brief Destroy light with the given id. If no light exists with the
       /// given id, no work will be done. All children of the light will
@@ -337,10 +345,14 @@ namespace ignition
       public: virtual SensorPtr SensorByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given sensor. If the given sensor is not managed by
-      /// this scene, no work will be done. All children of the sensor will
-      /// consequently be detached from the scene graph, but not destroyed.
+      /// this scene, no work will be done. Depending on the _recursive
+      /// argument, this function will either detach all child nodes from the
+      /// scene graph or recursively destroy them.
       /// \param[in] _id ID of the sensor to destroy
-      public: virtual void DestroySensor(SensorPtr _sensor) = 0;
+      /// \param[in] _recursive True to recursively destroy the node and its
+      /// children, false to destroy only this node and detach the children
+      public: virtual void DestroySensor(SensorPtr _sensor,
+          bool _recursive = false) = 0;
 
       /// \brief Destroy sensor with the given id. If no sensor exists with the
       /// given id, no work will be done. All children of the sensor will
@@ -405,10 +417,15 @@ namespace ignition
       public: virtual VisualPtr VisualByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given node. If the given node is not managed by this
-      /// scene, no work will be done. All children of the node will
+      /// scene, no work will be done. Depending on the _recursive argument,
+      /// this function will either detach all child nodes from the scene graph
+      /// or recursively destroy them.
       /// consequently be detached from the scene graph, but not destroyed.
       /// \param[in] _id ID of the node to destroy
-      public: virtual void DestroyVisual(VisualPtr _node) = 0;
+      /// \param[in] _recursive True to recursively destroy the node and its
+      /// children, false to destroy only this node and detach the children
+      public: virtual void DestroyVisual(VisualPtr _node,
+          bool _recursive = false) = 0;
 
       /// \brief Destroy node with the given id. If no node exists with the
       /// given id, no work will be done. All children of the node will

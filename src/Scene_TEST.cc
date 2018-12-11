@@ -33,6 +33,15 @@ class SceneTest : public testing::Test,
 {
   public: void Scene(const std::string &_renderEngine);
   public: void Nodes(const std::string &_renderEngine);
+
+  /// \brief Test removing nodes
+  public: void RemoveNodes(const std::string &_renderEngine);
+
+  /// \brief Test destroying nodes
+  public: void DestroyNodes(const std::string &_renderEngine);
+
+  /// \brief Test if node cycles (child pointing to parent) are handled properly
+  public: void NodeCycle(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -139,6 +148,362 @@ void SceneTest::Nodes(const std::string &_renderEngine)
   EXPECT_EQ(box, scene->NodeById(box->Id()));
   EXPECT_EQ(box, scene->NodeByName(box->Name()));
 
+  // Has visuals
+  EXPECT_EQ(1u, scene->VisualCount());
+  EXPECT_TRUE(scene->HasVisual(box));
+  EXPECT_TRUE(scene->HasVisualId(box->Id()));
+  EXPECT_TRUE(scene->HasVisualName(box->Name()));
+
+  // Get visual
+  EXPECT_EQ(box, scene->VisualByIndex(0));
+  EXPECT_EQ(box, scene->VisualById(box->Id()));
+  EXPECT_EQ(box, scene->VisualByName(box->Name()));
+
+  // child visual
+  auto child = scene->CreateVisual("child");
+  ASSERT_NE(nullptr, child);
+  auto geom = scene->CreateBox();
+  child->AddGeometry(geom);
+  EXPECT_TRUE(child->HasGeometry(geom));
+  EXPECT_TRUE(scene->HasVisual(child));
+
+  // scene visuals
+  EXPECT_EQ(2u, scene->VisualCount());
+
+  // visual tree: root > box > child
+  box->AddChild(child);
+
+  // Has child
+  EXPECT_TRUE(box->HasChild(child));
+  EXPECT_TRUE(box->HasChildId(child->Id()));
+  EXPECT_TRUE(box->HasChildName(child->Name()));
+  EXPECT_EQ(1u, box->ChildCount());
+
+  // Get child
+  EXPECT_EQ(child, box->ChildById(child->Id()));
+  EXPECT_EQ(child, box->ChildByName(child->Name()));
+  EXPECT_EQ(child, box->ChildByIndex(0u));
+
+  // Has parent
+  EXPECT_TRUE(child->HasParent());
+
+  // Get parent
+  EXPECT_EQ(box, child->Parent());
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+void SceneTest::RemoveNodes(const std::string &_renderEngine)
+{
+  auto engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return;
+  }
+
+  auto scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  auto root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  // No nodes
+  EXPECT_EQ(0u, scene->NodeCount());
+
+  // parent visual
+  auto parent = scene->CreateVisual("parent");
+  ASSERT_NE(nullptr, parent);
+  EXPECT_TRUE(scene->HasVisual(parent));
+
+  // Create and add child visuals to parent
+  auto child = scene->CreateVisual("child");
+  ASSERT_NE(nullptr, child);
+  child->AddGeometry(scene->CreateBox());
+  EXPECT_TRUE(scene->HasVisual(child));
+  parent->AddChild(child);
+
+  auto child02 = scene->CreateVisual("child_02");
+  ASSERT_NE(nullptr, child02);
+  child02->AddGeometry(scene->CreateCylinder());
+  parent->AddChild(child02);
+
+  auto child03 = scene->CreateVisual("child_03");
+  ASSERT_NE(nullptr, child03);
+  child03->AddGeometry(scene->CreateSphere());
+  parent->AddChild(child03);
+
+  auto child04 = scene->CreateVisual("child_04");
+  ASSERT_NE(nullptr, child04);
+  child04->AddGeometry(scene->CreateSphere());
+  parent->AddChild(child04);
+
+  EXPECT_TRUE(scene->HasVisual(child02));
+  EXPECT_TRUE(scene->HasVisual(child03));
+  EXPECT_TRUE(scene->HasVisual(child04));
+  EXPECT_TRUE(parent->HasChild(child02));
+  EXPECT_TRUE(parent->HasChild(child03));
+  EXPECT_TRUE(parent->HasChild(child04));
+  EXPECT_EQ(4u, parent->ChildCount());
+  EXPECT_EQ(5u, scene->VisualCount());
+
+  // Remove child - this detaches the child visual
+  parent->RemoveChild(child);
+  EXPECT_FALSE(parent->HasChild(child));
+  EXPECT_EQ(3u, parent->ChildCount());
+  EXPECT_EQ(5u, scene->VisualCount());
+
+  // Remove child by index
+  parent->RemoveChildByIndex(0u);
+  EXPECT_FALSE(parent->HasChild(child02));
+  EXPECT_EQ(2u, parent->ChildCount());
+  EXPECT_EQ(5u, scene->VisualCount());
+
+  // Remove child by Id
+  parent->RemoveChildById(child03->Id());
+  EXPECT_FALSE(parent->HasChild(child03));
+  EXPECT_EQ(1u, parent->ChildCount());
+  EXPECT_EQ(5u, scene->VisualCount());
+
+  // Remove child by name
+  parent->RemoveChildByName(child04->Name());
+  EXPECT_FALSE(parent->HasChild(child04));
+  EXPECT_EQ(0u, parent->ChildCount());
+  EXPECT_EQ(5u, scene->VisualCount());
+
+  // Verify that child visuals can be re-attached
+  parent->AddChild(child);
+  EXPECT_TRUE(parent->HasChild(child));
+  EXPECT_EQ(1u, parent->ChildCount());
+
+  parent->AddChild(child02);
+  EXPECT_TRUE(parent->HasChild(child02));
+  EXPECT_EQ(2u, parent->ChildCount());
+
+  parent->AddChild(child03);
+  EXPECT_TRUE(parent->HasChild(child03));
+  EXPECT_EQ(3u, parent->ChildCount());
+
+  parent->AddChild(child04);
+  EXPECT_TRUE(parent->HasChild(child04));
+  EXPECT_EQ(4u, parent->ChildCount());
+  EXPECT_EQ(5u, scene->VisualCount());
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+void SceneTest::DestroyNodes(const std::string &_renderEngine)
+{
+  auto engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return;
+  }
+
+  auto scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  auto root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  // No nodes
+  EXPECT_EQ(0u, scene->NodeCount());
+
+  // parent visual
+  auto parent = scene->CreateVisual("parent");
+  ASSERT_NE(nullptr, parent);
+  EXPECT_TRUE(scene->HasVisual(parent));
+
+  // Create and add child visuals to parent
+  // visual tree: root > parent > child
+  //                            > child_02
+  //                            > child_03
+  //                            > child_04
+  auto child = scene->CreateVisual("child");
+  ASSERT_NE(nullptr, child);
+  child->AddGeometry(scene->CreateBox());
+  EXPECT_TRUE(scene->HasVisual(child));
+  parent->AddChild(child);
+
+  auto child02 = scene->CreateVisual("child_02");
+  ASSERT_NE(nullptr, child02);
+  child02->AddGeometry(scene->CreateCylinder());
+  parent->AddChild(child02);
+
+  auto child03 = scene->CreateVisual("child_03");
+  ASSERT_NE(nullptr, child03);
+  child03->AddGeometry(scene->CreateSphere());
+  parent->AddChild(child03);
+
+  auto child04 = scene->CreateVisual("child_04");
+  ASSERT_NE(nullptr, child04);
+  child04->AddGeometry(scene->CreateSphere());
+  parent->AddChild(child04);
+
+  EXPECT_TRUE(scene->HasVisual(child02));
+  EXPECT_TRUE(scene->HasVisual(child03));
+  EXPECT_TRUE(scene->HasVisual(child04));
+  EXPECT_TRUE(parent->HasChild(child02));
+  EXPECT_TRUE(parent->HasChild(child03));
+  EXPECT_TRUE(parent->HasChild(child04));
+  EXPECT_EQ(4u, parent->ChildCount());
+  EXPECT_EQ(5u, scene->VisualCount());
+
+  // Destroy a child visual
+  scene->DestroyVisual(child);
+  EXPECT_FALSE(parent->HasChild(child));
+  EXPECT_FALSE(scene->HasVisual(child));
+  EXPECT_EQ(3u, parent->ChildCount());
+  EXPECT_EQ(4u, scene->VisualCount());
+
+  // Destroy a child visual by index
+  scene->DestroyVisualByIndex(0u);
+  EXPECT_FALSE(parent->HasChild(child02));
+  EXPECT_FALSE(scene->HasVisual(child02));
+  EXPECT_EQ(2u, parent->ChildCount());
+  EXPECT_EQ(3u, scene->VisualCount());
+
+  // Destroy a child visual by id
+  scene->DestroyVisualById(child03->Id());
+  EXPECT_FALSE(parent->HasChild(child03));
+  EXPECT_FALSE(scene->HasVisual(child03));
+  EXPECT_EQ(1u, parent->ChildCount());
+  EXPECT_EQ(2u, scene->VisualCount());
+
+  // Destroy a child visual by name
+  scene->DestroyVisualByName(child04->Name());
+  EXPECT_FALSE(parent->HasChild(child04));
+  EXPECT_FALSE(scene->HasVisual(child04));
+  EXPECT_EQ(0u, parent->ChildCount());
+  EXPECT_EQ(1u, scene->VisualCount());
+
+  // Create and add more child visuals to parent
+  // visual tree: root > parent > child_a > child_aa
+  //                            > child_b
+  auto childA = scene->CreateVisual("child_a");
+  ASSERT_NE(nullptr, childA);
+  childA->AddGeometry(scene->CreateBox());
+  EXPECT_TRUE(scene->HasVisual(childA));
+  parent->AddChild(childA);
+
+  auto childB = scene->CreateVisual("child_b");
+  ASSERT_NE(nullptr, childB);
+  childB->AddGeometry(scene->CreateSphere());
+  parent->AddChild(childB);
+
+  auto childAA = scene->CreateVisual("child_aa");
+  ASSERT_NE(nullptr, childAA);
+  childAA->AddGeometry(scene->CreateCylinder());
+  childA->AddChild(childAA);
+
+  EXPECT_TRUE(parent->HasChild(childA));
+  EXPECT_TRUE(parent->HasChild(childB));
+  EXPECT_TRUE(childA->HasChild(childAA));
+  EXPECT_EQ(2u, parent->ChildCount());
+  EXPECT_EQ(1u, childA->ChildCount());
+  EXPECT_EQ(4u, scene->VisualCount());
+
+  // Destroy parent visual - this should cause all child visuals to be
+  // detached but not destroyed
+  scene->DestroyVisual(parent);
+  EXPECT_FALSE(scene->HasVisual(parent));
+  EXPECT_TRUE(scene->HasVisual(childA));
+  EXPECT_TRUE(scene->HasVisual(childB));
+  EXPECT_TRUE(scene->HasVisual(childAA));
+  EXPECT_EQ(1u, childA->ChildCount());
+  EXPECT_EQ(3u, scene->VisualCount());
+
+  // Create another parent and attach all child visuals
+  auto parent02 = scene->CreateVisual("parent_02");
+  ASSERT_NE(nullptr, parent02);
+  EXPECT_TRUE(scene->HasVisual(parent02));
+  parent02->AddChild(childA);
+  parent02->AddChild(childB);
+  EXPECT_TRUE(parent02->HasChild(childA));
+  EXPECT_TRUE(parent02->HasChild(childB));
+  EXPECT_EQ(2u, parent02->ChildCount());
+  EXPECT_EQ(1u, childA->ChildCount());
+  EXPECT_EQ(4u, scene->VisualCount());
+
+  // Recursive destroy - all child visuals should also be destroyed
+  scene->DestroyVisual(parent02, true);
+  EXPECT_FALSE(scene->HasVisual(parent02));
+  EXPECT_FALSE(scene->HasVisual(childA));
+  EXPECT_FALSE(scene->HasVisual(childB));
+  EXPECT_FALSE(scene->HasVisual(childAA));
+
+  EXPECT_EQ(0u, scene->VisualCount());
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+void SceneTest::NodeCycle(const std::string &_renderEngine)
+{
+  auto engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return;
+  }
+
+  auto scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  auto root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  // No nodes
+  EXPECT_EQ(0u, scene->NodeCount());
+
+  {
+    // parent visual
+    auto parent = scene->CreateVisual("parent");
+    ASSERT_NE(nullptr, parent);
+    EXPECT_TRUE(scene->HasVisual(parent));
+
+    // Set child = parent on purpose to create a cycle of size 1
+    const auto child = parent;
+    ASSERT_NE(nullptr, child);
+    parent->AddChild(child);
+    // Adding the child should have failed
+    EXPECT_FALSE(parent->HasChild(child));
+
+    // Try Removing child. This should do nothing
+    parent->RemoveChild(child);
+    ASSERT_NE(nullptr, parent);
+
+    // add child again and try to destroy
+    parent->AddChild(child);
+    scene->DestroyVisual(parent, true);
+    EXPECT_EQ(0u, scene->VisualCount());
+  }
+
+  {
+    // Add another parent and create a longer cycle
+    auto parent = scene->CreateVisual("parent");
+    ASSERT_NE(nullptr, parent);
+    EXPECT_TRUE(scene->HasVisual(parent));
+
+    auto childA = scene->CreateVisual("child_A");
+    ASSERT_NE(nullptr, childA);
+    parent->AddChild(childA);
+
+    // set childAA to parent so the cycle is "parent->childA->parent"
+    auto childAA = parent;
+    childA->AddChild(childAA);
+
+    // This should not crash
+    scene->DestroyVisual(parent, true);
+    EXPECT_EQ(0u, scene->VisualCount());
+  }
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());
@@ -154,6 +519,24 @@ TEST_P(SceneTest, Scene)
 TEST_P(SceneTest, Nodes)
 {
   Nodes(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, RemoveNodes)
+{
+  RemoveNodes(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, DestroyNodes)
+{
+  DestroyNodes(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, NodeCycle)
+{
+  NodeCycle(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,

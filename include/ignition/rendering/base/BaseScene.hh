@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BASE_BASESCENE_HH_
 
 #include <array>
+#include <set>
 #include <string>
 
 #include <ignition/common/Console.hh>
@@ -101,7 +102,9 @@ namespace ignition
 
       public: virtual NodePtr NodeByIndex(unsigned int _index) const override;
 
-      public: virtual void DestroyNode(NodePtr _node) override;
+      // Documentation inherited.
+      public: virtual void DestroyNode(NodePtr _node, bool _recursive = false)
+                      override;
 
       public: virtual void DestroyNodeById(unsigned int _id) override;
 
@@ -127,7 +130,9 @@ namespace ignition
 
       public: virtual LightPtr LightByIndex(unsigned int _index) const override;
 
-      public: virtual void DestroyLight(LightPtr _light) override;
+      // Documentation inherited.
+      public: virtual void DestroyLight(LightPtr _light,
+          bool _recursive = false) override;
 
       public: virtual void DestroyLightById(unsigned int _id) override;
 
@@ -155,7 +160,9 @@ namespace ignition
       public: virtual SensorPtr SensorByIndex(unsigned int _index) const
                       override;
 
-      public: virtual void DestroySensor(SensorPtr _sensor) override;
+      // Documentation inherited.
+      public: virtual void DestroySensor(SensorPtr _sensor,
+          bool _recursive = false) override;
 
       public: virtual void DestroySensorById(unsigned int _id) override;
 
@@ -187,7 +194,9 @@ namespace ignition
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
                           const ignition::math::Vector2i &_mousePos) override;
 
-      public: virtual void DestroyVisual(VisualPtr _visual) override;
+      // Documentation inherited.
+      public: virtual void DestroyVisual(VisualPtr _visual,
+          bool _recursive = false) override;
 
       public: virtual void DestroyVisualById(unsigned int _id) override;
 
@@ -459,6 +468,14 @@ namespace ignition
       private: virtual void CreateNodeStore();
 
       private: virtual void CreateMaterials();
+
+      /// \brief Helper function to recursively destory nodes while checking
+      /// for loops.
+      /// \param[in] _node Node to be destroyed
+      /// \param[in] _nodeId Holds all node ids that have been visited in the
+      /// tree during the destroy process. Used for loop detection.
+      private: void DestroyNodeRecursive(NodePtr _node,
+          std::set<unsigned int> &_nodeIds);
 
       protected: unsigned int id;
 

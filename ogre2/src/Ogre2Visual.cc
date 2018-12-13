@@ -55,6 +55,12 @@ void Ogre2Visual::SetInheritScale(bool _inherit)
 }
 
 //////////////////////////////////////////////////
+void Ogre2Visual::SetVisible(bool _visible)
+{
+  this->ogreNode->setVisible(_visible);
+}
+
+//////////////////////////////////////////////////
 GeometryStorePtr Ogre2Visual::Geometries() const
 {
   return this->geometries;

@@ -138,6 +138,10 @@ namespace ignition
           const float _right, const float _bottom, const float _top,
           const float _near, const float _far);
 
+      private: void UpdateRenderTarget1stPass();
+      private: void UpdateRenderTarget2ndPass();
+
+
       private: void UpdateRenderTarget(Ogre::RenderTarget *_target,
                                        Ogre::Material *_material,
                                        Ogre::Camera *_cam,

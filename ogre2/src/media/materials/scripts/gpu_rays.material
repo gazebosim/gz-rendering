@@ -1,4 +1,68 @@
-vertex_program GpuRaysScan1stVS glsl
+fragment_program GpuRaysScan1stFS glsl
+{
+  source gpu_rays_1st_pass_fs.glsl
+
+  default_params
+  {
+    param_named depthTexture int 0
+  }
+}
+
+material GpuRaysScan1st
+{
+  technique
+  {
+    pass gpu_rays_tex
+    {
+      vertex_program_ref Ogre/Compositor/Quad_vs { }
+
+      fragment_program_ref GpuRaysScan1stFS { }
+      texture_unit depthTexture
+      {
+        filtering none
+        tex_address_mode mirror
+      }
+    }
+  }
+}
+
+
+fragment_program GpuRaysScan2ndFS glsl
+{
+  source gpu_rays_2nd_pass_fs.glsl
+
+  default_params
+  {
+    param_named depthTexture int 0
+    param_named tex1 int 1
+    param_named tex2 int 2
+    param_named tex3 int 3
+  }
+}
+
+material GpuRaysScan2nd
+{
+  technique
+  {
+    pass gpu_rays_tex_2nd
+    {
+      vertex_program_ref Ogre/Compositor/Quad_vs { }
+      fragment_program_ref GpuRaysScan2ndFS { }
+      texture_unit depthTexture
+      {
+        filtering none
+        tex_address_mode mirror
+      }
+    }
+  }
+}
+
+
+
+
+
+
+/*vertex_program GpuRaysScan1stVS glsl
 {
   source gpu_rays_1st_pass_vs.glsl
 }
@@ -23,10 +87,16 @@ material GpuRaysScan1st
   {
     pass gpu_rays_tex
     {
-      separate_scene_blend one zero one zero
+//      separate_scene_blend one zero one zero
 
       vertex_program_ref GpuRaysScan1stVS { }
       fragment_program_ref GpuRaysScan1stFS { }
+
+      texture_unit depthTexture
+      {
+        filtering none
+        tex_address_mode mirror
+      }
     }
   }
 }
@@ -63,3 +133,4 @@ material GpuRaysScan2nd
   }
 }
 
+*/

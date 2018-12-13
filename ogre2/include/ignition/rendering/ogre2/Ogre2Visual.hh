@@ -47,6 +47,9 @@ namespace ignition
       public: virtual void SetInheritScale(bool _inherit) override;
 
       // Documentation inherited.
+      public: virtual void SetVisible(bool _visible) override;
+
+      // Documentation inherited.
       protected: virtual GeometryStorePtr Geometries() const override;
 
       // Documentation inherited.

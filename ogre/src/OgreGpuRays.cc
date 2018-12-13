@@ -669,6 +669,20 @@ void OgreGpuRays::PostRender()
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
       width, height, this->dataPtr->channels, "PF_FLOAT32_RGB");
+
+
+  // ----------------------- testing
+  for (unsigned int i = 0; i < height; ++i)
+  {
+    for (unsigned int j = 0; j < width; ++j)
+    {
+      std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
+    }
+    std::cerr << std::endl;
+  }
+  std::cerr << std::endl;
+
+
 }
 
 //////////////////////////////////////////////////

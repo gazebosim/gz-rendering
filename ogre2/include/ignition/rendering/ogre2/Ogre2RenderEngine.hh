@@ -85,14 +85,14 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation Inherited.
-      public: virtual bool IsEnabled() const;
+      public: virtual bool IsEnabled() const override;
 
       // Documentation Inherited.
-      public: virtual std::string Name() const;
+      public: virtual std::string Name() const override;
 
       /// \brief Add path to resourcea in ogre2's resource manager
       /// \param[in] _uri Reousrce path in the form of an uri
-      public: void AddResourcePath(const std::string &_uri);
+      public: void AddResourcePath(const std::string &_uri) override;
 
       /// \brief Get the ogre2 root object
       /// \return ogre2 root object
@@ -114,12 +114,12 @@ namespace ignition
       /// \param[in] _id Unique scene Id
       /// \parampin] _name Name of scene
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
-                  const std::string &_name);
+                  const std::string &_name) override;
 
       /// \brief Get a pointer to the list of scenes managed by the render
       /// engine
       /// \return list of scenes
-      protected: virtual SceneStorePtr Scenes() const;
+      protected: virtual SceneStorePtr Scenes() const override;
 
       // Documentation Inherited.
       protected: virtual bool LoadImpl(
@@ -127,7 +127,7 @@ namespace ignition
 
       /// \brief Initialize the render engine
       /// \return True if the operation is successful
-      protected: virtual bool InitImpl();
+      protected: virtual bool InitImpl() override;
 
       /// \brief Helper function to initialize the render engine
       private: void LoadAttempt();

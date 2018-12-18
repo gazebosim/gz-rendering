@@ -57,7 +57,7 @@ namespace ignition
 
       /// \brief Copy the render target buffer data to an image
       /// \param[in] _image Image to copy the data to
-      public: virtual void Copy(Image &_image) const;
+      public: virtual void Copy(Image &_image) const override;
 
       /// \brief Get a pointer to the internal ogre camera
       /// \return Pointer to ogre camera
@@ -84,7 +84,7 @@ namespace ignition
       public: virtual void Render();
 
       /// \brief Destroy the render target
-      public: virtual void Destroy() = 0;
+      public: virtual void Destroy() override = 0;
 
       /// \brief Set a material to render on every object. This method is used
       /// for special cases like the render target of a depth camera.
@@ -98,7 +98,7 @@ namespace ignition
       protected: virtual void UpdateBackgroundColor();
 
       /// \brief Implementation of the Rebuild function
-      protected: virtual void RebuildImpl();
+      protected: virtual void RebuildImpl() override;
 
       /// \brief Rebuild the render target
       protected: virtual void RebuildTarget() = 0;
@@ -193,7 +193,7 @@ namespace ignition
       public: virtual ~Ogre2RenderWindow();
 
       // Documentation inherited.
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       // Documentation inherited.
       public: virtual Ogre::RenderTarget *RenderTarget() const override;

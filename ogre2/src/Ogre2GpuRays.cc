@@ -116,14 +116,22 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Pointer to Ogre material for the sencod rendering pass.
   public: Ogre::Material *matSecondPass = nullptr;
 
+  public: Ogre::Material *matCompose = nullptr;
+  public: Ogre::TexturePtr composeTexture ;
+  public: Ogre::TexturePtr cubemapTexture;
+  public: Ogre::Camera *cubemapCam = nullptr;
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspaceCubemap = nullptr;
+
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace1st[3];
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace2nd;
+
+
   /// \brief Temporary pointer to the current material.
   public: Ogre::Material *currentMat = nullptr;
 
   /// \brief An array of first pass textures.
   public: Ogre::Texture *firstPassTextures[3];
-
-  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace1st[3];
-  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace2nd;
 
   public: Ogre2GpuRays1stPassRTListener *rtListeners1st[3];
 
@@ -449,9 +457,170 @@ void Ogre2GpuRays::ConfigureCameras()
 }
 
 /////////////////////////////////////////////////////////
+void Ogre2GpuRays::CreateCubemap()
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+
+  std::string cubemapTexName = "cubemap_" + this->Name();
+  this->dataPtr->cubemapTexture =
+      Ogre::TextureManager::getSingleton().createManual(
+      cubemapTexName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+      Ogre::TEX_TYPE_CUBE_MAP, 1024, 1024,
+      Ogre::PixelUtil::getMaxMipmapCount( 1024, 1024, 1 ),
+      Ogre::PF_A8B8G8R8, Ogre::TU_RENDERTARGET | Ogre::TU_AUTOMIPMAP, 0, false);
+
+//      1, Ogre::PF_FLOAT32_R, Ogre::TU_RENDERTARGET, 0, false);
+//      1, Ogre::PF_B8G8R8, Ogre::TU_RENDERTARGET, 0, false);
+
+  // Create the camera used to render to our cubemap
+  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+  this->dataPtr->cubemapCam =
+      ogreSceneManager->createCamera("CubeMapCamera", true, true);
+  this->dataPtr->cubemapCam->setFOVy(Ogre::Degree(90));
+  this->dataPtr->cubemapCam->setAspectRatio(1);
+  this->dataPtr->cubemapCam->setFixedYawAxis(false);
+//  this->dataPtr->cubemapCam->setNearClipDistance(this->NearClipPlane());
+//  this->dataPtr->cubemapCam->setFarClipDistance(this->FarClipPlane());
+  this->dataPtr->cubemapCam->setFarClipDistance(10000);
+
+//  this->dataPtr->cubemapCam->yaw(Ogre::Degree(-90));
+//  this->dataPtr->cubemapCam->roll(Ogre::Degree(-90));
+  // this->dataPtr->cubemapCam->setPosition( 0, 1.0, 0 );
+
+/*  std::string cubemapWsDefName = "GpuRaysCubemapWorkspace";
+  this->dataPtr->ogreCompositorWorkspaceCubemap =
+      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
+      this->dataPtr->cubemapTexture->getBuffer(0)->getRenderTarget(),
+      this->dataPtr->cubemapCam, cubemapWsDefName, true);
+*/
+
+  // create cubemap compositor
+  Ogre::CompositorChannelVec cubemapExternalChannels(1);
+  // any of the cubemap's render targets will do
+  cubemapExternalChannels[0].target =
+      this->dataPtr->cubemapTexture->getBuffer(0)->getRenderTarget();
+  cubemapExternalChannels[0].textures.push_back(this->dataPtr->cubemapTexture);
+
+  std::string cubemapWsDefName = "GpuRaysCubemapWorkspace";
+  if( !ogreCompMgr->hasWorkspaceDefinition(cubemapWsDefName))
+  {
+    Ogre::CompositorWorkspaceDef *workspaceDef =
+        ogreCompMgr->addWorkspaceDefinition(cubemapWsDefName);
+    // "CubemapRendererNode" has been defined in scripts.
+    workspaceDef->connectExternal(0, "CubemapRendererNode", 0);
+    std::cerr << "cureating GpuRaysCubemapWorkspace and CubemapRendererNode " << std::endl;
+  }
+
+  Ogre::ResourceLayoutMap initialCubemapLayouts;
+  Ogre::ResourceAccessMap initialCubemapUavAccess;
+  this->dataPtr->ogreCompositorWorkspaceCubemap =
+      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
+      cubemapExternalChannels, this->dataPtr->cubemapCam, cubemapWsDefName,
+      true, -1, (Ogre::UavBufferPackedVec *)0, &initialCubemapLayouts,
+      &initialCubemapUavAccess);
+
+  // create output render texture
+  std::string texName = this->Name() + "_compose";
+  this->dataPtr->composeTexture =
+    Ogre::TextureManager::getSingleton().createManual(
+    texName, "General", Ogre::TEX_TYPE_2D,
+    this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
+    Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET);
+
+/*  this->dataPtr->matCompose = dynamic_cast<Ogre::Material *>(
+      Ogre::MaterialManager::getSingleton().getByName("GpuRaysCompose").get());
+  this->dataPtr->matCompose->load();
+  Ogre::Pass *pass = this->dataPtr->matCompose->getTechnique(0)->getPass(0);
+  auto texUnit = pass->getTextureUnitState(0);
+  texUnit->setTexture(this->dataPtr->cubemapTexture);
+  std::cerr << "tex unit state name " <<  texUnit->getName() << std::endl;
+//  Ogre::GpuProgramParametersSharedPtr psParams =
+//      pass->getFragmentProgramParameters();
+
+
+
+  std::string wsDefName = "GpuRaysComposeWorkspace";
+  this->dataPtr->ogreCompositorWorkspace =
+      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
+      this->dataPtr->composeTexture->getBuffer()->getRenderTarget(),
+      this->dataPtr->ogreCamera, wsDefName, true);
+*/
+
+
+  // create final RT compositor
+  auto rt = this->dataPtr->composeTexture->getBuffer()->getRenderTarget();
+  Ogre::CompositorChannelVec externalChannels(2) ;
+  externalChannels[0].target = rt;
+  externalChannels[1].target =
+      this->dataPtr->cubemapTexture->getBuffer(0)->getRenderTarget();
+  externalChannels[1].textures.push_back(this->dataPtr->cubemapTexture);
+
+  std::string wsDefName = "GpuRaysComposeWorkspace";
+  this->dataPtr->ogreCompositorWorkspace =
+      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
+      externalChannels, this->dataPtr->ogreCamera, wsDefName, true,
+      -1, (Ogre::UavBufferPackedVec *)0, &initialCubemapLayouts,
+      &initialCubemapUavAccess);
+
+//  // Setup the viewport to use the texture
+//  Ogre::Viewport *vp = rt->getViewport(0);
+//  vp->setOverlaysEnabled(false);
+//  vp->_setVisibilityMask(IGN_VISIBILITY_ALL &
+//      ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE),
+//      vp->getLightVisibilityMask());
+
+
+/*  double projectionA = this->FarClipPlane() /
+      (this->FarClipPlane() - this->NearClipPlane());
+  double projectionB = (-this->FarClipPlane() * this->NearClipPlane()) /
+      (this->FarClipPlane() - this->NearClipPlane());
+  psParams->setNamedConstant("projectionParams",
+      Ogre::Vector2(projectionA, projectionB));
+
+  psParams->setNamedConstant("near",
+      static_cast<float>(this->NearClipPlane()));
+  psParams->setNamedConstant("far",
+      static_cast<float>(this->FarClipPlane()));
+
+  psParams->setNamedConstant("max",
+      static_cast<float>(this->dataMaxVal));
+  psParams->setNamedConstant("min",
+      static_cast<float>(this->dataMinVal));
+*/
+
+/*
+  std::string cubemapTexName = "cubemap_" + this->Name();
+  this->dataPtr->cubemapTexture =
+    Ogre::TextureManager::getSingleton().createManual(
+    cubemapTexName, "General", Ogre::TEX_TYPE_2D,
+    this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
+    Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET);
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  auto rt = this->dataPtr->cubemapTexture->getBuffer()->getRenderTarget();
+  std::string wsDefName = "GpuRaysCubemapWorkspace";
+  this->dataPtr->ogreCompositorWorkspaceCubemap =
+      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
+      rt, this->dataPtr->ogreCamera, wsDefName, false);
+*/
+
+
+
+
+}
+
+/////////////////////////////////////////////////////////
 void Ogre2GpuRays::CreateGpuRaysTextures()
 {
   this->ConfigureCameras();
+
+  this->CreateCubemap();
 
   this->CreateOrthoCam();
 
@@ -684,7 +853,53 @@ void Ogre2GpuRays::CreateGpuRaysTextures()
 */
 
 
-  this->CreateCanvas();
+//  this->CreateCanvas();
+}
+
+/////////////////////////////////////////////////
+void Ogre2GpuRays::UpdateRenderTargetCubemap()
+{
+//  this->dataPtr->ogreCompositorWorkspaceCubemap->setEnabled(true);
+//  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->OgreRoot()->renderOneFrame();
+//  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
+//  this->dataPtr->ogreCompositorWorkspaceCubemap->setEnabled(false);
+//  return;
+
+  // ----------------------- testing
+  unsigned int width = this->dataPtr->w2nd;
+  unsigned int height = this->dataPtr->h2nd;
+
+  size_t size = Ogre::PixelUtil::getMemorySize(
+    width, height, 1, Ogre::PF_FLOAT32_RGB);
+  int len = width * height * this->dataPtr->channels;
+
+  std::cerr << "wxh: " << width << " x " << height << std::endl;
+
+  if (!this->dataPtr->gpuRaysBuffer)
+  {
+    this->dataPtr->gpuRaysBuffer = new float[len];
+  }
+  Ogre::PixelBox dstBox(width, height,
+        1, Ogre::PF_FLOAT32_RGB, this->dataPtr->gpuRaysBuffer);
+
+//  this->dataPtr->cubemapTexture->getBuffer()->getRenderTarget()->copyContentsToMemory(dstBox,
+  this->dataPtr->composeTexture->getBuffer()->getRenderTarget()->copyContentsToMemory(dstBox,
+      Ogre::RenderTarget::FB_FRONT);
+
+  for (unsigned int i = 0; i < height; ++i)
+  {
+    for (unsigned int j = 0; j < width; ++j)
+    {
+      std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " "
+                << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 +1] <<  " "
+                << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 +2] <<  " | ";
+
+    }
+    std::cerr << std::endl;
+  }
+  std::cerr << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -702,7 +917,7 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(false);
   }
 
-/*  unsigned int width = this->dataPtr->w1st;
+  unsigned int width = this->dataPtr->w1st;
   unsigned int height = this->dataPtr->h1st;
 
   size_t size = Ogre::PixelUtil::getMemorySize(
@@ -734,7 +949,6 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
     std::cerr << std::endl;
   }
   std::cerr << std::endl;
-*/
 
 
 }
@@ -750,7 +964,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
   this->dataPtr->ogreCompositorWorkspace2nd->setEnabled(false);
 
   // ----------------------- testing
-  unsigned int width = this->dataPtr->w2nd;
+/*  unsigned int width = this->dataPtr->w2nd;
   unsigned int height = this->dataPtr->h2nd;
 
   size_t size = Ogre::PixelUtil::getMemorySize(
@@ -786,6 +1000,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
     std::cerr << std::endl;
   }
   std::cerr << std::endl;
+*/
 
 }
 
@@ -893,10 +1108,8 @@ void Ogre2GpuRays::Render()
 */
 
 //  this->UpdateRenderTarget1stPass();
+//  this->UpdateRenderTarget2ndPass();
 
-
-
-  this->UpdateRenderTarget2ndPass();
 /*  this->dataPtr->visual->SetVisible(true);
 
   this->UpdateRenderTarget(
@@ -908,6 +1121,9 @@ void Ogre2GpuRays::Render()
 
   sceneMgr->_suppressRenderStateChanges(false);
 */
+
+
+  this->UpdateRenderTargetCubemap();
 }
 
 //////////////////////////////////////////////////
@@ -1173,8 +1389,8 @@ void Ogre2GpuRays::CreateMesh()
       // as a trick to determine which camera texture to use when stitching
       // together the final depth image.
       submesh->AddVertex(texture/1000.0, startX, startY);
-      std::cerr << "add vert " << texture/1000.0 << " " << startX << " " << startY
-                << std::endl;
+//      std::cerr << "add vert " << texture/1000.0 << " " << startX << " " << startY
+//                << std::endl;
 
       // first compute angle from the start of current camera's horizontal
       // min angle, then set delta to be angle from center of current camera.

@@ -84,7 +84,7 @@ void GpuRaysTest::SimpleTest(const std::string &_renderEngine)
   const double hMaxAngle = IGN_PI/4.0;
   const double minRange = 2.1;
   const double maxRange = 10.0;
-  const int hRayCount = 1000;
+  const int hRayCount = 100;
   const int vRayCount = 1;
 
   common::Time waitTime = common::Time(WAIT_TIME);
@@ -121,13 +121,30 @@ void GpuRaysTest::SimpleTest(const std::string &_renderEngine)
 
   // Create testing boxes
   // box in the center
+  MaterialPtr red = scene->CreateMaterial();
+  red->SetDiffuse(0.8, 0.7, 0.6);
   ignition::math::Pose3d box01Pose(ignition::math::Vector3d(3, 0, 0.5),
                                    ignition::math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual("UnitBox1");
-  visualBox1->AddGeometry(scene->CreateBox());
+  auto box = scene->CreateBox();
+  box->SetMaterial(red);
+  visualBox1->AddGeometry(box);
   visualBox1->SetWorldPosition(box01Pose.Pos());
   visualBox1->SetWorldRotation(box01Pose.Rot());
   root->AddChild(visualBox1);
+
+/*  // Create testing boxes
+  // box in the center
+  ignition::math::Pose3d box02Pose(ignition::math::Vector3d(-5, 0, 0.5),
+                                   ignition::math::Quaterniond::Identity);
+  VisualPtr visualBox2 = scene->CreateVisual("UnitBox2");
+  visualBox2->AddGeometry(scene->CreateBox());
+  visualBox2->SetWorldPosition(box02Pose.Pos());
+  visualBox2->SetWorldRotation(box02Pose.Rot());
+  root->AddChild(visualBox2);
+*/
+
+
 
 /*  // Verify rays caster 1 range readings
   // listen to new gpu rays frames

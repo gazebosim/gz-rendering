@@ -1,79 +1,100 @@
+abstract target cubemap_target
+{
+  pass clear
+  {
+    colour_value 0.2 0.5 0 1
+  }
+
+  pass render_scene
+  {
+    overlays      off
+    camera_cubemap_reorient true
+  }
+}
+
+
+compositor_node CubemapRendererNode
+{
+  in 0 cubemap
+
+  target cubemap +X : cubemap_target { }
+  target cubemap -X : cubemap_target { }
+  target cubemap +Y : cubemap_target { }
+  target cubemap -Y : cubemap_target { }
+  target cubemap +Z : cubemap_target { }
+  target cubemap -Z : cubemap_target
+  {
+    pass generate_mipmaps
+    {
+    }
+  }
+}
 /*
-compositor_node "GpuRays1stPass"
+compositor_node CubemapRendererNode2
 {
-  target rt_output
+  in 0 tmpCubemap
+
+  target tmpCubemap +X : cubemap_target { }
+  target tmpCubemap -X : cubemap_target { }
+  target tmpCubemap +Y : cubemap_target { }
+  target tmpCubemap -Y : cubemap_target { }
+  target tmpCubemap +Z : cubemap_target { }
+  target tmpCubemap -Z : cubemap_target
   {
-    pass render_quad
+    pass generate_mipmaps
     {
-      material GpuRaysScan1st
     }
   }
 
-  out 0 rt_output
+
+  out 0 tmpCubemap
 }
 
-
-compositor_node "GpuRays2ndPass"
+workspace GpuRaysCubemapWorkspace
 {
-  in 0 rt_output
-
-  custom_id ign-rendering/GpuRays2ndPass
-
-  target rt_output
-  {
-    pass render_quad
-    {
-      material GpuRaysScan2nd
-    }
-  }
-}
-
-workspace GpuRays1stPassWorkspace
-{
-  connect_output GpuRays1stPass 0
+  connect_output CubemapRendererNode2 0
 }
 */
 
 
-/*compositor_node GpuRays1stPass
+
+compositor_node GpuRaysCompose
 {
   in 0 rt_input
-
-  // Instruct we want to use a depth texture (32-bit float). The "depth_texture" keyword is necessary.
-  // Specifying The depth format is optional and so is the depth pool. However recommended to specify
-  // them to avoid surprises.
-  texture firstPass target_width target_height PF_R8G8B8 depth_format PF_D32_FLOAT depth_texture depth_pool 2
-
-  // Declare the depth texture view (which becomes so by using PF_D32_FLOAT as format).
-  // Settings MUST match (depth format, pools, resolution). Specifying the depth pool is necessary,
-  // otherwise the depth texture will get its own depth buffer, instead of becoming a view.
-  texture firstPassDepthTexture target_width target_height PF_D32_FLOAT depth_pool 2
-
-  // Draw everything, colour and depth
-  target firstPass
-  {
-    pass clear
-    {
-      colour_value 0.2 0.3 0.4 1.0
-    }
-    pass render_scene
-    {
-    }
-  }
+  in 1 cubemap
 
   target rt_input
   {
-    pass clear {}
+    pass clear
+    {
+      colour_value 0.1 0.2 0.3 1
+    }
+
     pass render_quad
     {
-      material GpuRaysScan1st
-      input 0 firstPassDepthTexture
-      input 1 firstPass
+      expose cubemap
+      material GpuRaysCompose
+      input 0 cubemap
     }
   }
+
   out 0 rt_input
 }
+
+/*workspace GpuRaysComposeWorkspace
+{
+  connect_output GpuRaysCompose 0
+}
 */
+
+
+workspace GpuRaysComposeWorkspace
+{
+  connect_external 0 GpuRaysCompose 0
+  connect_external 1 GpuRaysCompose 1
+}
+
+
 
 compositor_node GpuRays1stPass
 {

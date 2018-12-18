@@ -14,6 +14,7 @@ uniform float min;
 uniform float max;
 
 out vec4 fragColor;
+in vec4 point;
 
 float getDepth(vec2 uv)
 {
@@ -33,7 +34,10 @@ float getDepth(vec2 uv)
 
 void main()
 {
-  float d = getDepth(inPs.uv0);
+//  float d = getDepth(inPs.uv0);
+  float d = length(point.xyz);
+  fragColor = vec4(d, 0, 0, 1.0);
+  return;
 
   if (d > far)
     d = max;

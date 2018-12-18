@@ -1,3 +1,92 @@
+fragment_program GpuRaysCubemapFS glsl
+{
+  source gpu_rays_cubemap_fs.glsl
+
+  default_params
+  {
+    param_named depthTexture int 0
+  }
+}
+
+
+// Converts a cubemap to depth
+material GpuRaysCubemap
+{
+  technique
+  {
+    pass
+    {
+/*      // depth writes must be on, since we write directly to the depth buffer.
+      depth_check on
+      depth_write on
+
+      depth_func always_pass
+
+      cull_hardware none
+*/
+
+      vertex_program_ref Ogre/Compositor/Quad_vs
+      {
+      }
+
+      fragment_program_ref GpuRaysCubemapFS
+      {
+      }
+
+      texture_unit depthTexture
+      {
+        filtering     none
+        tex_address_mode  clamp
+      }
+    }
+  }
+}
+
+
+
+
+
+
+fragment_program GpuRaysComposeFS glsl
+{
+  source gpu_rays_compose_fs.glsl
+
+  default_params
+  {
+    param_named cm int 0
+  }
+}
+
+material GpuRaysCompose
+{
+  technique
+  {
+    pass gpu_rays_compose_tex
+    {
+      vertex_program_ref Ogre/Compositor/Quad_vs { }
+
+      fragment_program_ref GpuRaysComposeFS{ }
+      texture_unit cubemap
+      {
+        filtering none
+//        tex_address_mode clamp
+      }
+    }
+  }
+}
+
+
+vertex_program GpuRaysScan1stVS glsl
+{
+  source gpu_rays_1st_pass_vs.glsl
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+    param_named_auto worldView worldview_matrix
+  }
+}
+
+
 fragment_program GpuRaysScan1stFS glsl
 {
   source gpu_rays_1st_pass_fs.glsl
@@ -15,6 +104,7 @@ material GpuRaysScan1st
     pass gpu_rays_tex
     {
       vertex_program_ref Ogre/Compositor/Quad_vs { }
+//      vertex_program_ref GpuRaysScan1stVS { }
 
       fragment_program_ref GpuRaysScan1stFS { }
       texture_unit depthTexture

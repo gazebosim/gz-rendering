@@ -140,6 +140,8 @@ namespace ignition
 
       private: void UpdateRenderTarget1stPass();
       private: void UpdateRenderTarget2ndPass();
+      private: void UpdateRenderTargetCubemap();
+      private: void CreateCubemap();
 
 
       private: void UpdateRenderTarget(Ogre::RenderTarget *_target,

@@ -82,7 +82,7 @@ namespace ignition
       public: virtual ~BaseRenderTexture();
 
       // Documentation inherited.
-      public: virtual GLuint GLId() const override;
+      public: virtual unsigned int GLId() const override;
     };
 
     template <class T>
@@ -221,9 +221,9 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    GLuint BaseRenderTexture<T>::GLId() const
+    unsigned int BaseRenderTexture<T>::GLId() const
     {
-      return GLuint(0u);
+      return 0u;
     }
 
     //////////////////////////////////////////////////

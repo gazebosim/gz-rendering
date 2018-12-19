@@ -161,7 +161,7 @@ namespace ignition
       public: virtual void PostRender() override;
 
       // Documentation inherited
-      public: virtual GLuint GLId() const override;
+      public: virtual unsigned int GLId() const override;
 
       // Documentation inherited.
       public: virtual Ogre::RenderTarget *RenderTarget() const override;

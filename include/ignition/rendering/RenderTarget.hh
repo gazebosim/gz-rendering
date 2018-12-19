@@ -17,17 +17,6 @@
 #ifndef IGNITION_RENDERING_RENDERTARGET_HH_
 #define IGNITION_RENDERING_RENDERTARGET_HH_
 
-#if defined(__APPLE__)
-#include <OpenGL/gl.h>
-#include <OpenGL/glext.h>
-#else
-#if defined(_WIN32)
-  #include <windows.h>
-#endif /* _WIN32 */
-#include <GL/gl.h>
-#include <GL/glext.h>
-#endif /* __APPLE__ */
-
 #include <string>
 
 #include <ignition/math/Color.hh>
@@ -101,7 +90,7 @@ namespace ignition
 
       /// \brief Returns the OpenGL texture Id. A valid Id is returned only
       // if this is an OpenGL render texture
-      public: virtual GLuint GLId() const = 0;
+      public: virtual unsigned int GLId() const = 0;
     };
 
     /// \class RenderWindow RenderWindow.hh

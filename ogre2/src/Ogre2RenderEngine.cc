@@ -417,26 +417,36 @@ void Ogre2RenderEngine::LoadPlugins()
 
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
-      try
+      // check if plugin library exists
+      std::string filename = *piter+extension;
+      if (!common::exists(filename))
       {
-        // Load the plugin into OGRE
-        this->ogreRoot->loadPlugin(*piter+extension);
-      }
-      catch(Ogre::Exception &e)
-      {
-        try
-        {
-          // Load the debug plugin into OGRE
-          this->ogreRoot->loadPlugin(*piter+"_d"+extension);
-        }
-        catch(Ogre::Exception &ed)
+        filename = filename + "." + std::string(OGRE2_VERSION);
+        if (!common::exists(filename))
         {
           if ((*piter).find("RenderSystem") != std::string::npos)
           {
-            ignerr << "Unable to load Ogre Plugin[" << *piter
-                  << "]. Rendering will not be possible."
-                  << "Make sure you have installed OGRE and Gazebo properly.\n";
+            ignerr << "Unable to find Ogre Plugin[" << *piter
+                   << "]. Rendering will not be possible."
+                   << "Make sure you have installed OGRE properly.\n";
           }
+          continue;
+        }
+      }
+
+      // load the plugin
+      try
+      {
+        // Load the plugin into OGRE
+        this->ogreRoot->loadPlugin(filename);
+      }
+      catch(Ogre::Exception &e)
+      {
+        if ((*piter).find("RenderSystem") != std::string::npos)
+        {
+          ignerr << "Unable to load Ogre Plugin[" << *piter
+                 << "]. Rendering will not be possible."
+                 << "Make sure you have installed OGRE properly.\n";
         }
       }
     }

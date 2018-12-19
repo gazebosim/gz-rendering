@@ -92,7 +92,7 @@ namespace ignition
                   const MaterialPtr &_material) override;
 
       // Documentation inherited.
-      public: virtual GLuint RenderTextureGLId() const override;
+      public: virtual unsigned int RenderTextureGLId() const override;
 
       // Documenation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;

@@ -142,6 +142,9 @@ namespace ignition
       private: void UpdateRenderTarget2ndPass();
       private: void UpdateRenderTargetCubemap();
       private: void CreateCubemap();
+      private: void CreateSampleTexture();
+      private: math::Vector2d SampleCube(const math::Vector3d &_v,
+          unsigned int &_faceIndex);
 
 
       private: void UpdateRenderTarget(Ogre::RenderTarget *_target,

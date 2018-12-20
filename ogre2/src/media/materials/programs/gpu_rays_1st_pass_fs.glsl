@@ -3,49 +3,38 @@
 in block
 {
   vec2 uv0;
+  vec3 cameraDir;
 } inPs;
 
 
 uniform sampler2D depthTexture;
+
+out vec4 fragColor;
+
 uniform vec2 projectionParams;
 uniform float near;
 uniform float far;
 uniform float min;
 uniform float max;
 
-out vec4 fragColor;
-in vec4 point;
-
 float getDepth(vec2 uv)
 {
   float fDepth = texture(depthTexture, uv).x;
   float linearDepth = projectionParams.y / (fDepth - projectionParams.x);
   return linearDepth;
-
-/*
-// formula taken from https://stackoverflow.com/questions/6652253
-  float zb = texture(depthTexture, uv).x;
-  float zn = 2.0 * zb - 1.0f;
-  float ze = 2.0 * near * far / (far + near - zn *(far - near));
-  return ze;
-*/
 }
 
 
 void main()
 {
-//  float d = getDepth(inPs.uv0);
-  float d = length(point.xyz);
-  fragColor = vec4(d, 0, 0, 1.0);
-  return;
+  float d = getDepth(inPs.uv0);
+  vec3 viewSpacePos = inPs.cameraDir * d;
+  float l = length(viewSpacePos);
 
-  if (d > far)
-    d = max;
-  if (d < near)
-    d = min;
+  if (l > far)
+    l = max;
+  if (l < near)
+    l = min;
 
-  // todo(anyone) set retro values
-  float retro = 0.0;
-
-  fragColor = vec4(d, retro, 0, 1.0);
+  fragColor = vec4(l, 0.0, 0, 1.0);
 }

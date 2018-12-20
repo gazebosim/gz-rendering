@@ -63,6 +63,7 @@
 #include <OgreHighLevelGpuProgramManager.h>
 #include <OgreHardwarePixelBuffer.h>
 #include <OgreShadowCameraSetupPSSM.h>
+#include <OgreDepthBuffer.h>
 
 #include <OgreHlmsManager.h>
 #include <OgreHlmsTextureManager.h>

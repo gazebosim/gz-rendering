@@ -1,21 +1,9 @@
-/*varying vec4 point;
-
-void main()
-{
-  gl_Position = ftransform();
-
-  // Vertex in world space
-   point = gl_ModelViewMatrix * gl_Vertex;
-}
-*/
-
-
 #version 330
 
 in vec4 vertex;
+in vec3 normal;
 in vec2 uv0;
 uniform mat4 worldViewProj;
-uniform mat4 worldView;
 
 out gl_PerVertex
 {
@@ -25,6 +13,7 @@ out gl_PerVertex
 out block
 {
 	vec2 uv0;
+  vec3 cameraDir;
 } outVs;
 
 out vec4 point;
@@ -33,5 +22,5 @@ void main()
 {
   gl_Position = worldViewProj * vertex;
   outVs.uv0.xy = uv0.xy;
-  point = worldView * vertex;
+  outVs.cameraDir.xyz = normal.xyz;
 }

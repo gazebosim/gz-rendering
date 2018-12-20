@@ -100,9 +100,9 @@ compositor_node GpuRays1stPass
 {
   in 0 rt_input
 
-  texture firstPass target_width target_height PF_D32_FLOAT
+  texture depthTexture target_width target_height PF_D32_FLOAT
 
-  target firstPass
+  target depthTexture
   {
     pass clear
     {
@@ -122,9 +122,22 @@ compositor_node GpuRays1stPass
     pass render_quad
     {
       material GpuRaysScan1st
-      input 0 firstPass
+      input 0 depthTexture
+      quad_normals camera_far_corners_view_space
     }
   }
+
+/*  target rt_input
+  {
+    pass clear
+    {
+      colour_value 0.2 0.3 0.4 1.0
+    }
+    pass render_scene
+    {
+    }
+  }
+*/
   out 0 rt_input
 }
 
@@ -138,7 +151,7 @@ compositor_node GpuRays2ndPass
 {
   in 0 rt_input
 
-  texture secondPass target_width target_height PF_D32_FLOAT
+/*  texture secondPass target_width target_height PF_D32_FLOAT
 
   target secondPass
   {
@@ -147,6 +160,7 @@ compositor_node GpuRays2ndPass
     {
     }
   }
+*/
 
   target rt_input
   {
@@ -157,7 +171,7 @@ compositor_node GpuRays2ndPass
     pass render_quad
     {
       material GpuRaysScan2nd
-      input 0 secondPass
+//      input 0 secondPass
     }
   }
   out 0 rt_input

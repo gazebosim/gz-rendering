@@ -82,7 +82,6 @@ vertex_program GpuRaysScan1stVS glsl
   default_params
   {
     param_named_auto worldViewProj worldviewproj_matrix
-    param_named_auto worldView worldview_matrix
   }
 }
 
@@ -103,14 +102,13 @@ material GpuRaysScan1st
   {
     pass gpu_rays_tex
     {
-      vertex_program_ref Ogre/Compositor/Quad_vs { }
-//      vertex_program_ref GpuRaysScan1stVS { }
-
+      // vertex_program_ref Ogre/Compositor/Quad_vs { }
+      vertex_program_ref GpuRaysScan1stVS { }
       fragment_program_ref GpuRaysScan1stFS { }
       texture_unit depthTexture
       {
         filtering none
-        tex_address_mode mirror
+        tex_address_mode clamp
       }
     }
   }
@@ -123,10 +121,13 @@ fragment_program GpuRaysScan2ndFS glsl
 
   default_params
   {
-    param_named depthTexture int 0
-    param_named tex1 int 1
-    param_named tex2 int 2
-    param_named tex3 int 3
+    param_named cubeUVTex int 0
+    param_named tex0 int 1
+    param_named tex1 int 2
+    param_named tex2 int 3
+    param_named tex3 int 4
+    param_named tex4 int 5
+    param_named tex5 int 6
   }
 }
 
@@ -138,19 +139,44 @@ material GpuRaysScan2nd
     {
       vertex_program_ref Ogre/Compositor/Quad_vs { }
       fragment_program_ref GpuRaysScan2ndFS { }
-      texture_unit depthTexture
+      texture_unit cubeUVTex
       {
         filtering none
-        tex_address_mode mirror
+        // tex_address_mode mirror
+      }
+      texture_unit tex0
+      {
+        filtering none
+        // tex_address_mode mirror
+      }
+      texture_unit tex1
+      {
+        filtering none
+        // tex_address_mode mirror
+      }
+      texture_unit tex2
+      {
+        filtering none
+        // tex_address_mode mirror
+      }
+      texture_unit tex3
+      {
+        filtering none
+        // tex_address_mode mirror
+      }
+      texture_unit tex4
+      {
+        filtering none
+        // tex_address_mode mirror
+      }
+      texture_unit tex5
+      {
+        filtering none
+        // tex_address_mode mirror
       }
     }
   }
 }
-
-
-
-
-
 
 /*vertex_program GpuRaysScan1stVS glsl
 {

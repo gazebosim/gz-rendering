@@ -1,34 +1,3 @@
-/*uniform sampler2D tex1;
-uniform sampler2D tex2;
-uniform sampler2D tex3;
-
-uniform vec4 texSize;
-varying float tex;
-
-void main()
-{
-  gl_FragColor = vec4(1.2, 2.3, 3.4, 1.0);
-
-  if ((gl_TexCoord[0].s < 0.0) || (gl_TexCoord[0].s > 1.0) ||
-      (gl_TexCoord[0].t < 0.0) || (gl_TexCoord[0].t > 1.0))
-    gl_FragColor = vec4(1,1,1,1);
-  else
-  {
-    int int_tex = int(tex * 1000.0);
-    if (int_tex == 0)
-      //gl_FragColor=vec4(12,34,56,1);
-      gl_FragColor = texture2D( tex1, gl_TexCoord[0].st);
-    else
-      if (int_tex == 1)
-        //gl_FragColor=vec4(2,1,0,1);
-        gl_FragColor = texture2D( tex2, gl_TexCoord[0].st);
-      else
-        //gl_FragColor=vec4(3,2,1,1);
-        gl_FragColor = texture2D( tex3, gl_TexCoord[0].st);
-   }
-}
-*/
-
 #version 330
 
 in block
@@ -36,52 +5,64 @@ in block
   vec2 uv0;
 } inPs;
 
+// cubeUVTex packs information needed to sample from tex0-5
+uniform sampler2D cubeUVTex;
 
-uniform sampler2D depthTexture;
+// cube face 0 -y
+uniform sampler2D tex0;
 
+// cube face 1 +y
 uniform sampler2D tex1;
+
+// cube face 2 +z
 uniform sampler2D tex2;
+
+// cube face 3 -z
 uniform sampler2D tex3;
 
-uniform float tex;
-uniform vec2 projectionParams;
+// cube face 4 +x
+uniform sampler2D tex4;
+
+// cube face 5 -x
+uniform sampler2D tex5;
 
 out vec4 fragColor;
 
-float getDepth(vec2 uv)
+float getRange(vec2 uv, sampler2D tex)
 {
-  float fDepth = texture(depthTexture, uv).x;
-  float linearDepth = projectionParams.y / (fDepth - projectionParams.x);
-  return linearDepth;
+  float range = texture(tex, uv).x;
+  return range;
 }
 
 
 void main()
 {
-  // fragColor = vec4(1.2, 2.3, 3.4, 1.0);
+  // get face index and uv coorodate data
+  vec3 data = texture(cubeUVTex, inPs.uv0).xyz;
 
-  float d = getDepth(inPs.uv0);
+  // which face to sample range data from
+  float faceIdx = data.z;
 
-  // float d = texture(tex1, inPs.uv0).x;
+  // uv coordinates on texture that stores the range data
+  vec2 uv = data.xy;
 
-  fragColor = vec4(d, 2.3, 3.4, 1.0);
+  float d = 0;
+  if (faceIdx == 0)
+    d = getRange(uv, tex0);
+  else if (faceIdx == 1)
+    d = getRange(uv, tex1);
+  else if (faceIdx == 2)
+    d = getRange(uv, tex2);
+  else if (faceIdx == 3)
+    d = getRange(uv, tex3);
+  else if (faceIdx == 4)
+    d = getRange(uv, tex4);
+  else if (faceIdx == 5)
+    d = getRange(uv, tex5);
+
+  // todo(anyone) set retro values
+  float retro = 0.0;
+
+  fragColor = vec4(d, retro, 0, 1.0);
   return;
-
-
-  if ((inPs.uv0.x < 0.0) || (inPs.uv0.x > 1.0) ||
-      (inPs.uv0.y < 0.0) || (inPs.uv0.y > 1.0))
-    fragColor = vec4(1,1,1,1);
-  else
-  {
-    int int_tex = int(tex * 1000.0);
-    if (int_tex == 0)
-      fragColor = texture(tex1, inPs.uv0);
-    else
-      if (int_tex == 1)
-        fragColor = texture(tex2, inPs.uv0);
-      else
-        fragColor = texture(tex3, inPs.uv0);
-   }
 }
-
-

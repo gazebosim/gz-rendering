@@ -346,7 +346,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   // Load plugin
-  auto pluginNames = this->pluginLoader.LoadLibrary(pathToLib);
+  auto pluginNames = this->pluginLoader.LoadLib(pathToLib);
   if (pluginNames.empty())
   {
     ignerr << "Failed to load plugin [" << _filename <<

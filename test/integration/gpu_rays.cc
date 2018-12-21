@@ -28,7 +28,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-#define LASER_TOL 1e-3
+#define LASER_TOL 2e-4
 #define DOUBLE_TOL 1e-6
 
 // vertical range values seem to be less accurate
@@ -60,178 +60,7 @@ class GpuRaysTest: public testing::Test,
 
   // Test vertical measurements
   public: void LaserVertical(const std::string &_renderEngine);
-
-  public: void SimpleTest(const std::string &_renderEngine);
 };
-
-/////////////////////////////////////////////////
-/// \brief Test detection of different boxes
-void GpuRaysTest::SimpleTest(const std::string &_renderEngine)
-{
-  if (_renderEngine == "optix")
-  {
-    igndbg << "GpuRays not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
-  // Test GPU rays with 3 boxes in the world.
-  // First GPU rays at identity orientation, second at 90 degree roll
-  // First place 2 of 3 boxes within range and verify range values.
-  // then move all 3 boxes out of range and verify range values
-
-  const double hMinAngle = -IGN_PI/2.0;
-  const double hMaxAngle = IGN_PI/2.0;
-  const double minRange = 0.1;
-  const double maxRange = 10.0;
-  const int hRayCount = 320;
-  const int vRayCount = 1;
-
-  common::Time waitTime = common::Time(WAIT_TIME);
-
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    igndbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
-
-  ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
-
-  VisualPtr root = scene->RootVisual();
-
-  // Create first ray caster
-  ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0.1),
-      ignition::math::Quaterniond::Identity);
-
-  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays_1");
-  gpuRays->SetWorldPosition(testPose.Pos());
-  gpuRays->SetWorldRotation(testPose.Rot());
-  gpuRays->SetNearClipPlane(minRange);
-  gpuRays->SetFarClipPlane(maxRange);
-  gpuRays->SetAngleMin(hMinAngle);
-  gpuRays->SetAngleMax(hMaxAngle);
-  gpuRays->SetRayCount(hRayCount);
-
-  gpuRays->SetVerticalRayCount(vRayCount);
-  root->AddChild(gpuRays);
-
-  // Create a second ray caster rotated
-  ignition::math::Pose3d testPose2(ignition::math::Vector3d(0, 0, 0.1),
-      ignition::math::Quaterniond(IGN_PI/2.0, 0, 0));
-
-/*  GpuRaysPtr gpuRays2 = scene->CreateGpuRays("gpu_rays_2");
-  gpuRays2->SetWorldPosition(testPose2.Pos());
-  gpuRays2->SetWorldRotation(testPose2.Rot());
-  gpuRays2->SetNearClipPlane(minRange);
-  gpuRays2->SetFarClipPlane(maxRange);
-  gpuRays2->SetClamp(true);
-  gpuRays2->SetAngleMin(hMinAngle);
-  gpuRays2->SetAngleMax(hMaxAngle);
-  gpuRays2->SetRayCount(hRayCount);
-  gpuRays2->SetVerticalRayCount(vRayCount);
-  root->AddChild(gpuRays2);
-*/
-
-  // Create testing boxes
-  // box in the center
-  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(3, 0, 0.0),
-                                   ignition::math::Quaterniond::Identity);
-  VisualPtr visualBox1 = scene->CreateVisual("UnitBox1");
-  auto box = scene->CreateBox();
-  visualBox1->AddGeometry(box);
-  visualBox1->SetWorldPosition(box01Pose.Pos());
-  visualBox1->SetWorldRotation(box01Pose.Rot());
-  root->AddChild(visualBox1);
-
-  // Create testing boxes
-  // box in the center
-  ignition::math::Pose3d box02Pose(ignition::math::Vector3d(0, -5, 0.0),
-                                   ignition::math::Quaterniond::Identity);
-  VisualPtr visualBox2 = scene->CreateVisual("UnitBox2");
-  visualBox2->AddGeometry(scene->CreateBox());
-  visualBox2->SetWorldPosition(box02Pose.Pos());
-  visualBox2->SetWorldRotation(box02Pose.Rot());
-  root->AddChild(visualBox2);
-
-  // Verify rays caster 1 range readings
-  // listen to new gpu rays frames
-  unsigned int channels = 3;
-  float *scan = new float[hRayCount * vRayCount * channels];
-  common::ConnectionPtr c =
-    gpuRays->ConnectNewGpuRaysFrame(
-        std::bind(&::OnNewGpuRaysFrame, scan,
-          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
-          std::placeholders::_4, std::placeholders::_5));
-
-  gpuRays->Update();
-
-  int mid = static_cast<int>(hRayCount/2) * channels ;
-  int last = (hRayCount - 1) * channels;
-  std::cerr << " mid " << mid << "last " << last << std::endl;
-  double unitBoxSize = 1.0;
-  double expectedRangeAtMidPointBox1 = abs(box01Pose.Pos().X()) - unitBoxSize/2;
-  double expectedRangeAtMidPointBox2 = abs(box02Pose.Pos().Y()) - unitBoxSize/2;
-
-
-  // rays caster 1 should see box01 and box02
-  EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);
-  EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
-  EXPECT_DOUBLE_EQ(scan[last], ignition::math::INF_D);
-
-/*
-  // Verify rays caster 2 range readings
-  // listen to new gpu rays frames
-  float *scan2 = new float[hRayCount * vRayCount * 3];
-  common::ConnectionPtr c2 =
-    gpuRays2->ConnectNewGpuRaysFrame(
-        std::bind(&::OnNewGpuRaysFrame, scan2,
-          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
-          std::placeholders::_4, std::placeholders::_5));
-
-  gpuRays2->Update();
-
-  // Only box01 should be visible to rays caster 2
-  EXPECT_DOUBLE_EQ(scan2[0], maxRange);
-  EXPECT_NEAR(scan2[mid], expectedRangeAtMidPointBox1, LASER_TOL);
-  EXPECT_DOUBLE_EQ(scan2[last], maxRange);
-
-  // Move all boxes out of range
-  visualBox1->SetWorldPosition(
-      ignition::math::Vector3d(maxRange + 1, 0, 0));
-  visualBox1->SetWorldRotation(box01Pose.Rot());
-  visualBox2->SetWorldPosition(
-      ignition::math::Vector3d(0, -(maxRange + 1), 0));
-  visualBox2->SetWorldRotation(box02Pose.Rot());
-
-  gpuRays->Update();
-  gpuRays2->Update();
-
-  for (int i = 0; i < gpuRays->RayCount(); ++i)
-    EXPECT_DOUBLE_EQ(scan[i * 3], ignition::math::INF_D);
-
-  for (int i = 0; i < gpuRays2->RayCount(); ++i)
-    EXPECT_DOUBLE_EQ(scan2[i * 3], maxRange);
-
-  c.reset();
-  c2.reset();
-*/
-
-  delete [] scan;
-//  delete [] scan2;
-
-  scan = nullptr;
-//  scan2 = nullptr;
-
-  // Clean up
-  engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
-}
-
-
 
 /////////////////////////////////////////////////
 /// \brief Test GPU rays configuraions
@@ -308,6 +137,7 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 
@@ -423,7 +253,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   gpuRays->Update();
 
-  int mid = static_cast<int>(hRayCount/2) * channels ;
+  int mid = static_cast<int>(hRayCount/2) * channels;
   int last = (hRayCount - 1) * channels;
   double unitBoxSize = 1.0;
   double expectedRangeAtMidPointBox1 = abs(box01Pose.Pos().X()) - unitBoxSize/2;
@@ -485,7 +315,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 /// \brief Test GPU rays vertical component
 void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 {
-  if (_renderEngine != "ogre")
+  if (_renderEngine == "optix")
   {
     igndbg << "GpuRays not supported yet in rendering engine: "
             << _renderEngine << std::endl;
@@ -628,14 +458,6 @@ TEST_P(GpuRaysTest, LaserVertical)
 {
   LaserVertical(GetParam());
 }
-
-/////////////////////////////////////////////////
-TEST_P(GpuRaysTest, SimpleTest)
-{
-  SimpleTest(GetParam());
-}
-
-
 
 INSTANTIATE_TEST_CASE_P(GpuRays, GpuRaysTest,
     RENDER_ENGINE_VALUES,

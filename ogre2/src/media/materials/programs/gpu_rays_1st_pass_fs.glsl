@@ -6,7 +6,6 @@ in block
   vec3 cameraDir;
 } inPs;
 
-
 uniform sampler2D depthTexture;
 
 out vec4 fragColor;
@@ -33,7 +32,7 @@ void main()
 
   if (l > far)
     l = max;
-  if (l < near)
+  else if (l < near)
     l = min;
 
   fragColor = vec4(l, 0.0, 0, 1.0);

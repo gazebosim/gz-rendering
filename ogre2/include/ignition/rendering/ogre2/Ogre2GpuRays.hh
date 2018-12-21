@@ -19,25 +19,14 @@
 #define IGNITION_RENDERING_OGRE2_OGRE2GPURAYS_HH_
 
 #include <string>
-#include <vector>
 #include <memory>
-#include <sstream>
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/base/BaseGpuRays.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
-
-#ifdef _WIN32
-  // Ensure that Winsock2.h is included before Windows.h, which can get
-  // pulled in by anybody (e.g., Boost).
-  #include <Winsock2.h>
-#endif
 
 namespace ignition
 {
@@ -48,10 +37,19 @@ namespace ignition
     // Forward declaration
     class Ogre2GpuRaysPrivate;
 
-    /** \class Ogre2GpuRays Ogre2GpuRays.hh\
-     * rendering/ogre/Ogre2GpuRays.hh
-    **/
-    /// \brief Gpu Rays used to render depth data into an image buffer
+    /// \brief Gpu Rays used to render range data into an image buffer
+    /// The ogre2 implementation takes a 2 pass process to generate
+    /// the final range data.
+    /// 1st Pass: Creates a cubemap of range data. The cubemap is created from
+    /// six cameras looking in all directions. Depending on the min/max angles
+    /// specified, not all cameras need to be created. Internally in the 1st
+    /// pass shaders, we reconstruct 3d viewspace pos from depth buffer data
+    /// then convert them into ranges, i.e. length(pos.xyz).
+    /// 2nd Pass: Samples range data from cubemap using predefined rays. The
+    /// rays are generated based on the specified vertical and horizontal
+    /// min/max angles and no. of samples. Each ray is a direction vector that
+    /// is used to sample/lookup the range data stored in the faces of the
+    /// cubemap.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2GpuRays :
       public BaseGpuRays<Ogre2Sensor>
     {
@@ -108,86 +106,44 @@ namespace ignition
       // Documentation inherited.
       private: virtual void Render() override;
 
-      /// \brief Configure cameras.
-      private: void ConfigureCameras();
+      /// \brief Configure camera.
+      private: void ConfigureCamera();
 
-      /// \brief Create a mesh.
-      private: void CreateMesh();
-
-      /// \brief Create a canvas.
-      private: void CreateCanvas();
-
-      /// \brief Create an ortho camera.
-      private: void CreateOrthoCam();
-
-      /// \brief Create an ortho camera.
+     /// \brief Create an ortho camera.
       private: void CreateCamera();
 
       /// \brief Create the texture which is used to render gpu rays data.
       private: virtual void CreateGpuRaysTextures();
 
-      /// \brief Builds scaled Orthogonal Matrix from parameters.
-      /// \param[in] _left Left clip.
-      /// \param[in] _right Right clip.
-      /// \param[in] _bottom Bottom clip.
-      /// \param[in] _top Top clip.
-      /// \param[in] _near Near clip.
-      /// \param[in] _far Far clip.
-      /// \return The Scaled orthogonal Ogre::Matrix4
-      private: Ogre::Matrix4 BuildScaledOrthoMatrix(const float _left,
-          const float _right, const float _bottom, const float _top,
-          const float _near, const float _far);
-
+      /// \brief Update the render targets in the 1st pass
       private: void UpdateRenderTarget1stPass();
+
+      /// \brief Update the 2nd pass render target
       private: void UpdateRenderTarget2ndPass();
-      private: void UpdateRenderTargetCubemap();
-      private: void CreateCubemap();
+
+      /// \brief Create texture that store cubemap uv coordinates and
+      /// cubemap face index data
       private: void CreateSampleTexture();
-      private: math::Vector2d SampleCube(const math::Vector3d &_v,
+
+      /// \brief Set up 1st pass material, texture, and compositor
+      private: void Setup1stPass();
+
+      /// \brief Set up 2nd pass material, texture, and compositor
+      private: void Setup2ndPass();
+
+      /// \brief Heloper function to convert a direction vector to the
+      /// index number of a cubemap face and texture uv coordinates on that face
+      /// \param[in] _v Direction vector
+      /// \param[out] _faceIndex Index of face to sample
+      /// \return Texture UV coordinates of that face
+      private: math::Vector2d SampleCubemap(const math::Vector3d &_v,
           unsigned int &_faceIndex);
-
-
-      private: void UpdateRenderTarget(Ogre::RenderTarget *_target,
-                                       Ogre::Material *_material,
-                                       Ogre::Camera *_cam,
-                                       const bool _updateTex);
-
-      /// \brief Get Cos Horz field-of-view
-      /// \return 2 * atan(tan(this->hfov/2) / cos(this->vfov/2))
-      private: virtual double CosHorzFOV() const;
-
-      /// \brief Set the Cos Horz FOV
-      /// \param[in] _chfov Cos Horz FOV
-      private: virtual void SetCosHorzFOV(const double _chfov);
-
-      /// \brief Get Cos Vert field-of-view
-      /// \return 2 * atan(tan(this->vfov/2) / cos(this->hfov/2))
-      private: virtual double CosVertFOV() const;
-
-      /// \brief Set the Cos Horz FOV
-      /// \param[in] _cvfov Cos Horz FOV
-      private: virtual void SetCosVertFOV(const double _cvfov);
-
-      /// \brief Get (horizontal_max_angle + horizontal_min_angle) * 0.5
-      /// \return (horizontal_max_angle + horizontal_min_angle) * 0.5
-      private: virtual double HorzHalfAngle() const;
-
-      /// \brief Get (vertical_max_angle + vertical_min_angle) * 0.5
-      /// \return (vertical_max_angle + vertical_min_angle) * 0.5
-      private: virtual double VertHalfAngle() const;
-
-      /// \brief Set the horizontal half angle
-      /// \param[in] _angle horizontal half angle
-      private: virtual void SetHorzHalfAngle(const double _angle);
-
-      /// \brief Set the vertical half angle
-      /// \param[in] _angle vertical half angle
-      private: virtual void SetVertHalfAngle(const double _angle);
 
       /// \internal
       /// \brief Pointer to private data.
       private: std::unique_ptr<Ogre2GpuRaysPrivate> dataPtr;
 
+      /// \brief Only the scene can create a GpuRays sensor
       private: friend class Ogre2Scene;
     };
     }

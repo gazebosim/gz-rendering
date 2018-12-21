@@ -15,80 +15,12 @@
  *
 */
 
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/SubMesh.hh>
-
-#include <ignition/math/Color.hh>
-#include <ignition/math/Helpers.hh>
+#include <ignition/math/Vector2.hh>
 #include <ignition/math/Vector3.hh>
 
-#include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-
-/// \internal
-namespace ignition
-{
-namespace rendering
-{
-  class Ogre2GpuRays1stPassRTListener : public Ogre::RenderTargetListener
-  {
-    public: Ogre2GpuRays1stPassRTListener(Ogre::SceneNode *_node,
-      unsigned int _camIndex, unsigned int _count, double _rotation)
-    {
-      this->node = _node;
-      this->camIndex = _camIndex;
-      this->count = _count;
-      this->rotation = _rotation;
-      this->origQuat = this->node->getOrientation();
-      if (this->count == 2)
-      {
-        this->cameraYaws[0] = -this->rotation / 2.0;
-        this->cameraYaws[1] = +this->rotation;
-        this->cameraYaws[2] = 0;
-        this->cameraYaws[3] = -this->rotation / 2.0;
-      }
-      else
-      {
-        this->cameraYaws[0] = -this->rotation;
-        this->cameraYaws[1] = +this->rotation;
-        this->cameraYaws[2] = +this->rotation;
-        this->cameraYaws[3] = -this->rotation;
-      }
-    }
-
-    public: void preRenderTargetUpdate(
-      const Ogre::RenderTargetEvent &/*_evt*/)
-    {
-      std::cerr << "preRenderTargetUpdate " << rotation << std::endl;
-      if (this->count < 1)
-        return;
-
-      for (unsigned int i = 0; i <= this->camIndex; ++i)
-        this->node->roll(Ogre::Radian(this->cameraYaws[i]));
-    };
-
-    public: void postRenderTargetUpdate(
-      const Ogre::RenderTargetEvent &/*_evt*/)
-    {
-      if (this->count < 1)
-        return;
-
-      this->node->setOrientation(this->origQuat);
-    };
-
-    private: Ogre::SceneNode *node = nullptr;
-    private: unsigned int camIndex = 0u;
-    private: unsigned int count = 0u;
-    private: double rotation = 0.0;
-    private: Ogre::Quaternion origQuat = Ogre::Quaternion::IDENTITY;
-    private: double cameraYaws[4];
-  };
-}
-}
-
 
 /// \internal
 /// \brief Private data for the Ogre2GpuRays class
@@ -111,63 +43,47 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   public: float *gpuRaysScan = nullptr;
 
   /// \brief Pointer to Ogre material for the first rendering pass.
-  public: Ogre::Material *matFirstPass = nullptr;
+  public: Ogre::MaterialPtr matFirstPass;
 
   /// \brief Pointer to Ogre material for the sencod rendering pass.
-  public: Ogre::Material *matSecondPass = nullptr;
+  public: Ogre::MaterialPtr matSecondPass;
 
-  public: Ogre::Camera *envCam[6];
+  /// \brief Cubemap cameras
+  public: Ogre::Camera *cubeCam[6];
+
+  /// \brief Texture packed with cubemap face and uv data
   public: Ogre::TexturePtr cubeUVTexture;
+
+  /// \brief Set of cubemap faces that are needed to generate the final
+  /// range data
   public: std::set<unsigned int> cubeFaceIdx;
+
+  /// \brief 1st pass compositor workspace definition
+  public: std::string ogreCompositorWorkspaceDef1st;
+
+  /// \brief 1st pass compositor node definition
+  public: std::string ogreCompositorNodeDef1st;
+
+  /// \brief 1st pass compositor workspace. One for each cubemap camera
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace1st[6];
+
+  /// \brief 2nd pass compositor workspace definition
+  public: std::string ogreCompositorWorkspaceDef2nd;
+
+  /// \brief 1st pass compositor node definition
+  public: std::string ogreCompositorNodeDef2nd;
+
+  /// \brief 2nd pass compositor workspace.
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace2nd = nullptr;
 
-
-  public: Ogre::Material *matCompose = nullptr;
-  public: Ogre::TexturePtr composeTexture ;
-  public: Ogre::TexturePtr cubemapTexture;
-  public: Ogre::Camera *cubemapCam = nullptr;
-  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
-  public: Ogre::CompositorWorkspace *ogreCompositorWorkspaceCubemap = nullptr;
-
-
-
-  /// \brief Temporary pointer to the current material.
-  public: Ogre::Material *currentMat = nullptr;
-
-  /// \brief An array of first pass textures.
+  /// \brief An array of first pass textures. One for each cubemap camera.
   public: Ogre::TexturePtr firstPassTextures[6];
 
-  public: Ogre2GpuRays1stPassRTListener *rtListeners1st[3];
-
   /// \brief Second pass texture.
-  public: Ogre::Texture *secondPassTexture = nullptr;
-
-  /// \brief Temporary pointer to the current render target.
-  public: Ogre::Texture *currentTexture = nullptr;
-
-  /// \brief Ogre orthorgraphic camera used in the second pass for
-  /// undistortion.
-  public: Ogre::Camera *orthoCam = nullptr;
+  public: Ogre::TexturePtr secondPassTexture;
 
   /// \brief Pointer to the ogre camera
   public: Ogre::Camera *ogreCamera = nullptr;
-
-  /// \brief Ogre scenenode where the orthorgraphic camera is attached to.
-  public: Ogre::SceneNode *pitchNodeOrtho = nullptr;
-
-  /// \brief Ogre mesh used to create a canvas for undistorting range values
-  /// in the second rendering pass.
-  public: common::Mesh *undistMesh = nullptr;
-
-  /// \brief Pointer to visual that holds the canvas.
-  public: VisualPtr visual;
-
-  /// \brief Number of first pass textures.
-  public: unsigned int textureCount = 0u;
-
-  /// \brief A list of camera angles for first pass rendering.
-//  public: double cameraYaws[4];
 
   /// \brief Image width of first pass.
   public: unsigned int w1st = 0u;
@@ -185,30 +101,8 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   // r = depth, g = retro, and b = n/a
   public: unsigned int channels = 3u;
 
-  /// \brief List of texture unit indices used during the second
-  /// rendering pass.
-  public: std::vector<int> texIdx;
-
-  /// Number of second pass texture units created.
-  public: unsigned int texCount = 0;
-
   /// \brief Dummy render texture for the gpu rays
   public: RenderTexturePtr renderTexture;
-
-  /// \brief Cos horizontal field-of-view.
-  public: double chfov = 0;
-
-  /// \brief Cos vertical field-of-view.
-  public: double cvfov = 0;
-
-  /// \brief Horizontal half angle.
-  public: double horzHalfAngle = 0;
-
-  /// \brief Vertical half angle.
-  public: double vertHalfAngle = 0;
-
-  /// \brief Number of cameras needed to generate the rays.
-  public: unsigned int cameraCount = 1;
 };
 
 using namespace ignition;
@@ -220,7 +114,7 @@ Ogre2GpuRays::Ogre2GpuRays()
 {
   for (unsigned int i = 0; i < 6u; ++i)
   {
-    this->dataPtr->envCam[i] = nullptr;
+    this->dataPtr->cubeCam[i] = nullptr;
     this->dataPtr->ogreCompositorWorkspace1st[i] = nullptr;
   }
 }
@@ -236,7 +130,7 @@ void Ogre2GpuRays::Init()
 {
   BaseGpuRays::Init();
 
-  // create internal camera for 1st pass
+  // create internal camera
   this->CreateCamera();
 
   // create dummy render texture
@@ -258,6 +152,17 @@ void Ogre2GpuRays::Destroy()
     this->dataPtr->gpuRaysScan = nullptr;
   }
 
+  if (this->dataPtr->cubeUVTexture)
+  {
+    Ogre::TextureManager::getSingleton().remove(
+        this->dataPtr->cubeUVTexture->getName());
+  }
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  // remove 1st pass textures, material, compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
     if (this->dataPtr->firstPassTextures[i])
@@ -265,31 +170,47 @@ void Ogre2GpuRays::Destroy()
       Ogre::TextureManager::getSingleton().remove(
           this->dataPtr->firstPassTextures[i]->getName());
     }
+    if (this->dataPtr->ogreCompositorWorkspace1st[i])
+    {
+      ogreCompMgr->removeWorkspace(
+          this->dataPtr->ogreCompositorWorkspace1st[i]);
+    }
+  }
+  if (this->dataPtr->matFirstPass)
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        this->dataPtr->matFirstPass->getName());
   }
 
+  if (!this->dataPtr->ogreCompositorWorkspaceDef1st.empty())
+  {
+    ogreCompMgr->removeWorkspaceDefinition(
+        this->dataPtr->ogreCompositorWorkspaceDef1st);
+    ogreCompMgr->removeNodeDefinition(
+        this->dataPtr->ogreCompositorNodeDef1st);
+  }
+
+  // remove 2nd pass texture, material, compositor
   if (this->dataPtr->secondPassTexture)
   {
     Ogre::TextureManager::getSingleton().remove(
         this->dataPtr->secondPassTexture->getName());
-    this->dataPtr->secondPassTexture = nullptr;
   }
 
   if (this->dataPtr->matSecondPass)
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->matSecondPass->getName());
-    this->dataPtr->matSecondPass = nullptr;
   }
 
-  if (this->scene && this->dataPtr->orthoCam)
+  if (!this->dataPtr->ogreCompositorWorkspaceDef2nd.empty())
   {
-    this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->orthoCam);
-    this->dataPtr->orthoCam = nullptr;
+    ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorWorkspace2nd);
+    ogreCompMgr->removeWorkspaceDefinition(
+        this->dataPtr->ogreCompositorWorkspaceDef2nd);
+    ogreCompMgr->removeNodeDefinition(
+        this->dataPtr->ogreCompositorNodeDef2nd);
   }
-
-  this->dataPtr->visual.reset();
-  this->dataPtr->texIdx.clear();
-  this->dataPtr->texCount = 0u;
 }
 
 /////////////////////////////////////////////////
@@ -331,46 +252,10 @@ void Ogre2GpuRays::CreateCamera()
 }
 
 /////////////////////////////////////////////////
-void Ogre2GpuRays::ConfigureCameras()
+void Ogre2GpuRays::ConfigureCamera()
 {
   // horizontal gpu rays setup
   this->SetHFOV(this->AngleMax() - this->AngleMin());
-
-  if (this->HFOV().Radian() > 2.0 * IGN_PI)
-  {
-    this->SetHFOV(2.0 * IGN_PI);
-    ignwarn << "Horizontal FOV for GPU rays is capped at 180 degrees.\n";
-  }
-
-  this->SetHorzHalfAngle((this->AngleMax() + this->AngleMin()).Radian() / 2.0);
-
-  // determine number of cameras to use
-  if (this->HFOV().Radian() > 2.8)
-  {
-    if (this->HFOV().Radian()  > 5.6)
-    {
-      this->dataPtr->cameraCount = 3;
-    }
-    else
-    {
-      this->dataPtr->cameraCount = 2;
-    }
-  }
-  else
-  {
-    this->dataPtr->cameraCount = 1;
-  }
-
-  // horizontal fov of single frame
-  this->SetHFOV(this->HFOV().Radian() / this->dataPtr->cameraCount);
-  this->SetCosHorzFOV(this->HFOV().Radian());
-
-  // Fixed minimum resolution of texture to reduce steps in ranges
-  // when hitting surfaces where the angle between ray and surface is small.
-  // Also have to keep in mind the GPU's max. texture size
-  unsigned int horzRangeCountPerCamera =
-      std::max(2048U, this->RangeCount() / this->dataPtr->cameraCount);
-  unsigned int vertRangeCountPerCamera = this->VerticalRangeCount();
 
   // vertical laser setup
   double vfovAngle;
@@ -390,266 +275,45 @@ void Ogre2GpuRays::ConfigureCameras()
       this->SetVerticalAngleMax(this->VerticalAngleMin().Radian());
     }
   }
-
-  if (vfovAngle > IGN_PI / 2.0)
-  {
-    vfovAngle = IGN_PI / 2.0;
-    ignwarn << "Vertical FOV for GPU laser is capped at 90 degrees.\n";
-  }
-
   this->SetVFOV(vfovAngle);
-  this->SetVertHalfAngle((this->VerticalAngleMax()
-                   + this->VerticalAngleMin()).Radian() / 2.0);
-
-  this->SetVerticalAngleMin(this->VertHalfAngle() - (vfovAngle / 2));
-  this->SetVerticalAngleMax(this->VertHalfAngle() + (vfovAngle / 2));
-
-  // Assume camera always stays horizontally even if vert. half angle of
-  // laser is not 0. Add padding to camera vfov.
-  double vfovCamera = vfovAngle + 2.0 * std::abs(this->VertHalfAngle());
-
-  // Add padding to vertical camera FOV to cover all possible rays
-  // for given laser vert. and horiz. FOV
-  vfovCamera = 2.0 * atan(tan(vfovCamera / 2.0) / cos(
-        this->HFOV().Radian() / 2.0));
-
-  if (vfovCamera > 2.8)
-  {
-    ignerr << "Vertical FOV of internal camera exceeds 2.8 radians.\n";
-  }
-
-  this->SetCosVertFOV(vfovCamera);
-
-  // If vertical ray is not 1 adjust horizontal and vertical
-  // ray count to maintain aspect ratio
-  if (this->vSamples > 1)
-  {
-    double cameraAspectRatio =
-      tan(this->HFOV().Radian() / 2.0) / tan(vfovCamera / 2.0);
-
-    this->SetRayCountRatio(cameraAspectRatio);
-    this->rangeCountRatio = cameraAspectRatio;
-
-    if ((horzRangeCountPerCamera / this->rangeCountRatio) >
-         vertRangeCountPerCamera)
-    {
-      vertRangeCountPerCamera =
-          std::round(horzRangeCountPerCamera / this->rangeCountRatio);
-    }
-    else
-    {
-      horzRangeCountPerCamera =
-          round(vertRangeCountPerCamera * this->rangeCountRatio);
-    }
-  }
-  else
-  {
-    // In case of 1 vert. ray, set a very small vertical FOV for camera
-    this->SetRayCountRatio(horzRangeCountPerCamera);
-    double camVFOV = 2.0 * atan(tan(
-          this->HFOV().Radian() / 2.0) / this->RayCountRatio());
-    this->SetCosVertFOV(camVFOV);
-  }
 
   // Configure first pass texture size
-  this->Set1stTextureSize(horzRangeCountPerCamera, vertRangeCountPerCamera);
+  this->Set1stTextureSize(1024, 1024);
+
   // Configure second pass texture size
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());
 
   // Set ogre cam properties
-  this->dataPtr->ogreCamera->setAspectRatio(this->RayCountRatio());
-  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian((this->CosVertFOV())));
   this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
   this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
-  this->dataPtr->ogreCamera->setRenderingDistance(this->FarClipPlane());
-  this->dataPtr->ogreCamera->yaw(Ogre::Radian(this->HorzHalfAngle()));
 }
 
 /////////////////////////////////////////////////////////
-void Ogre2GpuRays::CreateCubemap()
-{
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
-  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
-
-
-  std::string cubemapTexName = "cubemap_" + this->Name();
-  this->dataPtr->cubemapTexture =
-      Ogre::TextureManager::getSingleton().createManual(
-      cubemapTexName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-      Ogre::TEX_TYPE_CUBE_MAP, 1024, 1024,
-      Ogre::PixelUtil::getMaxMipmapCount( 1024, 1024, 1 ),
-      Ogre::PF_A8B8G8R8, Ogre::TU_RENDERTARGET | Ogre::TU_AUTOMIPMAP, 0, false);
-
-//      1, Ogre::PF_FLOAT32_R, Ogre::TU_RENDERTARGET, 0, false);
-//      1, Ogre::PF_B8G8R8, Ogre::TU_RENDERTARGET, 0, false);
-
-  // Create the camera used to render to our cubemap
-  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
-  this->dataPtr->cubemapCam =
-      ogreSceneManager->createCamera("CubeMapCamera", true, true);
-  this->dataPtr->cubemapCam->setFOVy(Ogre::Degree(90));
-  this->dataPtr->cubemapCam->setAspectRatio(1);
-  this->dataPtr->cubemapCam->setFixedYawAxis(false);
-//  this->dataPtr->cubemapCam->setNearClipDistance(this->NearClipPlane());
-//  this->dataPtr->cubemapCam->setFarClipDistance(this->FarClipPlane());
-  this->dataPtr->cubemapCam->setFarClipDistance(10000);
-
-//  this->dataPtr->cubemapCam->yaw(Ogre::Degree(-90));
-//  this->dataPtr->cubemapCam->roll(Ogre::Degree(-90));
-  // this->dataPtr->cubemapCam->setPosition( 0, 1.0, 0 );
-
-/*  std::string cubemapWsDefName = "GpuRaysCubemapWorkspace";
-  this->dataPtr->ogreCompositorWorkspaceCubemap =
-      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      this->dataPtr->cubemapTexture->getBuffer(0)->getRenderTarget(),
-      this->dataPtr->cubemapCam, cubemapWsDefName, true);
-*/
-
-  // create cubemap compositor
-  Ogre::CompositorChannelVec cubemapExternalChannels(1);
-  // any of the cubemap's render targets will do
-  cubemapExternalChannels[0].target =
-      this->dataPtr->cubemapTexture->getBuffer(0)->getRenderTarget();
-  cubemapExternalChannels[0].textures.push_back(this->dataPtr->cubemapTexture);
-
-  std::string cubemapWsDefName = "GpuRaysCubemapWorkspace";
-  if( !ogreCompMgr->hasWorkspaceDefinition(cubemapWsDefName))
-  {
-    Ogre::CompositorWorkspaceDef *workspaceDef =
-        ogreCompMgr->addWorkspaceDefinition(cubemapWsDefName);
-    // "CubemapRendererNode" has been defined in scripts.
-    workspaceDef->connectExternal(0, "CubemapRendererNode", 0);
-    std::cerr << "cureating GpuRaysCubemapWorkspace and CubemapRendererNode " << std::endl;
-  }
-
-  Ogre::ResourceLayoutMap initialCubemapLayouts;
-  Ogre::ResourceAccessMap initialCubemapUavAccess;
-  this->dataPtr->ogreCompositorWorkspaceCubemap =
-      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      cubemapExternalChannels, this->dataPtr->cubemapCam, cubemapWsDefName,
-      true, -1, (Ogre::UavBufferPackedVec *)0, &initialCubemapLayouts,
-      &initialCubemapUavAccess);
-
-  // create output render texture
-  std::string texName = this->Name() + "_compose";
-  this->dataPtr->composeTexture =
-    Ogre::TextureManager::getSingleton().createManual(
-    texName, "General", Ogre::TEX_TYPE_2D,
-    this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
-    Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET);
-
-/*  this->dataPtr->matCompose = dynamic_cast<Ogre::Material *>(
-      Ogre::MaterialManager::getSingleton().getByName("GpuRaysCompose").get());
-  this->dataPtr->matCompose->load();
-  Ogre::Pass *pass = this->dataPtr->matCompose->getTechnique(0)->getPass(0);
-  auto texUnit = pass->getTextureUnitState(0);
-  texUnit->setTexture(this->dataPtr->cubemapTexture);
-  std::cerr << "tex unit state name " <<  texUnit->getName() << std::endl;
-//  Ogre::GpuProgramParametersSharedPtr psParams =
-//      pass->getFragmentProgramParameters();
-
-
-
-  std::string wsDefName = "GpuRaysComposeWorkspace";
-  this->dataPtr->ogreCompositorWorkspace =
-      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      this->dataPtr->composeTexture->getBuffer()->getRenderTarget(),
-      this->dataPtr->ogreCamera, wsDefName, true);
-*/
-
-
-  // create final RT compositor
-  auto rt = this->dataPtr->composeTexture->getBuffer()->getRenderTarget();
-  Ogre::CompositorChannelVec externalChannels(2) ;
-  externalChannels[0].target = rt;
-  externalChannels[1].target =
-      this->dataPtr->cubemapTexture->getBuffer(0)->getRenderTarget();
-  externalChannels[1].textures.push_back(this->dataPtr->cubemapTexture);
-
-  std::string wsDefName = "GpuRaysComposeWorkspace";
-  this->dataPtr->ogreCompositorWorkspace =
-      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      externalChannels, this->dataPtr->ogreCamera, wsDefName, true,
-      -1, (Ogre::UavBufferPackedVec *)0, &initialCubemapLayouts,
-      &initialCubemapUavAccess);
-
-//  // Setup the viewport to use the texture
-//  Ogre::Viewport *vp = rt->getViewport(0);
-//  vp->setOverlaysEnabled(false);
-//  vp->_setVisibilityMask(IGN_VISIBILITY_ALL &
-//      ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE),
-//      vp->getLightVisibilityMask());
-
-
-/*  double projectionA = this->FarClipPlane() /
-      (this->FarClipPlane() - this->NearClipPlane());
-  double projectionB = (-this->FarClipPlane() * this->NearClipPlane()) /
-      (this->FarClipPlane() - this->NearClipPlane());
-  psParams->setNamedConstant("projectionParams",
-      Ogre::Vector2(projectionA, projectionB));
-
-  psParams->setNamedConstant("near",
-      static_cast<float>(this->NearClipPlane()));
-  psParams->setNamedConstant("far",
-      static_cast<float>(this->FarClipPlane()));
-
-  psParams->setNamedConstant("max",
-      static_cast<float>(this->dataMaxVal));
-  psParams->setNamedConstant("min",
-      static_cast<float>(this->dataMinVal));
-*/
-
-/*
-  std::string cubemapTexName = "cubemap_" + this->Name();
-  this->dataPtr->cubemapTexture =
-    Ogre::TextureManager::getSingleton().createManual(
-    cubemapTexName, "General", Ogre::TEX_TYPE_2D,
-    this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
-    Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET);
-
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
-  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
-
-  auto rt = this->dataPtr->cubemapTexture->getBuffer()->getRenderTarget();
-  std::string wsDefName = "GpuRaysCubemapWorkspace";
-  this->dataPtr->ogreCompositorWorkspaceCubemap =
-      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      rt, this->dataPtr->ogreCamera, wsDefName, false);
-*/
-
-
-
-
-}
-
-/////////////////////////////////////////////////////////
-math::Vector2d Ogre2GpuRays::SampleCube(const math::Vector3d &_v,
+math::Vector2d Ogre2GpuRays::SampleCubemap(const math::Vector3d &_v,
     unsigned int &_faceIndex)
 {
-	math::Vector3d vAbs = _v.Abs();
-	double ma;
-	math::Vector2d uv;
-	if (vAbs.Z() >= vAbs.X() && vAbs.Z() >= vAbs.Y())
-	{
-		_faceIndex = _v.Z() < 0.0 ? 5.0 : 4.0;
-		ma = 0.5 / vAbs.Z();
-		uv = math::Vector2d(_v.Z() < 0.0 ? -_v.X() : _v.X(), -_v.Y());
-	}
-	else if(vAbs.Y() >= vAbs.X())
-	{
-		_faceIndex = _v.Y() < 0.0 ? 3.0 : 2.0;
-		ma = 0.5 / vAbs.Y();
-		uv = math::Vector2d(_v.X(), _v.Y() < 0.0 ? -_v.Z() : _v.Z());
-	}
-	else
-	{
-		_faceIndex = _v.X() < 0.0 ? 1.0 : 0.0;
-		ma = 0.5 / vAbs.X();
-		uv = math::Vector2d(_v.X() < 0.0 ? _v.Z() : -_v.Z(), -_v.Y());
-	}
-	return uv * ma + 0.5;
+  math::Vector3d vAbs = _v.Abs();
+  double ma;
+  math::Vector2d uv;
+  if (vAbs.Z() >= vAbs.X() && vAbs.Z() >= vAbs.Y())
+  {
+    _faceIndex = _v.Z() < 0.0 ? 5.0 : 4.0;
+    ma = 0.5 / vAbs.Z();
+    uv = math::Vector2d(_v.Z() < 0.0 ? -_v.X() : _v.X(), -_v.Y());
+  }
+  else if (vAbs.Y() >= vAbs.X())
+  {
+    _faceIndex = _v.Y() < 0.0 ? 3.0 : 2.0;
+    ma = 0.5 / vAbs.Y();
+    uv = math::Vector2d(_v.X(), _v.Y() < 0.0 ? -_v.Z() : _v.Z());
+  }
+  else
+  {
+    _faceIndex = _v.X() < 0.0 ? 1.0 : 0.0;
+    ma = 0.5 / vAbs.X();
+    uv = math::Vector2d(_v.X() < 0.0 ? _v.Z() : -_v.Z(), -_v.Y());
+  }
+  return uv * ma + 0.5;
 }
 
 /////////////////////////////////////////////////////////
@@ -661,21 +325,9 @@ void Ogre2GpuRays::CreateSampleTexture()
   double vmax = this->VerticalAngleMax().Radian();
   double hStep = (max-min) / static_cast<double>(this->dataPtr->w2nd-1);
   double vStep = 1.0;
-
+  // non-planar case
   if (this->dataPtr->h2nd > 1)
-  {
     vStep = (vmax-vmin) / static_cast<double>(this->dataPtr->h2nd-1);
-  }
-
-
-/*  vmin = min;
-  vmax = max;
-  vStep = hStep;
-  this->dataPtr->h2nd = this->dataPtr->w2nd;
-*/
-
-  std::cerr << "min max vmin vmax " << min << " " << max << " " << vmin << " " << vmax
-            << std::endl;
 
   // create an RGB texture (cubeUVTex) to pack info that tells the shaders how
   // to sample from the cubemap textures.
@@ -714,16 +366,14 @@ void Ogre2GpuRays::CreateSampleTexture()
       math::Quaterniond yaw(math::Vector3d(0, 1, 0), -h);
       math::Vector3d dir = yaw * pitch * ray;
       unsigned int faceIdx;
-      math::Vector2d uv = this->SampleCube(dir, faceIdx);
+      math::Vector2d uv = this->SampleCubemap(dir, faceIdx);
       this->dataPtr->cubeFaceIdx.insert(faceIdx);
-//      std::cerr << "p(" << pitch << ") y(" << yaw << "): " << dir << " | "
-//                << uv << " | " << faceIdx << std::endl;
+      // igndbg << "p(" << pitch << ") y(" << yaw << "): " << dir << " | "
+      //       << uv << " | " << faceIdx << std::endl;
       // u
       *pDest++ = uv.X();
-
       // v
       *pDest++ = uv.Y();
-
       // face
       *pDest++ = faceIdx;
 
@@ -733,197 +383,213 @@ void Ogre2GpuRays::CreateSampleTexture()
   }
 
   pixelBuffer->unlock();
-
-//  this->dataPtr->cubeFaceIdx.clear();
-//  this->dataPtr->cubeFaceIdx.insert(0u);
 }
 
-
 /////////////////////////////////////////////////////////
-void Ogre2GpuRays::CreateGpuRaysTextures()
+void Ogre2GpuRays::Setup1stPass()
 {
-  this->ConfigureCameras();
+  // Load 1st pass material
+  // The GpuRaysScan1st material is defined in script (gpu_rays.material).
+  // We need to clone it since we are going to modify its uniform variables
+  std::string mat1stName = "GpuRaysScan1st";
+  Ogre::MaterialPtr mat1st =
+      Ogre::MaterialManager::getSingleton().getByName(mat1stName);
+  this->dataPtr->matFirstPass = mat1st->clone(this->Name() + "_" + mat1stName);
+  this->dataPtr->matFirstPass->load();
+  Ogre::Pass *pass = this->dataPtr->matFirstPass->getTechnique(0)->getPass(0);
+  Ogre::GpuProgramParametersSharedPtr psParams =
+      pass->getFragmentProgramParameters();
 
-//  this->CreateCubemap();
+  // Set the uniform variables (see gpu_rays_1st_pass_fs.glsl).
+  // The projectParams is used to linearize depth buffer data
+  // The other params are used to clamp the range output
+  double projectionA = this->FarClipPlane() /
+      (this->FarClipPlane() - this->NearClipPlane());
+  double projectionB = (-this->FarClipPlane() * this->NearClipPlane()) /
+      (this->FarClipPlane() - this->NearClipPlane());
+  projectionB /= this->FarClipPlane();
+  psParams->setNamedConstant("projectionParams",
+      Ogre::Vector2(projectionA, projectionB));
+  psParams->setNamedConstant("near",
+      static_cast<float>(this->NearClipPlane()));
+  psParams->setNamedConstant("far",
+      static_cast<float>(this->FarClipPlane()));
+  psParams->setNamedConstant("max",
+      static_cast<float>(this->dataMaxVal));
+  psParams->setNamedConstant("min",
+      static_cast<float>(this->dataMinVal));
 
-//  this->CreateOrthoCam();
-  this->CreateSampleTexture();
-
-
-
-//  this->dataPtr->textureCount = this->dataPtr->cameraCount;
-
-  // create compositor workspace for rendering
+  // Create 1st pass compositor
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  // create 1st pass compositor
-  // TODO create workspace programmatically
-  //std::string wsDefName = "GpuRays1stPass_" + this->Name();
-  std::string wsDefName = "GpuRays1stPassWorkspace";
-/*  Ogre::CompositorWorkspaceDef *wsDef = nullptr;
+  // We need to programmatically create the compositor because we need to
+  // configure it to use the cloned 1st pass material created earlier.
+  // The compositor workspace definition is equivalent to the following
+  // ogre compositor script:
+  // compositor_node GpuRays1stPass
+  // {
+  //   in 0 rt_input
+  //   texture depthTexture target_width target_height PF_D32_FLOAT
+  //   target depthTexture
+  //   {
+  //     pass clear
+  //     {
+  //       colour_value 0.0 0.0 0.0 1.0
+  //     }
+  //     pass render_scene
+  //     {
+  //     }
+  //   }
+  //   target rt_input
+  //   {
+  //     pass clear
+  //     {
+  //       colour_value 0.0 0.0 0.0 1.0
+  //     }
+  //     pass render_quad
+  //     {
+  //       material GpuRaysScan1st // Use copy instead of original
+  //       input 0 depthTexture
+  //       quad_normals camera_far_corners_view_space
+  //     }
+  //   }
+  //   out 0 rt_input
+  // }
+  std::string wsDefName = "GpuRays1stPassWorkspace_" + this->Name();
+  this->dataPtr->ogreCompositorWorkspaceDef1st = wsDefName;
   if (!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
   {
-    Ogre::CompositorNodeDef *nodeDef = ogreCompMgr->addNodeDefinition(
-        "GpuRays_" + Ogre::IdString(wsDefName + "/Node").getReleaseText());
+    std::string nodeDefName = wsDefName + "/Node";
+    this->dataPtr->ogreCompositorNodeDef1st = nodeDefName;
+    Ogre::CompositorNodeDef *nodeDef =
+        ogreCompMgr->addNodeDefinition(nodeDefName);
     // Input texture
-    nodeDef->addTextureSourceName("rt_input", 0, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
-    nodeDef->setNumTargetPass(1);
-    {
-      Ogre::CompositorTargetDef *targetDef = nodeDef->addTargetPass("rt_input");
-      targetDef->setNumPasses(2);
-      {
-        {
-          Ogre::CompositorPassClearDef *passClear =
-              static_cast<Ogre::CompositorPassClearDef *>(
-              targetDef->addPass(Ogre::PASS_CLEAR));
-          // passClear->mColourValue = Ogre::ColourValue(this->dataMaxVal, 0, 1.0);
-          passClear->mColourValue = Ogre::ColourValue(1.32, 0, 1.0);
-        }
-        {
-          Ogre::CompositorPassQuadDef *passQuad =
-              static_cast<Ogre::CompositorPassQuadDef *>(
-              targetDef->addPass(Ogre::PASS_QUAD));
-          passQuad->mMaterialName = "GpuRaysScan1st";
-          passQuad->addQuadTextureSource( 0, "rt_input", 0 );
-       }
-      }
-    }
+    nodeDef->addTextureSourceName("rt_input", 0,
+        Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+    Ogre::TextureDefinitionBase::TextureDefinition *depthTexDef =
+        nodeDef->addTextureDefinition("depthTexture");
+    depthTexDef->textureType = Ogre::TEX_TYPE_2D;
+    depthTexDef->width = 0;
+    depthTexDef->height = 0;
+    depthTexDef->depth = 1;
+    depthTexDef->numMipmaps = 0;
+    depthTexDef->widthFactor = 1;
+    depthTexDef->heightFactor = 1;
+    depthTexDef->formatList = {Ogre::PF_D32_FLOAT};
+    depthTexDef->fsaa = 0;
+    depthTexDef->uav = false;
+    depthTexDef->automipmaps = false;
+    depthTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    depthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
+    depthTexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
+    depthTexDef->fsaaExplicitResolve = false;
 
-    Ogre::CompositorWorkspaceDef *workDef = ogreCompMgr->addWorkspaceDefinition(wsDefName);
+    nodeDef->setNumTargetPass(2);
+    // depthTexture target - renders depth
+    Ogre::CompositorTargetDef *depthTargetDef =
+        nodeDef->addTargetPass("depthTexture");
+    depthTargetDef->setNumPasses(2);
+    {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          depthTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(this->dataMaxVal, 0, 1.0);
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          depthTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->mVisibilityMask = IGN_VISIBILITY_ALL
+          & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
+    }
+    // rt_input target - converts depth to range
+    Ogre::CompositorTargetDef *inputTargetDef =
+        nodeDef->addTargetPass("rt_input");
+    inputTargetDef->setNumPasses(2);
+    {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          inputTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(this->dataMaxVal, 0, 1.0);
+      // quad pass
+      Ogre::CompositorPassQuadDef *passQuad =
+          static_cast<Ogre::CompositorPassQuadDef *>(
+          inputTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->mMaterialName = this->dataPtr->matFirstPass->getName();
+      passQuad->addQuadTextureSource(0, "depthTexture", 0);
+      passQuad->mFrustumCorners =
+          Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
+    }
+    nodeDef->mapOutputChannel(0, "rt_input");
+    Ogre::CompositorWorkspaceDef *workDef =
+        ogreCompMgr->addWorkspaceDefinition(wsDefName);
     workDef->connectExternal(0, nodeDef->getName(), 0);
   }
-  wsDef = ogreCompMgr->getWorkspaceDefinition(wsDefName);
-*/
+  Ogre::CompositorWorkspaceDef *wsDef =
+      ogreCompMgr->getWorkspaceDefinition(wsDefName);
 
+  if (!wsDef)
+  {
+    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
+           << " for " << this->Name();
+  }
 
-
-  // Configure first pass textures that are not yet configured properly
-  std::cerr << "configure first pass tex count " << this->dataPtr->textureCount << std::endl;
-
+  // create cubemap cameras and render to texture using 1st pass compositor
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
-  // for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
-    this->dataPtr->envCam[i] = ogreSceneManager->createCamera(
+    this->dataPtr->cubeCam[i] = ogreSceneManager->createCamera(
         this->Name() + "_env" + std::to_string(i));
-    this->dataPtr->envCam[i]->detachFromParent();
-    this->ogreNode->attachObject(this->dataPtr->envCam[i]);
-    this->dataPtr->envCam[i]->setFOVy(Ogre::Degree(90));
-    this->dataPtr->envCam[i]->setAspectRatio(1);
-    this->dataPtr->envCam[i]->setNearClipDistance(this->NearClipPlane());
-    this->dataPtr->envCam[i]->setFarClipDistance(this->FarClipPlane());
-//    this->dataPtr->envCam[i]->setRenderingDistance(this->FarClipPlane());
-    this->dataPtr->envCam[i]->setFixedYawAxis(false);
-    this->dataPtr->envCam[i]->yaw(Ogre::Degree(-90));
-    this->dataPtr->envCam[i]->roll(Ogre::Degree(-90));
+    this->dataPtr->cubeCam[i]->detachFromParent();
+    this->ogreNode->attachObject(this->dataPtr->cubeCam[i]);
+    this->dataPtr->cubeCam[i]->setFOVy(Ogre::Degree(90));
+    this->dataPtr->cubeCam[i]->setAspectRatio(1);
+    this->dataPtr->cubeCam[i]->setNearClipDistance(this->NearClipPlane());
+    this->dataPtr->cubeCam[i]->setFarClipDistance(this->FarClipPlane());
+    this->dataPtr->cubeCam[i]->setFixedYawAxis(false);
+    this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
+    this->dataPtr->cubeCam[i]->roll(Ogre::Degree(-90));
 
     // orient camera to create cubemap
     if (i == 0)
-      this->dataPtr->envCam[i]->yaw(Ogre::Degree(-90));
+      this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
     else if (i == 1)
-      this->dataPtr->envCam[i]->yaw(Ogre::Degree(90));
+      this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(90));
     else if (i == 2)
-      this->dataPtr->envCam[i]->pitch(Ogre::Degree(90));
+      this->dataPtr->cubeCam[i]->pitch(Ogre::Degree(90));
     else if (i == 3)
-      this->dataPtr->envCam[i]->pitch(Ogre::Degree(-90));
+      this->dataPtr->cubeCam[i]->pitch(Ogre::Degree(-90));
     else if (i == 5)
-      this->dataPtr->envCam[i]->yaw(Ogre::Degree(180));
+      this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(180));
 
-    std::cerr << "env cam [" << i << "] derived dir "
-              << this->dataPtr->envCam[i]->getDerivedDirection()
-              << std::endl;
-
-  //  this->dataPtr->cubemapCam->setNearClipDistance(this->NearClipPlane());
-  //  this->dataPtr->cubemapCam->setFarClipDistance(this->FarClipPlane());
-  //  this->dataPtr->cubemapCam->setFarClipDistance(10000);
-
-    // create render texture
+    // create render texture - these textures pack the range data
+    // that will be used in the 2nd pass
     std::stringstream texName;
     texName << this->Name() << "_first_pass_" << i;
     this->dataPtr->firstPassTextures[i] =
       Ogre::TextureManager::getSingleton().createManual(
       texName.str(), "General", Ogre::TEX_TYPE_2D,
-      1024, 1024, 1, 0,
-//      32, 32, 1, 0,
+      this->dataPtr->w1st, this->dataPtr->h1st, 1, 0,
       Ogre::PF_FLOAT32_R, Ogre::TU_RENDERTARGET,
       0, false, 0, Ogre::BLANKSTRING, false, true);
-//      Ogre::PF_D32_FLOAT, Ogre::TU_RENDERTARGET,
-//      0, false, 0, Ogre::BLANKSTRING, false, false);
 
     Ogre::RenderTarget *rt =
         this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget();
-//    rt->setDepthBufferPool(Ogre::DepthBuffer::POOL_NON_SHAREABLE);
-//    rt->setDesiredDepthBufferFormat(Ogre::PF_D32_FLOAT);
-
-
-/*    this->dataPtr->rtListeners1st[i] = new Ogre2GpuRays1stPassRTListener(
-        this->Node(), i, this->dataPtr->textureCount, camYaw);
-    rt->addListener(this->dataPtr->rtListeners1st[i]);
-*/
-//    rt->setAutoUpdated(false);
-
-    // create compositor
-//    const Ogre::String workspaceName = "GpuRays1stPass_" +
-//        this->dataPtr->ogreCamera->getName() + "_" + std::to_string(i);
+    // create compositor worksspace
     this->dataPtr->ogreCompositorWorkspace1st[i] =
         ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-        rt, this->dataPtr->envCam[i], wsDefName, false);
-/*    auto nodeSeq = this->dataPtr->ogreCompositorWorkspace1st[i]->getNodeSequence();
-    auto pass = nodeSeq[0]->_getPasses()[0]->getDefinition();
-    auto clearPass = dynamic_cast<const Ogre::CompositorPassClearDef *>(pass);
-    pass = nodeSeq[0]->_getPasses()[1]->getDefinition();
-    // set out of range max value
-    const_cast<Ogre::CompositorPassClearDef *>(clearPass)->mColourValue =
-        Ogre::ColourValue(this->dataMaxVal, 0.0, 1.0);
-    // set visibility mask
-    auto quadPass = dynamic_cast<const Ogre::CompositorPassQuadDef *>(pass);
-    const_cast<Ogre::CompositorPassQuadDef *>(quadPass)->mVisibilityMask =
-        IGN_VISIBILITY_ALL & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
-*/
-
-    // Setup the viewport visibility masks
-    Ogre::Viewport *vp = rt->getViewport(0);
-    vp->setOverlaysEnabled(false);
-    vp->_setVisibilityMask(IGN_VISIBILITY_ALL &
-        ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE),
-        vp->getLightVisibilityMask());
+        rt, this->dataPtr->cubeCam[i], wsDefName, false);
   }
+}
 
-  {
-    this->dataPtr->matFirstPass = dynamic_cast<Ogre::Material *>(
-        Ogre::MaterialManager::getSingleton().getByName("GpuRaysScan1st").get());
-    this->dataPtr->matFirstPass->load();
-    Ogre::Pass *pass = this->dataPtr->matFirstPass->getTechnique(0)->getPass(0);
-    Ogre::GpuProgramParametersSharedPtr psParams =
-        pass->getFragmentProgramParameters();
-
-    double projectionA = this->FarClipPlane() /
-        (this->FarClipPlane() - this->NearClipPlane());
-    double projectionB = (-this->FarClipPlane() * this->NearClipPlane()) /
-        (this->FarClipPlane() - this->NearClipPlane());
-    projectionB /= this->FarClipPlane();
-    psParams->setNamedConstant("projectionParams",
-        Ogre::Vector2(projectionA, projectionB));
-
-    psParams->setNamedConstant("near",
-        static_cast<float>(this->NearClipPlane()));
-    psParams->setNamedConstant("far",
-        static_cast<float>(this->FarClipPlane()));
-
-    psParams->setNamedConstant("max",
-        static_cast<float>(this->dataMaxVal));
-    psParams->setNamedConstant("min",
-        static_cast<float>(this->dataMinVal));
-  }
-
-
-
-//  this->dataPtr->matFirstPass->setCullingMode(Ogre::CULL_NONE);
-
-
-  // Configure second pass texture
+/////////////////////////////////////////////////////////
+void Ogre2GpuRays::Setup2ndPass()
+{
+  // Create second pass RTT, which stores the final range data output
+  // see PostRender on how we retrieve data from this texture
   this->dataPtr->secondPassTexture =
       Ogre::TextureManager::getSingleton().createManual(
       this->Name() + "_second_pass",
@@ -931,203 +597,130 @@ void Ogre2GpuRays::CreateGpuRaysTextures()
       Ogre::TEX_TYPE_2D,
       this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
       Ogre::PF_FLOAT32_RGB,
-      Ogre::TU_RENDERTARGET).get();
+      Ogre::TU_RENDERTARGET);
 
-  Ogre::RenderTarget *rt =
-      this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
-
-  // Set GpuRaysScan2nd material
-  this->dataPtr->matSecondPass = dynamic_cast<Ogre::Material *>(
-      Ogre::MaterialManager::getSingleton().getByName("GpuRaysScan2nd").get());
-  // clone the material since we're modifying it's definitions
-  // TODO cloning disabled for dev
-//  this->dataPtr->matSecondPass = this->dataPtr->matSecondPass->clone(
-//      this->Name() + "_" + this->dataPtr->matSecondPass->getName()).get();
+  // Create second pass material
+  // The GpuRaysScan2nd material is defined in script (gpu_rays.material).
+  // We need to clone it since we are going to modify texture unit states.
+  std::string mat2ndName = "GpuRaysScan2nd";
+  Ogre::MaterialPtr mat2nd =
+      Ogre::MaterialManager::getSingleton().getByName(mat2ndName);
+  this->dataPtr->matSecondPass = mat2nd->clone(
+      this->Name() + "_" + mat2ndName);
   this->dataPtr->matSecondPass->load();
+  Ogre::Pass *pass = this->dataPtr->matSecondPass->getTechnique(0)->getPass(0);
 
-  Ogre::Technique *technique =
-    this->dataPtr->matSecondPass->getTechnique(0);
-  IGN_ASSERT(technique,
-      "Ogre2GpuRays material script error: technique not found");
+  // Connect cubeUVTexture to the GpuRaysScan2nd material's texture unit state
+  // The texture unit index (0) must match the one specified in the script
+  // See GpuRaysScan2nd definition
+  pass->getTextureUnitState(0)->setTexture(this->dataPtr->cubeUVTexture);
 
-  Ogre::Pass *mat2ndPass = technique->getPass(0);
-  IGN_ASSERT(mat2ndPass,
-      "Ogre2GpuRays material script error: pass not found");
-//  pass->removeAllTextureUnitStates();
-
-  mat2ndPass->getTextureUnitState(0)->setTexture(this->dataPtr->cubeUVTexture);
-
+  // connect all cubemap textures to the corresponding texture unit states
+  // defined in the GpuRaysScan2nd material
   Ogre::TextureUnitState *texUnit = nullptr;
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
-    // texIndex need to match how the texture units are defined in
-    //  gpu_rays.material script
+    // texIndex need to match how the texture units are defined in the
+    // gpu_rays.material script
     unsigned int texIndex = 1 + i;
-    // std::string texName = this->dataPtr->firstPassTextures[i]->getName();
-    // texUnit = mat2ndPass->createTextureUnitState(texName, texIndex);
-    texUnit = mat2ndPass->getTextureUnitState(texIndex);
-    // auto tex = Ogre::TextureManager::getSingleton().getByName(texName);
+    texUnit = pass->getTextureUnitState(texIndex);
     texUnit->setTexture(this->dataPtr->firstPassTextures[i]);
-
-    std::cerr << "tex unit: " << texIndex << ": "
-        << this->dataPtr->firstPassTextures[i]->getName() << std::endl;
-
-//     this->dataPtr->texIdx.push_back(texIndex);
-//     texUnit->setTextureFiltering(Ogre::TFO_NONE);
-//     texUnit->setTextureAddressingMode(Ogre::TextureUnitState::TAM_MIRROR);
   }
-
- /* Ogre::GpuProgramParametersSharedPtr mat2ndPsParams =
-      mat2ndPass->getFragmentProgramParameters();
-  double projectionA = this->FarClipPlane() /
-      (this->FarClipPlane() - this->NearClipPlane());
-  double projectionB = (-this->FarClipPlane() * this->NearClipPlane()) /
-      (this->FarClipPlane() - this->NearClipPlane());
-  // projectionB /= this->FarClipPlane();
-  mat2ndPsParams->setNamedConstant("projectionParams",
-      Ogre::Vector2(projectionA, projectionB));
-  mat2ndPsParams->setNamedConstant("near",
-      static_cast<float>(this->NearClipPlane()));
-  mat2ndPsParams->setNamedConstant("far",
-      static_cast<float>(this->FarClipPlane()));
-  mat2ndPsParams->setNamedConstant("max",
-      static_cast<float>(this->dataMaxVal));
-  mat2ndPsParams->setNamedConstant("min",
-      static_cast<float>(this->dataMinVal));
-*/
-
-
-/*  double orthoNear = this->dataPtr->orthoCam->getNearClipDistance();
-  double orthoFar = this->dataPtr->orthoCam->getFarClipDistance();
-  double orthoProjectionA =  orthoFar / (orthoFar - orthoNear);
-  double orthoProjectionB = (-orthoFar * orthoNear) /
-      (orthoFar - orthoNear);
-//  projectionB /= this->FarClipPlane();
-  Ogre::GpuProgramParametersSharedPtr mat2ndPsParams =
-      mat2ndPass->getFragmentProgramParameters();
-  mat2ndPsParams->setNamedConstant("projectionParams",
-      Ogre::Vector2(orthoProjectionA, orthoProjectionB));
-*/
 
   // create 2nd pass compositor
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  std::string wsDefName2nd = "GpuRays2ndPassWorkspace";
+  // Same as 1st pass. We need to programmatically create the compositor in
+  // order to configure it to use the cloned 2nd pass material created earlier
+  // The compositor workspace definition is equivalent to the following
+  // compositor script:
+  //
+  // compositor_node GpuRays2ndPass
+  // {
+  //   in 0 rt_input
+  //   target rt_input
+  //   {
+  //     pass clear
+  //     {
+  //       colour_value 0.0 0.0 0.0 1.0
+  //     }
+  //     pass render_quad
+  //     {
+  //       material GpuRaysScan2nd // Use copy instead of original
+  //     }
+  //   }
+  //   out 0 rt_input
+  // }
+  std::string wsDefName = "GpuRays2ndPassWorkspace_" + this->Name();
+  this->dataPtr->ogreCompositorWorkspaceDef2nd = wsDefName;
+  if (!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
+  {
+    std::string nodeDefName = wsDefName + "/Node";
+    this->dataPtr->ogreCompositorNodeDef2nd = nodeDefName;
+    Ogre::CompositorNodeDef *nodeDef =
+        ogreCompMgr->addNodeDefinition(nodeDefName);
+    // Input texture
+    nodeDef->addTextureSourceName("rt_input", 0,
+        Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+    nodeDef->setNumTargetPass(1);
+    {
+      Ogre::CompositorTargetDef *inputTargetDef =
+          nodeDef->addTargetPass("rt_input");
+      inputTargetDef->setNumPasses(2);
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          inputTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(this->dataMaxVal, 0, 1.0);
+      // quad pass - sample from cubemap textures
+      Ogre::CompositorPassQuadDef *passQuad =
+          static_cast<Ogre::CompositorPassQuadDef *>(
+          inputTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->mMaterialName = this->dataPtr->matSecondPass->getName();
+    }
+    nodeDef->mapOutputChannel(0, "rt_input");
+
+    Ogre::CompositorWorkspaceDef *workDef =
+        ogreCompMgr->addWorkspaceDefinition(wsDefName);
+    workDef->connectExternal(0, nodeDef->getName(), 0);
+  }
+  Ogre::CompositorWorkspaceDef *wsDef =
+      ogreCompMgr->getWorkspaceDefinition(wsDefName);
+  if (!wsDef)
+  {
+    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
+           << " for " << this->Name();
+  }
+
+  // create the compositor workspace
+  Ogre::RenderTarget *rt =
+      this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
   this->dataPtr->ogreCompositorWorkspace2nd =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      rt, this->dataPtr->ogreCamera, wsDefName2nd, false);
-
-/*  // Setup the viewport
-  Ogre::Viewport *vp = rt->getViewport(0);
-  vp->setOverlaysEnabled(false);
-  vp->_setVisibilityMask(IGN_VISIBILITY_ALL &
-      ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE),
-      vp->getLightVisibilityMask());
-*/
-
-
-//  this->CreateCanvas();
+      rt, this->dataPtr->ogreCamera, wsDefName, false);
 }
 
-/////////////////////////////////////////////////
-void Ogre2GpuRays::UpdateRenderTargetCubemap()
+/////////////////////////////////////////////////////////
+void Ogre2GpuRays::CreateGpuRaysTextures()
 {
-//  this->dataPtr->ogreCompositorWorkspaceCubemap->setEnabled(true);
-//  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-//  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
-//  this->dataPtr->ogreCompositorWorkspaceCubemap->setEnabled(false);
-//  return;
-
-  // ----------------------- testing
-  unsigned int width = this->dataPtr->w2nd;
-  unsigned int height = this->dataPtr->h2nd;
-
-  size_t size = Ogre::PixelUtil::getMemorySize(
-    width, height, 1, Ogre::PF_FLOAT32_RGB);
-  int len = width * height * this->dataPtr->channels;
-
-  std::cerr << "wxh: " << width << " x " << height << std::endl;
-
-  if (!this->dataPtr->gpuRaysBuffer)
-  {
-    this->dataPtr->gpuRaysBuffer = new float[len];
-  }
-  Ogre::PixelBox dstBox(width, height,
-        1, Ogre::PF_FLOAT32_RGB, this->dataPtr->gpuRaysBuffer);
-
-//  this->dataPtr->cubemapTexture->getBuffer()->getRenderTarget()->copyContentsToMemory(dstBox,
-  this->dataPtr->composeTexture->getBuffer()->getRenderTarget()->copyContentsToMemory(dstBox,
-      Ogre::RenderTarget::FB_FRONT);
-
-  for (unsigned int i = 0; i < height; ++i)
-  {
-    for (unsigned int j = 0; j < width; ++j)
-    {
-      std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " "
-                << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 +1] <<  " "
-                << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 +2] <<  " | ";
-
-    }
-    std::cerr << std::endl;
-  }
-  std::cerr << std::endl;
+  this->ConfigureCamera();
+  this->CreateSampleTexture();
+  this->Setup1stPass();
+  this->Setup2ndPass();
 }
 
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget1stPass()
 {
-  // manual update
+  // update the compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
-  {
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(true);
-  }
   auto engine = Ogre2RenderEngine::Instance();
   engine->OgreRoot()->renderOneFrame();
   for (auto i : this->dataPtr->cubeFaceIdx)
-  {
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(false);
-  }
-
-
-//  unsigned int width = this->dataPtr->w1st;
-//  unsigned int height = this->dataPtr->h1st;
-/*  unsigned int width = 32;//this->dataPtr->w1st;
-  unsigned int height = 32;//this->dataPtr->h1st;
-
-  size_t size = Ogre::PixelUtil::getMemorySize(
-    width, height, 1, Ogre::PF_FLOAT32_R);
-  int len = width * height * this->dataPtr->channels;
-
-  std::cerr << "wxh: " << width << " x " << height << std::endl;
-
-  float *testBuffer = nullptr;
-  if (!testBuffer)
-  {
-    testBuffer = new float[len];
-  }
-  Ogre::PixelBox dstBox(width, height,
-        1, Ogre::PF_FLOAT32_R, testBuffer);
-
-//  auto pixelBuffer = this->dataPtr->firstPassTextures[0]->getBuffer();
-//  pixelBuffer->blitToMemory(dstBox);
-
-  this->dataPtr->firstPassTextures[0]->getBuffer()->getRenderTarget()->copyContentsToMemory(dstBox,
-      Ogre::RenderTarget::FB_FRONT);
-
-
-//  for (unsigned int i = 0; i < height; ++i)
-  {
-    int i = height / 2.0;
-    for (unsigned int j = 0; j < width; ++j)
-    {
-//      std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
-      std::cerr << testBuffer[i*width + j] <<  " ";
-    }
-    std::cerr << std::endl;
-  }
-  std::cerr << std::endl;
-*/
 }
 
 /////////////////////////////////////////////////
@@ -1139,126 +732,11 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
   this->dataPtr->ogreCompositorWorkspace2nd->setEnabled(false);
 }
 
-
-/////////////////////////////////////////////////
-void Ogre2GpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
-                   Ogre::Material *_material, Ogre::Camera *_cam,
-                   const bool _updateTex)
-{
-/*
-  Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
-  Ogre::RenderSystem *renderSys = sceneMgr->getDestinationRenderSystem();
-  // Get pointer to the material pass
-  Ogre::Pass *pass = _material->getBestTechnique()->getPass(0);
-
-  // Render the depth texture
-  // OgreSceneManager::_render function automatically sets farClip to 0.
-  // Which normally equates to infinite distance. We don't want this. So
-  // we have to set the distance every time.
-  _cam->setFarClipDistance(this->FarClipPlane());
-
-  Ogre::AutoParamDataSource autoParamDataSource;
-
-  Ogre::Viewport *vp = _target->getViewport(0);
-
-  // Need this line to render the ground plane. No idea why it's necessary.
-  renderSys->_setViewport(vp);
-  sceneMgr->_setPass(pass, true, false);
-  autoParamDataSource.setCurrentPass(pass);
-  autoParamDataSource.setCurrentViewport(vp);
-  autoParamDataSource.setCurrentRenderTarget(_target);
-  autoParamDataSource.setCurrentSceneManager(sceneMgr);
-  autoParamDataSource.setCurrentCamera(_cam, true);
-
-  renderSys->setLightingEnabled(false);
-  renderSys->_setFog(Ogre::FOG_NONE);
-
-  pass->_updateAutoParams(&autoParamDataSource, 1);
-
-  if (_updateTex)
-  {
-    pass->getFragmentProgramParameters()->setNamedConstant("tex1",
-      this->dataPtr->texIdx[0]);
-    if (this->dataPtr->texIdx.size() > 1)
-    {
-      pass->getFragmentProgramParameters()->setNamedConstant("tex2",
-        this->dataPtr->texIdx[1]);
-      if (this->dataPtr->texIdx.size() > 2)
-        pass->getFragmentProgramParameters()->setNamedConstant("tex3",
-          this->dataPtr->texIdx[2]);
-    }
-  }
-
-  // NOTE: We MUST bind parameters AFTER updating the autos
-  if (pass->hasVertexProgram())
-  {
-    renderSys->bindGpuProgram(
-        pass->getVertexProgram()->_getBindingDelegate());
-
-    renderSys->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM,
-    pass->getVertexProgramParameters(), 1);
-  }
-
-  if (pass->hasFragmentProgram())
-  {
-    renderSys->bindGpuProgram(
-    pass->getFragmentProgram()->_getBindingDelegate());
-
-    renderSys->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM,
-    pass->getFragmentProgramParameters(), 1);
-  }
-
-  _target->update(false);
-
-*/
-}
-
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
-/*  Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
-
-  sceneMgr->_suppressRenderStateChanges(true);
-
-  for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
-  {
-    if (this->dataPtr->textureCount > 1)
-    {
-      // Cannot call Camera::RotateYaw because it rotates in world frame,
-      // but we need rotation in camera local frame
-      this->Node()->roll(Ogre::Radian(this->dataPtr->cameraYaws[i]));
-    }
-
-    this->dataPtr->currentMat = this->dataPtr->matFirstPass;
-    this->dataPtr->currentTexture = this->dataPtr->firstPassTextures[i];
-
-//    this->UpdateRenderTarget(
-//        this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget(),
-//        this->dataPtr->matFirstPass,
-//        this->dataPtr->ogreCamera, false);
-  }
-
-  if (this->dataPtr->textureCount > 1)
-      this->Node()->roll(Ogre::Radian(this->dataPtr->cameraYaws[3]));
-*/
-
   this->UpdateRenderTarget1stPass();
   this->UpdateRenderTarget2ndPass();
-
-/*  this->dataPtr->visual->SetVisible(true);
-
-  this->UpdateRenderTarget(
-      this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget(),
-      this->dataPtr->matSecondPass,
-      this->dataPtr->orthoCam, true);
-
-  this->dataPtr->visual->SetVisible(false);
-
-  sceneMgr->_suppressRenderStateChanges(false);
-*/
-
-
-//  this->UpdateRenderTargetCubemap();
 }
 
 //////////////////////////////////////////////////
@@ -1271,50 +749,6 @@ void Ogre2GpuRays::PreRender()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::PostRender()
 {
-  // TODO
-//  return;
-
-/*  for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
-  {
-    auto rt =
-        this->dataPtr->firstPassTextures[i]->getBuffer()->getRenderTarget();
-    rt->swapBuffers();
-  }
-*/
-
-
-/*  auto rt = this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
-  rt->swapBuffers();
-
-  const Ogre::Viewport *secondPassViewport = rt->getViewport(0);
-  unsigned int width = secondPassViewport->getActualWidth();
-  unsigned int height = secondPassViewport->getActualHeight();
-
-  size_t size = Ogre::PixelUtil::getMemorySize(
-    width, height, 1, Ogre::PF_FLOAT32_RGB);
-  int len = width * height * this->dataPtr->channels;
-
-  if (!this->dataPtr->gpuRaysBuffer)
-  {
-    this->dataPtr->gpuRaysBuffer = new float[len];
-  }
-
-  Ogre::PixelBox dstBox(width, height,
-        1, Ogre::PF_FLOAT32_RGB, this->dataPtr->gpuRaysBuffer);
-
-  auto pixelBuffer = this->dataPtr->secondPassTexture->getBuffer();
-  pixelBuffer->blitToMemory(dstBox);
-
-  if (!this->dataPtr->gpuRaysScan)
-  {
-    this->dataPtr->gpuRaysScan = new float[len];
-  }
-
-  memcpy(this->dataPtr->gpuRaysScan, this->dataPtr->gpuRaysBuffer, size);
-
-  this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
-      width, height, this->dataPtr->channels, "PF_FLOAT32_RGB");
-*/
   unsigned int width = this->dataPtr->w2nd;
   unsigned int height = this->dataPtr->h2nd;
 
@@ -1329,6 +763,7 @@ void Ogre2GpuRays::PostRender()
   Ogre::PixelBox dstBox(width, height,
         1, Ogre::PF_FLOAT32_RGB, this->dataPtr->gpuRaysBuffer);
 
+  // blit data from gpu to cpu
   auto rt = this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
   rt->copyContentsToMemory(dstBox, Ogre::RenderTarget::FB_FRONT);
 
@@ -1342,20 +777,18 @@ void Ogre2GpuRays::PostRender()
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
       width, height, this->dataPtr->channels, "PF_FLOAT32_RGB");
 
-  // ----------------------- testing
-  /* std::cerr << "wxh: " << width << " x " << height << std::endl;
-  for (unsigned int i = 0; i < height; ++i)
-  {
-    for (unsigned int j = 0; j < width; ++j)
-    {
-      std::cerr << "[" << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
-      std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1] <<  " ";
-      std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2] <<  "] ";
-    }
-    std::cerr << std::endl;
-  }
-  std::cerr << std::endl;
-  */
+  // Uncomment to debug output
+  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // for (unsigned int i = 0; i < height; ++i)
+  // {
+  //   for (unsigned int j = 0; j < width; ++j)
+  //   {
+  //     igndbg << "[" << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
+  //     igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1] <<  " ";
+  //     igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2] <<  "] ";
+  //   }
+  //   igndbg << std::endl;
+  // }
 }
 
 //////////////////////////////////////////////////
@@ -1368,95 +801,13 @@ const float* Ogre2GpuRays::Data() const
 void Ogre2GpuRays::Copy(float *_dataDest)
 {
   auto rt = this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
-  const Ogre::Viewport *secondPassViewport = rt->getViewport(0);
-  unsigned int width = secondPassViewport->getActualWidth();
-  unsigned int height = secondPassViewport->getActualHeight();
+  unsigned int width = this->dataPtr->w2nd;
+  unsigned int height = this->dataPtr->h2nd;
 
   size_t size = Ogre::PixelUtil::getMemorySize(
     width, height, 1, Ogre::PF_FLOAT32_RGB);
 
   memcpy(_dataDest, this->dataPtr->gpuRaysScan, size);
-}
-
-/////////////////////////////////////////////////
-void Ogre2GpuRays::CreateOrthoCam()
-{
-  // create ogre camera object
-  Ogre::SceneManager *ogreSceneManager;
-  ogreSceneManager = this->scene->OgreSceneManager();
-  if (ogreSceneManager == nullptr)
-  {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
-    return;
-  }
-
-  this->dataPtr->orthoCam = ogreSceneManager->createCamera(
-      this->Name() + "_Ortho_Camera");
-  if (this->dataPtr->orthoCam == nullptr)
-  {
-    ignerr << "Ogre camera cannot be created" << std::endl;
-    return;
-  }
-
-/*  Ogre::SceneNode *rootSceneNode = std::dynamic_pointer_cast<
-      ignition::rendering::Ogre2Node>(this->scene->RootVisual())->Node();
-  this->dataPtr->pitchNodeOrtho = rootSceneNode->createChildSceneNode();
-  // by default, ogre2 cameras are attached to root scene node
-  this->dataPtr->orthoCam->detachFromParent();
-  this->dataPtr->pitchNodeOrtho->attachObject(this->dataPtr->orthoCam);
-*/
-
-  // Use X/Y as horizon, Z up
-  this->dataPtr->orthoCam->pitch(Ogre::Degree(90));
-
-  // Don't yaw along variable axis, causes leaning
-  this->dataPtr->orthoCam->setFixedYawAxis(true, Ogre::Vector3::UNIT_Z);
-  this->dataPtr->orthoCam->setDirection(1, 0, 0);
-  this->dataPtr->orthoCam->setAutoAspectRatio(true);
-
-//  this->dataPtr->orthoCam->setNearClipDistance(0.001);
-  this->dataPtr->orthoCam->setNearClipDistance(0.008);
-  this->dataPtr->orthoCam->setFarClipDistance(0.022);
-//  this->dataPtr->orthoCam->setRenderingDistance(0.02);
-
-  this->dataPtr->orthoCam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
-
-  Ogre::Matrix4 p = this->BuildScaledOrthoMatrix(
-      0, static_cast<float>(this->dataPtr->w2nd / 10.0),
-//      -static_cast<float>(this->dataPtr->w2nd / 10.0), 0,
-      0, static_cast<float>(this->dataPtr->h2nd / 10.0),
-      0.01, 0.02);
-
-//  this->dataPtr->orthoCam->setCustomProjectionMatrix(true, p);
-
-  this->dataPtr->orthoCam->setFrustumExtents(0,
-      static_cast<float>(this->dataPtr->w2nd / 10.0),
-      static_cast<float>(this->dataPtr->h2nd / 10.0), 0);
-
-  float l, r, t, b;
-  this->dataPtr->orthoCam->getFrustumExtents(l, r, t, b);
-  std::cerr << "l, r, t, b " << l << " " << r << " " << t << " " << b << std::endl;
-}
-
-/////////////////////////////////////////////////
-Ogre::Matrix4 Ogre2GpuRays::BuildScaledOrthoMatrix(const float _left,
-    const float _right, const float _bottom, const float _top,
-    const float _near, const float _far)
-{
-  float invw = 1 / (_right - _left);
-  float invh = 1 / (_top - _bottom);
-  float invd = 1 / (_far - _near);
-
-  Ogre::Matrix4 proj = Ogre::Matrix4::ZERO;
-  proj[0][0] = 2 * invw;
-  proj[0][3] = -(_right + _left) * invw;
-  proj[1][1] = 2 * invh;
-  proj[1][3] = -(_top + _bottom) * invh;
-  proj[2][2] = -2 * invd;
-  proj[2][3] = -(_far + _near) * invd;
-  proj[3][3] = 1;
-
-  return proj;
 }
 
 /////////////////////////////////////////////////
@@ -1475,170 +826,6 @@ void Ogre2GpuRays::SetRangeCount(
   this->dataPtr->h2nd = _h;
 }
 
-/////////////////////////////////////////////////
-void Ogre2GpuRays::CreateMesh()
-{
-  std::string meshName = this->Name() + "_undistortion_mesh";
-
-  common::Mesh *mesh = new common::Mesh();
-  mesh->SetName(meshName);
-
-  common::SubMesh *submesh = new common::SubMesh();
-
-  double dx, dy;
-  submesh->SetPrimitiveType(common::SubMesh::POINTS);
-
-  if (this->dataPtr->h2nd == 1)
-  {
-    dy = 0;
-  }
-  else
-  {
-    dy = 0.1;
-  }
-
-  dx = 0.1;
-
-  // startX ranges from 0 to -(w2nd/10) at dx=0.1 increments
-  // startY ranges from h2nd/10 to 0 at dy=0.1 decrements
-  // see Ogre2GpuRays::Set2ndPassTarget() on how the ortho cam is set up
-  double startX = dx;
-  double startY = this->dataPtr->h2nd/10.0;
-
-  // half of actual camera vertical FOV without padding
-  double phi = this->VFOV().Radian() / 2.0;
-  double phiCamera = phi + std::abs(this->VertHalfAngle());
-  double theta = this->CosHorzFOV() / 2.0;
-
-  if (this->dataPtr->h2nd == 1)
-  {
-    phi = 0;
-  }
-
-  // index of ray
-  unsigned int ptsOnLine = 0;
-
-  // total gpu rays hfov
-  double thfov = this->dataPtr->textureCount * this->CosHorzFOV();
-  double hstep = thfov / (this->dataPtr->w2nd - 1);
-  double vstep = 2.0 * phi / (this->dataPtr->h2nd - 1);
-
-  if (this->dataPtr->h2nd == 1)
-  {
-    vstep = 0;
-  }
-
-  for (unsigned int j = 0; j < this->dataPtr->h2nd; ++j)
-  {
-    double gamma = 0;
-    if (this->dataPtr->h2nd != 1)
-    {
-      // gamma: current vertical angle w.r.t. camera
-      gamma = vstep * j - phi + this->VertHalfAngle();
-    }
-
-    for (unsigned int i = 0; i < this->dataPtr->w2nd; ++i)
-    {
-      // current horizontal angle from start of gpu rays scan
-      double delta = hstep * i;
-
-      // index of texture that contains the depth value
-      unsigned int texture = delta / this->CosHorzFOV();
-
-      // cap texture index and horizontal angle
-      if (texture > this->dataPtr->textureCount-1)
-      {
-        texture -= 1;
-        delta -= hstep;
-      }
-
-      startX -= dx;
-      if (ptsOnLine == this->dataPtr->w2nd)
-      {
-        ptsOnLine = 0;
-        startX = 0;
-        startY -= dy;
-      }
-      ptsOnLine++;
-
-      // the texture/1000.0 value is used in the gpu rays_2nd_pass.frag shader
-      // as a trick to determine which camera texture to use when stitching
-      // together the final depth image.
-      submesh->AddVertex(texture/1000.0, startX, startY);
-//      std::cerr << "add vert " << texture/1000.0 << " " << startX << " " << startY
-//                << std::endl;
-
-      // first compute angle from the start of current camera's horizontal
-      // min angle, then set delta to be angle from center of current camera.
-      delta = delta - (texture * this->CosHorzFOV());
-      delta = delta - theta;
-
-      // adjust uv coordinates of depth texture to match projection of current
-      // gpu ray the depth image plane.
-      double u = 0.5 - tan(delta) / (2.0 * tan(theta));
-      double v = 0.5 - (tan(gamma) * cos(theta)) /
-          (2.0 * tan(phiCamera) * cos(delta));
-
-      submesh->AddTexCoord(u, v);
-      submesh->AddIndex(this->dataPtr->w2nd * j + i);
-    }
-    std::cerr <<"-- " << std::endl;
-  }
-
-  mesh->AddSubMesh(*submesh);
-
-  this->dataPtr->undistMesh = mesh;
-
-  common::MeshManager::Instance()->AddMesh(this->dataPtr->undistMesh);
-}
-
-/////////////////////////////////////////////////
-void Ogre2GpuRays::CreateCanvas()
-{
-  this->CreateMesh();
-
-  this->dataPtr->visual = this->scene->CreateVisual(
-      this->Name() + "second_pass_canvas");
-
-/*  Ogre::SceneNode *visualSceneNode =  std::dynamic_pointer_cast<
-      ignition::rendering::Ogre2Node>(this->dataPtr->visual)->Node();
-
-  Ogre::Node *visualParent = visualSceneNode->getParent();
-  if (visualParent != nullptr)
-  {
-    visualParent->removeChild(visualSceneNode);
-  }
-  this->dataPtr->pitchNodeOrtho->addChild(visualSceneNode);
-*/
-
-  // Convert mesh from common::Mesh to rendering::mesh and add it to
-  // the canvas visual
-//  MeshPtr renderingMesh = this->scene->CreateMesh(
-//      this->dataPtr->undistMesh);
-
-  GeometryPtr renderingMesh = this->scene->CreateBox();
-
-  this->dataPtr->visual->AddGeometry(renderingMesh);
-
-//  this->dataPtr->visual->SetLocalPosition(0.01, 0, 0);
-  this->dataPtr->visual->SetLocalPosition(0.015, 0, 0);
-  this->dataPtr->visual->SetLocalScale(0.01, 0.01, 0.01);
-
-  this->dataPtr->visual->SetLocalRotation(0, 0, 0);
-
-  VisualPtr root = this->scene->RootVisual();
-  root->AddChild(this->dataPtr->visual);
-
-
-/*  MaterialPtr canvasMaterial =
-    this->scene->CreateMaterial(this->Name() + "_green");
-  canvasMaterial->SetAmbient(ignition::math::Color(0, 1, 0, 1));
-  this->dataPtr->visual->SetMaterial(canvasMaterial);
-*/
-
-//  this->dataPtr->visual->SetVisible(false);
-}
-
 //////////////////////////////////////////////////
 ignition::common::ConnectionPtr Ogre2GpuRays::ConnectNewGpuRaysFrame(
     std::function<void(const float *_frame, unsigned int _width,
@@ -1652,52 +839,4 @@ ignition::common::ConnectionPtr Ogre2GpuRays::ConnectNewGpuRaysFrame(
 RenderTargetPtr Ogre2GpuRays::RenderTarget() const
 {
   return this->dataPtr->renderTexture;
-}
-
-//////////////////////////////////////////////////
-double Ogre2GpuRays::CosHorzFOV() const
-{
-  return this->dataPtr->chfov;
-}
-
-//////////////////////////////////////////////////
-void Ogre2GpuRays::SetCosHorzFOV(const double _chfov)
-{
-  this->dataPtr->chfov = _chfov;
-}
-
-//////////////////////////////////////////////////
-double Ogre2GpuRays::CosVertFOV() const
-{
-  return this->dataPtr->cvfov;
-}
-
-//////////////////////////////////////////////////
-void Ogre2GpuRays::SetCosVertFOV(const double _cvfov)
-{
-  this->dataPtr->cvfov = _cvfov;
-}
-
-//////////////////////////////////////////////////
-void Ogre2GpuRays::SetHorzHalfAngle(const double _angle)
-{
-  this->dataPtr->horzHalfAngle = _angle;
-}
-
-//////////////////////////////////////////////////
-void Ogre2GpuRays::SetVertHalfAngle(const double _angle)
-{
-  this->dataPtr->vertHalfAngle = _angle;
-}
-
-//////////////////////////////////////////////////
-double Ogre2GpuRays::HorzHalfAngle() const
-{
-  return this->dataPtr->horzHalfAngle;
-}
-
-//////////////////////////////////////////////////
-double Ogre2GpuRays::VertHalfAngle() const
-{
-  return this->dataPtr->vertHalfAngle;
 }

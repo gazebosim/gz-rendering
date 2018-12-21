@@ -77,8 +77,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual bool IsHorizontal() const override;
 
-      // Documentation inherited.
-      public: virtual void SetVFOV(const math::Angle &_vfov) override;
+      /// \brief Set the vertical fov
+      /// \param[in] _vfov vertical fov
+      public: virtual void SetVFOV(const math::Angle &_vfov);
 
       // Documentation inherited.
       public: virtual math::Angle VFOV() const override;

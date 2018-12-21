@@ -53,7 +53,7 @@ namespace ignition
       public: virtual Ogre::MovableObject *OgreObject() const override;
 
       /// \brief Get a list of submeshes in this mesh
-      protected: virtual SubMeshStorePtr SubMeshes() const;
+      protected: virtual SubMeshStorePtr SubMeshes() const override;
 
       /// \brief Store containing all the submeshes
       protected: Ogre2SubMeshStorePtr subMeshes;

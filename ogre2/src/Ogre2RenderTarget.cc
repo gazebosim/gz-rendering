@@ -295,15 +295,15 @@ void Ogre2RenderTexture::BuildTarget()
 }
 
 //////////////////////////////////////////////////
-GLuint Ogre2RenderTexture::GLId() const
+unsigned int Ogre2RenderTexture::GLId() const
 {
   if (!this->ogreTexture)
-    return GLuint(0);
+    return 0;
 
   GLuint texId;
   this->ogreTexture->getCustomAttribute("GLID", &texId);
 
-  return texId;
+  return static_cast<unsigned int>(texId);
 }
 
 //////////////////////////////////////////////////

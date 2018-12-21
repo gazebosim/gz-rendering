@@ -800,7 +800,6 @@ const float* Ogre2GpuRays::Data() const
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Copy(float *_dataDest)
 {
-  auto rt = this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
   unsigned int width = this->dataPtr->w2nd;
   unsigned int height = this->dataPtr->h2nd;
 

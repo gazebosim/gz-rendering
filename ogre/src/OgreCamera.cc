@@ -155,16 +155,16 @@ void OgreCamera::CreateRenderTexture()
 }
 
 //////////////////////////////////////////////////
-GLuint OgreCamera::RenderTextureGLId() const
+unsigned int OgreCamera::RenderTextureGLId() const
 {
   if (!this->renderTexture)
-    return GLuint(0u);
+    return 0u;
 
   OgreRenderTexturePtr rt =
       std::dynamic_pointer_cast<OgreRenderTexture>(this->renderTexture);
 
   if (!rt)
-    return GLuint(0u);
+    return 0u;
 
   return rt->GLId();
 }

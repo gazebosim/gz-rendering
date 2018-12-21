@@ -88,10 +88,10 @@ namespace ignition
       public: virtual Ogre::Light *Light() const;
 
       /// \brief Destroy the light
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       /// \brief Initialize the light
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
       /// \brief Create the light
       private: void CreateLight();

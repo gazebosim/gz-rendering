@@ -40,6 +40,20 @@ Ogre2Material::Ogre2Material()
 //////////////////////////////////////////////////
 Ogre2Material::~Ogre2Material()
 {
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::Destroy()
+{
+  if (!this->Scene()->IsInitialized())
+    return;
+
+  if (!this->ogreDatablock)
+    return;
+
+  this->ogreHlmsPbs->destroyDatablock(this->ogreDatablockId);
+  this->ogreDatablock = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -383,9 +397,10 @@ void Ogre2Material::Init()
            << std::endl;
     return;
   }
+  this->ogreDatablockId = this->Scene()->Name() + "::" + this->name;
   this->ogreDatablock = static_cast<Ogre::HlmsPbsDatablock *>(
       this->ogreHlmsPbs->createDatablock(
-      this->Scene()->Name() + "_" + this->name, this->name,
+      this->ogreDatablockId, this->name,
       Ogre::HlmsMacroblock(), Ogre::HlmsBlendblock(), Ogre::HlmsParamVec()));
 
   // use metal workflow as default

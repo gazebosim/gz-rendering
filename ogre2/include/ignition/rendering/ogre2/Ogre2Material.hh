@@ -40,6 +40,9 @@ namespace ignition
       public: virtual ~Ogre2Material();
 
       // Documentation inherited
+      public: virtual void Destroy() override;
+
+      // Documentation inherited
       public: virtual math::Color Diffuse() const override;
 
       // Documentation inherited
@@ -191,6 +194,9 @@ namespace ignition
 
       /// \brief Name of the environment map
       protected: std::string environmentMapName;
+
+      /// \brief Unique id assigned to ogre hlms datablock
+      protected: std::string ogreDatablockId;
 
       /// \brief Only an ogre scene can create an ogre material
       private: friend class Ogre2Scene;

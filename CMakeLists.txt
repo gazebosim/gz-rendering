@@ -14,7 +14,7 @@ find_package(ignition-cmake2 REQUIRED)
 #============================================================================
 # Set up the project
 #============================================================================
-ign_configure_project(VERSION_SUFFIX pre4)
+ign_configure_project(VERSION_SUFFIX pre5)
 
 #============================================================================
 # Set project-specific options
@@ -82,7 +82,7 @@ endif()
 
 #--------------------------------------
 # Find OGRE2
-ign_find_package(OGRE2 VERSION 2.1.0
+ign_find_package(IgnOGRE2 VERSION 2.1.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)

@@ -98,13 +98,24 @@ void Ogre2Scene::PreRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::Clear()
 {
+  this->meshFactory->Clear();
+
   BaseScene::Clear();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Scene::Destroy()
 {
+  this->DestroyNodes();
+
+  // cleanup any items that were not attached to nodes
+  // make sure to do this before destroying materials done by BaseScene::Destroy
+  // otherwise ogre throws an exception when unlinking a renderable from a
+  // hlms datablock
+  this->ogreSceneManager->destroyAllItems();
+
   BaseScene::Destroy();
+
   if (this->ogreSceneManager)
   {
     this->ogreSceneManager->removeRenderQueueListener(
@@ -286,6 +297,9 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
     const std::string &_name, const MeshDescriptor &_desc)
 {
   Ogre2MeshPtr mesh = this->meshFactory->Create(_desc);
+  if (nullptr == mesh)
+    return nullptr;
+
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
 }

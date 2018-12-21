@@ -145,6 +145,11 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 /// \brief Test detection of different boxes
 void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 {
+#ifdef __APPLE__
+  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  return;
+#endif
+
   if (_renderEngine == "optix")
   {
     igndbg << "GpuRays not supported yet in rendering engine: "
@@ -161,7 +166,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   const double hMaxAngle = IGN_PI/2.0;
   const double minRange = 0.1;
   const double maxRange = 10.0;
-  const int hRayCount = 11;
+  const int hRayCount = 320;
   const int vRayCount = 1;
 
   common::Time waitTime = common::Time(WAIT_TIME);
@@ -315,6 +320,11 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 /// \brief Test GPU rays vertical component
 void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 {
+#ifdef __APPLE__
+  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  return;
+#endif
+
   if (_renderEngine == "optix")
   {
     igndbg << "GpuRays not supported yet in rendering engine: "

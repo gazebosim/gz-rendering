@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2018 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,34 @@ Ogre2Mesh::~Ogre2Mesh()
 }
 
 //////////////////////////////////////////////////
+void Ogre2Mesh::Destroy()
+{
+  if (!this->ogreItem)
+    return;
+
+  // We need to override BaseMesh::Destroy for ogre2 implementation to control
+  // the order in which ogre items and materials are destroyed.
+  // Items must be destroyed before materials otherwise ogre throws an exception
+  // when unlinking an renderable from a hlms datablock
+
+  // Remove this object from parent
+  BaseGeometry::Destroy();
+
+  // destroy mesh (ogre item)
+  auto ogreScene = std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+  ogreScene->OgreSceneManager()->destroyItem(this->ogreItem);
+  this->ogreItem = nullptr;
+
+  // destroy submeshes (ogre subitems)
+  this->SubMeshes()->DestroyAll();
+
+  // destroy material (ogre hlms datablock) - this needs to be done last!
+  if (this->material && this->ownsMaterial)
+    this->Scene()->DestroyMaterial(this->material);
+  this->material.reset();
+}
+
+//////////////////////////////////////////////////
 Ogre::MovableObject *Ogre2Mesh::OgreObject() const
 {
   return this->ogreItem;
@@ -63,16 +91,14 @@ Ogre2SubMesh::~Ogre2SubMesh()
 }
 
 //////////////////////////////////////////////////
-MaterialPtr Ogre2SubMesh::Material() const
+Ogre::SubItem *Ogre2SubMesh::Ogre2SubItem() const
 {
-  return this->material;
+  return this->ogreSubItem;
 }
 
 //////////////////////////////////////////////////
-void Ogre2SubMesh::SetMaterial(MaterialPtr _material, bool _unique)
+void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
 {
-  _material = (_unique) ? _material->Clone() : _material;
-
   Ogre2MaterialPtr derived =
       std::dynamic_pointer_cast<Ogre2Material>(_material);
 
@@ -84,26 +110,8 @@ void Ogre2SubMesh::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
-  this->SetMaterialImpl(derived);
-}
-
-//////////////////////////////////////////////////
-Ogre::SubItem *Ogre2SubMesh::Ogre2SubItem() const
-{
-  return this->ogreSubItem;
-}
-
-//////////////////////////////////////////////////
-void Ogre2SubMesh::Destroy()
-{
-}
-
-//////////////////////////////////////////////////
-void Ogre2SubMesh::SetMaterialImpl(Ogre2MaterialPtr _material)
-{
-  this->material = _material;
   this->ogreSubItem->setDatablock(
-      static_cast<Ogre::HlmsPbsDatablock *>(this->material->Datablock()));
+      static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock()));
 }
 
 //////////////////////////////////////////////////

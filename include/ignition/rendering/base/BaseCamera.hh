@@ -161,7 +161,7 @@ namespace ignition
       public: virtual double FollowPGain() const override;
 
       // Documentation inherited.
-      public: virtual GLuint RenderTextureGLId() const override;
+      public: virtual unsigned int RenderTextureGLId() const override;
 
       protected: virtual void *CreateImageBuffer() const;
 
@@ -684,11 +684,11 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    GLuint BaseCamera<T>::RenderTextureGLId() const
+    unsigned int BaseCamera<T>::RenderTextureGLId() const
     {
       ignerr << "RenderTextureGLId is not supported by current render"
           << " engine" << std::endl;
-      return GLuint(0u);
+      return 0u;
     }
     }
   }

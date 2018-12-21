@@ -133,7 +133,7 @@ namespace ignition
       public: virtual void PostRender() override;
 
       // Documentation inherited.
-      public: virtual GLuint GLId();
+      public: virtual unsigned int GLId();
 
       public: virtual void Buffer(float *buffer);
 

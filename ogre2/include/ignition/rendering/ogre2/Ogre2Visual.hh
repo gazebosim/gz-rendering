@@ -58,10 +58,10 @@ namespace ignition
       /// \brief Implementation of the SetLocalScale function
       /// \param[in] _scale Scale to set the visual to
       protected: virtual void SetLocalScaleImpl(
-                     const math::Vector3d &_scale);
+                     const math::Vector3d &_scale) override;
 
       /// \brief Initialize the visual
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
       /// \brief Get a shared pointer to this.
       /// \return Shared pointer to this

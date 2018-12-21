@@ -454,7 +454,7 @@ void OgreRenderEngine::LoadPlugins()
           {
             ignerr << "Unable to load Ogre Plugin[" << *piter
                   << "]. Rendering will not be possible."
-                  << "Make sure you have installed OGRE and Gazebo properly.\n";
+                  << "Make sure you have installed OGRE properly.\n";
           }
         }
       }

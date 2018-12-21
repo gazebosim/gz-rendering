@@ -142,6 +142,20 @@ bool Ogre2Node::AttachChild(NodePtr _child)
     return false;
   }
 
+  // Check for loop. Ogre throws exception if child node to be added
+  // is a direct ancestor of this node
+  auto p = this->ogreNode->getParent();
+  while (p != nullptr)
+  {
+    if (p == derived->Node())
+    {
+      ignerr << "Node cycle detected. Not adding Node: " << _child->Name()
+             << std::endl;
+      return false;
+    }
+    p = p->getParent();
+  }
+
   derived->SetParent(this->SharedThis());
   this->ogreNode->addChild(derived->Node());
   return true;

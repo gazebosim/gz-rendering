@@ -25,6 +25,15 @@ in block
 // cubeUVTex packs information needed to sample from tex0-5
 uniform sampler2D cubeUVTex;
 
+// cubemap is constructed using z-up, x-forward, y-left
+// index: face   axis
+//     0: right  -y
+//     1: left   +y
+//     2: top    +z
+//     3: bottom -z
+//     4: front  +x
+//     5: back   -x
+
 // cube face 0 -y
 uniform sampler2D tex0;
 
@@ -50,7 +59,6 @@ float getRange(vec2 uv, sampler2D tex)
   float range = texture(tex, uv).x;
   return range;
 }
-
 
 void main()
 {

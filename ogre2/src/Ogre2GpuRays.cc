@@ -30,7 +30,7 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \param[in] _frame New frame containing raw gpu rays data.
   /// \param[in] _width Width of frame.
   /// \param[in] _height Height of frame.
-  /// \param[in] _depth Max depth of frame.
+  /// \param[in] _channel Number of channels
   /// \param[in] _format Format of frame.
   public: ignition::common::EventT<void(const float *,
                unsigned int, unsigned int, unsigned int,

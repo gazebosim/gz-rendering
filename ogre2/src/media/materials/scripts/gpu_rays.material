@@ -15,8 +15,6 @@
  *
  */
 
-
-
 vertex_program GpuRaysScan1stVS glsl
 {
   source gpu_rays_1st_pass_vs.glsl

@@ -43,8 +43,13 @@ float getDepth(vec2 uv)
 
 void main()
 {
+  // get linear depth
   float d = getDepth(inPs.uv0);
+
+  // reconstruct 3d viewspace pos from depth
   vec3 viewSpacePos = inPs.cameraDir * d;
+
+  // get length of 3d point, i.e.range
   float l = length(viewSpacePos);
 
   if (l > far)

@@ -131,11 +131,11 @@ namespace ignition
       /// \brief Set up 2nd pass material, texture, and compositor
       private: void Setup2ndPass();
 
-      /// \brief Heloper function to convert a direction vector to the
+      /// \brief Helper function to convert a direction vector to the
       /// index number of a cubemap face and texture uv coordinates on that face
       /// \param[in] _v Direction vector
       /// \param[out] _faceIndex Index of face to sample
-      /// \return Texture UV coordinates of that face
+      /// \return Texture UV coordinates on the face indicated by _faceIndex
       private: math::Vector2d SampleCubemap(const math::Vector3d &_v,
           unsigned int &_faceIndex);
 

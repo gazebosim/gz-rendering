@@ -40,5 +40,11 @@ void main()
 {
   gl_Position = worldViewProj * vertex;
   outVs.uv0.xy = uv0.xy;
+
+  // normal is used in fragment shader to reconstruct
+  // viewspace pos from depth buffer data
+  // see the `quad_normals` and `camera_far_corners_view_space`
+  // param descriptions in
+  // https://ogrecave.github.io/ogre/api/2.1/compositor.html
   outVs.cameraDir.xyz = normal.xyz;
 }

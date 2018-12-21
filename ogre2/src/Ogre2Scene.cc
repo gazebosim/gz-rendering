@@ -287,6 +287,9 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
     const std::string &_name, const MeshDescriptor &_desc)
 {
   Ogre2MeshPtr mesh = this->meshFactory->Create(_desc);
+  if (nullptr == mesh)
+    return nullptr;
+
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
 }

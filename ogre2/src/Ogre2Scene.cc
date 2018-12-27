@@ -20,6 +20,7 @@
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -212,6 +213,15 @@ DepthCameraPtr Ogre2Scene::CreateDepthCameraImpl(unsigned int /*_id*/,
 {
   // TODO(anyone)
   return DepthCameraPtr();
+}
+
+//////////////////////////////////////////////////
+GpuRaysPtr Ogre2Scene::CreateGpuRaysImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2GpuRaysPtr gpuRays(new Ogre2GpuRays);
+  bool result = this->InitObject(gpuRays, _id, _name);
+  return (result) ? gpuRays : nullptr;
 }
 
 //////////////////////////////////////////////////

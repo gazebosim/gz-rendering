@@ -63,6 +63,7 @@
 #include <OgreHighLevelGpuProgramManager.h>
 #include <OgreHardwarePixelBuffer.h>
 #include <OgreShadowCameraSetupPSSM.h>
+#include <OgreDepthBuffer.h>
 
 #include <OgreHlmsManager.h>
 #include <OgreHlmsTextureManager.h>
@@ -71,7 +72,10 @@
 
 #include <Compositor/OgreCompositorManager2.h>
 #include <Compositor/OgreCompositorNode.h>
+#include <Compositor/OgreCompositorNodeDef.h>
 #include <Compositor/OgreCompositorWorkspace.h>
+#include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
+#include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 
 #include <Overlay/OgreOverlayPrerequisites.h>

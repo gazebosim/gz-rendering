@@ -92,10 +92,6 @@ namespace ignition
       /// \return The vertical field of view of the gpu rays.
       public: virtual math::Angle VFOV() const = 0;
 
-      /// \brief Set the vertical fov
-      /// \param[in] _vfov vertical fov
-      public: virtual void SetVFOV(const math::Angle &_vfov) = 0;
-
       /// \brief Get the ray count ratio (equivalent to aspect ratio)
       /// \return The ray count ratio (equivalent to aspect ratio)
       public: virtual double RayCountRatio() const = 0;

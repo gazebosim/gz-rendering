@@ -103,6 +103,10 @@ namespace ignition
                      const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual GpuRaysPtr CreateGpuRaysImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual VisualPtr CreateVisualImpl(unsigned int _id,
                      const std::string &_name) override;
 

@@ -32,7 +32,6 @@
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreSensor.hh"
-#include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
 
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
@@ -187,7 +186,6 @@ namespace ignition
       private: std::unique_ptr<OgreGpuRaysPrivate> dataPtr;
 
       private: friend class OgreScene;
-      private: friend class OgreRayQuery;
     };
     }
   }

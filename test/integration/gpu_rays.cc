@@ -28,7 +28,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-#define LASER_TOL 1e-4
+#define LASER_TOL 2e-4
 #define DOUBLE_TOL 1e-6
 
 // vertical range values seem to be less accurate
@@ -66,7 +66,7 @@ class GpuRaysTest: public testing::Test,
 /// \brief Test GPU rays configuraions
 void GpuRaysTest::Configure(const std::string &_renderEngine)
 {
-  if (_renderEngine != "ogre")
+  if (_renderEngine == "optix")
   {
     igndbg << "GpuRays not supported yet in rendering engine: "
             << _renderEngine << std::endl;
@@ -150,7 +150,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   return;
 #endif
 
-  if (_renderEngine != "ogre")
+  if (_renderEngine == "optix")
   {
     igndbg << "GpuRays not supported yet in rendering engine: "
             << _renderEngine << std::endl;
@@ -258,7 +258,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   gpuRays->Update();
 
-  int mid = hRayCount * channels / 2;
+  int mid = static_cast<int>(hRayCount/2) * channels;
   int last = (hRayCount - 1) * channels;
   double unitBoxSize = 1.0;
   double expectedRangeAtMidPointBox1 = abs(box01Pose.Pos().X()) - unitBoxSize/2;
@@ -325,7 +325,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   return;
 #endif
 
-  if (_renderEngine != "ogre")
+  if (_renderEngine == "optix")
   {
     igndbg << "GpuRays not supported yet in rendering engine: "
             << _renderEngine << std::endl;

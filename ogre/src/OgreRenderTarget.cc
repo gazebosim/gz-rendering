@@ -200,10 +200,9 @@ void OgreRenderTarget::RebuildMaterial()
         this->material.get());
     Ogre::MaterialPtr matPtr = ogreMaterial->Material();
 
-    Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
     Ogre::RenderTarget *target = this->RenderTarget();
     this->materialApplicator.reset(new OgreRenderTargetMaterial(
-        sceneMgr, target, matPtr.get()));
+        this->scene, target, matPtr.get()));
   }
 }
 

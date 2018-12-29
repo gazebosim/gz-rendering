@@ -20,7 +20,9 @@
 #include <array>
 #include <string>
 #include "ignition/rendering/base/BaseScene.hh"
+#include "ignition/rendering/ogre/Export.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+
 
 namespace Ogre
 {

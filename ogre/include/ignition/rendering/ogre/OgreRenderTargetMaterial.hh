@@ -21,6 +21,7 @@
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/Export.hh"
 
 namespace ignition
@@ -49,7 +50,7 @@ namespace ignition
       /// \param[in] _scene the scene manager responsible for rendering
       /// \param[in] _renderTarget the RenderTarget this should apply to
       /// \param[in] _material the material to apply to all renderables
-      public: OgreRenderTargetMaterial(Ogre::SceneManager *_scene,
+      public: OgreRenderTargetMaterial(OgreScenePtr _scene,
           Ogre::RenderTarget *_renderTarget, Ogre::Material *_material);
 
       /// \brief destructor
@@ -83,7 +84,7 @@ namespace ignition
                   const Ogre::Renderable *_rend) override;
 
       /// \brief scene manager responsible for rendering
-      private: Ogre::SceneManager *scene;
+      private: OgreScenePtr scene;
 
       /// \brief render target that should see a uniform material
       private: Ogre::RenderTarget *renderTarget;

@@ -272,13 +272,10 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   // Verify rays caster 2 range readings
   // listen to new gpu rays frames
   float *scan2 = new float[hRayCount * vRayCount * 3];
-  common::ConnectionPtr c2 =
-    gpuRays2->ConnectNewGpuRaysFrame(
-        std::bind(&::OnNewGpuRaysFrame, scan2,
-          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
-          std::placeholders::_4, std::placeholders::_5));
 
   gpuRays2->Update();
+  // Test Copy method instead of using the callback for the second rays caster
+  gpuRays2->Copy(scan2);
 
   // Only box01 should be visible to rays caster 2
   EXPECT_DOUBLE_EQ(scan2[0], maxRange);
@@ -295,6 +292,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   gpuRays->Update();
   gpuRays2->Update();
+  gpuRays2->Copy(scan2);
 
   for (int i = 0; i < gpuRays->RayCount(); ++i)
     EXPECT_DOUBLE_EQ(scan[i * 3], ignition::math::INF_D);
@@ -303,7 +301,6 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
     EXPECT_DOUBLE_EQ(scan2[i * 3], maxRange);
 
   c.reset();
-  c2.reset();
 
   delete [] scan;
   delete [] scan2;

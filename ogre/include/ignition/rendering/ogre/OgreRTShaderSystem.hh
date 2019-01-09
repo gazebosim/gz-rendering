@@ -118,8 +118,12 @@ namespace ignition
       public: void SetPerPixelLighting(bool _set);
 
       /// \brief Generate shaders for an entity
-      /// \param[in] _vis The visual to generate shaders for.
-      public: void GenerateShaders(OgreSubMesh *_vis);
+      /// \param[in] _subMesh The submesh to remove shaders for.
+      public: void RemoveShaders(OgreSubMesh *_subMesh);
+
+      /// \brief Generate shaders for an entity
+      /// \param[in] _subMesh The submesh to generate shaders for.
+      public: void GenerateShaders(OgreSubMesh *_subMesh);
 
       /// \brief Apply shadows to a scene.
       /// \param[in] _scene The scene to receive shadows.

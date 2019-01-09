@@ -86,8 +86,9 @@ Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
 //////////////////////////////////////////////////
 void OgreSubMesh::Destroy()
 {
-  BaseSubMesh::Destroy();
   OgreRTShaderSystem::Instance()->DetachEntity(this);
+
+  BaseSubMesh::Destroy();
 }
 
 //////////////////////////////////////////////////

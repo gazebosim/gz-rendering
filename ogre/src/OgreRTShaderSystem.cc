@@ -291,16 +291,16 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
   if (!this->dataPtr->initialized)
     return;
 
-  Ogre::SubEntity* curSubEntity = _subMesh->OgreSubEntity();
-  const Ogre::String& curMaterialName = curSubEntity->getMaterialName();
-  for (unsigned int s = 0; s < this->dataPtr->scenes.size(); s++)
+  Ogre::SubEntity *curSubEntity = _subMesh->OgreSubEntity();
+  const Ogre::String &curMaterialName = curSubEntity->getMaterialName();
+  for (const auto &s : this->dataPtr->scenes)
   {
     try
     {
       this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
           curMaterialName,
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
-          this->dataPtr->scenes[s]->Name() +
+          s->Name() +
           Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
     }
     catch(Ogre::Exception &e)

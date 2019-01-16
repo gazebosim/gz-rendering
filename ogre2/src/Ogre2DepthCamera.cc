@@ -22,8 +22,60 @@
 #endif
 #include <ignition/math/Helpers.hh>
 
+#include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+
+/// \internal
+/// \brief Private data for the Ogre2DepthCamera class
+class ignition::rendering::Ogre2DepthCameraPrivate
+{
+  /// \brief The depth buffer
+  public: float *depthBuffer = nullptr;
+
+  /// \brief Outgoing gpu rays data, used by newGpuRaysFrame event.
+  public: float *depthImage = nullptr;
+
+  /// \brief maximum value used for data outside sensor range
+  public: float dataMaxVal = ignition::math::INF_D;
+
+  /// \brief minimum value used for data outside sensor range
+  public: float dataMinVal = -ignition::math::INF_D;
+
+  /// \brief 1st pass compositor workspace definition
+  public: std::string ogreCompositorWorkspaceDef;
+
+  /// \brief 1st pass compositor node definition
+  public: std::string ogreCompositorNodeDef;
+
+  /// \brief 1st pass compositor workspace. One for each cubemap camera
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace;
+
+  /// \brief An array of first pass textures. One for each cubemap camera.
+  public: Ogre::TexturePtr ogreDepthTexture;
+
+  /// \brief Dummy render texture for the depth data
+  public: RenderTexturePtr depthTexture;
+
+  /// \brief The depth material
+  public: Ogre::MaterialPtr depthMaterial;
+
+  /// \brief Event used to signal rgb point cloud data
+  public: ignition::common::EventT<void(const float *,
+              unsigned int, unsigned int, unsigned int,
+              const std::string &)> newRgbPointCloud;
+
+  /// \brief Event used to signal depth data
+  public: ignition::common::EventT<void(const float *,
+              unsigned int, unsigned int, unsigned int,
+              const std::string &)> newDepthFrame;
+};
 
 using namespace ignition;
 using namespace rendering;
@@ -52,6 +104,8 @@ void Ogre2DepthCamera::Init()
 
   // create dummy render texture
   this->CreateRenderTexture();
+
+  this->Reset();
 }
 
 //////////////////////////////////////////////////
@@ -128,10 +182,6 @@ void Ogre2DepthCamera::CreateCamera()
   this->ogreCamera->setRenderingDistance(100);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
-
-  //this->ogreCamera->setNearClipDistance(this->NearClipPlane());
-  this->ogreCamera->setNearClipDistance(0.0002);
-  this->ogreCamera->setFarClipDistance(this->FarClipPlane());
 }
 
 /////////////////////////////////////////////////
@@ -153,11 +203,19 @@ void Ogre2DepthCamera::CreateDepthTexture()
   std::string matDepthName = "DepthCamera";
   Ogre::MaterialPtr matDepth =
       Ogre::MaterialManager::getSingleton().getByName(matDepthName);
-  this->dataPtr->depthMaterial = matDepth->clone(this->Name() + "_" + matDepthName);
+  this->dataPtr->depthMaterial = matDepth->clone(
+      this->Name() + "_" + matDepthName);
   this->dataPtr->depthMaterial->load();
   Ogre::Pass *pass = this->dataPtr->depthMaterial->getTechnique(0)->getPass(0);
   Ogre::GpuProgramParametersSharedPtr psParams =
       pass->getFragmentProgramParameters();
+
+  // Configure camera behaviour. Depth camera reports the same for far
+  // away objects and close objects
+  this->ogreCamera->setNearClipDistance(this->NearClipPlane());
+  this->ogreCamera->setFarClipDistance(this->FarClipPlane());
+  this->dataPtr->dataMaxVal = this->FarClipPlane();
+  this->dataPtr->dataMinVal = this->FarClipPlane();
 
   // Set the uniform variables (depth_camera_fs.glsl).
   // The projectParams is used to linearize depth buffer data
@@ -174,9 +232,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
   psParams->setNamedConstant("far",
       static_cast<float>(this->FarClipPlane()));
   psParams->setNamedConstant("max",
-      static_cast<float>(this->FarClipPlane()));
+      static_cast<float>(this->dataPtr->dataMaxVal));
   psParams->setNamedConstant("min",
-      static_cast<float>(this->FarClipPlane()));
+      static_cast<float>(this->dataPtr->dataMinVal));
   // We need to include a tolerance for Clipping
   psParams->setNamedConstant("tolerance",
       static_cast<float>(1e-6));

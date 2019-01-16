@@ -27,19 +27,12 @@
 #include <memory>
 #include <string>
 
-#include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/base/BaseDepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
-#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 
 #include "ignition/common/Event.hh"
 #include "ignition/common/Console.hh"
-
 
 namespace Ogre
 {
@@ -54,54 +47,10 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \internal
-    /// \brief Private data for the Ogre2DepthCamera class
-    class Ogre2DepthCameraPrivate
-    {
-      /// \brief The depth buffer
-      public: float *depthBuffer = nullptr;
+    //
+    // Forward declaration
+    class Ogre2DepthCameraPrivate;
 
-      /// \brief The depth material
-      public: Ogre::MaterialPtr depthMaterial; //matFirstPass
-
-      /// \brief Outgoing gpu rays data, used by newGpuRaysFrame event.
-      public: float *depthImage = nullptr;
-
-      /// \brief maximum value used for data outside sensor range
-      public: float dataMaxVal = ignition::math::INF_D;
-
-      /// \brief minimum value used for data outside sensor range
-      public: float dataMinVal = -ignition::math::INF_D;
-
-      /// \brief 1st pass compositor workspace definition
-      public: std::string ogreCompositorWorkspaceDef;
-
-      /// \brief 1st pass compositor node definition
-      public: std::string ogreCompositorNodeDef;
-
-      /// \brief 1st pass compositor workspace. One for each cubemap camera
-      public: Ogre::CompositorWorkspace *ogreCompositorWorkspace;
-
-      /// \brief An array of first pass textures. One for each cubemap camera.
-      public: Ogre::TexturePtr ogreDepthTexture;
-
-      /// \brief Dummy render texture for the gpu rays
-      public: RenderTexturePtr depthTexture; //renderTexture
-
-      /// \brief Event used to signal rgb point cloud data
-      public: ignition::common::EventT<void(const float *,
-                  unsigned int, unsigned int, unsigned int,
-                  const std::string &)> newRgbPointCloud;
-
-      /// \brief Event used to signal depth data
-      public: ignition::common::EventT<void(const float *,
-                  unsigned int, unsigned int, unsigned int,
-                  const std::string &)> newDepthFrame;
-    };
-
-    /** \class Ogre2DepthCamera Ogre2DepthCamera.hh\
-     * rendering/ogre/Ogre2DepthCamera.hh
-    **/
     /// \brief Depth camera used to render depth data into an image buffer
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2DepthCamera :
       public BaseDepthCamera<Ogre2Sensor>
@@ -193,7 +142,7 @@ namespace ignition
 
       /// \internal
       /// \brief Pointer to private data.
-      private: std::unique_ptr<Ogre2DepthCameraPrivate> dataPtr = nullptr;
+      private: std::unique_ptr<Ogre2DepthCameraPrivate> dataPtr;
 
       private: friend class Ogre2Scene;
       private: friend class Ogre2RayQuery;

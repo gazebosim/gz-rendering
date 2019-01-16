@@ -29,6 +29,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     class Ogre2Camera;
+    class Ogre2DepthCamera;
     class Ogre2DirectionalLight;
     class Ogre2Geometry;
     class Ogre2GpuRays;
@@ -62,6 +63,7 @@ namespace ignition
     typedef BaseMaterialMap<Ogre2Material>        Ogre2MaterialMap;
 
     typedef shared_ptr<Ogre2Camera>               Ogre2CameraPtr;
+    typedef shared_ptr<Ogre2DepthCamera>          Ogre2DepthCameraPtr;
     typedef shared_ptr<Ogre2DirectionalLight>     Ogre2DirectionalLightPtr;
     typedef shared_ptr<Ogre2Geometry>             Ogre2GeometryPtr;
     typedef shared_ptr<Ogre2GpuRays>              Ogre2GpuRaysPtr;

@@ -176,8 +176,8 @@ void DepthCameraTest::DepthCameraBoxes(
 
   // Clean up
   connection.reset();
-  // engine->DestroyScene(scene);
-  // ignition::rendering::unloadEngine(engine->Name());
+  engine->DestroyScene(scene);
+  ignition::rendering::unloadEngine(engine->Name());
 }
 
 TEST_P(DepthCameraTest, DepthCameraBoxes)

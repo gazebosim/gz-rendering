@@ -57,7 +57,7 @@ void DepthCameraTest::DepthCameraBoxes(
   int imgWidth_ = 256;
   int imgHeight_ = 256;
   double far_ = 10.0;
-  double near_ = 0.1;
+  double near_ = 0.15;
   double hfov_ = 1.05;
   double aspectRatio_ = imgWidth_/imgHeight_;
 
@@ -108,9 +108,6 @@ void DepthCameraTest::DepthCameraBoxes(
   // Create depth camera
   auto depthCamera = scene->CreateDepthCamera("DepthCamera");
   ASSERT_NE(depthCamera, nullptr);
-
-  // Create image to store the camera output
-  //auto image = depthCamera->CreateImage();
 
   ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0),
       ignition::math::Quaterniond::Identity);

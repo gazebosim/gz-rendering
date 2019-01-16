@@ -32,6 +32,7 @@ uniform float near;
 uniform float far;
 uniform float min;
 uniform float max;
+uniform float tolerance;
 
 float getDepth(vec2 uv)
 {
@@ -52,9 +53,9 @@ void main()
   // get length of 3d point, i.e.range
   float l = length(viewSpacePos);
 
-  if (l > far)
+  if (l > far - tolerance)
     l = max;
-  else if (l < near)
+  else if (l < near + tolerance)
     l = min;
 
   fragColor = vec4(l, 0.0, 0, 1.0);

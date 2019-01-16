@@ -126,12 +126,11 @@ void Ogre2DepthCamera::CreateCamera()
   // TODO(anyone): provide api access
   this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setRenderingDistance(100);
-  // Nos tupported Ogre2
-  //this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
 
-  this->ogreCamera->setNearClipDistance(this->NearClipPlane());
+  //this->ogreCamera->setNearClipDistance(this->NearClipPlane());
+  this->ogreCamera->setNearClipDistance(0.0002);
   this->ogreCamera->setFarClipDistance(this->FarClipPlane());
 }
 
@@ -175,9 +174,12 @@ void Ogre2DepthCamera::CreateDepthTexture()
   psParams->setNamedConstant("far",
       static_cast<float>(this->FarClipPlane()));
   psParams->setNamedConstant("max",
-      static_cast<float>(this->dataPtr->dataMaxVal));
+      static_cast<float>(this->FarClipPlane()));
   psParams->setNamedConstant("min",
-      static_cast<float>(this->dataPtr->dataMinVal));
+      static_cast<float>(this->FarClipPlane()));
+  // We need to include a tolerance for Clipping
+  psParams->setNamedConstant("tolerance",
+      static_cast<float>(1e-6));
 
   // Create depth camera compositor
   auto engine = Ogre2RenderEngine::Instance();
@@ -256,7 +258,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(
           depthTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(this->dataPtr->dataMaxVal, 0, 1.0);
+      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(), 0, 1.0);
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
@@ -273,7 +275,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(
           inputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(this->dataPtr->dataMaxVal, 0, 1.0);
+      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(), 0, 1.0);
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
@@ -339,8 +341,8 @@ void Ogre2DepthCamera::PostRender()
   unsigned int height = this->ImageHeight();
 
   Ogre::PixelFormat imageFormat = Ogre2Conversions::Convert(PF_FLOAT32_R);
-  size_t size = Ogre::PixelUtil::getMemorySize(
-        width, height, 1, imageFormat);
+
+  size_t size = Ogre::PixelUtil::getMemorySize(width, height, 1, imageFormat);
   int len = width * height;
 
   if (!this->dataPtr->depthBuffer)
@@ -370,9 +372,7 @@ void Ogre2DepthCamera::PostRender()
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     igndbg << "[" << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
-  //     igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1] <<  " ";
-  //     igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2] <<  "] ";
+  //     igndbg << "[" << this->dataPtr->depthBuffer[i*width + j] << "]";
   //   }
   //   igndbg << std::endl;
   // }

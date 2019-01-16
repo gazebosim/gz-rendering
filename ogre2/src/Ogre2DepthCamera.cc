@@ -130,6 +130,9 @@ void Ogre2DepthCamera::CreateCamera()
   //this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
+
+  this->ogreCamera->setNearClipDistance(this->NearClipPlane());
+  this->ogreCamera->setFarClipDistance(this->FarClipPlane());
 }
 
 /////////////////////////////////////////////////
@@ -140,22 +143,6 @@ void Ogre2DepthCamera::CreateRenderTexture()
       std::dynamic_pointer_cast<Ogre2RenderTexture>(base);
   this->dataPtr->depthTexture->SetWidth(1);
   this->dataPtr->depthTexture->SetHeight(1);
-}
-
-/////////////////////////////////////////////////////////
-void Ogre2DepthCamera::CreateDepthCameraTexture()
-{
-  this->ConfigureCamera();
-  //this->CreateSampleTexture();
-  this->CreateDepthTexture();
-}
-
-/////////////////////////////////////////////////
-void Ogre2DepthCamera::ConfigureCamera()
-{
-  // Set ogre cam properties
-  this->ogreCamera->setNearClipDistance(this->NearClipPlane());
-  this->ogreCamera->setFarClipDistance(this->FarClipPlane());
 }
 
 /////////////////////////////////////////////////////////
@@ -342,7 +329,7 @@ void Ogre2DepthCamera::Render()
 void Ogre2DepthCamera::PreRender()
 {
   if (!this->dataPtr->ogreDepthTexture)
-    this->CreateDepthCameraTexture();
+    this->CreateDepthTexture();
 }
 
 //////////////////////////////////////////////////

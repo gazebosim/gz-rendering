@@ -123,7 +123,7 @@ namespace ignition
 
       /// \brief Create a texture which will hold the depth data
       /// \brief Set up 1st pass material, texture, and compositor
-      public: virtual void CreateDepthTexture() override; //Setup1stPass
+      public: virtual void CreateDepthTexture() override;
 
       // Documentation inherited
       public: virtual void PreRender() override;
@@ -170,20 +170,6 @@ namespace ignition
       /// ogre camera has not been created.
       public: double FarClipPlane() const override;
 
-      /// \brief Create the texture which is used to render gpu rays data.
-      private: virtual void CreateDepthCameraTexture();
-
-      /// \brief Update the render targets in the 1st pass
-      private: void UpdateRenderTarget1stPass();
-
-      /// \brief Update a render target
-      /// \param[in] _target Render target to update
-      /// \param[in] _material Material to use
-      /// \param[in] _matName Material name
-      protected: void UpdateRenderTarget(Ogre2RenderTexturePtr _target,
-                                       Ogre::Material *_material,
-                                       const std::string &_matName);
-
       /// \brief Get a pointer to the render target.
       /// \return Pointer to the render target
       protected: virtual RenderTargetPtr RenderTarget() const override;
@@ -193,9 +179,6 @@ namespace ignition
       /// \param[in] _fov expected field of view
       /// \return valid field of view
       protected: static double LimitFOV(const double _fov);
-
-      /// \brief Configure camera.
-      private: void ConfigureCamera();
 
       /// \brief Create the camera.
       protected: void CreateCamera();

@@ -594,6 +594,9 @@ void Ogre2RenderEngine::CreateResources()
     hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit,
         &archiveUnlitLibraryFolders);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
+
+    // disable writting debug output to disk
+    hlmsUnlit->setDebugOutputPath(false, false);
   }
 
   {
@@ -620,6 +623,9 @@ void Ogre2RenderEngine::CreateResources()
     // Create and register
     hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
+
+    // disable writting debug output to disk
+    hlmsPbs->setDebugOutputPath(false, false);
   }
 }
 

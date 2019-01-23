@@ -20,8 +20,8 @@
   #include <Winsock2.h>
 #endif
 
-#include <list>
 #include <mutex>
+#include <set>
 #include <vector>
 
 #include <ignition/common/Console.hh>
@@ -44,7 +44,7 @@ class ignition::rendering::OgreRTShaderSystemPrivate
   public: Ogre::RTShader::SubRenderState *shadowRenderState = nullptr;
 
   /// \brief All the entites being used.
-  public: std::list<OgreSubMesh*> entities;
+  public: std::set<OgreSubMesh *> entities;
 
   /// \brief True if initialized.
   public: bool initialized;
@@ -222,24 +222,30 @@ void OgreRTShaderSystem::RemoveScene(const std::string &_scene)
 }
 
 //////////////////////////////////////////////////
-void OgreRTShaderSystem::AttachEntity(OgreSubMesh *subMesh)
+void OgreRTShaderSystem::AttachEntity(OgreSubMesh *_subMesh)
 {
   if (!this->dataPtr->initialized)
     return;
 
   std::lock_guard<std::mutex> lock(this->dataPtr->entityMutex);
-  this->dataPtr->entities.push_back(subMesh);
+  this->dataPtr->entities.insert(_subMesh);
   this->dataPtr->updateShaders = true;
 }
 
 //////////////////////////////////////////////////
-void OgreRTShaderSystem::DetachEntity(OgreSubMesh *_vis)
+void OgreRTShaderSystem::DetachEntity(OgreSubMesh *_subMesh)
 {
   if (!this->dataPtr->initialized)
     return;
 
   std::lock_guard<std::mutex> lock(this->dataPtr->entityMutex);
-  this->dataPtr->entities.remove(_vis);
+  // Remove shaders
+  auto it = this->dataPtr->entities.find(_subMesh);
+  if (it != this->dataPtr->entities.end())
+  {
+    this->RemoveShaders(_subMesh);
+    this->dataPtr->entities.erase(it);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -277,6 +283,32 @@ void OgreRTShaderSystem::DetachViewport(Ogre::Viewport *_viewport,
 void OgreRTShaderSystem::UpdateShaders()
 {
   this->dataPtr->updateShaders = true;
+}
+
+//////////////////////////////////////////////////
+void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
+{
+  if (!this->dataPtr->initialized)
+    return;
+
+  Ogre::SubEntity *curSubEntity = _subMesh->OgreSubEntity();
+  const Ogre::String &curMaterialName = curSubEntity->getMaterialName();
+  for (const auto &s : this->dataPtr->scenes)
+  {
+    try
+    {
+      this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
+          curMaterialName,
+          Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
+          s->Name() +
+          Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+    }
+    catch(Ogre::Exception &e)
+    {
+      ignerr << "Unable to remove shader technique for material["
+        << curMaterialName << "]\n";
+    }
+  }
 }
 
 //////////////////////////////////////////////////

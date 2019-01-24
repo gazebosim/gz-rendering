@@ -342,6 +342,8 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   {
     ignerr << "Failed to load plugin [" << _filename <<
               "] : couldn't find shared library." << std::endl;
+    ignerr << "Plugin paths looked up: " << _path <<
+              " and " << std::string(IGN_RENDERING_PLUGIN_PATH) << std::endl;
     return false;
   }
 

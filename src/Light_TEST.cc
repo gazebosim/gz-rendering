@@ -40,6 +40,7 @@ class LightTest : public testing::Test,
 void LightTest::Light(const std::string &_renderEngine)
 {
   // create and populate scene
+  ignerr << "Before rendering::engine" << std::endl;
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -47,94 +48,22 @@ void LightTest::Light(const std::string &_renderEngine)
            << "' is not supported" << std::endl;
     return;
   }
+  
+  ignerr << "Before CreateScene" << std::endl;
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
   // Point light
+  ignerr << "Before CreatePointLight" << std::endl;
   LightPtr light = scene->CreatePointLight();
   EXPECT_TRUE(light != nullptr);
   EXPECT_EQ(1u, scene->LightCount());
   EXPECT_TRUE(scene->HasLight(light));
-
-  // diffuse
-  light->SetDiffuseColor(1, 0, 0);
-  EXPECT_EQ(math::Color(1, 0, 0), light->DiffuseColor());
-  light->SetDiffuseColor(math::Color(0, 1, 0));
-  EXPECT_EQ(math::Color(0, 1, 0), light->DiffuseColor());
-
-  // specular
-  light->SetSpecularColor(1, 1, 1);
-  EXPECT_EQ(math::Color(1, 1, 1), light->SpecularColor());
-  light->SetSpecularColor(math::Color(1, 1, 0));
-  EXPECT_EQ(math::Color(1, 1, 0), light->SpecularColor());
-
-  // cast shadows
-  light->SetCastShadows(true);
-  EXPECT_TRUE(light->CastShadows());
-  light->SetCastShadows(false);
-  EXPECT_FALSE(light->CastShadows());
-
-  // attenuation
-  light->SetAttenuationConstant(0.6);
-  EXPECT_FLOAT_EQ(0.6, light->AttenuationConstant());
-  light->SetAttenuationLinear(0.2);
-  EXPECT_FLOAT_EQ(0.2, light->AttenuationLinear());
-  light->SetAttenuationQuadratic(0.01);
-  EXPECT_FLOAT_EQ(0.01, light->AttenuationQuadratic());
-  light->SetAttenuationRange(10);
-  EXPECT_DOUBLE_EQ(10, light->AttenuationRange());
-
-  // Directional light
-  DirectionalLightPtr dirLight = scene->CreateDirectionalLight();
-  EXPECT_TRUE(dirLight != nullptr);
-  EXPECT_EQ(2u, scene->LightCount());
-  EXPECT_TRUE(scene->HasLightName(dirLight->Name()));
-
-  math::Vector3d dir = math::Vector3d(-0.2, -0.1, -0.9).Normalize();
-  dirLight->SetDirection(dir.X(), dir.Y(), dir.Z());
-  EXPECT_EQ(dir, dirLight->Direction());
-  dir = math::Vector3d(0.4, 0.3, 0.2).Normalize();
-  dirLight->SetDirection(dir);
-  EXPECT_EQ(dir, dirLight->Direction());
-
-  dirLight->SetLocalPose(math::Pose3d(10, 0, 0, 0, 0, 0));
-  EXPECT_EQ(math::Pose3d(10, 0, 0, 0, 0, 0), dirLight->LocalPose());
-  EXPECT_EQ(dir, dirLight->Direction());
-
-  // Spot light
-  SpotLightPtr spotLight = scene->CreateSpotLight();
-  EXPECT_TRUE(spotLight != nullptr);
-  EXPECT_EQ(3u, scene->LightCount());
-  EXPECT_TRUE(scene->HasLightId(dirLight->Id()));
-
-  dir = math::Vector3d(-0.2, -0.1, -0.9).Normalize();
-  spotLight->SetDirection(dir.X(), dir.Y(), dir.Z());
-  EXPECT_EQ(dir, spotLight->Direction());
-  dir = math::Vector3d(0.4, 0.3, 0.2).Normalize();
-  spotLight->SetDirection(dir);
-  EXPECT_EQ(dir, spotLight->Direction());
-  spotLight->SetInnerAngle(1.1);
-  EXPECT_EQ(math::Angle(1.1), spotLight->InnerAngle());
-  spotLight->SetInnerAngle(math::Angle(0.1));
-  EXPECT_EQ(math::Angle(0.1), spotLight->InnerAngle());
-  spotLight->SetOuterAngle(2.2);
-  EXPECT_EQ(math::Angle(2.2), spotLight->OuterAngle());
-  spotLight->SetOuterAngle(math::Angle(0.2));
-  EXPECT_EQ(math::Angle(0.2), spotLight->OuterAngle());
-  spotLight->SetFalloff(0.2);
-  EXPECT_FLOAT_EQ(0.2, spotLight->Falloff());
-
-  // remove lights
-  scene->DestroyLightById(light->Id());
-  EXPECT_EQ(2u, scene->LightCount());
-  scene->DestroyLightByName(dirLight->Name());
-  EXPECT_EQ(1u, scene->LightCount());
-  scene->DestroyLight(spotLight);
-  EXPECT_EQ(0u, scene->LightCount());
-
   // Clean up
   engine->DestroyScene(scene);
+  ignerr << "After DestroyScene" << std::endl;
   rendering::unloadEngine(engine->Name());
+  ignerr << "After unloadEngine" << std::endl;
 }
 
 /////////////////////////////////////////////////

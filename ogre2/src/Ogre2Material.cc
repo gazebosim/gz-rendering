@@ -370,7 +370,8 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
   // texture addressing mode defaults to 'clamp' for all except detail maps
   // in ogre2. Change default to 'wrap' instead
-  Ogre::HlmsSamplerblock samplerblock(*this->ogreDatablock->getSamplerblock(_type));
+  Ogre::HlmsSamplerblock samplerblock(
+      *this->ogreDatablock->getSamplerblock(_type));
   samplerblock.mU = Ogre::TAM_WRAP;
   samplerblock.mV = Ogre::TAM_WRAP;
   samplerblock.mW = Ogre::TAM_WRAP;

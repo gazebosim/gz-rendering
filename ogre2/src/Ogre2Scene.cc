@@ -403,6 +403,11 @@ void Ogre2Scene::CreateContext()
   // Set sane defaults for proper shadow mapping
   this->ogreSceneManager->setShadowDirectionalLightExtrusionDistance(500.0f);
   this->ogreSceneManager->setShadowFarDistance(500.0f);
+
+  // enable forward plus to support multiple lights
+  // this is required for non-shadow-casting point lights and
+  // spot lights to work
+  this->ogreSceneManager->setForwardClustered(true, 16, 8, 24, 96, 1, 500);
 }
 
 //////////////////////////////////////////////////

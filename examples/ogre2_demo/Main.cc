@@ -159,6 +159,7 @@ void buildScene(ScenePtr _scene)
   light0->SetDirection(0.5, 0.5, -1);
   light0->SetDiffuseColor(0.8, 0.7, 0.6);
   light0->SetSpecularColor(0.3, 0.3, 0.3);
+  light0->SetCastShadows(true);
   root->AddChild(light0);
 
   // create spot light
@@ -167,6 +168,7 @@ void buildScene(ScenePtr _scene)
   light1->SetSpecularColor(0.2, 0.2, 0.2);
   light1->SetLocalPosition(0, 3, 3);
   light1->SetDirection(1, -1, -1);
+  light1->SetCastShadows(true);
   root->AddChild(light1);
 
   // create point light
@@ -174,7 +176,17 @@ void buildScene(ScenePtr _scene)
   light2->SetDiffuseColor(0.2, 0.4, 0.8);
   light2->SetSpecularColor(0.2, 0.2, 0.2);
   light2->SetLocalPosition(3, 0, 2);
+  light2->SetCastShadows(true);
   root->AddChild(light2);
+
+  // create spot light that does not cast shadows
+  SpotLightPtr light3 = _scene->CreateSpotLight();
+  light3->SetDiffuseColor(0.3, 0.3, 0.3);
+  light3->SetSpecularColor(0.2, 0.2, 0.2);
+  light3->SetLocalPosition(0, -3, 3);
+  light3->SetDirection(1, 1, -1);
+  light3->SetCastShadows(false);
+  root->AddChild(light3);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

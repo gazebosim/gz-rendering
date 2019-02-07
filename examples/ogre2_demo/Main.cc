@@ -141,6 +141,26 @@ void buildScene(ScenePtr _scene)
   box->SetMaterial(mirrorMat);
   root->AddChild(box);
 
+  // create backpack material
+  MaterialPtr backpackMat = _scene->CreateMaterial();
+  backpackMat->SetTexture(common::joinPaths(RESOURCE_PATH, "backpack.png"));
+  backpackMat->SetRoughness(0.8f);
+  backpackMat->SetMetalness(0.0f);
+
+  // create a backpack
+  // backpack mesh is mirrored and requires texture addressing mode to be
+  // set to 'wrap', which is the default in ign-rendering-ogre2
+  VisualPtr backpack = _scene->CreateVisual("backpack");
+  backpack->SetLocalPosition(2.5, -1, 0);
+  backpack->SetLocalRotation(0, 0, -1.57);
+  MeshDescriptor backpackDesc;
+  backpackDesc.meshName = common::joinPaths(RESOURCE_PATH, "backpack.dae");
+  backpackDesc.mesh = meshManager->Load(backpackDesc.meshName);
+  MeshPtr backpackMeshGeom = _scene->CreateMesh(backpackDesc);
+  backpackMeshGeom->SetMaterial(backpackMat);
+  backpack->AddGeometry(backpackMeshGeom);
+  root->AddChild(backpack);
+
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
   white->SetDiffuse(1.0, 1.0, 1.0);

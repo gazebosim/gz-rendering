@@ -31,14 +31,14 @@ pipelines:
           - make -j4
           - make install
           - make codecheck
-          # Can't make tests - valid display not found
+          # Run tests
+          - Xvfb :1 -screen 0 1280x1024x24 &
+          - DISPLAY=:1.0 make test
+          - DISPLAY=:1.0 RENDERING_ENGINE_VALUES=ogre2 MESA_GL_VERSION_OVERRIDE=3.3 make test
           # Build an example
           - cd ../examples/simple_demo
           - mkdir build
           - cd build
           - cmake ..
           - make -j4
-          # run tests
-          - Xvfb :1 -screen 0 1280x1024x24 &
-          - DISPLAY=:1.0 make test
-          - DISPLAY=:1.0 RENDERING_ENGINE_VALUES=ogre2 MESA_GL_VERSION_OVERRIDE=3.3 make test
+

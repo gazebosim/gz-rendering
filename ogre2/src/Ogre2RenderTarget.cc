@@ -291,14 +291,32 @@ void Ogre2RenderTexture::BuildTarget()
   Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
   Ogre::PixelFormat ogreFormat = Ogre2Conversions::Convert(this->format);
 
+  // check if target fsaa is supported
+  unsigned int fsaa = 0;
+  std::vector<unsigned int> fsaaLevels =
+      Ogre2RenderEngine::Instance()->FSAALevels();
+  unsigned int targetFSAA = this->antiAliasing;
+  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
+  if (it != fsaaLevels.end())
+  {
+    fsaa = targetFSAA;
+  }
+  else
+  {
+    // output warning but only do it once
+    static bool ogre2FSAAWarn = false;
+    if (ogre2FSAAWarn)
+    {
+      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+              << "is not supported. Setting to 0" << std::endl;
+      ogre2FSAAWarn = true;
+    }
+  }
+
   // Ogre 2 PBS expects gamma correction to be enabled
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-#if OGRE_VERSION_LT_1_10_1
-      Ogre::TU_RENDERTARGET, 0, true, this->antiAliasing)).getPointer();
-#else
-      Ogre::TU_RENDERTARGET, 0, true, this->antiAliasing)).get();
-#endif
+      Ogre::TU_RENDERTARGET, 0, true, fsaa)).get();
 }
 
 //////////////////////////////////////////////////

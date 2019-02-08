@@ -159,6 +159,10 @@ namespace ignition
       /// \brief Attempt to initialize engine and catch exeption if they occur
       private: void InitAttempt();
 
+      /// \brief Get a list of all supported FSAA levels for this render system
+      /// \return a list of FSAA levels
+      public: std::vector<unsigned int> FSAALevels() const;
+
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.
       /// \return Pointer to the ogre overlay system.

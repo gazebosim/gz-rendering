@@ -47,6 +47,7 @@ void buildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.2, 0.2, 0.2);
+  _scene->SetBackgroundColor(0.0, 0.0, 0.0);
   VisualPtr root = _scene->RootVisual();
 
   // create PBR material

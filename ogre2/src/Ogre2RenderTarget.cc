@@ -192,6 +192,13 @@ void Ogre2RenderTarget::UpdateBackgroundColor()
 {
   if (this->colorDirty)
   {
+    // set background color in compositor clear pass def
+    auto nodeSeq = this->ogreCompositorWorkspace->getNodeSequence();
+    auto pass = nodeSeq[0]->_getPasses()[0]->getDefinition();
+    auto clearPass = dynamic_cast<const Ogre::CompositorPassClearDef *>(pass);
+    const_cast<Ogre::CompositorPassClearDef *>(clearPass)->mColourValue =
+        this->ogreBackgroundColor;
+
     this->colorDirty = false;
   }
 }

@@ -62,19 +62,18 @@ void SceneTest::Scene(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
-  // TODO(anyone) background color and render window only supported
+  // Check background color
+  EXPECT_EQ(math::Color::Black, scene->BackgroundColor());
+  scene->SetBackgroundColor(0, 1, 0, 1);
+  EXPECT_EQ(math::Color(0, 1, 0, 1), scene->BackgroundColor());
+  math::Color red(1, 0, 0, 1);
+  scene->SetBackgroundColor(red);
+  EXPECT_EQ(red, scene->BackgroundColor());
+
+  // TODO(anyone) gradient background color and render window only supported
   // by ogre
   if (_renderEngine == "ogre")
   {
-    EXPECT_FALSE(scene->IsGradientBackgroundColor());
-
-    // Check background color
-    EXPECT_EQ(math::Color::Black, scene->BackgroundColor());
-    scene->SetBackgroundColor(0, 1, 0, 1);
-    EXPECT_EQ(math::Color(0, 1, 0, 1), scene->BackgroundColor());
-    math::Color red(1, 0, 0, 1);
-    scene->SetBackgroundColor(red);
-    EXPECT_EQ(red, scene->BackgroundColor());
     EXPECT_FALSE(scene->IsGradientBackgroundColor());
 
     // Check gradient background color

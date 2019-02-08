@@ -33,8 +33,10 @@ pipelines:
           - make codecheck
           # Run tests
           - Xvfb :1 -screen 0 1280x1024x24 &
-          - DISPLAY=:1.0 make test
-          - DISPLAY=:1.0 RENDERING_ENGINE_VALUES=ogre2 MESA_GL_VERSION_OVERRIDE=3.3 make test
+          # - DISPLAY=:1.0 make test
+          # - DISPLAY=:1.0 RENDERING_ENGINE_VALUES=ogre2 MESA_GL_VERSION_OVERRIDE=3.3 make test
+          - DISPLAY=:1.0 RENDERING_ENGINE_VALUES=ogre2 MESA_GL_VERSION_OVERRIDE=3.3 ./bin/INTEGRATION_camera
+          - cat ~/.ignition/rendering/ogre2.log
           # Build an example
           - cd ../examples/simple_demo
           - mkdir build

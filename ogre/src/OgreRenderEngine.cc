@@ -326,6 +326,9 @@ void OgreRenderEngine::CreateLogger()
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
 
+  /// TODO remove after testing
+  logPath = "C:\\ogre.log";
+
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
   this->ogreLogManager->createLog(logPath, true, false, false);

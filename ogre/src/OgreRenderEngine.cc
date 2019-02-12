@@ -303,17 +303,30 @@ bool OgreRenderEngine::InitImpl()
 //////////////////////////////////////////////////
 void OgreRenderEngine::LoadAttempt()
 {
+  igndbg << "========== OgreRenderEngine: load attempt create logger" << std::endl;
   this->CreateLogger();
   if (!this->useCurrentGLContext)
+  {
+    igndbg << "========== OgreRenderEngine: create context" << std::endl;
     this->CreateContext();
+  }
+  igndbg << "========== OgreRenderEngine: create root" << std::endl;
   this->CreateRoot();
+  igndbg << "========== OgreRenderEngine: create overlay" << std::endl;
   this->CreateOverlay();
+  igndbg << "========== OgreRenderEngine: load plugins" << std::endl;
   this->LoadPlugins();
+  igndbg << "========== OgreRenderEngine: create render system" << std::endl;
   this->CreateRenderSystem();
+  igndbg << "========== OgreRenderEngine: root init" << std::endl;
   this->ogreRoot->initialise(false);
+  igndbg << "========== OgreRenderEngine: create resources" << std::endl;
   this->CreateResources();
+  igndbg << "========== OgreRenderEngine: create renderwindow" << std::endl;
   this->CreateRenderWindow();
+  igndbg << "========== OgreRenderEngine: check capa" << std::endl;
   this->CheckCapabilities();
+  igndbg << "========== OgreRenderEngine: load attempt done" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -703,6 +716,7 @@ void OgreRenderEngine::CheckCapabilities()
 //////////////////////////////////////////////////
 void OgreRenderEngine::InitAttempt()
 {
+  igndbg << "========== OgreRenderEngine: init attempt " << std::endl;
   if (this->renderPathType == NONE)
   {
     ignwarn << "Cannot initialize render engine since "
@@ -723,12 +737,20 @@ void OgreRenderEngine::InitAttempt()
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
   // init the resources
+  igndbg << "========== OgreRenderEngine: init resource group " << std::endl;
+
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+  igndbg << "========== OgreRenderEngine: set texture filtering " << std::endl;
 
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(
       Ogre::TFO_ANISOTROPIC);
 
+  igndbg << "========== OgreRenderEngine: init rt shader " << std::endl;
+
   OgreRTShaderSystem::Instance()->Init();
+
+  igndbg << "========== OgreRenderEngine: create scenes " << std::endl;
 
   this->scenes = OgreSceneStorePtr(new OgreSceneStore);
 }

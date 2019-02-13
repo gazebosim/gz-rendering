@@ -57,6 +57,8 @@ void Ogre2MaterialSwitcher::preRenderTargetUpdate(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
   {
+      this->NextColor();
+
       Ogre::MovableObject *object = itor.peekNext();
       Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
@@ -70,11 +72,8 @@ void Ogre2MaterialSwitcher::preRenderTargetUpdate(
         subItem->setCustomParameter(1,
             Ogre::Vector4(this->currentColor.R(), this->currentColor.G(),
                           this->currentColor.B(), 1.0));
-
         subItem->setMaterial(this->plainMaterial);
       }
-
-      this->NextColor();
       itor.moveNext();
   }
 }
@@ -122,6 +121,7 @@ void Ogre2MaterialSwitcher::NextColor()
 /////////////////////////////////////////////////
 void Ogre2MaterialSwitcher::Reset()
 {
-  this->currentColor = ignition::math::Color(0.0, 0.0, 0.1);
+  this->currentColor = ignition::math::Color(
+      0.0, 0.0, 0.0);
   this->colorDict.clear();
 }

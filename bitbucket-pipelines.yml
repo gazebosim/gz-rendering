@@ -11,7 +11,7 @@ pipelines:
           - wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
           - apt-get update
           - apt-get -y install
-            cmake pkg-config cppcheck libogre-1.9-dev libogre-2.1-dev libglew-dev libfreeimage-dev doxygen ruby-ronn freeglut3-dev libxmu-dev libxi-dev curl git mercurial g++-8 uuid-dev
+            cmake pkg-config cppcheck libogre-1.9-dev libogre-2.1-dev libglew-dev libfreeimage-dev doxygen ruby-ronn freeglut3-dev libxmu-dev libxi-dev curl git mercurial g++-8 uuid-dev xvfb
           - update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
           - gcc -v
           - g++ -v
@@ -31,10 +31,14 @@ pipelines:
           - make -j4
           - make install
           - make codecheck
-          # Can't make tests - valid display not found
+          # Run tests
+          - Xvfb :1 -screen 0 1280x1024x24 &
+          - DISPLAY=:1.0 make test
+          - DISPLAY=:1.0 RENDER_ENGINE_VALUES=ogre2 MESA_GL_VERSION_OVERRIDE=3.3 make test
           # Build an example
           - cd ../examples/simple_demo
           - mkdir build
           - cd build
           - cmake ..
           - make -j4
+

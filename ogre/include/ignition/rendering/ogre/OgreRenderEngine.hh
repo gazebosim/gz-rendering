@@ -106,6 +106,10 @@ namespace ignition
                   const unsigned int _width, const unsigned int _height,
                   const double _ratio, const unsigned int _antiAliasing);
 
+      /// \brief Get a list of all supported FSAA levels for this render system
+      /// \return a list of FSAA levels
+      public: std::vector<unsigned int> FSAALevels() const;
+
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name) override;
 

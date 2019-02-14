@@ -172,7 +172,7 @@ void OgreMaterialSwitcher::NextColor()
 /////////////////////////////////////////////////
 void OgreMaterialSwitcher::Reset()
 {
-  this->currentColor = ignition::math::Color(0.0, 0.0, 0.1);
+  this->currentColor = ignition::math::Color(0.0, 0.0, 0.0);
   this->lastTechnique = nullptr;
   this->lastEntity.clear();
   this->colorDict.clear();

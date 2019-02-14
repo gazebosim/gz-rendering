@@ -32,8 +32,8 @@ pipelines:
           - make install
           - make codecheck
           # Run tests
-          - xvfb-run -s "-ac -screen 0 1280x1024x24" make test
-          - RENDER_ENGINE_VALUES=ogre2 MESA_GL_VERSION_OVERRIDE=3.3 xvfb-run -s "-ac screen 0 1280x1024x24" make test
+          - xvfb-run -s "-ac -screen 0 1280x1024x24" make test ARGS="-VV"
+          - RENDER_ENGINE_VALUES=ogre2 MESA_GL_VERSION_OVERRIDE=3.3 xvfb-run -s "-ac screen 0 1280x1024x24" make test ARGS="-VV"
           # Build an example
           - cd ../examples/simple_demo
           - mkdir build

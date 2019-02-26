@@ -20,6 +20,19 @@
 #include <memory>
 #include <ignition/rendering/config.hh>
 
+
+/// \def IGN_VISIBILITY_ALL
+/// \brief Render everything visibility mask.
+#define IGN_VISIBILITY_ALL             0x0FFFFFFF
+
+/// \def IGN_VISIBILITY_SELECTION
+/// \brief Renders only objects that can be selected.
+#define IGN_VISIBILITY_SELECTION       0x10000000
+
+/// \def IGN_VISIBILITY_GUI
+/// \brief Render GUI visuals mask.
+#define IGN_VISIBILITY_GUI             0x00000001
+
 /// \def IGN_VISIBILITY_SELECTABLE
 /// \brief Render visuals that are selectable mask.
 #define IGN_VISIBILITY_SELECTABLE      0x00000002
@@ -36,8 +49,10 @@ namespace ignition
     class ArrowVisual;
     class AxisVisual;
     class Camera;
+    class DepthCamera;
     class DirectionalLight;
     class Geometry;
+    class GpuRays;
     class Grid;
     class JointVisual;
     class Image;
@@ -72,6 +87,14 @@ namespace ignition
     /// \def CameraPtr
     /// \brief Shared pointer to Camera
     typedef shared_ptr<Camera> CameraPtr;
+
+    /// \def DepthCameraPtr
+    /// \brief Shared pointer to DepthCamera
+    typedef shared_ptr<DepthCamera> DepthCameraPtr;
+
+    /// \def GpuRaysPtr
+    /// \brief Shared pointer to GpuRays
+    typedef shared_ptr<GpuRays> GpuRaysPtr;
 
     /// \def DirectionalLightPtr
     /// \brief Shared pointer to DirectionalLight
@@ -174,6 +197,14 @@ namespace ignition
     /// \def const CameraPtr
     /// \brief Shared pointer to const Camera
     typedef shared_ptr<const Camera> ConstCameraPtr;
+
+    /// \def const DepthCameraPtr
+    /// \brief Shared pointer to const DepthCamera
+    typedef shared_ptr<const DepthCamera> ConstDepthCameraPtr;
+
+    /// \def const GpuRaysPtr
+    /// \brief Shared pointer to const GpuRays
+    typedef shared_ptr<const GpuRays> ConstGpuRaysPtr;
 
     /// \def const DirectionalLightPtr
     /// \brief Shared pointer to const DirectionalLight

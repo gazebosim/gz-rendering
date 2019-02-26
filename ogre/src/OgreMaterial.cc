@@ -36,6 +36,29 @@ OgreMaterial::OgreMaterial()
 //////////////////////////////////////////////////
 OgreMaterial::~OgreMaterial()
 {
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::Destroy()
+{
+  if (!this->Scene()->IsInitialized())
+    return;
+
+  Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
+#if OGRE_VERSION_LT_1_10_1
+  if (!this->ogreMaterial.isNull())
+  {
+    matManager.remove(this->ogreMaterial->getName());
+    this->ogreMaterial.setNull();
+  }
+#else
+  if (this->ogreMaterial)
+  {
+    matManager.remove(this->ogreMaterial->getName());
+    this->ogreMaterial = nullptr;
+  }
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -156,7 +179,7 @@ bool OgreMaterial::CastShadows() const
 //////////////////////////////////////////////////
 void OgreMaterial::SetCastShadows(const bool _castShadows)
 {
-  // TODO: update RTShader
+  // TODO(anyone): update RTShader
   this->castShadows = _castShadows;
 }
 
@@ -239,7 +262,7 @@ void OgreMaterial::SetNormalMap(const std::string &_name)
   }
 
   this->normalMapName = _name;
-  // TODO: implement
+  // TODO(anyone): implement
   // this->SetNormalMapImpl(texture);
 }
 
@@ -498,8 +521,8 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
 //////////////////////////////////////////////////
 void OgreMaterial::UpdateTransparency()
 {
-  Ogre::ColourValue ambient = this->ogrePass->getAmbient();
-  double alpha = (1 - this->transparency) * ambient.a;
+  Ogre::ColourValue color = this->ogrePass->getAmbient();
+  double alpha = (1 - this->transparency) * color.a;
 
   if (alpha < 1)
   {
@@ -516,6 +539,43 @@ void OgreMaterial::UpdateTransparency()
     this->ogrePass->setDepthCheckEnabled(true);
     this->ogrePass->setSceneBlending(Ogre::SBT_REPLACE);
   }
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetDepthMaterial(const double _far,
+  const double _near)
+{
+  // Configure Ogre Pass settings for Depth
+  this->ogrePass->setDepthCheckEnabled(false);
+  this->ogrePass->setDepthWriteEnabled(false);
+  this->ogrePass->setLightingEnabled(false);
+  this->ogrePass->setFog(true, Ogre::FOG_NONE);
+
+  // TODO(anyone): convert depth configuration into a ShaderType
+  // Get shader parameters path
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+
+  // path to look for vertex and fragment shader parameters
+  std::string depth_vertex_shader_path = common::joinPaths(
+      resourcePath, "ogre", "media", "materials", "programs",
+      depth_vertex_shader_file);
+
+  std::string depth_fragment_shader_path = common::joinPaths(
+      resourcePath, "ogre", "media", "materials", "programs",
+      depth_fragment_shader_file);
+
+  this->SetVertexShader(depth_vertex_shader_path);
+  this->SetFragmentShader(depth_fragment_shader_path);
+
+  // Configure fragment shader variables
+  // Note: MSVC was not happy with one line commands, be sure
+  // of checking it if you change the lines below
+  auto farShaderParams = (*this->fragmentShaderParams)["pfar"];
+  auto nearShaderParams = (*this->fragmentShaderParams)["pnear"];
+  farShaderParams = static_cast<float>(_far);
+  nearShaderParams = static_cast<float>(_near);
 }
 
 //////////////////////////////////////////////////
@@ -550,7 +610,7 @@ void OgreMaterial::Init()
   this->ogreTexState->setBlank();
   this->Reset();
 
-  // TODO: provide function interface
+  // TODO(anyone): provide function interface
   this->ogreMaterial->setTextureAnisotropy(8);
 }
 

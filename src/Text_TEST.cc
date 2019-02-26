@@ -18,6 +18,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Text.hh"
@@ -35,6 +36,13 @@ class TextTest : public testing::Test,
 /////////////////////////////////////////////////
 void TextTest::Text(const std::string &_renderEngine)
 {
+  if (_renderEngine != "ogre")
+  {
+    igndbg << "Text not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -100,6 +108,10 @@ void TextTest::Text(const std::string &_renderEngine)
 
   // color is affected by material but currently only by the diffuse component
   EXPECT_EQ(math::Color(0.3, 0.8, 0.2, 1.0), text->Color());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -109,7 +121,8 @@ TEST_P(TextTest, Text)
 }
 
 INSTANTIATE_TEST_CASE_P(Text, TextTest,
-    ::testing::Values("ogre", "optix"));
+    RENDER_ENGINE_VALUES,
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -165,6 +165,12 @@ namespace ignition
     template <class T>
     void BaseNode<T>::AddChild(NodePtr _child)
     {
+      if (_child->Id() == this->Id())
+      {
+        ignerr << "Cannot add self as a child node" << std::endl;
+        return;
+      }
+
       if (this->AttachChild(_child))
       {
         this->Children()->Add(_child);

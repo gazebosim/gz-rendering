@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRERENDERTYPES_HH_
 #define IGNITION_RENDERING_OGRE_OGRERENDERTYPES_HH_
 
+#include <memory>
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
 namespace ignition
@@ -28,8 +29,10 @@ namespace ignition
     class OgreArrowVisual;
     class OgreAxisVisual;
     class OgreCamera;
+    class OgreDepthCamera;
     class OgreDirectionalLight;
     class OgreGeometry;
+    class OgreGpuRays;
     class OgreGrid;
     class OgreJointVisual;
     class OgreLight;
@@ -64,8 +67,10 @@ namespace ignition
     typedef shared_ptr<OgreArrowVisual>          OgreArrowVisualPtr;
     typedef shared_ptr<OgreAxisVisual>           OgreAxisVisualPtr;
     typedef shared_ptr<OgreCamera>               OgreCameraPtr;
+    typedef shared_ptr<OgreDepthCamera>          OgreDepthCameraPtr;
     typedef shared_ptr<OgreDirectionalLight>     OgreDirectionalLightPtr;
     typedef shared_ptr<OgreGeometry>             OgreGeometryPtr;
+    typedef shared_ptr<OgreGpuRays>              OgreGpuRaysPtr;
     typedef shared_ptr<OgreGrid>                 OgreGridPtr;
     typedef shared_ptr<OgreJointVisual>          OgreJointVisualPtr;
     typedef shared_ptr<OgreLight>                OgreLightPtr;

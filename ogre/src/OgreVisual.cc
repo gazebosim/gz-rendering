@@ -90,6 +90,9 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 //////////////////////////////////////////////////
 bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 {
+  if (!this->ogreNode)
+    return true;
+
   OgreGeometryPtr derived =
       std::dynamic_pointer_cast<OgreGeometry>(_geometry);
 

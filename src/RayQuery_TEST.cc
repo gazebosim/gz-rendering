@@ -19,6 +19,8 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
+
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/RenderEngine.hh"
@@ -38,6 +40,13 @@ class RayQueryTest : public testing::Test,
 /////////////////////////////////////////////////
 void RayQueryTest::RayQuery(const std::string &_renderEngine)
 {
+  if (_renderEngine == "optix")
+  {
+    igndbg << "RayQuery not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -90,6 +99,10 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
   EXPECT_LT(result.distance, 0.0);
   EXPECT_EQ(0u, result.objectId);
   EXPECT_FALSE((result));
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -99,7 +112,8 @@ TEST_P(RayQueryTest, RayQuery)
 }
 
 INSTANTIATE_TEST_CASE_P(RayQuery, RayQueryTest,
-    ::testing::Values("ogre"));
+    RENDER_ENGINE_VALUES,
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

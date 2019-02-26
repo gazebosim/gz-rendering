@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERENGINE_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2RENDERENGINE_HH_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -81,17 +82,17 @@ namespace ignition
       public: virtual ~Ogre2RenderEngine();
 
       // Documentation Inherited.
-      public: virtual bool Fini();
+      public: virtual void Destroy() override;
 
       // Documentation Inherited.
-      public: virtual bool IsEnabled() const;
+      public: virtual bool IsEnabled() const override;
 
       // Documentation Inherited.
-      public: virtual std::string Name() const;
+      public: virtual std::string Name() const override;
 
       /// \brief Add path to resourcea in ogre2's resource manager
       /// \param[in] _uri Reousrce path in the form of an uri
-      public: void AddResourcePath(const std::string &_uri);
+      public: void AddResourcePath(const std::string &_uri) override;
 
       /// \brief Get the ogre2 root object
       /// \return ogre2 root object
@@ -113,20 +114,20 @@ namespace ignition
       /// \param[in] _id Unique scene Id
       /// \parampin] _name Name of scene
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
-                  const std::string &_name);
+                  const std::string &_name) override;
 
       /// \brief Get a pointer to the list of scenes managed by the render
       /// engine
       /// \return list of scenes
-      protected: virtual SceneStorePtr Scenes() const;
+      protected: virtual SceneStorePtr Scenes() const override;
 
-      /// \brief Load the render engine
-      /// \return True if the operation is successful
-      protected: virtual bool LoadImpl();
+      // Documentation Inherited.
+      protected: virtual bool LoadImpl(
+          const std::map<std::string, std::string> &_params) override;
 
       /// \brief Initialize the render engine
       /// \return True if the operation is successful
-      protected: virtual bool InitImpl();
+      protected: virtual bool InitImpl() override;
 
       /// \brief Helper function to initialize the render engine
       private: void LoadAttempt();
@@ -158,6 +159,10 @@ namespace ignition
       /// \brief Attempt to initialize engine and catch exeption if they occur
       private: void InitAttempt();
 
+      /// \brief Get a list of all supported FSAA levels for this render system
+      /// \return a list of FSAA levels
+      public: std::vector<unsigned int> FSAALevels() const;
+
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.
       /// \return Pointer to the ogre overlay system.
@@ -167,8 +172,7 @@ namespace ignition
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
 
       /// \brief List of scenes managed by the render engine
-      // private: Ogre2SceneStorePtr scenes;
-      private: SceneStorePtr scenes;
+      private: Ogre2SceneStorePtr scenes;
 
       /// \brief Ogre root
       private: Ogre::Root *ogreRoot = nullptr;
@@ -187,6 +191,9 @@ namespace ignition
 
       /// \brief Dummy window Id needed for linux platform
       private: uint64_t dummyWindowId = 0u;
+
+      /// \brief True to use the current opengl context
+      private: bool useCurrentGLContext = false;
 
       /// \brief Pointer to private data
       private: std::unique_ptr<Ogre2RenderEnginePrivate> dataPtr;

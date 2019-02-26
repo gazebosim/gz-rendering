@@ -11,19 +11,18 @@ set_property(
   PROPERTY COMPILE_DEFINITIONS
   IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
   OGRE2_RESOURCE_PATH="${OGRE2_RESOURCE_PATH}"
+  OGRE2_VERSION="${OGRE2_VERSION}"
 )
-
-link_directories(${OGRE2_LIBRARY_DIRS})
 
 target_link_libraries(${ogre2_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
   PRIVATE
+    ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
-    ${OGRE2_LIBRARIES})
+    IgnOGRE2::IgnOGRE2)
 
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})
 
-#add_subdirectory(media)
 install(DIRECTORY "media"  DESTINATION ${IGN_RENDERING_RESOURCE_PATH}/ogre2)

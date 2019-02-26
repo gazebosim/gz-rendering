@@ -50,33 +50,45 @@ namespace ignition
 
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
-      public: virtual void Copy(Image &_image) const;
+      public: virtual void Copy(Image &_image) const override;
 
       public: virtual Ogre::Camera *Camera() const;
 
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
       // Documentation inherited
-      public: virtual math::Color BackgroundColor() const;
+      public: virtual math::Color BackgroundColor() const override;
 
       public: virtual void SetBackgroundColor(math::Color _color);
 
-      public: virtual void PreRender();
+      // Documentation inherited.
+      public: virtual void PreRender() override;
+
+      // Documentation inherited.
+      public: virtual void PostRender() override;
 
       public: virtual void Render();
 
-      public: virtual void Destroy() = 0;
+      public: virtual void Destroy() override = 0;
 
       /// \brief Set a material to render on every object. This method is used
       /// for special cases like the render target of a depth camera.
       /// \param[in] _material The material to render
       public: void SetMaterial(MaterialPtr _material);
 
-      protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+      public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+
+      public: Ogre::Viewport *AddViewport(Ogre::Camera *_viewport);
+
+      public: Ogre::Viewport *Viewport(const int _viewportId) const;
+
+      public: void SetUpdate(const bool _value);
+
+      public: void SetAutoUpdated(const bool _value);
 
       protected: virtual void UpdateBackgroundColor();
 
-      protected: virtual void RebuildImpl();
+      protected: virtual void RebuildImpl() override;
 
       protected: virtual void RebuildTarget() = 0;
 
@@ -112,11 +124,22 @@ namespace ignition
 
       public: virtual ~OgreRenderTexture();
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
-      protected: virtual Ogre::RenderTarget *RenderTarget() const;
+      // Documentation inherited.
+      public: virtual void PreRender() override;
 
-      protected: virtual void RebuildTarget();
+      // Documentation inherited.
+      public: virtual void PostRender() override;
+
+      // Documentation inherited.
+      public: virtual unsigned int GLId();
+
+      public: virtual void Buffer(float *buffer);
+
+      public: virtual Ogre::RenderTarget *RenderTarget() const override;
+
+      protected: virtual void RebuildTarget() override;
 
       protected: virtual void DestroyTarget();
 

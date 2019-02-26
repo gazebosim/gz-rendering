@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -59,6 +60,7 @@ void Ogre2Node::Destroy()
   BaseNode::Destroy();
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   ogreSceneManager->destroySceneNode(this->ogreNode);
+  this->ogreNode = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -119,4 +121,65 @@ void Ogre2Node::Init()
   sceneManager = this->scene->OgreSceneManager();
   this->ogreNode = sceneManager->createSceneNode();
   this->ogreNode->setInheritScale(true);
+  this->children = Ogre2NodeStorePtr(new Ogre2NodeStore);
+}
+
+//////////////////////////////////////////////////
+NodeStorePtr Ogre2Node::Children() const
+{
+  return this->children;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Node::AttachChild(NodePtr _child)
+{
+  Ogre2NodePtr derived = std::dynamic_pointer_cast<Ogre2Node>(_child);
+
+  if (!derived)
+  {
+    ignerr << "Cannot attach node created by another render-engine"
+        << std::endl;
+    return false;
+  }
+
+  // Check for loop. Ogre throws exception if child node to be added
+  // is a direct ancestor of this node
+  auto p = this->ogreNode->getParent();
+  while (p != nullptr)
+  {
+    if (p == derived->Node())
+    {
+      ignerr << "Node cycle detected. Not adding Node: " << _child->Name()
+             << std::endl;
+      return false;
+    }
+    p = p->getParent();
+  }
+
+  derived->SetParent(this->SharedThis());
+  this->ogreNode->addChild(derived->Node());
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Node::DetachChild(NodePtr _child)
+{
+  Ogre2NodePtr derived = std::dynamic_pointer_cast<Ogre2Node>(_child);
+
+  if (!derived)
+  {
+    ignerr << "Cannot detach node created by another render-engine"
+        << std::endl;
+    return false;
+  }
+
+  this->ogreNode->removeChild(derived->Node());
+  return true;
+}
+
+//////////////////////////////////////////////////
+Ogre2NodePtr Ogre2Node::SharedThis()
+{
+  ObjectPtr object = shared_from_this();
+  return std::dynamic_pointer_cast<Ogre2Node>(object);
 }

@@ -36,7 +36,9 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
+    template <class T>
+    class BaseDepthCamera;
+
     template <class T>
     class BaseCamera :
       public virtual Camera,
@@ -80,8 +82,10 @@ namespace ignition
 
       public: virtual void SetNearClipPlane(const double _near) override;
 
+      // Documentation inherited.
       public: virtual void PreRender() override;
 
+      // Documentation inherited.
       public: virtual void PostRender() override;
 
       public: virtual void Update() override;
@@ -156,6 +160,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual double FollowPGain() const override;
 
+      // Documentation inherited.
+      public: virtual unsigned int RenderTextureGLId() const override;
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load() override;
@@ -210,6 +217,8 @@ namespace ignition
 
       /// \brief Offset distance between camera and target node being followed
       protected: math::Vector3d followOffset;
+
+      friend class BaseDepthCamera<T>;
     };
 
     //////////////////////////////////////////////////
@@ -342,7 +351,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::PostRender()
     {
-      // do nothing by default
+      this->RenderTarget()->PostRender();
     }
 
     //////////////////////////////////////////////////
@@ -669,8 +678,17 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::SetMaterial(const MaterialPtr &/*_material*/)
     {
-      std::cerr << "SetMaterial not implemented for current render"
+      ignerr << "SetMaterial not implemented for current render"
           << " engine" << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseCamera<T>::RenderTextureGLId() const
+    {
+      ignerr << "RenderTextureGLId is not supported by current render"
+          << " engine" << std::endl;
+      return 0u;
     }
     }
   }

@@ -167,10 +167,69 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   EXPECT_EQ(noSuchNormalMapName, material->NormalMap());
   EXPECT_TRUE(material->HasNormalMap());
 
+  if (material->Type() == MaterialType::MT_PBS)
+  {
+    // metalness map
+    std::string metalnessMapName = textureName;
+    material->SetMetalnessMap(metalnessMapName);
+    EXPECT_EQ(metalnessMapName, material->MetalnessMap());
+    EXPECT_TRUE(material->HasMetalnessMap());
+
+    material->ClearMetalnessMap();
+    EXPECT_FALSE(material->HasMetalnessMap());
+
+    std::string noSuchMetalnessMapName = "no_such_metalness.png";
+    material->SetMetalnessMap(noSuchMetalnessMapName);
+    EXPECT_EQ(noSuchMetalnessMapName, material->MetalnessMap());
+    EXPECT_TRUE(material->HasMetalnessMap());
+
+    // roughness map
+    std::string roughnessMapName = textureName;
+    material->SetRoughnessMap(roughnessMapName);
+    EXPECT_EQ(roughnessMapName, material->RoughnessMap());
+    EXPECT_TRUE(material->HasRoughnessMap());
+
+    material->ClearRoughnessMap();
+    EXPECT_FALSE(material->HasRoughnessMap());
+
+    std::string noSuchRoughnessMapName = "no_such_roughness.png";
+    material->SetRoughnessMap(noSuchRoughnessMapName);
+    EXPECT_EQ(noSuchRoughnessMapName, material->RoughnessMap());
+    EXPECT_TRUE(material->HasRoughnessMap());
+
+    // environment map
+    std::string environmentMapName = textureName;
+    material->SetEnvironmentMap(environmentMapName);
+    EXPECT_EQ(environmentMapName, material->EnvironmentMap());
+    EXPECT_TRUE(material->HasEnvironmentMap());
+
+    material->ClearEnvironmentMap();
+    EXPECT_FALSE(material->HasEnvironmentMap());
+
+    std::string noSuchEnvironmentMapName = "no_such_environment.png";
+    material->SetEnvironmentMap(noSuchEnvironmentMapName);
+    EXPECT_EQ(noSuchEnvironmentMapName, material->EnvironmentMap());
+    EXPECT_TRUE(material->HasEnvironmentMap());
+
+    // roughness
+    float roughness = 0.3;
+    material->SetRoughness(roughness);
+    EXPECT_FLOAT_EQ(roughness, material->Roughness());
+
+    // metalness
+    float metalness = 0.9;
+    material->SetMetalness(metalness);
+    EXPECT_FLOAT_EQ(metalness, material->Metalness());
+  }
+
   // shader type
   enum ShaderType shaderType = ShaderType::ST_PIXEL;
   material->SetShaderType(shaderType);
   EXPECT_EQ(shaderType, material->ShaderType());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -200,10 +259,15 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   bool receiveShadows = false;
   bool reflectionEnabled = true;
   bool lightingEnabled = false;
+  float roughness = 0.5;
+  float metalness = 0.1;
 
   std::string textureName =
     common::joinPaths(TEST_MEDIA_PATH, "texture.png");
   std::string normalMapName = textureName;
+  std::string roughnessMapName = "roughness_" + textureName;
+  std::string metalnessMapName = "metalness_" + textureName;
+  std::string envMapName = "env_" + textureName;
   enum ShaderType shaderType = ShaderType::ST_PIXEL;
 
   material->SetAmbient(ambient);
@@ -220,6 +284,11 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetTexture(textureName);
   material->SetNormalMap(normalMapName);
   material->SetShaderType(shaderType);
+  material->SetRoughnessMap(roughnessMapName);
+  material->SetMetalnessMap(metalnessMapName);
+  material->SetEnvironmentMap(envMapName);
+  material->SetRoughness(roughness);
+  material->SetMetalness(metalness);
 
   // test cloning a material
   MaterialPtr clone = material->Clone("clone");
@@ -240,6 +309,14 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(normalMapName, clone->NormalMap());
   EXPECT_TRUE(clone->HasNormalMap());
   EXPECT_EQ(shaderType, clone->ShaderType());
+  if (material->Type() == MaterialType::MT_PBS)
+  {
+    EXPECT_FLOAT_EQ(roughness, clone->Roughness());
+    EXPECT_FLOAT_EQ(metalness, clone->Metalness());
+    EXPECT_EQ(roughnessMapName, clone->RoughnessMap());
+    EXPECT_EQ(metalnessMapName, clone->MetalnessMap());
+    EXPECT_EQ(envMapName, clone->EnvironmentMap());
+  }
 
   // test copying a material
   MaterialPtr copy = scene->CreateMaterial("copy");
@@ -261,6 +338,14 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(normalMapName, copy->NormalMap());
   EXPECT_TRUE(copy->HasNormalMap());
   EXPECT_EQ(shaderType, copy->ShaderType());
+  if (material->Type() == MaterialType::MT_PBS)
+  {
+    EXPECT_FLOAT_EQ(roughness, copy->Roughness());
+    EXPECT_FLOAT_EQ(metalness, copy->Metalness());
+    EXPECT_EQ(roughnessMapName, copy->RoughnessMap());
+    EXPECT_EQ(metalnessMapName, copy->MetalnessMap());
+    EXPECT_EQ(envMapName, copy->EnvironmentMap());
+  }
 
   // test copying from a common material
   // common::Material currently only has a subset of  material properties
@@ -287,6 +372,10 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(lightingEnabled, comCopy->LightingEnabled());
   EXPECT_EQ(textureName, comCopy->Texture());
   EXPECT_TRUE(comCopy->HasTexture());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -302,7 +391,8 @@ TEST_P(MaterialTest, Copy)
 }
 
 INSTANTIATE_TEST_CASE_P(Material, MaterialTest,
-    ::testing::Values("ogre", "optix"));
+    RENDER_ENGINE_VALUES,
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -32,6 +32,16 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief An enum for the type of material
+    enum IGNITION_RENDERING_VISIBLE MaterialType
+    {
+      /// \brief Classic shading, i.e. variants of Phong
+      MT_CLASSIC = 0,
+
+      /// \brief Physically Based Shading
+      MT_PBS = 1
+    };
+
     /// \class Material Material.hh ignition/rendering/Material.hh
     /// \brief Represents a surface material of a Geometry
     class IGNITION_RENDERING_VISIBLE Material :
@@ -124,6 +134,12 @@ namespace ignition
       /// \return The transparency value
       public: virtual double Transparency() const = 0;
 
+      /// \brief Configuration for Depth Material
+      /// \param[in] far Far distance for normalized output
+      /// \param[in] near Near distance for normalized output
+      public: virtual void SetDepthMaterial(const double far,
+            const double near) = 0;
+
       /// \brief Set the transparency value
       /// \param[in] _transparency New transparency value
       public: virtual void SetTransparency(const double _transparency) = 0;
@@ -189,6 +205,70 @@ namespace ignition
 
       /// \brief Removes any normal map mapped to this material
       public: virtual void ClearNormalMap() = 0;
+
+      /// \brief Determine if this material has a roughness map
+      /// \return True if this material has a roughness map
+      public: virtual bool HasRoughnessMap() const = 0;
+
+      /// \brief Get the URI of the roughness map file
+      /// \return URI of the roughness map file
+      public: virtual std::string RoughnessMap() const = 0;
+
+      /// \brief Set the material roughness map
+      /// \param[in] _name URI of the new roughness map file
+      public: virtual void SetRoughnessMap(const std::string &_name) = 0;
+
+      /// \brief Removes any roughness map mapped to this material
+      public: virtual void ClearRoughnessMap() = 0;
+
+      /// \brief Determine if this material has a metalness map
+      /// \return True if this material has a metalness map
+      public: virtual bool HasMetalnessMap() const = 0;
+
+      /// \brief Get the URI of the metalness map file
+      /// \return URI of the metalness map file
+      public: virtual std::string MetalnessMap() const = 0;
+
+      /// \brief Set the material metalness map
+      /// \param[in] _name URI of the new metalness map file
+      public: virtual void SetMetalnessMap(const std::string &_name) = 0;
+
+      /// \brief Removes any metalness map mapped to this material
+      public: virtual void ClearMetalnessMap() = 0;
+
+      /// \brief Determine if this material has a environment map
+      /// \return True if this material has a environment map
+      public: virtual bool HasEnvironmentMap() const = 0;
+
+      /// \brief Get the URI of the environment map file
+      /// \return URI of the environment map file
+      public: virtual std::string EnvironmentMap() const = 0;
+
+      /// \brief Set the material environment map
+      /// \param[in] _name URI of the new environment map file
+      public: virtual void SetEnvironmentMap(const std::string &_name) = 0;
+
+      /// \brief Removes any environment map mapped to this material
+      public: virtual void ClearEnvironmentMap() = 0;
+
+      /// \brief Set the roughness value. Only affects material of type MT_PBS
+      /// \param[in] _roughness Roughness to set to
+      public: virtual void SetRoughness(const float _roughness) = 0;
+
+      /// \brief Get the roughness value of this material.
+      /// \return Material roughness
+      public: virtual float Roughness() const = 0;
+
+      /// \brief Set the metalness value. Only affects material of type MT_PBS
+      /// \param[in] _metalness Metalness to set to
+      public: virtual void SetMetalness(const float _metalness) = 0;
+
+      /// \brief Get the metalness value of this material
+      /// \return Material metalness
+      public: virtual float Metalness() const = 0;
+
+      /// \brief Removes any metalness map mapped to this material
+      public: virtual enum MaterialType Type() const = 0;
 
       /// \brief Get the ShaderType value
       /// \return The ShaderType value

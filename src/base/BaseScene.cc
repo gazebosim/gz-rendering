@@ -28,6 +28,8 @@
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/DepthCamera.hh"
+#include "ignition/rendering/GpuRays.hh"
 #include "ignition/rendering/Grid.hh"
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/RenderTarget.hh"
@@ -84,6 +86,7 @@ void BaseScene::Init()
 //////////////////////////////////////////////////
 void BaseScene::Fini()
 {
+  this->Destroy();
 }
 
 //////////////////////////////////////////////////
@@ -246,8 +249,41 @@ NodePtr BaseScene::NodeByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroyNode(NodePtr _node)
+void BaseScene::DestroyNode(NodePtr _node, bool _recursive)
 {
+  if (!_node)
+    return;
+
+  if (_recursive)
+  {
+    std::set<unsigned int> nodeIds;
+    this->DestroyNodeRecursive(_node, nodeIds);
+  }
+  else
+    this->nodes->Destroy(_node);
+}
+
+//////////////////////////////////////////////////
+void BaseScene::DestroyNodeRecursive(NodePtr _node,
+    std::set<unsigned int> &_nodeIds)
+{
+  // check if we have visited this node before
+  if (_nodeIds.find(_node->Id()) != _nodeIds.end())
+  {
+    ignwarn << "Detected loop in scene tree while recursively destroying nodes."
+            << " Breaking loop." << std::endl;
+    _node->RemoveParent();
+    return;
+  }
+  _nodeIds.insert(_node->Id());
+
+  // destroy child nodes first
+  while (_node->ChildCount() > 0u)
+  {
+    this->DestroyNodeRecursive(_node->ChildByIndex(0u), _nodeIds);
+  }
+
+  // destroy node
   this->nodes->Destroy(_node);
 }
 
@@ -318,9 +354,16 @@ LightPtr BaseScene::LightByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroyLight(LightPtr _light)
+void BaseScene::DestroyLight(LightPtr _light, bool _recursive)
 {
-  this->Lights()->Destroy(_light);
+  if (_recursive)
+  {
+    this->DestroyNode(_light, _recursive);
+  }
+  else
+  {
+    this->Lights()->Destroy(_light);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -390,9 +433,16 @@ SensorPtr BaseScene::SensorByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroySensor(SensorPtr _sensor)
+void BaseScene::DestroySensor(SensorPtr _sensor, bool _recursive)
 {
-  this->Sensors()->Destroy(_sensor);
+  if (_recursive)
+  {
+    this->DestroyNode(_sensor, _recursive);
+  }
+  else
+  {
+    this->Sensors()->Destroy(_sensor);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -462,9 +512,16 @@ VisualPtr BaseScene::VisualByIndex(unsigned int _index) const
 }
 
 //////////////////////////////////////////////////
-void BaseScene::DestroyVisual(VisualPtr _visual)
+void BaseScene::DestroyVisual(VisualPtr _visual, bool _recursive)
 {
-  this->Visuals()->Destroy(_visual);
+  if (_recursive)
+  {
+    this->DestroyNode(_visual, _recursive);
+  }
+  else
+  {
+    this->Visuals()->Destroy(_visual);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -521,6 +578,28 @@ void BaseScene::UnregisterMaterial(const std::string &_name)
 void BaseScene::UnregisterMaterials()
 {
   this->Materials()->RemoveAll();
+}
+
+//////////////////////////////////////////////////
+void BaseScene::DestroyMaterial(MaterialPtr _material)
+{
+  if (!_material)
+    return;
+
+  std::string matName = _material->Name();
+  _material->Destroy();
+  this->UnregisterMaterial(matName);
+}
+
+//////////////////////////////////////////////////
+void BaseScene::DestroyMaterials()
+{
+  for (unsigned int i = 0; i < this->Materials()->Size(); ++i)
+  {
+    auto m = this->Materials()->GetByIndex(i);
+    m->Destroy();
+  }
+  this->UnregisterMaterials();
 }
 
 //////////////////////////////////////////////////
@@ -631,6 +710,60 @@ CameraPtr BaseScene::CreateCamera(unsigned int _id, const std::string &_name)
   CameraPtr camera = this->CreateCameraImpl(_id, _name);
   bool result = this->RegisterSensor(camera);
   return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+DepthCameraPtr BaseScene::CreateDepthCamera()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateDepthCamera(objId);
+}
+//////////////////////////////////////////////////
+DepthCameraPtr BaseScene::CreateDepthCamera(const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "DepthCamera");
+  return this->CreateDepthCamera(_id, objName);
+}
+//////////////////////////////////////////////////
+DepthCameraPtr BaseScene::CreateDepthCamera(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateDepthCamera(objId, _name);
+}
+//////////////////////////////////////////////////
+DepthCameraPtr BaseScene::CreateDepthCamera(const unsigned int _id,
+    const std::string &_name)
+{
+  DepthCameraPtr camera = this->CreateDepthCameraImpl(_id, _name);
+  bool result = this->RegisterSensor(camera);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+GpuRaysPtr BaseScene::CreateGpuRays()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGpuRays(objId);
+}
+//////////////////////////////////////////////////
+GpuRaysPtr BaseScene::CreateGpuRays(const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "GpuRays");
+  return this->CreateGpuRays(_id, objName);
+}
+//////////////////////////////////////////////////
+GpuRaysPtr BaseScene::CreateGpuRays(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGpuRays(objId, _name);
+}
+//////////////////////////////////////////////////
+GpuRaysPtr BaseScene::CreateGpuRays(const unsigned int _id,
+    const std::string &_name)
+{
+  GpuRaysPtr gpuRays = this->CreateGpuRaysImpl(_id, _name);
+  bool result = this->RegisterSensor(gpuRays);
+  return (result) ? gpuRays : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -864,7 +997,7 @@ void BaseScene::PreRender()
 void BaseScene::Clear()
 {
   this->nodes->DestroyAll();
-  this->Materials()->RemoveAll();
+  this->DestroyMaterials();
   this->nextObjectId = ignition::math::MAX_UI16;
 }
 
@@ -873,6 +1006,8 @@ void BaseScene::Destroy()
 {
   // TODO(anyone): destroy context
   this->Clear();
+  this->loaded = false;
+  this->initialized = false;
 }
 
 //////////////////////////////////////////////////

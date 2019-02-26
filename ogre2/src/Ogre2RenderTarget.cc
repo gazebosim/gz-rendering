@@ -15,6 +15,10 @@
  *
  */
 
+// leave this out of OgreIncludes as it conflicts with other files requiring
+// gl.h
+#include <OgreGL3PlusFBORenderTexture.h>
+
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Material.hh"
@@ -22,7 +26,7 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-// #include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
@@ -50,15 +54,7 @@ void Ogre2RenderTarget::BuildCompositor()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  const Ogre::String workspaceName(
-      this->ogreCamera->getName() + "_" + this->RenderTarget()->getName()
-      + "_workspace");
-  if (!ogreCompMgr->hasWorkspaceDefinition(workspaceName))
-  {
-    ogreCompMgr->createBasicWorkspaceDef(workspaceName,
-        this->ogreBackgroundColor,  Ogre::IdString());
-  }
-
+  const Ogre::String workspaceName = "PbsMaterialsWorkspace";
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
       this->RenderTarget(), this->ogreCamera, workspaceName, false);
@@ -154,6 +150,12 @@ void Ogre2RenderTarget::PreRender()
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTarget::PostRender()
+{
+  // do nothing by default
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
   // TODO(anyone)
@@ -190,6 +192,13 @@ void Ogre2RenderTarget::UpdateBackgroundColor()
 {
   if (this->colorDirty)
   {
+    // set background color in compositor clear pass def
+    auto nodeSeq = this->ogreCompositorWorkspace->getNodeSequence();
+    auto pass = nodeSeq[0]->_getPasses()[0]->getDefinition();
+    auto clearPass = dynamic_cast<const Ogre::CompositorPassClearDef *>(pass);
+    const_cast<Ogre::CompositorPassClearDef *>(clearPass)->mColourValue =
+        this->ogreBackgroundColor;
+
     this->colorDirty = false;
   }
 }
@@ -214,7 +223,17 @@ void Ogre2RenderTarget::SetMaterial(MaterialPtr _material)
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::RebuildMaterial()
 {
-  // TODO(anyone)
+  if (this->material)
+  {
+    Ogre2Material *ogreMaterial = dynamic_cast<Ogre2Material *>(
+        this->material.get());
+    Ogre::MaterialPtr matPtr = ogreMaterial->Material();
+
+    Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
+    Ogre::RenderTarget *target = this->RenderTarget();
+    this->materialApplicator.reset(new Ogre2RenderTargetMaterial(
+        sceneMgr, target, matPtr.get()));
+  }
 }
 
 //////////////////////////////////////////////////
@@ -232,8 +251,7 @@ Ogre2RenderTexture::~Ogre2RenderTexture()
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::Destroy()
 {
-  std::string ogreName = this->ogreTexture->getName();
-  Ogre::TextureManager::getSingleton().remove(ogreName);
+  this->DestroyTarget();
 }
 
 //////////////////////////////////////////////////
@@ -253,7 +271,18 @@ void Ogre2RenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::DestroyTarget()
 {
-  // TODO(anyone)
+  if (nullptr == this->ogreTexture)
+    return;
+
+  auto &manager = Ogre::TextureManager::getSingleton();
+  manager.unload(this->ogreTexture->getName());
+  manager.remove(this->ogreTexture->getName());
+
+  // TODO(anyone) there is memory leak when a render texture is destroyed.
+  // The RenderSystem::_cleanupDepthBuffers method used in ogre1 does not
+  // seem to work in ogre2
+
+  this->ogreTexture = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -262,9 +291,56 @@ void Ogre2RenderTexture::BuildTarget()
   Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
   Ogre::PixelFormat ogreFormat = Ogre2Conversions::Convert(this->format);
 
+  // check if target fsaa is supported
+  unsigned int fsaa = 0;
+  std::vector<unsigned int> fsaaLevels =
+      Ogre2RenderEngine::Instance()->FSAALevels();
+  unsigned int targetFSAA = this->antiAliasing;
+  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
+  if (it != fsaaLevels.end())
+  {
+    fsaa = targetFSAA;
+  }
+  else
+  {
+    // output warning but only do it once
+    static bool ogre2FSAAWarn = false;
+    if (ogre2FSAAWarn)
+    {
+      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+              << "is not supported. Setting to 0" << std::endl;
+      ogre2FSAAWarn = true;
+    }
+  }
+
+  // Ogre 2 PBS expects gamma correction to be enabled
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-      Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).getPointer();
+      Ogre::TU_RENDERTARGET, 0, true, fsaa)).get();
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2RenderTexture::GLId() const
+{
+  if (!this->ogreTexture)
+    return 0;
+
+  GLuint texId;
+  this->ogreTexture->getCustomAttribute("GLID", &texId);
+
+  return static_cast<unsigned int>(texId);
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::PreRender()
+{
+  Ogre2RenderTarget::PreRender();
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::PostRender()
+{
+  Ogre2RenderTarget::PostRender();
 }
 
 //////////////////////////////////////////////////

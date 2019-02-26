@@ -36,17 +36,18 @@ namespace ignition
 
       public: virtual ~BaseGeometry();
 
-      public: virtual VisualPtr Parent() const = 0;
+      public: virtual VisualPtr Parent() const override = 0;
 
-      public: virtual void RemoveParent();
+      public: virtual void RemoveParent() override;
 
       public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true);
+                  bool unique = true) override;
 
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool unique = true) override = 0;
 
-      public: virtual void Destroy();
+      // Documentation inherited
+      public: virtual void Destroy() override;
     };
 
     //////////////////////////////////////////////////

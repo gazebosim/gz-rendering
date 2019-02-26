@@ -20,8 +20,10 @@
 #include "ignition/rendering/ogre/OgreArrowVisual.hh"
 #include "ignition/rendering/ogre/OgreAxisVisual.hh"
 #include "ignition/rendering/ogre/OgreCamera.hh"
+#include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
+#include "ignition/rendering/ogre/OgreGpuRays.hh"
 #include "ignition/rendering/ogre/OgreGrid.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreText.hh"
@@ -171,7 +173,7 @@ void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
   this->backgroundColor = _color;
 
-  // TODO: clean up code
+  // TODO(anyone): clean up code
   unsigned int count = this->SensorCount();
 
   for (unsigned int i = 0; i < count; ++i)
@@ -273,11 +275,13 @@ void OgreScene::PreRender()
 //////////////////////////////////////////////////
 void OgreScene::Clear()
 {
+  BaseScene::Clear();
 }
 
 //////////////////////////////////////////////////
 void OgreScene::Destroy()
 {
+  BaseScene::Destroy();
 }
 
 //////////////////////////////////////////////////
@@ -368,6 +372,24 @@ CameraPtr OgreScene::CreateCameraImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+DepthCameraPtr OgreScene::CreateDepthCameraImpl(const unsigned int _id,
+    const std::string &_name)
+{
+  OgreDepthCameraPtr camera(new OgreDepthCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+///////////////////////////////////////////////////
+GpuRaysPtr OgreScene::CreateGpuRaysImpl(const unsigned int _id,
+    const std::string &_name)
+{
+  OgreGpuRaysPtr gpuRays(new OgreGpuRays);
+  bool result = this->InitObject(gpuRays, _id, _name);
+  return (result) ? gpuRays : nullptr;
+}
+
+////////////////////////////////////////////////
 VisualPtr OgreScene::CreateVisualImpl(unsigned int _id,
     const std::string &_name)
 {
@@ -442,6 +464,9 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
     const MeshDescriptor &_desc)
 {
   OgreMeshPtr mesh = this->meshFactory->Create(_desc);
+  if (nullptr == mesh)
+    return nullptr;
+
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
 }

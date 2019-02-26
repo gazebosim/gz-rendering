@@ -81,7 +81,7 @@ namespace ignition
 
       private: OgreNodePtr SharedThis();
 
-      // TODO remove the need for a visual friend class
+      // TODO(anyone): remove the need for a visual friend class
       private: friend class OgreVisual;
     };
     }

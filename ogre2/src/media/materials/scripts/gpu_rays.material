@@ -1,0 +1,108 @@
+/*
+ * Copyright (C) 2018 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+vertex_program GpuRaysScan1stVS glsl
+{
+  source gpu_rays_1st_pass_vs.glsl
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
+}
+
+fragment_program GpuRaysScan1stFS glsl
+{
+  source gpu_rays_1st_pass_fs.glsl
+
+  default_params
+  {
+    param_named depthTexture int 0
+  }
+}
+
+material GpuRaysScan1st
+{
+  technique
+  {
+    pass gpu_rays_tex
+    {
+      vertex_program_ref GpuRaysScan1stVS { }
+      fragment_program_ref GpuRaysScan1stFS { }
+      texture_unit depthTexture
+      {
+        filtering none
+        tex_address_mode clamp
+      }
+    }
+  }
+}
+
+fragment_program GpuRaysScan2ndFS glsl
+{
+  source gpu_rays_2nd_pass_fs.glsl
+
+  default_params
+  {
+    param_named cubeUVTex int 0
+    param_named tex0 int 1
+    param_named tex1 int 2
+    param_named tex2 int 3
+    param_named tex3 int 4
+    param_named tex4 int 5
+    param_named tex5 int 6
+  }
+}
+
+material GpuRaysScan2nd
+{
+  technique
+  {
+    pass gpu_rays_tex_2nd
+    {
+      vertex_program_ref Ogre/Compositor/Quad_vs { }
+      fragment_program_ref GpuRaysScan2ndFS { }
+      texture_unit cubeUVTex
+      {
+        filtering none
+      }
+      texture_unit tex0
+      {
+        filtering none
+      }
+      texture_unit tex1
+      {
+        filtering none
+      }
+      texture_unit tex2
+      {
+        filtering none
+      }
+      texture_unit tex3
+      {
+        filtering none
+      }
+      texture_unit tex4
+      {
+        filtering none
+      }
+      texture_unit tex5
+      {
+        filtering none
+      }
+    }
+  }
+}

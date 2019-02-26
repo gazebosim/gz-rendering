@@ -18,6 +18,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Grid.hh"
@@ -35,6 +36,14 @@ class GridTest : public testing::Test,
 /////////////////////////////////////////////////
 void GridTest::Grid(const std::string &_renderEngine)
 {
+  if (_renderEngine != "ogre")
+  {
+    igndbg << "Grid not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
+
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -42,6 +51,7 @@ void GridTest::Grid(const std::string &_renderEngine)
            << "' is not supported" << std::endl;
     return;
   }
+
   ScenePtr scene = engine->CreateScene("scene");
 
   GridPtr grid = scene->CreateGrid();
@@ -72,6 +82,10 @@ void GridTest::Grid(const std::string &_renderEngine)
   EXPECT_EQ(math::Color(0.6, 0.7, 0.8), gridMat->Ambient());
   EXPECT_EQ(math::Color(0.3, 0.8, 0.2), gridMat->Diffuse());
   EXPECT_EQ(math::Color(0.4, 0.9, 1.0), gridMat->Specular());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -81,7 +95,8 @@ TEST_P(GridTest, Grid)
 }
 
 INSTANTIATE_TEST_CASE_P(Grid, GridTest,
-    ::testing::Values("ogre", "optix"));
+    RENDER_ENGINE_VALUES,
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

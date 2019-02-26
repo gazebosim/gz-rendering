@@ -140,6 +140,7 @@ void Ogre2Light::Destroy()
 {
   BaseLight::Destroy();
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+  ogreSceneManager->destroySceneNode(this->ogreLight->getParentSceneNode());
   ogreSceneManager->destroyLight(this->ogreLight);
 }
 
@@ -154,21 +155,16 @@ void Ogre2Light::Init()
 //////////////////////////////////////////////////
 void Ogre2Light::CreateLight()
 {
-  try
-  {
-    Ogre::SceneManager *sceneManager;
-    sceneManager = this->scene->OgreSceneManager();
-    this->ogreLight = sceneManager->createLight();
-    this->ogreLight->setType(this->ogreLightType);
-    this->ogreNode->attachObject(this->ogreLight);
-    this->ogreLight->setCastShadows(true);
-    this->UpdateAttenuation();
-  }
-  catch (Ogre::Exception &ex)
-  {
-    ignerr << "Unabled to create light: " << ex.getFullDescription() <<
-        std::endl;
-  }
+  Ogre::SceneManager *sceneManager;
+  sceneManager = this->scene->OgreSceneManager();
+  this->ogreLight = sceneManager->createLight();
+  this->ogreLight->setType(this->ogreLightType);
+  // create an intermediate scene node to hold light object otherwise
+  // functions that update the light pose will affect the light direction
+  this->ogreNode->createChildSceneNode()->attachObject(this->ogreLight);
+  this->ogreLight->setCastShadows(true);
+  this->ogreLight->setPowerScale(Ogre::Math::PI);
+  this->UpdateAttenuation();
 }
 
 //////////////////////////////////////////////////

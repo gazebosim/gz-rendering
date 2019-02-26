@@ -84,6 +84,7 @@ void VisualTest::Material(const std::string &_renderEngine)
   EXPECT_NE(material->Name(), cloneMat->Name());
 
   // verify clone material properties
+  EXPECT_EQ(material->Type(), cloneMat->Type());
   EXPECT_EQ(ambient, cloneMat->Ambient());
   EXPECT_EQ(diffuse, cloneMat->Diffuse());
   EXPECT_EQ(specular, cloneMat->Specular());
@@ -107,10 +108,15 @@ void VisualTest::Material(const std::string &_renderEngine)
   MaterialPtr cloneMat2 = visual->Material();
   EXPECT_NE(material2, cloneMat);
   EXPECT_NE(material2->Name(), cloneMat2->Name());
+  EXPECT_EQ(material2->Type(), cloneMat2->Type());
   EXPECT_EQ(ambient2, cloneMat2->Ambient());
   EXPECT_EQ(diffuse2, cloneMat2->Diffuse());
   EXPECT_EQ(specular2, cloneMat2->Specular());
   EXPECT_DOUBLE_EQ(transparency2, cloneMat2->Transparency());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -153,6 +159,11 @@ void VisualTest::Children(const std::string &_renderEngine)
   EXPECT_EQ(child, visual->ChildByName(child->Name()));
   EXPECT_EQ(child, visual->ChildByIndex(0u));
 
+  // attempt to attach itself and verify self not added
+  visual->AddChild(visual);
+  EXPECT_EQ(1u, visual->ChildCount());
+  EXPECT_FALSE(visual->HasChild(visual));
+
   // attach more than one child
   VisualPtr child2 = scene->CreateVisual();
   ASSERT_NE(nullptr, child2);
@@ -171,6 +182,10 @@ void VisualTest::Children(const std::string &_renderEngine)
   // attach previously removed child and remove again
   visual->AddChild(child);
   EXPECT_EQ(child, visual->RemoveChildByIndex(0u));
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -180,7 +195,8 @@ TEST_P(VisualTest, Children)
 }
 
 INSTANTIATE_TEST_CASE_P(Visual, VisualTest,
-    ::testing::Values("ogre", "optix"));
+    RENDER_ENGINE_VALUES,
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

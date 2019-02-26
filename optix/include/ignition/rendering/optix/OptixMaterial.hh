@@ -95,10 +95,6 @@ namespace ignition
 
       public: virtual void ClearNormalMap();
 
-      public: virtual enum ShaderType ShaderType() const;
-
-      public: virtual void SetShaderType(enum ShaderType _type);
-
       public: virtual void PreRender();
 
       public: virtual void Destroy();
@@ -124,28 +120,6 @@ namespace ignition
       protected: bool textureDirty = true;
 
       protected: bool normalMapDirty = true;
-
-      protected: bool lightingEnabled = true;
-
-      protected: math::Color ambient;
-
-      protected: math::Color diffuse;
-
-      protected: math::Color specular;
-
-      protected: math::Color emissive;
-
-      protected: double shininess = 0.0;
-
-      protected: double transparency = 0.0;
-
-      protected: double reflectivity = 0.0;
-
-      protected: bool castShadows = true;
-
-      protected: bool receiveShadows = true;
-
-      protected: bool reflectionEnabled = true;
 
       protected: std::string textureName;
 

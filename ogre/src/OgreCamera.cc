@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -76,7 +77,7 @@ math::Color OgreCamera::BackgroundColor() const
   return this->renderTexture->BackgroundColor();
 }
 
-//////////////////////////////////////////////////
+/////////////////////////////////////////////////
 void OgreCamera::SetBackgroundColor(const math::Color &_color)
 {
   this->renderTexture->SetBackgroundColor(_color);
@@ -115,7 +116,17 @@ void OgreCamera::CreateCamera()
   // create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
+  if (ogreSceneManager == nullptr)
+  {
+    ignerr << "Scene manager cannot be obtained" << std::endl;
+  }
+
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
+  if (ogreCamera == nullptr)
+  {
+    ignerr << "Ogre camera cannot be created" << std::endl;
+  }
+
   this->ogreNode->attachObject(this->ogreCamera);
 
   // rotate to Gazebo coordinate system
@@ -123,7 +134,7 @@ void OgreCamera::CreateCamera()
   this->ogreCamera->roll(Ogre::Degree(-90.0));
   this->ogreCamera->setFixedYawAxis(false);
 
-  // TODO: provide api access
+  // TODO(anyone): provide api access
   this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setRenderingDistance(0);
   this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
@@ -141,6 +152,21 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture->SetWidth(this->ImageWidth());
   this->renderTexture->SetHeight(this->ImageHeight());
   this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
+}
+
+//////////////////////////////////////////////////
+unsigned int OgreCamera::RenderTextureGLId() const
+{
+  if (!this->renderTexture)
+    return 0u;
+
+  OgreRenderTexturePtr rt =
+      std::dynamic_pointer_cast<OgreRenderTexture>(this->renderTexture);
+
+  if (!rt)
+    return 0u;
+
+  return rt->GLId();
 }
 
 //////////////////////////////////////////////////
@@ -237,4 +263,22 @@ void OgreCamera::SetFarClipPlane(const double _far)
 {
   BaseCamera::SetFarClipPlane(_far);
   this->ogreCamera->setFarClipDistance(_far);
+}
+
+//////////////////////////////////////////////////
+double OgreCamera::NearClip() const
+{
+  if (this->ogreCamera)
+    return this->ogreCamera->getNearClipDistance();
+  else
+    return 0;
+}
+
+//////////////////////////////////////////////////
+double OgreCamera::FarClip() const
+{
+  if (this->ogreCamera)
+    return this->ogreCamera->getFarClipDistance();
+  else
+    return 0;
 }

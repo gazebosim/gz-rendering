@@ -15,6 +15,7 @@
  *
  */
 
+#include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreRenderTargetMaterial.hh"
 
 using namespace ignition::rendering;
@@ -22,7 +23,7 @@ using namespace ignition::rendering;
 
 //////////////////////////////////////////////////
 OgreRenderTargetMaterial::OgreRenderTargetMaterial(
-    Ogre::SceneManager *_scene, Ogre::RenderTarget *_renderTarget,
+    OgreScenePtr _scene, Ogre::RenderTarget *_renderTarget,
     Ogre::Material *_material):
   scene(_scene), renderTarget(_renderTarget), material(_material)
 {
@@ -35,7 +36,8 @@ OgreRenderTargetMaterial::OgreRenderTargetMaterial(
 //////////////////////////////////////////////////
 OgreRenderTargetMaterial::~OgreRenderTargetMaterial()
 {
-  this->renderTarget->removeListener(this);
+  if (this->scene->IsInitialized())
+    this->renderTarget->removeListener(this);
 }
 
 //////////////////////////////////////////////////

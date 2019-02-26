@@ -32,13 +32,123 @@ using namespace rendering;
 class SceneTest: public testing::Test,
                  public testing::WithParamInterface<const char *>
 {
+  // Test adding and removing visuals
+  // Simulates 'levels' where visuals are added and removed throughout
+  // frame updates
+  public: void AddRemoveVisuals(const std::string &_renderEngine);
+
   // Test and verify camera tracking
   public: void VisualAt(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
+void SceneTest::AddRemoveVisuals(const std::string &_renderEngine)
+{
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+
+  VisualPtr root = scene->RootVisual();
+
+  // create camera
+  CameraPtr camera = scene->CreateCamera("camera");
+  ASSERT_TRUE(camera != nullptr);
+  camera->SetLocalPosition(0.0, 0.0, 0.0);
+  camera->SetLocalRotation(0.0, 0.0, 0.0);
+  camera->SetImageWidth(800);
+  camera->SetImageHeight(600);
+  camera->SetAntiAliasing(2);
+  camera->SetAspectRatio(1.333);
+  camera->SetHFOV(IGN_PI / 2);
+  root->AddChild(camera);
+
+  // create material assigned to all geoms
+  math::Color ambient(0.5, 0.2, 0.4, 1.0);
+  math::Color diffuse(0.1, 0.9, 0.3, 1.0);
+  math::Color specular(0.8, 0.7, 0.0, 1.0);
+  double transparency = 0.3;
+  MaterialPtr material = scene->CreateMaterial("mat");
+  ASSERT_NE(nullptr, material);
+  EXPECT_TRUE(scene->MaterialRegistered("mat"));
+  material->SetAmbient(ambient);
+  material->SetDiffuse(diffuse);
+  material->SetSpecular(specular);
+  material->SetTransparency(transparency);
+
+  std::vector<VisualPtr> visuals;
+  for (unsigned int i = 0u; i < 10u; ++i)
+  {
+    // create 10 visuals and add to front of vector
+    for (unsigned int j = 0u; j < 10u; ++j)
+    {
+      // create box
+      std::string name = "box" + std::to_string(i) + std::to_string(j);
+      VisualPtr box = scene->CreateVisual(name);
+      ASSERT_TRUE(box != nullptr);
+      EXPECT_TRUE(scene->HasVisualName(name));
+      GeometryPtr boxGeom = scene->CreateBox();
+      boxGeom->SetMaterial(material);
+      box->AddGeometry(boxGeom);
+      box->SetLocalPosition(j*i + j, 0, 0);
+      root->AddChild(box);
+      visuals.insert(visuals.begin(), box);
+
+      // verify box material properties
+      MaterialPtr boxMat = boxGeom->Material();
+      std::string boxMatName = boxMat->Name();
+      EXPECT_TRUE(scene->MaterialRegistered(boxMatName));
+      EXPECT_NE(material->Name(), boxMatName);
+      EXPECT_EQ(material->Type(), boxMat->Type());
+      EXPECT_EQ(ambient, boxMat->Ambient());
+      EXPECT_EQ(diffuse, boxMat->Diffuse());
+      EXPECT_EQ(specular, boxMat->Specular());
+      EXPECT_DOUBLE_EQ(transparency, boxMat->Transparency());
+    }
+
+    // render a frame
+    camera->Update();
+
+    // remove second half of visuals in vector
+    int size = visuals.size();
+    while (visuals.size() > static_cast<unsigned int>(size/2.0))
+    {
+      // remove box visual and verify
+      VisualPtr box = visuals.back();
+      visuals.pop_back();
+      std::string name = box->Name();
+      std::string boxMatName = box->GeometryByIndex(0u)->Name();
+      scene->DestroyVisual(box);
+      EXPECT_FALSE(scene->HasVisualName(name));
+      EXPECT_FALSE(scene->MaterialRegistered(boxMatName));
+    }
+
+    // render a frame
+    camera->Update();
+  }
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
 void SceneTest::VisualAt(const std::string &_renderEngine)
 {
+  if (_renderEngine == "optix")
+  {
+    igndbg << "RayQuery not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -107,6 +217,13 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, AddRemoveVisuals)
+{
+  AddRemoveVisuals(GetParam());
 }
 
 /////////////////////////////////////////////////
@@ -117,7 +234,8 @@ TEST_P(SceneTest, VisualAt)
 
 // It doesn't suppot optix just yet
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
-    ::testing::Values("ogre"));
+    RENDER_ENGINE_VALUES,
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

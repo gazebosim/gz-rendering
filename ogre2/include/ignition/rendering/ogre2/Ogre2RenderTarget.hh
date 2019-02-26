@@ -23,7 +23,7 @@
 #include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
-// #include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
 
 namespace Ogre
 {
@@ -57,7 +57,7 @@ namespace ignition
 
       /// \brief Copy the render target buffer data to an image
       /// \param[in] _image Image to copy the data to
-      public: virtual void Copy(Image &_image) const;
+      public: virtual void Copy(Image &_image) const override;
 
       /// \brief Get a pointer to the internal ogre camera
       /// \return Pointer to ogre camera
@@ -74,14 +74,17 @@ namespace ignition
       /// \param[in] _color Color to set the background to
       public: virtual void SetBackgroundColor(math::Color _color);
 
-      /// \brief Prerender - called before Render
-      public: virtual void PreRender();
+      // Documentation inherited
+      public: virtual void PreRender() override;
+
+      // Documentation inherited
+      public: virtual void PostRender() override;
 
       /// \brief Main render call
       public: virtual void Render();
 
       /// \brief Destroy the render target
-      public: virtual void Destroy() = 0;
+      public: virtual void Destroy() override = 0;
 
       /// \brief Set a material to render on every object. This method is used
       /// for special cases like the render target of a depth camera.
@@ -89,13 +92,13 @@ namespace ignition
       public: void SetMaterial(MaterialPtr _material);
 
       /// \brief Get a pointer to the ogre render target
-      protected: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+      public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
 
       /// \brief Implementation of the Rebuild function
-      protected: virtual void RebuildImpl();
+      protected: virtual void RebuildImpl() override;
 
       /// \brief Rebuild the render target
       protected: virtual void RebuildTarget() = 0;
@@ -128,9 +131,8 @@ namespace ignition
       /// \brief a material used by for the render target
       protected: MaterialPtr material;
 
-      /// TODO(anyone)
       /// \brief Helper class that applies the material to the render target
-      // protected: Ogre2RenderTargetMaterialPtr materialApplicator;
+      protected: Ogre2RenderTargetMaterialPtr materialApplicator;
 
       /// \brief Flag to indicate if the render target color has changed
       protected: bool colorDirty = true;
@@ -152,8 +154,17 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
+      // Documentation inherited
+      public: virtual void PreRender() override;
+
+      // Documentation inherited
+      public: virtual void PostRender() override;
+
+      // Documentation inherited
+      public: virtual unsigned int GLId() const override;
+
       // Documentation inherited.
-      protected: virtual Ogre::RenderTarget *RenderTarget() const override;
+      public: virtual Ogre::RenderTarget *RenderTarget() const override;
 
       // Documentation inherited.
       protected: virtual void RebuildTarget() override;
@@ -182,10 +193,10 @@ namespace ignition
       public: virtual ~Ogre2RenderWindow();
 
       // Documentation inherited.
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       // Documentation inherited.
-      protected: virtual Ogre::RenderTarget *RenderTarget() const override;
+      public: virtual Ogre::RenderTarget *RenderTarget() const override;
 
       // Documentation inherited.
       protected: virtual void RebuildTarget() override;

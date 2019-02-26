@@ -38,22 +38,26 @@ namespace ignition
 
       public: virtual ~BaseRenderTarget();
 
-      public: virtual void PreRender();
+      // Documentation inherited.
+      public: virtual void PreRender() override;
 
-      public: virtual unsigned int Width() const;
+      // Documentation inherited.
+      public: virtual void PostRender() override;
 
-      public: virtual void SetWidth(const unsigned int _width);
+      public: virtual unsigned int Width() const override;
 
-      public: virtual unsigned int Height() const;
+      public: virtual void SetWidth(const unsigned int _width) override;
 
-      public: virtual void SetHeight(const unsigned int _height);
+      public: virtual unsigned int Height() const override;
 
-      public: virtual PixelFormat Format() const;
+      public: virtual void SetHeight(const unsigned int _height) override;
 
-      public: virtual void SetFormat(PixelFormat _format);
+      public: virtual PixelFormat Format() const override;
+
+      public: virtual void SetFormat(PixelFormat _format) override;
 
       // Documentation inherited
-      public: virtual math::Color BackgroundColor() const;
+      public: virtual math::Color BackgroundColor() const override;
 
       protected: virtual void Rebuild();
 
@@ -76,6 +80,9 @@ namespace ignition
       public: BaseRenderTexture();
 
       public: virtual ~BaseRenderTexture();
+
+      // Documentation inherited.
+      public: virtual unsigned int GLId() const override;
     };
 
     template <class T>
@@ -125,6 +132,13 @@ namespace ignition
     {
       T::PreRender();
       this->Rebuild();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::PostRender()
+    {
+      T::PostRender();
     }
 
     //////////////////////////////////////////////////
@@ -203,6 +217,13 @@ namespace ignition
     template <class T>
     BaseRenderTexture<T>::~BaseRenderTexture()
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseRenderTexture<T>::GLId() const
+    {
+      return 0u;
     }
 
     //////////////////////////////////////////////////

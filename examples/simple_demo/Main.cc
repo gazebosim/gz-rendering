@@ -79,6 +79,7 @@ void buildScene(ScenePtr _scene)
   center->SetMaterial(green);
   root->AddChild(center);
 
+
   // create red material
   MaterialPtr red = _scene->CreateMaterial();
   red->SetAmbient(0.5, 0.0, 0.0);

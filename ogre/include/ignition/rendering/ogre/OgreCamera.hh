@@ -33,8 +33,11 @@ namespace ignition
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
-    {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    // forward declaration
+    class OgreSelectionBuffer;
+
     class IGNITION_RENDERING_OGRE_VISIBLE OgreCamera :
       public BaseCamera<OgreSensor>
     {
@@ -68,6 +71,16 @@ namespace ignition
 
       public: virtual math::Matrix4d ViewMatrix() const override;
 
+      public: void SetVFOV(double cameraVFOV) const;
+
+      /// \brief Get the near clip distance
+      /// \return Near clip distance
+      public: double NearClip() const;
+
+      /// \brief Get the far clip distance
+      /// \return Far clip distance
+      public: double FarClip() const;
+
       // Documentation inherited
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
                   &_mousePos) override;
@@ -76,6 +89,9 @@ namespace ignition
       // \sa Camera::SetMaterial(const MaterialPtr &)
       public: virtual void SetMaterial(
                   const MaterialPtr &_material) override;
+
+      // Documentation inherited.
+      public: virtual unsigned int RenderTextureGLId() const override;
 
       protected: virtual RenderTargetPtr RenderTarget() const override;
 

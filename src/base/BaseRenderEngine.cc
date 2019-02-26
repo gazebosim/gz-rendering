@@ -33,7 +33,7 @@ BaseRenderEngine::~BaseRenderEngine()
 }
 
 //////////////////////////////////////////////////
-bool BaseRenderEngine::Load()
+bool BaseRenderEngine::Load(const std::map<std::string, std::string> &_params)
 {
   if (this->loaded)
   {
@@ -41,7 +41,7 @@ bool BaseRenderEngine::Load()
     return true;
   }
 
-  this->loaded = this->LoadImpl();
+  this->loaded = this->LoadImpl(_params);
   return this->loaded;
 }
 
@@ -67,6 +67,7 @@ bool BaseRenderEngine::Init()
 //////////////////////////////////////////////////
 bool BaseRenderEngine::Fini()
 {
+  this->Destroy();
   return true;
 }
 
@@ -197,6 +198,9 @@ ScenePtr BaseRenderEngine::CreateScene(unsigned int _id,
 //////////////////////////////////////////////////
 void BaseRenderEngine::Destroy()
 {
+  this->DestroyScenes();
+  this->loaded = false;
+  this->initialized = false;
 }
 
 //////////////////////////////////////////////////

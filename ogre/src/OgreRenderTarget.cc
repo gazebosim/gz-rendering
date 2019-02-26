@@ -15,6 +15,18 @@
  *
  */
 
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
+// leave this out of OgreIncludes as it conflicts with other files requiring
+// gl.h
+#include <OgreGLFBORenderTexture.h>
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
+
+
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Material.hh"
@@ -25,6 +37,7 @@
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
 using namespace ignition;
@@ -41,7 +54,7 @@ OgreRenderTarget::OgreRenderTarget()
 //////////////////////////////////////////////////
 OgreRenderTarget::~OgreRenderTarget()
 {
-  // TODO: clean up check null
+  // TODO(anyone): clean up check null
 
   OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
       this->scene);
@@ -50,8 +63,8 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
-  // TODO: handle Bayer conversions
-  // TODO: handle ogre version differences
+  // TODO(anyone): handle Bayer conversions
+  // TODO(anyone): handle ogre version differences
 
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
@@ -117,8 +130,17 @@ void OgreRenderTarget::PreRender()
 }
 
 //////////////////////////////////////////////////
+void OgreRenderTarget::PostRender()
+{
+  // do nothing by default
+}
+
+//////////////////////////////////////////////////
 void OgreRenderTarget::Render()
 {
+  if (nullptr == this->RenderTarget())
+    return;
+
   this->RenderTarget()->update();
 }
 
@@ -143,8 +165,12 @@ void OgreRenderTarget::RebuildImpl()
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildViewport()
 {
+  if (nullptr == this->RenderTarget())
+    return;
+
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
   ogreRenderTarget->removeAllViewports();
+  ogreRenderTarget->removeAllListeners();
 
   this->ogreViewport = ogreRenderTarget->addViewport(this->ogreCamera);
   this->ogreViewport->setBackgroundColour(this->ogreBackgroundColor);
@@ -174,11 +200,38 @@ void OgreRenderTarget::RebuildMaterial()
         this->material.get());
     Ogre::MaterialPtr matPtr = ogreMaterial->Material();
 
-    Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
     Ogre::RenderTarget *target = this->RenderTarget();
     this->materialApplicator.reset(new OgreRenderTargetMaterial(
-        sceneMgr, target, matPtr.get()));
+        this->scene, target, matPtr.get()));
   }
+}
+
+////////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTarget::Viewport(const int _viewportId) const
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  return ogreRenderTarget->getViewport(_viewportId);
+}
+
+////////////////////////////////////////////////////
+Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *_camera)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  return ogreRenderTarget->addViewport(_camera);
+}
+
+////////////////////////////////////////////////////
+void OgreRenderTarget::SetAutoUpdated(const bool _value)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->setAutoUpdated(_value);
+}
+
+////////////////////////////////////////////////////
+void OgreRenderTarget::SetUpdate(const bool _value)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->update(_value);
 }
 
 //////////////////////////////////////////////////
@@ -196,13 +249,15 @@ OgreRenderTexture::~OgreRenderTexture()
 //////////////////////////////////////////////////
 void OgreRenderTexture::Destroy()
 {
-  std::string ogreName = this->ogreTexture->getName();
-  Ogre::TextureManager::getSingleton().remove(ogreName);
+  this->DestroyTarget();
 }
 
 //////////////////////////////////////////////////
 Ogre::RenderTarget *OgreRenderTexture::RenderTarget() const
 {
+  if (nullptr == this->ogreTexture)
+    return nullptr;
+
   return this->ogreTexture->getBuffer()->getRenderTarget();
 }
 
@@ -216,7 +271,22 @@ void OgreRenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::DestroyTarget()
 {
-  // TODO: implement
+  if (nullptr == this->ogreTexture)
+    return;
+
+  OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
+      this->scene);
+
+  auto &manager = Ogre::TextureManager::getSingleton();
+  manager.unload(this->ogreTexture->getName());
+  manager.remove(this->ogreTexture->getName());
+
+  // clean up OGRE depth buffers on RTT resize.
+  // see https://forums.ogre3d.org/viewtopic.php?t=92111#p535220
+  auto engine = OgreRenderEngine::Instance();
+  engine->OgreRoot()->getRenderSystem()->_cleanupDepthBuffers(false);
+
+  this->ogreTexture = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -225,10 +295,74 @@ void OgreRenderTexture::BuildTarget()
   Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
   Ogre::PixelFormat ogreFormat = OgreConversions::Convert(this->format);
 
+  // check if target fsaa is supported
+  unsigned int fsaa = 0;
+  std::vector<unsigned int> fsaaLevels =
+      OgreRenderEngine::Instance()->FSAALevels();
+  unsigned int targetFSAA = this->antiAliasing;
+  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
+  if (it != fsaaLevels.end())
+  {
+    fsaa = targetFSAA;
+  }
+  else
+  {
+    // output warning but only do it once
+    static bool ogreFSAAWarn = false;
+    if (ogreFSAAWarn)
+    {
+      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+              << "is not supported. Setting to 0" << std::endl;
+      ogreFSAAWarn = true;
+    }
+  }
+
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-      Ogre::TU_RENDERTARGET, 0, false, this->antiAliasing)).get();
+      Ogre::TU_RENDERTARGET, 0, false, fsaa)).get();
 }
+
+//////////////////////////////////////////////////
+unsigned int OgreRenderTexture::GLId()
+{
+  if (!this->ogreTexture)
+    return 0u;
+
+  GLuint texId;
+  this->ogreTexture->getCustomAttribute("GLID", &texId);
+
+  return static_cast<unsigned int>(texId);
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::PreRender()
+{
+  OgreRenderTarget::PreRender();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::PostRender()
+{
+  OgreRenderTarget::PostRender();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTexture::Buffer(float *_buffer)
+{
+  Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+  ogreRenderTarget->swapBuffers();
+
+  Ogre::HardwarePixelBufferSharedPtr pcdPixelBuffer;
+  pcdPixelBuffer = this->ogreTexture->getBuffer();
+
+  Ogre::PixelFormat imageFormat = OgreConversions::Convert(
+      this->Format());
+
+  Ogre::PixelBox ogrePixelBox(this->width, this->height, 1,
+      imageFormat, _buffer);
+  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+}
+
 
 //////////////////////////////////////////////////
 // OgreRenderWindow
@@ -258,7 +392,7 @@ void OgreRenderWindow::Destroy()
 //////////////////////////////////////////////////
 void OgreRenderWindow::RebuildTarget()
 {
-  // TODO determine when to rebuild
+  // TODO(anyone) determine when to rebuild
   // ie. only when ratio or handle changes!
   // e.g. sizeDirty?
   if (!this->ogreRenderWindow)

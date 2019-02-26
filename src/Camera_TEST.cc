@@ -19,6 +19,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
@@ -98,6 +99,7 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -131,8 +133,18 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
   EXPECT_EQ(PixelFormat::PF_B8G8R8, camera->ImageFormat());
   EXPECT_EQ(100u*80u*3u, camera->ImageMemorySize());
 
+
+  // verify render texture GL Id
+  EXPECT_EQ(0u, camera->RenderTextureGLId());
+#ifdef HAVE_OPENGL
+  // PreRender - creates the render texture
+  camera->PreRender();
+  EXPECT_NE(0u, camera->RenderTextureGLId());
+#endif
+
   // Clean up
   engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -204,6 +216,7 @@ void CameraTest::TrackFollow(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -225,7 +238,8 @@ TEST_P(CameraTest, TrackFollow)
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
-    ::testing::Values("ogre", "optix"));
+    RENDER_ENGINE_VALUES,
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

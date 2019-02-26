@@ -18,9 +18,9 @@
 #include <map>
 
 #include <ignition/common/Console.hh>
-#include <ignition/common/Plugin.hh>
-#include <ignition/common/PluginLoader.hh>
 #include <ignition/common/SystemPaths.hh>
+
+#include <ignition/plugin/Loader.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
@@ -38,25 +38,50 @@ class ignition::rendering::RenderEngineManagerPrivate
 
   /// \brief Get a pointer to the render engine from an EngineMap iterator
   /// \param[in] _iter EngineMap iterator
-  public: RenderEngine *Engine(EngineIter _iter);
+  /// \param[in] _path Another search path for rendering engine plugin.
+  public: RenderEngine *Engine(EngineIter _iter,
+      const std::map<std::string, std::string> &_params,
+      const std::string &_path);
+
+  /// \brief Unload the given render engine from an EngineMap iterator.
+  /// The engine will remain registered and can be loaded again later.
+  /// \param[in] _iter EngineMap iterator
+  /// \return True if the engine is unloaded
+  public: bool UnloadEngine(EngineIter _iter);
 
   /// \brief Register default engines supplied by ign-rendering
   public: void RegisterDefaultEngines();
 
-  /// \brief Load a render engine plugin
-  /// \param[in] _filename Filename of plugin shared library
-  /// \return True if the plugin is loaded successfully
-  public: bool LoadEnginePlugin(const std::string &_filename);
-
-  /// \brief Unregister an engine using an EngineMap iterator
+  /// \brief Unregister an engine using an EngineMap iterator.
+  /// Once an engine is unregistered, it can no longer be loaded. Use
+  /// RenderEngineManagerPrivate::UnloadEngine to unload the engine without
+  /// unregistering it if you wish to load the engine again
   /// \param[in] _iter EngineMap iterator
   public: void UnregisterEngine(EngineIter _iter);
 
-  // Engines that have been registered
+  /// \brief Load a render engine plugin
+  /// \param[in] _filename Filename of plugin shared library
+  /// \param[in] _path Another search path for rendering engine plugin.
+  /// \return True if the plugin is loaded successfully
+  public: bool LoadEnginePlugin(const std::string &_filename,
+              const std::string &_path);
+
+  /// \brief Unload a render engine plugin.
+  /// \param[in] _engineName Name of engine associated with this plugin
+  /// \return True if the plugin is unloaded successfully
+  public: bool UnloadEnginePlugin(const std::string &_engineName);
+
+  /// \brief Engines that have been registered
   public: EngineMap engines;
 
-  /// \brief A map of default engine name to its plugin library path
+  /// \brief A map of default engine name to its plugin library name
   public: std::map<std::string, std::string> defaultEngines;
+
+  /// \brief A map of loaded engine plugins to its plugin name
+  public: std::map<std::string, std::string> enginePlugins;
+
+  /// \brief Plugin loader for managing render engine plugin libraries
+  public: ignition::plugin::Loader pluginLoader;
 };
 
 using namespace ignition;
@@ -90,7 +115,9 @@ bool RenderEngineManager::HasEngine(const std::string &_name) const
 }
 
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
+RenderEngine *RenderEngineManager::Engine(const std::string &_name,
+    const std::map<std::string, std::string> &_params,
+    const std::string &_path)
 {
   // check in the list of available engines
   auto iter = this->dataPtr->engines.find(_name);
@@ -101,11 +128,13 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name) const
     return nullptr;
   }
 
-  return this->dataPtr->Engine(iter);
+  return this->dataPtr->Engine(iter, _params, _path);
 }
 
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManager::EngineAt(unsigned int _index) const
+RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
+    const std::map<std::string, std::string> &_params,
+    const std::string &_path)
 {
   if (_index >= this->EngineCount())
   {
@@ -115,7 +144,36 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index) const
 
   auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
-  return this->dataPtr->Engine(iter);
+  return this->dataPtr->Engine(iter, _params, _path);
+}
+
+//////////////////////////////////////////////////
+bool RenderEngineManager::UnloadEngine(const std::string &_name)
+{
+  // check in the list of available engines
+  auto iter = this->dataPtr->engines.find(_name);
+
+  if (iter == this->dataPtr->engines.end())
+  {
+    ignerr << "No render-engine registered with name: " << _name << std::endl;
+    return false;
+  }
+
+  return this->dataPtr->UnloadEngine(iter);
+}
+
+//////////////////////////////////////////////////
+bool RenderEngineManager::UnloadEngineAt(unsigned int _index)
+{
+  if (_index >= this->EngineCount())
+  {
+    ignerr << "Invalid render-engine index: " << _index << std::endl;
+    return false;
+  }
+
+  auto iter = this->dataPtr->engines.begin();
+  std::advance(iter, _index);
+  return this->dataPtr->UnloadEngine(iter);
 }
 
 //////////////////////////////////////////////////
@@ -186,7 +244,9 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 //////////////////////////////////////////////////
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter)
+RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter,
+    const std::map<std::string, std::string> &_params,
+    const std::string &_path)
 {
   RenderEngine *engine = _iter->second;
 
@@ -198,7 +258,7 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter)
     if (defaultIt != this->defaultEngines.end())
     {
       std::string libName = defaultIt->second;
-      if (this->LoadEnginePlugin(libName))
+      if (this->LoadEnginePlugin(libName, _path))
       {
         auto engineIt = this->engines.find(_iter->first);
         if (engineIt != this->engines.end())
@@ -212,11 +272,24 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter)
 
   if (!engine->IsInitialized())
   {
-    engine->Load();
+    engine->Load(_params);
     engine->Init();
   }
 
   return engine;
+}
+
+//////////////////////////////////////////////////
+bool RenderEngineManagerPrivate::UnloadEngine(EngineIter _iter)
+{
+  RenderEngine *engine = _iter->second;
+
+  if (!engine)
+    return false;
+
+  engine->Destroy();
+
+  return this->UnloadEnginePlugin(engine->Name());
 }
 
 //////////////////////////////////////////////////
@@ -253,14 +326,16 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
 
 //////////////////////////////////////////////////
 bool RenderEngineManagerPrivate::LoadEnginePlugin(
-    const std::string &_filename)
+    const std::string &_filename, const std::string &_path)
 {
   ignmsg << "Loading plugin [" << _filename << "]" << std::endl;
 
   ignition::common::SystemPaths systemPaths;
 
-  // Add default install folder
+  // Add default install folder.
   systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
+  // Add extra search path.
+  systemPaths.AddPluginPaths(_path);
 
   auto pathToLib = systemPaths.FindSharedLibrary(_filename);
   if (pathToLib.empty())
@@ -271,9 +346,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   // Load plugin
-  ignition::common::PluginLoader pluginLoader;
-
-  auto pluginNames = pluginLoader.LoadLibrary(pathToLib);
+  auto pluginNames = this->pluginLoader.LoadLib(pathToLib);
   if (pluginNames.empty())
   {
     ignerr << "Failed to load plugin [" << _filename <<
@@ -282,7 +355,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     return false;
   }
 
-  auto pluginName = *pluginNames.begin();
+  std::string pluginName = *pluginNames.begin();
   if (pluginName.empty())
   {
     ignerr << "Failed to load plugin [" << _filename <<
@@ -291,7 +364,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     return false;
   }
 
-  auto commonPlugin = pluginLoader.Instantiate(pluginName);
+  auto commonPlugin = this->pluginLoader.Instantiate(pluginName);
   if (!commonPlugin)
   {
     ignerr << "Failed to load plugin [" << _filename <<
@@ -313,6 +386,39 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   // this triggers the engine to be instantiated
   std::string engineName = plugin->Name();
   this->engines[engineName] = plugin->Engine();
+
+  // store engine plugin data so plugin can be unloaded later
+  this->enginePlugins[engineName] = pluginName;
+
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool RenderEngineManagerPrivate::UnloadEnginePlugin(
+    const std::string &_engineName)
+{
+  auto it = this->enginePlugins.find(_engineName);
+  if (it == this->enginePlugins.end())
+  {
+    ignmsg << "Skip unloading engine plugin. [" << _engineName << "] "
+           << "not loaded from plugin." << std::endl;
+    return false;
+  }
+
+  std::string pluginName = it->second;
+  this->enginePlugins.erase(it);
+
+  if (!this->pluginLoader.ForgetLibraryOfPlugin(pluginName))
+  {
+    ignerr << "Failed to unload plugin: " << pluginName << std::endl;
+  }
+
+  auto engineIt = this->engines.find(_engineName);
+  if (engineIt == this->engines.end())
+    return false;
+
+  // set to null - this means engine is still registered but not loaded
+  this->engines[_engineName] = nullptr;
 
   return true;
 }

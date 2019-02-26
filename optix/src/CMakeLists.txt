@@ -35,6 +35,7 @@ target_link_libraries(${optix_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
   PRIVATE
+    ignition-plugin${IGN_PLUGIN_VER}::register
     optix::optix
     optix::optixu
     optix::optix_prime)

@@ -15,7 +15,6 @@
  *
  */
 
-
 // Not Apple or Windows
 #if not defined(__APPLE__) && not defined(_WIN32)
 # include <X11/Xlib.h>
@@ -28,6 +27,11 @@
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
 #endif
+
+# include <sstream>
+
+#include <ignition/plugin/Register.hh>
+
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
@@ -45,6 +49,9 @@ class ignition::rendering::OgreRenderEnginePrivate
 #if not defined(__APPLE__) && not defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
 #endif
+
+  /// \brief A list of supported fsaa levels
+  public: std::vector<unsigned int> fsaaLevels;
 };
 
 using namespace ignition;
@@ -69,17 +76,8 @@ RenderEngine *OgreRenderEnginePlugin::Engine() const
 
 //////////////////////////////////////////////////
 OgreRenderEngine::OgreRenderEngine() :
-  ogreRoot(nullptr),
-  ogreLogManager(nullptr),
   dataPtr(new OgreRenderEnginePrivate)
 {
-#if not (__APPLE__ || _WIN32)
-  this->dummyDisplay = nullptr;
-  this->dummyContext = 0;
-#endif
-
-  this->dummyWindowId = 0;
-
   this->ogrePaths.push_back(std::string(OGRE_RESOURCE_PATH));
 }
 
@@ -89,12 +87,37 @@ OgreRenderEngine::~OgreRenderEngine()
 }
 
 //////////////////////////////////////////////////
-bool OgreRenderEngine::Fini()
+void OgreRenderEngine::Destroy()
 {
+  BaseRenderEngine::Destroy();
+
   if (this->scenes)
   {
     this->scenes->RemoveAll();
   }
+
+#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
+  delete this->ogreOverlaySystem;
+  this->ogreOverlaySystem = nullptr;
+#endif
+
+  OgreRTShaderSystem::Instance()->Fini();
+
+  if (ogreRoot)
+  {
+    try
+    {
+      // TODO(anyone): do we need to catch segfault on delete?
+      delete this->ogreRoot;
+    }
+    catch (...)
+    {
+    }
+    this->ogreRoot = nullptr;
+  }
+
+  delete this->ogreLogManager;
+  this->ogreLogManager = nullptr;
 
 #if not (__APPLE__ || _WIN32)
   if (this->dummyDisplay)
@@ -109,27 +132,6 @@ bool OgreRenderEngine::Fini()
     this->dataPtr->dummyVisual = nullptr;
   }
 #endif
-
-#if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
-  delete this->ogreOverlaySystem;
-  this->ogreOverlaySystem = nullptr;
-#endif
-
-  if (ogreRoot)
-  {
-    this->ogreRoot->shutdown();
-    // TODO: fix segfault on delete
-    // delete this->ogreRoot;
-    this->ogreRoot = nullptr;
-  }
-
-  delete this->ogreLogManager;
-  this->ogreLogManager = nullptr;
-
-  this->loaded = false;
-  this->initialized = false;
-
-  return true;
 }
 
 //////////////////////////////////////////////////
@@ -261,8 +263,14 @@ SceneStorePtr OgreRenderEngine::Scenes() const
 }
 
 //////////////////////////////////////////////////
-bool OgreRenderEngine::LoadImpl()
+bool OgreRenderEngine::LoadImpl(
+    const std::map<std::string, std::string> &_params)
 {
+  // parse params
+  auto it = _params.find("useCurrentGLContext");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->useCurrentGLContext;
+
   try
   {
     this->LoadAttempt();
@@ -299,7 +307,8 @@ bool OgreRenderEngine::InitImpl()
 void OgreRenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  this->CreateContext();
+  if (!this->useCurrentGLContext)
+    this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -379,7 +388,7 @@ void OgreRenderEngine::CreateRoot()
 {
   try
   {
-    this->ogreRoot = new Ogre::Root();
+    this->ogreRoot = new Ogre::Root("", "", "");
   }
   catch (Ogre::Exception &ex)
   {
@@ -414,6 +423,9 @@ void OgreRenderEngine::LoadPlugins()
 #ifdef __APPLE__
     std::string prefix = "lib";
     std::string extension = ".dylib";
+#elif _WIN32
+    std::string prefix = "";
+    std::string extension = ".dll";
 #else
     std::string prefix = "";
     std::string extension = ".so";
@@ -448,7 +460,7 @@ void OgreRenderEngine::LoadPlugins()
           {
             ignerr << "Unable to load Ogre Plugin[" << *piter
                   << "]. Rendering will not be possible."
-                  << "Make sure you have installed OGRE and Gazebo properly.\n";
+                  << "Make sure you have installed OGRE properly.\n";
           }
         }
       }
@@ -501,7 +513,38 @@ void OgreRenderEngine::CreateRenderSystem()
   ///   FBO seem to be the only good option
   renderSys->setConfigOption("RTT Preferred Mode", "FBO");
 
-  renderSys->setConfigOption("FSAA", "4");
+  // get all supported fsaa values
+  Ogre::ConfigOptionMap configMap = renderSys->getConfigOptions();
+  auto fsaaOoption = configMap.find("FSAA");
+
+  if (fsaaOoption != configMap.end())
+  {
+    auto values = (*fsaaOoption).second.possibleValues;
+    for (auto const &str : values)
+    {
+      int value = 0;
+      try
+      {
+        value = std::stoi(str);
+      }
+      catch(...)
+      {
+        continue;
+      }
+      this->dataPtr->fsaaLevels.push_back(value);
+    }
+  }
+  std::sort(this->dataPtr->fsaaLevels.begin(), this->dataPtr->fsaaLevels.end());
+
+  // check if target fsaa is supported
+  unsigned int fsaa = 0;
+  unsigned int targetFSAA = 4;
+  auto const it = std::find(this->dataPtr->fsaaLevels.begin(),
+      this->dataPtr->fsaaLevels.end(), targetFSAA);
+  if (it != this->dataPtr->fsaaLevels.end())
+    fsaa = targetFSAA;
+
+  renderSys->setConfigOption("FSAA", std::to_string(fsaa));
 
   this->ogreRoot->setRenderSystem(renderSys);
 }
@@ -511,7 +554,7 @@ void OgreRenderEngine::CreateResources()
 {
   std::vector< std::pair<std::string, std::string> > archNames;
 
-  // TODO support loading resources from user specified paths
+  // TODO(anyone) support loading resources from user specified paths
   std::list<std::string> paths;
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
@@ -575,16 +618,20 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
   Ogre::NameValuePairList params;
   Ogre::RenderWindow *window = nullptr;
 
-  // Mac and Windows *must* use externalWindow handle.
+  if (!this->useCurrentGLContext)
+  {
+    // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
-  params["externalWindowHandle"] = _handle;
+    params["externalWindowHandle"] = _handle;
 #else
-  params["parentWindowHandle"] = _handle;
+    params["parentWindowHandle"] = _handle;
 #endif
+  }
+
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
-  // TODO: determine api without qt
+  // TODO(anyone): determine api without qt
 
   // Set the macAPI for Ogre based on the Qt implementation
   params["macAPI"] = "cocoa";
@@ -598,6 +645,12 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
 
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
+
+  if (this->useCurrentGLContext)
+  {
+    params["externalGLControl"] = "true";
+    params["currentGLContext"] = "true";
+  }
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
@@ -711,6 +764,12 @@ void OgreRenderEngine::InitAttempt()
   this->scenes = OgreSceneStorePtr(new OgreSceneStore);
 }
 
+/////////////////////////////////////////////////
+std::vector<unsigned int> OgreRenderEngine::FSAALevels() const
+{
+  return this->dataPtr->fsaaLevels;
+}
+
 #if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
 /////////////////////////////////////////////////
 Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
@@ -720,5 +779,5 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 #endif
 
 // Register this plugin
-IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
-                                  ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
+                    ignition::rendering::RenderEnginePlugin)

@@ -28,13 +28,21 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
+    // TODO(anyone): use a better way to find shader configurations
+    const std::string depth_vertex_shader_file =
+      "depth_vertex_shader.glsl";
+    const std::string depth_fragment_shader_file =
+      "depth_fragment_shader.glsl";
+
     class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterial :
       public BaseMaterial<OgreObject>
     {
       protected: OgreMaterial();
 
       public: virtual ~OgreMaterial();
+
+      // Documentation inherited
+      public: virtual void Destroy() override;
 
       public: virtual bool LightingEnabled() const override;
 
@@ -106,6 +114,11 @@ namespace ignition
       public: virtual Ogre::MaterialPtr Material() const;
 
       // Documentation inherited.
+      // \sa Material::Set3DMaterial()
+      public: virtual void SetDepthMaterial(const double far,
+                const double near) override;
+
+      // Documentation inherited.
       // \sa Material::SetVertexShader(const std::string &)
       public: virtual void SetVertexShader(const std::string &_path) override;
 
@@ -174,16 +187,6 @@ namespace ignition
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR <= 7
       protected: math::Color emissiveColor;
 #endif
-      protected: double shininess = 0.0;
-
-      protected: double transparency = 0.0;
-
-      protected: double reflectivity = 0.0;
-
-      protected: bool castShadows = true;
-
-      protected: bool reflectionEnabled = true;
-
       protected: std::string textureName;
 
       protected: std::string normalMapName;

@@ -28,6 +28,7 @@
 #include "ignition/rendering/Sensor.hh"
 #include "ignition/rendering/Scene.hh"
 
+
 namespace ignition
 {
   namespace rendering
@@ -275,6 +276,12 @@ namespace ignition
       /// \param[in] _material a material instance
       /// \param[in] _material a material instance
       public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
+
+      /// \brief Get the OpenGL texture id associated with the render texture
+      /// used by this camera. A valid id is returned only if the underlying
+      /// render engine is OpenGL based.
+      /// \return Texture Id of type GLuint.
+      public: virtual unsigned int RenderTextureGLId() const = 0;
     };
     }
   }

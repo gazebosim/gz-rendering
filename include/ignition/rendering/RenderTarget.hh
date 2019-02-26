@@ -87,6 +87,10 @@ namespace ignition
     {
       /// \brief Deconstructor
       public: virtual ~RenderTexture() { }
+
+      /// \brief Returns the OpenGL texture Id. A valid Id is returned only
+      // if this is an OpenGL render texture
+      public: virtual unsigned int GLId() const = 0;
     };
 
     /// \class RenderWindow RenderWindow.hh

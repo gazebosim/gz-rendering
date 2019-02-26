@@ -32,7 +32,10 @@ const char *PixelUtil::names[PF_COUNT] =
       "BAYER_RGGB8",
       "BAYER_BGGR8",
       "BAYER_GBGR8",
-      "BAYER_GRGB8"
+      "BAYER_GRGB8",
+      "FLOAT32_R",
+      "FLOAT32_RGBA",
+      "FLOAT32_RGB"
     };
 
 //////////////////////////////////////////////////
@@ -53,7 +56,13 @@ const unsigned char PixelUtil::channelCounts[PF_COUNT] =
       // BAYER_GBGR8
       4,
       // BAYER_GRGB8
-      4
+      4,
+      // PF_FLOAT32_R
+      4,
+      // PF_FLOAT32_RGBA
+      8,
+      // PF_FLOAT32_RGB
+      8
     };
 
 //////////////////////////////////////////////////
@@ -74,6 +83,12 @@ const unsigned char PixelUtil::channelByteCounts[PF_COUNT] =
       // BAYER_GBGR8
       1,
       // BAYER_GRGB8
+      1,
+      // PF_FLOAT32_R
+      1,
+      // PF_FLOAT32_RGBA
+      1,
+      // PF_FLOAT32_RGB
       1
     };
 

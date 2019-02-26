@@ -39,71 +39,78 @@ namespace ignition
 
       public: virtual ~BaseVisual();
 
-      public: virtual math::Pose3d LocalPose() const;
+      public: virtual math::Pose3d LocalPose() const override;
 
-      public: virtual void SetLocalPose(const math::Pose3d &_pose);
+      public: virtual void SetLocalPose(const math::Pose3d &_pose) override;
 
-      public: virtual unsigned int GeometryCount() const;
+      public: virtual unsigned int GeometryCount() const override;
 
-      public: virtual bool HasGeometry(ConstGeometryPtr _geometry) const;
+      public: virtual bool HasGeometry(ConstGeometryPtr _geometry) const
+                      override;
 
-      public: virtual GeometryPtr GeometryByIndex(unsigned int _index) const;
+      public: virtual GeometryPtr GeometryByIndex(unsigned int _index) const
+                      override;
 
-      public: virtual void AddGeometry(GeometryPtr _geometry);
+      public: virtual void AddGeometry(GeometryPtr _geometry) override;
 
-      public: virtual GeometryPtr RemoveGeometry(GeometryPtr _geometry);
+      public: virtual GeometryPtr RemoveGeometry(GeometryPtr _geometry)
+                      override;
 
-      public: virtual GeometryPtr RemoveGeometryByIndex(unsigned int _index);
+      public: virtual GeometryPtr RemoveGeometryByIndex(unsigned int _index)
+                      override;
 
-      public: virtual void RemoveGeometries();
+      public: virtual void RemoveGeometries() override;
 
       public: virtual void SetMaterial(const std::string &_name,
-                  bool _unique = true);
+                  bool _unique = true) override;
 
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool _unique = true);
+                  bool _unique = true) override;
 
       public: virtual void SetChildMaterial(MaterialPtr _material,
-                  bool _unique = true);
+                  bool _unique = true) override;
 
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
-                  bool _unique = true);
+                  bool _unique = true) override;
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material();
+      public: virtual MaterialPtr Material() override;
 
-      public: virtual math::Vector3d LocalScale() const = 0;
+      public: virtual math::Vector3d LocalScale() const override = 0;
 
-      public: virtual void SetLocalScale(double _scale);
+      public: virtual void SetLocalScale(double _scale) override;
 
-      public: virtual void SetLocalScale(double _x, double _y, double _z);
+      public: virtual void SetLocalScale(double _x, double _y, double _z)
+                      override;
 
-      public: virtual void SetLocalScale(const math::Vector3d &_scale);
+      public: virtual void SetLocalScale(const math::Vector3d &_scale) override;
 
-      public: virtual math::Vector3d WorldScale() const;
+      public: virtual math::Vector3d WorldScale() const override;
 
-      public: virtual void SetWorldScale(double _scale);
+      public: virtual void SetWorldScale(double _scale) override;
 
-      public: virtual void SetWorldScale(double _x, double _y, double _z);
+      public: virtual void SetWorldScale(double _x, double _y, double _z)
+                      override;
 
-      public: virtual void SetWorldScale(const math::Vector3d &_scale);
+      public: virtual void SetWorldScale(const math::Vector3d &_scale) override;
 
-      public: virtual void Scale(double _scale);
+      public: virtual void Scale(double _scale) override;
 
-      public: virtual void Scale(double _x, double _y, double _z);
+      public: virtual void Scale(double _x, double _y, double _z) override;
 
-      public: virtual void Scale(const math::Vector3d &_scale);
+      public: virtual void Scale(const math::Vector3d &_scale) override;
 
-      public: virtual bool InheritScale() const = 0;
+      public: virtual bool InheritScale() const override = 0;
 
       // Documentation inherited.
-      public: virtual void SetVisible(bool _visible);
+      public: virtual void SetVisible(bool _visible) override;
 
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
-      public: virtual void Destroy();
+      // Documentation inherited
+      public: virtual void Destroy() override;
 
-      protected: virtual void PreRenderChildren();
+      protected: virtual void PreRenderChildren() override;
 
       protected: virtual void PreRenderGeometries();
 
@@ -367,9 +374,10 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::Destroy()
     {
-      T::Destroy();
       this->Geometries()->DestroyAll();
       this->Children()->RemoveAll();
+      this->material.reset();
+      T::Destroy();
     }
 
     //////////////////////////////////////////////////

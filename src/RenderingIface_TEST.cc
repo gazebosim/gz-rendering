@@ -17,6 +17,8 @@
 
 #include <gtest/gtest.h>
 
+#include "test_config.h"  // NOLINT(build/include)
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
@@ -51,7 +53,8 @@ TEST(RenderingIfaceTest, GetEngine)
   // check get engine
   for (unsigned int i = 0; i < count; ++i)
   {
-    RenderEngine *eng = engine(i);
+    RenderEngine *eng = engine(i, std::map<std::string, std::string>(),
+        IGN_RENDERING_TEST_PLUGIN_PATH);
     EXPECT_NE(nullptr, eng);
     EXPECT_TRUE(hasEngine(eng->Name()));
     EXPECT_EQ(eng, engine(eng->Name()));
@@ -61,6 +64,7 @@ TEST(RenderingIfaceTest, GetEngine)
     if (eng->Name() == "ogre" || eng->Name() == "ogre2")
       ++i;
 #endif
+    rendering::unloadEngine(eng->Name());
   }
 
   // non-existent engine

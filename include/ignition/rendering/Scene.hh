@@ -56,7 +56,7 @@ namespace ignition
       /// \brief Initialize the scene
       public: virtual void Init() = 0;
 
-      // TODO(anyone`): merge with Destroy
+      // TODO(anyone): merge with Destroy
       public: virtual void Fini() = 0;
 
       /// \brief Determine if the scene is initialized
@@ -201,10 +201,14 @@ namespace ignition
       public: virtual NodePtr NodeByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given node. If the given node is not managed by this
-      /// scene, no work will be done. All children of the node will
-      /// consequently be detached from the scene graph, but not destroyed.
+      /// scene, no work will be done. Depending on the _recursive argument,
+      /// this function will either detach all child nodes from the scene graph
+      /// or recursively destroy them.
       /// \param[in] _id ID of the node to destroy
-      public: virtual void DestroyNode(NodePtr _node) = 0;
+      /// \param[in] _recursive True to recursively destroy the node and its
+      /// children, false to destroy only this node and detach the children
+      public: virtual void DestroyNode(NodePtr _node,
+          bool _recursive = false) = 0;
 
       /// \brief Destroy node with the given id. If no node exists with the
       /// given id, no work will be done. All children of the node will
@@ -269,10 +273,14 @@ namespace ignition
       public: virtual LightPtr LightByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given light. If the given light is not managed by this
-      /// scene, no work will be done. All children of the light will
-      /// consequently be detached from the scene graph, but not destroyed.
+      /// scene, no work will be done. Depending on the _recursive argument,
+      /// this function will either detach all child nodes from the scene graph
+      /// or recursively destroy them.
       /// \param[in] _id ID of the light to destroy
-      public: virtual void DestroyLight(LightPtr _light) = 0;
+      /// \param[in] _recursive True to recursively destroy the node and its
+      /// children, false to destroy only this node and detach the children
+      public: virtual void DestroyLight(LightPtr _light,
+          bool _recursive = false) = 0;
 
       /// \brief Destroy light with the given id. If no light exists with the
       /// given id, no work will be done. All children of the light will
@@ -337,10 +345,14 @@ namespace ignition
       public: virtual SensorPtr SensorByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given sensor. If the given sensor is not managed by
-      /// this scene, no work will be done. All children of the sensor will
-      /// consequently be detached from the scene graph, but not destroyed.
+      /// this scene, no work will be done. Depending on the _recursive
+      /// argument, this function will either detach all child nodes from the
+      /// scene graph or recursively destroy them.
       /// \param[in] _id ID of the sensor to destroy
-      public: virtual void DestroySensor(SensorPtr _sensor) = 0;
+      /// \param[in] _recursive True to recursively destroy the node and its
+      /// children, false to destroy only this node and detach the children
+      public: virtual void DestroySensor(SensorPtr _sensor,
+          bool _recursive = false) = 0;
 
       /// \brief Destroy sensor with the given id. If no sensor exists with the
       /// given id, no work will be done. All children of the sensor will
@@ -405,10 +417,15 @@ namespace ignition
       public: virtual VisualPtr VisualByIndex(unsigned int _index) const = 0;
 
       /// \brief Destroy given node. If the given node is not managed by this
-      /// scene, no work will be done. All children of the node will
+      /// scene, no work will be done. Depending on the _recursive argument,
+      /// this function will either detach all child nodes from the scene graph
+      /// or recursively destroy them.
       /// consequently be detached from the scene graph, but not destroyed.
       /// \param[in] _id ID of the node to destroy
-      public: virtual void DestroyVisual(VisualPtr _node) = 0;
+      /// \param[in] _recursive True to recursively destroy the node and its
+      /// children, false to destroy only this node and detach the children
+      public: virtual void DestroyVisual(VisualPtr _node,
+          bool _recursive = false) = 0;
 
       /// \brief Destroy node with the given id. If no node exists with the
       /// given id, no work will be done. All children of the node will
@@ -456,8 +473,15 @@ namespace ignition
       /// \param[in] _name Name of the material to unregistered
       public: virtual void UnregisterMaterial(const std::string &_name) = 0;
 
-      /// \brief Unregister material all registered materials
+      /// \brief Unregister all registered materials
       public: virtual void UnregisterMaterials() = 0;
+
+      /// \brief Unregister and destroy a material
+      /// \param[in] _material Material to be unregistered and destroyed
+      public: virtual void DestroyMaterial(MaterialPtr _material) = 0;
+
+      /// \brief Unregister and destroys all registered materials
+      public: virtual void DestroyMaterials() = 0;
 
       /// \brief Create new directional light. A unique ID and name will
       /// automatically be assigned to the light.
@@ -573,6 +597,63 @@ namespace ignition
       /// \param[in] _name Name of the new camera
       /// \return The created camera
       public: virtual CameraPtr CreateCamera(
+                  unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new depth camera. A unique ID and name will
+      /// automatically be assigned to the camera.
+      /// \return The created camera
+      public: virtual DepthCameraPtr CreateDepthCamera() = 0;
+
+      /// \brief Create new depth camera with the given ID. A unique name
+      /// will automatically be assigned to the camera. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new camera
+      /// \return The created camera
+      public: virtual DepthCameraPtr CreateDepthCamera(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new depth camera with the given name. A unique ID
+      /// will automatically be assigned to the camera. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new camera
+      /// \return The created camera
+      public: virtual DepthCameraPtr CreateDepthCamera(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new depth camera with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new camera
+      /// \param[in] _name Name of the new camera
+      /// \return The created camera
+      public: virtual DepthCameraPtr CreateDepthCamera(
+                  unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new gpu rays caster. A unique ID and name will
+      /// automatically be assigned to the gpu rays caster.
+      /// \return The created gpu rays caster
+      public: virtual GpuRaysPtr CreateGpuRays() = 0;
+
+      /// \brief Create new gpu rays caster with the given ID. A unique name
+      /// will automatically be assigned to the gpu rays caster. If the given
+      /// ID is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new gpu rays caster
+      /// \return The created gpu rays caster
+      public: virtual GpuRaysPtr CreateGpuRays(unsigned int _id) = 0;
+
+      /// \brief Create new gpu rays caster with the given name. A unique ID
+      /// will automatically be assigned to the gpu rays caster. If the given
+      /// name is already in use, NULL will be returned.
+      /// \param[in] _name Name of the new gpu rays caster
+      /// \return The created gpu ray caster
+      public: virtual GpuRaysPtr CreateGpuRays(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new gpu rays caster with the given name. If either
+      /// the given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the gpu ray caster
+      /// \param[in] _name Name of the new gpu ray caster
+      /// \return The created Gpu ray caster
+      public: virtual GpuRaysPtr CreateGpuRays(
                   unsigned int _id, const std::string &_name) = 0;
 
       /// \brief Create new visual. A unique ID and name will

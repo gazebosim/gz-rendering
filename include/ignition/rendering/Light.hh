@@ -113,7 +113,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE DirectionalLight :
       public virtual Light
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~DirectionalLight() { }
 
       /// \brief Get the direction of the light

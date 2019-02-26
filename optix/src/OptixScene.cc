@@ -238,6 +238,15 @@ CameraPtr OptixScene::CreateCameraImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+DepthCameraPtr OptixScene::CreateDepthCameraImpl(unsigned int /*_id*/,
+    const std::string &/*_name*/)
+{
+  // TODO(anyone)
+  return DepthCameraPtr();
+}
+
+
+//////////////////////////////////////////////////
 VisualPtr OptixScene::CreateVisualImpl(unsigned int _id,
     const std::string &_name)
 {

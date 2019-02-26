@@ -19,6 +19,8 @@
 
 #include <ignition/common/Console.hh>
 
+#include "test_config.h"  // NOLINT(build/include)
+
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/RenderEngine.hh"
@@ -126,6 +128,9 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
 
   engine->DestroyScenes();
   EXPECT_EQ(engine->SceneCount(), 0u);
+
+  // Clean up
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -135,7 +140,8 @@ TEST_P(RenderEngineTest, RenderEngine)
 }
 
 INSTANTIATE_TEST_CASE_P(RenderEngine, RenderEngineTest,
-    ::testing::Values("ogre", "optix"));
+    RENDER_ENGINE_VALUES,
+    ignition::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

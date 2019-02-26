@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
 #define IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <ignition/common/SingletonT.hh>
@@ -62,15 +63,37 @@ namespace ignition
       /// \brief Get the render-engine with the given name. If the no
       /// render-engine is registered under the given name, NULL will be
       /// returned.
-      /// \param[name] _name Name of the desired render-engine
+      /// \param[in] _name Name of the desired render-engine
+      /// \param[in] _params Parameters to be passed to the render engine.
+      /// \param[in] _path Another search path for rendering engine plugin.
       /// \return The specified render-engine
-      public: RenderEngine *Engine(const std::string &_name) const;
+      public: RenderEngine *Engine(const std::string &_name,
+                  const std::map<std::string, std::string> &_params = {},
+                  const std::string &_path = "");
 
       /// \brief Get the render-engine at the given index. If no
       /// render-engine is exists at the given index, NULL will be returned.
       /// \param[in] _index Index of the desired render-engine
+      /// \param[in] _params Parameters to be passed to the render engine.
+      /// \param[in] _path Another search path for rendering engine plugin.
       /// \return The specified render-engine
-      public: RenderEngine *EngineAt(unsigned int _index) const;
+      public: RenderEngine *EngineAt(unsigned int _index,
+                  const std::map<std::string, std::string> &_params = {},
+                  const std::string &_path = "");
+
+      /// \brief Unload the render-engine with the given name. If the no
+      /// render-engine is registered under the given name, false will be
+      /// returned.
+      /// \param[in] _name Name of the desired render-engine
+      /// \return  True if the engine is unloaded
+      public: bool UnloadEngine(const std::string &_name);
+
+      /// \brief Unload the render-engine at the given index. If the no
+      /// render-engine is registered under the given name, false will be
+      /// returned.
+      /// \param[in] _index Index of the desired render-engine
+      /// \return  True if the engine is unloaded
+      public: bool UnloadEngineAt(unsigned int _index);
 
       /// \brief Register a new render-engine under the given name. If the
       /// given name is already in use, the render-engine will not be
@@ -81,7 +104,7 @@ namespace ignition
                   RenderEngine *_engine);
 
       /// \brief Unregister a render-engine registered under the given name.
-      /// If the no render-engine is registered under the given name no work
+      /// If no render-engine is registered under the given name no work
       /// will be done.
       /// \param[in] _name Name of the render-engine to unregister
       public: void UnregisterEngine(const std::string &_name);

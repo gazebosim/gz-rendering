@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASE_BASERENDERENGINE_HH_
 #define IGNITION_RENDERING_BASE_BASERENDERENGINE_HH_
 
+#include <map>
 #include <string>
 #include <vector>
 #include "ignition/rendering/RenderEngine.hh"
@@ -35,57 +36,65 @@ namespace ignition
 
       public: virtual ~BaseRenderEngine();
 
-      public: virtual bool Load();
+      // Documentation Inherited.
+      public: virtual bool Load(
+          const std::map<std::string, std::string> &_params = {}) override;
 
-      public: virtual bool Init();
+      public: virtual bool Init() override;
 
-      public: virtual bool Fini();
+      public: virtual bool Fini() override;
 
-      public: virtual bool IsLoaded() const;
+      public: virtual bool IsLoaded() const override;
 
-      public: virtual bool IsInitialized() const;
+      public: virtual bool IsInitialized() const override;
 
-      public: virtual bool IsEnabled() const;
+      public: virtual bool IsEnabled() const override;
 
-      public: virtual unsigned int SceneCount() const;
+      public: virtual unsigned int SceneCount() const override;
 
-      public: virtual bool HasScene(ConstScenePtr _scene) const;
+      public: virtual bool HasScene(ConstScenePtr _scene) const override;
 
-      public: virtual bool HasSceneId(unsigned int _id) const;
+      public: virtual bool HasSceneId(unsigned int _id) const override;
 
-      public: virtual bool HasSceneName(const std::string &_name) const;
+      public: virtual bool HasSceneName(const std::string &_name) const
+                  override;
 
-      public: virtual ScenePtr SceneById(unsigned int _id) const;
+      public: virtual ScenePtr SceneById(unsigned int _id) const override;
 
-      public: virtual ScenePtr SceneByName(const std::string &_name) const;
+      public: virtual ScenePtr SceneByName(const std::string &_name) const
+                  override;
 
-      public: virtual ScenePtr SceneByIndex(unsigned int _index) const;
+      public: virtual ScenePtr SceneByIndex(unsigned int _index) const override;
 
-      public: virtual void DestroyScene(ScenePtr _scene);
+      public: virtual void DestroyScene(ScenePtr _scene) override;
 
-      public: virtual void DestroySceneById(unsigned int _id);
+      public: virtual void DestroySceneById(unsigned int _id) override;
 
-      public: virtual void DestroySceneByName(const std::string &_name);
+      public: virtual void DestroySceneByName(const std::string &_name)
+                  override;
 
-      public: virtual void DestroySceneByIndex(unsigned int _index);
+      public: virtual void DestroySceneByIndex(unsigned int _index) override;
 
-      public: virtual void DestroyScenes();
+      public: virtual void DestroyScenes() override;
 
-      public: virtual ScenePtr CreateScene(const std::string &_name);
+      public: virtual ScenePtr CreateScene(const std::string &_name) override;
 
       public: virtual ScenePtr CreateScene(unsigned int _id,
-                  const std::string &_name);
+                  const std::string &_name) override;
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       /// Documentation Inherited
-      public: virtual void AddResourcePath(const std::string &_path);
+      public: virtual void AddResourcePath(const std::string &_path) override;
 
       protected: virtual void PrepareScene(ScenePtr _scene);
 
       protected: virtual unsigned int NextSceneId();
 
-      protected: virtual bool LoadImpl() = 0;
+      /// \brief Engine implementation of Load function.
+      /// \param[in] _params Parameters to be passed to the render engine.
+      protected: virtual bool LoadImpl(
+          const std::map<std::string, std::string> &_params) = 0;
 
       protected: virtual bool InitImpl() = 0;
 

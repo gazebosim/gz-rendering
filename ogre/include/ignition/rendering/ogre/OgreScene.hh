@@ -20,7 +20,9 @@
 #include <array>
 #include <string>
 #include "ignition/rendering/base/BaseScene.hh"
+#include "ignition/rendering/ogre/Export.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+
 
 namespace Ogre
 {
@@ -82,6 +84,14 @@ namespace ignition
                      const std::string &_name);
 
       protected: virtual CameraPtr CreateCameraImpl(unsigned int _id,
+                     const std::string &_name);
+
+      protected: virtual DepthCameraPtr CreateDepthCameraImpl(
+                     const unsigned int _id,
+                     const std::string &_name);
+
+      protected: virtual GpuRaysPtr CreateGpuRaysImpl(
+                     const unsigned int _id,
                      const std::string &_name);
 
       protected: virtual VisualPtr CreateVisualImpl(unsigned int _id,

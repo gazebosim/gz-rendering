@@ -12,7 +12,7 @@ find_package(OpenGL)
 include_directories(${OGRE_INCLUDE_DIRS})
 
 set_property(
-  SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc
+  SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc OgreGpuRays.cc OgreMaterial.cc
   PROPERTY COMPILE_DEFINITIONS
   IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
@@ -22,10 +22,20 @@ target_link_libraries(${ogre_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
   PRIVATE
+    ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
-    ${OGRE_LIBRARIES})
+    IgnOGRE::IgnOGRE
+    )
 
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre_target})
+
+if(WIN32)
+  # tests needs .dll in the same directory
+  add_custom_command(TARGET ${ogre_target} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    $<TARGET_FILE:${ogre_target}> ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
 
 add_subdirectory(media)

@@ -31,12 +31,14 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
+#include <ignition/plugin/Register.hh>
+
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-// #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-// #include "ignition/rendering/ogre2/Ogre2Scene.hh"
-// #include "ignition/rendering/ogre2/Ogre2Storage.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 
 class ignition::rendering::Ogre2RenderEnginePrivate
@@ -44,6 +46,9 @@ class ignition::rendering::Ogre2RenderEnginePrivate
 #if not defined(__APPLE__) && not defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
 #endif
+
+  /// \brief A list of supported fsaa levels
+  public: std::vector<unsigned int> fsaaLevels;
 };
 
 using namespace ignition;
@@ -90,12 +95,33 @@ Ogre2RenderEngine::~Ogre2RenderEngine()
 }
 
 //////////////////////////////////////////////////
-bool Ogre2RenderEngine::Fini()
+void Ogre2RenderEngine::Destroy()
 {
+  BaseRenderEngine::Destroy();
+
   if (this->scenes)
   {
     this->scenes->RemoveAll();
   }
+
+  delete this->ogreOverlaySystem;
+  this->ogreOverlaySystem = nullptr;
+
+  if (ogreRoot)
+  {
+    try
+    {
+      // TODO(anyone): do we need to catch segfault on delete?
+      delete this->ogreRoot;
+    }
+    catch (...)
+    {
+    }
+    this->ogreRoot = nullptr;
+  }
+
+  delete this->ogreLogManager;
+  this->ogreLogManager = nullptr;
 
 #if not (__APPLE__ || _WIN32)
   if (this->dummyDisplay)
@@ -110,25 +136,6 @@ bool Ogre2RenderEngine::Fini()
     this->dataPtr->dummyVisual = nullptr;
   }
 #endif
-
-  delete this->ogreOverlaySystem;
-  this->ogreOverlaySystem = nullptr;
-
-  if (ogreRoot)
-  {
-    this->ogreRoot->shutdown();
-    // TODO(anyone): fix segfault on delete
-    // delete this->ogreRoot;
-    this->ogreRoot = nullptr;
-  }
-
-  delete this->ogreLogManager;
-  this->ogreLogManager = nullptr;
-
-  this->loaded = false;
-  this->initialized = false;
-
-  return true;
 }
 
 //////////////////////////////////////////////////
@@ -232,13 +239,12 @@ Ogre::Root *Ogre2RenderEngine::OgreRoot() const
 }
 
 //////////////////////////////////////////////////
-ScenePtr Ogre2RenderEngine::CreateSceneImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+ScenePtr Ogre2RenderEngine::CreateSceneImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // Ogre2ScenePtr scene = Ogre2ScenePtr(new Ogre2Scene(_id, _name));
-  // this->scenes->Add(scene);
-  // return scene;
-  return ScenePtr();
+  Ogre2ScenePtr scene = Ogre2ScenePtr(new Ogre2Scene(_id, _name));
+  this->scenes->Add(scene);
+  return scene;
 }
 
 //////////////////////////////////////////////////
@@ -248,8 +254,14 @@ SceneStorePtr Ogre2RenderEngine::Scenes() const
 }
 
 //////////////////////////////////////////////////
-bool Ogre2RenderEngine::LoadImpl()
+bool Ogre2RenderEngine::LoadImpl(
+    const std::map<std::string, std::string> &_params)
 {
+  // parse params
+  auto it = _params.find("useCurrentGLContext");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->useCurrentGLContext;
+
   try
   {
     this->LoadAttempt();
@@ -287,7 +299,8 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  this->CreateContext();
+  if (!this->useCurrentGLContext)
+    this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -407,26 +420,36 @@ void Ogre2RenderEngine::LoadPlugins()
 
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
-      try
+      // check if plugin library exists
+      std::string filename = *piter+extension;
+      if (!common::exists(filename))
       {
-        // Load the plugin into OGRE
-        this->ogreRoot->loadPlugin(*piter+extension);
-      }
-      catch(Ogre::Exception &e)
-      {
-        try
-        {
-          // Load the debug plugin into OGRE
-          this->ogreRoot->loadPlugin(*piter+"_d"+extension);
-        }
-        catch(Ogre::Exception &ed)
+        filename = filename + "." + std::string(OGRE2_VERSION);
+        if (!common::exists(filename))
         {
           if ((*piter).find("RenderSystem") != std::string::npos)
           {
-            ignerr << "Unable to load Ogre Plugin[" << *piter
-                  << "]. Rendering will not be possible."
-                  << "Make sure you have installed OGRE and Gazebo properly.\n";
+            ignerr << "Unable to find Ogre Plugin[" << *piter
+                   << "]. Rendering will not be possible."
+                   << "Make sure you have installed OGRE properly.\n";
           }
+          continue;
+        }
+      }
+
+      // load the plugin
+      try
+      {
+        // Load the plugin into OGRE
+        this->ogreRoot->loadPlugin(filename);
+      }
+      catch(Ogre::Exception &e)
+      {
+        if ((*piter).find("RenderSystem") != std::string::npos)
+        {
+          ignerr << "Unable to load Ogre Plugin[" << *piter
+                 << "]. Rendering will not be possible."
+                 << "Make sure you have installed OGRE properly.\n";
         }
       }
     }
@@ -473,7 +496,38 @@ void Ogre2RenderEngine::CreateRenderSystem()
   ///   FBO seem to be the only good option
   renderSys->setConfigOption("RTT Preferred Mode", "FBO");
 
-//  renderSys->setConfigOption("FSAA", "4");
+  // get all supported fsaa values
+  Ogre::ConfigOptionMap configMap = renderSys->getConfigOptions();
+  auto fsaaOoption = configMap.find("FSAA");
+
+  if (fsaaOoption != configMap.end())
+  {
+    auto values = (*fsaaOoption).second.possibleValues;
+    for (auto const &str : values)
+    {
+      int value = 0;
+      try
+      {
+        value = std::stoi(str);
+      }
+      catch(...)
+      {
+        continue;
+      }
+      this->dataPtr->fsaaLevels.push_back(value);
+    }
+  }
+  std::sort(this->dataPtr->fsaaLevels.begin(), this->dataPtr->fsaaLevels.end());
+
+  // check if target fsaa is supported
+  unsigned int fsaa = 0;
+  unsigned int targetFSAA = 4;
+  auto const it = std::find(this->dataPtr->fsaaLevels.begin(),
+      this->dataPtr->fsaaLevels.end(), targetFSAA);
+  if (it != this->dataPtr->fsaaLevels.end())
+    fsaa = targetFSAA;
+
+  renderSys->setConfigOption("FSAA", std::to_string(fsaa));
 
   this->ogreRoot->setRenderSystem(renderSys);
 }
@@ -492,7 +546,47 @@ void Ogre2RenderEngine::CreateResources()
     mediaPath = common::joinPaths(resourcePath, "ogre2", "src", "media");
   }
 
+  // register low level materials (ogre v1 materials)
+  std::vector< std::pair<std::string, std::string> > archNames;
+  std::string p = mediaPath;
+  if (common::isDirectory(p))
+  {
+    archNames.push_back(
+        std::make_pair(p, "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/programs", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/scripts", "General"));
+
+    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+    {
+      try
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            aiter->first, "FileSystem", aiter->second);
+      }
+      catch(Ogre::Exception &/*_e*/)
+      {
+        ignerr << "Unable to load Ogre Resources. Make sure the resources "
+            "path in the world file is set correctly." << std::endl;
+      }
+    }
+  }
+
+  // register PbsMaterial resources
   Ogre::String rootHlmsFolder = mediaPath;
+  Ogre::String pbsCompositorFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "Compositors");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      pbsCompositorFolder, "FileSystem", "General");
+  Ogre::String commonMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonMaterialFolder, "FileSystem", "General");
+  Ogre::String commonGLSLMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSL");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonGLSLMaterialFolder, "FileSystem", "General");
 
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework
@@ -534,6 +628,9 @@ void Ogre2RenderEngine::CreateResources()
     hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit,
         &archiveUnlitLibraryFolders);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
+
+    // disable writting debug output to disk
+    hlmsUnlit->setDebugOutputPath(false, false);
   }
 
   {
@@ -560,6 +657,9 @@ void Ogre2RenderEngine::CreateResources()
     // Create and register
     hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
+
+    // disable writting debug output to disk
+    hlmsPbs->setDebugOutputPath(false, false);
   }
 }
 
@@ -579,12 +679,17 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   Ogre::NameValuePairList params;
   Ogre::RenderWindow *window = nullptr;
 
-  // Mac and Windows *must* use externalWindow handle.
+  // if use current gl then don't include window handle params
+  if (!this->useCurrentGLContext)
+  {
+    // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
-  params["externalWindowHandle"] = _handle;
+    params["externalWindowHandle"] = _handle;
 #else
-  params["parentWindowHandle"] = _handle;
+    params["parentWindowHandle"] = _handle;
 #endif
+  }
+
   params["FSAA"] = std::to_string(_antiAliasing);
   params["stereoMode"] = "Frame Sequential";
 
@@ -604,6 +709,15 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
+
+  // Ogre 2 PBS expects gamma correction
+  params["gamma"] = "true";
+
+  if (this->useCurrentGLContext)
+  {
+    params["externalGLControl"] = "true";
+    params["currentGLContext"] = "true";
+  }
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
@@ -645,7 +759,13 @@ void Ogre2RenderEngine::InitAttempt()
   // init the resources
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(false);
 
-  // this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
+  this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
+}
+
+/////////////////////////////////////////////////
+std::vector<unsigned int> Ogre2RenderEngine::FSAALevels() const
+{
+  return this->dataPtr->fsaaLevels;
 }
 
 /////////////////////////////////////////////////
@@ -655,5 +775,5 @@ Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 }
 
 // Register this plugin
-IGN_COMMON_REGISTER_SINGLE_PLUGIN(ignition::rendering::Ogre2RenderEnginePlugin,
-                                  ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(ignition::rendering::Ogre2RenderEnginePlugin,
+                    ignition::rendering::RenderEnginePlugin)

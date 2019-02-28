@@ -33,7 +33,7 @@ set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-common
-ign_find_package(ignition-common3 REQUIRED COMPONENTS graphics events)
+ign_find_package(ignition-common3 REQUIRED COMPONENTS events)
 set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
 
 #--------------------------------------

@@ -18,4 +18,3 @@ a set of abstract public API interfaces and the engine plugins provides the
 implementation. So when a user specifies a particular rendering engine to use,
 the relevant plugin will be loaded and all rendering calls will be made through
 that rendering engine.
-

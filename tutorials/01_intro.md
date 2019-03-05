@@ -14,7 +14,7 @@ rendering engine to use at run time.
 Ignition Rendering has a plugin architecture. Each rendering engine is
 integrated in the form of an Ignition Rendering plugin. In a nutshell, a plugin
 is essentially an interface to the underlying engine. Ignition Rendering exposes
-a set of abstract public API interfaces and the engine plugins provides the
+a set of abstract public API interfaces and the engine plugins provide the
 implementation. So when a user specifies a particular rendering engine to use,
 the relevant plugin will be loaded and all rendering calls will be made through
 that rendering engine.

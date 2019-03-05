@@ -1,3 +1,3 @@
 \page installation Installation
 
-See **README.md** at https://bitbucket.org/ignitionrobotics/ign-rendering
+See [README.md](https://bitbucket.org/ignitionrobotics/ign-rendering/src/default/README.md?at=default)

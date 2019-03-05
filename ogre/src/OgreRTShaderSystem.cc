@@ -104,9 +104,13 @@ bool OgreRTShaderSystem::Init()
     return false;
   }
 
+  ignerr <<   "  ========== OgreRTShader: shader gen init" << std::endl;
+
   if (Ogre::RTShader::ShaderGenerator::initialize())
   {
     std::string coreLibsPath, cachePath;
+
+    ignerr << "  ========== OgreRTShader: paths" << std::endl;
     if (!this->Paths(coreLibsPath, cachePath))
     {
       ignerr << "Cannot find OGRE rtshaderlib. "
@@ -119,10 +123,13 @@ bool OgreRTShaderSystem::Init()
     this->dataPtr->shaderGenerator =
         Ogre::RTShader::ShaderGenerator::getSingletonPtr();
 
+    ignerr << "  ========== OgreRTShader: add resource location" << std::endl;
+
     // Add the shader libs resource location
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
         coreLibsPath, "FileSystem");
 
+    ignerr << "  ========== OgreRTShader set shader cache path" << std::endl;
     // Set shader cache path.
     this->dataPtr->shaderGenerator->setShaderCachePath(cachePath);
 
@@ -133,6 +140,7 @@ bool OgreRTShaderSystem::Init()
     ignerr << "RT Shader system failed to initialize" << std::endl;
     return false;
   }
+  ignerr <<   "  ========== OgreRTShader: done" << std::endl;
   return false;
 }
 
@@ -429,9 +437,12 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
 bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
     std::string &cachePath)
 {
+  ignerr <<   "    ========== OgreRTShader::Paths getenv" << std::endl;
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
+
+  ignerr <<   "    ========== OgreRTShader::Paths getenv done: " << resourcePath << " vs " << env << std::endl;
 
   // path to look for ogre media files
   std::vector<std::string> paths;
@@ -455,14 +466,21 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
       std::string tmpDir = std::getenv(IGN_HOMEDIR);
       tmpDir = common::joinPaths(tmpDir, ".ignition", "rendering",
           "ogre-rtshader");
+
+      ignerr <<   "    ========== OgreRTShader::Paths got tmpDir " <<  tmpDir <<  std::endl;
       // Get the user
       std::string user = "nobody";
       const char* userEnv = std::getenv("USER");
+
+      ignerr <<   "    ========== OgreRTShader::Paths userEnv " <<  userEnv <<  std::endl;
       if (userEnv)
         user = std::string(userEnv);
       cachePath = common::joinPaths(tmpDir, user + "-rtshaderlibcache");
+
+      ignerr <<   "    ========== OgreRTShader::Paths create directories " << userEnv << " vs " <<  cachePath <<  std::endl;
       // Create the directory
       common::createDirectories(cachePath);
+      ignerr <<   "    ========== OgreRTShader::Paths done create directories "  <<  std::endl;
       break;
     }
   }
@@ -475,6 +493,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
     return false;
   }
 
+      ignerr <<   "    ========== OgreRTShader::Paths done!! "  <<  std::endl;
   return true;
 }
 

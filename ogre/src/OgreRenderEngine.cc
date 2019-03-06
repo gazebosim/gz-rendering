@@ -248,8 +248,10 @@ Ogre::Root *OgreRenderEngine::OgreRoot() const
 ScenePtr OgreRenderEngine::CreateSceneImpl(unsigned int _id,
     const std::string &_name)
 {
+  ignerr << "========== OgreRenderEngine: CreateSceneImpl" << std::endl;
   auto scene = OgreScenePtr(new OgreScene(_id, _name));
   this->scenes->Add(scene);
+  ignerr << "========== OgreRenderEngine: done CreateSceneImpl" << std::endl;
   return scene;
 }
 
@@ -303,30 +305,19 @@ bool OgreRenderEngine::InitImpl()
 //////////////////////////////////////////////////
 void OgreRenderEngine::LoadAttempt()
 {
-  ignerr << "========== OgreRenderEngine: load attempt create logger" << std::endl;
   this->CreateLogger();
   if (!this->useCurrentGLContext)
   {
-    ignerr << "========== OgreRenderEngine: create context" << std::endl;
     this->CreateContext();
   }
-  ignerr << "========== OgreRenderEngine: create root" << std::endl;
   this->CreateRoot();
-  ignerr << "========== OgreRenderEngine: create overlay" << std::endl;
   this->CreateOverlay();
-  ignerr << "========== OgreRenderEngine: load plugins" << std::endl;
   this->LoadPlugins();
-  ignerr << "========== OgreRenderEngine: create render system" << std::endl;
   this->CreateRenderSystem();
-  ignerr << "========== OgreRenderEngine: root init" << std::endl;
   this->ogreRoot->initialise(false);
-  ignerr << "========== OgreRenderEngine: create resources" << std::endl;
   this->CreateResources();
-  ignerr << "========== OgreRenderEngine: create renderwindow" << std::endl;
   this->CreateRenderWindow();
-  ignerr << "========== OgreRenderEngine: check capa" << std::endl;
   this->CheckCapabilities();
-  ignerr << "========== OgreRenderEngine: load attempt done" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -737,12 +728,7 @@ void OgreRenderEngine::InitAttempt()
   Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
   // init the resources
-  ignerr << "========== OgreRenderEngine: init resource group " << std::endl;
-
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-
-  ignerr << "========== OgreRenderEngine: set texture filtering " << std::endl;
-
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(
       Ogre::TFO_ANISOTROPIC);
 
@@ -753,6 +739,7 @@ void OgreRenderEngine::InitAttempt()
   ignerr << "========== OgreRenderEngine: create scenes " << std::endl;
 
   this->scenes = OgreSceneStorePtr(new OgreSceneStore);
+  ignerr << "========== OgreRenderEngine: init attempt done" << std::endl;
 }
 
 #if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))

@@ -468,7 +468,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
       coreLibsPath = p;
       // setup patch name for rt shader cache in tmp
       const char *homeEnv = std::getenv(IGN_HOMEDIR);
-      std::string tmpDir = (homeEnv) ? std::string(homeEnv) : std::string();
+      std::string tmpDir = (homeEnv) ? std::string(homeEnv) : std::string(".");
 
       ignerr <<   "    ========== OgreRTShader::  tmp dir " << tmpDir <<  std::endl;
 
@@ -487,7 +487,11 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
 
       ignerr <<   "    ========== OgreRTShader::Paths create directories " << user << " vs " <<  cachePath <<  std::endl;
       // Create the directory
-      common::createDirectories(cachePath);
+
+      if (!common::createDirectories(cachePath))
+      {
+        ignerr << "Unable to create ogre RTShader cache directories: " << cachePath << std::endl;
+      }
       ignerr <<   "    ========== OgreRTShader::Paths done create directories "  <<  std::endl;
       break;
     }

@@ -293,20 +293,28 @@ Ogre::SceneManager *OgreScene::OgreSceneManager() const
 //////////////////////////////////////////////////
 bool OgreScene::LoadImpl()
 {
+  ignerr << "========== OgreScene : LoadImpl" << std::endl;
   return true;
 }
 
 //////////////////////////////////////////////////
 bool OgreScene::InitImpl()
 {
+  ignerr << "========== OgreScene : InitImpl" << std::endl;
   this->CreateContext();
+  ignerr << "========== OgreScene : created context" << std::endl;
   this->CreateRootVisual();
+  ignerr << "========== OgreScene : created root visual" << std::endl;
   this->CreateStores();
+  ignerr << "========== OgreScene : created stores" << std::endl;
   this->CreateMeshFactory();
+  ignerr << "========== OgreScene : created mesh factory" << std::endl;
 
   OgreRTShaderSystem::Instance()->AddScene(this->SharedThis());
+  ignerr << "========== OgreScene : shadows" << std::endl;
   OgreRTShaderSystem::Instance()->ApplyShadows(this->SharedThis());
 
+  ignerr << "========== OgreScene : done InitImpl" << std::endl;
   return true;
 }
 

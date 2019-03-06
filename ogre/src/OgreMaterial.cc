@@ -408,6 +408,28 @@ ShaderParamsPtr OgreMaterial::FragmentShaderParams()
 }
 
 //////////////////////////////////////////////////
+void OgreMaterial::SetCulling(CullMode _mode)
+{
+  BaseMaterial::SetCulling(_mode);
+  Ogre::CullingMode mode;
+  switch (this->culling)
+  {
+    case CM_NONE:
+      mode = Ogre::CULL_NONE;
+      break;
+    case CM_BACK:
+      mode = Ogre::CULL_CLOCKWISE;
+      break;
+    case CM_FRONT:
+      mode = Ogre::CULL_ANTICLOCKWISE;
+      break;
+    default:
+      mode = Ogre::CULL_CLOCKWISE;
+  }
+  this->ogreMaterial->setCullingMode(mode);
+}
+
+//////////////////////////////////////////////////
 Ogre::MaterialPtr OgreMaterial::Material() const
 {
   return this->ogreMaterial;
@@ -553,5 +575,6 @@ void OgreMaterial::Init()
   // TODO: provide function interface
   this->ogreMaterial->setTextureAnisotropy(8);
 }
+
 
 //////////////////////////////////////////////////

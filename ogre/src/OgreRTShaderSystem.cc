@@ -442,7 +442,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
 
-  ignerr <<   "    ========== OgreRTShader::Paths getenv done: " << resourcePath << " vs " << env << std::endl;
+  ignerr <<   "    ========== OgreRTShader::Paths getenv done: " << resourcePath <<  std::endl;
 
   // path to look for ogre media files
   std::vector<std::string> paths;
@@ -472,12 +472,12 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
       std::string user = "nobody";
       const char* userEnv = std::getenv("USER");
 
-      ignerr <<   "    ========== OgreRTShader::Paths userEnv " <<  userEnv <<  std::endl;
+      ignerr <<   "    ========== OgreRTShader::Paths userEnv " <<   std::endl;
       if (userEnv)
         user = std::string(userEnv);
       cachePath = common::joinPaths(tmpDir, user + "-rtshaderlibcache");
 
-      ignerr <<   "    ========== OgreRTShader::Paths create directories " << userEnv << " vs " <<  cachePath <<  std::endl;
+      ignerr <<   "    ========== OgreRTShader::Paths create directories " << user << " vs " <<  cachePath <<  std::endl;
       // Create the directory
       common::createDirectories(cachePath);
       ignerr <<   "    ========== OgreRTShader::Paths done create directories "  <<  std::endl;

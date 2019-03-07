@@ -397,6 +397,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
 bool RenderEngineManagerPrivate::UnloadEnginePlugin(
     const std::string &_engineName)
 {
+#ifndef _WIN32
   auto it = this->enginePlugins.find(_engineName);
   if (it == this->enginePlugins.end())
   {
@@ -419,7 +420,7 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
 
   // set to null - this means engine is still registered but not loaded
   this->engines[_engineName] = nullptr;
-
+#endif
   return true;
 }
 

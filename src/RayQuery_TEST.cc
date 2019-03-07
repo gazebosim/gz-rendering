@@ -55,10 +55,8 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
               << "' is not supported" << std::endl;
     return;
   }
-  ignerr << "RayQuery create scene " << std::endl;
   ScenePtr scene = engine->CreateScene("scene");
 
-  ignerr << "RayQuery create rayquery " << std::endl;
   RayQueryPtr rayQuery = scene->CreateRayQuery();
   EXPECT_TRUE(rayQuery != nullptr);
 
@@ -66,7 +64,6 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
   math::Vector3d o0 = math::Vector3d::Zero;
   math::Vector3d d0 = math::Vector3d::UnitZ;
 
-  ignerr << "RayQuery set origin " << std::endl;
   rayQuery->SetOrigin(o0);
   EXPECT_EQ(o0, rayQuery->Origin());
   rayQuery->SetDirection(d0);
@@ -104,11 +101,8 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
   EXPECT_FALSE((result));
 
   // Clean up
-  ignerr << "RayQuery destroy scene " << std::endl;
   engine->DestroyScene(scene);
-  ignerr << "RayQuery destroy unload engine" << std::endl;
   rendering::unloadEngine(engine->Name());
-  ignerr << "RayQuery test done" << std::endl;
 }
 
 /////////////////////////////////////////////////

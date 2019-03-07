@@ -101,7 +101,14 @@ namespace ignition
 
       public: virtual void PreRender() override;
 
+      public: virtual void SetCulling(CullMode _mode) override;
+
+      public: virtual CullMode Culling() const override;
+
       protected: virtual void Reset();
+
+      /// \brief Culling mode used by this material
+      protected: CullMode culling = CM_BACK;
     };
 
     //////////////////////////////////////////////////
@@ -198,6 +205,20 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMaterial<T>::SetCulling(CullMode _mode)
+    {
+      this->culling = _mode;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    CullMode BaseMaterial<T>::Culling() const
+    {
+      return this->culling;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     MaterialPtr BaseMaterial<T>::Clone(const std::string &_name) const
     {
       auto baseShared = this->shared_from_this();
@@ -230,6 +251,7 @@ namespace ignition
       this->SetShaderType(_material->ShaderType());
       this->SetVertexShader(_material->VertexShader());
       this->SetFragmentShader(_material->FragmentShader());
+      this->SetCulling(_material->Culling());
     }
 
     //////////////////////////////////////////////////
@@ -256,6 +278,7 @@ namespace ignition
       this->ClearNormalMap();
       // TODO(anyone): update common::Material
       this->SetShaderType(ST_PIXEL);
+      this->SetCulling(CM_BACK);
     }
 
     //////////////////////////////////////////////////
@@ -283,6 +306,7 @@ namespace ignition
       this->ClearTexture();
       this->ClearNormalMap();
       this->SetShaderType(ST_PIXEL);
+      this->SetCulling(CM_BACK);
     }
     }
   }

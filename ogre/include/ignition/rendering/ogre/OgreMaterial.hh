@@ -131,6 +131,9 @@ namespace ignition
       public: virtual ShaderParamsPtr FragmentShaderParams() override;
 
       // Documentation inherited.
+      public: virtual void SetCulling(CullMode _mode) override;
+
+      // Documentation inherited.
       // \sa BaseMaterial::PreRender()
       public: virtual void PreRender() override;
 

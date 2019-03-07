@@ -32,6 +32,19 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Enum of polygon face culling modes
+    enum IGNITION_RENDERING_VISIBLE CullMode
+    {
+      /// \brief No cullling
+      CM_NONE = 0,
+
+      /// \brief Cull back face
+      CM_BACK = 1,
+
+      /// \brief Cull front face
+      CM_FRONT = 2,
+    };
+
     /// \class Material Material.hh ignition/rendering/Material.hh
     /// \brief Represents a surface material of a Geometry
     class IGNITION_RENDERING_VISIBLE Material :
@@ -234,6 +247,14 @@ namespace ignition
       /// \brief Set the fragment shader
       /// \param[in] _path path to a file containing a glsl shader
       public: virtual void SetFragmentShader(const std::string &_path) = 0;
+
+      /// \brief Set the polygon face cullling mode
+      /// \param[in] _mode Culling mode
+      public: virtual void SetCulling(CullMode _mode) = 0;
+
+      /// \brief Get the cullling mode used by this material
+      /// \return[in] _mode Culling mode
+      public: virtual CullMode Culling() const = 0;
     };
     }
   }

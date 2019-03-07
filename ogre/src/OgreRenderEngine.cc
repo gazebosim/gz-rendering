@@ -86,6 +86,7 @@ OgreRenderEngine::~OgreRenderEngine()
 //////////////////////////////////////////////////
 void OgreRenderEngine::Destroy()
 {
+  ignerr << "OgreRenderEngine Destroy" << std::endl;
   BaseRenderEngine::Destroy();
 
   if (this->scenes)
@@ -129,6 +130,7 @@ void OgreRenderEngine::Destroy()
     this->dataPtr->dummyVisual = nullptr;
   }
 #endif
+  ignerr << "OgreRenderEngine Destroy done" << std::endl;
 }
 
 //////////////////////////////////////////////////

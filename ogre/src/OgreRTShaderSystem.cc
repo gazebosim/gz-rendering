@@ -107,7 +107,6 @@ bool OgreRTShaderSystem::Init()
   if (Ogre::RTShader::ShaderGenerator::initialize())
   {
     std::string coreLibsPath, cachePath;
-
     if (!this->Paths(coreLibsPath, cachePath))
     {
       ignerr << "Cannot find OGRE rtshaderlib. "
@@ -458,20 +457,17 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
 
       tmpDir = common::joinPaths(tmpDir, ".ignition", "rendering",
           "ogre-rtshader");
-
       // Get the user
       std::string user = "nobody";
       const char* userEnv = std::getenv("USER");
-
       if (userEnv)
         user = std::string(userEnv);
       cachePath = common::joinPaths(tmpDir, user + "-rtshaderlibcache");
-
       // Create the directory
-
       if (!common::createDirectories(cachePath))
       {
-        ignerr << "Unable to create ogre RTShader cache directories: " << cachePath << std::endl;
+        ignerr << "Unable to create ogre RTShader cache directories: "
+            << cachePath << std::endl;
       }
       break;
     }

@@ -132,7 +132,6 @@ void OgreRenderEngine::Destroy()
     this->dataPtr->dummyVisual = nullptr;
   }
 #endif
-  ignerr << "OgreRenderEngine Destroy done" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -309,9 +308,7 @@ void OgreRenderEngine::LoadAttempt()
 {
   this->CreateLogger();
   if (!this->useCurrentGLContext)
-  {
     this->CreateContext();
-  }
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -331,9 +328,6 @@ void OgreRenderEngine::CreateLogger()
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
-
-  /// TODO remove after testing
-  logPath = "C:\\ogre.log";
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
@@ -761,6 +755,7 @@ void OgreRenderEngine::InitAttempt()
 
   // init the resources
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
   Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(
       Ogre::TFO_ANISOTROPIC);
 

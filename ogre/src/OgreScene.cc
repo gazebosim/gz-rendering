@@ -306,6 +306,7 @@ bool OgreScene::InitImpl()
 
   OgreRTShaderSystem::Instance()->AddScene(this->SharedThis());
   OgreRTShaderSystem::Instance()->ApplyShadows(this->SharedThis());
+
   return true;
 }
 

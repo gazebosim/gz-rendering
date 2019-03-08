@@ -14,7 +14,7 @@ find_package(ignition-cmake2 REQUIRED)
 #============================================================================
 # Set up the project
 #============================================================================
-ign_configure_project(VERSION_SUFFIX pre6)
+ign_configure_project()
 
 #============================================================================
 # Set project-specific options
@@ -117,7 +117,7 @@ else()
   set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 endif()
 
-set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering-${PROJECT_VERSION_MAJOR})
+set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${IGN_DATA_INSTALL_DIR})
 
 #============================================================================
 # Configure the build

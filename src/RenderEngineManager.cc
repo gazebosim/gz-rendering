@@ -409,6 +409,8 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
   this->enginePlugins.erase(it);
 
 #ifndef _WIN32
+  // Unloading the plugin on windows causes tests to crash on exit
+  // see issue #45
   if (!this->pluginLoader.ForgetLibraryOfPlugin(pluginName))
   {
     ignerr << "Failed to unload plugin: " << pluginName << std::endl;
@@ -421,6 +423,7 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
 
   // set to null - this means engine is still registered but not loaded
   this->engines[_engineName] = nullptr;
+
   return true;
 }
 

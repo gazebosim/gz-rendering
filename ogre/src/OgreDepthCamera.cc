@@ -59,8 +59,6 @@ class ignition::rendering::OgreDepthCameraPrivate
               const std::string &)> newDepthFrame;
 };
 
-
-
 using namespace ignition;
 using namespace rendering;
 

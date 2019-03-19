@@ -166,6 +166,9 @@ namespace ignition
       /// \brief Add path to media resource location
       /// \param[in] _paths Absolute path to resource location
       public: virtual void AddResourcePath(const std::string &_path) = 0;
+
+      /// \brief Get the render pass manager for this engine.
+      public: virtual RenderPassSystemPtr RenderPassSystem() const = 0;
     };
     }
   }

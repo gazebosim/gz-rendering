@@ -37,7 +37,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE RenderTarget :
       public virtual Object
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~RenderTarget() { }
 
       /// \brief Get render target width in pixels
@@ -76,6 +76,23 @@ namespace ignition
       /// This should be the same as the scene background color.
       /// \return Render target background color.
       public: virtual math::Color BackgroundColor() const = 0;
+
+      /// \brief Add a render pass to the render target
+      /// \param[in] _pass New render pass to add
+      public: virtual void AddRenderPass(const RenderPassPtr &_pass) = 0;
+
+      /// \brief Remove a render pass from the render target
+      /// \param[in] _pass render pass to remove
+      public: virtual void RemoveRenderPass(const RenderPassPtr &_pass) = 0;
+
+      /// \brief Get the number of render passes applied to the render target
+      /// \return Number of render passes applied
+      public: virtual unsigned int RenderPassCount() const = 0;
+
+      /// \brief Get a render passes by index
+      /// \return Render pass at the specified index
+      public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
+          const = 0;
     };
 
     /// \class RenderTexture RenderTexture.hh

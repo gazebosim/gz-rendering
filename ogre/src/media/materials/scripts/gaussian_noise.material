@@ -1,0 +1,36 @@
+vertex_program GaussianNoiseVS glsl
+{
+  source gaussian_noise_vs.glsl
+}
+
+fragment_program GaussianNoiseFS glsl
+{
+  source gaussian_noise_fs.glsl
+  default_params
+  {
+    param_named RT int 0
+    param_named mean float 0.0
+    param_named stddev float 1.0
+    param_named offsets float3 0.0 0.0 0.0
+  }
+}
+
+material GaussianNoise
+{
+  technique
+  {
+    pass
+    {
+      vertex_program_ref GaussianNoiseVS { }
+      fragment_program_ref GaussianNoiseFS { }
+
+      texture_unit RT
+      {
+        tex_coord_set 0
+        tex_address_mode clamp
+        filtering linear linear linear
+      }
+    }
+  }
+}
+

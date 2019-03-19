@@ -274,7 +274,6 @@ namespace ignition
 
       /// \brief Set a material that the camera should see on all objects
       /// \param[in] _material a material instance
-      /// \param[in] _material a material instance
       public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
 
       /// \brief Get the OpenGL texture id associated with the render texture
@@ -282,6 +281,23 @@ namespace ignition
       /// render engine is OpenGL based.
       /// \return Texture Id of type GLuint.
       public: virtual unsigned int RenderTextureGLId() const = 0;
+
+      /// \brief Add a render pass to the camera
+      /// \param[in] _pass New render pass to add
+      public: virtual void AddRenderPass(const RenderPassPtr &_pass) = 0;
+
+      /// \brief Remove a render pass from the camera
+      /// \param[in] _pass render pass to remove
+      public: virtual void RemoveRenderPass(const RenderPassPtr &_pass) = 0;
+
+      /// \brief Get the number of render passes applied to the camera
+      /// \return Number of render passes applied
+      public: virtual unsigned int RenderPassCount() const = 0;
+
+      /// \brief Get a render passes by index
+      /// \return Render pass at the specified index
+      public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
+          const = 0;
     };
     }
   }

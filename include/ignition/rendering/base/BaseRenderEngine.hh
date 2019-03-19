@@ -87,6 +87,9 @@ namespace ignition
       /// Documentation Inherited
       public: virtual void AddResourcePath(const std::string &_path) override;
 
+      /// Documentation Inherited
+      public: virtual RenderPassSystemPtr RenderPassSystem() const override;
+
       protected: virtual void PrepareScene(ScenePtr _scene);
 
       protected: virtual unsigned int NextSceneId();
@@ -112,6 +115,9 @@ namespace ignition
       /// \brief a list of paths that render engines use to locate their
       /// resources
       protected: std::vector<std::string> resourcePaths;
+
+      /// \brief Render pass manager for this render engine.
+      protected: RenderPassSystemPtr renderPassSystem;
     };
     }
   }

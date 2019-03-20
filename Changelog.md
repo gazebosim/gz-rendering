@@ -4,8 +4,8 @@
 
 ### Ignition Rendering 2.0.0 (20XX-XX-XX)
 
-1. Add Render Pass System and Gaussian Noise render pass
-    * [Pull request ](https://bitbucket.org/ignitionrobotics/ign-common/pull-requests/)
+1. Add support for Render Passes and implement Gaussian Noise pass
+    * [Pull request 154](https://bitbucket.org/ignitionrobotics/ign-common/pull-requests/154)
 
 ### Ignition Rendering 1.X
 

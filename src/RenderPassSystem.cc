@@ -15,6 +15,8 @@
  *
  */
 
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/RenderPassSystem.hh"
 
 using namespace ignition;
@@ -41,12 +43,19 @@ RenderPassSystem::~RenderPassSystem()
 }
 
 //////////////////////////////////////////////////
-RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_name)
+RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_type)
 {
   RenderPassPtr pass;
-  auto it = renderPassMap.find(_name);
+  auto it = renderPassMap.find(_type);
   if (it != renderPassMap.end())
+  {
     pass.reset(it->second->New());
+  }
+  else
+  {
+    ignerr << "RenderPass of typeid '" << _type << "' is not registered"
+           << std::endl;
+  }
   return pass;
 }
 

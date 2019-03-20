@@ -19,6 +19,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <typeinfo>
 
 #include "ignition/rendering/config.hh"
@@ -64,22 +65,22 @@ namespace ignition
               }
 
       /// \brief Register a render pass factory to the sytem
-      /// \param[in] _name Name of render pass class
+      /// \param[in] _type Render pass type, i.e. typeid of render pass class
       /// \param[in] _factory Factory used to create the render pass
-      public: static void Register(const std::string &_name,
+      public: static void Register(const std::string &_type,
           RenderPassFactory *_factory);
 
       /// \brief Implementation for creating render passes
-      /// \param[in] _name Name of render pass to create
+      /// \param[in] _type Render pass type, i.e. typeid of render pass class
       /// \return Pointer to the render pass created
-      private: RenderPassPtr CreateImpl(const std::string &_name);
+      private: RenderPassPtr CreateImpl(const std::string &_type);
 
       /// \brief A map of render pass type id name to its factory class
-      public: static std::map<std::string, RenderPassFactory *> renderPassMap;
+      private: static std::map<std::string, RenderPassFactory *> renderPassMap;
 
       /// \internal
       /// \brief Pointer to private data class
-      public: std::unique_ptr<RenderPassSystemPrivate> dataPtr;
+      private: std::unique_ptr<RenderPassSystemPrivate> dataPtr;
     };
 
     /// \brief Render pass registration macro

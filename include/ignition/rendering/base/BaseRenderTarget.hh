@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BASE_BASERENDERTARGET_HH_
 
 #include <string>
+#include <vector>
 
 #include "ignition/rendering/RenderPass.hh"
 #include "ignition/rendering/RenderTarget.hh"
@@ -64,7 +65,8 @@ namespace ignition
       public: virtual void AddRenderPass(const RenderPassPtr &_pass) override;
 
       // Documentation inherited
-      public: virtual void RemoveRenderPass(const RenderPassPtr &_pass) override;
+      public: virtual void RemoveRenderPass(const RenderPassPtr &_pass)
+          override;
 
       // Documentation inherited
       public: virtual unsigned int RenderPassCount() const override;
@@ -255,7 +257,8 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    RenderPassPtr BaseRenderTarget<T>::RenderPassByIndex(unsigned int _index) const
+    RenderPassPtr BaseRenderTarget<T>::RenderPassByIndex(unsigned int _index)
+        const
     {
       if (_index > this->renderPasses.size())
       {

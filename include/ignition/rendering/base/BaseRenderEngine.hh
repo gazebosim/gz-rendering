@@ -84,10 +84,10 @@ namespace ignition
 
       public: virtual void Destroy() override;
 
-      /// Documentation Inherited
+      // Documentation Inherited
       public: virtual void AddResourcePath(const std::string &_path) override;
 
-      /// Documentation Inherited
+      // Documentation Inherited
       public: virtual RenderPassSystemPtr RenderPassSystem() const override;
 
       protected: virtual void PrepareScene(ScenePtr _scene);
@@ -116,7 +116,7 @@ namespace ignition
       /// resources
       protected: std::vector<std::string> resourcePaths;
 
-      /// \brief Render pass manager for this render engine.
+      /// \brief Render pass system for this render engine.
       protected: RenderPassSystemPtr renderPassSystem;
     };
     }

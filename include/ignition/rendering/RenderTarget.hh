@@ -89,7 +89,7 @@ namespace ignition
       /// \return Number of render passes applied
       public: virtual unsigned int RenderPassCount() const = 0;
 
-      /// \brief Get a render passes by index
+      /// \brief Get a render pass by index
       /// \return Render pass at the specified index
       public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
           const = 0;

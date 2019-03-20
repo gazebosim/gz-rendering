@@ -38,6 +38,7 @@ namespace ignition
       public: virtual ~OgreRenderPass();
 
       /// \brief Set the ogre camera that the render pass applies to
+      /// \param[in] _camera Pointer to the ogre camera.
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
       // Documentation inherited.

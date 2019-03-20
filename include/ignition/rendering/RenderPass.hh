@@ -29,8 +29,8 @@ namespace ignition
     //
     /// \class RenderPass RenderPass.hh ignition/rendering/RenderPass.hh
     /// \brief A render pass can be added to a camera to affect how the scene
-    /// or render texture is rendered. It can be used to add post-processing
-    /// effects. Multiple passes can be chained together.
+    /// is rendered. It can be used to add post-processing effects. Multiple
+    /// passes can be chained together.
     class IGNITION_RENDERING_VISIBLE RenderPass
       : public virtual Object
     {

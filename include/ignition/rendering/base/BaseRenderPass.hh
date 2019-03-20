@@ -28,7 +28,7 @@ namespace ignition
     //
     /// \class BaseRenderPass BaseRenderPass.hh
     /// ignition/rendering/base/BaseRenderPass.hh
-    /// \brief Base render pass that can be applied to a camera
+    /// \brief Base render pass that can be applied to a render target
     template <class T>
     class BaseRenderPass:
       public virtual RenderPass,

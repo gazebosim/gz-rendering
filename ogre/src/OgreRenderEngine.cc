@@ -778,7 +778,6 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 }
 #endif
 
-
 // Register this plugin
 IGNITION_ADD_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
                     ignition::rendering::RenderEnginePlugin)

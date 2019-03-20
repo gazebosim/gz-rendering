@@ -54,9 +54,6 @@ namespace ignition
       /// \brief Gaussian noise compositor listener
       public: std::shared_ptr<GaussianNoiseCompositorListener>
           gaussianNoiseCompositorListener;
-
-      /// \brief Only the render pass system can create render passes
-      private: friend class OgreRenderPassSystem;
     };
     }
   }

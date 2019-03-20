@@ -30,7 +30,7 @@ namespace ignition
     //
     /// \class BaseGaussianNoisePass BaseGaussianNoisePass.hh
     /// ignition/rendering/base/BaseGaussianNoisePass.hh
-    /// \brief Base gaussian noise render pass.
+    /// \brief Base Gaussian noise render pass.
     template <class T>
     class BaseGaussianNoisePass :
       public virtual GaussianNoisePass,

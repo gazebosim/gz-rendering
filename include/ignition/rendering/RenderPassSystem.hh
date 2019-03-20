@@ -64,14 +64,14 @@ namespace ignition
                 return this->CreateImpl(typeid(T).name());
               }
 
-      /// \brief Register a render pass factory to the sytem
-      /// \param[in] _type Render pass type, i.e. typeid of render pass class
+      /// \brief Register a render pass factory to the system
+      /// \param[in] _type Render pass type, i.e. type id of render pass class
       /// \param[in] _factory Factory used to create the render pass
       public: static void Register(const std::string &_type,
           RenderPassFactory *_factory);
 
       /// \brief Implementation for creating render passes
-      /// \param[in] _type Render pass type, i.e. typeid of render pass class
+      /// \param[in] _type Render pass type, i.e. type id of render pass class
       /// \return Pointer to the render pass created
       private: RenderPassPtr CreateImpl(const std::string &_type);
 

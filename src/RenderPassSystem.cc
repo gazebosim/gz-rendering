@@ -65,6 +65,3 @@ void RenderPassSystem::Register(const std::string &_name,
 {
   renderPassMap[_name] = _factory;
 }
-
-
-

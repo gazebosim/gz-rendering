@@ -79,14 +79,15 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
   // every frame. The changes made by other render pass are overriden locally
   // by this render passes, and vice versa.
   std::string matName = "GaussianNoise";
-  this->gaussianNoiseMat =
+  Ogre::MaterialPtr ogreMat =
       Ogre::MaterialManager::getSingleton().getByName(matName);
-  if (!this->gaussianNoiseMat)
+  if (!ogreMat)
   {
     ignerr << "Gaussian noise material not found: '" << matName << "'"
            << std::endl;
     return;
   }
+  this->gaussianNoiseMat = ogreMat.get();
   if (!this->gaussianNoiseMat->isLoaded())
     this->gaussianNoiseMat->load();
 

@@ -47,7 +47,7 @@ namespace ignition
       public: void CreateRenderPass() override;
 
       /// brief Pointer to the Gaussian noise ogre material
-      private: Ogre::MaterialPtr gaussianNoiseMat;
+      private: Ogre::Material *gaussianNoiseMat = nullptr;
     };
     }
   }

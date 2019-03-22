@@ -32,7 +32,6 @@ compositor_node PbsMaterialsRenderingNode
   out 1 rt1
 }
 
-
 compositor_node FinalComposition
 {
   in 0 rt_output
@@ -41,10 +40,10 @@ compositor_node FinalComposition
 
   target rt_output
   {
-    //Play nice with Multi-GPU setups by telling the API there is no inter-frame dependency.
-    //On APIs that support discard_only (e.g. DX11) the driver may just ignore the colour value,
-    //and use a different memory region (i.e. the value read from a pixel of a discarded buffer
-    //without having written to it is undefined)
+    // Play nice with Multi-GPU setups by telling the API there is no inter-frame dependency.
+    // On APIs that support discard_only (e.g. DX11) the driver may just ignore the colour value,
+    // and use a different memory region (i.e. the value read from a pixel of a discarded buffer
+    // without having written to it is undefined)
     pass clear
     {
       colour_value  1 0 0 1
@@ -151,6 +150,6 @@ compositor_node_shadow PbsMaterialsShadowNode
 
 workspace PbsMaterialsWorkspace
 {
-	connect_output FinalComposition 0
+  connect_output FinalComposition 0
   connect PbsMaterialsRenderingNode 0 FinalComposition 1
 }

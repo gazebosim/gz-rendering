@@ -57,7 +57,7 @@ namespace ignition
       // Documentation inherited.
       public: void Destroy() override;
 
-      /// \brief Get the ogre compositor node definition name fo this
+      /// \brief Get the ogre compositor node definition name for this
       /// render pass
       public: std::string OgreCompositorNodeDefinitionName() const;
 

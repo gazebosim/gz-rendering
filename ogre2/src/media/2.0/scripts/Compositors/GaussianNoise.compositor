@@ -39,5 +39,3 @@ compositor_node GaussianNoiseNode
   // where the texture is reused to store its result
   out 1 rt_input
 }
-
-

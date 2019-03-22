@@ -35,6 +35,7 @@
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/RayQuery.hh>
+#include <ignition/rendering/RenderPass.hh>
 #include <ignition/rendering/Scene.hh>
 #include <ignition/rendering/OrbitViewController.hh>
 
@@ -303,6 +304,18 @@ void keyboardCB(unsigned char _key, int, int)
   {
     g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
   }
+  else if (_key == 'p')
+  {
+    // toggle all render passes
+    for (ir::CameraPtr camera : g_cameras)
+    {
+      for (unsigned int i = 0; i < camera->RenderPassCount(); ++i)
+      {
+        ir::RenderPassPtr pass = camera->RenderPassByIndex(i);
+        pass->SetEnabled(!pass->IsEnabled());
+      }
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -337,6 +350,7 @@ void printUsage()
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
+  std::cout << "  P   - Toggle render pass     " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 

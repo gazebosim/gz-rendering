@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERTARGET_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2RENDERTARGET_HH_
 
+#include <string>
 #include <ignition/math/Color.hh>
 
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -97,6 +98,9 @@ namespace ignition
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
 
+      /// \brief Update the render pass chain
+      protected: virtual void UpdateRenderPassChain();
+
       /// \brief Implementation of the Rebuild function
       protected: virtual void RebuildImpl() override;
 
@@ -124,6 +128,9 @@ namespace ignition
       /// \brief Ogre's compositor workspace - the main interface to render
       /// into a render target or render texture.
       protected: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
+
+      /// \brief Ogre's compositor workspace definition name
+      protected: std::string ogreCompositorWorkspaceDefName;
 
       /// \brief Stores the background color of the render target
       protected: Ogre::ColourValue ogreBackgroundColor;

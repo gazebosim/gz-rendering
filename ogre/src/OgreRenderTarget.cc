@@ -220,6 +220,7 @@ void OgreRenderTarget::UpdateRenderPassChain()
     OgreRenderPass *ogreRenderPass =
         dynamic_cast<OgreRenderPass *>(pass.get());
     ogreRenderPass->SetCamera(this->ogreCamera);
+    ogreRenderPass->CreateRenderPass();
   }
   this->renderPassDirty = false;
 }

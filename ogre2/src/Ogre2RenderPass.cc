@@ -14,38 +14,35 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreRenderPass.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
 
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OgreRenderPass::OgreRenderPass()
+Ogre2RenderPass::Ogre2RenderPass()
 {
 }
 
 //////////////////////////////////////////////////
-OgreRenderPass::~OgreRenderPass()
+Ogre2RenderPass::~Ogre2RenderPass()
 {
 }
 
 //////////////////////////////////////////////////
-void OgreRenderPass::SetCamera(Ogre::Camera *_camera)
-{
-  if (this->ogreCamera != _camera)
-  {
-    this->ogreCamera = _camera;
-  }
-}
-
-//////////////////////////////////////////////////
-void OgreRenderPass::Destroy()
+void Ogre2RenderPass::Destroy()
 {
 }
 
 //////////////////////////////////////////////////
-void OgreRenderPass::CreateRenderPass()
+void Ogre2RenderPass::CreateRenderPass()
 {
   // To be overriden by derived render pass classes
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2RenderPass::OgreCompositorNodeDefinitionName() const
+{
+  return this->ogreCompositorNodeDefName;
 }

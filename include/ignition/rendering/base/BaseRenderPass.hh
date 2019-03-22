@@ -39,6 +39,15 @@ namespace ignition
 
       /// \brief Destructor
       public: virtual ~BaseRenderPass();
+
+      // Documentation inherited
+      public: virtual void SetEnabled(bool _enabled) override;
+
+      // Documentation inherited
+      public: virtual bool IsEnabled() const override;
+
+      /// \brief Flag to indicate if render pass is enabled or not
+      protected: bool enabled = true;
     };
 
     //////////////////////////////////////////////////
@@ -53,6 +62,20 @@ namespace ignition
     template <class T>
     BaseRenderPass<T>::~BaseRenderPass()
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderPass<T>::SetEnabled(bool _enabled)
+    {
+      this->enabled = _enabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseRenderPass<T>::IsEnabled() const
+    {
+      return this->enabled;
     }
     }
   }

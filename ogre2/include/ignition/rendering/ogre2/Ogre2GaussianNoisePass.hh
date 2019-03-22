@@ -14,15 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
-#define IGNITION_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
-
-#include <memory>
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
 
 #include "ignition/rendering/base/BaseGaussianNoisePass.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderPass.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
+#include "ignition/rendering/ogre2/Export.hh"
 
 namespace ignition
 {
@@ -30,33 +28,23 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    // Forward declaration
-    class GaussianNoiseCompositorListener;
-
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGaussianNoisePass :
-      public BaseGaussianNoisePass<OgreRenderPass>
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2GaussianNoisePass :
+      public BaseGaussianNoisePass<Ogre2RenderPass>
     {
       /// \brief Constructor
-      public: OgreGaussianNoisePass();
+      public: Ogre2GaussianNoisePass();
 
       /// \brief Destructor
-      public: virtual ~OgreGaussianNoisePass();
+      public: virtual ~Ogre2GaussianNoisePass();
 
       // Documentation inherited
       public: void PreRender() override;
 
       // Documentation inherited
-      public: void Destroy() override;
-
-      // Documentation inherited
       public: void CreateRenderPass() override;
 
-      /// \brief Gaussian noise compositor.
-      public: Ogre::CompositorInstance *gaussianNoiseInstance = nullptr;
-
-      /// \brief Gaussian noise compositor listener
-      public: std::shared_ptr<GaussianNoiseCompositorListener>
-          gaussianNoiseCompositorListener;
+      /// brief Pointer to the Gaussian noise ogre material
+      private: Ogre::MaterialPtr gaussianNoiseMat;
     };
     }
   }

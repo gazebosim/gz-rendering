@@ -103,6 +103,15 @@ OgreGaussianNoisePass::~OgreGaussianNoisePass()
 }
 
 //////////////////////////////////////////////////
+void OgreGaussianNoisePass::PreRender()
+{
+  if (!this->gaussianNoiseInstance)
+    return;
+  if (this->enabled != this->gaussianNoiseInstance->getEnabled())
+    this->gaussianNoiseInstance->setEnabled(this->enabled);
+}
+
+//////////////////////////////////////////////////
 void OgreGaussianNoisePass::CreateRenderPass()
 {
   if (!this->ogreCamera)
@@ -121,7 +130,7 @@ void OgreGaussianNoisePass::CreateRenderPass()
   this->gaussianNoiseInstance =
       Ogre::CompositorManager::getSingleton().addCompositor(
       this->ogreCamera->getViewport(), "RenderPass/GaussianNoise");
-  this->gaussianNoiseInstance->setEnabled(true);
+  this->gaussianNoiseInstance->setEnabled(this->enabled);
 
   // add listener that injects random noise over time
   this->gaussianNoiseCompositorListener.reset(new

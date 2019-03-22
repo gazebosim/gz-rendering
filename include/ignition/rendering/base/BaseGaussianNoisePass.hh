@@ -37,10 +37,10 @@ namespace ignition
       public virtual T
     {
       /// \brief Constructor
-      protected: BaseGaussianNoisePass();
+      protected: BaseGaussianNoisePass() { };
 
       /// \brief Destructor
-      public: virtual ~BaseGaussianNoisePass();
+      public: virtual ~BaseGaussianNoisePass() { };
 
       // Documentation inherited.
       public: double Mean() const;
@@ -87,7 +87,7 @@ namespace ignition
     //////////////////////////////////////////////////
     // BaseGaussianNoisePass
     //////////////////////////////////////////////////
-    template <class T>
+/*    template <class T>
     BaseGaussianNoisePass<T>::BaseGaussianNoisePass()
     {
     }
@@ -97,6 +97,7 @@ namespace ignition
     BaseGaussianNoisePass<T>::~BaseGaussianNoisePass()
     {
     }
+*/
 
     //////////////////////////////////////////////////
     template <class T>

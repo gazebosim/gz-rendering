@@ -46,7 +46,7 @@ namespace ignition
       public: void Destroy() override;
 
       // Documentation inherited
-      protected: void CreateRenderPass() override;
+      public: void CreateRenderPass() override;
 
       /// \brief Gaussian noise compositor.
       public: Ogre::CompositorInstance *gaussianNoiseInstance = nullptr;

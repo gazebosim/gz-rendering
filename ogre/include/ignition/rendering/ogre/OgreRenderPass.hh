@@ -45,7 +45,7 @@ namespace ignition
       public: void Destroy() override;
 
       /// \brief Create the render pass using ogre compositor
-      protected: virtual void CreateRenderPass();
+      public: virtual void CreateRenderPass();
 
       /// \brief Pointer to the ogre camera
       protected: Ogre::Camera *ogreCamera = nullptr;

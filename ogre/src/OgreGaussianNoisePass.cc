@@ -59,9 +59,9 @@ namespace ignition
                               ignition::math::Rand::DblUniform(0.0, 1.0),
                               ignition::math::Rand::DblUniform(0.0, 1.0));
         // These calls are setting parameters that are declared in two places:
-        // 1. media/materials/scripts/gazebo.material, in
-        //    fragment_program Gazebo/GaussianCameraNoiseFS
-        // 2. media/materials/scripts/camera_noise_gaussian_fs.glsl
+        // 1. media/materials/scripts/gaussian_noise.material, in
+        //    fragment_program GaussianNoiseFS
+        // 2. media/materials/scripts/gaussian_noise_fs.glsl
         Ogre::Technique *technique = _mat->getTechnique(0);
         IGN_ASSERT(technique, "Null OGRE material technique");
         Ogre::Pass *pass = technique->getPass(_passId);
@@ -150,6 +150,9 @@ void OgreGaussianNoisePass::Destroy()
       this->gaussianNoiseInstance->removeListener(
           this->gaussianNoiseCompositorListener.get());
     }
+    Ogre::CompositorManager::getSingleton().removeCompositor(
+        this->ogreCamera->getViewport(), "RenderPass/GaussianNoise");
+
     this->gaussianNoiseInstance = nullptr;
     this->gaussianNoiseCompositorListener.reset();
   }

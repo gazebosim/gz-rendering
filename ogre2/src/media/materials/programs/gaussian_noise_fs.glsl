@@ -125,11 +125,11 @@ void main()
 {
   // Add the sampled noise to the input color and clamp the result to a valid
   // range.
-  // note that an exponent is added to sampled noise, i.e. pow(noise, 2.2),
+  // note that an exponent is added to sampled noise, i.e. pow(noise, x),
   // which produces more consistent result with ogre1.x
   float z = gaussrand(inPs.uv0.xy).x;
-  float n = pow(abs(z), 2.2);
+  float n = pow(abs(z), 2.1);
   if (z < 0)
     n = -n;
-  fragColor = clamp(texture(RT, inPs.uv0.xy) + vec4(n), 0.0, 1.0);
+  fragColor = clamp(texture(RT, inPs.uv0.xy) + vec4(n, n, n, 0.0), 0.0, 1.0);
 }

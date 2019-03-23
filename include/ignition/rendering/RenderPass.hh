@@ -34,9 +34,11 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE RenderPass
       : public virtual Object
     {
+      /// \brief Constructor
+      public: RenderPass() { }
+
       /// \brief Destructor
       public: virtual ~RenderPass() { }
-
     };
     }
   }

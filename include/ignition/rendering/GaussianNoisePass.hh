@@ -35,7 +35,7 @@ namespace ignition
       : public virtual RenderPass
     {
       /// \brief Constructor
-      public: virtual GaussianNoisePass() { }
+      public: GaussianNoisePass() { }
 
       /// \brief Destructor
       public: virtual ~GaussianNoisePass() { }

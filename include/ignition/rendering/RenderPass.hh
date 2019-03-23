@@ -36,6 +36,7 @@ namespace ignition
     {
       /// \brief Destructor
       public: virtual ~RenderPass() { }
+
     };
     }
   }

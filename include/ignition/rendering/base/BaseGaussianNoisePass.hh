@@ -37,7 +37,7 @@ namespace ignition
       public virtual T
     {
       /// \brief Constructor
-      protected: BaseGaussianNoisePass() { };
+      public: BaseGaussianNoisePass() { };
 
       /// \brief Destructor
       public: virtual ~BaseGaussianNoisePass() { };

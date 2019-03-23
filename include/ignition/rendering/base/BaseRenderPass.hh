@@ -35,7 +35,7 @@ namespace ignition
       public T
     {
       /// \brief Constructor
-      protected: BaseRenderPass();
+      public: BaseRenderPass();
 
       /// \brief Destructor
       public: virtual ~BaseRenderPass();

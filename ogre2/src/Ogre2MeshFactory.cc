@@ -195,7 +195,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       Ogre::v1::HardwareVertexBufferSharedPtr vBuf;
       Ogre::v1::HardwareIndexBufferSharedPtr iBuf;
       float *vertices;
-      uint16_t *indices;
+      uint32_t *indices;
 
       size_t currOffset = 0;
 
@@ -330,18 +330,18 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
       ogreSubMesh->indexData[Ogre::VpNormal]->indexBuffer =
         Ogre::v1::HardwareBufferManager::getSingleton().createIndexBuffer(
-            Ogre::v1::HardwareIndexBuffer::IT_16BIT,
+            Ogre::v1::HardwareIndexBuffer::IT_32BIT,
             ogreSubMesh->indexData[Ogre::VpNormal]->indexCount,
             Ogre::v1::HardwareBuffer::HBU_STATIC,
             true);
 
       iBuf = ogreSubMesh->indexData[Ogre::VpNormal]->indexBuffer;
-      indices = static_cast<uint16_t*>(
+      indices = static_cast<uint32_t*>(
           iBuf->lock(Ogre::v1::HardwareBuffer::HBL_DISCARD));
 
 
       for (unsigned int j = 0; j < subMesh.IndexCount(); ++j)
-        *indices++ = static_cast<uint16_t>(subMesh.Index(j));
+        *indices++ = static_cast<uint32_t>(subMesh.Index(j));
 
       iBuf->unlock();
 

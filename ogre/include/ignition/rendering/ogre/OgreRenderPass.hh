@@ -28,6 +28,10 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /* \class OgreRenderPass OgreRenderPass.hh \
+     * ignition/rendering/ogre/OgreRenderPass.hh
+     */
+    /// \brief Ogre implementation of the RenderPass class
     class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderPass :
       public BaseRenderPass<OgreObject>
     {

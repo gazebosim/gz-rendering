@@ -28,8 +28,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Ogre2GaussianNoisePass Ogre2GaussianNoisePass.hh
-    /// ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh
+    /* \class Ogre2GaussianNoisePass Ogre2GaussianNoisePass.hh \
+     * ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh
+     */
     /// \brief Ogre2 Implementation of a Gaussian noise render pass.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2GaussianNoisePass :
       public BaseGaussianNoisePass<Ogre2RenderPass>

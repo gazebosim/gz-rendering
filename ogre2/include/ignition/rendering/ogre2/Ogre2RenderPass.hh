@@ -30,8 +30,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Ogre2RenderPass Ogre2RenderPass.hh
-    /// ignition/rendering/ogre2/Ogre2RenderPass.hh
+    /* \class Ogre2RenderPass Ogre2RenderPass.hh \
+     * ignition/rendering/ogre2/Ogre2RenderPass.hh
+     */
     /// \brief Ogre2 Implementation of a render pass.
     ///
     /// The ogre2 compositor chain in ign-rendering is set up as follows:

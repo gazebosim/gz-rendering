@@ -33,10 +33,10 @@ namespace ignition
     template <class T>
     class BaseRenderPass:
       public virtual RenderPass,
-      public T
+      public virtual T
     {
       /// \brief Constructor
-      public: BaseRenderPass();
+      protected: BaseRenderPass();
 
       /// \brief Destructor
       public: virtual ~BaseRenderPass();

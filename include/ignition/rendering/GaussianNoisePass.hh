@@ -35,9 +35,6 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE GaussianNoisePass
       : public virtual RenderPass
     {
-      /// \brief Constructor
-      public: GaussianNoisePass() { }
-
       /// \brief Destructor
       public: virtual ~GaussianNoisePass() { }
 

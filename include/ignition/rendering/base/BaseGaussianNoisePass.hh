@@ -21,6 +21,7 @@
 #include <ignition/math/Rand.hh>
 
 #include "ignition/rendering/GaussianNoisePass.hh"
+#include "ignition/rendering/base/BaseObject.hh"
 
 namespace ignition
 {
@@ -38,31 +39,31 @@ namespace ignition
       public virtual T
     {
       /// \brief Constructor
-      public: BaseGaussianNoisePass() { };
+      protected: BaseGaussianNoisePass();
 
       /// \brief Destructor
-      public: virtual ~BaseGaussianNoisePass() { };
+      public: virtual ~BaseGaussianNoisePass();
 
       // Documentation inherited.
-      public: double Mean() const;
+      public: virtual double Mean() const;
 
       // Documentation inherited.
-      public: double StdDev() const;
+      public: virtual double StdDev() const;
 
       // Documentation inherited.
-      public: double Bias() const;
+      public: virtual double Bias() const;
 
       // Documentation inherited.
-      public: void SetMean(double _mean);
+      public: virtual void SetMean(double _mean);
 
       // Documentation inherited.
-      public: void SetStdDev(double _stdDev);
+      public: virtual void SetStdDev(double _stdDev);
 
       // Documentation inherited.
-      public: void SetBiasMean(double _biasMean);
+      public: virtual void SetBiasMean(double _biasMean);
 
       // Documentation inherited.
-      public: void SetBiasStdDev(double _biasStdDev);
+      public: virtual void SetBiasStdDev(double _biasStdDev);
 
       // Sample the bias from bias mean and bias standard deviation
       protected: void SampleBias();
@@ -88,7 +89,7 @@ namespace ignition
     //////////////////////////////////////////////////
     // BaseGaussianNoisePass
     //////////////////////////////////////////////////
-/*    template <class T>
+    template <class T>
     BaseGaussianNoisePass<T>::BaseGaussianNoisePass()
     {
     }
@@ -98,7 +99,6 @@ namespace ignition
     BaseGaussianNoisePass<T>::~BaseGaussianNoisePass()
     {
     }
-*/
 
     //////////////////////////////////////////////////
     template <class T>

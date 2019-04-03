@@ -91,7 +91,7 @@ namespace ignition
       protected: unsigned int height = 0u;
 
       /// \brief A chain of render passes applied to the render target
-      protected: std::vector<RenderPassPtr> renderPasses;
+      // protected: std::vector<RenderPassPtr> renderPasses;
     };
 
     template <class T>
@@ -230,7 +230,7 @@ namespace ignition
     template <class T>
     void BaseRenderTarget<T>::AddRenderPass(const RenderPassPtr &_pass)
     {
-      this->renderPasses.push_back(_pass);
+//      this->renderPasses.push_back(_pass);
       this->renderPassDirty = true;
     }
 
@@ -238,7 +238,7 @@ namespace ignition
     template <class T>
     void BaseRenderTarget<T>::RemoveRenderPass(const RenderPassPtr &_pass)
     {
-      auto it = std::find(this->renderPasses.begin(), this->renderPasses.end(),
+/*      auto it = std::find(this->renderPasses.begin(), this->renderPasses.end(),
           _pass);
       if (it != this->renderPasses.end())
       {
@@ -246,13 +246,15 @@ namespace ignition
         this->renderPasses.erase(it);
         this->renderPassDirty = true;
       }
+*/
     }
 
     //////////////////////////////////////////////////
     template <class T>
     unsigned int BaseRenderTarget<T>::RenderPassCount() const
     {
-      return this->renderPasses.size();
+//      return this->renderPasses.size();
+      return 0;
     }
 
     //////////////////////////////////////////////////
@@ -260,12 +262,15 @@ namespace ignition
     RenderPassPtr BaseRenderTarget<T>::RenderPassByIndex(unsigned int _index)
         const
     {
-      if (_index > this->renderPasses.size())
+/*      if (_index > this->renderPasses.size())
       {
         ignerr << "RenderPass index out of range: " << _index << std::endl;
         return RenderPassPtr();
       }
       return this->renderPasses[_index];
+*/
+
+      return RenderPassPtr();
     }
 
     //////////////////////////////////////////////////

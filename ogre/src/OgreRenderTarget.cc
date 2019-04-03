@@ -212,7 +212,7 @@ void OgreRenderTarget::RebuildMaterial()
 //////////////////////////////////////////////////
 void OgreRenderTarget::UpdateRenderPassChain()
 {
-  if (!this->renderPassDirty)
+/*  if (!this->renderPassDirty)
     return;
 
   for (auto pass : this->renderPasses)
@@ -223,6 +223,7 @@ void OgreRenderTarget::UpdateRenderPassChain()
     ogreRenderPass->CreateRenderPass();
   }
   this->renderPassDirty = false;
+*/
 }
 
 ////////////////////////////////////////////////////

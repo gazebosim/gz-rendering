@@ -45,25 +45,25 @@ namespace ignition
       public: virtual ~BaseGaussianNoisePass();
 
       // Documentation inherited.
-      public: virtual double Mean() const;
+      public: virtual double Mean() const override;
 
       // Documentation inherited.
-      public: virtual double StdDev() const;
+      public: virtual double StdDev() const override;
 
       // Documentation inherited.
-      public: virtual double Bias() const;
+      public: virtual double Bias() const override;
 
       // Documentation inherited.
-      public: virtual void SetMean(double _mean);
+      public: virtual void SetMean(double _mean) override;
 
       // Documentation inherited.
-      public: virtual void SetStdDev(double _stdDev);
+      public: virtual void SetStdDev(double _stdDev) override;
 
       // Documentation inherited.
-      public: virtual void SetBiasMean(double _biasMean);
+      public: virtual void SetBiasMean(double _biasMean) override;
 
       // Documentation inherited.
-      public: virtual void SetBiasStdDev(double _biasStdDev);
+      public: virtual void SetBiasStdDev(double _biasStdDev) override;
 
       // Sample the bias from bias mean and bias standard deviation
       protected: void SampleBias();

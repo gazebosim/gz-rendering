@@ -98,7 +98,7 @@ namespace ignition
               } \
       public: RenderPass *New() const override \
               { \
-                return new classname(); \
+                return new classname; \
               } \
     }; \
     static classname##Factory global_##classname##Factory;

@@ -95,8 +95,9 @@ namespace ignition
           const = 0;
     };
 
-    /// \class RenderTexture RenderTexture.hh
-    /// ignition/rendering/RenderTexture.hh
+    /* \class RenderTexture RenderTexture.hh \
+     * ignition/rendering/RenderTexture.hh
+     */
     /// \brief Represents a off-screen render-texture to which cameras can
     /// render images.
     class IGNITION_RENDERING_VISIBLE RenderTexture :
@@ -110,8 +111,9 @@ namespace ignition
       public: virtual unsigned int GLId() const = 0;
     };
 
-    /// \class RenderWindow RenderWindow.hh
-    /// ignition/rendering/RenderWindow.hh
+    /* \class RenderWindow RenderWindow.hh \
+     * ignition/rendering/RenderWindow.hh
+     */
     /// \brief Represents a on-screen render-window to which cameras can
     /// render images.
     class IGNITION_RENDERING_VISIBLE RenderWindow :

@@ -36,8 +36,9 @@ namespace ignition
     // forward declaration
     class RenderPassSystemPrivate;
 
-    /// \class RenderPassFactory RenderPassSystem.hh
-    /// ignition/rendering/RenderPassSystem.hh
+    /* \class RenderPassFactory RenderPassSystem.hh \
+     * ignition/rendering/RenderPassSystem.hh
+     */
     /// \brief A factory interface for creating render passes
     class IGNITION_RENDERING_VISIBLE RenderPassFactory
     {
@@ -46,8 +47,9 @@ namespace ignition
       public: virtual RenderPass *New() const = 0;
     };
 
-    /// \class RenderPassSystem RenderPassSystem.hh
-    /// ignition/rendering/RenderPassSystem.hh
+    /* \class RenderPassSystem RenderPassSystem.hh \
+     * ignition/rendering/RenderPassSystem.hh
+     */
     /// \brief A class for creating and managing render passes
     class IGNITION_RENDERING_VISIBLE RenderPassSystem
     {

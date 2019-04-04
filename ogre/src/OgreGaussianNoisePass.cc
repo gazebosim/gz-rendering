@@ -18,7 +18,7 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/RenderPassSystem.hh"
+// #include "ignition/rendering/RenderPassSystem.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreGaussianNoisePass.hh"
 

@@ -43,6 +43,19 @@ namespace ignition
 
       public: virtual optix::Transform OptixTransform() const;
 
+      // Documentation inherited.
+      public: virtual math::Vector3d LocalScale() const;
+
+      // Documentation inherited.
+      public: virtual bool InheritScale() const;
+
+      // Documentation inherited.
+      public: virtual void SetInheritScale(bool _inherit);
+
+      // Documentation inherited.
+      protected: virtual void SetLocalScaleImpl(
+                     const math::Vector3d &_scale);
+
       protected: virtual math::Pose3d RawLocalPose() const;
 
       protected: virtual void SetRawLocalPose(const math::Pose3d &_pose);
@@ -74,6 +87,10 @@ namespace ignition
       protected: bool poseDirty;
 
       protected: OptixNodeStorePtr children;
+
+      protected: math::Vector3d scale = math::Vector3d::One;
+
+      protected: bool inheritScale = true;
 
       private: OptixNodePtr SharedThis();
 

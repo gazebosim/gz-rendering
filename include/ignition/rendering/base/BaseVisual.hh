@@ -76,32 +76,6 @@ namespace ignition
       // Documentation inherited.
       public: virtual MaterialPtr Material() override;
 
-      public: virtual math::Vector3d LocalScale() const override = 0;
-
-      public: virtual void SetLocalScale(double _scale) override;
-
-      public: virtual void SetLocalScale(double _x, double _y, double _z)
-                      override;
-
-      public: virtual void SetLocalScale(const math::Vector3d &_scale) override;
-
-      public: virtual math::Vector3d WorldScale() const override;
-
-      public: virtual void SetWorldScale(double _scale) override;
-
-      public: virtual void SetWorldScale(double _x, double _y, double _z)
-                      override;
-
-      public: virtual void SetWorldScale(const math::Vector3d &_scale) override;
-
-      public: virtual void Scale(double _scale) override;
-
-      public: virtual void Scale(double _x, double _y, double _z) override;
-
-      public: virtual void Scale(const math::Vector3d &_scale) override;
-
-      public: virtual bool InheritScale() const override = 0;
-
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
@@ -119,9 +93,6 @@ namespace ignition
       protected: virtual bool AttachGeometry(GeometryPtr _geometry) = 0;
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry) = 0;
-
-      protected: virtual void SetLocalScaleImpl(
-                     const math::Vector3d &_scale) = 0;
 
       /// \brief Pointer to material assigned to this visual
       protected: MaterialPtr material;
@@ -278,87 +249,6 @@ namespace ignition
     MaterialPtr BaseVisual<T>::Material()
     {
       return this->material;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::SetLocalScale(double _scale)
-    {
-      this->SetLocalScale(math::Vector3d(_scale, _scale, _scale));
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::SetLocalScale(double _x, double _y, double _z)
-    {
-      this->SetLocalScale(math::Vector3d(_x, _y, _z));
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::SetLocalScale(const math::Vector3d &_scale)
-    {
-      math::Pose3d rawPose = this->LocalPose();
-      this->SetLocalScaleImpl(_scale);
-      this->SetLocalPose(rawPose);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    math::Vector3d BaseVisual<T>::WorldScale() const
-    {
-      math::Vector3d scale = this->LocalScale();
-
-      if (!this->InheritScale() || !this->HasParent())
-      {
-        return scale;
-      }
-
-      VisualPtr derived = std::dynamic_pointer_cast<Visual>(this->Parent());
-      return scale * derived->WorldScale();
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::SetWorldScale(double _scale)
-    {
-      this->SetWorldScale(math::Vector3d(_scale, _scale, _scale));
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::SetWorldScale(double _x, double _y, double _z)
-    {
-      this->SetWorldScale(math::Vector3d(_x, _y, _z));
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::SetWorldScale(const math::Vector3d &_scale)
-    {
-      math::Vector3d currentScale = this->WorldScale();
-      this->SetLocalScale(_scale / currentScale);
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::Scale(double _scale)
-    {
-      this->Scale(math::Vector3d(_scale, _scale, _scale));
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::Scale(double _x, double _y, double _z)
-    {
-      this->Scale(math::Vector3d(_x, _y, _z));
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::Scale(const math::Vector3d &_scale)
-    {
-      this->SetLocalScale(_scale * this->LocalScale());
     }
 
     //////////////////////////////////////////////////

@@ -184,3 +184,26 @@ OptixNodePtr OptixNode::SharedThis()
   return std::dynamic_pointer_cast<OptixNode>(shared_from_this());
 }
 
+//////////////////////////////////////////////////
+math::Vector3d OptixNode::LocalScale() const
+{
+  return this->scale;
+}
+
+//////////////////////////////////////////////////
+bool OptixNode::InheritScale() const
+{
+  return this->inheritScale;
+}
+
+//////////////////////////////////////////////////
+void OptixNode::SetInheritScale(bool _inherit)
+{
+  this->inheritScale = _inherit;
+}
+
+//////////////////////////////////////////////////
+void OptixNode::SetLocalScaleImpl(const math::Vector3d &_scale)
+{
+  this->scale = _scale;
+}

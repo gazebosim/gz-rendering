@@ -56,6 +56,19 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
+      public: virtual math::Vector3d LocalScale() const override;
+
+      // Documentation inherited.
+      public: virtual bool InheritScale() const override;
+
+      // Documentation inherited.
+      public: virtual void SetInheritScale(bool _inherit) override;
+
+      // Documentation inherited.
+      protected: virtual void SetLocalScaleImpl(
+                     const math::Vector3d &_scale) override;
+
+      // Documentation inherited.
       protected: virtual NodeStorePtr Children() const override;
 
       // Documentation inherited.

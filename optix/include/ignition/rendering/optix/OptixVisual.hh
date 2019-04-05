@@ -34,12 +34,6 @@ namespace ignition
 
       public: virtual ~OptixVisual();
 
-      public: virtual math::Vector3d LocalScale() const;
-
-      public: virtual bool InheritScale() const;
-
-      public: virtual void SetInheritScale(bool _inherit);
-
       public: virtual optix::Group OptixGroup() const;
 
       public: virtual optix::Acceleration OptixAccel() const;
@@ -47,12 +41,10 @@ namespace ignition
       public: virtual void PreRender();
 
       protected: virtual GeometryStorePtr Geometries() const;
+
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry);
-
-      protected: virtual void SetLocalScaleImpl(
-                     const math::Vector3d &_scale);
 
       protected: virtual void Init();
 
@@ -61,10 +53,6 @@ namespace ignition
       private: OptixVisualPtr SharedThis();
 
       protected: OptixGeometryStorePtr geometries;
-
-      protected: math::Vector3d scale;
-
-      protected: bool inheritScale;
 
       private: friend class OptixScene;
     };

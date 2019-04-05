@@ -89,6 +89,44 @@ namespace ignition
 
       public: virtual void SetOrigin(const math::Vector3d &_origin);
 
+      // Documentation inherited
+      public: virtual math::Vector3d LocalScale() const override = 0;
+
+      // Documentation inherited
+      public: virtual void SetLocalScale(double _scale) override;
+
+      // Documentation inherited
+      public: virtual void SetLocalScale(double _x, double _y, double _z)
+                      override;
+
+      // Documentation inherited
+      public: virtual void SetLocalScale(const math::Vector3d &_scale) override;
+
+      // Documentation inherited
+      public: virtual math::Vector3d WorldScale() const override;
+
+      // Documentation inherited
+      public: virtual void SetWorldScale(double _scale) override;
+
+      // Documentation inherited
+      public: virtual void SetWorldScale(double _x, double _y, double _z)
+                      override;
+
+      // Documentation inherited
+      public: virtual void SetWorldScale(const math::Vector3d &_scale) override;
+
+      // Documentation inherited
+      public: virtual void Scale(double _scale) override;
+
+      // Documentation inherited
+      public: virtual void Scale(double _x, double _y, double _z) override;
+
+      // Documentation inherited
+      public: virtual void Scale(const math::Vector3d &_scale) override;
+
+      // Documentation inherited
+      public: virtual bool InheritScale() const override = 0;
+
       public: virtual void Destroy();
 
       public: virtual unsigned int ChildCount() const;
@@ -130,6 +168,11 @@ namespace ignition
       protected: virtual bool AttachChild(NodePtr _child) = 0;
 
       protected: virtual bool DetachChild(NodePtr _child) = 0;
+
+      /// \brief Implementation of the SetLocalScale function
+      /// \param[in] _scale Scale to set the visual to
+      protected: virtual void SetLocalScaleImpl(
+                     const math::Vector3d &_scale) = 0;
 
       protected: math::Vector3d origin;
     };
@@ -426,6 +469,91 @@ namespace ignition
     {
       this->origin = _origin;
     }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetLocalScale(double _scale)
+    {
+      this->SetLocalScale(math::Vector3d(_scale, _scale, _scale));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetLocalScale(double _x, double _y, double _z)
+    {
+      this->SetLocalScale(math::Vector3d(_x, _y, _z));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetLocalScale(const math::Vector3d &_scale)
+    {
+      math::Pose3d rawPose = this->LocalPose();
+      this->SetLocalScaleImpl(_scale);
+      this->SetLocalPose(rawPose);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Vector3d BaseNode<T>::WorldScale() const
+    {
+      math::Vector3d scale = this->LocalScale();
+
+      if (!this->InheritScale() || !this->HasParent())
+      {
+        return scale;
+      }
+
+      return scale * this->Parent()->WorldScale();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetWorldScale(double _scale)
+    {
+      this->SetWorldScale(math::Vector3d(_scale, _scale, _scale));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetWorldScale(double _x, double _y, double _z)
+    {
+      this->SetWorldScale(math::Vector3d(_x, _y, _z));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetWorldScale(const math::Vector3d &_scale)
+    {
+      math::Vector3d toScale = math::Vector3d::One;
+      if (this->InheritScale() && this->HasParent())
+        toScale = this->Parent()->WorldScale();
+
+      this->SetLocalScale(_scale / toScale);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::Scale(double _scale)
+    {
+      this->Scale(math::Vector3d(_scale, _scale, _scale));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::Scale(double _x, double _y, double _z)
+    {
+      this->Scale(math::Vector3d(_x, _y, _z));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::Scale(const math::Vector3d &_scale)
+    {
+      this->SetLocalScale(_scale * this->LocalScale());
+    }
+
+
 
     //////////////////////////////////////////////////
     template <class T>

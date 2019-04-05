@@ -34,12 +34,6 @@ namespace ignition
 
       public: virtual ~OgreVisual();
 
-      public: virtual math::Vector3d LocalScale() const;
-
-      public: virtual bool InheritScale() const;
-
-      public: virtual void SetInheritScale(bool _inherit);
-
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible);
 
@@ -48,10 +42,6 @@ namespace ignition
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry);
-
-      protected: virtual void SetLocalScaleImpl(
-                     const math::Vector3d &_scale);
-
       protected: virtual void Init();
 
       protected: OgreGeometryStorePtr geometries;

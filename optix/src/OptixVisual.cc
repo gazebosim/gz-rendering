@@ -25,9 +25,7 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OptixVisual::OptixVisual() :
-  scale(1, 1, 1),
-  inheritScale(true)
+OptixVisual::OptixVisual()
 {
   // TODO: move defaults to BaseVisual
 }
@@ -35,24 +33,6 @@ OptixVisual::OptixVisual() :
 //////////////////////////////////////////////////
 OptixVisual::~OptixVisual()
 {
-}
-
-//////////////////////////////////////////////////
-math::Vector3d OptixVisual::LocalScale() const
-{
-  return this->scale;
-}
-
-//////////////////////////////////////////////////
-bool OptixVisual::InheritScale() const
-{
-  return this->inheritScale;
-}
-
-//////////////////////////////////////////////////
-void OptixVisual::SetInheritScale(bool _inherit)
-{
-  this->inheritScale = _inherit;
 }
 
 //////////////////////////////////////////////////
@@ -126,12 +106,6 @@ bool OptixVisual::DetachGeometry(GeometryPtr _geometry)
   this->optixGroup->removeChild(derived->OptixGeometryGroup());
   this->optixAccel->markDirty();
   return true;
-}
-
-//////////////////////////////////////////////////
-void OptixVisual::SetLocalScaleImpl(const math::Vector3d &_scale)
-{
-  this->scale = _scale;
 }
 
 //////////////////////////////////////////////////

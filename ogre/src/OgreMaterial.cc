@@ -75,6 +75,30 @@ void OgreMaterial::SetLightingEnabled(bool _enabled)
 }
 
 //////////////////////////////////////////////////
+void OgreMaterial::SetDepthCheckEnabled(bool _enabled)
+{
+  this->ogrePass->setDepthCheckEnabled(_enabled);
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetDepthWriteEnabled(bool _enabled)
+{
+  this->ogrePass->setDepthWriteEnabled(_enabled);
+}
+
+//////////////////////////////////////////////////
+bool OgreMaterial::DepthCheckEnabled() const
+{
+  return this->ogrePass->getDepthCheckEnabled();
+}
+
+//////////////////////////////////////////////////
+bool OgreMaterial::DepthWriteEnabled() const
+{
+  return this->ogrePass->getDepthWriteEnabled();
+}
+
+//////////////////////////////////////////////////
 math::Color OgreMaterial::Ambient() const
 {
   return OgreConversions::Convert(this->ogrePass->getAmbient());
@@ -527,7 +551,6 @@ void OgreMaterial::UpdateTransparency()
   if (alpha < 1)
   {
     this->ogrePass->setDepthWriteEnabled(false);
-    this->ogrePass->setDepthCheckEnabled(true);
     this->ogrePass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 
     this->ogreTexState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL,

@@ -133,10 +133,20 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   material->SetReflectionEnabled(reflectionEnabled);
   EXPECT_EQ(reflectionEnabled, material->ReflectionEnabled());
 
-  // reflection
+  // lighting
   bool lightingEnabled = false;
   material->SetLightingEnabled(lightingEnabled);
   EXPECT_EQ(lightingEnabled, material->LightingEnabled());
+
+  // depth check
+  bool depthCheckEnabled = false;
+  material->SetDepthCheckEnabled(depthCheckEnabled);
+  EXPECT_EQ(depthCheckEnabled, material->DepthCheckEnabled());
+
+  // depth write
+  bool depthWriteEnabled = false;
+  material->SetDepthWriteEnabled(depthWriteEnabled);
+  EXPECT_EQ(depthWriteEnabled, material->DepthWriteEnabled());
 
   // texture
   std::string textureName =
@@ -259,6 +269,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   bool receiveShadows = false;
   bool reflectionEnabled = true;
   bool lightingEnabled = false;
+  bool depthCheckEnabled = false;
+  bool depthWriteEnabled = false;
   float roughness = 0.5;
   float metalness = 0.1;
 
@@ -281,6 +293,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetReceiveShadows(receiveShadows);
   material->SetReflectionEnabled(reflectionEnabled);
   material->SetLightingEnabled(lightingEnabled);
+  material->SetDepthCheckEnabled(depthCheckEnabled);
+  material->SetDepthWriteEnabled(depthWriteEnabled);
   material->SetTexture(textureName);
   material->SetNormalMap(normalMapName);
   material->SetShaderType(shaderType);
@@ -304,6 +318,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(receiveShadows, clone->ReceiveShadows());
   EXPECT_EQ(reflectionEnabled, clone->ReflectionEnabled());
   EXPECT_EQ(lightingEnabled, clone->LightingEnabled());
+  EXPECT_EQ(depthCheckEnabled, clone->DepthCheckEnabled());
+  EXPECT_EQ(depthWriteEnabled, clone->DepthWriteEnabled());
   EXPECT_EQ(textureName, clone->Texture());
   EXPECT_TRUE(clone->HasTexture());
   EXPECT_EQ(normalMapName, clone->NormalMap());

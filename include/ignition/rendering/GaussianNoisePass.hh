@@ -36,7 +36,9 @@ namespace ignition
       : public virtual RenderPass
     {
       /// \brief Destructor
-      public: virtual ~GaussianNoisePass() { }
+      public: GaussianNoisePass();
+
+      public: ~GaussianNoisePass();
 
       /// \brief Accessor for mean.
       /// \return Mean of Gaussian noise.
@@ -68,7 +70,15 @@ namespace ignition
       /// \sa SetBiasMean
       public: virtual void SetBiasStdDev(double _biasStdDev) = 0;
     };
+
+GaussianNoisePass::GaussianNoisePass()
+{ }
+
+GaussianNoisePass::~GaussianNoisePass()
+{ }
+
     }
   }
 }
+
 #endif

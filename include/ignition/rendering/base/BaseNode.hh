@@ -135,7 +135,7 @@ namespace ignition
       // Documentation inherited
       public: virtual bool InheritScale() const override = 0;
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       public: virtual unsigned int ChildCount() const override;
 

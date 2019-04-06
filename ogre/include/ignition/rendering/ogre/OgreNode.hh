@@ -39,13 +39,13 @@ namespace ignition
 
       public: virtual ~OgreNode();
 
-      public: virtual bool HasParent() const;
+      public: virtual bool HasParent() const override;
 
-      public: virtual NodePtr Parent() const;
+      public: virtual NodePtr Parent() const override;
 
       public: virtual Ogre::SceneNode *Node() const;
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       // Documentation inherited.
       public: virtual math::Vector3d LocalScale() const override;

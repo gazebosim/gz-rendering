@@ -37,57 +37,65 @@ namespace ignition
 
       public: virtual ~BaseNode();
 
-      public: virtual NodePtr Parent() const = 0;
+      public: virtual NodePtr Parent() const override = 0;
 
       // Documentation inherited
-      public: virtual void RemoveParent();
+      public: virtual void RemoveParent() override;
 
-      public: virtual math::Vector3d LocalPosition() const;
+      public: virtual math::Vector3d LocalPosition() const override;
 
-      public: virtual math::Pose3d LocalPose() const;
+      public: virtual math::Pose3d LocalPose() const override;
 
-      public: virtual void SetLocalPose(const math::Pose3d &_pose);
+      public: virtual void SetLocalPose(const math::Pose3d &_pose) override;
 
-      public: virtual void SetLocalPosition(double _x, double _y, double _z);
+      public: virtual void SetLocalPosition(double _x, double _y, double _z)
+          override;
 
-      public: virtual void SetLocalPosition(const math::Vector3d &_position);
+      public: virtual void SetLocalPosition(const math::Vector3d &_position)
+          override;
 
-      public: virtual math::Quaterniond LocalRotation() const;
+      public: virtual math::Quaterniond LocalRotation() const override;
 
-      public: virtual void SetLocalRotation(double _r, double _p, double _y);
+      public: virtual void SetLocalRotation(double _r, double _p, double _y)
+          override;
 
       public: virtual void SetLocalRotation(double _w, double _x, double _y,
-                  double _z);
+                  double _z) override;
 
-      public: virtual void SetLocalRotation(const math::Quaterniond &_rotation);
+      public: virtual void SetLocalRotation(const math::Quaterniond &_rotation)
+          override;
 
-      public: virtual math::Pose3d WorldPose() const;
+      public: virtual math::Pose3d WorldPose() const override;
 
-      public: virtual void SetWorldPose(const math::Pose3d &_pose);
+      public: virtual void SetWorldPose(const math::Pose3d &_pose) override;
 
-      public: virtual math::Vector3d WorldPosition() const;
+      public: virtual math::Vector3d WorldPosition() const override;
 
-      public: virtual void SetWorldPosition(double _x, double _y, double _z);
+      public: virtual void SetWorldPosition(double _x, double _y, double _z)
+         override;
 
-      public: virtual void SetWorldPosition(const math::Vector3d &_position);
+      public: virtual void SetWorldPosition(const math::Vector3d &_position)
+          override;
 
-      public: virtual math::Quaterniond WorldRotation() const;
+      public: virtual math::Quaterniond WorldRotation() const override;
 
-      public: virtual void SetWorldRotation(double _r, double _p, double _y);
+      public: virtual void SetWorldRotation(double _r, double _p, double _y)
+          override;
 
       public: virtual void SetWorldRotation(double _w, double _x, double _y,
-                  double _z);
+                  double _z) override;
 
-      public: virtual void SetWorldRotation(const math::Quaterniond &_rotation);
+      public: virtual void SetWorldRotation(const math::Quaterniond &_rotation)
+          override;
 
       public: virtual math::Pose3d WorldToLocal(const math::Pose3d &_pose)
-          const;
+          const override;
 
-      public: virtual math::Vector3d Origin() const;
+      public: virtual math::Vector3d Origin() const override;
 
-      public: virtual void SetOrigin(double _x, double _y, double _z);
+      public: virtual void SetOrigin(double _x, double _y, double _z) override;
 
-      public: virtual void SetOrigin(const math::Vector3d &_origin);
+      public: virtual void SetOrigin(const math::Vector3d &_origin) override;
 
       // Documentation inherited
       public: virtual math::Vector3d LocalScale() const override = 0;
@@ -129,33 +137,36 @@ namespace ignition
 
       public: virtual void Destroy();
 
-      public: virtual unsigned int ChildCount() const;
+      public: virtual unsigned int ChildCount() const override;
 
-      public: virtual bool HasChild(ConstNodePtr _child) const;
+      public: virtual bool HasChild(ConstNodePtr _child) const override;
 
-      public: virtual bool HasChildId(unsigned int _id) const;
+      public: virtual bool HasChildId(unsigned int _id) const override;
 
-      public: virtual bool HasChildName(const std::string &_name) const;
+      public: virtual bool HasChildName(const std::string &_name) const
+          override;
 
-      public: virtual NodePtr ChildById(unsigned int _id) const;
+      public: virtual NodePtr ChildById(unsigned int _id) const override;
 
-      public: virtual NodePtr ChildByName(const std::string &_name) const;
+      public: virtual NodePtr ChildByName(const std::string &_name) const
+          override;
 
-      public: virtual NodePtr ChildByIndex(unsigned int _index) const;
+      public: virtual NodePtr ChildByIndex(unsigned int _index) const override;
 
-      public: virtual void AddChild(NodePtr _child);
+      public: virtual void AddChild(NodePtr _child) override;
 
-      public: virtual NodePtr RemoveChild(NodePtr _child);
+      public: virtual NodePtr RemoveChild(NodePtr _child) override;
 
-      public: virtual NodePtr RemoveChildById(unsigned int _id);
+      public: virtual NodePtr RemoveChildById(unsigned int _id) override;
 
-      public: virtual NodePtr RemoveChildByName(const std::string &_name);
+      public: virtual NodePtr RemoveChildByName(const std::string &_name)
+          override;
 
-      public: virtual NodePtr RemoveChildByIndex(unsigned int _index);
+      public: virtual NodePtr RemoveChildByIndex(unsigned int _index) override;
 
-      public: virtual void RemoveChildren();
+      public: virtual void RemoveChildren() override;
 
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       protected: virtual void PreRenderChildren();
 

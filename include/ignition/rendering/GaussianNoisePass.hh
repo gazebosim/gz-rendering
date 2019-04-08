@@ -36,7 +36,9 @@ namespace ignition
       : public virtual RenderPass
     {
       /// \brief Destructor
-      public: virtual ~GaussianNoisePass() { }
+      public: GaussianNoisePass();
+
+      public: ~GaussianNoisePass();
 
       /// \brief Accessor for mean.
       /// \return Mean of Gaussian noise.

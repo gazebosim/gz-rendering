@@ -68,6 +68,8 @@ namespace ignition
       /// \sa SetBiasMean
       public: virtual void SetBiasStdDev(double _biasStdDev) = 0;
     };
+
+    typedef shared_ptr<GaussianNoisePass> GaussianNoisePassPtr;
     }
   }
 }

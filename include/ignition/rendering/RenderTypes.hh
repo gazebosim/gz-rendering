@@ -102,10 +102,6 @@ namespace ignition
     /// \brief Shared pointer to DirectionalLight
     typedef shared_ptr<DirectionalLight> DirectionalLightPtr;
 
-    /// \def GaussianNoisePass
-    /// \brief Shared pointer to GaussianNoisePass
-    typedef shared_ptr<GaussianNoisePass> GaussianNoisePassPtr;
-
     /// \def GeometryPtr
     /// \brief Shared pointer to Geometry
     typedef shared_ptr<Geometry> GeometryPtr;

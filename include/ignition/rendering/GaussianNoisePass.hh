@@ -70,6 +70,7 @@ namespace ignition
     };
 
     typedef shared_ptr<GaussianNoisePass> GaussianNoisePassPtr;
+    typedef shared_ptr<const GaussianNoisePass> ConstGaussianNoisePass;
     }
   }
 }

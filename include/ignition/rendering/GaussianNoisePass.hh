@@ -39,7 +39,7 @@ namespace ignition
       public: GaussianNoisePass();
 
       /// \brief Destructor
-      public: ~GaussianNoisePass();
+      public: virtual ~GaussianNoisePass();
 
       /// \brief Accessor for mean.
       /// \return Mean of Gaussian noise.

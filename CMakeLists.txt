@@ -42,22 +42,6 @@ ign_find_package(ignition-plugin1 REQUIRED COMPONENTS all)
 set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
 
 #--------------------------------------
-# Find FreeImage
-ign_find_package(FreeImage VERSION 3.9
-  REQUIRED_BY optix
-  PRIVATE_FOR optix)
-
-#--------------------------------------
-# Find OpenGL
-ign_find_package(OpenGL
-  REQUIRED_BY ogre ogre2
-  PKGCONFIG gl)
-
-if (OpenGL_FOUND)
-  set(HAVE_OPENGL TRUE)
-endif()
-
-#--------------------------------------
 # Find OGRE
 list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
 
@@ -80,35 +64,6 @@ if (OGRE_FOUND)
   set(HAVE_OGRE TRUE)
 endif()
 
-#--------------------------------------
-# Find OGRE2
-ign_find_package(IgnOGRE2 VERSION 2.1.0
-    COMPONENTS HlmsPbs HlmsUnlit Overlay
-    REQUIRED_BY ogre2
-    PRIVATE_FOR ogre2)
-
-if (OGRE2_FOUND)
-  set(HAVE_OGRE2 TRUE)
-endif()
-
-#--------------------------------------
-# Find dependencies that we ignore for Visual Studio
-if(NOT MSVC)
-  #--------------------------------------
-  # Find CUDA
-  find_package(CUDA)
-
-  #--------------------------------------
-  # Find OptiX
-  ign_find_package(OptiX VERSION 3.8.0
-      REQUIRED_BY optix
-      PRIVATE_FOR optix)
-
-  if (OptiX_FOUND AND CUDA_FOUND)
-    set(HAVE_OPTIX TRUE)
-  endif()
-endif()
-
 #####################################
 # Define compile-time default variables
 if(MSVC)
@@ -124,14 +79,6 @@ set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${IGN_DATA_INSTALL_DIR})
 #============================================================================
 if (HAVE_OGRE)
   list(APPEND RENDERING_COMPONENTS ogre)
-endif()
-
-if (HAVE_OPTIX)
-  list(APPEND RENDERING_COMPONENTS optix)
-endif()
-
-if (HAVE_OGRE2)
-  list(APPEND RENDERING_COMPONENTS ogre2)
 endif()
 
 ign_configure_build(QUIT_IF_BUILD_ERRORS

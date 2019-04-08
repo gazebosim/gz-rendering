@@ -51,7 +51,6 @@ namespace ignition
     class Camera;
     class DepthCamera;
     class DirectionalLight;
-    class GaussianNoisePass;
     class Geometry;
     class GpuRays;
     class Grid;

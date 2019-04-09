@@ -28,8 +28,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class BaseGaussianNoisePass BaseGaussianNoisePass.hh
-    /// ignition/rendering/base/BaseGaussianNoisePass.hh
+    /* \class BaseGaussianNoisePass BaseGaussianNoisePass.hh \
+     * ignition/rendering/base/BaseGaussianNoisePass.hh
+     */
     /// \brief Base Gaussian noise render pass.
     template <class T>
     class BaseGaussianNoisePass :

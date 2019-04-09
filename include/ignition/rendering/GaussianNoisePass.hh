@@ -28,14 +28,18 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class GaussianNoisePass GaussianNoisePass.hh
-    /// ignition/rendering/GaussianNoisePass.hh
+    /* \class GaussianNoisePass GaussianNoisePass.hh \
+     * ignition/rendering/GaussianNoisePass.hh
+     */
     /// \brief A render pass that applies Gaussian noise to the render target
     class IGNITION_RENDERING_VISIBLE GaussianNoisePass
       : public virtual RenderPass
     {
+      /// \brief Constructor
+      public: GaussianNoisePass();
+
       /// \brief Destructor
-      public: virtual ~GaussianNoisePass() { }
+      public: virtual ~GaussianNoisePass();
 
       /// \brief Accessor for mean.
       /// \return Mean of Gaussian noise.

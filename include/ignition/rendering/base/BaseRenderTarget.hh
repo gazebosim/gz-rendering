@@ -18,7 +18,9 @@
 #define IGNITION_RENDERING_BASE_BASERENDERTARGET_HH_
 
 #include <string>
+#include <vector>
 
+#include "ignition/rendering/RenderPass.hh"
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -59,6 +61,20 @@ namespace ignition
       // Documentation inherited
       public: virtual math::Color BackgroundColor() const override;
 
+      // Documentation inherited
+      public: virtual void AddRenderPass(const RenderPassPtr &_pass) override;
+
+      // Documentation inherited
+      public: virtual void RemoveRenderPass(const RenderPassPtr &_pass)
+          override;
+
+      // Documentation inherited
+      public: virtual unsigned int RenderPassCount() const override;
+
+      // Documentation inherited
+      public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
+          const override;
+
       protected: virtual void Rebuild();
 
       protected: virtual void RebuildImpl() = 0;
@@ -67,9 +83,15 @@ namespace ignition
 
       protected: bool targetDirty = true;
 
+      /// \brief Flag to indicate if render pass need to be rebuilt
+      protected: bool renderPassDirty = false;
+
       protected: unsigned int width = 0u;
 
       protected: unsigned int height = 0u;
+
+      /// \brief A chain of render passes applied to the render target
+      protected: std::vector<RenderPassPtr> renderPasses;
     };
 
     template <class T>
@@ -204,6 +226,47 @@ namespace ignition
       return this->Scene()->BackgroundColor();
     }
 
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::AddRenderPass(const RenderPassPtr &_pass)
+    {
+      this->renderPasses.push_back(_pass);
+      this->renderPassDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::RemoveRenderPass(const RenderPassPtr &_pass)
+    {
+      auto it = std::find(this->renderPasses.begin(), this->renderPasses.end(),
+          _pass);
+      if (it != this->renderPasses.end())
+      {
+        (*it)->Destroy();
+        this->renderPasses.erase(it);
+        this->renderPassDirty = true;
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseRenderTarget<T>::RenderPassCount() const
+    {
+      return this->renderPasses.size();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    RenderPassPtr BaseRenderTarget<T>::RenderPassByIndex(unsigned int _index)
+        const
+    {
+      if (_index > this->renderPasses.size())
+      {
+        ignerr << "RenderPass index out of range: " << _index << std::endl;
+        return RenderPassPtr();
+      }
+      return this->renderPasses[_index];
+    }
 
     //////////////////////////////////////////////////
     // BaseRenderTexture

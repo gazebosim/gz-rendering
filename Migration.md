@@ -10,6 +10,6 @@ release will remove the deprecated code.
 ### Modifications
 
 1. **Visual.hh** and **Node.hh**
-    + All function for setting and getting scale properties in the Visual class
+    + All functions for setting and getting scale properties in the Visual class
       are moved to the base Node class. These functions are now inherited by
       the Visual class.

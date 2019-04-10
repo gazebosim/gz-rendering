@@ -25,6 +25,7 @@
 
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -39,6 +40,7 @@ using namespace rendering;
 Ogre2RenderTarget::Ogre2RenderTarget()
 {
   this->ogreBackgroundColor = Ogre::ColourValue::Black;
+  this->ogreCompositorWorkspaceDefName = "PbsMaterialsWorkspace";
 }
 
 //////////////////////////////////////////////////
@@ -54,10 +56,10 @@ void Ogre2RenderTarget::BuildCompositor()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  const Ogre::String workspaceName = "PbsMaterialsWorkspace";
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      this->RenderTarget(), this->ogreCamera, workspaceName, false);
+      this->RenderTarget(), this->ogreCamera,
+      this->ogreCompositorWorkspaceDefName, false);
 }
 
 //////////////////////////////////////////////////
@@ -147,6 +149,8 @@ void Ogre2RenderTarget::PreRender()
   {
     this->material->PreRender();
   }
+
+  this->UpdateRenderPassChain();
 }
 
 //////////////////////////////////////////////////
@@ -201,6 +205,104 @@ void Ogre2RenderTarget::UpdateBackgroundColor()
 
     this->colorDirty = false;
   }
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::UpdateRenderPassChain()
+{
+  // check pass enabled state and update connections if necessary.
+  // If render pass is dirty then skip the enabled state check since the whole
+  // workspace nodes and connections will be recreated
+  bool updateConnection = false;
+  if (!this->renderPassDirty)
+  {
+    auto nodeSeq = this->ogreCompositorWorkspace->getNodeSequence();
+
+    // set node instance to render pass and update enabled state
+    for (auto &pass : this->renderPasses)
+    {
+      Ogre2RenderPass *ogre2RenderPass =
+          dynamic_cast<Ogre2RenderPass *>(pass.get());
+      Ogre::CompositorNode *node =
+          this->ogreCompositorWorkspace->findNodeNoThrow(
+          ogre2RenderPass->OgreCompositorNodeDefinitionName());
+
+      // check if we need to create the all nodes or just update the connections
+      // if node does not exist then it means it has not been added to the
+      // chain yet, in which case, we need to recreate the nodes and
+      // connections
+      if (!node)
+      {
+        renderPassDirty = true;
+      }
+      else if (node && node->getEnabled() != ogre2RenderPass->IsEnabled())
+      {
+        node->setEnabled(ogre2RenderPass->IsEnabled());
+        updateConnection = true;
+      }
+    }
+  }
+
+  if (!this->renderPassDirty && !updateConnection)
+    return;
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  Ogre::CompositorWorkspaceDef *workspaceDef =
+    ogreCompMgr->getWorkspaceDefinition(this->ogreCompositorWorkspaceDefName);
+
+  auto nodeSeq = this->ogreCompositorWorkspace->getNodeSequence();
+
+  // The first node and final node in the workspace are defined in
+  // PbsMaterials.compositor
+  // the first node is the base scene pass node
+  std::string outNodeDefName = "PbsMaterialsRenderingNode";
+  // the final compositor node
+  std::string finalNodeDefName = "FinalComposition";
+  std::string inNodeDefName;
+
+  // if new nodes need to be added then clear everything,
+  // otherwise clear only the node connections
+  if (this->renderPassDirty)
+    workspaceDef->clearAll();
+  else
+    workspaceDef->clearAllInterNodeConnections();
+
+  // chain the render passes by connecting all the ogre compositor nodes
+  // in between the base scene pass node and the final compositor node
+  for (auto &pass : this->renderPasses)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+        dynamic_cast<Ogre2RenderPass *>(pass.get());
+    ogre2RenderPass->CreateRenderPass();
+    inNodeDefName = ogre2RenderPass->OgreCompositorNodeDefinitionName();
+    // only connect passes that are enabled
+    if (!inNodeDefName.empty() && ogre2RenderPass->IsEnabled())
+    {
+      workspaceDef->connect(outNodeDefName, inNodeDefName);
+      outNodeDefName = inNodeDefName;
+    }
+  }
+
+  // connect the last render pass to the final compositor node
+  workspaceDef->connect(outNodeDefName, 0,  finalNodeDefName, 1);
+
+  // if new node definitions were added then recreate all the compositor nodes,
+  // otherwise update the connections
+  if (this->renderPassDirty)
+  {
+    // clearAll requires the output to be connected again.
+    workspaceDef->connectExternal(0, finalNodeDefName, 0);
+    this->ogreCompositorWorkspace->recreateAllNodes();
+  }
+  else
+  {
+    this->ogreCompositorWorkspace->reconnectAllNodes();
+  }
+
+  this->renderPassDirty = false;
 }
 
 //////////////////////////////////////////////////

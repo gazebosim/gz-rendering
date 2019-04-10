@@ -32,6 +32,7 @@
 #include "ignition/rendering/Material.hh"
 
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
+#include "ignition/rendering/ogre/OgreRenderPass.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
@@ -127,6 +128,8 @@ void OgreRenderTarget::PreRender()
   {
     this->material->PreRender();
   }
+
+  this->UpdateRenderPassChain();
 }
 
 //////////////////////////////////////////////////
@@ -204,6 +207,22 @@ void OgreRenderTarget::RebuildMaterial()
     this->materialApplicator.reset(new OgreRenderTargetMaterial(
         this->scene, target, matPtr.get()));
   }
+}
+
+//////////////////////////////////////////////////
+void OgreRenderTarget::UpdateRenderPassChain()
+{
+  if (!this->renderPassDirty)
+    return;
+
+  for (auto pass : this->renderPasses)
+  {
+    OgreRenderPass *ogreRenderPass =
+        dynamic_cast<OgreRenderPass *>(pass.get());
+    ogreRenderPass->SetCamera(this->ogreCamera);
+    ogreRenderPass->CreateRenderPass();
+  }
+  this->renderPassDirty = false;
 }
 
 ////////////////////////////////////////////////////

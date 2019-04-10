@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/RenderPassSystem.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 
 using namespace ignition;
@@ -25,6 +26,7 @@ using namespace rendering;
 //////////////////////////////////////////////////
 BaseRenderEngine::BaseRenderEngine()
 {
+  this->renderPassSystem.reset(new rendering::RenderPassSystem());
 }
 
 //////////////////////////////////////////////////
@@ -223,4 +225,16 @@ void BaseRenderEngine::PrepareScene(ScenePtr _scene)
 unsigned int BaseRenderEngine::NextSceneId()
 {
   return this->nextSceneId--;
+}
+
+//////////////////////////////////////////////////
+RenderPassSystemPtr BaseRenderEngine::RenderPassSystem() const
+{
+  if (!this->renderPassSystem)
+  {
+    ignerr << "Render pass not supported by the requested render engine"
+        << std::endl;
+    return RenderPassSystemPtr();
+  }
+  return this->renderPassSystem;
 }

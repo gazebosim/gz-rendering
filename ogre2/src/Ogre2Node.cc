@@ -183,3 +183,29 @@ Ogre2NodePtr Ogre2Node::SharedThis()
   ObjectPtr object = shared_from_this();
   return std::dynamic_pointer_cast<Ogre2Node>(object);
 }
+
+//////////////////////////////////////////////////
+math::Vector3d Ogre2Node::LocalScale() const
+{
+  return Ogre2Conversions::Convert(this->ogreNode->getScale());
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Node::InheritScale() const
+{
+  return this->ogreNode->getInheritScale();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Node::SetInheritScale(bool _inherit)
+{
+  this->ogreNode->setInheritScale(_inherit);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Node::SetLocalScaleImpl(const math::Vector3d &_scale)
+{
+  this->ogreNode->setScale(Ogre2Conversions::Convert(_scale));
+}
+
+

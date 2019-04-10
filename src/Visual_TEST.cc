@@ -38,6 +38,9 @@ class VisualTest : public testing::Test,
 
   /// \brief Test adding removing children
   public: void Children(const std::string &_renderEngine);
+
+  /// \brief Test visual scale
+  public: void Scale(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -120,7 +123,7 @@ void VisualTest::Material(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, VisualProperties)
+TEST_P(VisualTest, Material)
 {
   Material(GetParam());
 }
@@ -192,6 +195,97 @@ void VisualTest::Children(const std::string &_renderEngine)
 TEST_P(VisualTest, Children)
 {
   Children(GetParam());
+}
+
+/////////////////////////////////////////////////
+void VisualTest::Scale(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene2");
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+
+  VisualPtr child = scene->CreateVisual();
+  ASSERT_NE(nullptr, child);
+
+  // verify initial scale properties
+  EXPECT_TRUE(visual->InheritScale());
+  EXPECT_EQ(math::Vector3d::One, visual->LocalScale());
+  EXPECT_EQ(math::Vector3d::One, visual->WorldScale());
+
+  // set visual scale and verify
+  math::Vector3d scale(4, 2, 3);
+  visual->SetLocalScale(scale);
+  EXPECT_EQ(scale, visual->LocalScale());
+  EXPECT_EQ(scale, visual->WorldScale());
+
+  math::Vector3d worldScale(6, 1, 4);
+  visual->SetWorldScale(worldScale);
+  EXPECT_EQ(worldScale, visual->LocalScale());
+  EXPECT_EQ(worldScale, visual->WorldScale());
+
+  // attach child and verify
+  visual->AddChild(child);
+  EXPECT_EQ(1u, visual->ChildCount());
+  EXPECT_EQ(child, visual->ChildById(child->Id()));
+
+  // verify child initial scale
+  EXPECT_TRUE(child->InheritScale());
+  EXPECT_EQ(math::Vector3d::One, child->LocalScale());
+  EXPECT_EQ(worldScale, child->WorldScale());
+
+  // Set child scale and verify
+  math::Vector3d childScale(5, 1, 9);
+  child->SetLocalScale(childScale);
+  EXPECT_EQ(childScale, child->LocalScale());
+  EXPECT_EQ(childScale * worldScale, child->WorldScale());
+
+  math::Vector3d childWorldScale(5, 1, 9);
+  child->SetWorldScale(childWorldScale);
+  math::Vector3d childLocalScale = childWorldScale / worldScale;
+  EXPECT_EQ(childLocalScale, child->LocalScale());
+  EXPECT_EQ(childWorldScale, child->WorldScale());
+
+  // Set visual scale and verify visual and child scale
+  math::Vector3d scale2(3, 5, 9);
+  visual->SetLocalScale(scale2);
+  EXPECT_EQ(scale2, visual->LocalScale());
+  EXPECT_EQ(scale2, visual->WorldScale());
+  EXPECT_EQ(childLocalScale, child->LocalScale());
+  EXPECT_EQ(scale2 * childLocalScale, child->WorldScale());
+
+  // test setting child inherit scale to false
+  child->SetInheritScale(false);
+  EXPECT_FALSE(child->InheritScale());
+  EXPECT_EQ(childLocalScale, child->LocalScale());
+  EXPECT_EQ(childLocalScale, child->WorldScale());
+
+  // set parent visual scale and verify the child is not affected.
+  math::Vector3d scale3(1, 9, 8);
+  visual->SetLocalScale(scale3);
+  EXPECT_EQ(scale3, visual->LocalScale());
+  EXPECT_EQ(scale3, visual->WorldScale());
+  EXPECT_EQ(childLocalScale, child->LocalScale());
+  EXPECT_EQ(childLocalScale, child->WorldScale());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, Scale)
+{
+  Scale(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Visual, VisualTest,

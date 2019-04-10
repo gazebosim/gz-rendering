@@ -38,15 +38,6 @@ namespace ignition
       public: virtual ~Ogre2Visual();
 
       // Documentation inherited.
-      public: virtual math::Vector3d LocalScale() const override;
-
-      // Documentation inherited.
-      public: virtual bool InheritScale() const override;
-
-      // Documentation inherited.
-      public: virtual void SetInheritScale(bool _inherit) override;
-
-      // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
@@ -57,11 +48,6 @@ namespace ignition
 
       // Documentation inherited.
       protected: virtual bool DetachGeometry(GeometryPtr _geometry) override;
-
-      /// \brief Implementation of the SetLocalScale function
-      /// \param[in] _scale Scale to set the visual to
-      protected: virtual void SetLocalScaleImpl(
-                     const math::Vector3d &_scale) override;
 
       /// \brief Initialize the visual
       protected: virtual void Init() override;

@@ -106,67 +106,6 @@ namespace ignition
       /// material will be returned.
       public: virtual MaterialPtr Material() = 0;
 
-      /// \brief Get the local scale
-      /// \return The local scale
-      public: virtual math::Vector3d LocalScale() const = 0;
-
-      /// \brief Set the local scale. The given scale will be assigned to the
-      /// x, y, and z coordinates.
-      /// \param[in] _scale New local scale
-      public: virtual void SetLocalScale(double _scale) = 0;
-
-      /// \brief Set the local scale
-      /// \param[in] _x New x-coordinate scale
-      /// \param[in] _y New y-coordinate scale
-      /// \param[in] _z New z-coordinate scale
-      public: virtual void SetLocalScale(double _x, double _y, double _z) = 0;
-
-      /// \brief Set the local scale
-      /// \param[in] _scale New local scale
-      public: virtual void SetLocalScale(const math::Vector3d &_scale) = 0;
-
-      /// \brief Get the world scale
-      /// \return The world scale
-      public: virtual math::Vector3d WorldScale() const = 0;
-
-      /// \brief Set the world scale. The given scale will be assigned to the
-      /// x, y, and z coordinates.
-      /// \param[in] _scale New world scale
-      public: virtual void SetWorldScale(double _scale) = 0;
-
-      /// \brief Set the world scale
-      /// \param[in] _x New x-coordinate scale
-      /// \param[in] _y New y-coordinate scale
-      /// \param[in] _z New z-coordinate scale
-      public: virtual void SetWorldScale(double _x, double _y, double _z) = 0;
-
-      /// \brief Set the world scale
-      /// \param[in] _scale New world scale
-      public: virtual void SetWorldScale(const math::Vector3d &_scale) = 0;
-
-      /// \brief Scale the current scale by the given scalar. The given scalar
-      /// will be assigned to the x, y, and z coordinates.
-      /// \param[in] _scale Scalar to alter the current scale
-      public: virtual void Scale(double _scale) = 0;
-
-      /// \brief Scale the current scale by the given scalars
-      /// \param[in] _x Scalar to alter the current x-coordinate scale
-      /// \param[in] _y Scalar to alter the current y-coordinate scale
-      /// \param[in] _z Scalar to alter the current z-coordinate scale
-      public: virtual void Scale(double _x, double _y, double _z) = 0;
-
-      /// \brief Scale the current scale by the given scalars
-      /// \param[in] _scale Scalars to alter the current scale
-      public: virtual void Scale(const math::Vector3d &_scale) = 0;
-
-      /// \brief Determine if this visual inherits scale from this parent
-      /// \return True if this visual inherits scale from this parent
-      public: virtual bool InheritScale() const = 0;
-
-      /// \brief Specify if this visual inherits scale from its parent
-      /// \param[in] _inherit True if this visual inherits scale from its parent
-      public: virtual void SetInheritScale(bool _inherit) = 0;
-
       /// \brief Specify if this visual is visible
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;

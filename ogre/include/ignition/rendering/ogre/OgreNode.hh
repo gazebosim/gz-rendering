@@ -39,23 +39,37 @@ namespace ignition
 
       public: virtual ~OgreNode();
 
-      public: virtual bool HasParent() const;
+      public: virtual bool HasParent() const override;
 
-      public: virtual NodePtr Parent() const;
+      public: virtual NodePtr Parent() const override;
 
       public: virtual Ogre::SceneNode *Node() const;
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
-      protected: virtual NodeStorePtr Children() const;
+      // Documentation inherited.
+      public: virtual math::Vector3d LocalScale() const override;
 
-      protected: virtual bool AttachChild(NodePtr _child);
+      // Documentation inherited.
+      public: virtual bool InheritScale() const override;
 
-      protected: virtual bool DetachChild(NodePtr _child);
+      // Documentation inherited.
+      public: virtual void SetInheritScale(bool _inherit) override;
 
-      protected: virtual math::Pose3d RawLocalPose() const;
+      // Documentation inherited.
+      protected: virtual void SetLocalScaleImpl(
+                     const math::Vector3d &_scale) override;
 
-      protected: virtual void SetRawLocalPose(const math::Pose3d &_Pose3d);
+      protected: virtual NodeStorePtr Children() const override;
+
+      protected: virtual bool AttachChild(NodePtr _child) override;
+
+      protected: virtual bool DetachChild(NodePtr _child) override;
+
+      protected: virtual math::Pose3d RawLocalPose() const override;
+
+      protected: virtual void SetRawLocalPose(const math::Pose3d &_Pose3d)
+          override;
 
       protected: virtual math::Vector3d RawLocalPosition() const;
 
@@ -69,9 +83,9 @@ namespace ignition
 
       protected: virtual void SetParent(OgreNodePtr _parent);
 
-      protected: virtual void Load();
+      protected: virtual void Load() override;
 
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
       protected: OgreNodePtr parent;
 

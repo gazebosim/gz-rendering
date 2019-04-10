@@ -37,87 +37,136 @@ namespace ignition
 
       public: virtual ~BaseNode();
 
-      public: virtual NodePtr Parent() const = 0;
+      public: virtual NodePtr Parent() const override = 0;
 
       // Documentation inherited
-      public: virtual void RemoveParent();
+      public: virtual void RemoveParent() override;
 
-      public: virtual math::Vector3d LocalPosition() const;
+      public: virtual math::Vector3d LocalPosition() const override;
 
-      public: virtual math::Pose3d LocalPose() const;
+      public: virtual math::Pose3d LocalPose() const override;
 
-      public: virtual void SetLocalPose(const math::Pose3d &_pose);
+      public: virtual void SetLocalPose(const math::Pose3d &_pose) override;
 
-      public: virtual void SetLocalPosition(double _x, double _y, double _z);
+      public: virtual void SetLocalPosition(double _x, double _y, double _z)
+          override;
 
-      public: virtual void SetLocalPosition(const math::Vector3d &_position);
+      public: virtual void SetLocalPosition(const math::Vector3d &_position)
+          override;
 
-      public: virtual math::Quaterniond LocalRotation() const;
+      public: virtual math::Quaterniond LocalRotation() const override;
 
-      public: virtual void SetLocalRotation(double _r, double _p, double _y);
+      public: virtual void SetLocalRotation(double _r, double _p, double _y)
+          override;
 
       public: virtual void SetLocalRotation(double _w, double _x, double _y,
-                  double _z);
+                  double _z) override;
 
-      public: virtual void SetLocalRotation(const math::Quaterniond &_rotation);
+      public: virtual void SetLocalRotation(const math::Quaterniond &_rotation)
+          override;
 
-      public: virtual math::Pose3d WorldPose() const;
+      public: virtual math::Pose3d WorldPose() const override;
 
-      public: virtual void SetWorldPose(const math::Pose3d &_pose);
+      public: virtual void SetWorldPose(const math::Pose3d &_pose) override;
 
-      public: virtual math::Vector3d WorldPosition() const;
+      public: virtual math::Vector3d WorldPosition() const override;
 
-      public: virtual void SetWorldPosition(double _x, double _y, double _z);
+      public: virtual void SetWorldPosition(double _x, double _y, double _z)
+         override;
 
-      public: virtual void SetWorldPosition(const math::Vector3d &_position);
+      public: virtual void SetWorldPosition(const math::Vector3d &_position)
+          override;
 
-      public: virtual math::Quaterniond WorldRotation() const;
+      public: virtual math::Quaterniond WorldRotation() const override;
 
-      public: virtual void SetWorldRotation(double _r, double _p, double _y);
+      public: virtual void SetWorldRotation(double _r, double _p, double _y)
+          override;
 
       public: virtual void SetWorldRotation(double _w, double _x, double _y,
-                  double _z);
+                  double _z) override;
 
-      public: virtual void SetWorldRotation(const math::Quaterniond &_rotation);
+      public: virtual void SetWorldRotation(const math::Quaterniond &_rotation)
+          override;
 
       public: virtual math::Pose3d WorldToLocal(const math::Pose3d &_pose)
-          const;
+          const override;
 
-      public: virtual math::Vector3d Origin() const;
+      public: virtual math::Vector3d Origin() const override;
 
-      public: virtual void SetOrigin(double _x, double _y, double _z);
+      public: virtual void SetOrigin(double _x, double _y, double _z) override;
 
-      public: virtual void SetOrigin(const math::Vector3d &_origin);
+      public: virtual void SetOrigin(const math::Vector3d &_origin) override;
 
-      public: virtual void Destroy();
+      // Documentation inherited
+      public: virtual math::Vector3d LocalScale() const override = 0;
 
-      public: virtual unsigned int ChildCount() const;
+      // Documentation inherited
+      public: virtual void SetLocalScale(double _scale) override;
 
-      public: virtual bool HasChild(ConstNodePtr _child) const;
+      // Documentation inherited
+      public: virtual void SetLocalScale(double _x, double _y, double _z)
+                      override;
 
-      public: virtual bool HasChildId(unsigned int _id) const;
+      // Documentation inherited
+      public: virtual void SetLocalScale(const math::Vector3d &_scale) override;
 
-      public: virtual bool HasChildName(const std::string &_name) const;
+      // Documentation inherited
+      public: virtual math::Vector3d WorldScale() const override;
 
-      public: virtual NodePtr ChildById(unsigned int _id) const;
+      // Documentation inherited
+      public: virtual void SetWorldScale(double _scale) override;
 
-      public: virtual NodePtr ChildByName(const std::string &_name) const;
+      // Documentation inherited
+      public: virtual void SetWorldScale(double _x, double _y, double _z)
+                      override;
 
-      public: virtual NodePtr ChildByIndex(unsigned int _index) const;
+      // Documentation inherited
+      public: virtual void SetWorldScale(const math::Vector3d &_scale) override;
 
-      public: virtual void AddChild(NodePtr _child);
+      // Documentation inherited
+      public: virtual void Scale(double _scale) override;
 
-      public: virtual NodePtr RemoveChild(NodePtr _child);
+      // Documentation inherited
+      public: virtual void Scale(double _x, double _y, double _z) override;
 
-      public: virtual NodePtr RemoveChildById(unsigned int _id);
+      // Documentation inherited
+      public: virtual void Scale(const math::Vector3d &_scale) override;
 
-      public: virtual NodePtr RemoveChildByName(const std::string &_name);
+      // Documentation inherited
+      public: virtual bool InheritScale() const override = 0;
 
-      public: virtual NodePtr RemoveChildByIndex(unsigned int _index);
+      public: virtual void Destroy() override;
 
-      public: virtual void RemoveChildren();
+      public: virtual unsigned int ChildCount() const override;
 
-      public: virtual void PreRender();
+      public: virtual bool HasChild(ConstNodePtr _child) const override;
+
+      public: virtual bool HasChildId(unsigned int _id) const override;
+
+      public: virtual bool HasChildName(const std::string &_name) const
+          override;
+
+      public: virtual NodePtr ChildById(unsigned int _id) const override;
+
+      public: virtual NodePtr ChildByName(const std::string &_name) const
+          override;
+
+      public: virtual NodePtr ChildByIndex(unsigned int _index) const override;
+
+      public: virtual void AddChild(NodePtr _child) override;
+
+      public: virtual NodePtr RemoveChild(NodePtr _child) override;
+
+      public: virtual NodePtr RemoveChildById(unsigned int _id) override;
+
+      public: virtual NodePtr RemoveChildByName(const std::string &_name)
+          override;
+
+      public: virtual NodePtr RemoveChildByIndex(unsigned int _index) override;
+
+      public: virtual void RemoveChildren() override;
+
+      public: virtual void PreRender() override;
 
       protected: virtual void PreRenderChildren();
 
@@ -130,6 +179,11 @@ namespace ignition
       protected: virtual bool AttachChild(NodePtr _child) = 0;
 
       protected: virtual bool DetachChild(NodePtr _child) = 0;
+
+      /// \brief Implementation of the SetLocalScale function
+      /// \param[in] _scale Scale to set the visual to
+      protected: virtual void SetLocalScaleImpl(
+                     const math::Vector3d &_scale) = 0;
 
       protected: math::Vector3d origin;
     };
@@ -426,6 +480,91 @@ namespace ignition
     {
       this->origin = _origin;
     }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetLocalScale(double _scale)
+    {
+      this->SetLocalScale(math::Vector3d(_scale, _scale, _scale));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetLocalScale(double _x, double _y, double _z)
+    {
+      this->SetLocalScale(math::Vector3d(_x, _y, _z));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetLocalScale(const math::Vector3d &_scale)
+    {
+      math::Pose3d rawPose = this->LocalPose();
+      this->SetLocalScaleImpl(_scale);
+      this->SetLocalPose(rawPose);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Vector3d BaseNode<T>::WorldScale() const
+    {
+      math::Vector3d scale = this->LocalScale();
+
+      if (!this->InheritScale() || !this->HasParent())
+      {
+        return scale;
+      }
+
+      return scale * this->Parent()->WorldScale();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetWorldScale(double _scale)
+    {
+      this->SetWorldScale(math::Vector3d(_scale, _scale, _scale));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetWorldScale(double _x, double _y, double _z)
+    {
+      this->SetWorldScale(math::Vector3d(_x, _y, _z));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetWorldScale(const math::Vector3d &_scale)
+    {
+      math::Vector3d toScale = math::Vector3d::One;
+      if (this->InheritScale() && this->HasParent())
+        toScale = this->Parent()->WorldScale();
+
+      this->SetLocalScale(_scale / toScale);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::Scale(double _scale)
+    {
+      this->Scale(math::Vector3d(_scale, _scale, _scale));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::Scale(double _x, double _y, double _z)
+    {
+      this->Scale(math::Vector3d(_x, _y, _z));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::Scale(const math::Vector3d &_scale)
+    {
+      this->SetLocalScale(_scale * this->LocalScale());
+    }
+
+
 
     //////////////////////////////////////////////////
     template <class T>

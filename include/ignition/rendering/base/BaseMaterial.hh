@@ -94,6 +94,12 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetLightingEnabled(const bool _enabled) override;
 
+      // Documentation inherited.
+      public: virtual void SetDepthCheckEnabled(bool _enabled) override;
+
+      // Documentation inherited.
+      public: virtual void SetDepthWriteEnabled(bool _enabled) override;
+
       // Documentation inherited
       public: virtual math::Color Ambient() const override;
 
@@ -123,6 +129,12 @@ namespace ignition
 
       // Documentation inherited
       public: virtual bool LightingEnabled() const override;
+
+      // Documentation inherited
+      public: virtual bool DepthCheckEnabled() const override;
+
+      // Documentation inherited
+      public: virtual bool DepthWriteEnabled() const override;
 
       // Documentation inherited
       public: virtual bool ReflectionEnabled() const override;
@@ -278,6 +290,12 @@ namespace ignition
       /// \brief Flag to indicate if dynamic lighting is enabled
       protected: bool lightingEnabled = false;
 
+      /// \brief Flag to indicate if depth buffer checking is enabled
+      protected: bool depthCheckEnabled = true;
+
+      /// \brief Flag to indicate if depth buffer writing is enabled
+      protected: bool depthWriteEnabled = true;
+
       /// \brief Flag to indicate if reflection is enabled
       protected: bool reflectionEnabled = false;
 
@@ -397,6 +415,20 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMaterial<T>::SetDepthCheckEnabled(bool _enabled)
+    {
+      this->depthCheckEnabled = _enabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetDepthWriteEnabled(bool _enabled)
+    {
+      this->depthWriteEnabled = _enabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMaterial<T>::SetCastShadows(const bool _cast)
     {
       this->castShadows = _cast;
@@ -477,6 +509,20 @@ namespace ignition
     bool BaseMaterial<T>::LightingEnabled() const
     {
       return this->lightingEnabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::DepthCheckEnabled() const
+    {
+      return this->depthCheckEnabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::DepthWriteEnabled() const
+    {
+      return this->depthWriteEnabled;
     }
 
     //////////////////////////////////////////////////
@@ -728,6 +774,9 @@ namespace ignition
       this->SetEmissive(_material->Emissive());
       this->SetShininess(_material->Shininess());
       this->SetTransparency(_material->Transparency());
+      // override depth check / depth write after setting transparency
+      this->SetDepthCheckEnabled(_material->DepthCheckEnabled());
+      this->SetDepthWriteEnabled(_material->DepthWriteEnabled());
       this->SetReflectivity(_material->Reflectivity());
       this->SetCastShadows(_material->CastShadows());
       this->SetReceiveShadows(_material->ReceiveShadows());
@@ -790,6 +839,8 @@ namespace ignition
     void BaseMaterial<T>::Reset()
     {
       this->SetLightingEnabled(true);
+      this->SetDepthCheckEnabled(true);
+      this->SetDepthWriteEnabled(true);
       this->SetAmbient(0.3, 0.3, 0.3);
       this->SetDiffuse(1.0, 1.0, 1.0);
       this->SetSpecular(0.2, 0.2, 0.2);

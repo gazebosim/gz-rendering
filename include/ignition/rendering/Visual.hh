@@ -109,6 +109,13 @@ namespace ignition
       /// \brief Specify if this visual is visible
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;
+
+      /// \brief Specify the render order of the visual
+      /// \param[in] _order Render order.
+      /// \param[in] _recursive True to recursively set the render order on all
+      /// child visuals
+      public: virtual void SetRenderOrder(unsigned int _order,
+          bool _recursive = true) = 0;
     };
     }
   }

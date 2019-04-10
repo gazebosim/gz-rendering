@@ -49,7 +49,8 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~TransformController();
 
-      // Documentation inherited.
+      /// \brief Update the transform controller. Its visual is updated based
+      /// on the current transform mode, space, and axis.
       public: virtual void Update();
 
       /// \brief Set the camera.
@@ -184,8 +185,8 @@ namespace ignition
       /// projection.
       /// \param[in] _pt2d 2d point to help fine tune the plane created.
       /// \return Plane created for transform
-      protected: math::Planed CreatePlaneForTransform(const math::Vector3d &_axis,
-          const math::Vector2d &_pt2d);
+      protected: math::Planed CreatePlaneForTransform(
+          const math::Vector3d &_axis, const math::Vector2d &_pt2d);
 
       /// \brief Helper function to compute ray plane intersection
       /// \param[in] _ray Input ray

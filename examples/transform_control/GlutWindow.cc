@@ -150,6 +150,23 @@ void handleTransform()
     return;
   }
 
+/*  ir::VisualPtr test = rayCamera->Scene()->VisualByName("test");
+  if (!test)
+  {
+    // create gray material
+    ir::MaterialPtr gray = rayCamera->Scene()->CreateMaterial("test");
+    gray->SetAmbient(0.7, 0.7, 0.7);
+    gray->SetDiffuse(0.7, 0.7, 0.7);
+    gray->SetSpecular(0.7, 0.7, 0.7);
+
+    auto testV = rayCamera->Scene()->CreateVisual();
+    testV->AddGeometry(rayCamera->Scene()->CreateBox());
+    testV->SetLocalPosition(2, 0, 0);
+    testV->SetMaterial(gray);
+    rayCamera->Scene()->RootVisual()->AddChild(testV);
+  }
+*/
+
   std::lock_guard<std::mutex> lock(g_mouseMutex);
 
   // set transform configuration

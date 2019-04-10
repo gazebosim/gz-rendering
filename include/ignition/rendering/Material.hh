@@ -58,6 +58,22 @@ namespace ignition
       /// \param[in] _enabled True if lighting affects this material
       public: virtual void SetLightingEnabled(const bool _enabled) = 0;
 
+      /// \brief Specify if depth buffer checking is enabled
+      /// \param[in] _enabled True if depth check is enabled
+      public: virtual void SetDepthCheckEnabled(bool _enabled) = 0;
+
+      /// \brief Determine if depth buffer checking is enabled
+      /// \return True if depth check is enabled
+      public: virtual bool DepthCheckEnabled() const = 0;
+
+      /// \brief Specify if depth buffer writing is enabled
+      /// \param[in] _enabled True if depth buffer writing is enabled
+      public: virtual void SetDepthWriteEnabled(bool _enabled) = 0;
+
+      /// \brief Determine if depth buffer writing is enabled
+      /// \return True if depth buffer writing is enabled
+      public: virtual bool DepthWriteEnabled() const = 0;
+
       /// \brief Get the ambient color
       /// \return The ambient color
       public: virtual math::Color Ambient() const = 0;

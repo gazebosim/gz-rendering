@@ -28,7 +28,7 @@
 class ignition::rendering::TransformControllerPrivate
 {
   /// \brief Gizmo visual that provides translation, rotation, and scale
-  /// handles for transformation
+  /// tandles for transformation
   public: GizmoVisualPtr gizmoVisual;
 
   /// \brief Node to be transformed
@@ -85,6 +85,9 @@ void TransformController::SetCamera(const CameraPtr &_camera)
 
   if (!this->dataPtr->ray)
     this->dataPtr->ray = this->dataPtr->camera->Scene()->CreateRayQuery();
+
+//  if (this->dataPtr->gizmoVisual)
+//    this->dataPtr->gizmoVisual->SetCamera(this->dataPtr->camera);
 }
 
 //////////////////////////////////////////////////
@@ -105,35 +108,75 @@ void TransformController::Update()
         this->dataPtr->node->Scene()->CreateGizmoVisual();
     this->dataPtr->node->Scene()->RootVisual()->AddChild(
         this->dataPtr->gizmoVisual);
+
+//    this->dataPtr->gizmoVisual->SetCamera(this->dataPtr->camera);
   }
 
   // update gizmo
   this->dataPtr->gizmoVisual->SetMode(this->dataPtr->mode);
   this->dataPtr->gizmoVisual->SetActiveAxis(this->dataPtr->axis);
 
-  // update pose
-  // Note scale is limited to local space
-  if (this->dataPtr->space == TransformSpace::TS_LOCAL ||
-      this->dataPtr->mode == TransformMode::TM_SCALE)
+  if (!this->dataPtr->camera)
+    return;
+
+  // update scale
+  math::Vector3d nodePos = this->dataPtr->node->WorldPose().Pos();
+  double scale = nodePos.Distance(this->dataPtr->camera->WorldPose().Pos())
+      / 2.0;
+  this->dataPtr->gizmoVisual->SetLocalScale(scale, scale, scale);
+
+  // update gizmo visual position
+  math::Vector3d pos = this->dataPtr->node->WorldPosition();
+  // update gizmo visual rotation so that they are always facing the
+  // eye position
+  math::Quaterniond rot;
+  if (this->dataPtr->mode == TransformMode::TM_ROTATION)
   {
-    this->dataPtr->gizmoVisual->SetWorldPose(
-        this->dataPtr->node->WorldPose());
+    math::Vector3d eye = this->dataPtr->camera->WorldPosition() - pos;
+    eye = eye.Normalize();
+    math::Quaterniond nodeRot;
+    if (this->dataPtr->space == TransformSpace::TS_LOCAL)
+    {
+      nodeRot = this->dataPtr->node->WorldRotation();
+      eye = nodeRot.RotateVectorReverse(eye);
+    }
+    VisualPtr xVis = this->dataPtr->gizmoVisual->ChildByAxis(
+        TransformAxis::TA_ROTATION_X);
+    math::Vector3d xRot(atan2(-eye.Y(), eye.Z()), 0, 0);
+    math::Vector3d xRotOffset(0, -IGN_PI * 0.5, 0);
+    xVis->SetWorldRotation(nodeRot *
+        math::Quaterniond(xRot) * math::Quaterniond(xRotOffset));
+
+    VisualPtr yVis = this->dataPtr->gizmoVisual->ChildByAxis(
+        TransformAxis::TA_ROTATION_Y);
+    math::Vector3d yRot(0, atan2(eye.X(), eye.Z()), 0);
+    math::Vector3d yRotOffset(IGN_PI * 0.5, -IGN_PI * 0.5, 0);
+    yVis->SetWorldRotation(nodeRot *
+        math::Quaterniond(yRot) * math::Quaterniond(yRotOffset));
+
+    VisualPtr zVis = this->dataPtr->gizmoVisual->ChildByAxis(
+        TransformAxis::TA_ROTATION_Z);
+    math::Vector3d zRot(0, 0, atan2(eye.Y(), eye.X()));
+    zVis->SetWorldRotation(nodeRot * math::Quaterniond(zRot));
+
+    VisualPtr circleVis = this->dataPtr->gizmoVisual->ChildByAxis(
+        TransformMode::TM_ROTATION);
+    math::Matrix4d lookAt;
+    lookAt = lookAt.LookAt(this->dataPtr->camera->WorldPosition(), pos);
+    math::Vector3d circleRotOffset(0, IGN_PI * 0.5, 0);
+    circleVis->SetWorldRotation(
+        lookAt.Rotation() * math::Quaterniond(circleRotOffset));
   }
   else
   {
-    this->dataPtr->gizmoVisual->SetWorldPose(
-        math::Pose3d(this->dataPtr->node->WorldPosition(),
-        math::Quaterniond::Identity));
+    // scaling is limited to local space
+    if (this->dataPtr->space == TransformSpace::TS_LOCAL ||
+        this->dataPtr->mode == TransformMode::TM_SCALE)
+      rot = this->dataPtr->node->WorldRotation();
   }
 
-  // update scale
-  if (this->dataPtr->camera)
-  {
-    math::Vector3d nodePos = this->dataPtr->node->WorldPose().Pos();
-    double scale = nodePos.Distance(this->dataPtr->camera->WorldPose().Pos())
-        / 2.0;
-    this->dataPtr->gizmoVisual->SetLocalScale(scale, scale, scale);
-  }
+  this->dataPtr->gizmoVisual->SetWorldPose(
+      math::Pose3d(pos, rot));
 }
 
 //////////////////////////////////////////////////

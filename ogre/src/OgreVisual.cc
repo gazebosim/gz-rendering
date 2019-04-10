@@ -103,3 +103,23 @@ OgreVisualPtr OgreVisual::SharedThis()
   ObjectPtr object = shared_from_this();
   return std::dynamic_pointer_cast<OgreVisual>(object);
 }
+
+//////////////////////////////////////////////////
+void OgreVisual::SetRenderOrder(unsigned int _order, bool _recursive)
+{
+  for (unsigned int i = 0; i <  this->ogreNode->numAttachedObjects(); ++i)
+  {
+    this->ogreNode->getAttachedObject(i)->setRenderQueueGroup(_order);
+  }
+
+  if (_recursive)
+  {
+    for (unsigned int i = 0; i < this->ChildCount(); ++i)
+    {
+      NodePtr child = this->ChildByIndex(i);
+      VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+      if (visual)
+        visual->SetRenderOrder(_order, _recursive);
+    }
+  }
+}

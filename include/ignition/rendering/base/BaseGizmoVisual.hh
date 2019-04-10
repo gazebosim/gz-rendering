@@ -18,10 +18,13 @@
 #ifndef IGNITION_RENDERING_BASE_BASEGIZMOVISUAL_HH_
 #define IGNITION_RENDERING_BASE_BASEGIZMOVISUAL_HH_
 
-//#include "ignition/rendering/base/BaseObject.hh"
+#include <map>
+#include <ignition/common/MeshManager.hh>
+
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/ArrowVisual.hh"
+#include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/GizmoVisual.hh"
 
 namespace ignition
@@ -64,7 +67,13 @@ namespace ignition
       public: virtual math::Vector3d ActiveAxis() const override;
 
       // Documentation inherited
-      public: virtual TransformAxis AxisById(unsigned int _id) const;
+      public: virtual TransformAxis AxisById(unsigned int _id) const override;
+
+      // Documentation inherited
+      public: virtual VisualPtr ChildByAxis(unsigned int _axis) const override;
+
+      // Documentation inherited
+//      public: virtual void SetCamera(CameraPtr _camera) override;
 
       /// \brief Reset the gizmo visual state
       public: virtual void Reset();
@@ -86,13 +95,20 @@ namespace ignition
       protected: TransformMode mode = TransformMode::TM_NONE;
 
       /// \brief A map of gizmo modes and their visuals
-      protected: std::map<TransformAxis, VisualPtr> visuals;
+      protected: std::map<unsigned int, VisualPtr> visuals;
+
+      /// \brief A map of gizmo modes and their handle visuals
+      protected: std::map<unsigned int, VisualPtr> handles;
 
       /// \brief Currently active visual.
       protected: VisualPtr activeVis;
 
       /// \brief Flag to indicate the mode has changed.
       protected: bool modeDirty = false;
+
+      /// \brief The scale and pose of the gizmo visual are adjusted based on
+      /// viewpoint
+//      protected: CameraPtr camera;
 
       /// \brief Active axis
       protected: math::Vector3d axis = math::Vector3d::Zero;
@@ -110,8 +126,14 @@ namespace ignition
                    /// \brief Z axis
                    AM_Z,
                    /// \brief Active axis
-                   AM_ACTIVE
+                   AM_ACTIVE,
+                   /// \brief Origin
+                   AM_O,
+                   /// \brief handle
+                   AM_HANDLE
                  };
+//      protected: const unsigned int kTranslationOrigin =
+//          TransformAxis::TA_TRANSLATION_Z + 1;
 
       /// \brief Only the scene can create a GizmoVisual
       private: friend class BaseScene;
@@ -167,6 +189,27 @@ namespace ignition
       this->visuals[TransformAxis::TA_SCALE_Z]->SetMaterial(
           this->materials[AM_Z], false);
 
+      this->handles[TransformAxis::TA_TRANSLATION_X]->SetMaterial(
+          this->materials[AM_HANDLE], false);
+      this->handles[TransformAxis::TA_TRANSLATION_Y]->SetMaterial(
+          this->materials[AM_HANDLE], false);
+      this->handles[TransformAxis::TA_TRANSLATION_Z]->SetMaterial(
+          this->materials[AM_HANDLE], false);
+
+      this->handles[TransformAxis::TA_ROTATION_X]->SetMaterial(
+          this->materials[AM_HANDLE], false);
+      this->handles[TransformAxis::TA_ROTATION_Y]->SetMaterial(
+          this->materials[AM_HANDLE], false);
+      this->handles[TransformAxis::TA_ROTATION_Z]->SetMaterial(
+          this->materials[AM_HANDLE], false);
+
+      this->handles[TransformAxis::TA_SCALE_X]->SetMaterial(
+          this->materials[AM_HANDLE], false);
+      this->handles[TransformAxis::TA_SCALE_Y]->SetMaterial(
+          this->materials[AM_HANDLE], false);
+      this->handles[TransformAxis::TA_SCALE_Z]->SetMaterial(
+          this->materials[AM_HANDLE], false);
+
       for (auto v : this->visuals)
         v.second->SetVisible(false);
     }
@@ -191,20 +234,27 @@ namespace ignition
         this->visuals[TransformAxis::TA_TRANSLATION_X]->SetVisible(true);
         this->visuals[TransformAxis::TA_TRANSLATION_Y]->SetVisible(true);
         this->visuals[TransformAxis::TA_TRANSLATION_Z]->SetVisible(true);
+        this->visuals[TransformMode::TM_TRANSLATION]->SetVisible(true);
         if (this->axis.X() > 0)
         {
           this->visuals[TransformAxis::TA_TRANSLATION_X]->SetMaterial(
               this->materials[AM_ACTIVE]);
+          this->handles[TransformAxis::TA_TRANSLATION_X]->SetMaterial(
+              this->materials[AM_HANDLE]);
         }
         if (this->axis.Y() > 0)
         {
           this->visuals[TransformAxis::TA_TRANSLATION_Y]->SetMaterial(
               this->materials[AM_ACTIVE]);
+          this->handles[TransformAxis::TA_TRANSLATION_Y]->SetMaterial(
+              this->materials[AM_HANDLE]);
         }
         if (this->axis.Z() > 0)
         {
           this->visuals[TransformAxis::TA_TRANSLATION_Z]->SetMaterial(
               this->materials[AM_ACTIVE]);
+          this->handles[TransformAxis::TA_TRANSLATION_Z]->SetMaterial(
+              this->materials[AM_HANDLE]);
         }
       }
       else if (this->mode & TransformMode::TM_ROTATION)
@@ -212,22 +262,28 @@ namespace ignition
         this->visuals[TransformAxis::TA_ROTATION_X]->SetVisible(true);
         this->visuals[TransformAxis::TA_ROTATION_Y]->SetVisible(true);
         this->visuals[TransformAxis::TA_ROTATION_Z]->SetVisible(true);
+        this->visuals[TransformMode::TM_ROTATION]->SetVisible(true);
         if (this->axis.X() > 0)
         {
           this->visuals[TransformAxis::TA_ROTATION_X]->SetMaterial(
               this->materials[AM_ACTIVE]);
+          this->handles[TransformAxis::TA_ROTATION_X]->SetMaterial(
+              this->materials[AM_HANDLE]);
         }
         if (this->axis.Y() > 0)
         {
           this->visuals[TransformAxis::TA_ROTATION_Y]->SetMaterial(
               this->materials[AM_ACTIVE]);
+          this->handles[TransformAxis::TA_ROTATION_Y]->SetMaterial(
+              this->materials[AM_HANDLE]);
         }
         if (this->axis.Z() > 0)
         {
           this->visuals[TransformAxis::TA_ROTATION_Z]->SetMaterial(
               this->materials[AM_ACTIVE]);
+          this->handles[TransformAxis::TA_ROTATION_Z]->SetMaterial(
+              this->materials[AM_HANDLE]);
         }
-
       }
       else if (this->mode & TransformMode::TM_SCALE)
       {
@@ -238,16 +294,22 @@ namespace ignition
         {
           this->visuals[TransformAxis::TA_SCALE_X]->SetMaterial(
               this->materials[AM_ACTIVE]);
+          this->handles[TransformAxis::TA_SCALE_X]->SetMaterial(
+              this->materials[AM_HANDLE]);
         }
         if (this->axis.Y() > 0)
         {
           this->visuals[TransformAxis::TA_SCALE_Y]->SetMaterial(
               this->materials[AM_ACTIVE]);
+          this->handles[TransformAxis::TA_SCALE_Y]->SetMaterial(
+              this->materials[AM_HANDLE]);
         }
         if (this->axis.Z() > 0)
         {
           this->visuals[TransformAxis::TA_SCALE_Z]->SetMaterial(
               this->materials[AM_ACTIVE]);
+          this->handles[TransformAxis::TA_SCALE_Z]->SetMaterial(
+              this->materials[AM_HANDLE]);
         }
       }
 
@@ -298,8 +360,10 @@ namespace ignition
     {
       for (auto v : this->visuals)
       {
+        // each axis visual has a child handle so also check children for
+        // matching id
         if (v.second->Id() == _id || v.second->ChildById(_id))
-          return v.first;
+          return static_cast<TransformAxis>(v.first);
       }
       return TransformAxis::TA_NONE;
     }
@@ -315,10 +379,52 @@ namespace ignition
       MaterialPtr activeMat =
           this->Scene()->Material("Default/TransYellow")->Clone();
 
+      // disable depth checking and writing, make them overlays
+      xMat->SetDepthWriteEnabled(false);
+      xMat->SetDepthCheckEnabled(false);
+      yMat->SetDepthWriteEnabled(false);
+      yMat->SetDepthCheckEnabled(false);
+      zMat->SetDepthWriteEnabled(false);
+      zMat->SetDepthCheckEnabled(false);
+      activeMat->SetDepthWriteEnabled(false);
+      activeMat->SetDepthCheckEnabled(false);
+
+      MaterialPtr oMat = this->Scene()->Material("GizmoGray");
+      if (!oMat)
+      {
+        oMat = this->Scene()->CreateMaterial("GizmoGray");
+        oMat->SetAmbient(0.5, 0.5, 0.5);
+        oMat->SetDiffuse(0.5, 0.5, 0.5);
+        oMat->SetEmissive(0.5, 0.5, 0.5);
+        oMat->SetTransparency(0.5);
+        oMat->SetCastShadows(false);
+        oMat->SetReceiveShadows(false);
+        oMat->SetLightingEnabled(false);
+        oMat->SetDepthWriteEnabled(false);
+        oMat->SetDepthCheckEnabled(false);
+      }
+
+      MaterialPtr handleMat = this->Scene()->Material("GizmoHandle");
+      if (!handleMat)
+      {
+        handleMat = this->Scene()->CreateMaterial("GizmoHandle");
+        handleMat->SetAmbient(0.0, 0.0, 0.0);
+        handleMat->SetDiffuse(0.0, 0.0, 0.0);
+        handleMat->SetEmissive(0.0, 0.0, 0.0);
+        handleMat->SetTransparency(1.0);
+        handleMat->SetCastShadows(false);
+        handleMat->SetReceiveShadows(false);
+        handleMat->SetLightingEnabled(false);
+        handleMat->SetDepthWriteEnabled(false);
+        handleMat->SetDepthCheckEnabled(false);
+      }
+
       this->materials[AM_X] = xMat;
       this->materials[AM_Y] = yMat;
       this->materials[AM_Z] = zMat;
       this->materials[AM_ACTIVE] = activeMat;
+      this->materials[AM_O] = oMat;
+      this->materials[AM_HANDLE] = handleMat;
     }
     //////////////////////////////////////////////////
     template <class T>
@@ -332,7 +438,7 @@ namespace ignition
       transShaftXVis->AddGeometry(this->Scene()->CreateCylinder());
       transShaftXVis->SetOrigin(0, 0, 0.5);
       transShaftXVis->SetLocalPosition(0, 0, 0.5);
-      transShaftXVis->SetLocalScale(0.025, 0.025, 0.5);
+      transShaftXVis->SetLocalScale(0.02, 0.02, 0.45);
       transXVis->AddChild(transShaftXVis);
 
       VisualPtr transHeadXVis = this->Scene()->CreateVisual();
@@ -342,7 +448,7 @@ namespace ignition
       transHeadXVis->SetLocalScale(0.07, 0.07, 0.2);
       transXVis->AddChild(transHeadXVis);
 
-      transXVis->SetMaterial("Default/TransRed");
+      transXVis->SetMaterial(this->materials[AM_X], false);
       transXVis->SetLocalRotation(0, IGN_PI * 0.5, 0);
       transVis->AddChild(transXVis);
 
@@ -352,7 +458,7 @@ namespace ignition
       transShaftYVis->AddGeometry(this->Scene()->CreateCylinder());
       transShaftYVis->SetOrigin(0, 0, 0.5);
       transShaftYVis->SetLocalPosition(0, 0, 0.5);
-      transShaftYVis->SetLocalScale(0.025, 0.025, 0.5);
+      transShaftYVis->SetLocalScale(0.02, 0.02, 0.45);
       transYVis->AddChild(transShaftYVis);
 
       VisualPtr transHeadYVis = this->Scene()->CreateVisual();
@@ -362,7 +468,7 @@ namespace ignition
       transHeadYVis->SetLocalScale(0.07, 0.07, 0.2);
       transYVis->AddChild(transHeadYVis);
 
-      transYVis->SetMaterial("Default/TransGreen");
+      transYVis->SetMaterial(this->materials[AM_Y], false);
       transYVis->SetLocalRotation(-IGN_PI * 0.5, 0, 0);
       transVis->AddChild(transYVis);
 
@@ -372,7 +478,7 @@ namespace ignition
       transShaftZVis->AddGeometry(this->Scene()->CreateCylinder());
       transShaftZVis->SetOrigin(0, 0, 0.5);
       transShaftZVis->SetLocalPosition(0, 0, 0.5);
-      transShaftZVis->SetLocalScale(0.025, 0.025, 0.5);
+      transShaftZVis->SetLocalScale(0.02, 0.02, 0.45);
       transZVis->AddChild(transShaftZVis);
 
       VisualPtr transHeadZVis = this->Scene()->CreateVisual();
@@ -382,12 +488,46 @@ namespace ignition
       transHeadZVis->SetLocalScale(0.07, 0.07, 0.2);
       transZVis->AddChild(transHeadZVis);
 
-      transZVis->SetMaterial("Default/TransBlue");
+      transZVis->SetMaterial(this->materials[AM_Z], false);
       transVis->AddChild(transZVis);
+
+      // trans origin
+      VisualPtr transOrigin = this->Scene()->CreateVisual();
+      transOrigin->AddGeometry(this->Scene()->CreateSphere());
+      transOrigin->SetLocalScale(0.05, 0.05, 0.05);
+      transOrigin->SetMaterial(this->materials[AM_O], false);
+      transVis->AddChild(transOrigin);
 
       this->visuals[TransformAxis::TA_TRANSLATION_X] = transXVis;
       this->visuals[TransformAxis::TA_TRANSLATION_Y] = transYVis;
       this->visuals[TransformAxis::TA_TRANSLATION_Z] = transZVis;
+      this->visuals[TransformMode::TM_TRANSLATION] = transOrigin;
+
+      // translation handles
+      VisualPtr transHandleXVis = this->Scene()->CreateVisual();
+      transHandleXVis->AddGeometry(this->Scene()->CreateCylinder());
+      transHandleXVis->SetLocalPosition(0, 0, 0.35);
+      transHandleXVis->SetLocalScale(0.11, 0.11, 0.7);
+      transHandleXVis->SetMaterial(this->materials[AM_HANDLE], false);
+      transXVis->AddChild(transHandleXVis);
+
+      VisualPtr transHandleYVis = this->Scene()->CreateVisual();
+      transHandleYVis->AddGeometry(this->Scene()->CreateCylinder());
+      transHandleYVis->SetLocalPosition(0, 0, 0.35);
+      transHandleYVis->SetLocalScale(0.11, 0.11, 0.7);
+      transHandleYVis->SetMaterial(this->materials[AM_HANDLE], false);
+      transYVis->AddChild(transHandleYVis);
+
+      VisualPtr transHandleZVis = this->Scene()->CreateVisual();
+      transHandleZVis->AddGeometry(this->Scene()->CreateCylinder());
+      transHandleZVis->SetLocalPosition(0, 0, 0.35);
+      transHandleZVis->SetLocalScale(0.11, 0.11, 0.7);
+      transHandleZVis->SetMaterial(this->materials[AM_HANDLE], false);
+      transZVis->AddChild(transHandleZVis);
+
+      this->handles[TransformAxis::TA_TRANSLATION_X] = transHandleXVis;
+      this->handles[TransformAxis::TA_TRANSLATION_Y] = transHandleYVis;
+      this->handles[TransformAxis::TA_TRANSLATION_Z] = transHandleZVis;
 
       this->AddChild(transVis);
     }
@@ -396,33 +536,75 @@ namespace ignition
     template <class T>
     void BaseGizmoVisual<T>::CreateRotationVisual()
     {
-      // rotation x
+      common::MeshManager *meshMgr = common::MeshManager::Instance();
+      std::string rotMeshName = "gizmo_rotate";
+      if (!meshMgr->HasMesh(rotMeshName))
+        meshMgr->CreateTube(rotMeshName, 1.0, 1.02, 0.02, 1, 64, IGN_PI);
+
+      std::string rotFullMeshName = "gizmo_rotate_full";
+      if (!meshMgr->HasMesh(rotFullMeshName))
+        meshMgr->CreateTube(rotFullMeshName, 1.0, 1.02, 0.02, 1, 64, 2*IGN_PI);
+
+      std::string rotHandleMeshName = "gizmo_rotate_handle";
+      if (!meshMgr->HasMesh(rotHandleMeshName))
+        meshMgr->CreateTube(rotHandleMeshName, 0.95, 1.07, 0.1, 1, 64, IGN_PI);
+
       VisualPtr rotVis = this->Scene()->CreateVisual();
+
+      // rotation x
       VisualPtr rotXVis = this->Scene()->CreateVisual();
-      rotXVis->AddGeometry(this->Scene()->CreateMesh("selection_tube"));
+      rotXVis->AddGeometry(this->Scene()->CreateMesh(rotMeshName));
       rotXVis->SetLocalRotation(0, IGN_PI * 0.5, 0);
       rotXVis->SetLocalScale(0.5, 0.5, 0.5);
-      rotXVis->SetMaterial("Default/TransRed");
+      rotXVis->SetMaterial(this->materials[AM_X], false);
       rotVis->AddChild(rotXVis);
 
       // rotation y
       VisualPtr rotYVis = this->Scene()->CreateVisual();
-      rotYVis->AddGeometry(this->Scene()->CreateMesh("selection_tube"));
+      rotYVis->AddGeometry(this->Scene()->CreateMesh(rotMeshName));
       rotYVis->SetLocalRotation(IGN_PI * 0.5, 0, 0);
       rotYVis->SetLocalScale(0.5, 0.5, 0.5);
-      rotYVis->SetMaterial("Default/TransGreen");
+      rotYVis->SetMaterial(this->materials[AM_Y], false);
       rotVis->AddChild(rotYVis);
 
       // rotation z
       VisualPtr rotZVis = this->Scene()->CreateVisual();
-      rotZVis->AddGeometry(this->Scene()->CreateMesh("selection_tube"));
+      rotZVis->AddGeometry(this->Scene()->CreateMesh(rotMeshName));
       rotZVis->SetLocalScale(0.5, 0.5, 0.5);
-      rotZVis->SetMaterial("Default/TransBlue");
+      rotZVis->SetMaterial(this->materials[AM_Z], false);
       rotVis->AddChild(rotZVis);
+
+      // rotation origin
+      VisualPtr rotFullVis = this->Scene()->CreateVisual();
+      rotFullVis->AddGeometry(this->Scene()->CreateMesh(rotFullMeshName));
+      rotFullVis->SetLocalScale(0.5, 0.5, 0.5);
+      rotFullVis->SetMaterial(this->materials[AM_O], false);
+      rotVis->AddChild(rotFullVis);
 
       this->visuals[TransformAxis::TA_ROTATION_X] = rotXVis;
       this->visuals[TransformAxis::TA_ROTATION_Y] = rotYVis;
       this->visuals[TransformAxis::TA_ROTATION_Z] = rotZVis;
+      this->visuals[TransformMode::TM_ROTATION] = rotFullVis;
+
+      // rotation handles
+      VisualPtr rotHandleXVis = this->Scene()->CreateVisual();
+      rotHandleXVis->AddGeometry(this->Scene()->CreateMesh(rotHandleMeshName));
+      rotHandleXVis->SetMaterial(this->materials[AM_HANDLE], false);
+      rotXVis->AddChild(rotHandleXVis);
+
+      VisualPtr rotHandleYVis = this->Scene()->CreateVisual();
+      rotHandleYVis->AddGeometry(this->Scene()->CreateMesh(rotHandleMeshName));
+      rotHandleYVis->SetMaterial(this->materials[AM_HANDLE], false);
+      rotYVis->AddChild(rotHandleYVis);
+
+      VisualPtr rotHandleZVis = this->Scene()->CreateVisual();
+      rotHandleZVis->AddGeometry(this->Scene()->CreateMesh(rotHandleMeshName));
+      rotHandleZVis->SetMaterial(this->materials[AM_HANDLE], false);
+      rotZVis->AddChild(rotHandleZVis);
+
+      this->handles[TransformAxis::TA_ROTATION_X] = rotHandleXVis;
+      this->handles[TransformAxis::TA_ROTATION_Y] = rotHandleYVis;
+      this->handles[TransformAxis::TA_ROTATION_Z] = rotHandleZVis;
 
       this->AddChild(rotVis);
     }
@@ -439,7 +621,7 @@ namespace ignition
       scaleShaftXVis->AddGeometry(this->Scene()->CreateCylinder());
       scaleShaftXVis->SetOrigin(0, 0, 0.5);
       scaleShaftXVis->SetLocalPosition(0, 0, 0.5);
-      scaleShaftXVis->SetLocalScale(0.025, 0.025, 0.5);
+      scaleShaftXVis->SetLocalScale(0.02, 0.02, 0.5);
       scaleXVis->AddChild(scaleShaftXVis);
 
       VisualPtr scaleHeadXVis = this->Scene()->CreateVisual();
@@ -449,7 +631,7 @@ namespace ignition
       scaleHeadXVis->SetLocalScale(0.07, 0.07, 0.07);
       scaleXVis->AddChild(scaleHeadXVis);
 
-      scaleXVis->SetMaterial("Default/TransRed");
+      scaleXVis->SetMaterial(this->materials[AM_X], false);
       scaleXVis->SetLocalRotation(0, IGN_PI * 0.5, 0);
       scaleVis->AddChild(scaleXVis);
 
@@ -459,7 +641,7 @@ namespace ignition
       scaleShaftYVis->AddGeometry(this->Scene()->CreateCylinder());
       scaleShaftYVis->SetOrigin(0, 0, 0.5);
       scaleShaftYVis->SetLocalPosition(0, 0, 0.5);
-      scaleShaftYVis->SetLocalScale(0.025, 0.025, 0.5);
+      scaleShaftYVis->SetLocalScale(0.02, 0.02, 0.5);
       scaleYVis->AddChild(scaleShaftYVis);
 
       VisualPtr scaleHeadYVis = this->Scene()->CreateVisual();
@@ -469,7 +651,7 @@ namespace ignition
       scaleHeadYVis->SetLocalScale(0.07, 0.07, 0.07);
       scaleYVis->AddChild(scaleHeadYVis);
 
-      scaleYVis->SetMaterial("Default/TransGreen");
+      scaleYVis->SetMaterial(this->materials[AM_Y], false);
       scaleYVis->SetLocalRotation(-IGN_PI * 0.5, 0, 0);
       scaleVis->AddChild(scaleYVis);
 
@@ -479,7 +661,7 @@ namespace ignition
       scaleShaftZVis->AddGeometry(this->Scene()->CreateCylinder());
       scaleShaftZVis->SetOrigin(0, 0, 0.5);
       scaleShaftZVis->SetLocalPosition(0, 0, 0.5);
-      scaleShaftZVis->SetLocalScale(0.025, 0.025, 0.5);
+      scaleShaftZVis->SetLocalScale(0.02, 0.02, 0.5);
       scaleZVis->AddChild(scaleShaftZVis);
 
       VisualPtr scaleHeadZVis = this->Scene()->CreateVisual();
@@ -489,14 +671,58 @@ namespace ignition
       scaleHeadZVis->SetLocalScale(0.07, 0.07, 0.07);
       scaleZVis->AddChild(scaleHeadZVis);
 
-      scaleZVis->SetMaterial("Default/TransBlue");
+      scaleZVis->SetMaterial(this->materials[AM_Z], false);
       scaleVis->AddChild(scaleZVis);
 
       this->visuals[TransformAxis::TA_SCALE_X] = scaleXVis;
       this->visuals[TransformAxis::TA_SCALE_Y] = scaleYVis;
       this->visuals[TransformAxis::TA_SCALE_Z] = scaleZVis;
 
+      // scale handles
+      VisualPtr scaleHandleXVis= this->Scene()->CreateVisual();
+      scaleHandleXVis->AddGeometry(this->Scene()->CreateCylinder());
+      scaleHandleXVis->SetLocalPosition(0, 0, 0.285);
+      scaleHandleXVis->SetLocalScale(0.11, 0.11, 0.57);
+      scaleHandleXVis->SetMaterial(this->materials[AM_HANDLE], false);
+      scaleXVis->AddChild(scaleHandleXVis);
+
+      VisualPtr scaleHandleYVis = this->Scene()->CreateVisual();
+      scaleHandleYVis->AddGeometry(this->Scene()->CreateCylinder());
+      scaleHandleYVis->SetLocalPosition(0, 0, 0.285);
+      scaleHandleYVis->SetLocalScale(0.11, 0.11, 0.57);
+      scaleHandleYVis->SetMaterial(this->materials[AM_HANDLE], false);
+      scaleYVis->AddChild(scaleHandleYVis);
+
+      VisualPtr scaleHandleZVis = this->Scene()->CreateVisual();
+      scaleHandleZVis->AddGeometry(this->Scene()->CreateCylinder());
+      scaleHandleZVis->SetLocalPosition(0, 0, 0.285);
+      scaleHandleZVis->SetLocalScale(0.11, 0.11, 0.57);
+      scaleHandleZVis->SetMaterial(this->materials[AM_HANDLE], false);
+      scaleZVis->AddChild(scaleHandleZVis);
+
+      this->handles[TransformAxis::TA_SCALE_X] = scaleHandleXVis;
+      this->handles[TransformAxis::TA_SCALE_Y] = scaleHandleYVis;
+      this->handles[TransformAxis::TA_SCALE_Z] = scaleHandleZVis;
+
       this->AddChild(scaleVis);
+    }
+
+/*    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGizmoVisual<T>::SetCamera(CameraPtr _camera)
+    {
+      this->camera = _camera;
+    }
+*/
+    //////////////////////////////////////////////////
+    template <class T>
+    VisualPtr BaseGizmoVisual<T>::ChildByAxis(unsigned int _axis) const
+    {
+      auto it = this->visuals.find(_axis);
+      if (it != this->visuals.end())
+        return it->second;
+
+      return VisualPtr();
     }
     }
   }

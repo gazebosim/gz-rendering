@@ -59,10 +59,21 @@ namespace ignition
       /// \sa SetActiveAxis
       public: virtual math::Vector3d ActiveAxis() const = 0;
 
+      /// \brief Set camera that will be used to adjust the scale and pose of
+      /// the gizmo visual.
+      /// \param[in] _camera Pointer to camera
+      /// \sa SetActiveAxis
+//      public: virtual void SetCamera(CameraPtr _camera) = 0;
+
       /// \brief Get the Transform axis associated with the given id.
       /// \param[in] _id  Id of the visual associated with a transform axis
       /// \return Transform axis with the given id
       public: virtual TransformAxis AxisById(unsigned int _id) const = 0;
+
+      /// \brief Get the child visual by axis
+      /// \return Visual representing the specified transform axis or transform mode
+      /// \sa TransformAxis, TransformMode
+      public: virtual VisualPtr ChildByAxis(unsigned int _axis) const = 0;
     };
     }
   }

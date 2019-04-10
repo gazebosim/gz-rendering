@@ -34,6 +34,7 @@
 #include <ignition/common/Console.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
+#include <ignition/rendering/RenderPass.hh>
 #include <ignition/rendering/Scene.hh>
 
 #include "GlutWindow.hh"
@@ -115,6 +116,18 @@ void keyboardCB(unsigned char _key, int, int)
   else if (_key == KEY_TAB)
   {
     g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
+  }
+  else if (_key == 'p')
+  {
+    // toggle all render passes
+    for (ir::CameraPtr camera : g_cameras)
+    {
+      for (unsigned int i = 0; i < camera->RenderPassCount(); ++i)
+      {
+        ir::RenderPassPtr pass = camera->RenderPassByIndex(i);
+        pass->SetEnabled(!pass->IsEnabled());
+      }
+    }
   }
 }
 

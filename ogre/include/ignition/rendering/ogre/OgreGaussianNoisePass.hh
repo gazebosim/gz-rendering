@@ -47,6 +47,9 @@ namespace ignition
       public: virtual ~OgreGaussianNoisePass();
 
       // Documentation inherited
+      public: void PreRender() override;
+
+      // Documentation inherited
       public: void Destroy() override;
 
       // Documentation inherited

@@ -154,6 +154,8 @@ namespace ignition
     {
       T::PreRender();
       this->Rebuild();
+      for (auto &pass : this->renderPasses)
+        pass->PreRender();
     }
 
     //////////////////////////////////////////////////

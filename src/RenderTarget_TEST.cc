@@ -22,8 +22,10 @@
 #include "test_config.h"  // NOLINT(build/include)
 
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/GaussianNoisePass.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
+#include "ignition/rendering/RenderPassSystem.hh"
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -38,6 +40,9 @@ class RenderTargetTest : public testing::Test,
 
   /// \brief test RenderWindow properties
   public: void RenderWindow(const std::string &_renderEngine);
+
+  /// \brief test adding and removing render passes
+  public: void AddRemoveRenderPass(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -52,7 +57,6 @@ void RenderTargetTest::RenderTexture(const std::string &_renderEngine)
     return;
   }
   ScenePtr scene = engine->CreateScene("scene");
-  CameraPtr camera =  scene->CreateCamera("camera");
 
   RenderTexturePtr renderTexture = scene->CreateRenderTexture();
 
@@ -123,6 +127,60 @@ void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void RenderTargetTest::AddRemoveRenderPass(const std::string &_renderEngine)
+{
+  if (_renderEngine != "ogre")
+  {
+    igndbg << "RenderWindow not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+  ScenePtr scene = engine->CreateScene("scene");
+
+  // create a render texture and verify no render pass exists
+  RenderTexturePtr renderTexture = scene->CreateRenderTexture();
+  EXPECT_EQ(0u, renderTexture->RenderPassCount());
+
+  // get the render pass system
+  RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
+  if (!rpSystem)
+  {
+    ignwarn << "Render engin '" << _renderEngine << "' does not support "
+            << "render pass system" << std::endl;
+    return;
+  }
+  RenderPassPtr pass1 = rpSystem->Create<GaussianNoisePass>();
+  EXPECT_NE(nullptr, pass1);
+
+  // test adding a render pass
+  renderTexture->AddRenderPass(pass1);
+  EXPECT_EQ(1u, renderTexture->RenderPassCount());
+  EXPECT_EQ(pass1, renderTexture->RenderPassByIndex(0u));
+
+  // test adding another render pass
+  RenderPassPtr pass2 = rpSystem->Create<GaussianNoisePass>();
+  EXPECT_NE(nullptr, pass2);
+  renderTexture->AddRenderPass(pass2);
+  EXPECT_EQ(2u, renderTexture->RenderPassCount());
+  EXPECT_EQ(pass1, renderTexture->RenderPassByIndex(0u));
+  EXPECT_EQ(pass2, renderTexture->RenderPassByIndex(1u));
+
+  // test removing render pass
+  renderTexture->RemoveRenderPass(pass1);
+  EXPECT_EQ(1u, renderTexture->RenderPassCount());
+  EXPECT_EQ(pass2, renderTexture->RenderPassByIndex(0u));
+}
+
+/////////////////////////////////////////////////
 TEST_P(RenderTargetTest, RenderTexture)
 {
   RenderTexture(GetParam());
@@ -133,6 +191,13 @@ TEST_P(RenderTargetTest, RenderWindow)
 {
   RenderWindow(GetParam());
 }
+
+/////////////////////////////////////////////////
+TEST_P(RenderTargetTest, AddRemoveRenderPass)
+{
+  AddRemoveRenderPass(GetParam());
+}
+
 
 INSTANTIATE_TEST_CASE_P(RenderTarget, RenderTargetTest,
     RENDER_ENGINE_VALUES,

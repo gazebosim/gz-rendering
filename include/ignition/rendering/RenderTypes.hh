@@ -51,6 +51,7 @@ namespace ignition
     class Camera;
     class DepthCamera;
     class DirectionalLight;
+    class GaussianNoisePass;
     class Geometry;
     class GpuRays;
     class Grid;
@@ -65,6 +66,8 @@ namespace ignition
     class PointLight;
     class RayQuery;
     class RenderEngine;
+    class RenderPass;
+    class RenderPassSystem;
     class RenderTarget;
     class RenderTexture;
     class RenderWindow;
@@ -99,6 +102,10 @@ namespace ignition
     /// \def DirectionalLightPtr
     /// \brief Shared pointer to DirectionalLight
     typedef shared_ptr<DirectionalLight> DirectionalLightPtr;
+
+    /// \def GaussianNoisePass
+    /// \brief Shared pointer to GaussianNoisePass
+    typedef shared_ptr<GaussianNoisePass> GaussianNoisePassPtr;
 
     /// \def GeometryPtr
     /// \brief Shared pointer to Geometry
@@ -147,6 +154,14 @@ namespace ignition
     /// \def RayQueryPtr
     /// \brief Shared pointer to RayQuery
     typedef shared_ptr<RayQuery> RayQueryPtr;
+
+    /// \def RenderPassPtr
+    /// \brief Shared pointer to RenderPass
+    typedef shared_ptr<RenderPass> RenderPassPtr;
+
+    /// \def RenderPassSystemPtr
+    /// \brief Shared pointer to RenderPassSystem
+    typedef shared_ptr<RenderPassSystem> RenderPassSystemPtr;
 
     /// \def RenderTargetPtr
     /// \brief Shared pointer to RenderTarget
@@ -210,6 +225,10 @@ namespace ignition
     /// \brief Shared pointer to const DirectionalLight
     typedef shared_ptr<const DirectionalLight> ConstDirectionalLightPtr;
 
+    /// \def const GaussianNoisePass
+    /// \brief Shared pointer to const GaussianNoisePass
+    typedef shared_ptr<const GaussianNoisePass> ConstGaussianNoisePass;
+
     /// \def const GeometryPtr
     /// \brief Shared pointer to const Geometry
     typedef shared_ptr<const Geometry> ConstGeometryPtr;
@@ -252,7 +271,15 @@ namespace ignition
 
     /// \def RayQueryPtr
     /// \brief Shared pointer to RayQuery
-    typedef shared_ptr<const RayQuery> ConstRayQuery;
+    typedef shared_ptr<const RayQuery> ConstRayQueryPtr;
+
+    /// \def const RenderPassPtr
+    /// \brief Shared pointer to const RenderPass
+    typedef shared_ptr<const RenderPass> ConstRenderPassPtr;
+
+    /// \def const RenderPassSystemPtr
+    /// \brief Shared pointer to const RenderPassSystem
+    typedef shared_ptr<const RenderPassSystem> ConstRenderPassSystemPtr;
 
     /// \def const RenderTargetPtr
     /// \brief Shared pointer to const RenderTarget

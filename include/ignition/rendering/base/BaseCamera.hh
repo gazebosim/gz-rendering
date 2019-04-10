@@ -163,6 +163,20 @@ namespace ignition
       // Documentation inherited.
       public: virtual unsigned int RenderTextureGLId() const override;
 
+      // Documentation inherited.
+      public: virtual void AddRenderPass(const RenderPassPtr &_pass) override;
+
+      // Documentation inherited.
+      public: virtual void RemoveRenderPass(const RenderPassPtr &_pass)
+          override;
+
+      // Documentation inherited.
+      public: virtual unsigned int RenderPassCount() const override;
+
+      // Documentation inherited.
+      public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
+          const override;
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load() override;
@@ -689,6 +703,34 @@ namespace ignition
       ignerr << "RenderTextureGLId is not supported by current render"
           << " engine" << std::endl;
       return 0u;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::AddRenderPass(const RenderPassPtr &_pass)
+    {
+      this->RenderTarget()->AddRenderPass(_pass);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::RemoveRenderPass(const RenderPassPtr &_pass)
+    {
+      this->RenderTarget()->RemoveRenderPass(_pass);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseCamera<T>::RenderPassCount() const
+    {
+      return this->RenderTarget()->RenderPassCount();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    RenderPassPtr BaseCamera<T>::RenderPassByIndex(unsigned int _index) const
+    {
+      return this->RenderTarget()->RenderPassByIndex(_index);
     }
     }
   }

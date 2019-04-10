@@ -4,6 +4,7 @@ set(tests
   gpu_rays.cc
   depth_camera.cc
   camera.cc
+  render_pass.cc
   shadows.cc
   scene.cc
 )

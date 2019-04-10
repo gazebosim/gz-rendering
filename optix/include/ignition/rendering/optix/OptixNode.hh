@@ -35,17 +35,31 @@ namespace ignition
 
       public: virtual ~OptixNode();
 
-      public: virtual bool HasParent() const;
+      public: virtual bool HasParent() const override;
 
-      public: virtual NodePtr Parent() const;
+      public: virtual NodePtr Parent() const override;
 
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       public: virtual optix::Transform OptixTransform() const;
 
-      protected: virtual math::Pose3d RawLocalPose() const;
+      // Documentation inherited.
+      public: virtual math::Vector3d LocalScale() const override;
 
-      protected: virtual void SetRawLocalPose(const math::Pose3d &_pose);
+      // Documentation inherited.
+      public: virtual bool InheritScale() const override;
+
+      // Documentation inherited.
+      public: virtual void SetInheritScale(bool _inherit) override;
+
+      // Documentation inherited.
+      protected: virtual void SetLocalScaleImpl(
+                     const math::Vector3d &_scale) override;
+
+      protected: virtual math::Pose3d RawLocalPose() const override;
+
+      protected: virtual void SetRawLocalPose(const math::Pose3d &_pose)
+          override;
 
       protected: virtual void WritePoseToDevice();
 
@@ -53,13 +67,13 @@ namespace ignition
 
       protected: virtual void SetParent(OptixNodePtr _parent);
 
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
-      protected: virtual NodeStorePtr Children() const;
+      protected: virtual NodeStorePtr Children() const override;
 
-      protected: virtual bool AttachChild(NodePtr _child);
+      protected: virtual bool AttachChild(NodePtr _child) override;
 
-      protected: virtual bool DetachChild(NodePtr _child);
+      protected: virtual bool DetachChild(NodePtr _child) override;
 
       protected: OptixNodePtr parent;
 
@@ -74,6 +88,10 @@ namespace ignition
       protected: bool poseDirty;
 
       protected: OptixNodeStorePtr children;
+
+      protected: math::Vector3d scale = math::Vector3d::One;
+
+      protected: bool inheritScale = true;
 
       private: OptixNodePtr SharedThis();
 

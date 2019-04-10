@@ -37,24 +37,6 @@ Ogre2Visual::~Ogre2Visual()
 }
 
 //////////////////////////////////////////////////
-math::Vector3d Ogre2Visual::LocalScale() const
-{
-  return Ogre2Conversions::Convert(this->ogreNode->getScale());
-}
-
-//////////////////////////////////////////////////
-bool Ogre2Visual::InheritScale() const
-{
-  return this->ogreNode->getInheritScale();
-}
-
-//////////////////////////////////////////////////
-void Ogre2Visual::SetInheritScale(bool _inherit)
-{
-  this->ogreNode->setInheritScale(_inherit);
-}
-
-//////////////////////////////////////////////////
 void Ogre2Visual::SetVisible(bool _visible)
 {
   this->ogreNode->setVisible(_visible);
@@ -108,12 +90,6 @@ bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
 
   this->ogreNode->detachObject(derived->OgreObject());
   return true;
-}
-
-//////////////////////////////////////////////////
-void Ogre2Visual::SetLocalScaleImpl(const math::Vector3d &_scale)
-{
-  this->ogreNode->setScale(Ogre2Conversions::Convert(_scale));
 }
 
 //////////////////////////////////////////////////

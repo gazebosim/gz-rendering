@@ -169,3 +169,28 @@ OgreNodePtr OgreNode::SharedThis()
   return std::dynamic_pointer_cast<OgreNode>(object);
 }
 
+//////////////////////////////////////////////////
+math::Vector3d OgreNode::LocalScale() const
+{
+  return OgreConversions::Convert(this->ogreNode->getScale());
+}
+
+//////////////////////////////////////////////////
+bool OgreNode::InheritScale() const
+{
+  return this->ogreNode->getInheritScale();
+}
+
+//////////////////////////////////////////////////
+void OgreNode::SetInheritScale(bool _inherit)
+{
+  this->ogreNode->setInheritScale(_inherit);
+}
+
+//////////////////////////////////////////////////
+void OgreNode::SetLocalScaleImpl(const math::Vector3d &_scale)
+{
+  this->ogreNode->setScale(OgreConversions::Convert(_scale));
+}
+
+

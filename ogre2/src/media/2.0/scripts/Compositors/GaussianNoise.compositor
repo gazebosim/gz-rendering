@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2019 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+compositor_node GaussianNoiseNode
+{
+  // render texture input from previous render pass
+  in 0 rt_input
+  // render texture output to be passed to next render pass
+  in 1 rt_output
+
+  // Only one target pass is needed.
+  // rt_input is used as input to this pass and result is stored
+  // in rt_output
+  target rt_output
+  {
+    pass render_quad
+    {
+      material GaussianNoise
+      input 0 rt_input
+    }
+  }
+  // pass the result to the next render pass
+  out 0 rt_output
+  // pass the rt_input render texture to the next render pass
+  // where the texture is reused to store its result
+  out 1 rt_input
+}

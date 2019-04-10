@@ -88,6 +88,9 @@ namespace ignition
 
       protected: virtual void UpdateBackgroundColor();
 
+      /// \brief Update render pass chain if changes were made
+      protected: virtual void UpdateRenderPassChain();
+
       protected: virtual void RebuildImpl() override;
 
       protected: virtual void RebuildTarget() = 0;

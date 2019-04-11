@@ -1,8 +1,13 @@
 compositor_node PbsMaterialsRenderingNode
 {
-	in 0 rt_renderwindow
+  // rt0 - original scene
+	texture rt0 target_width target_height PF_R8G8B8
+  // rt1 - texture to be passed to the next compositor node for
+  // adding render pass effect. Note: it seems that a clear pass is not needed
+  // for rt1
+	texture rt1 target_width target_height PF_R8G8B8
 
-	target rt_renderwindow
+	target rt0
 	{
 
 		pass clear
@@ -16,7 +21,40 @@ compositor_node PbsMaterialsRenderingNode
 			shadows		PbsMaterialsShadowNode
 		}
 	}
+
+  out 0 rt0
+  out 1 rt1
 }
+
+compositor_node FinalComposition
+{
+  in 0 rt_output
+  // Take input texture #1 and use the local name "rtN" for reference in this
+  // scope. Note: A clear pass was removed from this target as it generated
+  // image artifacts on some machines
+  in 1 rtN
+
+  target rt_output
+  {
+    pass render_quad
+    {
+      // Ignore the alpha channel
+      material Ogre/Copy/4xFP32
+      input 0 rtN
+    }
+
+    pass render_scene
+    {
+      lod_update_list off
+
+      // Render Overlays
+      overlays  on
+      rq_first  254
+      rq_last   255
+    }
+  }
+}
+
 
 abstract target cubemap_target_shadow
 {
@@ -97,5 +135,6 @@ compositor_node_shadow PbsMaterialsShadowNode
 
 workspace PbsMaterialsWorkspace
 {
-	connect_output PbsMaterialsRenderingNode 0
+  connect_output FinalComposition 0
+  connect PbsMaterialsRenderingNode 0 FinalComposition 1
 }

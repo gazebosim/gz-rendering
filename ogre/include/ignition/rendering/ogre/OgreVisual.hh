@@ -35,17 +35,14 @@ namespace ignition
       public: virtual ~OgreVisual();
 
       // Documentation inherited.
-      public: virtual void SetVisible(bool _visible) override;
-
-      // Documentation inherited.
-      public: virtual void SetRenderOrder(unsigned int _order, bool _recursive)
-          override;
+      public: virtual void SetVisible(bool _visible);
 
       protected: virtual GeometryStorePtr Geometries() const;
 
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry);
+
       protected: virtual void Init();
 
       protected: OgreGeometryStorePtr geometries;

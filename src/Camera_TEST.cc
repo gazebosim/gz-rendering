@@ -21,8 +21,10 @@
 
 #include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/GaussianNoisePass.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
+#include "ignition/rendering/RenderPassSystem.hh"
 #include "ignition/rendering/Scene.hh"
 
 using namespace ignition;
@@ -39,6 +41,9 @@ class CameraTest : public testing::Test,
 
   /// \brief Test camera tracking and camera following.
   public: void TrackFollow(const std::string &_renderEngine);
+
+  /// \brief Test adding and removing render passes
+  public: void AddRemoveRenderPass(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -220,6 +225,56 @@ void CameraTest::TrackFollow(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void CameraTest::AddRemoveRenderPass(const std::string &_renderEngine)
+{
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  CameraPtr camera = scene->CreateCamera();
+  EXPECT_TRUE(camera != nullptr);
+
+  // verify no render pass exists for camera
+  EXPECT_EQ(0u, camera->RenderPassCount());
+
+  // get the render pass system
+  RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
+  if (!rpSystem)
+  {
+    ignwarn << "Render engin '" << _renderEngine << "' does not support "
+            << "render pass system" << std::endl;
+    return;
+  }
+  RenderPassPtr pass1 = rpSystem->Create<GaussianNoisePass>();
+  EXPECT_NE(nullptr, pass1);
+
+  // test adding a render pass
+  camera->AddRenderPass(pass1);
+  EXPECT_EQ(1u, camera->RenderPassCount());
+  EXPECT_EQ(pass1, camera->RenderPassByIndex(0u));
+
+  // test adding another render pass
+  RenderPassPtr pass2 = rpSystem->Create<GaussianNoisePass>();
+  EXPECT_NE(nullptr, pass2);
+  camera->AddRenderPass(pass2);
+  EXPECT_EQ(2u, camera->RenderPassCount());
+  EXPECT_EQ(pass1, camera->RenderPassByIndex(0u));
+  EXPECT_EQ(pass2, camera->RenderPassByIndex(1u));
+
+  // test removing render pass
+  camera->RemoveRenderPass(pass1);
+  EXPECT_EQ(1u, camera->RenderPassCount());
+  EXPECT_EQ(pass2, camera->RenderPassByIndex(0u));
+}
+
+/////////////////////////////////////////////////
 TEST_P(CameraTest, ViewProjectionMatrix)
 {
   ViewProjectionMatrix(GetParam());
@@ -235,6 +290,12 @@ TEST_P(CameraTest, RenderTexture)
 TEST_P(CameraTest, TrackFollow)
 {
   TrackFollow(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, AddRemoveRenderPass)
+{
+  AddRemoveRenderPass(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,

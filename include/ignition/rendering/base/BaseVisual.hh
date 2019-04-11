@@ -84,10 +84,6 @@ namespace ignition
       // Documentation inherited
       public: virtual void Destroy() override;
 
-      // Documentation inherited
-      public: virtual void SetRenderOrder(unsigned int _order, bool _recursive)
-          override;
-
       protected: virtual void PreRenderChildren() override;
 
       protected: virtual void PreRenderGeometries();
@@ -312,14 +308,6 @@ namespace ignition
       ignerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::SetRenderOrder(unsigned int, bool)
-    {
-      ignerr << "SetRenderOrder not supported for render engine: "
-             << this->Scene()->Engine()->Name() << std::endl;
     }
     }
   }

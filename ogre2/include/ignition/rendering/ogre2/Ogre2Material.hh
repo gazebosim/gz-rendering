@@ -157,6 +157,18 @@ namespace ignition
       // Documentation inherited.
       public: virtual enum MaterialType Type() const override;
 
+      // Documentation inherited
+      public: virtual bool DepthCheckEnabled() const override;
+
+      // Documentation inherited
+      public: virtual void SetDepthCheckEnabled(bool _enabled) override;
+
+      // Documentation inherited
+      public: virtual bool DepthWriteEnabled() const override;
+
+      // Documentation inherited
+      public: virtual void SetDepthWriteEnabled(bool _enabled) override;
+
       /// \brief Set the texture map for this material
       /// \param[in] _texture Name of the texture.
       /// \param[in] _type Type of texture, i.e. diffuse, normal, roughness,

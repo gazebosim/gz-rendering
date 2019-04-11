@@ -423,3 +423,37 @@ enum MaterialType Ogre2Material::Type() const
 {
   return MaterialType::MT_PBS;
 }
+
+//////////////////////////////////////////////////
+bool Ogre2Material::DepthCheckEnabled() const
+{
+  const Ogre::HlmsMacroblock *macroblock = this->ogreDatablock->getMacroblock();
+  return macroblock->mDepthCheck;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetDepthCheckEnabled(bool _enabled)
+{
+  Ogre::HlmsMacroblock macroblock(
+      *this->ogreDatablock->getMacroblock());
+  macroblock.mDepthCheck = _enabled;
+  this->ogreDatablock->setMacroblock(macroblock);
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Material::DepthWriteEnabled() const
+{
+  const Ogre::HlmsMacroblock *macroblock = this->ogreDatablock->getMacroblock();
+  return macroblock->mDepthWrite;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetDepthWriteEnabled(bool _enabled)
+{
+  Ogre::HlmsMacroblock macroblock(
+      *this->ogreDatablock->getMacroblock());
+  macroblock.mDepthWrite = _enabled;
+  this->ogreDatablock->setMacroblock(macroblock);
+}
+
+

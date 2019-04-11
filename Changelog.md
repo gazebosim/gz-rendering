@@ -4,6 +4,9 @@
 
 ### Ignition Rendering 2.0.0 (20XX-XX-XX)
 
+1. Add depth check and depth write properties to Material
+    * [Pull request 160](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/160)
+
 1. Move scale functions from Visual to Node class.
     * [Pull request 159](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/159)
 

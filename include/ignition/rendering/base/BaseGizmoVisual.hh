@@ -104,10 +104,6 @@ namespace ignition
       /// \brief Flag to indicate the mode has changed.
       protected: bool modeDirty = false;
 
-      /// \brief The scale and pose of the gizmo visual are adjusted based on
-      /// viewpoint
-//      protected: CameraPtr camera;
-
       /// \brief Active axis
       protected: math::Vector3d axis = math::Vector3d::Zero;
 
@@ -130,8 +126,6 @@ namespace ignition
                    /// \brief handle
                    AM_HANDLE
                  };
-//      protected: const unsigned int kTranslationOrigin =
-//          TransformAxis::TA_TRANSLATION_Z + 1;
 
       /// \brief Only the scene can create a GizmoVisual
       private: friend class BaseScene;

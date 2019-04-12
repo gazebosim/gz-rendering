@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
+#include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
@@ -249,6 +250,15 @@ AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int /*_id*/,
 {
   // TODO(anyone)
   return AxisVisualPtr();
+}
+
+//////////////////////////////////////////////////
+GizmoVisualPtr Ogre2Scene::CreateGizmoVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2GizmoVisualPtr visual(new Ogre2GizmoVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

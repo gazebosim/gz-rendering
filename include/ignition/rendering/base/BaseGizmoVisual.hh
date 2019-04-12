@@ -671,7 +671,7 @@ namespace ignition
       this->visuals[TransformAxis::TA_SCALE_Z] = scaleZVis;
 
       // scale handles
-      VisualPtr scaleHandleXVis= this->Scene()->CreateVisual();
+      VisualPtr scaleHandleXVis = this->Scene()->CreateVisual();
       scaleHandleXVis->AddGeometry(this->Scene()->CreateCylinder());
       scaleHandleXVis->SetLocalPosition(0, 0, 0.285);
       scaleHandleXVis->SetLocalScale(0.11, 0.11, 0.57);

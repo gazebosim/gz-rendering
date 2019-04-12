@@ -743,6 +743,35 @@ namespace ignition
       public: virtual AxisVisualPtr CreateAxisVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new gizmo visual. A unique ID and name will
+      /// automatically be assigned to the visual.
+      /// \return The created gizmo visual
+      public: virtual GizmoVisualPtr CreateGizmoVisual() = 0;
+
+      /// \brief Create new gizmo visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new gizmo visual
+      /// \return The created gizmo visual
+      public: virtual GizmoVisualPtr CreateGizmoVisual(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new gizmo visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new gizmo visual
+      /// \return The created gizmo visual
+      public: virtual GizmoVisualPtr CreateGizmoVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new gizmo visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new gizmo visual
+      /// \param[in] _name Name of the new gizmo visual
+      /// \return The created gizmo visual
+      public: virtual GizmoVisualPtr CreateGizmoVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new box geometry
       /// \return The created box
       public: virtual GeometryPtr CreateBox() = 0;

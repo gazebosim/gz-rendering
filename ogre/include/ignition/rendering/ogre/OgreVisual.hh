@@ -42,6 +42,7 @@ namespace ignition
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);
 
       protected: virtual bool DetachGeometry(GeometryPtr _geometry);
+
       protected: virtual void Init();
 
       protected: OgreGeometryStorePtr geometries;

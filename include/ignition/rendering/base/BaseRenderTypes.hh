@@ -30,6 +30,9 @@ namespace ignition
     class BaseNodeCompositeStore;
     typedef shared_ptr<BaseNodeCompositeStore>   BaseNodeCompositeStorePtr;
 
+    class BaseObject;
+    typedef std::shared_ptr<BaseObject> BaseObjectPtr;
+
     template <class T> class BaseSceneStore;
     template <class T> class BaseNodeStore;
     template <class T> class BaseLightStore;

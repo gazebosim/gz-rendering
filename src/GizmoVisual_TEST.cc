@@ -1,0 +1,125 @@
+/*
+ * Copyright (C) 2019 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+*/
+
+#include <gtest/gtest.h>
+#include <string>
+
+#include <ignition/common/Console.hh>
+
+#include "test_config.h"  // NOLINT(build/include)
+
+#include "ignition/rendering/GizmoVisual.hh"
+#include "ignition/rendering/RenderEngine.hh"
+#include "ignition/rendering/RenderingIface.hh"
+#include "ignition/rendering/Scene.hh"
+
+using namespace ignition;
+using namespace rendering;
+
+class GizmoVisualTest : public testing::Test,
+                        public testing::WithParamInterface<const char *>
+{
+  /// \brief Test basic API
+  public: void GizmoVisual(const std::string &_renderEngine);
+};
+
+/////////////////////////////////////////////////
+void GizmoVisualTest::GizmoVisual(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+
+  // create visual
+  GizmoVisualPtr gizmo = scene->CreateGizmoVisual();
+  ASSERT_NE(nullptr, gizmo);
+
+  // check initial values
+  EXPECT_EQ(TransformMode::TM_NONE, gizmo->Mode());
+  EXPECT_EQ(math::Vector3d::Zero, gizmo->ActiveAxis());
+
+  // test setting mode
+  gizmo->SetTransformMode(TransformMode::TM_ROTATION);
+  EXPECT_EQ(TransformMode::TM_ROTATION, gizmo->Mode());
+
+  // test setting active axis
+  gizmo->SetActiveAxis(math::Vector3d::UnitZ);
+  EXPECT_EQ(math::Vector3d::UnitZ, gizmo->ActiveAxis());
+
+  // verify all axis visuals exist
+  VisualPtr xtrans = gizmo->ChildByAxis(TransformAxis::TA_TRANSLATION_X);
+  EXPECT_NE(nullptr, xtrans);
+  EXPECT_EQ(TransformAxis::TA_TRANSLATION_X, gizmo->AxisById(xtrans->Id()));
+
+  VisualPtr ytrans = gizmo->ChildByAxis(TransformAxis::TA_TRANSLATION_Y);
+  EXPECT_NE(nullptr, ytrans);
+  EXPECT_EQ(TransformAxis::TA_TRANSLATION_Y, gizmo->AxisById(ytrans->Id()));
+
+  VisualPtr ztrans = gizmo->ChildByAxis(TransformAxis::TA_TRANSLATION_Z);
+  EXPECT_NE(nullptr, ztrans);
+  EXPECT_EQ(TransformAxis::TA_TRANSLATION_Z, gizmo->AxisById(ztrans->Id()));
+
+  VisualPtr xrot = gizmo->ChildByAxis(TransformAxis::TA_ROTATION_X);
+  EXPECT_NE(nullptr, xrot);
+  EXPECT_EQ(TransformAxis::TA_ROTATION_X, gizmo->AxisById(xrot->Id()));
+
+  VisualPtr yrot = gizmo->ChildByAxis(TransformAxis::TA_ROTATION_Y);
+  EXPECT_NE(nullptr, yrot);
+  EXPECT_EQ(TransformAxis::TA_ROTATION_Y, gizmo->AxisById(yrot->Id()));
+
+  VisualPtr zrot = gizmo->ChildByAxis(TransformAxis::TA_ROTATION_Z);
+  EXPECT_NE(nullptr, zrot);
+  EXPECT_EQ(TransformAxis::TA_ROTATION_Z, gizmo->AxisById(zrot->Id()));
+
+  VisualPtr xscale = gizmo->ChildByAxis(TransformAxis::TA_SCALE_X);
+  EXPECT_NE(nullptr, xscale);
+  EXPECT_EQ(TransformAxis::TA_SCALE_X, gizmo->AxisById(xscale->Id()));
+
+  VisualPtr yscale = gizmo->ChildByAxis(TransformAxis::TA_SCALE_Y);
+  EXPECT_NE(nullptr, yscale);
+  EXPECT_EQ(TransformAxis::TA_SCALE_Y, gizmo->AxisById(yscale->Id()));
+
+  VisualPtr zscale = gizmo->ChildByAxis(TransformAxis::TA_SCALE_Z);
+  EXPECT_NE(nullptr, zscale);
+  EXPECT_EQ(TransformAxis::TA_SCALE_Z, gizmo->AxisById(zscale->Id()));
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_P(GizmoVisualTest, GizmoVisual)
+{
+  GizmoVisual(GetParam());
+}
+
+INSTANTIATE_TEST_CASE_P(Visual, GizmoVisualTest,
+    RENDER_ENGINE_VALUES,
+    ignition::rendering::PrintToStringParam());
+
+int main(int argc, char **argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}

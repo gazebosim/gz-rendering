@@ -103,6 +103,10 @@ namespace ignition
       protected: virtual AxisVisualPtr CreateAxisVisualImpl(unsigned int _id,
                      const std::string &_name);
 
+      // Documentation inherited
+      protected: virtual GizmoVisualPtr CreateGizmoVisualImpl(unsigned int _id,
+                     const std::string &_name);
+
       protected: virtual GeometryPtr CreateBoxImpl(unsigned int _id,
                      const std::string &_name);
 

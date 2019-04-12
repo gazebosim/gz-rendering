@@ -29,6 +29,7 @@
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/DepthCamera.hh"
+#include "ignition/rendering/GizmoVisual.hh"
 #include "ignition/rendering/GpuRays.hh"
 #include "ignition/rendering/Grid.hh"
 #include "ignition/rendering/RayQuery.hh"
@@ -847,6 +848,36 @@ AxisVisualPtr BaseScene::CreateAxisVisual(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+GizmoVisualPtr BaseScene::CreateGizmoVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGizmoVisual(objId);
+}
+
+//////////////////////////////////////////////////
+GizmoVisualPtr BaseScene::CreateGizmoVisual(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "GizmoVisual");
+  return this->CreateGizmoVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+GizmoVisualPtr BaseScene::CreateGizmoVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGizmoVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+GizmoVisualPtr BaseScene::CreateGizmoVisual(unsigned int _id,
+    const std::string &_name)
+{
+  GizmoVisualPtr visual = this->CreateGizmoVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
 GeometryPtr BaseScene::CreateBox()
 {
   unsigned int objId = this->CreateObjectId();
@@ -1094,6 +1125,15 @@ void BaseScene::CreateMaterials()
   material->SetAmbient(0.0, 0.0, 1.0);
   material->SetDiffuse(0.0, 0.0, 1.0);
   material->SetEmissive(0.0, 0.0, 1.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
+
+  material = this->CreateMaterial("Default/TransYellow");
+  material->SetAmbient(1.0, 1.0, 0.0);
+  material->SetDiffuse(1.0, 1.0, 0.0);
+  material->SetEmissive(1.0, 1.0, 0.0);
   material->SetTransparency(0.5);
   material->SetCastShadows(false);
   material->SetReceiveShadows(false);

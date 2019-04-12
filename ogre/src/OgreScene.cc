@@ -23,6 +23,7 @@
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
+#include "ignition/rendering/ogre/OgreGizmoVisual.hh"
 #include "ignition/rendering/ogre/OgreGpuRays.hh"
 #include "ignition/rendering/ogre/OgreGrid.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
@@ -412,6 +413,15 @@ AxisVisualPtr OgreScene::CreateAxisVisualImpl(unsigned int _id,
     const std::string &_name)
 {
   OgreAxisVisualPtr visual(new OgreAxisVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+GizmoVisualPtr OgreScene::CreateGizmoVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreGizmoVisualPtr visual(new OgreGizmoVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }

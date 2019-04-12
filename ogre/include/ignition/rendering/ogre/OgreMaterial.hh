@@ -46,7 +46,7 @@ namespace ignition
 
       public: virtual bool LightingEnabled() const override;
 
-      public: virtual void SetLightingEnabled(bool _enabled) override;
+      public: virtual void SetLightingEnabled(const bool _enabled) override;
 
       // Documentation inherited
       public: virtual bool DepthCheckEnabled() const override;
@@ -58,7 +58,7 @@ namespace ignition
       public: virtual bool DepthWriteEnabled() const override;
 
       // Documentation inherited
-      public: virtual void SetDepthWriteEnabled(const bool _enabled) override;
+      public: virtual void SetDepthWriteEnabled(bool _enabled) override;
 
       public: virtual math::Color Ambient() const override;
 

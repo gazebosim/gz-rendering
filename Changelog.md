@@ -4,6 +4,9 @@
 
 ### Ignition Rendering 2.0.0 (20XX-XX-XX)
 
+1. Add GizmoVisual class
+    * [Pull request 163](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/163)
+
 1. Add Transform Controller for translating, rotating, and scaling nodes.
     * [Pull request 162](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/162)
 

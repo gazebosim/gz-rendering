@@ -38,16 +38,16 @@ namespace ignition
       public: virtual ~GizmoVisual() { }
 
       /// \brief Set the transform mode of the gizmo. This controls the visual
-      /// appearance of the gizmo., e.g. in tranlation mode, only the
-      /// tranlation visual will be visible. If set to a mode involving a
-      /// a particular axis, the corresponding axis visual will be highlighted.
+      /// appearance of the gizmo. Only the visuals in the specified mode will
+      /// be visible, e.g. if set to TM_TRANSLATION mode, then only the
+      /// translation axis visuals will be visible.
       /// \param[in] _mode Transform mode to set the gizmo to
       /// \sa GizmoMode
-      public: virtual void SetMode(TransformMode _mode) = 0;
+      public: virtual void SetTransformMode(TransformMode _mode) = 0;
 
       /// \brief Get the current transform mode.
       /// \return Transform mode
-      /// \sa SetMode
+      /// \sa SetTransformMode
       public: virtual TransformMode Mode() const = 0;
 
       /// \brief Set the active axis in the gizmo visual
@@ -59,19 +59,14 @@ namespace ignition
       /// \sa SetActiveAxis
       public: virtual math::Vector3d ActiveAxis() const = 0;
 
-      /// \brief Set camera that will be used to adjust the scale and pose of
-      /// the gizmo visual.
-      /// \param[in] _camera Pointer to camera
-      /// \sa SetActiveAxis
-//      public: virtual void SetCamera(CameraPtr _camera) = 0;
-
       /// \brief Get the Transform axis associated with the given id.
       /// \param[in] _id  Id of the visual associated with a transform axis
       /// \return Transform axis with the given id
       public: virtual TransformAxis AxisById(unsigned int _id) const = 0;
 
       /// \brief Get the child visual by axis
-      /// \return Visual representing the specified transform axis or transform mode
+      /// \return Visual representing the specified transform axis or transform
+      /// mode
       /// \sa TransformAxis, TransformMode
       public: virtual VisualPtr ChildByAxis(unsigned int _axis) const = 0;
     };

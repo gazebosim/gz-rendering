@@ -19,6 +19,7 @@
 #define IGNITION_RENDERING_BASE_BASEGIZMOVISUAL_HH_
 
 #include <map>
+#include <string>
 #include <ignition/common/MeshManager.hh>
 
 #include "ignition/rendering/base/BaseScene.hh"
@@ -55,7 +56,7 @@ namespace ignition
       public: virtual void PreRender() override;
 
       // Documentation inherited
-      public: virtual void SetMode(TransformMode _mode) override;
+      public: virtual void SetTransformMode(TransformMode _mode) override;
 
       // Documentation inherited
       public: virtual TransformMode Mode() const override;
@@ -71,9 +72,6 @@ namespace ignition
 
       // Documentation inherited
       public: virtual VisualPtr ChildByAxis(unsigned int _axis) const override;
-
-      // Documentation inherited
-//      public: virtual void SetCamera(CameraPtr _camera) override;
 
       /// \brief Reset the gizmo visual state
       public: virtual void Reset();
@@ -318,7 +316,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGizmoVisual<T>::SetMode(TransformMode _mode)
+    void BaseGizmoVisual<T>::SetTransformMode(TransformMode _mode)
     {
       if (this->mode == _mode)
         return;
@@ -707,13 +705,6 @@ namespace ignition
       this->AddChild(scaleVis);
     }
 
-/*    //////////////////////////////////////////////////
-    template <class T>
-    void BaseGizmoVisual<T>::SetCamera(CameraPtr _camera)
-    {
-      this->camera = _camera;
-    }
-*/
     //////////////////////////////////////////////////
     template <class T>
     VisualPtr BaseGizmoVisual<T>::ChildByAxis(unsigned int _axis) const

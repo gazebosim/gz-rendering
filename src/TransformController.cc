@@ -85,9 +85,6 @@ void TransformController::SetCamera(const CameraPtr &_camera)
 
   if (!this->dataPtr->ray)
     this->dataPtr->ray = this->dataPtr->camera->Scene()->CreateRayQuery();
-
-//  if (this->dataPtr->gizmoVisual)
-//    this->dataPtr->gizmoVisual->SetCamera(this->dataPtr->camera);
 }
 
 //////////////////////////////////////////////////
@@ -108,12 +105,10 @@ void TransformController::Update()
         this->dataPtr->node->Scene()->CreateGizmoVisual();
     this->dataPtr->node->Scene()->RootVisual()->AddChild(
         this->dataPtr->gizmoVisual);
-
-//    this->dataPtr->gizmoVisual->SetCamera(this->dataPtr->camera);
   }
 
   // update gizmo
-  this->dataPtr->gizmoVisual->SetMode(this->dataPtr->mode);
+  this->dataPtr->gizmoVisual->SetTransformMode(this->dataPtr->mode);
   this->dataPtr->gizmoVisual->SetActiveAxis(this->dataPtr->axis);
 
   if (!this->dataPtr->camera)
@@ -216,13 +211,13 @@ TransformMode TransformController::Mode() const
 }
 
 //////////////////////////////////////////////////
-math::Vector3d TransformController::Axis() const
+math::Vector3d TransformController::ActiveAxis() const
 {
   return this->dataPtr->axis;
 }
 
 //////////////////////////////////////////////////
-void TransformController::SetTransformAxis(const math::Vector3d &_axis)
+void TransformController::SetActiveAxis(const math::Vector3d &_axis)
 {
   this->dataPtr->axis = _axis;
 }
@@ -270,6 +265,10 @@ void TransformController::Translate(
     return;
   }
 
+  bool started = this->dataPtr->active;
+  if (!started)
+    this->Start();
+
   math::Vector3d translation = _translation;
   if (this->dataPtr->space == TransformSpace::TS_LOCAL)
     translation = this->dataPtr->nodeStartPose.Rot().RotateVector(translation);
@@ -279,12 +278,21 @@ void TransformController::Translate(
     pos = TransformController::SnapPoint(pos);
 
   this->dataPtr->node->SetWorldPosition(pos);
+
+  if (!started)
+    this->Stop();
 }
 
 //////////////////////////////////////////////////
 void TransformController::SetTransformSpace(TransformSpace _space)
 {
   this->dataPtr->space = _space;
+}
+
+//////////////////////////////////////////////////
+TransformSpace TransformController::Space() const
+{
+  return this->dataPtr->space;
 }
 
 //////////////////////////////////////////////////
@@ -522,6 +530,10 @@ void TransformController::Rotate(const math::Quaterniond &_rotation, bool _snap)
     return;
   }
 
+  bool started = this->dataPtr->active;
+  if (!started)
+    this->Start();
+
   math::Quaterniond rotation = _rotation;
   if (this->dataPtr->space == TransformSpace::TS_LOCAL)
     rotation = this->dataPtr->nodeStartPose.Rot() * rotation;
@@ -538,6 +550,9 @@ void TransformController::Rotate(const math::Quaterniond &_rotation, bool _snap)
   }
 
   this->dataPtr->node->SetWorldRotation(rotation);
+
+  if (!started)
+    this->Stop();
 }
 
 //////////////////////////////////////////////////
@@ -548,6 +563,10 @@ void TransformController::Scale(const math::Vector3d &_scale, bool _snap)
     ignerr << "No node attached for transformation" << std::endl;
     return;
   }
+
+  bool started = this->dataPtr->active;
+  if (!started)
+    this->Start();
 
   math::Vector3d scale = _scale;
   scale = this->dataPtr->nodeStartScale * scale.Abs();
@@ -562,6 +581,9 @@ void TransformController::Scale(const math::Vector3d &_scale, bool _snap)
   }
 
   this->dataPtr->node->SetLocalScale(scale);
+
+  if (!started)
+    this->Stop();
 }
 
 /////////////////////////////////////////////////

@@ -150,23 +150,6 @@ void handleTransform()
     return;
   }
 
-/*  ir::VisualPtr test = rayCamera->Scene()->VisualByName("test");
-  if (!test)
-  {
-    // create gray material
-    ir::MaterialPtr gray = rayCamera->Scene()->CreateMaterial("test");
-    gray->SetAmbient(0.7, 0.7, 0.7);
-    gray->SetDiffuse(0.7, 0.7, 0.7);
-    gray->SetSpecular(0.7, 0.7, 0.7);
-
-    auto testV = rayCamera->Scene()->CreateVisual();
-    testV->AddGeometry(rayCamera->Scene()->CreateBox());
-    testV->SetLocalPosition(2, 0, 0);
-    testV->SetMaterial(gray);
-    rayCamera->Scene()->RootVisual()->AddChild(testV);
-  }
-*/
-
   std::lock_guard<std::mutex> lock(g_mouseMutex);
 
   // set transform configuration
@@ -184,14 +167,17 @@ void handleTransform()
       // mouse press
       if (g_mouse.state == GLUT_DOWN)
       {
+        // get the visual at mouse position
         ignition::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
         ir::VisualPtr visual = rayCamera->VisualAt(mousePos);
         if (visual)
         {
+          // check if the visual is an axis in the gizmo visual
           ignition::math::Vector3d axis =
               g_transformControl.AxisById(visual->Id());
           if (axis != ignition::math::Vector3d::Zero)
           {
+            // start the transform process
             g_transformControl.SetTransformAxis(axis);
             g_transformControl.Start();
 
@@ -209,23 +195,25 @@ void handleTransform()
     }
   }
 
-
   if (g_mouse.motionDirty && g_transformControl.Active())
   {
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
     {
+      // compute the the start and end mouse positions in normalized coordiantes
       double imageWidth = static_cast<double>(rayCamera->ImageWidth());
       double imageHeight = static_cast<double>(rayCamera->ImageHeight());
-      ignition::math::Vector3d axis = g_transformControl.Axis();
       double nx = 2.0 * g_mouse.x / imageWidth - 1.0;
       double ny = 1.0 - 2.0 * g_mouse.y / imageHeight;
       double nxEnd = 2.0 * g_mouse.motionX / imageWidth - 1.0;
       double nyEnd = 1.0 - 2.0 * g_mouse.motionY / imageHeight;
-
       ignition::math::Vector2d start(nx, ny);
       ignition::math::Vector2d end(nxEnd, nyEnd);
 
+      // get the currect active axis
+      ignition::math::Vector3d axis = g_transformControl.ActiveAxis();
+
+      // compute 3d transformation from 2d mouse movement
       if (g_transformControl.Mode() == ir::TransformMode::TM_TRANSLATION)
       {
         ignition::math::Vector3d distance =
@@ -420,9 +408,15 @@ void keyboardCB(unsigned char _key, int, int)
   {
     // toggle
     if (g_space == ir::TransformSpace::TS_LOCAL)
+    {
       g_space = ir::TransformSpace::TS_WORLD;
+      std::cout << "Transformation in World Space" << std::endl;
+    }
     else
+    {
       g_space = ir::TransformSpace::TS_LOCAL;
+      std::cout << "Transformation in Local Space" << std::endl;
+    }
   }
 }
 
@@ -458,6 +452,10 @@ void printUsage()
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
+  std::cout << "  t   - Translate Mode         " << std::endl;
+  std::cout << "  r   - Rotate Mode            " << std::endl;
+  std::cout << "  s   - Scale Mode             " << std::endl;
+  std::cout << "  g   - Toggle Transform Space " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 

@@ -84,23 +84,17 @@ namespace ignition
       /// \param[in] _mode Transform space to set to
       public: virtual void SetTransformSpace(TransformSpace _space);
 
-      /// \brief Get the current axis of transform
-      /// \return Axis of transform
-      public: virtual math::Vector3d Axis() const;
+      /// \brief Get the transform space
+      /// \return Transform space
+      public: virtual TransformSpace Space() const;
 
-      /// \brief Set the transform axis
-      /// \param[in] _mode Transform axis
-      public: virtual void SetTransformAxis(const math::Vector3d &_axis);
+      /// \brief Get the current highlighted active axis of transform
+      /// \return Active axis of transform
+      public: virtual math::Vector3d ActiveAxis() const;
 
-      /// \brief Start the transform process
-      public: virtual void Start();
-
-      /// \brief Stop the transform process
-      public: virtual void Stop();
-
-      /// \brief Check if the transform process is active
-      /// \return True if node is being transformed
-      public: virtual bool Active() const;
+      /// \brief Set the active transform axis. This highlights the axis visual
+      /// \param[in] _axis Transform axis vector
+      public: virtual void SetActiveAxis(const math::Vector3d &_axis);
 
       /// \brief Query the axis of transform represented by the given node id
       /// \param[in] _id Id of the node/visual to check
@@ -140,9 +134,24 @@ namespace ignition
           const ignition::math::Vector3d &_point, const double _interval = 1.0,
           const double _sensitivity = 0.4);
 
+      /// \brief Start the transform process. To be used with helper functions
+      /// that computions transforms from 2d movements.
+      /// \sa Stop
+      public: virtual void Start();
+
+      /// \brief Stop the transform process. To be used with helper functions
+      /// that computions transforms from 2d movements.
+      /// \sa Stop
+      public: virtual void Stop();
+
+      /// \brief Check if the transform process is active
+      /// \return True if node is being transformed
+      public: virtual bool Active() const;
+
       /// \brief Helper function to compute 3d translation from 2d translation
       /// movement. Useful for converting 2d mouse drag motion to displacement
-      /// in world frame. Note that the camera must be set.
+      /// in world frame. Note that the camera must be set and Start() must be
+      /// called before using this function.
       /// \param[in] _axis Axis of 3d translation. The resulting 3d vector
       /// is constrained to this axis.
       /// \param[in] _start Starting position of the 2d translation movement
@@ -153,7 +162,8 @@ namespace ignition
 
       /// \brief Helper function to compute 3d rotation from 2d translation
       /// movement. Useful for converting 2d mouse drag motion to rotation angle
-      /// in world frame. Note that the camera must be set.
+      /// in world frame. Note that the camera must be set and Start() must be
+      /// called before using this function.
       /// \param[in] _axis Axis of 3d rotation. The resulting rotation is
       /// is constrained to this axis.
       /// \param[in] _start Starting position of the 2d translation movement
@@ -164,7 +174,8 @@ namespace ignition
 
       /// \brief Helper function to compute 3d scale from 2d translation
       /// movement. Useful for converting 2d mouse drag motion to scale vector
-      /// in world frame. Note that the camera must be set.
+      /// in world frame. Note that the camera must be set and Start() must be
+      /// called before using this function.
       /// \param[in] _axis Axis of scale. The resulting 3d vector
       /// is constrained to this axis.
       /// \param[in] _start Starting position of the 2d translation movement

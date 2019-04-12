@@ -11,9 +11,11 @@ find_package(OpenGL REQUIRED)
 include_directories(SYSTEM ${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
 
-find_package(GLEW REQUIRED)
-include_directories(SYSTEM ${GLEW_INCLUDE_DIRS})
-link_directories(${GLEW_LIBRARY_DIRS})
+if (NOT APPLE)
+  find_package(GLEW REQUIRED)
+  include_directories(SYSTEM ${GLEW_INCLUDE_DIRS})
+  link_directories(${GLEW_LIBRARY_DIRS})
+endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 

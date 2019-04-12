@@ -61,15 +61,16 @@ namespace ignition
       /// \return camera being controlled
       public: virtual CameraPtr Camera() const;
 
-      /// \brief Get the attached ndoe
-      /// \param[in] _node Node the tool is attached to
+      /// \brief Get the attached node
+      /// \param[in] _node Node the transform controller is attached to
       public: virtual NodePtr Node() const;
 
-      /// \brief Attach the tool to the specified node
+      /// \brief Attach the transform controller to the specified node
       /// \param[in] _node Node that will be transformed
       public: virtual void Attach(NodePtr _node);
 
-      /// \brief Detach the tool from the currently attached node.
+      /// \brief Detach the transform controller from the currently attached
+      /// node
       public: virtual void Detach();
 
       /// \brief Set the transform mode
@@ -81,23 +82,23 @@ namespace ignition
       public: virtual TransformMode Mode() const;
 
       /// \brief Set the transform space
-      /// \param[in] _mode Transform space to set to
+      /// \param[in] _space Transform space to set to
       public: virtual void SetTransformSpace(TransformSpace _space);
 
       /// \brief Get the transform space
       /// \return Transform space
       public: virtual TransformSpace Space() const;
 
-      /// \brief Get the current highlighted active axis of transform
-      /// \return Active axis of transform
-      public: virtual math::Vector3d ActiveAxis() const;
-
       /// \brief Set the active transform axis. This highlights the axis visual
       /// \param[in] _axis Transform axis vector
       public: virtual void SetActiveAxis(const math::Vector3d &_axis);
 
-      /// \brief Query the axis of transform represented by the given node id
-      /// \param[in] _id Id of the node/visual to check
+      /// \brief Get the current highlighted active axis of transform
+      /// \return Active axis of transform
+      public: virtual math::Vector3d ActiveAxis() const;
+
+      /// \brief Get the axis of transform represented by the given node id
+      /// \param[in] _id Id of the node to check
       /// \return Transform axis
       public: virtual math::Vector3d AxisById(unsigned int _id) const;
 

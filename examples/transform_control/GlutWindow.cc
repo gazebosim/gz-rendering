@@ -178,7 +178,7 @@ void handleTransform()
           if (axis != ignition::math::Vector3d::Zero)
           {
             // start the transform process
-            g_transformControl.SetTransformAxis(axis);
+            g_transformControl.SetActiveAxis(axis);
             g_transformControl.Start();
 
             g_mouse.buttonDirty = false;
@@ -493,5 +493,3 @@ void run(std::vector<ir::CameraPtr> _cameras)
 
   glutMainLoop();
 }
-
-

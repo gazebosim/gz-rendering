@@ -226,7 +226,7 @@ namespace ignition
         this->visuals[TransformAxis::TA_TRANSLATION_X]->SetVisible(true);
         this->visuals[TransformAxis::TA_TRANSLATION_Y]->SetVisible(true);
         this->visuals[TransformAxis::TA_TRANSLATION_Z]->SetVisible(true);
-        this->visuals[TransformAxis::TA_TRANSLATION_Z<<1]->SetVisible(true);
+        this->visuals[TransformAxis::TA_TRANSLATION_Z << 1]->SetVisible(true);
         if (this->axis.X() > 0)
         {
           this->visuals[TransformAxis::TA_TRANSLATION_X]->SetMaterial(
@@ -254,7 +254,7 @@ namespace ignition
         this->visuals[TransformAxis::TA_ROTATION_X]->SetVisible(true);
         this->visuals[TransformAxis::TA_ROTATION_Y]->SetVisible(true);
         this->visuals[TransformAxis::TA_ROTATION_Z]->SetVisible(true);
-        this->visuals[TransformAxis::TA_ROTATION_Z<<1]->SetVisible(true);
+        this->visuals[TransformAxis::TA_ROTATION_Z << 1]->SetVisible(true);
         if (this->axis.X() > 0)
         {
           this->visuals[TransformAxis::TA_ROTATION_X]->SetMaterial(
@@ -493,7 +493,7 @@ namespace ignition
       this->visuals[TransformAxis::TA_TRANSLATION_X] = transXVis;
       this->visuals[TransformAxis::TA_TRANSLATION_Y] = transYVis;
       this->visuals[TransformAxis::TA_TRANSLATION_Z] = transZVis;
-      this->visuals[TransformAxis::TA_TRANSLATION_Z<<1] = transOrigin;
+      this->visuals[TransformAxis::TA_TRANSLATION_Z << 1] = transOrigin;
 
       // translation handles
       VisualPtr transHandleXVis = this->Scene()->CreateVisual();
@@ -576,7 +576,7 @@ namespace ignition
       this->visuals[TransformAxis::TA_ROTATION_X] = rotXVis;
       this->visuals[TransformAxis::TA_ROTATION_Y] = rotYVis;
       this->visuals[TransformAxis::TA_ROTATION_Z] = rotZVis;
-      this->visuals[TransformAxis::TA_ROTATION_Z<<1] = rotFullVis;
+      this->visuals[TransformAxis::TA_ROTATION_Z << 1] = rotFullVis;
 
       // rotation handles
       VisualPtr rotHandleXVis = this->Scene()->CreateVisual();

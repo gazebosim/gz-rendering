@@ -155,7 +155,7 @@ void TransformController::Update()
     zVis->SetWorldRotation(nodeRot * math::Quaterniond(zRot));
 
     VisualPtr circleVis = this->dataPtr->gizmoVisual->ChildByAxis(
-        TransformMode::TM_ROTATION);
+        TransformAxis::TA_ROTATION_Z<<1);
     math::Matrix4d lookAt;
     lookAt = lookAt.LookAt(this->dataPtr->camera->WorldPosition(), pos);
     math::Vector3d circleRotOffset(0, IGN_PI * 0.5, 0);

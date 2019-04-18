@@ -322,6 +322,23 @@ namespace ignition
       public: virtual AxisVisualPtr CreateAxisVisual(unsigned int _id,
                   const std::string &_name) override;
 
+
+      // Documentation inherited
+      public: virtual GizmoVisualPtr CreateGizmoVisual() override;
+
+      // Documentation inherited
+      public: virtual GizmoVisualPtr CreateGizmoVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual GizmoVisualPtr CreateGizmoVisual(const std::string &_name)
+                      override;
+
+      // Documentation inherited
+      public: virtual GizmoVisualPtr CreateGizmoVisual(unsigned int _id,
+                  const std::string &_name) override;
+
+
       public: virtual GeometryPtr CreateBox() override;
 
       public: virtual GeometryPtr CreateCone() override;
@@ -408,6 +425,17 @@ namespace ignition
 
       protected: virtual AxisVisualPtr CreateAxisVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a GizmoVisual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of GizmoVisual
+      protected: virtual GizmoVisualPtr CreateGizmoVisualImpl(unsigned int,
+                     const std::string &)
+                 {
+                   ignerr << "GizmoVisual not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return GizmoVisualPtr();
+                 }
 
       protected: virtual GeometryPtr CreateBoxImpl(unsigned int _id,
                      const std::string &_name) = 0;

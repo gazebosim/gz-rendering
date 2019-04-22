@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-simple-demo)
+project(ignition-rendering-transform-control)
+find_package(ignition-rendering2 REQUIRED)
 
-find_package(ignition-rendering2)
+include_directories(SYSTEM
+  ${PROJECT_BINARY_DIR}
+)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -19,11 +22,11 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
-add_executable(simple_demo Main.cc GlutWindow.cc)
+add_executable(transform_control Main.cc GlutWindow.cc)
 
-target_link_libraries(simple_demo
+target_link_libraries(transform_control
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
-  )
+)

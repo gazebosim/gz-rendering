@@ -80,6 +80,11 @@ namespace ignition
       /// appearance of item to use a unique color for mouse picking
       private: Ogre::MaterialPtr plainMaterial;
 
+      /// \brief Ogre v1 material consisting of a shader that changes the
+      /// appearance of item to use a unique color for mouse picking. In
+      /// addition, the depth check and depth write properties disabled.
+      private: Ogre::MaterialPtr plainOverlayMaterial;
+
       /// \brief Increment unique color value that will be assigned to the
       /// next renderable
       private: void NextColor();

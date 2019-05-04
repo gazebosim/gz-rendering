@@ -97,7 +97,11 @@ CameraPtr TransformController::Camera() const
 void TransformController::Update()
 {
   if (!this->dataPtr->node)
+  {
+    if (this->dataPtr->gizmoVisual)
+      this->dataPtr->gizmoVisual->SetTransformMode(TransformMode::TM_NONE);
     return;
+  }
 
   if (!this->dataPtr->gizmoVisual)
   {

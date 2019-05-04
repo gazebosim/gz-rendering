@@ -181,7 +181,8 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
     }
   }
 
-  int ratio = static_cast<int>(this->AspectRatio());
+  // todo(anyone) set device pixel ratio for high dpi displays
+  int ratio = 1;
 
   ignition::math::Vector2i mousePos(
       ratio * _mousePos.X(), ratio * _mousePos.Y());

@@ -455,5 +455,3 @@ void Ogre2Material::SetDepthWriteEnabled(bool _enabled)
   macroblock.mDepthWrite = _enabled;
   this->ogreDatablock->setMacroblock(macroblock);
 }
-
-

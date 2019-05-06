@@ -15,9 +15,11 @@ find_package(OpenGL REQUIRED)
 include_directories(SYSTEM ${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
 
-find_package(GLEW REQUIRED)
-include_directories(SYSTEM ${GLEW_INCLUDE_DIRS})
-link_directories(${GLEW_LIBRARY_DIRS})
+if (NOT APPLE)
+  find_package(GLEW REQUIRED)
+  include_directories(SYSTEM ${GLEW_INCLUDE_DIRS})
+  link_directories(${GLEW_LIBRARY_DIRS})
+endif()
 
 configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
 

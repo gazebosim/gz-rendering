@@ -55,41 +55,8 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \internal
-    /// \brief Private data for the OgreDepthCamera class
-    class OgreDepthCameraPrivate
-    {
-      /// \brief The depth buffer
-      public: float *depthBuffer = nullptr;
-
-      /// \brief The depth material
-      public: Ogre::Material *depthMaterial = nullptr;
-
-      /// \brief True to generate point clouds
-      public: bool outputPoints = false;
-
-      /// \brief Point cloud data buffer
-      public: float *pcdBuffer = nullptr;
-
-      /// \brief Point cloud view port
-      public: Ogre::Viewport *pcdViewport = nullptr;
-
-      /// \brief Point cloud material
-      public: Ogre::Material *pcdMaterial = nullptr;
-
-      /// \brief Point cloud texture
-      public: OgreRenderTexturePtr pcdTexture;
-
-      /// \brief Event used to signal rgb point cloud data
-      public: ignition::common::EventT<void(const float *,
-                  unsigned int, unsigned int, unsigned int,
-                  const std::string &)> newRgbPointCloud;
-
-      /// \brief Event used to signal depth data
-      public: ignition::common::EventT<void(const float *,
-                  unsigned int, unsigned int, unsigned int,
-                  const std::string &)> newDepthFrame;
-    };
+    // forward declaration
+    class OgreDepthCameraPrivate;
 
     /** \class OgreDepthCamera OgreDepthCamera.hh\
      * rendering/ogre/OgreDepthCamera.hh
@@ -189,7 +156,7 @@ namespace ignition
 
       /// \internal
       /// \brief Pointer to private data.
-      private: std::unique_ptr<OgreDepthCameraPrivate> dataPtr = nullptr;
+      private: std::unique_ptr<OgreDepthCameraPrivate> dataPtr;
 
       private: friend class OgreScene;
       private: friend class OgreRayQuery;

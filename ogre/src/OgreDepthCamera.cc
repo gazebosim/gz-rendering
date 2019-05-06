@@ -23,6 +23,42 @@
 #include <ignition/math/Helpers.hh>
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
 
+/// \internal
+/// \brief Private data for the OgreDepthCamera class
+class ignition::rendering::OgreDepthCameraPrivate
+{
+  /// \brief The depth buffer
+  public: float *depthBuffer = nullptr;
+
+  /// \brief The depth material
+  public: Ogre::Material *depthMaterial = nullptr;
+
+  /// \brief True to generate point clouds
+  public: bool outputPoints = false;
+
+  /// \brief Point cloud data buffer
+  public: float *pcdBuffer = nullptr;
+
+  /// \brief Point cloud view port
+  public: Ogre::Viewport *pcdViewport = nullptr;
+
+  /// \brief Point cloud material
+  public: Ogre::Material *pcdMaterial = nullptr;
+
+  /// \brief Point cloud texture
+  public: OgreRenderTexturePtr pcdTexture;
+
+  /// \brief Event used to signal rgb point cloud data
+  public: ignition::common::EventT<void(const float *,
+              unsigned int, unsigned int, unsigned int,
+              const std::string &)> newRgbPointCloud;
+
+  /// \brief Event used to signal depth data
+  public: ignition::common::EventT<void(const float *,
+              unsigned int, unsigned int, unsigned int,
+              const std::string &)> newDepthFrame;
+};
+
 using namespace ignition;
 using namespace rendering;
 

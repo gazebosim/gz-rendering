@@ -84,7 +84,7 @@ OgreRTShaderSystem::OgreRTShaderSystem()
 #if OGRE_VERSION_LT_1_10_1
   this->dataPtr->pssmSetup.setNull();
 #else
-  this->dataPtr->pssmSetup = nullptr;
+  this->dataPtr->pssmSetup.reset();
 #endif
 }
 
@@ -160,7 +160,7 @@ void OgreRTShaderSystem::Fini()
 #if OGRE_VERSION_LT_1_10_1
   this->dataPtr->pssmSetup.setNull();
 #else
-  this->dataPtr->pssmSetup = nullptr;
+  this->dataPtr->pssmSetup.reset();
 #endif
   this->dataPtr->entities.clear();
   this->dataPtr->scenes.clear();
@@ -340,7 +340,11 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
     try
     {
       success = this->dataPtr->shaderGenerator->createShaderBasedTechnique(
+#if OGRE_VERSION_LT_1_10_1
           curMaterialName,
+#else
+          material,
+#endif
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
           this->dataPtr->scenes[s]->Name() +
           Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
@@ -542,8 +546,14 @@ void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
   sceneMgr->setShadowTextureSelfShadow(false);
   sceneMgr->setShadowCasterRenderBackFaces(true);
 
+#if OGRE_VERSION_LT_1_10_1
   // Set up caster material - this is just a standard depth/shadow map caster
   sceneMgr->setShadowTextureCasterMaterial("PSSM/shadow_caster");
+#else
+  Ogre::MaterialPtr mat =
+    Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+  sceneMgr->setShadowTextureCasterMaterial(mat);
+#endif
 
   // Disable fog on the caster pass.
   //  Ogre::MaterialPtr passCaterMaterial =

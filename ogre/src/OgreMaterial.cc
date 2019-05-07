@@ -56,7 +56,7 @@ void OgreMaterial::Destroy()
   if (this->ogreMaterial)
   {
     matManager.remove(this->ogreMaterial->getName());
-    this->ogreMaterial = nullptr;
+    this->ogreMaterial.reset();
   }
 #endif
 }
@@ -529,7 +529,7 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
     #if OGRE_VERSION_LT_1_10_1
     texture.setNull();
     #else
-    texture = nullptr;
+    texture.reset();
     #endif
     return texture;
   }

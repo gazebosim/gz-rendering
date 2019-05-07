@@ -205,8 +205,11 @@ void OgreScene::SetGradientBackgroundColor(
     // Create background rectangle covering the whole screen
     rect = new ColoredRectangle2D();
     rect->setCorners(-1.0, 1.0, 1.0, -1.0);
+#if OGRE_VERSION_LT_1_10_1
     rect->setMaterial("Background");
-
+#else
+    rect->setMaterial(material);
+#endif
     // Render the background before everything else
     rect->setRenderQueueGroup(Ogre::RENDER_QUEUE_BACKGROUND);
 

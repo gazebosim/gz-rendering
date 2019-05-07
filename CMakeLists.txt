@@ -66,10 +66,7 @@ ign_find_package(IgnOGRE VERSION 1.8.0
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
 
-message(STATUS "*********************** ${OGRE_INCLUDE_DIRS}")
-
 if (OGRE_FOUND)
-  include_directories(${OGRE_INCLUDE_DIRS})
   # find boost - mainly needed on macOS and also by the terrain component
   find_package(Boost)
   if (Boost_FOUND)

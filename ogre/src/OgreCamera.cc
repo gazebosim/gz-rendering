@@ -14,11 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef _WIN32
-#include <X11/Xlib.h>
-#include <X11/Xresource.h>
-#endif
-#include <ignition/math/Helpers.hh>
 
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
@@ -27,6 +22,7 @@
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
+#include "ignition/rendering/Utils.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -198,62 +194,10 @@ VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i
     }
   }
 
-  // todo(anyone) set device pixel ratio for high dpi displays on Windows
-  float xRatio = 1.0;
-  float yRatio = 1.0;
-#ifndef _WIN32
-  Display *disp = XOpenDisplay(nullptr);
-  char *resourceString = XResourceManagerString(disp);
-
-  if (resourceString)
-  {
-    char *type = nullptr;
-    float dpiDesktop = 0.0;
-
-    // Need to initialize the DB before calling Xrm* functions
-    XrmInitialize();
-
-    XrmValue value;
-    XrmDatabase db = XrmGetStringDatabase(resourceString);
-
-    // Debug:
-    // printf("Entire DB:\n%s\n", resourceString);
-
-    if (XrmGetResource(db, "Xft.dpi", "String", &type, &value) == True)
-    {
-      if (value.addr)
-        dpiDesktop = atof(value.addr);
-    }
-
-    // To get the ratio we need the DPI as reported by the Xrmdatabase, which
-    // takes into account desktop scaling, and the DPI computed by the
-    // actual display resolution.
-    //
-    // dpiRes = N pixels / (M millimeters / (25.4 millimeters / 1 inch))
-    //        = N pixels / (M inch / 25.4)
-    //        = (N * 25.4 pixels) / M inch
-    //
-    // We can use either the width or height in the following line. The zero
-    // values in DisplayHeight and DisplayHeightMM is the screen number. A
-    // value of zero uses the default screen.
-    float xDpiRes = (DisplayWidth(disp, 0) * 25.4) / DisplayWidthMM(disp, 0);
-    float yDpiRes = (DisplayHeight(disp, 0) * 25.4) / DisplayHeightMM(disp, 0);
-    if (!math::equal(dpiDesktop, 0.0f) && !math::equal(xDpiRes, 0.0f) &&
-        !math::equal(yDpiRes, 0.0f))
-    {
-      xRatio = dpiDesktop / xDpiRes;
-      yRatio = dpiDesktop / yDpiRes;
-    }
-
-    // Debug:
-    // printf("DPI Desktop: %f, DPI XY: [%f, %f], Ratio XY: [%f, %f]\n",
-    // dpiDesktop, xDpiRes, yDpiRes, xRatio, yRatio);
-  }
-#endif
-
+  float ratio = screenScalingFactor();
   ignition::math::Vector2i mousePos(
-      static_cast<int>(std::rint(xRatio * _mousePos.X())),
-      static_cast<int>(std::rint(yRatio * _mousePos.Y())));
+      static_cast<int>(std::rint(ratio * _mousePos.X())),
+      static_cast<int>(std::rint(ratio * _mousePos.Y())));
 
   Ogre::Entity *entity = this->selectionBuffer->OnSelectionClick(
       mousePos.X(), mousePos.Y());

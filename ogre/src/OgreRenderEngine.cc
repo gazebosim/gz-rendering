@@ -707,7 +707,7 @@ void OgreRenderEngine::CheckCapabilities()
 #else
   // All targetted APIs by Ogre support this feature.
   // https://ogrecave.github.io/ogre/api/1.10/deprecated.html#_deprecated000139
-  bool hasFBO = true:
+  bool hasFBO = true;
 #endif
 
   bool hasGLSL =

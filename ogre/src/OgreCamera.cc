@@ -199,8 +199,8 @@ VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i
   }
 
   // todo(anyone) set device pixel ratio for high dpi displays on Windows
-  int xRatio = 1;
-  int yRatio = 1;
+  float xRatio = 1.0;
+  float yRatio = 1.0;
 #ifndef _WIN32
   Display *disp = XOpenDisplay(nullptr);
   char *resourceString = XResourceManagerString(disp);
@@ -241,18 +241,19 @@ VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i
     if (!math::equal(dpiDesktop, 0.0f) && !math::equal(xDpiRes, 0.0f) &&
         !math::equal(yDpiRes, 0.0f))
     {
-      xRatio = static_cast<int>(std::rint(dpiDesktop / xDpiRes));
-      yRatio = static_cast<int>(std::rint(dpiDesktop / yDpiRes));
+      xRatio = dpiDesktop / xDpiRes;
+      yRatio = dpiDesktop / yDpiRes;
     }
 
     // Debug:
-    // printf("DPI Desktop: %f, DPI XY: [%f, %f], Ratio XY: [%d, %d]\n",
+    // printf("DPI Desktop: %f, DPI XY: [%f, %f], Ratio XY: [%f, %f]\n",
     // dpiDesktop, xDpiRes, yDpiRes, xRatio, yRatio);
   }
 #endif
 
   ignition::math::Vector2i mousePos(
-      xRatio * _mousePos.X(), yRatio * _mousePos.Y());
+      static_cast<int>(std::rint(xRatio * _mousePos.X())),
+      static_cast<int>(std::rint(yRatio * _mousePos.Y())));
 
   Ogre::Entity *entity = this->selectionBuffer->OnSelectionClick(
       mousePos.X(), mousePos.Y());

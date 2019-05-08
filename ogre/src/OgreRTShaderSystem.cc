@@ -299,6 +299,9 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
     {
       this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
           curMaterialName,
+#ifndef OGRE_VERSION_LT_1_10_3
+          curSubEntity->getMaterial()->getGroup(),
+#endif
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
           s->Name() +
           Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
@@ -340,10 +343,10 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
     try
     {
       success = this->dataPtr->shaderGenerator->createShaderBasedTechnique(
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_10_3
           curMaterialName,
 #else
-          material,
+          *material,
 #endif
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
           this->dataPtr->scenes[s]->Name() +
@@ -366,7 +369,11 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
         this->dataPtr->shaderGenerator->getRenderState(
             this->dataPtr->scenes[s]->Name() +
             Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME,
-            curMaterialName, 0);
+            curMaterialName,
+#ifndef OGRE_VERSION_LT_1_10_3
+            material->getGroup(),
+#endif
+            0);
 
       // Remove all sub render states.
       renderState->reset();

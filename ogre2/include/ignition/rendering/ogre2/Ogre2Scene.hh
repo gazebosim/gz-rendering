@@ -120,7 +120,8 @@ namespace ignition
 
       // Documentation inherited
       protected: virtual GizmoVisualPtr CreateGizmoVisualImpl(unsigned int _id,
-                     const std::string &_name);
+                     const std::string &_name) override;
+
       // Documentation inherited
       protected: virtual GeometryPtr CreateBoxImpl(unsigned int _id,
                      const std::string &_name) override;

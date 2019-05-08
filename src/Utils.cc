@@ -15,7 +15,7 @@
  *
 */
 
-#ifndef _WIN32
+#ifdef __linux__
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 #endif
@@ -33,7 +33,7 @@ float screenScalingFactor()
 {
   // todo(anyone) set device pixel ratio for high dpi displays on Windows
   float ratio = 1.0;
-#ifndef _WIN32
+#ifdef __linux__
   Display *disp = XOpenDisplay(nullptr);
   char *resourceString = XResourceManagerString(disp);
 

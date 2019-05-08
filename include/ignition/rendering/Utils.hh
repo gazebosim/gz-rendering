@@ -24,14 +24,14 @@
 
 namespace ignition
 {
-  /// \brief Math classes and function useful in robot applications.
+  /// \brief Rendering classes and function useful in robot applications.
   namespace rendering
   {
     // Inline bracket to help doxygen filtering.
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \brief Get the desktop scaling factor.
-    /// \return The desktop scaling factor.
+    /// \brief Get the screen scaling factor.
+    /// \return The screen scaling factor.
     IGNITION_RENDERING_VISIBLE
     float screenScalingFactor();
     }

@@ -23,6 +23,14 @@ pipelines:
           - cd lcov
           - make install
           - cd ..
+          # test ign-cmake from source
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b ign-cmake2_fix_ogre11
+          - cd ign-cmake
+          - mkdir build
+          - cd build
+          - cmake .. -DBUILD_TESTING=false
+          - make -j4 install
+          - cd ../..
           # Ignition rendering
           - mkdir build
           - cd build

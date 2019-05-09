@@ -22,6 +22,7 @@
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
+#include "ignition/rendering/Utils.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -193,11 +194,10 @@ VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i
     }
   }
 
-  // todo(anyone) set device pixel ratio for high dpi displays
-  int ratio = 1;
-
+  float ratio = screenScalingFactor();
   ignition::math::Vector2i mousePos(
-      ratio * _mousePos.X(), ratio * _mousePos.Y());
+      static_cast<int>(std::rint(ratio * _mousePos.X())),
+      static_cast<int>(std::rint(ratio * _mousePos.Y())));
 
   Ogre::Entity *entity = this->selectionBuffer->OnSelectionClick(
       mousePos.X(), mousePos.Y());

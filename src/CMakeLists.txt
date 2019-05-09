@@ -28,7 +28,11 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
   ignition-common${IGN_COMMON_VER}::requested
   PRIVATE
-  ignition-plugin${IGN_PLUGIN_VER}::loader)
+  ignition-plugin${IGN_PLUGIN_VER}::loader
+)
+if (UNIX AND NOT APPLE)
+  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE X11)
+endif()
 
 # Build the unit tests.
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})

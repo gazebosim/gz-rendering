@@ -346,7 +346,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
 #if OGRE_VERSION_LT_1_10_3
           curMaterialName,
 #else
-          *material,
+          *material->Material(),
 #endif
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
           this->dataPtr->scenes[s]->Name() +
@@ -371,7 +371,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
             Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME,
             curMaterialName,
 #ifndef OGRE_VERSION_LT_1_10_3
-            material->getGroup(),
+            material->Material()->getGroup(),
 #endif
             0);
 

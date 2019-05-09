@@ -159,7 +159,7 @@ namespace ignition
       // \sa BaseMaterial::PreRender()
       public: virtual void PreRender() override;
 
-      protected: virtual void LoadImage(const std::string &_name,
+      protected: virtual void LoadOneImage(const std::string &_name,
                      Ogre::Image &_image);
 
       /// \brief Set the texture for this material

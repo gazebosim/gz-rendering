@@ -461,7 +461,7 @@ Ogre::MaterialPtr OgreMaterial::Material() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::LoadImage(const std::string &_name, Ogre::Image &_image)
+void OgreMaterial::LoadOneImage(const std::string &_name, Ogre::Image &_image)
 {
   try
   {
@@ -522,7 +522,7 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
   Ogre::Image image;
   Ogre::TexturePtr texture;
 
-  this->LoadImage(_name, image);
+  this->LoadOneImage(_name, image);
 
   if (image.getWidth() == 0)
   {

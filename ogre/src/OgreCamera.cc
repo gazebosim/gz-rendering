@@ -174,8 +174,7 @@ unsigned int OgreCamera::RenderTextureGLId() const
 void OgreCamera::SetSelectionBuffer()
 {
   this->selectionBuffer = new OgreSelectionBuffer(this->name,
-      this->scene->OgreSceneManager(), this->ImageWidth(),
-      this->ImageHeight());
+      this->scene->OgreSceneManager());
 }
 
 //////////////////////////////////////////////////

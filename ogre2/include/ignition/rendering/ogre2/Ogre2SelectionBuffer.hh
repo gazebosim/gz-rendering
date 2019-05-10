@@ -49,11 +49,9 @@ namespace ignition
       /// \brief Constructor
       /// \param[in] _camera Name of the camera to generate a selection
       /// buffer for.
-      /// \param[in] _mgr Pointer to the scene manager.
-      /// \param[in] _renderTarget Pointer to the render target.
+      /// \param[in] _scene Pointer to the scene
       public: Ogre2SelectionBuffer(const std::string &_cameraName,
-                  Ogre2ScenePtr _scene, const unsigned int width,
-                  const unsigned int height);
+                  Ogre2ScenePtr _scene);
 
       /// \brief Destructor
       public: ~Ogre2SelectionBuffer();

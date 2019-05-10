@@ -24,7 +24,7 @@ pipelines:
           - make install
           - cd ..
           # test ign-cmake from source
-          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b ign-cmake2_fix_ogre11
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-cmake -b ign-cmake2_fix_ogre11_review
           - cd ign-cmake
           - mkdir build
           - cd build

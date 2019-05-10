@@ -51,12 +51,6 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
   /// \brief Selection buffer's render to texture camera
   public: Ogre::Camera *selectionCamera  = nullptr;
 
-  /// \brief Render width
-  public: unsigned int width = 0;
-
-  /// \brief Render height
-  public: unsigned int height = 0;
-
   /// \brief Ogre texture
   public: Ogre::TexturePtr texture;
 
@@ -77,14 +71,10 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
 
 /////////////////////////////////////////////////
 Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
-    Ogre2ScenePtr _scene, const unsigned int _width,
-    const unsigned int _height): dataPtr(new Ogre2SelectionBufferPrivate)
+    Ogre2ScenePtr _scene): dataPtr(new Ogre2SelectionBufferPrivate)
 {
   this->dataPtr->scene = _scene;
   this->dataPtr->sceneMgr = _scene->OgreSceneManager();
-  this->dataPtr->width = _width;
-  this->dataPtr->height = _height;
-
 
   this->dataPtr->camera = this->dataPtr->sceneMgr->findCameraNoThrow(
       _cameraName);
@@ -133,8 +123,10 @@ void Ogre2SelectionBuffer::Update()
 /////////////////////////////////////////////////
 void Ogre2SelectionBuffer::DeleteRTTBuffer()
 {
-  if (this->dataPtr->texture && this->dataPtr->texture->isLoaded())
-    this->dataPtr->texture->unload();
+  auto &manager = Ogre::TextureManager::getSingleton();
+  manager.unload(this->dataPtr->texture->getName());
+  manager.remove(this->dataPtr->texture->getName());
+
   if (this->dataPtr->buffer)
   {
     delete [] this->dataPtr->buffer;
@@ -196,8 +188,10 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
   if (!this->dataPtr->renderTexture)
     return nullptr;
 
-  const unsigned int targetWidth = this->dataPtr->width;
-  const unsigned int targetHeight = this->dataPtr->height;
+  Ogre::RenderTarget *rt =
+      this->dataPtr->camera->getLastViewport()->getTarget();
+  const unsigned int targetWidth = rt->getWidth();
+  const unsigned int targetHeight = rt->getHeight();
 
   if (_x < 0 || _y < 0 || _x >= static_cast<int>(targetWidth)
       || _y >= static_cast<int>(targetHeight))

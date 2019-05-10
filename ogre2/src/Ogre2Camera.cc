@@ -163,8 +163,7 @@ unsigned int Ogre2Camera::RenderTextureGLId() const
 //////////////////////////////////////////////////
 void Ogre2Camera::SetSelectionBuffer()
 {
-  this->selectionBuffer = new Ogre2SelectionBuffer(this->name,
-      this->scene, this->ImageWidth(), this->ImageHeight());
+  this->selectionBuffer = new Ogre2SelectionBuffer(this->name, this->scene);
 }
 
 //////////////////////////////////////////////////

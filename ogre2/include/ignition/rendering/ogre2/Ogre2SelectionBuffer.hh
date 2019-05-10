@@ -52,8 +52,7 @@ namespace ignition
       /// \param[in] _mgr Pointer to the scene manager.
       /// \param[in] _renderTarget Pointer to the render target.
       public: Ogre2SelectionBuffer(const std::string &_cameraName,
-                  Ogre2ScenePtr _scene, const unsigned int width,
-                  const unsigned int height);
+                  Ogre2ScenePtr _scene);
 
       /// \brief Destructor
       public: ~Ogre2SelectionBuffer();

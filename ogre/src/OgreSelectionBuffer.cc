@@ -45,12 +45,6 @@ class ignition::rendering::OgreSelectionBufferPrivate
   /// \brief Selection buffer's render to texture camera
   public: Ogre::Camera *selectionCamera  = nullptr;
 
-  /// \brief Render width
-  public: unsigned int width = 0;
-
-  /// \brief Render height
-  public: unsigned int height = 0;
-
   /// \brief Ogre texture
   public: Ogre::TexturePtr texture;
 
@@ -70,13 +64,9 @@ class ignition::rendering::OgreSelectionBufferPrivate
 
 /////////////////////////////////////////////////
 OgreSelectionBuffer::OgreSelectionBuffer(const std::string &_cameraName,
-    Ogre::SceneManager *_mgr, const unsigned int _width,
-    const unsigned int _height): dataPtr(new OgreSelectionBufferPrivate)
+    Ogre::SceneManager *_mgr): dataPtr(new OgreSelectionBufferPrivate)
 {
   this->dataPtr->sceneMgr = _mgr;
-  this->dataPtr->width = _width;
-  this->dataPtr->height = _height;
-
 
   this->dataPtr->camera = this->dataPtr->sceneMgr->getCamera(_cameraName);
 
@@ -124,12 +114,10 @@ void OgreSelectionBuffer::Update()
 /////////////////////////////////////////////////
 void OgreSelectionBuffer::DeleteRTTBuffer()
 {
-#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 10
-  if (!this->dataPtr->texture.isNull() && this->dataPtr->texture->isLoaded())
-#else
-  if (this->dataPtr->texture && this->dataPtr->texture->isLoaded())
-#endif
-    this->dataPtr->texture->unload();
+  auto &manager = Ogre::TextureManager::getSingleton();
+  manager.unload(this->dataPtr->texture->getName());
+  manager.remove(this->dataPtr->texture->getName());
+
   if (this->dataPtr->buffer)
   {
     delete [] this->dataPtr->buffer;
@@ -191,8 +179,9 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(const int _x, const int _y)
   if (!this->dataPtr->renderTexture)
     return nullptr;
 
-  const unsigned int targetWidth = this->dataPtr->width;
-  const unsigned int targetHeight = this->dataPtr->height;
+  Ogre::RenderTarget *rt = this->dataPtr->camera->getViewport()->getTarget();
+  const unsigned int targetWidth = rt->getWidth();
+  const unsigned int targetHeight = rt->getHeight();
 
   if (_x < 0 || _y < 0 || _x >= static_cast<int>(targetWidth)
       || _y >= static_cast<int>(targetHeight))

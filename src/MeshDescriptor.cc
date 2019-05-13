@@ -15,6 +15,7 @@
  *
  */
 
+#include <ignition/common/Console.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
 
@@ -47,8 +48,17 @@ void MeshDescriptor::Load()
   {
     this->meshName = this->mesh->Name();
   }
-  else
+  else if (!this->meshName.empty())
   {
     this->mesh = common::MeshManager::Instance()->MeshByName(this->meshName);
+    if (!this->mesh)
+    {
+      ignerr << "Mesh manager can't find mesh named [" << this->meshName << "]"
+             << std::endl;
+    }
+  }
+  else
+  {
+    ignerr << "Missing mesh or mesh name" << std::endl;
   }
 }

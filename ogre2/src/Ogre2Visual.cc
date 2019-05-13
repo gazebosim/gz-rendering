@@ -51,6 +51,13 @@ GeometryStorePtr Ogre2Visual::Geometries() const
 //////////////////////////////////////////////////
 bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
 {
+  if (!_geometry)
+  {
+    ignerr << "Cannot attach null geometry." << std::endl;
+
+    return false;
+  }
+
   Ogre2GeometryPtr derived =
       std::dynamic_pointer_cast<Ogre2Geometry>(_geometry);
 

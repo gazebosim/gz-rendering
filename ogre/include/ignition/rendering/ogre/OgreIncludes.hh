@@ -32,7 +32,6 @@
 #include <OgrePlugin.h>
 #include <OgreDataStream.h>
 #include <OgreLogManager.h>
-#include <OgreWindowEventUtilities.h>
 #include <OgreSceneQuery.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>

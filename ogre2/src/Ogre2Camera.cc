@@ -22,6 +22,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
+#include "ignition/rendering/Utils.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -162,8 +163,7 @@ unsigned int Ogre2Camera::RenderTextureGLId() const
 //////////////////////////////////////////////////
 void Ogre2Camera::SetSelectionBuffer()
 {
-  this->selectionBuffer = new Ogre2SelectionBuffer(this->name,
-      this->scene, this->ImageWidth(), this->ImageHeight());
+  this->selectionBuffer = new Ogre2SelectionBuffer(this->name, this->scene);
 }
 
 //////////////////////////////////////////////////
@@ -181,10 +181,10 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
     }
   }
 
-  int ratio = static_cast<int>(this->AspectRatio());
-
+  float ratio = screenScalingFactor();
   ignition::math::Vector2i mousePos(
-      ratio * _mousePos.X(), ratio * _mousePos.Y());
+      static_cast<int>(std::rint(ratio * _mousePos.X())),
+      static_cast<int>(std::rint(ratio * _mousePos.Y())));
 
   Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(
       mousePos.X(), mousePos.Y());

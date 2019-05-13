@@ -4,6 +4,12 @@
 
 ### Ignition Rendering 2.0.0 (20XX-XX-XX)
 
+1. Fix ogre mouse picking after window resize
+    * [Pull request 168](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/168)
+
+1. Ogre2: Support mouse picking for objects with overlay material
+    * [Pull request 165](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/165)
+
 1. Add GizmoVisual class
     * [Pull request 163](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/163)
 

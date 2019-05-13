@@ -38,6 +38,23 @@ Ogre2MaterialSwitcher::Ogre2MaterialSwitcher(Ogre2ScenePtr _scene)
 
   this->plainMaterial = res.staticCast<Ogre::Material>();
   this->plainMaterial->load();
+
+  // plain overlay material
+  this->plainOverlayMaterial =
+      this->plainMaterial->clone("plain_color_overlay");
+  if (!this->plainOverlayMaterial->getTechnique(0) ||
+      !this->plainOverlayMaterial->getTechnique(0)->getPass(0))
+  {
+    ignerr << "Problem creating selection buffer overlay material"
+        << std::endl;
+    return;
+  }
+  Ogre::Pass *overlayPass =
+      this->plainOverlayMaterial->getTechnique(0)->getPass(0);
+  Ogre::HlmsMacroblock macroblock(*overlayPass->getMacroblock());
+  macroblock.mDepthCheck = false;
+  macroblock.mDepthWrite = false;
+  overlayPass->setMacroblock(macroblock);
 }
 
 /////////////////////////////////////////////////
@@ -57,24 +74,32 @@ void Ogre2MaterialSwitcher::preRenderTargetUpdate(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
   {
-      this->NextColor();
+    this->NextColor();
 
-      Ogre::MovableObject *object = itor.peekNext();
-      Ogre::Item *item = static_cast<Ogre::Item *>(object);
+    Ogre::MovableObject *object = itor.peekNext();
+    Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
-      this->colorDict[this->currentColor.AsRGBA()] = item->getName();
+    this->colorDict[this->currentColor.AsRGBA()] = item->getName();
 
-      for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
-      {
-        Ogre::SubItem *subItem = item->getSubItem(i);
-        this->datablockMap[subItem] = subItem->getDatablock();
+    for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+    {
+      Ogre::SubItem *subItem = item->getSubItem(i);
+      Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+      this->datablockMap[subItem] = datablock;
 
-        subItem->setCustomParameter(1,
-            Ogre::Vector4(this->currentColor.R(), this->currentColor.G(),
-                          this->currentColor.B(), 1.0));
+      subItem->setCustomParameter(1,
+          Ogre::Vector4(this->currentColor.R(), this->currentColor.G(),
+                        this->currentColor.B(), 1.0));
+
+      // check if it's an overlay material by assuming the
+      // depth check and depth write properties are off.
+      if (!datablock->getMacroblock()->mDepthWrite &&
+          !datablock->getMacroblock()->mDepthCheck)
+        subItem->setMaterial(this->plainOverlayMaterial);
+      else
         subItem->setMaterial(this->plainMaterial);
-      }
-      itor.moveNext();
+    }
+    itor.moveNext();
   }
 }
 
@@ -87,14 +112,14 @@ void Ogre2MaterialSwitcher::postRenderTargetUpdate(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
   {
-      Ogre::MovableObject *object = itor.peekNext();
-      Ogre::Item *item = static_cast<Ogre::Item *>(object);
-      for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
-      {
-        Ogre::SubItem *subItem = item->getSubItem(i);
-        subItem->setDatablock(this->datablockMap[subItem]);
-      }
-      itor.moveNext();
+    Ogre::MovableObject *object = itor.peekNext();
+    Ogre::Item *item = static_cast<Ogre::Item *>(object);
+    for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+    {
+      Ogre::SubItem *subItem = item->getSubItem(i);
+      subItem->setDatablock(this->datablockMap[subItem]);
+    }
+    itor.moveNext();
   }
 }
 

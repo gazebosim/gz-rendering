@@ -721,6 +721,7 @@ void OgreRenderEngine::CheckCapabilities()
     ignwarn << "GLSL is missing."
            << "Fixed function rendering will be used.\n";
 
+  // cppcheck-suppress knownConditionTrueFalse
   if (!hasFBO)
     ignwarn << "Frame Buffer Objects (FBO) is missing. "
            << "Rendering will be disabled.\n";

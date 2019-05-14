@@ -69,6 +69,8 @@ Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
   // check if invalid mesh
   if (!mesh->ogreItem)
   {
+    ignerr << "Failed to get Ogre item for [" << _desc.meshName << "]"
+           << std::endl;
     return nullptr;
   }
 
@@ -426,7 +428,7 @@ bool Ogre2MeshFactory::Validate(const MeshDescriptor &_desc)
 
   if (!_desc.mesh)
   {
-    ignerr << "Cannot load null mesh" << std::endl;
+    ignerr << "Cannot load null mesh [" << _desc.meshName << "]" << std::endl;
     return false;
   }
 

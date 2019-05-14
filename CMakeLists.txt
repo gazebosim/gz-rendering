@@ -14,7 +14,7 @@ find_package(ignition-cmake2 REQUIRED)
 #============================================================================
 # Set up the project
 #============================================================================
-ign_configure_project()
+ign_configure_project(VERSION_SUFFIX pre1)
 
 #============================================================================
 # Set project-specific options
@@ -60,10 +60,6 @@ endif()
 #--------------------------------------
 # Find OGRE
 list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
-
-if (WIN32)
-  list(APPEND ign_ogre_components "RenderSystem_GL")
-endif()
 
 ign_find_package(IgnOGRE VERSION 1.8.0
   COMPONENTS ${ign_ogre_components}

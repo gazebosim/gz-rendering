@@ -701,8 +701,14 @@ void OgreRenderEngine::CheckCapabilities()
   bool hasVertexPrograms =
     capabilities->hasCapability(Ogre::RSC_VERTEX_PROGRAM);
 
+#if OGRE_VERSION_LT_1_10_1
   bool hasFBO =
     capabilities->hasCapability(Ogre::RSC_FBO);
+#else
+  // All targetted APIs by Ogre support this feature.
+  // https://ogrecave.github.io/ogre/api/1.10/deprecated.html#_deprecated000139
+  bool hasFBO = true;
+#endif
 
   bool hasGLSL =
     std::find(profiles.begin(), profiles.end(), "glsl") != profiles.end();
@@ -715,6 +721,7 @@ void OgreRenderEngine::CheckCapabilities()
     ignwarn << "GLSL is missing."
            << "Fixed function rendering will be used.\n";
 
+  // cppcheck-suppress knownConditionTrueFalse
   if (!hasFBO)
     ignwarn << "Frame Buffer Objects (FBO) is missing. "
            << "Rendering will be disabled.\n";

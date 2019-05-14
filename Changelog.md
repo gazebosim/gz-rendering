@@ -4,6 +4,9 @@
 
 ### Ignition Rendering 2.0.0 (20XX-XX-XX)
 
+1. Support for ogre 1.11 on windows
+    * [Pull request 167](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/167)
+
 1. Fix ogre mouse picking after window resize
     * [Pull request 168](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/168)
 

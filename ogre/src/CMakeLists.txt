@@ -12,7 +12,6 @@ if(OGRE_VERSION VERSION_LESS 1.10.1)
 endif()
 
 find_package(OpenGL)
-# include_directories(${OGRE_INCLUDE_DIRS})
 
 set_property(
   SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc OgreGpuRays.cc OgreMaterial.cc

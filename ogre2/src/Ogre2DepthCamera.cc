@@ -197,6 +197,11 @@ void Ogre2DepthCamera::CreateRenderTexture()
 /////////////////////////////////////////////////////////
 void Ogre2DepthCamera::CreateDepthTexture()
 {
+  // set aspect ratio and fov
+  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->aspect);
+  this->ogreCamera->setAspectRatio(this->aspect);
+  this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
+
   // Load depth material
   // The DepthCamera material is defined in script (depth_camera.material).
   // We need to clone it since we are going to modify its uniform variables

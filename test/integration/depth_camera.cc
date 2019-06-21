@@ -62,7 +62,7 @@ void DepthCameraTest::DepthCameraBoxes(
   double aspectRatio_ = imgWidth_/imgHeight_;
 
   double unitBoxSize = 1.0;
-  ignition::math::Vector3d boxPosition(3.0, 0.0, 0.0);
+  ignition::math::Vector3d boxPosition(1.5, 0.0, 0.0);
 
   // Optix is not supported
   if (_renderEngine.compare("optix") == 0)

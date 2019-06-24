@@ -46,6 +46,14 @@ Ogre2Camera::~Ogre2Camera()
     ogreSceneManager->destroyCamera(this->ogreCamera);
     this->ogreCamera = nullptr;
   }
+  else
+  {
+    if (this->ogreCamera != nullptr && ogreSceneManager->hasCamera(this->name))
+    {
+      ogreSceneManager->destroyCamera(this->ogreCamera);
+      this->ogreCamera = nullptr;
+    }
+  }
 }
 
 //////////////////////////////////////////////////

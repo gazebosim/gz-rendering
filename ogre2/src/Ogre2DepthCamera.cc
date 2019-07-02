@@ -155,8 +155,8 @@ void Ogre2DepthCamera::Destroy()
   }
   else
   {
-    if (this->ogreCamera != nullptr && ogreSceneManager->hasCamera(
-        this->name + "_Depth_Camera"))
+    if (this->ogreCamera != nullptr && ogreSceneManager->findCameraNoThrow(
+        this->name + "_Depth_Camera") != nullptr)
     {
       ogreSceneManager->destroyCamera(this->ogreCamera);
       this->ogreCamera = nullptr;

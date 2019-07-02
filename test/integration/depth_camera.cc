@@ -56,9 +56,6 @@ void DepthCameraTest::DepthCameraBoxes(
 {
   int imgWidth_ = 256;
   int imgHeight_ = 256;
-  double far_ = 10.0;
-  double near_ = 0.15;
-  double hfov_ = 1.05;
   double aspectRatio_ = imgWidth_/imgHeight_;
 
   double unitBoxSize = 1.0;
@@ -105,6 +102,9 @@ void DepthCameraTest::DepthCameraBoxes(
   box->SetMaterial(blue);
   root->AddChild(box);
   {
+    double far_ = 10.0;
+    double near_ = 0.15;
+    double hfov_ = 1.05;
     // Create depth camera
     auto depthCamera = scene->CreateDepthCamera("DepthCamera");
     ASSERT_NE(depthCamera, nullptr);

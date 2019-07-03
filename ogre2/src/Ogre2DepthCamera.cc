@@ -146,6 +146,22 @@ void Ogre2DepthCamera::Destroy()
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorNodeDef);
   }
+
+  Ogre::SceneManager *ogreSceneManager;
+  ogreSceneManager = this->scene->OgreSceneManager();
+  if (ogreSceneManager == nullptr)
+  {
+    ignerr << "Scene manager cannot be obtained" << std::endl;
+  }
+  else
+  {
+    if (this->ogreCamera != nullptr && ogreSceneManager->findCameraNoThrow(
+        this->name + "_Depth_Camera") != nullptr)
+    {
+      ogreSceneManager->destroyCamera(this->ogreCamera);
+      this->ogreCamera = nullptr;
+    }
+  }
 }
 
 //////////////////////////////////////////////////

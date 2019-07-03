@@ -54,7 +54,7 @@ void OgreCamera::Destroy()
   {
     if (ogreSceneManager->hasCamera(this->name))
     {
-      ogreSceneManager->destroyCamera(this->name);
+      ogreSceneManager->destroyCamera(this->ogreCamera);
       this->ogreCamera = nullptr;
     }
   }

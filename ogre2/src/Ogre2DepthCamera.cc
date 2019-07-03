@@ -93,7 +93,6 @@ Ogre2DepthCamera::~Ogre2DepthCamera()
   this->Destroy();
 }
 
-
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Init()
 {
@@ -161,8 +160,7 @@ void Ogre2DepthCamera::Destroy()
   }
   else
   {
-    if (ogreSceneManager->findCameraNoThrow(
-        this->name + "_Depth_Camera") != nullptr)
+    if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
     {
       ogreSceneManager->destroyCamera(this->ogreCamera);
       this->ogreCamera = nullptr;
@@ -182,8 +180,7 @@ void Ogre2DepthCamera::CreateCamera()
     return;
   }
 
-  this->ogreCamera = ogreSceneManager->createCamera(
-      this->name + "_Depth_Camera");
+  this->ogreCamera = ogreSceneManager->createCamera(this->name);
   if (this->ogreCamera == nullptr)
   {
     ignerr << "Ogre camera cannot be created" << std::endl;

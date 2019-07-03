@@ -146,6 +146,22 @@ void Ogre2DepthCamera::Destroy()
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorNodeDef);
   }
+
+  Ogre::SceneManager *ogreSceneManager;
+  ogreSceneManager = this->scene->OgreSceneManager();
+  if (ogreSceneManager == nullptr)
+  {
+    ignerr << "Scene manager cannot be obtained" << std::endl;
+  }
+  else
+  {
+    if (this->ogreCamera != nullptr && ogreSceneManager->findCameraNoThrow(
+        this->name + "_Depth_Camera") != nullptr)
+    {
+      ogreSceneManager->destroyCamera(this->ogreCamera);
+      this->ogreCamera = nullptr;
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -197,6 +213,11 @@ void Ogre2DepthCamera::CreateRenderTexture()
 /////////////////////////////////////////////////////////
 void Ogre2DepthCamera::CreateDepthTexture()
 {
+  // set aspect ratio and fov
+  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->aspect);
+  this->ogreCamera->setAspectRatio(this->aspect);
+  this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
+
   // Load depth material
   // The DepthCamera material is defined in script (depth_camera.material).
   // We need to clone it since we are going to modify its uniform variables

@@ -51,33 +51,33 @@ void OrbitViewControllerTest::OrbitViewControl(const std::string &_renderEngine)
   }
   ScenePtr scene = engine->CreateScene("scene");
   EXPECT_NE(scene, nullptr);
-  {
-    CameraPtr camera =  scene->CreateCamera("camera");
-    EXPECT_NE(camera, nullptr);
 
-    OrbitViewController viewControl;
+  CameraPtr camera =  scene->CreateCamera("camera");
+  EXPECT_NE(camera, nullptr);
 
-    // verify intial values
-    EXPECT_EQ(nullptr, viewControl.Camera());
-    EXPECT_EQ(math::Vector3d::Zero, viewControl.Target());
+  OrbitViewController viewControl;
 
-    // test setting caream
-    viewControl.SetCamera(camera);
-    EXPECT_EQ(camera, viewControl.Camera());
+  // verify intial values
+  EXPECT_EQ(nullptr, viewControl.Camera());
+  EXPECT_EQ(math::Vector3d::Zero, viewControl.Target());
 
-    viewControl.SetCamera(CameraPtr());
-    EXPECT_EQ(CameraPtr(), viewControl.Camera());
+  // test setting caream
+  viewControl.SetCamera(camera);
+  EXPECT_EQ(camera, viewControl.Camera());
+
+  viewControl.SetCamera(CameraPtr());
+  EXPECT_EQ(CameraPtr(), viewControl.Camera());
 
 
-    // test setting target
-    math::Vector3d target(1, 0, 0);
-    viewControl.SetTarget(target);
-    EXPECT_EQ(target, viewControl.Target());
+  // test setting target
+  math::Vector3d target(1, 0, 0);
+  viewControl.SetTarget(target);
+  EXPECT_EQ(target, viewControl.Target());
 
-    target.Set(-0.3, -5, 1);
-    viewControl.SetTarget(target);
-    EXPECT_EQ(target, viewControl.Target());
-  }
+  target.Set(-0.3, -5, 1);
+  viewControl.SetTarget(target);
+  EXPECT_EQ(target, viewControl.Target());
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());
@@ -95,129 +95,129 @@ void OrbitViewControllerTest::Control(const std::string &_renderEngine)
   }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
-  {
-    CameraPtr camera =  scene->CreateCamera("camera");
-    ASSERT_NE(nullptr, camera);
 
-    camera->SetImageWidth(320);
-    camera->SetImageHeight(240);
+  CameraPtr camera =  scene->CreateCamera("camera");
+  ASSERT_NE(nullptr, camera);
 
-    math::Pose3d initialPose = camera->WorldPose();
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  camera->SetImageWidth(320);
+  camera->SetImageHeight(240);
 
-    OrbitViewController viewControl;
+  math::Pose3d initialPose = camera->WorldPose();
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
-    // test setting camera
-    viewControl.SetCamera(camera);
-    EXPECT_EQ(camera, viewControl.Camera());
+  OrbitViewController viewControl;
 
-    // test setting target
-    math::Vector3d target(1, 0, 0);
-    viewControl.SetTarget(target);
-    EXPECT_EQ(target, viewControl.Target());
+  // test setting camera
+  viewControl.SetCamera(camera);
+  EXPECT_EQ(camera, viewControl.Camera());
 
-    // test zoom
-    viewControl.Zoom(0);
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
-    viewControl.Zoom(0.1);
-    EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
-    EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
-    viewControl.Zoom(-5);
-    EXPECT_LT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
-    EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
+  // test setting target
+  math::Vector3d target(1, 0, 0);
+  viewControl.SetTarget(target);
+  EXPECT_EQ(target, viewControl.Target());
 
-    // reset camera pose
-    camera->SetWorldPose(initialPose);
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  // test zoom
+  viewControl.Zoom(0);
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  viewControl.Zoom(0.1);
+  EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
+  EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
+  viewControl.Zoom(-5);
+  EXPECT_LT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
+  EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
 
-    // test zero pan
-    viewControl.Pan(math::Vector2d(0, 0));
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  // reset camera pose
+  camera->SetWorldPose(initialPose);
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
-    // test pan in viewport x
-    viewControl.Pan(math::Vector2d(2, 0));
-    EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
-    EXPECT_GT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
-    EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
-    viewControl.Pan(math::Vector2d(-8, 0));
-    EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
-    EXPECT_LT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
-    EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
+  // test zero pan
+  viewControl.Pan(math::Vector2d(0, 0));
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
-    // reset camera pose
-    camera->SetWorldPose(initialPose);
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  // test pan in viewport x
+  viewControl.Pan(math::Vector2d(2, 0));
+  EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
+  EXPECT_GT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
+  EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
+  viewControl.Pan(math::Vector2d(-8, 0));
+  EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
+  EXPECT_LT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
+  EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
 
-    // test pan in viewport y
-    viewControl.Pan(math::Vector2d(0, 7));
-    EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-    EXPECT_GT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
-    EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
-    viewControl.Pan(math::Vector2d(0, -25));
-    EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-    EXPECT_LT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
-    EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
+  // reset camera pose
+  camera->SetWorldPose(initialPose);
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
-    // reset camera pose
-    camera->SetWorldPose(initialPose);
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  // test pan in viewport y
+  viewControl.Pan(math::Vector2d(0, 7));
+  EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
+  EXPECT_GT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
+  EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
+  viewControl.Pan(math::Vector2d(0, -25));
+  EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
+  EXPECT_LT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
+  EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
 
-    // test zero orbit
-    viewControl.Orbit(math::Vector2d(0, 0));
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  // reset camera pose
+  camera->SetWorldPose(initialPose);
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
-    // test orbit in viewport x (yaw)
-    viewControl.Orbit(math::Vector2d(100, 0));
-    EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
-    EXPECT_GT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
-    EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
-    EXPECT_DOUBLE_EQ(initialPose.Rot().Y(), camera->WorldPose().Rot().Y());
-    EXPECT_LT(camera->WorldPose().Rot().Z(), initialPose.Rot().Z());
+  // test zero orbit
+  viewControl.Orbit(math::Vector2d(0, 0));
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
-    camera->SetWorldPose(initialPose);
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  // test orbit in viewport x (yaw)
+  viewControl.Orbit(math::Vector2d(100, 0));
+  EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
+  EXPECT_GT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
+  EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
+  EXPECT_DOUBLE_EQ(initialPose.Rot().Y(), camera->WorldPose().Rot().Y());
+  EXPECT_LT(camera->WorldPose().Rot().Z(), initialPose.Rot().Z());
 
-    viewControl.Orbit(math::Vector2d(-80, 0));
-    EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
-    EXPECT_LT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
-    EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
-    EXPECT_DOUBLE_EQ(initialPose.Rot().Y(), camera->WorldPose().Rot().Y());
-    EXPECT_GT(camera->WorldPose().Rot().Z(), initialPose.Rot().Z());
+  camera->SetWorldPose(initialPose);
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
-    // reset camera pose
-    camera->SetWorldPose(initialPose);
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  viewControl.Orbit(math::Vector2d(-80, 0));
+  EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
+  EXPECT_LT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
+  EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
+  EXPECT_DOUBLE_EQ(initialPose.Rot().Y(), camera->WorldPose().Rot().Y());
+  EXPECT_GT(camera->WorldPose().Rot().Z(), initialPose.Rot().Z());
 
-    // test orbit in viewport y (pitch)
-    viewControl.Orbit(math::Vector2d(0, 80));
-    EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-    EXPECT_GT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
-    EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
-    EXPECT_GT(camera->WorldPose().Rot().Y(), initialPose.Rot().Y());
-    EXPECT_DOUBLE_EQ(initialPose.Rot().Z(), camera->WorldPose().Rot().Z());
+  // reset camera pose
+  camera->SetWorldPose(initialPose);
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
-    camera->SetWorldPose(initialPose);
-    EXPECT_EQ(math::Pose3d::Zero, initialPose);
+  // test orbit in viewport y (pitch)
+  viewControl.Orbit(math::Vector2d(0, 80));
+  EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
+  EXPECT_GT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
+  EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
+  EXPECT_GT(camera->WorldPose().Rot().Y(), initialPose.Rot().Y());
+  EXPECT_DOUBLE_EQ(initialPose.Rot().Z(), camera->WorldPose().Rot().Z());
 
-    viewControl.Orbit(math::Vector2d(0, -90));
-    EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
-    EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-    EXPECT_LT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
-    EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
-    EXPECT_LT(camera->WorldPose().Rot().Y(), initialPose.Rot().Y());
-    EXPECT_DOUBLE_EQ(initialPose.Rot().Z(), camera->WorldPose().Rot().Z());
-  }
+  camera->SetWorldPose(initialPose);
+  EXPECT_EQ(math::Pose3d::Zero, initialPose);
+
+  viewControl.Orbit(math::Vector2d(0, -90));
+  EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
+  EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
+  EXPECT_LT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
+  EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
+  EXPECT_LT(camera->WorldPose().Rot().Y(), initialPose.Rot().Y());
+  EXPECT_DOUBLE_EQ(initialPose.Rot().Z(), camera->WorldPose().Rot().Z());
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

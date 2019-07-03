@@ -71,11 +71,26 @@ OgreDepthCamera::OgreDepthCamera()
 //////////////////////////////////////////////////
 OgreDepthCamera::~OgreDepthCamera()
 {
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void OgreDepthCamera::Destroy()
+{
   if (this->dataPtr->depthBuffer)
+  {
     delete [] this->dataPtr->depthBuffer;
+    this->dataPtr->depthBuffer = nullptr;
+  }
 
   if (this->dataPtr->pcdBuffer)
+  {
     delete [] this->dataPtr->pcdBuffer;
+    this->dataPtr->pcdBuffer = nullptr;
+  }
+
+  if (!this->ogreCamera)
+    return;
 
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();

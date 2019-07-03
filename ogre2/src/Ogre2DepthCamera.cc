@@ -112,10 +112,16 @@ void Ogre2DepthCamera::Init()
 void Ogre2DepthCamera::Destroy()
 {
   if (this->dataPtr->depthBuffer)
+  {
     delete [] this->dataPtr->depthBuffer;
+    this->dataPtr->depthBuffer = nullptr;
+  }
 
   // if (this->dataPtr->pcdBuffer)
   //   delete [] this->dataPtr->pcdBuffer;
+
+  if (!this->ogreCamera)
+    return;
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -155,7 +161,7 @@ void Ogre2DepthCamera::Destroy()
   }
   else
   {
-    if (this->ogreCamera != nullptr && ogreSceneManager->findCameraNoThrow(
+    if (ogreSceneManager->findCameraNoThrow(
         this->name + "_Depth_Camera") != nullptr)
     {
       ogreSceneManager->destroyCamera(this->ogreCamera);

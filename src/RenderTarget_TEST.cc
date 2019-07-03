@@ -97,31 +97,31 @@ void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
     return;
   }
   ScenePtr scene = engine->CreateScene("scene");
-  {
-    CameraPtr camera =  scene->CreateCamera("camera");
 
-    RenderWindowPtr renderWindow = camera->CreateRenderWindow();
+  CameraPtr camera =  scene->CreateCamera("camera");
 
-    renderWindow->SetWidth(320);
-    renderWindow->SetHeight(240);
-    renderWindow->SetHandle("windowId");
-    renderWindow->SetDevicePixelRatio(1.0);
+  RenderWindowPtr renderWindow = camera->CreateRenderWindow();
 
-    EXPECT_EQ(320u, renderWindow->Width());
-    EXPECT_EQ(240u, renderWindow->Height());
-    EXPECT_EQ("windowId", renderWindow->Handle());
-    EXPECT_DOUBLE_EQ(1.0, renderWindow->DevicePixelRatio());
-    EXPECT_EQ(math::Color::Black, renderWindow->BackgroundColor());
+  renderWindow->SetWidth(320);
+  renderWindow->SetHeight(240);
+  renderWindow->SetHandle("windowId");
+  renderWindow->SetDevicePixelRatio(1.0);
 
-    // change render window properties and verify
-    renderWindow->SetWidth(640);
-    renderWindow->SetHeight(480);
-    scene->SetBackgroundColor(math::Color::Red);
+  EXPECT_EQ(320u, renderWindow->Width());
+  EXPECT_EQ(240u, renderWindow->Height());
+  EXPECT_EQ("windowId", renderWindow->Handle());
+  EXPECT_DOUBLE_EQ(1.0, renderWindow->DevicePixelRatio());
+  EXPECT_EQ(math::Color::Black, renderWindow->BackgroundColor());
 
-    EXPECT_EQ(640u, renderWindow->Width());
-    EXPECT_EQ(480u, renderWindow->Height());
-    EXPECT_EQ(math::Color::Red, renderWindow->BackgroundColor());
-  }
+  // change render window properties and verify
+  renderWindow->SetWidth(640);
+  renderWindow->SetHeight(480);
+  scene->SetBackgroundColor(math::Color::Red);
+
+  EXPECT_EQ(640u, renderWindow->Width());
+  EXPECT_EQ(480u, renderWindow->Height());
+  EXPECT_EQ(math::Color::Red, renderWindow->BackgroundColor());
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

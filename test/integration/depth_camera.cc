@@ -101,81 +101,81 @@ void DepthCameraTest::DepthCameraBoxes(
   box->SetLocalScale(unitBoxSize, unitBoxSize, unitBoxSize);
   box->SetMaterial(blue);
   root->AddChild(box);
-  {
-    double far_ = 10.0;
-    double near_ = 0.15;
-    double hfov_ = 1.05;
-    // Create depth camera
-    auto depthCamera = scene->CreateDepthCamera("DepthCamera");
-    ASSERT_NE(depthCamera, nullptr);
 
-    ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond::Identity);
-    depthCamera->SetLocalPose(testPose);
+  double far_ = 10.0;
+  double near_ = 0.15;
+  double hfov_ = 1.05;
+  // Create depth camera
+  auto depthCamera = scene->CreateDepthCamera("DepthCamera");
+  ASSERT_NE(depthCamera, nullptr);
 
-    // Configure depth camera
-    depthCamera->SetImageWidth(imgWidth_);
-    EXPECT_EQ(depthCamera->ImageWidth(),
-      static_cast<unsigned int>(imgWidth_));
-    depthCamera->SetImageHeight(imgHeight_);
-    EXPECT_EQ(depthCamera->ImageHeight(),
-      static_cast<unsigned int>(imgHeight_));
-    depthCamera->SetFarClipPlane(far_);
-    EXPECT_NEAR(depthCamera->FarClipPlane(), far_, DOUBLE_TOL);
-    depthCamera->SetNearClipPlane(near_);
-    EXPECT_NEAR(depthCamera->NearClipPlane(), near_, DOUBLE_TOL);
-    depthCamera->SetAspectRatio(aspectRatio_);
-    EXPECT_NEAR(depthCamera->AspectRatio(), aspectRatio_, DOUBLE_TOL);
-    depthCamera->SetHFOV(hfov_);
-    EXPECT_NEAR(depthCamera->HFOV().Radian(), hfov_, DOUBLE_TOL);
+  ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0),
+      ignition::math::Quaterniond::Identity);
+  depthCamera->SetLocalPose(testPose);
 
-    depthCamera->SetImageFormat(ignition::rendering::PF_FLOAT32_R);
-    depthCamera->SetAntiAliasing(2);
-    depthCamera->CreateDepthTexture();
-    scene->RootVisual()->AddChild(depthCamera);
+  // Configure depth camera
+  depthCamera->SetImageWidth(imgWidth_);
+  EXPECT_EQ(depthCamera->ImageWidth(),
+    static_cast<unsigned int>(imgWidth_));
+  depthCamera->SetImageHeight(imgHeight_);
+  EXPECT_EQ(depthCamera->ImageHeight(),
+    static_cast<unsigned int>(imgHeight_));
+  depthCamera->SetFarClipPlane(far_);
+  EXPECT_NEAR(depthCamera->FarClipPlane(), far_, DOUBLE_TOL);
+  depthCamera->SetNearClipPlane(near_);
+  EXPECT_NEAR(depthCamera->NearClipPlane(), near_, DOUBLE_TOL);
+  depthCamera->SetAspectRatio(aspectRatio_);
+  EXPECT_NEAR(depthCamera->AspectRatio(), aspectRatio_, DOUBLE_TOL);
+  depthCamera->SetHFOV(hfov_);
+  EXPECT_NEAR(depthCamera->HFOV().Radian(), hfov_, DOUBLE_TOL);
 
-    // Set a callback on the  camera sensor to get a depth camera frame
-    float *scan = new float[imgHeight_ * imgWidth_];
-    ignition::common::ConnectionPtr connection =
-      depthCamera->ConnectNewDepthFrame(
-          std::bind(&::OnNewDepthFrame, scan,
-            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
-            std::placeholders::_4, std::placeholders::_5));
+  depthCamera->SetImageFormat(ignition::rendering::PF_FLOAT32_R);
+  depthCamera->SetAntiAliasing(2);
+  depthCamera->CreateDepthTexture();
+  scene->RootVisual()->AddChild(depthCamera);
 
-    // Update once to create image
-    depthCamera->Update();
+  // Set a callback on the  camera sensor to get a depth camera frame
+  float *scan = new float[imgHeight_ * imgWidth_];
+  ignition::common::ConnectionPtr connection =
+    depthCamera->ConnectNewDepthFrame(
+        std::bind(&::OnNewDepthFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
 
-    int midWidth = depthCamera->ImageWidth() * 0.5;
-    int midHeight = depthCamera->ImageHeight() * 0.5;
-    int mid = midHeight * depthCamera->ImageWidth() + midWidth -1;
-    double expectedRangeAtMidPoint = boxPosition.X() - unitBoxSize * 0.5;
+  // Update once to create image
+  depthCamera->Update();
 
-    // Depth sensor should see box in the middle of the image
-    EXPECT_NEAR(scan[mid], expectedRangeAtMidPoint, DEPTH_TOL);
+  int midWidth = depthCamera->ImageWidth() * 0.5;
+  int midHeight = depthCamera->ImageHeight() * 0.5;
+  int mid = midHeight * depthCamera->ImageWidth() + midWidth -1;
+  double expectedRangeAtMidPoint = boxPosition.X() - unitBoxSize * 0.5;
 
-    // The left and right side of the depth frame should be far value
-    int left = midHeight * depthCamera->ImageWidth();
-    EXPECT_DOUBLE_EQ(scan[left], far_);
-    int right = (midHeight+1) * depthCamera->ImageWidth() - 1;
-    EXPECT_DOUBLE_EQ(scan[right], far_);
+  // Depth sensor should see box in the middle of the image
+  EXPECT_NEAR(scan[mid], expectedRangeAtMidPoint, DEPTH_TOL);
 
-    // Check that for a box really close it returns far (it is not seen)
-    ignition::math::Vector3d boxPositionNear(
-        unitBoxSize * 0.5 + near_ * 0.5, 0.0, 0.0);
-    box->SetLocalPosition(boxPositionNear);
-    depthCamera->Update();
-    EXPECT_DOUBLE_EQ(scan[mid], far_);
+  // The left and right side of the depth frame should be far value
+  int left = midHeight * depthCamera->ImageWidth();
+  EXPECT_DOUBLE_EQ(scan[left], far_);
+  int right = (midHeight+1) * depthCamera->ImageWidth() - 1;
+  EXPECT_DOUBLE_EQ(scan[right], far_);
 
-    // Check that for a box really far it returns far
-    ignition::math::Vector3d boxPositionFar(
-        unitBoxSize * 0.5 + far_ * 1.5, 0.0, 0.0);
-    box->SetLocalPosition(boxPositionFar);
-    depthCamera->Update();
-    EXPECT_DOUBLE_EQ(scan[mid], far_);
+  // Check that for a box really close it returns far (it is not seen)
+  ignition::math::Vector3d boxPositionNear(
+      unitBoxSize * 0.5 + near_ * 0.5, 0.0, 0.0);
+  box->SetLocalPosition(boxPositionNear);
+  depthCamera->Update();
+  EXPECT_DOUBLE_EQ(scan[mid], far_);
 
-    // Clean up
-    connection.reset();
-  }
+  // Check that for a box really far it returns far
+  ignition::math::Vector3d boxPositionFar(
+      unitBoxSize * 0.5 + far_ * 1.5, 0.0, 0.0);
+  box->SetLocalPosition(boxPositionFar);
+  depthCamera->Update();
+  EXPECT_DOUBLE_EQ(scan[mid], far_);
+
+  // Clean up
+  connection.reset();
+
   engine->DestroyScene(scene);
   ignition::rendering::unloadEngine(engine->Name());
 }

@@ -93,6 +93,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual unsigned int RenderTextureGLId() const override;
 
+      // Documentation inherited.
+      public: virtual void Destroy() override;
+
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       protected: virtual void Init() override;

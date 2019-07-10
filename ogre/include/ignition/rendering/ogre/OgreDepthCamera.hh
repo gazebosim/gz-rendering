@@ -120,7 +120,7 @@ namespace ignition
       public: double FarClipPlane() const override;
 
       // Documentation inherited
-      public: void Destroy() override;
+      public: virtual void Destroy() override;
 
       /// \brief Update a render target
       /// \param[in] _target Render target to update

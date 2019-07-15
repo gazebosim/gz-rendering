@@ -1,5 +1,10 @@
 ## Ignition Rendering
 
+### Ignition Rendering 3.X
+
+1. Added function to get the number of channels from a GpuRay.
+    * [Pull request 178](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/178)
+
 ### Ignition Rendering 2.X
 
 ### Ignition Rendering 2.0.0 (20XX-XX-XX)

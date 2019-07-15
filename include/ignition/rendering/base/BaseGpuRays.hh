@@ -185,8 +185,8 @@ namespace ignition
       /// \brief Resolution of vertical rays
       protected: int vResolution = 1;
 
-      /// \brief Amount of channels used to store the data
-      protected: unsigned int channels = 1;
+      /// \brief Number of channels used to store the data
+      protected: unsigned int channels = 1u;
 
       private: friend class OgreScene;
     };

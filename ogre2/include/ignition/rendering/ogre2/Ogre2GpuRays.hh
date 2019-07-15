@@ -89,6 +89,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual RenderTargetPtr RenderTarget() const override;
 
+      // Documentation inherited.
+      public: virtual unsigned int Channels() const override;
+
       /// \brief Set the number of samples in the width and height for the
       /// first pass texture.
       /// \param[in] _w Number of samples in the horizontal sweep

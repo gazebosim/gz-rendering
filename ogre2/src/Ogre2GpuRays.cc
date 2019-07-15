@@ -839,3 +839,9 @@ RenderTargetPtr Ogre2GpuRays::RenderTarget() const
 {
   return this->dataPtr->renderTexture;
 }
+
+//////////////////////////////////////////////////
+unsigned int Ogre2GpuRays::Channels() const
+{
+  return this->dataPtr->channels;
+}

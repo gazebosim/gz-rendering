@@ -1037,3 +1037,9 @@ double OgreGpuRays::VertHalfAngle() const
 {
   return this->dataPtr->vertHalfAngle;
 }
+
+//////////////////////////////////////////////////
+unsigned int OgreGpuRays::Channels() const
+{
+  return this->dataPtr->channels;
+}

@@ -286,6 +286,11 @@ void OgreScene::Clear()
 void OgreScene::Destroy()
 {
   BaseScene::Destroy();
+
+  // ogre scene manager is destroyed when ogre root is deleted
+  // removing here seems to cause the system to freeze on deleting rthsader
+  // system when unloading the engine
+  this->ogreSceneManager = nullptr;
 }
 
 //////////////////////////////////////////////////

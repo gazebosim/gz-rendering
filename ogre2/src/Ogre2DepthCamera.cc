@@ -433,7 +433,9 @@ void Ogre2DepthCamera::PostRender()
 
   // blit data from gpu to cpu
   auto rt = this->dataPtr->ogreDepthTexture->getBuffer()->getRenderTarget();
-  rt->copyContentsToMemory(dstBox, Ogre::RenderTarget::FB_FRONT);
+  rt->copyContentsToMemory(
+    Ogre::Box(0, 0, width, height),
+    dstBox, Ogre::RenderTarget::FB_FRONT);
 
   if (!this->dataPtr->depthImage)
   {

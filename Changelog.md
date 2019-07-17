@@ -1,6 +1,6 @@
 ## Ignition Rendering
 
-### Ignition Rendering 2.X
+### Ignition Rendering 2.0.1
 
 1. Clean up camera objects when destroying scene
     * [Pull request 174](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/174)

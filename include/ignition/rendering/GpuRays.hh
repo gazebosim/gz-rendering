@@ -154,6 +154,10 @@ namespace ignition
       /// \brief Set maximal vertical angle value
       // \return minimal vertical angle value
       public: virtual void SetVerticalAngleMax(const double _angle) = 0;
+
+      /// \brief Get the number of channels used to store the ray data.
+      /// \return Channel count.
+      public: virtual unsigned int Channels() const = 0;
     };
   }
   }

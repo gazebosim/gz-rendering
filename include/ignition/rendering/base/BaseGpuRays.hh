@@ -136,6 +136,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVerticalAngleMax(const double _angle) override;
 
+      // Documentation inherited.
+      public: virtual unsigned int Channels() const override;
+
       /// \brief maximum value used for data outside sensor range
       public: float dataMaxVal = ignition::math::INF_D;
 
@@ -181,6 +184,9 @@ namespace ignition
 
       /// \brief Resolution of vertical rays
       protected: int vResolution = 1;
+
+      /// \brief Number of channels used to store the data
+      protected: unsigned int channels = 1u;
 
       private: friend class OgreScene;
     };
@@ -392,6 +398,13 @@ namespace ignition
     void BaseGpuRays<T>::SetVerticalAngleMax(const double _angle)
     {
         this->vMaxAngle = _angle;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    unsigned int BaseGpuRays<T>::Channels() const
+    {
+      return this->channels;
     }
     }
   }

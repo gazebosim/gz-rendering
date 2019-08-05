@@ -50,7 +50,6 @@ void Ogre2Camera::Destroy()
   {
     ignerr << "Scene manager cannot be obtained" << std::endl;
   }
-
   if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
   {
     ogreSceneManager->destroyCamera(this->ogreCamera);

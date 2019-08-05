@@ -100,10 +100,6 @@ class ignition::rendering::OgreGpuRaysPrivate
   /// \brief Image height of second pass.
   public: unsigned int h2nd = 0u;
 
-  /// \brief Amount of channels used to store the data
-  // r = depth, g = retro, and b = n/a
-  public: unsigned int channels = 3u;
-
   /// \brief List of texture unit indices used during the second
   /// rendering pass.
   public: std::vector<int> texIdx;
@@ -137,6 +133,8 @@ using namespace rendering;
 OgreGpuRays::OgreGpuRays()
   : dataPtr(new OgreGpuRaysPrivate)
 {
+  // r = depth, g = retro, and b = n/a
+  this->channels = 3u;
 }
 
 //////////////////////////////////////////////////
@@ -647,7 +645,7 @@ void OgreGpuRays::PostRender()
 
   size_t size = Ogre::PixelUtil::getMemorySize(
     width, height, 1, Ogre::PF_FLOAT32_RGB);
-  int len = width * height * this->dataPtr->channels;
+  int len = width * height * this->Channels();
 
   if (!this->dataPtr->gpuRaysBuffer)
   {
@@ -668,7 +666,7 @@ void OgreGpuRays::PostRender()
   memcpy(this->dataPtr->gpuRaysScan, this->dataPtr->gpuRaysBuffer, size);
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
-      width, height, this->dataPtr->channels, "PF_FLOAT32_RGB");
+      width, height, this->Channels(), "PF_FLOAT32_RGB");
 }
 
 //////////////////////////////////////////////////

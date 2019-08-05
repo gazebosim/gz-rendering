@@ -7,11 +7,16 @@
 1. Destroy camera when the scene is destroyed
     * [Pull request 175](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/175)
 
+1. Added function to get the number of channels from a GpuRay.
+    * [Pull request 178](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/178)
+
 ### Ignition Rendering 2.X
+
+### Ignition Rendering 2.0.1
 
 1. Clean up camera objects when destroying scene
     * [Pull request 174](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/174)
-
+    * [Pull request 180](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/180)
 
 ### Ignition Rendering 2.0.0 (20XX-XX-XX)
 

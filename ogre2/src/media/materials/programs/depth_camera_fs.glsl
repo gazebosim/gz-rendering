@@ -24,6 +24,7 @@ in block
 } inPs;
 
 uniform sampler2D depthTexture;
+uniform sampler2D colorTexture;
 
 out vec4 fragColor;
 
@@ -33,12 +34,25 @@ uniform float far;
 uniform float min;
 uniform float max;
 uniform float tolerance;
+uniform vec3 backgroundColor;
 
 float getDepth(vec2 uv)
 {
   float fDepth = texture(depthTexture, uv).x;
   float linearDepth = projectionParams.y / (fDepth - projectionParams.x);
   return linearDepth;
+}
+
+float packFloat(vec4 color)
+{
+  // vec4 decode = vec4(1.0, 1/255.0, 1/65025.0, 1/160581375.0);
+  // return dot(color, decode);
+
+  int rgba = (int(color.x * 255.0) << 24) +
+             (int(color.y * 255.0) << 16) +
+             (int(color.z * 255.0) << 8) +
+             int(color.w * 255.0);
+  return intBitsToFloat(rgba);
 }
 
 
@@ -53,10 +67,29 @@ void main()
   // get length of 3d point, i.e.range
   float l = length(viewSpacePos);
 
-  if (l > far - tolerance)
-    l = max;
-  else if (l < near + tolerance)
-    l = min;
+  // convert to z up
+  vec3 point = vec3(-viewSpacePos.z, -viewSpacePos.x, viewSpacePos.y);
 
-  fragColor = vec4(l, 0.0, 0, 1.0);
+  // normalize - used to compute new xyz if l is clamped by near and far
+
+  // color
+  vec4 color = texture(colorTexture, inPs.uv0);
+
+  // clamp
+  if (l > far - tolerance)
+  {
+    float scale = max / l;
+    point = scale * point;
+    color = vec4(backgroundColor, 1.0);
+  }
+  else if (l < near + tolerance)
+  {
+    float scale = min / l;
+    point = scale * point;
+    color = vec4(backgroundColor, 1.0);
+  }
+
+  float rgba = packFloat(color);
+
+  fragColor = vec4(point, rgba);
 }

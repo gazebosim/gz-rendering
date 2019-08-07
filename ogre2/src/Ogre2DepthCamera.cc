@@ -20,6 +20,8 @@
   #define NOMINMAX
   #include <windows.h>
 #endif
+
+#include <math.h>
 #include <ignition/math/Helpers.hh>
 
 #include "ignition/rendering/RenderTypes.hh"
@@ -241,12 +243,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
   this->ogreCamera->setNearClipDistance(nearPlane);
   this->ogreCamera->setFarClipDistance(farPlane);
 
-  // \todo(anyone) Change default behavior in ign-rendering3 to not clamp
-  // the values to far and near clip distance. Instead, conform to REP and
-  // return -inf and +inf for values outside of the clipping planes.
-  this->dataPtr->dataMaxVal = this->FarClipPlane();
-  this->dataPtr->dataMinVal = this->FarClipPlane();
-
   // Set the uniform variables (depth_camera_fs.glsl).
   // The projectParams is used to linearize depth buffer data
   // The other params are used to clamp the range output
@@ -274,12 +270,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
   // We need to include a tolerance for Clipping
   psParams->setNamedConstant("tolerance",
       static_cast<float>(1e-6));
-
-  std::cerr << "========================min max "
-     << this->NearClipPlane() << " "
-     << this->FarClipPlane() << " "
-     << this->dataPtr->dataMaxVal << " "
-     << this->dataPtr->dataMinVal << std::endl;
 
   // Create depth camera compositor
   auto engine = Ogre2RenderEngine::Instance();
@@ -347,7 +337,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
     depthTexDef->uav = false;
     depthTexDef->automipmaps = false;
     depthTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
-    // depthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
     depthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     depthTexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
     depthTexDef->fsaaExplicitResolve = false;
@@ -372,24 +361,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
     colorTexDef->fsaaExplicitResolve = false;
 
     nodeDef->setNumTargetPass(2);
-    // depthTexture target - renders depth
-    // Ogre::CompositorTargetDef *depthTargetDef =
-    //     nodeDef->addTargetPass("depthTexture");
-    //     // nodeDef->addTargetPass("colorTexture");
-    // depthTargetDef->setNumPasses(2);
-    // {
-    //   // clear pass
-    //   Ogre::CompositorPassClearDef *passClear =
-    //       static_cast<Ogre::CompositorPassClearDef *>(
-    //       depthTargetDef->addPass(Ogre::PASS_CLEAR));
-    //   passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(), 0, 1.0);
-    //   // scene pass
-    //   Ogre::CompositorPassSceneDef *passScene =
-    //       static_cast<Ogre::CompositorPassSceneDef *>(
-    //       depthTargetDef->addPass(Ogre::PASS_SCENE));
-    //   passScene->mVisibilityMask = IGN_VISIBILITY_ALL
-    //       & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
-    // }
     Ogre::CompositorTargetDef *colorTargetDef =
         nodeDef->addTargetPass("colorTexture");
     colorTargetDef->setNumPasses(2);
@@ -511,7 +482,7 @@ void Ogre2DepthCamera::PostRender()
     this->dataPtr->pointCloudImage = new float[len * channelCount];
   }
 
-  // depth data
+  // xyz and depth data
   for (unsigned int i = 0; i < height; ++i)
   {
     unsigned int step = i*width*channelCount;
@@ -521,8 +492,19 @@ void Ogre2DepthCamera::PostRender()
       float y = this->dataPtr->depthBuffer[step + j*channelCount + 1];
       float z = this->dataPtr->depthBuffer[step + j*channelCount + 2];
 
-      // depth to range
-      this->dataPtr->depthImage[i*width + j] = sqrt(x*x + y*y + z*z);
+      // check to see if xyz is clamped to -inf
+      // avoid computing  length since it returns +inf
+      float d = this->dataPtr->dataMaxVal;
+      if (std::isinf(x))
+      {
+        if (signbit(x) > 0)
+          d = this->dataPtr->dataMinVal;
+      }
+      else
+      {
+        d = sqrt(x*x + y*y + z*z);
+      }
+      this->dataPtr->depthImage[i*width + j] = d;
     }
   }
   this->dataPtr->newDepthFrame(
@@ -534,10 +516,10 @@ void Ogre2DepthCamera::PostRender()
     memcpy(this->dataPtr->pointCloudImage, this->dataPtr->depthBuffer, size);
     this->dataPtr->newRgbPointCloud(
         this->dataPtr->pointCloudImage, width, height, channelCount,
-        "FLOAT32");
+        "PF_FLOAT32_RGBA");
 
     // Uncomment to debug output
-    // std::cerr << "color: " <<  std::endl;
+    // igndbg << "color: " <<  std::endl;
     // for (unsigned int i = 0; i < height; ++i)
     // {
     //   unsigned int step = i*width*channelCount;
@@ -549,24 +531,22 @@ void Ogre2DepthCamera::PostRender()
     //     unsigned int r = *rgba >> 24 & 0xFF;
     //     unsigned int g = *rgba >> 16 & 0xFF;
     //     unsigned int b = *rgba >> 8 & 0xFF;
-    //     std::cerr << "[" << r << "]" << "[" << g << "]" << "[" << b << "],";
+    //     igndbg << "[" << r << "]" << "[" << g << "]" << "[" << b << "],";
     //   }
-    //   std::cerr << std::endl;
+    //   igndbg << std::endl;
     // }
   }
 
-
   // Uncomment to debug output
-  // std::cerr << "wxh: " << width << " x " << height << std::endl;
+  // igndbg << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     std::cerr << "[" << this->dataPtr->depthImage[i*width + j] << "]";
+  //     igndbg << "[" << this->dataPtr->depthImage[i*width + j] << "]";
   //   }
-  //   std::cerr << std::endl;
+  //   igndbg << std::endl;
   // }
-
 }
 
 //////////////////////////////////////////////////
@@ -607,7 +587,6 @@ double Ogre2DepthCamera::LimitFOV(const double _fov)
 void Ogre2DepthCamera::SetNearClipPlane(const double _near)
 {
   BaseDepthCamera::SetNearClipPlane(_near);
-//  this->ogreCamera->setNearClipDistance(_near);
   // near plane clipping is handled in shaders
 }
 
@@ -615,26 +594,17 @@ void Ogre2DepthCamera::SetNearClipPlane(const double _near)
 void Ogre2DepthCamera::SetFarClipPlane(const double _far)
 {
   BaseDepthCamera::SetFarClipPlane(_far);
-//   this->ogreCamera->setFarClipDistance(_far);
+  // far plane clipping is handled in shaders
 }
 
 //////////////////////////////////////////////////
 double Ogre2DepthCamera::NearClipPlane() const
 {
- // if (this->ogreCamera)
- //   return this->ogreCamera->getNearClipDistance();
- // else
- //   return 0;
   return BaseDepthCamera::NearClipPlane();
 }
 
 //////////////////////////////////////////////////
 double Ogre2DepthCamera::FarClipPlane() const
 {
-  // if (this->ogreCamera)
-  //   return this->ogreCamera->getFarClipDistance();
-  // else
-  //   return 0;
-
   return BaseDepthCamera::FarClipPlane();
 }

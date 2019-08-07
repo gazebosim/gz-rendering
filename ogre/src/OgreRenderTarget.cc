@@ -339,6 +339,7 @@ void OgreRenderTexture::BuildTarget()
   this->ogreTexture = (manager.createManual(this->name, "General",
       Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
       Ogre::TU_RENDERTARGET, 0, false, fsaa)).get();
+  std::cerr << "building target " << this->name << std::endl;
 }
 
 //////////////////////////////////////////////////

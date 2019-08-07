@@ -45,9 +45,6 @@ float getDepth(vec2 uv)
 
 float packFloat(vec4 color)
 {
-  // vec4 decode = vec4(1.0, 1/255.0, 1/65025.0, 1/160581375.0);
-  // return dot(color, decode);
-
   int rgba = (int(color.x * 255.0) << 24) +
              (int(color.y * 255.0) << 16) +
              (int(color.z * 255.0) << 8) +
@@ -70,22 +67,37 @@ void main()
   // convert to z up
   vec3 point = vec3(-viewSpacePos.z, -viewSpacePos.x, viewSpacePos.y);
 
-  // normalize - used to compute new xyz if l is clamped by near and far
+  // normalize for clamping point later
+  vec3 normalized = normalize(point);
 
   // color
   vec4 color = texture(colorTexture, inPs.uv0);
 
-  // clamp
+  // clamp xyz and set rgb to background color
   if (l > far - tolerance)
   {
-    float scale = max / l;
-    point = scale * point;
+    if (isinf(max))
+    {
+      point = vec3(max);
+    }
+    else
+    {
+      float scale = max / l;
+      point = scale * point;
+    }
     color = vec4(backgroundColor, 1.0);
   }
   else if (l < near + tolerance)
   {
-    float scale = min / l;
-    point = scale * point;
+    if (isinf(min))
+    {
+      point = vec3(min);
+    }
+    else
+    {
+      float scale = min / l;
+      point = scale * point;
+    }
     color = vec4(backgroundColor, 1.0);
   }
 

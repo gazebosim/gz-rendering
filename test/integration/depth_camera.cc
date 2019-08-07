@@ -68,9 +68,6 @@ void DepthCameraTest::DepthCameraBoxes(
   int imgWidth_ = 256;
   int imgHeight_ = 256;
 
-//  int imgWidth_ = 10;
-//  int imgHeight_ = 10;
-
   double aspectRatio_ = imgWidth_/imgHeight_;
 
   double unitBoxSize = 1.0;
@@ -145,8 +142,6 @@ void DepthCameraTest::DepthCameraBoxes(
     depthCamera->SetHFOV(hfov_);
     EXPECT_NEAR(depthCamera->HFOV().Radian(), hfov_, DOUBLE_TOL);
 
-    depthCamera->SetImageFormat(ignition::rendering::PF_FLOAT32_RGBA);
-    depthCamera->SetAntiAliasing(2);
     depthCamera->CreateDepthTexture();
     scene->RootVisual()->AddChild(depthCamera);
 
@@ -163,7 +158,7 @@ void DepthCameraTest::DepthCameraBoxes(
     unsigned int pointCloudChannelCount = 4u;
     // \todo(anyone) point cloud currently only supported in ogre2
     // implementation
-    if (_renderEngine == "ogre2")
+    //if (_renderEngine == "ogre2")
     {
       pointCloudData = new float[
           imgHeight_ * imgWidth_ * pointCloudChannelCount];
@@ -196,12 +191,15 @@ void DepthCameraTest::DepthCameraBoxes(
         * (depthCamera->ImageWidth() * pointCloudChannelCount)
         - pointCloudChannelCount;
 
+    float minVal = -ignition::math::INF_D;
+    float maxVal = ignition::math::INF_D;
+
     // Verify Depth
     // Depth sensor should see box in the middle of the image
-    EXPECT_NEAR(scan[mid], expectedRangeAtMidPoint, DEPTH_TOL);
-    // The left and right side of the depth frame should be far value
-    EXPECT_FLOAT_EQ(farDist, scan[left]);
-    EXPECT_FLOAT_EQ(farDist, scan[right]);
+    EXPECT_NEAR(expectedRangeAtMidPoint, scan[mid], DEPTH_TOL);
+    // The left and right side of the depth frame should be max value
+    EXPECT_FLOAT_EQ(maxVal, scan[left]);
+    EXPECT_FLOAT_EQ(maxVal, scan[right]);
 
     if (pointCloudData)
     {
@@ -213,29 +211,20 @@ void DepthCameraTest::DepthCameraBoxes(
       float midRange = sqrt(mx * mx + my * my + mz * mz);
       EXPECT_FLOAT_EQ(scan[mid], midRange);
 
-      std::cerr << "pc left " << pcLeft << std::endl;
-      std::cerr << "pc right " << pcRight << std::endl;
       // check left and right points
       float lx = pointCloudData[pcLeft];
       float ly = pointCloudData[pcLeft + 1];
       float lz = pointCloudData[pcLeft + 2];
       float leftRange = sqrt(lx*lx + ly*ly + lz*lz);
       EXPECT_FLOAT_EQ(scan[left], leftRange);
-      EXPECT_GT(lx, 0.0);
-      EXPECT_GT(ly, 0.0);
+      EXPECT_FLOAT_EQ(maxVal, leftRange);
 
       float rx = pointCloudData[pcRight];
       float ry = pointCloudData[pcRight + 1];
       float rz = pointCloudData[pcRight + 2];
       float rightRange = sqrt(rx*rx + ry*ry + rz*rz);
       EXPECT_FLOAT_EQ(scan[right], rightRange);
-      EXPECT_GT(rx, 0.0);
-      EXPECT_LT(ry, 0.0);
-
-      // z values of left and right point should be the same
-      EXPECT_NEAR(lz, rz, DEPTH_TOL);
-
-      std::cerr << "right xyz : " << rx << " " << ry << " " << rz << " " << std::endl;
+      EXPECT_FLOAT_EQ(maxVal, rightRange);
 
       // Verify Point Cloud RGB values
       // The mid point should be blue
@@ -255,8 +244,6 @@ void DepthCameraTest::DepthCameraBoxes(
       unsigned int lg = *lrgba >> 16 & 0xFF;
       unsigned int lb = *lrgba >> 8 & 0xFF;
 
-      std::cerr << "left rgb : " << lr << " " << lg << " " << lb << " " << std::endl;
-
       EXPECT_EQ(255u, lr);
       EXPECT_EQ(0u, lg);
       EXPECT_EQ(0u, lb);
@@ -270,8 +257,6 @@ void DepthCameraTest::DepthCameraBoxes(
       EXPECT_EQ(255u, rr);
       EXPECT_EQ(0u, rg);
       EXPECT_EQ(0u, rb);
-
-      std::cerr << "right rgb : " << rr << " " << rg << " " << rb << " " << std::endl;
     }
 
     // Check that for a box really close it returns it is not seen
@@ -282,12 +267,12 @@ void DepthCameraTest::DepthCameraBoxes(
 
     // Verify Depth
     // box not detected
-    EXPECT_FLOAT_EQ(farDist, scan[mid]);
-    EXPECT_FLOAT_EQ(farDist, scan[left]);
-    EXPECT_FLOAT_EQ(farDist, scan[right]);
+    EXPECT_FLOAT_EQ(minVal, scan[mid]);
+    EXPECT_FLOAT_EQ(minVal, scan[left]);
+    EXPECT_FLOAT_EQ(minVal, scan[right]);
 
     // Verify Point Cloud XYZ
-    // length of all points should be farDist
+    // all points should be min val
     if (pointCloudData)
     {
       for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
@@ -298,8 +283,9 @@ void DepthCameraTest::DepthCameraBoxes(
           float x = pointCloudData[step + j*pointCloudChannelCount];
           float y = pointCloudData[step + j*pointCloudChannelCount + 1];
           float z = pointCloudData[step + j*pointCloudChannelCount + 2];
-          float range = sqrt(x*x + y*y + z*z);
-          EXPECT_FLOAT_EQ(farDist, range);
+          EXPECT_FLOAT_EQ(minVal, x);
+          EXPECT_FLOAT_EQ(minVal, y);
+          EXPECT_FLOAT_EQ(minVal, z);
         }
       }
 
@@ -322,7 +308,7 @@ void DepthCameraTest::DepthCameraBoxes(
       }
     }
 
-    // Check that for a box really far it returns far
+    // Check that for a box really far it returns max val
     ignition::math::Vector3d boxPositionFar(
         unitBoxSize * 0.5 + farDist * 1.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionFar);
@@ -330,14 +316,14 @@ void DepthCameraTest::DepthCameraBoxes(
 
     // Verify Depth
     {
-      // box not detected so all should return farDist
-      EXPECT_FLOAT_EQ(farDist, scan[mid]);
-      EXPECT_FLOAT_EQ(farDist, scan[left]);
-      EXPECT_FLOAT_EQ(farDist, scan[right]);
+      // box not detected so all should return max val
+      EXPECT_FLOAT_EQ(maxVal, scan[mid]);
+      EXPECT_FLOAT_EQ(maxVal, scan[left]);
+      EXPECT_FLOAT_EQ(maxVal, scan[right]);
     }
 
     // Verify Point Cloud XYZ
-    // length of all points should be farDist
+    // all points should be maxVal
     if (pointCloudData)
     {
       for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
@@ -348,8 +334,9 @@ void DepthCameraTest::DepthCameraBoxes(
           float x = pointCloudData[step + j*pointCloudChannelCount];
           float y = pointCloudData[step + j*pointCloudChannelCount + 1];
           float z = pointCloudData[step + j*pointCloudChannelCount + 2];
-          float range = sqrt(x*x + y*y + z*z);
-          EXPECT_FLOAT_EQ(farDist, range);
+          EXPECT_FLOAT_EQ(maxVal, x);
+          EXPECT_FLOAT_EQ(maxVal, y);
+          EXPECT_FLOAT_EQ(maxVal, z);
         }
       }
 

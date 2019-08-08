@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGREMESH_HH_
 #define IGNITION_RENDERING_OGRE_OGREMESH_HH_
 
+#include <map>
 #include <string>
 #include <vector>
 #include "ignition/rendering/base/BaseMesh.hh"
@@ -47,6 +48,14 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void Destroy() override;
+
+      public: virtual bool HasSkeleton() const override;
+
+      public: virtual std::map<std::string, math::Matrix4d>
+                          SkeletonLocalTransforms() override;
+
+      public: virtual void SetSkeletonLocalTransforms(
+              std::map<std::string, math::Matrix4d> _tfs) override;
 
       public: virtual Ogre::MovableObject *OgreObject() const override;
 

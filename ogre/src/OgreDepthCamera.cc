@@ -23,7 +23,6 @@
 #include <ignition/math/Helpers.hh>
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ShaderParams.hh"
 
 /// \internal
 /// \brief Private data for the OgreDepthCamera class
@@ -94,6 +93,9 @@ OgreDepthCamera::~OgreDepthCamera()
   if (this->dataPtr->colorBuffer)
     delete [] this->dataPtr->colorBuffer;
 
+  if (!this->scene->IsInitialized())
+    return;
+
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
@@ -102,6 +104,7 @@ OgreDepthCamera::~OgreDepthCamera()
   }
   else
   {
+    ogreSceneManager->hasCamera(this->name + "_Depth_Camera");
     if (this->ogreCamera != nullptr && ogreSceneManager->hasCamera(
         this->name + "_Depth_Camera"))
     {
@@ -238,23 +241,10 @@ void OgreDepthCamera::CreateDepthTexture()
 /////////////////////////////////////////////////
 void OgreDepthCamera::PreRender()
 {
-  // if (this->depthTexture && !this->dataPtr->depthMaterial)
-  // {
-  //   this->dataPtr->depthMaterial = this->scene->CreateMaterial();
-  //   this->dataPtr->depthMaterial->SetDepthMaterial(
-  //       this->FarClipPlane(), this->NearClipPlane());
-  //   this->depthTexture->SetMaterial(this->dataPtr->depthMaterial);
-
-  //   double ratio = static_cast<double>(this->ImageWidth()) /
-  //                  static_cast<double>(this->ImageHeight());
-
-  //   double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
-  //   this->ogreCamera->setAspectRatio(ratio);
-  //   this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
-
-  //   this->depthTexture->SetFormat(PF_FLOAT32_R);
-  //   this->depthTexture->PreRender();
-  // }
+  if (!this->depthTexture)
+  {
+    this->CreateDepthTexture();
+  }
 
   if (!this->dataPtr->pcdTexture || !this->dataPtr->colorTexture)
   {
@@ -287,6 +277,9 @@ void OgreDepthCamera::Render()
   sceneMgr->_suppressRenderStateChanges(false);
   sceneMgr->setShadowTechnique(shadowTech);
 
+  std::cerr << "this->ogreCam fov " << this->ogreCamera->getFOVy().valueRadians() << std::endl;
+
+  // skip color pass if we do not need to output point clouds
   this->dataPtr->outputPoints =
       (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0);
   if (!this->dataPtr->outputPoints)
@@ -380,18 +373,16 @@ void OgreDepthCamera::PostRender()
   double farPlane = this->FarClipPlane();
   double nearPlane = this->NearClipPlane();
 
-  // depth
+  // get depth data
   if (!this->dataPtr->depthBuffer)
     this->dataPtr->depthBuffer = new float[len];
-
-  // this->depthTexture->Buffer(this->dataPtr->depthBuffer);
   PixelFormat format = this->dataPtr->pcdTexture->Format();
   unsigned int channelCount = PixelUtil::ChannelCount(format);
   if (!this->dataPtr->pcdBuffer)
     this->dataPtr->pcdBuffer = new float[len * channelCount];
-
   this->dataPtr->pcdTexture->Buffer(this->dataPtr->pcdBuffer);
 
+  // color data
   unsigned int colorChannelCount = 3;
   int bgColorR = this->scene->BackgroundColor().R() * 255;
   int bgColorG = this->scene->BackgroundColor().G() * 255;
@@ -410,6 +401,8 @@ void OgreDepthCamera::PostRender()
         ogrePixelBox);
   }
 
+  // fill depthBuffer and clamp values
+  // \todo(anyone) figure out how to do this in shaders?
   for (unsigned int i = 0; i < height; ++i)
   {
     unsigned int step = i*width;
@@ -422,6 +415,8 @@ void OgreDepthCamera::PostRender()
 
       float depth = 0;
       bool clamp = false;
+      // shaders return far for pixels with no depth data
+      // manually clamp to max
       if ((*x >= farPlane) && (*y >= farPlane)
           && (*z >= farPlane))
       {
@@ -434,6 +429,7 @@ void OgreDepthCamera::PostRender()
           *z = this->dataPtr->dataMaxVal;
         }
       }
+      // Manually clamp values to min
       else if ((*x <= nearPlane) && (*y <= nearPlane)
           && (*z <= nearPlane))
       {
@@ -482,7 +478,7 @@ void OgreDepthCamera::PostRender()
   }
 
   this->dataPtr->newDepthFrame(
-      this->dataPtr->depthBuffer, width, height, 1, "PF_FLOAT32_R");
+      this->dataPtr->depthBuffer, width, height, 1, "FLOAT32");
 
   // point cloud
   if (this->dataPtr->outputPoints)
@@ -562,7 +558,7 @@ double OgreDepthCamera::LimitFOV(const double _fov)
 void OgreDepthCamera::SetNearClipPlane(const double _near)
 {
   BaseDepthCamera::SetNearClipPlane(_near);
-  // Do not set near clip plane. We need to manually clamp the depth values
+//  this->ogreCamera->setNearClipDistance(_near);
 }
 
 //////////////////////////////////////////////////
@@ -576,6 +572,10 @@ void OgreDepthCamera::SetFarClipPlane(const double _far)
 double OgreDepthCamera::NearClipPlane() const
 {
   return BaseDepthCamera::NearClipPlane();
+//  if (this->ogreCamera)
+//    return this->ogreCamera->getNearClipDistance();
+//  else
+//    return 0;
 }
 
 //////////////////////////////////////////////////

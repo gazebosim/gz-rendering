@@ -283,10 +283,18 @@ void DepthCameraTest::DepthCameraBoxes(
           float x = pointCloudData[step + j*pointCloudChannelCount];
           float y = pointCloudData[step + j*pointCloudChannelCount + 1];
           float z = pointCloudData[step + j*pointCloudChannelCount + 2];
-          EXPECT_FLOAT_EQ(minVal, x);
-          EXPECT_FLOAT_EQ(minVal, y);
-          EXPECT_FLOAT_EQ(minVal, z);
-        }
+          if (std::isinf(minVal))
+          {
+            EXPECT_FLOAT_EQ(minVal, x);
+            EXPECT_FLOAT_EQ(minVal, y);
+            EXPECT_FLOAT_EQ(minVal, z);
+          }
+          else
+          {
+            float range = sqrt(x*x + y*y + z*z);
+            EXPECT_FLOAT_EQ(minVal, range);
+          }
+         }
       }
 
       // Verify Point Cloud RGB
@@ -334,9 +342,17 @@ void DepthCameraTest::DepthCameraBoxes(
           float x = pointCloudData[step + j*pointCloudChannelCount];
           float y = pointCloudData[step + j*pointCloudChannelCount + 1];
           float z = pointCloudData[step + j*pointCloudChannelCount + 2];
-          EXPECT_FLOAT_EQ(maxVal, x);
-          EXPECT_FLOAT_EQ(maxVal, y);
-          EXPECT_FLOAT_EQ(maxVal, z);
+          if (std::isinf(maxVal))
+          {
+            EXPECT_FLOAT_EQ(maxVal, x);
+            EXPECT_FLOAT_EQ(maxVal, y);
+            EXPECT_FLOAT_EQ(maxVal, z);
+          }
+          else
+          {
+            float range = sqrt(x*x + y*y + z*z);
+            EXPECT_FLOAT_EQ(maxVal, range);
+          }
         }
       }
 

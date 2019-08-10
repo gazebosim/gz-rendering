@@ -252,7 +252,6 @@ math::Matrix4d Ogre2Camera::ViewMatrix() const
 //////////////////////////////////////////////////
 void Ogre2Camera::SetNearClipPlane(const double _near)
 {
-  // this->nearClip = _near;
   BaseCamera::SetNearClipPlane(_near);
   this->ogreCamera->setNearClipDistance(_near);
 }

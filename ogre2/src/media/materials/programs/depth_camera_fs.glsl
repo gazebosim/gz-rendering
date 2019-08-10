@@ -67,14 +67,11 @@ void main()
   // convert to z up
   vec3 point = vec3(-viewSpacePos.z, -viewSpacePos.x, viewSpacePos.y);
 
-  // normalize for clamping point later
-  vec3 normalized = normalize(point);
-
   // color
   vec4 color = texture(colorTexture, inPs.uv0);
 
   // clamp xyz and set rgb to background color
-  if (l > far - tolerance)
+  if (point.x > far - tolerance)
   {
     if (isinf(max))
     {
@@ -87,7 +84,7 @@ void main()
     }
     color = vec4(backgroundColor, 1.0);
   }
-  else if (l < near + tolerance)
+  else if (point.x < near + tolerance)
   {
     if (isinf(min))
     {
@@ -102,6 +99,5 @@ void main()
   }
 
   float rgba = packFloat(color);
-
   fragColor = vec4(point, rgba);
 }

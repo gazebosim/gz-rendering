@@ -238,7 +238,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
 
   // Configure camera behaviour.
   // Make the clipping plane dist large and handle near clamping in shaders
-  double nearPlane = this->NearClipPlane() * 0.5;
+  double nearPlane = this->NearClipPlane() * 0.9;
   double farPlane = this->FarClipPlane() * 1.1;
   this->ogreCamera->setNearClipDistance(nearPlane);
   this->ogreCamera->setFarClipDistance(farPlane);
@@ -538,14 +538,14 @@ void Ogre2DepthCamera::PostRender()
   }
 
   // Uncomment to debug output
-  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // std::cerr << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     igndbg << "[" << this->dataPtr->depthImage[i*width + j] << "]";
+  //     std::cerr << "[" << this->dataPtr->depthImage[i*width + j] << "]";
   //   }
-  //   igndbg << std::endl;
+  //   std::cerr << std::endl;
   // }
 }
 

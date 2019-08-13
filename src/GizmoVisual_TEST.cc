@@ -35,6 +35,9 @@ class GizmoVisualTest : public testing::Test,
 {
   /// \brief Test basic API
   public: void GizmoVisual(const std::string &_renderEngine);
+
+  /// \brief Test gizmo material
+  public: void Material(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -109,9 +112,100 @@ void GizmoVisualTest::GizmoVisual(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void GizmoVisualTest::Material(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+
+  // create visual
+  GizmoVisualPtr gizmo = scene->CreateGizmoVisual();
+  ASSERT_NE(nullptr, gizmo);
+
+  // get all original axis materials
+  VisualPtr xtrans = gizmo->ChildByAxis(TransformAxis::TA_TRANSLATION_X);
+  EXPECT_NE(nullptr, xtrans);
+  EXPECT_EQ(TransformAxis::TA_TRANSLATION_X, gizmo->AxisById(xtrans->Id()));
+  MaterialPtr xMat = xtrans->Material();
+  EXPECT_NE(nullptr, xMat);
+
+  VisualPtr ytrans = gizmo->ChildByAxis(TransformAxis::TA_TRANSLATION_Y);
+  EXPECT_NE(nullptr, ytrans);
+  EXPECT_EQ(TransformAxis::TA_TRANSLATION_Y, gizmo->AxisById(ytrans->Id()));
+  MaterialPtr yMat = ytrans->Material();
+  EXPECT_NE(nullptr, yMat);
+
+  VisualPtr ztrans = gizmo->ChildByAxis(TransformAxis::TA_TRANSLATION_Z);
+  EXPECT_NE(nullptr, ztrans);
+  EXPECT_EQ(TransformAxis::TA_TRANSLATION_Z, gizmo->AxisById(ztrans->Id()));
+  MaterialPtr zMat = ztrans->Material();
+  EXPECT_NE(nullptr, zMat);
+
+  // set mode and active axis
+  gizmo->SetTransformMode(TransformMode::TM_TRANSLATION);
+  EXPECT_EQ(TransformMode::TM_TRANSLATION, gizmo->Mode());
+  gizmo->SetActiveAxis(math::Vector3d::UnitZ);
+  EXPECT_EQ(math::Vector3d::UnitZ, gizmo->ActiveAxis());
+
+  // pre-render to verify that material of active axis changed.
+  gizmo->PreRender();
+  MaterialPtr xMat2 = xtrans->Material();
+  MaterialPtr yMat2 = ytrans->Material();
+  MaterialPtr zMat2 = ztrans->Material();
+  EXPECT_EQ(xMat, xMat2);
+  EXPECT_EQ(yMat, yMat2);
+  EXPECT_NE(zMat, zMat2);
+
+  MaterialPtr activeMat = zMat2;
+
+  // set different active axis
+  gizmo->SetActiveAxis(math::Vector3d::UnitX);
+  EXPECT_EQ(math::Vector3d::UnitX, gizmo->ActiveAxis());
+
+  // pre-render to verify that material of active axis.
+  gizmo->PreRender();
+  MaterialPtr xMat3 = xtrans->Material();
+  MaterialPtr yMat3 = ytrans->Material();
+  MaterialPtr zMat3 = ztrans->Material();
+  EXPECT_NE(xMat, xMat3);
+  EXPECT_EQ(yMat, yMat3);
+  EXPECT_EQ(zMat, zMat3);
+
+  // the active axis material should be the same as before
+  EXPECT_EQ(activeMat, xMat3);
+
+  // reset mode and verify all axes now have the original materials
+  gizmo->SetTransformMode(TransformMode::TM_NONE);
+  EXPECT_EQ(TransformMode::TM_NONE, gizmo->Mode());
+  gizmo->PreRender();
+  MaterialPtr xMat4 = xtrans->Material();
+  MaterialPtr yMat4 = ytrans->Material();
+  MaterialPtr zMat4 = ztrans->Material();
+  EXPECT_EQ(xMat, xMat4);
+  EXPECT_EQ(yMat, yMat4);
+  EXPECT_EQ(zMat, zMat4);
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
 TEST_P(GizmoVisualTest, GizmoVisual)
 {
   GizmoVisual(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(GizmoVisualTest, Material)
+{
+  Material(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Visual, GizmoVisualTest,

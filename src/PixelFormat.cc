@@ -58,11 +58,11 @@ const unsigned char PixelUtil::channelCounts[PF_COUNT] =
       // BAYER_GRGB8
       4,
       // PF_FLOAT32_R
-      4,
+      1,
       // PF_FLOAT32_RGBA
-      8,
+      4,
       // PF_FLOAT32_RGB
-      8
+      3
     };
 
 //////////////////////////////////////////////////
@@ -85,11 +85,11 @@ const unsigned char PixelUtil::channelByteCounts[PF_COUNT] =
       // BAYER_GRGB8
       1,
       // PF_FLOAT32_R
-      1,
+      4,
       // PF_FLOAT32_RGBA
-      1,
+      4,
       // PF_FLOAT32_RGB
-      1
+      4
     };
 
 //////////////////////////////////////////////////

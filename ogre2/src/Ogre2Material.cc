@@ -366,41 +366,13 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       hlmsTextureManager->createOrRetrieveTexture(baseName,
       this->ogreDatablock->suggestMapTypeBasedOnTextureType(_type));
 
-
-/*  Ogre::HlmsSamplerblock samplerBlockRef;
+  Ogre::HlmsSamplerblock samplerBlockRef;
   samplerBlockRef.mU = Ogre::TAM_WRAP;
   samplerBlockRef.mV = Ogre::TAM_WRAP;
   samplerBlockRef.mW = Ogre::TAM_WRAP;
 
-//  this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture,
-//      &samplerBlockRef);
-
-*/
-
-  this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture);
-
-
-//  auto a = this->ogreHlmsPbs->getHlmsManager()->getSamplerblock(samplerBlockRef);
-
-
-  // texture addressing mode defaults to 'clamp' for all except detail maps
-  // in ogre2. Change default to 'wrap' instead
-  const auto *sb = this->ogreDatablock->getSamplerblock(_type);
-  Ogre::HlmsSamplerblock samplerblock(*sb);
-  samplerblock.mU = Ogre::TAM_WRAP;
-  samplerblock.mV = Ogre::TAM_WRAP;
-  samplerblock.mW = Ogre::TAM_WRAP;
-  this->ogreDatablock->setSamplerblock(_type, samplerblock);
-
-//  std::cerr << "ref count " << sb->mRefCount << " vs " << samplerblock.mRefCount << std::endl;
-  const auto *sb2 = this->ogreDatablock->getSamplerblock(_type);
-
-  std::cerr << "ref count " << /*a->mRefCount  <<*/ " vs " << sb2->mRefCount << " id: " <<
-     /*a->mId << */" " << sb2->mId << std::endl;
-
-//  auto a = this->ogreHlmsPbs->getHlmsManager()->destroySamplerblock(&samplerBlockRef);
-
-
+  this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture,
+      &samplerBlockRef);
 }
 
 //////////////////////////////////////////////////

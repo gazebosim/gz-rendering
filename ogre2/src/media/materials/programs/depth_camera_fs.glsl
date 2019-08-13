@@ -98,6 +98,9 @@ void main()
     color = vec4(backgroundColor, 1.0);
   }
 
+  // gamma correct
+  color = sqrt(color);
+
   float rgba = packFloat(color);
   fragColor = vec4(point, rgba);
 }

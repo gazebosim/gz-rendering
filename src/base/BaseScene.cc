@@ -567,8 +567,6 @@ void BaseScene::RegisterMaterial(const std::string &_name,
 {
   if (_material)
     this->Materials()->Put(_name, _material);
-
-  std::cerr << "register material size " << _name << " " << this->Materials()->Size() << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -592,8 +590,6 @@ void BaseScene::DestroyMaterial(MaterialPtr _material)
   std::string matName = _material->Name();
   _material->Destroy();
   this->UnregisterMaterial(matName);
-
-  std::cerr << "unregister material size " << matName << " " << this->Materials()->Size() << std::endl;
 }
 
 //////////////////////////////////////////////////

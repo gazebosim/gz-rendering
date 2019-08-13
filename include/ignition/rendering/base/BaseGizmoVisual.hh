@@ -230,23 +230,23 @@ namespace ignition
         if (this->axis.X() > 0)
         {
           this->visuals[TransformAxis::TA_TRANSLATION_X]->SetMaterial(
-              this->materials[AM_ACTIVE]);
+              this->materials[AM_ACTIVE], false);
           this->handles[TransformAxis::TA_TRANSLATION_X]->SetMaterial(
-              this->materials[AM_HANDLE]);
+              this->materials[AM_HANDLE], false);
         }
         if (this->axis.Y() > 0)
         {
           this->visuals[TransformAxis::TA_TRANSLATION_Y]->SetMaterial(
-              this->materials[AM_ACTIVE]);
+              this->materials[AM_ACTIVE], false);
           this->handles[TransformAxis::TA_TRANSLATION_Y]->SetMaterial(
-              this->materials[AM_HANDLE]);
+              this->materials[AM_HANDLE], false);
         }
         if (this->axis.Z() > 0)
         {
           this->visuals[TransformAxis::TA_TRANSLATION_Z]->SetMaterial(
-              this->materials[AM_ACTIVE]);
+              this->materials[AM_ACTIVE], false);
           this->handles[TransformAxis::TA_TRANSLATION_Z]->SetMaterial(
-              this->materials[AM_HANDLE]);
+              this->materials[AM_HANDLE], false);
         }
       }
       else if (this->mode & TransformMode::TM_ROTATION)
@@ -258,23 +258,23 @@ namespace ignition
         if (this->axis.X() > 0)
         {
           this->visuals[TransformAxis::TA_ROTATION_X]->SetMaterial(
-              this->materials[AM_ACTIVE]);
+              this->materials[AM_ACTIVE], false);
           this->handles[TransformAxis::TA_ROTATION_X]->SetMaterial(
-              this->materials[AM_HANDLE]);
+              this->materials[AM_HANDLE], false);
         }
         if (this->axis.Y() > 0)
         {
           this->visuals[TransformAxis::TA_ROTATION_Y]->SetMaterial(
-              this->materials[AM_ACTIVE]);
+              this->materials[AM_ACTIVE], false);
           this->handles[TransformAxis::TA_ROTATION_Y]->SetMaterial(
-              this->materials[AM_HANDLE]);
+              this->materials[AM_HANDLE], false);
         }
         if (this->axis.Z() > 0)
         {
           this->visuals[TransformAxis::TA_ROTATION_Z]->SetMaterial(
-              this->materials[AM_ACTIVE]);
+              this->materials[AM_ACTIVE], false);
           this->handles[TransformAxis::TA_ROTATION_Z]->SetMaterial(
-              this->materials[AM_HANDLE]);
+              this->materials[AM_HANDLE], false);
         }
       }
       else if (this->mode & TransformMode::TM_SCALE)
@@ -285,23 +285,23 @@ namespace ignition
         if (this->axis.X() > 0)
         {
           this->visuals[TransformAxis::TA_SCALE_X]->SetMaterial(
-              this->materials[AM_ACTIVE]);
+              this->materials[AM_ACTIVE], false);
           this->handles[TransformAxis::TA_SCALE_X]->SetMaterial(
-              this->materials[AM_HANDLE]);
+              this->materials[AM_HANDLE], false);
         }
         if (this->axis.Y() > 0)
         {
           this->visuals[TransformAxis::TA_SCALE_Y]->SetMaterial(
-              this->materials[AM_ACTIVE]);
+              this->materials[AM_ACTIVE], false);
           this->handles[TransformAxis::TA_SCALE_Y]->SetMaterial(
-              this->materials[AM_HANDLE]);
+              this->materials[AM_HANDLE], false);
         }
         if (this->axis.Z() > 0)
         {
           this->visuals[TransformAxis::TA_SCALE_Z]->SetMaterial(
-              this->materials[AM_ACTIVE]);
+              this->materials[AM_ACTIVE], false);
           this->handles[TransformAxis::TA_SCALE_Z]->SetMaterial(
-              this->materials[AM_HANDLE]);
+              this->materials[AM_HANDLE], false);
         }
       }
 

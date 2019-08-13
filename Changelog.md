@@ -1,12 +1,17 @@
 ## Ignition Rendering
 
-### Ignition Rendering 2.0.1
+### Ignition Rendering 2.X.X (201X-XX-XX)
+
+1. Fixa GizmoVisual material memory leak
+    * [Pull request 185](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/185)
+
+### Ignition Rendering 2.0.1 (2019-07-16)
 
 1. Clean up camera objects when destroying scene
     * [Pull request 174](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/174)
     * [Pull request 180](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/180)
 
-### Ignition Rendering 2.0.0 (20XX-XX-XX)
+### Ignition Rendering 2.0.0 (2019-05-20)
 
 1. More ogre2 error messages for debugging mesh loading.
     * [Pull request 170](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/170)

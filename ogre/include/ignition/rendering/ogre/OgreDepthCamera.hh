@@ -119,6 +119,9 @@ namespace ignition
       /// ogre camera has not been created.
       public: double FarClipPlane() const override;
 
+      // Documentation inherited
+      public: virtual void Destroy() override;
+
       /// \brief Update a render target
       /// \param[in] _target Render target to update
       /// \param[in] _material Material to use

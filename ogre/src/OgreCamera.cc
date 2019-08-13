@@ -35,6 +35,15 @@ OgreCamera::OgreCamera()
 //////////////////////////////////////////////////
 OgreCamera::~OgreCamera()
 {
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::Destroy()
+{
+  if (!this->ogreCamera)
+    return;
+
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
@@ -43,9 +52,9 @@ OgreCamera::~OgreCamera()
   }
   else
   {
-    if (this->ogreCamera != nullptr && ogreSceneManager->hasCamera(this->name))
+    if (ogreSceneManager->hasCamera(this->name))
     {
-      ogreSceneManager->destroyCamera(this->ogreCamera);
+      ogreSceneManager->destroyCamera(this->name);
       this->ogreCamera = nullptr;
     }
   }

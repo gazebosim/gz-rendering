@@ -85,21 +85,21 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
   EXPECT_EQ(o2, rayQuery->Origin());
   rayQuery->SetDirection(d2);
   EXPECT_EQ(d2, rayQuery->Direction());
-  {
-    // set from camera
-    CameraPtr camera =  scene->CreateCamera("camera");
-    math::Vector2d pos(0.0, 0.0);
-    rayQuery->SetFromCamera(camera, pos);
 
-    EXPECT_GT(rayQuery->Origin().X(), 0.0);
-    EXPECT_EQ(math::Vector3d::UnitX, rayQuery->Direction().Normalize());
+  // set from camera
+  CameraPtr camera =  scene->CreateCamera("camera");
+  math::Vector2d pos(0.0, 0.0);
+  rayQuery->SetFromCamera(camera, pos);
 
-    RayQueryResult result = rayQuery->ClosestPoint();
-    EXPECT_EQ(math::Vector3d::Zero, result.point);
-    EXPECT_LT(result.distance, 0.0);
-    EXPECT_EQ(0u, result.objectId);
-    EXPECT_FALSE((result));
-  }
+  EXPECT_GT(rayQuery->Origin().X(), 0.0);
+  EXPECT_EQ(math::Vector3d::UnitX, rayQuery->Direction().Normalize());
+
+  RayQueryResult result = rayQuery->ClosestPoint();
+  EXPECT_EQ(math::Vector3d::Zero, result.point);
+  EXPECT_LT(result.distance, 0.0);
+  EXPECT_EQ(0u, result.objectId);
+  EXPECT_FALSE((result));
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

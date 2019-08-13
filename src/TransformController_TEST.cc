@@ -58,76 +58,76 @@ void TransformControllerTest::TransformControl(const std::string &_renderEngine)
   }
   ScenePtr scene = engine->CreateScene("scene");
   EXPECT_NE(scene, nullptr);
-  {
-    CameraPtr camera =  scene->CreateCamera("camera");
-    EXPECT_NE(camera, nullptr);
 
-    TransformController transformControl;
+  CameraPtr camera =  scene->CreateCamera("camera");
+  EXPECT_NE(camera, nullptr);
 
-    // verify intial values
-    EXPECT_EQ(nullptr, transformControl.Camera());
-    EXPECT_EQ(nullptr, transformControl.Node());
-    EXPECT_FALSE(transformControl.Active());
-    EXPECT_EQ(TransformMode::TM_NONE, transformControl.Mode());
-    EXPECT_EQ(TransformSpace::TS_LOCAL, transformControl.Space());
-    EXPECT_EQ(math::Vector3d::Zero, transformControl.ActiveAxis());
+  TransformController transformControl;
 
-    // create visual node for testing
-    VisualPtr visual = scene->CreateVisual();
-    ASSERT_NE(nullptr, visual);
+  // verify intial values
+  EXPECT_EQ(nullptr, transformControl.Camera());
+  EXPECT_EQ(nullptr, transformControl.Node());
+  EXPECT_FALSE(transformControl.Active());
+  EXPECT_EQ(TransformMode::TM_NONE, transformControl.Mode());
+  EXPECT_EQ(TransformSpace::TS_LOCAL, transformControl.Space());
+  EXPECT_EQ(math::Vector3d::Zero, transformControl.ActiveAxis());
 
-    // test attaching / detaching node
-    transformControl.Attach(visual);
-    EXPECT_EQ(visual, transformControl.Node());
+  // create visual node for testing
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
 
-    transformControl.Detach();
-    EXPECT_EQ(nullptr, transformControl.Node());
+  // test attaching / detaching node
+  transformControl.Attach(visual);
+  EXPECT_EQ(visual, transformControl.Node());
 
-    // attach node again for subsequent tests
-    transformControl.Attach(visual);
+  transformControl.Detach();
+  EXPECT_EQ(nullptr, transformControl.Node());
 
-    // test setting camera
-    transformControl.SetCamera(camera);
-    EXPECT_EQ(camera, transformControl.Camera());
+  // attach node again for subsequent tests
+  transformControl.Attach(visual);
 
-    // test setting transform space
-    transformControl.SetTransformSpace(TransformSpace::TS_WORLD);
-    EXPECT_EQ(TransformSpace::TS_WORLD, transformControl.Space());
+  // test setting camera
+  transformControl.SetCamera(camera);
+  EXPECT_EQ(camera, transformControl.Camera());
 
-    // test setting transform axis
-    transformControl.SetActiveAxis(math::Vector3d::UnitZ);
-    EXPECT_EQ(math::Vector3d::UnitZ, transformControl.ActiveAxis());
+  // test setting transform space
+  transformControl.SetTransformSpace(TransformSpace::TS_WORLD);
+  EXPECT_EQ(TransformSpace::TS_WORLD, transformControl.Space());
 
-    // test setting transform mode
-    transformControl.SetTransformMode(TransformMode::TM_ROTATION);
-    EXPECT_EQ(TransformMode::TM_ROTATION, transformControl.Mode());
+  // test setting transform axis
+  transformControl.SetActiveAxis(math::Vector3d::UnitZ);
+  EXPECT_EQ(math::Vector3d::UnitZ, transformControl.ActiveAxis());
 
-    // verify active state
-    transformControl.Start();
-    EXPECT_TRUE(transformControl.Active());
-    transformControl.Stop();
-    EXPECT_FALSE(transformControl.Active());
+  // test setting transform mode
+  transformControl.SetTransformMode(TransformMode::TM_ROTATION);
+  EXPECT_EQ(TransformMode::TM_ROTATION, transformControl.Mode());
 
-    // test axis conversion
-    EXPECT_EQ(math::Vector3d::UnitX,
-        transformControl.ToAxis(TransformAxis::TA_TRANSLATION_X));
-    EXPECT_EQ(math::Vector3d::UnitY,
-        transformControl.ToAxis(TransformAxis::TA_TRANSLATION_Y));
-    EXPECT_EQ(math::Vector3d::UnitZ,
-        transformControl.ToAxis(TransformAxis::TA_TRANSLATION_Z));
-    EXPECT_EQ(math::Vector3d::UnitX,
-        transformControl.ToAxis(TransformAxis::TA_ROTATION_X));
-    EXPECT_EQ(math::Vector3d::UnitY,
-        transformControl.ToAxis(TransformAxis::TA_ROTATION_Y));
-    EXPECT_EQ(math::Vector3d::UnitZ,
-        transformControl.ToAxis(TransformAxis::TA_ROTATION_Z));
-    EXPECT_EQ(math::Vector3d::UnitX,
-        transformControl.ToAxis(TransformAxis::TA_SCALE_X));
-    EXPECT_EQ(math::Vector3d::UnitY,
-        transformControl.ToAxis(TransformAxis::TA_SCALE_Y));
-    EXPECT_EQ(math::Vector3d::UnitZ,
-        transformControl.ToAxis(TransformAxis::TA_SCALE_Z));
-  }
+  // verify active state
+  transformControl.Start();
+  EXPECT_TRUE(transformControl.Active());
+  transformControl.Stop();
+  EXPECT_FALSE(transformControl.Active());
+
+  // test axis conversion
+  EXPECT_EQ(math::Vector3d::UnitX,
+      transformControl.ToAxis(TransformAxis::TA_TRANSLATION_X));
+  EXPECT_EQ(math::Vector3d::UnitY,
+      transformControl.ToAxis(TransformAxis::TA_TRANSLATION_Y));
+  EXPECT_EQ(math::Vector3d::UnitZ,
+      transformControl.ToAxis(TransformAxis::TA_TRANSLATION_Z));
+  EXPECT_EQ(math::Vector3d::UnitX,
+      transformControl.ToAxis(TransformAxis::TA_ROTATION_X));
+  EXPECT_EQ(math::Vector3d::UnitY,
+      transformControl.ToAxis(TransformAxis::TA_ROTATION_Y));
+  EXPECT_EQ(math::Vector3d::UnitZ,
+      transformControl.ToAxis(TransformAxis::TA_ROTATION_Z));
+  EXPECT_EQ(math::Vector3d::UnitX,
+      transformControl.ToAxis(TransformAxis::TA_SCALE_X));
+  EXPECT_EQ(math::Vector3d::UnitY,
+      transformControl.ToAxis(TransformAxis::TA_SCALE_Y));
+  EXPECT_EQ(math::Vector3d::UnitZ,
+      transformControl.ToAxis(TransformAxis::TA_SCALE_Z));
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());
@@ -145,52 +145,52 @@ void TransformControllerTest::WorldSpace(const std::string &_renderEngine)
   }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
-  {
-    CameraPtr camera =  scene->CreateCamera("camera");
-    ASSERT_NE(nullptr, camera);
 
-    camera->SetImageWidth(320);
-    camera->SetImageHeight(240);
+  CameraPtr camera =  scene->CreateCamera("camera");
+  ASSERT_NE(nullptr, camera);
 
-    TransformController transformControl;
+  camera->SetImageWidth(320);
+  camera->SetImageHeight(240);
 
-    // test setting camera
-    transformControl.SetCamera(camera);
-    EXPECT_EQ(camera, transformControl.Camera());
+  TransformController transformControl;
 
-    // create visual node for testing
-    VisualPtr visual = scene->CreateVisual();
-    ASSERT_NE(nullptr, visual);
-    transformControl.Attach(visual);
-    EXPECT_EQ(visual, transformControl.Node());
+  // test setting camera
+  transformControl.SetCamera(camera);
+  EXPECT_EQ(camera, transformControl.Camera());
 
-    // test translation in world space
-    transformControl.SetTransformMode(TransformMode::TM_TRANSLATION);
-    transformControl.SetTransformSpace(TransformSpace::TS_WORLD);
-    transformControl.SetActiveAxis(math::Vector3d::UnitZ);
-    transformControl.Translate(math::Vector3d(0, 0, 2));
-    EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, 0, 2));
-    EXPECT_EQ(visual->WorldRotation(), math::Quaterniond::Identity);
-    EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
+  // create visual node for testing
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+  transformControl.Attach(visual);
+  EXPECT_EQ(visual, transformControl.Node());
 
-    // test rotation in world space
-    transformControl.SetTransformMode(TransformMode::TM_ROTATION);
-    transformControl.SetTransformSpace(TransformSpace::TS_WORLD);
-    transformControl.SetActiveAxis(math::Vector3d::UnitX);
-    transformControl.Rotate(math::Quaterniond(IGN_PI, 0, 0));
-    EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, 0, 2));
-    EXPECT_EQ(visual->WorldRotation(), math::Quaterniond(IGN_PI, 0, 0));
-    EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
+  // test translation in world space
+  transformControl.SetTransformMode(TransformMode::TM_TRANSLATION);
+  transformControl.SetTransformSpace(TransformSpace::TS_WORLD);
+  transformControl.SetActiveAxis(math::Vector3d::UnitZ);
+  transformControl.Translate(math::Vector3d(0, 0, 2));
+  EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, 0, 2));
+  EXPECT_EQ(visual->WorldRotation(), math::Quaterniond::Identity);
+  EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
 
-    // test scaling in world space
-    transformControl.SetTransformMode(TransformMode::TM_SCALE);
-    transformControl.SetTransformSpace(TransformSpace::TS_WORLD);
-    transformControl.SetActiveAxis(math::Vector3d::UnitY);
-    transformControl.Scale(math::Vector3d(1.0, 0.3, 1.0));
-    EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, 0, 2));
-    EXPECT_EQ(visual->WorldRotation(), math::Quaterniond(IGN_PI, 0, 0));
-    EXPECT_EQ(visual->WorldScale(), math::Vector3d(1.0, 0.3, 1.0));
-  }
+  // test rotation in world space
+  transformControl.SetTransformMode(TransformMode::TM_ROTATION);
+  transformControl.SetTransformSpace(TransformSpace::TS_WORLD);
+  transformControl.SetActiveAxis(math::Vector3d::UnitX);
+  transformControl.Rotate(math::Quaterniond(IGN_PI, 0, 0));
+  EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, 0, 2));
+  EXPECT_EQ(visual->WorldRotation(), math::Quaterniond(IGN_PI, 0, 0));
+  EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
+
+  // test scaling in world space
+  transformControl.SetTransformMode(TransformMode::TM_SCALE);
+  transformControl.SetTransformSpace(TransformSpace::TS_WORLD);
+  transformControl.SetActiveAxis(math::Vector3d::UnitY);
+  transformControl.Scale(math::Vector3d(1.0, 0.3, 1.0));
+  EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, 0, 2));
+  EXPECT_EQ(visual->WorldRotation(), math::Quaterniond(IGN_PI, 0, 0));
+  EXPECT_EQ(visual->WorldScale(), math::Vector3d(1.0, 0.3, 1.0));
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());
@@ -208,58 +208,58 @@ void TransformControllerTest::LocalSpace(const std::string &_renderEngine)
   }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
-  {
-    CameraPtr camera =  scene->CreateCamera("camera");
-    ASSERT_NE(nullptr, camera);
 
-    camera->SetImageWidth(320);
-    camera->SetImageHeight(240);
+  CameraPtr camera =  scene->CreateCamera("camera");
+  ASSERT_NE(nullptr, camera);
 
-    TransformController transformControl;
+  camera->SetImageWidth(320);
+  camera->SetImageHeight(240);
 
-    // test setting camera
-    transformControl.SetCamera(camera);
-    EXPECT_EQ(camera, transformControl.Camera());
+  TransformController transformControl;
 
-    // create a visual node and intiialize it with a rotation
-    // for testing transfoms in local space
-    VisualPtr visual = scene->CreateVisual();
-    ASSERT_NE(nullptr, visual);
-    math::Quaterniond initialRot(IGN_PI * 0.5, 0, 0);
-    visual->SetLocalRotation(initialRot);
-    EXPECT_EQ(initialRot, visual->WorldRotation());
-    transformControl.Attach(visual);
-    EXPECT_EQ(visual, transformControl.Node());
+  // test setting camera
+  transformControl.SetCamera(camera);
+  EXPECT_EQ(camera, transformControl.Camera());
 
-    // test translation in local space
-    transformControl.SetTransformMode(TransformMode::TM_TRANSLATION);
-    transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
-    transformControl.SetActiveAxis(math::Vector3d::UnitZ);
-    transformControl.Translate(math::Vector3d(0, 0, 2));
-    EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, -2, 0));
-    EXPECT_EQ(visual->WorldRotation(), initialRot);
-    EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
+  // create a visual node and intiialize it with a rotation
+  // for testing transfoms in local space
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+  math::Quaterniond initialRot(IGN_PI * 0.5, 0, 0);
+  visual->SetLocalRotation(initialRot);
+  EXPECT_EQ(initialRot, visual->WorldRotation());
+  transformControl.Attach(visual);
+  EXPECT_EQ(visual, transformControl.Node());
 
-    // test rotation in local space
-    transformControl.SetTransformMode(TransformMode::TM_ROTATION);
-    transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
-    transformControl.SetActiveAxis(math::Vector3d::UnitX);
-    transformControl.Rotate(math::Quaterniond(IGN_PI, 0, 0));
-    EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, -2, 0));
-    EXPECT_EQ(visual->WorldRotation(),
-        math::Quaterniond(IGN_PI, 0, 0) * initialRot);
-    EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
+  // test translation in local space
+  transformControl.SetTransformMode(TransformMode::TM_TRANSLATION);
+  transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
+  transformControl.SetActiveAxis(math::Vector3d::UnitZ);
+  transformControl.Translate(math::Vector3d(0, 0, 2));
+  EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, -2, 0));
+  EXPECT_EQ(visual->WorldRotation(), initialRot);
+  EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
 
-    // test scaling in local space
-    transformControl.SetTransformMode(TransformMode::TM_SCALE);
-    transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
-    transformControl.SetActiveAxis(math::Vector3d::UnitY);
-    transformControl.Scale(math::Vector3d(1.0, 0.3, 1.0));
-    EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, -2, 0));
-    EXPECT_EQ(visual->WorldRotation(),
-        math::Quaterniond(IGN_PI, 0, 0) * initialRot);
-    EXPECT_EQ(visual->WorldScale(), math::Vector3d(1.0, 0.3, 1.0));
-  }
+  // test rotation in local space
+  transformControl.SetTransformMode(TransformMode::TM_ROTATION);
+  transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
+  transformControl.SetActiveAxis(math::Vector3d::UnitX);
+  transformControl.Rotate(math::Quaterniond(IGN_PI, 0, 0));
+  EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, -2, 0));
+  EXPECT_EQ(visual->WorldRotation(),
+      math::Quaterniond(IGN_PI, 0, 0) * initialRot);
+  EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
+
+  // test scaling in local space
+  transformControl.SetTransformMode(TransformMode::TM_SCALE);
+  transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
+  transformControl.SetActiveAxis(math::Vector3d::UnitY);
+  transformControl.Scale(math::Vector3d(1.0, 0.3, 1.0));
+  EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, -2, 0));
+  EXPECT_EQ(visual->WorldRotation(),
+      math::Quaterniond(IGN_PI, 0, 0) * initialRot);
+  EXPECT_EQ(visual->WorldScale(), math::Vector3d(1.0, 0.3, 1.0));
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());
@@ -277,68 +277,68 @@ void TransformControllerTest::Control2d(const std::string &_renderEngine)
   }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
-  {
-    CameraPtr camera =  scene->CreateCamera("camera");
-    ASSERT_NE(nullptr, camera);
-    camera->SetWorldPosition(-5, 0, 0);
-    EXPECT_EQ(math::Vector3d(-5, 0, 0), camera->WorldPosition());
 
-    camera->SetImageWidth(320);
-    camera->SetImageHeight(240);
+  CameraPtr camera =  scene->CreateCamera("camera");
+  ASSERT_NE(nullptr, camera);
+  camera->SetWorldPosition(-5, 0, 0);
+  EXPECT_EQ(math::Vector3d(-5, 0, 0), camera->WorldPosition());
 
-    TransformController transformControl;
+  camera->SetImageWidth(320);
+  camera->SetImageHeight(240);
 
-    // test setting camera
-    transformControl.SetCamera(camera);
-    EXPECT_EQ(camera, transformControl.Camera());
+  TransformController transformControl;
 
-    // create a dummy node visual node and attach to the controller
-    VisualPtr visual = scene->CreateVisual();
-    ASSERT_NE(nullptr, visual);
-    transformControl.Attach(visual);
-    EXPECT_EQ(visual, transformControl.Node());
+  // test setting camera
+  transformControl.SetCamera(camera);
+  EXPECT_EQ(camera, transformControl.Camera());
 
-    // test translation from 2d
-    transformControl.SetTransformMode(TransformMode::TM_TRANSLATION);
-    transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
-    transformControl.SetActiveAxis(math::Vector3d::UnitZ);
-    transformControl.Start();
-    math::Vector2d start(0.5, 0.5);
-    math::Vector2d end(0.5, 0.8);
-    math::Vector3d translation =
-        transformControl.TranslationFrom2d(math::Vector3d::UnitZ, start, end);
-    transformControl.Stop();
-    EXPECT_DOUBLE_EQ(translation.X(), 0);
-    EXPECT_DOUBLE_EQ(translation.Y(), 0);
-    EXPECT_GT(translation.Z(), 0);
+  // create a dummy node visual node and attach to the controller
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+  transformControl.Attach(visual);
+  EXPECT_EQ(visual, transformControl.Node());
 
-    // test rotation from 2d
-    transformControl.SetTransformMode(TransformMode::TM_ROTATION);
-    transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
-    transformControl.SetActiveAxis(math::Vector3d::UnitX);
-    transformControl.Start();
-    start = math::Vector2d(0.5, 0.5);
-    end = math::Vector2d(0.5, -0.8);
-    math::Quaterniond rotation =
-        transformControl.RotationFrom2d(math::Vector3d::UnitX, start, end);
-    transformControl.Stop();
-    math::Vector3d euler = rotation.Euler();
-    EXPECT_GT(euler.X(), 0);
-    EXPECT_DOUBLE_EQ(euler.Y(), 0);
-    EXPECT_DOUBLE_EQ(euler.Z(), 0);
+  // test translation from 2d
+  transformControl.SetTransformMode(TransformMode::TM_TRANSLATION);
+  transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
+  transformControl.SetActiveAxis(math::Vector3d::UnitZ);
+  transformControl.Start();
+  math::Vector2d start(0.5, 0.5);
+  math::Vector2d end(0.5, 0.8);
+  math::Vector3d translation =
+      transformControl.TranslationFrom2d(math::Vector3d::UnitZ, start, end);
+  transformControl.Stop();
+  EXPECT_DOUBLE_EQ(translation.X(), 0);
+  EXPECT_DOUBLE_EQ(translation.Y(), 0);
+  EXPECT_GT(translation.Z(), 0);
 
-    // test scaling from 2d
-    transformControl.SetTransformMode(TransformMode::TM_SCALE);
-    transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
-    transformControl.SetActiveAxis(math::Vector3d::UnitY);
-    transformControl.Start();
-    math::Vector3d scale =
-        transformControl.ScaleFrom2d(math::Vector3d::UnitY, start, end);
-    transformControl.Stop();
-    EXPECT_DOUBLE_EQ(scale.X(), 1);
-    EXPECT_GT(scale.Y(), 0);
-    EXPECT_DOUBLE_EQ(scale.Z(), 1);
-  }
+  // test rotation from 2d
+  transformControl.SetTransformMode(TransformMode::TM_ROTATION);
+  transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
+  transformControl.SetActiveAxis(math::Vector3d::UnitX);
+  transformControl.Start();
+  start = math::Vector2d(0.5, 0.5);
+  end = math::Vector2d(0.5, -0.8);
+  math::Quaterniond rotation =
+      transformControl.RotationFrom2d(math::Vector3d::UnitX, start, end);
+  transformControl.Stop();
+  math::Vector3d euler = rotation.Euler();
+  EXPECT_GT(euler.X(), 0);
+  EXPECT_DOUBLE_EQ(euler.Y(), 0);
+  EXPECT_DOUBLE_EQ(euler.Z(), 0);
+
+  // test scaling from 2d
+  transformControl.SetTransformMode(TransformMode::TM_SCALE);
+  transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
+  transformControl.SetActiveAxis(math::Vector3d::UnitY);
+  transformControl.Start();
+  math::Vector3d scale =
+      transformControl.ScaleFrom2d(math::Vector3d::UnitY, start, end);
+  transformControl.Stop();
+  EXPECT_DOUBLE_EQ(scale.X(), 1);
+  EXPECT_GT(scale.Y(), 0);
+  EXPECT_DOUBLE_EQ(scale.Z(), 1);
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

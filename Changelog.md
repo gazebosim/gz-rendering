@@ -2,8 +2,11 @@
 
 ### Ignition Rendering 2.X.X (201X-XX-XX)
 
-1. Fixa GizmoVisual material memory leak
+1. Fix GizmoVisual material memory leak
     * [Pull request 185](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/185)
+
+1. Fix PixelFormat FLOAT32 byte and channel count
+    * [Pull request 186](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/186)
 
 ### Ignition Rendering 2.0.1 (2019-07-16)
 

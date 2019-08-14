@@ -154,15 +154,9 @@ void DepthCameraTest::DepthCameraBoxes(
             std::placeholders::_4, std::placeholders::_5));
 
     // rgb point cloud data callback
-    float *pointCloudData = nullptr;
     unsigned int pointCloudChannelCount = 4u;
-    // \todo(anyone) point cloud currently only supported in ogre2
-    // implementation
-    //if (_renderEngine == "ogre2")
-    {
-      pointCloudData = new float[
-          imgHeight_ * imgWidth_ * pointCloudChannelCount];
-    }
+    float *pointCloudData = new float[
+        imgHeight_ * imgWidth_ * pointCloudChannelCount];
     ignition::common::ConnectionPtr connection2 =
       depthCamera->ConnectNewRgbPointCloud(
           std::bind(&::OnNewRgbPointCloud, pointCloudData,

@@ -85,13 +85,22 @@ OgreDepthCamera::OgreDepthCamera()
 OgreDepthCamera::~OgreDepthCamera()
 {
   if (this->dataPtr->depthBuffer)
+  {
     delete [] this->dataPtr->depthBuffer;
+    this->dataPtr->depthBuffer = nullptr;
+  }
 
   if (this->dataPtr->pcdBuffer)
+  {
     delete [] this->dataPtr->pcdBuffer;
+    this->dataPtr->pcdBuffer = nullptr;
+  }
 
   if (this->dataPtr->colorBuffer)
+  {
     delete [] this->dataPtr->colorBuffer;
+    this->dataPtr->colorBuffer = nullptr;
+  }
 
   if (!this->scene->IsInitialized())
     return;
@@ -104,7 +113,6 @@ OgreDepthCamera::~OgreDepthCamera()
   }
   else
   {
-    ogreSceneManager->hasCamera(this->name + "_Depth_Camera");
     if (this->ogreCamera != nullptr && ogreSceneManager->hasCamera(
         this->name + "_Depth_Camera"))
     {
@@ -277,8 +285,6 @@ void OgreDepthCamera::Render()
   sceneMgr->_suppressRenderStateChanges(false);
   sceneMgr->setShadowTechnique(shadowTech);
 
-  std::cerr << "this->ogreCam fov " << this->ogreCamera->getFOVy().valueRadians() << std::endl;
-
   // skip color pass if we do not need to output point clouds
   this->dataPtr->outputPoints =
       (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0);
@@ -299,7 +305,7 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
   std::string matName = _matName;
 
   Ogre::RenderSystem *renderSys;
-  Ogre::Viewport *vp = nullptr;
+  Ogre::Viewport *vp = target->getViewport(0);
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
   Ogre::Pass *pass;
 
@@ -315,8 +321,6 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
   this->ogreCamera->setNearClipDistance(1e-4);
 
   Ogre::AutoParamDataSource autoParamDataSource;
-
-  vp = target->getViewport(0);
 
   // return farClip in case no renderable object is inside frustrum
   vp->setBackgroundColour(Ogre::ColourValue(this->FarClipPlane(),
@@ -471,6 +475,7 @@ void OgreDepthCamera::PostRender()
         uint32_t rgba = (static_cast<uint8_t>(r) << 24) +
                         (static_cast<uint8_t>(g) << 16) +
                         (static_cast<uint8_t>(b) << 8);
+        // cppcheck-suppress invalidPointerCast
         float *c = reinterpret_cast<float *>(&rgba);
         *color = *c;
       }
@@ -558,7 +563,6 @@ double OgreDepthCamera::LimitFOV(const double _fov)
 void OgreDepthCamera::SetNearClipPlane(const double _near)
 {
   BaseDepthCamera::SetNearClipPlane(_near);
-//  this->ogreCamera->setNearClipDistance(_near);
 }
 
 //////////////////////////////////////////////////
@@ -572,10 +576,6 @@ void OgreDepthCamera::SetFarClipPlane(const double _far)
 double OgreDepthCamera::NearClipPlane() const
 {
   return BaseDepthCamera::NearClipPlane();
-//  if (this->ogreCamera)
-//    return this->ogreCamera->getNearClipDistance();
-//  else
-//    return 0;
 }
 
 //////////////////////////////////////////////////

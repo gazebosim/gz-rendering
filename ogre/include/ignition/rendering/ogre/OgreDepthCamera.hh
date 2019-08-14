@@ -141,7 +141,7 @@ namespace ignition
       protected: void CreateCamera();
 
       /// \brief PreRender function.
-      /// \todo(anyone) Move this to public and override existing base function
+      /// \todo(anyone) Move this to public to override base function
       private: void PreRender();
 
       /// \brief Create point cloud texture. This stores xyz rgb data

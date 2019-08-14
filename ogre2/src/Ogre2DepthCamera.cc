@@ -98,7 +98,6 @@ Ogre2DepthCamera::~Ogre2DepthCamera()
   this->Destroy();
 }
 
-
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Init()
 {
@@ -117,10 +116,22 @@ void Ogre2DepthCamera::Init()
 void Ogre2DepthCamera::Destroy()
 {
   if (this->dataPtr->depthBuffer)
+  {
     delete [] this->dataPtr->depthBuffer;
+    this->dataPtr->depthBuffer = nullptr;
+  }
 
-  // if (this->dataPtr->pcdBuffer)
-  //   delete [] this->dataPtr->pcdBuffer;
+  if (this->dataPtr->depthImage)
+  {
+    delete [] this->dataPtr->depthImage;
+    this->dataPtr->depthImage = nullptr;
+  }
+
+  if (this->dataPtr->pointCloudImage)
+  {
+    delete [] this->dataPtr->pointCloudImage;
+    this->dataPtr->pointCloudImage = nullptr;
+  }
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -454,7 +465,6 @@ void Ogre2DepthCamera::PostRender()
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();
 
-
   PixelFormat format = PF_FLOAT32_RGBA;
   Ogre::PixelFormat imageFormat = Ogre2Conversions::Convert(format);
 
@@ -525,7 +535,8 @@ void Ogre2DepthCamera::PostRender()
     //   unsigned int step = i*width*channelCount;
     //   for (unsigned int j = 0; j < width; ++j)
     //   {
-    //     float color = this->dataPtr->pointCloudImage[step + j*channelCount + 3];
+    //     float color =
+    //         this->dataPtr->pointCloudImage[step + j*channelCount + 3];
     //     // unpack rgb data
     //     uint32_t *rgba = reinterpret_cast<uint32_t *>(&color);
     //     unsigned int r = *rgba >> 24 & 0xFF;

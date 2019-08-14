@@ -35,6 +35,9 @@ Ogre2Camera::Ogre2Camera()
 //////////////////////////////////////////////////
 Ogre2Camera::~Ogre2Camera()
 {
+  if (!this->Scene()->IsInitialized())
+    return;
+
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)

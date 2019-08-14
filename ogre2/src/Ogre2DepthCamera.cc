@@ -492,29 +492,14 @@ void Ogre2DepthCamera::PostRender()
     this->dataPtr->pointCloudImage = new float[len * channelCount];
   }
 
-  // xyz and depth data
+  // fill depth data
   for (unsigned int i = 0; i < height; ++i)
   {
     unsigned int step = i*width*channelCount;
     for (unsigned int j = 0; j < width; ++j)
     {
       float x = this->dataPtr->depthBuffer[step + j*channelCount];
-      float y = this->dataPtr->depthBuffer[step + j*channelCount + 1];
-      float z = this->dataPtr->depthBuffer[step + j*channelCount + 2];
-
-      // check to see if xyz is clamped to -inf
-      // avoid computing  length since it returns +inf
-      float d = this->dataPtr->dataMaxVal;
-      if (std::isinf(x))
-      {
-        if (signbit(x) > 0)
-          d = this->dataPtr->dataMinVal;
-      }
-      else
-      {
-        d = sqrt(x*x + y*y + z*z);
-      }
-      this->dataPtr->depthImage[i*width + j] = d;
+      this->dataPtr->depthImage[i*width + j] = x;
     }
   }
   this->dataPtr->newDepthFrame(
@@ -549,14 +534,14 @@ void Ogre2DepthCamera::PostRender()
   }
 
   // Uncomment to debug output
-  // std::cerr << "wxh: " << width << " x " << height << std::endl;
+  // igndbg << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     std::cerr << "[" << this->dataPtr->depthImage[i*width + j] << "]";
+  //     igndbg << "[" << this->dataPtr->depthImage[i*width + j] << "]";
   //   }
-  //   std::cerr << std::endl;
+  //   igndbg << std::endl;
   // }
 }
 

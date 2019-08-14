@@ -417,7 +417,7 @@ void OgreDepthCamera::PostRender()
       float *y = &this->dataPtr->pcdBuffer[pcdStep + j*channelCount + 1];
       float *z = &this->dataPtr->pcdBuffer[pcdStep + j*channelCount + 2];
 
-      float depth = 0;
+      float depth = *x;
       bool clamp = false;
       // shaders return far for pixels with no depth data
       // manually clamp to max
@@ -445,10 +445,6 @@ void OgreDepthCamera::PostRender()
           *y = this->dataPtr->dataMinVal;
           *z = this->dataPtr->dataMinVal;
         }
-      }
-      else
-      {
-        depth = sqrt(*x * *x + *y * *y + *z * *z);
       }
       this->dataPtr->depthBuffer[step + j] = depth;
 

@@ -28,7 +28,8 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-#define DEPTH_TOL 1e-4
+// ogre1 needs higher tol
+#define DEPTH_TOL 1e-3
 #define DOUBLE_TOL 1e-6
 
 unsigned int g_depthCounter = 0;
@@ -195,30 +196,46 @@ void DepthCameraTest::DepthCameraBoxes(
     EXPECT_FLOAT_EQ(maxVal, scan[left]);
     EXPECT_FLOAT_EQ(maxVal, scan[right]);
 
-    if (pointCloudData)
+    // Verify Point Cloud XYZ values
     {
-      // Verify Point Cloud XYZ values
-      // mid point should have the same magnitude as range
+      // check mid point
       float mx = pointCloudData[pcMid];
       float my = pointCloudData[pcMid + 1];
       float mz = pointCloudData[pcMid + 2];
-      float midRange = sqrt(mx * mx + my * my + mz * mz);
-      EXPECT_FLOAT_EQ(scan[mid], midRange);
+      EXPECT_FLOAT_EQ(scan[mid], mx);
 
       // check left and right points
       float lx = pointCloudData[pcLeft];
       float ly = pointCloudData[pcLeft + 1];
       float lz = pointCloudData[pcLeft + 2];
-      float leftRange = sqrt(lx*lx + ly*ly + lz*lz);
-      EXPECT_FLOAT_EQ(scan[left], leftRange);
-      EXPECT_FLOAT_EQ(maxVal, leftRange);
+      EXPECT_FLOAT_EQ(maxVal, ly);
+      EXPECT_FLOAT_EQ(maxVal, lz);
+      EXPECT_FLOAT_EQ(scan[left], lx);
 
       float rx = pointCloudData[pcRight];
       float ry = pointCloudData[pcRight + 1];
       float rz = pointCloudData[pcRight + 2];
-      float rightRange = sqrt(rx*rx + ry*ry + rz*rz);
-      EXPECT_FLOAT_EQ(scan[right], rightRange);
-      EXPECT_FLOAT_EQ(maxVal, rightRange);
+      EXPECT_FLOAT_EQ(maxVal, rx);
+      EXPECT_FLOAT_EQ(maxVal, ry);
+      EXPECT_FLOAT_EQ(maxVal, rz);
+      EXPECT_FLOAT_EQ(scan[right], rx);
+
+      // point to the left of mid point should have larger y value than mid
+      // point, which in turn should have large y value than point to the
+      // right of mid point
+      float midLeftY = pointCloudData[pcMid + 1 - pointCloudChannelCount];
+      float midRightY = pointCloudData[pcMid + 1 + pointCloudChannelCount];
+      EXPECT_GT(midLeftY, my);
+      EXPECT_GT(my, midRightY);
+      EXPECT_GT(midLeftY, 0.0);
+      EXPECT_LT(midRightY, 0.0);
+
+      // all points on the box should have the same z position
+      float midLeftZ = pointCloudData[pcMid + 2 - pointCloudChannelCount];
+      float midRightZ = pointCloudData[pcMid + 2 + pointCloudChannelCount];
+      // ogre2 works fine but ogre needs higher tol
+      EXPECT_NEAR(mz, midLeftZ, DEPTH_TOL);
+      EXPECT_NEAR(mz, midRightZ, DEPTH_TOL);
 
       // Verify Point Cloud RGB values
       // The mid point should be blue
@@ -266,9 +283,8 @@ void DepthCameraTest::DepthCameraBoxes(
     EXPECT_FLOAT_EQ(minVal, scan[right]);
 
     // Verify Point Cloud XYZ
-    // all points should be min val
-    if (pointCloudData)
     {
+      // all points should be min val
       for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
       {
         unsigned int step = i*depthCamera->ImageWidth()*pointCloudChannelCount;
@@ -277,17 +293,9 @@ void DepthCameraTest::DepthCameraBoxes(
           float x = pointCloudData[step + j*pointCloudChannelCount];
           float y = pointCloudData[step + j*pointCloudChannelCount + 1];
           float z = pointCloudData[step + j*pointCloudChannelCount + 2];
-          if (std::isinf(minVal))
-          {
-            EXPECT_FLOAT_EQ(minVal, x);
-            EXPECT_FLOAT_EQ(minVal, y);
-            EXPECT_FLOAT_EQ(minVal, z);
-          }
-          else
-          {
-            float range = sqrt(x*x + y*y + z*z);
-            EXPECT_FLOAT_EQ(minVal, range);
-          }
+          EXPECT_FLOAT_EQ(minVal, x);
+          EXPECT_FLOAT_EQ(minVal, y);
+          EXPECT_FLOAT_EQ(minVal, z);
          }
       }
 
@@ -325,9 +333,8 @@ void DepthCameraTest::DepthCameraBoxes(
     }
 
     // Verify Point Cloud XYZ
-    // all points should be maxVal
-    if (pointCloudData)
     {
+      // all points should be maxVal
       for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
       {
         unsigned int step = i*depthCamera->ImageWidth()*pointCloudChannelCount;
@@ -336,17 +343,9 @@ void DepthCameraTest::DepthCameraBoxes(
           float x = pointCloudData[step + j*pointCloudChannelCount];
           float y = pointCloudData[step + j*pointCloudChannelCount + 1];
           float z = pointCloudData[step + j*pointCloudChannelCount + 2];
-          if (std::isinf(maxVal))
-          {
-            EXPECT_FLOAT_EQ(maxVal, x);
-            EXPECT_FLOAT_EQ(maxVal, y);
-            EXPECT_FLOAT_EQ(maxVal, z);
-          }
-          else
-          {
-            float range = sqrt(x*x + y*y + z*z);
-            EXPECT_FLOAT_EQ(maxVal, range);
-          }
+          EXPECT_FLOAT_EQ(maxVal, x);
+          EXPECT_FLOAT_EQ(maxVal, y);
+          EXPECT_FLOAT_EQ(maxVal, z);
         }
       }
 

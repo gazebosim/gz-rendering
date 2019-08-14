@@ -61,9 +61,6 @@ void main()
   // reconstruct 3d viewspace pos from depth
   vec3 viewSpacePos = inPs.cameraDir * d;
 
-  // get length of 3d point, i.e.range
-  float l = length(viewSpacePos);
-
   // convert to z up
   vec3 point = vec3(-viewSpacePos.z, -viewSpacePos.x, viewSpacePos.y);
 
@@ -79,8 +76,7 @@ void main()
     }
     else
     {
-      float scale = max / l;
-      point = scale * point;
+      point.x = max;
     }
     color = vec4(backgroundColor, 1.0);
   }
@@ -92,8 +88,7 @@ void main()
     }
     else
     {
-      float scale = min / l;
-      point = scale * point;
+      point.x = min;
     }
     color = vec4(backgroundColor, 1.0);
   }

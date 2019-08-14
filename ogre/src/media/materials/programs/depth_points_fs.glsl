@@ -15,11 +15,10 @@
  *
 */
 
-varying vec4 position;
+varying vec4 eyePos;
 
 void main()
 {
   // convert to z up
-  vec3 point = vec3(position.z, -position.x, -position.y);
-  gl_FragColor = vec4(point, 1.0);
+  gl_FragColor = vec4(-eyePos.z, -eyePos.x, eyePos.y, 1.0);
 }

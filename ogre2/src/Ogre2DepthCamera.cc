@@ -513,8 +513,7 @@ void Ogre2DepthCamera::PostRender()
         this->dataPtr->pointCloudImage, width, height, channelCount,
         "PF_FLOAT32_RGBA");
 
-    // Uncomment to debug output
-    // igndbg << "color: " <<  std::endl;
+    // Uncomment to debug color output
     // for (unsigned int i = 0; i < height; ++i)
     // {
     //   unsigned int step = i*width*channelCount;
@@ -531,9 +530,22 @@ void Ogre2DepthCamera::PostRender()
     //   }
     //   igndbg << std::endl;
     // }
+
+    // Uncomment to debug xyz output
+    // igndbg << "wxh: " << width << " x " << height << std::endl;
+    // for (unsigned int i = 0; i < height; ++i)
+    // {
+    //   for (unsigned int j = 0; j < width; ++j)
+    //   {
+    //     igndbg << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4] << "]"
+    //       << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4+1] << "]"
+    //       << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4+2] << "],";
+    //   }
+    //   igndbg << std::endl;
+    // }
   }
 
-  // Uncomment to debug output
+  // Uncomment to debug depth output
   // igndbg << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {

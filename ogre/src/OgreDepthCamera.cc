@@ -488,8 +488,7 @@ void OgreDepthCamera::PostRender()
         this->dataPtr->pcdBuffer, width, height, channelCount,
         "PF_FLOAT32_RGBA");
 
-    // Uncomment to debug output
-    // xyz
+    // Uncomment to debug xyz output
     // igndbg << "wxh: " << width << " x " << height << std::endl;
     // for (unsigned int i = 0; i < height; ++i)
     // {
@@ -502,7 +501,7 @@ void OgreDepthCamera::PostRender()
     //   igndbg << std::endl;
     // }
 
-    // // color
+    // Uncommnet to debug color output
     // for (unsigned int i = 0; i < height; ++i)
     // {
     //   for (unsigned int j = 0; j < width; ++j)
@@ -513,8 +512,8 @@ void OgreDepthCamera::PostRender()
     //     unsigned int g = *rgba >> 16 & 0xFF;
     //     unsigned int b = *rgba >> 8 & 0xFF;
     //     igndbg << "[" << r << "]"
-    //               << "[" << g << "]"
-    //               << "[" << b << "],";
+    //            << "[" << g << "]"
+    //            << "[" << b << "],";
     //   }
     //   igndbg << std::endl;
     // }

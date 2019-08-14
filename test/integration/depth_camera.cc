@@ -28,8 +28,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-// ogre1 needs higher tol
-#define DEPTH_TOL 1e-3
+#define DEPTH_TOL 1e-4
 #define DOUBLE_TOL 1e-6
 
 unsigned int g_depthCounter = 0;
@@ -66,13 +65,13 @@ class DepthCameraTest: public testing::Test,
 void DepthCameraTest::DepthCameraBoxes(
     const std::string &_renderEngine)
 {
-  int imgWidth_ = 256;
-  int imgHeight_ = 256;
+  int imgWidth_ = 10;
+  int imgHeight_ = 10;
 
   double aspectRatio_ = imgWidth_/imgHeight_;
 
   double unitBoxSize = 1.0;
-  ignition::math::Vector3d boxPosition(1.5, 0.0, 0.0);
+  ignition::math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
   // Optix is not supported
   if (_renderEngine.compare("optix") == 0)
@@ -233,7 +232,6 @@ void DepthCameraTest::DepthCameraBoxes(
       // all points on the box should have the same z position
       float midLeftZ = pointCloudData[pcMid + 2 - pointCloudChannelCount];
       float midRightZ = pointCloudData[pcMid + 2 + pointCloudChannelCount];
-      // ogre2 works fine but ogre needs higher tol
       EXPECT_NEAR(mz, midLeftZ, DEPTH_TOL);
       EXPECT_NEAR(mz, midRightZ, DEPTH_TOL);
 

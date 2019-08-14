@@ -15,12 +15,11 @@
  *
 */
 
-varying vec4 position;
+varying vec4 eyePos;
 
 void main()
 {
   gl_Position = ftransform();
-  position = gl_Position;
-  gl_TexCoord[0] = gl_MultiTexCoord0;
+  eyePos = gl_ModelViewMatrix * gl_Vertex;
 }
 

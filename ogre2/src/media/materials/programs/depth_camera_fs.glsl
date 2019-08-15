@@ -93,7 +93,8 @@ void main()
     color = vec4(backgroundColor, 1.0);
   }
 
-  // gamma correct
+  // gamma correct - using same method as:
+  // https://bitbucket.org/sinbad/ogre/src/v2-1/Samples/Media/Hlms/Pbs/GLSL/PixelShader_ps.glsl#lines-513
   color = sqrt(color);
 
   float rgba = packFloat(color);

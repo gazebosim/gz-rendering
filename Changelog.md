@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 2.X.X (201X-XX-XX)
 
+1. Support generating point cloud data in DepthCamera
+    * [Pull request 187](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/187)
+
 1. Fix GizmoVisual material memory leak
     * [Pull request 185](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/185)
 

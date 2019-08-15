@@ -166,7 +166,7 @@ void DepthCameraTest::DepthCameraBoxes(
     // Update once to create image
     depthCamera->Update();
 
-    // compute mid, left, and ar indices to be used later for retrieving data
+    // compute mid, left, and right indices to be used later for retrieving data
     // from depth and point cloud image
 
     // depth image indices

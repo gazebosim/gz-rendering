@@ -246,25 +246,13 @@ void OgreDepthCamera::CreateDepthTexture()
   this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
 }
 
-/////////////////////////////////////////////////
-void OgreDepthCamera::PreRender()
-{
-  if (!this->depthTexture)
-  {
-    this->CreateDepthTexture();
-  }
-
-  if (!this->dataPtr->pcdTexture || !this->dataPtr->colorTexture)
-  {
-    this->CreatePointCloudTexture();
-  }
-}
-
 //////////////////////////////////////////////////
 void OgreDepthCamera::Render()
 {
   // \todo(anyone) Make OgreDepthCamera::PreRender public to override
   // base function and move these calls there
+  if (!this->depthTexture)
+    this->CreateDepthTexture();
   if (!this->dataPtr->pcdTexture || !this->dataPtr->colorTexture)
     this->CreatePointCloudTexture();
 

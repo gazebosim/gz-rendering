@@ -228,6 +228,10 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
     // render a frame
     camera->Update();
 
+    ignition::rendering::Image img(800, 600, PixelFormat::PF_B8G8R8);
+    std::cerr << "Copy" << std::endl;
+    camera->Copy(img);
+
     // test get sphere object
     ignition::math::Vector2i sphere_position(220, 307);
     VisualPtr sphere_visual = camera->VisualAt(sphere_position);

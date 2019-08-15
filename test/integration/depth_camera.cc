@@ -366,6 +366,52 @@ void DepthCameraTest::DepthCameraBoxes(
       }
     }
 
+    // Check that the depth values for a box do not warp.
+    ignition::math::Vector3d boxPositionFillFrame(
+        unitBoxSize * 0.5 + 0.2, 0.0, 0.0);
+    box->SetLocalPosition(boxPositionFillFrame);
+    depthCamera->Update();
+    double expectedRange = boxPositionFillFrame.X() - unitBoxSize * 0.5;
+
+    // Verify Depth
+    {
+      // box not detected so all should return max val
+      EXPECT_FLOAT_EQ(expectedRange, scan[mid]);
+      EXPECT_FLOAT_EQ(expectedRange, scan[left]);
+      EXPECT_FLOAT_EQ(expectedRange, scan[right]);
+    }
+    // Verify Point Cloud XYZ
+    {
+      // all points should have the same X value
+      for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
+      {
+        unsigned int step = i*depthCamera->ImageWidth()*pointCloudChannelCount;
+        for (unsigned int j = 0; j < depthCamera->ImageWidth(); ++j)
+        {
+          float x = pointCloudData[step + j*pointCloudChannelCount];
+          EXPECT_FLOAT_EQ(expectedRange, x);
+        }
+      }
+
+      // Verify Point Cloud RGB
+      // all points should be blue
+      for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
+      {
+        unsigned int step = i*depthCamera->ImageWidth()*pointCloudChannelCount;
+        for (unsigned int j = 0; j < depthCamera->ImageWidth(); ++j)
+        {
+          float color = pointCloudData[step + j*pointCloudChannelCount + 3];
+          uint32_t *rgba = reinterpret_cast<uint32_t *>(&color);
+          unsigned int r = *rgba >> 24 & 0xFF;
+          unsigned int g = *rgba >> 16 & 0xFF;
+          unsigned int b = *rgba >> 8 & 0xFF;
+          EXPECT_EQ(0u, r);
+          EXPECT_EQ(0u, g);
+          EXPECT_GT(b, 0u);
+        }
+      }
+    }
+
     // Clean up
     connection.reset();
     delete [] scan;

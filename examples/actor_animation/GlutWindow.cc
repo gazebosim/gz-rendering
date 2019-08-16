@@ -246,9 +246,9 @@ void updatePose(double _time)
     std::string animName = pair.first;
     auto animTf = pair.second;
 
-    std::string skinName = g_skel->NodeNameAnimToSkin(animName);
-    ignition::math::Matrix4d skinTf = g_skel->AlignTranslation(animName)
-            * animTf * g_skel->AlignRotation(animName);
+    std::string skinName = g_skel->NodeNameAnimToSkin(0u, animName);
+    ignition::math::Matrix4d skinTf = g_skel->AlignTranslation(0u, animName)
+            * animTf * g_skel->AlignRotation(0u, animName);
 
     skinFrames[skinName] = skinTf;
   }

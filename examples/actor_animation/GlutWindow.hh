@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2019 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_MESH_VIEWER_GLUTWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_MESH_VIEWER_GLUTWINDOW_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_ACTOR_ANIMATION_GLUTWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_ACTOR_ANIMATION_GLUTWINDOW_HH_
 
 #include <vector>
 #include "ignition/rendering/RenderTypes.hh"
@@ -25,7 +25,10 @@ namespace ir = ignition::rendering;
 namespace ic = ignition::common;
 
 /// \brief Run the demo and render the scene from the cameras
-/// \param[in] _cameras Cameras in the scene
-void run(ir::MeshPtr _mesh, ir::CameraPtr _camera, ic::SkeletonPtr _skel);
+/// \param[in] _camera Cameras in the scene
+/// \param[in] _mesh Actor mesh
+/// \param[in] _skel Actor skeleton
+void run(std::vector<ir::CameraPtr> _camera,
+                    ir::MeshPtr _mesh, ic::SkeletonPtr _skel);
 
 #endif

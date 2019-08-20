@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2019 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,17 +28,10 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Skeleton.hh>
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/Mesh.hh>
-#include <ignition/common/SubMesh.hh>
-
 #include <ignition/rendering.hh>
-#include <ignition/rendering/ogre/OgreScene.hh>
-#include <ignition/rendering/ogre/OgreMesh.hh>
-#include <ignition/rendering/ogre/OgreMeshFactory.hh>
-
-#include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonAnimation.hh>
 
 #include "example_config.hh"
 #include "GlutWindow.hh"
@@ -47,58 +40,57 @@ const std::string RESOURCE_PATH =
     ic::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 using namespace ignition;
+using namespace rendering;
 
 //////////////////////////////////////////////////
-void buildScene(ir::ScenePtr _scene, ic::SkeletonPtr &_skel)
+void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
   _scene->SetBackgroundColor(0.3, 0.3, 0.3);
-  ir::VisualPtr root = _scene->RootVisual();
+  VisualPtr root = _scene->RootVisual();
 
   // create directional light
-  ir::DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
+  DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
   light0->SetDirection(0.5, 0.5, -1);
   light0->SetDiffuseColor(0.8, 0.8, 0.8);
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
   // create a mesh
-  ir::VisualPtr actorVisual = _scene->CreateVisual("actor");
+  VisualPtr actorVisual = _scene->CreateVisual("actor");
   actorVisual->SetLocalPosition(3, 0, 0);
   actorVisual->SetLocalRotation(0, 0, 0);
 
-  ir::MeshDescriptor descriptor;
-  descriptor.meshName = ic::joinPaths(RESOURCE_PATH, "walk.dae");
-  ic::MeshManager *meshManager = ic::MeshManager::Instance();
-  std::cout << "loading" << std::endl;
+  MeshDescriptor descriptor;
+  descriptor.meshName = common::joinPaths(RESOURCE_PATH, "walk.dae");
+  common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
-  std::cout << "loading done" << std::endl;
 
-  ir::MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-  actorVisual->AddGeometry(meshGeom);
+  _mesh = _scene->CreateMesh(descriptor);
+  actorVisual->AddGeometry(_mesh);
   root->AddChild(actorVisual);
 
-  if (meshGeom && descriptor.mesh->HasSkeleton())
+  if (_mesh && descriptor.mesh->HasSkeleton())
   {
     _skel = descriptor.mesh->MeshSkeleton();
 
     if (!_skel || _skel->AnimationCount() == 0)
     {
-      std::cout << "Failed to load animation." << std::endl;
+      std::cerr << "Failed to load animation." << std::endl;
       return;
     }
   }
 
   // create gray material
-  ir::MaterialPtr gray = _scene->CreateMaterial();
+  MaterialPtr gray = _scene->CreateMaterial();
   gray->SetAmbient(0.7, 0.7, 0.7);
   gray->SetDiffuse(0.7, 0.7, 0.7);
   gray->SetSpecular(0.7, 0.7, 0.7);
 
   // create grid visual
-  ir::VisualPtr grid = _scene->CreateVisual("grid");
-  ir::GridPtr gridGeom = _scene->CreateGrid();
+  VisualPtr grid = _scene->CreateVisual("grid");
+  GridPtr gridGeom = _scene->CreateGrid();
   gridGeom->SetCellCount(20);
   gridGeom->SetCellLength(1);
   gridGeom->SetVerticalCellCount(0);
@@ -108,7 +100,7 @@ void buildScene(ir::ScenePtr _scene, ic::SkeletonPtr &_skel)
   root->AddChild(grid);
 
   // create camera
-  ir::CameraPtr camera = _scene->CreateCamera("camera");
+  CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
@@ -117,8 +109,26 @@ void buildScene(ir::ScenePtr _scene, ic::SkeletonPtr &_skel)
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
+}
 
-  run(meshGeom, camera, _skel);
+//////////////////////////////////////////////////
+CameraPtr createCamera(const std::string &_engineName,
+                    MeshPtr &_mesh, common::SkeletonPtr &_skel)
+{
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_engineName);
+  if (!engine)
+  {
+    ignwarn << "Engine '" << _engineName
+              << "' is not supported" << std::endl;
+    return CameraPtr();
+  }
+  ScenePtr scene = engine->CreateScene("scene");
+  buildScene(scene, _mesh, _skel);
+
+  // return camera sensor
+  SensorPtr sensor = scene->SensorByName("camera");
+  return std::dynamic_pointer_cast<Camera>(sensor);
 }
 
 //////////////////////////////////////////////////
@@ -127,28 +137,31 @@ int main(int _argc, char** _argv)
   glutInit(&_argc, _argv);
 
   ic::Console::SetVerbosity(4);
-  ir::CameraPtr camera;
+  std::vector<std::string> engineNames;
+  std::vector<CameraPtr> cameras;
 
-  ic::SkeletonPtr skel;
+  engineNames.push_back("ogre");
+  // engineNames.push_back("ogre2");
+  engineNames.push_back("optix");
 
-  std::chrono::nanoseconds nanosec(1);
+  MeshPtr mesh = nullptr;
+  ic::SkeletonPtr skel = nullptr;
 
-  using toSeconds = std::chrono::duration<float, std::ratio<1, 1>>;
-  std::cout << "Seconds: " << toSeconds(nanosec).count() << std::endl;
-
-  try
+  for (auto engineName : engineNames)
   {
-    // create and populate scene
-    ir::RenderEngine *engine = ir::engine("ogre");
-    ir::ScenePtr scene = engine->CreateScene("scene");
-
-    buildScene(scene, skel);
+    try
+    {
+      CameraPtr camera = createCamera(engineName, mesh, skel);
+      if (camera)
+      {
+        cameras.push_back(camera);
+      }
+    }
+    catch (...)
+    {
+      std::cerr << "Error starting up: " << engineName << std::endl;
+    }
   }
-  catch (...)
-  {
-    // std::cout << ex.what() << std::endl;
-    std::cerr << "Error starting up: ogre" << std::endl;
-  }
-
+  run(cameras, mesh, skel);
   return 0;
 }

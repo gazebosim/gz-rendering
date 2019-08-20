@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2019 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,18 +36,16 @@
 #include <ignition/math/Matrix4.hh>
 #include <ignition/common/Console.hh>
 #include <ignition/common/Mesh.hh>
-#include <ignition/common/SubMesh.hh>
 #include <ignition/common/Skeleton.hh>
 #include <ignition/common/SkeletonNode.hh>
 #include <ignition/common/SkeletonAnimation.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/RayQuery.hh>
-#include <ignition/rendering/Scene.hh>
+#include <ignition/rendering/RenderPass.hh>
 #include <ignition/rendering/OrbitViewController.hh>
-#include <ignition/rendering/TransformController.hh>
+#include <ignition/rendering/Scene.hh>
 
-#include <ignition/common/MeshManager.hh>
 
 #include "GlutWindow.hh"
 #include "example_config.hh"
@@ -59,12 +57,15 @@
 unsigned int imgw = 0;
 unsigned int imgh = 0;
 
+std::vector<ir::CameraPtr> g_cameras;
 ir::CameraPtr g_camera;
 ir::CameraPtr g_currCamera;
+unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
 ir::MeshPtr g_mesh;
 ic::SkeletonPtr g_skel;
 ic::SkeletonAnimation *g_skelAnim;
+unsigned int g_animIdx = 1;
 
 bool g_initContext = false;
 
@@ -99,10 +100,6 @@ struct mouseButton
   bool buttonDirty = false;
   bool motionDirty = false;
 };
-// transform control variables
-ir::TransformController g_transformControl;
-ir::TransformSpace g_space = ir::TransformSpace::TS_LOCAL;
-ir::TransformMode g_mode = ir::TransformMode::TM_TRANSLATION;
 
 struct mouseButton g_mouse;
 std::mutex g_mouseMutex;
@@ -154,7 +151,7 @@ void handleMouse()
   std::lock_guard<std::mutex> lock(g_mouseMutex);
   // only ogre supports ray query for now so use
   // ogre camera located at camera index = 0.
-  ir::CameraPtr rayCamera = g_camera;
+  ir::CameraPtr rayCamera = g_cameras[0];
   if (!g_rayQuery)
   {
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
@@ -167,6 +164,28 @@ void handleMouse()
   if (g_mouse.buttonDirty)
   {
     g_mouse.buttonDirty = false;
+
+    // test mouse picking
+    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
+    {
+      // Get visual using Selection Buffer from Camera
+      ir::VisualPtr visual;
+      ignition::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
+      visual = rayCamera->VisualAt(mousePos);
+      if (visual)
+      {
+        std::cout << "Selected visual at position: ";
+        std::cout << g_mouse.x << " " << g_mouse.y << ": ";
+        std::cout << visual->Name() << "\n";
+      }
+      else
+      {
+        std::cout << "No visual found at position: ";
+        std::cout << g_mouse.x << " " << g_mouse.y << std::endl;
+      }
+    }
+
+    // camera orbit
     double nx =
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
@@ -189,10 +208,12 @@ void handleMouse()
           g_target.point);
       int factor = 1;
       double amount = -(scroll * factor) * (distance / 5.0);
-
-      g_viewControl.SetCamera(g_camera);
-      g_viewControl.SetTarget(g_target.point);
-      g_viewControl.Zoom(amount);
+      for (ir::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Zoom(amount);
+      }
     }
   }
 
@@ -204,15 +225,21 @@ void handleMouse()
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
     {
-      g_viewControl.SetCamera(g_camera);
-      g_viewControl.SetTarget(g_target.point);
-      g_viewControl.Pan(drag);
+      for (ir::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Pan(drag);
+      }
     }
     else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN)
     {
-      g_viewControl.SetCamera(g_camera);
-      g_viewControl.SetTarget(g_target.point);
-      g_viewControl.Orbit(drag);
+      for (ir::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Orbit(drag);
+      }
     }
     // right mouse button zoom
     else if (g_mouse.button == GLUT_RIGHT_BUTTON && g_mouse.state == GLUT_DOWN)
@@ -225,9 +252,12 @@ void handleMouse()
       double amount = ((-g_mouse.dragY /
           static_cast<double>(rayCamera->ImageHeight()))
           * distance * tan(vfov/2.0) * 6.0);
-      g_viewControl.SetCamera(g_camera);
-      g_viewControl.SetTarget(g_target.point);
-      g_viewControl.Zoom(amount);
+      for (ir::CameraPtr camera : g_cameras)
+      {
+        g_viewControl.SetCamera(camera);
+        g_viewControl.SetTarget(g_target.point);
+        g_viewControl.Zoom(amount);
+      }
     }
   }
 }
@@ -235,7 +265,6 @@ void handleMouse()
 //////////////////////////////////////////////////
 void updatePose(double _time)
 {
-  g_skelAnim = g_skel->Animation(0u);
   std::map<std::string, ignition::math::Matrix4d> animFrames;
   animFrames = g_skelAnim->PoseAt(_time, true);
 
@@ -246,9 +275,10 @@ void updatePose(double _time)
     std::string animName = pair.first;
     auto animTf = pair.second;
 
-    std::string skinName = g_skel->NodeNameAnimToSkin(0u, animName);
-    ignition::math::Matrix4d skinTf = g_skel->AlignTranslation(0u, animName)
-            * animTf * g_skel->AlignRotation(0u, animName);
+    std::string skinName = g_skel->NodeNameAnimToSkin(g_animIdx, animName);
+    ignition::math::Matrix4d skinTf =
+            g_skel->AlignTranslation(g_animIdx, animName)
+            * animTf * g_skel->AlignRotation(g_animIdx, animName);
 
     skinFrames[skinName] = skinTf;
   }
@@ -281,8 +311,7 @@ void displayCB()
   }
 #endif
 
-  g_camera->Capture(*g_image);
-
+  g_cameras[g_cameraIndex]->Capture(*g_image);
   handleMouse();
 
 #if __APPLE__
@@ -318,30 +347,20 @@ void keyboardCB(unsigned char _key, int, int)
   {
     exit(0);
   }
-  else if (_key == 'r')
+  else if (_key == KEY_TAB)
   {
-    g_mode = ir::TransformMode::TM_ROTATION;
+    g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
   }
-  else if (_key == 't')
+  else if (_key == 'p')
   {
-    g_mode = ir::TransformMode::TM_TRANSLATION;
-  }
-  else if (_key == 's')
-  {
-    g_mode = ir::TransformMode::TM_SCALE;
-  }
-  else if (_key == 'g')
-  {
-    // toggle
-    if (g_space == ir::TransformSpace::TS_LOCAL)
+    // toggle all render passes
+    for (ir::CameraPtr camera : g_cameras)
     {
-      g_space = ir::TransformSpace::TS_WORLD;
-      std::cout << "Transformation in World Space" << std::endl;
-    }
-    else
-    {
-      g_space = ir::TransformSpace::TS_LOCAL;
-      std::cout << "Transformation in Local Space" << std::endl;
+      for (unsigned int i = 0; i < camera->RenderPassCount(); ++i)
+      {
+        ir::RenderPassPtr pass = camera->RenderPassByIndex(i);
+        pass->SetEnabled(!pass->IsEnabled());
+      }
     }
   }
 }
@@ -363,7 +382,7 @@ void initContext()
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
-  glutCreateWindow("Mesh Viewer");
+  glutCreateWindow("Actor animation");
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);
@@ -376,17 +395,16 @@ void initAnimation()
 {
   if (!g_skel || g_skel->AnimationCount() == 0)
   {
-    std::cout << "Failed to load animation." << std::endl;
+    std::cerr << "Failed to load animation." << std::endl;
     return;
   }
   const std::string RESOURCE_PATH =
       ic::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
   std::string bvhFile = ic::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
   double scale = 0.055;
-
   g_skel->AddBvhAnimation(bvhFile, scale);
-  g_skelAnim = g_skel->Animation(0);
-  std::cout << g_skelAnim->Length() << std::endl;
+
+  g_skelAnim = g_skel->Animation(g_animIdx);
 }
 
 //////////////////////////////////////////////////
@@ -395,16 +413,20 @@ void printUsage()
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
-  std::cout << "  t   - Translate Mode         " << std::endl;
-  std::cout << "  r   - Rotate Mode            " << std::endl;
-  std::cout << "  s   - Scale Mode             " << std::endl;
-  std::cout << "  g   - Toggle Transform Space " << std::endl;
+  std::cout << "  P   - Toggle render pass     " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 
 //////////////////////////////////////////////////
-void run(ir::MeshPtr _mesh, ir::CameraPtr _camera, ic::SkeletonPtr _skel)
+void run(std::vector<ir::CameraPtr>_cameras,
+            ir::MeshPtr _mesh, ic::SkeletonPtr _skel)
 {
+  if (_cameras.empty())
+  {
+    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    return;
+  }
+
 #if __APPLE__
   g_context = CGLGetCurrentContext();
 #elif _WIN32
@@ -414,11 +436,11 @@ void run(ir::MeshPtr _mesh, ir::CameraPtr _camera, ic::SkeletonPtr _skel)
   g_drawable = glXGetCurrentDrawable();
 #endif
 
+  g_cameras = _cameras;
   g_mesh = _mesh;
-  g_camera = _camera;
   g_skel = _skel;
 
-  initCamera(_camera);
+  initCamera(_cameras[0]);
   initContext();
   initAnimation();
   printUsage();

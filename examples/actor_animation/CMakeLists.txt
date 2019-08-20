@@ -4,28 +4,15 @@ find_package(ignition-rendering3 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
-  ${OGRE_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}
 )
-
-set(OGRE_LIBRARIES "/usr/lib/x86_64-linux-gnu/libOgreMain.so")
-set(Boost_LIBRARIES "/usr/lib/x86_64-linux-gnu/libboost_system.so")
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
-link_directories( 
-  ${GLUT_LIBRARY_DIRS}
-  ${Ogre_library_dirs}
-  ${Boost_LIBRARY_DIRS}
-)
+link_directories(${GLUT_LIBRARY_DIRS})
 
 find_package(OpenGL REQUIRED)
 include_directories(SYSTEM ${OpenGL_INCLUDE_DIRS})
-link_directories(
-  ${OpenGL_LIBRARY_DIRS}
-  ${Ogre_library_dirs}
-  ${Boost_LIBRARY_DIRS}
-)
+link_directories(${OpenGL_LIBRARY_DIRS})
 
 if (NOT APPLE)
   find_package(GLEW REQUIRED)
@@ -43,8 +30,6 @@ target_link_libraries(actor_animation
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${OGRE_LIBRARIES}
-  ${Boost_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )
 

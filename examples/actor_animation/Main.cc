@@ -36,11 +36,11 @@
 #include "example_config.hh"
 #include "GlutWindow.hh"
 
-const std::string RESOURCE_PATH =
-    ic::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
-
 using namespace ignition;
 using namespace rendering;
+
+const std::string RESOURCE_PATH =
+    common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
@@ -57,7 +57,8 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
-  // create a mesh
+  // create a visual for the actor, attach mesh and get skeleton
+  // Skeleton will be animated by GlutWindow
   VisualPtr actorVisual = _scene->CreateVisual("actor");
   actorVisual->SetLocalPosition(3, 0, 0);
   actorVisual->SetLocalRotation(0, 0, 0);
@@ -89,7 +90,7 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
   gray->SetSpecular(0.7, 0.7, 0.7);
 
   // create grid visual
-  VisualPtr grid = _scene->CreateVisual("grid");
+  VisualPtr grid = _scene->CreateVisual();
   GridPtr gridGeom = _scene->CreateGrid();
   gridGeom->SetCellCount(20);
   gridGeom->SetCellLength(1);
@@ -136,7 +137,7 @@ int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
 
-  ic::Console::SetVerbosity(4);
+  common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 

@@ -37,15 +37,13 @@
 #include <ignition/common/Console.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonNode.hh>
 #include <ignition/common/SkeletonAnimation.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
+#include <ignition/rendering/OrbitViewController.hh>
 #include <ignition/rendering/RayQuery.hh>
 #include <ignition/rendering/RenderPass.hh>
-#include <ignition/rendering/OrbitViewController.hh>
 #include <ignition/rendering/Scene.hh>
-
 
 #include "GlutWindow.hh"
 #include "example_config.hh"
@@ -66,6 +64,8 @@ ir::MeshPtr g_mesh;
 ic::SkeletonPtr g_skel;
 ic::SkeletonAnimation *g_skelAnim;
 unsigned int g_animIdx = 1;
+std::chrono::steady_clock::duration g_time{0};
+std::chrono::steady_clock::time_point g_startTime;
 
 bool g_initContext = false;
 
@@ -100,11 +100,8 @@ struct mouseButton
   bool buttonDirty = false;
   bool motionDirty = false;
 };
-
 struct mouseButton g_mouse;
 std::mutex g_mouseMutex;
-
-ir::ScenePtr scene;
 
 //////////////////////////////////////////////////
 void mouseCB(int _button, int _state, int _x, int _y)
@@ -164,28 +161,6 @@ void handleMouse()
   if (g_mouse.buttonDirty)
   {
     g_mouse.buttonDirty = false;
-
-    // test mouse picking
-    if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
-    {
-      // Get visual using Selection Buffer from Camera
-      ir::VisualPtr visual;
-      ignition::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
-      visual = rayCamera->VisualAt(mousePos);
-      if (visual)
-      {
-        std::cout << "Selected visual at position: ";
-        std::cout << g_mouse.x << " " << g_mouse.y << ": ";
-        std::cout << visual->Name() << "\n";
-      }
-      else
-      {
-        std::cout << "No visual found at position: ";
-        std::cout << g_mouse.x << " " << g_mouse.y << std::endl;
-      }
-    }
-
-    // camera orbit
     double nx =
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
@@ -285,17 +260,22 @@ void updatePose(double _time)
 
   g_mesh->SetSkeletonLocalTransforms(skinFrames);
 }
-double curr_time = 0.0;
 
 //////////////////////////////////////////////////
 void updateActor()
 {
-  updatePose(curr_time);
-  if (curr_time >= g_skelAnim->Length())
+  auto seconds =
+      std::chrono::duration_cast<std::chrono::milliseconds>(g_time).count() /
+      1000.0;
+  updatePose(seconds);
+  if (seconds >= g_skelAnim->Length())
   {
-    curr_time = 0;
+    g_time = std::chrono::steady_clock::duration();
   }
-  curr_time+= 0.05;
+  else
+  {
+    g_time = std::chrono::steady_clock::now() - g_startTime;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -351,18 +331,6 @@ void keyboardCB(unsigned char _key, int, int)
   {
     g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
   }
-  else if (_key == 'p')
-  {
-    // toggle all render passes
-    for (ir::CameraPtr camera : g_cameras)
-    {
-      for (unsigned int i = 0; i < camera->RenderPassCount(); ++i)
-      {
-        ir::RenderPassPtr pass = camera->RenderPassByIndex(i);
-        pass->SetEnabled(!pass->IsEnabled());
-      }
-    }
-  }
 }
 
 //////////////////////////////////////////////////
@@ -391,6 +359,7 @@ void initContext()
   glutMotionFunc(motionCB);
 }
 
+//////////////////////////////////////////////////
 void initAnimation()
 {
   if (!g_skel || g_skel->AnimationCount() == 0)
@@ -405,6 +374,8 @@ void initAnimation()
   g_skel->AddBvhAnimation(bvhFile, scale);
 
   g_skelAnim = g_skel->Animation(g_animIdx);
+
+  g_startTime = std::chrono::steady_clock::now();
 }
 
 //////////////////////////////////////////////////
@@ -413,7 +384,6 @@ void printUsage()
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
-  std::cout << "  P   - Toggle render pass     " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 

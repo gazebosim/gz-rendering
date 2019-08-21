@@ -379,6 +379,7 @@ void OgreDepthCamera::PostRender()
   int bgColorR = this->scene->BackgroundColor().R() * 255;
   int bgColorG = this->scene->BackgroundColor().G() * 255;
   int bgColorB = this->scene->BackgroundColor().B() * 255;
+  int bgColorA = this->scene->BackgroundColor().A() * 255;
   if (this->dataPtr->outputPoints)
   {
     PixelFormat colorFormat = this->dataPtr->colorTexture->Format();
@@ -443,12 +444,14 @@ void OgreDepthCamera::PostRender()
         int r = 0;
         int g = 0;
         int b = 0;
+        int a = 255;
         float *color = &this->dataPtr->pcdBuffer[pcdStep + j*channelCount + 3];
         if (clamp)
         {
           r = bgColorR;
           g = bgColorG;
           b = bgColorB;
+          a = bgColorA;
         }
         else
         {
@@ -458,7 +461,8 @@ void OgreDepthCamera::PostRender()
         }
         uint32_t rgba = (static_cast<uint8_t>(r) << 24) +
                         (static_cast<uint8_t>(g) << 16) +
-                        (static_cast<uint8_t>(b) << 8);
+                        (static_cast<uint8_t>(b) << 8) +
+                        (static_cast<uint8_t>(a) << 0);
         // cppcheck-suppress invalidPointerCast
         float *c = reinterpret_cast<float *>(&rgba);
         *color = *c;

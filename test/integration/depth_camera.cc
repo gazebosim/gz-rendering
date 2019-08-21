@@ -242,9 +242,11 @@ void DepthCameraTest::DepthCameraBoxes(
       unsigned int mr = *mrgba >> 24 & 0xFF;
       unsigned int mg = *mrgba >> 16 & 0xFF;
       unsigned int mb = *mrgba >> 8 & 0xFF;
+      unsigned int ma = *mrgba >> 0 & 0xFF;
       EXPECT_EQ(0u, mr);
       EXPECT_EQ(0u, mg);
       EXPECT_GT(mb, 0u);
+      EXPECT_EQ(255u, ma);
 
       // Far left and right points should be red (background color)
       float lc = pointCloudData[pcLeft + 3];
@@ -252,20 +254,24 @@ void DepthCameraTest::DepthCameraBoxes(
       unsigned int lr = *lrgba >> 24 & 0xFF;
       unsigned int lg = *lrgba >> 16 & 0xFF;
       unsigned int lb = *lrgba >> 8 & 0xFF;
+      unsigned int la = *lrgba >> 0 & 0xFF;
 
       EXPECT_EQ(255u, lr);
       EXPECT_EQ(0u, lg);
       EXPECT_EQ(0u, lb);
+      EXPECT_EQ(255u, la);
 
       float rc = pointCloudData[pcRight + 3];
       uint32_t *rrgba = reinterpret_cast<uint32_t *>(&rc);
       unsigned int rr = *rrgba >> 24 & 0xFF;
       unsigned int rg = *rrgba >> 16 & 0xFF;
       unsigned int rb = *rrgba >> 8 & 0xFF;
+      unsigned int ra = *rrgba >> 0 & 0xFF;
 
       EXPECT_EQ(255u, rr);
       EXPECT_EQ(0u, rg);
       EXPECT_EQ(0u, rb);
+      EXPECT_EQ(255u, ra);
     }
 
     // Check that for a box really close it returns it is not seen
@@ -309,9 +315,11 @@ void DepthCameraTest::DepthCameraBoxes(
           unsigned int r = *rgba >> 24 & 0xFF;
           unsigned int g = *rgba >> 16 & 0xFF;
           unsigned int b = *rgba >> 8 & 0xFF;
+          unsigned int a = *rgba >> 0 & 0xFF;
           EXPECT_EQ(255u, r);
           EXPECT_EQ(0u, g);
           EXPECT_EQ(0u, b);
+          EXPECT_EQ(255u, a);
         }
       }
     }
@@ -359,9 +367,11 @@ void DepthCameraTest::DepthCameraBoxes(
           unsigned int r = *rgba >> 24 & 0xFF;
           unsigned int g = *rgba >> 16 & 0xFF;
           unsigned int b = *rgba >> 8 & 0xFF;
+          unsigned int a = *rgba >> 0 & 0xFF;
           EXPECT_EQ(255u, r);
           EXPECT_EQ(0u, g);
           EXPECT_EQ(0u, b);
+          EXPECT_EQ(255u, a);
         }
       }
     }
@@ -405,9 +415,11 @@ void DepthCameraTest::DepthCameraBoxes(
           unsigned int r = *rgba >> 24 & 0xFF;
           unsigned int g = *rgba >> 16 & 0xFF;
           unsigned int b = *rgba >> 8 & 0xFF;
+          unsigned int a = *rgba >> 0 & 0xFF;
           EXPECT_EQ(0u, r);
           EXPECT_EQ(0u, g);
           EXPECT_GT(b, 0u);
+          EXPECT_EQ(255u, a);
         }
       }
     }

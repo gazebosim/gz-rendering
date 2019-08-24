@@ -49,13 +49,16 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
+      // Documentation inherited.
       public: virtual bool HasSkeleton() const override;
 
+      // Documentation inherited.
       public: virtual std::map<std::string, math::Matrix4d>
-                          SkeletonLocalTransforms() override;
+                          SkeletonLocalTransforms() const override;
 
+      // Documentation inherited.
       public: virtual void SetSkeletonLocalTransforms(
-              std::map<std::string, math::Matrix4d> _tfs) override;
+            const std::map<std::string, math::Matrix4d> _tfs) override;
 
       public: virtual Ogre::MovableObject *OgreObject() const override;
 

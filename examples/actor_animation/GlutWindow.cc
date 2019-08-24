@@ -42,7 +42,6 @@
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/OrbitViewController.hh>
 #include <ignition/rendering/RayQuery.hh>
-#include <ignition/rendering/RenderPass.hh>
 #include <ignition/rendering/Scene.hh>
 
 #include "GlutWindow.hh"

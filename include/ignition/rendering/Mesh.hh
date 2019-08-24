@@ -48,7 +48,7 @@ namespace ignition
       ///     * Skeleton node names
       ///     * Local transformations of the skeleton nodes
       public: virtual std::map<std::string, math::Matrix4d>
-            SkeletonLocalTransforms() = 0;
+            SkeletonLocalTransforms() const = 0;
 
       /// \brief Set transforms for the skeleton
       /// \param[in] _tfs Map of skeleton local transformations
@@ -57,7 +57,7 @@ namespace ignition
       ///     * Local transformations of the skeleton nodes
       /// \return True if all the transformations are set to the skeleton
       public: virtual void SetSkeletonLocalTransforms(
-            std::map<std::string, math::Matrix4d> _tfs) = 0;
+            const std::map<std::string, math::Matrix4d> _tfs) = 0;
 
       /// \brief Get the sub-mesh count
       /// \return The sub-mesh count

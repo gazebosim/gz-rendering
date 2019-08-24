@@ -62,13 +62,13 @@ bool OgreMesh::HasSkeleton() const
 
 //////////////////////////////////////////////////
 std::map<std::string, math::Matrix4d>
-        OgreMesh::SkeletonLocalTransforms()
+        OgreMesh::SkeletonLocalTransforms() const
 {
   std::map<std::string, ignition::math::Matrix4d> mapTfs;
   if (this->ogreEntity->hasSkeleton())
   {
     Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
-    for (unsigned int i = 0; i < skel->getNumBones(); i++)
+    for (unsigned int i = 0; i < skel->getNumBones(); ++i)
     {
       Ogre::Bone *bone = skel->getBone(i);
       Ogre::Quaternion quat(bone->getOrientation());
@@ -89,7 +89,7 @@ std::map<std::string, math::Matrix4d>
 
 //////////////////////////////////////////////////
 void OgreMesh::SetSkeletonLocalTransforms(
-          std::map<std::string, math::Matrix4d> _tfs)
+          const std::map<std::string, math::Matrix4d> _tfs)
 {
   if (!this->ogreEntity->hasSkeleton())
   {

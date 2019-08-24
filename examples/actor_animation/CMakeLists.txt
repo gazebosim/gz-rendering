@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-mesh-viewer)
+project(ignition-rendering-actor-animation)
 find_package(ignition-rendering3 REQUIRED)
 
 include_directories(SYSTEM

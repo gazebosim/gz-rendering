@@ -89,7 +89,7 @@ std::map<std::string, math::Matrix4d>
 
 //////////////////////////////////////////////////
 void OgreMesh::SetSkeletonLocalTransforms(
-          const std::map<std::string, math::Matrix4d> _tfs)
+          const std::map<std::string, math::Matrix4d> &_tfs)
 {
   if (!this->ogreEntity->hasSkeleton())
   {

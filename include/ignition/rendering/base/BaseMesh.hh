@@ -48,7 +48,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetSkeletonLocalTransforms(
-                      const std::map<std::string, math::Matrix4d>) override;
+                      const std::map<std::string, math::Matrix4d> &) override;
 
       public: virtual unsigned int SubMeshCount() const override;
 
@@ -158,7 +158,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseMesh<T>::SetSkeletonLocalTransforms(
-          const std::map<std::string, math::Matrix4d>)
+          const std::map<std::string, math::Matrix4d> &)
     {
     }
 

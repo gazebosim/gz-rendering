@@ -58,7 +58,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetSkeletonLocalTransforms(
-            const std::map<std::string, math::Matrix4d> _tfs) override;
+            const std::map<std::string, math::Matrix4d> &_tfs) override;
 
       public: virtual Ogre::MovableObject *OgreObject() const override;
 

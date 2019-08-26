@@ -1,6 +1,6 @@
 ## Ignition Rendering
 
-### Ignition Rendering 2.X.X (201X-XX-XX)
+### Ignition Rendering 2.1.0 (2019-08-XX)
 
 1. Support generating point cloud data in DepthCamera
     * [Pull request 187](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/187)

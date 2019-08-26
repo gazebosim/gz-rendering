@@ -140,6 +140,9 @@ namespace ignition
       /// \brief Create the camera.
       protected: void CreateCamera();
 
+      /// \brief Create point cloud texture. This stores xyz rgb data
+      private: void CreatePointCloudTexture();
+
       /// \brief Communicates that a frams was rendered
       protected: bool newData = false;
 

@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASE_BASEMESH_HH_
 #define IGNITION_RENDERING_BASE_BASEMESH_HH_
 
+#include <map>
 #include <string>
 #include "ignition/rendering/Mesh.hh"
 #include "ignition/rendering/Storage.hh"
@@ -37,6 +38,17 @@ namespace ignition
       protected: BaseMesh();
 
       public: virtual ~BaseMesh();
+
+      // Documentation inherited.
+      public: virtual bool HasSkeleton() const override;
+
+      // Documentation inherited.
+      public: virtual std::map<std::string, math::Matrix4d>
+                      SkeletonLocalTransforms() const override;
+
+      // Documentation inherited.
+      public: virtual void SetSkeletonLocalTransforms(
+                      const std::map<std::string, math::Matrix4d> &) override;
 
       public: virtual unsigned int SubMeshCount() const override;
 
@@ -124,6 +136,29 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     BaseMesh<T>::~BaseMesh()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMesh<T>::HasSkeleton() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::map<std::string, math::Matrix4d>
+          BaseMesh<T>::SkeletonLocalTransforms() const
+    {
+      std::map<std::string, ignition::math::Matrix4d> tmpMap;
+      return tmpMap;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMesh<T>::SetSkeletonLocalTransforms(
+          const std::map<std::string, math::Matrix4d> &)
     {
     }
 

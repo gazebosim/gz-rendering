@@ -2,6 +2,8 @@
 
 ### Ignition Rendering 2.X.X (2019-XX-XX)
 
+### Ignition Rendering 2.1.1 (2019-09-06)
+
 1. Add checks on mouse selection
     * [Pull request 191](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/191)
 

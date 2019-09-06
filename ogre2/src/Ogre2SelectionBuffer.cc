@@ -198,7 +198,7 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
 
   Ogre::RenderTarget *rt = vp->getTarget();
 
-   if (!rt)
+  if (!rt)
     return nullptr;
 
   const unsigned int targetWidth = rt->getWidth();

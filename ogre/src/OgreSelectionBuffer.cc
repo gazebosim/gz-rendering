@@ -179,7 +179,19 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(const int _x, const int _y)
   if (!this->dataPtr->renderTexture)
     return nullptr;
 
-  Ogre::RenderTarget *rt = this->dataPtr->camera->getViewport()->getTarget();
+  if (!this->dataPtr->camera)
+    return nullptr;
+
+  Ogre::Viewport *vp = this->dataPtr->camera->getViewport();
+
+  if (!vp)
+    return nullptr;
+
+  Ogre::RenderTarget *rt = vp->getTarget();
+
+  if (!rt)
+    return nullptr;
+
   const unsigned int targetWidth = rt->getWidth();
   const unsigned int targetHeight = rt->getHeight();
 

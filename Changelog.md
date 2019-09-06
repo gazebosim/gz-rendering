@@ -1,5 +1,10 @@
 ## Ignition Rendering
 
+### Ignition Rendering 2.X.X (2019-XX-XX)
+
+1. Add checks on mouse selection
+    * [Pull request 191](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/191)
+
 ### Ignition Rendering 2.1.0 (2019-08-27)
 
 1. Support generating point cloud data in DepthCamera

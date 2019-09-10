@@ -365,6 +365,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
     colorTexDef->fsaa = 0;
     colorTexDef->uav = false;
     colorTexDef->automipmaps = false;
+    // Enable gamma write to avoid discretization in the color values
+    // Note we are using low level materials in quad pass so also had to perform
+    // gamma correction in the fragment shaders (depth_camera_fs.glsl)
     colorTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolTrue;
     colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     colorTexDef->depthBufferFormat = Ogre::PF_D32_FLOAT;

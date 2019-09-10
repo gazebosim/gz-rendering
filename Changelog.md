@@ -2,6 +2,8 @@
 
 ### Ignition Rendering 2.X.X (2019-XX-XX)
 
+### Ignition Rendering 2.1.2 (2019-09-10)
+
 1. Enable gamma write on color texture in depth camera
     * [Pull request 193](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/193)
 

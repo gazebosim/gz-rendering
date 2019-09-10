@@ -365,7 +365,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     colorTexDef->fsaa = 0;
     colorTexDef->uav = false;
     colorTexDef->automipmaps = false;
-    colorTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    colorTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolTrue;
     colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     colorTexDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
     colorTexDef->preferDepthTexture = true;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Open Source Robotics Foundation
+ * Copyright (C) 2019 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
 #include <string>
 #include <ignition/math/Color.hh>
 
-#include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/Export.hh"
+#include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreDynamicRenderable.hh"
 
 namespace ignition
@@ -31,8 +31,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \addtogroup gazebo_rendering
-    /// \{
 
     /// \brief Forward declaration
     class DynamicLinesPrivate;
@@ -120,7 +118,6 @@ namespace ignition
       private: std::unique_ptr<DynamicLinesPrivate> dataPtr;
     };
     }
-    /// \}
   }
 }
 #endif

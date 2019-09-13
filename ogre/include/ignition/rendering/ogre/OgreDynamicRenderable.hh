@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Open Source Robotics Foundation
+ * Copyright (C) 2019 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \addtogroup gazebo_rendering
-    /// \{
 
     /// \class DynamicRenderable DynamicRenderable.hh rendering/rendering.hh
     /// \brief Abstract base class providing mechanisms for dynamically
@@ -110,7 +108,6 @@ namespace ignition
       protected: size_t indexBufferCapacity;
     };
     }
-    /// \}
   }
 }
 #endif

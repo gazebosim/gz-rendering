@@ -31,13 +31,13 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-
     /// \brief Forward declaration
     class DynamicLinesPrivate;
 
     /// \class DynamicLines DynamicLines.hh rendering/rendering.hh
     /// \brief Class for drawing lines that can change
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreDynamicLines : public OgreDynamicRenderable
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreDynamicLines :
+      public OgreDynamicRenderable
     {
       /// \brief Constructor
       /// \param[in] _opType The type of Line

@@ -73,8 +73,8 @@ void OgreDynamicLines::AddPoint(const ignition::math::Vector3d &_pt,
 }
 
 /////////////////////////////////////////////////
-void OgreDynamicLines::AddPoint(const double _x, const double _y, const double _z,
-                            const ignition::math::Color &_color)
+void OgreDynamicLines::AddPoint(const double _x, const double _y,
+                const double _z, const ignition::math::Color &_color)
 {
   this->AddPoint(ignition::math::Vector3d(_x, _y, _z), _color);
 }
@@ -189,7 +189,8 @@ void OgreDynamicLines::FillHardwareBuffers()
         Ogre::Root::getSingleton().getRenderSystem();
   for (int i = 0; i < size; ++i)
   {
-    Ogre::ColourValue color = OgreConversions::Convert(this->dataPtr->colors[i]);
+    Ogre::ColourValue color =
+            OgreConversions::Convert(this->dataPtr->colors[i]);
     renderSystemForVertex->convertColourValue(color, &colorArrayBuffer[i]);
   }
   cbuf->unlock();

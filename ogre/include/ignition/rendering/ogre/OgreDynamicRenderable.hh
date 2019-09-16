@@ -27,7 +27,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-
     /// \class DynamicRenderable DynamicRenderable.hh rendering/rendering.hh
     /// \brief Abstract base class providing mechanisms for dynamically
     /// growing hardware buffers.

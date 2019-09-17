@@ -27,7 +27,9 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \class DynamicRenderable DynamicRenderable.hh rendering/rendering.hh
+    /*  \class OgreDynamicRenderable OgreDynamicRenderable.hh \
+     *  ignition/rendering/ogre/OgreDynamicRenderable.hh
+     */
     /// \brief Abstract base class providing mechanisms for dynamically
     /// growing hardware buffers.
     class IGNITION_RENDERING_OGRE_VISIBLE OgreDynamicRenderable :
@@ -54,7 +56,7 @@ namespace ignition
 
       /// \brief Get the render operation type
       /// \return The render operation type.
-      public: RenderOpType GetOperationType() const;
+      public: RenderOpType OperationType() const;
 
       /// \brief Implementation of Ogre::SimpleRenderable
       /// \return The bounding radius
@@ -66,10 +68,6 @@ namespace ignition
       /// \return The squared depth in the Camera's view
       public: virtual Ogre::Real getSquaredViewDepth(
                   const Ogre::Camera *_cam) const;
-
-      /// \brief Get type of movable
-      /// \return This returns "gazebo::DynamicRenderable"
-      public: std::string GetMovableType() const;
 
       /// \brief Creates the vertex declaration.  @remarks Override and set
       /// mRenderOp.vertexData->vertexDeclaration here.  mRenderOp.vertexData
@@ -101,10 +99,10 @@ namespace ignition
       protected: virtual void FillHardwareBuffers() = 0;
 
       /// \brief Maximum capacity of the currently allocated vertex buffer.
-      protected: size_t vertexBufferCapacity;
+      protected: size_t vertexBufferCapacity = 0;
 
       /// \brief Maximum capacity of the currently allocated index buffer.
-      protected: size_t indexBufferCapacity;
+      protected: size_t indexBufferCapacity = 0;
     };
     }
   }

@@ -30,19 +30,25 @@ enum {POSITION_BINDING, TEXCOORD_BINDING};
 
 
 /// \brief Private implementation
-class ignition::rendering::DynamicLinesPrivate
+class ignition::rendering::OgreDynamicLinesPrivate
 {
   /// \brief list of colors at each point
   public: std::vector<ignition::math::Color> colors;
+  
+  /// \brief List of points for the line
+  public: std::vector<ignition::math::Vector3d> points;
+
+  /// \brief Used to indicate if the lines require an update
+  public: bool dirty = false;
 };
 
 /////////////////////////////////////////////////
 OgreDynamicLines::OgreDynamicLines(RenderOpType opType)
-  : dataPtr(new DynamicLinesPrivate)
+  : dataPtr(new OgreDynamicLinesPrivate)
 {
   this->Init(opType, false);
   this->setCastShadows(false);
-  this->dirty = true;
+  this->dataPtr->dirty = true;
 }
 
 /////////////////////////////////////////////////
@@ -51,15 +57,15 @@ OgreDynamicLines::~OgreDynamicLines()
 }
 
 /////////////////////////////////////////////////
-std::string OgreDynamicLines::GetMovableType()
+std::string OgreDynamicLines::MovableType()
 {
-  return "gazebo::dynamiclines";
+  return "ignition::rendering::ogredynamiclines";
 }
 
 /////////////////////////////////////////////////
 const Ogre::String &OgreDynamicLines::getMovableType() const
 {
-  static Ogre::String moveType = OgreDynamicLines::GetMovableType();
+  static Ogre::String moveType = OgreDynamicLines::MovableType();
   return moveType;
 }
 
@@ -67,9 +73,9 @@ const Ogre::String &OgreDynamicLines::getMovableType() const
 void OgreDynamicLines::AddPoint(const ignition::math::Vector3d &_pt,
                             const ignition::math::Color &_color)
 {
-  this->points.push_back(_pt);
+  this->dataPtr->points.push_back(_pt);
   this->dataPtr->colors.push_back(_color);
-  this->dirty = true;
+  this->dataPtr->dirty = true;
 }
 
 /////////////////////////////////////////////////
@@ -83,16 +89,16 @@ void OgreDynamicLines::AddPoint(const double _x, const double _y,
 void OgreDynamicLines::SetPoint(const unsigned int _index,
                             const ignition::math::Vector3d &_value)
 {
-  if (_index >= this->points.size())
+  if (_index >= this->dataPtr->points.size())
   {
     ignerr << "Point index[" << _index << "] is out of bounds[0-"
-           << this->points.size()-1 << "]\n";
+           << this->dataPtr->points.size()-1 << "]\n";
     return;
   }
 
-  this->points[_index] = _value;
+  this->dataPtr->points[_index] = _value;
 
-  this->dirty = true;
+  this->dataPtr->dirty = true;
 }
 
 /////////////////////////////////////////////////
@@ -100,43 +106,43 @@ void OgreDynamicLines::SetColor(const unsigned int _index,
                             const ignition::math::Color &_color)
 {
   this->dataPtr->colors[_index] = _color;
-  this->dirty = true;
+  this->dataPtr->dirty = true;
 }
 
 /////////////////////////////////////////////////
 ignition::math::Vector3d OgreDynamicLines::Point(
     const unsigned int _index) const
 {
-  if (_index >= this->points.size())
+  if (_index >= this->dataPtr->points.size())
   {
     ignerr << "Point index[" << _index << "] is out of bounds[0-"
-           << this->points.size()-1 << "]\n";
+           << this->dataPtr->points.size()-1 << "]\n";
 
     return ignition::math::Vector3d(ignition::math::INF_D,
                                     ignition::math::INF_D,
                                     ignition::math::INF_D);
   }
 
-  return this->points[_index];
+  return this->dataPtr->points[_index];
 }
 
 /////////////////////////////////////////////////
-unsigned int OgreDynamicLines::GetPointCount() const
+unsigned int OgreDynamicLines::PointCount() const
 {
-  return this->points.size();
+  return this->dataPtr->points.size();
 }
 
 /////////////////////////////////////////////////
 void OgreDynamicLines::Clear()
 {
-  this->points.clear();
-  this->dirty = true;
+  this->dataPtr->points.clear();
+  this->dataPtr->dirty = true;
 }
 
 /////////////////////////////////////////////////
 void OgreDynamicLines::Update()
 {
-  if (this->dirty && this->points.size() > 1)
+  if (this->dataPtr->dirty && this->dataPtr->points.size() > 1)
     this->FillHardwareBuffers();
 }
 
@@ -153,13 +159,13 @@ void OgreDynamicLines::CreateVertexDeclaration()
 /////////////////////////////////////////////////
 void OgreDynamicLines::FillHardwareBuffers()
 {
-  int size = this->points.size();
+  int size = this->dataPtr->points.size();
   this->PrepareHardwareBuffers(size, 0);
 
   if (!size)
   {
     this->mBox.setExtents(Ogre::Vector3::ZERO, Ogre::Vector3::ZERO);
-    this->dirty = false;
+    this->dataPtr->dirty = false;
   }
 
   Ogre::HardwareVertexBufferSharedPtr vbuf =
@@ -170,11 +176,11 @@ void OgreDynamicLines::FillHardwareBuffers()
   {
     for (int i = 0; i < size; i++)
     {
-      *prPos++ = this->points[i].X();
-      *prPos++ = this->points[i].Y();
-      *prPos++ = this->points[i].Z();
+      *prPos++ = this->dataPtr->points[i].X();
+      *prPos++ = this->dataPtr->points[i].Y();
+      *prPos++ = this->dataPtr->points[i].Z();
 
-      this->mBox.merge(OgreConversions::Convert(this->points[i]));
+      this->mBox.merge(OgreConversions::Convert(this->dataPtr->points[i]));
     }
   }
   vbuf->unlock();
@@ -199,5 +205,5 @@ void OgreDynamicLines::FillHardwareBuffers()
   // of scope based on old mBox
   this->getParentSceneNode()->needUpdate();
 
-  this->dirty = false;
+  this->dataPtr->dirty = false;
 }

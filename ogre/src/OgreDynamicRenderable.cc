@@ -91,7 +91,7 @@ void OgreDynamicRenderable::SetOperationType(RenderOpType opType)
 }
 
 //////////////////////////////////////////////////
-RenderOpType OgreDynamicRenderable::GetOperationType() const
+RenderOpType OgreDynamicRenderable::OperationType() const
 {
   RenderOpType type;
   switch (this->mRenderOp.operationType)
@@ -244,10 +244,4 @@ Ogre::Real OgreDynamicRenderable::getSquaredViewDepth(
   vMid = ((vMax - vMin) * 0.5) + vMin;
   vDist = cam->getDerivedPosition() - vMid;
   return vDist.squaredLength();
-}
-
-/////////////////////////////////////////////////
-std::string OgreDynamicRenderable::GetMovableType() const
-{
-  return "gazebo::DynamicRenderable";
 }

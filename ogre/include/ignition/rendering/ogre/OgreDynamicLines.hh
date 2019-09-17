@@ -32,9 +32,11 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \brief Forward declaration
-    class DynamicLinesPrivate;
+    class OgreDynamicLinesPrivate;
 
-    /// \class DynamicLines DynamicLines.hh rendering/rendering.hh
+    /*  \class OgreDynamicLines OgreDynamicLines.hh \
+     *  ignition/rendering/ogre/OgreDynamicLines.hh
+     */
     /// \brief Class for drawing lines that can change
     class IGNITION_RENDERING_OGRE_VISIBLE OgreDynamicLines :
       public OgreDynamicRenderable
@@ -48,11 +50,11 @@ namespace ignition
       public: virtual ~OgreDynamicLines();
 
       /// \brief Get type of movable
-      /// \return This returns "gazebo::dynamiclines"
-      public: static std::string GetMovableType();
+      /// \return Returns "ignition::rendering::ogredynamiclines"
+      public: static std::string MovableType();
 
       /// \brief Overridden function from Ogre's base class.
-      /// \return Returns "gazebo::ogredynamicslines"
+      /// \return Returns "ignition::rendering::ogredynamiclines"
       public: virtual const Ogre::String &getMovableType() const;
 
       /// \brief Add a point to the point list
@@ -92,7 +94,7 @@ namespace ignition
 
       /// \brief Return the total number of points in the point list
       /// \return Number of points
-      public: unsigned int GetPointCount() const;
+      public: unsigned int PointCount() const;
 
       /// \brief Remove all points from the point list
       public: void Clear();
@@ -108,14 +110,8 @@ namespace ignition
       /// list out to hardware memory
       private: virtual void FillHardwareBuffers();
 
-      /// \brief List of points for the line
-      private: std::vector<ignition::math::Vector3d> points;
-
-      /// \brief Used to indicate if the lines require an update
-      private: bool dirty;
-
       /// \brief private implementation
-      private: std::unique_ptr<DynamicLinesPrivate> dataPtr;
+      private: std::unique_ptr<OgreDynamicLinesPrivate> dataPtr;
     };
     }
   }

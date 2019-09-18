@@ -27,7 +27,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-
     /*  \class Ogre2DynamicRenderable Ogre2DynamicRenderable.hh \
      *  ignition/rendering/ogre2/Ogre2DynamicRenderable.hh
      */

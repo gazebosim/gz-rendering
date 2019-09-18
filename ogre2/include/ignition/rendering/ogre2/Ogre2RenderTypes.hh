@@ -97,7 +97,7 @@ namespace ignition
     typedef shared_ptr<Ogre2VisualStore>          Ogre2VisualStorePtr;
 
     typedef shared_ptr<Ogre2MaterialMap>          Ogre2MaterialMapPtr;
-    
+
     enum RenderOpType
     {
       RENDERING_POINT_LIST = 0,

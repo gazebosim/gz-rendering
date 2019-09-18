@@ -34,7 +34,7 @@ class ignition::rendering::OgreDynamicLinesPrivate
 {
   /// \brief list of colors at each point
   public: std::vector<ignition::math::Color> colors;
-  
+
   /// \brief List of points for the line
   public: std::vector<ignition::math::Vector3d> points;
 

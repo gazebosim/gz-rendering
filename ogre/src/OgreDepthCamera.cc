@@ -252,15 +252,17 @@ void OgreDepthCamera::CreateDepthTexture()
 }
 
 //////////////////////////////////////////////////
-void OgreDepthCamera::Render()
+void OgreDepthCamera::PreRender()
 {
-  // \todo(anyone) Make OgreDepthCamera::PreRender public to override
-  // base function and move these calls there
   if (!this->depthTexture)
     this->CreateDepthTexture();
   if (!this->dataPtr->pcdTexture || !this->dataPtr->colorTexture)
     this->CreatePointCloudTexture();
+}
 
+//////////////////////////////////////////////////
+void OgreDepthCamera::Render()
+{
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
   Ogre::ShadowTechnique shadowTech = sceneMgr->getShadowTechnique();
 

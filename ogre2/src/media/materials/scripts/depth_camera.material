@@ -31,6 +31,7 @@ fragment_program DepthCameraFS glsl
   default_params
   {
     param_named depthTexture int 0
+    param_named colorTexture int 1
   }
 }
 
@@ -43,6 +44,11 @@ material DepthCamera
       vertex_program_ref DepthCameraVS { }
       fragment_program_ref DepthCameraFS { }
       texture_unit depthTexture
+      {
+        filtering none
+        tex_address_mode clamp
+      }
+      texture_unit colorTexture
       {
         filtering none
         tex_address_mode clamp

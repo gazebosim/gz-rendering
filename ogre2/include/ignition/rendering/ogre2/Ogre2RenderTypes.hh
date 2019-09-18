@@ -97,6 +97,17 @@ namespace ignition
     typedef shared_ptr<Ogre2VisualStore>          Ogre2VisualStorePtr;
 
     typedef shared_ptr<Ogre2MaterialMap>          Ogre2MaterialMapPtr;
+    
+    enum RenderOpType
+    {
+      RENDERING_POINT_LIST = 0,
+      RENDERING_LINE_LIST = 1,
+      RENDERING_LINE_STRIP = 2,
+      RENDERING_TRIANGLE_LIST = 3,
+      RENDERING_TRIANGLE_STRIP = 4,
+      RENDERING_TRIANGLE_FAN = 5,
+      RENDERING_MESH_RESOURCE = 6
+    };
     }
   }
 }

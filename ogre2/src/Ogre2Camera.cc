@@ -35,7 +35,13 @@ Ogre2Camera::Ogre2Camera()
 //////////////////////////////////////////////////
 Ogre2Camera::~Ogre2Camera()
 {
-  if (!this->Scene()->IsInitialized())
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::Destroy()
+{
+  if (!this->ogreCamera || !this->Scene()->IsInitialized())
     return;
 
   Ogre::SceneManager *ogreSceneManager;
@@ -44,8 +50,7 @@ Ogre2Camera::~Ogre2Camera()
   {
     ignerr << "Scene manager cannot be obtained" << std::endl;
   }
-  if (this->ogreCamera != nullptr && ogreSceneManager->findCameraNoThrow(
-      this->name) != nullptr)
+  if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
   {
     ogreSceneManager->destroyCamera(this->ogreCamera);
     this->ogreCamera = nullptr;

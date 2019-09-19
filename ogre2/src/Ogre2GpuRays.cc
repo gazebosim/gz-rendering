@@ -97,10 +97,6 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Image height of second pass.
   public: unsigned int h2nd = 0u;
 
-  /// \brief Amount of channels used to store the data
-  // r = depth, g = retro, and b = n/a
-  public: unsigned int channels = 3u;
-
   /// \brief Dummy render texture for the gpu rays
   public: RenderTexturePtr renderTexture;
 };
@@ -112,6 +108,9 @@ using namespace rendering;
 Ogre2GpuRays::Ogre2GpuRays()
   : dataPtr(new Ogre2GpuRaysPrivate)
 {
+  // r = depth, g = retro, and b = n/a
+  this->channels = 3u;
+
   for (unsigned int i = 0; i < 6u; ++i)
   {
     this->dataPtr->cubeCam[i] = nullptr;
@@ -754,7 +753,7 @@ void Ogre2GpuRays::PostRender()
 
   size_t size = Ogre::PixelUtil::getMemorySize(
     width, height, 1, Ogre::PF_FLOAT32_RGB);
-  int len = width * height * this->dataPtr->channels;
+  int len = width * height * this->Channels();
 
   if (!this->dataPtr->gpuRaysBuffer)
   {
@@ -775,7 +774,7 @@ void Ogre2GpuRays::PostRender()
   memcpy(this->dataPtr->gpuRaysScan, this->dataPtr->gpuRaysBuffer, size);
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
-      width, height, this->dataPtr->channels, "PF_FLOAT32_RGB");
+      width, height, this->Channels(), "PF_FLOAT32_RGB");
 
   // Uncomment to debug output
   // igndbg << "wxh: " << width << " x " << height << std::endl;

@@ -55,6 +55,70 @@ void OgreMesh::Destroy()
 }
 
 //////////////////////////////////////////////////
+bool OgreMesh::HasSkeleton() const
+{
+  return this->ogreEntity->hasSkeleton();
+}
+
+//////////////////////////////////////////////////
+std::map<std::string, math::Matrix4d>
+        OgreMesh::SkeletonLocalTransforms() const
+{
+  std::map<std::string, ignition::math::Matrix4d> mapTfs;
+  if (this->ogreEntity->hasSkeleton())
+  {
+    Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
+    for (unsigned int i = 0; i < skel->getNumBones(); ++i)
+    {
+      Ogre::Bone *bone = skel->getBone(i);
+      Ogre::Quaternion quat(bone->getOrientation());
+      Ogre::Vector3 p(bone->getPosition());
+
+      ignition::math::Quaterniond tfQuat(quat.w, quat.x, quat.y, quat.z);
+      ignition::math::Vector3d tfTrans(p.x, p.y, p.z);
+
+      ignition::math::Matrix4d tf(tfQuat);
+      tf.SetTranslation(tfTrans);
+
+      mapTfs[bone->getName()] = tf;
+    }
+  }
+
+  return mapTfs;
+}
+
+//////////////////////////////////////////////////
+void OgreMesh::SetSkeletonLocalTransforms(
+          const std::map<std::string, math::Matrix4d> &_tfs)
+{
+  if (!this->ogreEntity->hasSkeleton())
+  {
+    return;
+  }
+  Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
+
+  for (auto const& pair : _tfs)
+  {
+    if (skel->hasBone(pair.first))
+    {
+      Ogre::Bone *bone = skel->getBone(pair.first);
+      ignition::math::Matrix4d tf = pair.second;
+      ignition::math::Vector3d tf_trans = tf.Translation();
+      ignition::math::Quaterniond tf_quat = tf.Rotation();
+
+      Ogre::Vector3 p(tf_trans.X(), tf_trans.Y(), tf_trans.Z());
+
+      const Ogre::Quaternion quat(
+        tf_quat.W(), tf_quat.X(), tf_quat.Y(), tf_quat.Z());
+
+      bone->setManuallyControlled(true);
+      bone->setPosition(p);
+      bone->setOrientation(quat);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 Ogre::MovableObject *OgreMesh::OgreObject() const
 {
   return this->ogreEntity;

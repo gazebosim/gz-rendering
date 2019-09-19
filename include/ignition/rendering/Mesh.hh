@@ -17,7 +17,9 @@
 #ifndef IGNITION_RENDERING_MESH_HH_
 #define IGNITION_RENDERING_MESH_HH_
 
+#include <map>
 #include <string>
+#include <ignition/math/Matrix4.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Object.hh"
@@ -35,6 +37,27 @@ namespace ignition
     {
       /// \brief Destructor
       public: virtual ~Mesh() { }
+
+      /// \brief Check whether the mesh has skeleton
+      /// \return True if the mesh has skeleton
+      public: virtual bool HasSkeleton() const = 0;
+
+      /// \brief Get the skeleton local transforms
+      /// \return Map of skeleton local transformations
+      /// * Map holding:
+      ///     * Skeleton node names
+      ///     * Local transformations of the skeleton nodes
+      public: virtual std::map<std::string, math::Matrix4d>
+            SkeletonLocalTransforms() const = 0;
+
+      /// \brief Set transforms for the skeleton
+      /// \param[in] _tfs Map of skeleton local transformations
+      /// * Map holding:
+      ///     * Skeleton node names
+      ///     * Local transformations of the skeleton nodes
+      /// \return True if all the transformations are set to the skeleton
+      public: virtual void SetSkeletonLocalTransforms(
+            const std::map<std::string, math::Matrix4d> &_tfs) = 0;
 
       /// \brief Get the sub-mesh count
       /// \return The sub-mesh count

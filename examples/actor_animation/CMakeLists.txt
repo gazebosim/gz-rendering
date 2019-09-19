@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-mouse-picking)
+project(ignition-rendering-actor-animation)
 find_package(ignition-rendering3 REQUIRED)
 
 include_directories(SYSTEM
@@ -22,11 +22,18 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
-add_executable(mouse_picking Main.cc GlutWindow.cc)
+configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
 
-target_link_libraries(mouse_picking
+add_executable(actor_animation Main.cc GlutWindow.cc)
+
+target_link_libraries(actor_animation
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
-  )
+)
+
+add_custom_command(TARGET actor_animation POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${CMAKE_SOURCE_DIR}/media
+  $<TARGET_FILE_DIR:actor_animation>/media)

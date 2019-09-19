@@ -59,49 +59,48 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
   }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
-  {
-    CameraPtr camera(scene->CreateCamera());
-    EXPECT_TRUE(camera != nullptr);
 
-    // projection parameters
-    math::Matrix4d projMatrix = camera->ProjectionMatrix();
+  CameraPtr camera(scene->CreateCamera());
+  EXPECT_TRUE(camera != nullptr);
 
-    EXPECT_GT(camera->HFOV(), 0);
-    math::Angle hfov(1.57);
-    camera->SetHFOV(hfov);
-    EXPECT_DOUBLE_EQ(hfov.Radian(), camera->HFOV().Radian());
+  // projection parameters
+  math::Matrix4d projMatrix = camera->ProjectionMatrix();
 
-    EXPECT_GT(camera->AspectRatio(), 0);
-    camera->SetAspectRatio(1.7777);
-    EXPECT_FLOAT_EQ(1.7777, camera->AspectRatio());
+  EXPECT_GT(camera->HFOV(), 0);
+  math::Angle hfov(1.57);
+  camera->SetHFOV(hfov);
+  EXPECT_DOUBLE_EQ(hfov.Radian(), camera->HFOV().Radian());
 
-    camera->SetAntiAliasing(1u);
-    EXPECT_EQ(1u, camera->AntiAliasing());
+  EXPECT_GT(camera->AspectRatio(), 0);
+  camera->SetAspectRatio(1.7777);
+  EXPECT_FLOAT_EQ(1.7777, camera->AspectRatio());
 
-    EXPECT_GT(camera->NearClipPlane(), 0);
-    camera->SetNearClipPlane(0.1);
-    EXPECT_DOUBLE_EQ(0.1, camera->NearClipPlane());
+  camera->SetAntiAliasing(1u);
+  EXPECT_EQ(1u, camera->AntiAliasing());
 
-    EXPECT_GT(camera->FarClipPlane(), 0);
-    camera->SetFarClipPlane(800);
-    EXPECT_DOUBLE_EQ(800, camera->FarClipPlane());
+  EXPECT_GT(camera->NearClipPlane(), 0);
+  camera->SetNearClipPlane(0.1);
+  EXPECT_DOUBLE_EQ(0.1, camera->NearClipPlane());
 
-    EXPECT_NE(projMatrix, camera->ProjectionMatrix());
+  EXPECT_GT(camera->FarClipPlane(), 0);
+  camera->SetFarClipPlane(800);
+  EXPECT_DOUBLE_EQ(800, camera->FarClipPlane());
 
-    // view matrix
-    math::Matrix4d viewMatrix = camera->ViewMatrix();
-    EXPECT_EQ(math::Vector3d::Zero, camera->LocalPosition());
-    EXPECT_EQ(math::Quaterniond::Identity, camera->LocalRotation());
+  EXPECT_NE(projMatrix, camera->ProjectionMatrix());
 
-    math::Vector3d pos(3.0, -2.0, 5.0);
-    math::Quaterniond rot(0.0, 1.5, 3.14);
-    camera->SetLocalPosition(pos);
-    EXPECT_EQ(pos, camera->LocalPosition());
-    camera->SetLocalRotation(rot);
-    EXPECT_EQ(rot, camera->LocalRotation());
+  // view matrix
+  math::Matrix4d viewMatrix = camera->ViewMatrix();
+  EXPECT_EQ(math::Vector3d::Zero, camera->LocalPosition());
+  EXPECT_EQ(math::Quaterniond::Identity, camera->LocalRotation());
 
-    EXPECT_NE(viewMatrix, camera->ViewMatrix());
-  }
+  math::Vector3d pos(3.0, -2.0, 5.0);
+  math::Quaterniond rot(0.0, 1.5, 3.14);
+  camera->SetLocalPosition(pos);
+  EXPECT_EQ(pos, camera->LocalPosition());
+  camera->SetLocalRotation(rot);
+  EXPECT_EQ(rot, camera->LocalRotation());
+
+  EXPECT_NE(viewMatrix, camera->ViewMatrix());
 
   // Clean up
   engine->DestroyScene(scene);
@@ -122,33 +121,31 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
-  {
-    CameraPtr camera = scene->CreateCamera();
-    EXPECT_TRUE(camera != nullptr);
+  CameraPtr camera = scene->CreateCamera();
+  EXPECT_TRUE(camera != nullptr);
 
-    // render texture parameters
-    EXPECT_GT(camera->ImageWidth(), 0u);
-    camera->SetImageWidth(100u);
-    EXPECT_EQ(100u, camera->ImageWidth());
+  // render texture parameters
+  EXPECT_GT(camera->ImageWidth(), 0u);
+  camera->SetImageWidth(100u);
+  EXPECT_EQ(100u, camera->ImageWidth());
 
-    EXPECT_GT(camera->ImageHeight(), 0u);
-    camera->SetImageHeight(80u);
-    EXPECT_EQ(80u, camera->ImageHeight());
+  EXPECT_GT(camera->ImageHeight(), 0u);
+  camera->SetImageHeight(80u);
+  EXPECT_EQ(80u, camera->ImageHeight());
 
-    EXPECT_NE(PixelFormat::PF_UNKNOWN, camera->ImageFormat());
-    camera->SetImageFormat(PixelFormat::PF_B8G8R8);
-    EXPECT_EQ(PixelFormat::PF_B8G8R8, camera->ImageFormat());
-    EXPECT_EQ(100u*80u*3u, camera->ImageMemorySize());
+  EXPECT_NE(PixelFormat::PF_UNKNOWN, camera->ImageFormat());
+  camera->SetImageFormat(PixelFormat::PF_B8G8R8);
+  EXPECT_EQ(PixelFormat::PF_B8G8R8, camera->ImageFormat());
+  EXPECT_EQ(100u*80u*3u, camera->ImageMemorySize());
 
 
-    // verify render texture GL Id
-    EXPECT_EQ(0u, camera->RenderTextureGLId());
-  #ifdef HAVE_OPENGL
-    // PreRender - creates the render texture
-    camera->PreRender();
-    EXPECT_NE(0u, camera->RenderTextureGLId());
-  #endif
-  }
+  // verify render texture GL Id
+  EXPECT_EQ(0u, camera->RenderTextureGLId());
+#ifdef HAVE_OPENGL
+  // PreRender - creates the render texture
+  camera->PreRender();
+  EXPECT_NE(0u, camera->RenderTextureGLId());
+#endif
 
   // Clean up
   engine->DestroyScene(scene);
@@ -169,60 +166,58 @@ void CameraTest::TrackFollow(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
-  {
-    CameraPtr camera = scene->CreateCamera();
-    EXPECT_TRUE(camera != nullptr);
+  CameraPtr camera = scene->CreateCamera();
+  EXPECT_TRUE(camera != nullptr);
 
-    VisualPtr visual = scene->CreateVisual();
+  VisualPtr visual = scene->CreateVisual();
 
-    // track node
-    EXPECT_EQ(nullptr, camera->TrackTarget());
-    EXPECT_EQ(math::Vector3d::Zero, camera->TrackOffset());
+  // track node
+  EXPECT_EQ(nullptr, camera->TrackTarget());
+  EXPECT_EQ(math::Vector3d::Zero, camera->TrackOffset());
 
-    camera->SetTrackTarget(nullptr);
-    EXPECT_EQ(nullptr, camera->TrackTarget());
-    EXPECT_EQ(math::Vector3d::Zero, camera->TrackOffset());
+  camera->SetTrackTarget(nullptr);
+  EXPECT_EQ(nullptr, camera->TrackTarget());
+  EXPECT_EQ(math::Vector3d::Zero, camera->TrackOffset());
 
-    camera->SetTrackTarget(visual);
-    EXPECT_EQ(visual, camera->TrackTarget());
-    EXPECT_EQ(math::Vector3d::Zero, camera->TrackOffset());
+  camera->SetTrackTarget(visual);
+  EXPECT_EQ(visual, camera->TrackTarget());
+  EXPECT_EQ(math::Vector3d::Zero, camera->TrackOffset());
 
-    math::Vector3d trackOffset(1.3, 30.4, -1.3);
-    camera->SetTrackTarget(visual, trackOffset, false);
-    EXPECT_EQ(visual, camera->TrackTarget());
-    EXPECT_EQ(trackOffset, camera->TrackOffset());
+  math::Vector3d trackOffset(1.3, 30.4, -1.3);
+  camera->SetTrackTarget(visual, trackOffset, false);
+  EXPECT_EQ(visual, camera->TrackTarget());
+  EXPECT_EQ(trackOffset, camera->TrackOffset());
 
-    math::Vector3d newTrackOffset(-1.2, 9.4, 1.7);
-    camera->SetTrackOffset(newTrackOffset);
-    EXPECT_EQ(newTrackOffset, camera->TrackOffset());
+  math::Vector3d newTrackOffset(-1.2, 9.4, 1.7);
+  camera->SetTrackOffset(newTrackOffset);
+  EXPECT_EQ(newTrackOffset, camera->TrackOffset());
 
-    camera->SetTrackPGain(0.234);
-    EXPECT_DOUBLE_EQ(0.234, camera->TrackPGain());
+  camera->SetTrackPGain(0.234);
+  EXPECT_DOUBLE_EQ(0.234, camera->TrackPGain());
 
-    // follow node
-    EXPECT_EQ(nullptr, camera->FollowTarget());
-    EXPECT_EQ(math::Vector3d::Zero, camera->FollowOffset());
+  // follow node
+  EXPECT_EQ(nullptr, camera->FollowTarget());
+  EXPECT_EQ(math::Vector3d::Zero, camera->FollowOffset());
 
-    camera->SetFollowTarget(nullptr);
-    EXPECT_EQ(nullptr, camera->FollowTarget());
-    EXPECT_EQ(math::Vector3d::Zero, camera->FollowOffset());
+  camera->SetFollowTarget(nullptr);
+  EXPECT_EQ(nullptr, camera->FollowTarget());
+  EXPECT_EQ(math::Vector3d::Zero, camera->FollowOffset());
 
-    camera->SetFollowTarget(visual);
-    EXPECT_EQ(visual, camera->FollowTarget());
-    EXPECT_EQ(math::Vector3d::Zero, camera->FollowOffset());
+  camera->SetFollowTarget(visual);
+  EXPECT_EQ(visual, camera->FollowTarget());
+  EXPECT_EQ(math::Vector3d::Zero, camera->FollowOffset());
 
-    math::Vector3d followOffset(7.2, -3.8, 9.3);
-    camera->SetFollowTarget(visual, followOffset, true);
-    EXPECT_EQ(visual, camera->FollowTarget());
-    EXPECT_EQ(followOffset, camera->FollowOffset());
+  math::Vector3d followOffset(7.2, -3.8, 9.3);
+  camera->SetFollowTarget(visual, followOffset, true);
+  EXPECT_EQ(visual, camera->FollowTarget());
+  EXPECT_EQ(followOffset, camera->FollowOffset());
 
-    math::Vector3d newFollowOffset(-0.2, 0.4, 0.7);
-    camera->SetFollowOffset(newFollowOffset);
-    EXPECT_EQ(newFollowOffset, camera->FollowOffset());
+  math::Vector3d newFollowOffset(-0.2, 0.4, 0.7);
+  camera->SetFollowOffset(newFollowOffset);
+  EXPECT_EQ(newFollowOffset, camera->FollowOffset());
 
-    camera->SetFollowPGain(0.4);
-    EXPECT_DOUBLE_EQ(0.4, camera->FollowPGain());
-  }
+  camera->SetFollowPGain(0.4);
+  EXPECT_DOUBLE_EQ(0.4, camera->FollowPGain());
 
   // Clean up
   engine->DestroyScene(scene);
@@ -243,42 +238,40 @@ void CameraTest::AddRemoveRenderPass(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
+  CameraPtr camera = scene->CreateCamera();
+  EXPECT_TRUE(camera != nullptr);
+
+  // verify no render pass exists for camera
+  EXPECT_EQ(0u, camera->RenderPassCount());
+
+  // get the render pass system
+  RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
+  if (!rpSystem)
   {
-    CameraPtr camera = scene->CreateCamera();
-    EXPECT_TRUE(camera != nullptr);
-
-    // verify no render pass exists for camera
-    EXPECT_EQ(0u, camera->RenderPassCount());
-
-    // get the render pass system
-    RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-    if (!rpSystem)
-    {
-      ignwarn << "Render engin '" << _renderEngine << "' does not support "
-              << "render pass system" << std::endl;
-      return;
-    }
-    RenderPassPtr pass1 = rpSystem->Create<GaussianNoisePass>();
-    EXPECT_NE(nullptr, pass1);
-
-    // test adding a render pass
-    camera->AddRenderPass(pass1);
-    EXPECT_EQ(1u, camera->RenderPassCount());
-    EXPECT_EQ(pass1, camera->RenderPassByIndex(0u));
-
-    // test adding another render pass
-    RenderPassPtr pass2 = rpSystem->Create<GaussianNoisePass>();
-    EXPECT_NE(nullptr, pass2);
-    camera->AddRenderPass(pass2);
-    EXPECT_EQ(2u, camera->RenderPassCount());
-    EXPECT_EQ(pass1, camera->RenderPassByIndex(0u));
-    EXPECT_EQ(pass2, camera->RenderPassByIndex(1u));
-
-    // test removing render pass
-    camera->RemoveRenderPass(pass1);
-    EXPECT_EQ(1u, camera->RenderPassCount());
-    EXPECT_EQ(pass2, camera->RenderPassByIndex(0u));
+    ignwarn << "Render engin '" << _renderEngine << "' does not support "
+            << "render pass system" << std::endl;
+    return;
   }
+  RenderPassPtr pass1 = rpSystem->Create<GaussianNoisePass>();
+  EXPECT_NE(nullptr, pass1);
+
+  // test adding a render pass
+  camera->AddRenderPass(pass1);
+  EXPECT_EQ(1u, camera->RenderPassCount());
+  EXPECT_EQ(pass1, camera->RenderPassByIndex(0u));
+
+  // test adding another render pass
+  RenderPassPtr pass2 = rpSystem->Create<GaussianNoisePass>();
+  EXPECT_NE(nullptr, pass2);
+  camera->AddRenderPass(pass2);
+  EXPECT_EQ(2u, camera->RenderPassCount());
+  EXPECT_EQ(pass1, camera->RenderPassByIndex(0u));
+  EXPECT_EQ(pass2, camera->RenderPassByIndex(1u));
+
+  // test removing render pass
+  camera->RemoveRenderPass(pass1);
+  EXPECT_EQ(1u, camera->RenderPassCount());
+  EXPECT_EQ(pass2, camera->RenderPassByIndex(0u));
 
   // Clean up
   engine->DestroyScene(scene);

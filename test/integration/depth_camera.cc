@@ -65,9 +65,8 @@ class DepthCameraTest: public testing::Test,
 void DepthCameraTest::DepthCameraBoxes(
     const std::string &_renderEngine)
 {
-  int imgWidth_ = 10;
-  int imgHeight_ = 10;
-
+  int imgWidth_ = 256;
+  int imgHeight_ = 256;
   double aspectRatio_ = imgWidth_/imgHeight_;
 
   double unitBoxSize = 1.0;

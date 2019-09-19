@@ -98,6 +98,9 @@ namespace ignition
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
+      // Documentation inherited.
+      public: virtual void PreRender() override;
+
       /// \brief Implementation of the render call
       public: virtual void Render() override;
 
@@ -118,6 +121,9 @@ namespace ignition
       /// \return Far clip distance. A value of zero is returned if the
       /// ogre camera has not been created.
       public: double FarClipPlane() const override;
+
+      // Documentation inherited
+      public: virtual void Destroy() override;
 
       /// \brief Update a render target
       /// \param[in] _target Render target to update

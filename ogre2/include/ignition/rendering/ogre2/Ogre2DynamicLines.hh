@@ -22,7 +22,6 @@
 #include <string>
 #include <ignition/math/Color.hh>
 
-// #include "ignition/rendering/ogre2/Export.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 

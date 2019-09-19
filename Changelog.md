@@ -10,7 +10,22 @@
 1. Added function to get the number of channels from a GpuRay.
     * [Pull request 178](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/178)
 
-### Ignition Rendering 2.X.X (201X-XX-XX)
+### Ignition Rendering 2.X.X (2019-XX-XX)
+
+### Ignition Rendering 2.1.2 (2019-09-10)
+
+1. Enable gamma write on color texture in depth camera
+    * [Pull request 193](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/193)
+
+### Ignition Rendering 2.1.1 (2019-09-06)
+
+1. Add checks on mouse selection
+    * [Pull request 191](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/191)
+
+### Ignition Rendering 2.1.0 (2019-08-27)
+
+1. Support generating point cloud data in DepthCamera
+    * [Pull request 187](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/187)
 
 1. Fix GizmoVisual material memory leak
     * [Pull request 185](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/185)

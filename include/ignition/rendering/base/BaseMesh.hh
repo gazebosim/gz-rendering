@@ -218,6 +218,8 @@ namespace ignition
     template <class T>
     void BaseMesh<T>::SetMaterial(MaterialPtr _material, bool _unique)
     {
+      // todo(anyone) take ownership of reference _material if _unique
+      // and destroy the reference material when the mesh is destroyed
       unsigned int count = this->SubMeshCount();
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 

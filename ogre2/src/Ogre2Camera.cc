@@ -41,7 +41,7 @@ Ogre2Camera::~Ogre2Camera()
 //////////////////////////////////////////////////
 void Ogre2Camera::Destroy()
 {
-  if (!this->ogreCamera)
+  if (!this->ogreCamera || !this->Scene()->IsInitialized())
     return;
 
   Ogre::SceneManager *ogreSceneManager;
@@ -252,7 +252,6 @@ math::Matrix4d Ogre2Camera::ViewMatrix() const
 //////////////////////////////////////////////////
 void Ogre2Camera::SetNearClipPlane(const double _near)
 {
-  // this->nearClip = _near;
   BaseCamera::SetNearClipPlane(_near);
   this->ogreCamera->setNearClipDistance(_near);
 }

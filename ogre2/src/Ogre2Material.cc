@@ -366,16 +366,13 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       hlmsTextureManager->createOrRetrieveTexture(baseName,
       this->ogreDatablock->suggestMapTypeBasedOnTextureType(_type));
 
-  this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture);
+  Ogre::HlmsSamplerblock samplerBlockRef;
+  samplerBlockRef.mU = Ogre::TAM_WRAP;
+  samplerBlockRef.mV = Ogre::TAM_WRAP;
+  samplerBlockRef.mW = Ogre::TAM_WRAP;
 
-  // texture addressing mode defaults to 'clamp' for all except detail maps
-  // in ogre2. Change default to 'wrap' instead
-  Ogre::HlmsSamplerblock samplerblock(
-      *this->ogreDatablock->getSamplerblock(_type));
-  samplerblock.mU = Ogre::TAM_WRAP;
-  samplerblock.mV = Ogre::TAM_WRAP;
-  samplerblock.mW = Ogre::TAM_WRAP;
-  this->ogreDatablock->setSamplerblock(_type, samplerblock);
+  this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture,
+      &samplerBlockRef);
 }
 
 //////////////////////////////////////////////////

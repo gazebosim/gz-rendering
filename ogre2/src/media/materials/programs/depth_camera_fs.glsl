@@ -24,6 +24,7 @@ in block
 } inPs;
 
 uniform sampler2D depthTexture;
+uniform sampler2D colorTexture;
 
 out vec4 fragColor;
 
@@ -33,12 +34,22 @@ uniform float far;
 uniform float min;
 uniform float max;
 uniform float tolerance;
+uniform vec3 backgroundColor;
 
 float getDepth(vec2 uv)
 {
   float fDepth = texture(depthTexture, uv).x;
   float linearDepth = projectionParams.y / (fDepth - projectionParams.x);
   return linearDepth;
+}
+
+float packFloat(vec4 color)
+{
+  int rgba = (int(color.x * 255.0) << 24) +
+             (int(color.y * 255.0) << 16) +
+             (int(color.z * 255.0) << 8) +
+             int(color.w * 255.0);
+  return intBitsToFloat(rgba);
 }
 
 
@@ -50,13 +61,42 @@ void main()
   // reconstruct 3d viewspace pos from depth
   vec3 viewSpacePos = inPs.cameraDir * d;
 
-  // get length of 3d point, i.e.range
-  float l = length(viewSpacePos);
+  // convert to z up
+  vec3 point = vec3(-viewSpacePos.z, -viewSpacePos.x, viewSpacePos.y);
 
-  if (l > far - tolerance)
-    l = max;
-  else if (l < near + tolerance)
-    l = min;
+  // color
+  vec4 color = texture(colorTexture, inPs.uv0);
 
-  fragColor = vec4(l, 0.0, 0, 1.0);
+  // clamp xyz and set rgb to background color
+  if (point.x > far - tolerance)
+  {
+    if (isinf(max))
+    {
+      point = vec3(max);
+    }
+    else
+    {
+      point.x = max;
+    }
+    color = vec4(backgroundColor, 1.0);
+  }
+  else if (point.x < near + tolerance)
+  {
+    if (isinf(min))
+    {
+      point = vec3(min);
+    }
+    else
+    {
+      point.x = min;
+    }
+    color = vec4(backgroundColor, 1.0);
+  }
+
+  // gamma correct - using same method as:
+  // https://bitbucket.org/sinbad/ogre/src/v2-1/Samples/Media/Hlms/Pbs/GLSL/PixelShader_ps.glsl#lines-513
+  color = sqrt(color);
+
+  float rgba = packFloat(color);
+  fragColor = vec4(point, rgba);
 }

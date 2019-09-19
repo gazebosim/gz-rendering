@@ -360,7 +360,6 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
         MaterialPtr defaultMat = this->scene->Material("Default/White");
         mat->CopyFrom(defaultMat);
       }
-
       ogreSubMesh->setMaterialName(mat->Name());
     }
 

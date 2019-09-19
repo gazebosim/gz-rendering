@@ -63,10 +63,24 @@ namespace ignition
 
       /// \brief Connect to the new rgb point cloud signal.
       /// \param[in] _subscriber Subscriber callback function
+      /// The arguments of the callback function are:
+      ///   _pointCloud Point cloud data. Each point is represented by four
+      ///               32 bit floating point values [X, Y, Z, RGBA]. The last
+      ///               field can be decoded into 4 unsigned 8 bit color values:
+      ///               uint32_t *rgba = reinterpret_cast<uint32_t *>(&_rgba)
+      ///               r = static_cast<uint8_t>(*rgba >> 24 & 0xFF);
+      ///               g = static_cast<uint8_t>(*rgba >> 16 & 0xFF);
+      ///               b = static_cast<uint8_t>(*rgba >> 8 & 0xFF);
+      ///               a = static_cast<uint8_t>(*rgba >> 0 & 0xFF);
+      ///  _width Point cloud image width
+      ///  _height Point cloud image height
+      ///  _depth Point cloud image depth
+      ///  _format Point cloud image format
       /// \return Pointer to the new Connection. This must be kept in scope
       public: virtual ignition::common::ConnectionPtr ConnectNewRgbPointCloud(
-          std::function<void(const float *, unsigned int, unsigned int,
-          unsigned int, const std::string &)>  _subscriber) = 0;
+          std::function<void(const float *_pointCloud, unsigned int _width,
+          unsigned int _height, unsigned int _depth,
+          const std::string &_format)> _subscriber) = 0;
     };
   }
   }

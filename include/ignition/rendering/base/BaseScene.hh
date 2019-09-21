@@ -279,6 +279,21 @@ namespace ignition
                   const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual ThermalCameraPtr CreateThermalCamera() override;
+
+      // Documentation inherited.
+      public: virtual ThermalCameraPtr CreateThermalCamera(
+                  const unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual ThermalCameraPtr CreateThermalCamera(
+                  const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual ThermalCameraPtr CreateThermalCamera(
+                  const unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual GpuRaysPtr CreateGpuRays() override;
 
       // Documentation inherited.
@@ -405,6 +420,17 @@ namespace ignition
 
       protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      /// \brief Implementation for creating thermal camera.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of thermal camera
+      protected: virtual ThermalCameraPtr CreateThermalCameraImpl(
+                     unsigned int /*_id*/, const std::string &/*_name*/)
+                 {
+                   ignerr << "Thermal camera not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return ThermalCameraPtr();
+                 }
 
       /// \brief Implementation for creating GpuRays sensor.
       /// \param[in] _id Unique id

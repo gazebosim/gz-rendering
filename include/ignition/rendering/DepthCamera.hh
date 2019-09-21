@@ -20,12 +20,6 @@
 #include <string>
 
 #include <ignition/common/Event.hh>
-#include <ignition/math/Matrix4.hh>
-
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/Sensor.hh"
-#include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Camera.hh"
 
 namespace ignition
@@ -44,7 +38,7 @@ namespace ignition
       public: typedef std::function<void(const void*, unsigned int,
           unsigned int, unsigned int, const std::string&)> NewFrameListener;
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~DepthCamera() { }
 
       /// \brief Create a texture which will hold the depth data

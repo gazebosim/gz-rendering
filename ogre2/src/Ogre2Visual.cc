@@ -72,6 +72,7 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
   // set user data for mouse queries
   derived->OgreObject()->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
+
   derived->OgreObject()->setName(this->Name() + "_" + _geometry->Name());
   derived->OgreObject()->setVisibilityFlags(IGN_VISIBILITY_ALL);
 
@@ -112,3 +113,25 @@ Ogre2VisualPtr Ogre2Visual::SharedThis()
   ObjectPtr object = shared_from_this();
   return std::dynamic_pointer_cast<Ogre2Visual>(object);
 }
+
+//////////////////////////////////////////////////
+//void Ogre2Visual::SetUserData(const std::string &_key, const std::any &_any)
+//{
+//  BaseVisual::SetUserData(_key, _any);
+//
+//  auto userObj = this->ogreNode->getUserObjectBindings();
+//
+//  // set custom user data
+//  for (auto it : this->userData)
+//  {
+//    auto v = it.second;
+//    std::cerr << "type id name " << v.type().name() << std::endl;
+//    if (v.type() == typeid(float) || v.type() == typeid(double))
+//    {
+//      double d = std::any_cast<double>(v);
+//      userObj.setUserAny(it.first, Ogre::Any(d));
+//      std::cerr << "setting user any " << it.first << ": " << d << std::endl;
+//    }
+//  }
+//}
+

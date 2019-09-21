@@ -299,7 +299,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   //   texture colorTexture target_width target_height PF_R8G8B8
   //       depth_texture depth_format PF_D32_FLOAT
   //   texture depthTexture target_width target_height PF_D32_FLOAT
-  //   target depthTexture
+  //   target colorTexture
   //   {
   //     pass clear
   //     {
@@ -394,7 +394,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
           & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
     }
 
-    // rt_input target - converts depth to range
+    // rt_input target - converts depth to xyz
     Ogre::CompositorTargetDef *inputTargetDef =
         nodeDef->addTargetPass("rt_input");
     inputTargetDef->setNumPasses(2);

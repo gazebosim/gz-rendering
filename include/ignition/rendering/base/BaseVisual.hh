@@ -84,6 +84,13 @@ namespace ignition
       // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited.
+      public: virtual void SetUserData(const std::string &_key,
+          Variant _value) override;
+
+      // Documentation inherited.
+      public: virtual Variant UserData(const std::string &_key) const override;
+
       protected: virtual void PreRenderChildren() override;
 
       protected: virtual void PreRenderGeometries();
@@ -96,6 +103,9 @@ namespace ignition
 
       /// \brief Pointer to material assigned to this visual
       protected: MaterialPtr material;
+
+      /// \brief A map of custom key value data
+      protected: std::map<std::string, Variant> userData;
     };
 
     //////////////////////////////////////////////////
@@ -308,6 +318,24 @@ namespace ignition
       ignerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetUserData(const std::string &_key, Variant _value)
+    {
+      this->userData[_key] = _value;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    Variant BaseVisual<T>::UserData(const std::string &_key) const
+    {
+      Variant value;
+      auto it = this->userData.find(_key);
+      if (it != this->userData.end())
+        value = it->second;
+      return value;
     }
     }
   }

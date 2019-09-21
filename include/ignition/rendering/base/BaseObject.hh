@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASE_BASEOBJECT_HH_
 #define IGNITION_RENDERING_BASE_BASEOBJECT_HH_
 
+#include <map>
 #include <string>
 #include "ignition/rendering/Object.hh"
 
@@ -44,6 +45,7 @@ namespace ignition
       // Documentation inherited.
       public: virtual void PostRender() override;
 
+      // Documentation inherited.
       public: virtual void Destroy() override;
 
       // TODO(anyone): make pure virtual

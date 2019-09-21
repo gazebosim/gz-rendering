@@ -19,18 +19,10 @@
 
 #include <string>
 
-#include <ignition/math/Matrix3.hh>
-#include <ignition/math/Pose3.hh>
-
 #include <ignition/common/Event.hh>
-#include <ignition/common/Console.hh>
 
-#include "ignition/rendering/DepthCamera.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/base/BaseRenderTarget.hh"
 #include "ignition/rendering/base/BaseCamera.hh"
+#include "ignition/rendering/DepthCamera.hh"
 
 namespace ignition
 {

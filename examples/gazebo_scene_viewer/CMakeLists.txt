@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(ignition-rendering-gazebo-scene-viewer)
-find_package(ignition-rendering2 REQUIRED)
+find_package(ignition-rendering3 REQUIRED)
 find_package(gazebo REQUIRED)
 
 include_directories(SYSTEM ${GAZEBO_INCLUDE_DIRS})

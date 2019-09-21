@@ -248,7 +248,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Verify rays caster 1 range readings
   // listen to new gpu rays frames
-  unsigned int channels = 3;
+  unsigned int channels = gpuRays->Channels();
   float *scan = new float[hRayCount * vRayCount * channels];
   common::ConnectionPtr c =
     gpuRays->ConnectNewGpuRaysFrame(
@@ -385,7 +385,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   visualBox1->SetWorldRotation(box01Pose.Rot());
   root->AddChild(visualBox1);
 
-  unsigned int channels = 3;
+  unsigned int channels = gpuRays->Channels();
   float *scan = new float[hRayCount * vRayCount * channels];
   common::ConnectionPtr c =
     gpuRays->ConnectNewGpuRaysFrame(

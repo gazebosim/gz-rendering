@@ -84,6 +84,12 @@ OgreDepthCamera::OgreDepthCamera()
 //////////////////////////////////////////////////
 OgreDepthCamera::~OgreDepthCamera()
 {
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void OgreDepthCamera::Destroy()
+{
   if (this->dataPtr->depthBuffer)
   {
     delete [] this->dataPtr->depthBuffer;
@@ -102,7 +108,7 @@ OgreDepthCamera::~OgreDepthCamera()
     this->dataPtr->colorBuffer = nullptr;
   }
 
-  if (!this->scene->IsInitialized())
+  if (!this->ogreCamera || !this->scene->IsInitialized())
     return;
 
   Ogre::SceneManager *ogreSceneManager;
@@ -113,10 +119,9 @@ OgreDepthCamera::~OgreDepthCamera()
   }
   else
   {
-    if (this->ogreCamera != nullptr && ogreSceneManager->hasCamera(
-        this->name + "_Depth_Camera"))
+    if (ogreSceneManager->hasCamera(this->name))
     {
-      ogreSceneManager->destroyCamera(this->ogreCamera);
+      ogreSceneManager->destroyCamera(this->name);
       this->ogreCamera = nullptr;
     }
   }
@@ -144,7 +149,7 @@ void OgreDepthCamera::CreateCamera()
   }
 
   this->ogreCamera = ogreSceneManager->createCamera(
-      this->name + "_Depth_Camera");
+      this->name);
   if (this->ogreCamera == nullptr)
   {
     ignerr << "Ogre camera cannot be created" << std::endl;
@@ -247,15 +252,17 @@ void OgreDepthCamera::CreateDepthTexture()
 }
 
 //////////////////////////////////////////////////
-void OgreDepthCamera::Render()
+void OgreDepthCamera::PreRender()
 {
-  // \todo(anyone) Make OgreDepthCamera::PreRender public to override
-  // base function and move these calls there
   if (!this->depthTexture)
     this->CreateDepthTexture();
   if (!this->dataPtr->pcdTexture || !this->dataPtr->colorTexture)
     this->CreatePointCloudTexture();
+}
 
+//////////////////////////////////////////////////
+void OgreDepthCamera::Render()
+{
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
   Ogre::ShadowTechnique shadowTech = sceneMgr->getShadowTechnique();
 

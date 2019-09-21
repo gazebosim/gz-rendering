@@ -65,86 +65,86 @@ void ShadowsTest::Shadows(const std::string &_renderEngine)
   scene->SetAmbientLight(0.3, 0.3, 0.3);
 
   VisualPtr root = scene->RootVisual();
+
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_TRUE(camera != nullptr);
+
+  // downward looking camera
+  camera->SetImageWidth(10);
+  camera->SetImageHeight(10);
+  camera->SetLocalRotation(0, 1.57, 0);
+  root->AddChild(camera);
+
+
+  // create downward directional light
+  DirectionalLightPtr light = scene->CreateDirectionalLight();
+  light->SetDirection(0.0, 0.0, -1);
+  light->SetDiffuseColor(0.5, 0.5, 0.5);
+  light->SetSpecularColor(0.5, 0.5, 0.5);
+  root->AddChild(light);
+
+  // create box that casts shadows
+  VisualPtr boxTop = scene->CreateVisual();
+  boxTop->AddGeometry(scene->CreateBox());
+  boxTop->SetLocalPosition(0.0, 0.5, 0.55);
+  root->AddChild(boxTop);
+
+  // create green material
+  MaterialPtr green = scene->CreateMaterial();
+  green->SetAmbient(0.0, 0.5, 0.0);
+  green->SetDiffuse(0.0, 0.7, 0.0);
+  green->SetSpecular(0.5, 0.5, 0.5);
+  green->SetShininess(50);
+  green->SetReflectivity(0);
+
+  // create box at origin that receives shadows
+  VisualPtr boxBottom = scene->CreateVisual();
+  boxBottom->AddGeometry(scene->CreateBox());
+  boxBottom->SetLocalPosition(0.0, 0.0, -1.0);
+  boxBottom->SetMaterial(green);
+  root->AddChild(boxBottom);
+
+  Image image = camera->CreateImage();
+
+  // verify shadows are generated for a number of images
+  for (unsigned int k = 0; k < 10; ++k)
   {
-    CameraPtr camera = scene->CreateCamera();
-    ASSERT_TRUE(camera != nullptr);
+    // sum of shaded / unshaded pixel values
+    unsigned shaded = 0;
+    unsigned unshaded = 0;
 
-    // downward looking camera
-    camera->SetImageWidth(10);
-    camera->SetImageHeight(10);
-    camera->SetLocalRotation(0, 1.57, 0);
-    root->AddChild(camera);
-
-
-    // create downward directional light
-    DirectionalLightPtr light = scene->CreateDirectionalLight();
-    light->SetDirection(0.0, 0.0, -1);
-    light->SetDiffuseColor(0.5, 0.5, 0.5);
-    light->SetSpecularColor(0.5, 0.5, 0.5);
-    root->AddChild(light);
-
-    // create box that casts shadows
-    VisualPtr boxTop = scene->CreateVisual();
-    boxTop->AddGeometry(scene->CreateBox());
-    boxTop->SetLocalPosition(0.0, 0.5, 0.55);
-    root->AddChild(boxTop);
-
-    // create green material
-    MaterialPtr green = scene->CreateMaterial();
-    green->SetAmbient(0.0, 0.5, 0.0);
-    green->SetDiffuse(0.0, 0.7, 0.0);
-    green->SetSpecular(0.5, 0.5, 0.5);
-    green->SetShininess(50);
-    green->SetReflectivity(0);
-
-    // create box at origin that receives shadows
-    VisualPtr boxBottom = scene->CreateVisual();
-    boxBottom->AddGeometry(scene->CreateBox());
-    boxBottom->SetLocalPosition(0.0, 0.0, -1.0);
-    boxBottom->SetMaterial(green);
-    root->AddChild(boxBottom);
-
-    Image image = camera->CreateImage();
-
-    // verify shadows are generated for a number of images
-    for (unsigned int k = 0; k < 10; ++k)
+    camera->Capture(image);
+    unsigned char *data = image.Data<unsigned char>();
+    unsigned int height = camera->ImageHeight();
+    unsigned int width = camera->ImageWidth();
+    unsigned int bpp = PixelUtil::BytesPerPixel(camera->ImageFormat());
+    unsigned int step = width * bpp;
+    for (unsigned int i = 0; i < height; ++i)
     {
-      // sum of shaded / unshaded pixel values
-      unsigned shaded = 0;
-      unsigned unshaded = 0;
-
-      camera->Capture(image);
-      unsigned char *data = image.Data<unsigned char>();
-      unsigned int height = camera->ImageHeight();
-      unsigned int width = camera->ImageWidth();
-      unsigned int bpp = PixelUtil::BytesPerPixel(camera->ImageFormat());
-      unsigned int step = width * bpp;
-      for (unsigned int i = 0; i < height; ++i)
+      for (unsigned int j = 0; j < step; j+=bpp)
       {
-        for (unsigned int j = 0; j < step; j+=bpp)
-        {
-          unsigned int idx = i * step + j;
-          unsigned int r = data[idx];
-          unsigned int g = data[idx+1];
-          unsigned int b = data[idx+2];
+        unsigned int idx = i * step + j;
+        unsigned int r = data[idx];
+        unsigned int g = data[idx+1];
+        unsigned int b = data[idx+2];
 
-          // color should be a shade of green
-          EXPECT_GT(g, r);
-          EXPECT_GT(g, b);
+        // color should be a shade of green
+        EXPECT_GT(g, r);
+        EXPECT_GT(g, b);
 
-          if (j < step /2)
-            shaded += r + g + b;
-          else
-            unshaded += r + g + b;
-        }
+        if (j < step /2)
+          shaded += r + g + b;
+        else
+          unshaded += r + g + b;
       }
-      // Test currently fails on macOS
-  #ifndef __APPLE__
-      // left side of image should be significanly darker than the right side
-      EXPECT_LT(shaded, unshaded);
-  #endif
     }
+    // Test currently fails on macOS
+#ifndef __APPLE__
+    // left side of image should be significanly darker than the right side
+    EXPECT_LT(shaded, unshaded);
+#endif
   }
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

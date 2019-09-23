@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_OGRE_OGREDYNAMICLINES_HH_
-#define IGNITION_RENDERING_OGRE_OGREDYNAMICLINES_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2DYNAMICLINES_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2DYNAMICLINES_HH_
 
 #include <memory>
 #include <vector>
@@ -33,8 +33,8 @@ namespace ignition
     /// \brief Forward declaration
     class Ogre2DynamicLinesPrivate;
 
-    /*  \class OgreDynamicLines OgreDynamicLines.hh \
-     *  ignition/rendering/ogre/OgreDynamicLines.hh
+    /*  \class Ogre2DynamicLines Ogre2DynamicLines.hh \
+     *  ignition/rendering/ogre2/Ogre2DynamicLines.hh
      */
     /// \brief Class for drawing lines that can change
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2DynamicLines :

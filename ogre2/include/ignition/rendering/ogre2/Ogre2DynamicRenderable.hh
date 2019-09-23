@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_OGRE_OGREDYNAMICRENDERABLE_HH_
-#define IGNITION_RENDERING_OGRE_OGREDYNAMICRENDERABLE_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2DYNAMICRENDERABLE_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2DYNAMICRENDERABLE_HH_
 
 #include <string>
 #include "ignition/rendering/ogre2/Export.hh"
@@ -37,6 +37,11 @@ namespace ignition
     {
       /// \brief Constructor
       public: Ogre2DynamicRenderable();
+
+      /// \brief Constructor
+      public: Ogre2DynamicRenderable(Ogre::IdType id,
+                              Ogre::ObjectMemoryManager *objectMemoryManager,
+                              Ogre::SceneManager *manager);
 
       /// \brief Virtual destructor
       public: virtual ~Ogre2DynamicRenderable();

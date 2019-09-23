@@ -31,6 +31,15 @@ Ogre2DynamicRenderable::Ogre2DynamicRenderable() :
 }
 
 //////////////////////////////////////////////////
+Ogre2DynamicRenderable::Ogre2DynamicRenderable(Ogre::IdType id,
+                        Ogre::ObjectMemoryManager *objectMemoryManager,
+                        Ogre::SceneManager *manager) :
+                        SimpleRenderable(id, objectMemoryManager,
+                        manager)
+{
+}
+
+//////////////////////////////////////////////////
 Ogre2DynamicRenderable::~Ogre2DynamicRenderable()
 {
   delete this->mRenderOp.vertexData;

@@ -74,6 +74,8 @@
        public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
                                      const ignition::math::Color &_color);
 
+       public: virtual void ClearPoints();
+
        public: virtual void SetType(Type _type);
 
        public: virtual void SetAction(Action _action);

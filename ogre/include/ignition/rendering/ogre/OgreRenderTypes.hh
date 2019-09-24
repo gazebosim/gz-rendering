@@ -70,6 +70,7 @@ namespace ignition
     typedef shared_ptr<OgreCamera>               OgreCameraPtr;
     typedef shared_ptr<OgreDepthCamera>          OgreDepthCameraPtr;
     typedef shared_ptr<OgreDirectionalLight>     OgreDirectionalLightPtr;
+    typedef shared_ptr<OgreDynamicLines>         OgreDynamicLinesPtr;
     typedef shared_ptr<OgreGeometry>             OgreGeometryPtr;
     typedef shared_ptr<OgreGizmoVisual>          OgreGizmoVisualPtr;
     typedef shared_ptr<OgreGpuRays>              OgreGpuRaysPtr;
@@ -105,13 +106,41 @@ namespace ignition
 
     enum RenderOpType
     {
-      RENDERING_POINT_LIST = 0,
-      RENDERING_LINE_LIST = 1,
-      RENDERING_LINE_STRIP = 2,
-      RENDERING_TRIANGLE_LIST = 3,
+      RENDERING_POINT_LIST     = 0,
+      RENDERING_LINE_LIST      = 1,
+      RENDERING_LINE_STRIP     = 2,
+      RENDERING_TRIANGLE_LIST  = 3,
       RENDERING_TRIANGLE_STRIP = 4,
-      RENDERING_TRIANGLE_FAN = 5,
-      RENDERING_MESH_RESOURCE = 6
+      RENDERING_TRIANGLE_FAN   = 5,
+      RENDERING_MESH_RESOURCE  = 6
+    };
+
+    enum Type
+    {
+      NONE           = 0;
+      BOX            = 1;
+      CYLINDER       = 2;
+      LINE_STRIP     = 3;
+      LINE_LIST      = 4;
+      POINTS         = 5;
+      SPHERE         = 6;
+      TEXT           = 7;
+      TRIANGLE_FAN   = 8;
+      TRIANGLE_LIST  = 9;
+      TRIANGLE_STRIP = 10;
+    };
+
+    enum Vsibility
+    {
+      GUI = 0;
+      ALL = 1;
+    };
+    
+    enum Action
+    {
+      ADD_MODIFY    = 0;
+      DELETE_MARKER = 1;
+      DELETE_ALL    = 2;
     };
     }
   }

@@ -49,13 +49,7 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~OgreDynamicLines();
 
-      /// \brief Get type of movable
-      /// \return Returns "ignition::rendering::ogredynamiclines"
-      public: static std::string MovableType();
-
-      /// \brief Overridden function from Ogre's base class.
-      /// \return Returns "ignition::rendering::ogredynamiclines"
-      public: virtual const Ogre::String &getMovableType() const;
+      public: virtual void SetOperationType(RenderOpType opType);
 
       /// \brief Add a point to the point list
       /// \param[in] _pt ignition::math::Vector3d point

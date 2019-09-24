@@ -56,17 +56,9 @@ OgreDynamicLines::~OgreDynamicLines()
 {
 }
 
-/////////////////////////////////////////////////
-std::string OgreDynamicLines::MovableType()
+void OgreDynamicLines::SetOperationType(RenderOpType opType)
 {
-  return "ignition::rendering::ogredynamiclines";
-}
-
-/////////////////////////////////////////////////
-const Ogre::String &OgreDynamicLines::getMovableType() const
-{
-  static Ogre::String moveType = OgreDynamicLines::MovableType();
-  return moveType;
+  this->SetOperationType(opType);
 }
 
 /////////////////////////////////////////////////

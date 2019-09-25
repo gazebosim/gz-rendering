@@ -21,7 +21,7 @@
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Object.hh"
-#include "ignition/rendering/Material.hh"
+#include "ignition/common/Time.hh"
 
 namespace ignition
 {
@@ -57,9 +57,9 @@ namespace ignition
 
       public: virtual int32_t Layer() const = 0;
 
-      public: virtual void SetPose(math::Pose _pose) = 0;
+      public: virtual void SetPose(math::Pose3d _pose) = 0;
 
-      public: virtual math::Pose Pose() const = 0;
+      public: virtual math::Pose3d Pose() const = 0;
 
       public: virtual void SetScale(math::Vector3d _scale) = 0;
 
@@ -67,7 +67,7 @@ namespace ignition
 
       public: virtual void SetParent(std::string _parent) = 0;
 
-      public: virtual std::string Parent() const = 0;
+      public: virtual std::string getParent() const = 0;
     };
     }
   }

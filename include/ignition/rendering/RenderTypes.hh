@@ -60,6 +60,7 @@ namespace ignition
     class Image;
     class Light;
     class Material;
+    class Marker;
     class Mesh;
     class Node;
     class Object;
@@ -136,6 +137,10 @@ namespace ignition
     /// \brief Shared pointer to Material
     typedef shared_ptr<Material> MaterialPtr;
 
+    /// \def MarkerPtr
+    /// \brief Shared pointer to Marker
+    typedef shared_ptr<Marker> MarkerPtr;
+    
     /// \def MeshPtr
     /// \brief Shared pointer to Mesh
     typedef shared_ptr<Mesh> MeshPtr;

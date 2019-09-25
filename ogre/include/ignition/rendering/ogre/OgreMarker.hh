@@ -22,7 +22,6 @@
  #include "ignition/rendering/base/BaseMarker.hh"
  #include "ignition/rendering/ogre/OgreGeometry.hh"
  #include "ignition/rendering/ogre/OgreIncludes.hh"
- #include "ignition/rendering/ogre/OgreRenderTypes.hh"
  
  namespace ignition
  {
@@ -35,7 +34,7 @@
  
      /// \brief Ogre implementation of a grid geometry.
      class IGNITION_RENDERING_OGRE_VISIBLE OgreMarker
-       : public BaseMarker<OgreMarker>
+       : public BaseMarker<OgreGeometry>
      {
        /// \brief Constructor
        protected: OgreMarker();
@@ -59,9 +58,6 @@
        /// \param[in] _material Ogre material.
        protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
 
-       // Documentation inherited.
-       public: virtual MaterialPtr Material() const;
-
        public: virtual void SetRenderOperation(RenderOpType opType);
 
        public: virtual void SetPoint(const unsigned int _index,
@@ -82,11 +78,11 @@
 
        public: virtual void SetVisibility(Visibility _visibility);
        
-       public: virtual Type Type() const;
+       public: virtual Type getType() const;
 
-       public: virtual Action Action() const;
+       public: virtual Action getAction() const;
 
-       public: virtual Visibility Visibility() const;
+       public: virtual Visibility getVisibility() const;
 
        /// \brief Create the grid geometry in ogre
        private: void Create();

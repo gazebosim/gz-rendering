@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreDynamicLines.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
@@ -26,7 +27,7 @@ class ignition::rendering::OgreMarkerPrivate
   /// \brief Grid materal
   public: OgreMaterialPtr material;
 
-  public: OgreDynamicLinesPtr dynamicRenderable;
+  public: std::shared_ptr<OgreDynamicLines> dynamicRenderable;
   
   public: Type type;
 
@@ -151,17 +152,17 @@ void OgreMarker::SetVisibility(Visibility _visibility)
   this->dataPtr->visibility = _visibility;
 }
 
-Type OgreMarker::Type()
+Type OgreMarker::getType() const
 {
   return this->dataPtr->type;
 }
 
-Action OgreMarker::Action()
+Action OgreMarker::getAction() const
 {
   return this->dataPtr->action;
 }
 
-Visibility OgreMarker::Visibility()
+Visibility OgreMarker::getVisibility() const
 {
   return this->dataPtr->visibility;
 }

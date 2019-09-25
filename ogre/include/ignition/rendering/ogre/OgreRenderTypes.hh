@@ -38,6 +38,7 @@ namespace ignition
     class OgreJointVisual;
     class OgreLight;
     class OgreMaterial;
+    class OgreMarker;
     class OgreMesh;
     class OgreMeshFactory;
     class OgreNode;
@@ -70,7 +71,6 @@ namespace ignition
     typedef shared_ptr<OgreCamera>               OgreCameraPtr;
     typedef shared_ptr<OgreDepthCamera>          OgreDepthCameraPtr;
     typedef shared_ptr<OgreDirectionalLight>     OgreDirectionalLightPtr;
-    typedef shared_ptr<OgreDynamicLines>         OgreDynamicLinesPtr;
     typedef shared_ptr<OgreGeometry>             OgreGeometryPtr;
     typedef shared_ptr<OgreGizmoVisual>          OgreGizmoVisualPtr;
     typedef shared_ptr<OgreGpuRays>              OgreGpuRaysPtr;
@@ -78,6 +78,7 @@ namespace ignition
     typedef shared_ptr<OgreJointVisual>          OgreJointVisualPtr;
     typedef shared_ptr<OgreLight>                OgreLightPtr;
     typedef shared_ptr<OgreMaterial>             OgreMaterialPtr;
+    typedef shared_ptr<OgreMarker>               OgreMarkerPtr;
     typedef shared_ptr<OgreMesh>                 OgreMeshPtr;
     typedef shared_ptr<OgreMeshFactory>          OgreMeshFactoryPtr;
     typedef shared_ptr<OgreNode>                 OgreNodePtr;
@@ -117,30 +118,30 @@ namespace ignition
 
     enum Type
     {
-      NONE           = 0;
-      BOX            = 1;
-      CYLINDER       = 2;
-      LINE_STRIP     = 3;
-      LINE_LIST      = 4;
-      POINTS         = 5;
-      SPHERE         = 6;
-      TEXT           = 7;
-      TRIANGLE_FAN   = 8;
-      TRIANGLE_LIST  = 9;
-      TRIANGLE_STRIP = 10;
+      NONE           = 0,
+      BOX            = 1,
+      CYLINDER       = 2,
+      LINE_STRIP     = 3,
+      LINE_LIST      = 4,
+      POINTS         = 5,
+      SPHERE         = 6,
+      TEXT           = 7,
+      TRIANGLE_FAN   = 8,
+      TRIANGLE_LIST  = 9,
+      TRIANGLE_STRIP = 10
     };
 
-    enum Vsibility
+    enum Visibility
     {
-      GUI = 0;
-      ALL = 1;
+      GUI = 0,
+      ALL = 1
     };
     
     enum Action
     {
-      ADD_MODIFY    = 0;
-      DELETE_MARKER = 1;
-      DELETE_ALL    = 2;
+      ADD_MODIFY    = 0,
+      DELETE_MARKER = 1,
+      DELETE_ALL    = 2
     };
     }
   }

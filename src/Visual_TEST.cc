@@ -41,6 +41,9 @@ class VisualTest : public testing::Test,
 
   /// \brief Test visual scale
   public: void Scale(const std::string &_renderEngine);
+
+  /// \brief User data
+  public: void UserData(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -286,6 +289,65 @@ void VisualTest::Scale(const std::string &_renderEngine)
 TEST_P(VisualTest, Scale)
 {
   Scale(GetParam());
+}
+
+/////////////////////////////////////////////////
+void VisualTest::UserData(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene3");
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+
+  // int
+  std::string intKey = "int";
+  int intValue = 1998;
+  visual->SetUserData(intKey, intValue);
+  Variant value = visual->UserData(intKey);
+  EXPECT_EQ(intValue, std::get<int>(value));
+
+  // float
+  std::string floatKey = "float";
+  float floatValue = 1.345f;
+  visual->SetUserData(floatKey, floatValue);
+  value = visual->UserData(floatKey);
+  EXPECT_FLOAT_EQ(floatValue, std::get<float>(value));
+
+  // double
+  std::string doubleKey = "double";
+  double doubleValue = -0.123;
+  visual->SetUserData(doubleKey, doubleValue);
+  value = visual->UserData(doubleKey);
+  EXPECT_DOUBLE_EQ(doubleValue, std::get<double>(value));
+
+  // string
+  std::string stringKey = "string";
+  std::string stringValue = "test_string";
+  visual->SetUserData(stringKey, stringValue);
+  value = visual->UserData(stringKey);
+  EXPECT_EQ(stringValue, std::get<std::string>(value));
+
+  // test invalid access
+  EXPECT_THROW(std::get<int>(value), std::bad_variant_access);
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, UserData)
+{
+  UserData(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Visual, VisualTest,

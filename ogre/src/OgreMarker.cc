@@ -1,4 +1,4 @@
-/*
+/*/dyna
  * Copyright (C) 2019 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,6 @@ class ignition::rendering::OgreMarkerPrivate
   public: Visibility visibility;
 
   public: Action action;
-
 };
 
 using namespace ignition;
@@ -45,7 +44,7 @@ OgreMarker::OgreMarker()
     : dataPtr(new OgreMarkerPrivate)
 {
 }
-
+//TODO add Destroy implementation
 //////////////////////////////////////////////////
 OgreMarker::~OgreMarker()
 {
@@ -54,11 +53,7 @@ OgreMarker::~OgreMarker()
 //////////////////////////////////////////////////
 void OgreMarker::PreRender()
 {
-  if (this->markerDirty)
-  {
-    this->Create();
-    this->markerDirty = false;
-  }
+  this->dataPtr->dynamicRenderable->Update();
 }
 
 //////////////////////////////////////////////////
@@ -70,7 +65,11 @@ void OgreMarker::Init()
 //////////////////////////////////////////////////
 void OgreMarker::Create()
 {
-  
+  //TODO init dynamicRenderable to default rendertype
+  this->dataPtr->type = LINE_STRIP;
+  this->dataPtr->visibility = GUI;
+  this->dataPtr->action = ADD_MODIFY;
+  this->dataPtr->dynamicRenderable.reset(new OgreDynamicLines(LINE_STRIP));
 }
 
 //////////////////////////////////////////////////
@@ -109,9 +108,9 @@ MaterialPtr OgreMarker::Material() const
   return this->dataPtr->material;
 }
 
-void OgreMarker::SetRenderOperation(RenderOpType opType)
+void OgreMarker::SetRenderOperation(Type _type)
 {
-  this->dataPtr->dynamicRenderable->SetOperationType(opType);
+  this->dataPtr->dynamicRenderable->SetOperationType(_type);
 }
 
 void OgreMarker::SetPoint(const unsigned int _index,
@@ -140,6 +139,7 @@ void OgreMarker::ClearPoints()
 void OgreMarker::SetType(Type _type)
 {
   this->dataPtr->type = _type;
+  SetRenderOperation(_type);
 }
 
 void OgreMarker::SetAction(Action _action)

@@ -58,7 +58,7 @@
        /// \param[in] _material Ogre material.
        protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
 
-       public: virtual void SetRenderOperation(RenderOpType opType);
+       public: virtual void SetRenderOperation(Type _type);
 
        public: virtual void SetPoint(const unsigned int _index,
                                      const ignition::math::Vector3d &_value);

@@ -41,33 +41,9 @@ namespace ignition
 
       public: virtual common::Time Lifetime() const = 0;
 
-      public: virtual void SetLoaded(bool _loaded) = 0;
-
-      public: virtual bool isLoaded() const = 0;
-
-      public: virtual void SetNS(std::string _ns) = 0;
-
-      public: virtual std::string NS() const = 0;
-
-      public: virtual void SetID(uint64_t _id) = 0;
-
-      public: virtual uint64_t ID() const = 0;
-
       public: virtual void SetLayer(int32_t _layer) = 0;
 
       public: virtual int32_t Layer() const = 0;
-
-      public: virtual void SetPose(math::Pose3d _pose) = 0;
-
-      public: virtual math::Pose3d Pose() const = 0;
-
-      public: virtual void SetScale(math::Vector3d _scale) = 0;
-
-      public: virtual math::Vector3d Scale() const = 0;
-
-      public: virtual void SetParent(std::string _parent) = 0;
-
-      public: virtual std::string getParent() const = 0;
     };
     }
   }

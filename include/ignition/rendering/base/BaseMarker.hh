@@ -44,35 +44,14 @@ namespace ignition
       public: virtual ~BaseMarker();
       
       public: virtual void PreRender();
-
       public: virtual void Destroy();
-
       public: virtual void setLifetime(common::Time _lifetime);
       public: virtual common::Time Lifetime() const;
-      public: virtual void SetLoaded(bool _loaded);
-      public: virtual bool isLoaded() const;
-      public: virtual void SetNS(std::string _ns);
-      public: virtual std::string NS() const;
-      public: virtual void SetID(uint64_t id);
-      public: virtual uint64_t ID() const;
       public: virtual void SetLayer(int32_t _layer);
       public: virtual int32_t Layer() const;
-      public: virtual void SetPose(math::Pose3d _pose);
-      public: virtual math::Pose3d Pose() const;
-      public: virtual void SetScale(math::Vector3d _scale);
-      public: virtual math::Vector3d Scale() const;
-      public: virtual void SetParent(std::string _parent);
-      public: virtual std::string getParent() const;
 
-      //TODO add init vals
       protected: common::Time lifetime;
-      protected: bool loaded = false;
-      protected: std::string ns;
-      protected: uint64_t id = 0;
       protected: int32_t layer = 0;
-      protected: math::Pose3d pose;
-      protected: math::Vector3d scale;
-      protected: std::string parent;
       protected: bool markerDirty = false;
     };
     
@@ -107,51 +86,6 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseMarker<T>::SetLoaded(bool _loaded)
-    {
-      this->loaded = _loaded;
-      this->markerDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    bool BaseMarker<T>::isLoaded() const
-    {
-      return this->loaded;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseMarker<T>::SetNS(std::string _ns)
-    {
-      this->ns = _ns;
-      this->markerDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    std::string BaseMarker<T>::NS() const
-    {
-      return this->ns;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseMarker<T>::SetID(uint64_t _id)
-    {
-      this->id = _id;
-      this->markerDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    uint64_t BaseMarker<T>::ID() const
-    {
-      return this->id;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
     void BaseMarker<T>::SetLayer(int32_t _layer)
     {
       this->layer = _layer;
@@ -163,51 +97,6 @@ namespace ignition
     int32_t BaseMarker<T>::Layer() const
     {
       return this->layer;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseMarker<T>::SetPose(math::Pose3d _pose)
-    {
-      this->pose = _pose;
-      this->markerDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    math::Pose3d BaseMarker<T>::Pose() const
-    {
-      return this->pose;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseMarker<T>::SetScale(math::Vector3d _scale)
-    {
-      this->scale = _scale;
-      this->markerDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    math::Vector3d BaseMarker<T>::Scale() const
-    {
-      return this->scale;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseMarker<T>::SetParent(std::string _parent)
-    {
-      this->parent = _parent;
-      this->markerDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    std::string BaseMarker<T>::getParent() const
-    {
-      return this->parent;
     }
 
     /////////////////////////////////////////////////

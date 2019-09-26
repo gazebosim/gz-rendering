@@ -43,10 +43,10 @@ class ignition::rendering::OgreDynamicLinesPrivate
 };
 
 /////////////////////////////////////////////////
-OgreDynamicLines::OgreDynamicLines(RenderOpType opType)
+OgreDynamicLines::OgreDynamicLines(Type _type)
   : dataPtr(new OgreDynamicLinesPrivate)
 {
-  this->Init(opType, false);
+  this->Init(_type, false);
   this->setCastShadows(false);
   this->dataPtr->dirty = true;
 }
@@ -56,9 +56,9 @@ OgreDynamicLines::~OgreDynamicLines()
 {
 }
 
-void OgreDynamicLines::SetOperationType(RenderOpType opType)
+void OgreDynamicLines::SetOperationType(Type _type)
 {
-  this->SetOperationType(opType);
+  this->SetOperationType(_type);
 }
 
 /////////////////////////////////////////////////

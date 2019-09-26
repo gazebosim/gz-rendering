@@ -105,17 +105,6 @@ namespace ignition
     typedef shared_ptr<OgreMaterialMap>          OgreMaterialMapPtr;
     typedef shared_ptr<OgreRenderTargetMaterial> OgreRenderTargetMaterialPtr;
 
-    enum RenderOpType
-    {
-      RENDERING_POINT_LIST     = 0,
-      RENDERING_LINE_LIST      = 1,
-      RENDERING_LINE_STRIP     = 2,
-      RENDERING_TRIANGLE_LIST  = 3,
-      RENDERING_TRIANGLE_STRIP = 4,
-      RENDERING_TRIANGLE_FAN   = 5,
-      RENDERING_MESH_RESOURCE  = 6
-    };
-
     enum Type
     {
       NONE           = 0,

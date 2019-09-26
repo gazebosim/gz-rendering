@@ -34,9 +34,9 @@ OgreDynamicRenderable::~OgreDynamicRenderable()
 }
 
 //////////////////////////////////////////////////
-void OgreDynamicRenderable::Init(RenderOpType operationType, bool useIndices)
+void OgreDynamicRenderable::Init(Type _type, bool useIndices)
 {
-  this->SetOperationType(operationType);
+  this->SetOperationType(_type);
 
   // Initialize render operation
   this->mRenderOp.useIndexes = useIndices;
@@ -54,71 +54,69 @@ void OgreDynamicRenderable::Init(RenderOpType operationType, bool useIndices)
 }
 
 //////////////////////////////////////////////////
-void OgreDynamicRenderable::SetOperationType(RenderOpType opType)
+void OgreDynamicRenderable::SetOperationType(Type _type)
 {
-  switch (opType)
+  switch (_type)
   {
-    case RENDERING_POINT_LIST:
+    case POINTS:
       this->mRenderOp.operationType = Ogre::RenderOperation::OT_POINT_LIST;
       break;
 
-    case RENDERING_LINE_LIST:
+    case LINE_LIST:
       this->mRenderOp.operationType = Ogre::RenderOperation::OT_LINE_LIST;
       break;
 
-    case RENDERING_LINE_STRIP:
+    case LINE_STRIP:
       this->mRenderOp.operationType = Ogre::RenderOperation::OT_LINE_STRIP;
       break;
 
-    case RENDERING_TRIANGLE_LIST:
+    case TRIANGLE_LIST:
       this->mRenderOp.operationType = Ogre::RenderOperation::OT_TRIANGLE_LIST;
       break;
 
-    case RENDERING_TRIANGLE_STRIP:
+    case TRIANGLE_STRIP:
       this->mRenderOp.operationType = Ogre::RenderOperation::OT_TRIANGLE_STRIP;
       break;
 
-    case RENDERING_TRIANGLE_FAN:
+    case TRIANGLE_FAN:
       this->mRenderOp.operationType = Ogre::RenderOperation::OT_TRIANGLE_FAN;
       break;
-    case RENDERING_MESH_RESOURCE:
-      ignwarn << "RENDERING_MESH_RESOURCE not handled\n";
-      break;
+
     default:
-      ignerr << "Unknown render operation type[" << opType << "]\n";
+      ignerr << "Unknown render operation type[" << _type << "]\n";
       break;
   }
 }
 
 //////////////////////////////////////////////////
-RenderOpType OgreDynamicRenderable::OperationType() const
+Type OgreDynamicRenderable::OperationType() const
 {
-  RenderOpType type;
+  Type type;
   switch (this->mRenderOp.operationType)
   {
     case Ogre::RenderOperation::OT_LINE_LIST:
-      type = RENDERING_LINE_LIST;
+      type = LINE_LIST;
       break;
 
     case Ogre::RenderOperation::OT_LINE_STRIP:
-      type = RENDERING_LINE_STRIP;
+      type = LINE_STRIP;
       break;
 
     case Ogre::RenderOperation::OT_TRIANGLE_LIST:
-      type = RENDERING_TRIANGLE_LIST;
+      type = TRIANGLE_LIST;
       break;
 
     case Ogre::RenderOperation::OT_TRIANGLE_STRIP:
-      type = RENDERING_TRIANGLE_STRIP;
+      type = TRIANGLE_STRIP;
       break;
 
     case Ogre::RenderOperation::OT_TRIANGLE_FAN:
-      type = RENDERING_TRIANGLE_FAN;
+      type = TRIANGLE_FAN;
       break;
 
     default:
     case Ogre::RenderOperation::OT_POINT_LIST:
-      type = RENDERING_POINT_LIST;
+      type = POINTS;
       break;
   }
 

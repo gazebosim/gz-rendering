@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2THERMALCAMERA_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2THERMALCAMERA_HH_
+#ifndef IGNITION_RENDERING_OGRE_OGRETHERMALCAMERA_HH_
+#define IGNITION_RENDERING_OGRE_OGRETHERMALCAMERA_HH_
 
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
@@ -27,19 +27,23 @@
 #include <memory>
 #include <string>
 
+#include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/base/BaseThermalCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "ignition/rendering/ogre/OgreConversions.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreRenderTarget.hh"
+#include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreSensor.hh"
 
 #include "ignition/common/Event.hh"
 #include "ignition/common/Console.hh"
 
+
 namespace Ogre
 {
   class Material;
-  class RenderTarget;
-  class Texture;
-  class Viewport;
+  class Camera;
 }
 
 namespace ignition
@@ -48,40 +52,53 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    // Forward declaration
-    class Ogre2ThermalCameraPrivate;
+    // forward declaration
+    class OgreThermalCameraPrivate;
 
-    /// \brief Thermal camera used to render thermal data into an image buffer
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2ThermalCamera :
-      public BaseThermalCamera<Ogre2Sensor>
+    /** \class OgreThermalCamera OgreThermalCamera.hh\
+     * rendering/ogre/OgreThermalCamera.hh
+    **/
+    /// \brief Depth camera used to render thermal data into an image buffer
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreThermalCamera :
+      public BaseThermalCamera<OgreSensor>
     {
       /// \brief Constructor
-      protected: Ogre2ThermalCamera();
+      protected: OgreThermalCamera();
 
       /// \brief Destructor
-      public: virtual ~Ogre2ThermalCamera();
+      public: virtual ~OgreThermalCamera();
 
       /// \brief Initialize the camera
       public: virtual void Init() override;
 
-      // Documentation inherited
-      public: virtual void Destroy() override;
-
-      // Documentation inherited
-      public: virtual void PreRender() override;
+      /// \brief Create a texture
+      public: virtual void CreateRenderTexture();
 
       /// \brief Render the camera
       public: virtual void PostRender() override;
 
-      /// \brief Connect to the new thermal image event
+      /// \brief Connect a to the new thermal image signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
       public: virtual ignition::common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
+      // Documentation inherited.
+      public: virtual void PreRender() override;
+
       /// \brief Implementation of the render call
       public: virtual void Render() override;
+
+      // Documentation inherited
+      public: virtual void Destroy() override;
+
+      /// \brief Update a render target
+      /// \param[in] _target Render target to update
+      /// \param[in] _material Material to use
+      /// \param[in] _matName Material name
+      protected: void UpdateRenderTarget(Ogre::RenderTarget *_target,
+                                       Ogre::Material *_material);
 
       /// \brief Get a pointer to the render target.
       /// \return Pointer to the render target
@@ -90,20 +107,17 @@ namespace ignition
       /// \brief Create the camera.
       protected: void CreateCamera();
 
-      /// \brief Create dummy render texture. Needed to satisfy inheritance
-      protected: virtual void CreateRenderTexture();
-
-      /// \brief Create thermal texture
-      protected: virtual void CreateThermalTexture();
+      /// \brief Create thermal texture. This stores temperature data
+      private: void CreateThermalTexture();
 
       /// \brief Pointer to the ogre camera
       protected: Ogre::Camera *ogreCamera = nullptr;
 
       /// \internal
       /// \brief Pointer to private data.
-      private: std::unique_ptr<Ogre2ThermalCameraPrivate> dataPtr;
+      private: std::unique_ptr<OgreThermalCameraPrivate> dataPtr;
 
-      private: friend class Ogre2Scene;
+      private: friend class OgreScene;
     };
     }
   }

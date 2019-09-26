@@ -46,7 +46,7 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
 {
   /// \brief constructor
   /// \param[in] _scene the scene manager responsible for rendering
-  public: Ogre2ThermalCameraMaterialSwitcher(Ogre2ScenePtr _scene);
+  public: explicit Ogre2ThermalCameraMaterialSwitcher(Ogre2ScenePtr _scene);
 
   /// \brief destructor
   public: ~Ogre2ThermalCameraMaterialSwitcher() = default;
@@ -106,7 +106,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   /// \brief 1st pass compositor workspace. One for each cubemap camera
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace;
 
-  /// \brief An array of first pass textures. One for each cubemap camera.
+  /// \brief Thermal textures.
   public: Ogre::TexturePtr ogreThermalTexture;
 
   /// \brief Dummy render texture for the thermal data
@@ -140,7 +140,6 @@ Ogre2ThermalCameraMaterialSwitcher::Ogre2ThermalCameraMaterialSwitcher(
 
   this->heatSourceMaterial = res.staticCast<Ogre::Material>();
   this->heatSourceMaterial->load();
-
 }
 
 //////////////////////////////////////////////////
@@ -159,8 +158,6 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
     std::string tempKey = "temperature";
-    float temp = 0.0;
-
     // get visual
     Ogre::Any userAny = item->getUserObjectBindings().getUserAny();
     if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
@@ -181,6 +178,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
       Variant tempAny = ogreVisual->UserData(tempKey);
       if (tempAny.index() != 0)
       {
+        float temp = -1.0;
         try
         {
           temp = std::get<float>(tempAny);
@@ -397,12 +395,12 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   this->dataPtr->thermalMaterial = matThermal->clone(
       this->Name() + "_" + matThermalName);
   this->dataPtr->thermalMaterial->load();
-  Ogre::Pass *pass = this->dataPtr->thermalMaterial->getTechnique(0)->getPass(0);
+  Ogre::Pass *pass =
+      this->dataPtr->thermalMaterial->getTechnique(0)->getPass(0);
   Ogre::GpuProgramParametersSharedPtr psParams =
       pass->getFragmentProgramParameters();
 
   // Configure camera behaviour.
-  // Make the clipping plane dist large and handle near clamping in shaders
   double nearPlane = this->NearClipPlane();
   double farPlane = this->FarClipPlane();
   this->ogreCamera->setNearClipDistance(nearPlane);
@@ -604,10 +602,9 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   }
 
   // create render texture - these textures pack the thermal data
-  std::stringstream texName;
   this->dataPtr->ogreThermalTexture =
     Ogre::TextureManager::getSingleton().createManual(
-    texName.str(), "General", Ogre::TEX_TYPE_2D,
+    this->Name() + "_thermal", "General", Ogre::TEX_TYPE_2D,
     this->ImageWidth(), this->ImageHeight(), 1, 0,
     Ogre::PF_L16, Ogre::TU_RENDERTARGET,
     0, false, 0, Ogre::BLANKSTRING, false, true);
@@ -657,6 +654,9 @@ void Ogre2ThermalCamera::PreRender()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::PostRender()
 {
+  if (this->dataPtr->newThermalFrame.ConnectionCount() <= 0u)
+    return;
+
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();
 
@@ -665,6 +665,7 @@ void Ogre2ThermalCamera::PostRender()
 
   int len = width * height;
   unsigned int channelCount = PixelUtil::ChannelCount(format);
+  unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
   if (!this->dataPtr->thermalBuffer)
   {
@@ -683,28 +684,22 @@ void Ogre2ThermalCamera::PostRender()
   }
 
   // fill thermal data
-  for (unsigned int i = 0; i < height; ++i)
-  {
-    unsigned int step = i*width*channelCount;
-    for (unsigned int j = 0; j < width; ++j)
-    {
-      uint16_t x = this->dataPtr->thermalBuffer[step + j*channelCount];
-      this->dataPtr->thermalImage[i*width + j] = x;
-    }
-  }
+  memcpy(this->dataPtr->thermalImage, this->dataPtr->thermalBuffer,
+      height*width*channelCount*bytesPerChannel);
+
   this->dataPtr->newThermalFrame(
         this->dataPtr->thermalImage, width, height, 1, "L16");
 
   // Uncomment to debug thermal output
-  std::cerr << "wxh: " << width << " x " << height << std::endl;
-  for (unsigned int i = 0; i < height; ++i)
-  {
-    for (unsigned int j = 0; j < width; ++j)
-    {
-      std::cerr << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
-    }
-    std::cerr << std::endl;
-  }
+  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // for (unsigned int i = 0; i < height; ++i)
+  // {
+  //   for (unsigned int j = 0; j < width; ++j)
+  //   {
+  //     igndbg << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
+  //   }
+  //   igndbg << std::endl;
+  // }
 }
 
 //////////////////////////////////////////////////
@@ -720,4 +715,3 @@ RenderTargetPtr Ogre2ThermalCamera::RenderTarget() const
 {
   return this->dataPtr->thermalTexture;
 }
-

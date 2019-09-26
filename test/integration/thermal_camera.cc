@@ -55,15 +55,15 @@ class ThermalCameraTest: public testing::Test,
 void ThermalCameraTest::ThermalCameraBoxes(
     const std::string &_renderEngine)
 {
-  int imgWidth_ = 10;
-  int imgHeight_ = 10;
-  double aspectRatio_ = imgWidth_/imgHeight_;
+  int imgWidth = 10;
+  int imgHeight = 10;
+  double aspectRatio = imgWidth/imgHeight;
 
   double unitBoxSize = 1.0;
   ignition::math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
   // Optix is not supported
-  if (_renderEngine.compare("optix") == 0 || _renderEngine.compare("ogre") == 0)
+  if (_renderEngine.compare("optix") == 0)
   {
     igndbg << "Engine '" << _renderEngine
               << "' doesn't support thermal cameras" << std::endl;
@@ -95,13 +95,18 @@ void ThermalCameraTest::ThermalCameraBoxes(
   box->SetLocalPosition(boxPosition);
   box->SetLocalRotation(0, 0, 0);
   box->SetLocalScale(unitBoxSize, unitBoxSize, unitBoxSize);
-  box->SetUserData("temperature", 310.0);
+
+  // set box temperature
+  float boxTemp = 310.0;
+  box->SetUserData("temperature", boxTemp);
 
   root->AddChild(box);
   {
+    // range is hardcoded in shaders
+    float boxTempRange = 3.0;
     double farDist = 10.0;
     double nearDist = 0.15;
-    double hfov_ = 1.05;
+    double hfov = 1.05;
     // Create thermal camera
     auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
     ASSERT_NE(thermalCamera, nullptr);
@@ -111,47 +116,115 @@ void ThermalCameraTest::ThermalCameraBoxes(
     thermalCamera->SetLocalPose(testPose);
 
     // Configure thermal camera
-    thermalCamera->SetImageWidth(imgWidth_);
+    thermalCamera->SetImageWidth(imgWidth);
     EXPECT_EQ(thermalCamera->ImageWidth(),
-      static_cast<unsigned int>(imgWidth_));
-    thermalCamera->SetImageHeight(imgHeight_);
+      static_cast<unsigned int>(imgWidth));
+    thermalCamera->SetImageHeight(imgHeight);
     EXPECT_EQ(thermalCamera->ImageHeight(),
-      static_cast<unsigned int>(imgHeight_));
+      static_cast<unsigned int>(imgHeight));
     thermalCamera->SetFarClipPlane(farDist);
     EXPECT_NEAR(thermalCamera->FarClipPlane(), farDist, DOUBLE_TOL);
     thermalCamera->SetNearClipPlane(nearDist);
     EXPECT_NEAR(thermalCamera->NearClipPlane(), nearDist, DOUBLE_TOL);
-    thermalCamera->SetAspectRatio(aspectRatio_);
-    EXPECT_NEAR(thermalCamera->AspectRatio(), aspectRatio_, DOUBLE_TOL);
-    thermalCamera->SetHFOV(hfov_);
-    EXPECT_NEAR(thermalCamera->HFOV().Radian(), hfov_, DOUBLE_TOL);
+    thermalCamera->SetAspectRatio(aspectRatio);
+    EXPECT_NEAR(thermalCamera->AspectRatio(), aspectRatio, DOUBLE_TOL);
+    thermalCamera->SetHFOV(hfov);
+    EXPECT_NEAR(thermalCamera->HFOV().Radian(), hfov, DOUBLE_TOL);
 
     // thermal-specific params
     // set room temperature: 294 ~ 298 Kelvin
-    thermalCamera->SetAmbientTemperature(296.0);
-    EXPECT_FLOAT_EQ(296.0, thermalCamera->AmbientTemperature());
-    thermalCamera->SetAmbientTemperatureRange(4.0);
-    EXPECT_FLOAT_EQ(4.0, thermalCamera->AmbientTemperatureRange());
-    thermalCamera->SetLinearResolution(0.01);
-    EXPECT_FLOAT_EQ(0.01, thermalCamera->LinearResolution());
+    float ambientTemp = 296.0;
+    float ambientTempRange = 4.0;
+    float linearResolution = 0.01;
+    thermalCamera->SetAmbientTemperature(ambientTemp);
+    EXPECT_FLOAT_EQ(ambientTemp, thermalCamera->AmbientTemperature());
+    thermalCamera->SetAmbientTemperatureRange(ambientTempRange);
+    EXPECT_FLOAT_EQ(ambientTempRange, thermalCamera->AmbientTemperatureRange());
+    thermalCamera->SetLinearResolution(linearResolution);
+    EXPECT_FLOAT_EQ(linearResolution, thermalCamera->LinearResolution());
 
-//    thermalCamera->CreateThermalTexture();
     scene->RootVisual()->AddChild(thermalCamera);
 
     // Set a callback on the  camera sensor to get a thermal camera frame
-    uint16_t *thermalData = new uint16_t[imgHeight_ * imgWidth_];
+    uint16_t *thermalData = new uint16_t[imgHeight * imgWidth];
     ignition::common::ConnectionPtr connection =
       thermalCamera->ConnectNewThermalFrame(
           std::bind(&::OnNewThermalFrame, thermalData,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
             std::placeholders::_4, std::placeholders::_5));
 
-    // Update once to create image
-    std::cerr << "============== update " << std::endl;
-    thermalCamera->Update();
-    std::cerr << "============== update done" << std::endl;
+    // Create thermal camera
+    auto camera = scene->CreateCamera("cam");
+    camera->SetImageWidth(imgWidth);
+    camera->SetImageHeight(imgHeight);
+    scene->RootVisual()->AddChild(camera);
+    camera->Update();
 
-   // Clean up
+    // Update once to create image
+    thermalCamera->Update();
+
+    // thermal image indices
+    int midWidth = thermalCamera->ImageWidth() * 0.5;
+    int midHeight = thermalCamera->ImageHeight() * 0.5;
+    int mid = midHeight * thermalCamera->ImageWidth() + midWidth -1;
+    int left = midHeight * thermalCamera->ImageWidth();
+    int right = (midHeight+1) * thermalCamera->ImageWidth() - 1;
+
+    // verify temperature
+    // Box should be in the middle of image and return box temp
+    // Left and right side of the image frame should be ambient temp
+    EXPECT_NEAR(ambientTemp, thermalData[left] * linearResolution,
+        ambientTempRange);
+    EXPECT_NEAR(ambientTemp, thermalData[right] * linearResolution,
+        ambientTempRange);
+    EXPECT_FLOAT_EQ(thermalData[right], thermalData[left]);
+    EXPECT_NEAR(boxTemp, thermalData[mid] * linearResolution, boxTempRange);
+
+    // move box in front of near clip plane and verify the thermal
+    // image returns all box temperature values
+    ignition::math::Vector3d boxPositionNear(
+        unitBoxSize * 0.5 + nearDist * 0.5, 0.0, 0.0);
+    box->SetLocalPosition(boxPositionNear);
+    thermalCamera->Update();
+
+    for (unsigned int i = 0; i < thermalCamera->ImageHeight(); ++i)
+    {
+      unsigned int step = i*thermalCamera->ImageWidth();
+      for (unsigned int j = 0; j < thermalCamera->ImageWidth(); ++j)
+      {
+        float temp = thermalData[step + j] * linearResolution;
+        EXPECT_NEAR(boxTemp, temp, boxTempRange);
+      }
+    }
+
+    // move box beyond far clip plane and verify the thermal
+    // image returns all ambient temperature values
+    ignition::math::Vector3d boxPositionFar(
+        unitBoxSize * 0.5 + farDist * 1.5, 0.0, 0.0);
+    box->SetLocalPosition(boxPositionFar);
+    thermalCamera->Update();
+
+    for (unsigned int i = 0; i < thermalCamera->ImageHeight(); ++i)
+    {
+      unsigned int step = i*thermalCamera->ImageWidth();
+      for (unsigned int j = 0; j < thermalCamera->ImageWidth(); ++j)
+      {
+        float temp = thermalData[step + j] * linearResolution;
+        EXPECT_NEAR(ambientTemp, temp, ambientTempRange);
+      }
+    }
+
+
+    EXPECT_NEAR(ambientTemp, thermalData[left] * linearResolution,
+        ambientTempRange);
+    EXPECT_NEAR(ambientTemp, thermalData[right] * linearResolution,
+        ambientTempRange);
+    EXPECT_NEAR(ambientTemp, thermalData[mid] * linearResolution,
+        ambientTempRange);
+    EXPECT_FLOAT_EQ(thermalData[right], thermalData[left]);
+    EXPECT_FLOAT_EQ(thermalData[right], thermalData[mid]);
+
+    // Clean up
     connection.reset();
     delete [] thermalData;
   }

@@ -429,10 +429,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
   }
 
   // create render texture - these textures pack the range data
-  std::stringstream texName;
   this->dataPtr->ogreDepthTexture =
     Ogre::TextureManager::getSingleton().createManual(
-    texName.str(), "General", Ogre::TEX_TYPE_2D,
+    this->Name() + "_depth", "General", Ogre::TEX_TYPE_2D,
     this->ImageWidth(), this->ImageHeight(), 1, 0,
     Ogre::PF_FLOAT32_RGBA, Ogre::TU_RENDERTARGET,
     0, false, 0, Ogre::BLANKSTRING, false, true);

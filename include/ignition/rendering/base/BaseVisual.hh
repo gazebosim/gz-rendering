@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_BASE_BASEVISUAL_HH_
 #define IGNITION_RENDERING_BASE_BASEVISUAL_HH_
 
+#include <map>
 #include <string>
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/Storage.hh"

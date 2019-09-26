@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_THERMALCAMERA_HH_
 #define IGNITION_RENDERING_THERMALCAMERA_HH_
 
+#include <string>
 #include "ignition/rendering/Camera.hh"
 
 namespace ignition

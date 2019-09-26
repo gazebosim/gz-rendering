@@ -38,10 +38,13 @@ OgreMaterialSwitcher::~OgreMaterialSwitcher()
 
 /////////////////////////////////////////////////
 Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
-    uint16_t /*_schemeIndex*/, const Ogre::String &/*_schemeName*/,
+    uint16_t /*_schemeIndex*/, const Ogre::String &_schemeName,
     Ogre::Material *_originalMaterial, uint16_t /*_lodIndex*/,
     const Ogre::Renderable *_rend)
 {
+  if (_schemeName != "selection")
+    return nullptr;
+
   if (!_rend || typeid(*_rend) != typeid(Ogre::SubEntity))
     return nullptr;
 

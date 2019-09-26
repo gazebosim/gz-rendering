@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_BASE_BASETHERMALCAMERA_HH_
 #define IGNITION_RENDERING_BASE_BASETHERMALCAMERA_HH_
 
+#include <string>
+
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ThermalCamera.hh"
 
@@ -25,7 +27,7 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-
+    //
     /// \brief Base implementation of the ThermalCamera class
     template <class T>
     class IGNITION_RENDERING_VISIBLE BaseThermalCamera :

@@ -57,15 +57,25 @@ material ThermalCamera
   }
 }
 
-// fragment_program thermal_heat_source_fs glsl
-// {
-//   source thermal_heat_source_fs.glsl
-//
-//   default_params
-//   {
-//     param_named inColor float4 0 0 0 0
-//   }
-// }
+vertex_program heat_source_vs glsl
+{
+  source plain_color_vs.glsl
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
+}
+
+fragment_program heat_source_fs glsl
+{
+  source plain_color_fs.glsl
+
+  default_params
+  {
+    param_named inColor float4 1 1 1 1
+  }
+}
 
 material ThermalHeatSource
 {
@@ -77,13 +87,11 @@ material ThermalHeatSource
     {
       fog_override true
 
-      // reuse vertex shader
-      vertex_program_ref plaincolor_vs
+      vertex_program_ref heat_source_vs
       {
       }
 
-      // reuse fragment shader but with different custom param idx
-      fragment_program_ref plaincolor_fs
+      fragment_program_ref heat_source_fs
       {
         param_named_auto inColor custom 10
       }

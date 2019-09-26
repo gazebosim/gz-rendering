@@ -13,36 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
+*/
 
-#version 330
-
-in block
-{
-  vec2 uv0;
-  vec3 cameraDir;
-} inPs;
-
-uniform sampler2D depthTexture;
-uniform sampler2D colorTexture;
-
-out vec4 fragColor;
-
-uniform vec2 projectionParams;
 uniform float near;
 uniform float far;
 uniform float min;
 uniform float max;
+uniform float ambient;
 uniform float range;
 uniform float resolution;
-uniform float ambient;
+uniform sampler2D heatTexture;
 
-float getDepth(vec2 uv)
-{
-  float fDepth = texture(depthTexture, uv).x;
-  float linearDepth = projectionParams.y / (fDepth - projectionParams.x);
-  return linearDepth;
-}
+varying vec4 eyePos;
 
 void main()
 {
@@ -50,17 +32,13 @@ void main()
   float temp = ambient;
   float heatRange = range;
 
-  // get depth
-  float d = getDepth(inPs.uv0);
-
-  // reconstruct 3d viewspace pos from depth
-  vec3 viewSpacePos = inPs.cameraDir * d;
-
-  d = -viewSpacePos.z;
+  // get depth, convert to z up
+  float d = -eyePos.z;
   d = d / (far-near);
 
   // check for heat source
-  float heat = texture(colorTexture, inPs.uv0).x;
+  float heat = texture2D(heatTexture, gl_TexCoord[0].xy).x;
+  // float heat = 0.2;
   if (heat > 0.0)
   {
     // heat is normalized so convert back to work in kelvin
@@ -80,5 +58,5 @@ void main()
   // normalize
   temp /= 65535.0;
 
-  fragColor = vec4(temp, 0, 0, 1.0);
+  gl_FragColor = vec4(temp, 0, 0, 1.0);
 }

@@ -214,16 +214,6 @@ void ThermalCameraTest::ThermalCameraBoxes(
       }
     }
 
-
-    EXPECT_NEAR(ambientTemp, thermalData[left] * linearResolution,
-        ambientTempRange);
-    EXPECT_NEAR(ambientTemp, thermalData[right] * linearResolution,
-        ambientTempRange);
-    EXPECT_NEAR(ambientTemp, thermalData[mid] * linearResolution,
-        ambientTempRange);
-    EXPECT_FLOAT_EQ(thermalData[right], thermalData[left]);
-    EXPECT_FLOAT_EQ(thermalData[right], thermalData[mid]);
-
     // Clean up
     connection.reset();
     delete [] thermalData;

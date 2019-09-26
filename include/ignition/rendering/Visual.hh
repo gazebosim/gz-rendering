@@ -119,7 +119,7 @@ namespace ignition
       public: virtual void SetUserData(const std::string &_key,
           Variant _value) = 0;
 
-      /// \brief Get a custom data stored in this visual
+      /// \brief Get custom data stored in this visual
       /// \param[in] _key Unique key
       /// \param[in] _value Value in any type
       public: virtual Variant UserData(const std::string &_key) const = 0;

@@ -421,7 +421,7 @@ namespace ignition
       protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
-      /// \brief Implementation for creating thermal camera.
+      /// \brief Implementation for creating a thermal camera.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of thermal camera
       protected: virtual ThermalCameraPtr CreateThermalCameraImpl(

@@ -41,10 +41,6 @@ namespace ignition
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
-//      public: virtual void SetUserData(const std::string &_key,
-//          const std::any &_any) override;
-
-      // Documentation inherited.
       protected: virtual GeometryStorePtr Geometries() const override;
 
       // Documentation inherited.

@@ -267,6 +267,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
           vba.vertexIndex = 0;
           vba.boneIndex = 0;
           vba.weight = 0;
+          ogreSubMesh->addBoneAssignment(vba);
         }
       }
 

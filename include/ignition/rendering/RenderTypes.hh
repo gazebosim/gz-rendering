@@ -140,7 +140,7 @@ namespace ignition
     /// \def MarkerPtr
     /// \brief Shared pointer to Marker
     typedef shared_ptr<Marker> MarkerPtr;
-    
+
     /// \def MeshPtr
     /// \brief Shared pointer to Mesh
     typedef shared_ptr<Mesh> MeshPtr;

@@ -821,7 +821,7 @@ namespace ignition
       /// \brief Create new marker geometry.
       /// \return The created marker
       public: virtual MarkerPtr CreateMarker() = 0;
-      
+
       /// \brief Create new text geometry.
       /// \return The created text
       public: virtual TextPtr CreateText() = 0;

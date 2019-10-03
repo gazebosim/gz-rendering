@@ -67,8 +67,8 @@ namespace ignition
                                     const ignition::math::Vector3d &_value);
 
       public: virtual void AddPoint(const double _x,
-       		             const double _y, const double _z,
-       			     const ignition::math::Color &_color);
+                                    const double _y, const double _z,
+                                    const ignition::math::Color &_color);
 
       public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
                                     const ignition::math::Color &_color);
@@ -80,7 +80,7 @@ namespace ignition
       public: virtual void SetAction(Action _action);
 
       public: virtual void SetVisibility(Visibility _visibility);
-      
+
       public: virtual Type getType() const;
 
       public: virtual Action getAction() const;

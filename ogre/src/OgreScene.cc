@@ -499,7 +499,8 @@ GridPtr OgreScene::CreateGridImpl(unsigned int _id, const std::string &_name)
 }
 
 //////////////////////////////////////////////////
-MarkerPtr OgreScene::CreateMarkerImpl(unsigned int _id, const std::string &_name)
+MarkerPtr OgreScene::CreateMarkerImpl(unsigned int _id,
+                                      const std::string &_name)
 {
   OgreMarkerPtr marker(new OgreMarker);
   bool result = this->InitObject(marker, _id, _name);

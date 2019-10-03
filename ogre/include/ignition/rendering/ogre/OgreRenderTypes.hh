@@ -125,7 +125,7 @@ namespace ignition
       GUI = 0,
       ALL = 1
     };
-    
+
     enum Action
     {
       ADD_MODIFY    = 0,

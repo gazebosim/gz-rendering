@@ -472,7 +472,7 @@ namespace ignition
       /// \return Pointer to a marker geometry object
       protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
                      const std::string &_name) = 0;
-      
+
       /// \brief Implementation for creating a text's geometry object
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.

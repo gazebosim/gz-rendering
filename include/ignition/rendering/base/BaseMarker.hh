@@ -31,7 +31,7 @@ namespace ignition
     /// \brief A marker visualization. The MarkerManager class should
     /// instantiate instances of this class.
     /// \sa MarkerManager
-    //  TODO add descriptions to all below
+    /// TODO(jshep1): add descriptions to all below
     template <class T>
     class BaseMarker :
       public virtual Marker,
@@ -42,7 +42,7 @@ namespace ignition
 
       /// \brief Destructor.
       public: virtual ~BaseMarker();
-      
+
       public: virtual void PreRender();
       public: virtual void Destroy();
       public: virtual void setLifetime(common::Time _lifetime);
@@ -54,7 +54,7 @@ namespace ignition
       protected: int32_t layer = 0;
       protected: bool markerDirty = false;
     };
-    
+
     /////////////////////////////////////////////////
     // BaseMarker
     /////////////////////////////////////////////////
@@ -104,14 +104,14 @@ namespace ignition
     void BaseMarker<T>::PreRender()
     {
       T::PreRender();
-    }    
+    }
 
     /////////////////////////////////////////////////
     template <class T>
     void BaseMarker<T>::Destroy()
     {
       T::Destroy();
-    }    
+    }
     }
   }
 }

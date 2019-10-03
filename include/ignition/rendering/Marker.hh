@@ -30,13 +30,13 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Marker Marker.hh ignition/rendering/Marker
-    /// \brief TODO update description of this and all below funcs. 
+    /// \brief TODO(jshep1): update description of this and all below funcs.
     class IGNITION_RENDERING_VISIBLE Marker :
       public virtual Geometry
     {
       /// \brief Destructor
       public: virtual ~Marker() { }
-      
+
       public: virtual void setLifetime(common::Time _lifetime) = 0;
 
       public: virtual common::Time Lifetime() const = 0;

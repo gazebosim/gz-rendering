@@ -28,7 +28,7 @@ class ignition::rendering::OgreMarkerPrivate
   public: OgreMaterialPtr material;
 
   public: std::shared_ptr<OgreDynamicLines> dynamicRenderable;
-  
+
   public: Type type;
 
   public: Visibility visibility;
@@ -44,7 +44,7 @@ OgreMarker::OgreMarker()
     : dataPtr(new OgreMarkerPrivate)
 {
 }
-//TODO add Destroy implementation
+// TODO(jshep1): add Destroy implementation
 //////////////////////////////////////////////////
 OgreMarker::~OgreMarker()
 {
@@ -73,7 +73,7 @@ void OgreMarker::Init()
 //////////////////////////////////////////////////
 void OgreMarker::Create()
 {
-  //TODO init dynamicRenderable to default rendertype
+  // TODO(jshep1): init dynamicRenderable to default rendertype
   this->dataPtr->type = LINE_STRIP;
   this->dataPtr->visibility = GUI;
   this->dataPtr->action = ADD_MODIFY;

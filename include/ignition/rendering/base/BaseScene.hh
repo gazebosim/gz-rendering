@@ -359,6 +359,9 @@ namespace ignition
       public: virtual GridPtr CreateGrid() override;
 
       // Documentation inherited.
+      public: virtual MarkerPtr CreateMarker() override;
+
+      // Documentation inherited.
       public: virtual TextPtr CreateText() override;
 
       public: virtual MaterialPtr CreateMaterial(const std::string &_name = "")
@@ -463,6 +466,13 @@ namespace ignition
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
+      /// \brief Implementation for creating a marker geometry object
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a marker geometry object
+      protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+      
       /// \brief Implementation for creating a text's geometry object
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.

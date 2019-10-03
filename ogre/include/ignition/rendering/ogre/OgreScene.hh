@@ -28,6 +28,7 @@ namespace Ogre
 {
   class Root;
   class SceneManager;
+  class MarkerManager;
 }
 
 namespace ignition
@@ -130,6 +131,10 @@ namespace ignition
 
       // Documentation inherited
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
+                     const std::string &_name);
+
+      // Documentation inherited
+      protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
                      const std::string &_name);
 
       // Documentation inherited

@@ -29,6 +29,7 @@
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreText.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
+#include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreMeshFactory.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
@@ -495,6 +496,14 @@ GridPtr OgreScene::CreateGridImpl(unsigned int _id, const std::string &_name)
   OgreGridPtr grid(new OgreGrid);
   bool result = this->InitObject(grid, _id, _name);
   return (result) ? grid: nullptr;
+}
+
+//////////////////////////////////////////////////
+MarkerPtr OgreScene::CreateMarkerImpl(unsigned int _id, const std::string &_name)
+{
+  OgreMarkerPtr marker(new OgreMarker);
+  bool result = this->InitObject(marker, _id, _name);
+  return (result) ? marker: nullptr;
 }
 
 //////////////////////////////////////////////////

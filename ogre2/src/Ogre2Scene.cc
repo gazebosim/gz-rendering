@@ -324,6 +324,13 @@ GridPtr Ogre2Scene::CreateGridImpl(unsigned int /*_id*/,
   return GridPtr();
 }
 
+MarkerPtr Ogre2Scene::CreateMarkerImpl(unsigned int /*_id*/,
+    const std::string &/*_name*/)
+{
+  // TODO(anyone)
+  return MarkerPtr();
+}
+
 //////////////////////////////////////////////////
 TextPtr Ogre2Scene::CreateTextImpl(unsigned int /*_id*/,
     const std::string &/*_name*/)

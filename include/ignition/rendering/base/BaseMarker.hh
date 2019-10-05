@@ -45,12 +45,12 @@ namespace ignition
 
       public: virtual void PreRender();
       public: virtual void Destroy();
-      public: virtual void setLifetime(common::Time _lifetime);
-      public: virtual common::Time Lifetime() const;
-      public: virtual void SetLayer(int32_t _layer);
+      public: virtual void SetLifetime(const std::chrono::steady_clock::duration &_lifetime);
+      public: virtual std::chrono::steady_clock::duration Lifetime() const;
+      public: virtual void SetLayer(const int32_t _layer);
       public: virtual int32_t Layer() const;
 
-      protected: common::Time lifetime;
+      protected: std::chrono::steady_clock::duration lifetime;
       protected: int32_t layer = 0;
       protected: bool markerDirty = false;
     };
@@ -71,7 +71,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseMarker<T>::setLifetime(common::Time _lifetime)
+    void BaseMarker<T>::SetLifetime(const std::chrono::steady_clock::duration &_lifetime)
     {
       this->lifetime = _lifetime;
       this->markerDirty = true;
@@ -79,14 +79,14 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    common::Time BaseMarker<T>::Lifetime() const
+    std::chrono::steady_clock::duration BaseMarker<T>::Lifetime() const
     {
       return this->lifetime;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseMarker<T>::SetLayer(int32_t _layer)
+    void BaseMarker<T>::SetLayer(const int32_t _layer)
     {
       this->layer = _layer;
       this->markerDirty = true;

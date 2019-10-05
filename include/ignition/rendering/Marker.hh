@@ -37,11 +37,11 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Marker() { }
 
-      public: virtual void setLifetime(common::Time _lifetime) = 0;
+      public: virtual void SetLifetime(const std::chrono::steady_clock::duration &_lifetime) = 0;
 
-      public: virtual common::Time Lifetime() const = 0;
+      public: virtual std::chrono::steady_clock::duration Lifetime() const = 0;
 
-      public: virtual void SetLayer(int32_t _layer) = 0;
+      public: virtual void SetLayer(const int32_t _layer) = 0;
 
       public: virtual int32_t Layer() const = 0;
     };

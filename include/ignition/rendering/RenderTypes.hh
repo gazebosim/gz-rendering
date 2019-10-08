@@ -333,6 +333,34 @@ namespace ignition
     /// \def const VisualPtr
     /// \brief Shared pointer to const Visual
     typedef shared_ptr<const Visual> ConstVisualPtr;
+    
+    enum Type
+    {
+      NONE           = 0,
+      BOX            = 1,
+      CYLINDER       = 2,
+      LINE_STRIP     = 3,
+      LINE_LIST      = 4,
+      POINTS         = 5,
+      SPHERE         = 6,
+      TEXT           = 7,
+      TRIANGLE_FAN   = 8,
+      TRIANGLE_LIST  = 9,
+      TRIANGLE_STRIP = 10
+    };
+
+    enum Visibility
+    {
+      GUI = 0,
+      ALL = 1
+    };
+
+    enum Action
+    {
+      ADD_MODIFY    = 0,
+      DELETE_MARKER = 1,
+      DELETE_ALL    = 2
+    };
     }
   }
 }

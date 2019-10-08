@@ -53,15 +53,15 @@ namespace ignition
       /// \param[in] _opType The type of render operation to perform.
       /// \param[in] _useIndices Specifies whether to use indices to
       /// determine the vertices to use as input.
-      public: void Init(RenderOpType _opType, bool _useIndices = false);
+      public: void Init(Type _opType, bool _useIndices = false);
 
       /// \brief Set the render operation type
       /// \param[in] _opType The type of render operation to perform.
-      public: void SetOperationType(RenderOpType _opType);
+      public: void SetOperationType(Type _opType);
 
       /// \brief Get the render operation type
       /// \return The render operation type.
-      public: RenderOpType OperationType() const;
+      public: Type OperationType() const;
 
       /// \brief Implementation of Ogre::SimpleRenderable
       /// \return The bounding radius

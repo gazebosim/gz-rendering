@@ -43,7 +43,7 @@ class ignition::rendering::Ogre2DynamicLinesPrivate
 };
 
 /////////////////////////////////////////////////
-Ogre2DynamicLines::Ogre2DynamicLines(RenderOpType opType)
+Ogre2DynamicLines::Ogre2DynamicLines(Type opType)
   : dataPtr(new Ogre2DynamicLinesPrivate)
 {
   this->Init(opType, false);

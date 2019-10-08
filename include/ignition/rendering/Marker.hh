@@ -21,6 +21,7 @@
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Object.hh"
+#include "ignition/rendering/RenderTypes.hh"
 #include "ignition/common/Time.hh"
 
 namespace ignition
@@ -44,6 +45,10 @@ namespace ignition
       public: virtual void SetLayer(const int32_t _layer) = 0;
 
       public: virtual int32_t Layer() const = 0;
+      
+      public: virtual void SetRenderOperation(const Type _type) = 0;
+
+      public: virtual Type RenderOperation() const = 0;
     };
     }
   }

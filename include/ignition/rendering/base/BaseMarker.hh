@@ -49,10 +49,13 @@ namespace ignition
       public: virtual std::chrono::steady_clock::duration Lifetime() const;
       public: virtual void SetLayer(const int32_t _layer);
       public: virtual int32_t Layer() const;
+      public: virtual void SetRenderOperation(const Type _type);
+      public: virtual Type RenderOperation() const;
 
       protected: std::chrono::steady_clock::duration lifetime;
       protected: int32_t layer = 0;
       protected: bool markerDirty = false;
+      protected: Type type = ignition::rendering::Type::NONE;
     };
 
     /////////////////////////////////////////////////
@@ -99,6 +102,21 @@ namespace ignition
       return this->layer;
     }
 
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseMarker<T>::SetRenderOperation(const Type _type)
+    {
+      this->type = _type;
+      this->markerDirty = true;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    Type BaseMarker<T>::RenderOperation() const
+    {
+      return this->type;
+    }
+    
     /////////////////////////////////////////////////
     template <class T>
     void BaseMarker<T>::PreRender()

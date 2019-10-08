@@ -116,9 +116,14 @@ MaterialPtr OgreMarker::Material() const
   return this->dataPtr->material;
 }
 
-void OgreMarker::SetRenderOperation(Type _type)
+void OgreMarker::SetRenderOperation(const Type _type)
 {
   this->dataPtr->dynamicRenderable->SetOperationType(_type);
+}
+
+Type OgreMarker::RenderOperation() const
+{
+  return this->dataPtr->dynamicRenderable->OperationType();
 }
 
 void OgreMarker::SetPoint(const unsigned int _index,

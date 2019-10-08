@@ -43,7 +43,7 @@ namespace ignition
       /// \brief Constructor
       /// \param[in] _opType The type of Line
       public: explicit Ogre2DynamicLines(
-                  RenderOpType _opType = RENDERING_LINE_STRIP);
+                  Type _opType = LINE_STRIP);
 
       /// \brief Destructor
       public: virtual ~Ogre2DynamicLines();

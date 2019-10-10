@@ -405,6 +405,7 @@ VisualPtr OgreScene::CreateVisualImpl(unsigned int _id,
 {
   OgreVisualPtr visual(new OgreVisual);
   bool result = this->InitObject(visual, _id, _name);
+  ignwarn << "result of object visual initialization " << result << "\n";
   return (result) ? visual : nullptr;
 }
 
@@ -504,6 +505,7 @@ MarkerPtr OgreScene::CreateMarkerImpl(unsigned int _id,
 {
   OgreMarkerPtr marker(new OgreMarker);
   bool result = this->InitObject(marker, _id, _name);
+  ignwarn << "result of object initialization " << result << "\n";
   return (result) ? marker: nullptr;
 }
 

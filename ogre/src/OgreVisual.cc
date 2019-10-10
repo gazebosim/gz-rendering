@@ -61,6 +61,9 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
   }
 
   // set user data for mouse queries
+  ignwarn << "geometry ptr" << _geometry << "\n";
+  ignwarn << "derived ptr" << derived << "\n";
+  ignwarn << "ogre object ptr" << derived->OgreObject() << "\n";
   derived->OgreObject()->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
 

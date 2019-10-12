@@ -505,7 +505,6 @@ MarkerPtr OgreScene::CreateMarkerImpl(unsigned int _id,
 {
   OgreMarkerPtr marker(new OgreMarker);
   bool result = this->InitObject(marker, _id, _name);
-  ignwarn << "result of object initialization " << result << "\n";
   return (result) ? marker: nullptr;
 }
 

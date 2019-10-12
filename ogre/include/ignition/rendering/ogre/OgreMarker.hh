@@ -60,16 +60,6 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
 
-      public: virtual Ogre::MovableObject *CreateMesh(
-                                    const std::string &_meshName,
-                                    const std::string &_subMesh="",
-                                    bool _centerSubmesh = false,
-                                    const std::string &_objName="");
-
-      public: virtual void InsertMesh(const common::Mesh *_mesh,
-                                    const std::string &_subMesh,
-                                    const bool _centerSubmesh);
-
       public: virtual void SetRenderOperation(const Type _type) override;
       
       public: virtual Type RenderOperation() const override;

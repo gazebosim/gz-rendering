@@ -20,6 +20,7 @@
 #include "ignition/rendering/ogre/OgreDynamicLines.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
+#include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
 class ignition::rendering::OgreMarkerPrivate
@@ -30,6 +31,8 @@ class ignition::rendering::OgreMarkerPrivate
   public: std::shared_ptr<OgreDynamicLines> dynamicRenderable;
 
   public: Ogre::MovableObject *movableObject = nullptr;
+
+  public: OgreMeshPtr mesh = nullptr;
 
   public: Type type;
 
@@ -71,7 +74,7 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
     case BOX:
     case CYLINDER:
     case SPHERE:
-      return this->dataPtr->movableObject;
+      return this->dataPtr->mesh->OgreObject();
     case LINE_STRIP:
     case LINE_LIST:
     case POINTS:
@@ -80,7 +83,7 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
     case TRIANGLE_STRIP:
       return std::dynamic_pointer_cast<Ogre::MovableObject>(this->dataPtr->dynamicRenderable).get();
     default:
-      ignerr << "Invalid Marker type\n";
+      ignerr << "Invalid Marker type " << type << "\n";
       return nullptr;    
   }
 }
@@ -100,16 +103,10 @@ void OgreMarker::Create()
   this->dataPtr->action = ADD_MODIFY;
   this->dataPtr->dynamicRenderable.reset(new OgreDynamicLines(LINE_STRIP));
 
-  if (!this->dataPtr->movableObject)
+  if (!this->dataPtr->mesh)
   {
-    this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_box");
+    this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
   }
-
-  //this->dataPtr->movableObject->clear();
-
-
-  //this->dataPtr->movableObject->end();
-
 }
 
 //////////////////////////////////////////////////
@@ -151,20 +148,23 @@ MaterialPtr OgreMarker::Material() const
 
 void OgreMarker::SetRenderOperation(const Type _type)
 {
-  // TODO update a parsing of the type to create a dynamic
-  // renderable if it is those 6 types and update the movable
-  // object otherwise to be the primitive types
   switch (_type)
   {
     case NONE:
+      type = NONE;
+      this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
+      break;
     case BOX:
-      this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_box");
+      //this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_box");
+      this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
       break;
     case CYLINDER:
-      this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_cylinder");
+      //this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_cylinder");
+      this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateCylinder());
       break;
     case SPHERE:
-      this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_sphere");
+      //this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_sphere");
+      this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateSphere());
       break;
     case LINE_STRIP:
     case LINE_LIST:

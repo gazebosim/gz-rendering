@@ -50,6 +50,9 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual Ogre::MovableObject *OgreObject() const;
+      
+      /// \brief Sets the Marker's MovableObject
+      public: virtual void SetOgreObject(Ogre::MovableObject *_movableObject);
 
       // Documentation inherited.
       public: virtual MaterialPtr Material() const;
@@ -57,7 +60,7 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
 
-      public: virtual MovableObject *CreateMesh(
+      public: virtual Ogre::MovableObject *CreateMesh(
                                     const std::string &_meshName,
                                     const std::string &_subMesh="",
                                     bool _centerSubmesh = false,
@@ -83,13 +86,13 @@ namespace ignition
 
       public: virtual void ClearPoints();
 
-      public: virtual void SetType(Type _type);
+      public: virtual void SetType(const Type _type) override;
+      
+      public: virtual Type getType() const override;
 
       public: virtual void SetAction(Action _action);
 
       public: virtual void SetVisibility(Visibility _visibility);
-
-      public: virtual Type getType() const;
 
       public: virtual Action getAction() const;
 

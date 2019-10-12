@@ -46,6 +46,10 @@ namespace ignition
 
       public: virtual int32_t Layer() const = 0;
       
+      public: virtual void SetType(const Type _type) = 0;
+
+      public: virtual Type getType() const = 0;
+      
       public: virtual void SetRenderOperation(const Type _type) = 0;
 
       public: virtual Type RenderOperation() const = 0;

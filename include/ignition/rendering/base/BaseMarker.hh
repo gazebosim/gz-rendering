@@ -47,6 +47,8 @@ namespace ignition
       public: virtual void Destroy();
       public: virtual void SetLifetime(const std::chrono::steady_clock::duration &_lifetime);
       public: virtual std::chrono::steady_clock::duration Lifetime() const;
+      public: virtual void SetType(const Type _type);
+      public: virtual Type getType() const;
       public: virtual void SetLayer(const int32_t _layer);
       public: virtual int32_t Layer() const;
       public: virtual void SetRenderOperation(const Type _type);
@@ -100,6 +102,21 @@ namespace ignition
     int32_t BaseMarker<T>::Layer() const
     {
       return this->layer;
+    }
+    
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseMarker<T>::SetType(const Type _type)
+    {
+      this->type = _type;
+      this->markerDirty = true;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    Type BaseMarker<T>::getType() const
+    {
+      return this->type;
     }
 
     /////////////////////////////////////////////////

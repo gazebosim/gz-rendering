@@ -82,9 +82,12 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
       return std::dynamic_pointer_cast<Ogre::MovableObject>(this->dataPtr->dynamicRenderable).get();
-    default:
+    case NONE:
       ignerr << "Invalid Marker type " << type << "\n";
-      return nullptr;    
+      return nullptr;
+    default:
+    ignerr << "default\n";
+    return nullptr;
   }
 }
 
@@ -133,7 +136,6 @@ void OgreMarker::SetMaterialImpl(OgreMaterialPtr _material)
 {
   std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
-  //this->dataPtr->movableObject->setMaterialName(0, materialName);
   this->dataPtr->material = _material;
 
   this->dataPtr->material->SetReceiveShadows(false);
@@ -148,22 +150,19 @@ MaterialPtr OgreMarker::Material() const
 
 void OgreMarker::SetRenderOperation(const Type _type)
 {
+  type = _type;
   switch (_type)
   {
     case NONE:
-      type = NONE;
       this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
       break;
     case BOX:
-      //this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_box");
       this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
       break;
     case CYLINDER:
-      //this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_cylinder");
       this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateCylinder());
       break;
     case SPHERE:
-      //this->dataPtr->movableObject = this->scene->OgreSceneManager()->createEntity("unit_sphere");
       this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateSphere());
       break;
     case LINE_STRIP:
@@ -210,6 +209,7 @@ void OgreMarker::ClearPoints()
 
 void OgreMarker::SetType(Type _type)
 {
+  ignwarn << "Setting ogre type to " << _type << "\n";
   this->dataPtr->type = _type;
   SetRenderOperation(_type);
 }

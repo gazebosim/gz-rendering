@@ -53,6 +53,17 @@ namespace ignition
       public: virtual void SetRenderOperation(const Type _type) = 0;
 
       public: virtual Type RenderOperation() const = 0;
+
+      public: virtual void ClearPoints() = 0;
+
+      public: virtual void AddPoint(const double _x, const double _y, const double _z,
+                  const ignition::math::Color &_color) = 0;
+      
+      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
+                  const ignition::math::Color &_color) = 0;
+      
+      public: virtual void SetPoint(const unsigned int _index,
+                  const ignition::math::Vector3d &_value) = 0;
     };
     }
   }

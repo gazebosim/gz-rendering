@@ -201,6 +201,7 @@ namespace ignition
     template <class T>
     MaterialPtr BaseMesh<T>::Material() const
     {
+      ignwarn << "Calling basemesh\n";
       unsigned int count = this->SubMeshCount();
       return (count > 0) ? this->SubMeshByIndex(0)->Material() :
           MaterialPtr();

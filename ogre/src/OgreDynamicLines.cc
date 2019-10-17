@@ -56,15 +56,12 @@ OgreDynamicLines::~OgreDynamicLines()
 {
 }
 
-void OgreDynamicLines::SetOperationType(Type _type)
-{
-  this->SetOperationType(_type);
-}
-
 /////////////////////////////////////////////////
 void OgreDynamicLines::AddPoint(const ignition::math::Vector3d &_pt,
                             const ignition::math::Color &_color)
 {
+  ignwarn << 
+    "adding point with color " << _color << "\n";
   this->dataPtr->points.push_back(_pt);
   this->dataPtr->colors.push_back(_color);
   this->dataPtr->dirty = true;

@@ -405,7 +405,6 @@ VisualPtr OgreScene::CreateVisualImpl(unsigned int _id,
 {
   OgreVisualPtr visual(new OgreVisual);
   bool result = this->InitObject(visual, _id, _name);
-  ignwarn << "result of object visual initialization " << result << "\n";
   return (result) ? visual : nullptr;
 }
 

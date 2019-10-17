@@ -50,31 +50,28 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual Ogre::MovableObject *OgreObject() const;
-      
-      /// \brief Sets the Marker's MovableObject
-      public: virtual void SetOgreObject(Ogre::MovableObject *_movableObject);
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() const;
+      public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
+      public: virtual void SetMaterial(MaterialPtr _material, bool _unique) override;
 
       public: virtual void SetRenderOperation(const Type _type) override;
       
       public: virtual Type RenderOperation() const override;
 
       public: virtual void SetPoint(const unsigned int _index,
-                                    const ignition::math::Vector3d &_value);
+                                    const ignition::math::Vector3d &_value) override;
 
       public: virtual void AddPoint(const double _x,
                                     const double _y, const double _z,
-                                    const ignition::math::Color &_color);
+                                    const ignition::math::Color &_color) override;
 
       public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                                    const ignition::math::Color &_color);
+                                    const ignition::math::Color &_color) override;
 
-      public: virtual void ClearPoints();
+      public: virtual void ClearPoints() override;
 
       public: virtual void SetType(const Type _type) override;
       
@@ -88,7 +85,7 @@ namespace ignition
 
       public: virtual Visibility getVisibility() const;
       
-      /// \brief Set material to grid geometry.
+      /// \brief Set material.
       /// \param[in] _material Ogre material.
       protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
 

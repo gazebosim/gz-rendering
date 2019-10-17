@@ -56,6 +56,7 @@ void OgreDynamicRenderable::Init(Type _type, bool useIndices)
 //////////////////////////////////////////////////
 void OgreDynamicRenderable::SetOperationType(Type _type)
 {
+  ignwarn << "Dynamic renderable type " << _type << "\n";
   switch (_type)
   {
     case POINTS:

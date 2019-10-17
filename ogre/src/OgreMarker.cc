@@ -25,12 +25,10 @@
 
 class ignition::rendering::OgreMarkerPrivate
 {
-  /// \brief Grid materal
-  public: OgreMaterialPtr material;
+  /// \brief Marker materal
+  public: OgreMaterialPtr material = nullptr;
 
   public: std::shared_ptr<OgreDynamicLines> dynamicRenderable;
-
-  public: Ogre::MovableObject *movableObject = nullptr;
 
   public: OgreMeshPtr mesh = nullptr;
 
@@ -62,11 +60,6 @@ void OgreMarker::PreRender()
 }
 
 //////////////////////////////////////////////////
-void OgreMarker::SetOgreObject(Ogre::MovableObject *_movableObject) {
-  this->dataPtr->movableObject = _movableObject;
-}
-
-//////////////////////////////////////////////////
 Ogre::MovableObject *OgreMarker::OgreObject() const
 {
   switch (type)
@@ -81,13 +74,17 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
     case TRIANGLE_FAN:
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
-      return std::dynamic_pointer_cast<Ogre::MovableObject>(this->dataPtr->dynamicRenderable).get();
-    case NONE:
+      {
+      Ogre::MovableObject *m = std::dynamic_pointer_cast<Ogre::MovableObject>(this->dataPtr->dynamicRenderable).get();
+      ignwarn << "Returning dynamic renderable " << m <<"\n";
+      return m;
+      }
+     case NONE:
       ignerr << "Invalid Marker type " << type << "\n";
       return nullptr;
     default:
-    ignerr << "default\n";
-    return nullptr;
+      ignerr << "default\n";
+      return nullptr;
   }
 }
 
@@ -128,6 +125,8 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
+  this->dataPtr->mesh->SetMaterial(_material, _unique);
+
   this->SetMaterialImpl(derived);
 }
 
@@ -139,7 +138,9 @@ void OgreMarker::SetMaterialImpl(OgreMaterialPtr _material)
   this->dataPtr->material = _material;
 
   this->dataPtr->material->SetReceiveShadows(false);
-  this->dataPtr->material->SetLightingEnabled(false);
+
+  this->dataPtr->dynamicRenderable->setMaterial(materialName);
+  //this->dataPtr->material->SetLightingEnabled(false);
 }
 
 //////////////////////////////////////////////////
@@ -151,6 +152,7 @@ MaterialPtr OgreMarker::Material() const
 void OgreMarker::SetRenderOperation(const Type _type)
 {
   type = _type;
+  ignwarn << "type " << type << "\n";
   switch (_type)
   {
     case NONE:
@@ -171,6 +173,7 @@ void OgreMarker::SetRenderOperation(const Type _type)
     case TRIANGLE_FAN:
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
+      ignwarn << "Setting type for dynamicrenderable in ogremarker\n";
       this->dataPtr->dynamicRenderable->SetOperationType(_type);
       break;
     default:
@@ -204,6 +207,7 @@ void OgreMarker::AddPoint(const ignition::math::Vector3d &_pt,
 
 void OgreMarker::ClearPoints()
 {
+  ignwarn << "Clearing points\n";
   this->dataPtr->dynamicRenderable->Clear();
 }
 

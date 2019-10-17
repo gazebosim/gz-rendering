@@ -49,8 +49,6 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~OgreDynamicLines();
 
-      public: virtual void SetOperationType(Type _type);
-
       /// \brief Add a point to the point list
       /// \param[in] _pt ignition::math::Vector3d point
       /// \param[in] _color ignition::math::Color Point color

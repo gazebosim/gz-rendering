@@ -55,39 +55,28 @@ namespace ignition
       public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(MaterialPtr _material, bool _unique) override;
+      public: virtual void SetMaterial(
+                           MaterialPtr _material, bool _unique) override;
 
-      public: virtual void SetRenderOperation(const Type _type) override;
-      
-      public: virtual Type RenderOperation() const override;
+      public: virtual void SetRenderOperation(const MarkerType _markerType) override;
+
+      public: virtual MarkerType RenderOperation() const override;
 
       public: virtual void SetPoint(const unsigned int _index,
-                                    const ignition::math::Vector3d &_value) override;
+                           const ignition::math::Vector3d &_value) override;
 
       public: virtual void AddPoint(const double _x,
-                                    const double _y, const double _z,
-                                    const ignition::math::Color &_color) override;
+                           const double _y, const double _z,
+                           const ignition::math::Color &_color) override;
 
       public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                                    const ignition::math::Color &_color) override;
+                           const ignition::math::Color &_color) override;
 
       public: virtual void ClearPoints() override;
 
-      public: virtual void SetType(const Type _type) override;
-      
-      public: virtual Type getType() const override;
+      public: virtual void SetType(const MarkerType _markerType) override;
 
-      public: virtual void SetAction(Action _action);
-
-      public: virtual void SetVisibility(Visibility _visibility);
-
-      public: virtual Action getAction() const;
-
-      public: virtual Visibility getVisibility() const;
-      
-      /// \brief Set material.
-      /// \param[in] _material Ogre material.
-      protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
+      public: virtual MarkerType Type() const override;
 
       /// \brief Create the grid geometry in ogre
       private: void Create();

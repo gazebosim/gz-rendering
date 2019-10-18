@@ -45,18 +45,18 @@ namespace ignition
       /// \remarks This function should only be called once. It initializes the
       /// render operation, and calls the abstract function
       /// CreateVertexDeclaration().
-      /// \param[in] _type The type of render operation to perform.
+      /// \param[in] _opType The type of render operation to perform.
       /// \param[in] _useIndices Specifies whether to use indices to
       /// determine the vertices to use as input.
-      public: void Init(Type _type, bool _useIndices = false);
+      public: void Init(MarkerType _opType, bool _useIndices = false);
 
       /// \brief Set the render operation type
-      /// \param[in] _type The type of render operation to perform.
-      public: void SetOperationType(Type _type);
+      /// \param[in] _opType The type of render operation to perform.
+      public: void SetOperationType(MarkerType _opType);
 
       /// \brief Get the render operation type
       /// \return The render operation type.
-      public: Type OperationType() const;
+      public: MarkerType OperationType() const;
 
       /// \brief Implementation of Ogre::SimpleRenderable
       /// \return The bounding radius

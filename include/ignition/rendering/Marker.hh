@@ -31,37 +31,38 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Marker Marker.hh ignition/rendering/Marker
-    /// \brief TODO(jshep1): update description of this and all below funcs.
     class IGNITION_RENDERING_VISIBLE Marker :
       public virtual Geometry
     {
       /// \brief Destructor
       public: virtual ~Marker() { }
 
-      public: virtual void SetLifetime(const std::chrono::steady_clock::duration &_lifetime) = 0;
+      public: virtual void SetLifetime(
+                  const std::chrono::steady_clock::duration &_lifetime) = 0;
 
       public: virtual std::chrono::steady_clock::duration Lifetime() const = 0;
 
       public: virtual void SetLayer(const int32_t _layer) = 0;
 
       public: virtual int32_t Layer() const = 0;
-      
-      public: virtual void SetType(const Type _type) = 0;
 
-      public: virtual Type getType() const = 0;
-      
-      public: virtual void SetRenderOperation(const Type _type) = 0;
+      public: virtual void SetType(const MarkerType _markerType) = 0;
 
-      public: virtual Type RenderOperation() const = 0;
+      public: virtual MarkerType Type() const = 0;
+
+      public: virtual void SetRenderOperation(const MarkerType _markerType) = 0;
+
+      public: virtual MarkerType RenderOperation() const = 0;
 
       public: virtual void ClearPoints() = 0;
 
-      public: virtual void AddPoint(const double _x, const double _y, const double _z,
+      public: virtual void AddPoint(const double _x,
+                  const double _y, const double _z,
                   const ignition::math::Color &_color) = 0;
-      
+
       public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
                   const ignition::math::Color &_color) = 0;
-      
+ 
       public: virtual void SetPoint(const unsigned int _index,
                   const ignition::math::Vector3d &_value) = 0;
     };

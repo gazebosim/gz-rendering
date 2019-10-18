@@ -25,18 +25,17 @@
 
 class ignition::rendering::OgreMarkerPrivate
 {
-  /// \brief Marker materal
+  /// \brief Marker material
   public: OgreMaterialPtr material = nullptr;
 
+  /// \brief DynamicLines Object to display
   public: std::shared_ptr<OgreDynamicLines> dynamicRenderable;
 
+  /// \brief Mesh Object for primitive shapes
   public: OgreMeshPtr mesh = nullptr;
 
-  public: Type type;
-
-  public: Visibility visibility;
-
-  public: Action action;
+  /// \brief MarkerType of render operation
+  public: MarkerType markerType;
 };
 
 using namespace ignition;
@@ -47,7 +46,7 @@ OgreMarker::OgreMarker()
   : dataPtr(new OgreMarkerPrivate)
 {
 }
-// TODO(jshep1): add Destroy implementation
+
 //////////////////////////////////////////////////
 OgreMarker::~OgreMarker()
 {
@@ -62,8 +61,9 @@ void OgreMarker::PreRender()
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreMarker::OgreObject() const
 {
-  switch (type)
+  switch (markerType)
   {
+    case NONE:
     case BOX:
     case CYLINDER:
     case SPHERE:
@@ -74,16 +74,10 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
     case TRIANGLE_FAN:
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
-      {
-      Ogre::MovableObject *m = std::dynamic_pointer_cast<Ogre::MovableObject>(this->dataPtr->dynamicRenderable).get();
-      ignwarn << "Returning dynamic renderable " << m <<"\n";
-      return m;
-      }
-     case NONE:
-      ignerr << "Invalid Marker type " << type << "\n";
-      return nullptr;
+      return std::dynamic_pointer_cast<Ogre::MovableObject>
+        (this->dataPtr->dynamicRenderable).get();
     default:
-      ignerr << "default\n";
+      ignerr << "Invalid Marker type " << markerType << "\n";
       return nullptr;
   }
 }
@@ -97,15 +91,13 @@ void OgreMarker::Init()
 //////////////////////////////////////////////////
 void OgreMarker::Create()
 {
-  // TODO(jshep1): init dynamicRenderable to default rendertype
-  this->dataPtr->type = LINE_STRIP;
-  this->dataPtr->visibility = GUI;
-  this->dataPtr->action = ADD_MODIFY;
+  this->dataPtr->markerType = LINE_STRIP;
   this->dataPtr->dynamicRenderable.reset(new OgreDynamicLines(LINE_STRIP));
 
   if (!this->dataPtr->mesh)
   {
-    this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
+    this->dataPtr->mesh =
+      std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
   }
 }
 
@@ -125,22 +117,33 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
-  this->dataPtr->mesh->SetMaterial(_material, _unique);
-
-  this->SetMaterialImpl(derived);
-}
-
-//////////////////////////////////////////////////
-void OgreMarker::SetMaterialImpl(OgreMaterialPtr _material)
-{
-  std::string materialName = _material->Name();
-  Ogre::MaterialPtr ogreMaterial = _material->Material();
-  this->dataPtr->material = _material;
+  std::string materialName = derived->Name();
+  Ogre::MaterialPtr ogreMaterial = derived->Material();
+  this->dataPtr->material = derived;
 
   this->dataPtr->material->SetReceiveShadows(false);
-
-  this->dataPtr->dynamicRenderable->setMaterial(materialName);
-  //this->dataPtr->material->SetLightingEnabled(false);
+  this->dataPtr->material->SetLightingEnabled(false);
+  
+  switch (markerType)
+  {
+    case NONE:
+    case BOX:
+    case CYLINDER:
+    case SPHERE:
+      this->dataPtr->mesh->SetMaterial(derived, _unique);
+      break;
+    case LINE_STRIP:
+    case LINE_LIST:
+    case POINTS:
+    case TRIANGLE_FAN:
+    case TRIANGLE_LIST:
+    case TRIANGLE_STRIP:
+      this->dataPtr->dynamicRenderable->setMaterial(materialName);
+      break;
+    default:
+      ignerr << "Invalid Marker type " << markerType << "\n";
+      break;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -149,23 +152,26 @@ MaterialPtr OgreMarker::Material() const
   return this->dataPtr->material;
 }
 
-void OgreMarker::SetRenderOperation(const Type _type)
+void OgreMarker::SetRenderOperation(const MarkerType _markerType)
 {
-  type = _type;
-  ignwarn << "type " << type << "\n";
-  switch (_type)
+  markerType = _markerType;
+  switch (_markerType)
   {
     case NONE:
-      this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
+      this->dataPtr->mesh =
+        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
       break;
     case BOX:
-      this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
+      this->dataPtr->mesh =
+        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
       break;
     case CYLINDER:
-      this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateCylinder());
+      this->dataPtr->mesh =
+        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateCylinder());
       break;
     case SPHERE:
-      this->dataPtr->mesh = std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateSphere());
+      this->dataPtr->mesh =
+        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateSphere());
       break;
     case LINE_STRIP:
     case LINE_LIST:
@@ -173,8 +179,7 @@ void OgreMarker::SetRenderOperation(const Type _type)
     case TRIANGLE_FAN:
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
-      ignwarn << "Setting type for dynamicrenderable in ogremarker\n";
-      this->dataPtr->dynamicRenderable->SetOperationType(_type);
+      this->dataPtr->dynamicRenderable->SetOperationType(_markerType);
       break;
     default:
       ignerr << "Invalid Marker type\n";
@@ -182,7 +187,7 @@ void OgreMarker::SetRenderOperation(const Type _type)
   }
 }
 
-Type OgreMarker::RenderOperation() const
+MarkerType OgreMarker::RenderOperation() const
 {
   return this->dataPtr->dynamicRenderable->OperationType();
 }
@@ -207,39 +212,16 @@ void OgreMarker::AddPoint(const ignition::math::Vector3d &_pt,
 
 void OgreMarker::ClearPoints()
 {
-  ignwarn << "Clearing points\n";
   this->dataPtr->dynamicRenderable->Clear();
 }
 
-void OgreMarker::SetType(Type _type)
+void OgreMarker::SetType(MarkerType _markerType)
 {
-  ignwarn << "Setting ogre type to " << _type << "\n";
-  this->dataPtr->type = _type;
-  SetRenderOperation(_type);
+  this->dataPtr->markerType = _markerType;
+  SetRenderOperation(_markerType);
 }
 
-void OgreMarker::SetAction(Action _action)
+MarkerType OgreMarker::Type() const
 {
-  this->dataPtr->action = _action;
+  return this->dataPtr->markerType;
 }
-
-void OgreMarker::SetVisibility(const Visibility _visibility)
-{
-  this->dataPtr->visibility = _visibility;
-}
-
-Type OgreMarker::getType() const
-{
-  return this->dataPtr->type;
-}
-
-Action OgreMarker::getAction() const
-{
-  return this->dataPtr->action;
-}
-
-Visibility OgreMarker::getVisibility() const
-{
-  return this->dataPtr->visibility;
-}
-

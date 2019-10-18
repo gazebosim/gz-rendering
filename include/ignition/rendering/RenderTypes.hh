@@ -333,8 +333,8 @@ namespace ignition
     /// \def const VisualPtr
     /// \brief Shared pointer to const Visual
     typedef shared_ptr<const Visual> ConstVisualPtr;
-    
-    enum Type
+
+    enum MarkerType
     {
       NONE           = 0,
       BOX            = 1,

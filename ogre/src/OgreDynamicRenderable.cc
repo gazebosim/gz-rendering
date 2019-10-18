@@ -34,9 +34,9 @@ OgreDynamicRenderable::~OgreDynamicRenderable()
 }
 
 //////////////////////////////////////////////////
-void OgreDynamicRenderable::Init(Type _type, bool useIndices)
+void OgreDynamicRenderable::Init(MarkerType _opType, bool useIndices)
 {
-  this->SetOperationType(_type);
+  this->SetOperationType(_opType);
 
   // Initialize render operation
   this->mRenderOp.useIndexes = useIndices;
@@ -54,10 +54,9 @@ void OgreDynamicRenderable::Init(Type _type, bool useIndices)
 }
 
 //////////////////////////////////////////////////
-void OgreDynamicRenderable::SetOperationType(Type _type)
+void OgreDynamicRenderable::SetOperationType(MarkerType _opType)
 {
-  ignwarn << "Dynamic renderable type " << _type << "\n";
-  switch (_type)
+  switch (_opType)
   {
     case POINTS:
       this->mRenderOp.operationType = Ogre::RenderOperation::OT_POINT_LIST;
@@ -84,44 +83,44 @@ void OgreDynamicRenderable::SetOperationType(Type _type)
       break;
 
     default:
-      ignerr << "Unknown render operation type[" << _type << "]\n";
+      ignerr << "Unknown render operation type[" << _opType << "]\n";
       break;
   }
 }
 
 //////////////////////////////////////////////////
-Type OgreDynamicRenderable::OperationType() const
+MarkerType OgreDynamicRenderable::OperationType() const
 {
-  Type type;
+  MarkerType opType;
   switch (this->mRenderOp.operationType)
   {
     case Ogre::RenderOperation::OT_LINE_LIST:
-      type = LINE_LIST;
+      opType = LINE_LIST;
       break;
 
     case Ogre::RenderOperation::OT_LINE_STRIP:
-      type = LINE_STRIP;
+      opType = LINE_STRIP;
       break;
 
     case Ogre::RenderOperation::OT_TRIANGLE_LIST:
-      type = TRIANGLE_LIST;
+      opType = TRIANGLE_LIST;
       break;
 
     case Ogre::RenderOperation::OT_TRIANGLE_STRIP:
-      type = TRIANGLE_STRIP;
+      opType = TRIANGLE_STRIP;
       break;
 
     case Ogre::RenderOperation::OT_TRIANGLE_FAN:
-      type = TRIANGLE_FAN;
+      opType = TRIANGLE_FAN;
       break;
 
     default:
     case Ogre::RenderOperation::OT_POINT_LIST:
-      type = POINTS;
+      opType = POINTS;
       break;
   }
 
-  return type;
+  return opType;
 }
 
 //////////////////////////////////////////////////

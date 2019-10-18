@@ -43,10 +43,10 @@ class ignition::rendering::Ogre2DynamicLinesPrivate
 };
 
 /////////////////////////////////////////////////
-Ogre2DynamicLines::Ogre2DynamicLines(Type opType)
+Ogre2DynamicLines::Ogre2DynamicLines(MarkerType _opType)
   : dataPtr(new Ogre2DynamicLinesPrivate)
 {
-  this->Init(opType, false);
+  this->Init(_opType, false);
   this->setCastShadows(false);
   this->dataPtr->dirty = true;
 }

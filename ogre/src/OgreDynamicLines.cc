@@ -43,10 +43,10 @@ class ignition::rendering::OgreDynamicLinesPrivate
 };
 
 /////////////////////////////////////////////////
-OgreDynamicLines::OgreDynamicLines(Type _type)
+OgreDynamicLines::OgreDynamicLines(MarkerType _opType)
   : dataPtr(new OgreDynamicLinesPrivate)
 {
-  this->Init(_type, false);
+  this->Init(_opType, false);
   this->setCastShadows(false);
   this->dataPtr->dirty = true;
 }
@@ -60,8 +60,6 @@ OgreDynamicLines::~OgreDynamicLines()
 void OgreDynamicLines::AddPoint(const ignition::math::Vector3d &_pt,
                             const ignition::math::Color &_color)
 {
-  ignwarn << 
-    "adding point with color " << _color << "\n";
   this->dataPtr->points.push_back(_pt);
   this->dataPtr->colors.push_back(_color);
   this->dataPtr->dirty = true;

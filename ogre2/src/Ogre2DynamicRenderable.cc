@@ -47,9 +47,9 @@ Ogre2DynamicRenderable::~Ogre2DynamicRenderable()
 }
 
 //////////////////////////////////////////////////
-void Ogre2DynamicRenderable::Init(Type operationType, bool useIndices)
+void Ogre2DynamicRenderable::Init(MarkerType _opType, bool useIndices)
 {
-  this->SetOperationType(operationType);
+  this->SetOperationType(_opType);
 
   // Initialize render operation
   this->mRenderOp.useIndexes = useIndices;
@@ -67,9 +67,9 @@ void Ogre2DynamicRenderable::Init(Type operationType, bool useIndices)
 }
 
 //////////////////////////////////////////////////
-void Ogre2DynamicRenderable::SetOperationType(Type opType)
+void Ogre2DynamicRenderable::SetOperationType(MarkerType _opType)
 {
-  switch (opType)
+  switch (_opType)
   {
     case POINTS:
       this->mRenderOp.operationType = Ogre::OT_POINT_LIST;
@@ -96,44 +96,44 @@ void Ogre2DynamicRenderable::SetOperationType(Type opType)
       break;
 
     default:
-      ignerr << "Unknown render operation type[" << opType << "]\n";
+      ignerr << "Unknown render operation type[" << _opType << "]\n";
       break;
   }
 }
 
 //////////////////////////////////////////////////
-Type Ogre2DynamicRenderable::OperationType() const
+MarkerType Ogre2DynamicRenderable::OperationType() const
 {
-  Type type;
+  MarkerType opType;
   switch (this->mRenderOp.operationType)
   {
     case Ogre::OT_LINE_LIST:
-      type = LINE_LIST;
+      opType = LINE_LIST;
       break;
 
     case Ogre::OT_LINE_STRIP:
-      type = LINE_STRIP;
+      opType = LINE_STRIP;
       break;
 
     case Ogre::OT_TRIANGLE_LIST:
-      type = TRIANGLE_LIST;
+      opType = TRIANGLE_LIST;
       break;
 
     case Ogre::OT_TRIANGLE_STRIP:
-      type = TRIANGLE_STRIP;
+      opType = TRIANGLE_STRIP;
       break;
 
     case Ogre::OT_TRIANGLE_FAN:
-      type = TRIANGLE_FAN;
+      opType = TRIANGLE_FAN;
       break;
 
     default:
     case Ogre::OT_POINT_LIST:
-      type = POINTS;
+      opType = POINTS;
       break;
   }
 
-  return type;
+  return opType;
 }
 
 //////////////////////////////////////////////////

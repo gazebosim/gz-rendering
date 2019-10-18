@@ -45,19 +45,20 @@ namespace ignition
 
       public: virtual void PreRender();
       public: virtual void Destroy();
-      public: virtual void SetLifetime(const std::chrono::steady_clock::duration &_lifetime);
+      public: virtual void SetLifetime(
+                  const std::chrono::steady_clock::duration &_lifetime);
       public: virtual std::chrono::steady_clock::duration Lifetime() const;
-      public: virtual void SetType(const Type _type);
-      public: virtual Type getType() const;
+      public: virtual void SetType(const MarkerType _markerType);
+      public: virtual MarkerType Type() const;
       public: virtual void SetLayer(const int32_t _layer);
       public: virtual int32_t Layer() const;
-      public: virtual void SetRenderOperation(const Type _type);
-      public: virtual Type RenderOperation() const;
+      public: virtual void SetRenderOperation(const MarkerType _markerType);
+      public: virtual MarkerType RenderOperation() const;
 
       protected: std::chrono::steady_clock::duration lifetime;
       protected: int32_t layer = 0;
       protected: bool markerDirty = false;
-      protected: Type type = ignition::rendering::Type::NONE;
+      protected: MarkerType markerType = ignition::rendering::MarkerType::NONE;
     };
 
     /////////////////////////////////////////////////
@@ -76,7 +77,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseMarker<T>::SetLifetime(const std::chrono::steady_clock::duration &_lifetime)
+    void BaseMarker<T>::SetLifetime(
+        const std::chrono::steady_clock::duration &_lifetime)
     {
       this->lifetime = _lifetime;
       this->markerDirty = true;
@@ -103,37 +105,37 @@ namespace ignition
     {
       return this->layer;
     }
-    
+
     /////////////////////////////////////////////////
     template <class T>
-    void BaseMarker<T>::SetType(const Type _type)
+    void BaseMarker<T>::SetType(const MarkerType _markerType)
     {
-      this->type = _type;
+      this->markerType = _markerType;
       this->markerDirty = true;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    Type BaseMarker<T>::getType() const
+    MarkerType BaseMarker<T>::Type() const
     {
-      return this->type;
+      return this->markerType;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseMarker<T>::SetRenderOperation(const Type _type)
+    void BaseMarker<T>::SetRenderOperation(const MarkerType _markerType)
     {
-      this->type = _type;
+      this->markerType = _markerType;
       this->markerDirty = true;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    Type BaseMarker<T>::RenderOperation() const
+    MarkerType BaseMarker<T>::RenderOperation() const
     {
-      return this->type;
+      return this->markerType;
     }
-    
+
     /////////////////////////////////////////////////
     template <class T>
     void BaseMarker<T>::PreRender()

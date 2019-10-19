@@ -29,7 +29,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-
     /// \class Marker Marker.hh ignition/rendering/Marker
     class IGNITION_RENDERING_VISIBLE Marker :
       public virtual Geometry
@@ -62,7 +61,7 @@ namespace ignition
 
       public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
                   const ignition::math::Color &_color) = 0;
- 
+
       public: virtual void SetPoint(const unsigned int _index,
                   const ignition::math::Vector3d &_value) = 0;
     };

@@ -58,7 +58,8 @@ namespace ignition
       public: virtual void SetMaterial(
                            MaterialPtr _material, bool _unique) override;
 
-      public: virtual void SetRenderOperation(const MarkerType _markerType) override;
+      public: virtual void SetRenderOperation(
+                           const MarkerType _markerType) override;
 
       public: virtual MarkerType RenderOperation() const override;
 

@@ -123,7 +123,7 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
 
   this->dataPtr->material->SetReceiveShadows(false);
   this->dataPtr->material->SetLightingEnabled(false);
-  
+
   switch (markerType)
   {
     case NONE:

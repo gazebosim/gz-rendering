@@ -29,7 +29,7 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
+
     /// \class Marker Marker.hh ignition/rendering/Marker
     class IGNITION_RENDERING_VISIBLE Marker :
       public virtual Geometry

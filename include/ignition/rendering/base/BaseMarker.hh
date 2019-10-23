@@ -47,11 +47,12 @@ namespace ignition
       public: virtual void Destroy();
 
       // Documentation inherited
-      public: virtual void SetLifetime(
-                  const std::chrono::steady_clock::duration &_lifetime) override;
+      public: virtual void SetLifetime(const
+                  std::chrono::steady_clock::duration &_lifetime) override;
 
       // Documentation inherited
-      public: virtual std::chrono::steady_clock::duration Lifetime() const override;
+      public: virtual std::chrono::steady_clock::duration Lifetime()
+                  const override;
 
       // Documentation inherited
       public: virtual void SetType(const MarkerType _markerType) override;

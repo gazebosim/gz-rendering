@@ -32,7 +32,7 @@ namespace ignition
     // Forward declaration
     class OgreMarkerPrivate;
 
-    /// \brief Ogre implementation of a grid geometry.
+    /// \brief Ogre implementation of a marker geometry.
     class IGNITION_RENDERING_OGRE_VISIBLE OgreMarker
       : public BaseMarker<OgreGeometry>
     {
@@ -58,25 +58,26 @@ namespace ignition
       public: virtual void SetMaterial(
                            MaterialPtr _material, bool _unique) override;
 
-      public: virtual void SetRenderOperation(
-                           const MarkerType _markerType) override;
-
-      public: virtual MarkerType RenderOperation() const override;
-
-      public: virtual void SetPoint(const unsigned int _index,
+      // Documentation inherited
+      public: virtual void SetPoint(unsigned int _index,
                            const ignition::math::Vector3d &_value) override;
 
-      public: virtual void AddPoint(const double _x,
-                           const double _y, const double _z,
+      // Documentation inherited
+      public: virtual void AddPoint(double _x,
+                           double _y, double _z,
                            const ignition::math::Color &_color) override;
 
+      // Documentation inherited
       public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
                            const ignition::math::Color &_color) override;
 
+      // Documentation inherited
       public: virtual void ClearPoints() override;
 
+      // Documentation inherited
       public: virtual void SetType(const MarkerType _markerType) override;
 
+      // Documentation inherited
       public: virtual MarkerType Type() const override;
 
       /// \brief Create the grid geometry in ogre

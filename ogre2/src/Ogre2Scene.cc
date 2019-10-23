@@ -233,7 +233,6 @@ VisualPtr Ogre2Scene::CreateVisualImpl(unsigned int _id,
 {
   Ogre2VisualPtr visual(new Ogre2Visual);
   bool result = this->InitObject(visual, _id, _name);
-  ignwarn << "visual object result " << result << "\n";
   return (result) ? visual : nullptr;
 }
 
@@ -325,6 +324,7 @@ GridPtr Ogre2Scene::CreateGridImpl(unsigned int /*_id*/,
   return GridPtr();
 }
 
+//////////////////////////////////////////////////
 MarkerPtr Ogre2Scene::CreateMarkerImpl(unsigned int /*_id*/,
     const std::string &/*_name*/)
 {

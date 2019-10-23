@@ -348,19 +348,6 @@ namespace ignition
       TRIANGLE_LIST  = 9,
       TRIANGLE_STRIP = 10
     };
-
-    enum Visibility
-    {
-      GUI = 0,
-      ALL = 1
-    };
-
-    enum Action
-    {
-      ADD_MODIFY    = 0,
-      DELETE_MARKER = 1,
-      DELETE_ALL    = 2
-    };
     }
   }
 }

@@ -152,7 +152,35 @@ MaterialPtr OgreMarker::Material() const
   return this->dataPtr->material;
 }
 
-void OgreMarker::SetRenderOperation(const MarkerType _markerType)
+//////////////////////////////////////////////////
+void OgreMarker::SetPoint(unsigned int _index,
+    const ignition::math::Vector3d &_value)
+{
+  this->dataPtr->dynamicRenderable->SetPoint(_index, _value);
+}
+
+//////////////////////////////////////////////////
+void OgreMarker::AddPoint(double _x, double _y, double _z,
+    const ignition::math::Color &_color)
+{
+  this->dataPtr->dynamicRenderable->AddPoint(_x, _y, _z, _color);
+}
+
+//////////////////////////////////////////////////
+void OgreMarker::AddPoint(const ignition::math::Vector3d &_pt,
+    const ignition::math::Color &_color)
+{
+  this->dataPtr->dynamicRenderable->AddPoint(_pt, _color);
+}
+
+//////////////////////////////////////////////////
+void OgreMarker::ClearPoints()
+{
+  this->dataPtr->dynamicRenderable->Clear();
+}
+
+//////////////////////////////////////////////////
+void OgreMarker::SetType(MarkerType _markerType)
 {
   markerType = _markerType;
   switch (_markerType)
@@ -187,40 +215,7 @@ void OgreMarker::SetRenderOperation(const MarkerType _markerType)
   }
 }
 
-MarkerType OgreMarker::RenderOperation() const
-{
-  return this->dataPtr->dynamicRenderable->OperationType();
-}
-
-void OgreMarker::SetPoint(const unsigned int _index,
-    const ignition::math::Vector3d &_value)
-{
-  this->dataPtr->dynamicRenderable->SetPoint(_index, _value);
-}
-
-void OgreMarker::AddPoint(const double _x, const double _y, const double _z,
-    const ignition::math::Color &_color)
-{
-  this->dataPtr->dynamicRenderable->AddPoint(_x, _y, _z, _color);
-}
-
-void OgreMarker::AddPoint(const ignition::math::Vector3d &_pt,
-    const ignition::math::Color &_color)
-{
-  this->dataPtr->dynamicRenderable->AddPoint(_pt, _color);
-}
-
-void OgreMarker::ClearPoints()
-{
-  this->dataPtr->dynamicRenderable->Clear();
-}
-
-void OgreMarker::SetType(MarkerType _markerType)
-{
-  this->dataPtr->markerType = _markerType;
-  SetRenderOperation(_markerType);
-}
-
+//////////////////////////////////////////////////
 MarkerType OgreMarker::Type() const
 {
   return this->dataPtr->markerType;

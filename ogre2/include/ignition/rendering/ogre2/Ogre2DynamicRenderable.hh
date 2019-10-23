@@ -104,10 +104,10 @@ namespace ignition
       protected: virtual void FillHardwareBuffers() = 0;
 
       /// \brief Maximum capacity of the currently allocated vertex buffer.
-      protected: size_t vertexBufferCapacity;
+      protected: size_t vertexBufferCapacity = 0;
 
       /// \brief Maximum capacity of the currently allocated index buffer.
-      protected: size_t indexBufferCapacity;
+      protected: size_t indexBufferCapacity = 0;
     };
     }
   }

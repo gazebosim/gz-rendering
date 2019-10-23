@@ -17,8 +17,6 @@
 #ifndef IGNITION_RENDERING_BASEMARKER_HH_
 #define IGNITION_RENDERING_BASEMARKER_HH_
 
-#include <string>
-
 #include "ignition/rendering/Marker.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -30,8 +28,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \brief A marker visualization. The MarkerManager class should
     /// instantiate instances of this class.
-    /// \sa MarkerManager
-    /// TODO(jshep1): add descriptions to all below
+    /// \sa Base implementation of a Marker geometry
     template <class T>
     class BaseMarker :
       public virtual Marker,
@@ -43,17 +40,30 @@ namespace ignition
       /// \brief Destructor.
       public: virtual ~BaseMarker();
 
+      /// \brief PreRender function
       public: virtual void PreRender();
+
+      /// \brief Destroy function
       public: virtual void Destroy();
+
+      // Documentation inherited
       public: virtual void SetLifetime(
-                  const std::chrono::steady_clock::duration &_lifetime);
-      public: virtual std::chrono::steady_clock::duration Lifetime() const;
-      public: virtual void SetType(const MarkerType _markerType);
-      public: virtual MarkerType Type() const;
-      public: virtual void SetLayer(const int32_t _layer);
-      public: virtual int32_t Layer() const;
-      public: virtual void SetRenderOperation(const MarkerType _markerType);
-      public: virtual MarkerType RenderOperation() const;
+                  const std::chrono::steady_clock::duration &_lifetime) override;
+
+      // Documentation inherited
+      public: virtual std::chrono::steady_clock::duration Lifetime() const override;
+
+      // Documentation inherited
+      public: virtual void SetType(const MarkerType _markerType) override;
+
+      // Documentation inherited
+      public: virtual MarkerType Type() const override;
+
+      // Documentation inherited
+      public: virtual void SetLayer(int32_t _layer) override;
+
+      // Documentation inherited
+      public: virtual int32_t Layer() const override;
 
       protected: std::chrono::steady_clock::duration lifetime;
       protected: int32_t layer = 0;
@@ -93,7 +103,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseMarker<T>::SetLayer(const int32_t _layer)
+    void BaseMarker<T>::SetLayer(int32_t _layer)
     {
       this->layer = _layer;
       this->markerDirty = true;
@@ -117,21 +127,6 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     MarkerType BaseMarker<T>::Type() const
-    {
-      return this->markerType;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseMarker<T>::SetRenderOperation(const MarkerType _markerType)
-    {
-      this->markerType = _markerType;
-      this->markerDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    MarkerType BaseMarker<T>::RenderOperation() const
     {
       return this->markerType;
     }

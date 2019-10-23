@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre/Export.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/Marker.hh"
 
 namespace ignition
 {

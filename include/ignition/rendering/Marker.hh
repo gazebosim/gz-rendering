@@ -17,18 +17,34 @@
 #ifndef IGNITION_RENDERING_MARKER_HH_
 #define IGNITION_RENDERING_MARKER_HH_
 
-#include <string>
+#include <ignition/common/Time.hh>
+#include <ignition/math/Color.hh>
+#include <ignition/math/Vector3.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/RenderTypes.hh"
-#include "ignition/common/Time.hh"
 
 namespace ignition
 {
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    enum MarkerType
+    {
+      NONE           = 0,
+      BOX            = 1,
+      CYLINDER       = 2,
+      LINE_STRIP     = 3,
+      LINE_LIST      = 4,
+      POINTS         = 5,
+      SPHERE         = 6,
+      TEXT           = 7,
+      TRIANGLE_FAN   = 8,
+      TRIANGLE_LIST  = 9,
+      TRIANGLE_STRIP = 10
+    };
+
     /// \class Marker Marker.hh ignition/rendering/Marker
     class IGNITION_RENDERING_VISIBLE Marker :
       public virtual Geometry
@@ -54,11 +70,12 @@ namespace ignition
 
       /// \brief Set the render type of this Marker
       /// \param[in] The desired render type
-      public: virtual void SetType(const MarkerType _markerType) = 0;
+      public: virtual void SetType(
+                  const ignition::rendering::MarkerType _markerType) = 0;
 
       /// \brief Get the render type of this Marker
       /// \return The render type of the marker
-      public: virtual MarkerType Type() const = 0;
+      public: virtual ignition::rendering::MarkerType Type() const = 0;
 
       /// \brief Clear the points of the marker, if applicable
       public: virtual void ClearPoints() = 0;

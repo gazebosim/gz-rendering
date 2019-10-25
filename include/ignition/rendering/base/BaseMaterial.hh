@@ -204,6 +204,19 @@ namespace ignition
       public: virtual void ClearEnvironmentMap() override;
 
       // Documentation inherited
+      public: virtual bool HasEmissiveMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string EmissiveMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetEmissiveMap(const std::string &_emissiveMap)
+          override;
+
+      // Documentation inherited
+      public: virtual void ClearEmissiveMap() override;
+
+      // Documentation inherited
       public: virtual void SetRoughness(const float _roughness) override;
 
       // Documentation inherited
@@ -717,6 +730,34 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseMaterial<T>::ClearEnvironmentMap()
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::HasEmissiveMap() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::EmissiveMap() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetEmissiveMap(const std::string &)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::ClearEmissiveMap()
     {
       // no op
     }

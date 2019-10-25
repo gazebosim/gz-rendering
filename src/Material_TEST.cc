@@ -221,6 +221,20 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     EXPECT_EQ(noSuchEnvironmentMapName, material->EnvironmentMap());
     EXPECT_TRUE(material->HasEnvironmentMap());
 
+    // emissive map
+    std::string emissiveMapName = textureName;
+    material->SetEmissiveMap(emissiveMapName);
+    EXPECT_EQ(emissiveMapName, material->EmissiveMap());
+    EXPECT_TRUE(material->HasEmissiveMap());
+
+    material->ClearEmissiveMap();
+    EXPECT_FALSE(material->HasEmissiveMap());
+
+    std::string noSuchEmissiveMapName = "no_such_emissive.png";
+    material->SetEmissiveMap(noSuchEmissiveMapName);
+    EXPECT_EQ(noSuchEmissiveMapName, material->EmissiveMap());
+    EXPECT_TRUE(material->HasEmissiveMap());
+
     // roughness
     float roughness = 0.3;
     material->SetRoughness(roughness);

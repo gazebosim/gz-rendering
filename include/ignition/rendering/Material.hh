@@ -267,6 +267,21 @@ namespace ignition
       /// \brief Removes any environment map mapped to this material
       public: virtual void ClearEnvironmentMap() = 0;
 
+      /// \brief Determine if this material has an emissive map
+      /// \return True if this material has an emissive map
+      public: virtual bool HasEmissiveMap() const = 0;
+
+      /// \brief Get the URI of the emissive map file
+      /// \return URI of the emissive map file
+      public: virtual std::string EmissiveMap() const = 0;
+
+      /// \brief Set the material emissive map
+      /// \param[in] _name URI of the new emissive map file
+      public: virtual void SetEmissiveMap(const std::string &_name) = 0;
+
+      /// \brief Removes any emissive map mapped to this material
+      public: virtual void ClearEmissiveMap() = 0;
+
       /// \brief Set the roughness value. Only affects material of type MT_PBS
       /// \param[in] _roughness Roughness to set to
       public: virtual void SetRoughness(const float _roughness) = 0;

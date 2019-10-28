@@ -160,13 +160,6 @@ void OgreMarker::SetPoint(unsigned int _index,
 }
 
 //////////////////////////////////////////////////
-void OgreMarker::AddPoint(double _x, double _y, double _z,
-    const ignition::math::Color &_color)
-{
-  this->dataPtr->dynamicRenderable->AddPoint(_x, _y, _z, _color);
-}
-
-//////////////////////////////////////////////////
 void OgreMarker::AddPoint(const ignition::math::Vector3d &_pt,
     const ignition::math::Color &_color)
 {

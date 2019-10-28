@@ -30,22 +30,47 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    enum MarkerType
+    //
+    /// \brief Enum for marker types
+    enum IGNITION_RENDERING_VISIBLE MarkerType
     {
+      /// \brief No type
       NONE           = 0,
+
+      /// \brief Box geometry
       BOX            = 1,
+
+      /// \brief Cylinder geometry
       CYLINDER       = 2,
+
+      /// \brief Line strip primitive
       LINE_STRIP     = 3,
+
+      /// \brief Line list primitive
       LINE_LIST      = 4,
+
+      /// \brief Points primitive
       POINTS         = 5,
+
+      /// \brief Sphere geometry
       SPHERE         = 6,
+
+      /// \brief Text geometry
       TEXT           = 7,
+
+      /// \brief Triangle fan primitive
       TRIANGLE_FAN   = 8,
+
+      /// \brief Triangle list primitive
       TRIANGLE_LIST  = 9,
+
+      /// \brief Triangle strip primitive
       TRIANGLE_STRIP = 10
     };
 
     /// \class Marker Marker.hh ignition/rendering/Marker
+    /// \brief A marker geometry class. The marker's visual appearance is based
+    /// on the marker type specified.
     class IGNITION_RENDERING_VISIBLE Marker :
       public virtual Geometry
     {
@@ -53,6 +78,7 @@ namespace ignition
       public: virtual ~Marker() { }
 
       /// \brief Set the lifetime of this Marker
+      /// \param[in] _lifetime The time at which the marker will be removed
       public: virtual void SetLifetime(
                   const std::chrono::steady_clock::duration &_lifetime) = 0;
 

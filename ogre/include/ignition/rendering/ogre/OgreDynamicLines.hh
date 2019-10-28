@@ -66,14 +66,14 @@ namespace ignition
       /// \brief Change the location of an existing point in the point list
       /// \param[in] _index Index of the point to set
       /// \param[in] _value ignition::math::Vector3d value to set the point to
-      public: void SetPoint(const unsigned int _index,
+      public: void SetPoint(unsigned int _index,
                   const ignition::math::Vector3d &_value);
 
       /// \brief Change the color of an existing point in the point list
       /// \param[in] _index Index of the point to set
       /// \param[in] _color ignition::math::Color Pixelcolor color to set the
       /// point to
-      public: void SetColor(const unsigned int _index,
+      public: void SetColor(unsigned int _index,
                             const ignition::math::Color &_color);
 
       /// \brief Return the location of an existing point in the point list
@@ -82,7 +82,7 @@ namespace ignition
       /// [ignition::math::INF_D, ignition::math::INF_D, ignition::math::INF_D]
       /// is returned when then the _index is out of bounds.
       /// ignition::math::INF_D==std::numeric_limits<double>::infinity()
-      public: ignition::math::Vector3d Point(const unsigned int _index) const;
+      public: ignition::math::Vector3d Point(unsigned int _index) const;
 
       /// \brief Return the total number of points in the point list
       /// \return Number of points
@@ -96,7 +96,7 @@ namespace ignition
 
       /// \brief Implementation DynamicRenderable,
       /// creates a simple vertex-only decl
-      private: virtual void  CreateVertexDeclaration();
+      private: virtual void CreateVertexDeclaration();
 
       /// \brief Implementation DynamicRenderable, pushes point
       /// list out to hardware memory

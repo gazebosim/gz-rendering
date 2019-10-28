@@ -4,6 +4,12 @@
 
 ### Ignition Rendering 3.0.0 (20XX-XX-XX)
 
+1. Support storing user data in Visual
+    * [Pull request 200](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/200)
+
+1. Add 16 bit format
+    * [Pull request 201](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/201)
+
 1. Destroy camera when the scene is destroyed
     * [Pull request 175](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/175)
 

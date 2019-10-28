@@ -242,15 +242,31 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
       if (_desc.mesh->HasSkeleton())
       {
-        common::SkeletonPtr skel = _desc.mesh->MeshSkeleton();
-        for (unsigned int j = 0; j < subMesh.NodeAssignmentsCount(); j++)
+        if (subMesh.NodeAssignmentsCount())
         {
-          common::NodeAssignment na = subMesh.NodeAssignmentByIndex(j);
+          common::SkeletonPtr skel = _desc.mesh->MeshSkeleton();
+          for (unsigned int j = 0; j < subMesh.NodeAssignmentsCount(); j++)
+          {
+            common::NodeAssignment na = subMesh.NodeAssignmentByIndex(j);
+            Ogre::VertexBoneAssignment vba;
+            vba.vertexIndex = na.vertexIndex;
+            vba.boneIndex = ogreSkeleton->getBone(skel->NodeByHandle(
+                                na.nodeIndex)->Name())->getHandle();
+            vba.weight = na.weight;
+            ogreSubMesh->addBoneAssignment(vba);
+          }
+        }
+        else
+        {
+          // When there is a skeleton associated with the mesh,
+          // Ogre requires at least 1 bone assignment to compile the blend
+          // weights.
+          // The submeshes laoded from COLLADA may not have weights so we need
+          // to add a dummy bone assignment for OGRE
           Ogre::VertexBoneAssignment vba;
-          vba.vertexIndex = na.vertexIndex;
-          vba.boneIndex = ogreSkeleton->getBone(skel->NodeByHandle(
-                              na.nodeIndex)->Name())->getHandle();
-          vba.weight = na.weight;
+          vba.vertexIndex = 0;
+          vba.boneIndex = 0;
+          vba.weight = 0;
           ogreSubMesh->addBoneAssignment(vba);
         }
       }

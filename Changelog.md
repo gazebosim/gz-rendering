@@ -4,6 +4,9 @@
 
 ### Ignition Rendering 3.0.0 (20XX-XX-XX)
 
+1. Add Thermal Camera
+    * [Pull request 202](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/202)
+
 1. Support storing user data in Visual
     * [Pull request 200](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/200)
 

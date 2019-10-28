@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_VISUAL_HH_
 #define IGNITION_RENDERING_VISUAL_HH_
 
+#include <variant>
 #include <string>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Node.hh"
@@ -27,6 +28,8 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    using Variant = std::variant<int, float, double, std::string>;
+
     /// \class Visual Visual.hh ignition/rendering/Visual.hh
     /// \brief Represents a visual node in a scene graph. A Visual is the only
     /// node that can have Geometry and other Visual children.
@@ -109,6 +112,17 @@ namespace ignition
       /// \brief Specify if this visual is visible
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;
+
+      /// \brief Store any custom data associated with this visual
+      /// \param[in] _key Unique key
+      /// \param[in] _value Value in any type
+      public: virtual void SetUserData(const std::string &_key,
+          Variant _value) = 0;
+
+      /// \brief Get custom data stored in this visual
+      /// \param[in] _key Unique key
+      /// \param[in] _value Value in any type
+      public: virtual Variant UserData(const std::string &_key) const = 0;
     };
     }
   }

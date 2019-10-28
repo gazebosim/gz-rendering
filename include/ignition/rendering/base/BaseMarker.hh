@@ -26,9 +26,7 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \brief A marker visualization. The MarkerManager class should
-    /// instantiate instances of this class.
-    /// \sa Base implementation of a Marker geometry
+    /// \brief Base implementation of a Marker geometry
     template <class T>
     class BaseMarker :
       public virtual Marker,
@@ -41,10 +39,10 @@ namespace ignition
       public: virtual ~BaseMarker();
 
       /// \brief PreRender function
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       /// \brief Destroy function
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
       // Documentation inherited
       public: virtual void SetLifetime(const
@@ -66,9 +64,32 @@ namespace ignition
       // Documentation inherited
       public: virtual int32_t Layer() const override;
 
+      // Documentation inherited
+      public: virtual void ClearPoints() override;
+
+      // Documentation inherited
+      public: virtual void AddPoint(double _x,
+                  double _y, double _z,
+                  const ignition::math::Color &_color) override;
+
+      // Documentation inherited
+      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
+                  const ignition::math::Color &_color) override;
+
+      // Documentation inherited
+      public: virtual void SetPoint(unsigned int _index,
+                  const ignition::math::Vector3d &_value) override;
+
+      /// \brief Life time of a marker
       protected: std::chrono::steady_clock::duration lifetime;
+
+      /// \brief Layer at which the marker will reside
       protected: int32_t layer = 0;
+
+      /// \brief Flag to indicate if marker needs to be updated
       protected: bool markerDirty = false;
+
+      /// \brief Marker type
       protected: MarkerType markerType = ignition::rendering::MarkerType::NONE;
     };
 
@@ -144,6 +165,37 @@ namespace ignition
     void BaseMarker<T>::Destroy()
     {
       T::Destroy();
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseMarker<T>::ClearPoints()
+    {
+        // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseMarker<T>::AddPoint(const ignition::math::Vector3d &,
+                                 const ignition::math::Color &)
+    {
+        // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseMarker<T>::AddPoint(double _x, double _y, double _z,
+                  const ignition::math::Color &_color)
+    {
+      this->AddPoint(ignition::math::Vector3d(_x, _y, _z), _color);
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseMarker<T>::SetPoint(unsigned int,
+                  const ignition::math::Vector3d &)
+    {
+      // no op
     }
     }
   }

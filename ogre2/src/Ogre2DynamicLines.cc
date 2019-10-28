@@ -79,14 +79,14 @@ void Ogre2DynamicLines::AddPoint(const ignition::math::Vector3d &_pt,
 }
 
 /////////////////////////////////////////////////
-void Ogre2DynamicLines::AddPoint(const double _x, const double _y,
-                const double _z, const ignition::math::Color &_color)
+void Ogre2DynamicLines::AddPoint(double _x, double _y,
+                double _z, const ignition::math::Color &_color)
 {
   this->AddPoint(ignition::math::Vector3d(_x, _y, _z), _color);
 }
 
 /////////////////////////////////////////////////
-void Ogre2DynamicLines::SetPoint(const unsigned int _index,
+void Ogre2DynamicLines::SetPoint(unsigned int _index,
                             const ignition::math::Vector3d &_value)
 {
   if (_index >= this->dataPtr->points.size())
@@ -102,7 +102,7 @@ void Ogre2DynamicLines::SetPoint(const unsigned int _index,
 }
 
 /////////////////////////////////////////////////
-void Ogre2DynamicLines::SetColor(const unsigned int _index,
+void Ogre2DynamicLines::SetColor(unsigned int _index,
                             const ignition::math::Color &_color)
 {
   this->dataPtr->colors[_index] = _color;
@@ -111,7 +111,7 @@ void Ogre2DynamicLines::SetColor(const unsigned int _index,
 
 /////////////////////////////////////////////////
 ignition::math::Vector3d Ogre2DynamicLines::Point(
-    const unsigned int _index) const
+    unsigned int _index) const
 {
   if (_index >= this->dataPtr->points.size())
   {

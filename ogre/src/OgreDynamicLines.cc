@@ -66,14 +66,14 @@ void OgreDynamicLines::AddPoint(const ignition::math::Vector3d &_pt,
 }
 
 /////////////////////////////////////////////////
-void OgreDynamicLines::AddPoint(const double _x, const double _y,
-                const double _z, const ignition::math::Color &_color)
+void OgreDynamicLines::AddPoint(double _x, double _y,
+                double _z, const ignition::math::Color &_color)
 {
   this->AddPoint(ignition::math::Vector3d(_x, _y, _z), _color);
 }
 
 /////////////////////////////////////////////////
-void OgreDynamicLines::SetPoint(const unsigned int _index,
+void OgreDynamicLines::SetPoint(unsigned int _index,
                             const ignition::math::Vector3d &_value)
 {
   if (_index >= this->dataPtr->points.size())
@@ -89,7 +89,7 @@ void OgreDynamicLines::SetPoint(const unsigned int _index,
 }
 
 /////////////////////////////////////////////////
-void OgreDynamicLines::SetColor(const unsigned int _index,
+void OgreDynamicLines::SetColor(unsigned int _index,
                             const ignition::math::Color &_color)
 {
   this->dataPtr->colors[_index] = _color;
@@ -177,7 +177,8 @@ void OgreDynamicLines::FillHardwareBuffers()
     this->mRenderOp.vertexData->vertexBufferBinding->getBuffer(1);
 
   Ogre::RGBA *colorArrayBuffer =
-        static_cast<Ogre::RGBA*>(cbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
+        static_cast<Ogre::RGBA *>(
+        cbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
   Ogre::RenderSystem *renderSystemForVertex =
         Ogre::Root::getSingleton().getRenderSystem();
   for (int i = 0; i < size; ++i)

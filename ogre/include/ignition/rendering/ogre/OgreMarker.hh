@@ -43,13 +43,13 @@ namespace ignition
       public: virtual ~OgreMarker();
 
       // Documentation inherited.
-      public: virtual void Init();
+      public: virtual void Init() override;
 
       // Documentation inherited.
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       // Documentation inherited.
-      public: virtual Ogre::MovableObject *OgreObject() const;
+      public: virtual Ogre::MovableObject *OgreObject() const override;
 
       // Documentation inherited.
       public: virtual MaterialPtr Material() const override;
@@ -61,11 +61,6 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetPoint(unsigned int _index,
                            const ignition::math::Vector3d &_value) override;
-
-      // Documentation inherited
-      public: virtual void AddPoint(double _x,
-                           double _y, double _z,
-                           const ignition::math::Color &_color) override;
 
       // Documentation inherited
       public: virtual void AddPoint(const ignition::math::Vector3d &_pt,

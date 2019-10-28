@@ -234,7 +234,7 @@ Ogre::Real OgreDynamicRenderable::getBoundingRadius() const
 
 //////////////////////////////////////////////////
 Ogre::Real OgreDynamicRenderable::getSquaredViewDepth(
-          const Ogre::Camera* cam) const
+          const Ogre::Camera *cam) const
 {
   Ogre::Vector3 vMin, vMax, vMid, vDist;
   vMin = mBox.getMinimum();

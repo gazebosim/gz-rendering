@@ -28,7 +28,6 @@ namespace Ogre
 {
   class Root;
   class SceneManager;
-  class MarkerManager;
 }
 
 namespace ignition

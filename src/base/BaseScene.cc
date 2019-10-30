@@ -951,6 +951,14 @@ GridPtr BaseScene::CreateGrid()
 }
 
 //////////////////////////////////////////////////
+MarkerPtr BaseScene::CreateMarker()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Marker");
+  return this->CreateMarkerImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
 TextPtr BaseScene::CreateText()
 {
   unsigned int objId = this->CreateObjectId();

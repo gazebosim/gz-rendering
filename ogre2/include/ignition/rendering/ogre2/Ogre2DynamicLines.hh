@@ -1,0 +1,118 @@
+/*
+ * Copyright (C) 2019 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+*/
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2DYNAMICLINES_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2DYNAMICLINES_HH_
+
+#include <memory>
+#include <vector>
+#include <string>
+#include <ignition/math/Color.hh>
+
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    /// \brief Forward declaration
+    class Ogre2DynamicLinesPrivate;
+
+    /*  \class Ogre2DynamicLines Ogre2DynamicLines.hh \
+     *  ignition/rendering/ogre2/Ogre2DynamicLines.hh
+     */
+    /// \brief Class for drawing lines that can change
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2DynamicLines :
+      public Ogre2DynamicRenderable
+    {
+      /// \brief Constructor
+      /// \param[in] _opType The type of Line
+      public: explicit Ogre2DynamicLines(
+                  MarkerType _opType = LINE_STRIP);
+
+      /// \brief Destructor
+      public: virtual ~Ogre2DynamicLines();
+
+      /// \brief Get type of movable
+      /// \return Returns "ignition::rendering::ogredynamiclines"
+      public: static std::string MovableType();
+
+      /// \brief Overridden function from Ogre's base class.
+      /// \return Returns "ignition::rendering::ogredynamiclines"
+      public: virtual const Ogre::String &getMovableType() const;
+
+      /// \brief Add a point to the point list
+      /// \param[in] _pt ignition::math::Vector3d point
+      /// \param[in] _color ignition::math::Color Point color
+      public: void AddPoint(const ignition::math::Vector3d &_pt,
+            const ignition::math::Color &_color = ignition::math::Color::White);
+
+      /// \brief Add a point to the point list.
+      /// \param[in] _x X position
+      /// \param[in] _y Y position
+      /// \param[in] _z Z position
+      /// \param[in] _color ignition::math::Color Point color
+      public: void AddPoint(double _x, double _y, double _z,
+            const ignition::math::Color &_color = ignition::math::Color::White);
+
+      /// \brief Change the location of an existing point in the point list
+      /// \param[in] _index Index of the point to set
+      /// \param[in] _value ignition::math::Vector3d value to set the point to
+      public: void SetPoint(unsigned int _index,
+                  const ignition::math::Vector3d &_value);
+
+      /// \brief Change the color of an existing point in the point list
+      /// \param[in] _index Index of the point to set
+      /// \param[in] _color ignition::math::Color Pixelcolor color to set the
+      /// point to
+      public: void SetColor(unsigned int _index,
+                            const ignition::math::Color &_color);
+
+      /// \brief Return the location of an existing point in the point list
+      /// \param[in] _index Number of the point to return
+      /// \return ignition::math::Vector3d value of the point. A vector of
+      /// [ignition::math::INF_D, ignition::math::INF_D, ignition::math::INF_D]
+      /// is returned when then the _index is out of bounds.
+      /// ignition::math::INF_D==std::numeric_limits<double>::infinity()
+      public: ignition::math::Vector3d Point(unsigned int _index) const;
+
+      /// \brief Return the total number of points in the point list
+      /// \return Number of points
+      public: unsigned int PointCount() const;
+
+      /// \brief Remove all points from the point list
+      public: void Clear();
+
+      /// \brief Call this to update the hardware buffer after making changes.
+      public: void Update();
+
+      /// \brief Implementation DynamicRenderable,
+      /// creates a simple vertex-only decl
+      private: virtual void  CreateVertexDeclaration();
+
+      /// \brief Implementation DynamicRenderable, pushes point
+      /// list out to hardware memory
+      private: virtual void FillHardwareBuffers();
+
+      /// \brief private implementation
+      private: std::unique_ptr<Ogre2DynamicLinesPrivate> dataPtr;
+    };
+    }
+  }
+}
+#endif

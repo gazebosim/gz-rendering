@@ -16,17 +16,17 @@
  */
 
 
-#include "ignition/rendering/Object.hh"
+#include "ignition/rendering/Marker.hh"
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-Object::Object()
+Marker::Marker()
 {
 }
 
 //////////////////////////////////////////////////
-Object::~Object()
+Marker::~Marker()
 {
 }

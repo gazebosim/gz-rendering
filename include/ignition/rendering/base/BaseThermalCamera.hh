@@ -20,7 +20,6 @@
 #include <string>
 
 #include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/Export.hh"
 #include "ignition/rendering/ThermalCamera.hh"
 
 namespace ignition
@@ -31,7 +30,7 @@ namespace ignition
     //
     /// \brief Base implementation of the ThermalCamera class
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseThermalCamera :
+    class BaseThermalCamera :
       public virtual ThermalCamera,
       public virtual BaseCamera<T>,
       public virtual T

@@ -20,6 +20,7 @@
 #include <string>
 
 #include "ignition/rendering/base/BaseCamera.hh"
+#include "ignition/rendering/Export.hh"
 #include "ignition/rendering/ThermalCamera.hh"
 
 namespace ignition

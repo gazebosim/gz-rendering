@@ -7,6 +7,9 @@
 1. Add Thermal Camera
     * [Pull request 202](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/202)
 
+1. Add Marker class and port ogre dynamic lines and renderable
+    * [Pull request 195](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/195)
+
 1. Support storing user data in Visual
     * [Pull request 200](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/200)
 

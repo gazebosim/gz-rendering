@@ -164,6 +164,10 @@ namespace ignition
                      const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual TextPtr CreateTextImpl(unsigned int _id,
                      const std::string &_name) override;
 

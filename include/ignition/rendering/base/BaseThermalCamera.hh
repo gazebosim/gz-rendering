@@ -30,7 +30,7 @@ namespace ignition
     //
     /// \brief Base implementation of the ThermalCamera class
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseThermalCamera :
+    class BaseThermalCamera :
       public virtual ThermalCamera,
       public virtual BaseCamera<T>,
       public virtual T

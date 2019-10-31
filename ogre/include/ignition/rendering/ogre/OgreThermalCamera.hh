@@ -29,6 +29,7 @@
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/base/BaseThermalCamera.hh"
+#include "ignition/rendering/ogre/Export.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"

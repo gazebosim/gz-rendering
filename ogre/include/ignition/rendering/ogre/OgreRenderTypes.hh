@@ -38,6 +38,7 @@ namespace ignition
     class OgreJointVisual;
     class OgreLight;
     class OgreMaterial;
+    class OgreMarker;
     class OgreMesh;
     class OgreMeshFactory;
     class OgreNode;
@@ -77,6 +78,7 @@ namespace ignition
     typedef shared_ptr<OgreJointVisual>          OgreJointVisualPtr;
     typedef shared_ptr<OgreLight>                OgreLightPtr;
     typedef shared_ptr<OgreMaterial>             OgreMaterialPtr;
+    typedef shared_ptr<OgreMarker>               OgreMarkerPtr;
     typedef shared_ptr<OgreMesh>                 OgreMeshPtr;
     typedef shared_ptr<OgreMeshFactory>          OgreMeshFactoryPtr;
     typedef shared_ptr<OgreNode>                 OgreNodePtr;

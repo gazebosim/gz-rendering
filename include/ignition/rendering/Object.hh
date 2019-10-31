@@ -33,7 +33,7 @@ namespace ignition
     /// sub-meshes, materials, render targets, as well as posable nodes.
     class IGNITION_RENDERING_VISIBLE Object
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Object() { }
 
       /// \brief Get the object ID. This ID will be unique across all objects

@@ -138,7 +138,11 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
     case TRIANGLE_FAN:
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
+#if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
       this->dataPtr->dynamicRenderable->setMaterial(materialName);
+#else
+      this->dataPtr->dynamicRenderable->setMaterial(ogreMaterial);
+#endif
       break;
     default:
       ignerr << "Invalid Marker type " << markerType << "\n";

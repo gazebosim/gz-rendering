@@ -74,8 +74,10 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Marker :
       public virtual Geometry
     {
+      protected: Marker();
+
       /// \brief Destructor
-      public: virtual ~Marker() { }
+      public: virtual ~Marker();
 
       /// \brief Set the lifetime of this Marker
       /// \param[in] _lifetime The time at which the marker will be removed

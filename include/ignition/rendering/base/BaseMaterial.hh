@@ -829,6 +829,7 @@ namespace ignition
       this->SetRoughness(_material->Roughness());
       this->SetMetalness(_material->Metalness());
       this->SetEnvironmentMap(_material->EnvironmentMap());
+      this->SetEmissiveMap(_material->EmissiveMap());
       this->SetShaderType(_material->ShaderType());
       this->SetVertexShader(_material->VertexShader());
       this->SetFragmentShader(_material->FragmentShader());
@@ -896,6 +897,7 @@ namespace ignition
       this->ClearNormalMap();
       this->ClearRoughnessMap();
       this->ClearMetalnessMap();
+      this->ClearEmissiveMap();
       this->SetRoughness(1.0);
       this->SetMetalness(0.8);
       this->SetShaderType(ST_PIXEL);

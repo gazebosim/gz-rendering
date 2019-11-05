@@ -91,7 +91,7 @@ namespace ignition
       /// \brief Minimum temperature
       protected: float minTemp = -ignition::math::INF_F;
 
-      /// \brief Minimum temperature
+      /// \brief Maximum temperature
       protected: float maxTemp = ignition::math::INF_F;
 
       /// \brief Linear resolution. Defaults to 10mK.

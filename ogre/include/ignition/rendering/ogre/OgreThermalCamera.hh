@@ -78,7 +78,7 @@ namespace ignition
       /// \brief Render the camera
       public: virtual void PostRender() override;
 
-      /// \brief Connect a to the new thermal image signal
+      /// \brief Connect to the new thermal image signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
       public: virtual ignition::common::ConnectionPtr ConnectNewThermalFrame(
@@ -97,7 +97,6 @@ namespace ignition
       /// \brief Update a render target
       /// \param[in] _target Render target to update
       /// \param[in] _material Material to use
-      /// \param[in] _matName Material name
       protected: void UpdateRenderTarget(Ogre::RenderTarget *_target,
                                        Ogre::Material *_material);
 

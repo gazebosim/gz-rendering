@@ -66,7 +66,7 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
       const Ogre::RenderTargetEvent &_evt) override;
 
   /// \brief Scene manager
-  private: Ogre2ScenePtr scene;
+  private: Ogre2ScenePtr scene = nullptr;
 
   /// \brief Pointer to the heat source material
   private: Ogre::MaterialPtr heatSourceMaterial;
@@ -112,7 +112,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   public: Ogre::TexturePtr ogreThermalTexture;
 
   /// \brief Dummy render texture for the thermal data
-  public: RenderTexturePtr thermalTexture;
+  public: RenderTexturePtr thermalTexture = nullptr;
 
   /// \brief The thermal material
   public: Ogre::MaterialPtr thermalMaterial;
@@ -124,7 +124,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
 
   /// \brief Pointer to material switcher
   public: std::unique_ptr<Ogre2ThermalCameraMaterialSwitcher>
-      thermalMaterialSwitcher;
+      thermalMaterialSwitcher = nullptr;
 };
 
 using namespace ignition;
@@ -570,7 +570,6 @@ void Ogre2ThermalCamera::CreateThermalTexture()
       // set thermal camera custom visibility mask when rendering heat sources
       passScene->mVisibilityMask = 0x10000000;
     }
-
 
     // rt_input target - converts depth to thermal
     Ogre::CompositorTargetDef *inputTargetDef =

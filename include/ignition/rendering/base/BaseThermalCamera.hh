@@ -71,6 +71,12 @@ namespace ignition
       // Documentation inherited.
       public: virtual float LinearResolution() const override;
 
+      // Documentation inherited.
+      public: virtual float HeatSourceTemperatureRange() const;
+
+      // Documentation inherited.
+      public: virtual void SetHeatSourceTemperatureRange(float _range);
+
       // Documentation inherted.
       public: virtual ignition::common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
@@ -90,6 +96,9 @@ namespace ignition
 
       /// \brief Linear resolution. Defaults to 10mK.
       protected: float resolution = 0.01;
+
+      /// \brief Range of heat source temperature variation
+      protected: float heatSourceTempRange = 0.0;
     };
 
     //////////////////////////////////////////////////
@@ -172,6 +181,20 @@ namespace ignition
     float BaseThermalCamera<T>::LinearResolution() const
     {
       return this->resolution;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseThermalCamera<T>::SetHeatSourceTemperatureRange(float _range)
+    {
+      this->heatSourceTempRange =  _range;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    float BaseThermalCamera<T>::HeatSourceTemperatureRange() const
+    {
+      return this->heatSourceTempRange;
     }
 
     //////////////////////////////////////////////////

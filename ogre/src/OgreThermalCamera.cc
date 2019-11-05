@@ -415,6 +415,8 @@ void OgreThermalCamera::CreateThermalTexture()
       this->ambient;
   (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))["range"] =
       this->ambientRange;
+  (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))
+      ["heatSourceTempRange"] = this->heatSourceTempRange;
 
   if (!this->dataPtr->ogreHeatSourceTexture)
   {

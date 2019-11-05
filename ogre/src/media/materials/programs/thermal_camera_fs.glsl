@@ -22,6 +22,7 @@ uniform float max;
 uniform float ambient;
 uniform float range;
 uniform float resolution;
+uniform float heatSourceTempRange;
 uniform sampler2D heatTexture;
 
 varying vec4 eyePos;
@@ -43,8 +44,8 @@ void main()
     // heat is normalized so convert back to work in kelvin
     temp = heat * 655.35;
 
-    // todo(anyone) expose this param?
-    heatRange = 3.0;
+    // set temperature variation for heat source
+    heatRange = heatSourceTempRange;
   }
 
   // simulate temp variation as a function of depth

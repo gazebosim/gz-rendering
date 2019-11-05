@@ -142,7 +142,8 @@ void ThermalCameraTest::ThermalCameraBoxes(
     EXPECT_FLOAT_EQ(ambientTempRange, thermalCamera->AmbientTemperatureRange());
     thermalCamera->SetLinearResolution(linearResolution);
     EXPECT_FLOAT_EQ(linearResolution, thermalCamera->LinearResolution());
-
+    thermalCamera->SetHeatSourceTemperatureRange(boxTempRange);
+    EXPECT_FLOAT_EQ(boxTempRange, thermalCamera->HeatSourceTemperatureRange());
     scene->RootVisual()->AddChild(thermalCamera);
 
     // Set a callback on the  camera sensor to get a thermal camera frame

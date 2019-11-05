@@ -435,6 +435,8 @@ void Ogre2ThermalCamera::CreateThermalTexture()
       static_cast<float>(this->ambient));
   psParams->setNamedConstant("range",
       static_cast<float>(this->ambientRange));
+  psParams->setNamedConstant("heatSourceTempRange",
+      static_cast<float>(this->heatSourceTempRange));
 
   // Create thermal camera compositor
   auto engine = Ogre2RenderEngine::Instance();

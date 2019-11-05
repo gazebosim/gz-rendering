@@ -81,7 +81,7 @@ namespace ignition
       /// returned will be temperature in kelvin / resolution.
       /// Typical values are 0.01 (10mK), 0.1 (100mK), or 0.04 to simulate
       /// 14 bit format.
-      /// \param[in] resolution Temperature linear resolution
+      /// \param[in] _resolution Temperature linear resolution
       /// \sa LinearResolution
       public: virtual void SetLinearResolution(float _resolution) = 0;
 
@@ -89,6 +89,19 @@ namespace ignition
       /// \return Temperature linear resolution
       /// \sa SetLinearResolution
       public: virtual float LinearResolution() const = 0;
+
+      /// \brief Get the range of temperature variation for all heat sources.
+      /// \return Temperature variation range
+      /// \sa SetHeatSourceTemperatureRange
+      public: virtual float HeatSourceTemperatureRange() const = 0;
+
+      /// \brief Set the range of temperature variation for all heat sources.
+      /// If set, the temperature reading of heat sources will vary within
+      /// a temperature of +/- range/2 instead of returning a fixed uniform
+      /// temperature for the entire heat source
+      /// \param[in] _rnage Temperature variation range
+      /// \sa HeatSourceTemperatureRange
+      public: virtual void SetHeatSourceTemperatureRange(float _range) = 0;
 
       /// \brief Connect to the new thermal image event
       /// \param[in] _subscriber Subscriber callback function. The callback

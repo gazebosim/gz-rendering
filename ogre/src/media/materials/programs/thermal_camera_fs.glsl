@@ -38,7 +38,6 @@ void main()
 
   // check for heat source
   float heat = texture2D(heatTexture, gl_TexCoord[0].xy).x;
-  // float heat = 0.2;
   if (heat > 0.0)
   {
     // heat is normalized so convert back to work in kelvin

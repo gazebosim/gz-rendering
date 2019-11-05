@@ -22,6 +22,8 @@
 #endif
 
 #include <math.h>
+#include <limits>
+
 #include <ignition/common/Console.hh>
 #include <ignition/math/Helpers.hh>
 
@@ -92,7 +94,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   public: uint16_t *thermalImage = nullptr;
 
   /// \brief maximum value used for data outside sensor range
-  public: uint16_t dataMaxVal = 65535u;
+  public: uint16_t dataMaxVal = std::numeric_limits<uint16_t>::max();
 
   /// \brief minimum value used for data outside sensor range
   public: uint16_t dataMinVal = 0u;
@@ -214,7 +216,8 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
             if (!subItem->hasCustomParameter(this->customParamIdx))
             {
               // normalize temperature value
-              float color = temp * 100.0 / 65535.0;
+              float color = temp * 100.0 /
+                  static_cast<float>(std::numeric_limits<uint16_t>::max());
               subItem->setCustomParameter(this->customParamIdx,
                   Ogre::Vector4(color, color, color, 1.0));
             }

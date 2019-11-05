@@ -20,6 +20,9 @@
   #define NOMINMAX
   #include <windows.h>
 #endif
+
+#include <limits>
+
 #include <ignition/math/Helpers.hh>
 #include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ogre/OgreThermalCamera.hh"
@@ -83,7 +86,6 @@ class OgreThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener,
 class ignition::rendering::OgreThermalCameraPrivate
 {
   /// \brief The thermal material
-  // public: Ogre::Material *thermalMaterial = nullptr;
   public: MaterialPtr thermalMaterial = nullptr;
 
   /// \brief thermal camera texture
@@ -105,7 +107,7 @@ class ignition::rendering::OgreThermalCameraPrivate
   public: uint16_t *thermalImage = nullptr;
 
   /// \brief maximum value used for data outside sensor range
-  public: uint16_t dataMaxVal = 65535u;
+  public: uint16_t dataMaxVal = std::numeric_limits<uint16_t>::max();
 
   /// \brief minimum value used for data outside sensor range
   public: uint16_t dataMinVal = 0u;
@@ -229,14 +231,13 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
     if (temp >= 0.0)
     {
       // normalize temperature value
-      float color = temp * 100.0 / 65535.0;
+      float color = temp * 100.0 / static_cast<float>(
+          std::numeric_limits<uint16_t>::max());
       const_cast<Ogre::SubEntity *>(subEntity)->setCustomParameter(
           this->customParamIdx,
-          // Ogre::Vector4(color, color, color, 1.0));
           Ogre::Vector4(color, 0.0, 0.0, 1.0));
 
       return this->heatSourceMaterial->getSupportedTechnique(0);
-      // return this->heatSourceMaterial->getTechnique(0);
     }
   }
 
@@ -309,7 +310,6 @@ void OgreThermalCamera::Init()
 {
   BaseThermalCamera::Init();
   this->CreateCamera();
-  // this->CreateThermalTexture();
   this->CreateRenderTexture();
   this->Reset();
 }
@@ -532,7 +532,7 @@ void OgreThermalCamera::UpdateRenderTarget(Ogre::RenderTarget *_target,
   float d = farPlane / (farPlane - nearPlane);
   float temp = this->ambient - this->ambientRange * 0.5 + (1.0 - d)
       * this->ambientRange;
-  temp /= 655.35;
+  temp /= (this->dataPtr->dataMaxVal * 0.01);
   vp->setBackgroundColour(Ogre::ColourValue(temp, 0, 0));
 
   Ogre::CompositorManager::getSingleton().setCompositorEnabled(

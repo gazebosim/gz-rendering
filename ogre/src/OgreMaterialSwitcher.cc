@@ -42,6 +42,9 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
     Ogre::Material *_originalMaterial, uint16_t /*_lodIndex*/,
     const Ogre::Renderable *_rend)
 {
+  // selection buffer: check scheme name against the one specified in
+  // OgreSelectionBuffer::CreateRTTBuffer. Only proceed if this is a callback
+  // from the selection camera.
   if (_schemeName != "selection")
     return nullptr;
 

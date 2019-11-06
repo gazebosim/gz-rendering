@@ -221,7 +221,7 @@ void buildScene(ScenePtr _scene)
       VisualPtr boxVis = _scene->CreateVisual(name.str());
       boxVis->AddGeometry(_scene->CreateBox());
       double x = -n + i*n -5;
-      double y = -n + j*n ;
+      double y = -n + j*n;
       boxVis->SetLocalPosition(x, y, 0.0);
       boxVis->SetLocalRotation(0, 0, 0);
       boxVis->SetLocalScale(0.5, 0.5, 0.5);

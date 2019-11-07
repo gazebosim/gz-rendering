@@ -78,7 +78,7 @@ namespace ignition
       /// \brief Render the camera
       public: virtual void PostRender() override;
 
-      /// \brief Connect a to the new thermal image signal
+      /// \brief Connect to the new thermal image signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
       public: virtual ignition::common::ConnectionPtr ConnectNewThermalFrame(

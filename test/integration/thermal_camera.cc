@@ -33,25 +33,37 @@
 
 unsigned int g_thermalCounter = 0;
 
+//////////////////////////////////////////////////
 void OnNewThermalFrame(uint16_t *_scanDest, const uint16_t *_scan,
                   unsigned int _width, unsigned int _height,
                   unsigned int _channels,
-                  const std::string &/*_format*/)
+                  const std::string &_format)
 {
+  EXPECT_EQ("L16", _format);
+  EXPECT_EQ(10u, _width);
+  EXPECT_EQ(10u, _height);
+  EXPECT_EQ(1u, _channels);
+
   uint16_t u;
   int size =  _width * _height * _channels;
   memcpy(_scanDest, _scan, size * sizeof(u));
 }
 
-
-
+//////////////////////////////////////////////////
 class ThermalCameraTest: public testing::Test,
   public testing::WithParamInterface<const char *>
 {
   // Create a Camera sensor from a SDF and gets a image message
   public: void ThermalCameraBoxes(const std::string &_renderEngine);
+
+  // Documentation inherited
+  protected: void SetUp() override
+  {
+    ignition::common::Console::SetVerbosity(4);
+  }
 };
 
+//////////////////////////////////////////////////
 void ThermalCameraTest::ThermalCameraBoxes(
     const std::string &_renderEngine)
 {
@@ -153,6 +165,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
           std::bind(&::OnNewThermalFrame, thermalData,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
             std::placeholders::_4, std::placeholders::_5));
+    EXPECT_NE(nullptr, connection);
 
     // Update once to create image
     thermalCamera->Update();
@@ -183,7 +196,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
 
     for (unsigned int i = 0; i < thermalCamera->ImageHeight(); ++i)
     {
-      unsigned int step = i*thermalCamera->ImageWidth();
+      unsigned int step = i * thermalCamera->ImageWidth();
       for (unsigned int j = 0; j < thermalCamera->ImageWidth(); ++j)
       {
         float temp = thermalData[step + j] * linearResolution;
@@ -200,7 +213,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
 
     for (unsigned int i = 0; i < thermalCamera->ImageHeight(); ++i)
     {
-      unsigned int step = i*thermalCamera->ImageWidth();
+      unsigned int step = i * thermalCamera->ImageWidth();
       for (unsigned int j = 0; j < thermalCamera->ImageWidth(); ++j)
       {
         float temp = thermalData[step + j] * linearResolution;

@@ -553,7 +553,7 @@ void OgreThermalCamera::PostRender()
   //   {
   //     igndbg << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
   //   }
-  //   igndbg<< std::endl;
+  //   igndbg << std::endl;
   // }
 }
 

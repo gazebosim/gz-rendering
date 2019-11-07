@@ -366,7 +366,6 @@ void Ogre2ThermalCamera::CreateCamera()
 
   // TODO(anyone): provide api access
   this->ogreCamera->setAutoAspectRatio(true);
-  this->ogreCamera->setRenderingDistance(100);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
 }

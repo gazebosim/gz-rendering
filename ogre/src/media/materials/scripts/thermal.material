@@ -1,20 +1,21 @@
 vertex_program heat_source_vs glsl
 {
-  source plain_color_vs.glsl
+  source depth_points_vs.glsl
 
   default_params
   {
-    param_named_auto worldViewProj worldviewproj_matrix
   }
 }
 
 fragment_program heat_source_fs glsl
 {
-  source plain_color_fs.glsl
+  source heat_source_fs.glsl
 
   default_params
   {
-    param_named inColor float4 1 1 1 1
+    param_named inColor float4 0 0 0 1
+    param_named near float 0.0
+    param_named far float 0.0
   }
 }
 
@@ -36,6 +37,45 @@ material ThermalHeatSource
       fragment_program_ref heat_source_fs
       {
         param_named_auto inColor custom 10
+      }
+    }
+  }
+}
+
+
+
+vertex_program ThermalCameraVS glsl
+{
+  source depth_points_vs.glsl
+  default_params
+  {
+  }
+}
+
+fragment_program ThermalCameraFS glsl
+{
+  source thermal_camera_fs.glsl
+
+  default_params
+  {
+    param_named heatTexture int 0
+  }
+}
+
+
+
+material ThermalCamera
+{
+  technique
+  {
+    pass thermal_camera_tex
+    {
+      vertex_program_ref ThermalCameraVS { }
+      fragment_program_ref ThermalCameraFS { }
+      texture_unit heatTexture
+      {
+        filtering none
+        tex_address_mode clamp
       }
     }
   }

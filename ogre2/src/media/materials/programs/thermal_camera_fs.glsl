@@ -58,7 +58,7 @@ void main()
   vec3 viewSpacePos = inPs.cameraDir * d;
 
   d = -viewSpacePos.z;
-  d = d / (far-near);
+  d = (d-near) / (far-near);
 
   // check for heat source
   float heat = texture(colorTexture, inPs.uv0).x;

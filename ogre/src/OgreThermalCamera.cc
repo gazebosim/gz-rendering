@@ -40,7 +40,10 @@ class OgreThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener,
 {
   /// \brief constructor
   /// \param[in] _scene the scene manager responsible for rendering
-  public: explicit OgreThermalCameraMaterialSwitcher(OgreScenePtr _scene);
+  /// \param[in] _near Camera near plane
+  /// \param[in] _far Camera far plane
+  public: OgreThermalCameraMaterialSwitcher(OgreScenePtr _scene,
+      double _near, double _far);
 
   /// \brief destructor
   public: ~OgreThermalCameraMaterialSwitcher() = default;
@@ -76,17 +79,22 @@ class OgreThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener,
   /// This has to match the custom index specifed in ThermalHeatSource material
   /// script in media/materials/scripts/thermal_camera.material
   private: const unsigned int customParamIdx = 10u;
+
+  /// \brief Camera near plane
+  private: double near = 0;
+
+  /// \brief Camera far plane
+  private: double far = 0;
 };
 }
 }
-
 
 /// \internal
 /// \brief Private data for the OgreThermalCamera class
 class ignition::rendering::OgreThermalCameraPrivate
 {
   /// \brief The thermal material
-  public: MaterialPtr thermalMaterial = nullptr;
+  public: Ogre::MaterialPtr thermalMaterial;
 
   /// \brief thermal camera texture
   public: Ogre::Texture *ogreThermalTexture = nullptr;
@@ -99,6 +107,9 @@ class ignition::rendering::OgreThermalCameraPrivate
 
   /// \brief Point cloud texture
   public: OgreRenderTexturePtr colorTexture;
+
+  /// \brief Lens distortion compositor
+  public: Ogre::CompositorInstance *thermalInstance = nullptr;
 
   /// \brief The thermal buffer
   public: uint16_t *thermalBuffer = nullptr;
@@ -128,13 +139,14 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreThermalCameraMaterialSwitcher::OgreThermalCameraMaterialSwitcher(
-    OgreScenePtr _scene)
+    OgreScenePtr _scene, double _near, double _far)
 {
   this->scene = _scene;
 
-  // plain opaque material
+  // heat source material
+  std::string matName = "ThermalHeatSource";
   Ogre::ResourcePtr res =
-    Ogre::MaterialManager::getSingleton().load("ThermalHeatSource",
+    Ogre::MaterialManager::getSingleton().load(matName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
   // OGRE 1.9 changes the shared pointer definition
@@ -145,6 +157,14 @@ OgreThermalCameraMaterialSwitcher::OgreThermalCameraMaterialSwitcher(
     std::static_pointer_cast<Ogre::Material>(res);
   #endif
   this->heatSourceMaterial->load();
+  static int thermalMatNameCount = 0;
+  this->heatSourceMaterial = this->heatSourceMaterial->clone(
+      matName + "_" + std::to_string(thermalMatNameCount++));
+
+  Ogre::Pass *pass = this->heatSourceMaterial->getTechnique(0)->getPass(0);
+  auto params = pass->getFragmentProgramParameters();
+  params->setNamedConstant("near", static_cast<float>(_near));
+  params->setNamedConstant("far", static_cast<float>(_far));
 }
 
 //////////////////////////////////////////////////
@@ -241,7 +261,11 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
     }
   }
 
-  return nullptr;
+  const_cast<Ogre::SubEntity *>(subEntity)->setCustomParameter(
+      this->customParamIdx,
+      Ogre::Vector4(0.0, 0.0, 0.0, 1.0));
+
+  return this->heatSourceMaterial->getSupportedTechnique(0);
 }
 
 //////////////////////////////////////////////////
@@ -381,42 +405,51 @@ void OgreThermalCamera::CreateThermalTexture()
   double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
   this->ogreCamera->setAspectRatio(ratio);
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
-  this->ogreCamera->setNearClipDistance(this->NearClipPlane());
-  this->ogreCamera->setFarClipDistance(this->FarClipPlane());
+
+  // near and far plane are passed to heat source frag shaders through
+  // material switcher. They are used to normalize depth values which are then
+  // used for adding variations to temperature of the heat source
+  // Here we set a small clip distance so camera can see close objects
+  // without being clipped.
+  double nearPlane = this->NearClipPlane();
+  double farPlane = this->FarClipPlane();
+  this->ogreCamera->setNearClipDistance(1e-4);
+  this->ogreCamera->setFarClipDistance(farPlane);
 
   // create thermal material
-  this->dataPtr->thermalMaterial = this->scene->CreateMaterial();
+  std::string matName = "ThermalCamera";
+  Ogre::ResourcePtr res =
+    Ogre::MaterialManager::getSingleton().load(matName,
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
-  std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+  // OGRE 1.9 changes the shared pointer definition
+  #if OGRE_VERSION_LT_1_10_1
+  this->dataPtr->thermalMaterial = res.staticCast<Ogre::Material>();
+  #else
+  this->dataPtr->thermalMaterial =
+    std::static_pointer_cast<Ogre::Material>(res);
+  #endif
 
-  // path to look for vertex and fragment shader parameters
-  std::string thermalVSPath = common::joinPaths(
-      resourcePath, "ogre", "media", "materials", "programs",
-      "depth_points_vs.glsl");
-  std::string thermalFSPath = common::joinPaths(
-      resourcePath, "ogre", "media", "materials", "programs",
-      "thermal_camera_fs.glsl");
-  this->dataPtr->thermalMaterial->SetVertexShader(thermalVSPath);
-  this->dataPtr->thermalMaterial->SetFragmentShader(thermalFSPath);
+  this->dataPtr->thermalMaterial = this->dataPtr->thermalMaterial->clone(
+      matName + "_" + this->ogreCamera->getName());
+  this->dataPtr->thermalMaterial->load();
 
-  (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))["near"] =
-      static_cast<float>(this->NearClipPlane());
-  (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))["far"] =
-      static_cast<float>(this->FarClipPlane());
-  (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))["max"] =
-      this->maxTemp;
-  (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))["min"] =
-      this->minTemp;
-  (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))["resolution"] =
-      this->resolution;
-  (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))["ambient"] =
-      this->ambient;
-  (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))["range"] =
-      this->ambientRange;
-  (*(this->dataPtr->thermalMaterial->FragmentShaderParams()))
-      ["heatSourceTempRange"] = this->heatSourceTempRange;
+  Ogre::Pass *pass =
+      this->dataPtr->thermalMaterial->getTechnique(0)->getPass(0);
+  auto params = pass->getFragmentProgramParameters();
+  params->setNamedConstant("max", this->maxTemp);
+  params->setNamedConstant("min", this->minTemp);
+  params->setNamedConstant("resolution", this->resolution);
+  params->setNamedConstant("ambient", this->ambient);
+  params->setNamedConstant("range", this->ambientRange);
+  params->setNamedConstant("heatSourceTempRange", this->heatSourceTempRange);
+
+  this->dataPtr->thermalInstance =
+      Ogre::CompositorManager::getSingleton().addCompositor(
+      this->ogreCamera->getViewport(), "ThermalCamera");
+  this->dataPtr->thermalInstance->getTechnique()->getOutputTargetPass()->
+      getPass(0)->setMaterial(this->dataPtr->thermalMaterial);
+  this->dataPtr->thermalInstance->setEnabled(true);
 
   if (!this->dataPtr->ogreHeatSourceTexture)
   {
@@ -433,25 +466,18 @@ void OgreThermalCamera::CreateThermalTexture()
     vp->setClearEveryFrame(true);
     vp->setShadowsEnabled(false);
     vp->setOverlaysEnabled(false);
-    vp->setBackgroundColour(Ogre::ColourValue(0, 1, 0));
     rt->setAutoUpdated(false);
 
     vp->setMaterialScheme("thermal");
     this->dataPtr->thermalMaterialSwitcher.reset(
-        new OgreThermalCameraMaterialSwitcher(this->scene));
+        new OgreThermalCameraMaterialSwitcher(
+        this->scene, nearPlane, farPlane));
     rt->addListener(this->dataPtr->thermalMaterialSwitcher.get());
 
-    OgreMaterialPtr mat = std::dynamic_pointer_cast<OgreMaterial>(
-        this->dataPtr->thermalMaterial);
-    Ogre::MaterialPtr ogreMat = mat->Material();
-    Ogre::Pass *pass = ogreMat->getTechnique(0)->getPass(0);
     Ogre::TextureUnitState *tex = pass->getTextureUnitState(0u);
     tex->setTextureName(this->dataPtr->ogreHeatSourceTexture->getName());
     tex->setTextureFiltering(Ogre::TFO_NONE);
-    tex->setTextureAnisotropy(1u);
   }
-
-  this->dataPtr->thermalMaterial->PreRender();
 }
 
 /////////////////////////////////////////////////
@@ -480,102 +506,10 @@ void OgreThermalCamera::Render()
       this->dataPtr->ogreHeatSourceTexture->getBuffer()->getRenderTarget();
   heatRt->update();
 
-  Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
-  Ogre::ShadowTechnique shadowTech = sceneMgr->getShadowTechnique();
-
-  // update thermal camera
-  sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-  sceneMgr->_suppressRenderStateChanges(true);
-
   Ogre::RenderTarget *rt =
       this->dataPtr->ogreThermalTexture->getBuffer()->getRenderTarget();
   rt->setAutoUpdated(false);
-  OgreMaterialPtr ogreMaterial = std::dynamic_pointer_cast<OgreMaterial>(
-    this->dataPtr->thermalMaterial);
-  Ogre::MaterialPtr matPtr = ogreMaterial->Material();
-  this->UpdateRenderTarget(rt, matPtr.get());
   rt->update(false);
-
-  sceneMgr->_suppressRenderStateChanges(false);
-  sceneMgr->setShadowTechnique(shadowTech);
-}
-
-//////////////////////////////////////////////////
-void OgreThermalCamera::UpdateRenderTarget(Ogre::RenderTarget *_target,
-    Ogre::Material *_material)
-
-{
-  Ogre::RenderTarget *target = _target;
-  std::string matName = _material->getName();
-
-  Ogre::RenderSystem *renderSys;
-  Ogre::Viewport *vp = target->getViewport(0);
-  Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
-  Ogre::Pass *pass;
-
-  renderSys = this->scene->OgreSceneManager()->getDestinationRenderSystem();
-  // Get pointer to the material pass
-  pass = _material->getBestTechnique()->getPass(0);
-
-  // Render the depth texture
-  // OgreSceneManager::_render function automatically sets farClip to 0.
-  // Which normally equates to infinite distance. We don't want this. So
-  // we have to set the distance every time.
-  this->ogreCamera->setFarClipDistance(this->FarClipPlane());
-  this->ogreCamera->setNearClipDistance(1e-4);
-
-  Ogre::AutoParamDataSource autoParamDataSource;
-
-  // return ambient temp (as a function of depth) in case no renderable object
-  // is inside frustrum. The calculation here should match the one in the shader
-  // media/materials/programs/thermal_camera_fs.glsl
-  float nearPlane = this->NearClipPlane();
-  float farPlane = this->FarClipPlane();
-  float d = farPlane / (farPlane - nearPlane);
-  float temp = this->ambient - this->ambientRange * 0.5 + (1.0 - d)
-      * this->ambientRange;
-  temp /= (this->dataPtr->dataMaxVal * 0.01);
-  vp->setBackgroundColour(Ogre::ColourValue(temp, 0, 0));
-
-  Ogre::CompositorManager::getSingleton().setCompositorEnabled(
-      vp, matName, true);
-
-  renderSys->_setViewport(vp);
-  sceneMgr->_setPass(pass, true, false);
-  autoParamDataSource.setCurrentPass(pass);
-  autoParamDataSource.setCurrentViewport(vp);
-  autoParamDataSource.setCurrentRenderTarget(target);
-  autoParamDataSource.setCurrentSceneManager(sceneMgr);
-  autoParamDataSource.setCurrentCamera(this->ogreCamera, true);
-
-  renderSys->setLightingEnabled(false);
-  renderSys->_setFog(Ogre::FOG_NONE);
-
-  // These two lines don't seem to do anything useful
-  renderSys->_setProjectionMatrix(
-      this->ogreCamera->getProjectionMatrixRS());
-  renderSys->_setViewMatrix(this->ogreCamera->getViewMatrix(true));
-
-  pass->_updateAutoParams(&autoParamDataSource, 1);
-
-  // NOTE: We MUST bind parameters AFTER updating the autos
-  if (pass->hasVertexProgram())
-  {
-    renderSys->bindGpuProgram(
-    pass->getVertexProgram()->_getBindingDelegate());
-
-    renderSys->bindGpuProgramParameters(Ogre::GPT_VERTEX_PROGRAM,
-      pass->getVertexProgramParameters(), 1);
-  }
-
-  if (pass->hasFragmentProgram())
-  {
-    renderSys->bindGpuProgram(
-    pass->getFragmentProgram()->_getBindingDelegate());
-
-    renderSys->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM,
-    pass->getFragmentProgramParameters(), 1);
-  }
 }
 
 //////////////////////////////////////////////////
@@ -619,7 +553,7 @@ void OgreThermalCamera::PostRender()
   //   {
   //     igndbg << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
   //   }
-  //   igndbg << std::endl;
+  //   igndbg<< std::endl;
   // }
 }
 

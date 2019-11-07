@@ -94,13 +94,6 @@ namespace ignition
       // Documentation inherited
       public: virtual void Destroy() override;
 
-      /// \brief Update a render target
-      /// \param[in] _target Render target to update
-      /// \param[in] _material Material to use
-      /// \param[in] _matName Material name
-      protected: void UpdateRenderTarget(Ogre::RenderTarget *_target,
-                                       Ogre::Material *_material);
-
       /// \brief Get a pointer to the render target.
       /// \return Pointer to the render target
       protected: virtual RenderTargetPtr RenderTarget() const override;

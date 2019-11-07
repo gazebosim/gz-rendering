@@ -55,8 +55,8 @@ class ThermalCameraTest: public testing::Test,
 void ThermalCameraTest::ThermalCameraBoxes(
     const std::string &_renderEngine)
 {
-  int imgWidth = 10;
-  int imgHeight = 10;
+  int imgWidth = 50;
+  int imgHeight = 50;
   double aspectRatio = imgWidth/imgHeight;
 
   double unitBoxSize = 1.0;
@@ -153,13 +153,6 @@ void ThermalCameraTest::ThermalCameraBoxes(
           std::bind(&::OnNewThermalFrame, thermalData,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
             std::placeholders::_4, std::placeholders::_5));
-
-    // Create thermal camera
-    auto camera = scene->CreateCamera("cam");
-    camera->SetImageWidth(imgWidth);
-    camera->SetImageHeight(imgHeight);
-    scene->RootVisual()->AddChild(camera);
-    camera->Update();
 
     // Update once to create image
     thermalCamera->Update();

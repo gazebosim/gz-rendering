@@ -15,8 +15,6 @@
  *
 */
 
-uniform float near;
-uniform float far;
 uniform float min;
 uniform float max;
 uniform float ambient;
@@ -33,12 +31,13 @@ void main()
   float temp = ambient;
   float heatRange = range;
 
-  // get depth, convert to z up
-  float d = -eyePos.z;
-  d = d / (far-near);
-
   // check for heat source
-  float heat = texture2D(heatTexture, gl_TexCoord[0].xy).x;
+  vec4 sample = texture2D(heatTexture, gl_TexCoord[0].xy);
+  float heat = sample.x;
+  float valid = sample.y;
+  float d = 1.0;
+  if (valid == 1.0)
+    d = sample.z;
   if (heat > 0.0)
   {
     // heat is normalized so convert back to work in kelvin

@@ -40,8 +40,8 @@ void OnNewThermalFrame(uint16_t *_scanDest, const uint16_t *_scan,
                   const std::string &_format)
 {
   EXPECT_EQ("L16", _format);
-  EXPECT_EQ(10u, _width);
-  EXPECT_EQ(10u, _height);
+  EXPECT_EQ(50u, _width);
+  EXPECT_EQ(50u, _height);
   EXPECT_EQ(1u, _channels);
 
   uint16_t u;

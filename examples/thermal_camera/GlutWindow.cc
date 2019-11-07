@@ -86,7 +86,7 @@ void OnNewThermalFrame(const uint16_t *_scan,
       min = temp;
   }
 
-  // convert to temperature to grayscale image
+  // convert temperature to grayscale image
   double range = static_cast<double>(max - min);
   unsigned char *data = g_image->Data<unsigned char>();
   for (unsigned int i = 0; i < _height; ++i)

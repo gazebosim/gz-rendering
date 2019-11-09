@@ -41,9 +41,14 @@ namespace ignition
       public Ogre2DynamicRenderable
     {
       /// \brief Constructor
+      /// \param[in] _id Ogre movable object id
+      /// \param[in] _objectMemoryManager Ogre entity memory manager
+      /// \param[in] _manager Ogre scene manager
       /// \param[in] _opType The type of Line
-      public: explicit Ogre2DynamicLines(
-                  MarkerType _opType = LINE_STRIP);
+      public: Ogre2DynamicLines(Ogre::IdType _id,
+                              Ogre::ObjectMemoryManager *_objectMemoryManager,
+                              Ogre::SceneManager *_manager,
+                              MarkerType _opType = LINE_STRIP);
 
       /// \brief Destructor
       public: virtual ~Ogre2DynamicLines();

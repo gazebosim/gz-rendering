@@ -43,8 +43,11 @@ class ignition::rendering::Ogre2DynamicLinesPrivate
 };
 
 /////////////////////////////////////////////////
-Ogre2DynamicLines::Ogre2DynamicLines(MarkerType _opType)
-  : dataPtr(new Ogre2DynamicLinesPrivate)
+Ogre2DynamicLines::Ogre2DynamicLines(Ogre::IdType _id,
+    Ogre::ObjectMemoryManager *_objectMemoryManager,
+    Ogre::SceneManager *_manager, MarkerType _opType)
+  : Ogre2DynamicRenderable(_id, _objectMemoryManager, _manager),
+    dataPtr(new Ogre2DynamicLinesPrivate)
 {
   this->Init(_opType, false);
   this->setCastShadows(false);
@@ -172,9 +175,9 @@ void Ogre2DynamicLines::FillHardwareBuffers()
     this->mRenderOp.vertexData->vertexBufferBinding->getBuffer(0);
 
   Ogre::Real *prPos =
-    static_cast<Ogre::Real*>(vbuf->lock(Ogre::v1::HardwareBuffer::HBL_NORMAL));
+    static_cast<Ogre::Real*>(vbuf->lock(Ogre::v1::HardwareBuffer::HBL_WRITE_ONLY));
   {
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < size; ++i)
     {
       *prPos++ = this->dataPtr->points[i].X();
       *prPos++ = this->dataPtr->points[i].Y();
@@ -190,7 +193,7 @@ void Ogre2DynamicLines::FillHardwareBuffers()
     this->mRenderOp.vertexData->vertexBufferBinding->getBuffer(1);
 
   Ogre::RGBA *colorArrayBuffer =
-        static_cast<Ogre::RGBA*>(
+        static_cast<Ogre::RGBA *>(
                         cbuf->lock(Ogre::v1::HardwareBuffer::HBL_DISCARD));
   Ogre::RenderSystem *renderSystemForVertex =
         Ogre::Root::getSingleton().getRenderSystem();

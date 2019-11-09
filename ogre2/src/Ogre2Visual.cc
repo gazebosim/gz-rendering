@@ -96,6 +96,7 @@ bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
   }
 
   this->ogreNode->detachObject(derived->OgreObject());
+  derived->SetParent(nullptr);
   return true;
 }
 

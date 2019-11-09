@@ -21,21 +21,12 @@
 using namespace ignition;
 using namespace rendering;
 
-static unsigned int msGenNameCount = 0;
-
 //////////////////////////////////////////////////
-Ogre2DynamicRenderable::Ogre2DynamicRenderable() :
-                        SimpleRenderable(Ogre::IdType(msGenNameCount++),
-                        nullptr, nullptr)
-{
-}
-
-//////////////////////////////////////////////////
-Ogre2DynamicRenderable::Ogre2DynamicRenderable(Ogre::IdType id,
-                        Ogre::ObjectMemoryManager *objectMemoryManager,
-                        Ogre::SceneManager *manager) :
-                        SimpleRenderable(id, objectMemoryManager,
-                        manager)
+Ogre2DynamicRenderable::Ogre2DynamicRenderable(Ogre::IdType _id,
+                        Ogre::ObjectMemoryManager *_objectMemoryManager,
+                        Ogre::SceneManager *_manager) :
+                        SimpleRenderable(_id, _objectMemoryManager,
+                        _manager)
 {
 }
 
@@ -138,7 +129,7 @@ MarkerType Ogre2DynamicRenderable::OperationType() const
 
 //////////////////////////////////////////////////
 void Ogre2DynamicRenderable::PrepareHardwareBuffers(size_t vertexCount,
-                                               size_t indexCount)
+                                                    size_t indexCount)
 {
   // Prepare vertex buffer
   size_t newVertCapacity = this->vertexBufferCapacity;

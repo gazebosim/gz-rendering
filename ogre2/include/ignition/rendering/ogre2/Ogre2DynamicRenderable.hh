@@ -37,12 +37,12 @@ namespace ignition
       public Ogre::v1::SimpleRenderable
     {
       /// \brief Constructor
-      public: Ogre2DynamicRenderable();
-
-      /// \brief Constructor
-      public: Ogre2DynamicRenderable(Ogre::IdType id,
-                              Ogre::ObjectMemoryManager *objectMemoryManager,
-                              Ogre::SceneManager *manager);
+      /// \param[in] _id Ogre movable object id
+      /// \param[in] _objectMemoryManager Ogre entity memory manager
+      /// \param[in] _manager Ogre scene manager
+      public: Ogre2DynamicRenderable(Ogre::IdType _id,
+                              Ogre::ObjectMemoryManager *_objectMemoryManager,
+                              Ogre::SceneManager *_manager);
 
       /// \brief Virtual destructor
       public: virtual ~Ogre2DynamicRenderable();

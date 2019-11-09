@@ -22,10 +22,11 @@
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/Visual.hh"
+#include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
+#include "ignition/rendering/Visual.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -44,6 +45,9 @@ class VisualTest : public testing::Test,
 
   /// \brief User data
   public: void UserData(const std::string &_renderEngine);
+
+  /// \brief Test adding removing geometry
+  public: void Geometry(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -348,6 +352,81 @@ void VisualTest::UserData(const std::string &_renderEngine)
 TEST_P(VisualTest, UserData)
 {
   UserData(GetParam());
+}
+
+/////////////////////////////////////////////////
+void VisualTest::Geometry(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene4");
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+
+  // Add geometries
+  GeometryPtr box = scene->CreateBox();
+  visual->AddGeometry(box);
+  EXPECT_EQ(1u, visual->GeometryCount());
+  EXPECT_TRUE(visual->HasGeometry(box));
+  EXPECT_EQ(box, visual->GeometryByIndex(0u));
+  EXPECT_TRUE(box->HasParent());
+  EXPECT_EQ(visual, box->Parent());
+
+  GeometryPtr cylinder = scene->CreateCylinder();
+  visual->AddGeometry(cylinder);
+  EXPECT_EQ(2u, visual->GeometryCount());
+  EXPECT_TRUE(visual->HasGeometry(cylinder));
+  EXPECT_EQ(cylinder, visual->GeometryByIndex(1u));
+  EXPECT_TRUE(cylinder->HasParent());
+  EXPECT_EQ(visual, cylinder->Parent());
+
+  GeometryPtr sphere = scene->CreateSphere();
+  visual->AddGeometry(sphere);
+  EXPECT_EQ(3u, visual->GeometryCount());
+  EXPECT_TRUE(visual->HasGeometry(sphere));
+  EXPECT_EQ(sphere, visual->GeometryByIndex(2u));
+  EXPECT_TRUE(sphere->HasParent());
+  EXPECT_EQ(visual, sphere->Parent());
+
+  // Remove geometries
+  GeometryPtr removed = visual->RemoveGeometryByIndex(0u);
+  EXPECT_EQ(2u, visual->GeometryCount());
+  EXPECT_EQ(box, removed);
+  EXPECT_FALSE(box->HasParent());
+  EXPECT_EQ(nullptr, box->Parent());
+
+  GeometryPtr removed2 = visual->RemoveGeometry(cylinder);
+  EXPECT_EQ(1u, visual->GeometryCount());
+  EXPECT_EQ(cylinder, removed2);
+  EXPECT_FALSE(cylinder->HasParent());
+  EXPECT_EQ(nullptr, cylinder->Parent());
+
+  visual->RemoveGeometries();
+  EXPECT_EQ(0u, visual->GeometryCount());
+  EXPECT_FALSE(sphere->HasParent());
+  EXPECT_EQ(nullptr, sphere->Parent());
+
+  // remove non-existent geometries
+  GeometryPtr removed3 = visual->RemoveGeometryByIndex(0u);
+  EXPECT_EQ(nullptr, removed3);
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, Geometry)
+{
+  Geometry(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Visual, VisualTest,

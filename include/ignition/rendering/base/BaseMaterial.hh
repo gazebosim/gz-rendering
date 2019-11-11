@@ -204,6 +204,19 @@ namespace ignition
       public: virtual void ClearEnvironmentMap() override;
 
       // Documentation inherited
+      public: virtual bool HasEmissiveMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string EmissiveMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetEmissiveMap(const std::string &_emissiveMap)
+          override;
+
+      // Documentation inherited
+      public: virtual void ClearEmissiveMap() override;
+
+      // Documentation inherited
       public: virtual void SetRoughness(const float _roughness) override;
 
       // Documentation inherited
@@ -723,6 +736,34 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    bool BaseMaterial<T>::HasEmissiveMap() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::EmissiveMap() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetEmissiveMap(const std::string &)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::ClearEmissiveMap()
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMaterial<T>::SetRoughness(const float)
     {
       // no op
@@ -788,6 +829,7 @@ namespace ignition
       this->SetRoughness(_material->Roughness());
       this->SetMetalness(_material->Metalness());
       this->SetEnvironmentMap(_material->EnvironmentMap());
+      this->SetEmissiveMap(_material->EmissiveMap());
       this->SetShaderType(_material->ShaderType());
       this->SetVertexShader(_material->VertexShader());
       this->SetFragmentShader(_material->FragmentShader());
@@ -855,6 +897,7 @@ namespace ignition
       this->ClearNormalMap();
       this->ClearRoughnessMap();
       this->ClearMetalnessMap();
+      this->ClearEmissiveMap();
       this->SetRoughness(1.0);
       this->SetMetalness(0.8);
       this->SetShaderType(ST_PIXEL);

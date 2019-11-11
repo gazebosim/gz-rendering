@@ -290,6 +290,38 @@ void Ogre2Material::ClearEnvironmentMap()
 }
 
 //////////////////////////////////////////////////
+bool Ogre2Material::HasEmissiveMap() const
+{
+  return !this->emissiveMapName.empty();
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2Material::EmissiveMap() const
+{
+  return this->emissiveMapName;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetEmissiveMap(const std::string &_name)
+{
+  if (_name.empty())
+  {
+    this->ClearEmissiveMap();
+    return;
+  }
+
+  this->emissiveMapName = _name;
+  this->SetTextureMapImpl(this->emissiveMapName, Ogre::PBSM_EMISSIVE);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::ClearEmissiveMap()
+{
+  this->emissiveMapName = "";
+  this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, 0, Ogre::TexturePtr());
+}
+
+//////////////////////////////////////////////////
 void Ogre2Material::SetRoughness(const float _roughness)
 {
   this->ogreDatablock->setRoughness(_roughness);

@@ -134,6 +134,18 @@ namespace ignition
       public: virtual void SetRoughness(const float _roughness) override;
 
       // Documentation inherited
+      public: virtual bool HasEmissiveMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string EmissiveMap() const override;
+
+      // Documentation inherited
+      public: virtual void SetEmissiveMap(const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual void ClearEmissiveMap() override;
+
+      // Documentation inherited
       public: virtual float Roughness() const override;
 
       // Documentation inherited
@@ -206,6 +218,9 @@ namespace ignition
 
       /// \brief Name of the environment map
       protected: std::string environmentMapName;
+
+      /// \brief Name of the emissive map
+      protected: std::string emissiveMapName;
 
       /// \brief Unique id assigned to ogre hlms datablock
       protected: std::string ogreDatablockId;

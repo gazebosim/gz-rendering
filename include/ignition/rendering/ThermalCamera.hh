@@ -28,7 +28,15 @@ namespace ignition
     /* \class ThermalCamera ThermalCamera.hh \
       * ignition/rendering/ThermalCamera.hh
      */
-    /// \brief Thermal camera that produces temperature data
+    /// \brief Thermal camera that produces temperature data.
+    /// An object's temperature can be set through the Visual class
+    /// using SetUserData with the key "temperature". Ambient temperature
+    /// is returned for object that do not have this property set. Note that
+    /// temperature variations for the environment and objects can be set using
+    /// the Set*Range functions in this class. For simplicity, the variations
+    /// are modeled as a function of depth (which is not how a real thermal
+    /// sensor works). Ideally we support heatmaps for visuals in order to
+    /// produce more realistic temperature output.
     class IGNITION_RENDERING_VISIBLE ThermalCamera :
       public virtual Camera
     {

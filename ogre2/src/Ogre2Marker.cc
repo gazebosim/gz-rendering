@@ -17,7 +17,6 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/ogre2/Ogre2DynamicLines.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
@@ -28,9 +27,6 @@ class ignition::rendering::Ogre2MarkerPrivate
 {
   /// \brief Marker material
   public: Ogre2MaterialPtr material = nullptr;
-
-  /// \brief DynamicLines Object to display
-  public: std::shared_ptr<Ogre2DynamicLines> dynamicRenderable;
 
   /// \brief Mesh Object for primitive shapes
   public: Ogre2MeshPtr mesh = nullptr;
@@ -57,7 +53,6 @@ Ogre2Marker::~Ogre2Marker()
 //////////////////////////////////////////////////
 void Ogre2Marker::PreRender()
 {
-  this->dataPtr->dynamicRenderable->Update();
 }
 
 //////////////////////////////////////////////////
@@ -93,8 +88,9 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
     {
-      return std::dynamic_pointer_cast<Ogre::MovableObject>
-         (this->dataPtr->dynamicRenderable).get();
+      ignerr << "Failed to create marker of type " << markerType
+             << ". Dynamic renderables not supported yet\n";
+      return this->dataPtr->mesh->OgreObject();
     }
     default:
       ignerr << "Invalid Marker type " << markerType << "\n";
@@ -111,13 +107,7 @@ void Ogre2Marker::Init()
 //////////////////////////////////////////////////
 void Ogre2Marker::Create()
 {
-  Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
-  this->dataPtr->markerType = LINE_STRIP;
-  this->dataPtr->dynamicRenderable.reset(
-      new Ogre2DynamicLines(Ogre::Id::generateNewId<Ogre::MovableObject>(),
-      &sceneManager->_getEntityMemoryManager(Ogre::SCENE_DYNAMIC),
-      sceneManager, LINE_STRIP));
-
+  this->dataPtr->markerType = BOX;
   if (!this->dataPtr->mesh)
   {
     this->dataPtr->mesh =
@@ -162,7 +152,6 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
     case TRIANGLE_FAN:
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
-      this->dataPtr->dynamicRenderable->setMaterial(materialName);
       break;
     default:
       ignerr << "Invalid Marker type " << markerType << "\n";
@@ -177,23 +166,20 @@ MaterialPtr Ogre2Marker::Material() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Marker::SetPoint(unsigned int _index,
-    const ignition::math::Vector3d &_value)
+void Ogre2Marker::SetPoint(unsigned int /*_index*/,
+    const ignition::math::Vector3d &/*_value*/)
 {
-  this->dataPtr->dynamicRenderable->SetPoint(_index, _value);
 }
 
 //////////////////////////////////////////////////
-void Ogre2Marker::AddPoint(const ignition::math::Vector3d &_pt,
-    const ignition::math::Color &_color)
+void Ogre2Marker::AddPoint(const ignition::math::Vector3d &/*_pt*/,
+    const ignition::math::Color &/*_color*/)
 {
-  this->dataPtr->dynamicRenderable->AddPoint(_pt, _color);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Marker::ClearPoints()
 {
-  this->dataPtr->dynamicRenderable->Clear();
 }
 
 //////////////////////////////////////////////////
@@ -216,23 +202,22 @@ void Ogre2Marker::SetType(MarkerType _markerType)
     }
     this->dataPtr->mesh->Destroy();
   }
-  this->dataPtr->dynamicRenderable->Clear();
 
 
   GeometryPtr newMesh;
   switch (_markerType)
   {
     case NONE:
-        newMesh = this->scene->CreateBox();
+      newMesh = this->scene->CreateBox();
       break;
     case BOX:
-        newMesh = this->scene->CreateBox();
+      newMesh = this->scene->CreateBox();
       break;
     case CYLINDER:
-        newMesh = this->scene->CreateCylinder();
+      newMesh = this->scene->CreateCylinder();
       break;
     case SPHERE:
-        newMesh = this->scene->CreateSphere();
+      newMesh = this->scene->CreateSphere();
       break;
     case LINE_STRIP:
     case LINE_LIST:
@@ -240,7 +225,7 @@ void Ogre2Marker::SetType(MarkerType _markerType)
     case TRIANGLE_FAN:
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
-      this->dataPtr->dynamicRenderable->SetOperationType(_markerType);
+      // todo(anyone) support dynamic renderables
       break;
     default:
       ignerr << "Invalid Marker type\n";

@@ -75,7 +75,7 @@ namespace ignition
       // Documentation inherited
       public: virtual MarkerType Type() const override;
 
-      /// \brief Create the grid geometry in ogre
+      /// \brief Create the marker geometry in ogre
       private: void Create();
 
       /// \brief Marker should only be created by scene.

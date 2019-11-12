@@ -30,9 +30,6 @@ class ignition::rendering::Ogre2MarkerPrivate
 
   /// \brief Mesh Object for primitive shapes
   public: Ogre2MeshPtr mesh = nullptr;
-
-  /// \brief MarkerType of render operation
-  public: MarkerType markerType;
 };
 
 using namespace ignition;
@@ -74,9 +71,10 @@ void Ogre2Marker::Destroy()
 //////////////////////////////////////////////////
 Ogre::MovableObject *Ogre2Marker::OgreObject() const
 {
-  switch (markerType)
+  switch (this->markerType)
   {
     case NONE:
+      return nullptr;
     case BOX:
     case CYLINDER:
     case SPHERE:
@@ -88,12 +86,12 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
     case TRIANGLE_LIST:
     case TRIANGLE_STRIP:
     {
-      ignerr << "Failed to create marker of type " << markerType
+      ignerr << "Failed to create marker of type " << this->markerType
              << ". Dynamic renderables not supported yet\n";
       return this->dataPtr->mesh->OgreObject();
     }
     default:
-      ignerr << "Invalid Marker type " << markerType << "\n";
+      ignerr << "Invalid Marker type " << this->markerType << "\n";
       return nullptr;
   }
 }
@@ -107,7 +105,7 @@ void Ogre2Marker::Init()
 //////////////////////////////////////////////////
 void Ogre2Marker::Create()
 {
-  this->dataPtr->markerType = BOX;
+  this->markerType = NONE;
   if (!this->dataPtr->mesh)
   {
     this->dataPtr->mesh =
@@ -138,9 +136,10 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
   this->dataPtr->material->SetReceiveShadows(false);
   this->dataPtr->material->SetLightingEnabled(false);
 
-  switch (markerType)
+  switch (this->markerType)
   {
     case NONE:
+      break;
     case BOX:
     case CYLINDER:
     case SPHERE:
@@ -154,7 +153,7 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
     case TRIANGLE_STRIP:
       break;
     default:
-      ignerr << "Invalid Marker type " << markerType << "\n";
+      ignerr << "Invalid Marker type " << this->markerType << "\n";
       break;
   }
 }
@@ -208,7 +207,6 @@ void Ogre2Marker::SetType(MarkerType _markerType)
   switch (_markerType)
   {
     case NONE:
-      newMesh = this->scene->CreateBox();
       break;
     case BOX:
       newMesh = this->scene->CreateBox();
@@ -246,5 +244,5 @@ void Ogre2Marker::SetType(MarkerType _markerType)
 //////////////////////////////////////////////////
 MarkerType Ogre2Marker::Type() const
 {
-  return this->dataPtr->markerType;
+  return this->markerType;
 }

@@ -29,8 +29,20 @@ OgreDynamicRenderable::OgreDynamicRenderable()
 //////////////////////////////////////////////////
 OgreDynamicRenderable::~OgreDynamicRenderable()
 {
-  delete this->mRenderOp.vertexData;
-  delete this->mRenderOp.indexData;
+  if (!Ogre::HardwareBufferManager::getSingletonPtr())
+    return;
+
+  if (this->mRenderOp.vertexData)
+  {
+    delete this->mRenderOp.vertexData;
+    this->mRenderOp.vertexData = nullptr;
+  }
+
+  if (this->mRenderOp.indexData)
+  {
+    delete this->mRenderOp.indexData;
+    this->mRenderOp.indexData = nullptr;
+  }
 }
 
 //////////////////////////////////////////////////

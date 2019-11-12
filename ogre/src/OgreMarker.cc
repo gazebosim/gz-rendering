@@ -50,6 +50,7 @@ OgreMarker::OgreMarker()
 //////////////////////////////////////////////////
 OgreMarker::~OgreMarker()
 {
+  this->Destroy();
 }
 
 //////////////////////////////////////////////////
@@ -59,11 +60,29 @@ void OgreMarker::PreRender()
 }
 
 //////////////////////////////////////////////////
+void OgreMarker::Destroy()
+{
+  if (this->dataPtr->mesh)
+  {
+    this->dataPtr->mesh->Destroy();
+    this->dataPtr->mesh.reset();
+  }
+
+  if (this->dataPtr->material && this->Scene())
+  {
+    this->Scene()->DestroyMaterial(this->dataPtr->material);
+    this->dataPtr->material.reset();
+  }
+  this->dataPtr->dynamicRenderable.reset();
+}
+
+//////////////////////////////////////////////////
 Ogre::MovableObject *OgreMarker::OgreObject() const
 {
   switch (markerType)
   {
     case NONE:
+      return nullptr;
     case BOX:
     case CYLINDER:
     case SPHERE:
@@ -91,7 +110,7 @@ void OgreMarker::Init()
 //////////////////////////////////////////////////
 void OgreMarker::Create()
 {
-  this->dataPtr->markerType = LINE_STRIP;
+  this->markerType = NONE;
   this->dataPtr->dynamicRenderable.reset(new OgreDynamicLines(LINE_STRIP));
 
   if (!this->dataPtr->mesh)
@@ -116,7 +135,6 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
 
     return;
   }
-
   std::string materialName = derived->Name();
   Ogre::MaterialPtr ogreMaterial = derived->Material();
   this->dataPtr->material = derived;
@@ -124,9 +142,10 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
   this->dataPtr->material->SetReceiveShadows(false);
   this->dataPtr->material->SetLightingEnabled(false);
 
-  switch (markerType)
+  switch (this->markerType)
   {
     case NONE:
+      break;
     case BOX:
     case CYLINDER:
     case SPHERE:
@@ -145,7 +164,7 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
 #endif
       break;
     default:
-      ignerr << "Invalid Marker type " << markerType << "\n";
+      ignerr << "Invalid Marker type " << this->markerType << "\n";
       break;
   }
 }
@@ -179,12 +198,10 @@ void OgreMarker::ClearPoints()
 //////////////////////////////////////////////////
 void OgreMarker::SetType(MarkerType _markerType)
 {
-  markerType = _markerType;
+  this->markerType = _markerType;
   switch (_markerType)
   {
     case NONE:
-      this->dataPtr->mesh =
-        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
       break;
     case BOX:
       this->dataPtr->mesh =
@@ -215,5 +232,5 @@ void OgreMarker::SetType(MarkerType _markerType)
 //////////////////////////////////////////////////
 MarkerType OgreMarker::Type() const
 {
-  return this->dataPtr->markerType;
+  return this->markerType;
 }

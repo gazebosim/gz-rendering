@@ -81,7 +81,8 @@ namespace ignition
                   const ignition::math::Vector3d &_value) override;
 
       /// \brief Life time of a marker
-      protected: std::chrono::steady_clock::duration lifetime;
+      protected: std::chrono::steady_clock::duration lifetime =
+          std::chrono::steady_clock::duration::zero();
 
       /// \brief Layer at which the marker will reside
       protected: int32_t layer = 0;

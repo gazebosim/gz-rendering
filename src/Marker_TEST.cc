@@ -55,7 +55,7 @@ void MarkerTest::Marker(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
 
-  MarkerPtr marker= scene->CreateMarker();
+  MarkerPtr marker = scene->CreateMarker();
   ASSERT_NE(nullptr, marker);
 
   // initial values

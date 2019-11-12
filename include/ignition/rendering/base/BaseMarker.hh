@@ -91,7 +91,8 @@ namespace ignition
       protected: bool markerDirty = false;
 
       /// \brief Marker type
-      protected: MarkerType markerType = ignition::rendering::MarkerType::NONE;
+      protected: MarkerType markerType =
+          ignition::rendering::MarkerType::MT_NONE;
     };
 
     /////////////////////////////////////////////////

@@ -35,37 +35,37 @@ namespace ignition
     enum IGNITION_RENDERING_VISIBLE MarkerType
     {
       /// \brief No type
-      NONE           = 0,
+      MT_NONE           = 0,
 
       /// \brief Box geometry
-      BOX            = 1,
+      MT_BOX            = 1,
 
       /// \brief Cylinder geometry
-      CYLINDER       = 2,
+      MT_CYLINDER       = 2,
 
       /// \brief Line strip primitive
-      LINE_STRIP     = 3,
+      MT_LINE_STRIP     = 3,
 
       /// \brief Line list primitive
-      LINE_LIST      = 4,
+      MT_LINE_LIST      = 4,
 
       /// \brief Points primitive
-      POINTS         = 5,
+      MT_POINTS         = 5,
 
       /// \brief Sphere geometry
-      SPHERE         = 6,
+      MT_SPHERE         = 6,
 
       /// \brief Text geometry
-      TEXT           = 7,
+      MT_TEXT           = 7,
 
       /// \brief Triangle fan primitive
-      TRIANGLE_FAN   = 8,
+      MT_TRIANGLE_FAN   = 8,
 
       /// \brief Triangle list primitive
-      TRIANGLE_LIST  = 9,
+      MT_TRIANGLE_LIST  = 9,
 
       /// \brief Triangle strip primitive
-      TRIANGLE_STRIP = 10
+      MT_TRIANGLE_STRIP = 10
     };
 
     /// \class Marker Marker.hh ignition/rendering/Marker

@@ -33,9 +33,6 @@ class ignition::rendering::OgreMarkerPrivate
 
   /// \brief Mesh Object for primitive shapes
   public: OgreMeshPtr mesh = nullptr;
-
-  /// \brief MarkerType of render operation
-  public: MarkerType markerType;
 };
 
 using namespace ignition;
@@ -81,18 +78,18 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
 {
   switch (markerType)
   {
-    case NONE:
+    case MT_NONE:
       return nullptr;
-    case BOX:
-    case CYLINDER:
-    case SPHERE:
+    case MT_BOX:
+    case MT_CYLINDER:
+    case MT_SPHERE:
       return this->dataPtr->mesh->OgreObject();
-    case LINE_STRIP:
-    case LINE_LIST:
-    case POINTS:
-    case TRIANGLE_FAN:
-    case TRIANGLE_LIST:
-    case TRIANGLE_STRIP:
+    case MT_LINE_STRIP:
+    case MT_LINE_LIST:
+    case MT_POINTS:
+    case MT_TRIANGLE_FAN:
+    case MT_TRIANGLE_LIST:
+    case MT_TRIANGLE_STRIP:
       return std::dynamic_pointer_cast<Ogre::MovableObject>
         (this->dataPtr->dynamicRenderable).get();
     default:
@@ -110,8 +107,8 @@ void OgreMarker::Init()
 //////////////////////////////////////////////////
 void OgreMarker::Create()
 {
-  this->markerType = NONE;
-  this->dataPtr->dynamicRenderable.reset(new OgreDynamicLines(LINE_STRIP));
+  this->markerType = MT_NONE;
+  this->dataPtr->dynamicRenderable.reset(new OgreDynamicLines(MT_LINE_STRIP));
 
   if (!this->dataPtr->mesh)
   {
@@ -144,19 +141,19 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
 
   switch (this->markerType)
   {
-    case NONE:
+    case MT_NONE:
       break;
-    case BOX:
-    case CYLINDER:
-    case SPHERE:
+    case MT_BOX:
+    case MT_CYLINDER:
+    case MT_SPHERE:
       this->dataPtr->mesh->SetMaterial(derived, false);
       break;
-    case LINE_STRIP:
-    case LINE_LIST:
-    case POINTS:
-    case TRIANGLE_FAN:
-    case TRIANGLE_LIST:
-    case TRIANGLE_STRIP:
+    case MT_LINE_STRIP:
+    case MT_LINE_LIST:
+    case MT_POINTS:
+    case MT_TRIANGLE_FAN:
+    case MT_TRIANGLE_LIST:
+    case MT_TRIANGLE_STRIP:
 #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
       this->dataPtr->dynamicRenderable->setMaterial(materialName);
 #else
@@ -201,26 +198,26 @@ void OgreMarker::SetType(MarkerType _markerType)
   this->markerType = _markerType;
   switch (_markerType)
   {
-    case NONE:
+    case MT_NONE:
       break;
-    case BOX:
+    case MT_BOX:
       this->dataPtr->mesh =
         std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
       break;
-    case CYLINDER:
+    case MT_CYLINDER:
       this->dataPtr->mesh =
         std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateCylinder());
       break;
-    case SPHERE:
+    case MT_SPHERE:
       this->dataPtr->mesh =
         std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateSphere());
       break;
-    case LINE_STRIP:
-    case LINE_LIST:
-    case POINTS:
-    case TRIANGLE_FAN:
-    case TRIANGLE_LIST:
-    case TRIANGLE_STRIP:
+    case MT_LINE_STRIP:
+    case MT_LINE_LIST:
+    case MT_POINTS:
+    case MT_TRIANGLE_FAN:
+    case MT_TRIANGLE_LIST:
+    case MT_TRIANGLE_STRIP:
       this->dataPtr->dynamicRenderable->SetOperationType(_markerType);
       break;
     default:

@@ -73,18 +73,18 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
 {
   switch (this->markerType)
   {
-    case NONE:
+    case MT_NONE:
       return nullptr;
-    case BOX:
-    case CYLINDER:
-    case SPHERE:
+    case MT_BOX:
+    case MT_CYLINDER:
+    case MT_SPHERE:
       return this->dataPtr->mesh->OgreObject();
-    case LINE_STRIP:
-    case LINE_LIST:
-    case POINTS:
-    case TRIANGLE_FAN:
-    case TRIANGLE_LIST:
-    case TRIANGLE_STRIP:
+    case MT_LINE_STRIP:
+    case MT_LINE_LIST:
+    case MT_POINTS:
+    case MT_TRIANGLE_FAN:
+    case MT_TRIANGLE_LIST:
+    case MT_TRIANGLE_STRIP:
     {
       ignerr << "Failed to create marker of type " << this->markerType
              << ". Dynamic renderables not supported yet\n";
@@ -105,7 +105,7 @@ void Ogre2Marker::Init()
 //////////////////////////////////////////////////
 void Ogre2Marker::Create()
 {
-  this->markerType = NONE;
+  this->markerType = MT_NONE;
   if (!this->dataPtr->mesh)
   {
     this->dataPtr->mesh =
@@ -138,19 +138,19 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
 
   switch (this->markerType)
   {
-    case NONE:
+    case MT_NONE:
       break;
-    case BOX:
-    case CYLINDER:
-    case SPHERE:
+    case MT_BOX:
+    case MT_CYLINDER:
+    case MT_SPHERE:
       this->dataPtr->mesh->SetMaterial(derived, false);
       break;
-    case LINE_STRIP:
-    case LINE_LIST:
-    case POINTS:
-    case TRIANGLE_FAN:
-    case TRIANGLE_LIST:
-    case TRIANGLE_STRIP:
+    case MT_LINE_STRIP:
+    case MT_LINE_LIST:
+    case MT_POINTS:
+    case MT_TRIANGLE_FAN:
+    case MT_TRIANGLE_LIST:
+    case MT_TRIANGLE_STRIP:
       break;
     default:
       ignerr << "Invalid Marker type " << this->markerType << "\n";
@@ -206,23 +206,23 @@ void Ogre2Marker::SetType(MarkerType _markerType)
   GeometryPtr newMesh;
   switch (_markerType)
   {
-    case NONE:
+    case MT_NONE:
       break;
-    case BOX:
+    case MT_BOX:
       newMesh = this->scene->CreateBox();
       break;
-    case CYLINDER:
+    case MT_CYLINDER:
       newMesh = this->scene->CreateCylinder();
       break;
-    case SPHERE:
+    case MT_SPHERE:
       newMesh = this->scene->CreateSphere();
       break;
-    case LINE_STRIP:
-    case LINE_LIST:
-    case POINTS:
-    case TRIANGLE_FAN:
-    case TRIANGLE_LIST:
-    case TRIANGLE_STRIP:
+    case MT_LINE_STRIP:
+    case MT_LINE_LIST:
+    case MT_POINTS:
+    case MT_TRIANGLE_FAN:
+    case MT_TRIANGLE_LIST:
+    case MT_TRIANGLE_STRIP:
       // todo(anyone) support dynamic renderables
       break;
     default:

@@ -62,7 +62,7 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   EXPECT_EQ(std::chrono::steady_clock::duration::zero().count(),
       marker->Lifetime().count());
   EXPECT_EQ(0, marker->Layer());
-  EXPECT_EQ(MarkerType::NONE, marker->Type());
+  EXPECT_EQ(MarkerType::MT_NONE, marker->Type());
 
   // lifetime
   std::chrono::steady_clock::duration duration{2ms};
@@ -76,10 +76,10 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   EXPECT_EQ(-2, marker->Layer());
 
   // type
-  marker->SetType(MarkerType::CYLINDER);
-  EXPECT_EQ(MarkerType::CYLINDER, marker->Type());
-  marker->SetType(MarkerType::NONE);
-  EXPECT_EQ(MarkerType::NONE, marker->Type());
+  marker->SetType(MarkerType::MT_CYLINDER);
+  EXPECT_EQ(MarkerType::MT_CYLINDER, marker->Type());
+  marker->SetType(MarkerType::MT_NONE);
+  EXPECT_EQ(MarkerType::MT_NONE, marker->Type());
 
   // Clean up
   engine->DestroyScene(scene);

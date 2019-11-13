@@ -134,6 +134,7 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
   this->dataPtr->material = derived;
 
   this->dataPtr->material->SetReceiveShadows(false);
+  this->dataPtr->material->SetCastShadows(false);
   this->dataPtr->material->SetLightingEnabled(false);
 
   switch (this->markerType)

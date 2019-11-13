@@ -83,10 +83,17 @@ void ShadowsTest::Shadows(const std::string &_renderEngine)
   light->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light);
 
+  MaterialPtr white = scene->CreateMaterial();
+  white->SetAmbient(1.0, 1.0, 1.0);
+  white->SetDiffuse(1.0, 1.0, 1.0);
+  white->SetSpecular(1.0, 1.0, 1.0);
+  white->SetCastShadows(true);
+
   // create box that casts shadows
   VisualPtr boxTop = scene->CreateVisual();
   boxTop->AddGeometry(scene->CreateBox());
   boxTop->SetLocalPosition(0.0, 0.5, 0.55);
+  boxTop->SetMaterial(white, false);
   root->AddChild(boxTop);
 
   // create green material
@@ -105,6 +112,10 @@ void ShadowsTest::Shadows(const std::string &_renderEngine)
   root->AddChild(boxBottom);
 
   Image image = camera->CreateImage();
+  unsigned int height = camera->ImageHeight();
+  unsigned int width = camera->ImageWidth();
+  unsigned int bpp = PixelUtil::BytesPerPixel(camera->ImageFormat());
+  unsigned int step = width * bpp;
 
   // verify shadows are generated for a number of images
   for (unsigned int k = 0; k < 10; ++k)
@@ -115,10 +126,6 @@ void ShadowsTest::Shadows(const std::string &_renderEngine)
 
     camera->Capture(image);
     unsigned char *data = image.Data<unsigned char>();
-    unsigned int height = camera->ImageHeight();
-    unsigned int width = camera->ImageWidth();
-    unsigned int bpp = PixelUtil::BytesPerPixel(camera->ImageFormat());
-    unsigned int step = width * bpp;
     for (unsigned int i = 0; i < height; ++i)
     {
       for (unsigned int j = 0; j < step; j+=bpp)
@@ -144,6 +151,50 @@ void ShadowsTest::Shadows(const std::string &_renderEngine)
     EXPECT_LT(shaded, unshaded);
 #endif
   }
+
+  // disable shadows and verify shades
+  white->SetCastShadows(false);
+  boxTop->SetMaterial(white);
+
+
+  // verify no shadows are generated for a number of images
+  for (unsigned int k = 0; k < 10; ++k)
+  {
+    // sum of left / right pixel values
+    unsigned left = 0;
+    unsigned right = 0;
+
+    camera->Capture(image);
+    unsigned char *data = image.Data<unsigned char>();
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < step; j+=bpp)
+      {
+        unsigned int idx = i * step + j;
+        unsigned int r = data[idx];
+        unsigned int g = data[idx+1];
+        unsigned int b = data[idx+2];
+
+        // color should be a shade of green
+        EXPECT_GT(g, r);
+        EXPECT_GT(g, b);
+
+        if (j < step /2)
+          left += r + g + b;
+        else
+          right += r + g + b;
+      }
+    }
+    // Test currently fails on macOS
+#ifndef __APPLE__
+    // left side of image should be similar to right side
+    EXPECT_NEAR(left, right, 5);
+#endif
+  }
+
+  // Clean up materials
+  scene->DestroyMaterial(white);
+  scene->DestroyMaterial(green);
 
   // Clean up
   engine->DestroyScene(scene);

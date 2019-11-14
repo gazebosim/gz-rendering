@@ -88,6 +88,8 @@ void OnNewThermalFrame(const uint16_t *_scan,
 
   // convert temperature to grayscale image
   double range = static_cast<double>(max - min);
+  if (ignition::math::equal(range, 0.0))
+    range = 1.0;
   unsigned char *data = g_image->Data<unsigned char>();
   for (unsigned int i = 0; i < _height; ++i)
   {

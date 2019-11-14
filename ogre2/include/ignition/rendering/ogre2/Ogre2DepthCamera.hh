@@ -132,11 +132,6 @@ namespace ignition
       /// \brief Create the camera.
       protected: void CreateCamera();
 
-      /// \brief Communicates that a frams was rendered
-      protected: bool newData = false;
-
-      protected: bool captureData = false;
-
       /// \brief Pointer to the ogre camera
       protected: Ogre::Camera *ogreCamera;
 
@@ -145,7 +140,6 @@ namespace ignition
       private: std::unique_ptr<Ogre2DepthCameraPrivate> dataPtr;
 
       private: friend class Ogre2Scene;
-      private: friend class Ogre2RayQuery;
     };
     }
   }

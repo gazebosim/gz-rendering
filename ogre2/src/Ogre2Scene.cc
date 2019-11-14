@@ -33,6 +33,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
 using namespace ignition;
@@ -214,6 +215,15 @@ DepthCameraPtr Ogre2Scene::CreateDepthCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
   Ogre2DepthCameraPtr camera(new Ogre2DepthCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+ThermalCameraPtr Ogre2Scene::CreateThermalCameraImpl(const unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2ThermalCameraPtr camera(new Ogre2ThermalCamera);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }

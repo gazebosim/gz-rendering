@@ -299,7 +299,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   //   texture colorTexture target_width target_height PF_R8G8B8
   //       depth_texture depth_format PF_D32_FLOAT
   //   texture depthTexture target_width target_height PF_D32_FLOAT
-  //   target depthTexture
+  //   target colorTexture
   //   {
   //     pass clear
   //     {
@@ -394,7 +394,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
           & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
     }
 
-    // rt_input target - converts depth to range
+    // rt_input target - converts depth to xyz
     Ogre::CompositorTargetDef *inputTargetDef =
         nodeDef->addTargetPass("rt_input");
     inputTargetDef->setNumPasses(2);
@@ -429,10 +429,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
   }
 
   // create render texture - these textures pack the range data
-  std::stringstream texName;
   this->dataPtr->ogreDepthTexture =
     Ogre::TextureManager::getSingleton().createManual(
-    texName.str(), "General", Ogre::TEX_TYPE_2D,
+    this->Name() + "_depth", "General", Ogre::TEX_TYPE_2D,
     this->ImageWidth(), this->ImageHeight(), 1, 0,
     Ogre::PF_FLOAT32_RGBA, Ogre::TU_RENDERTARGET,
     0, false, 0, Ogre::BLANKSTRING, false, true);

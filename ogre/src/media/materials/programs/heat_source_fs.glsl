@@ -15,12 +15,22 @@
  *
 */
 
+
+uniform vec4 inColor;
+uniform float near;
+uniform float far;
+
 varying vec4 eyePos;
 
 void main()
 {
-  gl_Position = ftransform();
-  eyePos = gl_ModelViewMatrix * gl_Vertex;
-  gl_TexCoord[0] = gl_MultiTexCoord0;
-}
+  // get depth, convert to z up
+  float d = -eyePos.z;
+  d = (d-near) / (far-near);
+  vec4 c = inColor;
+  // set y to indicate valid depth
+  c.y = 1.0;
+  c.z = d;
 
+  gl_FragColor = c;
+}

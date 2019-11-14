@@ -14,7 +14,7 @@ endif()
 find_package(OpenGL)
 
 set_property(
-  SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc OgreGpuRays.cc OgreMaterial.cc OgreDepthCamera.cc
+  SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc OgreGpuRays.cc OgreMaterial.cc OgreDepthCamera.cc OgreThermalCamera.cc
   PROPERTY COMPILE_DEFINITIONS
   IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"

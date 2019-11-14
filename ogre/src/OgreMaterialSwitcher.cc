@@ -38,10 +38,16 @@ OgreMaterialSwitcher::~OgreMaterialSwitcher()
 
 /////////////////////////////////////////////////
 Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
-    uint16_t /*_schemeIndex*/, const Ogre::String &/*_schemeName*/,
+    uint16_t /*_schemeIndex*/, const Ogre::String &_schemeName,
     Ogre::Material *_originalMaterial, uint16_t /*_lodIndex*/,
     const Ogre::Renderable *_rend)
 {
+  // selection buffer: check scheme name against the one specified in
+  // OgreSelectionBuffer::CreateRTTBuffer. Only proceed if this is a callback
+  // from the selection camera.
+  if (_schemeName != "selection")
+    return nullptr;
+
   if (!_rend || typeid(*_rend) != typeid(Ogre::SubEntity))
     return nullptr;
 

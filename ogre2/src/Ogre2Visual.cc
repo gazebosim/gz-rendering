@@ -72,6 +72,7 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
   // set user data for mouse queries
   derived->OgreObject()->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
+
   derived->OgreObject()->setName(this->Name() + "_" + _geometry->Name());
   derived->OgreObject()->setVisibilityFlags(IGN_VISIBILITY_ALL);
 

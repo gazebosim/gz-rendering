@@ -28,6 +28,12 @@
 
 ### Ignition Rendering 2.X.X (2019-XX-XX)
 
+1. Backport setting cast shadows
+    * [Pull request 210](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/210)
+
+1. Ogre2: Add more shadow maps
+    * [Pull request 203](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/203)
+
 ### Ignition Rendering 2.1.2 (2019-09-10)
 
 1. Enable gamma write on color texture in depth camera

@@ -72,15 +72,15 @@ namespace ignition
       public: virtual float LinearResolution() const override;
 
       // Documentation inherited.
-      public: virtual float HeatSourceTemperatureRange() const;
+      public: virtual float HeatSourceTemperatureRange() const override;
 
       // Documentation inherited.
-      public: virtual void SetHeatSourceTemperatureRange(float _range);
+      public: virtual void SetHeatSourceTemperatureRange(float _range) override;
 
       // Documentation inherted.
       public: virtual ignition::common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
-          unsigned int, const std::string &)>  _subscriber);
+          unsigned int, const std::string &)>  _subscriber) override;
 
       /// \brief Ambient temperature of the environment
       protected: float ambient = 0.0;

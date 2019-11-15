@@ -25,6 +25,7 @@
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
+#include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
@@ -335,11 +336,12 @@ GridPtr Ogre2Scene::CreateGridImpl(unsigned int /*_id*/,
 }
 
 //////////////////////////////////////////////////
-MarkerPtr Ogre2Scene::CreateMarkerImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+MarkerPtr Ogre2Scene::CreateMarkerImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return MarkerPtr();
+  Ogre2MarkerPtr marker(new Ogre2Marker);
+  bool result = this->InitObject(marker, _id, _name);
+  return (result) ? marker: nullptr;
 }
 
 //////////////////////////////////////////////////

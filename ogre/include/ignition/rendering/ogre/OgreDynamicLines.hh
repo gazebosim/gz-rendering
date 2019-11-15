@@ -44,7 +44,7 @@ namespace ignition
       /// \brief Constructor
       /// \param[in] _opType The type of Line
       public: explicit OgreDynamicLines(
-                  MarkerType _opType = LINE_STRIP);
+                  MarkerType _opType = MT_LINE_STRIP);
 
       /// \brief Destructor
       public: virtual ~OgreDynamicLines();

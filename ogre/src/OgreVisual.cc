@@ -60,12 +60,19 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
     return false;
   }
 
+  Ogre::MovableObject *ogreObj = derived->OgreObject();
+  if (!ogreObj)
+  {
+    ignerr << "Cannot attach a null geometry object" << std::endl;
+    return false;
+  }
+
   // set user data for mouse queries
-  derived->OgreObject()->getUserObjectBindings().setUserAny(
+  ogreObj->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
 
   derived->SetParent(this->SharedThis());
-  this->ogreNode->attachObject(derived->OgreObject());
+  this->ogreNode->attachObject(ogreObj);
   return true;
 }
 
@@ -87,6 +94,7 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
   }
 
   this->ogreNode->detachObject(derived->OgreObject());
+  derived->SetParent(nullptr);
   return true;
 }
 

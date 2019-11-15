@@ -69,15 +69,21 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  // set user data for mouse queries
-  derived->OgreObject()->getUserObjectBindings().setUserAny(
-      Ogre::Any(this->Id()));
+  Ogre::MovableObject *ogreObj = derived->OgreObject();
+  if (!ogreObj)
+  {
+    ignerr << "Cannot attach a null geometry object" << std::endl;
+    return false;
+  }
 
-  derived->OgreObject()->setName(this->Name() + "_" + _geometry->Name());
-  derived->OgreObject()->setVisibilityFlags(IGN_VISIBILITY_ALL);
+  // set user data for mouse queries
+  ogreObj->getUserObjectBindings().setUserAny(
+      Ogre::Any(this->Id()));
+  ogreObj->setName(this->Name() + "_" + _geometry->Name());
+  ogreObj->setVisibilityFlags(IGN_VISIBILITY_ALL);
 
   derived->SetParent(this->SharedThis());
-  this->ogreNode->attachObject(derived->OgreObject());
+  this->ogreNode->attachObject(ogreObj);
 
   return true;
 }

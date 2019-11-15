@@ -15,12 +15,22 @@
  *
 */
 
-varying vec4 eyePos;
 
-void main()
+compositor ThermalCamera
 {
-  gl_Position = ftransform();
-  eyePos = gl_ModelViewMatrix * gl_Vertex;
-  gl_TexCoord[0] = gl_MultiTexCoord0;
+  technique
+  {
+    target_output
+    {
+      // Start with clear output
+      input none
+      // Draw a fullscreen quad with noise
+      pass render_quad
+      {
+        // Renders a fullscreen quad with a material
+        material ThermalCamera
+      }
+    }
+  }
 }
 

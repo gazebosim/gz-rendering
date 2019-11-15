@@ -7,6 +7,7 @@ set(tests
   render_pass.cc
   shadows.cc
   scene.cc
+  thermal_camera.cc
 )
 
 link_directories(${PROJECT_BINARY_DIR}/test)

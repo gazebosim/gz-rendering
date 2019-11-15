@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
+#ifndef IGNITION_RENDERING_EXAMPLES_THERMAL_CAMERA_GLUTWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_THERMAL_CAMERA_GLUTWINDOW_HH_
 
-varying vec4 eyePos;
+#include <vector>
+#include "ignition/rendering/RenderTypes.hh"
 
-void main()
-{
-  gl_Position = ftransform();
-  eyePos = gl_ModelViewMatrix * gl_Vertex;
-  gl_TexCoord[0] = gl_MultiTexCoord0;
-}
+namespace ir = ignition::rendering;
 
+/// \brief Run the demo and render the scene from the cameras
+/// \param[in] _cameras Cameras in the scene
+void run(std::vector<ir::CameraPtr> _cameras);
+
+#endif

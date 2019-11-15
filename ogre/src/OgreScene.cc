@@ -37,6 +37,7 @@
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
+#include "ignition/rendering/ogre/OgreThermalCamera.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 
 namespace ignition
@@ -386,6 +387,15 @@ DepthCameraPtr OgreScene::CreateDepthCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
   OgreDepthCameraPtr camera(new OgreDepthCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+ThermalCameraPtr OgreScene::CreateThermalCameraImpl(const unsigned int _id,
+    const std::string &_name)
+{
+  OgreThermalCameraPtr camera(new OgreThermalCamera);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }

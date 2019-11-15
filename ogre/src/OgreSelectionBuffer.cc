@@ -153,19 +153,19 @@ void OgreSelectionBuffer::CreateRTTBuffer()
     this->dataPtr->texture->getBuffer()->getRenderTarget();
   this->dataPtr->renderTexture->setAutoUpdated(false);
   this->dataPtr->renderTexture->setPriority(0);
-  this->dataPtr->renderTexture->addViewport(this->dataPtr->selectionCamera);
-  this->dataPtr->renderTexture->getViewport(0)->setOverlaysEnabled(false);
-  this->dataPtr->renderTexture->getViewport(0)->setShadowsEnabled(false);
-  this->dataPtr->renderTexture->getViewport(0)->setClearEveryFrame(true);
+  Ogre::Viewport *vp =
+      this->dataPtr->renderTexture->addViewport(this->dataPtr->selectionCamera);
+  vp->setOverlaysEnabled(false);
+  vp->setShadowsEnabled(false);
+  vp->setClearEveryFrame(true);
   this->dataPtr->renderTexture->addListener(
       this->dataPtr->materialSwitcher.get());
-  this->dataPtr->renderTexture->getViewport(0)->setMaterialScheme("aa");
-  this->dataPtr->renderTexture->getViewport(0)->setVisibilityMask(
+  vp->setMaterialScheme("selection");
+  vp->setVisibilityMask(
       IGN_VISIBILITY_SELECTABLE);
   Ogre::HardwarePixelBufferSharedPtr pixelBuffer =
     this->dataPtr->texture->getBuffer();
   size_t bufferSize = pixelBuffer->getSizeInBytes();
-
 
   this->dataPtr->buffer = new uint8_t[bufferSize];
   this->dataPtr->pixelBox = new Ogre::PixelBox(pixelBuffer->getWidth(),

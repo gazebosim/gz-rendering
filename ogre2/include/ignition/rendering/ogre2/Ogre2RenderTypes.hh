@@ -52,6 +52,7 @@ namespace ignition
     class Ogre2Sensor;
     class Ogre2SpotLight;
     class Ogre2SubMesh;
+    class Ogre2ThermalCamera;
     class Ogre2Visual;
 
     typedef BaseGeometryStore<Ogre2Geometry>      Ogre2GeometryStore;
@@ -87,6 +88,7 @@ namespace ignition
     typedef shared_ptr<Ogre2Sensor>               Ogre2SensorPtr;
     typedef shared_ptr<Ogre2SpotLight>            Ogre2SpotLightPtr;
     typedef shared_ptr<Ogre2SubMesh>              Ogre2SubMeshPtr;
+    typedef shared_ptr<Ogre2ThermalCamera>        Ogre2ThermalCameraPtr;
     typedef shared_ptr<Ogre2Visual>               Ogre2VisualPtr;
 
     typedef shared_ptr<Ogre2GeometryStore>        Ogre2GeometryStorePtr;

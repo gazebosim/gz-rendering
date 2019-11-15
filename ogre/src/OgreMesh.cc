@@ -108,6 +108,9 @@ void OgreSubMesh::SetMaterialImpl(MaterialPtr _material)
   std::string materialName = derived->Name();
   Ogre::MaterialPtr ogreMaterial = derived->Material();
   this->ogreSubEntity->setMaterialName(materialName);
+
+  // set cast shadows
+  this->ogreSubEntity->getParent()->setCastShadows(_material->CastShadows());
 }
 
 //////////////////////////////////////////////////

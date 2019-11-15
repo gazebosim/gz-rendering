@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 2.X.X (2019-XX-XX)
 
+1. Backport setting cast shadows
+    * [Pull request 210](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/210)
+
 1. Ogre2: Add more shadow maps
     * [Pull request 203](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/203)
 

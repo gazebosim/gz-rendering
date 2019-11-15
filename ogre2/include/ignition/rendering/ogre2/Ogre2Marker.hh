@@ -15,13 +15,13 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGREMARKER_HH_
-#define IGNITION_RENDERING_OGRE_OGREMARKER_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGREMARKER_HH_
+#define IGNITION_RENDERING_OGRE2_OGREMARKER_HH_
 
 #include <memory>
 #include "ignition/rendering/base/BaseMarker.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 
 namespace ignition
 {
@@ -30,17 +30,17 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
-    class OgreMarkerPrivate;
+    class Ogre2MarkerPrivate;
 
-    /// \brief Ogre implementation of a marker geometry.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMarker
-      : public BaseMarker<OgreGeometry>
+    /// \brief Ogre 2.x implementation of a marker geometry.
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Marker
+      : public BaseMarker<Ogre2Geometry>
     {
       /// \brief Constructor
-      protected: OgreMarker();
+      protected: Ogre2Marker();
 
       /// \brief Destructor
-      public: virtual ~OgreMarker();
+      public: virtual ~Ogre2Marker();
 
       // Documentation inherited.
       public: virtual void Init() override;
@@ -82,10 +82,10 @@ namespace ignition
       private: void Create();
 
       /// \brief Marker should only be created by scene.
-      private: friend class OgreScene;
+      private: friend class Ogre2Scene;
 
       /// \brief Private data class
-      private: std::unique_ptr<OgreMarkerPrivate> dataPtr;
+      private: std::unique_ptr<Ogre2MarkerPrivate> dataPtr;
     };
     }
   }

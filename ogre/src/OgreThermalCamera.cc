@@ -79,12 +79,6 @@ class OgreThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener,
   /// This has to match the custom index specifed in ThermalHeatSource material
   /// script in media/materials/scripts/thermal_camera.material
   private: const unsigned int customParamIdx = 10u;
-
-  /// \brief Camera near plane
-  private: double near = 0;
-
-  /// \brief Camera far plane
-  private: double far = 0;
 };
 }
 }

@@ -64,7 +64,7 @@ class OgreThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener,
   private: Ogre::Technique *handleSchemeNotFound(
     uint16_t _schemeIndex, const Ogre::String &_schemeName,
     Ogre::Material *_originalMaterial, uint16_t _lodIndex,
-    const Ogre::Renderable *_rend);
+    const Ogre::Renderable *_rend) override;
 
   /// \brief Scene manager
   private: OgreScenePtr scene;

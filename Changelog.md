@@ -4,6 +4,9 @@
 
 ### Ignition Rendering 3.0.0 (20XX-XX-XX)
 
+1. Support setting cast shadows
+    * [Pull request 209](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/209)
+
 1. Add Thermal Camera
     * [Pull request 202](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/202)
 

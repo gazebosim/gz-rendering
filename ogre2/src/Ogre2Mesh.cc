@@ -112,6 +112,9 @@ void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
 
   this->ogreSubItem->setDatablock(
       static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock()));
+
+  // set cast shadows
+  this->ogreSubItem->getParent()->setCastShadows(_material->CastShadows());
 }
 
 //////////////////////////////////////////////////

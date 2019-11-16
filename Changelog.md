@@ -4,6 +4,9 @@
 
 ### Ignition Rendering 3.0.0 (20XX-XX-XX)
 
+1. Support setting cast shadows
+    * [Pull request 209](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/209)
+
 1. Add Thermal Camera
     * [Pull request 202](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/202)
 
@@ -27,6 +30,12 @@
     * [Pull request 178](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/178)
 
 ### Ignition Rendering 2.X.X (2019-XX-XX)
+
+1. Backport setting cast shadows
+    * [Pull request 210](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/210)
+
+1. Ogre2: Add more shadow maps
+    * [Pull request 203](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/203)
 
 ### Ignition Rendering 2.1.2 (2019-09-10)
 

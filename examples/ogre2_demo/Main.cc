@@ -170,8 +170,8 @@ void buildScene(ScenePtr _scene)
   // create plane visual
   VisualPtr plane = _scene->CreateVisual("plane");
   plane->AddGeometry(_scene->CreatePlane());
-  plane->SetLocalScale(5, 8, 1);
-  plane->SetLocalPosition(3, 0, -0.5);
+  plane->SetLocalScale(20, 20, 1);
+  plane->SetLocalPosition(0, 0, -0.5);
   plane->SetMaterial(white);
   root->AddChild(plane);
 
@@ -208,6 +208,36 @@ void buildScene(ScenePtr _scene)
   light3->SetDirection(1, 1, -1);
   light3->SetCastShadows(false);
   root->AddChild(light3);
+
+  // spot light test
+  int n = 3;
+  for (int i = 0; i < n; ++i)
+  {
+    for (int j = 0; j < n; ++j)
+    {
+      // create box visual
+      std::stringstream name;
+      name << "spotlight_test_" << i << j;
+      VisualPtr boxVis = _scene->CreateVisual(name.str());
+      boxVis->AddGeometry(_scene->CreateBox());
+      double x = -n + i*n -5;
+      double y = -n + j*n;
+      boxVis->SetLocalPosition(x, y, 0.0);
+      boxVis->SetLocalRotation(0, 0, 0);
+      boxVis->SetLocalScale(0.5, 0.5, 0.5);
+      boxVis->SetMaterial(green);
+      root->AddChild(boxVis);
+
+      name << "_light";
+      SpotLightPtr spotLight = _scene->CreateSpotLight(name.str());
+      spotLight->SetDiffuseColor(1.0, 1.0, 1.0);
+      spotLight->SetSpecularColor(0.2, 0.2, 0.2);
+      spotLight->SetLocalPosition(x, y, 2.0);
+      spotLight->SetDirection(0, 0, -1);
+      spotLight->SetCastShadows(true);
+      root->AddChild(spotLight);
+    }
+  }
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

@@ -29,6 +29,11 @@
 1. Added function to get the number of channels from a GpuRay.
     * [Pull request 178](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/178)
 
+1. Ogre 1.x skeletal animation changes
+    * [Pull request 184](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/184)
+    * [Pull request 199](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/199)
+    * [Pull request 204](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/204)
+
 ### Ignition Rendering 2.X.X (2019-XX-XX)
 
 1. Backport setting cast shadows

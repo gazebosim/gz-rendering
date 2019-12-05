@@ -194,6 +194,11 @@ void Ogre2RenderTarget::Render()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::UpdateBackgroundColor()
 {
+  // check if scene background color has changed
+  auto color = Ogre2Conversions::Convert(this->scene->BackgroundColor());
+  if (this->ogreBackgroundColor != color)
+    this->SetBackgroundColor(this->scene->BackgroundColor());
+
   if (this->colorDirty)
   {
     // set background color in compositor clear pass def

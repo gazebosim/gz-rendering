@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 2.X.X (2019-XX-XX)
 
+1. Fix setting ogre2 background color after cameras are created
+    * [Pull request 219](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/219)
+
 ### Ignition Rendering 2.2.0 (2019-11-20)
 
 1. Backport setting cast shadows

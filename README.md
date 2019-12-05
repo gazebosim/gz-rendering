@@ -80,44 +80,14 @@ Add OSRF packages:
 
 Install Ignition Rendering:
 
-    sudo apt install libignition-rendering-dev
+    # This installs ign-rendering3. Change the number after ign-rendering to the version you want
+    sudo apt install libignition-rendering3-dev
 
 ## Source Install
 
-There are two versions of Ign Rendering:
-
-* Version 0: Supports OGRE 1.8+ and OptiX
-* Version 1: Adds support for OGRE 2.1
-
 ### Prerequisites
 
-#### Version 0 (Requires Ubuntu Xenial 16.04 or above)
-
-Install dependencies:
-
-    sudo apt -y install wget lsb-release gnupg
-    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
-    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
-    sudo apt update
-    sudo apt install -y \
-        cmake \
-        pkg-config \
-        mercurial \
-        libglew-dev  \
-        libfreeimage-dev \
-        freeglut3-dev \
-        libxmu-dev \
-        libxi-dev \
-        libignition-cmake1-dev \
-        libignition-math5-dev \
-        libignition-common2-dev
-
-Clone source code, note you'll need the `default` branch:
-
-    hg clone http://bitbucket.org/ignitionrobotics/ign-rendering -b default
-
-#### Version 1 (Requires Ubuntu Bionic 18.04 or above)
+#### Ubuntu Bionic 18.04 or above
 
 Install dependencies:
 
@@ -142,9 +112,36 @@ Install dependencies:
         libignition-plugin-dev
     sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
 
-Clone source code, note you'll need the `gz11` branch:
+Clone source code
 
-    hg clone http://bitbucket.org/ignitionrobotics/ign-rendering -b gz11
+    # This checks out the `default` branch. You can append `-b ignition-rendering#` (replace # with a number) to checkout a specific version
+    hg clone http://bitbucket.org/ignitionrobotics/ign-rendering
+
+#### Version 0 (Legacy version for Ubuntu Xenial 16.04 or above)
+
+Install dependencies:
+
+    sudo apt -y install wget lsb-release gnupg
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
+    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+    sudo apt update
+    sudo apt install -y \
+        cmake \
+        pkg-config \
+        mercurial \
+        libglew-dev  \
+        libfreeimage-dev \
+        freeglut3-dev \
+        libxmu-dev \
+        libxi-dev \
+        libignition-cmake1-dev \
+        libignition-math5-dev \
+        libignition-common2-dev
+
+Clone source code, note you'll need the `ign-rendering0` branch:
+
+    hg clone http://bitbucket.org/ignitionrobotics/ign-rendering -b ign-rendering0
 
 
 #### Supported Rendering Engines
@@ -157,7 +154,7 @@ build the relevant plugins if dependencies are found.
     # this installs ogre 1.9. Alternatively, you can install 1.8
     sudo apt-get install libogre-1.9-dev
 
-**OGRE 2.x (supported in Version 1)**
+**OGRE 2.x (supported in Versions >= ign-rendering1)**
 
 Add OSRF packages if you have not done so already:
 
@@ -239,6 +236,10 @@ Tests can be run by building the `test` target:
     cd build
     make test
 
+To run tests specific to a render engine, set the `RENDER_ENGINE_VALUES` environment variable, e.g.
+
+    RENDER_ENGINE_VALUES=ogre2 make test
+
 # Folder Structure
 
 * `include/ignition/rendering`: Contains all the public header files which will be installed
@@ -256,7 +257,7 @@ Rendering engine plugin implementation code is stored in their own folders
 
 * `ogre` : OGRE 1.x rendering engine plugin
 
-* `ogre2` : OGRE 2.x rendering engine plugin (available in Version 1)
+* `ogre2` : OGRE 2.x rendering engine plugin (available in versions >= ign-rendering1)
 
 * `optix` : OptiX rendering engine plugin
 

@@ -80,7 +80,7 @@ Add OSRF packages:
 
 Install Ignition Rendering:
 
-    # This installs ign-rendering3. Change the number after ign-rendering to the version you want
+    # This installs ign-rendering3. Change the number after libignition-rendering to the version you want
     sudo apt install libignition-rendering3-dev
 
 ## Source Install

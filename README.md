@@ -13,7 +13,7 @@ Test coverage | [![codecov](https://codecov.io/bb/ignitionrobotics/ign-rendering
 Ubuntu Xenial | [![](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-xenial-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-xenial-amd64/)
 Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-bionic-amd64)
 Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-homebrew-amd64)
-Windows 7     | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-windows7-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-windows7-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ign_rendering-ci-win)](https://build.osrfoundation.org/job/ign_rendering-ci-win)
 
 Ignition Rendering is a C++ library designed to provide an abstraction
 for different rendering engines. It offers unified APIs for creating

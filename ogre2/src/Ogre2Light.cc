@@ -26,8 +26,6 @@
 using namespace ignition;
 using namespace rendering;
 
-static const std::string kGlobalDirLightName = "global_dir_light";
-
 //////////////////////////////////////////////////
 // Ogre2Light
 //////////////////////////////////////////////////
@@ -143,7 +141,6 @@ void Ogre2Light::Destroy()
 {
   BaseLight::Destroy();
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
-
   ogreSceneManager->destroySceneNode(this->ogreLight->getParentSceneNode());
   ogreSceneManager->destroyLight(this->ogreLight);
 }
@@ -161,10 +158,8 @@ void Ogre2Light::CreateLight()
 {
   Ogre::SceneManager *sceneManager;
   sceneManager = this->scene->OgreSceneManager();
-
   this->ogreLight = sceneManager->createLight();
   this->ogreLight->setType(this->ogreLightType);
-
   // create an intermediate scene node to hold light object otherwise
   // functions that update the light pose will affect the light direction
   this->ogreNode->createChildSceneNode()->attachObject(this->ogreLight);

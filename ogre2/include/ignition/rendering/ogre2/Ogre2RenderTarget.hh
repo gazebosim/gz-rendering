@@ -103,7 +103,6 @@ namespace ignition
 
       /// \brief Create a compositor shadow node with the same number of shadow
       /// textures as the number of shadow casting lights
-      /// \sa SetShadowsDirty
       protected: void UpdateShadowNode();
 
       /// \brief Implementation of the Rebuild function

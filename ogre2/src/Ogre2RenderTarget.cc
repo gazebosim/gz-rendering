@@ -97,7 +97,10 @@ void Ogre2RenderTarget::Copy(Image &_image) const
   void *data = _image.Data();
   Ogre::PixelFormat imageFormat = Ogre2Conversions::Convert(_image.Format());
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
-  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+//  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+  this->RenderTarget()->copyContentsToMemory(
+      Ogre::Box(0, 0, this->width, this->height),
+      ogrePixelBox);
 }
 
 //////////////////////////////////////////////////
@@ -169,7 +172,40 @@ void Ogre2RenderTarget::Render()
   this->ogreCompositorWorkspace->setEnabled(true);
   auto engine = Ogre2RenderEngine::Instance();
   engine->OgreRoot()->renderOneFrame();
+
+
+  auto n = this->ogreCompositorWorkspace->findShadowNode("PbsMaterialsShadowNode");
+  if (n)
+  {
+//    std::cerr << "shadow casting lights " << n->getShadowCastingLights().size()
+//              << " vs " << n->getNumActiveShadowCastingLights() << " vs "
+//              << n->isShadowMapIdxActive(4) <<   std::endl;
+
+//    for (auto l : n->getShadowCastingLights())
+//    {
+//      std::cerr << l.distance << " " << l.globalIndex << " " << l.isDirty << " " << l.light << std::endl;
+//    }
+//
+    auto obj = this->scene->OgreSceneManager()->findMovableObjects(Ogre::LightFactory::FACTORY_TYPE_NAME, "spot");
+    if (!obj.empty())
+    {
+//      Ogre::Light *lt = dynamic_cast<Ogre::Light *>(obj[0]);
+//      std::cerr << "spot " << (lt->getVisibilityFlags() & Ogre::VisibilityFlags::LAYER_SHADOW_CASTER) <<  std::endl;
+    }
+
+
+//    this->scene->OgreSceneManager()->buildLightList();
+//    std::cerr << this->scene->OgreSceneManager()->getGlobalLightList().lights.size() << std::endl;
+
+//    for (auto l : n->getAffectedLightsBitSet())
+//      std::cerr << l  << " " ;
+//    std::cerr << std::endl;
+  }
+
+
   this->ogreCompositorWorkspace->setEnabled(false);
+
+
 
   // The code below for manual updating render textures was suggested in ogre
   // forum but it does not seem to work
@@ -190,6 +226,11 @@ void Ogre2RenderTarget::Render()
   // }
   // engine->OgreRoot()->getRenderSystem()->_update();
 }
+
+//////////////////////////////////////////////////
+//void Ogre2RenderTarget::CreateShadowNode()
+//{
+//}
 
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::UpdateBackgroundColor()
@@ -227,7 +268,7 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
           this->ogreCompositorWorkspace->findNodeNoThrow(
           ogre2RenderPass->OgreCompositorNodeDefinitionName());
 
-      // check if we need to create the all nodes or just update the connections
+      // check if we need to create all nodes or just update the connections.
       // if node does not exist then it means it has not been added to the
       // chain yet, in which case, we need to recreate the nodes and
       // connections

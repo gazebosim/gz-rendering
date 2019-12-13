@@ -98,6 +98,9 @@ namespace ignition
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
 
+      /// \brief Create the compositor shadow node
+      // protected: virtual void CreateShadowNode();
+
       /// \brief Update the render pass chain
       protected: virtual void UpdateRenderPassChain();
 

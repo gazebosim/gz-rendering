@@ -21,6 +21,7 @@
 
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 
 #include "ignition/rendering/ogre2/Export.hh"
@@ -76,6 +77,15 @@ namespace ignition
       /// \brief Get a pointer to the ogre scene manager
       /// \return Pointer to the ogre scene manager
       public: virtual Ogre::SceneManager *OgreSceneManager() const;
+
+      /// \internal
+      /// \brief Mark shadows dirty to rebuild compostior shadow node
+      /// This is set when the number of shadow casting light changes
+      /// \param[in] _dirty True to mark shadows are dirty
+      /// \sa UpdateShadowNode
+      public: void SetShadowsDirty(bool _dirty);
+
+      // public: bool ShadowsDirty() const;
 
       // Documentation inherited
       protected: virtual bool LoadImpl() override;
@@ -209,6 +219,16 @@ namespace ignition
 
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();
+
+      /// \brief Create a compositor shadow node with the same number of shadow
+      /// textures as the number of shadow casting lights
+      /// \sa SetShadowsDirty
+      private: void UpdateShadowNode();
+
+      private: void CreateShadowNodeWithSettings(
+          Ogre::CompositorManager2 *_compositorManager,
+          const std::string &_shadowNodeName,
+          const Ogre::ShadowNodeHelper::ShadowParamVec &_shadowParams);
 
       /// \brief Root visual in the scene
       protected: Ogre2VisualPtr rootVisual;

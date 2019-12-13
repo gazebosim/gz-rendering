@@ -116,7 +116,14 @@ void Ogre2SelectionBuffer::Update()
   engine->OgreRoot()->renderOneFrame();
   this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
 
-  this->dataPtr->renderTexture->copyContentsToMemory(*this->dataPtr->pixelBox,
+//  this->dataPtr->renderTexture->copyContentsToMemory(*this->dataPtr->pixelBox,
+//      Ogre::RenderTarget::FB_FRONT);
+  this->dataPtr->renderTexture->copyContentsToMemory(
+      Ogre::Box(0,
+                0,
+                this->dataPtr->renderTexture->getWidth(),
+                this->dataPtr->renderTexture->getHeight()),
+      *this->dataPtr->pixelBox,
       Ogre::RenderTarget::FB_FRONT);
 }
 

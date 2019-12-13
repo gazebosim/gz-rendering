@@ -38,6 +38,9 @@
 using namespace ignition;
 using namespace rendering;
 
+// TODO make this a member variable
+static bool shadowsDirty = true;
+
 //////////////////////////////////////////////////
 Ogre2Scene::Ogre2Scene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name)
@@ -91,9 +94,31 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
       Ogre::Vector3::UNIT_Z);
 }
 
+
 //////////////////////////////////////////////////
 void Ogre2Scene::PreRender()
 {
+  if (shadowsDirty)
+  {
+    this->UpdateShadowNode();
+
+    // notify all render targets
+    for (unsigned int i  = 0; i < this->SensorCount(); ++i)
+    {
+      auto camera = std::dynamic_pointer_cast<Ogre2Camera>(
+          this->SensorByIndex(i));
+      if (camera)
+      {
+        Ogre2RenderTargetPtr rt =
+            std::dynamic_pointer_cast<Ogre2RenderTarget>(
+            camera->RenderTarget());
+        // hack: this marks the render target dirty and causes it to be rebuilt
+        rt->SetCamera(rt->Camera());
+      }
+    }
+    shadowsDirty = false;
+  }
+
   BaseScene::PreRender();
 }
 
@@ -417,7 +442,8 @@ void Ogre2Scene::CreateContext()
   // enable forward plus to support multiple lights
   // this is required for non-shadow-casting point lights and
   // spot lights to work
-  this->ogreSceneManager->setForwardClustered(true, 16, 8, 24, 96, 1, 500);
+//  this->ogreSceneManager->setForwardClustered(true, 16, 8, 24, 96, 1, 500);
+  this->ogreSceneManager->setForwardClustered(true, 16, 8, 24, 96,0, 1, 500);
 }
 
 //////////////////////////////////////////////////
@@ -465,4 +491,400 @@ Ogre2ScenePtr Ogre2Scene::SharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<Ogre2Scene>(sharedBase);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::SetShadowsDirty(bool _dirty)
+{
+  shadowsDirty = _dirty;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::UpdateShadowNode()
+{
+  unsigned int lightCount = 0;
+  unsigned int dirLightCount = 0;
+
+  for (unsigned int i = 0; i < this->LightCount(); ++i)
+  {
+    LightPtr light = this->LightByIndex(i);
+    if (light->CastShadows())
+    {
+      if (std::dynamic_pointer_cast<DirectionalLight>(light))
+        dirLightCount++;
+      else
+        lightCount++;
+    }
+  }
+
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::CompositorManager2 *compositorManager =
+      engine->OgreRoot()->getCompositorManager2();
+
+  Ogre::ShadowNodeHelper::ShadowParamVec shadowParams;
+
+  Ogre::ShadowNodeHelper::ShadowParam shadowParam;
+//  memset(&shadowParam, 0, sizeof(shadowParam));
+
+  // directional lights
+  unsigned int atlasId = 0u;
+  unsigned int texSize = 2048u;
+  unsigned int halfTexSize = texSize * 0.5;
+  for (unsigned int i = 0; i < dirLightCount; ++i)
+  {
+    shadowParam.technique = Ogre::SHADOWMAP_PSSM;
+    shadowParam.atlasId = atlasId;
+    shadowParam.numPssmSplits = 3u;
+    shadowParam.resolution[0].x = texSize;
+    shadowParam.resolution[0].y = texSize;
+    shadowParam.resolution[1].x = halfTexSize;
+    shadowParam.resolution[1].y = halfTexSize;
+    shadowParam.resolution[2].x = halfTexSize;
+    shadowParam.resolution[2].y = halfTexSize;
+    shadowParam.atlasStart[0].x = 0u;
+    shadowParam.atlasStart[0].y = 0u;
+    shadowParam.atlasStart[1].x = 0u;
+    shadowParam.atlasStart[1].y = texSize;
+    shadowParam.atlasStart[2].x = halfTexSize;
+    shadowParam.atlasStart[2].y = texSize;
+    shadowParam.supportedLightTypes = 0u;
+    shadowParam.addLightType(Ogre::Light::LT_DIRECTIONAL);
+    shadowParams.push_back(shadowParam);
+    // atlasId += shadowParam.numPssmSplits;
+    atlasId += 1u;
+  }
+
+  // others
+  unsigned int maxTexSize = 8192u;
+  unsigned int rowIdx = 0;
+  unsigned int colIdx = 0;
+  unsigned int rowSize = maxTexSize / texSize;
+  unsigned int colSize = rowSize;
+  for (unsigned int i = 0; i < lightCount; ++ i)
+  {
+    shadowParam.technique = Ogre::SHADOWMAP_FOCUSED;
+    shadowParam.atlasId = atlasId;
+    shadowParam.resolution[0].x = texSize;
+    shadowParam.resolution[0].y = texSize;
+    shadowParam.atlasStart[0].x = colIdx * texSize;
+    shadowParam.atlasStart[0].y = rowIdx * texSize;
+    std::cerr << " atlas id " << atlasId << std::endl;
+
+    shadowParam.supportedLightTypes = 0u;
+//    shadowParam.addLightType(Ogre::Light::LT_DIRECTIONAL);
+    shadowParam.addLightType(Ogre::Light::LT_POINT);
+    shadowParam.addLightType(Ogre::Light::LT_SPOTLIGHT);
+    shadowParams.push_back(shadowParam);
+
+    colIdx++;
+    colIdx = colIdx % colSize;
+    if (colIdx == 0u)
+      rowIdx++;
+
+     // check if we've filled the current texture atlas
+    // if so, increment atlas id to indicate we want a new texture
+    if (rowIdx >= rowSize)
+    {
+      atlasId++;
+      colIdx = 0;
+      rowIdx = 0;
+    }
+  }
+
+  std::string shadowNodeDefName = "PbsMaterialsShadowNode";
+  if (compositorManager->hasShadowNodeDefinition(shadowNodeDefName))
+    compositorManager->removeShadowNodeDefinition(shadowNodeDefName);
+
+  std::cerr << "shadow param size " << shadowParams.size() << " vs scene light count "
+            << this->LightCount() << " vs lightCount " << lightCount <<  std::endl;
+
+//  Ogre::RenderSystem *renderSystem = engine->OgreRoot()->getRenderSystem();
+//  Ogre::ShadowNodeHelper::createShadowNodeWithSettings(compositorManager,
+//      renderSystem->getCapabilities(), shadowNodeDefName,
+//      shadowParams, false);
+  this->CreateShadowNodeWithSettings(compositorManager, shadowNodeDefName,
+      shadowParams);
+}
+
+////////////////////////////////////////////////////
+void Ogre2Scene::CreateShadowNodeWithSettings(
+    Ogre::CompositorManager2 *_compositorManager,
+    const std::string &_shadowNodeName,
+    const Ogre::ShadowNodeHelper::ShadowParamVec &_shadowParams)
+{
+  Ogre::uint32 pointLightCubemapResolution = 1024u;
+  Ogre::Real pssmLambda = 0.95f;
+  Ogre::Real splitPadding = 1.0f;
+  Ogre::Real splitBlend = 0.125f;
+  Ogre::Real splitFade = 0.313f;
+
+  const Ogre::uint32 spotMask           = 1u << Ogre::Light::LT_SPOTLIGHT;
+  const Ogre::uint32 directionalMask    = 1u << Ogre::Light::LT_DIRECTIONAL;
+  const Ogre::uint32 pointMask          = 1u << Ogre::Light::LT_POINT;
+  const Ogre::uint32 spotAndDirMask = spotMask | directionalMask;
+
+  typedef Ogre::vector<Ogre::ShadowNodeHelper::Resolution>::type ResolutionVec;
+
+  size_t numExtraShadowMapsForPssmSplits = 0;
+  size_t numTargetPasses = 0;
+  ResolutionVec atlasResolutions;
+
+  // Validation and data gathering
+  bool hasPointLights = false;
+
+  Ogre::ShadowNodeHelper::ShadowParamVec::const_iterator itor =
+      _shadowParams.begin();
+  Ogre::ShadowNodeHelper::ShadowParamVec::const_iterator end =
+      _shadowParams.end();
+
+  while (itor != end)
+  {
+    if (itor->technique == Ogre::SHADOWMAP_PSSM)
+    {
+      numExtraShadowMapsForPssmSplits = itor->numPssmSplits - 1u;
+      // 1 per PSSM split
+      numTargetPasses += numExtraShadowMapsForPssmSplits + 1u;
+    }
+
+    if (itor->atlasId >= atlasResolutions.size())
+      atlasResolutions.resize( itor->atlasId + 1u);
+
+    Ogre::ShadowNodeHelper::Resolution &resolution =
+        atlasResolutions[itor->atlasId];
+
+    const size_t numSplits = itor->technique == Ogre::SHADOWMAP_PSSM ?
+        itor->numPssmSplits : 1u;
+    for (size_t i=0; i<numSplits; ++i)
+    {
+      resolution.x = std::max(resolution.x,
+          itor->atlasStart[i].x + itor->resolution[i].x);
+      resolution.y = std::max(resolution.y,
+          itor->atlasStart[i].y + itor->resolution[i].y);
+    }
+
+    if (itor->supportedLightTypes & pointMask)
+    {
+      hasPointLights = true;
+      // 6 target passes per cubemap + 1 for copy
+      numTargetPasses += 7u;
+    }
+    if (itor->supportedLightTypes & spotAndDirMask &&
+         itor->technique != Ogre::SHADOWMAP_PSSM )
+    {
+      // 1 per directional/spot light (for non-PSSM techniques)
+      numTargetPasses += 1u;
+    }
+    ++itor;
+  }
+
+  // One clear for each atlas
+  numTargetPasses += atlasResolutions.size();
+  // Create the shadow node definition
+  Ogre::CompositorShadowNodeDef *shadowNodeDef =
+          _compositorManager->addShadowNodeDefinition(_shadowNodeName);
+
+  const size_t numTextures = atlasResolutions.size();
+  {
+    // Define the atlases (textures)
+    shadowNodeDef->setNumLocalTextureDefinitions(
+        numTextures + (hasPointLights ? 1u : 0u));
+    for (size_t i=0; i<numTextures; ++i)
+    {
+      const Ogre::ShadowNodeHelper::Resolution &atlasRes = atlasResolutions[i];
+      Ogre::TextureDefinitionBase::TextureDefinition *texDef =
+          shadowNodeDef->addTextureDefinition(
+          "atlas" + Ogre::StringConverter::toString(i));
+
+      texDef->width = std::max(atlasRes.x, 1u);
+      texDef->height = std::max(atlasRes.y, 1u);
+      std::cerr << " add atlas " << texDef->width << " " << texDef->height << std::endl;
+      texDef->formatList.push_back(Ogre::PF_D32_FLOAT);
+      texDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
+      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+      texDef->preferDepthTexture = false;
+      texDef->fsaa = false;
+    }
+
+    // Define the cubemap needed by point lights
+    if (hasPointLights)
+    {
+      Ogre::TextureDefinitionBase::TextureDefinition *texDef =
+          shadowNodeDef->addTextureDefinition("tmpCubemap");
+
+      texDef->width   = pointLightCubemapResolution;
+      texDef->height  = pointLightCubemapResolution;
+      texDef->depth   = 6u;
+      texDef->textureType = Ogre::TEX_TYPE_CUBE_MAP;
+      texDef->formatList.push_back(Ogre::PF_FLOAT32_R);
+      texDef->depthBufferId = 1u;
+      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+      texDef->preferDepthTexture = false;
+      texDef->fsaa = false;
+    }
+  }
+
+  // Create the shadow maps
+  const size_t numShadowMaps =
+      _shadowParams.size() + numExtraShadowMapsForPssmSplits;
+  shadowNodeDef->setNumShadowTextureDefinitions(numShadowMaps);
+
+  itor = _shadowParams.begin();
+
+  while (itor != end)
+  {
+    const size_t lightIdx = itor - _shadowParams.begin();
+    const Ogre::ShadowNodeHelper::ShadowParam &shadowParam = *itor;
+
+    const Ogre::ShadowNodeHelper::Resolution &texResolution =
+        atlasResolutions[shadowParam.atlasId];
+
+    const size_t numSplits =
+        shadowParam.technique == Ogre::SHADOWMAP_PSSM ?
+        shadowParam.numPssmSplits : 1u;
+
+    for (size_t j=0; j<numSplits; ++j)
+    {
+      Ogre::Vector2 uvOffset(
+          shadowParam.atlasStart[j].x, shadowParam.atlasStart[j].y);
+      Ogre::Vector2 uvLength(
+          shadowParam.resolution[j].x, shadowParam.resolution[j].y);
+
+      uvOffset /= Ogre::Vector2(texResolution.x, texResolution.y);
+      uvLength /= Ogre::Vector2(texResolution.x, texResolution.y);
+
+      const Ogre::String texName =
+          "atlas" + Ogre::StringConverter::toString(shadowParam.atlasId);
+
+      Ogre::ShadowTextureDefinition *shadowTexDef =
+          shadowNodeDef->addShadowTextureDefinition( lightIdx, j, texName,
+          0, uvOffset, uvLength, 0);
+      shadowTexDef->shadowMapTechnique = shadowParam.technique;
+      shadowTexDef->pssmLambda = pssmLambda;
+      shadowTexDef->splitPadding = splitPadding;
+      shadowTexDef->splitBlend = splitBlend;
+      shadowTexDef->splitFade = splitFade;
+      shadowTexDef->numSplits = numSplits;
+      std::cerr << "shadow_map " << lightIdx << " " << j << " " << texName << " " << uvOffset << " : " << uvLength << std::endl;
+    }
+    ++itor;
+  }
+
+  shadowNodeDef->setNumTargetPass(numTargetPasses);
+
+  // Create the passes for each atlas
+  for (size_t atlasId=0; atlasId<numTextures; ++atlasId)
+  {
+    const Ogre::String texName =
+        "atlas" + Ogre::StringConverter::toString(atlasId);
+    {
+      //Atlas clear pass
+      Ogre::CompositorTargetDef *targetDef =
+          shadowNodeDef->addTargetPass(texName);
+      targetDef->setNumPasses(1u);
+
+      Ogre::CompositorPassDef *passDef = targetDef->addPass(Ogre::PASS_CLEAR);
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(passDef);
+      passClear->mColourValue = Ogre::ColourValue::White;
+      passClear->mDepthValue = 1.0f;
+    }
+
+    //Pass scene for directional and spot lights first
+    size_t shadowMapIdx = 0;
+    itor = _shadowParams.begin();
+    while (itor != end)
+    {
+      const Ogre::ShadowNodeHelper::ShadowParam &shadowParam = *itor;
+      std::cerr << "atlasId " << Ogre::StringConverter::toString(shadowParam.atlasId) << std::endl;
+      const size_t numSplits = shadowParam.technique == Ogre::SHADOWMAP_PSSM ?
+          shadowParam.numPssmSplits : 1u;
+      if (shadowParam.atlasId == atlasId &&
+          shadowParam.supportedLightTypes & spotAndDirMask)
+      {
+        size_t currentShadowMapIdx = shadowMapIdx;
+        for (size_t i=0; i<numSplits; ++i)
+        {
+          Ogre::CompositorTargetDef *targetDef =
+              shadowNodeDef->addTargetPass(texName);
+          targetDef->setShadowMapSupportedLightTypes(
+              shadowParam.supportedLightTypes & spotAndDirMask);
+          targetDef->setNumPasses( 1u );
+
+          Ogre::CompositorPassDef *passDef =
+              targetDef->addPass(Ogre::PASS_SCENE);
+          Ogre::CompositorPassSceneDef *passScene =
+              static_cast<Ogre::CompositorPassSceneDef *>(passDef);
+
+          passScene->mShadowMapIdx = currentShadowMapIdx + i;
+          passScene->mIncludeOverlays = false;
+
+          std::cerr << "shadow map pass " << texName << " " << shadowMapIdx << std::endl;
+          // ++shadowMapIdx;
+        }
+      }
+      shadowMapIdx += numSplits;
+      ++itor;
+    }
+
+    // Pass scene for point lights last
+    shadowMapIdx = 0;
+    itor = _shadowParams.begin();
+    while (itor != end)
+    {
+      const Ogre::ShadowNodeHelper::ShadowParam &shadowParam = *itor;
+      if (shadowParam.atlasId == atlasId &&
+          shadowParam.supportedLightTypes & pointMask)
+      {
+        // Render to cubemap, each face clear + render
+        for( Ogre::uint32 i=0; i<6u; ++i)
+        {
+          Ogre::CompositorTargetDef *targetDef =
+              shadowNodeDef->addTargetPass( "tmpCubemap", i);
+          targetDef->setNumPasses(2u);
+          targetDef->setShadowMapSupportedLightTypes(
+              shadowParam.supportedLightTypes & pointMask);
+          {
+            // Clear pass
+            Ogre::CompositorPassDef *passDef =
+                targetDef->addPass(Ogre::PASS_CLEAR);
+            Ogre::CompositorPassClearDef *passClear =
+                static_cast<Ogre::CompositorPassClearDef *>(passDef);
+            passClear->mColourValue = Ogre::ColourValue::White;
+            passClear->mDepthValue = 1.0f;
+            passClear->mShadowMapIdx = shadowMapIdx;
+          }
+
+          {
+            // Scene pass
+            Ogre::CompositorPassDef *passDef =
+                targetDef->addPass(Ogre::PASS_SCENE);
+            Ogre::CompositorPassSceneDef *passScene =
+                static_cast<Ogre::CompositorPassSceneDef *>(passDef);
+            passScene->mCameraCubemapReorient = true;
+            passScene->mShadowMapIdx = shadowMapIdx;
+            passScene->mIncludeOverlays = false;
+          }
+        }
+
+        // Copy to the atlas using a pass quad
+        // (Cubemap -> DPSM / Dual Paraboloid).
+        Ogre::CompositorTargetDef *targetDef =
+            shadowNodeDef->addTargetPass(texName);
+        targetDef->setShadowMapSupportedLightTypes(
+            shadowParam.supportedLightTypes & pointMask);
+        targetDef->setNumPasses(1u);
+        Ogre::CompositorPassDef *passDef = targetDef->addPass(Ogre::PASS_QUAD);
+        Ogre::CompositorPassQuadDef *passQuad =
+            static_cast<Ogre::CompositorPassQuadDef *>(passDef);
+        passQuad->mMaterialIsHlms = false;
+        passQuad->mMaterialName = "Ogre/DPSM/CubeToDpsm";
+        passQuad->addQuadTextureSource(0, "tmpCubemap", 0);
+        passQuad->mShadowMapIdx = shadowMapIdx;
+      }
+      const size_t numSplits = shadowParam.technique ==
+          Ogre::SHADOWMAP_PSSM ? shadowParam.numPssmSplits : 1u;
+      shadowMapIdx += numSplits;
+      ++itor;
+    }
+  }
 }

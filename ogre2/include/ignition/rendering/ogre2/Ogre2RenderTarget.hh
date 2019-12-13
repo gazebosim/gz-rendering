@@ -101,6 +101,11 @@ namespace ignition
       /// \brief Update the render pass chain
       protected: virtual void UpdateRenderPassChain();
 
+      /// \brief Create a compositor shadow node with the same number of shadow
+      /// textures as the number of shadow casting lights
+      /// \sa SetShadowsDirty
+      protected: void UpdateShadowNode();
+
       /// \brief Implementation of the Rebuild function
       protected: virtual void RebuildImpl() override;
 
@@ -121,6 +126,20 @@ namespace ignition
       /// \sa Ogre2RenderTarget::RebuildImpl()
       /// \sa BaseRenderTarget::Rebuild()
       protected: void RebuildMaterial();
+
+      /// \brief Create ogre compositor shadow node definition. This function
+      /// is similar to Ogre::ShadowNodeHelper::createShadowNodeWithSettings
+      /// but fixes a problem with the shadow map index when directional and
+      /// spot light shadow textures are defined on two different texture
+      /// aliases.
+      /// \param[in] _compositorManager ogre compositor manager
+      /// \param[in] _shadowNodeName Name of the shadow node definition
+      /// \param[in] _shadowParams Parameters containing the shadow type,
+      /// texure position and resolution on the atlas
+      private: void CreateShadowNodeWithSettings(
+          Ogre::CompositorManager2 *_compositorManager,
+          const std::string &_shadowNodeName,
+          const Ogre::ShadowNodeHelper::ShadowParamVec &_shadowParams);
 
       /// \brief Pointer to the internal ogre camera
       protected: Ogre::Camera *ogreCamera = nullptr;

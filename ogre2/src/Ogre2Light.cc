@@ -144,25 +144,6 @@ void Ogre2Light::Destroy()
   BaseLight::Destroy();
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
 
-//  {
-//    // If light is global directional light, detach it but do not destroy it
-//    // see comments in CreateLight()
-//    if (this->ogreLight->getName() == kGlobalDirLightName)
-//    {
-//      Ogre::SceneNode *parentNode = this->ogreLight->getParentSceneNode();
-//      this->ogreLight->detachFromParent();
-//      ogreSceneManager->destroySceneNode(parentNode);
-//      Ogre::SceneNode *lightNode =
-//          ogreSceneManager->getRootSceneNode()->createChildSceneNode();
-//      lightNode->setName(kGlobalDirLightName);
-//      lightNode->attachObject(this->ogreLight);
-//      this->ogreLight->setPowerScale(0.0);
-//      this->ogreLight->setVisible(false);
-//      this->ogreLight = nullptr;
-//      return;
-//    }
-//  }
-
   ogreSceneManager->destroySceneNode(this->ogreLight->getParentSceneNode());
   ogreSceneManager->destroyLight(this->ogreLight);
 }
@@ -181,53 +162,7 @@ void Ogre2Light::CreateLight()
   Ogre::SceneManager *sceneManager;
   sceneManager = this->scene->OgreSceneManager();
 
-//  {
-//    // The code here is added to work around an edge case in which
-//    // shadows do not work properly for non-directional lights.
-//    // The issue happens when there are
-//    // 1) no shadow-casting directional lights, and
-//    // 2) more lights in the scene than the number of shaow maps specified in
-//    //    the compositor, see PbsMaterialsShadowNode in
-//    //    ogre2/src/media/2.0/scripts/Compositors/PbsMaterials.compositor
-//    // Apparently, having a shadow-casting directional light in the
-//    // scene resolves the issue. So the workaround is to create a global
-//    // directional light before any lights are created. The light's power scale
-//    // is initially set to 0 so it does affect the scene. The first time a user
-//    // requests a directional light, this global directional light is returned
-//    // and its power scale is restored.
-//    Ogre::Light *dirLight = nullptr;
-//    auto lightMovableObjs = sceneManager->findMovableObjects(
-//        Ogre::LightFactory::FACTORY_TYPE_NAME, kGlobalDirLightName);
-//    if (!lightMovableObjs.empty())
-//      dirLight = dynamic_cast<Ogre::Light *>(lightMovableObjs[0]);
-//    // create the global directional light if it does not exist
-//    if (!dirLight)
-//    {
-//      dirLight = sceneManager->createLight();
-//      dirLight->setName(kGlobalDirLightName);
-//      dirLight->setType(Ogre::Light::LT_DIRECTIONAL);
-//      dirLight->setPowerScale(0.0);
-//      dirLight->setVisible(false);
-//      dirLight->setCastShadows(true);
-//      Ogre::SceneNode *rootNode = sceneManager->getRootSceneNode();
-//      Ogre::SceneNode *lightNode = rootNode->createChildSceneNode();
-//      lightNode->setName(kGlobalDirLightName);
-//      lightNode->attachObject(dirLight);
-//    }
-//    // return the global directional light if requested type is directional
-//    if (this->ogreLightType == Ogre::Light::LT_DIRECTIONAL &&
-//        dirLight->getParentSceneNode()->getName() == kGlobalDirLightName)
-//    {
-//      Ogre::SceneNode *parentNode = dirLight->getParentSceneNode();
-//      parentNode->detachObject(dirLight);
-//      sceneManager->destroySceneNode(parentNode);
-//      dirLight->setVisible(true);
-//      this->ogreLight = dirLight;
-//    }
-//  }
-//
-//  if (!this->ogreLight)
-    this->ogreLight = sceneManager->createLight();
+  this->ogreLight = sceneManager->createLight();
   this->ogreLight->setType(this->ogreLightType);
 
   // create an intermediate scene node to hold light object otherwise

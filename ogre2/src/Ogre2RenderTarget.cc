@@ -388,7 +388,7 @@ void Ogre2RenderTarget::UpdateShadowNode()
     if (colIdx == 0u)
       rowIdx++;
 
-     // check if we've filled the current texture atlas
+    // check if we've filled the current texture atlas
     // if so, increment atlas id to indicate we want a new texture
     if (rowIdx >= rowSize)
     {
@@ -401,11 +401,6 @@ void Ogre2RenderTarget::UpdateShadowNode()
   std::string shadowNodeDefName = "PbsMaterialsShadowNode";
   if (compositorManager->hasShadowNodeDefinition(shadowNodeDefName))
     compositorManager->removeShadowNodeDefinition(shadowNodeDefName);
-
-//  Ogre::RenderSystem *renderSystem = engine->OgreRoot()->getRenderSystem();
-//  Ogre::ShadowNodeHelper::createShadowNodeWithSettings(compositorManager,
-//      renderSystem->getCapabilities(), shadowNodeDefName,
-//      shadowParams, false);
 
   this->CreateShadowNodeWithSettings(compositorManager, shadowNodeDefName,
       shadowParams);
@@ -476,7 +471,7 @@ void Ogre2RenderTarget::CreateShadowNodeWithSettings(
       numTargetPasses += 7u;
     }
     if (itor->supportedLightTypes & spotAndDirMask &&
-         itor->technique != Ogre::SHADOWMAP_PSSM )
+        itor->technique != Ogre::SHADOWMAP_PSSM)
     {
       // 1 per directional/spot light (for non-PSSM techniques)
       numTargetPasses += 1u;
@@ -488,7 +483,7 @@ void Ogre2RenderTarget::CreateShadowNodeWithSettings(
   numTargetPasses += atlasResolutions.size();
   // Create the shadow node definition
   Ogre::CompositorShadowNodeDef *shadowNodeDef =
-          _compositorManager->addShadowNodeDefinition(_shadowNodeName);
+      _compositorManager->addShadowNodeDefinition(_shadowNodeName);
 
   const size_t numTextures = atlasResolutions.size();
   {

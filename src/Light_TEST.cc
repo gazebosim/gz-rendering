@@ -132,6 +132,16 @@ void LightTest::Light(const std::string &_renderEngine)
   scene->DestroyLight(spotLight);
   EXPECT_EQ(0u, scene->LightCount());
 
+  // Verify we can repeatedly create and remove lights
+  for (unsigned i = 0; i < 5u; ++i)
+  {
+    DirectionalLightPtr lightx = scene->CreateDirectionalLight();
+    EXPECT_TRUE(lightx != nullptr);
+    EXPECT_EQ(1u, scene->LightCount());
+    scene->DestroyLight(lightx);
+    EXPECT_EQ(0u, scene->LightCount());
+  }
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

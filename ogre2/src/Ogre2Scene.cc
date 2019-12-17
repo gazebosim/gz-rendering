@@ -38,6 +38,9 @@
 using namespace ignition;
 using namespace rendering;
 
+// TODO(anyone) make this a member variable in ign-rendering4
+static bool shadowsDirty = true;
+
 //////////////////////////////////////////////////
 Ogre2Scene::Ogre2Scene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name)
@@ -91,9 +94,28 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
       Ogre::Vector3::UNIT_Z);
 }
 
+
 //////////////////////////////////////////////////
 void Ogre2Scene::PreRender()
 {
+  if (this->ShadowsDirty())
+  {
+    // notify all render targets
+    for (unsigned int i  = 0; i < this->SensorCount(); ++i)
+    {
+      auto camera = std::dynamic_pointer_cast<Ogre2Camera>(
+          this->SensorByIndex(i));
+      if (camera)
+      {
+        Ogre2RenderTargetPtr rt =
+            std::dynamic_pointer_cast<Ogre2RenderTarget>(
+            camera->RenderTarget());
+        // hack: this marks the render target dirty and causes it to be rebuilt
+        rt->SetCamera(rt->Camera());
+      }
+    }
+  }
+
   BaseScene::PreRender();
 }
 
@@ -465,4 +487,16 @@ Ogre2ScenePtr Ogre2Scene::SharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<Ogre2Scene>(sharedBase);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::SetShadowsDirty(bool _dirty)
+{
+  shadowsDirty = _dirty;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Scene::ShadowsDirty() const
+{
+  return shadowsDirty;
 }

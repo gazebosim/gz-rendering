@@ -38,7 +38,7 @@
 using namespace ignition;
 using namespace rendering;
 
-// TODO(anyone) make this a member variable
+// TODO(anyone) make this a member variable in ign-rendering4
 static bool shadowsDirty = true;
 
 //////////////////////////////////////////////////

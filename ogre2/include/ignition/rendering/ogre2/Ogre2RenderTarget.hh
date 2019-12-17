@@ -126,15 +126,19 @@ namespace ignition
       /// \sa BaseRenderTarget::Rebuild()
       protected: void RebuildMaterial();
 
-      /// \brief Create ogre compositor shadow node definition. This function
-      /// is similar to Ogre::ShadowNodeHelper::createShadowNodeWithSettings
-      /// but fixes a problem with the shadow map index when directional and
-      /// spot light shadow textures are defined on two different texture
-      /// aliases.
+      /// \brief Create ogre compositor shadow node definition. The function
+      /// takes a vector of parameters that describe the type, number, and
+      /// resolution of textures create. Note that it is not necessary to
+      /// create separate textures for each shadow map. It is more efficient to
+      /// define a large texture atlas which is composed of multiple shadow
+      /// maps each occupying a subspace within the texture. This function is
+      /// similar to Ogre::ShadowNodeHelper::createShadowNodeWithSettings but
+      /// fixes a problem with the shadow map index when directional and spot
+      /// light shadow textures are defined on two different texture atlases.
       /// \param[in] _compositorManager ogre compositor manager
       /// \param[in] _shadowNodeName Name of the shadow node definition
       /// \param[in] _shadowParams Parameters containing the shadow type,
-      /// texure position and resolution on the atlas
+      /// texure resolution and position on the texture atlas.
       private: void CreateShadowNodeWithSettings(
           Ogre::CompositorManager2 *_compositorManager,
           const std::string &_shadowNodeName,

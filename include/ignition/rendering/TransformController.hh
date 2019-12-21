@@ -97,6 +97,14 @@ namespace ignition
       /// \return Active axis of transform
       public: virtual math::Vector3d ActiveAxis() const;
 
+      public: virtual void SetXYZSnap(const math::Vector3d &_xyzSnap);
+      
+      public: virtual math::Vector3d XYZSnap() const;
+
+      public: virtual void SetRPYSnap(const math::Vector3d &_rpySnap);
+      
+      public: virtual math::Vector3d RPYSnap() const;
+
       /// \brief Get the axis of transform represented by the given node id
       /// \param[in] _id Id of the node to check
       /// \return Transform axis

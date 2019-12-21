@@ -60,6 +60,10 @@ class ignition::rendering::TransformControllerPrivate
   /// \brief Initial scale of the node being transformed.
   /// This is set in Start();
   public: ignition::math::Vector3d nodeStartScale;
+
+  public: ignition::math::Vector3d xyzSnap = ignition::math::Vector3d::Zero;
+
+  public: ignition::math::Vector3d rpySnap = ignition::math::Vector3d::Zero;
 };
 
 using namespace ignition;
@@ -224,6 +228,30 @@ math::Vector3d TransformController::ActiveAxis() const
 void TransformController::SetActiveAxis(const math::Vector3d &_axis)
 {
   this->dataPtr->axis = _axis;
+}
+
+//////////////////////////////////////////////////
+void TransformController::SetXYZSnap(const math::Vector3d &_xyzSnap)
+{
+  this->dataPtr->xyzSnap = _xyzSnap;
+}
+
+//////////////////////////////////////////////////
+math::Vector3d TransformController::XYZSnap() const
+{
+  return this->dataPtr->xyzSnap;
+}
+
+//////////////////////////////////////////////////
+void TransformController::SetRPYSnap(const math::Vector3d &_rpySnap)
+{
+  this->dataPtr->rpySnap = _rpySnap;
+}
+
+//////////////////////////////////////////////////
+math::Vector3d TransformController::RPYSnap() const
+{
+  return this->dataPtr->rpySnap;
 }
 
 //////////////////////////////////////////////////

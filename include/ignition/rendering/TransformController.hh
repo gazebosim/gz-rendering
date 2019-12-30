@@ -97,12 +97,20 @@ namespace ignition
       /// \return Active axis of transform
       public: virtual math::Vector3d ActiveAxis() const;
 
+      /// \brief Set the current XYZ snapping values.
+      /// \param[in] _xyzSnap The xyz snapping values
       public: virtual void SetXYZSnap(const math::Vector3d &_xyzSnap);
 
+      /// \brief Get the current XYZ snapping values.
+      /// \return XYZ snapping values as Vector3d
       public: virtual math::Vector3d XYZSnap() const;
 
+      /// \brief Set the current RPY snapping values.
+      /// \param[in] _rpySnap The rpy snapping values
       public: virtual void SetRPYSnap(const math::Vector3d &_rpySnap);
 
+      /// \brief Get the current RPY snapping values.
+      /// \return RPY snapping values as Vector3d
       public: virtual math::Vector3d RPYSnap() const;
 
       /// \brief Get the axis of transform represented by the given node id

@@ -61,8 +61,10 @@ class ignition::rendering::TransformControllerPrivate
   /// This is set in Start();
   public: ignition::math::Vector3d nodeStartScale;
 
+  /// \brief The xyz values by which to snap the object.
   public: ignition::math::Vector3d xyzSnap = ignition::math::Vector3d::Zero;
 
+  /// \brief The rpy values by which to snap the object.
   public: ignition::math::Vector3d rpySnap = ignition::math::Vector3d::Zero;
 };
 

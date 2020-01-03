@@ -107,11 +107,18 @@ void Ogre2Scene::PreRender()
           this->SensorByIndex(i));
       if (camera)
       {
-        Ogre2RenderTargetPtr rt =
-            std::dynamic_pointer_cast<Ogre2RenderTarget>(
+        Ogre2RenderTexturePtr rt =
+            std::dynamic_pointer_cast<Ogre2RenderTexture>(
             camera->RenderTarget());
-        // hack: this marks the render target dirty and causes it to be rebuilt
-        rt->SetCamera(rt->Camera());
+        if (rt)
+        {
+          // need to destroy compositor resources first before the render target
+          // builds the new shadow node
+          rt->DestroyCompositor();
+          // hack: this marks the render target dirty and causes it to be
+          // rebuilt
+          rt->SetCamera(rt->Camera());
+        }
       }
     }
   }

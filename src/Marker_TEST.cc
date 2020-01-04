@@ -81,6 +81,30 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   marker->SetType(MarkerType::MT_NONE);
   EXPECT_EQ(MarkerType::MT_NONE, marker->Type());
 
+  marker->SetType(MarkerType::MT_POINTS);
+  EXPECT_EQ(MarkerType::MT_POINTS, marker->Type());
+
+  marker->SetType(MarkerType::MT_LINE_STRIP);
+  EXPECT_EQ(MarkerType::MT_LINE_STRIP, marker->Type());
+
+  marker->SetType(MarkerType::MT_LINE_LIST);
+  EXPECT_EQ(MarkerType::MT_LINE_LIST, marker->Type());
+
+  marker->SetType(MarkerType::MT_TRIANGLE_STRIP);
+  EXPECT_EQ(MarkerType::MT_TRIANGLE_STRIP, marker->Type());
+
+  marker->SetType(MarkerType::MT_TRIANGLE_LIST);
+  EXPECT_EQ(MarkerType::MT_TRIANGLE_LIST, marker->Type());
+
+  marker->SetType(MarkerType::MT_TRIANGLE_FAN);
+  EXPECT_EQ(MarkerType::MT_TRIANGLE_FAN, marker->Type());
+
+  // exercise point api
+  EXPECT_NO_THROW(marker->AddPoint(math::Vector3d(0, 1, 2),
+      math::Color::White));
+  EXPECT_NO_THROW(marker->SetPoint(0, math::Vector3d(3, 1, 2)));
+  EXPECT_NO_THROW(marker->ClearPoints());
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

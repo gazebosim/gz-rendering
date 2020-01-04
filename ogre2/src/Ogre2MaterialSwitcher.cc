@@ -117,7 +117,9 @@ void Ogre2MaterialSwitcher::postRenderTargetUpdate(
     for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
     {
       Ogre::SubItem *subItem = item->getSubItem(i);
-      subItem->setDatablock(this->datablockMap[subItem]);
+      auto it = this->datablockMap.find(subItem);
+      if (it != this->datablockMap.end())
+        subItem->setDatablock(it->second);
     }
     itor.moveNext();
   }

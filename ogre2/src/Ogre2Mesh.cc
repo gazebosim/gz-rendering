@@ -21,6 +21,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -65,6 +66,56 @@ void Ogre2Mesh::Destroy()
   if (this->material && this->ownsMaterial)
     this->Scene()->DestroyMaterial(this->material);
   this->material.reset();
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Mesh::HasSkeleton() const
+{
+  return this->ogreItem->hasSkeleton();
+}
+
+//////////////////////////////////////////////////
+std::map<std::string, math::Matrix4d> Ogre2Mesh::SkeletonLocalTransforms() const
+{
+  std::map<std::string, ignition::math::Matrix4d> mapTfs;
+  if (this->ogreItem->hasSkeleton())
+  {
+    auto skel = this->ogreItem->getSkeletonInstance();
+    for (unsigned int i = 0; i < skel->getNumBones(); ++i)
+    {
+      auto bone = skel->getBone(i);
+
+      math::Matrix4d tf(Ogre2Conversions::Convert(bone->getOrientation()));
+      tf.SetTranslation(Ogre2Conversions::Convert(bone->getPosition()));
+
+      mapTfs[bone->getName()] = tf;
+    }
+  }
+
+  return mapTfs;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Mesh::SetSkeletonLocalTransforms(
+          const std::map<std::string, math::Matrix4d> &_tfs)
+{
+  if (!this->ogreItem->hasSkeleton())
+  {
+    return;
+  }
+  auto skel = this->ogreItem->getSkeletonInstance();
+
+  for (auto const &[boneName, tf] : _tfs)
+  {
+    if (skel->getBone(boneName))
+    {
+      auto bone = skel->getBone(boneName);
+
+      skel->setManualBone(bone, true);
+      bone->setPosition(Ogre2Conversions::Convert(tf.Translation()));
+      bone->setOrientation(Ogre2Conversions::Convert(tf.Rotation()));
+    }
+  }
 }
 
 //////////////////////////////////////////////////

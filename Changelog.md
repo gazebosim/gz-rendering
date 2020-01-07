@@ -2,7 +2,10 @@
 
 ### Ignition Rendering 3.X
 
-### Ignition Rendering 3.0.0 (20XX-XX-XX)
+1. Skeletons for Ogre2
+    * [Pull request 224](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/224)
+
+### Ignition Rendering 3.0.0 (2019-12-10)
 
 1. Support setting cast shadows
     * [Pull request 209](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/209)

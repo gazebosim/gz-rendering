@@ -70,7 +70,7 @@ class ignition::rendering::Ogre2DynamicRenderablePrivate
   public: ScenePtr scene;
 
   /// \brief Pointer to the ogre scene manager
-  public: Ogre::SceneManager *sceneManager= nullptr;
+  public: Ogre::SceneManager *sceneManager = nullptr;
 };
 
 

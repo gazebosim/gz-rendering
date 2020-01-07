@@ -17,8 +17,10 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2DYNAMICRENDERABLE_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2DYNAMICRENDERABLE_HH_
 
+#include <memory>
 #include <string>
 #include <vector>
+
 #include "ignition/rendering/ogre2/Export.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"

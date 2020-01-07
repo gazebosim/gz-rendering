@@ -104,9 +104,6 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
     case MT_TRIANGLE_LIST:
     case MT_TRIANGLE_STRIP:
     {
-      // ignerr << "Failed to create marker of type " << this->markerType
-      //        << ". Dynamic renderables not supported yet\n";
-      // return this->dataPtr->mesh->OgreObject();
       return this->dataPtr->dynamicRenderable->OgreObject();
     }
     default:

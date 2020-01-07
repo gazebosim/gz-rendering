@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 3.X
 
+1. Add Ogre2 DynamicRenderable class
+    * [Pull request 226](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/226)
+
 1. Skeletons for Ogre2
     * [Pull request 224](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/224)
 

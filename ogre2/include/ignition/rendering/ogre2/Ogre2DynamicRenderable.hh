@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_OGRE2_OGRE2DYNAMICRENDERABLE_HH_
 
 #include <string>
+#include <vector>
 #include "ignition/rendering/ogre2/Export.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -40,7 +41,8 @@ namespace ignition
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2DynamicRenderable
     {
       /// \brief Constructor
-      public: Ogre2DynamicRenderable(ScenePtr _scene);
+      /// \param[in] _scene Pointer to scene
+      public: explicit Ogre2DynamicRenderable(ScenePtr _scene);
 
       /// \brief Virtual destructor
       public: virtual ~Ogre2DynamicRenderable();
@@ -69,26 +71,25 @@ namespace ignition
       /// \param[in] _x X position
       /// \param[in] _y Y position
       /// \param[in] _z Z position
-      /// \param[in] _color ignition::math::Color Point color
+      /// \param[in] _color Point color
       public: void AddPoint(const double _x, const double _y, const double _z,
             const ignition::math::Color &_color = ignition::math::Color::White);
 
       /// \brief Change the location of an existing point in the point list
       /// \param[in] _index Index of the point to set
-      /// \param[in] _value ignition::math::Vector3d value to set the point to
+      /// \param[in] _value Position of the point
       public: void SetPoint(unsigned int _index,
                             const ignition::math::Vector3d &_value);
 
       /// \brief Change the color of an existing point in the point list
       /// \param[in] _index Index of the point to set
-      /// \param[in] _color ignition::math::Color Pixelcolor color to set the
-      /// point to
+      /// \param[in] _color color to set the point to
       public: void SetColor(unsigned int _index,
                             const ignition::math::Color &_color);
 
-      /// \brief Return the location of an existing point in the point list
-      /// \param[in] _index Number of the point to return
-      /// \return ignition::math::Vector3d value of the point. A vector of
+      /// \brief Return the position of an existing point in the point list
+      /// \param[in] _index Get the point at this index
+      /// \return position of point. A vector of
       /// [ignition::math::INF_D, ignition::math::INF_D, ignition::math::INF_D]
       /// is returned when then the _index is out of bounds.
       /// ignition::math::INF_D==std::numeric_limits<double>::infinity()
@@ -116,9 +117,10 @@ namespace ignition
       private: void UpdateBuffer();
 
       /// \brief Helper function to generate normals
+      /// \param[in] _opType Ogre render operation type
       /// \param[in] _vertices a list of vertices
       /// \param[in,out] _vbuffer vertex buffer to be filled
-      private: void GenerateNormals(
+      private: void GenerateNormals(Ogre::OperationType _opType,
           const std::vector<math::Vector3d> &_vertices, float *_vbuffer);
 
       /// \brief Destroy the vertex buffer

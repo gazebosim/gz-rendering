@@ -38,9 +38,6 @@ class ignition::rendering::Ogre2DynamicRenderablePrivate
   /// \brief Used to indicate if the lines require an update
   public: bool dirty = false;
 
-  /// \brief Used to indicate if the operation type has changed
-  public: bool operationTypeDirty = false;
-
   /// \brief Render operation type
   public: Ogre::OperationType operationType;
 
@@ -49,9 +46,6 @@ class ignition::rendering::Ogre2DynamicRenderablePrivate
 
   /// \brief Ogre vertex buffer data structure
   public: Ogre::VertexBufferPacked *vertexBuffer = nullptr;
-
-  /// \brief Ogre index buffer data structure
-  public: Ogre::IndexBufferPacked *indexBuffer = nullptr;
 
   /// \brief Ogre vertex array object which binds the index and vertex buffers
   public: Ogre::VertexArrayObject *vao = nullptr;
@@ -71,9 +65,6 @@ class ignition::rendering::Ogre2DynamicRenderablePrivate
   /// \brief Flag to indicate whether or not this mesh should be
   /// responsible for destroying the material
   public: bool ownsMaterial = false;
-
-  /// \brief Maximum capacity of the currently allocated index buffer.
-  // public: size_t indexBufferCapacity = 0;
 
   /// \brief Pointer to scene
   public: ScenePtr scene;
@@ -224,7 +215,6 @@ void Ogre2DynamicRenderable::UpdateBuffer()
   if (newVertCapacity != this->dataPtr->vertexBufferCapacity)
   {
     this->dataPtr->vertexBufferCapacity = newVertCapacity;
-    this->dataPtr->operationTypeDirty = false;
 
     this->DestroyBuffer();
 
@@ -237,8 +227,10 @@ void Ogre2DynamicRenderable::UpdateBuffer()
 
     // recreate the vao data structures
     Ogre::VertexElement2Vec vertexElements;
-    vertexElements.push_back(Ogre::VertexElement2(Ogre::VET_FLOAT3, Ogre::VES_POSITION));
-    vertexElements.push_back(Ogre::VertexElement2(Ogre::VET_FLOAT3, Ogre::VES_NORMAL));
+    vertexElements.push_back(
+        Ogre::VertexElement2(Ogre::VET_FLOAT3, Ogre::VES_POSITION));
+    vertexElements.push_back(
+        Ogre::VertexElement2(Ogre::VET_FLOAT3, Ogre::VES_NORMAL));
 
     // create vertex buffer
     this->dataPtr->vertexBuffer = vaoManager->createVertexBuffer(
@@ -248,16 +240,16 @@ void Ogre2DynamicRenderable::UpdateBuffer()
     Ogre::VertexBufferPackedVec vertexBuffers;
     vertexBuffers.push_back(this->dataPtr->vertexBuffer);
 
+    // it is ok to use null index buffer
+    Ogre::IndexBufferPacked *indexBuffer = nullptr;
+
     this->dataPtr->vao = vaoManager->createVertexArrayObject(vertexBuffers,
-        this->dataPtr->indexBuffer, this->dataPtr->operationType);
+        indexBuffer, this->dataPtr->operationType);
 
     this->dataPtr->subMesh->mVao[Ogre::VpNormal].push_back(this->dataPtr->vao);
     // Use the same geometry for shadow casting.
     this->dataPtr->subMesh->mVao[Ogre::VpShadow].push_back(this->dataPtr->vao);
   }
-
-  std::cerr << "update vertex buffer 5: "  << this->dataPtr->vertices.size()
-            << " vs " << this->dataPtr->vertexBufferCapacity << std::endl;
 
   // map buffer and update the geometry
   Ogre::Aabb bbox;
@@ -297,25 +289,8 @@ void Ogre2DynamicRenderable::UpdateBuffer()
   }
 
   // fill normals
-  this->GenerateNormals(this->dataPtr->vertices, vertices);
-
-//      if (this->dataPtr->operationType == Ogre::OperationType::OT_TRIANGLE_LIST)
-//      for (unsigned int i = 0; i < this->dataPtr->vertexBufferCapacity; ++i)
-//      {
-//        unsigned int idx1 = i * 6;
-//        float x1 = vertices[idx1];
-//        float y1 = vertices[idx1+1];
-//        float z1 = vertices[idx1+2];
-//
-//        float x1a = vertices[idx1+3];
-//        float y1a = vertices[idx1+4];
-//        float z1a = vertices[idx1+5];
-//
-//        std::cerr << "(" << x1 << ", " << y1 << ", " << z1 << "),  "
-//                  << "(" << x1a << ", " << y1a << ", " << z1a << ") " << std::endl;
-//     }
-//
-
+  this->GenerateNormals(this->dataPtr->operationType, this->dataPtr->vertices,
+      vertices);
 
   // unmap buffer
   this->dataPtr->vertexBuffer->unmap(Ogre::UO_KEEP_PERSISTENT);
@@ -328,9 +303,11 @@ void Ogre2DynamicRenderable::UpdateBuffer()
   if (this->dataPtr->ogreItem)
   {
     // need to rebuild ogre [sub]item because the vao was destroyed
-    // this updates the item's bounding box issue and fixes occasional crashes
+    // this updates the item's bounding box and fixes occasional crashes
     // from invalid access to old vao
     this->dataPtr->ogreItem->_initialise(true);
+
+    // set material
     if (this->dataPtr->material)
     {
       this->dataPtr->ogreItem->getSubItem(0)->setDatablock(
@@ -342,7 +319,6 @@ void Ogre2DynamicRenderable::UpdateBuffer()
   }
 
   this->dataPtr->dirty = false;
-  std::cerr << "update vertex buffer done " << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -456,11 +432,21 @@ void Ogre2DynamicRenderable::SetPoint(unsigned int _index,
 void Ogre2DynamicRenderable::SetColor(unsigned int _index,
                                       const ignition::math::Color &_color)
 {
+  if (_index >= this->dataPtr->colors.size())
+  {
+    ignerr << "Point color index[" << _index << "] is out of bounds[0-"
+           << this->dataPtr->colors.size()-1 << "]\n";
+    return;
+  }
+
+
   // todo(anyone)
   // vertex coloring does not work yet. It requires using an unlit datablock:
   // https://forums.ogre3d.org/viewtopic.php?t=93627#p539276
   this->dataPtr->colors[_index] = _color;
-  this->dataPtr->dirty = true;
+
+  // uncomment this line when colors are working
+  // this->dataPtr->dirty = true;
 }
 
 /////////////////////////////////////////////////
@@ -489,10 +475,11 @@ unsigned int Ogre2DynamicRenderable::PointCount() const
 /////////////////////////////////////////////////
 void Ogre2DynamicRenderable::Clear()
 {
-  if (this->dataPtr->vertices.empty())
+  if (this->dataPtr->vertices.empty() && this->dataPtr->colors.empty())
     return;
 
   this->dataPtr->vertices.clear();
+  this->dataPtr->colors.clear();
   this->dataPtr->dirty = true;
 }
 
@@ -527,7 +514,7 @@ void Ogre2DynamicRenderable::SetMaterial(MaterialPtr _material, bool _unique)
 }
 
 //////////////////////////////////////////////////
-void Ogre2DynamicRenderable::GenerateNormals(
+void Ogre2DynamicRenderable::GenerateNormals(Ogre::OperationType _opType,
   const std::vector<math::Vector3d> &_vertices, float *_vbuffer)
 {
   unsigned int vertexCount = _vertices.size();
@@ -538,7 +525,7 @@ void Ogre2DynamicRenderable::GenerateNormals(
   // vbuffer[i+3] : normal x
   // vbuffer[i+4] : normal y
   // vbuffer[i+5] : normal z
-  switch (this->dataPtr->operationType)
+  switch (_opType)
   {
     case Ogre::OperationType::OT_POINT_LIST:
     case Ogre::OperationType::OT_LINE_LIST:

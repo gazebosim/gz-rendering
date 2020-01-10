@@ -194,7 +194,7 @@ void Ogre2DynamicRenderable::UpdateBuffer()
 
     // Check if this is the first call
     if (!newVertCapacity)
-      newVertCapacity = 3;
+      newVertCapacity = 1;
 
     // Make capacity the next power of two
     while (newVertCapacity < vertexCount)
@@ -204,7 +204,7 @@ void Ogre2DynamicRenderable::UpdateBuffer()
   {
     // Make capacity the previous power of two
     unsigned int newCapacity = newVertCapacity >>1;
-    while (vertexCount < newCapacity && newCapacity > 3)
+    while (vertexCount < newCapacity)
     {
       newVertCapacity = newCapacity;
       newCapacity >>= 1;
@@ -398,7 +398,8 @@ void Ogre2DynamicRenderable::AddPoint(const ignition::math::Vector3d &_pt,
   this->dataPtr->vertices.push_back(_pt);
 
   // todo(anyone)
-  // vertex coloring does not work yet. It requires using an unlit datablock:
+  // setting material works but vertex coloring does not work yet.
+  // It requires using an unlit datablock:
   // https://forums.ogre3d.org/viewtopic.php?t=93627#p539276
   this->dataPtr->colors.push_back(_color);
 

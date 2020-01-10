@@ -129,6 +129,9 @@ void Ogre2DynamicRenderable::DestroyBuffer()
   Ogre::RenderSystem *renderSystem = root->getRenderSystem();
   Ogre::VaoManager *vaoManager = renderSystem->getVaoManager();
 
+  if (!vaoManager)
+    return;
+
   if (this->dataPtr->vertexBuffer)
     vaoManager->destroyVertexBuffer(this->dataPtr->vertexBuffer);
 
@@ -180,7 +183,10 @@ void Ogre2DynamicRenderable::UpdateBuffer()
 
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
   Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+
   Ogre::VaoManager *vaoManager = renderSystem->getVaoManager();
+  if (!vaoManager)
+    return;
 
   // Prepare vertex buffer
   unsigned int newVertCapacity = this->dataPtr->vertexBufferCapacity;

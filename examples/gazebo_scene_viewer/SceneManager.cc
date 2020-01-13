@@ -1909,7 +1909,7 @@ void NewSceneManager::ProcessScene()
   // TODO(anyone): process environment info
 
   // delete all previous nodes
-  this->activeScene->Clear();
+  // this->activeScene->Clear();
 
   // process ambient if available
   if (this->sceneMsg.has_ambient())

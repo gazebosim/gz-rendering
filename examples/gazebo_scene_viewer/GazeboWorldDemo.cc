@@ -67,8 +67,8 @@ int main(int, char**)
 {
   Connect();
   std::vector<CameraPtr> cameras;
-  // cameras.push_back(CreateCamera("ogre"));
-  cameras.push_back(CreateCamera("optix"));
+  cameras.push_back(CreateCamera("ogre"));
+  // cameras.push_back(CreateCamera("optix"));
   GlutRun(cameras);
   return 0;
 }

@@ -109,9 +109,19 @@ void Ogre2Material::SetTransparency(const double _transparency)
   Ogre::HlmsPbsDatablock::TransparencyModes mode;
   double opacity = 1.0-this->transparency;
   if (math::equal(opacity, 1.0))
-     mode = Ogre::HlmsPbsDatablock::None;
+  {
+    mode = Ogre::HlmsPbsDatablock::None;
+  }
   else
+  {
+    Ogre::HlmsBlendblock block;
     mode = Ogre::HlmsPbsDatablock::Transparent;
+    this->ogreDatablock->setAlphaTest(Ogre::CMPF_GREATER_EQUAL);
+    block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
+    this->ogreDatablock->setAlphaTestThreshold(0.5);
+    this->ogreDatablock->setTwoSidedLighting(true);
+    this->ogreDatablock->setBlendblock(block);
+  }
 
   // from ogre documentation: 0 = full transparency and 1 = fully opaque
   this->ogreDatablock->setTransparency(opacity, mode);

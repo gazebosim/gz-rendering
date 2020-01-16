@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(ignition-rendering-gazebo-scene-viewer)
+
+set(CMAKE_CXX_STANDARD 14)
+
 find_package(ignition-rendering3 REQUIRED)
 find_package(gazebo REQUIRED)
 
 include_directories(SYSTEM ${GAZEBO_INCLUDE_DIRS})
- message("gazebo include ================== ${GAZEBO_INCLUDE_DIRS}")
+message("gazebo include ================== ${GAZEBO_INCLUDE_DIRS}")
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -34,6 +37,7 @@ target_link_libraries(gazebo_scene_viewer
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
+  stdc++fs
 )
 
 add_executable(gazebo_scene_viewer2_demo
@@ -48,4 +52,5 @@ target_link_libraries(gazebo_scene_viewer2_demo
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
+  stdc++fs
 )

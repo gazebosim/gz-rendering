@@ -21,6 +21,15 @@
 #include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/RenderTypes.hh"
 
+#if __cplusplus > 201703L
+    #include <filesystem>
+    using fs = std::filesystem;
+#else
+    #include <experimental/filesystem>
+    using namespace std;
+    namespace fs = std::experimental::filesystem::v1;
+#endif
+
 namespace ignition
 {
   namespace rendering

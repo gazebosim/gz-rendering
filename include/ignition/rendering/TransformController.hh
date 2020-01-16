@@ -98,20 +98,28 @@ namespace ignition
       public: virtual math::Vector3d ActiveAxis() const;
 
       /// \brief Set the current XYZ snapping values.
-      /// \param[in] _xyzSnap The xyz snapping values
-      public: virtual void SetXYZSnap(const math::Vector3d &_xyzSnap);
+      /// \param[in] _xyz The xyz snapping values
+      public: void SetXYZSnap(const math::Vector3d &_xyz);
 
       /// \brief Get the current XYZ snapping values.
       /// \return XYZ snapping values as Vector3d
-      public: virtual math::Vector3d XYZSnap() const;
+      public: math::Vector3d XYZSnap() const;
 
       /// \brief Set the current RPY snapping values.
-      /// \param[in] _rpySnap The rpy snapping values
-      public: virtual void SetRPYSnap(const math::Vector3d &_rpySnap);
+      /// \param[in] _rpy The rpy snapping values
+      public: void SetRPYSnap(const math::Vector3d &_rpy);
 
       /// \brief Get the current RPY snapping values.
       /// \return RPY snapping values as Vector3d
-      public: virtual math::Vector3d RPYSnap() const;
+      public: math::Vector3d RPYSnap() const;
+
+      /// \brief Set the current scale snapping values.
+      /// \param[in] _scale The scale snapping values
+      public: void SetScaleSnap(const math::Vector3d &_scale);
+
+      /// \brief Get the current scale snapping values.
+      /// \return Scale snapping values as Vector3d
+      public: math::Vector3d ScaleSnap() const;
 
       /// \brief Get the axis of transform represented by the given node id
       /// \param[in] _id Id of the node to check

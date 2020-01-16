@@ -66,6 +66,9 @@ class ignition::rendering::TransformControllerPrivate
 
   /// \brief The rpy values by which to snap the object.
   public: ignition::math::Vector3d rpySnap = ignition::math::Vector3d::Zero;
+
+  /// \brief The scale values by which to snap the object.
+  public: ignition::math::Vector3d scaleSnap = ignition::math::Vector3d::Zero;
 };
 
 using namespace ignition;
@@ -233,9 +236,9 @@ void TransformController::SetActiveAxis(const math::Vector3d &_axis)
 }
 
 //////////////////////////////////////////////////
-void TransformController::SetXYZSnap(const math::Vector3d &_xyzSnap)
+void TransformController::SetXYZSnap(const math::Vector3d &_xyz)
 {
-  this->dataPtr->xyzSnap = _xyzSnap;
+  this->dataPtr->xyzSnap = _xyz;
 }
 
 //////////////////////////////////////////////////
@@ -245,15 +248,27 @@ math::Vector3d TransformController::XYZSnap() const
 }
 
 //////////////////////////////////////////////////
-void TransformController::SetRPYSnap(const math::Vector3d &_rpySnap)
+void TransformController::SetRPYSnap(const math::Vector3d &_rpy)
 {
-  this->dataPtr->rpySnap = _rpySnap;
+  this->dataPtr->rpySnap = _rpy;
 }
 
 //////////////////////////////////////////////////
 math::Vector3d TransformController::RPYSnap() const
 {
   return this->dataPtr->rpySnap;
+}
+
+//////////////////////////////////////////////////
+void TransformController::SetScaleSnap(const math::Vector3d &_scale)
+{
+  this->dataPtr->scaleSnap = _scale;
+}
+
+//////////////////////////////////////////////////
+math::Vector3d TransformController::ScaleSnap() const
+{
+  return this->dataPtr->scaleSnap;
 }
 
 //////////////////////////////////////////////////

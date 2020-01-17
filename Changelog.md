@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 3.X
 
+1. Fixed gazebo gazebo scene viewer example
+    * [Pull request 228](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/228)
+
 ### Ignition Rendering 3.0.0 (20XX-XX-XX)
 
 1. Support setting cast shadows

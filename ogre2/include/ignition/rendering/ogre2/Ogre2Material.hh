@@ -162,7 +162,7 @@ namespace ignition
       /// \return Ogre Hlms datablock
       public: virtual Ogre::HlmsPbsDatablock *Datablock() const;
 
-     // Documentation inherited.
+      // Documentation inherited.
       // \sa BaseMaterial::PreRender()
       public: virtual void PreRender() override;
 

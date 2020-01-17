@@ -2,10 +2,16 @@
 
 ### Ignition Rendering 3.X
 
+1. Add Ogre2 DynamicRenderable class
+    * [Pull request 226](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/226)
+
+1. Skeletons for Ogre2
+    * [Pull request 224](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/224)
+
 1. Fixed gazebo gazebo scene viewer example
     * [Pull request 228](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/228)
 
-### Ignition Rendering 3.0.0 (20XX-XX-XX)
+### Ignition Rendering 3.0.0 (2019-12-10)
 
 1. Support setting cast shadows
     * [Pull request 209](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/209)

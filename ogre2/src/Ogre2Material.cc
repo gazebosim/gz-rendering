@@ -114,8 +114,8 @@ void Ogre2Material::SetTransparency(const double _transparency)
   }
   else
   {
-    Ogre::HlmsBlendblock block;
     mode = Ogre::HlmsPbsDatablock::Transparent;
+    Ogre::HlmsBlendblock block;
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_GREATER_EQUAL);
     block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setAlphaTestThreshold(0.5);

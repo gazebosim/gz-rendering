@@ -44,7 +44,7 @@ const std::string RESOURCE_PATH =
 void buildScene(ScenePtr _scene)
 {
   // initialize _scene
-  _scene->SetAmbientLight(0.3, 0.3, 0.3);
+  _scene->SetAmbientLight(0.5, 0.5, 0.5);
   _scene->SetBackgroundColor(0.3, 0.3, 0.3);
   VisualPtr root = _scene->RootVisual();
 
@@ -56,33 +56,51 @@ void buildScene(ScenePtr _scene)
   root->AddChild(light0);
 
   // create a mesh
-  VisualPtr mesh = _scene->CreateVisual();
-  mesh->SetLocalPosition(3, 0, 0);
-  mesh->SetLocalRotation(1.5708, 0, 2.0);
+  VisualPtr duck = _scene->CreateVisual();
+  duck->SetLocalPosition(3, 0, 0);
+  duck->SetLocalRotation(1.5708, 0, 2.0);
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
-  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-  mesh->AddGeometry(meshGeom);
-  root->AddChild(mesh);
+  MeshPtr duckMeshGeom = _scene->CreateMesh(descriptor);
+  duck->AddGeometry(duckMeshGeom);
 
-  // create gray material
-  MaterialPtr gray = _scene->CreateMaterial();
-  gray->SetAmbient(0.7, 0.7, 0.7);
-  gray->SetDiffuse(0.7, 0.7, 0.7);
-  gray->SetSpecular(0.7, 0.7, 0.7);
+  // create duck material
+  MaterialPtr duckMaterial = _scene->CreateMaterial();
+  duckMaterial->SetTexture(common::joinPaths(RESOURCE_PATH, "/duck.png"));
+  duckMaterial->SetTransparency(0.3);
+  duckMeshGeom->SetMaterial(duckMaterial);
+  root->AddChild(duck);
+
+  // create another mesh
+  VisualPtr cage = _scene->CreateVisual();
+  cage->SetLocalPosition(3, 3, 0);
+  descriptor.meshName = common::joinPaths(RESOURCE_PATH, "/cage/cage.dae");
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+  MeshPtr cageMeshGeom = _scene->CreateMesh(descriptor);
+  cage->AddGeometry(cageMeshGeom);
+  root->AddChild(cage);
 
   // create grid visual
-  VisualPtr grid = _scene->CreateVisual();
   GridPtr gridGeom = _scene->CreateGrid();
-  gridGeom->SetCellCount(20);
-  gridGeom->SetCellLength(1);
-  gridGeom->SetVerticalCellCount(0);
-  grid->AddGeometry(gridGeom);
-  grid->SetLocalPosition(3, 0, 0.0);
-  grid->SetMaterial(gray);
-  root->AddChild(grid);
+  if (gridGeom)
+  {
+    // create gray material
+    MaterialPtr gray = _scene->CreateMaterial();
+    gray->SetAmbient(0.7, 0.7, 0.7);
+    gray->SetDiffuse(0.7, 0.7, 0.7);
+    gray->SetSpecular(0.7, 0.7, 0.7);
+
+    VisualPtr grid = _scene->CreateVisual();
+    gridGeom->SetCellCount(20);
+    gridGeom->SetCellLength(1);
+    gridGeom->SetVerticalCellCount(0);
+    grid->AddGeometry(gridGeom);
+    grid->SetLocalPosition(3, 0, 0.0);
+    grid->SetMaterial(gray);
+    root->AddChild(grid);
+  }
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
@@ -124,8 +142,15 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back("ogre");
-  engineNames.push_back("optix");
+  if (_argc > 1)
+  {
+    engineNames.push_back(std::string(_argv[1]));
+  }
+  else
+  {
+    engineNames.push_back("ogre");
+    engineNames.push_back("optix");
+  }
 
   for (auto engineName : engineNames)
   {

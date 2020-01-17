@@ -553,6 +553,9 @@ void OgreMaterial::UpdateTransparency()
     this->ogrePass->setDepthWriteEnabled(false);
     this->ogrePass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogrePass->setCullingMode(Ogre::CULL_NONE);
+
+//    this->ogreTexState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL,
+//        Ogre::LBS_CURRENT, alpha);
   }
   else
   {

@@ -40,6 +40,13 @@ void Connect()
 ScenePtr CreateScene(const std::string &_engine)
 {
   RenderEngine *engine = rendering::engine(_engine);
+  if (!engine)
+  {
+    std::cout << "Engine '" << _engine
+              << "' is not supported" << std::endl;
+    return ScenePtr();
+  }
+
   ScenePtr scene = engine->CreateScene("scene");
   SceneManager::Instance()->AddScene(scene);
   return scene;

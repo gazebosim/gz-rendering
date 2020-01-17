@@ -552,6 +552,7 @@ void OgreMaterial::UpdateTransparency()
   {
     this->ogrePass->setDepthWriteEnabled(false);
     this->ogrePass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+    this->ogrePass->setCullingMode(Ogre::CULL_NONE);
   }
   else
   {

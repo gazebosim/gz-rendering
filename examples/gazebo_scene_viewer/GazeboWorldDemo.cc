@@ -58,7 +58,7 @@ CameraPtr CreateCamera(const std::string &_engine)
   if (!scene)
     return CameraPtr();
   VisualPtr root = scene->RootVisual();
-  
+
   CameraPtr camera = scene->CreateCamera("camera");
   camera->SetLocalPosition(-1.0, 1.0, 0.0);
   camera->SetLocalRotation(0.0, 0.35, -0.175);

@@ -358,7 +358,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       else
       {
         MaterialPtr defaultMat = this->scene->Material("Default/White");
-        if(defaultMat != nullptr)
+        if (defaultMat != nullptr)
           mat->CopyFrom(defaultMat);
       }
       ogreSubMesh->setMaterialName(mat->Name());

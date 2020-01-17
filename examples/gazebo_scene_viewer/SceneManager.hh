@@ -17,10 +17,6 @@
 #ifndef IGNITION_RENDERING_EXAMPLES_SCENEMANAGER_HH
 #define IGNITION_RENDERING_EXAMPLES_SCENEMANAGER_HH
 
-#include <string>
-#include <ignition/common/SingletonT.hh>
-#include "ignition/rendering/RenderTypes.hh"
-
 #if __cplusplus > 201703L
     #include <filesystem>
     using fs = std::filesystem;
@@ -29,6 +25,10 @@
     using namespace std;
     namespace fs = std::experimental::filesystem::v1;
 #endif
+
+#include <string>
+#include <ignition/common/SingletonT.hh>
+#include "ignition/rendering/RenderTypes.hh"
 
 namespace ignition
 {

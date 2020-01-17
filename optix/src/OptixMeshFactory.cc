@@ -134,7 +134,7 @@ OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
       else
       {
         MaterialPtr defaultMat = this->scene->Material("Default/White");
-        if(defaultMat != nullptr)
+        if (defaultMat != nullptr)
           mat->CopyFrom(defaultMat);
       }
       // assign material to submesh who will make a copy of this material

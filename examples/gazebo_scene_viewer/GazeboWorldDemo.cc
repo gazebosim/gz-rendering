@@ -55,8 +55,10 @@ ScenePtr CreateScene(const std::string &_engine)
 CameraPtr CreateCamera(const std::string &_engine)
 {
   ScenePtr scene = CreateScene(_engine);
+  if (!scene)
+    return CameraPtr();
   VisualPtr root = scene->RootVisual();
-
+  
   CameraPtr camera = scene->CreateCamera("camera");
   camera->SetLocalPosition(-1.0, 1.0, 0.0);
   camera->SetLocalRotation(0.0, 0.35, -0.175);
@@ -74,8 +76,18 @@ int main(int, char**)
 {
   Connect();
   std::vector<CameraPtr> cameras;
-  cameras.push_back(CreateCamera("ogre"));
-  // cameras.push_back(CreateCamera("optix"));
+  std::vector<std::string> engineNames;
+
+  engineNames.push_back("ogre");
+  engineNames.push_back("optix");
+
+  for (auto engineName : engineNames)
+  {
+    CameraPtr camera = CreateCamera(engineName);
+    if (camera)
+      cameras.push_back(camera);
+  }
+
   GlutRun(cameras);
   return 0;
 }

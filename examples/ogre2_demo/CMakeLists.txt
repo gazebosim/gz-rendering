@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(ignition-rendering-ogre2-demo)
 
-find_package(ignition-rendering3)
+find_package(ignition-rendering4)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

@@ -114,7 +114,7 @@ Install dependencies:
 
 Clone source code
 
-    # This checks out the `default` branch. You can append `-b ignition-rendering#` (replace # with a number) to checkout a specific version
+    # This checks out the `default` branch. You can append `-b ign-rendering#` (replace # with a number) to checkout a specific version
     hg clone http://bitbucket.org/ignitionrobotics/ign-rendering
 
 #### Version 0 (Legacy version for Ubuntu Xenial 16.04 or above)

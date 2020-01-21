@@ -1482,9 +1482,40 @@ void SubSceneManager::ProcessMesh(const gazebo::msgs::Geometry &_geometryMsg,
 {
   const gazebo::msgs::MeshGeom &meshMsg = _geometryMsg.mesh();
 
+  // if the model contains model:// try to find the meshes in ~/.gazebo
+  std::list<std::string> modelPaths;
+  char *homePath = getenv("HOME");
+  std::string home;
+  if (!homePath)
+    home = "/tmp/gazebo";
+  else
+    home = homePath;
+
+  modelPaths.push_back(home + "/.gazebo/models");
+
+  std::string meshName = meshMsg.filename();
+  int index = meshName.find("://");
+  std::string prefix = meshName.substr(0, index);
+  std::string suffix = meshName.substr(index + 3, meshName.size() - index - 3);
+
+  if (prefix == "model")
+  {
+     fs::path path;
+     for (std::list<std::string>::iterator iter = modelPaths.begin();
+          iter != modelPaths.end(); ++iter)
+     {
+       path = fs::path(*iter) / suffix;
+       if (fs::exists(path))
+       {
+         meshName = path.string();
+         break;
+       }
+     }
+  }
+
   // initialize mesh parameters
   MeshDescriptor descriptor;
-  descriptor.meshName = meshMsg.filename();
+  descriptor.meshName = meshName;
 
   // assign sub-mesh if available
   if (meshMsg.has_submesh())
@@ -1909,7 +1940,7 @@ void NewSceneManager::ProcessScene()
   // TODO(anyone): process environment info
 
   // delete all previous nodes
-  this->activeScene->Clear();
+  // this->activeScene->Clear();
 
   // process ambient if available
   if (this->sceneMsg.has_ambient())

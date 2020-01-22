@@ -104,8 +104,6 @@ if(NOT MSVC)
     set(HAVE_OPTIX TRUE)
   endif()
 endif()
-set(OptiX_FOUND TRUE)
-set(HAVE_OPTIX TRUE)
 
 #####################################
 # Define compile-time default variables
@@ -124,9 +122,9 @@ if (HAVE_OGRE)
   list(APPEND RENDERING_COMPONENTS ogre)
 endif()
 
-# if (HAVE_OPTIX)
+if (HAVE_OPTIX)
   list(APPEND RENDERING_COMPONENTS optix)
-# endif()
+endif()
 
 if (HAVE_OGRE2)
   list(APPEND RENDERING_COMPONENTS ogre2)

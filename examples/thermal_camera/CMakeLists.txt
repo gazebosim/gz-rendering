@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(ignition-rendering-thermal-camera)
-find_package(ignition-rendering3 REQUIRED)
+find_package(ignition-rendering4 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

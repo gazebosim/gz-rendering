@@ -15,7 +15,7 @@ make
 ```
 
 ```
-./custom_shaders
+./camera_tracking
 Image saved: depth.png
 Image saved: regular.png
 ```

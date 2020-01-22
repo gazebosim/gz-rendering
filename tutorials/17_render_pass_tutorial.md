@@ -2,8 +2,6 @@
 
 This example shows how to add gaussian mode to the camera
 
-use mouse to select objects in the scene.
-
 # Compile and run the example
 
 Create a build directory and use `cmake` and `make` to compile the code:

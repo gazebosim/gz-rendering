@@ -115,6 +115,29 @@ bool RenderEngineManager::HasEngine(const std::string &_name) const
 }
 
 //////////////////////////////////////////////////
+bool RenderEngineManager::IsEngineLoaded(const std::string &_name) const
+{
+  auto iter = this->dataPtr->engines.find(_name);
+
+  if (iter == this->dataPtr->engines.end())
+    return false;
+
+  return nullptr != iter->second;
+}
+
+//////////////////////////////////////////////////
+std::vector<std::string> RenderEngineManager::LoadedEngines() const
+{
+  std::vector<std::string> engines;
+  for (auto [name, engine] : this->dataPtr->engines)
+  {
+    if (nullptr != engine)
+      engines.push_back(name);
+  }
+  return engines;
+}
+
+//////////////////////////////////////////////////
 RenderEngine *RenderEngineManager::Engine(const std::string &_name,
     const std::map<std::string, std::string> &_params,
     const std::string &_path)

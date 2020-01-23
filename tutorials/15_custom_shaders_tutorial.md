@@ -2,7 +2,7 @@
 
 This example will create two images (RGB and Depth) based on the scene. The scene will allow us to introduce shaders from a file.
 
-# Compile and run the example
+## Compile and run the example
 
 Create a build directory and use `cmake` and `make` to compile the code:
 
@@ -23,7 +23,7 @@ Image saved: regular.png
 ![](img/custom_shaders_rgb.png)
 ![](img/custom_shaders_depth.png)
 
-# Code
+## Code
 
 In the first lines of the `custom_shaders.cc` file there are some constants defined with the name of the shaders that the scene will use:
 
@@ -53,7 +53,7 @@ std::string fragment_shader_path = ignition::common::joinPaths(
     fragment_shader_file);
 ```
 
-Then the shaders will be apply on the object's material:
+Then the shaders will be applied on the object's material:
 
 ```{.cpp}
 ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();

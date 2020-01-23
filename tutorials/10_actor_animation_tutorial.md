@@ -1,10 +1,10 @@
- # Actor animation tutorial
+# Actor animation tutorial
 
- In this tutorial will show how to use the Ignition Rendering Library to create an actor animation.
+This tutorial will show you how to use the Ignition Rendering library to create an actor animation.
 
-# Code
+## Code
 
-In this section we will describe the main classes and method used to create the actor. The basic steps are:
+In this section we will describe the main classes and methods used to create the actor. The basic steps are:
 
  - Create a visual for the actor
  - Attach mesh
@@ -19,7 +19,7 @@ actorVisual->SetLocalPosition(3, 0, 0);
 actorVisual->SetLocalRotation(0, 0, 0);
 ```
 
-Create a `MeshDescriptor` class with the mesh name of the actor, then using the `MeshManager` Singleton class load the mesh in the descriptor:
+Create a `MeshDescriptor` class with the mesh name of the actor, then using the `MeshManager` Singleton class, load the mesh in the descriptor:
 
 ```{.cpp}
 MeshDescriptor descriptor;
@@ -52,7 +52,8 @@ if (_mesh && descriptor.mesh->HasSkeleton())
 
 There are two main function in the `GlutWindow.c` file:
 
- - **void initAnimation()**: This function will check if the skeleton has an animation. Then it will load the animation using a `bvh` file (it's an animation file format).
+ - **void initAnimation()**: This function will check if the skeleton has an animation. Then it will load the animation using a `bvh` file (an animation file format).
+ 
 ```{.cpp}
 if (!g_skel || g_skel->AnimationCount() == 0)
 {
@@ -65,7 +66,9 @@ std::string bvhFile = ic::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
 double scale = 0.055;
 g_skel->AddBvhAnimation(bvhFile, scale);
 ```
-And finally the animation will be initialize
+
+And finally, the animation will be initialized:
+
 ```{.cpp}
 g_skelAnim = g_skel->Animation(g_animIdx);
 ```
@@ -81,7 +84,7 @@ g_skelAnim = g_skel->Animation(g_animIdx);
 g_mesh->SetSkeletonLocalTransforms(skinFrames);
 ```
 
-# Compile and run the example
+## Compile and run the example
 
 Create a build directory and use `cmake` and `make` to compile the code:
 
@@ -93,7 +96,7 @@ cmake ..
 make
 ```
 
-When the code is compiled you can execute the example with the following command. Using the left and right button of the mouse you can move around the scene o even zoom in and out.
+When the code is compiled you can execute the example with the following command. Using the left and right button of the mouse you can move around the scene and even zoom in and out.
 
 ```{.sh}
 ./actor_animation

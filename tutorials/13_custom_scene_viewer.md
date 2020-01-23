@@ -1,19 +1,26 @@
 # Custom scene viewer
 
-When the application starts we will see a blank window, this application allows us to view a number of pre constructed scenes. The initial render engine is Ogre, when we click on `+` or `-` buttons we can change the scene. By pressing the `Tab` button we will advance the next render engine. You may see how the render engine title in the window will change to Optix if you have compiled you Ignition Rendering Library with OptiX (Otherwise you will only can use Ogre) also the frame rate may change based on your computer capabilities.
+This application allows us to view a number of pre constructed scenes. 
+The initial render engine is Ogre. 
 
-The following scenes have more primitive objects such us cones or cilinders. Again we can see the scene with different render engines pressing `Tab`.
+When the application starts you will see a blank window.
+When you click the `+` or `-` keys you can change the scene. 
+By pressing the `Tab` button you will advance to the next render engine.
+ 
+You may see the render engine title in the window change to Optix if you have compiled your Ignition Rendering library with OptiX (otherwise you can only use Ogre). 
+The frame rate may also change based on your computer's capabilities.
 
-Some of the scene availables will include:
+The following scenes have more primitive objects such as cones or cilinders. Again, you can see the scene with different render engines pressing `Tab`.
+Some of the scenes available include:
 
  - Textures
  - Normal mapping
  - Reflective property
  - Soft shadows
 
-There are some scenes that are not available in Ogre because we have not or we can not implement it in Ogre.
+There are some scenes that are not available in Ogre because we have not or we cannot implement it in Ogre.
 
-# Compile and run the example
+## Compile and run the example
 
 Create a build directory and use `cmake` and `make` to compile the code:
 
@@ -33,9 +40,9 @@ To run the example:
 
 ![](img/custom_scene_viewer.png)
 
-# Code
+## Code
 
-In the main function we can have a look to all the scenes defined:
+In the main function we can have a look at all the defined scenes.
 
 ```{.cpp}
 ...
@@ -54,9 +61,9 @@ In the main function we can have a look to all the scenes defined:
 ...
 ```
 
-Inside `SceneBuilder.cc` there are define some classes which create the world. The method `BuildScene` will create the world for each scene.
+Inside `SceneBuilder.cc` some classes are defined which create the world. The method `BuildScene` will create the world for each scene.
 
-For example, we can have a look to the `SimpleSceneBuilder` class inside `SceneBuilder.cc`. This class will only define the floor, the sphere and the light.
+For example, we can have a look at the `SimpleSceneBuilder` class inside `SceneBuilder.cc`. This class will only define the floor, the sphere and the light.
 
 ```{.cpp}
 void SimpleSceneBuilder::BuildScene(ScenePtr _scene)
@@ -88,7 +95,7 @@ void SimpleSceneBuilder::BuildScene(ScenePtr _scene)
 }
 ```
 
-`AllShapesSceneBuilder` class inside `SceneBuilder.cc`. It will define more objects such us: `CYLINDER`, `CONE` or `BOX`.
+The `AllShapesSceneBuilder` class inside `SceneBuilder.cc` will define more objects such us: `CYLINDER`, `CONE` or `BOX`.
 
 ```{.cpp}
 void AllShapesSceneBuilder::BuildScene(ScenePtr _scene)
@@ -122,7 +129,7 @@ void AllShapesSceneBuilder::BuildScene(ScenePtr _scene)
 }
 ```
 
-The class `TextureSceneBuilder` will include all the objects and the textures:
+The class `TextureSceneBuilder` includes all the objects and the textures:
 
 ```{.cpp}
 void TextureSceneBuilder::BuildScene(ScenePtr _scene)
@@ -146,7 +153,7 @@ void TextureSceneBuilder::BuildScene(ScenePtr _scene)
 }
 ```
 
-The class `NormalMapSceneBuilder` will include all the objects, the textures and the normal maps:
+The class `NormalMapSceneBuilder` includes all the objects, the textures and the normal maps:
 
 ```{.cpp}
 void NormalMapSceneBuilder::BuildScene(ScenePtr _scene)

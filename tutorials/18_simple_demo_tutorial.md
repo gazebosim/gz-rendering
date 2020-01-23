@@ -2,7 +2,7 @@
 
 This example shows how move the camera automatically.
 
-# Compile and run the example
+## Compile and run the example
 
 Create a build directory and use `cmake` and `make` to compile the code:
 
@@ -27,7 +27,7 @@ Engine 'optix' is not supported
 
 ![](img/simple_demo.gif)
 
-# Code
+## Code
 
 The function `updateCameras()` is called each time the `DisplayCB` function runs. Using the method `SetLocalPosition` from the `Camera` class we can locate the camera in the world:
 

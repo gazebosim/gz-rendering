@@ -1,14 +1,16 @@
 # Gazebo scene viewer
 
-The gazebo scene viewer examples allow us to visualize Gazebo using the Ignition Rendering Library.
+The Gazebo scene viewer examples allow us to visualize Gazebo using the Ignition Rendering library.
 
-# Code
+## Code
 
-The `SceneManager` class defined in `SceneManager.hh`, `SceneManagerPrivate.hh` and `SceneManager.cc` manages a collection of scenes. The class provides a single interface for modifications, allowing multiple scenes to stay synchronized. It will allow us to receive data from Gazebo and update the render window each time that the examples received a new scene. **This class currently consumes Gazebo-specified protobuf messages**.
+The `SceneManager` class defined in `SceneManager.hh`, `SceneManagerPrivate.hh` and `SceneManager.cc` manages a collection of scenes. 
+The class provides a single interface for modifications, allowing multiple scenes to stay synchronized. 
+It will allow us to receive data from Gazebo and update the render window each time that the examples receive a new scene. **This class currently consumes Gazebo-specified protobuf messages**.
 
 The following list will describe some methods:
 
- - **void SceneManagerPrivate::Init()**: It initializes the communication with gazebo. It will create some subscribers to received data about poses, light, models, joints, visual or sensors.
+ - **void SceneManagerPrivate::Init()**: It initializes the communication with Gazebo. It will create some subscribers to receive data about poses, light, models, joints, visual or sensors.
 ```{.cpp}
       this->preRenderConn = gazebo::event::Events::ConnectPreRender(
             std::bind(&SceneManagerPrivate::UpdateScenes, this));
@@ -65,7 +67,7 @@ void SubSceneManager::ProcessMessages()
       this->activeScene->PreRender();
 }
 ```
- For example, if the Gazebo scene contains a cylinder the following method will be called
+ For example, if the Gazebo scene contains a cylinder the following method will be called:
 ```{.cpp}
 void SubSceneManager::ProcessCylinder(
     const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)
@@ -80,7 +82,7 @@ void SubSceneManager::ProcessCylinder(
 }
 ```
 
- - **void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)**: This method is called when the subscriber received a new pose message.
+ - **void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)**: This method is called when the subscriber receives a new pose message.
 ```
 void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
 {
@@ -96,7 +98,7 @@ void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
 }
 ```
 
-# Compile and run the example
+## Compile and run the example
 
 Create a build directory and use `cmake` and `make` to compile the code:
 
@@ -108,7 +110,7 @@ cmake ..
 make
 ```
 
-## gazebo_scene_viewer
+### gazebo_scene_viewer
 
 Launch Gazebo and insert `Double pendulum with base`:
 
@@ -126,9 +128,9 @@ You can use the `Tab` button to change the rendering engine.
 
 ![](img/gazebo_scene_viewer.gif)
 
-### gazebo_scene_viewer2_demo
+#### gazebo_scene_viewer2_demo
 
-Launch Gazebo using the world inside example directory called `falling_objects.world`. You will see some objects falling:
+Launch Gazebo using the world inside the example directory called `falling_objects.world`. You will see some objects falling.
 
 ```{.sh}
 gazebo examples/gazebo_scene_viewer/falling_objects.world

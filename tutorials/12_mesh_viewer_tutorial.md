@@ -20,7 +20,7 @@ To run the example:
 
 ![](img/mesh_viewer.png)
 
-# Code
+## Code
 
 In the the `Main.cc` file there is a function called `buildScene` which is in charge of creating the objects in the scene (for example: the grid or the duck). 
 The steps to visualize a mesh are the following:

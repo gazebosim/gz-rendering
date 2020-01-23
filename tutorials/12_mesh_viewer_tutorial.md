@@ -1,6 +1,6 @@
 # Mesh Viewer
 
-# Compile and run the example
+## Compile and run the example
 
 Create a build directory and use `cmake` and `make` to compile the code:
 
@@ -22,7 +22,8 @@ To run the example:
 
 # Code
 
-In the the `Main.cc` file there is a function called `buildScene` which is in charge of crete the objects in the scene (for example: the grid or the duck). The steps to visualize a mesh are the following:
+In the the `Main.cc` file there is a function called `buildScene` which is in charge of creating the objects in the scene (for example: the grid or the duck). 
+The steps to visualize a mesh are the following:
 
   - Create a visual
   - Attach mesh to the visual
@@ -42,7 +43,7 @@ mesh->AddGeometry(meshGeom);
 root->AddChild(mesh);
 ```
 
-Similar to the code we can add a grid in the floor:
+Similarly, we can add a grid to the floor:
 
 ```{.cpp}
 // create grid visual
@@ -57,7 +58,7 @@ grid->SetMaterial(gray);
 root->AddChild(grid);
 ```
 
-Or we can include a camera, setting up the position, orientation, dimensions and other relevant feature of cameras:
+Or we can include a camera and set up the position, orientation, dimensions and other relevant features of cameras:
 
 ```{.cpp}
 // create camera

@@ -133,10 +133,9 @@ void Ogre2Material::SetAlphaFromTexture(bool _enabled,
   else
   {
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_ALWAYS_PASS);
-    this->ogreDatablock->setTwoSidedLighting(false);
-    this->twoSidedEnabled = false;
   }
   this->ogreDatablock->setAlphaTestThreshold(_alpha);
+  this->ogreDatablock->setTwoSidedLighting(_twoSided);
 }
 
 //////////////////////////////////////////////////

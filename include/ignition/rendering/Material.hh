@@ -169,7 +169,7 @@ namespace ignition
 
       /// \brief Get the enable alpha from textures
       /// \return The enable alpha value
-      public: virtual bool AlphaEnabled() const = 0;
+      public: virtual bool TextureAlphaEnabled() const = 0;
 
       /// \brief Get the alpha threshold
       /// \return The alpha threshold value

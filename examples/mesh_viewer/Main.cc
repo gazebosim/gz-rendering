@@ -55,7 +55,7 @@ void buildScene(ScenePtr _scene)
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
-  // create a mesh
+//! [create a mesh]
   VisualPtr mesh = _scene->CreateVisual();
   mesh->SetLocalPosition(3, 0, 0);
   mesh->SetLocalRotation(1.5708, 0, 2.0);
@@ -66,6 +66,7 @@ void buildScene(ScenePtr _scene)
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
+//! [create a mesh]
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();
@@ -73,7 +74,7 @@ void buildScene(ScenePtr _scene)
   gray->SetDiffuse(0.7, 0.7, 0.7);
   gray->SetSpecular(0.7, 0.7, 0.7);
 
-  // create grid visual
+//! [create grid visual]
   VisualPtr grid = _scene->CreateVisual();
   GridPtr gridGeom = _scene->CreateGrid();
   gridGeom->SetCellCount(20);
@@ -83,8 +84,9 @@ void buildScene(ScenePtr _scene)
   grid->SetLocalPosition(3, 0, 0.0);
   grid->SetMaterial(gray);
   root->AddChild(grid);
+//! [create grid visual]
 
-  // create camera
+//! [create camera]
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
@@ -94,6 +96,7 @@ void buildScene(ScenePtr _scene)
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
+//! [create camera]
 }
 
 //////////////////////////////////////////////////

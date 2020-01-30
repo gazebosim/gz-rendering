@@ -59,19 +59,26 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
 
   // create a visual for the actor, attach mesh and get skeleton
   // Skeleton will be animated by GlutWindow
+//! [create a visual for the actor]
   VisualPtr actorVisual = _scene->CreateVisual("actor");
   actorVisual->SetLocalPosition(3, 0, 0);
   actorVisual->SetLocalRotation(0, 0, 0);
+//! [create a visual for the actor]
 
+//! [create mesh]
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "walk.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
+//! [create mesh]
 
+//! [added mesh]
   _mesh = _scene->CreateMesh(descriptor);
   actorVisual->AddGeometry(_mesh);
   root->AddChild(actorVisual);
+//! [added mesh]
 
+//! [check skeleton]
   if (_mesh && descriptor.mesh->HasSkeleton())
   {
     _skel = descriptor.mesh->MeshSkeleton();
@@ -82,6 +89,7 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
       return;
     }
   }
+//! [check skeleton]
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();

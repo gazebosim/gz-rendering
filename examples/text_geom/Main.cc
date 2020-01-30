@@ -67,7 +67,7 @@ void buildScene(ScenePtr _scene)
   MaterialPtr green = _scene->CreateMaterial();
   green->SetDiffuse(0.0, 0.7, 0.0);
 
-  // creat text geometry
+  //! [create text geometry]
   TextPtr textGeom = _scene->CreateText();
   textGeom->SetFontName("Liberation Sans");
   textGeom->SetTextString("Hello World!");
@@ -83,6 +83,7 @@ void buildScene(ScenePtr _scene)
   // Only diffuse component will be used!
   text->SetMaterial(green);
   root->AddChild(text);
+  //! [create text geometry]
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

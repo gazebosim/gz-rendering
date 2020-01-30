@@ -151,3 +151,5 @@ ign_create_docs(
     "${IGNITION-COMMON_DOXYGEN_TAGFILE} = ${IGNITION-COMMON_API_URL}"
     "${IGNITION-MATH_DOXYGEN_TAGFILE} = ${IGNITION-MATH_API_URL}"
 )
+
+execute_process(COMMAND bash -c "cp -r ${CMAKE_SOURCE_DIR}/tutorials/img/ ${CMAKE_BINARY_DIR}/doxygen/html/img/")

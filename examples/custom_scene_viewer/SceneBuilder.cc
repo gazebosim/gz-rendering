@@ -259,6 +259,7 @@ SimpleSceneBuilder::~SimpleSceneBuilder()
 }
 
 //////////////////////////////////////////////////
+//! [build scene SimpleSceneBuilder]
 void SimpleSceneBuilder::BuildScene(ScenePtr _scene)
 {
   SceneBuilder::BuildScene(_scene);
@@ -286,7 +287,7 @@ void SimpleSceneBuilder::BuildScene(ScenePtr _scene)
   plane->SetMaterial("White");
   root->AddChild(plane);
 }
-
+//! [build scene SimpleSceneBuilder]
 //////////////////////////////////////////////////
 void SimpleSceneBuilder::ResetCamera(CameraPtr _camera)
 {
@@ -326,6 +327,7 @@ AllShapesSceneBuilder::~AllShapesSceneBuilder()
 }
 
 //////////////////////////////////////////////////
+//! [build scene AllShapesSceneBuilder]
 void AllShapesSceneBuilder::BuildScene(ScenePtr _scene)
 {
   SimpleSceneBuilder::BuildScene(_scene);
@@ -355,6 +357,7 @@ void AllShapesSceneBuilder::BuildScene(ScenePtr _scene)
   box->SetMaterial("Yellow");
   root->AddChild(box);
 }
+//! [build scene AllShapesSceneBuilder]
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -368,6 +371,7 @@ TextureSceneBuilder::~TextureSceneBuilder()
 }
 
 //////////////////////////////////////////////////
+//! [build scene TextureSceneBuilder]
 void TextureSceneBuilder::BuildScene(ScenePtr _scene)
 {
   AllShapesSceneBuilder::BuildScene(_scene);
@@ -387,6 +391,7 @@ void TextureSceneBuilder::BuildScene(ScenePtr _scene)
   VisualPtr sphere = _scene->VisualByName(SPHERE);
   sphere->SetMaterial("TextureRed");
 }
+//! [build scene TextureSceneBuilder]
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -400,6 +405,7 @@ NormalMapSceneBuilder::~NormalMapSceneBuilder()
 }
 
 //////////////////////////////////////////////////
+//! [build scene NormalMapSceneBuilder]
 void NormalMapSceneBuilder::BuildScene(ScenePtr _scene)
 {
   TextureSceneBuilder::BuildScene(_scene);
@@ -419,6 +425,7 @@ void NormalMapSceneBuilder::BuildScene(ScenePtr _scene)
   VisualPtr sphere = _scene->VisualByName(SPHERE);
   sphere->SetMaterial("NormalRed");
 }
+//! [build scene NormalMapSceneBuilder]
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////

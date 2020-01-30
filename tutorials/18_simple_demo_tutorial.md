@@ -1,4 +1,4 @@
-# Simple demo
+\page simple_demo Simple demo
 
 This example shows how move the camera automatically.
 
@@ -25,21 +25,10 @@ Engine 'optix' is not supported
 ===============================
 ```
 
-![](img/simple_demo.gif)
+@image html img/simple_demo.gif
 
 ## Code
 
 The function `updateCameras()` is called each time the `DisplayCB` function runs. Using the method `SetLocalPosition` from the `Camera` class we can locate the camera in the world:
 
-```{.cpp}
-//////////////////////////////////////////////////
-void updateCameras()
-{
-  for (ir::CameraPtr camera : g_cameras)
-  {
-    camera->SetLocalPosition(g_offset, g_offset, g_offset);
-  }
-
-  g_offset+= 0.001;
-}
-```
+\snippet examples/simple_demo/GlutWindow.cc update camera

@@ -1,6 +1,6 @@
-# Camera tracking
+\page camera_tracking Camera tracking
 
-This example allows you to move a box inside the world. 
+This example allows you to move a box inside the world.
 Using the `W` and `S` keys you can move the box forward or backward. Pressing `A` or `D` rotates the box. You can also set up how to you want to track the object and fix the offset.
 
 ## Compile and run the example
@@ -50,7 +50,7 @@ To run the example:
 
 ```
 
-![](img/camera_tracking.png)
+@image html img/camera_tracking.png
 
 ## Code
 

@@ -248,11 +248,12 @@ void updatePose(double _time)
   {
     std::string animName = pair.first;
     auto animTf = pair.second;
-
+//! [update pose]
     std::string skinName = g_skel->NodeNameAnimToSkin(g_animIdx, animName);
     ignition::math::Matrix4d skinTf =
             g_skel->AlignTranslation(g_animIdx, animName)
             * animTf * g_skel->AlignRotation(g_animIdx, animName);
+//! [update pose]
 
     skinFrames[skinName] = skinTf;
   }
@@ -361,6 +362,7 @@ void initContext()
 //////////////////////////////////////////////////
 void initAnimation()
 {
+//! [init animation]
   if (!g_skel || g_skel->AnimationCount() == 0)
   {
     std::cerr << "Failed to load animation." << std::endl;
@@ -371,8 +373,10 @@ void initAnimation()
   std::string bvhFile = ic::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
   double scale = 0.055;
   g_skel->AddBvhAnimation(bvhFile, scale);
-
+//! [init animation]
+//! [index animation]
   g_skelAnim = g_skel->Animation(g_animIdx);
+//! [index animation]
 
   g_startTime = std::chrono::steady_clock::now();
 }

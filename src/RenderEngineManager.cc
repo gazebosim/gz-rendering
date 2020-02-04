@@ -137,7 +137,8 @@ std::vector<std::string> RenderEngineManager::LoadedEngines() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   std::vector<std::string> engines;
-  for (auto [name, engine] : this->dataPtr->engines)
+  for (auto [name, engine] :  // NOLINT(whitespace/braces)
+      this->dataPtr->engines)
   {
     if (nullptr != engine)
       engines.push_back(name);

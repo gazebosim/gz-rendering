@@ -5,6 +5,10 @@
 1. Fix setting ogre2 background color after cameras are created
     * [Pull request 219](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/219)
 
+1. Ogre2: Fix shadows by dynamically generating shadow maps
+    * [Pull request 222](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/222)
+    * [Pull request 223](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/223)
+
 ### Ignition Rendering 2.2.0 (2019-11-20)
 
 1. Backport setting cast shadows

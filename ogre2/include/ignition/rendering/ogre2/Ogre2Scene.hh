@@ -77,6 +77,21 @@ namespace ignition
       /// \return Pointer to the ogre scene manager
       public: virtual Ogre::SceneManager *OgreSceneManager() const;
 
+      /// \cond PRIVATE
+      /// \internal
+      /// \brief Mark shadows dirty to rebuild compostior shadow node
+      /// This is set when the number of shadow casting lighst changes
+      /// \param[in] _dirty True to mark shadows are dirty
+      /// \sa SetShadowsDirty
+      public: void SetShadowsDirty(bool _dirty);
+
+      /// \internal
+      /// \brief Get whether shadows are dirty
+      /// \return True if the number of shadow casting lights changed
+      /// \sa ShadowsDirty
+      public: bool ShadowsDirty() const;
+      /// \endcond
+
       // Documentation inherited
       protected: virtual bool LoadImpl() override;
 

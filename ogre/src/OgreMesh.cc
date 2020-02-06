@@ -17,17 +17,25 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 
+
+/// brief Private implementation of the OgreMesh class
+class ignition::rendering::OgreMeshPrivate
+{
+};
+
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreMesh::OgreMesh()
+  : dataPtr(new OgreMeshPrivate)
 {
 }
 
@@ -95,27 +103,87 @@ void OgreMesh::SetSkeletonLocalTransforms(
   {
     return;
   }
+
   Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
 
-  for (auto const& pair : _tfs)
+  for (auto const &[boneName, tf] : _tfs)
   {
-    if (skel->hasBone(pair.first))
+    if (skel->hasBone(boneName))
     {
-      Ogre::Bone *bone = skel->getBone(pair.first);
-      ignition::math::Matrix4d tf = pair.second;
-      ignition::math::Vector3d tf_trans = tf.Translation();
-      ignition::math::Quaterniond tf_quat = tf.Rotation();
-
-      Ogre::Vector3 p(tf_trans.X(), tf_trans.Y(), tf_trans.Z());
-
-      const Ogre::Quaternion quat(
-        tf_quat.W(), tf_quat.X(), tf_quat.Y(), tf_quat.Z());
-
+      Ogre::Bone *bone = skel->getBone(boneName);
       bone->setManuallyControlled(true);
-      bone->setPosition(p);
-      bone->setOrientation(quat);
+      bone->setPosition(OgreConversions::Convert(tf.Translation()));
+      bone->setOrientation(OgreConversions::Convert(tf.Rotation()));
     }
   }
+}
+
+//////////////////////////////////////////////////
+void OgreMesh::SetSkeletonAnimationEnabled(const std::string &_name,
+    bool _enabled, bool _loop, float _weight)
+{
+  if (!this->ogreEntity->hasAnimationState(_name))
+  {
+    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    return;
+  }
+
+  // disable manual control
+  if (_enabled)
+  {
+    Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
+    Ogre::Skeleton::BoneIterator iter = skel->getBoneIterator();
+    while (iter.hasMoreElements())
+    {
+      Ogre::Bone* bone = iter.getNext();
+      bone->setManuallyControlled(false);
+    }
+  }
+
+  // update animation state
+  Ogre::AnimationState *anim = this->ogreEntity->getAnimationState(_name);
+  anim->setEnabled(_enabled);
+  anim->setLoop(_loop);
+  anim->setWeight(_weight);
+}
+
+//////////////////////////////////////////////////
+bool OgreMesh::SkeletonAnimationEnabled(const std::string &_name) const
+{
+  if (!this->ogreEntity->hasAnimationState(_name))
+  {
+    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    return false;
+  }
+
+  Ogre::AnimationState *anim = this->ogreEntity->getAnimationState(_name);
+  return anim->getEnabled();
+}
+
+
+//////////////////////////////////////////////////
+void OgreMesh::UpdateSkeletonAnimation(double _time)
+{
+  Ogre::AnimationStateSet *animationStateSet =
+      this->ogreEntity->getAllAnimationStates();
+
+  auto it = animationStateSet->getAnimationStateIterator();
+  while (it.hasMoreElements())
+  {
+    Ogre::AnimationState *anim = it.getNext();
+    if (anim->getEnabled())
+      anim->setTimePosition(_time);
+  }
+
+  // this workaround is needed for ogre 1.x because we are doing manual
+  // render updates.
+  // see https://forums.ogre3d.org/viewtopic.php?t=33448
+  Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
+  skel->setAnimationState(*this->ogreEntity->getAllAnimationStates());
+  skel->_notifyManualBonesDirty();
+
+  // Ogre::Bone *bone = skel->getBone("RightArm");
+  // std::cerr << " bone RightArm " <<  bone->getPosition() << " " << bone->getOrientation() << std::endl;;
 }
 
 //////////////////////////////////////////////////

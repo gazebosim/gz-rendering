@@ -29,6 +29,7 @@
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Skeleton.hh>
+#include <ignition/common/SkeletonAnimation.hh>
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/rendering.hh>
@@ -68,20 +69,26 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
 
+  // add bvh animation
+  std::string bvhFile = common::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
+  double scale = 0.055;
+  _skel = descriptor.mesh->MeshSkeleton();
+  _skel->AddBvhAnimation(bvhFile, scale);
+
+  ignmsg << "Creating mesh with animations..." << std::endl;
   _mesh = _scene->CreateMesh(descriptor);
   actorVisual->AddGeometry(_mesh);
   root->AddChild(actorVisual);
 
-  if (_mesh && descriptor.mesh->HasSkeleton())
+  if (!_mesh || _skel->AnimationCount() == 0)
   {
-    _skel = descriptor.mesh->MeshSkeleton();
-
-    if (!_skel || _skel->AnimationCount() == 0)
-    {
-      std::cerr << "Failed to load animation." << std::endl;
-      return;
-    }
+    std::cerr << "Failed to load animation." << std::endl;
+    return;
   }
+  ignmsg << "Loaded animations: " << std::endl;
+  for (unsigned int i = 0; i < _skel->AnimationCount(); ++i)
+    ignmsg << "  * " << _skel->Animation(i)->Name() << std::endl;
+
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();
@@ -105,8 +112,8 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.5);
-  camera->SetLocalRotation(0.0, 0.0, 0.0);
+  camera->SetLocalPosition(0.0, 0.0, 2.0);
+  camera->SetLocalRotation(0.0, 0.5, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);

@@ -62,7 +62,9 @@ ir::ImagePtr g_image;
 ir::MeshPtr g_mesh;
 ic::SkeletonPtr g_skel;
 ic::SkeletonAnimation *g_skelAnim;
-unsigned int g_animIdx = 1;
+unsigned int g_animIdx = 0;
+bool g_manualBoneUpdate = false;
+bool g_actorUpdateDirty = true;
 std::chrono::steady_clock::duration g_time{0};
 std::chrono::steady_clock::time_point g_startTime;
 
@@ -246,13 +248,13 @@ void updatePose(double _time)
 
   for (auto pair : animFrames)
   {
-    std::string animName = pair.first;
+    std::string animNodeName = pair.first;
     auto animTf = pair.second;
 
-    std::string skinName = g_skel->NodeNameAnimToSkin(g_animIdx, animName);
+    std::string skinName = g_skel->NodeNameAnimToSkin(g_animIdx, animNodeName);
     ignition::math::Matrix4d skinTf =
-            g_skel->AlignTranslation(g_animIdx, animName)
-            * animTf * g_skel->AlignRotation(g_animIdx, animName);
+            g_skel->AlignTranslation(g_animIdx, animNodeName)
+            * animTf * g_skel->AlignRotation(g_animIdx, animNodeName);
 
     skinFrames[skinName] = skinTf;
   }
@@ -261,19 +263,58 @@ void updatePose(double _time)
 }
 
 //////////////////////////////////////////////////
+void updateTime(double _time)
+{
+  g_mesh->UpdateSkeletonAnimation(_time);
+}
+
+//////////////////////////////////////////////////
 void updateActor()
 {
   auto seconds =
       std::chrono::duration_cast<std::chrono::milliseconds>(g_time).count() /
       1000.0;
-  updatePose(seconds);
-  if (seconds >= g_skelAnim->Length())
+
+  g_skelAnim = g_skel->Animation(g_animIdx);
+
+
+  // change detected due to key press
+  if (g_actorUpdateDirty)
   {
-    g_time = std::chrono::steady_clock::duration();
+    // disable all auto animations
+    for (unsigned int i = 0; i < g_skel->AnimationCount(); ++i)
+    {
+      auto anim = g_skel->Animation(i);
+      if (g_mesh->SkeletonAnimationEnabled(anim->Name()))
+        g_mesh->SetSkeletonAnimationEnabled(anim->Name(), false, false, 0.0);
+    }
+
+    // enabled selected animation
+    if (!g_manualBoneUpdate)
+    {
+      g_mesh->SetSkeletonAnimationEnabled(g_skelAnim->Name(), true, true, 1.0);
+    }
+    g_actorUpdateDirty = false;
   }
+
+  // manually update skeleton bone pose
+  if (g_manualBoneUpdate)
+  {
+    if (seconds >= g_skelAnim->Length())
+    {
+      g_time = std::chrono::steady_clock::duration();
+    }
+    else
+    {
+      g_time = std::chrono::steady_clock::now() - g_startTime;
+    }
+    updatePose(seconds);
+  }
+  // advance time for built in animations
   else
   {
     g_time = std::chrono::steady_clock::now() - g_startTime;
+    updateTime(seconds);
   }
 }
 
@@ -330,6 +371,19 @@ void keyboardCB(unsigned char _key, int, int)
   {
     g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
   }
+  else if (_key == 'i')
+  {
+    g_animIdx = (g_animIdx + 1) % 2;
+    auto anim = g_skel->Animation(g_animIdx);
+    g_actorUpdateDirty = true;
+    std::cout << "Playing animation: " << anim->Name() << std::endl;
+  }
+  else if (_key == 't')
+  {
+    g_manualBoneUpdate = !g_manualBoneUpdate;
+    g_actorUpdateDirty = true;
+    std::cout << "Manual skeleton bone update: " << g_manualBoneUpdate << std::endl;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -366,11 +420,6 @@ void initAnimation()
     std::cerr << "Failed to load animation." << std::endl;
     return;
   }
-  const std::string RESOURCE_PATH =
-      ic::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
-  std::string bvhFile = ic::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
-  double scale = 0.055;
-  g_skel->AddBvhAnimation(bvhFile, scale);
 
   g_skelAnim = g_skel->Animation(g_animIdx);
 
@@ -388,7 +437,7 @@ void printUsage()
 
 //////////////////////////////////////////////////
 void run(std::vector<ir::CameraPtr>_cameras,
-            ir::MeshPtr _mesh, ic::SkeletonPtr _skel)
+            ir::MeshPtr _meshes, ic::SkeletonPtr _skel)
 {
   if (_cameras.empty())
   {
@@ -406,7 +455,7 @@ void run(std::vector<ir::CameraPtr>_cameras,
 #endif
 
   g_cameras = _cameras;
-  g_mesh = _mesh;
+  g_mesh = _meshes;
   g_skel = _skel;
 
   initCamera(_cameras[0]);

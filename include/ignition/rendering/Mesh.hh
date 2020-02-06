@@ -59,6 +59,20 @@ namespace ignition
       public: virtual void SetSkeletonLocalTransforms(
             const std::map<std::string, math::Matrix4d> &_tfs) = 0;
 
+      /// \brief Set whether a skeleton animation should be enabled or not
+      /// \param[in] _name Name of animation
+      /// \param[in] _enabled True to enable animation, false to disable
+      /// \param[in] _loop True loop animation
+      public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
+            bool _enabled, bool _loop = true, float _weight = 1.0) = 0;
+
+      public: virtual bool SkeletonAnimationEnabled(const std::string &_name)
+            const = 0;
+
+      /// \brief Play the active skeleton animation to the specified time
+      /// \param[in] _time Time to set the skeleton animation to
+      public: virtual void UpdateSkeletonAnimation(double _time) = 0;
+
       /// \brief Get the sub-mesh count
       /// \return The sub-mesh count
       public: virtual unsigned int SubMeshCount() const = 0;

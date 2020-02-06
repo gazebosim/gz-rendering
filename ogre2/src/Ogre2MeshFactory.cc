@@ -224,11 +224,6 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
                 bone->getPosition();
             kf->setRotation(rot);
             kf->setTranslate(pos);
-
-            //  if (node->Name() == "RightArm")
-            //  std::cerr << "  adding frame " << node->Name() << " " << k << " " << keyFrame.first << " "
-            //            << rot <<  " "
-            //            << pos << std::endl;
           }
         }
       }

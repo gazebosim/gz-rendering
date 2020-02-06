@@ -241,6 +241,7 @@ void handleMouse()
 //////////////////////////////////////////////////
 void updatePose(double _time)
 {
+  // manually update the bone pose
   std::map<std::string, ignition::math::Matrix4d> animFrames;
   animFrames = g_skelAnim->PoseAt(_time, true);
 
@@ -265,18 +266,19 @@ void updatePose(double _time)
 //////////////////////////////////////////////////
 void updateTime(double _time)
 {
+  // set time to advance animation
   g_mesh->UpdateSkeletonAnimation(_time);
 }
 
 //////////////////////////////////////////////////
 void updateActor()
 {
+  g_time = std::chrono::steady_clock::now() - g_startTime;
   auto seconds =
       std::chrono::duration_cast<std::chrono::milliseconds>(g_time).count() /
       1000.0;
 
   g_skelAnim = g_skel->Animation(g_animIdx);
-
 
   // change detected due to key press
   if (g_actorUpdateDirty)
@@ -300,20 +302,11 @@ void updateActor()
   // manually update skeleton bone pose
   if (g_manualBoneUpdate)
   {
-    if (seconds >= g_skelAnim->Length())
-    {
-      g_time = std::chrono::steady_clock::duration();
-    }
-    else
-    {
-      g_time = std::chrono::steady_clock::now() - g_startTime;
-    }
-    updatePose(seconds);
+    updatePose(fmod(seconds, g_skelAnim->Length()));
   }
   // advance time for built in animations
   else
   {
-    g_time = std::chrono::steady_clock::now() - g_startTime;
     updateTime(seconds);
   }
 }

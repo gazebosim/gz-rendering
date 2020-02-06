@@ -73,7 +73,7 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
   std::string bvhFile = common::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
   double scale = 0.055;
   _skel = descriptor.mesh->MeshSkeleton();
-  _skel->AddBvhAnimation(bvhFile, scale);
+//  _skel->AddBvhAnimation(bvhFile, scale);
 
   ignmsg << "Creating mesh with animations..." << std::endl;
   _mesh = _scene->CreateMesh(descriptor);

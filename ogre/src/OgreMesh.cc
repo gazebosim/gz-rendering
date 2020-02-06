@@ -182,8 +182,8 @@ void OgreMesh::UpdateSkeletonAnimation(double _time)
   skel->setAnimationState(*this->ogreEntity->getAllAnimationStates());
   skel->_notifyManualBonesDirty();
 
-  // Ogre::Bone *bone = skel->getBone("RightArm");
-  // std::cerr << " bone RightArm " <<  bone->getPosition() << " " << bone->getOrientation() << std::endl;;
+//  Ogre::Bone *bone = skel->getBone("Hips");
+//  std::cerr << " bone Hips" <<  bone->getPosition() << " " << bone->getOrientation() << std::endl;;
 }
 
 //////////////////////////////////////////////////

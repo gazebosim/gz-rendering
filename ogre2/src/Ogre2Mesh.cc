@@ -172,10 +172,6 @@ void Ogre2Mesh::UpdateSkeletonAnimation(double _time)
     if (sa->getEnabled())
       sa->setTime(_time);
   }
-
-
-//  Ogre::Bone *bone = skel->getBone("RightArm");
-//  std::cerr << " bone RightArm " <<  bone->getPosition() << " " << bone->getOrientation() << std::endl;;
 }
 
 //////////////////////////////////////////////////

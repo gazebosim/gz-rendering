@@ -382,7 +382,8 @@ void keyboardCB(unsigned char _key, int, int)
   {
     g_manualBoneUpdate = !g_manualBoneUpdate;
     g_actorUpdateDirty = true;
-    std::cout << "Manual skeleton bone update: " << g_manualBoneUpdate << std::endl;
+    std::cout << "Manual skeleton bone update: " << g_manualBoneUpdate
+              << std::endl;
   }
 }
 

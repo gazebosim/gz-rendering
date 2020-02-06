@@ -189,7 +189,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMesh<T>::UpdateSkeletonAnimation(double)
+    void BaseMesh<T>::UpdateSkeletonAnimation(double /*_time*/)
     {
     }
 

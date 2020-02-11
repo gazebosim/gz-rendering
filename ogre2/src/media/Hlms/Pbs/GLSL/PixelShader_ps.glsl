@@ -371,10 +371,10 @@ void main()
 @foreach( hlms_lights_directional, n, 1 )
 	@insertpiece( ObjLightMaskCmp )
 		finalColour += BRDF( passBuf.lights[@n].position.xyz, viewDir, NdotV, passBuf.lights[@n].diffuse, passBuf.lights[@n].specular )@insertpiece( DarkenWithShadow );@end
-@foreach( hlms_lights_directional_non_caster, n, hlms_lights_directional )
-	@insertpiece( ObjLightMaskCmp )
-		finalColour += BRDF( passBuf.lights[@n].position.xyz, viewDir, NdotV, passBuf.lights[@n].diffuse, passBuf.lights[@n].specular );@end
-@end
+//@foreach( hlms_lights_directional_non_caster, n, hlms_lights_directional )
+//	@insertpiece( ObjLightMaskCmp )
+//		finalColour += BRDF( passBuf.lights[@n].position.xyz, viewDir, NdotV, passBuf.lights[@n].diffuse, passBuf.lights[@n].specular );@end
+//@end
 
 @property( hlms_lights_point || hlms_lights_spot || hlms_lights_area_approx )	vec3 lightDir;
 	float fDistance;

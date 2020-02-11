@@ -371,10 +371,7 @@ void main()
 @foreach( hlms_lights_directional, n, 1 )
 	@insertpiece( ObjLightMaskCmp )
 		finalColour += BRDF( passBuf.lights[@n].position.xyz, viewDir, NdotV, passBuf.lights[@n].diffuse, passBuf.lights[@n].specular )@insertpiece( DarkenWithShadow );@end
-//@foreach( hlms_lights_directional_non_caster, n, hlms_lights_directional )
-//	@insertpiece( ObjLightMaskCmp )
-//		finalColour += BRDF( passBuf.lights[@n].position.xyz, viewDir, NdotV, passBuf.lights[@n].diffuse, passBuf.lights[@n].specular );@end
-//@end
+@end
 
 @property( hlms_lights_point || hlms_lights_spot || hlms_lights_area_approx )	vec3 lightDir;
 	float fDistance;
@@ -382,16 +379,6 @@ void main()
 	float spotCosAngle;@end
 
 	//Point lights
-@foreach( hlms_lights_point, n, hlms_lights_directional_non_caster )
-	lightDir = passBuf.lights[@n].position.xyz - inPs.pos;
-	fDistance= length( lightDir );
-	if( fDistance <= passBuf.lights[@n].attenuation.x @insertpiece( andObjLightMaskCmp ) )
-	{
-		lightDir *= 1.0 / fDistance;
-		tmpColour = BRDF( lightDir, viewDir, NdotV, passBuf.lights[@n].diffuse, passBuf.lights[@n].specular )@insertpiece( DarkenWithShadowPoint );
-		float atten = 1.0 / (0.5 + (passBuf.lights[@n].attenuation.y + passBuf.lights[@n].attenuation.z * fDistance) * fDistance );
-		finalColour += tmpColour * atten;
-	}@end
 
 	//Spot lights
 	//spotParams[@value(spot_params)].x = 1.0 / cos( InnerAngle ) - cos( OuterAngle )

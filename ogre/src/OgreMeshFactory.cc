@@ -181,7 +181,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
             Ogre::TransformKeyFrame *kf =
                 ogreNodeAnimTrack->createNodeKeyFrame(keyFrame.first);
 
-            math::Matrix4d p = nodeAnim->FrameAt(keyFrame.first);
+            math::Matrix4d p = keyFrame.second;
 
             // apply anim-skin transform
             p = alignTrans * p * alignRot;

@@ -66,6 +66,9 @@ namespace ignition
       public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
             bool _enabled, bool _loop = true, float _weight = 1.0) = 0;
 
+      /// \brief Get whether a skeleton animation is enabled or not
+      /// \param[in] _name Name of animation
+      /// \return True is the skeleton animation is enabled, false otherwise
       public: virtual bool SkeletonAnimationEnabled(const std::string &_name)
             const = 0;
 

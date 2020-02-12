@@ -140,7 +140,6 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
         if (node->Parent())
           ogreSkeleton->getBone(node->Parent()->Name())->addChild(bone);
-        else std::cerr << "node no parent " << node->Name() << std::endl;
 
         math::Matrix4d trans = node->Transform();
         math::Vector3d pos = trans.Translation();
@@ -342,7 +341,6 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
           vba.boneIndex = 0;
           vba.weight = 0;
           ogreSubMesh->addBoneAssignment(vba);
-          std::cerr << " =============  no node assignment count "<< std::endl;
         }
       }
 

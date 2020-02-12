@@ -26,9 +26,10 @@ namespace ic = ignition::common;
 
 /// \brief Run the demo and render the scene from the cameras
 /// \param[in] _cameras Cameras in the scene
-/// \param[in] _mesh Actor mesh
+/// \param[in] _visuals Actor visuals
 /// \param[in] _skel Actor skeleton
 void run(std::vector<ir::CameraPtr> _cameras,
-    std::vector<ir::MeshPtr> _mesh, ic::SkeletonPtr _skel);
+    const std::vector<ir::VisualPtr> &_visuals,
+    ic::SkeletonPtr _skel);
 
 #endif

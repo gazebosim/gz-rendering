@@ -44,7 +44,7 @@ const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene, std::vector<MeshPtr> &_meshes,
+void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
     common::SkeletonPtr &_skel)
 {
   // initialize _scene
@@ -72,7 +72,7 @@ void buildScene(ScenePtr _scene, std::vector<MeshPtr> &_meshes,
   std::string bvhFile = common::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
   double scale = 0.055;
   _skel = descriptor.mesh->MeshSkeleton();
-  //  _skel->AddBvhAnimation(bvhFile, scale);
+  _skel->AddBvhAnimation(bvhFile, scale);
   if (_skel->AnimationCount() == 0)
   {
     ignerr << "Failed to load animation." << std::endl;
@@ -108,7 +108,7 @@ void buildScene(ScenePtr _scene, std::vector<MeshPtr> &_meshes,
       actorVisual->AddGeometry(mesh);
       root->AddChild(actorVisual);
 
-      _meshes.push_back(mesh);
+      _visuals.push_back(actorVisual);
     }
   }
 
@@ -146,7 +146,7 @@ void buildScene(ScenePtr _scene, std::vector<MeshPtr> &_meshes,
 
 //////////////////////////////////////////////////
 CameraPtr createCamera(const std::string &_engineName,
-    std::vector<MeshPtr> &_meshes, common::SkeletonPtr &_skel)
+    std::vector<VisualPtr> &_visuals, common::SkeletonPtr &_skel)
 {
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName);
@@ -157,7 +157,7 @@ CameraPtr createCamera(const std::string &_engineName,
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  buildScene(scene, _meshes, _skel);
+  buildScene(scene, _visuals, _skel);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
@@ -183,7 +183,7 @@ int main(int _argc, char** _argv)
 
   engineNames.push_back(engine);
 
-  std::vector<MeshPtr> meshes;
+  std::vector<VisualPtr> visuals;
   ic::SkeletonPtr skel = nullptr;
 
   for (auto engineName : engineNames)
@@ -191,7 +191,7 @@ int main(int _argc, char** _argv)
     std::cout << "Starting engine [" << engineName << "]" << std::endl;
     try
     {
-      CameraPtr camera = createCamera(engineName, meshes, skel);
+      CameraPtr camera = createCamera(engineName, visuals, skel);
       if (camera)
       {
         cameras.push_back(camera);
@@ -202,6 +202,6 @@ int main(int _argc, char** _argv)
       std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }
-  run(cameras, meshes, skel);
+  run(cameras, visuals, skel);
   return 0;
 }

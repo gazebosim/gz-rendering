@@ -29,6 +29,7 @@
   #include <GL/glx.h>
 #endif
 
+#include <iomanip>
 #include <mutex>
 #include <map>
 #include <string>
@@ -59,8 +60,8 @@ ir::CameraPtr g_camera;
 ir::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
-std::vector<ir::MeshPtr> g_meshes;
-std::vector<ir::MeshPtr> g_allMeshes;
+std::vector<ir::VisualPtr> g_visuals;
+std::vector<ir::VisualPtr> g_allVisuals;
 ic::SkeletonPtr g_skel;
 ic::SkeletonAnimation *g_skelAnim;
 unsigned int g_animIdx = 0;
@@ -245,7 +246,7 @@ void handleMouse()
 void updatePose(double _time)
 {
   // manually update the bone pose
-  for (auto &m : g_meshes)
+  for (auto &v : g_visuals)
   {
     std::map<std::string, ignition::math::Matrix4d> animFrames;
     animFrames = g_skelAnim->PoseAt(_time, true);
@@ -255,7 +256,8 @@ void updatePose(double _time)
       std::string animNodeName = pair.first;
       auto animTf = pair.second;
 
-      std::string skinName = g_skel->NodeNameAnimToSkin(g_animIdx, animNodeName);
+      std::string skinName =
+          g_skel->NodeNameAnimToSkin(g_animIdx, animNodeName);
       ignition::math::Matrix4d skinTf =
               g_skel->AlignTranslation(g_animIdx, animNodeName)
               * animTf * g_skel->AlignRotation(g_animIdx, animNodeName);
@@ -263,7 +265,9 @@ void updatePose(double _time)
       skinFrames[skinName] = skinTf;
     }
 
-    m->SetSkeletonLocalTransforms(skinFrames);
+    ir::MeshPtr mesh =
+        std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
+    mesh->SetSkeletonLocalTransforms(skinFrames);
   }
 }
 
@@ -271,8 +275,12 @@ void updatePose(double _time)
 void updateTime(double _time)
 {
   // set time to advance animation
-  for (auto &m : g_meshes)
-    m->UpdateSkeletonAnimation(_time);
+  for (auto &v : g_visuals)
+  {
+    ir::MeshPtr mesh =
+        std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
+    mesh->UpdateSkeletonAnimation(_time);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -289,42 +297,47 @@ void updateActor()
   if (g_actorUpdateDirty)
   {
     // disable all auto animations
-    for (auto &m : g_allMeshes)
+    for (auto &v : g_allVisuals)
     {
+      ir::MeshPtr mesh =
+          std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
       for (unsigned int i = 0; i < g_skel->AnimationCount(); ++i)
       {
         auto anim = g_skel->Animation(i);
 
         // reset pose
-        m->SetSkeletonAnimationEnabled(anim->Name(), true, true, 1.0);
-        m->UpdateSkeletonAnimation(0);
+        // mesh->SetSkeletonAnimationEnabled(anim->Name(), true, true, 1.0);
+        // mesh->UpdateSkeletonAnimation(0);
 
         // disable all
-        // if (m->SkeletonAnimationEnabled(anim->Name()))
-        m->SetSkeletonAnimationEnabled(anim->Name(), false, false, 0.0);
+        mesh->SetSkeletonAnimationEnabled(anim->Name(), false, false, 0.0);
       }
+      v->SetVisible(false);
     }
 
-    // set meshes to be updated
-    g_meshes.clear();
+    // set visuals to be updated
+    g_visuals.clear();
     if (g_updateAll)
     {
-      std::copy(g_allMeshes.begin(), g_allMeshes.end(),
-          std::back_inserter(g_meshes));
+      std::copy(g_allVisuals.begin(), g_allVisuals.end(),
+          std::back_inserter(g_visuals));
     }
     else
     {
       unsigned int idx = static_cast<unsigned int>(
-          sqrt(g_allMeshes.size()) * 0.5);
-      g_meshes.push_back(g_allMeshes[idx]);
+          sqrt(g_allVisuals.size()) * 0.5);
+      g_visuals.push_back(g_allVisuals[idx]);
     }
 
     // enabled selected animation
-    if (!g_manualBoneUpdate)
+    for (auto &v : g_visuals)
     {
-      for (auto &m : g_meshes)
+      v->SetVisible(true);
+      if (!g_manualBoneUpdate)
       {
-        m->SetSkeletonAnimationEnabled(g_skelAnim->Name(), true, true, 1.0);
+        ir::MeshPtr mesh =
+            std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
+        mesh->SetSkeletonAnimationEnabled(g_skelAnim->Name(), true, true, 1.0);
       }
     }
 
@@ -345,7 +358,7 @@ void updateActor()
 }
 
 //////////////////////////////////////////////////
-void drawText(int _x, int _y, const std::string _text)
+void drawText(int _x, int _y, const std::string &_text)
 {
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
@@ -356,7 +369,6 @@ void drawText(int _x, int _y, const std::string _text)
   glLoadIdentity();
   glColor3f(1.0f, 1.0f, 1.0f);
   glRasterPos2i(_x, _y);
-  std::string s = "Some text";
   void *font = GLUT_BITMAP_9_BY_15;
   for (auto c : _text)
     glutBitmapCharacter(font, c);
@@ -404,12 +416,13 @@ void displayCB()
   double t = std::chrono::duration_cast<std::chrono::milliseconds>(
       now - prevUpdateTime).count() / 1000.0;
   prevUpdateTime = now;
-  std::string tStr = std::to_string(1.0 / t);
-  drawText(10, 10, tStr);
+  std::string manual = g_manualBoneUpdate ? "true" : "false";
+  std::stringstream text;
+  text << std::fixed << std::setw(5) << std::setprecision(4) << (1.0/t);
+  text << std::setw(30) << "Manual skeleton update: " << manual;
+  drawText(10, 10, text.str());
 
   glutSwapBuffers();
-
-  // std::cerr << "t " <<  t <<  " " <<  1.0 / t << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -504,8 +517,9 @@ void printUsage()
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr>_cameras,
-         std::vector<ir::MeshPtr> _meshes, ic::SkeletonPtr _skel)
+void run(std::vector<ir::CameraPtr> _cameras,
+         const std::vector<ir::VisualPtr> &_visuals,
+         ic::SkeletonPtr _skel)
 {
   if (_cameras.empty())
   {
@@ -523,7 +537,7 @@ void run(std::vector<ir::CameraPtr>_cameras,
 #endif
 
   g_cameras = _cameras;
-  g_allMeshes = _meshes;
+  g_allVisuals = _visuals;
   g_skel = _skel;
 
   initCamera(_cameras[0]);

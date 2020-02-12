@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Skeleton animation updates
+    * [Pull request 235](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/235)
+
 ### Ignition Rendering 3.X
 
 1. Add Ogre2 DynamicRenderable class

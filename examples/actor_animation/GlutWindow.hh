@@ -29,6 +29,6 @@ namespace ic = ignition::common;
 /// \param[in] _mesh Actor mesh
 /// \param[in] _skel Actor skeleton
 void run(std::vector<ir::CameraPtr> _cameras,
-                    ir::MeshPtr _mesh, ic::SkeletonPtr _skel);
+    std::vector<ir::MeshPtr> _mesh, ic::SkeletonPtr _skel);
 
 #endif

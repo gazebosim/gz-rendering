@@ -305,10 +305,6 @@ void updateActor()
       {
         auto anim = g_skel->Animation(i);
 
-        // reset pose
-        // mesh->SetSkeletonAnimationEnabled(anim->Name(), true, true, 1.0);
-        // mesh->UpdateSkeletonAnimation(0);
-
         // disable all
         mesh->SetSkeletonAnimationEnabled(anim->Name(), false, false, 0.0);
       }

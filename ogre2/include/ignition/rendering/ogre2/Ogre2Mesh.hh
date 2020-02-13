@@ -73,7 +73,8 @@ namespace ignition
       public: bool SkeletonAnimationEnabled(const std::string &_name) const;
 
       // Documentation inherited.
-      public: void UpdateSkeletonAnimation(double _time);
+      public: void UpdateSkeletonAnimation(
+            std::chrono::steady_clock::duration _time);
 
       // Documentation inherited
       public: virtual Ogre::MovableObject *OgreObject() const override;

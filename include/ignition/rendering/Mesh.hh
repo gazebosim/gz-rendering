@@ -62,7 +62,8 @@ namespace ignition
       /// \brief Set whether a skeleton animation should be enabled or not
       /// \param[in] _name Name of animation
       /// \param[in] _enabled True to enable animation, false to disable
-      /// \param[in] _loop True loop animation
+      /// \param[in] _loop True to loop animation
+      /// \param[in] _weight Weight of animation
       public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
             bool _enabled, bool _loop = true, float _weight = 1.0) = 0;
 
@@ -74,7 +75,8 @@ namespace ignition
 
       /// \brief Play the active skeleton animation to the specified time
       /// \param[in] _time Time to set the skeleton animation to
-      public: virtual void UpdateSkeletonAnimation(double _time) = 0;
+      public: virtual void UpdateSkeletonAnimation(
+          std::chrono::steady_clock::duration _time) = 0;
 
       /// \brief Get the sub-mesh count
       /// \return The sub-mesh count

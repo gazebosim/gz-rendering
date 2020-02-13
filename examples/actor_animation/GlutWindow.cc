@@ -279,7 +279,9 @@ void updateTime(double _time)
   {
     ir::MeshPtr mesh =
         std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
-    mesh->UpdateSkeletonAnimation(_time);
+    mesh->UpdateSkeletonAnimation(
+        std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+        std::chrono::duration<double>(_time)));
   }
 }
 

@@ -162,7 +162,8 @@ bool OgreMesh::SkeletonAnimationEnabled(const std::string &_name) const
 
 
 //////////////////////////////////////////////////
-void OgreMesh::UpdateSkeletonAnimation(double _time)
+void OgreMesh::UpdateSkeletonAnimation(
+    std::chrono::steady_clock::duration _time)
 {
   Ogre::AnimationStateSet *animationStateSet =
       this->ogreEntity->getAllAnimationStates();
@@ -172,7 +173,12 @@ void OgreMesh::UpdateSkeletonAnimation(double _time)
   {
     Ogre::AnimationState *anim = it.getNext();
     if (anim->getEnabled())
-      anim->setTimePosition(_time);
+    {
+      auto seconds =
+          std::chrono::duration_cast<std::chrono::milliseconds>(_time).count() /
+          1000.0;
+      anim->setTimePosition(seconds);
+    }
   }
 
   // this workaround is needed for ogre 1.x because we are doing manual

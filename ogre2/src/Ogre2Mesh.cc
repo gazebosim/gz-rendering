@@ -157,7 +157,8 @@ void Ogre2Mesh::SetSkeletonAnimationEnabled(const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-void Ogre2Mesh::UpdateSkeletonAnimation(double _time)
+void Ogre2Mesh::UpdateSkeletonAnimation(
+    std::chrono::steady_clock::duration _time)
 {
   if (!this->ogreItem->hasSkeleton())
   {
@@ -170,7 +171,12 @@ void Ogre2Mesh::UpdateSkeletonAnimation(double _time)
   {
     Ogre::SkeletonAnimation *sa = skel->getAnimation(anim.getName());
     if (sa->getEnabled())
-      sa->setTime(_time);
+    {
+      auto seconds =
+          std::chrono::duration_cast<std::chrono::milliseconds>(_time).count() /
+          1000.0;
+      sa->setTime(seconds);
+    }
   }
 }
 

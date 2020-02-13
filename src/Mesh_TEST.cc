@@ -149,10 +149,18 @@ void MeshTest::MeshSkeletonAnimation(const std::string &_renderEngine)
   mesh->SetSkeletonAnimationEnabled(animName, true);
   EXPECT_TRUE(mesh->SkeletonAnimationEnabled(animName));
 
-  EXPECT_NO_THROW(mesh->UpdateSkeletonAnimation(0.0));
-  EXPECT_NO_THROW(mesh->UpdateSkeletonAnimation(1.0));
-  EXPECT_NO_THROW(mesh->UpdateSkeletonAnimation(-1));
-  EXPECT_NO_THROW(mesh->UpdateSkeletonAnimation(1234.5));
+  EXPECT_NO_THROW(mesh->UpdateSkeletonAnimation(
+      std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+      std::chrono::duration<double>(0.0))));
+  EXPECT_NO_THROW(mesh->UpdateSkeletonAnimation(
+      std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+      std::chrono::duration<double>(1.0))));
+  EXPECT_NO_THROW(mesh->UpdateSkeletonAnimation(
+      std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+      std::chrono::duration<double>(-11.0))));
+  EXPECT_NO_THROW(mesh->UpdateSkeletonAnimation(
+      std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+      std::chrono::duration<double>(1234.5))));
 
   // Clean up
   engine->DestroyScene(scene);

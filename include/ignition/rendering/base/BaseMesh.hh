@@ -59,7 +59,8 @@ namespace ignition
             const;
 
       // Documentation inherited.
-      public: virtual void UpdateSkeletonAnimation(double _time);
+      public: virtual void UpdateSkeletonAnimation(
+            std::chrono::steady_clock::duration _time);
 
       public: virtual unsigned int SubMeshCount() const override;
 
@@ -189,7 +190,8 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMesh<T>::UpdateSkeletonAnimation(double) // NOLINT
+    void BaseMesh<T>::UpdateSkeletonAnimation(
+        std::chrono::steady_clock::duration)
     {
     }
 

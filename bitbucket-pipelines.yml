@@ -17,7 +17,21 @@ pipelines:
           - gcov -v
           # Dependency: Ignition packages
           - apt-get -y install
-            libignition-cmake2-dev libignition-common3-dev libignition-math6-dev libignition-plugin-dev
+            libignition-cmake2-dev
+            libignition-math6-dev
+            libignition-plugin-dev
+          #  libignition-common3-dev
+          # Ignition common (uncomment if a specific branch is needed)
+          - apt-get -y install
+            libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
+            libfreeimage-dev libgts-dev libswscale-dev libtinyxml2-dev
+          - hg clone http://bitbucket.org/ignitionrobotics/ign-common -b ign-common3
+          - cd ign-common
+          - mkdir build
+          - cd build
+          - cmake ..
+          - make -j4 install
+          - cd ../..
           # lcov
           - git clone https://github.com/linux-test-project/lcov.git
           - cd lcov

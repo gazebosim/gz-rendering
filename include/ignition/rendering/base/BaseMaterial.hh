@@ -76,6 +76,19 @@ namespace ignition
       public: virtual void SetTransparency(const double _transparency) override;
 
       // Documentation inherited
+      public: virtual void SetAlphaFromTexture(bool _enabled,
+          double _alpha = 0.5, bool _twoSided = true) override;
+
+      // Documentation inherited
+      public: bool TextureAlphaEnabled() const override;
+
+      // Documentation inherited
+      public: double AlphaThreshold() const override;
+
+      // Documentation inherited
+      public: bool TwoSidedEnabled() const override;
+
+      // Documentation inherited
       public: virtual void SetShininess(const double _shininess) override;
 
       // Documentation inherited
@@ -294,6 +307,15 @@ namespace ignition
       /// \brief Transparent. 1: fully transparent, 0: opaque
       protected: double transparency = 0.0;
 
+      /// \brief Enable alpha channel based texture transparency
+      protected: bool textureAlphaEnabled = false;
+
+      /// \brief Threshold for alpha channel rejection
+      protected: double alphaThreshold = 0.5;
+
+      /// \brief Enable two sided rendering
+      protected: bool twoSidedEnabled = false;
+
       /// \brief Shininess factor
       protected: double shininess = 0.0;
 
@@ -403,6 +425,37 @@ namespace ignition
     void BaseMaterial<T>::SetTransparency(const double _transparency)
     {
       this->transparency = _transparency;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetAlphaFromTexture(bool _enabled, double _alpha,
+                                       bool _twoSided)
+    {
+      this->textureAlphaEnabled = _enabled;
+      this->alphaThreshold = _alpha;
+      this->twoSidedEnabled = _twoSided;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::TextureAlphaEnabled() const
+    {
+      return this->textureAlphaEnabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseMaterial<T>::AlphaThreshold() const
+    {
+      return this->alphaThreshold;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMaterial<T>::TwoSidedEnabled() const
+    {
+      return this->twoSidedEnabled;
     }
 
     //////////////////////////////////////////////////
@@ -815,6 +868,8 @@ namespace ignition
       this->SetEmissive(_material->Emissive());
       this->SetShininess(_material->Shininess());
       this->SetTransparency(_material->Transparency());
+      this->SetAlphaFromTexture(_material->TextureAlphaEnabled(),
+          _material->AlphaThreshold(), _material->TwoSidedEnabled());
       // override depth check / depth write after setting transparency
       this->SetDepthCheckEnabled(_material->DepthCheckEnabled());
       this->SetDepthWriteEnabled(_material->DepthWriteEnabled());
@@ -846,6 +901,8 @@ namespace ignition
       this->SetEmissive(_material.Emissive());
       this->SetShininess(_material.Shininess());
       this->SetTransparency(_material.Transparency());
+      this->SetAlphaFromTexture(_material.TextureAlphaEnabled(),
+          _material.AlphaThreshold(), _material.TwoSidedEnabled());
       // TODO(anyone): update common::Material
       this->SetReflectivity(0);
       this->SetTexture(_material.TextureImage());

@@ -548,13 +548,16 @@ void OgreMaterial::UpdateTransparency()
   Ogre::ColourValue color = this->ogrePass->getAmbient();
   double alpha = (1 - this->transparency) * color.a;
 
-  if (alpha < 1)
+  if (alpha < 1 || this->textureAlphaEnabled)
   {
     this->ogrePass->setDepthWriteEnabled(false);
     this->ogrePass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 
-    this->ogreTexState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL,
-        Ogre::LBS_CURRENT, alpha);
+    if (!this->textureAlphaEnabled)
+    {
+      this->ogreTexState->setAlphaOperation(Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL,
+          Ogre::LBS_CURRENT, alpha);
+    }
   }
   else
   {
@@ -562,6 +565,19 @@ void OgreMaterial::UpdateTransparency()
     this->ogrePass->setDepthCheckEnabled(true);
     this->ogrePass->setSceneBlending(Ogre::SBT_REPLACE);
   }
+  if (this->twoSidedEnabled)
+    this->ogrePass->setCullingMode(Ogre::CULL_NONE);
+  else
+    this->ogrePass->setCullingMode(Ogre::CULL_CLOCKWISE);
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetAlphaFromTexture(bool _enabled,
+  double _alpha, bool _twoSided)
+{
+  // TODO(anyone) Implement alpha testing for shadow caster pass
+  BaseMaterial::SetAlphaFromTexture(_enabled, _alpha, _twoSided);
+  this->UpdateTransparency();
 }
 
 //////////////////////////////////////////////////

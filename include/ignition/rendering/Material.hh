@@ -160,6 +160,25 @@ namespace ignition
       /// \param[in] _transparency New transparency value
       public: virtual void SetTransparency(const double _transparency) = 0;
 
+      /// \brief Set the material to use the alpha channel from the textures
+      /// \param[in] _enabled Enable alpha channel based rendering
+      /// \param[in] _alpha Set the alpha threshold value
+      /// \param[in] _twoSided Enable two sided rendering
+      public: virtual void SetAlphaFromTexture(bool _enabled,
+                  double _alpha = 0.5, bool _twoSided = true) = 0;
+
+      /// \brief Get the enable alpha from textures
+      /// \return The enable alpha value
+      public: virtual bool TextureAlphaEnabled() const = 0;
+
+      /// \brief Get the alpha threshold
+      /// \return The alpha threshold value
+      public: virtual double AlphaThreshold() const = 0;
+
+      /// \brief Get the enable two sided rendering value
+      /// \return The enable two sided rendering value
+      public: virtual bool TwoSidedEnabled() const = 0;
+
       /// \brief Get the reflectivity value
       /// \return The reflectivity value
       public: virtual double Reflectivity() const = 0;

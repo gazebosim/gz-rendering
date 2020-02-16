@@ -9,6 +9,9 @@
 1. Skeleton animation updates
     * [Pull request 235](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/235)
 
+1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
+    * [Pull request 229](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/229)
+
 ### Ignition Rendering 3.X
 
 1. Add Ogre2 DynamicRenderable class

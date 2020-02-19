@@ -2,6 +2,12 @@
 
 ### Ignition Rendering 2.X.X (2019-XX-XX)
 
+1. Add API to check which engines are loaded
+    * [Pull request 233](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/233)
+
+1. Fix custom shaders example
+    * [Pull request 230](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/230)
+
 1. Ogre2: Fix shadows by dynamically generating shadow maps
     * [Pull request 222](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/222)
     * [Pull request 223](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/223)

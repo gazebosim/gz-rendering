@@ -50,22 +50,37 @@ TEST(RenderingIfaceTest, GetEngine)
 
   EXPECT_EQ(count, engineCount());
 
+  EXPECT_TRUE(loadedEngines().empty());
+  EXPECT_FALSE(isEngineLoaded("ogre"));
+  EXPECT_FALSE(isEngineLoaded("ogre2"));
+  EXPECT_FALSE(isEngineLoaded("optix"));
+  EXPECT_FALSE(isEngineLoaded("no_such_engine"));
+
   // check get engine
   for (unsigned int i = 0; i < count; ++i)
   {
     RenderEngine *eng = engine(i, std::map<std::string, std::string>(),
         IGN_RENDERING_TEST_PLUGIN_PATH);
-    EXPECT_NE(nullptr, eng);
+    ASSERT_NE(nullptr, eng);
+    EXPECT_TRUE(isEngineLoaded(eng->Name()));
     EXPECT_TRUE(hasEngine(eng->Name()));
     EXPECT_EQ(eng, engine(eng->Name()));
+
 #if HAVE_OGRE && HAVE_OGRE2
     // TODO(anyone): ogre and ogre2 cannot be loaded at the same time
     // so for now only test rendering engine API with one ogre version
     if (eng->Name() == "ogre" || eng->Name() == "ogre2")
       ++i;
 #endif
+
+    ASSERT_EQ(1u, loadedEngines().size());
+    EXPECT_EQ(eng->Name(), loadedEngines()[0]);
+
     rendering::unloadEngine(eng->Name());
+    EXPECT_FALSE(isEngineLoaded(eng->Name()));
   }
+
+  EXPECT_TRUE(loadedEngines().empty());
 
   // non-existent engine
   EXPECT_EQ(nullptr, engine("no_such_engine"));

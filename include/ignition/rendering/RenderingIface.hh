@@ -19,6 +19,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
@@ -57,9 +58,21 @@ namespace ignition
     IGNITION_RENDERING_VISIBLE
     bool hasEngine(const std::string &_name);
 
+    /// \brief Determine if a render-engine is already loaded.
+    /// \param[in] _name Name of the desired render-engine
+    /// \return True if a render-engine is loaded under the given name
+    IGNITION_RENDERING_VISIBLE
+    bool isEngineLoaded(const std::string &_name);
+
+    /// \brief Get the names of all engines currently loaded.
+    /// \return All the engines currently loaded.
+    IGNITION_RENDERING_VISIBLE
+    std::vector<std::string> loadedEngines();
+
     /// \brief Get the render-engine registered under the given name. If no
     /// render-engine is registered under the given name, NULL will be
     /// returned.
+    /// If the engine is registered, but not loaded, this function will load it.
     /// \param[in] _name Name of the desired render-engine
     /// \param[in] _params Parameters to be passed to the render engine.
     /// \param[in] _path Another search path for rendering engine plugin.
@@ -71,6 +84,7 @@ namespace ignition
 
     /// \brief Get the render-engine registered at the given index. If no
     /// render-engine is registered at the given index, NULL will be returned.
+    /// If the engine is registered, but not loaded, this function will load it.
     /// \param[in] _index Index of the desired render-engine
     /// \param[in] _params Parameters to be passed to the render engine.
     /// \param[in] _path Another search path for rendering engine plugin.

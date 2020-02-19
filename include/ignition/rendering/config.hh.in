@@ -12,6 +12,8 @@
 
 #define IGNITION_RENDERING_VERSION_HEADER "Ignition ${IGN_PROJECT_NAME}, version ${PROJECT_VERSION_FULL}\nCopyright (C) 2014 Open Source Robotics Foundation.\nReleased under the Apache 2.0 License.\n\n"
 
+#define IGN_RENDERING_RESOURCE_PATH "${IGN_RENDERING_RESOURCE_PATH}"
+
 #cmakedefine BUILD_TYPE_PROFILE 1
 #cmakedefine BUILD_TYPE_DEBUG 1
 #cmakedefine BUILD_TYPE_RELEASE 1

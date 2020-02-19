@@ -57,6 +57,18 @@ bool hasEngine(const std::string &_name)
 }
 
 //////////////////////////////////////////////////
+bool isEngineLoaded(const std::string &_name)
+{
+  return RenderEngineManager::Instance()->IsEngineLoaded(_name);
+}
+
+//////////////////////////////////////////////////
+std::vector<std::string> loadedEngines()
+{
+  return RenderEngineManager::Instance()->LoadedEngines();
+}
+
+//////////////////////////////////////////////////
 RenderEngine *engine(const std::string &_name,
     const std::map<std::string, std::string> &_params,
     const std::string &_path)

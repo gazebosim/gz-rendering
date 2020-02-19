@@ -23,12 +23,9 @@ endif()
 
 configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
 
-set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/share/ignition/rendering-${PROJECT_VERSION_MAJOR})
 set_property(
   SOURCE custom_shaders.cc
   PROPERTY COMPILE_DEFINITIONS
-  IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
-  OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
 )
 
 add_executable(custom_shaders custom_shaders.cc)

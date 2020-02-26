@@ -395,7 +395,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   Ogre::HlmsTextureManager *hlmsTextureManager =
       this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
   Ogre::HlmsTextureManager::TextureLocation texLocation =
-      hlmsTextureManager->createOrRetrieveTexture(baseName,
+      hlmsTextureManager->createOrRetrieveTexture(_texture,
       this->ogreDatablock->suggestMapTypeBasedOnTextureType(_type));
 
   Ogre::HlmsSamplerblock samplerBlockRef;

@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 3.X
 
+1. Fix textures for multiple models with same texture names
+    * [Pull request 240](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/240)
+
 1. Add Ogre2 DynamicRenderable class
     * [Pull request 226](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/226)
 

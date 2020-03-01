@@ -10,6 +10,9 @@ endif()
 if(OGRE_VERSION VERSION_LESS 1.10.1)
   add_definitions(-DOGRE_VERSION_LT_1_10_1)
 endif()
+if(OGRE_VERSION VERSION_LESS 1.12.1)
+  add_definitions(-DOGRE_VERSION_LT_1_12_1)
+endif()
 
 find_package(OpenGL)
 

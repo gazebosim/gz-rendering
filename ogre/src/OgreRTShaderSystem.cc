@@ -298,7 +298,9 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
     try
     {
       this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
+#ifndef OGRE_VERSION_LT_1_12_1
           curMaterialName,
+#endif
 #ifndef OGRE_VERSION_LT_1_10_3
           curSubEntity->getMaterial()->getGroup(),
 #endif

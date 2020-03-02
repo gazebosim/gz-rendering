@@ -308,7 +308,7 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
           Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
 #else
       Ogre::Technique* srcTechnique =
-          Ogre::ShaderGenerator::findSourceTechnique(
+          Ogre::RTShader::ShaderGenerator::findSourceTechnique(
           *curSubEntity->getMaterial(),
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME, false);
       this->dataPtr->shaderGenerator->removeShaderBasedTechnique(srcTechnique,

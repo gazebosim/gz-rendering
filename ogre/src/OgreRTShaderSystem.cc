@@ -297,16 +297,21 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
   {
     try
     {
-      this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
 #ifdef OGRE_VERSION_LT_1_12_1
+      this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
+          curSubEntity->getMaterial()->getTechnique(0)
+      // TODO: Iaaaaaaaaan
+      // https://ogrecave.github.io/ogre/api/1.12/class_ogre_1_1_material.html
+#else
+      this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
           curMaterialName,
-  #ifndef OGRE_VERSION_LT_1_10_3
+      #ifndef OGRE_VERSION_LT_1_10_3
           curSubEntity->getMaterial()->getGroup(),
-  #endif
-#endif
+      #endif
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
           s->Name() +
           Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+#endif
     }
     catch(Ogre::Exception &e)
     {

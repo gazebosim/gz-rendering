@@ -3,7 +3,7 @@
 ### Ignition Rendering 3.X
 
 1. Use default material properties from ign-common PBR material when loading a mesh
-    * [Pull request 2](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/2)
+    * [Pull request 242](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/242)
 
 1. Add Ogre2 DynamicRenderable class
     * [Pull request 226](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/226)

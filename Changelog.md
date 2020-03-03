@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 3.X
 
+1. Fix build for ogre version >= 1.12.0
+    * [Pull request 241](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/241)
+
 1. Add Ogre2 DynamicRenderable class
     * [Pull request 226](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/226)
 

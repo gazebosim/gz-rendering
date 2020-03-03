@@ -29,6 +29,7 @@
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Skeleton.hh>
+#include <ignition/common/SkeletonAnimation.hh>
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/rendering.hh>
@@ -43,7 +44,8 @@ const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
+void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
+    common::SkeletonPtr &_skel)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
@@ -59,27 +61,54 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
 
   // create a visual for the actor, attach mesh and get skeleton
   // Skeleton will be animated by GlutWindow
-  VisualPtr actorVisual = _scene->CreateVisual("actor");
-  actorVisual->SetLocalPosition(3, 0, 0);
-  actorVisual->SetLocalRotation(0, 0, 0);
 
+  ignmsg << "Creating mesh with animations..." << std::endl;
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "walk.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
 
-  _mesh = _scene->CreateMesh(descriptor);
-  actorVisual->AddGeometry(_mesh);
-  root->AddChild(actorVisual);
-
-  if (_mesh && descriptor.mesh->HasSkeleton())
+  // add bvh animation
+  std::string bvhFile = common::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
+  double scale = 0.055;
+  _skel = descriptor.mesh->MeshSkeleton();
+  _skel->AddBvhAnimation(bvhFile, scale);
+  if (_skel->AnimationCount() == 0)
   {
-    _skel = descriptor.mesh->MeshSkeleton();
+    ignerr << "Failed to load animation." << std::endl;
+    return;
+  }
+  ignmsg << "Loaded animations: " << std::endl;
+  for (unsigned int i = 0; i < _skel->AnimationCount(); ++i)
+    ignmsg << "  * " << _skel->Animation(i)->Name() << std::endl;
 
-    if (!_skel || _skel->AnimationCount() == 0)
+  unsigned int size = 25;
+  double halfSize = size * 0.5;
+  unsigned int count = 0;
+  ignmsg << "Creating " << size*size << " meshes with skeleton animation"
+         << std::endl;
+  for (unsigned int i = 0; i < size; ++i)
+  {
+    double x = i + 3;
+    for (unsigned int j = 0; j < size; ++j)
     {
-      std::cerr << "Failed to load animation." << std::endl;
-      return;
+      double y = halfSize - j;
+      std::string actorName = "actor" + std::to_string(count++);
+      VisualPtr actorVisual = _scene->CreateVisual(actorName);
+
+      actorVisual->SetLocalPosition(x, y, 0);
+      actorVisual->SetLocalRotation(0, 0, 3.14);
+
+      auto mesh = _scene->CreateMesh(descriptor);
+      if (!mesh)
+      {
+        std::cerr << "Failed to load mesh with animation." << std::endl;
+        return;
+      }
+      actorVisual->AddGeometry(mesh);
+      root->AddChild(actorVisual);
+
+      _visuals.push_back(actorVisual);
     }
   }
 
@@ -105,8 +134,8 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.5);
-  camera->SetLocalRotation(0.0, 0.0, 0.0);
+  camera->SetLocalPosition(0.0, 0.0, 2.0);
+  camera->SetLocalRotation(0.0, 0.5, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);
@@ -117,7 +146,7 @@ void buildScene(ScenePtr _scene, MeshPtr &_mesh, common::SkeletonPtr &_skel)
 
 //////////////////////////////////////////////////
 CameraPtr createCamera(const std::string &_engineName,
-                    MeshPtr &_mesh, common::SkeletonPtr &_skel)
+    std::vector<VisualPtr> &_visuals, common::SkeletonPtr &_skel)
 {
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName);
@@ -128,7 +157,7 @@ CameraPtr createCamera(const std::string &_engineName,
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  buildScene(scene, _mesh, _skel);
+  buildScene(scene, _visuals, _skel);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
@@ -154,7 +183,7 @@ int main(int _argc, char** _argv)
 
   engineNames.push_back(engine);
 
-  MeshPtr mesh = nullptr;
+  std::vector<VisualPtr> visuals;
   ic::SkeletonPtr skel = nullptr;
 
   for (auto engineName : engineNames)
@@ -162,7 +191,7 @@ int main(int _argc, char** _argv)
     std::cout << "Starting engine [" << engineName << "]" << std::endl;
     try
     {
-      CameraPtr camera = createCamera(engineName, mesh, skel);
+      CameraPtr camera = createCamera(engineName, visuals, skel);
       if (camera)
       {
         cameras.push_back(camera);
@@ -173,6 +202,6 @@ int main(int _argc, char** _argv)
       std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }
-  run(cameras, mesh, skel);
+  run(cameras, visuals, skel);
   return 0;
 }

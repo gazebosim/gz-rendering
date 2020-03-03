@@ -23,16 +23,18 @@
 #include <ignition/common/Material.hh>
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/Skeleton.hh>
+#include <ignition/common/SkeletonAnimation.hh>
 #include <ignition/common/SubMesh.hh>
 
 #include <ignition/math/Matrix4.hh>
 
+#include "ignition/rendering/ogre/OgreConversions.hh"
+#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreMeshFactory.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -120,8 +122,8 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
     group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
     ogreMesh = Ogre::MeshManager::getSingleton().createManual(name, group);
 
+    // load skeleton
     Ogre::SkeletonPtr ogreSkeleton;
-
     if (_desc.mesh->HasSkeleton())
     {
       common::SkeletonPtr skel = _desc.mesh->MeshSkeleton();
@@ -130,6 +132,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         true);
 
+      // load bones
       for (unsigned int i = 0; i < skel->NodeCount(); i++)
       {
         common::SkeletonNode *node = skel->NodeByHandle(i);
@@ -147,9 +150,56 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
         bone->setManuallyControlled(true);
         bone->setInitialState();
       }
+
+      // load skeletal animations
+      for (unsigned int i = 0; i < skel->AnimationCount(); ++i)
+      {
+        common::SkeletonAnimation *skelAnim = skel->Animation(i);
+        Ogre::Animation *ogreAnim = ogreSkeleton->createAnimation(
+            skelAnim->Name(), skelAnim->Length());
+
+        for (unsigned int j = 0; j < skel->NodeCount(); ++j)
+        {
+          common::SkeletonNode *node = skel->NodeByHandle(j);
+          common::NodeAnimation *nodeAnim = skelAnim->NodeAnimationByName(
+              node->Name());
+          if (!nodeAnim)
+          {
+            continue;
+          }
+          Ogre::Bone *bone = ogreSkeleton->getBone(node->Name());
+          Ogre::NodeAnimationTrack *ogreNodeAnimTrack =
+              ogreAnim->createNodeTrack(j, bone);
+
+          // set up transform (needed for bvh)
+          math::Matrix4d alignTrans = skel->AlignTranslation(i, node->Name());
+          math::Matrix4d alignRot = skel->AlignRotation(i, node->Name());
+
+          for (unsigned int k = 0; k < nodeAnim->FrameCount(); ++k)
+          {
+            std::pair<double, math::Matrix4d> keyFrame = nodeAnim->KeyFrame(k);
+            Ogre::TransformKeyFrame *kf =
+                ogreNodeAnimTrack->createNodeKeyFrame(keyFrame.first);
+
+            math::Matrix4d p = keyFrame.second;
+
+            // apply anim-skin transform
+            p = alignTrans * p * alignRot;
+
+            auto rot = bone->getOrientation().Inverse() *
+                OgreConversions::Convert(p.Rotation());
+            auto pos = OgreConversions::Convert(p.Translation()) -
+                bone->getPosition();
+            kf->setRotation(rot);
+            kf->setTranslate(pos);
+          }
+        }
+      }
+
       ogreMesh->setSkeletonName(_desc.mesh->Name() + "_skeleton");
     }
 
+    // load submeshes
     for (unsigned int i = 0; i < _desc.mesh->SubMeshCount(); i++)
     {
       auto s = _desc.mesh->SubMeshByIndex(i).lock();

@@ -27,11 +27,18 @@
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+
+/// brief Private implementation of the Ogre2Mesh class
+class ignition::rendering::Ogre2MeshPrivate
+{
+};
+
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2Mesh::Ogre2Mesh()
+  : dataPtr(new Ogre2MeshPrivate)
 {
 }
 
@@ -107,15 +114,89 @@ void Ogre2Mesh::SetSkeletonLocalTransforms(
 
   for (auto const &[boneName, tf] : _tfs)
   {
-    if (skel->getBone(boneName))
+    auto bone = skel->getBone(boneName);
+    if (bone)
     {
-      auto bone = skel->getBone(boneName);
-
       skel->setManualBone(bone, true);
       bone->setPosition(Ogre2Conversions::Convert(tf.Translation()));
       bone->setOrientation(Ogre2Conversions::Convert(tf.Rotation()));
     }
   }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Mesh::SetSkeletonAnimationEnabled(const std::string &_name,
+    bool _enabled, bool _loop, float _weight)
+{
+  if (!this->ogreItem->hasSkeleton())
+  {
+    return;
+  }
+
+  Ogre::SkeletonInstance *skel = this->ogreItem->getSkeletonInstance();
+
+  if (!skel->hasAnimation(_name))
+  {
+    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    return;
+  }
+
+  if (_enabled)
+  {
+    for (unsigned int i = 0; i < skel->getNumBones(); ++i)
+    {
+      auto bone = skel->getBone(i);
+      skel->setManualBone(bone, false);
+    }
+  }
+
+  Ogre::SkeletonAnimation *anim = skel->getAnimation(_name);
+  anim->setEnabled(_enabled);
+  anim->setLoop(_loop);
+  anim->mWeight = _weight;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Mesh::UpdateSkeletonAnimation(
+    std::chrono::steady_clock::duration _time)
+{
+  if (!this->ogreItem->hasSkeleton())
+  {
+    return;
+  }
+
+  Ogre::SkeletonInstance *skel = this->ogreItem->getSkeletonInstance();
+  auto animations = skel->getAnimations();
+  for (auto &anim : animations)
+  {
+    Ogre::SkeletonAnimation *sa = skel->getAnimation(anim.getName());
+    if (sa->getEnabled())
+    {
+      auto seconds =
+          std::chrono::duration_cast<std::chrono::milliseconds>(_time).count() /
+          1000.0;
+      sa->setTime(seconds);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Mesh::SkeletonAnimationEnabled(const std::string &_name) const
+{
+  if (!this->ogreItem->hasSkeleton())
+  {
+    return false;
+  }
+
+  Ogre::SkeletonInstance *skel = this->ogreItem->getSkeletonInstance();
+  if (!skel->hasAnimation(_name))
+  {
+    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    return false;
+  }
+
+  Ogre::SkeletonAnimation *anim = skel->getAnimation(_name);
+  return anim->getEnabled();
 }
 
 //////////////////////////////////////////////////

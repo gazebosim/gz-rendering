@@ -7,7 +7,7 @@
 ### Ignition Rendering 4.0.0
 
 1. Add transparency based on diffuse tag's alpha channel
-    * [Pull request 229](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/243)
+    * [Pull request 243](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/243)
 
 1. Skeleton animation updates
     * [Pull request 235](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/235)

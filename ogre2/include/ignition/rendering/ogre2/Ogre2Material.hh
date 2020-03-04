@@ -65,7 +65,7 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void SetAlphaFromTexture(bool _enabled,
-          double _alpha=0.5, bool _twoSided=true) override;
+          double _alpha = 0.5, bool _twoSided = true) override;
 
       // Documentation inherited
       public: virtual bool ReceiveShadows() const override;
@@ -195,6 +195,10 @@ namespace ignition
       /// \brief Get a pointer to the ogre texture by name
       /// \return Ogre texture
       protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
+
+      /// \brief Updates the material transparency in the engine,
+      /// based on transparency and diffuse alpha values
+      protected: virtual void UpdateTransparency();
 
       // Documentation inherited.
       protected: virtual void Init() override;

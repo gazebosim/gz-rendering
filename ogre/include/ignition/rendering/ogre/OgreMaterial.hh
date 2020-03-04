@@ -85,8 +85,9 @@ namespace ignition
       public: virtual void SetTransparency(const double _transparency)
                   override;
 
+      // Documentation inherited
       public: virtual void SetAlphaFromTexture(bool _enabled,
-          double _alpha=0.5, bool _twoSided=true) override;
+          double _alpha = 0.5, bool _twoSided = true) override;
 
       public: virtual double Reflectivity() const override;
 

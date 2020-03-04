@@ -6,6 +6,12 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Skeleton animation updates
+    * [Pull request 235](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/235)
+
+1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
+    * [Pull request 229](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/229)
+
 ### Ignition Rendering 3.X
 
 1. Add Ogre2 DynamicRenderable class
@@ -13,6 +19,9 @@
 
 1. Skeletons for Ogre2
     * [Pull request 224](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/224)
+
+1. Fixed gazebo scene viewer example
+    * [Pull request 228](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/228)
 
 ### Ignition Rendering 3.0.0 (2019-12-10)
 

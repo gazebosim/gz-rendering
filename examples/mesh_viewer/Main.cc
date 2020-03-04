@@ -82,6 +82,19 @@ void buildScene(ScenePtr _scene)
   cage->AddGeometry(cageMeshGeom);
   root->AddChild(cage);
 
+  // create box visual
+  VisualPtr box = _scene->CreateVisual("box");
+  box->AddGeometry(_scene->CreateBox());
+  box->SetLocalPosition(3, 1.5, 0.5);
+  box->SetLocalRotation(0, 0, 0);
+  //box->SetLocalScale(0.5, 0.5, 0.5);
+  MaterialPtr boxMat = _scene->CreateMaterial();
+  // Blue, partially transparent
+  boxMat->SetDiffuse(0.1, 0.1, 0.9, 0.8);
+  boxMat->SetAmbient(0.1, 0.1, 0.9, 0.8);
+  box->SetMaterial(boxMat);
+  root->AddChild(box);
+
   // create grid visual
   GridPtr gridGeom = _scene->CreateGrid();
   if (gridGeom)

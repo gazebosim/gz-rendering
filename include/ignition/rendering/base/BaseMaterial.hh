@@ -77,10 +77,10 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void SetAlphaFromTexture(bool _enabled,
-          double _alpha=0.5, bool _twoSided=true) override;
+          double _alpha = 0.5, bool _twoSided = true) override;
 
       // Documentation inherited
-      public: bool AlphaEnabled() const override;
+      public: bool TextureAlphaEnabled() const override;
 
       // Documentation inherited
       public: double AlphaThreshold() const override;
@@ -308,7 +308,7 @@ namespace ignition
       protected: double transparency = 0.0;
 
       /// \brief Enable alpha channel based texture transparency
-      protected: bool alphaEnabled = false;
+      protected: bool textureAlphaEnabled = false;
 
       /// \brief Threshold for alpha channel rejection
       protected: double alphaThreshold = 0.5;
@@ -432,16 +432,16 @@ namespace ignition
     void BaseMaterial<T>::SetAlphaFromTexture(bool _enabled, double _alpha,
                                        bool _twoSided)
     {
-      this->alphaEnabled = _enabled;
+      this->textureAlphaEnabled = _enabled;
       this->alphaThreshold = _alpha;
       this->twoSidedEnabled = _twoSided;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    bool BaseMaterial<T>::AlphaEnabled() const
+    bool BaseMaterial<T>::TextureAlphaEnabled() const
     {
-      return this->alphaEnabled;
+      return this->textureAlphaEnabled;
     }
 
     //////////////////////////////////////////////////
@@ -868,7 +868,7 @@ namespace ignition
       this->SetEmissive(_material->Emissive());
       this->SetShininess(_material->Shininess());
       this->SetTransparency(_material->Transparency());
-      this->SetAlphaFromTexture(_material->AlphaEnabled(),
+      this->SetAlphaFromTexture(_material->TextureAlphaEnabled(),
           _material->AlphaThreshold(), _material->TwoSidedEnabled());
       // override depth check / depth write after setting transparency
       this->SetDepthCheckEnabled(_material->DepthCheckEnabled());
@@ -901,7 +901,7 @@ namespace ignition
       this->SetEmissive(_material.Emissive());
       this->SetShininess(_material.Shininess());
       this->SetTransparency(_material.Transparency());
-      this->SetAlphaFromTexture(_material.AlphaEnabled(),
+      this->SetAlphaFromTexture(_material.TextureAlphaEnabled(),
           _material.AlphaThreshold(), _material.TwoSidedEnabled());
       // TODO(anyone): update common::Material
       this->SetReflectivity(0);

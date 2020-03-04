@@ -32,7 +32,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Default pbr material properties
-    const static common::Pbr kDefaultPbr;
+    static const common::Pbr kDefaultPbr;
 
     template <class T>
     class BaseMaterial :

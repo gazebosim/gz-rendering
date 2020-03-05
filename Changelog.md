@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Update transparency based on diffuse alpha channel for ogre2
+    * [Pull request 243](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/243)
+
 1. Skeleton animation updates
     * [Pull request 235](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/235)
 

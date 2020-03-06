@@ -30,13 +30,8 @@ class ignition::rendering::Ogre2GridPrivate
   /// \brief Grid materal
   public: Ogre2MaterialPtr material;
 
-  /// \brief Ogre manual object used to render the grid.
-  public: Ogre::v1::ManualObject *manualObject = nullptr;
-
+  /// \brief Ogre renderable used to render the grid.
   public: Ogre2DynamicRenderable *grid = nullptr;
-
-  /// \brief Ogre memory manager responsible for the movable object
-  public: Ogre::ObjectMemoryManager *memoryManager = nullptr;
 };
 
 //////////////////////////////////////////////////
@@ -80,38 +75,12 @@ void Ogre2Grid::Create()
   {
     this->dataPtr->grid = new Ogre2DynamicRenderable(this->scene);
   }
-  if (!this->dataPtr->grid)
-  {
-    ignwarn << "grid null\n";
-  }
 
   this->dataPtr->grid->SetOperationType(MarkerType::MT_LINE_LIST);
   
-  /*
-  if (!this->dataPtr->manualObject)
-  {
-    this->dataPtr->manualObject = new
-      Ogre::v1::ManualObject(1, this->dataPtr->memoryManager, this->scene->OgreSceneManager());
-    //  this->dataPtr->manualObject =
-    //    this->scene->OgreSceneManager()->createManualObject(this->name);
-  }
-
-  this->dataPtr->manualObject->clear();
-
-  */
   double extent = (this->cellLength * static_cast<double>(this->cellCount))/2;
-/*
-  this->dataPtr->manualObject->setCastShadows(false);
-  this->dataPtr->manualObject->estimateVertexCount(
-      this->cellCount * 4 * this->verticalCellCount +
-      ((this->cellCount + 1) * (this->cellCount + 1)));
-*/
   std::string materialName = this->dataPtr->material ?
       this->dataPtr->material->Name() : "Default/White";
-  //t his->dataPtr->manualObject->begin(materialName,
-  //    Ogre::OT_LINE_LIST);
-  ignwarn << "Cell length " << this->cellLength << "\n";
-  ignwarn << "Vertical cell count " << this->verticalCellCount << "\n";
   for (unsigned int h = 0; h <= this->verticalCellCount; ++h)
   {
     double hReal = this->heightOffset +
@@ -130,16 +99,10 @@ void Ogre2Grid::Create()
       this->dataPtr->grid->AddPoint(p2);
       this->dataPtr->grid->AddPoint(p3);
       this->dataPtr->grid->AddPoint(p4);
-
-      //this->dataptr->manualobject->position(p1);
-      //this->dataptr->manualobject->position(p2);
-
-      //this->dataptr->manualobject->position(p3);
-      //this->dataptr->manualobject->position(p4);
     }
   }
+
   this->dataPtr->grid->Update();
-/*
   if (this->verticalCellCount > 0)
   {
     for (unsigned int x = 0; x <= this->cellCount; ++x)
@@ -152,21 +115,10 @@ void Ogre2Grid::Create()
         double zTop = (this->verticalCellCount / 2.0f) * this->cellLength;
         double zBottom = -zTop;
 
-        this->dataPtr->manualObject->position(xReal, yReal, zBottom);
-        this->dataPtr->manualObject->position(xReal, yReal, zBottom);
+        this->dataPtr->grid->AddPoint(xReal, yReal, zBottom);
       }
     }
   }
-
-  ignwarn << "Current index count " << this->dataPtr->manualObject->getCurrentIndexCount() << "\n";
-
-  if (this->dataPtr->manualObject->getParentSceneNode())
-    this->dataPtr->manualObject->setVisible(1);
-    
-  ignwarn << "parent node " << this->dataPtr->manualObject->getParentSceneNode() << "\n";
-  ignwarn << "is visible? " << this->dataPtr->manualObject->isVisible() << "\n";
-  this->dataPtr->manualObject->end();
-  */
 }
 
 //////////////////////////////////////////////////
@@ -193,7 +145,6 @@ void Ogre2Grid::SetMaterialImpl(Ogre2MaterialPtr _material)
 {
   std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
-  this->dataPtr->manualObject->setMaterialName(0, materialName);
   this->dataPtr->material = _material;
 
   this->dataPtr->material->SetReceiveShadows(false);

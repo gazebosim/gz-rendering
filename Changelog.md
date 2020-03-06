@@ -1,6 +1,8 @@
 ## Ignition Rendering
 
-### Ignition Rendering 3.X
+### Ignition Rendering 3.X.X
+
+### Ignition Rendering 3.1.0 (2020-03-05)
 
 1. Use default material properties from ign-common PBR material when loading a mesh
     * [Pull request 242](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/242)
@@ -13,6 +15,21 @@
 
 1. Fixed gazebo scene viewer example
     * [Pull request 228](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/228)
+
+1. Ogre2: Fix shadows by dynamically generating shadow maps
+    * [Pull request 222](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/222)
+
+1. Ogre2: Destroy resources before recreating shadows
+    * [Pull request 223](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/223)
+
+1. Fix custom shaders example
+    * [Pull request 230](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/230)
+
+1. Gazebo_scene_viewer fix
+    * [Pull request 228](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/228)
+
+1. Add API to check which engines are loaded
+    * [Pull request 233](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/233)
 
 ### Ignition Rendering 3.0.0 (2019-12-10)
 

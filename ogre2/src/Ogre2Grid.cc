@@ -75,8 +75,10 @@ void Ogre2Grid::Create()
     this->dataPtr->grid = new Ogre2DynamicRenderable(this->scene);
   }
 
-  this->dataPtr->grid->SetOperationType(MarkerType::MT_LINE_LIST);
+  // Clear any previous data from the grid
+  this->dataPtr->grid->Clear();
 
+  this->dataPtr->grid->SetOperationType(MarkerType::MT_LINE_LIST);
   double extent = (this->cellLength * static_cast<double>(this->cellCount))/2;
   for (unsigned int h = 0; h <= this->verticalCellCount; ++h)
   {

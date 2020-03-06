@@ -70,17 +70,14 @@ void Ogre2Grid::Init()
 //////////////////////////////////////////////////
 void Ogre2Grid::Create()
 {
-
   if (!this->dataPtr->grid)
   {
     this->dataPtr->grid = new Ogre2DynamicRenderable(this->scene);
   }
 
   this->dataPtr->grid->SetOperationType(MarkerType::MT_LINE_LIST);
-  
+
   double extent = (this->cellLength * static_cast<double>(this->cellCount))/2;
-  std::string materialName = this->dataPtr->material ?
-      this->dataPtr->material->Name() : "Default/White";
   for (unsigned int h = 0; h <= this->verticalCellCount; ++h)
   {
     double hReal = this->heightOffset +
@@ -137,17 +134,19 @@ void Ogre2Grid::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
+  // Set material for the underlying dynamic renderable
+  this->dataPtr->grid->SetMaterial(_material, _unique);
   this->SetMaterialImpl(derived);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Grid::SetMaterialImpl(Ogre2MaterialPtr _material)
 {
-  std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
   this->dataPtr->material = _material;
 
   this->dataPtr->material->SetReceiveShadows(false);
+  this->dataPtr->material->SetCastShadows(false);
   this->dataPtr->material->SetLightingEnabled(false);
 }
 

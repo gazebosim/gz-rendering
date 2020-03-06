@@ -66,15 +66,16 @@ namespace ignition
             const std::map<std::string, math::Matrix4d> &_tfs) override;
 
       // Documentation inherited.
-      public: void SetSkeletonAnimationEnabled(const std::string &_name,
-            bool _enabled, bool _loop = true, float _weight = 1.0);
+      public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
+            bool _enabled, bool _loop = true, float _weight = 1.0) override;
 
       // Documentation inherited.
-      public: bool SkeletonAnimationEnabled(const std::string &_name) const;
+      public: virtual bool SkeletonAnimationEnabled(const std::string &_name)
+            const override;
 
       // Documentation inherited.
-      public: void UpdateSkeletonAnimation(
-            std::chrono::steady_clock::duration _time);
+      public: virtual void UpdateSkeletonAnimation(
+            std::chrono::steady_clock::duration _time) override;
 
       // Documentation inherited
       public: virtual Ogre::MovableObject *OgreObject() const override;

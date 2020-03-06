@@ -52,15 +52,15 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
-            bool _enabled, bool _loop = true, float _weight = 1.0);
+            bool _enabled, bool _loop = true, float _weight = 1.0) override;
 
       // Documentation inherited.
       public: virtual bool SkeletonAnimationEnabled(const std::string &_name)
-            const;
+            const override;
 
       // Documentation inherited.
       public: virtual void UpdateSkeletonAnimation(
-            std::chrono::steady_clock::duration _time);
+            std::chrono::steady_clock::duration _time) override;
 
       public: virtual unsigned int SubMeshCount() const override;
 

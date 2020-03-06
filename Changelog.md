@@ -25,9 +25,6 @@
 1. Fix custom shaders example
     * [Pull request 230](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/230)
 
-1. Gazebo_scene_viewer fix
-    * [Pull request 228](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/228)
-
 1. Add API to check which engines are loaded
     * [Pull request 233](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/233)
 

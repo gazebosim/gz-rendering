@@ -21,6 +21,7 @@
 #include <string>
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/Storage.hh"
+#include <ignition/math/AxisAlignedBox.hh>
 
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
@@ -91,6 +92,9 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual Variant UserData(const std::string &_key) const override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
 
       protected: virtual void PreRenderChildren() override;
 
@@ -337,6 +341,16 @@ namespace ignition
       if (it != this->userData.end())
         value = it->second;
       return value;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::AxisAlignedBox BaseVisual<T>::BoundingBox() const
+    {
+      ignition::math::AxisAlignedBox box(
+          ignition::math::Vector3d::Zero,
+          ignition::math::Vector3d::Zero);
+      return box;
     }
     }
   }

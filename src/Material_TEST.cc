@@ -403,7 +403,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   }
 
   // test copying from a common material
-  // common::Material currently only has a subset of  material properties
+  // common::Material currently only has a subset of material properties
   common::Material comMat;
   comMat.SetAmbient(ambient);
   comMat.SetDiffuse(ambient);
@@ -415,6 +415,17 @@ void MaterialTest::Copy(const std::string &_renderEngine)
       twoSidedEnabled);
   comMat.SetLighting(lightingEnabled);
   comMat.SetTextureImage(textureName);
+  common::Pbr pbr;
+  pbr.SetType(common::PbrType::METAL);
+  pbr.SetRoughness(roughness);
+  pbr.SetMetalness(metalness);
+  pbr.SetAlbedoMap(textureName);
+  pbr.SetNormalMap(normalMapName);
+  pbr.SetRoughnessMap(roughnessMapName);
+  pbr.SetMetalnessMap(metalnessMapName);
+  pbr.SetEmissiveMap(emissiveMapName);
+  pbr.SetEnvironmentMap(envMapName);
+  comMat.SetPbrMaterial(pbr);
 
   MaterialPtr comCopy = scene->CreateMaterial("comCopy");
   EXPECT_TRUE(scene->MaterialRegistered("comCopy"));
@@ -432,6 +443,21 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(lightingEnabled, comCopy->LightingEnabled());
   EXPECT_EQ(textureName, comCopy->Texture());
   EXPECT_TRUE(comCopy->HasTexture());
+  if (material->Type() == MaterialType::MT_PBS)
+  {
+    EXPECT_DOUBLE_EQ(roughness, comCopy->Roughness());
+    EXPECT_DOUBLE_EQ(metalness, comCopy->Metalness());
+    EXPECT_TRUE(comCopy->HasNormalMap());
+    EXPECT_EQ(normalMapName, comCopy->NormalMap());
+    EXPECT_TRUE(comCopy->HasRoughnessMap());
+    EXPECT_EQ(roughnessMapName, comCopy->RoughnessMap());
+    EXPECT_TRUE(comCopy->HasMetalnessMap());
+    EXPECT_EQ(metalnessMapName, comCopy->MetalnessMap());
+    EXPECT_TRUE(comCopy->HasEmissiveMap());
+    EXPECT_EQ(emissiveMapName, comCopy->EmissiveMap());
+    EXPECT_TRUE(comCopy->HasEnvironmentMap());
+    EXPECT_EQ(envMapName, comCopy->EnvironmentMap());
+  }
 
   // Clean up
   engine->DestroyScene(scene);

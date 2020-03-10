@@ -31,6 +31,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Default pbr material properties
+    static const common::Pbr kDefaultPbr;
+
     template <class T>
     class BaseMaterial :
       public virtual Material,
@@ -284,10 +287,13 @@ namespace ignition
       // \sa Material::SetFragmentShader(const std::string &)
       public: virtual void SetFragmentShader(const std::string &_path) override;
 
+      // Documentation inherited.
       public: virtual void CopyFrom(ConstMaterialPtr _material) override;
 
+      // Documentation inherited.
       public: virtual void CopyFrom(const common::Material &_material) override;
 
+      // Documentation inherited.
       public: virtual void PreRender() override;
 
       protected: virtual void Reset();
@@ -916,6 +922,17 @@ namespace ignition
       this->ClearNormalMap();
       // TODO(anyone): update common::Material
       this->SetShaderType(ST_PIXEL);
+
+      const common::Pbr *pbrMat = _material.PbrMaterial();
+      if (!pbrMat)
+        pbrMat = &kDefaultPbr;
+      this->SetNormalMap(pbrMat->NormalMap());
+      this->SetRoughnessMap(pbrMat->RoughnessMap());
+      this->SetMetalnessMap(pbrMat->MetalnessMap());
+      this->SetRoughness(pbrMat->Roughness());
+      this->SetMetalness(pbrMat->Metalness());
+      this->SetEnvironmentMap(pbrMat->EnvironmentMap());
+      this->SetEmissiveMap(pbrMat->EmissiveMap());
     }
 
     //////////////////////////////////////////////////
@@ -955,8 +972,8 @@ namespace ignition
       this->ClearRoughnessMap();
       this->ClearMetalnessMap();
       this->ClearEmissiveMap();
-      this->SetRoughness(1.0);
-      this->SetMetalness(0.8);
+      this->SetRoughness(kDefaultPbr.Roughness());
+      this->SetMetalness(kDefaultPbr.Metalness());
       this->SetShaderType(ST_PIXEL);
     }
     }

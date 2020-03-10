@@ -127,6 +127,7 @@ bool Ogre2Light::CastShadows() const
 void Ogre2Light::SetCastShadows(bool _castShadows)
 {
   this->ogreLight->setCastShadows(_castShadows);
+  this->scene->SetShadowsDirty(true);
 }
 
 //////////////////////////////////////////////////

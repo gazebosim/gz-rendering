@@ -16,6 +16,7 @@
  */
 
 #include <map>
+#include <mutex>
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/SystemPaths.hh>
@@ -82,6 +83,9 @@ class ignition::rendering::RenderEngineManagerPrivate
 
   /// \brief Plugin loader for managing render engine plugin libraries
   public: ignition::plugin::Loader pluginLoader;
+
+  /// \brief Mutex to protect the engines map.
+  public: std::recursive_mutex enginesMutex;
 };
 
 using namespace ignition;
@@ -104,14 +108,42 @@ RenderEngineManager::~RenderEngineManager()
 //////////////////////////////////////////////////
 unsigned int RenderEngineManager::EngineCount() const
 {
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   return this->dataPtr->engines.size();
 }
 
 //////////////////////////////////////////////////
 bool RenderEngineManager::HasEngine(const std::string &_name) const
 {
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto iter = this->dataPtr->engines.find(_name);
   return iter != this->dataPtr->engines.end();
+}
+
+//////////////////////////////////////////////////
+bool RenderEngineManager::IsEngineLoaded(const std::string &_name) const
+{
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
+  auto iter = this->dataPtr->engines.find(_name);
+
+  if (iter == this->dataPtr->engines.end())
+    return false;
+
+  return nullptr != iter->second;
+}
+
+//////////////////////////////////////////////////
+std::vector<std::string> RenderEngineManager::LoadedEngines() const
+{
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
+  std::vector<std::string> engines;
+  for (auto [name, engine] :  // NOLINT(whitespace/braces)
+      this->dataPtr->engines)
+  {
+    if (nullptr != engine)
+      engines.push_back(name);
+  }
+  return engines;
 }
 
 //////////////////////////////////////////////////
@@ -119,6 +151,7 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name,
     const std::map<std::string, std::string> &_params,
     const std::string &_path)
 {
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   // check in the list of available engines
   auto iter = this->dataPtr->engines.find(_name);
 
@@ -142,6 +175,7 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
     return nullptr;
   }
 
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
   return this->dataPtr->Engine(iter, _params, _path);
@@ -150,6 +184,7 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
 //////////////////////////////////////////////////
 bool RenderEngineManager::UnloadEngine(const std::string &_name)
 {
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   // check in the list of available engines
   auto iter = this->dataPtr->engines.find(_name);
 
@@ -171,6 +206,7 @@ bool RenderEngineManager::UnloadEngineAt(unsigned int _index)
     return false;
   }
 
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
   return this->dataPtr->UnloadEngine(iter);
@@ -194,12 +230,14 @@ void RenderEngineManager::RegisterEngine(const std::string &_name,
     return;
   }
 
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   this->dataPtr->engines[_name] = _engine;
 }
 
 //////////////////////////////////////////////////
 void RenderEngineManager::UnregisterEngine(const std::string &_name)
 {
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto iter = this->dataPtr->engines.find(_name);
 
   if (iter != this->dataPtr->engines.end())
@@ -214,6 +252,7 @@ void RenderEngineManager::UnregisterEngine(RenderEngine *_engine)
   if (!_engine)
     return;
 
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto begin = this->dataPtr->engines.begin();
   auto end = this->dataPtr->engines.end();
 
@@ -236,6 +275,7 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
     return;
   }
 
+  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
   this->dataPtr->UnregisterEngine(iter);
@@ -260,6 +300,7 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter,
       std::string libName = defaultIt->second;
       if (this->LoadEnginePlugin(libName, _path))
       {
+        std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
         auto engineIt = this->engines.find(_iter->first);
         if (engineIt != this->engines.end())
           engine = engineIt->second;
@@ -304,6 +345,7 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   // cppcheck-suppress unusedVariable
   std::string engineName;
 
+  std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
 #if HAVE_OGRE
   engineName = "ogre";
   this->defaultEngines[engineName] = libName + engineName;
@@ -385,7 +427,10 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
 
   // this triggers the engine to be instantiated
   std::string engineName = plugin->Name();
-  this->engines[engineName] = plugin->Engine();
+  {
+    std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
+    this->engines[engineName] = plugin->Engine();
+  }
 
   // store engine plugin data so plugin can be unloaded later
   this->enginePlugins[engineName] = pluginName;
@@ -417,6 +462,7 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
   }
 #endif
 
+  std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
   auto engineIt = this->engines.find(_engineName);
   if (engineIt == this->engines.end())
     return false;
@@ -431,5 +477,7 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
 void RenderEngineManagerPrivate::UnregisterEngine(EngineIter _iter)
 {
   _iter->second->Destroy();
+
+  std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
   this->engines.erase(_iter);
 }

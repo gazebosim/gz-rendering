@@ -99,6 +99,17 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 }
 
 //////////////////////////////////////////////////
+ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
+{
+  ignition::math::AxisAlignedBox box(
+      ignition::math::Vector3d::Zero,
+      ignition::math::Vector3d::Zero);
+  // TODO(john) Calculate bounding boxes of attached objects
+  // and return as math::AxisAlignedBox
+  return box;
+}
+
+//////////////////////////////////////////////////
 void OgreVisual::Init()
 {
   BaseVisual::Init();

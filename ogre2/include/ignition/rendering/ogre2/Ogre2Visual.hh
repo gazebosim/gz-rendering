@@ -41,6 +41,9 @@ namespace ignition
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
+      public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
+
+      // Documentation inherited.
       protected: virtual GeometryStorePtr Geometries() const override;
 
       // Documentation inherited.

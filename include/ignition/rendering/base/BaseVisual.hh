@@ -347,9 +347,24 @@ namespace ignition
     template <class T>
     ignition::math::AxisAlignedBox BaseVisual<T>::BoundingBox() const
     {
-      ignition::math::AxisAlignedBox box(
-          ignition::math::Vector3d::Zero,
-          ignition::math::Vector3d::Zero);
+      ignition::math::AxisAlignedBox box;
+
+      // Recursively loop through child visuals
+      auto childNodes =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!childNodes)
+      {
+        ignerr << "Cast failed in BaseVisual::BoundingBox" << std::endl;
+        return box;
+      }
+      for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+      {
+        NodePtr child = it->second;
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        if (visual)
+          box.Merge(visual->BoundingBox());
+      }
       return box;
     }
     }

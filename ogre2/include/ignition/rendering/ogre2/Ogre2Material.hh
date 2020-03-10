@@ -180,6 +180,10 @@ namespace ignition
       /// \return Ogre texture
       protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
 
+      /// \brief Updates the material transparency in the engine,
+      /// based on transparency and diffuse alpha values
+      protected: virtual void UpdateTransparency();
+
       // Documentation inherited.
       protected: virtual void Init() override;
 

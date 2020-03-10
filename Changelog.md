@@ -22,6 +22,9 @@
 1. Use default material properties from ign-common PBR material when loading a mesh
     * [Pull request 242](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/242)
 
+1. Fix build for ogre version >= 1.12.0
+    * [Pull request 241](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/241)
+
 1. Add Ogre2 DynamicRenderable class
     * [Pull request 226](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/226)
 

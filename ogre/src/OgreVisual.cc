@@ -41,6 +41,18 @@ void OgreVisual::SetVisible(bool _visible)
 }
 
 //////////////////////////////////////////////////
+void OgreVisual::SetVisibilityFlags(uint32_t _flags)
+{
+  if (!this->ogreNode)
+    return;
+
+  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects(); ++i)
+    this->ogreNode->getAttachedObject(i)->setVisibilityFlags(_flags);
+
+  BaseVisual::SetVisibilityFlags(_flags);
+}
+
+//////////////////////////////////////////////////
 GeometryStorePtr OgreVisual::Geometries() const
 {
   return this->geometries;
@@ -70,6 +82,7 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
   // set user data for mouse queries
   ogreObj->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
+  ogreObj->setVisibilityFlags(this->visibilityFlags);
 
   derived->SetParent(this->SharedThis());
   this->ogreNode->attachObject(ogreObj);

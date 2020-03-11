@@ -43,6 +43,18 @@ void Ogre2Visual::SetVisible(bool _visible)
 }
 
 //////////////////////////////////////////////////
+void Ogre2Visual::SetVisibilityFlags(uint32_t _flags)
+{
+  if (!this->ogreNode)
+    return;
+
+  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects(); ++i)
+    this->ogreNode->getAttachedObject(i)->setVisibilityFlags(_flags);
+
+  BaseVisual::SetVisibilityFlags(_flags);
+}
+
+//////////////////////////////////////////////////
 GeometryStorePtr Ogre2Visual::Geometries() const
 {
   return this->geometries;
@@ -80,7 +92,7 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
   ogreObj->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
   ogreObj->setName(this->Name() + "_" + _geometry->Name());
-  ogreObj->setVisibilityFlags(IGN_VISIBILITY_ALL);
+  ogreObj->setVisibilityFlags(this->visibilityFlags);
 
   derived->SetParent(this->SharedThis());
   this->ogreNode->attachObject(ogreObj);

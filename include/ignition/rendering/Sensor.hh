@@ -34,6 +34,14 @@ namespace ignition
     {
       /// \brief Sensor
       public: virtual ~Sensor() { }
+
+      /// \brief Set visibility mask
+      /// \param[in] _visibility mask
+      public: virtual void SetVisibilityMask(uint32_t _mask) = 0;
+
+      /// \brief Get visibility mask
+      /// \return visibility mask
+      public: virtual uint32_t VisibilityMask() const = 0;
     };
     }
   }

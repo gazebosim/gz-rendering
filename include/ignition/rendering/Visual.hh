@@ -113,6 +113,22 @@ namespace ignition
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;
 
+      /// \brief Set visibility flags
+      /// \param[in] _visibility flags
+      public: virtual void SetVisibilityFlags(uint32_t _flags) = 0;
+
+      /// \brief Get visibility flags
+      /// \return visibility flags
+      public: virtual uint32_t VisibilityFlags() const = 0;
+
+      /// \brief Add visibility flags
+      /// \param[in] _visibility flags
+      public: virtual void AddVisibilityFlags(uint32_t _flags) = 0;
+
+      /// \brief Remove visibility flags
+      /// \param[in] _visibility flags
+      public: virtual void RemoveVisibilityFlags(uint32_t _flags) = 0;
+
       /// \brief Store any custom data associated with this visual
       /// \param[in] _key Unique key
       /// \param[in] _value Value in any type

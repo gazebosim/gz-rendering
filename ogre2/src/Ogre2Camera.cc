@@ -163,6 +163,7 @@ void Ogre2Camera::CreateRenderTexture()
   this->renderTexture->SetWidth(this->ImageWidth());
   this->renderTexture->SetHeight(this->ImageHeight());
   this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
+  this->renderTexture->SetVisibilityMask(this->visibilityMask);
 }
 
 //////////////////////////////////////////////////
@@ -261,4 +262,12 @@ void Ogre2Camera::SetFarClipPlane(const double _far)
 {
   BaseCamera::SetFarClipPlane(_far);
   this->ogreCamera->setFarClipDistance(_far);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetVisibilityMask(uint32_t _mask)
+{
+  BaseSensor::SetVisibilityMask(_mask);
+  if (this->renderTexture)
+    this->renderTexture->SetVisibilityMask(_mask);
 }

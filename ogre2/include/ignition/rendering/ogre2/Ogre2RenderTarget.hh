@@ -95,6 +95,11 @@ namespace ignition
       /// \brief Get a pointer to the ogre render target
       public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
+      /// \brief Set visibility mask for the viewport associated with this
+      /// render target
+      /// \param[in] _mask Visibility mask
+      public: virtual void SetVisibilityMask(uint32_t _mask);
+
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
 
@@ -168,6 +173,9 @@ namespace ignition
 
       /// \brief Anti-aliasing level
       protected: unsigned int antiAliasing = 4;
+
+      /// \brief visibility mask associated with this render target
+      protected: uint32_t visibilityMask = IGN_VISIBILITY_ALL;
     };
 
     /// \brief Ogre2.x implementation of the render texture class

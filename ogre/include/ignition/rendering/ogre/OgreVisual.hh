@@ -35,7 +35,10 @@ namespace ignition
       public: virtual ~OgreVisual();
 
       // Documentation inherited.
-      public: virtual void SetVisible(bool _visible);
+      public: virtual void SetVisible(bool _visible) override;
+
+      // Documentation inherited.
+      public: virtual void SetVisibilityFlags(uint32_t _flags) override;
 
       protected: virtual GeometryStorePtr Geometries() const;
 

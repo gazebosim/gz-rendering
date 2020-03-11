@@ -80,6 +80,19 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
+      // Documentation inherited.
+      public: virtual void SetVisibilityFlags(uint32_t _flags) override;
+
+      // Documentation inherited.
+      public: virtual uint32_t VisibilityFlags() const override;
+
+      // Documentation inherited.
+      public: virtual void AddVisibilityFlags(uint32_t _flags) override;
+
+      // Documentation inherited.
+      public: virtual void RemoveVisibilityFlags(uint32_t _flags) override;
+
+      // Documentation inherited.
       public: virtual void PreRender() override;
 
       // Documentation inherited
@@ -107,6 +120,9 @@ namespace ignition
 
       /// \brief A map of custom key value data
       protected: std::map<std::string, Variant> userData;
+
+      /// \brief Visual's visibility flags
+      protected: uint32_t visibilityFlags = IGN_VISIBILITY_ALL;
     };
 
     //////////////////////////////////////////////////
@@ -319,6 +335,50 @@ namespace ignition
       ignerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::AddVisibilityFlags(uint32_t _flags)
+    {
+      this->SetVisibilityFlags(this->VisibilityFlags() | _flags);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::RemoveVisibilityFlags(uint32_t _flags)
+    {
+      this->SetVisibilityFlags(this->VisibilityFlags() & ~(_flags));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetVisibilityFlags(uint32_t _flags)
+    {
+      this->visibilityFlags = _flags;
+
+      // recursively set child visuals' visibility flags
+      auto childNodes =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!childNodes)
+      {
+        ignerr << "Cast failed in BaseVisual::SetVisibiltyFlags" << std::endl;
+        return;
+      }
+      for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+      {
+        NodePtr child = it->second;
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        if (visual) visual->SetVisibilityFlags(_flags);
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    uint32_t BaseVisual<T>::VisibilityFlags() const
+    {
+      return this->visibilityFlags;
     }
 
     //////////////////////////////////////////////////

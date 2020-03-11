@@ -106,6 +106,66 @@ ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
       ignition::math::Vector3d::Zero);
   // TODO(john) Calculate bounding boxes of attached objects
   // and return as math::AxisAlignedBox
+  this->ogreNode->_updateBounds();
+  this->ogreNode->_update(false, true);
+
+  Ogre::Matrix4 invTransform =
+      this->ogreNode->_getFullTransform().inverse();
+
+  for (int i = 0; i < this->ogreNode->numAttachedObjects(); i++)
+  {
+    Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+
+    if (obj->isVisible() && obj->getMovableType() != "gazebo::dynamiclines"
+        && obj->getMovableType() != "BillboardSet"
+        && obj->getVisibilityFlags() != IGN_VISIBILITY_GUI)
+    {
+      Ogre::Any any = obj->getUserObjectBindings().getUserAny();
+      if (any.getType() == typeid(std::string))
+      {
+        std::string str = Ogre::any_cast<std::string>(any);
+        if (str.substr(0, 3) == "rot" || str.substr(0, 5) == "trans"
+            || str.substr(0, 5) == "scale" ||
+            str.find("_APPLY_WRENCH_") != std::string::npos)
+          continue;
+      }
+
+      Ogre::AxisAlignedBox bb = obj->getBoundingBox();
+
+      ignition::math::Vector3d min;
+      ignition::math::Vector3d max;
+
+      // Ogre does not return a valid bounding box for lights.
+      if (obj->getMovableType() == "Light")
+      {
+        min = ignition::math::Vector3d(-0.5, -0.5, -0.5);
+        max = ignition::math::Vector3d(0.5, 0.5, 0.5);
+      }
+else
+      {
+        // Get transform to be applied to the current node.
+        Ogre::Matrix4 transform = invTransform * this->ogreNode->_getFullTransform();
+        // Correct precision error which makes ogre's isAffine check fail.
+        transform[3][0] = transform[3][1] = transform[3][2] = 0;
+        transform[3][3] = 1;
+        // get oriented bounding box in object's local space
+#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 11
+        bb.transform(transform);
+#else
+        bb.transformAffine(transform);
+#endif
+        // TODO(john) make conversion functions for
+        // Ogre::Vector3 -> math::Vector3d
+        Ogre::Vector3 ogreMin = bb.getMinimum();
+        Ogre::Vector3 ogreMax = bb.getMaximum();
+        min = ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
+        max = ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
+      }
+
+      box.Merge(ignition::math::AxisAlignedBox(min, max));
+    }
+  }
+
   return box;
 }
 

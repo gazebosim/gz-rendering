@@ -31,6 +31,58 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
+namespace ignition
+{
+namespace rendering
+{
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+//
+/// \brief Listener for changing ogre compositor pass properties
+class Ogre2RenderTargetCompositorListener :
+    public Ogre::CompositorWorkspaceListener
+{
+  /// \brief Constructor
+  /// \param[in] _target ogre render target object
+  public: explicit Ogre2RenderTargetCompositorListener(
+      Ogre2RenderTarget *_target)
+  {
+    this->ogreRenderTarget = _target;
+  }
+
+  /// \brief Destructor
+  public: virtual ~Ogre2RenderTargetCompositorListener() = default;
+
+  // Documentation inherited.
+  public: virtual void passPreExecute(Ogre::CompositorPass *_pass)
+  {
+    if (_pass->getType() == Ogre::PASS_SCENE)
+    {
+      Ogre::CompositorPassScene *scenePass =
+          static_cast<Ogre::CompositorPassScene *>(_pass);
+        Ogre::Viewport *vp = scenePass->getViewport();
+        // make sure we do not alter the reserved visibility flags
+        uint32_t f = ogreRenderTarget->VisibilityMask() |
+            ~Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS;
+        // apply the new visibility mask
+        uint32_t flags = f & vp->getVisibilityMask();
+        vp->_setVisibilityMask(flags, vp->getLightVisibilityMask());
+    }
+  }
+
+  /// \brief Pointer to render target that added this listener
+  private: Ogre2RenderTarget *ogreRenderTarget = nullptr;
+};
+}
+}
+}
+
+/// \brief Private data class for Ogre2RenderTarget
+class ignition::rendering::Ogre2RenderTargetPrivate
+{
+  /// \brief Listener for chaning compositor pass properties
+  public: Ogre2RenderTargetCompositorListener *rtListener = nullptr;
+};
+
 using namespace ignition;
 using namespace rendering;
 
@@ -38,6 +90,7 @@ using namespace rendering;
 // Ogre2RenderTarget
 //////////////////////////////////////////////////
 Ogre2RenderTarget::Ogre2RenderTarget()
+  : dataPtr(new Ogre2RenderTargetPrivate)
 {
   this->ogreBackgroundColor = Ogre::ColourValue::Black;
   this->ogreCompositorWorkspaceDefName = "PbsMaterialsWorkspace";
@@ -46,7 +99,8 @@ Ogre2RenderTarget::Ogre2RenderTarget()
 //////////////////////////////////////////////////
 Ogre2RenderTarget::~Ogre2RenderTarget()
 {
-  // TODO(anyone)
+  if (this->dataPtr->rtListener)
+    delete this->dataPtr->rtListener;
 }
 
 //////////////////////////////////////////////////
@@ -63,7 +117,8 @@ void Ogre2RenderTarget::BuildCompositor()
       this->RenderTarget(), this->ogreCamera,
       this->ogreCompositorWorkspaceDefName, false);
 
-  this->SetVisibilityMask(this->visibilityMask);
+  this->dataPtr->rtListener = new Ogre2RenderTargetCompositorListener(this);
+  this->ogreCompositorWorkspace->setListener(this->dataPtr->rtListener);
 }
 
 //////////////////////////////////////////////////
@@ -75,8 +130,11 @@ void Ogre2RenderTarget::DestroyCompositor()
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+  this->ogreCompositorWorkspace->setListener(nullptr);
   ogreCompMgr->removeWorkspace(this->ogreCompositorWorkspace);
   this->ogreCompositorWorkspace = nullptr;
+  delete this->dataPtr->rtListener;
+  this->dataPtr->rtListener = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -196,16 +254,15 @@ void Ogre2RenderTarget::Render()
 }
 
 //////////////////////////////////////////////////
+uint32_t Ogre2RenderTarget::VisibilityMask() const
+{
+  return this->visibilityMask;
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::SetVisibilityMask(uint32_t _mask)
 {
   this->visibilityMask = _mask;
-  if (!this->ogreCompositorWorkspace)
-    return;
-  auto nodeSeq = this->ogreCompositorWorkspace->getNodeSequence();
-  auto pass = nodeSeq[0]->_getPasses()[1]->getDefinition();
-  auto scenePass = dynamic_cast<const Ogre::CompositorPassSceneDef *>(pass);
-  const_cast<Ogre::CompositorPassSceneDef *>(scenePass)->mVisibilityMask =
-      this->visibilityMask;
 }
 
 //////////////////////////////////////////////////
@@ -631,7 +688,6 @@ void Ogre2RenderTarget::CreateShadowNodeWithSettings(
 
           passScene->mShadowMapIdx = currentShadowMapIdx + i;
           passScene->mIncludeOverlays = false;
-          passScene->mVisibilityMask = this->visibilityMask;
         }
       }
       shadowMapIdx += numSplits;
@@ -675,7 +731,6 @@ void Ogre2RenderTarget::CreateShadowNodeWithSettings(
             passScene->mCameraCubemapReorient = true;
             passScene->mShadowMapIdx = shadowMapIdx;
             passScene->mIncludeOverlays = false;
-            passScene->mVisibilityMask = this->visibilityMask;
           }
         }
 

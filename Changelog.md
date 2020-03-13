@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 3.X.X
 
+1. Ogre2: Add Grid
+    * [Pull request 246](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/246)
+
 ### Ignition Rendering 3.1.0 (2020-03-05)
 
 1. Use default material properties from ign-common PBR material when loading a mesh

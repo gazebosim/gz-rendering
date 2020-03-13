@@ -73,7 +73,7 @@ namespace ignition
       protected: unsigned int verticalCellCount = 0;
 
       /// \brief vertical offset of the XY plane from origin
-      protected: double heightOffset = 0.0;
+      protected: double heightOffset = 0.01;
 
       /// \brief Flag to indicate grid properties have changed
       protected: bool gridDirty = false;

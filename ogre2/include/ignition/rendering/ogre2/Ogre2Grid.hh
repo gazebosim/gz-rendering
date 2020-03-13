@@ -37,7 +37,7 @@ namespace ignition
     // Forward declaration
     class Ogre2GridPrivate;
 
-    /// \brief Ogre implementation of a grid geometry.
+    /// \brief Ogre2 implementation of a grid geometry.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Grid
       : public BaseGrid<Ogre2Geometry>
     {

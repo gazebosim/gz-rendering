@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERTARGET_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2RENDERTARGET_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Color.hh>
 

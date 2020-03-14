@@ -47,12 +47,14 @@ namespace ignition
 
       /// \brief Set the axis aligned box
       /// \param[in] _box The axis aligned box
-      public: virtual void SetBox(const ignition::math::AxisAlignedBox &_box) = 0
+      public: virtual void SetBox(const ignition::math::AxisAlignedBox &_box) = 0;
 
       /// \brief Get the wireframe box.
       /// \return The wireframe box.
       public: virtual ignition::math::AxisAlignedBox Box() const = 0;
-      };
+
+      public: virtual void SetVisual(const rendering::VisualPtr &_visual) = 0;
+    };
     }
   }
 }

@@ -40,6 +40,10 @@ namespace ignition
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
 
+      public: virtual void SetHighlighted(bool _highlighted) override;
+
+      public: virtual bool GetHighlighted() const override;
+
       protected: virtual GeometryStorePtr Geometries() const;
 
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);
@@ -49,6 +53,8 @@ namespace ignition
       protected: virtual void Init();
 
       protected: OgreGeometryStorePtr geometries;
+
+      protected: OgreWireBoxPtr boundingBox = nullptr;
 
       private: OgreVisualPtr SharedThis();
 

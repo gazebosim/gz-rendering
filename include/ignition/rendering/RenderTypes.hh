@@ -81,6 +81,7 @@ namespace ignition
     class Text;
     class ThermalCamera;
     class Visual;
+    class WireBox;
 
     /// \def ArrowVisualPtr
     /// \brief Shared pointer to ArrowVisual
@@ -215,6 +216,10 @@ namespace ignition
     /// \def VisualPtr
     /// \brief Shared pointer to Visual
     typedef shared_ptr<Visual> VisualPtr;
+
+    /// \def WireBoxPtr
+    /// \brief Shared pointer to WireBox
+    typedef shared_ptr<WireBox> WireBoxPtr;
 
     /// \def const ArrowVisualPtr
     /// \brief Shared pointer to const ArrowVisual

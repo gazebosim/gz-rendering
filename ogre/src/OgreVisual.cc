@@ -98,6 +98,28 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
   return true;
 }
 
+void OgreVisual::SetHighlighted(bool _highlighted)
+{
+  if (_highlighted)
+  {
+    auto bbox = this->BoundingBox();
+    if (!this->boundingBox)
+    {
+      this->boundingBox = new OgreWireBox();
+    }
+    this->boundingBox->SetVisual(shared_from_this());
+    this->boundingBox->SetBox(bbox);
+    this->boundingBox->SetVisible(true);
+    this->boundingBox->Init();
+  }
+  else if (this->boundingBox)
+  {
+    this->boundingBox->SetVisible(false);
+  }
+  // TODO(john)
+  // iterate through links and highlight those visuals
+}
+
 //////////////////////////////////////////////////
 ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
 {

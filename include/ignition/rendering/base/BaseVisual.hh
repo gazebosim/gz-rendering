@@ -80,6 +80,10 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
+     
+      public: virtual void SetHighlighted(bool _highlighted);
+
+      public: virtual bool GetHighlighted() const;
 
       public: virtual void PreRender() override;
 
@@ -323,6 +327,23 @@ namespace ignition
       ignerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
+    }
+
+    template <class T>
+    void BaseVisual<T>::SetHighlighted(bool _highlighted)
+    {
+      ignerr << "SetHighlighted(" << _highlighted << ") not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
+    }
+
+    template <class T>
+    bool BaseVisual<T>::GetHighlighted() const
+    {
+      ignerr << "GetHighlighted() not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
+      return false;
     }
 
     //////////////////////////////////////////////////

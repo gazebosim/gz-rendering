@@ -13,7 +13,7 @@ cd build
 cmake ..
 make
 ```
-Excute the example:
+Execute the example:
 
 ```{.sh}
 ./simple_demo

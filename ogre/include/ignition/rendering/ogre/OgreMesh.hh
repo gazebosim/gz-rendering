@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_OGRE_OGREMESH_HH_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 #include "ignition/rendering/base/BaseMesh.hh"
@@ -37,6 +38,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declarations
+    class OgreMeshPrivate;
+
     class IGNITION_RENDERING_OGRE_VISIBLE OgreMesh :
       public BaseMesh<OgreGeometry>
     {
@@ -60,6 +64,18 @@ namespace ignition
       public: virtual void SetSkeletonLocalTransforms(
             const std::map<std::string, math::Matrix4d> &_tfs) override;
 
+      // Documentation inherited.
+      public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
+            bool _enabled, bool _loop = true, float _weight = 1.0) override;
+
+      // Documentation inherited.
+      public: virtual bool SkeletonAnimationEnabled(const std::string &_name)
+            const override;
+
+      // Documentation inherited.
+      public: virtual void UpdateSkeletonAnimation(
+            std::chrono::steady_clock::duration _time) override;
+
       public: virtual Ogre::MovableObject *OgreObject() const override;
 
       protected: virtual SubMeshStorePtr SubMeshes() const override;
@@ -71,6 +87,9 @@ namespace ignition
       private: friend class OgreScene;
 
       private: friend class OgreMeshFactory;
+
+      /// \brief Pointer to private data
+      private: std::unique_ptr<OgreMeshPrivate> dataPtr;
     };
 
     class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMesh :

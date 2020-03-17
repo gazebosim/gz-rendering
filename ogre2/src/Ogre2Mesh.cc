@@ -21,16 +21,24 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
+
+
+/// brief Private implementation of the Ogre2Mesh class
+class ignition::rendering::Ogre2MeshPrivate
+{
+};
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2Mesh::Ogre2Mesh()
+  : dataPtr(new Ogre2MeshPrivate)
 {
 }
 
@@ -65,6 +73,130 @@ void Ogre2Mesh::Destroy()
   if (this->material && this->ownsMaterial)
     this->Scene()->DestroyMaterial(this->material);
   this->material.reset();
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Mesh::HasSkeleton() const
+{
+  return this->ogreItem->hasSkeleton();
+}
+
+//////////////////////////////////////////////////
+std::map<std::string, math::Matrix4d> Ogre2Mesh::SkeletonLocalTransforms() const
+{
+  std::map<std::string, ignition::math::Matrix4d> mapTfs;
+  if (this->ogreItem->hasSkeleton())
+  {
+    auto skel = this->ogreItem->getSkeletonInstance();
+    for (unsigned int i = 0; i < skel->getNumBones(); ++i)
+    {
+      auto bone = skel->getBone(i);
+
+      math::Matrix4d tf(Ogre2Conversions::Convert(bone->getOrientation()));
+      tf.SetTranslation(Ogre2Conversions::Convert(bone->getPosition()));
+
+      mapTfs[bone->getName()] = tf;
+    }
+  }
+
+  return mapTfs;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Mesh::SetSkeletonLocalTransforms(
+          const std::map<std::string, math::Matrix4d> &_tfs)
+{
+  if (!this->ogreItem->hasSkeleton())
+  {
+    return;
+  }
+  auto skel = this->ogreItem->getSkeletonInstance();
+
+  for (auto const &[boneName, tf] : _tfs)
+  {
+    auto bone = skel->getBone(boneName);
+    if (bone)
+    {
+      skel->setManualBone(bone, true);
+      bone->setPosition(Ogre2Conversions::Convert(tf.Translation()));
+      bone->setOrientation(Ogre2Conversions::Convert(tf.Rotation()));
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Mesh::SetSkeletonAnimationEnabled(const std::string &_name,
+    bool _enabled, bool _loop, float _weight)
+{
+  if (!this->ogreItem->hasSkeleton())
+  {
+    return;
+  }
+
+  Ogre::SkeletonInstance *skel = this->ogreItem->getSkeletonInstance();
+
+  if (!skel->hasAnimation(_name))
+  {
+    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    return;
+  }
+
+  if (_enabled)
+  {
+    for (unsigned int i = 0; i < skel->getNumBones(); ++i)
+    {
+      auto bone = skel->getBone(i);
+      skel->setManualBone(bone, false);
+    }
+  }
+
+  Ogre::SkeletonAnimation *anim = skel->getAnimation(_name);
+  anim->setEnabled(_enabled);
+  anim->setLoop(_loop);
+  anim->mWeight = _weight;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Mesh::UpdateSkeletonAnimation(
+    std::chrono::steady_clock::duration _time)
+{
+  if (!this->ogreItem->hasSkeleton())
+  {
+    return;
+  }
+
+  Ogre::SkeletonInstance *skel = this->ogreItem->getSkeletonInstance();
+  auto animations = skel->getAnimations();
+  for (auto &anim : animations)
+  {
+    Ogre::SkeletonAnimation *sa = skel->getAnimation(anim.getName());
+    if (sa->getEnabled())
+    {
+      auto seconds =
+          std::chrono::duration_cast<std::chrono::milliseconds>(_time).count() /
+          1000.0;
+      sa->setTime(seconds);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Mesh::SkeletonAnimationEnabled(const std::string &_name) const
+{
+  if (!this->ogreItem->hasSkeleton())
+  {
+    return false;
+  }
+
+  Ogre::SkeletonInstance *skel = this->ogreItem->getSkeletonInstance();
+  if (!skel->hasAnimation(_name))
+  {
+    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    return false;
+  }
+
+  Ogre::SkeletonAnimation *anim = skel->getAnimation(_name);
+  return anim->getEnabled();
 }
 
 //////////////////////////////////////////////////

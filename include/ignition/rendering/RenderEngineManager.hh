@@ -20,6 +20,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 #include <ignition/common/SingletonT.hh>
 #include <ignition/common/SuppressWarning.hh>
 #include "ignition/rendering/config.hh"
@@ -59,6 +60,16 @@ namespace ignition
       /// \param[in] _name Name of the desired render-engine
       /// \return True if the specified render-engine is available
       public: bool HasEngine(const std::string &_name) const;
+
+      /// \brief Determine if a render-engine with the given name is already
+      /// loaded.
+      /// \param[in] _name Name of the desired render-engine
+      /// \return True if the specified render-engine is loaded.
+      public: bool IsEngineLoaded(const std::string &_name) const;
+
+      /// \brief Get the list of all engines already loaded.
+      /// \return Names of all loaded engines.
+      public: std::vector<std::string> LoadedEngines() const;
 
       /// \brief Get the render-engine with the given name. If the no
       /// render-engine is registered under the given name, NULL will be

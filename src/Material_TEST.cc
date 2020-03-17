@@ -113,6 +113,16 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   material->SetTransparency(transparency);
   EXPECT_DOUBLE_EQ(transparency, material->Transparency());
 
+  // alpha from texture
+  bool alphaFromTexture = true;
+  double alphaThreshold = 0.9;
+  bool twoSidedEnabled = false;
+  material->SetAlphaFromTexture(alphaFromTexture, alphaThreshold,
+      twoSidedEnabled);
+  EXPECT_EQ(material->TextureAlphaEnabled(), alphaFromTexture);
+  EXPECT_DOUBLE_EQ(material->AlphaThreshold(), alphaThreshold);
+  EXPECT_EQ(material->TwoSidedEnabled(), twoSidedEnabled);
+
   // reflectivity
   double reflectivity = 0.5;
   material->SetReflectivity(reflectivity);
@@ -278,6 +288,9 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   math::Color emissive(0.6, 0.4, 0.2, 1.0);
   double shininess = 0.8;
   double transparency = 0.3;
+  bool alphaFromTexture = true;
+  double alphaThreshold = 0.9;
+  bool twoSidedEnabled = false;
   double reflectivity = 0.5;
   bool castShadows = false;
   bool receiveShadows = false;
@@ -303,6 +316,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetEmissive(emissive);
   material->SetShininess(shininess);
   material->SetTransparency(transparency);
+  material->SetAlphaFromTexture(alphaFromTexture, alphaThreshold,
+      twoSidedEnabled);
   material->SetReflectivity(reflectivity);
   material->SetCastShadows(castShadows);
   material->SetReceiveShadows(receiveShadows);
@@ -329,6 +344,9 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(emissive, clone->Emissive());
   EXPECT_DOUBLE_EQ(shininess, clone->Shininess());
   EXPECT_DOUBLE_EQ(transparency, clone->Transparency());
+  EXPECT_EQ(alphaFromTexture, clone->TextureAlphaEnabled());
+  EXPECT_DOUBLE_EQ(alphaThreshold, clone->AlphaThreshold());
+  EXPECT_EQ(twoSidedEnabled, clone->TwoSidedEnabled());
   EXPECT_DOUBLE_EQ(reflectivity, clone->Reflectivity());
   EXPECT_EQ(castShadows, clone->CastShadows());
   EXPECT_EQ(receiveShadows, clone->ReceiveShadows());
@@ -361,6 +379,9 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(emissive, copy->Emissive());
   EXPECT_DOUBLE_EQ(shininess, copy->Shininess());
   EXPECT_DOUBLE_EQ(transparency, copy->Transparency());
+  EXPECT_EQ(alphaFromTexture, copy->TextureAlphaEnabled());
+  EXPECT_DOUBLE_EQ(alphaThreshold, copy->AlphaThreshold());
+  EXPECT_EQ(twoSidedEnabled, copy->TwoSidedEnabled());
   EXPECT_DOUBLE_EQ(reflectivity, copy->Reflectivity());
   EXPECT_EQ(castShadows, copy->CastShadows());
   EXPECT_EQ(receiveShadows, copy->ReceiveShadows());
@@ -382,7 +403,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   }
 
   // test copying from a common material
-  // common::Material currently only has a subset of  material properties
+  // common::Material currently only has a subset of material properties
   common::Material comMat;
   comMat.SetAmbient(ambient);
   comMat.SetDiffuse(ambient);
@@ -390,8 +411,21 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   comMat.SetEmissive(ambient);
   comMat.SetShininess(shininess);
   comMat.SetTransparency(transparency);
+  comMat.SetAlphaFromTexture(alphaFromTexture, alphaThreshold,
+      twoSidedEnabled);
   comMat.SetLighting(lightingEnabled);
   comMat.SetTextureImage(textureName);
+  common::Pbr pbr;
+  pbr.SetType(common::PbrType::METAL);
+  pbr.SetRoughness(roughness);
+  pbr.SetMetalness(metalness);
+  pbr.SetAlbedoMap(textureName);
+  pbr.SetNormalMap(normalMapName);
+  pbr.SetRoughnessMap(roughnessMapName);
+  pbr.SetMetalnessMap(metalnessMapName);
+  pbr.SetEmissiveMap(emissiveMapName);
+  pbr.SetEnvironmentMap(envMapName);
+  comMat.SetPbrMaterial(pbr);
 
   MaterialPtr comCopy = scene->CreateMaterial("comCopy");
   EXPECT_TRUE(scene->MaterialRegistered("comCopy"));
@@ -402,10 +436,28 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(emissive, comCopy->Emissive());
   EXPECT_DOUBLE_EQ(shininess, comCopy->Shininess());
   EXPECT_DOUBLE_EQ(transparency, comCopy->Transparency());
+  EXPECT_EQ(alphaFromTexture, comCopy->TextureAlphaEnabled());
+  EXPECT_DOUBLE_EQ(alphaThreshold, comCopy->AlphaThreshold());
+  EXPECT_EQ(twoSidedEnabled, comCopy->TwoSidedEnabled());
   EXPECT_DOUBLE_EQ(reflectivity, comCopy->Reflectivity());
   EXPECT_EQ(lightingEnabled, comCopy->LightingEnabled());
   EXPECT_EQ(textureName, comCopy->Texture());
   EXPECT_TRUE(comCopy->HasTexture());
+  if (material->Type() == MaterialType::MT_PBS)
+  {
+    EXPECT_DOUBLE_EQ(roughness, comCopy->Roughness());
+    EXPECT_DOUBLE_EQ(metalness, comCopy->Metalness());
+    EXPECT_TRUE(comCopy->HasNormalMap());
+    EXPECT_EQ(normalMapName, comCopy->NormalMap());
+    EXPECT_TRUE(comCopy->HasRoughnessMap());
+    EXPECT_EQ(roughnessMapName, comCopy->RoughnessMap());
+    EXPECT_TRUE(comCopy->HasMetalnessMap());
+    EXPECT_EQ(metalnessMapName, comCopy->MetalnessMap());
+    EXPECT_TRUE(comCopy->HasEmissiveMap());
+    EXPECT_EQ(emissiveMapName, comCopy->EmissiveMap());
+    EXPECT_TRUE(comCopy->HasEnvironmentMap());
+    EXPECT_EQ(envMapName, comCopy->EnvironmentMap());
+  }
 
   // Clean up
   engine->DestroyScene(scene);

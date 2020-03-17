@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2MESH_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2MESH_HH_
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 #include "ignition/rendering/base/BaseMesh.hh"
@@ -36,6 +38,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2MeshPrivate;
+
     /// \brief Ogre2.x implementation of the mesh class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Mesh :
       public BaseMesh<Ogre2Geometry>
@@ -48,6 +53,29 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void Destroy() override;
+
+      // Documentation inherited.
+      public: virtual bool HasSkeleton() const override;
+
+      // Documentation inherited.
+      public: virtual std::map<std::string, math::Matrix4d>
+                          SkeletonLocalTransforms() const override;
+
+      // Documentation inherited.
+      public: virtual void SetSkeletonLocalTransforms(
+            const std::map<std::string, math::Matrix4d> &_tfs) override;
+
+      // Documentation inherited.
+      public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
+            bool _enabled, bool _loop = true, float _weight = 1.0) override;
+
+      // Documentation inherited.
+      public: virtual bool SkeletonAnimationEnabled(const std::string &_name)
+            const override;
+
+      // Documentation inherited.
+      public: virtual void UpdateSkeletonAnimation(
+            std::chrono::steady_clock::duration _time) override;
 
       // Documentation inherited
       public: virtual Ogre::MovableObject *OgreObject() const override;
@@ -66,6 +94,9 @@ namespace ignition
 
       /// \brief Make mesh factory our friend so it can create an ogre2 mesh
       private: friend class Ogre2MeshFactory;
+
+      /// \brief Pointer to private data
+      private: std::unique_ptr<Ogre2MeshPrivate> dataPtr;
     };
 
     /// \brief Ogre2.x implementation of the submesh class

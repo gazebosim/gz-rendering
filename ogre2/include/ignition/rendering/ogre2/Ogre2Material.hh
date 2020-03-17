@@ -64,6 +64,10 @@ namespace ignition
       public: virtual void SetTransparency(const double _transparency) override;
 
       // Documentation inherited
+      public: virtual void SetAlphaFromTexture(bool _enabled,
+          double _alpha = 0.5, bool _twoSided = true) override;
+
+      // Documentation inherited
       public: virtual bool ReceiveShadows() const override;
 
       // Documentation inherited
@@ -162,7 +166,7 @@ namespace ignition
       /// \return Ogre Hlms datablock
       public: virtual Ogre::HlmsPbsDatablock *Datablock() const;
 
-     // Documentation inherited.
+      // Documentation inherited.
       // \sa BaseMaterial::PreRender()
       public: virtual void PreRender() override;
 
@@ -191,6 +195,10 @@ namespace ignition
       /// \brief Get a pointer to the ogre texture by name
       /// \return Ogre texture
       protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
+
+      /// \brief Updates the material transparency in the engine,
+      /// based on transparency and diffuse alpha values
+      protected: virtual void UpdateTransparency();
 
       // Documentation inherited.
       protected: virtual void Init() override;

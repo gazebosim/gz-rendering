@@ -50,6 +50,18 @@ namespace ignition
       public: virtual void SetSkeletonLocalTransforms(
                       const std::map<std::string, math::Matrix4d> &) override;
 
+      // Documentation inherited.
+      public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
+            bool _enabled, bool _loop = true, float _weight = 1.0) override;
+
+      // Documentation inherited.
+      public: virtual bool SkeletonAnimationEnabled(const std::string &_name)
+            const override;
+
+      // Documentation inherited.
+      public: virtual void UpdateSkeletonAnimation(
+            std::chrono::steady_clock::duration _time) override;
+
       public: virtual unsigned int SubMeshCount() const override;
 
       public: virtual bool HasSubMesh(ConstSubMeshPtr _subMesh) const override;
@@ -159,6 +171,27 @@ namespace ignition
     template <class T>
     void BaseMesh<T>::SetSkeletonLocalTransforms(
           const std::map<std::string, math::Matrix4d> &)
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMesh<T>::SetSkeletonAnimationEnabled(const std::string &, bool,
+        bool, float)
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseMesh<T>::SkeletonAnimationEnabled(const std::string &) const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMesh<T>::UpdateSkeletonAnimation(
+        std::chrono::steady_clock::duration)
     {
     }
 

@@ -24,6 +24,7 @@
 #pragma clang diagnostic ignored "-W#warnings"
 
 #include <Ogre.h>
+#include <OgreAnimation.h>
 #include <OgreBillboard.h>
 #include <OgreImageCodec.h>
 #include <OgreMovableObject.h>

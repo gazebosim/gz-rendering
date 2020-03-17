@@ -114,7 +114,7 @@ namespace ignition
       public: virtual void SetVisible(bool _visible) = 0;
 
       /// \brief Set visibility flags
-      /// \param[in] _visibility flags
+      /// \param[in] _flags Visibility flags
       public: virtual void SetVisibilityFlags(uint32_t _flags) = 0;
 
       /// \brief Get visibility flags

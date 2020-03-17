@@ -18,6 +18,7 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre/OgreVisual.hh"
+#include "ignition/rendering/ogre/OgreWireBox.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
 
@@ -98,6 +99,13 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
   return true;
 }
 
+bool OgreVisual::GetHighlighted() const
+{
+  if (this->boundingBox)
+    return this->boundingBox->Visible();
+  return false;
+}
+
 void OgreVisual::SetHighlighted(bool _highlighted)
 {
   if (_highlighted)
@@ -105,9 +113,9 @@ void OgreVisual::SetHighlighted(bool _highlighted)
     auto bbox = this->BoundingBox();
     if (!this->boundingBox)
     {
-      this->boundingBox = new OgreWireBox();
+      this->boundingBox = OgreWireBoxPtr(new OgreWireBox());
     }
-    this->boundingBox->SetVisual(shared_from_this());
+    this->boundingBox->SetVisual(std::dynamic_pointer_cast<rendering::Visual>(shared_from_this()));
     this->boundingBox->SetBox(bbox);
     this->boundingBox->SetVisible(true);
     this->boundingBox->Init();
@@ -126,8 +134,6 @@ ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
   ignition::math::AxisAlignedBox box(
       ignition::math::Vector3d::Zero,
       ignition::math::Vector3d::Zero);
-  // TODO(john) Calculate bounding boxes of attached objects
-  // and return as math::AxisAlignedBox
   this->ogreNode->_updateBounds();
   this->ogreNode->_update(false, true);
 

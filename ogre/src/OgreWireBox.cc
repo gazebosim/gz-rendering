@@ -14,7 +14,7 @@
  * limitations under the License.
  *
 */
-
+// TODO convert below create function to use dynamic renderable
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre/OgreWireBox.hh"
@@ -82,8 +82,6 @@ void OgreWireBox::Create()
   }
 
   this->dataPtr->manualObject->clear();
-
-
   this->dataPtr->manualObject->setCastShadows(false);
   
   // TODO below estimate vertex count

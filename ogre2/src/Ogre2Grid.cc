@@ -31,7 +31,7 @@ class ignition::rendering::Ogre2GridPrivate
   public: Ogre2MaterialPtr material;
 
   /// \brief Ogre renderable used to render the grid.
-  public: Ogre2DynamicRenderable *grid = nullptr;
+  public: std::shared_ptr<Ogre2DynamicRenderable> grid = nullptr;
 };
 
 //////////////////////////////////////////////////
@@ -43,7 +43,6 @@ Ogre2Grid::Ogre2Grid()
 //////////////////////////////////////////////////
 Ogre2Grid::~Ogre2Grid()
 {
-  delete this->dataPtr->grid;
 }
 
 //////////////////////////////////////////////////
@@ -73,7 +72,7 @@ void Ogre2Grid::Create()
 {
   if (!this->dataPtr->grid)
   {
-    this->dataPtr->grid = new Ogre2DynamicRenderable(this->scene);
+    this->dataPtr->grid.reset(new Ogre2DynamicRenderable(this->scene));
   }
 
   // Clear any previous data from the grid
@@ -102,7 +101,6 @@ void Ogre2Grid::Create()
     }
   }
 
-  this->dataPtr->grid->Update();
   if (this->verticalCellCount > 0)
   {
     for (unsigned int x = 0; x <= this->cellCount; ++x)
@@ -119,6 +117,7 @@ void Ogre2Grid::Create()
       }
     }
   }
+  this->dataPtr->grid->Update();
 }
 
 //////////////////////////////////////////////////
@@ -138,7 +137,7 @@ void Ogre2Grid::SetMaterial(MaterialPtr _material, bool _unique)
   }
 
   // Set material for the underlying dynamic renderable
-  this->dataPtr->grid->SetMaterial(_material, _unique);
+  this->dataPtr->grid->SetMaterial(_material, false);
   this->SetMaterialImpl(derived);
 }
 

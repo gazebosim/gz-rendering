@@ -43,7 +43,6 @@ void GridTest::Grid(const std::string &_renderEngine)
     return;
   }
 
-
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

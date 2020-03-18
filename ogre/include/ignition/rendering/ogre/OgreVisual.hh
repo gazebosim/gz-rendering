@@ -44,6 +44,8 @@ namespace ignition
 
       public: virtual bool GetHighlighted() const override;
 
+      protected: virtual void BoundsHelper(Ogre::SceneNode *_node, ignition::math::AxisAlignedBox &_box) const;
+
       protected: virtual GeometryStorePtr Geometries() const;
 
       protected: virtual bool AttachGeometry(GeometryPtr _geometry);

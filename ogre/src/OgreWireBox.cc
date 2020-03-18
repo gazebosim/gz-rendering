@@ -109,7 +109,7 @@ void OgreWireBox::Create()
   ignition::math::Vector3d max = this->box.Max();
   ignition::math::Vector3d min = this->box.Min();
 
-  max = ignition::math::Vector3d(1, 1, 1);
+  max = ignition::math::Vector3d(5, 5, 5);
   ignwarn << "Max " << max << "\n";
   ignwarn << "Min " << min << "\n";
 
@@ -161,6 +161,7 @@ void OgreWireBox::Create()
   this->dataPtr->boundingBox->AddPoint({min.X(), min.Y(), max.Z()}, {1, 0, 0});
   this->dataPtr->boundingBox->AddPoint({max.X(), min.Y(), max.Z()}, {1, 0, 0});
 
+  this->dataPtr->boundingBox->Update();
 
  // this->dataPtr->manualObject->end();
 }

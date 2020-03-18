@@ -134,17 +134,27 @@ ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
   ignition::math::AxisAlignedBox box(
       ignition::math::Vector3d::Zero,
       ignition::math::Vector3d::Zero);
+  this->BoundsHelper(this->ogreNode, box);
+  return box;
+}
+
+void OgreVisual::BoundsHelper(Ogre::SceneNode *_node, ignition::math::AxisAlignedBox &_box) const
+{
   this->ogreNode->_updateBounds();
   this->ogreNode->_update(false, true);
 
   Ogre::Matrix4 invTransform =
       this->ogreNode->_getFullTransform().inverse();
 
+  Ogre::SceneNode::ChildNodeIterator it = _node->getChildIterator();
+
+  ignwarn << "num attached objects " << this->ogreNode->numAttachedObjects() << "\n";
+ 
   for (int i = 0; i < this->ogreNode->numAttachedObjects(); i++)
   {
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
 
-    if (obj->isVisible() && obj->getMovableType() != "gazebo::dynamiclines"
+    if (obj->isVisible() && obj->getMovableType() != "ignition::dynamiclines"
         && obj->getMovableType() != "BillboardSet"
         && obj->getVisibilityFlags() != IGN_VISIBILITY_GUI)
     {
@@ -169,7 +179,7 @@ ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
         min = ignition::math::Vector3d(-0.5, -0.5, -0.5);
         max = ignition::math::Vector3d(0.5, 0.5, 0.5);
       }
-else
+      else
       {
         // Get transform to be applied to the current node.
         Ogre::Matrix4 transform = invTransform * this->ogreNode->_getFullTransform();
@@ -182,19 +192,21 @@ else
 #else
         bb.transformAffine(transform);
 #endif
-        // TODO(john) make conversion functions for
-        // Ogre::Vector3 -> math::Vector3d
         Ogre::Vector3 ogreMin = bb.getMinimum();
         Ogre::Vector3 ogreMax = bb.getMaximum();
         min = ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
         max = ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
       }
 
-      box.Merge(ignition::math::AxisAlignedBox(min, max));
+      _box.Merge(ignition::math::AxisAlignedBox(min, max));
     }
   }
 
-  return box;
+  while (it.hasMoreElements())
+  {
+    Ogre::SceneNode *next = dynamic_cast<Ogre::SceneNode*>(it.getNext());
+    this->BoundsHelper(next, _box);
+  }
 }
 
 //////////////////////////////////////////////////

@@ -43,6 +43,10 @@ namespace ignition
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
 
+      public: virtual void SetHighlighted(bool _highlighted) override;
+
+      public: virtual bool GetHighlighted() const override;
+
       // Documentation inherited.
       protected: virtual GeometryStorePtr Geometries() const override;
 
@@ -61,6 +65,8 @@ namespace ignition
 
       /// \brief Pointer to the attached geometries
       protected: Ogre2GeometryStorePtr geometries;
+
+      protected: Ogre2WireBoxPtr boundingBox = nullptr;
 
       /// \brief Make scene our friend so it can create ogre2 visuals
       private: friend class Ogre2Scene;

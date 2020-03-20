@@ -105,11 +105,12 @@ ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
   ignition::math::AxisAlignedBox box(
       ignition::math::Vector3d::Zero,
       ignition::math::Vector3d::Zero);
-  this->BoundsHelper(this->ogreNode, box);
+  this->BoundsHelper(box);
   return box;
 }
 
-void OgreVisual::BoundsHelper(Ogre::SceneNode *_node, ignition::math::AxisAlignedBox &_box) const
+//////////////////////////////////////////////////
+void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
 {
   this->ogreNode->_updateBounds();
   this->ogreNode->_update(false, true);
@@ -117,10 +118,8 @@ void OgreVisual::BoundsHelper(Ogre::SceneNode *_node, ignition::math::AxisAligne
   Ogre::Matrix4 invTransform =
       this->ogreNode->_getFullTransform().inverse();
 
-  Ogre::SceneNode::ChildNodeIterator it = _node->getChildIterator();
+  //Ogre::SceneNode::ChildNodeIterator it = _node->getChildIterator();
 
-  ignwarn << "num attached objects " << this->ogreNode->numAttachedObjects() << "\n";
- 
   for (int i = 0; i < this->ogreNode->numAttachedObjects(); i++)
   {
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
@@ -173,11 +172,25 @@ void OgreVisual::BoundsHelper(Ogre::SceneNode *_node, ignition::math::AxisAligne
     }
   }
 
+  auto childNodes = std::dynamic_pointer_cast<OgreNodeStore>(this->Children());
+  if (!childNodes)
+    return;
+  
+  for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+  {
+    NodePtr child = it->second;
+    OgreVisualPtr visual = std::dynamic_pointer_cast<OgreVisual>(child);
+    if (visual)
+      _box.Merge(visual->BoundingBox());
+  }
+
+  /*
   while (it.hasMoreElements())
   {
     Ogre::SceneNode *next = dynamic_cast<Ogre::SceneNode*>(it.getNext());
     this->BoundsHelper(next, _box);
   }
+  */
 }
 
 //////////////////////////////////////////////////

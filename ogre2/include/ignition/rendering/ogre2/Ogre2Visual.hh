@@ -43,6 +43,8 @@ namespace ignition
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
 
+      public: virtual void BoundsHelper(ignition::math::AxisAlignedBox &_box) const;
+
       // Documentation inherited.
       protected: virtual GeometryStorePtr Geometries() const override;
 

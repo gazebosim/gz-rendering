@@ -40,7 +40,7 @@ namespace ignition
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
 
-      protected: virtual void BoundsHelper(Ogre::SceneNode *_node, ignition::math::AxisAlignedBox &_box) const;
+      protected: virtual void BoundsHelper(ignition::math::AxisAlignedBox &_box) const;
 
       protected: virtual GeometryStorePtr Geometries() const;
 

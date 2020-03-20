@@ -84,8 +84,6 @@ void Ogre2WireBox::Create()
   ignition::math::Vector3d max = this->box.Max();
   ignition::math::Vector3d min = this->box.Min();
 
-  max = ignition::math::Vector3d(5, 5, 5);
-
   // line 0
   this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), min.Z()});
   this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), min.Z()});

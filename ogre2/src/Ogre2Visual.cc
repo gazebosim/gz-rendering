@@ -114,8 +114,7 @@ ignition::math::AxisAlignedBox Ogre2Visual::BoundingBox() const
   ignition::math::AxisAlignedBox box(
       ignition::math::Vector3d::Zero,
       ignition::math::Vector3d::Zero);
-  // TODO(john) Calculate bounding boxes of attaached objects
-  // and return as math::AxisAlignedBox, something like 
+  this->BoundsHelper(box);
   return box;
 }
 
@@ -150,8 +149,7 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
           continue;
       }
       
-      // TODO(john) find the ogre2 way of getting bounding box
-      Ogre::AxisAlignedBox bb;// = obj->getBoundingBox();
+      Ogre::Aabb bb = obj->getLocalAabb();
       
       ignition::math::Vector3d min;
       ignition::math::Vector3d max;

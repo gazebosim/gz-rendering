@@ -66,13 +66,11 @@ namespace ignition
       /// \param[in] _material Ogre material.
       protected: virtual void SetMaterialImpl(Ogre2MaterialPtr _material);
 
-      protected: virtual void SetSceneNode(const ScenePtr &_scene);
-
       /// \brief Create the wire box geometry in ogre2
       private: void Create();
 
-      /// \brief Wire box should only be created by visual.
-      private: friend class Ogre2Visual;
+      /// \brief Wire Box should only be created by scene.
+      private: friend class Ogre2Scene;
 
       /// \brief Private data class
       private: std::unique_ptr<Ogre2WireBoxPrivate> dataPtr;

@@ -31,9 +31,7 @@ class ignition::rendering::Ogre2WireBoxPrivate
   public: Ogre2MaterialPtr material;
 
   /// \brief Ogre renderable used to render the grid.
-  public: Ogre2DynamicRenderable *wireBox = nullptr;
-
-  public: ScenePtr scene;
+  public: std::shared_ptr<Ogre2DynamicRenderable> wireBox = nullptr;
 };
 
 //////////////////////////////////////////////////
@@ -45,7 +43,6 @@ Ogre2WireBox::Ogre2WireBox()
 //////////////////////////////////////////////////
 Ogre2WireBox::~Ogre2WireBox()
 {
-  delete this->dataPtr->wireBox;
 }
 
 //////////////////////////////////////////////////
@@ -70,124 +67,74 @@ void Ogre2WireBox::Init()
   this->Create();
 }
 
-void Ogre2WireBox::SetSceneNode(const ScenePtr &_scene)
-{
-  this->dataPtr->scene = _scene;
-}
-
 //////////////////////////////////////////////////
 void Ogre2WireBox::Create()
 {
-  ignwarn << "1\n";
   if (!this->dataPtr->wireBox)
   {
-    this->dataPtr->wireBox = new Ogre2DynamicRenderable(this->dataPtr->scene);
+    this->dataPtr->wireBox.reset(new Ogre2DynamicRenderable(this->scene));
   }
 
-  ignwarn << "2\n";
   // Clear any previous data from the grid
   this->dataPtr->wireBox->Clear();
-  ignwarn << "3\n";
+  this->dataPtr->wireBox->Update();
 
   this->dataPtr->wireBox->SetOperationType(MarkerType::MT_LINE_LIST);
-  ignwarn << "4\n";
-  
-  /*
-  double extent = (this->cellLength * static_cast<double>(this->cellCount))/2;
-  for (unsigned int h = 0; h <= this->verticalCellCount; ++h)
-  {
-    double hReal = this->heightOffset +
-        (this->verticalCellCount / 2.0f - static_cast<double>(h))
-        * this->cellLength;
-    for (unsigned int i = 0; i <= this->cellCount; i++)
-    {
-      double inc = extent - (i * this->cellLength);
-
-      math::Vector3d p1{inc, -extent, hReal};
-      math::Vector3d p2{inc, extent , hReal};
-      math::Vector3d p3{-extent, inc, hReal};
-      math::Vector3d p4{extent, inc, hReal};
-
-      this->dataPtr->grid->AddPoint(p1);
-      this->dataPtr->grid->AddPoint(p2);
-      this->dataPtr->grid->AddPoint(p3);
-      this->dataPtr->grid->AddPoint(p4);
-    }
-  }
-*/
 
   ignition::math::Vector3d max = this->box.Max();
   ignition::math::Vector3d min = this->box.Min();
-  ignwarn << "5\n";
 
   max = ignition::math::Vector3d(5, 5, 5);
 
-  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), min.Z()}, {1, 0, 0});
+  // line 0
+  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), min.Z()});
+  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), min.Z()});
 
   // line 1
-  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), min.Z()});
+  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), max.Z()});
 
   // line 2
-  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), min.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), min.Z()});
+  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), min.Z()});
 
   // line 3
-  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), min.Z()});
+  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), max.Z()});
 
   // line 4
-  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), min.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), min.Z()});
+  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), min.Z()});
 
   // line 5
-  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), min.Z()});
+  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), max.Z()});
 
   // line 6
-  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), min.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), min.Z()});
+  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), min.Z()});
 
   // line 7
-  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), max.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), max.Z()});
+  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), max.Z()});
 
   // line 8
-  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), max.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({min.X(), max.Y(), max.Z()});
+  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), max.Z()});
 
   // line 9
-  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), min.Z()});
+  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), max.Z()});
 
   // line 10
-  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), max.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), max.Z()});
+  this->dataPtr->wireBox->AddPoint({max.X(), max.Y(), max.Z()});
 
   // line 11
-  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), max.Z()}, {1, 0, 0});
-  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), max.Z()});
+  this->dataPtr->wireBox->AddPoint({max.X(), min.Y(), max.Z()});
 
   this->dataPtr->wireBox->Update();
-  /*
-  if (this->verticalCellCount > 0)
-  {
-    for (unsigned int x = 0; x <= this->cellCount; ++x)
-    {
-      for (unsigned int y = 0; y <= this->cellCount; ++y)
-      {
-        double xReal = extent - x * this->cellLength;
-        double yReal = extent - y * this->cellLength;
-
-        double zTop = (this->verticalCellCount / 2.0f) * this->cellLength;
-        double zBottom = -zTop;
-
-        this->dataPtr->grid->AddPoint(xReal, yReal, zBottom);
-      }
-    }
-  }
-  */
 }
 
 //////////////////////////////////////////////////
@@ -207,7 +154,7 @@ void Ogre2WireBox::SetMaterial(MaterialPtr _material, bool _unique)
   }
 
   // Set material for the underlying dynamic renderable
-  this->dataPtr->wireBox->SetMaterial(_material, _unique);
+  this->dataPtr->wireBox->SetMaterial(_material, false);
   this->SetMaterialImpl(derived);
 }
 

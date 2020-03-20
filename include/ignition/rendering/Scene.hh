@@ -847,6 +847,10 @@ namespace ignition
       /// \return The created grid
       public: virtual GridPtr CreateGrid() = 0;
 
+      /// \brief Create new wire box geometry.
+      /// \return The created wire box
+      public: virtual WireBoxPtr CreateWireBox() = 0;
+
       /// \brief Create new marker geometry.
       /// \return The created marker
       public: virtual MarkerPtr CreateMarker() = 0;

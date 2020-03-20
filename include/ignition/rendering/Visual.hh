@@ -114,10 +114,6 @@ namespace ignition
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;
 
-      public: virtual void SetHighlighted(bool _highlighted) = 0;
-
-      public: virtual bool GetHighlighted() const = 0;
-
       /// \brief Store any custom data associated with this visual
       /// \param[in] _key Unique key
       /// \param[in] _value Value in any type

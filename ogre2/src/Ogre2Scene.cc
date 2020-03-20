@@ -36,6 +36,7 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "ignition/rendering/ogre2/Ogre2WireBox.hh"
 
 using namespace ignition;
 using namespace rendering;
@@ -362,6 +363,15 @@ GridPtr Ogre2Scene::CreateGridImpl(unsigned int /*_id*/,
 {
   // TODO(anyone)
   return GridPtr();
+}
+
+//////////////////////////////////////////////////
+WireBoxPtr Ogre2Scene::CreateWireBoxImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2WireBoxPtr wireBox(new Ogre2WireBox);
+  bool result = this->InitObject(wireBox, _id, _name);
+  return (result) ? wireBox: nullptr;
 }
 
 //////////////////////////////////////////////////

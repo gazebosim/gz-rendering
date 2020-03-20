@@ -40,10 +40,6 @@ namespace ignition
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
 
-      public: virtual void SetHighlighted(bool _highlighted) override;
-
-      public: virtual bool GetHighlighted() const override;
-
       protected: virtual void BoundsHelper(Ogre::SceneNode *_node, ignition::math::AxisAlignedBox &_box) const;
 
       protected: virtual GeometryStorePtr Geometries() const;

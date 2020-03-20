@@ -52,13 +52,9 @@ namespace ignition
 
       public: virtual ignition::math::AxisAlignedBox Box() const;
 
-      public: virtual void SetVisual(const rendering::VisualPtr &_visual);
-
       protected: ignition::math::AxisAlignedBox box;
 
       protected: bool visible = false;
-
-      protected: rendering::VisualPtr visual = nullptr;
 
       /// \brief Flag to indicate WireBox properties have changed
       protected: bool wireBoxDirty = false;
@@ -116,13 +112,6 @@ namespace ignition
     ignition::math::AxisAlignedBox BaseWireBox<T>::Box() const
     {
       return this->box;
-    }
-
-    template <class T>
-    void BaseWireBox<T>::SetVisual(const rendering::VisualPtr &_visual)
-    {
-      this->visual = _visual;
-      this->wireBoxDirty = true;
     }
     }
   }

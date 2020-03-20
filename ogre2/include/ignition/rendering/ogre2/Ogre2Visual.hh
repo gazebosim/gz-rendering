@@ -43,10 +43,6 @@ namespace ignition
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
 
-      public: virtual void SetHighlighted(bool _highlighted) override;
-
-      public: virtual bool GetHighlighted() const override;
-
       // Documentation inherited.
       protected: virtual GeometryStorePtr Geometries() const override;
 

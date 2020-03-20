@@ -39,6 +39,7 @@
 #include "ignition/rendering/ogre/OgreStorage.hh"
 #include "ignition/rendering/ogre/OgreThermalCamera.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
+#include "ignition/rendering/ogre/OgreWireBox.hh"
 
 namespace ignition
 {
@@ -506,6 +507,15 @@ GridPtr OgreScene::CreateGridImpl(unsigned int _id, const std::string &_name)
   OgreGridPtr grid(new OgreGrid);
   bool result = this->InitObject(grid, _id, _name);
   return (result) ? grid: nullptr;
+}
+
+//////////////////////////////////////////////////
+WireBoxPtr OgreScene::CreateWireBoxImpl(unsigned int _id,
+                                      const std::string &_name)
+{
+  OgreWireBoxPtr wireBox(new OgreWireBox);
+  bool result = this->InitObject(wireBox, _id, _name);
+  return (result) ? wireBox: nullptr;
 }
 
 //////////////////////////////////////////////////

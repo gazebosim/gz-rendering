@@ -119,35 +119,6 @@ ignition::math::AxisAlignedBox Ogre2Visual::BoundingBox() const
   return box;
 }
 
-bool Ogre2Visual::GetHighlighted() const
-{
-  if (this->boundingBox)
-    return this->boundingBox->Visible();
-  return false;
-}
-
-void Ogre2Visual::SetHighlighted(bool _highlighted)
-{
-  ignwarn << "scene " << this->scene << "\n";
-  if (_highlighted)
-  {
-    auto bbox = this->BoundingBox();
-    if (!this->boundingBox)
-    {
-      this->boundingBox = Ogre2WireBoxPtr(new Ogre2WireBox());
-    }
-    this->boundingBox->SetSceneNode(this->scene);
-    this->boundingBox->SetVisual(std::dynamic_pointer_cast<rendering::Visual>(shared_from_this()));
-    this->boundingBox->SetBox(bbox);
-    this->boundingBox->SetVisible(true);
-    this->boundingBox->Init();
-  }
-  else if (this->boundingBox)
-  {
-    this->boundingBox->SetVisible(false);
-  }
-}
-
 //////////////////////////////////////////////////
 void Ogre2Visual::Init()
 {

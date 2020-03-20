@@ -52,8 +52,6 @@ namespace ignition
       /// \brief Get the wireframe box.
       /// \return The wireframe box.
       public: virtual ignition::math::AxisAlignedBox Box() const = 0;
-
-      public: virtual void SetVisual(const rendering::VisualPtr &_visual) = 0;
     };
     }
   }

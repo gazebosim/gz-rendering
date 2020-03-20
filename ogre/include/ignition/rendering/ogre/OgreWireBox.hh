@@ -69,7 +69,8 @@ namespace ignition
       /// \brief Create the wire box geometry in ogre
       private: void Create();
 
-      private: friend class OgreVisual;
+      /// \brief Wire Box should only be created by scene.
+      private: friend class OgreScene;
 
       /// \brief Private data class
       private: std::unique_ptr<OgreWireBoxPrivate> dataPtr;

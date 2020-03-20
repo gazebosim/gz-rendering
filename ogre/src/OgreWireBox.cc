@@ -56,14 +56,15 @@ void OgreWireBox::PreRender()
     this->wireBoxDirty = false;
   }
 
-  if (this->dataPtr->boundingBox)
-    this->dataPtr->boundingBox->Update();
+  //if (this->dataPtr->boundingBox)
+  //  this->dataPtr->boundingBox->Update();
 }
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreWireBox::OgreObject() const
 {
-  return std::dynamic_pointer_cast<Ogre::MovableObject>(this->dataPtr->boundingBox).get();
+  //return std::dynamic_pointer_cast<Ogre::MovableObject>(this->dataPtr->boundingBox).get();
+  return this->dataPtr->manualObject;
 }
 
 //////////////////////////////////////////////////
@@ -75,12 +76,6 @@ void OgreWireBox::Init()
 //////////////////////////////////////////////////
 void OgreWireBox::Create()
 {
-  if (!this->visual)
-  {
-    ignerr << "Wire Box has no attached visual.\n";
-    return;
-  }
-
   if (!this->dataPtr->boundingBox)
   {
     this->dataPtr->boundingBox.reset(new OgreDynamicLines(MarkerType::MT_LINE_LIST));
@@ -88,7 +83,6 @@ void OgreWireBox::Create()
 
   this->dataPtr->boundingBox->Clear();
 
-/*
   if (!this->dataPtr->manualObject)
   {
     this->dataPtr->manualObject =
@@ -100,12 +94,11 @@ void OgreWireBox::Create()
   
   // TODO below estimate vertex count
   this->dataPtr->manualObject->estimateVertexCount(12);
+  std::string materialName = this->dataPtr->material ?
+      this->dataPtr->material->Name() : "Default/White";
   this->dataPtr->manualObject->begin(materialName,
       Ogre::RenderOperation::OT_LINE_LIST);
-*/
 
-  std::string materialName = this->dataPtr->material ?
-      this->dataPtr->material->Name() : "Default/Blue";
   ignition::math::Vector3d max = this->box.Max();
   ignition::math::Vector3d min = this->box.Min();
 
@@ -114,56 +107,55 @@ void OgreWireBox::Create()
   ignwarn << "Min " << min << "\n";
 
   // line 0
-  this->dataPtr->boundingBox->AddPoint({min.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({max.X(), min.Y(), min.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(min.X(), min.Y(), min.Z());
+  this->dataPtr->manualObject->position(max.X(), min.Y(), min.Z());
 
   // line 1
-  this->dataPtr->boundingBox->AddPoint({min.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({min.X(), min.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(min.X(), min.Y(), min.Z());
+  this->dataPtr->manualObject->position(min.X(), min.Y(), max.Z());
 
   // line 2
-  this->dataPtr->boundingBox->AddPoint({min.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({min.X(), max.Y(), min.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(min.X(), min.Y(), min.Z());
+  this->dataPtr->manualObject->position(min.X(), max.Y(), min.Z());
 
   // line 3
-  this->dataPtr->boundingBox->AddPoint({min.X(), max.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({min.X(), max.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(min.X(), max.Y(), min.Z());
+  this->dataPtr->manualObject->position(min.X(), max.Y(), max.Z());
 
   // line 4
-  this->dataPtr->boundingBox->AddPoint({min.X(), max.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({max.X(), max.Y(), min.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(min.X(), max.Y(), min.Z());
+  this->dataPtr->manualObject->position(max.X(), max.Y(), min.Z());
 
   // line 5
-  this->dataPtr->boundingBox->AddPoint({max.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({max.X(), min.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(max.X(), min.Y(), min.Z());
+  this->dataPtr->manualObject->position(max.X(), min.Y(), max.Z());
 
   // line 6
-  this->dataPtr->boundingBox->AddPoint({max.X(), min.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({max.X(), max.Y(), min.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(max.X(), min.Y(), min.Z());
+  this->dataPtr->manualObject->position(max.X(), max.Y(), min.Z());
 
   // line 7
-  this->dataPtr->boundingBox->AddPoint({min.X(), max.Y(), max.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({max.X(), max.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(min.X(), max.Y(), max.Z());
+  this->dataPtr->manualObject->position(max.X(), max.Y(), max.Z());
 
   // line 8
-  this->dataPtr->boundingBox->AddPoint({min.X(), max.Y(), max.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({min.X(), min.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(min.X(), max.Y(), max.Z());
+  this->dataPtr->manualObject->position(min.X(), min.Y(), max.Z());
 
   // line 9
-  this->dataPtr->boundingBox->AddPoint({max.X(), max.Y(), min.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({max.X(), max.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(max.X(), max.Y(), min.Z());
+  this->dataPtr->manualObject->position(max.X(), max.Y(), max.Z());
 
   // line 10
-  this->dataPtr->boundingBox->AddPoint({max.X(), min.Y(), max.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({max.X(), max.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(max.X(), min.Y(), max.Z());
+  this->dataPtr->manualObject->position(max.X(), max.Y(), max.Z());
 
   // line 11
-  this->dataPtr->boundingBox->AddPoint({min.X(), min.Y(), max.Z()}, {1, 0, 0});
-  this->dataPtr->boundingBox->AddPoint({max.X(), min.Y(), max.Z()}, {1, 0, 0});
+  this->dataPtr->manualObject->position(min.X(), min.Y(), max.Z());
+  this->dataPtr->manualObject->position(max.X(), min.Y(), max.Z());
 
-  this->dataPtr->boundingBox->Update();
-
- // this->dataPtr->manualObject->end();
+  //this->dataPtr->boundingBox->Update();
+  this->dataPtr->manualObject->end();
 }
 
 //////////////////////////////////////////////////
@@ -200,6 +192,5 @@ void OgreWireBox::SetMaterialImpl(OgreMaterialPtr _material)
 //////////////////////////////////////////////////
 MaterialPtr OgreWireBox::Material() const
 {
-  ignwarn << "Returning material: " << this->dataPtr->material << "\n";
   return this->dataPtr->material;
 }

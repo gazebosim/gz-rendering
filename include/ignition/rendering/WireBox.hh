@@ -37,17 +37,10 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~WireBox() { }
 
-      /// \brief Set the visibility of the box
-      /// \param[in] _visible True to make the box visible, False to hide.
-      public: virtual void SetVisible(bool _visible) = 0;
-
-      /// \brief Get the visibility of the box.
-      /// \return True if the box is visible.
-      public: virtual bool Visible() const = 0;
-
       /// \brief Set the axis aligned box
       /// \param[in] _box The axis aligned box
-      public: virtual void SetBox(const ignition::math::AxisAlignedBox &_box) = 0;
+      public: virtual void SetBox(
+                  const ignition::math::AxisAlignedBox &_box) = 0;
 
       /// \brief Get the wireframe box.
       /// \return The wireframe box.

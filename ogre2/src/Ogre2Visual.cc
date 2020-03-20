@@ -121,39 +121,33 @@ ignition::math::AxisAlignedBox Ogre2Visual::BoundingBox() const
 //////////////////////////////////////////////////
 void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
 {
-  //this->ogreNode->_updateBounds();
-  //this->ogreNode->_update(false, true);
-  
   Ogre::Matrix4 invTransform =
       this->ogreNode->_getFullTransform().inverse();
-  
-  //Ogre::SceneNode::ChildNodeIterator it = _node->getChildIterator();
-  
-  ignwarn << "num attached objects " << this->ogreNode->numAttachedObjects() << "\n";
-  
+
   for (size_t i = 0; i < this->ogreNode->numAttachedObjects(); i++)
-  { 
+  {
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
-    
+
     if (obj->isVisible() && obj->getMovableType() != "ignition::dynamiclines"
         && obj->getMovableType() != "BillboardSet"
         && obj->getVisibilityFlags() != IGN_VISIBILITY_GUI)
-    { 
+    {
       Ogre::Any any = obj->getUserObjectBindings().getUserAny();
       if (any.getType() == typeid(std::string))
       {
         std::string str = Ogre::any_cast<std::string>(any);
+        ignwarn << "String is " << str << "\n";
         if (str.substr(0, 3) == "rot" || str.substr(0, 5) == "trans"
             || str.substr(0, 5) == "scale" ||
             str.find("_APPLY_WRENCH_") != std::string::npos)
           continue;
       }
-      
+
       Ogre::Aabb bb = obj->getLocalAabb();
-      
-      ignition::math::Vector3d min;
-      ignition::math::Vector3d max;
-      
+
+      ignition::math::Vector3d min(0, 0, 0);
+      ignition::math::Vector3d max(0, 0, 0);
+
       // Ogre does not return a valid bounding box for lights.
       if (obj->getMovableType() == "Light")
       {
@@ -163,26 +157,28 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
       else
       {
         // Get transform to be applied to the current node.
-        Ogre::Matrix4 transform = invTransform * this->ogreNode->_getFullTransform();
+        Ogre::Matrix4 transform =
+          invTransform * this->ogreNode->_getFullTransform();
+
         // Correct precision error which makes ogre's isAffine check fail.
         transform[3][0] = transform[3][1] = transform[3][2] = 0;
         transform[3][3] = 1;
-        // get oriented bounding box in object's local space
+
+        // Get oriented bounding box in object's local space
         bb.transformAffine(transform);
         Ogre::Vector3 ogreMin = bb.getMinimum();
         Ogre::Vector3 ogreMax = bb.getMaximum();
         min = ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
         max = ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
       }
-      
       _box.Merge(ignition::math::AxisAlignedBox(min, max));
     }
   }
-  
+
   auto childNodes = std::dynamic_pointer_cast<Ogre2NodeStore>(this->Children());
   if (!childNodes)
     return;
-  
+
   for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
   {
     NodePtr child = it->second;
@@ -190,14 +186,6 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
     if (visual)
       _box.Merge(visual->BoundingBox());
   }
-  
-  /*
-  while (it.hasMoreElements())
-  {
-    Ogre::SceneNode *next = dynamic_cast<Ogre::SceneNode*>(it.getNext());
-    this->BoundsHelper(next, _box);
-  }
-  */
 }
 
 //////////////////////////////////////////////////

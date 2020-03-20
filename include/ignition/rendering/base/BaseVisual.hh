@@ -19,10 +19,11 @@
 
 #include <map>
 #include <string>
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/Storage.hh"
+
 #include <ignition/math/AxisAlignedBox.hh>
 
+#include "ignition/rendering/Visual.hh"
+#include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
 
@@ -80,7 +81,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
-     
+
       public: virtual void PreRender() override;
 
       // Documentation inherited
@@ -94,7 +95,8 @@ namespace ignition
       public: virtual Variant UserData(const std::string &_key) const override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
+      public: virtual ignition::math::AxisAlignedBox BoundingBox()
+              const override;
 
       protected: virtual void PreRenderChildren() override;
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  *
 */
-// TODO convert below create function to use dynamic renderable
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre/OgreWireBox.hh"
@@ -29,8 +28,6 @@ class ignition::rendering::OgreWireBoxPrivate
 
   /// \brief Ogre manual object used to render the wire box.
   public: Ogre::ManualObject *manualObject = nullptr;
-
-  public: std::shared_ptr<OgreDynamicLines> boundingBox;
 };
 
 using namespace ignition;
@@ -55,15 +52,11 @@ void OgreWireBox::PreRender()
     this->Create();
     this->wireBoxDirty = false;
   }
-
-  //if (this->dataPtr->boundingBox)
-  //  this->dataPtr->boundingBox->Update();
 }
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreWireBox::OgreObject() const
 {
-  //return std::dynamic_pointer_cast<Ogre::MovableObject>(this->dataPtr->boundingBox).get();
   return this->dataPtr->manualObject;
 }
 
@@ -76,13 +69,6 @@ void OgreWireBox::Init()
 //////////////////////////////////////////////////
 void OgreWireBox::Create()
 {
-  if (!this->dataPtr->boundingBox)
-  {
-    this->dataPtr->boundingBox.reset(new OgreDynamicLines(MarkerType::MT_LINE_LIST));
-  }
-
-  this->dataPtr->boundingBox->Clear();
-
   if (!this->dataPtr->manualObject)
   {
     this->dataPtr->manualObject =
@@ -91,8 +77,7 @@ void OgreWireBox::Create()
 
   this->dataPtr->manualObject->clear();
   this->dataPtr->manualObject->setCastShadows(false);
-  
-  // TODO below estimate vertex count
+
   this->dataPtr->manualObject->estimateVertexCount(12);
   std::string materialName = this->dataPtr->material ?
       this->dataPtr->material->Name() : "Default/White";
@@ -150,7 +135,6 @@ void OgreWireBox::Create()
   this->dataPtr->manualObject->position(min.X(), min.Y(), max.Z());
   this->dataPtr->manualObject->position(max.X(), min.Y(), max.Z());
 
-  //this->dataPtr->boundingBox->Update();
   this->dataPtr->manualObject->end();
 }
 

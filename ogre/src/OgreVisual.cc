@@ -118,8 +118,6 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
   Ogre::Matrix4 invTransform =
       this->ogreNode->_getFullTransform().inverse();
 
-  //Ogre::SceneNode::ChildNodeIterator it = _node->getChildIterator();
-
   for (int i = 0; i < this->ogreNode->numAttachedObjects(); i++)
   {
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
@@ -152,11 +150,14 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
       else
       {
         // Get transform to be applied to the current node.
-        Ogre::Matrix4 transform = invTransform * this->ogreNode->_getFullTransform();
+        Ogre::Matrix4 transform =
+          invTransform * this->ogreNode->_getFullTransform();
+
         // Correct precision error which makes ogre's isAffine check fail.
         transform[3][0] = transform[3][1] = transform[3][2] = 0;
         transform[3][3] = 1;
-        // get oriented bounding box in object's local space
+
+        // Get oriented bounding box in object's local space
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 11
         bb.transform(transform);
 #else
@@ -175,7 +176,7 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
   auto childNodes = std::dynamic_pointer_cast<OgreNodeStore>(this->Children());
   if (!childNodes)
     return;
-  
+
   for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
   {
     NodePtr child = it->second;
@@ -183,14 +184,6 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
     if (visual)
       _box.Merge(visual->BoundingBox());
   }
-
-  /*
-  while (it.hasMoreElements())
-  {
-    Ogre::SceneNode *next = dynamic_cast<Ogre::SceneNode*>(it.getNext());
-    this->BoundsHelper(next, _box);
-  }
-  */
 }
 
 //////////////////////////////////////////////////

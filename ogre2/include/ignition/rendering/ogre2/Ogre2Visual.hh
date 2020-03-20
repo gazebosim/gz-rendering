@@ -41,9 +41,14 @@ namespace ignition
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox BoundingBox() const override;
+      public: virtual ignition::math::AxisAlignedBox BoundingBox()
+              const override;
 
-      public: virtual void BoundsHelper(ignition::math::AxisAlignedBox &_box) const;
+      /// \brief Recursively loop through this visual's children
+      /// to obtain bounding box.
+      /// \param[in] _box The bounding box.
+      protected: virtual void BoundsHelper(
+                     ignition::math::AxisAlignedBox &_box) const;
 
       // Documentation inherited.
       protected: virtual GeometryStorePtr Geometries() const override;
@@ -63,8 +68,6 @@ namespace ignition
 
       /// \brief Pointer to the attached geometries
       protected: Ogre2GeometryStorePtr geometries;
-
-      protected: Ogre2WireBoxPtr boundingBox = nullptr;
 
       /// \brief Make scene our friend so it can create ogre2 visuals
       private: friend class Ogre2Scene;

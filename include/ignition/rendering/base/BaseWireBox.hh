@@ -44,17 +44,14 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy();
 
-      public: virtual void SetVisible(bool _visible);
-
-      public: virtual bool Visible() const;
-
+      // Documentation inherited.
       public: virtual void SetBox(const ignition::math::AxisAlignedBox &_box);
 
+      // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox Box() const;
 
+      // \brief Underlying axis aligned box that the wire box reflects.
       protected: ignition::math::AxisAlignedBox box;
-
-      protected: bool visible = false;
 
       /// \brief Flag to indicate WireBox properties have changed
       protected: bool wireBoxDirty = false;
@@ -88,19 +85,7 @@ namespace ignition
       T::Destroy();
     }
 
-    template <class T>
-    void BaseWireBox<T>::SetVisible(bool _visible)
-    {
-      this->visible = _visible;
-      this->wireBoxDirty = true;
-    }
-
-    template <class T>
-    bool BaseWireBox<T>::Visible() const
-    {
-      return this->visible;
-    }
-
+    //////////////////////////////////////////////////
     template <class T>
     void BaseWireBox<T>::SetBox(const ignition::math::AxisAlignedBox &_box)
     {
@@ -108,6 +93,7 @@ namespace ignition
       this->wireBoxDirty = true;
     }
 
+    //////////////////////////////////////////////////
     template <class T>
     ignition::math::AxisAlignedBox BaseWireBox<T>::Box() const
     {

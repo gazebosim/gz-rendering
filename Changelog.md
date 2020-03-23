@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 2.X.X (20XX-XX-XX)
 
+1. Port windows fixes
+    * [Pull request 253](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/253)
+
 1. Backport transparency setting based on diffuse alpha
     * [Pull request 247](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/247)
 

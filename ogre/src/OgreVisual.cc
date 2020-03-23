@@ -43,13 +43,13 @@ void OgreVisual::SetVisible(bool _visible)
 //////////////////////////////////////////////////
 void OgreVisual::SetVisibilityFlags(uint32_t _flags)
 {
+  BaseVisual::SetVisibilityFlags(_flags);
+
   if (!this->ogreNode)
     return;
 
   for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects(); ++i)
     this->ogreNode->getAttachedObject(i)->setVisibilityFlags(_flags);
-
-  BaseVisual::SetVisibilityFlags(_flags);
 }
 
 //////////////////////////////////////////////////

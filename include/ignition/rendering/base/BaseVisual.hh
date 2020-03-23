@@ -370,7 +370,8 @@ namespace ignition
       {
         NodePtr child = it->second;
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
-        if (visual) visual->SetVisibilityFlags(_flags);
+        if (visual)
+          visual->SetVisibilityFlags(_flags);
       }
     }
 

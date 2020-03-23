@@ -59,13 +59,14 @@ class Ogre2RenderTargetCompositorListener :
     {
       Ogre::CompositorPassScene *scenePass =
           static_cast<Ogre::CompositorPassScene *>(_pass);
-        Ogre::Viewport *vp = scenePass->getViewport();
-        // make sure we do not alter the reserved visibility flags
-        uint32_t f = ogreRenderTarget->VisibilityMask() |
-            ~Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS;
-        // apply the new visibility mask
-        uint32_t flags = f & vp->getVisibilityMask();
-        vp->_setVisibilityMask(flags, vp->getLightVisibilityMask());
+      IGN_ASSERT(scenePass != nullptr, "Unable to get scene pass");
+      Ogre::Viewport *vp = scenePass->getViewport();
+      // make sure we do not alter the reserved visibility flags
+      uint32_t f = ogreRenderTarget->VisibilityMask() |
+          ~Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS;
+      // apply the new visibility mask
+      uint32_t flags = f & vp->getVisibilityMask();
+      vp->_setVisibilityMask(flags, vp->getLightVisibilityMask());
     }
   }
 
@@ -100,7 +101,10 @@ Ogre2RenderTarget::Ogre2RenderTarget()
 Ogre2RenderTarget::~Ogre2RenderTarget()
 {
   if (this->dataPtr->rtListener)
+  {
     delete this->dataPtr->rtListener;
+    this->dataPtr->rtListener = nullptr;
+  }
 }
 
 //////////////////////////////////////////////////

@@ -38,11 +38,11 @@ class CameraTest: public testing::Test,
   // Test and verify camera following
   public: void Follow(const std::string &_renderEngine);
 
-  // Test and verify camera select function method using Selection Buffer
-  public: void VisualAt(const std::string &_renderEngine);
-
   // Test and verify camera visibilty mask and visual visibility flags
   public: void Visibility(const std::string &_renderEngine);
+
+  // Test and verify camera select function method using Selection Buffer
+  public: void VisualAt(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -502,8 +502,6 @@ void CameraTest::Visibility(const std::string &_renderEngine)
   rendering::unloadEngine(engine->Name());
 }
 
-
-
 /////////////////////////////////////////////////
 TEST_P(CameraTest, Track)
 {
@@ -517,15 +515,15 @@ TEST_P(CameraTest, Follow)
 }
 
 /////////////////////////////////////////////////
-TEST_P(CameraTest, VisualAt)
-{
-  VisualAt(GetParam());
-}
-
-/////////////////////////////////////////////////
 TEST_P(CameraTest, Visibility)
 {
   Visibility(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, VisualAt)
+{
+  VisualAt(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,

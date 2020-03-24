@@ -113,6 +113,9 @@ namespace ignition
 
       /// \brief A map of custom key value data
       protected: std::map<std::string, Variant> userData;
+
+      /// \brief The bounding box of the visual
+      protected: ignition::math::AxisAlignedBox boundingBox;
     };
 
     //////////////////////////////////////////////////

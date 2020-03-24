@@ -87,6 +87,9 @@ void OgreWireBox::Create()
   ignition::math::Vector3d max = this->box.Max();
   ignition::math::Vector3d min = this->box.Min();
 
+  ignwarn << "max " << max << "\n";
+  ignwarn << "min " << min << "\n";
+
   // line 0
   this->dataPtr->manualObject->position(min.X(), min.Y(), min.Z());
   this->dataPtr->manualObject->position(max.X(), min.Y(), min.Z());

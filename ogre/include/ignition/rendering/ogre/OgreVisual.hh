@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE_OGREVISUAL_HH_
 #define IGNITION_RENDERING_OGRE_OGREVISUAL_HH_
 
+#include <vector>
+
 #include "ignition/rendering/base/BaseVisual.hh"
 #include "ignition/rendering/ogre/OgreNode.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -46,6 +48,25 @@ namespace ignition
       /// \param[in] _box The bounding box.
       protected: virtual void BoundsHelper(
                      ignition::math::AxisAlignedBox &_box) const;
+
+      /// \brief Transform a bounding box to the world space.
+      /// \param[in] _bbox Input bounding box.
+      /// \param[in] _worldPose Pose used to transform the bounding box.
+      /// \param[out] _vertices Vertices of the transformed bounding box in
+      /// world coordinates.
+      protected: virtual void Transform(
+                     const ignition::math::AxisAlignedBox &_bbox,
+                     const ignition::math::Pose3d &_worldPose,
+                     std::vector<ignition::math::Vector3d> &_vertices) const;
+
+      /// \brief Get the minimum and maximum values of a list of vertices.
+      /// \param[in] _vertices A list of input vertices.
+      /// \param[out] _min Minimum x, y, z values.
+      /// \param[out] _max Maximum x, y, z values.
+      protected: virtual void MinMax(
+                     const std::vector<ignition::math::Vector3d> &_vertices,
+                     ignition::math::Vector3d &_min,
+                     ignition::math::Vector3d &_max) const;
 
       protected: virtual GeometryStorePtr Geometries() const;
 

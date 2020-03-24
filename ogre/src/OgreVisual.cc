@@ -99,12 +99,94 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
   return true;
 }
 
+/////////////////////////////////////////////////
+void OgreVisual::Transform(const ignition::math::AxisAlignedBox &_bbox,
+    const ignition::math::Pose3d &_worldPose,
+    std::vector<ignition::math::Vector3d> &_vertices) const
+{
+  auto center = _bbox.Center();
+
+  // Get the 8 corners of the bounding box.
+  auto v0 = center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+                                               _bbox.YLength()/2.0,
+                                               _bbox.ZLength()/2.0);
+  auto v1 = center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+                                              _bbox.YLength()/2.0,
+                                              _bbox.ZLength()/2.0);
+  auto v2 = center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+                                              -_bbox.YLength()/2.0,
+                                               _bbox.ZLength()/2.0);
+  auto v3 = center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+                                             -_bbox.YLength()/2.0,
+                                              _bbox.ZLength()/2.0);
+
+  auto v4 = center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+                                               _bbox.YLength()/2.0,
+                                              -_bbox.ZLength()/2.0);
+  auto v5 = center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+                                              _bbox.YLength()/2.0,
+                                             -_bbox.ZLength()/2.0);
+  auto v6 = center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+                                              -_bbox.YLength()/2.0,
+                                              -_bbox.ZLength()/2.0);
+  auto v7 = center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+                                             -_bbox.YLength()/2.0,
+                                             -_bbox.ZLength()/2.0);
+
+  // Transform corners into world spacce.
+  v0 = _worldPose.Rot() * v0 + _worldPose.Pos();
+  v1 = _worldPose.Rot() * v1 + _worldPose.Pos();
+  v2 = _worldPose.Rot() * v2 + _worldPose.Pos();
+  v3 = _worldPose.Rot() * v3 + _worldPose.Pos();
+  v4 = _worldPose.Rot() * v4 + _worldPose.Pos();
+  v5 = _worldPose.Rot() * v5 + _worldPose.Pos();
+  v6 = _worldPose.Rot() * v6 + _worldPose.Pos();
+  v7 = _worldPose.Rot() * v7 + _worldPose.Pos();
+
+  _vertices.clear();
+  _vertices.push_back(v0);
+  _vertices.push_back(v1);
+  _vertices.push_back(v2);
+  _vertices.push_back(v3);
+  _vertices.push_back(v4);
+  _vertices.push_back(v5);
+  _vertices.push_back(v6);
+  _vertices.push_back(v7);
+}
+
+/////////////////////////////////////////////////
+void OgreVisual::MinMax(const std::vector<ignition::math::Vector3d> &_vertices,
+    ignition::math::Vector3d &_min, ignition::math::Vector3d &_max) const
+{
+  if (_vertices.empty())
+    return;
+
+  _min = _vertices[0];
+  _max = _vertices[0];
+
+  // find min / max in world space;
+  for (unsigned int i = 1; i < _vertices.size(); ++i)
+  {
+    auto v = _vertices[i];
+    if (_min.X() > v.X())
+      _min.X() = v.X();
+    if (_max.X() < v.X())
+      _max.X() = v.X();
+    if (_min.Y() > v.Y())
+      _min.Y() = v.Y();
+    if (_max.Y() < v.Y())
+      _max.Y() = v.Y();
+    if (_min.Z() > v.Z())
+      _min.Z() = v.Z();
+    if (_max.Z() < v.Z())
+      _max.Z() = v.Z();
+  }
+}
+
 //////////////////////////////////////////////////
 ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
 {
-  ignition::math::AxisAlignedBox box(
-      ignition::math::Vector3d::Zero,
-      ignition::math::Vector3d::Zero);
+  ignition::math::AxisAlignedBox box;
   this->BoundsHelper(box);
   return box;
 }
@@ -117,6 +199,9 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
 
   Ogre::Matrix4 invTransform =
       this->ogreNode->_getFullTransform().inverse();
+
+  ignition::math::Pose3d worldPose = this->WorldPose();
+  ignition::math::Vector3d scale = this->WorldScale();
 
   for (int i = 0; i < this->ogreNode->numAttachedObjects(); i++)
   {
@@ -149,6 +234,9 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
       }
       else
       {
+        Ogre::Vector3 ogreMin = bb.getMinimum();
+        Ogre::Vector3 ogreMax = bb.getMaximum();
+
         // Get transform to be applied to the current node.
         Ogre::Matrix4 transform =
           invTransform * this->ogreNode->_getFullTransform();
@@ -163,10 +251,19 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
 #else
         bb.transformAffine(transform);
 #endif
-        Ogre::Vector3 ogreMin = bb.getMinimum();
-        Ogre::Vector3 ogreMax = bb.getMaximum();
+        // Get bounding box in object's local space
+        ogreMin = bb.getMinimum();
+        ogreMax = bb.getMaximum();
         min = ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
         max = ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
+
+        // Create bounding box, multiply by visual's scale, and transform
+        ignition::math::AxisAlignedBox tempBox(min, max);
+        tempBox.Min() *= scale;
+        tempBox.Max() *= scale;
+        std::vector<ignition::math::Vector3d> vertices;
+        this->Transform(tempBox, worldPose, vertices);
+        this->MinMax(vertices, min, max);
       }
 
       _box.Merge(ignition::math::AxisAlignedBox(min, max));

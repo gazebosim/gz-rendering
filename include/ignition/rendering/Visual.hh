@@ -125,7 +125,7 @@ namespace ignition
       /// \param[in] _value Value in any type
       public: virtual Variant UserData(const std::string &_key) const = 0;
 
-      /// \brief Get the bounding box around this visual
+      /// \brief Get the bounding box in world frame coordinates.
       /// \return The axis aligned bounding box
       public: virtual ignition::math::AxisAlignedBox BoundingBox() const = 0;
     };

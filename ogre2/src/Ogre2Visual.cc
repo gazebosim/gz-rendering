@@ -150,7 +150,7 @@ void Ogre2Visual::Transform(const ignition::math::AxisAlignedBox &_bbox,
                                              -_bbox.YLength()/2.0,
                                              -_bbox.ZLength()/2.0);
 
-  // Transform corners into world spacce.
+  // Transform corners into world space.
   v0 = _worldPose.Rot() * v0 + _worldPose.Pos();
   v1 = _worldPose.Rot() * v1 + _worldPose.Pos();
   v2 = _worldPose.Rot() * v2 + _worldPose.Pos();
@@ -177,13 +177,13 @@ void Ogre2Visual::MinMax(const std::vector<ignition::math::Vector3d> &_vertices,
 {
   if (_vertices.empty())
     return;
-
+  
   _min = _vertices[0];
   _max = _vertices[0];
-
+  
   // find min / max in world space;
   for (unsigned int i = 1; i < _vertices.size(); ++i)
-  {
+  { 
     auto v = _vertices[i];
     if (_min.X() > v.X())
       _min.X() = v.X();
@@ -208,6 +208,8 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
 
   ignition::math::Pose3d worldPose = this->WorldPose();
   ignition::math::Vector3d scale = this->WorldScale();
+
+  ignwarn << "Pose in Bounds helper: " << worldPose << "\n";
 
   for (size_t i = 0; i < this->ogreNode->numAttachedObjects(); i++)
   {
@@ -242,11 +244,11 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
       {
         Ogre::Vector3 ogreMin = bb.getMinimum();
         Ogre::Vector3 ogreMax = bb.getMaximum();
-
+        
         // Get transform to be applied to the current node.
         Ogre::Matrix4 transform =
           invTransform * this->ogreNode->_getFullTransform();
-
+        
         // Correct precision error which makes ogre's isAffine check fail.
         transform[3][0] = transform[3][1] = transform[3][2] = 0;
         transform[3][3] = 1;

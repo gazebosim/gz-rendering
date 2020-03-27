@@ -33,6 +33,15 @@ namespace ignition
       protected: BaseSensor();
 
       public: virtual ~BaseSensor();
+
+      // Documentation inherited.
+      public: virtual void SetVisibilityMask(uint32_t _mask) override;
+
+      // Documentation inherited.
+      public: virtual uint32_t VisibilityMask() const override;
+
+      /// \brief Camera's visibility mask
+      protected: uint32_t visibilityMask = IGN_VISIBILITY_ALL;
     };
 
     //////////////////////////////////////////////////
@@ -45,6 +54,20 @@ namespace ignition
     template <class T>
     BaseSensor<T>::~BaseSensor()
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseSensor<T>::SetVisibilityMask(uint32_t _mask)
+    {
+      this->visibilityMask = _mask;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    uint32_t BaseSensor<T>::VisibilityMask() const
+    {
+      return this->visibilityMask;
     }
     }
   }

@@ -48,6 +48,9 @@ class VisualTest : public testing::Test,
 
   /// \brief Test adding removing geometry
   public: void Geometry(const std::string &_renderEngine);
+
+  /// \brief Test setting visiblity flags
+  public: void VisibilityFlags(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -428,6 +431,74 @@ TEST_P(VisualTest, Geometry)
 {
   Geometry(GetParam());
 }
+
+/////////////////////////////////////////////////
+void VisualTest::VisibilityFlags(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene5");
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+
+  // check initial value
+  EXPECT_EQ(static_cast<uint32_t>(IGN_VISIBILITY_ALL),
+      visual->VisibilityFlags());
+
+  // check setting new values
+  visual->SetVisibilityFlags(0x00000001u);
+  EXPECT_EQ(0x00000001u, visual->VisibilityFlags());
+
+  visual->AddVisibilityFlags(0x10000000u);
+  EXPECT_EQ(0x10000001u, visual->VisibilityFlags());
+
+  visual->RemoveVisibilityFlags(0x00000001u);
+  EXPECT_EQ(0x10000000u, visual->VisibilityFlags());
+
+  VisualPtr visual2 = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual2);
+  EXPECT_EQ(static_cast<uint32_t>(IGN_VISIBILITY_ALL),
+      visual2->VisibilityFlags());
+
+  // check setting visibility flags to visual with child nodes
+  visual->AddChild(visual2);
+
+  visual->SetVisibilityFlags(0x00000001u);
+  EXPECT_EQ(0x00000001u, visual->VisibilityFlags());
+  EXPECT_EQ(0x00000001u, visual2->VisibilityFlags());
+
+  visual->AddVisibilityFlags(0x01000000u);
+  EXPECT_EQ(0x01000001u, visual->VisibilityFlags());
+  EXPECT_EQ(0x01000001u, visual2->VisibilityFlags());
+
+  visual->RemoveVisibilityFlags(0x00000001u);
+  EXPECT_EQ(0x01000000u, visual->VisibilityFlags());
+  EXPECT_EQ(0x01000000u, visual2->VisibilityFlags());
+
+  // set child node's visibility flag only
+  visual2->SetVisibilityFlags(0x00000010u);
+  EXPECT_EQ(0x01000000u, visual->VisibilityFlags());
+  EXPECT_EQ(0x00000010u, visual2->VisibilityFlags());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, VisibilityFlags)
+{
+  VisibilityFlags(GetParam());
+}
+
 
 INSTANTIATE_TEST_CASE_P(Visual, VisualTest,
     RENDER_ENGINE_VALUES,

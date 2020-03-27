@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERTARGET_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2RENDERTARGET_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Color.hh>
 
@@ -39,6 +40,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2RenderTargetPrivate;
+
     /// \brief Ogre2.x implementation of the render target class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderTarget :
       public virtual BaseRenderTarget<Ogre2Object>
@@ -95,6 +99,16 @@ namespace ignition
       /// \brief Get a pointer to the ogre render target
       public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
+      /// \brief Get visibility mask for the viewport associated with this
+      /// render target
+      /// \return Visibility mask
+      public: virtual uint32_t VisibilityMask() const;
+
+      /// \brief Set visibility mask for the viewport associated with this
+      /// render target
+      /// \param[in] _mask Visibility mask
+      public: virtual void SetVisibilityMask(uint32_t _mask);
+
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
 
@@ -114,7 +128,7 @@ namespace ignition
       /// \brief Rebuild the compositor
       protected: virtual void RebuildCompositor();
 
-      /// \brief Build the comopsitor
+      /// \brief Build the compositor
       protected: virtual void BuildCompositor();
 
       /// \brief Destroy the compositor
@@ -168,6 +182,12 @@ namespace ignition
 
       /// \brief Anti-aliasing level
       protected: unsigned int antiAliasing = 4;
+
+      /// \brief visibility mask associated with this render target
+      protected: uint32_t visibilityMask = IGN_VISIBILITY_ALL;
+
+      /// \brief Pointer to private data
+      private: std::unique_ptr<Ogre2RenderTargetPrivate> dataPtr;
     };
 
     /// \brief Ogre2.x implementation of the render texture class

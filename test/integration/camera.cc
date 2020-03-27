@@ -38,6 +38,9 @@ class CameraTest: public testing::Test,
   // Test and verify camera following
   public: void Follow(const std::string &_renderEngine);
 
+  // Test and verify camera visibilty mask and visual visibility flags
+  public: void Visibility(const std::string &_renderEngine);
+
   // Test and verify camera select function method using Selection Buffer
   public: void VisualAt(const std::string &_renderEngine);
 };
@@ -368,6 +371,138 @@ void CameraTest::Follow(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void CameraTest::Visibility(const std::string &_renderEngine)
+{
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+  scene->SetBackgroundColor(0, 0, 0);
+  scene->SetAmbientLight(1, 1, 1);
+
+  VisualPtr root = scene->RootVisual();
+
+  CameraPtr cameraA = scene->CreateCamera();
+  ASSERT_TRUE(cameraA != nullptr);
+  cameraA->SetWorldPosition(-1, 0, 0);
+  cameraA->SetVisibilityMask(0x01);
+  root->AddChild(cameraA);
+
+  CameraPtr cameraB = scene->CreateCamera();
+  ASSERT_TRUE(cameraB != nullptr);
+  cameraB->SetWorldPosition(-1, 0, 0);
+  cameraB->SetVisibilityMask(0x02);
+  root->AddChild(cameraB);
+
+  // create visuals with different visibility flags
+  VisualPtr visualA = scene->CreateVisual();
+  visualA->AddGeometry(scene->CreateBox());
+  visualA->SetWorldPosition(0.0, 0.0, 0.0);
+  visualA->SetVisibilityFlags(0x01);
+  root->AddChild(visualA);
+
+  VisualPtr visualB = scene->CreateVisual();
+  visualB->AddGeometry(scene->CreateBox());
+  visualB->SetWorldPosition(0.0, 0.0, 0.0);
+  visualB->SetVisibilityFlags(0x02);
+  root->AddChild(visualB);
+
+  // create green and red material and assign to visualA and visualB
+  MaterialPtr green = scene->CreateMaterial();
+  green->SetAmbient(0.0, 1.0, 0.0);
+  green->SetDiffuse(0.0, 1.0, 0.0);
+  green->SetSpecular(0.0, 1.0, 0.0);
+  visualA->SetMaterial(green);
+
+  MaterialPtr red = scene->CreateMaterial();
+  red->SetAmbient(1.0, 0.0, 0.0);
+  red->SetDiffuse(1.0, 0.0, 0.0);
+  red->SetSpecular(1.0, 0.0, 0.0);
+  visualB->SetMaterial(red);
+
+  // create images to store camera data
+  Image imageA = cameraA->CreateImage();
+  Image imageB = cameraB->CreateImage();
+
+  unsigned int height = cameraA->ImageHeight();
+  unsigned int width = cameraA->ImageWidth();
+  unsigned int bpp = PixelUtil::BytesPerPixel(cameraA->ImageFormat());
+  unsigned int step = width * bpp;
+
+  ASSERT_GT(height, 0u);
+  ASSERT_GT(width, 0u);
+  ASSERT_GT(bpp, 0u);
+
+  unsigned int rASum = 0u;
+  unsigned int gASum = 0u;
+  unsigned int bASum = 0u;
+  unsigned int rBSum = 0u;
+  unsigned int gBSum = 0u;
+  unsigned int bBSum = 0u;
+
+  // verify that cameraA only sees visualA and cameraB only sees VisualB
+  for (unsigned int k = 0; k < 10; ++k)
+  {
+    cameraA->Capture(imageA);
+    cameraB->Capture(imageB);
+
+    unsigned char *dataA = imageA.Data<unsigned char>();
+    unsigned char *dataB = imageB.Data<unsigned char>();
+
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < step; j+=bpp)
+      {
+        unsigned int idx = i * step + j;
+        unsigned int rA = dataA[idx];
+        unsigned int gA = dataA[idx+1];
+        unsigned int bA = dataA[idx+2];
+
+        // color should be a shade of green
+        EXPECT_GT(gA, rA);
+        EXPECT_GT(gA, bA);
+
+        rASum += rA;
+        gASum += gA;
+        bASum += bA;
+
+        unsigned int rB = dataB[idx];
+        unsigned int gB = dataB[idx+1];
+        unsigned int bB = dataB[idx+2];
+
+        // color should be a shade of red
+        EXPECT_GT(rB, gB);
+        EXPECT_GT(rB, bB);
+
+        rBSum += rB;
+        gBSum += gB;
+        bBSum += bB;
+      }
+    }
+  }
+
+  // one last test:  verify sums of rgb for bother cameras
+  EXPECT_EQ(rASum, 0u);
+  EXPECT_GT(gASum, 0u);
+  EXPECT_EQ(bASum, 0u);
+
+  EXPECT_GT(rBSum, 0u);
+  EXPECT_EQ(gBSum, 0u);
+  EXPECT_EQ(bBSum, 0u);
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
 TEST_P(CameraTest, Track)
 {
   Track(GetParam());
@@ -377,6 +512,12 @@ TEST_P(CameraTest, Track)
 TEST_P(CameraTest, Follow)
 {
   Follow(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, Visibility)
+{
+  Visibility(GetParam());
 }
 
 /////////////////////////////////////////////////

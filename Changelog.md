@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Add support for setting visibility mask and flags
+    * [Pull request 252](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/252)
+
 1. Increase precision of Ogre2 mesh vertices from half to full precision float
     * [Pull request 254](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/254)
 

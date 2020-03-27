@@ -86,6 +86,11 @@ namespace ignition
 
       public: void SetAutoUpdated(const bool _value);
 
+      /// \brief Set visibility mask for the viewport associated with this
+      /// render target
+      /// \param[in] _mask Visibility mask
+      public: virtual void SetVisibilityMask(uint32_t _mask);
+
       protected: virtual void UpdateBackgroundColor();
 
       /// \brief Update render pass chain if changes were made
@@ -118,6 +123,9 @@ namespace ignition
       protected: bool colorDirty = true;
 
       protected: unsigned int antiAliasing = 4;
+
+      /// \brief visibility mask associated with this render target
+      protected: uint32_t visibilityMask = IGN_VISIBILITY_ALL;
     };
 
     class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderTexture :

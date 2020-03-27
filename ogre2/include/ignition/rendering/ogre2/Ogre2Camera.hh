@@ -97,6 +97,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
+      // Documentation inherited.
+      public: virtual void SetVisibilityMask(uint32_t _mask) override;
+
       // Documenation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;
 

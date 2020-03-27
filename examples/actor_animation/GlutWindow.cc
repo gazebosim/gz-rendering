@@ -67,6 +67,7 @@ ic::SkeletonAnimation *g_skelAnim;
 unsigned int g_animIdx = 0;
 bool g_updateAll = false;
 bool g_manualBoneUpdate = false;
+bool g_rootBoneWeight = 1.0;
 bool g_actorUpdateDirty = true;
 std::chrono::steady_clock::duration g_time{0};
 std::chrono::steady_clock::time_point g_startTime;
@@ -265,6 +266,7 @@ void updatePose(double _time)
       skinFrames[skinName] = skinTf;
     }
 
+    // set bone transforms
     ir::MeshPtr mesh =
         std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
     mesh->SetSkeletonLocalTransforms(skinFrames);
@@ -331,12 +333,16 @@ void updateActor()
     for (auto &v : g_visuals)
     {
       v->SetVisible(true);
+      ir::MeshPtr mesh =
+          std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
       if (!g_manualBoneUpdate)
       {
-        ir::MeshPtr mesh =
-            std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
         mesh->SetSkeletonAnimationEnabled(g_skelAnim->Name(), true, true, 1.0);
       }
+      // update root bone weight
+      std::map<std::string, float> weights;
+      weights[g_skel->RootNode()->Name()] = g_rootBoneWeight;
+      mesh->SetSkeletonWeights(weights);
     }
 
 
@@ -418,6 +424,8 @@ void displayCB()
   std::stringstream text;
   text << std::fixed << std::setw(5) << std::setprecision(4) << (1.0/t);
   text << std::setw(30) << "Manual skeleton update: " << manual;
+  text << std::setw(30) << "Root bone weight:: " << std::setprecision(2)
+       << g_rootBoneWeight;
   drawText(10, 10, text.str());
 
   glutSwapBuffers();
@@ -459,6 +467,13 @@ void keyboardCB(unsigned char _key, int, int)
     g_updateAll = !g_updateAll;
     g_actorUpdateDirty = true;
     std::cout << "Update all meshes " << g_updateAll << std::endl;
+  }
+  else if (_key == 'r')
+  {
+    g_actorUpdateDirty = true;
+    g_rootBoneWeight = g_rootBoneWeight ^ 1;
+    std::cout << "Setting root bone weight to: " << g_rootBoneWeight
+              << std::endl;
   }
 }
 
@@ -505,13 +520,15 @@ void initAnimation()
 //////////////////////////////////////////////////
 void printUsage()
 {
-  std::cout << "========================================" << std::endl;
-  std::cout << "  TAB - Switch render engines           " << std::endl;
-  std::cout << "  ESC - Exit                            " << std::endl;
-  std::cout << "  A   - Switch animation                " << std::endl;
-  std::cout << "  M   - Toggle manual skeleton update   " << std::endl;
-  std::cout << "  T   - Toggle animated mesh count      " << std::endl;
-  std::cout << "========================================" << std::endl;
+  std::cout << "==========================================" << std::endl;
+  std::cout << "  TAB - Switch render engines             " << std::endl;
+  std::cout << "  ESC - Exit                              " << std::endl;
+  std::cout << "  A   - Switch animation                  " << std::endl;
+  std::cout << "  M   - Toggle manual skeleton update     " << std::endl;
+  std::cout << "  T   - Toggle animated mesh count        " << std::endl;
+  std::cout << "  R   - Toggle root bone weight           " << std::endl;
+  std::cout << "        (non-manual skeleton update only) " << std::endl;
+  std::cout << "==========================================" << std::endl;
 }
 
 //////////////////////////////////////////////////

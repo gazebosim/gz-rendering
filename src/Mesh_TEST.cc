@@ -162,6 +162,35 @@ void MeshTest::MeshSkeletonAnimation(const std::string &_renderEngine)
       std::chrono::duration_cast<std::chrono::steady_clock::duration>(
       std::chrono::duration<double>(1234.5))));
 
+  // verify default skeleton bone weight
+  std::map<std::string, float> weights = mesh->SkeletonWeights();
+  EXPECT_FALSE(weights.empty());
+  EXPECT_EQ(skel->NodeCount(), weights.size());
+  for (auto &it : weights)
+  {
+    EXPECT_NE(nullptr, skel->NodeByName(it.first));
+    EXPECT_FLOAT_EQ(1.0, it.second);
+  }
+
+  // change a bone weight and verify
+  std::string nodeName  = skel->RootNode()->Name();
+  EXPECT_EQ(1u, weights.count(nodeName));
+  weights[nodeName] = 0.5;
+  mesh->SetSkeletonWeights(weights);
+
+  auto newWeights = mesh->SkeletonWeights();
+  EXPECT_FALSE(newWeights.empty());
+  EXPECT_EQ(skel->NodeCount(), newWeights.size());
+  EXPECT_FLOAT_EQ(0.5, newWeights[nodeName]);
+  for (auto &it : newWeights)
+  {
+    EXPECT_NE(nullptr, skel->NodeByName(it.first));
+    if (it.first != nodeName)
+    {
+      EXPECT_FLOAT_EQ(1.0, it.second);
+    }
+  }
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

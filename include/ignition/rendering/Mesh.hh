@@ -55,9 +55,23 @@ namespace ignition
       /// * Map holding:
       ///     * Skeleton node names
       ///     * Local transformations of the skeleton nodes
-      /// \return True if all the transformations are set to the skeleton
       public: virtual void SetSkeletonLocalTransforms(
             const std::map<std::string, math::Matrix4d> &_tfs) = 0;
+
+      /// \brief Get skeleton node weight
+      /// \return Map of skeleton node name to its weight
+      /// * Map holding:
+      ///     * Skeleton node names
+      ///     * Weight the skeleton nodes
+      public: virtual std::map<std::string, float> SkeletonWeights() const = 0;
+
+      /// \brief Set skeleton node weight
+      /// \param[in] _weights Map of skeleton node's name to its weight
+      /// * Map holding:
+      ///     * Skeleton node names
+      ///     * Weight the skeleton nodes
+      public: virtual void SetSkeletonWeights(
+            const std::map<std::string, float> &_weights) = 0;
 
       /// \brief Set whether a skeleton animation should be enabled or not
       /// \param[in] _name Name of animation

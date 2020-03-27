@@ -65,6 +65,14 @@ namespace ignition
             const std::map<std::string, math::Matrix4d> &_tfs) override;
 
       // Documentation inherited.
+      public: virtual std::map<std::string, float>
+                          SkeletonWeights() const override;
+
+      // Documentation inherited.
+      public: virtual void SetSkeletonWeights(
+            const std::map<std::string, float> &_weight) override;
+
+      // Documentation inherited.
       public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
             bool _enabled, bool _loop = true, float _weight = 1.0) override;
 

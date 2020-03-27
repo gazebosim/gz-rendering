@@ -148,6 +148,69 @@ void OgreMesh::SetSkeletonAnimationEnabled(const std::string &_name,
 }
 
 //////////////////////////////////////////////////
+std::map<std::string, float> OgreMesh::SkeletonWeights() const
+{
+  std::map<std::string, float> mapWeights;
+  Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
+  if (!skel)
+    return mapWeights;
+
+  auto animations = this->ogreEntity->getAllAnimationStates();
+  if (!animations)
+    return mapWeights;
+
+  auto animIt = animations->getAnimationStateIterator();
+
+  // todo(anyone) support different bone weight per animation?
+  // currently assume all skeletal animations have same bone weights
+  if (animIt.hasMoreElements())
+  {
+    Ogre::AnimationState *anim = animIt.getNext();
+    if (!anim->hasBlendMask())
+      anim->createBlendMask(skel->getNumBones());
+
+    Ogre::Skeleton::BoneIterator iter = skel->getBoneIterator();
+    while (iter.hasMoreElements())
+    {
+      Ogre::Bone* bone = iter.getNext();
+      mapWeights[bone->getName()] =
+          anim->getBlendMaskEntry(bone->getHandle());
+    }
+  }
+
+  return mapWeights;
+}
+
+//////////////////////////////////////////////////
+void OgreMesh::SetSkeletonWeights(
+    const std::map<std::string, float> &_weights)
+{
+  Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
+  if (!skel)
+    return;
+
+  auto animations = this->ogreEntity->getAllAnimationStates();
+  if (!animations)
+    return;
+
+  // set bone weights for all animations
+  auto animIt = animations->getAnimationStateIterator();
+  while (animIt.hasMoreElements())
+  {
+    Ogre::AnimationState *anim = animIt.getNext();
+    if (!anim->hasBlendMask())
+      anim->createBlendMask(skel->getNumBones());
+
+    for (auto const &[boneName, weight] : _weights)
+    {
+      Ogre::Bone *bone = skel->getBone(boneName);
+      if (bone)
+        anim->setBlendMaskEntry(bone->getHandle(), weight);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 bool OgreMesh::SkeletonAnimationEnabled(const std::string &_name) const
 {
   if (!this->ogreEntity->hasAnimationState(_name))

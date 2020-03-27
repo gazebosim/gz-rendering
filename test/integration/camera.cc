@@ -32,6 +32,12 @@ using namespace rendering;
 class CameraTest: public testing::Test,
                   public testing::WithParamInterface<const char *>
 {
+  // Documentation inherited
+  public: void SetUp() override
+  {
+    ignition::common::Console::SetVerbosity(4);
+  }
+
   // Test and verify camera tracking
   public: void Track(const std::string &_renderEngine);
 
@@ -197,20 +203,16 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   VisualPtr box = scene->CreateVisual("box");
   ASSERT_TRUE(box != nullptr);
   box->AddGeometry(scene->CreateBox());
-  box->SetOrigin(0.0, 0.5, 0.0);
-  box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
-  box->SetLocalScale(1, 2.5, 1);
+  box->SetOrigin(0.0, 0.7, 0.0);
+  box->SetLocalPosition(2, 0, 0);
   root->AddChild(box);
 
   // create sphere visual
   VisualPtr sphere = scene->CreateVisual("sphere");
   ASSERT_TRUE(sphere != nullptr);
   sphere->AddGeometry(scene->CreateSphere());
-  sphere->SetOrigin(0.0, -0.5, 0.0);
-  sphere->SetLocalPosition(3, 0, 0);
-  sphere->SetLocalRotation(0, 0, 0);
-  sphere->SetLocalScale(1, 2.5, 1);
+  sphere->SetOrigin(0.0, -0.7, 0.0);
+  sphere->SetLocalPosition(2, 0, 0);
   root->AddChild(sphere);
   {
     // create camera
@@ -228,22 +230,33 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
     // render a frame
     camera->Update();
 
-    // test get sphere object
-    ignition::math::Vector2i sphere_position(220, 307);
-    VisualPtr sphere_visual = camera->VisualAt(sphere_position);
-    ASSERT_TRUE(sphere_visual != nullptr);
-    EXPECT_EQ("sphere", sphere_visual->Name());
+    for (auto x = 0u; x < camera->ImageWidth(); x = x + 100)
+    {
+      auto vis = camera->VisualAt(math::Vector2i(x, camera->ImageHeight() / 2));
 
-    // test get box object
-    ignition::math::Vector2i box_position(452, 338);
-    VisualPtr box_visual = camera->VisualAt(box_position);
-    ASSERT_TRUE(box_visual != nullptr);
-    EXPECT_EQ("box", box_visual->Name());
-
-    // test get no object
-    ignition::math::Vector2i empty_position(300, 150);
-    VisualPtr empty_visual = camera->VisualAt(empty_position);
-    ASSERT_TRUE(empty_visual == nullptr);
+      if (x <= 100)
+      {
+        EXPECT_EQ(nullptr, vis);
+      }
+      else if (x > 100 && x <= 300)
+      {
+        ASSERT_NE(nullptr, vis);
+        EXPECT_EQ("sphere", vis->Name());
+      }
+      else if (x > 300 && x <= 400)
+      {
+        EXPECT_EQ(nullptr, vis);
+      }
+      else if (x > 400 && x <= 700)
+      {
+        ASSERT_NE(nullptr, vis);
+        EXPECT_EQ("box", vis->Name());
+      }
+      else
+      {
+        EXPECT_EQ(nullptr, vis);
+      }
+    }
   }
   // Clean up
   engine->DestroyScene(scene);

@@ -297,14 +297,51 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
   {
     try
     {
+#ifdef OGRE_VERSION_LT_1_12_0
       this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
           curMaterialName,
-#ifndef OGRE_VERSION_LT_1_10_3
+      #ifndef OGRE_VERSION_LT_1_10_3
           curSubEntity->getMaterial()->getGroup(),
-#endif
+      #endif
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
           s->Name() +
           Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+#else
+      auto mat = curSubEntity->getMaterial();
+
+      // get source technique from technique scheme name
+      // see findSourceTechnique in
+      // ogre/Components/RTShaderSystem/src/OgreShaderGenerator.cpp
+      Ogre::Technique* srcTechnique = nullptr;
+      std::string srcTechniqueSchemeName =
+          Ogre::MaterialManager::DEFAULT_SCHEME_NAME;
+      for (auto it = mat->getTechniques().begin();
+          it != mat->getTechniques().end(); ++it)
+      {
+        Ogre::Technique *curTechnique = *it;
+
+        if (curTechnique->getSchemeName() == srcTechniqueSchemeName)
+        {
+          bool hasFixedFunctionPass = false;
+          for (unsigned int i = 0; i < curTechnique->getNumPasses(); ++i)
+          {
+            if (!curTechnique->getPass(i)->isProgrammable())
+            {
+              hasFixedFunctionPass = true;
+              break;
+            }
+          }
+          if (hasFixedFunctionPass)
+          {
+            srcTechnique = curTechnique;
+            break;
+          }
+        }
+      }
+
+      this->dataPtr->shaderGenerator->removeShaderBasedTechnique(srcTechnique,
+          s->Name() + Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+#endif
     }
     catch(Ogre::Exception &e)
     {

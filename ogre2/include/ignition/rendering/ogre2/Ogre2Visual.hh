@@ -52,10 +52,11 @@ namespace ignition
 
       /// \brief Recursively loop through this visual's children
       /// to obtain the bounding box.
-      /// \param[out] _box The bounding box.
-      /// \param[in] _local A flag for if the local bounding box is being calculated.
-      /// \param[in] _pose The top level visual pose used for local transformation,
-      /// the pose will be disregarded if _local is false.
+      /// \param[in,out] _box The bounding box.
+      /// \param[in] _local A flag indicating if the local bounding box is to
+      /// be calculated.
+      /// \param[in] _pose The top level visual pose used for local
+      /// transformation, the pose will be disregarded if _local is false.
       protected: virtual void BoundsHelper(
                      ignition::math::AxisAlignedBox &_box, bool _local,
                      const ignition::math::Pose3d &_pose) const;

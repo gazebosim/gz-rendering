@@ -47,17 +47,16 @@ namespace ignition
       public: virtual ignition::math::AxisAlignedBox BoundingBox()
               const override;
 
-      /// \brief Finds if the bounding box is completely based about the origin
-      /// within its own frame.
-      /// \param[in] _box The bounding box.
-      /// \return The flag indicating if the box is based about the origin.
-      protected: virtual bool AboutOrigin(const ignition::math::AxisAlignedBox &_box) const;
-
       /// \brief Recursively loop through this visual's children
       /// to obtain bounding box.
-      /// \param[in] _box The bounding box.
+      /// \param[in,out] _box The bounding box.
+      /// \param[in] _local A flag indicating if the local bounding box is to
+      /// be calculated.
+      /// \param[in] _pose The top level visual pose used for local
+      /// transformation, the pose will be disregarded if _local is false.
       protected: virtual void BoundsHelper(
-                     ignition::math::AxisAlignedBox &_box, bool _local) const;
+                     ignition::math::AxisAlignedBox &_box, bool _local,
+                     const ignition::math::Pose3d &_pose) const;
 
       /// \brief Transform a bounding box to the world space.
       /// \param[in] _bbox Input bounding box.

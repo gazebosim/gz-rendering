@@ -120,7 +120,8 @@ ignition::math::AxisAlignedBox Ogre2Visual::LocalBoundingBox() const
 ignition::math::AxisAlignedBox Ogre2Visual::BoundingBox() const
 {
   ignition::math::AxisAlignedBox box;
-  this->BoundsHelper(box, false /* world frame */, ignition::math::Pose3d::Zero);
+  this->BoundsHelper(box, false /* world frame */,
+      ignition::math::Pose3d::Zero);
   return box;
 }
 
@@ -185,13 +186,13 @@ void Ogre2Visual::MinMax(const std::vector<ignition::math::Vector3d> &_vertices,
 {
   if (_vertices.empty())
     return;
-  
+
   _min = _vertices[0];
   _max = _vertices[0];
-  
+
   // find min / max in world space;
   for (unsigned int i = 1; i < _vertices.size(); ++i)
-  { 
+  {
     auto v = _vertices[i];
     if (_min.X() > v.X())
       _min.X() = v.X();
@@ -218,6 +219,7 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
   for (size_t i = 0; i < this->ogreNode->numAttachedObjects(); i++)
   {
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+
     if (obj->isVisible() && obj->getMovableType() != "ignition::dynamiclines"
         && obj->getMovableType() != "BillboardSet"
         && obj->getVisibilityFlags() != IGN_VISIBILITY_GUI)
@@ -248,8 +250,8 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
       {
         Ogre::Vector3 ogreMin = bb.getMinimum();
         Ogre::Vector3 ogreMax = bb.getMaximum();
- 
-        // Get ogre bounding boxes and size to object's scale 
+
+        // Get ogre bounding boxes and size to object's scale
         min = scale * ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
         max = scale * ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
         ignition::math::AxisAlignedBox box(min, max);
@@ -288,11 +290,7 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
     NodePtr child = it->second;
     Ogre2VisualPtr visual = std::dynamic_pointer_cast<Ogre2Visual>(child);
     if (visual)
-    {
-      // We need to use the world frame of any lower level visuals in order
-      // to aggregate them
       visual->BoundsHelper(_box, _local, _pose);
-    }
   }
 }
 

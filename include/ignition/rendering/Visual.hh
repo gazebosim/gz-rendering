@@ -131,7 +131,8 @@ namespace ignition
 
       /// \brief Get the local bounding box of the visual.
       /// \return The local bounding box
-      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox() const = 0;
+      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+              const = 0;
     };
     }
   }

@@ -184,29 +184,10 @@ void OgreVisual::MinMax(const std::vector<ignition::math::Vector3d> &_vertices,
 }
 
 //////////////////////////////////////////////////
-bool OgreVisual::AboutOrigin(const ignition::math::AxisAlignedBox &_box) const
-{
-  if (_box.Max().X() >= 0 && _box.Min().X() <= 0 &&
-      _box.Max().Y() >= 0 && _box.Min().Y() <= 0 &&
-      _box.Max().Z() >= 0 && _box.Min().Z() <= 0)
-    return true;
-
-  return false;
-}
-
-//////////////////////////////////////////////////
 ignition::math::AxisAlignedBox OgreVisual::LocalBoundingBox() const
 {
   ignition::math::AxisAlignedBox box;
-  this->BoundsHelper(box, true /* local frame */);
-
-  // If the local bounding box is not set about the origin, translate it
-  // back to the visual's position
-  if (!this->AboutOrigin(box))
-  {
-    box.Min() -= this->WorldPose().Pos();
-    box.Max() -= this->WorldPose().Pos();
-  }
+  this->BoundsHelper(box, true /* local frame */, this->WorldPose());
   return box;
 }
 
@@ -214,18 +195,17 @@ ignition::math::AxisAlignedBox OgreVisual::LocalBoundingBox() const
 ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
 {
   ignition::math::AxisAlignedBox box;
-  this->BoundsHelper(box, false /* world frame */);
+  this->BoundsHelper(box, false /* world frame */,
+      ignition::math::Pose3d::Zero);
   return box;
 }
 
 //////////////////////////////////////////////////
-void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local) const
+void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
+    bool _local, const ignition::math::Pose3d &_pose) const
 {
   this->ogreNode->_updateBounds();
   this->ogreNode->_update(false, true);
-
-  Ogre::Matrix4 invTransform =
-      this->ogreNode->_getFullTransform().inverse();
 
   ignition::math::Pose3d worldPose = this->WorldPose();
   ignition::math::Vector3d scale = this->WorldScale();
@@ -250,8 +230,8 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local)
 
       Ogre::AxisAlignedBox bb = obj->getBoundingBox();
 
-      ignition::math::Vector3d min;
-      ignition::math::Vector3d max;
+      ignition::math::Vector3d min(0, 0, 0);
+      ignition::math::Vector3d max(0, 0, 0);
 
       // Ogre does not return a valid bounding box for lights.
       if (obj->getMovableType() == "Light")
@@ -264,34 +244,27 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local)
         Ogre::Vector3 ogreMin = bb.getMinimum();
         Ogre::Vector3 ogreMax = bb.getMaximum();
 
-        // Get transform to be applied to the current node.
-        Ogre::Matrix4 transform =
-          invTransform * this->ogreNode->_getFullTransform();
-
-        // Correct precision error which makes ogre's isAffine check fail.
-        transform[3][0] = transform[3][1] = transform[3][2] = 0;
-        transform[3][3] = 1;
-
-        // Get oriented bounding box in object's local space
-#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 11
-        bb.transform(transform);
-#else
-        bb.transformAffine(transform);
-#endif
-        // Get bounding box in object's local space
-        ogreMin = bb.getMinimum();
-        ogreMax = bb.getMaximum();
         min = scale * ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
         max = scale * ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
         ignition::math::AxisAlignedBox box(min, max);
 
+        ignition::math::Pose3d transform = worldPose;
+
         // Transform and get new mins and maxes
-        if (!_local)
+        if (_local)
         {
-          std::vector<ignition::math::Vector3d> vertices;
-          this->Transform(box, worldPose, vertices);
-          this->MinMax(vertices, min, max);
+          ignition::math::Quaternion parentRot = _pose.Rot();
+          ignition::math::Vector3d parentPos = _pose.Pos();
+          ignition::math::Quaternion parentRotInv = parentRot.Inverse();
+          ignition::math::Pose3d localTransform =
+            ignition::math::Pose3d(
+                (parentRotInv * (worldPose.Pos() - parentPos)),
+                (parentRotInv * worldPose.Rot()));
+          transform = localTransform;
         }
+        std::vector<ignition::math::Vector3d> vertices;
+        this->Transform(box, transform, vertices);
+        this->MinMax(vertices, min, max);
       }
       _box.Merge(ignition::math::AxisAlignedBox(min, max));
     }
@@ -306,7 +279,7 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local)
     NodePtr child = it->second;
     OgreVisualPtr visual = std::dynamic_pointer_cast<OgreVisual>(child);
     if (visual)
-      _box.Merge(visual->BoundingBox());
+      visual->BoundsHelper(_box, _local, _pose);
   }
 }
 

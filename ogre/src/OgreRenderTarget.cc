@@ -148,6 +148,14 @@ void OgreRenderTarget::Render()
 }
 
 //////////////////////////////////////////////////
+void OgreRenderTarget::SetVisibilityMask(uint32_t _mask)
+{
+  this->visibilityMask = _mask;
+  if (this->ogreViewport)
+    this->ogreViewport->setVisibilityMask(this->visibilityMask);
+}
+
+//////////////////////////////////////////////////
 void OgreRenderTarget::UpdateBackgroundColor()
 {
   if (this->colorDirty && this->ogreViewport)
@@ -180,6 +188,7 @@ void OgreRenderTarget::RebuildViewport()
   this->ogreViewport->setClearEveryFrame(true);
   this->ogreViewport->setShadowsEnabled(true);
   this->ogreViewport->setOverlaysEnabled(false);
+  this->ogreViewport->setVisibilityMask(this->visibilityMask);
 
   OgreRTShaderSystem::Instance()->AttachViewport(this->ogreViewport,
       this->scene);

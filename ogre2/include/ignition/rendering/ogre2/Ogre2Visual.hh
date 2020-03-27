@@ -43,6 +43,9 @@ namespace ignition
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
+      public: virtual void SetVisibilityFlags(uint32_t _flags) override;
+
+      // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox()
                   const override;
 

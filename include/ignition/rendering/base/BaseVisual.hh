@@ -82,6 +82,19 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
+      // Documentation inherited.
+      public: virtual void SetVisibilityFlags(uint32_t _flags) override;
+
+      // Documentation inherited.
+      public: virtual uint32_t VisibilityFlags() const override;
+
+      // Documentation inherited.
+      public: virtual void AddVisibilityFlags(uint32_t _flags) override;
+
+      // Documentation inherited.
+      public: virtual void RemoveVisibilityFlags(uint32_t _flags) override;
+
+      // Documentation inherited.
       public: virtual void PreRender() override;
 
       // Documentation inherited
@@ -117,6 +130,9 @@ namespace ignition
 
       /// \brief A map of custom key value data
       protected: std::map<std::string, Variant> userData;
+
+      /// \brief Visual's visibility flags
+      protected: uint32_t visibilityFlags = IGN_VISIBILITY_ALL;
 
       /// \brief The bounding box of the visual
       protected: ignition::math::AxisAlignedBox boundingBox;
@@ -336,24 +352,6 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetUserData(const std::string &_key, Variant _value)
-    {
-      this->userData[_key] = _value;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    Variant BaseVisual<T>::UserData(const std::string &_key) const
-    {
-      Variant value;
-      auto it = this->userData.find(_key);
-      if (it != this->userData.end())
-        value = it->second;
-      return value;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
     ignition::math::AxisAlignedBox BaseVisual<T>::LocalBoundingBox() const
     {
       ignition::math::AxisAlignedBox box;
@@ -406,6 +404,69 @@ namespace ignition
         }
       }
       return box;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::AddVisibilityFlags(uint32_t _flags)
+    {
+      this->SetVisibilityFlags(this->VisibilityFlags() | _flags);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::RemoveVisibilityFlags(uint32_t _flags)
+    {
+      this->SetVisibilityFlags(this->VisibilityFlags() & ~(_flags));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetVisibilityFlags(uint32_t _flags)
+    {
+      this->visibilityFlags = _flags;
+
+      // recursively set child visuals' visibility flags
+      auto childNodes =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!childNodes)
+      {
+        ignerr << "Cast failed in BaseVisual::SetVisibiltyFlags" << std::endl;
+        return;
+      }
+      for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+      {
+        NodePtr child = it->second;
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        if (visual)
+          visual->SetVisibilityFlags(_flags);
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    uint32_t BaseVisual<T>::VisibilityFlags() const
+    {
+      return this->visibilityFlags;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetUserData(const std::string &_key, Variant _value)
+    {
+      this->userData[_key] = _value;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    Variant BaseVisual<T>::UserData(const std::string &_key) const
+    {
+      Variant value;
+      auto it = this->userData.find(_key);
+      if (it != this->userData.end())
+        value = it->second;
+      return value;
     }
     }
   }

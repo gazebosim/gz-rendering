@@ -42,6 +42,8 @@ namespace ignition
 {
 namespace rendering
 {
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+//
 /// \brief Helper class for switching the ogre item's material to heat source
 /// material when a thermal camera is being rendered.
 class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
@@ -79,6 +81,7 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   /// \brief A map of ogre sub item pointer to their original hlms material
   private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
 };
+}
 }
 }
 

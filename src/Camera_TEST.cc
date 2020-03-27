@@ -44,6 +44,9 @@ class CameraTest : public testing::Test,
 
   /// \brief Test adding and removing render passes
   public: void AddRemoveRenderPass(const std::string &_renderEngine);
+
+  /// \brief Test setting visibility mask
+  public: void VisibilityMask(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -279,6 +282,39 @@ void CameraTest::AddRemoveRenderPass(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void CameraTest::VisibilityMask(const std::string &_renderEngine)
+{
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  CameraPtr camera = scene->CreateCamera();
+  EXPECT_TRUE(camera != nullptr);
+
+  // chek initial value
+  EXPECT_EQ(static_cast<uint32_t>(IGN_VISIBILITY_ALL),
+      camera->VisibilityMask());
+
+  // check setting new values
+  camera->SetVisibilityMask(0x00000010u);
+  EXPECT_EQ(0x00000010u, camera->VisibilityMask());
+
+  camera->SetVisibilityMask(0u);
+  EXPECT_EQ(0u, camera->VisibilityMask());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
 TEST_P(CameraTest, ViewProjectionMatrix)
 {
   ViewProjectionMatrix(GetParam());
@@ -300,6 +336,11 @@ TEST_P(CameraTest, TrackFollow)
 TEST_P(CameraTest, AddRemoveRenderPass)
 {
   AddRemoveRenderPass(GetParam());
+}
+/////////////////////////////////////////////////
+TEST_P(CameraTest, VisibilityMask)
+{
+  VisibilityMask(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,

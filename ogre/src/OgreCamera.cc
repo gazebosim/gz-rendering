@@ -305,3 +305,10 @@ double OgreCamera::FarClip() const
   else
     return 0;
 }
+
+//////////////////////////////////////////////////
+void OgreCamera::SetVisibilityMask(uint32_t _mask)
+{
+  BaseCamera::SetVisibilityMask(_mask);
+  this->renderTexture->SetVisibilityMask(_mask);
+}

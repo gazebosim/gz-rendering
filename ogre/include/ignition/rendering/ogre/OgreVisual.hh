@@ -37,7 +37,10 @@ namespace ignition
       public: virtual ~OgreVisual();
 
       // Documentation inherited.
-      public: virtual void SetVisible(bool _visible);
+      public: virtual void SetVisible(bool _visible) override;
+
+      // Documentation inherited.
+      public: virtual void SetVisibilityFlags(uint32_t _flags) override;
 
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
@@ -77,13 +80,16 @@ namespace ignition
                      ignition::math::Vector3d &_min,
                      ignition::math::Vector3d &_max) const;
 
-      protected: virtual GeometryStorePtr Geometries() const;
+      protected: virtual GeometryStorePtr Geometries() const override;
 
-      protected: virtual bool AttachGeometry(GeometryPtr _geometry);
+      // Documentation inherited.
+      protected: virtual bool AttachGeometry(GeometryPtr _geometry) override;
 
-      protected: virtual bool DetachGeometry(GeometryPtr _geometry);
+      // Documentation inherited.
+      protected: virtual bool DetachGeometry(GeometryPtr _geometry) override;
 
-      protected: virtual void Init();
+      // Documentation inherited.
+      protected: virtual void Init() override;
 
       protected: OgreGeometryStorePtr geometries;
 

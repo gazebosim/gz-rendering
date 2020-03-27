@@ -240,7 +240,6 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
       if (any.getType() == typeid(std::string))
       {
         std::string str = Ogre::any_cast<std::string>(any);
-        ignwarn << "String is " << str << "\n";
         if (str.substr(0, 3) == "rot" || str.substr(0, 5) == "trans"
             || str.substr(0, 5) == "scale" ||
             str.find("_APPLY_WRENCH_") != std::string::npos)

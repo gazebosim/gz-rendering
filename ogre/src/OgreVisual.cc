@@ -184,15 +184,42 @@ void OgreVisual::MinMax(const std::vector<ignition::math::Vector3d> &_vertices,
 }
 
 //////////////////////////////////////////////////
-ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
+bool OgreVisual::AboutOrigin(const ignition::math::AxisAlignedBox &_box) const
+{
+  if (_box.Max().X() >= 0 && _box.Min().X() <= 0 &&
+      _box.Max().Y() >= 0 && _box.Min().Y() <= 0 &&
+      _box.Max().Z() >= 0 && _box.Min().Z() <= 0)
+    return true;
+
+  return false;
+}
+
+//////////////////////////////////////////////////
+ignition::math::AxisAlignedBox OgreVisual::LocalBoundingBox() const
 {
   ignition::math::AxisAlignedBox box;
-  this->BoundsHelper(box);
+  this->BoundsHelper(box, true /* local frame */);
+
+  // If the local bounding box is not set about the origin, translate it
+  // back to the visual's position
+  if (!this->AboutOrigin(box))
+  {
+    box.Min() -= this->WorldPose().Pos();
+    box.Max() -= this->WorldPose().Pos();
+  }
   return box;
 }
 
 //////////////////////////////////////////////////
-void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
+ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
+{
+  ignition::math::AxisAlignedBox box;
+  this->BoundsHelper(box, false /* world frame */);
+  return box;
+}
+
+//////////////////////////////////////////////////
+void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local) const
 {
   this->ogreNode->_updateBounds();
   this->ogreNode->_update(false, true);
@@ -254,18 +281,18 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box) const
         // Get bounding box in object's local space
         ogreMin = bb.getMinimum();
         ogreMax = bb.getMaximum();
-        min = ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
-        max = ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
+        min = scale * ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
+        max = scale * ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
+        ignition::math::AxisAlignedBox box(min, max);
 
-        // Create bounding box, multiply by visual's scale, and transform
-        ignition::math::AxisAlignedBox tempBox(min, max);
-        tempBox.Min() *= scale;
-        tempBox.Max() *= scale;
-        std::vector<ignition::math::Vector3d> vertices;
-        this->Transform(tempBox, worldPose, vertices);
-        this->MinMax(vertices, min, max);
+        // Transform and get new mins and maxes
+        if (!_local)
+        {
+          std::vector<ignition::math::Vector3d> vertices;
+          this->Transform(box, worldPose, vertices);
+          this->MinMax(vertices, min, max);
+        }
       }
-
       _box.Merge(ignition::math::AxisAlignedBox(min, max));
     }
   }

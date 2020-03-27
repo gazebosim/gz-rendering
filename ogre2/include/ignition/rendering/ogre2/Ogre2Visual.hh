@@ -46,11 +46,19 @@ namespace ignition
       public: virtual ignition::math::AxisAlignedBox BoundingBox()
                   const override;
 
+      // Documentation inherited.
+      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+                  const override;
+
       /// \brief Recursively loop through this visual's children
-      /// to obtain bounding box.
-      /// \param[in] _box The bounding box.
+      /// to obtain the bounding box.
+      /// \param[out] _box The bounding box.
+      /// \param[in] _local A flag for if the local bounding box is being calculated.
+      /// \param[in] _pose The top level visual pose used for local transformation,
+      /// the pose will be disregarded if _local is false.
       protected: virtual void BoundsHelper(
-                     ignition::math::AxisAlignedBox &_box) const;
+                     ignition::math::AxisAlignedBox &_box, bool _local,
+                     const ignition::math::Pose3d &_pose) const;
 
       /// \brief Transform a bounding box to the world space.
       /// \param[in] _bbox Input bounding box.

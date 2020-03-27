@@ -40,14 +40,24 @@ namespace ignition
       public: virtual void SetVisible(bool _visible);
 
       // Documentation inherited.
+      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+              const override;
+
+      // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox()
               const override;
+
+      /// \brief Finds if the bounding box is completely based about the origin
+      /// within its own frame.
+      /// \param[in] _box The bounding box.
+      /// \return The flag indicating if the box is based about the origin.
+      protected: virtual bool AboutOrigin(const ignition::math::AxisAlignedBox &_box) const;
 
       /// \brief Recursively loop through this visual's children
       /// to obtain bounding box.
       /// \param[in] _box The bounding box.
       protected: virtual void BoundsHelper(
-                     ignition::math::AxisAlignedBox &_box) const;
+                     ignition::math::AxisAlignedBox &_box, bool _local) const;
 
       /// \brief Transform a bounding box to the world space.
       /// \param[in] _bbox Input bounding box.

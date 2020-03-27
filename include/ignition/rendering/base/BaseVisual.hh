@@ -98,6 +98,10 @@ namespace ignition
       public: virtual ignition::math::AxisAlignedBox BoundingBox()
               const override;
 
+      // Documentation inherited.
+      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+              const override;
+
       protected: virtual void PreRenderChildren() override;
 
       protected: virtual void PreRenderGeometries();
@@ -350,6 +354,34 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    ignition::math::AxisAlignedBox BaseVisual<T>::LocalBoundingBox() const
+    {
+      ignition::math::AxisAlignedBox box;
+
+      // Recursively loop through child visuals
+      auto childNodes =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!childNodes)
+      {
+        ignerr << "Cast failed in BaseVisual::LocalBoundingBox" << std::endl;
+        return box;
+      }
+      for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+      {
+        NodePtr child = it->second;
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        if (visual)
+        {
+          box.Merge(visual->LocalBoundingBox());
+          ignwarn << "new box " << box << "\n";
+        }
+      }
+      return box;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     ignition::math::AxisAlignedBox BaseVisual<T>::BoundingBox() const
     {
       ignition::math::AxisAlignedBox box;
@@ -368,7 +400,10 @@ namespace ignition
         NodePtr child = it->second;
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
         if (visual)
+        {
           box.Merge(visual->BoundingBox());
+          ignwarn << "new box " << box << "\n";
+        }
       }
       return box;
     }

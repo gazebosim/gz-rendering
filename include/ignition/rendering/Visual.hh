@@ -128,6 +128,10 @@ namespace ignition
       /// \brief Get the bounding box in world frame coordinates.
       /// \return The axis aligned bounding box
       public: virtual ignition::math::AxisAlignedBox BoundingBox() const = 0;
+
+      /// \brief Get the local bounding box of the visual.
+      /// \return The local bounding box
+      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox() const = 0;
     };
     }
   }

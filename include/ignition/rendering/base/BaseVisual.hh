@@ -370,10 +370,7 @@ namespace ignition
         NodePtr child = it->second;
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
         if (visual)
-        {
           box.Merge(visual->LocalBoundingBox());
-          ignwarn << "new box " << box << "\n";
-        }
       }
       return box;
     }
@@ -398,10 +395,7 @@ namespace ignition
         NodePtr child = it->second;
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
         if (visual)
-        {
           box.Merge(visual->BoundingBox());
-          ignwarn << "new box " << box << "\n";
-        }
       }
       return box;
     }

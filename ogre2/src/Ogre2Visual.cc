@@ -220,6 +220,7 @@ ignition::math::AxisAlignedBox Ogre2Visual::BoundingBox() const
   return box;
 }
 
+//////////////////////////////////////////////////
 void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local) const
 {
   this->BoundsHelper(_box, _local, this->WorldPose());

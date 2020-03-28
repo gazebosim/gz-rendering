@@ -213,6 +213,7 @@ ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
   return box;
 }
 
+//////////////////////////////////////////////////
 void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local) const
 {
   this->BoundsHelper(_box, _local, this->WorldPose());

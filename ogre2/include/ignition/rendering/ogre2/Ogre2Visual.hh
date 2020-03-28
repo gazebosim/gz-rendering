@@ -58,11 +58,18 @@ namespace ignition
       /// \param[in,out] _box The bounding box.
       /// \param[in] _local A flag indicating if the local bounding box is to
       /// be calculated.
-      /// \param[in] _pose The top level visual pose used for local
-      /// transformation, the pose will be disregarded if _local is false.
+      /// \param[in] _pose The top level visual pose
       protected: virtual void BoundsHelper(
                      ignition::math::AxisAlignedBox &_box, bool _local,
                      const ignition::math::Pose3d &_pose) const;
+
+      /// \brief Wrapper function for BoundsHelper to reduce redundant
+      /// world pose access
+      /// \param[in,out] _box The bounding box.
+      /// \param[in] _local A flag indicating if the local bounding box is to
+      /// be calculated.
+      protected: virtual void BoundsHelper(
+                     ignition::math::AxisAlignedBox &_box, bool _local) const;
 
       /// \brief Transform a bounding box to the world space.
       /// \param[in] _bbox Input bounding box.

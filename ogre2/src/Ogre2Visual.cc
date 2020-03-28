@@ -120,23 +120,6 @@ bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
   return true;
 }
 
-//////////////////////////////////////////////////
-ignition::math::AxisAlignedBox Ogre2Visual::LocalBoundingBox() const
-{
-  ignition::math::AxisAlignedBox box;
-  this->BoundsHelper(box, true /* local frame */, this->WorldPose());
-  return box;
-}
-
-//////////////////////////////////////////////////
-ignition::math::AxisAlignedBox Ogre2Visual::BoundingBox() const
-{
-  ignition::math::AxisAlignedBox box;
-  this->BoundsHelper(box, false /* world frame */,
-      ignition::math::Pose3d::Zero);
-  return box;
-}
-
 /////////////////////////////////////////////////
 void Ogre2Visual::Transform(const ignition::math::AxisAlignedBox &_bbox,
     const ignition::math::Pose3d &_worldPose,
@@ -219,6 +202,27 @@ void Ogre2Visual::MinMax(const std::vector<ignition::math::Vector3d> &_vertices,
     if (_max.Z() < v.Z())
       _max.Z() = v.Z();
   }
+}
+
+//////////////////////////////////////////////////
+ignition::math::AxisAlignedBox Ogre2Visual::LocalBoundingBox() const
+{
+  ignition::math::AxisAlignedBox box;
+  this->BoundsHelper(box, true /* local frame */);
+  return box;
+}
+
+//////////////////////////////////////////////////
+ignition::math::AxisAlignedBox Ogre2Visual::BoundingBox() const
+{
+  ignition::math::AxisAlignedBox box;
+  this->BoundsHelper(box, false /* world frame */);
+  return box;
+}
+
+void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local) const
+{
+  this->BoundsHelper(_box, _local, this->WorldPose());
 }
 
 //////////////////////////////////////////////////

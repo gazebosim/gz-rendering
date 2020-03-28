@@ -213,6 +213,11 @@ ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
   return box;
 }
 
+void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local) const
+{
+  this->BoundsHelper(_box, _local, this->WorldPose());
+}
+
 //////////////////////////////////////////////////
 void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
     bool _local, const ignition::math::Pose3d &_pose) const
@@ -265,8 +270,8 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
         ignition::math::Pose3d transform = worldPose;
 
         // If local frame, calculate transform matrix and set
-        if (_local)
-        {
+        //if (_local)
+        //{
           ignition::math::Quaternion parentRot = _pose.Rot();
           ignition::math::Vector3d parentPos = _pose.Pos();
           ignition::math::Quaternion parentRotInv = parentRot.Inverse();
@@ -275,7 +280,7 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
                 (parentRotInv * (worldPose.Pos() - parentPos)),
                 (parentRotInv * worldPose.Rot()));
           transform = localTransform;
-        }
+        //}
 
         // Transform to world or local space
         std::vector<ignition::math::Vector3d> vertices;

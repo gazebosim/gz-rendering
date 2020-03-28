@@ -229,7 +229,6 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box, bool _local
 void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
     bool _local, const ignition::math::Pose3d &_pose) const
 {
-  ignition::math::Pose3d worldPose = this->WorldPose();
   ignition::math::Vector3d scale = this->WorldScale();
 
   for (size_t i = 0; i < this->ogreNode->numAttachedObjects(); i++)
@@ -272,11 +271,12 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
         ignition::math::AxisAlignedBox box(min, max);
 
         // Assume world transform
-        ignition::math::Pose3d transform = worldPose;
+        ignition::math::Pose3d transform = _pose;
 
         // If local frame, calculate transform matrix and set
         if (_local)
         {
+          ignition::math::Pose3d worldPose = this->WorldPose();
           ignition::math::Quaternion parentRot = _pose.Rot();
           ignition::math::Vector3d parentPos = _pose.Pos();
           ignition::math::Quaternion parentRotInv = parentRot.Inverse();

@@ -210,7 +210,6 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
   {
     NodePtr child = it->second;
     Ogre2VisualPtr visual = std::dynamic_pointer_cast<Ogre2Visual>(child);
-    ignwarn << "visual name " << visual->Name() << "\n";
     if (visual)
       visual->BoundsHelper(_box, _local, _pose);
   }

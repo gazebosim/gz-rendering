@@ -370,7 +370,11 @@ namespace ignition
         NodePtr child = it->second;
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
         if (visual)
-          box.Merge(visual->LocalBoundingBox());
+        {
+          ignition::math::AxisAlignedBox aabb = visual->LocalBoundingBox();
+          if (aabb.Min().IsFinite() && aabb.Max().IsFinite())
+            box.Merge(aabb);
+        }
       }
       return box;
     }

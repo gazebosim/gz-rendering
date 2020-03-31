@@ -502,7 +502,7 @@ namespace ignition
       protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
-      /// \brief Implementation for creating a wire box geometry object
+      /// \brief Implementation for creating a wire box geometry
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.
       /// \return Pointer to a wire box geometry object

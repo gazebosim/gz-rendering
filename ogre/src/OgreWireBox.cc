@@ -42,6 +42,12 @@ OgreWireBox::OgreWireBox()
 //////////////////////////////////////////////////
 OgreWireBox::~OgreWireBox()
 {
+  if (this->dataPtr->manualObject)
+  {
+    this->scene->OgreSceneManager()->destroyMovableObject(
+        this->dataPtr->manualObject);
+    this->dataPtr->manualObject = nullptr;
+  }
 }
 
 //////////////////////////////////////////////////

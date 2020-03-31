@@ -27,10 +27,10 @@ using namespace rendering;
 
 class ignition::rendering::Ogre2WireBoxPrivate
 {
-  /// \brief Grid materal
+  /// \brief Wirebox material
   public: Ogre2MaterialPtr material;
 
-  /// \brief Ogre renderable used to render the grid.
+  /// \brief Ogre renderable used to render the wirebox.
   public: std::shared_ptr<Ogre2DynamicRenderable> wireBox = nullptr;
 };
 
@@ -75,7 +75,7 @@ void Ogre2WireBox::Create()
     this->dataPtr->wireBox.reset(new Ogre2DynamicRenderable(this->scene));
   }
 
-  // Clear any previous data from the grid
+  // Clear any previous data from the wirebox
   this->dataPtr->wireBox->Clear();
   this->dataPtr->wireBox->Update();
 

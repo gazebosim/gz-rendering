@@ -17,10 +17,8 @@
 #ifndef IGNITION_RENDERING_WIREBOX_HH_
 #define IGNITION_RENDERING_WIREBOX_HH_
 
-#include <string>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Object.hh"
 #include "ignition/math/AxisAlignedBox.hh"
 
 namespace ignition

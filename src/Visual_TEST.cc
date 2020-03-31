@@ -19,6 +19,7 @@
 #include <string>
 
 #include <ignition/common/Console.hh>
+#include <ignition/math/AxisAlignedBox.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
@@ -49,8 +50,11 @@ class VisualTest : public testing::Test,
   /// \brief Test adding removing geometry
   public: void Geometry(const std::string &_renderEngine);
 
-  /// \brief Test setting visiblity flags
+  /// \brief Test setting visibility flags
   public: void VisibilityFlags(const std::string &_renderEngine);
+
+  /// \brief Test getting setting bounding boxes
+  public: void BoundingBox(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -497,6 +501,47 @@ void VisualTest::VisibilityFlags(const std::string &_renderEngine)
 TEST_P(VisualTest, VisibilityFlags)
 {
   VisibilityFlags(GetParam());
+}
+
+/////////////////////////////////////////////////
+void VisualTest::BoundingBox(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene6");
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+
+  // Add geometries
+  GeometryPtr box = scene->CreateBox();
+  visual->AddGeometry(box);
+  visual->SetWorldPosition(1.0, 2.0, 3.0);
+
+  ignition::math::AxisAlignedBox localBoundingBox = visual->LocalBoundingBox();
+  ignition::math::AxisAlignedBox boundingBox = visual->BoundingBox();
+
+  EXPECT_EQ(ignition::math::Vector3d(-0.5, -0.5, -0.5), localBoundingBox.Min());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.5, 0.5), localBoundingBox.Max());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 1.5, 2.5), boundingBox.Min());
+  EXPECT_EQ(ignition::math::Vector3d(1.5, 2.5, 3.5), boundingBox.Max());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, BoundingBox)
+{
+  BoundingBox(GetParam());
 }
 
 

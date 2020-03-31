@@ -48,19 +48,19 @@ namespace ignition
       public: virtual ~OgreWireBox();
 
       // Documentation inherited.
-      public: virtual void Init();
+      public: virtual void Init() override;
 
       // Documentation inherited.
-      public: virtual Ogre::MovableObject *OgreObject() const;
+      public: virtual Ogre::MovableObject *OgreObject() const override;
 
       // Documentation inherited.
-      public: virtual void PreRender();
+      public: virtual void PreRender() override;
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() const;
+      public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
+      public: virtual void SetMaterial(MaterialPtr _material, bool _unique) override;
 
       /// \brief Set material to wire box geometry.
       /// \param[in] _material Ogre material.

@@ -20,6 +20,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include "ignition/rendering/base/BaseMesh.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"

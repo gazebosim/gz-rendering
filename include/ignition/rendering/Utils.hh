@@ -42,21 +42,13 @@ namespace ignition
 
     /// \brief Transform a bounding box.
     /// \param[in] _box The bounding box.
-    /// \param[in] _worldPose Pose used to transform the bounding box.
+    /// \param[in] _pose Pose used to transform the bounding box.
     /// \param[out] _vertices Vertices of the transformed bounding box in
     /// world coordinates.
     IGNITION_RENDERING_VISIBLE
-    void Transform(const ignition::math::AxisAlignedBox &_box,
-        const ignition::math::Pose3d &_worldPose,
-        std::vector<ignition::math::Vector3d> &_vertices);
-
-    /// Get the minimum and maximum values of a list of vertices.
-    /// \param[in] _vertices A list of input vertices.
-    /// \param[out] _min Minimum x, y, z values
-    /// \param[out] _max Maximum x, y, z values
-    IGNITION_RENDERING_VISIBLE
-    void MinMax(const std::vector<ignition::math::Vector3d> &_vertices,
-        ignition::math::Vector3d &_min, ignition::math::Vector3d &_max);
+    ignition::math::AxisAlignedBox transformAxisAlignedBox(
+        const ignition::math::AxisAlignedBox &_box,
+        const ignition::math::Pose3d &_pose);
     }
   }
 }

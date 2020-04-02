@@ -148,9 +148,9 @@ void OgreMesh::SetSkeletonAnimationEnabled(const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-std::map<std::string, float> OgreMesh::SkeletonWeights() const
+std::unordered_map<std::string, float> OgreMesh::SkeletonWeights() const
 {
-  std::map<std::string, float> mapWeights;
+  std::unordered_map<std::string, float> mapWeights;
   Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
   if (!skel)
     return mapWeights;
@@ -183,7 +183,7 @@ std::map<std::string, float> OgreMesh::SkeletonWeights() const
 
 //////////////////////////////////////////////////
 void OgreMesh::SetSkeletonWeights(
-    const std::map<std::string, float> &_weights)
+    const std::unordered_map<std::string, float> &_weights)
 {
   Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
   if (!skel)

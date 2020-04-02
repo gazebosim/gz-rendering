@@ -163,7 +163,7 @@ void MeshTest::MeshSkeletonAnimation(const std::string &_renderEngine)
       std::chrono::duration<double>(1234.5))));
 
   // verify default skeleton bone weight
-  std::map<std::string, float> weights = mesh->SkeletonWeights();
+  std::unordered_map<std::string, float> weights = mesh->SkeletonWeights();
   EXPECT_FALSE(weights.empty());
   EXPECT_EQ(skel->NodeCount(), weights.size());
   for (auto &it : weights)

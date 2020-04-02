@@ -340,7 +340,7 @@ void updateActor()
         mesh->SetSkeletonAnimationEnabled(g_skelAnim->Name(), true, true, 1.0);
       }
       // update root bone weight
-      std::map<std::string, float> weights;
+      std::unordered_map<std::string, float> weights;
       weights[g_skel->RootNode()->Name()] = g_rootBoneWeight;
       mesh->SetSkeletonWeights(weights);
     }

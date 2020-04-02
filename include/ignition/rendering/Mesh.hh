@@ -19,6 +19,7 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <ignition/math/Matrix4.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
@@ -63,7 +64,8 @@ namespace ignition
       /// * Map holding:
       ///     * Skeleton node names
       ///     * Weight the skeleton nodes
-      public: virtual std::map<std::string, float> SkeletonWeights() const = 0;
+      public: virtual std::unordered_map<std::string, float> SkeletonWeights()
+            const = 0;
 
       /// \brief Set skeleton node weight
       /// \param[in] _weights Map of skeleton node's name to its weight
@@ -71,7 +73,7 @@ namespace ignition
       ///     * Skeleton node names
       ///     * Weight the skeleton nodes
       public: virtual void SetSkeletonWeights(
-            const std::map<std::string, float> &_weights) = 0;
+            const std::unordered_map<std::string, float> &_weights) = 0;
 
       /// \brief Set whether a skeleton animation should be enabled or not
       /// \param[in] _name Name of animation

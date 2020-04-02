@@ -125,9 +125,9 @@ void Ogre2Mesh::SetSkeletonLocalTransforms(
 }
 
 //////////////////////////////////////////////////
-std::map<std::string, float> Ogre2Mesh::SkeletonWeights() const
+std::unordered_map<std::string, float> Ogre2Mesh::SkeletonWeights() const
 {
-  std::map<std::string, float> mapWeights;
+  std::unordered_map<std::string, float> mapWeights;
   if (!this->ogreItem->hasSkeleton())
     return mapWeights;
 
@@ -152,7 +152,7 @@ std::map<std::string, float> Ogre2Mesh::SkeletonWeights() const
 
 //////////////////////////////////////////////////
 void Ogre2Mesh::SetSkeletonWeights(
-    const std::map<std::string, float> &_weights)
+    const std::unordered_map<std::string, float> &_weights)
 {
   if (!this->ogreItem->hasSkeleton())
     return;
@@ -167,7 +167,9 @@ void Ogre2Mesh::SetSkeletonWeights(
     {
       if (skel->getBone(boneName))
       {
-        skel->getAnimation(anim.getName())->setBoneWeight(boneName, weight);
+        Ogre::SkeletonAnimation *animPtr = skel->getAnimation(anim.getName());
+        if (animPtr)
+          animPtr->setBoneWeight(boneName, weight);
       }
     }
   }

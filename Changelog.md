@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 3.X.X
 
+1. Ogre2 GPU Ray: Cleanup all resources on destruction
+    * [Pull request 258](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/258)
+
 1. Ogre2: Add Grid
     * [Pull request 246](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/246)
 

@@ -155,6 +155,7 @@ void Ogre2GpuRays::Destroy()
   {
     Ogre::TextureManager::getSingleton().remove(
         this->dataPtr->cubeUVTexture->getName());
+    this->dataPtr->cubeUVTexture.reset();
   }
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -168,17 +169,20 @@ void Ogre2GpuRays::Destroy()
     {
       Ogre::TextureManager::getSingleton().remove(
           this->dataPtr->firstPassTextures[i]->getName());
+      this->dataPtr->firstPassTextures[i].reset();
     }
     if (this->dataPtr->ogreCompositorWorkspace1st[i])
     {
       ogreCompMgr->removeWorkspace(
           this->dataPtr->ogreCompositorWorkspace1st[i]);
+      this->dataPtr->ogreCompositorWorkspace1st[i] = nullptr;
     }
   }
   if (this->dataPtr->matFirstPass)
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->matFirstPass->getName());
+    this->dataPtr->matFirstPass.reset();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef1st.empty())
@@ -187,6 +191,7 @@ void Ogre2GpuRays::Destroy()
         this->dataPtr->ogreCompositorWorkspaceDef1st);
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorNodeDef1st);
+    this->dataPtr->ogreCompositorWorkspaceDef1st.clear();
   }
 
   // remove 2nd pass texture, material, compositor
@@ -194,12 +199,14 @@ void Ogre2GpuRays::Destroy()
   {
     Ogre::TextureManager::getSingleton().remove(
         this->dataPtr->secondPassTexture->getName());
+    this->dataPtr->secondPassTexture.reset();
   }
 
   if (this->dataPtr->matSecondPass)
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->matSecondPass->getName());
+    this->dataPtr->matSecondPass.reset();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef2nd.empty())
@@ -209,6 +216,7 @@ void Ogre2GpuRays::Destroy()
         this->dataPtr->ogreCompositorWorkspaceDef2nd);
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorNodeDef2nd);
+    this->dataPtr->ogreCompositorWorkspaceDef2nd.clear();
   }
 }
 

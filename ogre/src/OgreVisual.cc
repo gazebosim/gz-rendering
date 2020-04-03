@@ -155,12 +155,13 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
 
       ignition::math::Vector3d min(0, 0, 0);
       ignition::math::Vector3d max(0, 0, 0);
+      ignition::math::AxisAlignedBox box(min, max);
 
       // Ogre does not return a valid bounding box for lights.
       if (obj->getMovableType() == Ogre::LightFactory::FACTORY_TYPE_NAME)
       {
-        min = ignition::math::Vector3d(-0.5, -0.5, -0.5);
-        max = ignition::math::Vector3d(0.5, 0.5, 0.5);
+        box.Min() = ignition::math::Vector3d(-0.5, -0.5, -0.5);
+        box.Max()  = ignition::math::Vector3d(0.5, 0.5, 0.5);
       }
       else
       {
@@ -169,7 +170,8 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
 
         min = scale * ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
         max = scale * ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
-        ignition::math::AxisAlignedBox box(min, max);
+        box.Min() = min,
+        box.Max() = max;
 
         // Assume world transform
         ignition::math::Pose3d transform = _pose;
@@ -189,11 +191,9 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
         }
 
         // Transform to world or local space
-        std::vector<ignition::math::Vector3d> vertices;
-        Transform(box, transform, vertices);
-        MinMax(vertices, min, max);
+        box = transformAxisAlignedBox(box, transform);
       }
-      _box.Merge(ignition::math::AxisAlignedBox(min, max));
+      _box.Merge(box);
     }
   }
 

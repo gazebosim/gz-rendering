@@ -54,6 +54,14 @@ void Ogre2Material::Destroy()
 
   this->ogreHlmsPbs->destroyDatablock(this->ogreDatablockId);
   this->ogreDatablock = nullptr;
+
+  // remove low level ogre material used by render targets
+  if (this->ogreMaterial)
+  {
+    Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
+    matManager.remove(this->ogreMaterial);
+    this->ogreMaterial.reset();
+  }
 }
 
 //////////////////////////////////////////////////

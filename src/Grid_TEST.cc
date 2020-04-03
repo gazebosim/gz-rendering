@@ -36,13 +36,12 @@ class GridTest : public testing::Test,
 /////////////////////////////////////////////////
 void GridTest::Grid(const std::string &_renderEngine)
 {
-  if (_renderEngine != "ogre")
+  if (_renderEngine != "ogre" && _renderEngine != "ogre2")
   {
     igndbg << "Grid not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
-
 
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)

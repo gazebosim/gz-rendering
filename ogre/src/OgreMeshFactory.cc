@@ -155,6 +155,13 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       for (unsigned int i = 0; i < skel->AnimationCount(); ++i)
       {
         common::SkeletonAnimation *skelAnim = skel->Animation(i);
+        if (ogreSkeleton->hasAnimation(skelAnim->Name()))
+        {
+          ignwarn << "Skeleton animation not loaded. Animation with same "
+                  << "name already exists: " << skelAnim->Name() << std::endl;
+          continue;
+        }
+
         Ogre::Animation *ogreAnim = ogreSkeleton->createAnimation(
             skelAnim->Name(), skelAnim->Length());
 

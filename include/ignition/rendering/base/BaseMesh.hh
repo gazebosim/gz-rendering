@@ -19,7 +19,9 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 #include "ignition/rendering/Mesh.hh"
+#include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 
@@ -49,6 +51,14 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetSkeletonLocalTransforms(
                       const std::map<std::string, math::Matrix4d> &) override;
+
+      // Documentation inherited.
+      public: virtual std::unordered_map<std::string, float> SkeletonWeights()
+                      const override;
+
+      // Documentation inherited.
+      public: virtual void SetSkeletonWeights(
+                      const std::unordered_map<std::string, float> &) override;
 
       // Documentation inherited.
       public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
@@ -172,6 +182,23 @@ namespace ignition
     void BaseMesh<T>::SetSkeletonLocalTransforms(
           const std::map<std::string, math::Matrix4d> &)
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::unordered_map<std::string, float> BaseMesh<T>::SkeletonWeights() const
+    {
+      std::unordered_map<std::string, float> tmpMap;
+      return tmpMap;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMesh<T>::SetSkeletonWeights(
+          const std::unordered_map<std::string, float> &)
+    {
+      ignerr << "SetSkeletonWeights not supported for render engine: "
+             << this->Scene()->Engine()->Name() << std::endl;
     }
 
     //////////////////////////////////////////////////

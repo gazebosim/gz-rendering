@@ -20,6 +20,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include "ignition/rendering/base/BaseMesh.hh"
 #include "ignition/rendering/ogre2/Ogre2Geometry.hh"
@@ -64,6 +65,14 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetSkeletonLocalTransforms(
             const std::map<std::string, math::Matrix4d> &_tfs) override;
+
+      // Documentation inherited.
+      public: virtual std::unordered_map<std::string, float>
+                          SkeletonWeights() const override;
+
+      // Documentation inherited.
+      public: virtual void SetSkeletonWeights(
+            const std::unordered_map<std::string, float> &_weight) override;
 
       // Documentation inherited.
       public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,

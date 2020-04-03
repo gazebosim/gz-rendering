@@ -173,6 +173,7 @@ void Ogre2GpuRays::Destroy()
     {
       ogreCompMgr->removeWorkspace(
           this->dataPtr->ogreCompositorWorkspace1st[i]);
+      this->dataPtr->ogreCompositorWorkspace1st[i] = nullptr;
     }
   }
   if (this->dataPtr->matFirstPass)
@@ -187,6 +188,7 @@ void Ogre2GpuRays::Destroy()
         this->dataPtr->ogreCompositorWorkspaceDef1st);
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorNodeDef1st);
+    this->dataPtr->ogreCompositorWorkspaceDef1st.clear();
   }
 
   // remove 2nd pass texture, material, compositor
@@ -209,6 +211,7 @@ void Ogre2GpuRays::Destroy()
         this->dataPtr->ogreCompositorWorkspaceDef2nd);
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorNodeDef2nd);
+    this->dataPtr->ogreCompositorWorkspaceDef2nd.clear();
   }
 }
 

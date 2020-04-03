@@ -23,6 +23,7 @@
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
+#include "ignition/rendering/ogre2/Ogre2Grid.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
@@ -358,11 +359,12 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-GridPtr Ogre2Scene::CreateGridImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+GridPtr Ogre2Scene::CreateGridImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return GridPtr();
+  Ogre2GridPtr grid(new Ogre2Grid);
+  bool result = this->InitObject(grid, _id, _name);
+  return (result) ? grid : nullptr;
 }
 
 //////////////////////////////////////////////////

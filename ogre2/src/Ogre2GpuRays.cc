@@ -155,6 +155,7 @@ void Ogre2GpuRays::Destroy()
   {
     Ogre::TextureManager::getSingleton().remove(
         this->dataPtr->cubeUVTexture->getName());
+    this->dataPtr->cubeUVTexture.reset();
   }
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -168,6 +169,7 @@ void Ogre2GpuRays::Destroy()
     {
       Ogre::TextureManager::getSingleton().remove(
           this->dataPtr->firstPassTextures[i]->getName());
+      this->dataPtr->firstPassTextures[i].reset();
     }
     if (this->dataPtr->ogreCompositorWorkspace1st[i])
     {
@@ -180,6 +182,7 @@ void Ogre2GpuRays::Destroy()
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->matFirstPass->getName());
+    this->dataPtr->matFirstPass.reset();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef1st.empty())
@@ -196,12 +199,14 @@ void Ogre2GpuRays::Destroy()
   {
     Ogre::TextureManager::getSingleton().remove(
         this->dataPtr->secondPassTexture->getName());
+    this->dataPtr->secondPassTexture.reset();
   }
 
   if (this->dataPtr->matSecondPass)
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->matSecondPass->getName());
+    this->dataPtr->matSecondPass.reset();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef2nd.empty())

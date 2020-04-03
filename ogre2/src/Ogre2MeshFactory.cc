@@ -106,7 +106,7 @@ Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
     // create v2 mesh from v1
     mesh = Ogre::MeshManager::getSingleton().createManual(
         name, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-    mesh->importV1(v1Mesh.get(), true, true, true);
+    mesh->importV1(v1Mesh.get(), false, true, true);
     this->ogreMeshes.push_back(name);
   }
 

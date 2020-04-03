@@ -69,7 +69,16 @@
     * [Pull request 199](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/199)
     * [Pull request 204](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/204)
 
-### Ignition Rendering 2.X.X (2019-XX-XX)
+### Ignition Rendering 2.X.X (20XX-XX-XX)
+
+1. Port windows fixes
+    * [Pull request 253](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/253)
+
+1. Backport ogre2 mesh vertices precision change.
+    * [Pull request 255](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/255)
+
+1. Backport transparency setting based on diffuse alpha
+    * [Pull request 247](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/247)
 
 1. Add API to check which engines are loaded
     * [Pull request 233](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/233)

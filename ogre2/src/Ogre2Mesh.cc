@@ -125,6 +125,57 @@ void Ogre2Mesh::SetSkeletonLocalTransforms(
 }
 
 //////////////////////////////////////////////////
+std::unordered_map<std::string, float> Ogre2Mesh::SkeletonWeights() const
+{
+  std::unordered_map<std::string, float> mapWeights;
+  if (!this->ogreItem->hasSkeleton())
+    return mapWeights;
+
+  auto skel = this->ogreItem->getSkeletonInstance();
+
+  auto animations = skel->getAnimations();
+  if (animations.empty())
+    return mapWeights;
+
+  // todo(anyone) support different bone weight per animation?
+  // currently assume all skeletal animations have same bone weights
+  Ogre::SkeletonAnimation &anim = *animations.begin();
+  for (unsigned int i = 0; i < skel->getNumBones(); ++i)
+  {
+    auto bone = skel->getBone(i);
+    float weight = anim.getBoneWeight(bone->getName());
+    mapWeights[bone->getName()] = weight;
+  }
+
+  return mapWeights;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Mesh::SetSkeletonWeights(
+    const std::unordered_map<std::string, float> &_weights)
+{
+  if (!this->ogreItem->hasSkeleton())
+    return;
+
+  auto skel = this->ogreItem->getSkeletonInstance();
+
+  // set bone weights for all animations
+  auto &animations = skel->getAnimations();
+  for (auto &anim : animations)
+  {
+    for (auto const &[boneName, weight] : _weights)
+    {
+      if (skel->getBone(boneName))
+      {
+        Ogre::SkeletonAnimation *animPtr = skel->getAnimation(anim.getName());
+        if (animPtr)
+          animPtr->setBoneWeight(boneName, weight);
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2Mesh::SetSkeletonAnimationEnabled(const std::string &_name,
     bool _enabled, bool _loop, float _weight)
 {

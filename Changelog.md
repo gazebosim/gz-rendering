@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Support setting skeleton node weights
+    * [Pull request 256](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/256)
+
 1. Add support for setting visibility mask and flags
     * [Pull request 252](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests/252)
 

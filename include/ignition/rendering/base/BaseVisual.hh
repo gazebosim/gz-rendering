@@ -19,9 +19,11 @@
 
 #include <map>
 #include <string>
+
+#include <ignition/math/AxisAlignedBox.hh>
+
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/Storage.hh"
-
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
 
@@ -105,6 +107,14 @@ namespace ignition
       // Documentation inherited.
       public: virtual Variant UserData(const std::string &_key) const override;
 
+      // Documentation inherited.
+      public: virtual ignition::math::AxisAlignedBox BoundingBox()
+              const override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+              const override;
+
       protected: virtual void PreRenderChildren() override;
 
       protected: virtual void PreRenderGeometries();
@@ -123,6 +133,9 @@ namespace ignition
 
       /// \brief Visual's visibility flags
       protected: uint32_t visibilityFlags = IGN_VISIBILITY_ALL;
+
+      /// \brief The bounding box of the visual
+      protected: ignition::math::AxisAlignedBox boundingBox;
     };
 
     //////////////////////////////////////////////////
@@ -335,6 +348,60 @@ namespace ignition
       ignerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::AxisAlignedBox BaseVisual<T>::LocalBoundingBox() const
+    {
+      ignition::math::AxisAlignedBox box;
+
+      // Recursively loop through child visuals
+      auto childNodes =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!childNodes)
+      {
+        ignerr << "Cast failed in BaseVisual::LocalBoundingBox" << std::endl;
+        return box;
+      }
+      for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+      {
+        NodePtr child = it->second;
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        if (visual)
+        {
+          ignition::math::AxisAlignedBox aabb = visual->LocalBoundingBox();
+          if (aabb.Min().IsFinite() && aabb.Max().IsFinite())
+            box.Merge(aabb);
+        }
+      }
+      return box;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::AxisAlignedBox BaseVisual<T>::BoundingBox() const
+    {
+      ignition::math::AxisAlignedBox box;
+
+      // Recursively loop through child visuals
+      auto childNodes =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!childNodes)
+      {
+        ignerr << "Cast failed in BaseVisual::BoundingBox" << std::endl;
+        return box;
+      }
+      for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+      {
+        NodePtr child = it->second;
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        if (visual)
+          box.Merge(visual->BoundingBox());
+      }
+      return box;
     }
 
     //////////////////////////////////////////////////

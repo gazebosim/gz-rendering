@@ -987,6 +987,14 @@ MarkerPtr BaseScene::CreateMarker()
 }
 
 //////////////////////////////////////////////////
+WireBoxPtr BaseScene::CreateWireBox()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Wirebox");
+  return this->CreateWireBoxImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
 TextPtr BaseScene::CreateText()
 {
   unsigned int objId = this->CreateObjectId();

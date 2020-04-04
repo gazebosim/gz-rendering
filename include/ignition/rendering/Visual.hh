@@ -19,6 +19,7 @@
 
 #include <variant>
 #include <string>
+#include <ignition/math/AxisAlignedBox.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Node.hh"
 
@@ -139,6 +140,15 @@ namespace ignition
       /// \param[in] _key Unique key
       /// \param[in] _value Value in any type
       public: virtual Variant UserData(const std::string &_key) const = 0;
+
+      /// \brief Get the bounding box in world frame coordinates.
+      /// \return The axis aligned bounding box
+      public: virtual ignition::math::AxisAlignedBox BoundingBox() const = 0;
+
+      /// \brief Get the local bounding box of the visual.
+      /// \return The local bounding box
+      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+              const = 0;
     };
     }
   }

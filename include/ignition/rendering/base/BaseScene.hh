@@ -377,6 +377,9 @@ namespace ignition
       public: virtual MarkerPtr CreateMarker() override;
 
       // Documentation inherited.
+      public: virtual WireBoxPtr CreateWireBox() override;
+
+      // Documentation inherited.
       public: virtual TextPtr CreateText() override;
 
       public: virtual MaterialPtr CreateMaterial(const std::string &_name = "")
@@ -497,6 +500,13 @@ namespace ignition
       /// \param[in] _name unique object name.
       /// \return Pointer to a marker geometry object
       protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a wire box geometry
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a wire box geometry object
+      protected: virtual WireBoxPtr CreateWireBoxImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
       /// \brief Implementation for creating a text's geometry object

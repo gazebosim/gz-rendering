@@ -143,6 +143,10 @@ namespace ignition
                      const std::string &_name);
 
       // Documentation inherited
+      protected: virtual WireBoxPtr CreateWireBoxImpl(unsigned int _id,
+                     const std::string &_name);
+
+      // Documentation inherited
       protected: virtual TextPtr CreateTextImpl(unsigned int _id,
                      const std::string &_name);
 

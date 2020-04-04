@@ -17,7 +17,12 @@
 #ifndef IGNITION_RENDERING_UTILS_HH_
 #define IGNITION_RENDERING_UTILS_HH_
 
+#include <vector>
+
 #include <ignition/math/Helpers.hh>
+#include <ignition/math/AxisAlignedBox.hh>
+#include <ignition/math/Vector3.hh>
+#include <ignition/math/Pose3.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
@@ -34,6 +39,16 @@ namespace ignition
     /// \return The screen scaling factor.
     IGNITION_RENDERING_VISIBLE
     float screenScalingFactor();
+
+    /// \brief Transform a bounding box.
+    /// \param[in] _box The bounding box.
+    /// \param[in] _pose Pose used to transform the bounding box.
+    /// \param[out] _vertices Vertices of the transformed bounding box in
+    /// world coordinates.
+    IGNITION_RENDERING_VISIBLE
+    ignition::math::AxisAlignedBox transformAxisAlignedBox(
+        const ignition::math::AxisAlignedBox &_box,
+        const ignition::math::Pose3d &_pose);
     }
   }
 }

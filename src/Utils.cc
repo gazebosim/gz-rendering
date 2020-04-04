@@ -81,6 +81,73 @@ float screenScalingFactor()
 #endif
   return ratio;
 }
+
+/////////////////////////////////////////////////
+ignition::math::AxisAlignedBox transformAxisAlignedBox(
+    const ignition::math::AxisAlignedBox &_bbox,
+    const ignition::math::Pose3d &_pose)
+{
+  auto center = _bbox.Center();
+
+  // Get the 8 corners of the bounding box.
+  std::vector<ignition::math::Vector3d> vertices;
+  vertices.push_back(center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+                                                       _bbox.YLength()/2.0,
+                                                       _bbox.ZLength()/2.0));
+  vertices.push_back(center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+                                                       _bbox.YLength()/2.0,
+                                                       _bbox.ZLength()/2.0));
+  vertices.push_back(center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+                                                       -_bbox.YLength()/2.0,
+                                                       _bbox.ZLength()/2.0));
+  vertices.push_back(center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+                                                       -_bbox.YLength()/2.0,
+                                                       _bbox.ZLength()/2.0));
+
+  vertices.push_back(center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+                                                       _bbox.YLength()/2.0,
+                                                       -_bbox.ZLength()/2.0));
+  vertices.push_back(center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+                                                       _bbox.YLength()/2.0,
+                                                       -_bbox.ZLength()/2.0));
+  vertices.push_back(center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+                                                       -_bbox.YLength()/2.0,
+                                                       -_bbox.ZLength()/2.0));
+  vertices.push_back(center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+                                                       -_bbox.YLength()/2.0,
+                                                       -_bbox.ZLength()/2.0));
+
+
+  // Transform corners.
+  for (unsigned int i = 0; i < vertices.size(); ++i)
+  {
+    auto &v = vertices[i];
+    v = _pose.Rot() * v + _pose.Pos();
+  }
+
+  ignition::math::Vector3d min = vertices[0];
+  ignition::math::Vector3d max = vertices[0];
+
+  // find min / max of vertices
+  for (unsigned int i = 1; i < vertices.size(); ++i)
+  {
+    auto &v = vertices[i];
+
+    if (min.X() > v.X())
+      min.X() = v.X();
+    if (max.X() < v.X())
+      max.X() = v.X();
+    if (min.Y() > v.Y())
+      min.Y() = v.Y();
+    if (max.Y() < v.Y())
+      max.Y() = v.Y();
+    if (min.Z() > v.Z())
+      min.Z() = v.Z();
+    if (max.Z() < v.Z())
+      max.Z() = v.Z();
+  }
+  return ignition::math::AxisAlignedBox(min, max);
+}
 }
 }
 }

@@ -32,8 +32,11 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE WireBox :
       public virtual Geometry
     {
+      /// \brief Constructor
+      protected: WireBox();
+
       /// \brief Destructor
-      public: virtual ~WireBox() { }
+      public: virtual ~WireBox();
 
       /// \brief Set the axis aligned box
       /// \param[in] _box The axis aligned box

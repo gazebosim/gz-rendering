@@ -257,11 +257,13 @@ void updatePose(double _time)
       std::string animNodeName = pair.first;
       auto animTf = pair.second;
 
+      //! [update pose]
       std::string skinName =
           g_skel->NodeNameAnimToSkin(g_animIdx, animNodeName);
       ignition::math::Matrix4d skinTf =
               g_skel->AlignTranslation(g_animIdx, animNodeName)
               * animTf * g_skel->AlignRotation(g_animIdx, animNodeName);
+      //! [update pose]
 
       skinFrames[skinName] = skinTf;
     }
@@ -506,13 +508,17 @@ void initContext()
 //////////////////////////////////////////////////
 void initAnimation()
 {
+//! [init animation]
   if (!g_skel || g_skel->AnimationCount() == 0)
   {
     std::cerr << "Failed to load animation." << std::endl;
     return;
   }
+//! [init animation]
 
+//! [index animation]
   g_skelAnim = g_skel->Animation(g_animIdx);
+//! [index animation]
 
   g_startTime = std::chrono::steady_clock::now();
 }

@@ -152,7 +152,7 @@ CameraPtr createCamera(const std::string &_engineName)
 
   SensorPtr sensor = scene->SensorByName("camera");
 
-  // get render pass system
+  //! [get render pass system]
   CameraPtr camera = std::dynamic_pointer_cast<Camera>(sensor);
   RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
   if (rpSystem)
@@ -165,6 +165,7 @@ CameraPtr createCamera(const std::string &_engineName)
     noisePass->SetStdDev(0.08);
     camera->AddRenderPass(noisePass);
   }
+  //! [get render pass system]
 
   // return camera sensor
   return camera;

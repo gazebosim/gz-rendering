@@ -9,6 +9,18 @@ Ignition @IGN_DESIGNATION_CAP@ library and how to use the library effectively.
 1. \subpage introduction "Introduction"
 2. \subpage installation "Installation"
 
+**The examples**
+
+1. \subpage actor_animation  "Actor animation"
+2. \subpage gazebo_scene_viewer  "Gazebo scene viewer"
+3. \subpage mesh_viewer  "Mesh viewer"
+4. \subpage custom_scene_viewer  "Custom scene viewer"
+5. \subpage camera_tracking  "Camera tracking"
+6. \subpage custom_shaders  "Custom shaders"
+7. \subpage render_pass  "Render pass"
+8. \subpage simple_demo  "Simple demo"
+9. \subpage text_geom  "Text geom"
+
 ## License
 
 The code associated with this documentation is licensed under an [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0).

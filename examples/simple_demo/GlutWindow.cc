@@ -69,6 +69,7 @@ bool g_initContext = false;
 double g_offset = 0.0;
 
 //////////////////////////////////////////////////
+//! [update camera]
 void updateCameras()
 {
   for (ir::CameraPtr camera : g_cameras)
@@ -78,6 +79,7 @@ void updateCameras()
 
   g_offset+= 0.001;
 }
+//! [update camera]
 
 //////////////////////////////////////////////////
 void displayCB()
@@ -198,5 +200,3 @@ void run(std::vector<ir::CameraPtr> _cameras)
 
   glutMainLoop();
 }
-
-

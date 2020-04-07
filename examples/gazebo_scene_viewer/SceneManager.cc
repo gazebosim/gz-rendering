@@ -165,6 +165,7 @@ void SceneManagerPrivate::Load()
 //////////////////////////////////////////////////
 void SceneManagerPrivate::Init()
 {
+//! [init scene manager]
   // listen for pre-render events
   this->preRenderConn = gazebo::event::Events::ConnectPreRender(
         std::bind(&SceneManagerPrivate::UpdateScenes, this));
@@ -213,6 +214,8 @@ void SceneManagerPrivate::Init()
   // listen for to pose updates
   this->poseSub = this->transportNode->Subscribe("~/pose/local/info",
       &SceneManagerPrivate::OnPoseUpdate, this);
+//! [init scene manager]
+
 }
 
 //////////////////////////////////////////////////
@@ -846,6 +849,7 @@ void SubSceneManager::OnRemovalUpdate(const std::string &_name)
 void SubSceneManager::ProcessMessages()
 {
   // process each queued message
+//! [process message]
   this->ProcessLights();
   this->ProcessModels();
   this->ProcessJoints();
@@ -853,6 +857,7 @@ void SubSceneManager::ProcessMessages()
   this->ProcessSensors();
   this->ProcessPoses();
   this->ProcessRemovals();
+//! [process message]
 
   // flush changes to scene
   this->activeScene->SetSimTime(this->timePosesReceived);
@@ -1458,6 +1463,7 @@ void SubSceneManager::ProcessCone(
 }
 
 //////////////////////////////////////////////////
+//! [process cylinder]
 void SubSceneManager::ProcessCylinder(
     const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)
 {
@@ -1469,6 +1475,7 @@ void SubSceneManager::ProcessCylinder(
   _parent->SetLocalScale(x, y, z);
   _parent->AddGeometry(cylinder);
 }
+//! [process cylinder]
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessEmpty(const gazebo::msgs::Geometry&, VisualPtr)
@@ -1801,6 +1808,7 @@ CurrentSceneManager::~CurrentSceneManager()
 }
 
 //////////////////////////////////////////////////
+//! [on update pose]
 void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
 {
   // record pose timestamp
@@ -1817,6 +1825,7 @@ void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
     this->poseMsgs[name] = pose;
   }
 }
+//! [on update pose]
 
 //////////////////////////////////////////////////
 void CurrentSceneManager::ClearMessages()

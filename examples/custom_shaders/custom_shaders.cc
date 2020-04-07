@@ -31,13 +31,14 @@ const double width = 512;
 const double height = 512;
 const int bytesPerPixel = 3;
 
+//! [init shaders variables]
 const std::string depth_vertex_shader_file =
   "depth_vertex_shader.glsl";
 const std::string depth_fragment_shader_file =
   "depth_fragment_shader.glsl";
 const std::string vertex_shader_file = "vertex_shader.glsl";
 const std::string fragment_shader_file = "fragment_shader.glsl";
-
+//! [init shaders variables]
 
 //////////////////////////////////////////////////
 int main()
@@ -88,7 +89,7 @@ int main()
 
 
   // TODO(anyone): convert depth configuration into a ShaderType
-  // Get shader parameters path
+  //! [Get shader parameters path]
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
@@ -101,10 +102,11 @@ int main()
   std::string depth_fragment_shader_path = ignition::common::joinPaths(
       resourcePath, "ogre", "media", "materials", "programs",
       depth_fragment_shader_file);
-
+  //! [Get shader parameters path]
   ignition::rendering::MaterialPtr depthMat = scene->CreateMaterial();
   depthMat->SetVertexShader(depth_vertex_shader_path);
   depthMat->SetFragmentShader(depth_fragment_shader_path);
+
   depthCamera->SetMaterial(depthMat);
 
   ignition::rendering::ImagePtr image =
@@ -181,9 +183,11 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
       resourcePath, "ogre", "media", "materials", "programs",
       fragment_shader_file);
 
+//! [add shader to material]
   ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
   shader->SetVertexShader(vertex_shader_path);
   shader->SetFragmentShader(fragment_shader_path);
+//! [add shader to material]
 
   // create box visual
   ignition::rendering::VisualPtr box = _scene->CreateVisual();

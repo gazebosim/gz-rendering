@@ -172,6 +172,7 @@ void ManualSceneDemo::ChangeScene()
 int main(int, char**)
 {
   common::Console::SetVerbosity(4);
+//! [add scenes]
   ManualSceneDemoPtr sceneDemo(new ManualSceneDemo);
   sceneDemo->AddScene(SceneBuilderPtr(new SceneBuilder));
   sceneDemo->AddScene(SceneBuilderPtr(new SimpleSceneBuilder));
@@ -186,6 +187,7 @@ int main(int, char**)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(3)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(4)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
+//! [add scenes]
   sceneDemo->AddCamera("ogre");
   sceneDemo->AddCamera("optix");
   sceneDemo->Run();

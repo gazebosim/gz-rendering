@@ -63,10 +63,10 @@ There are three main methods in the `Camera` class that allow us to follow and t
                        const bool 	_worldFrame = false
  )
  ```
- Parameters:
-    - *_target*:	Target node to track
-    - *_offset*:	Track a point that is at an offset relative to target
-    - *worldFrame*:	If true, the offset point to track will be treated in world frame and its position relative to the target node remains fixed regardless of the target node's rotation. Default is false, which means the camera tracks the point in target node's local frame.
+Parameters:
+    - \_target:	Target node to track
+    - \_offset:	Track a point that is at an offset relative to target
+    - worldFrame:	If true, the offset point to track will be treated in world frame and its position relative to the target node remains fixed regardless of the target node's rotation. Default is false, which means the camera tracks the point in target node's local frame.
  - **SetWorldPosition**: Set the world pose.
  ```{.cpp}
 void 	SetWorldPose (const math::Pose3d &_pose)
@@ -83,6 +83,6 @@ void 	SetWorldRotation (const math::Quaterniond &_rotation)
                         const bool 	_worldFrame = false )
  ```
  Parameters:
-  - *_target*:	Target node to follow
-  - *_offset*:	Tether the camera at an offset distance from the target node
-  - *_worldFrame*:	True to follow the target node at a distance that's fixed in world frame. Default is false which means the camera follows at fixed distance in target node's local frame.
+  - \_target:	Target node to follow
+  - \_offset:	Tether the camera at an offset distance from the target node
+  - worldFrame:	True to follow the target node at a distance that's fixed in world frame. Default is false which means the camera follows at fixed distance in target node's local frame.

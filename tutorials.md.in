@@ -17,10 +17,9 @@ Ignition @IGN_DESIGNATION_CAP@ library and how to use the library effectively.
 4. \subpage custom_scene_viewer  "Custom scene viewer"
 5. \subpage camera_tracking  "Camera tracking"
 6. \subpage custom_shaders  "Custom shaders"
-7. \subpage mouse_picking  "Mouse picking"
-8. \subpage render_pass  "Render pass"
-9. \subpage simple_demo  "Simple demo"
-10. \subpage text_geom  "Text geom"
+7. \subpage render_pass  "Render pass"
+8. \subpage simple_demo  "Simple demo"
+9. \subpage text_geom  "Text geom"
 
 ## License
 

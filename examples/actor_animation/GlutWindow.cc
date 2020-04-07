@@ -499,6 +499,7 @@ void initAnimation()
     std::cerr << "Failed to load animation." << std::endl;
     return;
   }
+//! [init animation]
 
 //! [index animation]
   g_skelAnim = g_skel->Animation(g_animIdx);

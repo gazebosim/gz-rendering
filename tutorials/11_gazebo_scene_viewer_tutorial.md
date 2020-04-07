@@ -6,7 +6,7 @@ The Gazebo scene viewer examples allow us to visualize Gazebo using the Ignition
 
 The `SceneManager` class defined in `SceneManager.hh`, `SceneManagerPrivate.hh` and `SceneManager.cc` manages a collection of scenes.
 The class provides a single interface for modifications, allowing multiple scenes to stay synchronized.
-It will allow us to receive data from Gazebo and update the render window each time that the examples receive a new scene. **This class currently consumes Gazebo-specified protobuf messages**.
+It will allow us to receive data from Gazebo and update the render window each time that the examples receive a new scene. **This class currently consumes Gazebo-specific protobuf messages**.
 
 The following list will describe some methods:
 

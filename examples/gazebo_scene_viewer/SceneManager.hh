@@ -37,7 +37,7 @@ namespace ignition
     /// \class SceneManager SceneManager.hh ignition/rendering/SceneManager.hh
     /// \brief Manages a collection of scenes. The class provides a single
     /// interface for modifications, allowing multiple scenes to stay
-    /// synchronized. This class currently consumes Gazebo-specified protobuf
+    /// synchronized. This class currently consumes Gazebo-specific protobuf
     /// messages, but will be updated to be Gazebo-agnostic in the future.
     class SceneManager :
       public virtual common::SingletonT<SceneManager>

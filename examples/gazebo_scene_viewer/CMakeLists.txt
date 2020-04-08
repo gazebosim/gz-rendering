@@ -4,7 +4,6 @@ find_package(ignition-rendering4 REQUIRED)
 find_package(gazebo REQUIRED)
 
 include_directories(SYSTEM ${GAZEBO_INCLUDE_DIRS})
-message("gazebo include ================== ${GAZEBO_INCLUDE_DIRS}")
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})

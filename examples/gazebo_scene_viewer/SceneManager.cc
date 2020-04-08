@@ -215,7 +215,6 @@ void SceneManagerPrivate::Init()
   this->poseSub = this->transportNode->Subscribe("~/pose/local/info",
       &SceneManagerPrivate::OnPoseUpdate, this);
 //! [init scene manager]
-
 }
 
 //////////////////////////////////////////////////

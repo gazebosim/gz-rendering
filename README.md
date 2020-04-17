@@ -2,8 +2,8 @@
 
 **Maintainer:** ichen [AT] openrobotics [DOT] org
 
-[![Bitbucket open issues](https://img.shields.io/bitbucket/issues-raw/ignitionrobotics/ign-rendering.svg)](https://bitbucket.org/ignitionrobotics/ign-rendering/issues)
-[![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/ignitionrobotics/ign-rendering.svg)](https://bitbucket.org/ignitionrobotics/ign-rendering/pull-requests)
+[![GitHub open issues](https://img.shields.io/github/issues-raw/ignitionrobotics/ign-rendering.svg)](https://github.com/ignitionrobotics/ign-rendering/issues)
+[![GitHub open pull requests](https://img.shields.io/github/issues-pr-raw/ignitionrobotics/ign-rendering.svg)](https://github.com/ignitionrobotics/ign-rendering/pulls)
 [![Discourse topics](https://img.shields.io/discourse/https/community.gazebosim.org/topics.svg)](https://community.gazebosim.org)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
@@ -100,7 +100,7 @@ Install dependencies:
         g++-8 \
         cmake \
         pkg-config \
-        mercurial \
+        git \
         libglew-dev  \
         libfreeimage-dev \
         freeglut3-dev \
@@ -115,7 +115,7 @@ Install dependencies:
 Clone source code
 
     # This checks out the `default` branch. You can append `-b ign-rendering#` (replace # with a number) to checkout a specific version
-    hg clone http://bitbucket.org/ignitionrobotics/ign-rendering
+    git clone http://github.com/ignitionrobotics/ign-rendering
 
 #### Version 0 (Legacy version for Ubuntu Xenial 16.04 or above)
 
@@ -129,7 +129,7 @@ Install dependencies:
     sudo apt install -y \
         cmake \
         pkg-config \
-        mercurial \
+        git \
         libglew-dev  \
         libfreeimage-dev \
         freeglut3-dev \
@@ -141,7 +141,7 @@ Install dependencies:
 
 Clone source code, note you'll need the `ign-rendering0` branch:
 
-    hg clone http://bitbucket.org/ignitionrobotics/ign-rendering -b ign-rendering0
+    git clone http://github.com/ignitionrobotics/ign-rendering -b ign-rendering0
 
 
 #### Supported Rendering Engines
@@ -264,12 +264,12 @@ Rendering engine plugin implementation code is stored in their own folders
 # Contributing
 
 Please see
-[CONTRIBUTING.md](https://bitbucket.org/ignitionrobotics/ign-gazebo/src/default/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://ignitionrobotics.org/docs/all/contributing).
 
 # Code of Conduct
 
 Please see
-[CODE_OF_CONDUCT.md](https://bitbucket.org/ignitionrobotics/ign-gazebo/src/default/CODE_OF_CONDUCT.md).
+[CODE_OF_CONDUCT.md](https://github.com/ignitionrobotics/ign-gazebo/blob/master/CODE_OF_CONDUCT.md).
 
 # Versioning
 
@@ -277,4 +277,4 @@ This library uses [Semantic Versioning](https://semver.org/). Additionally, this
 
 # License
 
-This library is licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). See also the [LICENSE](https://bitbucket.org/ignitionrobotics/ign-rendering/src/default/LICENSE) file.
+This library is licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). See also the [LICENSE](https://github.com/ignitionrobotics/ign-rendering/blob/master/LICENSE) file.

@@ -113,11 +113,11 @@ Install dependencies:
         libignition-math5-dev \
         libignition-common2-dev
 
-Clone source code, note you'll need the `default` branch:
+Clone source code, note you'll need the `ign-rendering0` branch:
 
-    git clone http://github.com/ignitionrobotics/ign-rendering -b master
+    git clone http://github.com/ignitionrobotics/ign-rendering -b ign-rendering0
 
-#### Version 1 (Requires Ubuntu Bionic 18.04 or above)
+#### Versions >= 1.0 (Requires Ubuntu Bionic 18.04 or above)
 
 Install dependencies:
 
@@ -142,9 +142,10 @@ Install dependencies:
         libignition-plugin-dev
     sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
 
-Clone source code, note you'll need the `gz11` branch:
+Clone source code
 
-    git clone http://github.com/ignitionrobotics/ign-rendering -b gz11
+    # This checks out the `master` branch. You can append `-b ign-rendering#` (replace # with a number) to checkout a specific version
+    git clone http://github.com/ignitionrobotics/ign-rendering
 
 
 #### Supported Rendering Engines

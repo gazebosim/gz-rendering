@@ -80,7 +80,7 @@ void Ogre2Grid::Create()
   this->dataPtr->grid->Update();
 
   this->dataPtr->grid->SetOperationType(MarkerType::MT_LINE_LIST);
-  double extent = (this->cellLength * static_cast<double>(this->cellCount))/2;
+  double extent = static_cast<int>((this->cellLength * this->cellCount)/2);
   for (unsigned int h = 0; h <= this->verticalCellCount; ++h)
   {
     double hReal = this->heightOffset +
@@ -89,11 +89,17 @@ void Ogre2Grid::Create()
     for (unsigned int i = 0; i <= this->cellCount; i++)
     {
       double inc = extent - (i * this->cellLength);
-
       math::Vector3d p1{inc, -extent, hReal};
       math::Vector3d p2{inc, extent , hReal};
       math::Vector3d p3{-extent, inc, hReal};
       math::Vector3d p4{extent, inc, hReal};
+
+      // If the cell count is odd, draw an extra row and column
+      if (this->cellCount % 2)
+      {
+        p1.Y() -= 1;
+        p3.X() -= 1;
+      }
 
       this->dataPtr->grid->AddPoint(p1);
       this->dataPtr->grid->AddPoint(p2);

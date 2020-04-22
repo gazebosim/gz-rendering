@@ -77,7 +77,7 @@ void OgreGrid::Create()
 
   this->dataPtr->manualObject->clear();
 
-  double extent = (this->cellLength * static_cast<double>(this->cellCount))/2;
+  double extent = static_cast<int>((this->cellLength * this->cellCount)/2);
 
   this->dataPtr->manualObject->setCastShadows(false);
   this->dataPtr->manualObject->estimateVertexCount(
@@ -101,6 +101,13 @@ void OgreGrid::Create()
       Ogre::Vector3 p2(inc, extent , hReal);
       Ogre::Vector3 p3(-extent, inc, hReal);
       Ogre::Vector3 p4(extent, inc, hReal);
+
+      // If the cell count is odd, draw an extra row and column
+      if (this->cellCount % 2)
+      {
+        p1.y -= 1;
+        p3.x -= 1;
+      }
 
       this->dataPtr->manualObject->position(p1);
       this->dataPtr->manualObject->position(p2);

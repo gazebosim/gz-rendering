@@ -85,7 +85,7 @@ void Ogre2Grid::Create()
   for (unsigned int h = 0; h <= this->verticalCellCount; ++h)
   {
     double hReal = this->heightOffset +
-        (this->verticalCellCount / 2.0f - static_cast<double>(h))
+        (this->verticalCellCount / 2 - static_cast<double>(h))
         * this->cellLength;
 
     // If there are odd vertical cells, shift cell planes up

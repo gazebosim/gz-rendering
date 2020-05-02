@@ -9,11 +9,11 @@
 
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/bb/ignitionrobotics/ign-rendering/branch/default/graph/badge.svg)](https://codecov.io/bb/ignitionrobotics/ign-rendering/branch/default)
-Ubuntu Xenial | [![](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-xenial-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-xenial-amd64/)
-Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-bionic-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-homebrew-amd64)
-Windows 7     | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-windows7-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-windows7-amd64)
+Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/master/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
+Ubuntu Xenial | [![](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-xenial-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-xenial-amd64/)
+Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-bionic-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-homebrew-amd64)
+Windows 7     | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-windows7-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-windows7-amd64)
 
 Ignition Rendering is a C++ library designed to provide an abstraction
 for different rendering engines. It offers unified APIs for creating

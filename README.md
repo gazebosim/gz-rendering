@@ -9,10 +9,10 @@
 
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/bb/ignitionrobotics/ign-rendering/branch/default/graph/badge.svg)](https://codecov.io/bb/ignitionrobotics/ign-rendering/branch/default)
-Ubuntu Xenial | [![](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-xenial-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-xenial-amd64/)
-Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-bionic-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-default-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-default-homebrew-amd64)
+Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/master/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
+Ubuntu Xenial | [![](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-xenial-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-xenial-amd64/)
+Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-bionic-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-homebrew-amd64)
 Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ign_rendering-ci-win)](https://build.osrfoundation.org/job/ign_rendering-ci-win)
 
 Ignition Rendering is a C++ library designed to provide an abstraction
@@ -24,33 +24,33 @@ of libraries designed to rapidly develop robot applications.
 
 # Table of Contents
 
-[Features](#markdown-header-features)
+[Features](#features)
 
-[Install](#markdown-header-install)
+[Install](#install)
 
-* [Binary Install](#markdown-header-binary-install)
+* [Binary Install](#binary-install)
 
-* [Source Install](#markdown-header-source-install)
+* [Source Install](#source-install)
 
-    * [Prerequisites](#markdown-header-prerequisites)
+    * [Prerequisites](#prerequisites)
 
-    * [Building from Source](#markdown-header-building-from-source)
+    * [Building from Source](#building-from-source)
 
-[Usage](#markdown-header-usage)
+[Usage](#usage)
 
-[Documentation](#markdown-header-documentation)
+[Documentation](#documentation)
 
-[Testing](#markdown-header-testing)
+[Testing](#testing)
 
-[Folder Structure](#markdown-header-folder-structure)
+[Folder Structure](#folder-structure)
 
-[Code of Conduct](#markdown-header-code-of-conduct)
+[Code of Conduct](#code-of-conduct)
 
-[Contributing](#markdown-header-code-of-contributing)
+[Contributing](#code-of-contributing)
 
-[Versioning](#markdown-header-versioning)
+[Versioning](#versioning)
 
-[License](#markdown-header-license)
+[License](#license)
 
 # Features
 
@@ -60,9 +60,9 @@ of libraries designed to rapidly develop robot applications.
 
 # Install
 
-We recommend following the [Binary Install](#markdown-header-binary-install) instructions to get up and running as quickly and painlessly as possible.
+We recommend following the [Binary Install](#binary-install) instructions to get up and running as quickly and painlessly as possible.
 
-The [Source Install](#markdown-header-source-install) instructions should be used if you need the very latest software improvements, you need to modify the code, or you plan to make a contribution.
+The [Source Install](#source-install) instructions should be used if you need the very latest software improvements, you need to modify the code, or you plan to make a contribution.
 
 ## Binary Install
 
@@ -209,7 +209,7 @@ Replace `/path/to/install/dir` to whatever directory you want to install this pa
 # Usage
 
 The Ign Rendering API can be found in the documentation. See the
-[Documentation](#markdown-header-documentation) section on how to build the
+[Documentation](#documentation) section on how to build the
 documentation files using Doxygen.
 
 You can also take a look at the sample applications in the `examples` folder.

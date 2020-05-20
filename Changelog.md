@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 3.X.X
 
+1. Update test configuration to use ogre2
+    * [Pull request 83](https://github.com/ignitionrobotics/ign-rendering/pull/83)
+
 1. Ogre2 GPU Ray: Cleanup all resources on destruction
     * [BitBucket pull request 258](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/258)
 

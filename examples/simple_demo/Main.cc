@@ -136,14 +136,6 @@ void buildScene(ScenePtr _scene)
   axis->SetLocalPosition(4.0, 0.5, -0.4);
   root->AddChild(axis);
 
-  // create arrow visual
-  // VisualPtr arrow = _scene->CreateArrowVisual();
-  // arrow->SetLocalPosition(2, -1, -0.3);
-  // arrow->SetLocalScale(2, -1, 2);
-  // arrow->SetLocalRotation(-IGN_PI / 3, -IGN_PI / 3, 0);
-  // arrow->SetMaterial(green);
-  // root->AddChild(arrow);
-
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.0);
@@ -155,6 +147,7 @@ void buildScene(ScenePtr _scene)
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 
+  // track target
   camera->SetTrackTarget(box);
 }
 

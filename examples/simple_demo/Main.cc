@@ -131,6 +131,19 @@ void buildScene(ScenePtr _scene)
   plane->SetMaterial(white);
   root->AddChild(plane);
 
+  // create axis visual
+  VisualPtr axis = _scene->CreateAxisVisual();
+  axis->SetLocalPosition(4.0, 0.5, -0.4);
+  root->AddChild(axis);
+
+  // create arrow visual
+  // VisualPtr arrow = _scene->CreateArrowVisual();
+  // arrow->SetLocalPosition(2, -1, -0.3);
+  // arrow->SetLocalScale(2, -1, 2);
+  // arrow->SetLocalRotation(-IGN_PI / 3, -IGN_PI / 3, 0);
+  // arrow->SetMaterial(green);
+  // root->AddChild(arrow);
+
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.0);
@@ -141,6 +154,8 @@ void buildScene(ScenePtr _scene)
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
+
+  camera->SetTrackTarget(box);
 }
 
 //////////////////////////////////////////////////
@@ -167,12 +182,21 @@ int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
 
+  // Expose engine name to command line because we can't instantiate both
+  // ogre and ogre2 at the same time
+  std::string engine("ogre");
+  if (_argc > 1)
+  {
+    engine = _argv[1];
+  }
+
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back("ogre");
+  engineNames.push_back(engine);
   engineNames.push_back("optix");
+
   for (auto engineName : engineNames)
   {
     try

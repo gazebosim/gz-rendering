@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Add ogre2 implementation of AxisVisual and ArrowVisual
+    * [Pull request ]()
+
 1. Support setting skeleton node weights
     * [BitBucket pull request 256](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/256)
 

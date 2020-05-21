@@ -1,6 +1,5 @@
 ## Ignition Rendering
 
-
 ### Ignition Rendering 3.X.X
 
 1. Update test configuration to use ogre2

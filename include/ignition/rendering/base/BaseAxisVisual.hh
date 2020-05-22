@@ -37,6 +37,18 @@ namespace ignition
       public: virtual ~BaseAxisVisual();
 
       public: virtual void Init();
+
+      public: virtual void SetLocalScale(double _x, double _y, double _z) override;
+
+      public: virtual void SetLocalScale(double _scale) override;
+
+      public: virtual void SetLocalScale(const math::Vector3d &_scale) override;
+
+      private: ArrowVisualPtr xArrow;
+
+      private: ArrowVisualPtr yArrow;
+
+      private: ArrowVisualPtr zArrow;
     };
 
     //////////////////////////////////////////////////
@@ -53,23 +65,50 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseAxisVisual<T>::SetLocalScale(double _x, double _y, double _z)
+    {
+      xArrow->SetLocalScale(_x, _y, _z);
+      yArrow->SetLocalScale(_x, _y, _z);
+      zArrow->SetLocalScale(_x, _y, _z);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseAxisVisual<T>::SetLocalScale(double _scale)
+    {
+      xArrow->SetLocalScale(_scale, _scale, _scale);
+      yArrow->SetLocalScale(_scale, _scale, _scale);
+      zArrow->SetLocalScale(_scale, _scale, _scale);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseAxisVisual<T>::SetLocalScale(const math::Vector3d &_scale)
+    {
+      xArrow->SetLocalScale(_scale.X(), _scale.Y(), _scale.Z());
+      yArrow->SetLocalScale(_scale.X(), _scale.Y(), _scale.Z());
+      zArrow->SetLocalScale(_scale.X(), _scale.Y(), _scale.Z());
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseAxisVisual<T>::Init()
     {
       T::Init();
 
-      ArrowVisualPtr xArrow = this->Scene()->CreateArrowVisual();
+      xArrow = this->Scene()->CreateArrowVisual();
       xArrow->SetLocalPosition(0, 0, 0);
       xArrow->SetLocalRotation(0, IGN_PI / 2, 0);
       xArrow->SetMaterial("Default/TransRed");
       this->AddChild(xArrow);
 
-      ArrowVisualPtr yArrow = this->Scene()->CreateArrowVisual();
+      yArrow = this->Scene()->CreateArrowVisual();
       yArrow->SetLocalPosition(0, 0, 0);
       yArrow->SetLocalRotation(-IGN_PI / 2, 0, 0);
       yArrow->SetMaterial("Default/TransGreen");
       this->AddChild(yArrow);
 
-      ArrowVisualPtr zArrow = this->Scene()->CreateArrowVisual();
+      zArrow = this->Scene()->CreateArrowVisual();
       zArrow->SetLocalPosition(0, 0, 0);
       zArrow->SetLocalRotation(0, 0, 0);
       zArrow->SetMaterial("Default/TransBlue");

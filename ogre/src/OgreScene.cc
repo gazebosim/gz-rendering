@@ -30,6 +30,7 @@
 #include "ignition/rendering/ogre/OgreText.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
+#include "ignition/rendering/ogre/OgreLidarVisual.hh"
 #include "ignition/rendering/ogre/OgreMeshFactory.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
@@ -523,6 +524,15 @@ MarkerPtr OgreScene::CreateMarkerImpl(unsigned int _id,
                                       const std::string &_name)
 {
   OgreMarkerPtr marker(new OgreMarker);
+  bool result = this->InitObject(marker, _id, _name);
+  return (result) ? marker: nullptr;
+}
+
+//////////////////////////////////////////////////
+LidarVisualPtr OgreScene::CreateLidarVisualImpl(unsigned int _id,
+                                      const std::string &_name)
+{
+  OgreLidarVisualPtr marker(new OgreLidarVisual);
   bool result = this->InitObject(marker, _id, _name);
   return (result) ? marker: nullptr;
 }

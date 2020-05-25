@@ -71,13 +71,17 @@ double g_offset = 0.0;
 //////////////////////////////////////////////////
 //! [update camera]
 void updateCameras()
+
 {
+  double angle = g_offset / 2 * M_PI;
+  double x = sin(angle) * 3.0 + 3.0;
+  double y = cos(angle) * 3.0;
   for (ir::CameraPtr camera : g_cameras)
   {
-    camera->SetLocalPosition(g_offset, g_offset, g_offset);
+    camera->SetLocalPosition(x, y, 0.0);
   }
 
-  g_offset+= 0.001;
+  g_offset += 0.0005;
 }
 //! [update camera]
 

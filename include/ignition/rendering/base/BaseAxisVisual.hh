@@ -38,6 +38,7 @@ namespace ignition
 
       public: virtual void Init();
 
+      // Documentation inherited.
       public: virtual void SetLocalScale(const math::Vector3d &_scale) override;
     };
 

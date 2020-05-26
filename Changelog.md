@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Scale BaseAxis properly
+    * [Pull request #88](https://github.com/ignitionrobotics/ign-rendering/pull/88)
+
 1. Support setting skeleton node weights
     * [BitBucket pull request 256](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/256)
 

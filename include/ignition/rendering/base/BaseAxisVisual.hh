@@ -39,11 +39,11 @@ namespace ignition
       public: virtual void Init();
 
       // Documentation inherited.
-      public: virtual void SetLocalScale(const math::Vector3d &_scale) override;
+      public: virtual void SetLocalScale(
+          const math::Vector3d &_scale) override;
 
       // Documentation inherited.
       public: virtual math::Vector3d LocalScale() const override;
-
     };
 
     //////////////////////////////////////////////////
@@ -62,7 +62,7 @@ namespace ignition
     template <class T>
     math::Vector3d BaseAxisVisual<T>::LocalScale() const
     {
-      if(this->ChildCount() > 0) {
+      if (this->ChildCount() > 0) {
         return this->ChildByIndex(0)->LocalScale();
       }
       return math::Vector3d::Zero;
@@ -73,7 +73,9 @@ namespace ignition
     void BaseAxisVisual<T>::SetLocalScale(const math::Vector3d &_scale)
     {
       for (unsigned int i = 0; i < this->ChildCount(); ++i)
-        this->ChildByIndex(i)->SetLocalScale(_scale.X(), _scale.Y(), _scale.Z());
+        this->ChildByIndex(i)->SetLocalScale(_scale.X(),
+                                             _scale.Y(),
+                                             _scale.Z());
     }
 
     //////////////////////////////////////////////////

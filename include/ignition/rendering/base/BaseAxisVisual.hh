@@ -36,7 +36,7 @@ namespace ignition
 
       public: virtual ~BaseAxisVisual();
 
-      public: virtual void Init();
+      public: virtual void Init() override;
 
       // Documentation inherited.
       public: virtual void SetLocalScale(

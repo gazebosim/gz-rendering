@@ -33,6 +33,9 @@ namespace ignition
     {
       /// \brief Deconstructor
       public: virtual ~AxisVisual() { }
+
+      /// \brief set true to show the axis heads, false otherwise
+      public: virtual void ShowAxisHead(bool b) = 0;
     };
     }
   }

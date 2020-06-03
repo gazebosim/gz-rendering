@@ -35,9 +35,9 @@ namespace ignition
 
       public: virtual ~BaseArrowVisual();
 
-      public: virtual VisualPtr Head() const;
+      public: virtual VisualPtr Head() const override;
 
-      public: virtual VisualPtr Shaft() const;
+      public: virtual VisualPtr Shaft() const override;
 
       protected: virtual void Init();
     };

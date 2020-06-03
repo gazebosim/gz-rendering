@@ -58,14 +58,14 @@ namespace ignition
     template <class T>
     VisualPtr BaseArrowVisual<T>::Head() const
     {
-      return nullptr;
+      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(1));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     VisualPtr BaseArrowVisual<T>::Shaft() const
     {
-      return nullptr;
+      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(0));
     }
 
     //////////////////////////////////////////////////

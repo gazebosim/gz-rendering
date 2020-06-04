@@ -39,7 +39,8 @@ namespace ignition
 
       public: virtual VisualPtr Shaft() const;
 
-      public: virtual void ShowArrowHead(bool b) override;
+      // Documentation inherited
+      public: virtual void ShowArrowHead(bool _b) override;
 
       protected: virtual void Init();
     };
@@ -72,13 +73,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseArrowVisual<T>::ShowArrowHead(bool b)
+    void BaseArrowVisual<T>::ShowArrowHead(bool _b)
     {
       NodePtr child = this->ChildByIndex(1);
       VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
       if (visual)
       {
-        visual->SetVisible(b);
+        visual->SetVisible(_b);
       }
     }
 

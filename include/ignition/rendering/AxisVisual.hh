@@ -35,7 +35,8 @@ namespace ignition
       public: virtual ~AxisVisual() { }
 
       /// \brief set true to show the axis heads, false otherwise
-      public: virtual void ShowAxisHead(bool b) = 0;
+      /// \param[in] _b true to show the axis heads, false otherwise
+      public: virtual void ShowAxisHead(bool _b) = 0;
     };
     }
   }

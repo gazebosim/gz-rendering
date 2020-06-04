@@ -46,7 +46,7 @@ namespace ignition
       public: virtual math::Vector3d LocalScale() const override;
 
       // Documentation inherited.
-      public: void ShowAxisHead(bool b) override;
+      public: void ShowAxisHead(bool _b) override;
     };
 
     //////////////////////////////////////////////////
@@ -83,13 +83,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseAxisVisual<T>::ShowAxisHead(bool b)
+    void BaseAxisVisual<T>::ShowAxisHead(bool _b)
     {
-      for (unsigned int i = 0; i < this->ChildCount(); ++i) {
-
+      for (unsigned int i = 0; i < this->ChildCount(); ++i)
+      {
         auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
               this->ChildByIndex(i));
-        arrow->ShowArrowHead(b);
+        arrow->ShowArrowHead(_b);
       }
     }
 

@@ -70,11 +70,13 @@ void ArrowVisualTest::ArrowVisual(const std::string &_renderEngine)
   VisualPtr child = std::dynamic_pointer_cast<Visual>(node);
   ASSERT_NE(nullptr, child);
   EXPECT_EQ(1u, child->GeometryCount());
+  EXPECT_EQ(node, visual->Shaft());
 
   node = visual->ChildByIndex(1u);
   child = std::dynamic_pointer_cast<Visual>(node);
   ASSERT_NE(nullptr, child);
   EXPECT_EQ(1u, child->GeometryCount());
+  EXPECT_EQ(node, visual->Head());
 
   // Clean up
   engine->DestroyScene(scene);

@@ -31,17 +31,23 @@ namespace ignition
       public virtual ArrowVisual,
       public virtual T
     {
+      /// \brief Constructor
       protected: BaseArrowVisual();
 
+      /// \brief Destructor
       public: virtual ~BaseArrowVisual();
 
-      public: virtual VisualPtr Head() const;
+      // Documentation inherited.
+      public: virtual VisualPtr Head() const override;
 
-      public: virtual VisualPtr Shaft() const;
+      // Documentation inherited.
+      public: virtual VisualPtr Shaft() const override;
 
+      // Documentation inherited.
       public: virtual void ShowArrowHead(bool b) override;
 
-      protected: virtual void Init();
+      // Documentation inherited.
+      protected: virtual void Init() override;
     };
 
     //////////////////////////////////////////////////

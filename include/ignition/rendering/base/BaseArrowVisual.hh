@@ -35,11 +35,13 @@ namespace ignition
 
       public: virtual ~BaseArrowVisual();
 
+      // Documentation inherited.
       public: virtual VisualPtr Head() const override;
 
+      // Documentation inherited.
       public: virtual VisualPtr Shaft() const override;
 
-      protected: virtual void Init();
+      protected: virtual void Init() override;
     };
 
     //////////////////////////////////////////////////

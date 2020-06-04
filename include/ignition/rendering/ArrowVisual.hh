@@ -43,7 +43,8 @@ namespace ignition
       public: virtual VisualPtr Shaft() const = 0;
 
       /// \brief set true to show the arrow head, false otherwise
-      public: virtual void ShowArrowHead(bool b) = 0;
+      /// \param[in] _b true to show the arrow head, false otherwise
+      public: virtual void ShowArrowHead(bool _b) = 0;
     };
     }
   }

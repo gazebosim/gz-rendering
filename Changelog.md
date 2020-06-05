@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Added a method to show the head on arrows and axis
+    * [Pull request #95](https://github.com/ignitionrobotics/ign-rendering/pull/95)
+
 1. Scale BaseAxis properly
     * [Pull request #88](https://github.com/ignitionrobotics/ign-rendering/pull/88)
 

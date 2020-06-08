@@ -262,3 +262,9 @@ void Ogre2Camera::SetFarClipPlane(const double _far)
   BaseCamera::SetFarClipPlane(_far);
   this->ogreCamera->setFarClipDistance(_far);
 }
+
+//////////////////////////////////////////////////
+Ogre::Camera *Ogre2Camera::OgreCamera() const
+{
+  return ogreCamera;
+}

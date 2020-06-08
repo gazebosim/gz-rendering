@@ -97,6 +97,8 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
+      public: Ogre::Camera *OgreCamera() const;
+
       // Documenation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;
 

@@ -532,9 +532,9 @@ MarkerPtr OgreScene::CreateMarkerImpl(unsigned int _id,
 LidarVisualPtr OgreScene::CreateLidarVisualImpl(unsigned int _id,
                                       const std::string &_name)
 {
-  OgreLidarVisualPtr marker(new OgreLidarVisual);
-  bool result = this->InitObject(marker, _id, _name);
-  return (result) ? marker: nullptr;
+  OgreLidarVisualPtr lidar(new OgreLidarVisual);
+  bool result = this->InitObject(lidar, _id, _name);
+  return (result) ? lidar: nullptr;
 }
 
 //////////////////////////////////////////////////

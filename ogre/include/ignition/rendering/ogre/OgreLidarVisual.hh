@@ -20,7 +20,7 @@
 
 #include <memory>
 #include "ignition/rendering/base/BaseLidarVisual.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
+#include "ignition/rendering/ogre/OgreVisual.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
 namespace ignition
@@ -34,7 +34,7 @@ namespace ignition
 
     /// \brief Ogre implementation of a LidarVisual geometry.
     class IGNITION_RENDERING_OGRE_VISIBLE OgreLidarVisual
-      : public BaseLidarVisual<OgreGeometry>
+      : public BaseLidarVisual<OgreVisual>
     {
       /// \brief Constructor
       protected: OgreLidarVisual();
@@ -51,32 +51,18 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
-      // Documentation inherited.
-      public: virtual Ogre::MovableObject *OgreObject() const override;
-
-      // Documentation inherited.
-      public: virtual MaterialPtr Material() const override;
-
-      // Documentation inherited.
-      public: virtual void SetMaterial(
-                           MaterialPtr _material, bool _unique) override;
+      
+      // Documentation inherited
+      public: virtual void Update() override;
 
       // Documentation inherited
-      public: virtual void SetPoint(unsigned int _index,
-                           const ignition::math::Vector3d &_value) override;
-
-      // Documentation inherited
-      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                           const ignition::math::Color &_color) override;
+      public: virtual void OnMsg(std::vector<double> &_msg) override;
 
       // Documentation inherited
       public: virtual void ClearPoints() override;
 
-      // Documentation inherited
-      public: virtual void SetType(const LidarVisualType _lidarVisualType) override;
-
-      // Documentation inherited
-      public: virtual LidarVisualType Type() const override;
+      // TODO REMOVE THIS
+      public: virtual void PrintStatus();
 
       /// \brief Create the LidarVisual geometry in ogre
       private: void Create();

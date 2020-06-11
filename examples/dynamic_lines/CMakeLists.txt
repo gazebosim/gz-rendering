@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-actor-animation)
+project(ignition-rendering-dynamic-lines)
 find_package(ignition-rendering4 REQUIRED)
 
 include_directories(SYSTEM
@@ -24,16 +24,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
 configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
 
-add_executable(actor_animation Main.cc GlutWindow.cc)
+add_executable(dynamic_lines Main.cc GlutWindow.cc)
 
-target_link_libraries(actor_animation
+target_link_libraries(dynamic_lines
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )
 
-add_custom_command(TARGET actor_animation POST_BUILD
+add_custom_command(TARGET dynamic_lines POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
   ${CMAKE_SOURCE_DIR}/media
-  $<TARGET_FILE_DIR:actor_animation>/media)
+  $<TARGET_FILE_DIR:dynamic_lines>/media)

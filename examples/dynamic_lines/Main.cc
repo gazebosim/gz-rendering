@@ -149,40 +149,58 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
   blue->SetShininess(50);
   blue->SetReflectivity(0);
 
-  //create marker visual
-  VisualPtr line = _scene->CreateVisual();
-  LidarVisualPtr mkr = _scene->CreateLidarVisual();
-  mkr->SetType(MarkerType::MT_TRIANGLE_STRIP);
-  mkr->AddPoint(ignition::math::Vector3d(0, 6, 2), ignition::math::Color::Red);
-  mkr->AddPoint(ignition::math::Vector3d(0, 5, 0), ignition::math::Color::Red);
-  mkr->AddPoint(ignition::math::Vector3d(5 , 2, 0), ignition::math::Color::Red);
-  mkr->AddPoint(ignition::math::Vector3d(4, -2, 0), ignition::math::Color::Red);
-  mkr->AddPoint(ignition::math::Vector3d(2, 1, 1), ignition::math::Color::Red);
-  line->AddGeometry(mkr);
-  line->SetLocalPosition(3.0,0,0);
-  mkr->SetMaterial(blue);
-  root->AddChild(line);
+  //create lidar visual
+  std::cout << "CREATING LIDAR NOW\n";
+  LidarVisualPtr lidar = _scene->CreateLidarVisual();
+  std::cout << "CreateLidarVisual called\n";
+  if ( !lidar)
+  {
+    std::cout << "NULLPOINTER IS RETURNED\n";
+  }
+  std::vector<double> pts{10.0, 4.0, 2.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0};
 
 
+  lidar->OnMsg(pts);
+  lidar->SetLocalPosition(3,0,0);
+  
+  
+  lidar->SetMaterial(blue);
+  std::cout << "sending points\n";
+  
+  std::cout << "sent points\n";
+  root->AddChild(lidar);
+  std::cout << "LIDAR CREATED\n";
 
 
   VisualPtr aV = _scene->CreateArrowVisual();
-  aV->SetMaterial(blue);
+  aV->SetMaterial("Default/TransBlue");
   aV->SetLocalPosition(0,0,2);
   root->AddChild(aV);
   AxisVisualPtr axptr = _scene->CreateAxisVisual();
-  axptr->SetLocalPosition(10,10,0);
+  axptr->SetLocalPosition(1,1,0);
   root->AddChild(axptr);
+
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 2.0);
   camera->SetLocalRotation(0.0, 0.5, 0.0);
-  camera->SetImageWidth(800);
-  camera->SetImageHeight(600);
+  camera->SetImageWidth(1600);
+  camera->SetImageHeight(1200);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
+
+  int childCount = root->ChildCount();
+  std::cout << "TOTAL CHILDREN OF ROOT " << childCount <<std::endl;
+  std::stringstream ss;
+  ss << "LidarVisual::" << "(" << std::to_string(lidar->Id()) << ")";
+  std::cout << ss.str() << std::endl;
+
+  
+  std::cout << "Check if it has name " << root->ChildById(lidar->Id()) << std::endl;
+  std::cout << "Check if it has name " << lidar->Name() << std::endl;
+
 }
 
 //////////////////////////////////////////////////

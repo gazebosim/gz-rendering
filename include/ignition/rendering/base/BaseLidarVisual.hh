@@ -45,54 +45,16 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited
-      public: virtual void SetLifetime(const
-                  std::chrono::steady_clock::duration &_lifetime) override;
-
-      // Documentation inherited
-      public: virtual std::chrono::steady_clock::duration Lifetime()
-                  const override;
-
-      // Documentation inherited
-      public: virtual void SetType(const LidarVisualType _lidarVisualType) override;
-
-      // Documentation inherited
-      public: virtual LidarVisualType Type() const override;
-
-      // Documentation inherited
-      public: virtual void SetLayer(int32_t _layer) override;
-
-      // Documentation inherited
-      public: virtual int32_t Layer() const override;
-
-      // Documentation inherited
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
-      public: virtual void AddPoint(double _x,
-                  double _y, double _z,
-                  const ignition::math::Color &_color) override;
+      public: virtual void OnMsg(std::vector<double> &msg);
 
-      // Documentation inherited
-      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                  const ignition::math::Color &_color) override;
+      //Documentation Inherited
+      public: virtual void Update();
 
-      // Documentation inherited
-      public: virtual void SetPoint(unsigned int _index,
-                  const ignition::math::Vector3d &_value) override;
-
-      /// \brief Life time of a LidarVisual
-      protected: std::chrono::steady_clock::duration lifetime =
-          std::chrono::steady_clock::duration::zero();
-
-      /// \brief Layer at which the LidarVisual will reside
-      protected: int32_t layer = 0;
-
-      /// \brief Flag to indicate if visual needs to be updated
-      protected: bool lidarVisualDirty = true;
-
-      /// \brief LidarVisual type
-      protected: LidarVisualType lidarVisualType =
-          ignition::rendering::LidarVisualType::MT_NONE;
+      //Documentation Inherited
+      public: virtual void Init();
     };
 
     /////////////////////////////////////////////////
@@ -107,52 +69,6 @@ namespace ignition
     template <class T>
     BaseLidarVisual<T>::~BaseLidarVisual()
     {
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseLidarVisual<T>::SetLifetime(
-        const std::chrono::steady_clock::duration &_lifetime)
-    {
-      this->lifetime = _lifetime;
-      this->lidarVisualDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    std::chrono::steady_clock::duration BaseLidarVisual<T>::Lifetime() const
-    {
-      return this->lifetime;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseLidarVisual<T>::SetLayer(int32_t _layer)
-    {
-      this->layer = _layer;
-      this->lidarVisualDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    int32_t BaseLidarVisual<T>::Layer() const
-    {
-      return this->layer;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseLidarVisual<T>::SetType(const LidarVisualType _lidarVisualType)
-    {
-      this->lidarVisualType = _lidarVisualType;
-      this->lidarVisualDirty = true;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    LidarVisualType BaseLidarVisual<T>::Type() const
-    {
-      return this->lidarVisualType;
     }
 
     /////////////////////////////////////////////////
@@ -178,27 +94,25 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::AddPoint(const ignition::math::Vector3d &,
-                                 const ignition::math::Color &)
-    {
-        // no op
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseLidarVisual<T>::AddPoint(double _x, double _y, double _z,
-                  const ignition::math::Color &_color)
-    {
-      this->AddPoint(ignition::math::Vector3d(_x, _y, _z), _color);
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseLidarVisual<T>::SetPoint(unsigned int,
-                  const ignition::math::Vector3d &)
+    void BaseLidarVisual<T>::Update()
     {
       // no op
     }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseLidarVisual<T>::OnMsg(std::vector<double> &)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseLidarVisual<T>::Init()
+    {
+      T::Init();
+    }
+
     }
   }
 }

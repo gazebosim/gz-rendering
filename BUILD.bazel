@@ -206,7 +206,7 @@ cc_binary(
       "src/WireBox.cc",
     ] + public_headers,
     includes = ["include"],
-    linkopts = ["-Wl,-soname,libign_rendering.so"],
+    linkopts = ["-Wl,-soname,libign_rendering.so", "-lX11"],
     linkshared =  True,
     visibility = [],
     deps = [

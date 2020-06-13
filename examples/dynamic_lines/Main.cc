@@ -157,7 +157,7 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
   {
     std::cout << "NULLPOINTER IS RETURNED\n";
   }
-  std::vector<double> pts{10.0, 4.0, 2.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0};
+  std::vector<double> pts{10.0, 4.0, 2.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10};
 
 
   lidar->OnMsg(pts);

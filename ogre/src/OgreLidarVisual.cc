@@ -146,7 +146,7 @@ void OgreLidarVisual::Update()
   this->dataPtr->receivedMsg = false;
 
   unsigned int vertCount = 1;
-  double minRange = 1;
+  double minRange = 0.03;
   double maxRange = 30;
   double verticalAngle = 0.0;
 
@@ -161,22 +161,21 @@ void OgreLidarVisual::Update()
     {
       // Ray Strips fill in between the line areas that have intersected an object
       OgreDynamicLines *line = new OgreDynamicLines(MT_TRIANGLE_STRIP);
-      
-      //line->setMaterial(this->Scene()->Material("Default/TransBlue")->Clone());
+      line->setMaterial("Default/TransBlue");
       Ogre::MovableObject *mv = dynamic_cast<Ogre::MovableObject *>(line);
       this->Node()->attachObject(mv);
       this->dataPtr->rayStrips.push_back(line);
       
       
       OgreDynamicLines *line2 = new OgreDynamicLines(MT_TRIANGLE_STRIP);
-      //line2->setMaterial("Default/TransRed");
+      line2->setMaterial("Default/TransRed");
       Ogre::MovableObject *mv2 = dynamic_cast<Ogre::MovableObject *>(line2);
       this->Node()->attachObject(mv2);
       this->dataPtr->noHitRayStrips.push_back(line2);
 
       
-      OgreDynamicLines *line3 = new OgreDynamicLines(MT_TRIANGLE_STRIP);
-      //line3->setMaterial("Default/TransGreen");      
+      OgreDynamicLines *line3 = new OgreDynamicLines(MT_TRIANGLE_FAN);
+      line3->setMaterial("Default/TransGreen");      
       Ogre::MovableObject *mv3 = dynamic_cast<Ogre::MovableObject *>(line3);
       this->Node()->attachObject(mv3);
       this->dataPtr->deadZoneRayFans.push_back(line3);
@@ -185,8 +184,8 @@ void OgreLidarVisual::Update()
 
 
       
-      OgreDynamicLines *line4 = new OgreDynamicLines(MT_LINE_STRIP);
-      //line4->setMaterial("Default/TransYellow");      
+      OgreDynamicLines *line4 = new OgreDynamicLines(MT_LINE_LIST);
+      line4->setMaterial("Default/TransYellow");      
       Ogre::MovableObject *mv4 = dynamic_cast<Ogre::MovableObject *>(line4);
       this->Node()->attachObject(mv4);
       this->dataPtr->rayLines.push_back(line4);
@@ -215,11 +214,13 @@ void OgreLidarVisual::Update()
       }
 
       bool inf = std::isinf(r);
+      
       ignition::math::Quaterniond ray(
         ignition::math::Vector3d(0.0, 0.0, angle));
 
       ignition::math::Vector3d axis = offset.Rot() * ray *
         ignition::math::Vector3d(1.0, 0.0, 0.0);
+
       // Check for infinite range, which indicates the ray did not
       // intersect an object.
       double hitRange = inf ? 0 : r;
@@ -239,6 +240,7 @@ void OgreLidarVisual::Update()
       // Draw the lines and strips that represent each simulated ray
       if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
       {
+        
         this->dataPtr->rayLines[j]->AddPoint(startPt);
         this->dataPtr->rayLines[j]->AddPoint(inf ? noHitPt : pt);
         
@@ -251,7 +253,7 @@ void OgreLidarVisual::Update()
       }
       else
       {
-        
+                
         this->dataPtr->rayLines[j]->SetPoint(i*2, startPt);
         this->dataPtr->rayLines[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
         
@@ -268,6 +270,12 @@ void OgreLidarVisual::Update()
         this->dataPtr->deadZoneRayFans[j]->AddPoint(startPt);
       else
         this->dataPtr->deadZoneRayFans[j]->SetPoint(i+1, startPt);
+      
+      // Update all the DynamicLines after adding points
+      this->dataPtr->rayLines[j]->Update();
+      this->dataPtr->rayStrips[j]->Update();
+      this->dataPtr->noHitRayStrips[j]->Update();
+      this->dataPtr->deadZoneRayFans[j]->Update();
 
 /// HOW TO DO THIS??
 

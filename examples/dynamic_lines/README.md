@@ -5,7 +5,7 @@ Demo of skeleton animation.
 ## Build
 
 ~~~
-cd examples/actor_animation
+cd examples/dynamic_lines
 mkdir build
 cd build
 cmake ..
@@ -16,9 +16,9 @@ make
 
 By default, the demo uses the Ogre 1 engine:
 
-    ./actor_animation
+    ./dynamic_lines
 
-It's also possible to use Ogre 2, i.e.
+It's also possible to use Ogre 2, i.e. ( Currently disabled)
 
-    ./actor_animation ogre2
+    ./dynamic_lines ogre2
 

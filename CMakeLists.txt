@@ -50,7 +50,7 @@ ign_find_package(FreeImage VERSION 3.9
 #--------------------------------------
 # Find OpenGL
 ign_find_package(OpenGL
-  REQUIRED_BY ogre
+  REQUIRED_BY ogre ogre2
   PKGCONFIG gl)
 
 if (OpenGL_FOUND)
@@ -78,14 +78,14 @@ endif()
 
 #--------------------------------------
 # Find OGRE2
-# ign_find_package(IgnOGRE2 VERSION 2.1.0
-#     COMPONENTS HlmsPbs HlmsUnlit Overlay
-#     REQUIRED_BY ogre2
-#     PRIVATE_FOR ogre2)
+ign_find_package(IgnOGRE2 VERSION 2.1.0
+    COMPONENTS HlmsPbs HlmsUnlit Overlay
+    REQUIRED_BY ogre2
+    PRIVATE_FOR ogre2)
 
-# if (OGRE2_FOUND)
-#   set(HAVE_OGRE2 TRUE)
-# endif()
+if (OGRE2_FOUND)
+  set(HAVE_OGRE2 TRUE)
+endif()
 
 #--------------------------------------
 # Find dependencies that we ignore for Visual Studio
@@ -126,9 +126,9 @@ if (HAVE_OPTIX)
   list(APPEND RENDERING_COMPONENTS optix)
 endif()
 
-# if (HAVE_OGRE2)
-#   list(APPEND RENDERING_COMPONENTS ogre2)
-# endif()
+if (HAVE_OGRE2)
+  list(APPEND RENDERING_COMPONENTS ogre2)
+endif()
 
 ign_configure_build(QUIT_IF_BUILD_ERRORS
     COMPONENTS ${RENDERING_COMPONENTS})

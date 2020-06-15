@@ -1,0 +1,78 @@
+/*
+ * Copyright (C) 2020 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include <ignition/common/Console.hh>
+
+#include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
+#include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2Mesh.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+
+// class ignition::rendering::Ogre2LidarVisualPrivate
+// {
+//   /// \brief Marker material
+//   public: Ogre2MaterialPtr material = nullptr;
+
+//   /// \brief Flag to indicate whether or not this mesh should be
+//   /// responsible for destroying the material
+//   public: bool ownsMaterial = false;
+
+//   /// \brief Mesh Object for primitive shapes
+//   public: Ogre2MeshPtr mesh = nullptr;
+
+//   /// \brief DynamicLines Object to display
+//   public: std::shared_ptr<Ogre2DynamicRenderable> dynamicRenderable;
+// };
+
+using namespace ignition;
+using namespace rendering;
+
+//////////////////////////////////////////////////
+Ogre2LidarVisual::Ogre2LidarVisual()
+//   : dataPtr(new Ogre2LidarVisualPrivate)
+{
+	// BaseLidarVisual::Init();
+
+}
+
+//////////////////////////////////////////////////
+Ogre2LidarVisual::~Ogre2LidarVisual()
+{
+	// no ops
+}
+
+//////////////////////////////////////////////////
+void Ogre2LidarVisual::Init()
+{
+	BaseLidarVisual::Init();
+}
+
+//////////////////////////////////////////////////
+void Ogre2LidarVisual::PreRender()
+{
+	// no ops
+}
+
+
+//////////////////////////////////////////////////
+void Ogre2LidarVisual::Destroy()
+{
+	// no ops
+}
+

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Open Source Robotics Foundation
+ * Copyright (C) 2020 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,28 +167,28 @@ void OgreLidarVisual::Update()
       this->dataPtr->rayStrips.push_back(line);
       
       
-      OgreDynamicLines *line2 = new OgreDynamicLines(MT_TRIANGLE_STRIP);
-      line2->setMaterial("Default/TransRed");
-      Ogre::MovableObject *mv2 = dynamic_cast<Ogre::MovableObject *>(line2);
-      this->Node()->attachObject(mv2);
-      this->dataPtr->noHitRayStrips.push_back(line2);
+      line = new OgreDynamicLines(MT_TRIANGLE_STRIP);
+      line->setMaterial("Default/TransRed");
+      mv = dynamic_cast<Ogre::MovableObject *>(line);
+      this->Node()->attachObject(mv);
+      this->dataPtr->noHitRayStrips.push_back(line);
 
       
-      OgreDynamicLines *line3 = new OgreDynamicLines(MT_TRIANGLE_FAN);
-      line3->setMaterial("Default/TransGreen");      
-      Ogre::MovableObject *mv3 = dynamic_cast<Ogre::MovableObject *>(line3);
-      this->Node()->attachObject(mv3);
-      this->dataPtr->deadZoneRayFans.push_back(line3);
+      line = new OgreDynamicLines(MT_TRIANGLE_FAN);
+      line->setMaterial("Default/TransGreen");      
+      mv = dynamic_cast<Ogre::MovableObject *>(line);
+      this->Node()->attachObject(mv);
+      this->dataPtr->deadZoneRayFans.push_back(line);
       this->dataPtr->deadZoneRayFans[j]->AddPoint(ignition::math::Vector3d::Zero);
       
 
 
       
-      OgreDynamicLines *line4 = new OgreDynamicLines(MT_LINE_LIST);
-      line4->setMaterial("Default/TransYellow");      
-      Ogre::MovableObject *mv4 = dynamic_cast<Ogre::MovableObject *>(line4);
-      this->Node()->attachObject(mv4);
-      this->dataPtr->rayLines.push_back(line4);
+      line = new OgreDynamicLines(MT_LINE_LIST);
+      line->setMaterial("Default/TransYellow");      
+      mv = dynamic_cast<Ogre::MovableObject *>(line);
+      this->Node()->attachObject(mv);
+      this->dataPtr->rayLines.push_back(line);
       
 
       this->SetVisibilityFlags(0x0FFFFFFF);

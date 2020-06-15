@@ -15,13 +15,14 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGRELIDARVISUAL_HH_
-#define IGNITION_RENDERING_OGRE_OGRELIDARVISUAL_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRELIDARVISUAL_HH_
+#define IGNITION_RENDERING_OGRE2_OGRELIDARVISUAL_HH_
 
 #include <memory>
 #include "ignition/rendering/base/BaseLidarVisual.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 
 namespace ignition
 {
@@ -30,17 +31,17 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
-    class OgreLidarVisualPrivate;
+    // class Ogre2LidarVisualPrivate;
 
-    /// \brief Ogre implementation of a LidarVisual geometry.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreLidarVisual
-      : public BaseLidarVisual<OgreVisual>
+    /// \brief Ogre 2.x implementation of a marker geometry.
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2LidarVisual
+    : public BaseLidarVisual<Ogre2Visual>
     {
       /// \brief Constructor
-      protected: OgreLidarVisual();
+      protected: Ogre2LidarVisual();
 
       /// \brief Destructor
-      public: virtual ~OgreLidarVisual();
+      public: virtual ~Ogre2LidarVisual();
 
       // Documentation inherited.
       public: virtual void Init() override;
@@ -51,27 +52,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
-      
-      // Documentation inherited
-      public: virtual void Update() override;
+      /// \brief Marker should only be created by scene.
+      private: friend class Ogre2Scene;
 
-      // Documentation inherited
-      public: virtual void OnMsg(std::vector<double> &_msg) override;
-
-      // Documentation inherited
-      public: virtual void ClearPoints() override;
-
-      // TODO REMOVE THIS
-      public: virtual void PrintStatus();
-
-      /// \brief Create the LidarVisual geometry in ogre
-      private: void Create();
-
-      /// \brief LidarVisual should only be created by scene.
-      private: friend class OgreScene;
-
-      /// \brief Private data class
-      private: std::unique_ptr<OgreLidarVisualPrivate> dataPtr;
     };
     }
   }

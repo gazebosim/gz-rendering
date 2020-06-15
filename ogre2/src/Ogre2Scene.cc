@@ -26,6 +26,7 @@
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
+#include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
@@ -383,6 +384,15 @@ MarkerPtr Ogre2Scene::CreateMarkerImpl(unsigned int _id,
   Ogre2MarkerPtr marker(new Ogre2Marker);
   bool result = this->InitObject(marker, _id, _name);
   return (result) ? marker: nullptr;
+}
+
+//////////////////////////////////////////////////
+LidarVisualPtr Ogre2Scene::CreateLidarVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2LidarVisualPtr lidar(new Ogre2LidarVisual);
+  bool result = this->InitObject(lidar, _id, _name);
+  return (result) ? lidar: nullptr;
 }
 
 //////////////////////////////////////////////////

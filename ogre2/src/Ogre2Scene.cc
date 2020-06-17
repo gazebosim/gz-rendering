@@ -180,6 +180,8 @@ bool Ogre2Scene::InitImpl()
   this->CreateStores();
   this->CreateMeshFactory();
 
+  this->SetupParticles();
+
   return true;
 }
 
@@ -523,6 +525,15 @@ void Ogre2Scene::CreateStores()
   this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
   this->visuals = Ogre2VisualStorePtr(new Ogre2VisualStore);
   this->materials = Ogre2MaterialMapPtr(new Ogre2MaterialMap);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::SetupParticles()
+{
+  Ogre::ParticleSystem *ps;
+  ps = this->ogreSceneManager->createParticleSystem("Examples/PurpleFountain");
+  this->ogreSceneManager->getRootSceneNode()->attachObject(ps);
+  ps->setVisible(true);
 }
 
 //////////////////////////////////////////////////

@@ -235,6 +235,9 @@ namespace ignition
       /// \brief Create the vaiours storage objects
       private: void CreateStores();
 
+      /// \brief Create particle system.
+      private: void SetupParticles();
+
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();
 

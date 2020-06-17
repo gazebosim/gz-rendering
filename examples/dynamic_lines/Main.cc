@@ -162,7 +162,8 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
 
   lidar->OnMsg(pts);
   lidar->SetLocalPosition(3,0,0);
-  
+  std::vector<double> pt2{2.0, 2.0, 2.0, 2.0, INFINITY, INFINITY, INFINITY, 10};
+  lidar->OnMsg(pt2);
   
   lidar->SetMaterial(blue);
   std::cout << "sending points\n";

@@ -22,6 +22,7 @@
 #include "ignition/rendering/base/BaseLidarVisual.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreScene.hh"
 
 namespace ignition
 {
@@ -32,7 +33,7 @@ namespace ignition
     // Forward declaration
     class OgreLidarVisualPrivate;
 
-    /// \brief Ogre implementation of a LidarVisual geometry.
+    /// \brief Ogre implementation of a Lidar Visual.
     class IGNITION_RENDERING_OGRE_VISIBLE OgreLidarVisual
       : public BaseLidarVisual<OgreVisual>
     {
@@ -56,18 +57,19 @@ namespace ignition
       public: virtual void Update() override;
 
       // Documentation inherited
-      public: virtual void OnMsg(std::vector<double> &_msg) override;
+      public: virtual void OnMsg(std::vector<double> &_msg);
 
       // Documentation inherited
-      public: virtual void ClearPoints() override;
+      public: virtual void ClearPoints();
 
-      // TODO REMOVE THIS
-      public: virtual void PrintStatus();
+      /// \brief Get the number of points stored in last laser message
+      /// \return Number of Points stored in last laser message
+      public: virtual unsigned int GetPointCount();
 
-      /// \brief Create the LidarVisual geometry in ogre
+      /// \brief Create the Lidar Visual in ogre
       private: void Create();
 
-      /// \brief LidarVisual should only be created by scene.
+      /// \brief Lidar Visual should only be created by scene.
       private: friend class OgreScene;
 
       /// \brief Private data class

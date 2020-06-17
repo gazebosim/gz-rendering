@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ * 
  */
 
 #include <ignition/common/Console.hh>
@@ -26,16 +26,16 @@
 class ignition::rendering::OgreLidarVisualPrivate
 {
   /// \brief Non Hitting DynamicLines Object to display
-  public: std::vector<OgreDynamicLines *> noHitRayStrips;
+  public: std::vector<std::shared_ptr<OgreDynamicLines>> noHitRayStrips;
 
   /// \brief Hitting DynamicLines Object to display
-  public: std::vector<OgreDynamicLines *> rayStrips;
+  public: std::vector<std::shared_ptr<OgreDynamicLines>> rayStrips;
 
   /// \brief Dead Zone Geometry DynamicLines Object to display
-  public: std::vector<OgreDynamicLines *> deadZoneRayFans;
+  public: std::vector<std::shared_ptr<OgreDynamicLines>> deadZoneRayFans;
 
   /// \brief Lidar Ray DynamicLines Object to display
-  public: std::vector<OgreDynamicLines *> rayLines;
+  public: std::vector<std::shared_ptr<OgreDynamicLines>> rayLines;
 
   /// \brief The current lidar data message
   public: std::vector<double> laserMsg;
@@ -72,26 +72,26 @@ void OgreLidarVisual::Destroy()
   
   for (auto ray : this->dataPtr->noHitRayStrips)
   {
-    ray->Clear();
-    delete ray;
+    ray.get()->Clear();
+    ray.reset();
   }
 
   for (auto ray : this->dataPtr->rayStrips)
   {
-    ray->Clear();
-    delete ray;
+    ray.get()->Clear();
+    ray.reset();
   }
 
   for (auto ray : this->dataPtr->rayLines)
   {
-    ray->Clear();
-    delete ray;
+    ray.get()->Clear();
+    ray.reset();
   }
 
   for (auto ray : this->dataPtr->deadZoneRayFans)
   {
-    ray->Clear();
-    delete ray;
+    ray.get()->Clear();
+    ray.reset();
   }
 
   this->ClearPoints();
@@ -120,6 +120,7 @@ void OgreLidarVisual::ClearPoints()
   this->dataPtr->deadZoneRayFans.clear();
   this->dataPtr->rayLines.clear();
   this->dataPtr->rayStrips.clear();
+  this->dataPtr->laserMsg.clear();
 }
 
 
@@ -129,7 +130,7 @@ void OgreLidarVisual::OnMsg(std::vector<double> &_msg)
   this->dataPtr->laserMsg = _msg;
   this->dataPtr->receivedMsg = true;
   this->Update();
-  this->PrintStatus();
+  
 }
 
 //////////////////////////////////////////////////
@@ -160,34 +161,34 @@ void OgreLidarVisual::Update()
     if (j+1 > this->dataPtr->rayStrips.size())
     {
       // Ray Strips fill in between the line areas that have intersected an object
-      OgreDynamicLines *line = new OgreDynamicLines(MT_TRIANGLE_STRIP);
-      line->setMaterial("Default/TransBlue");
-      Ogre::MovableObject *mv = dynamic_cast<Ogre::MovableObject *>(line);
-      this->Node()->attachObject(mv);
+      std::shared_ptr<OgreDynamicLines> line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_TRIANGLE_STRIP));
+      line->setMaterial("Lidar/BlueLaser");
+      std::shared_ptr<Ogre::MovableObject> mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
+      this->Node()->attachObject(mv.get());
       this->dataPtr->rayStrips.push_back(line);
       
       
-      line = new OgreDynamicLines(MT_TRIANGLE_STRIP);
-      line->setMaterial("Default/TransRed");
-      mv = dynamic_cast<Ogre::MovableObject *>(line);
-      this->Node()->attachObject(mv);
+      line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_TRIANGLE_STRIP));
+      line->setMaterial("Lidar/LightBlueLaser");
+      mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
+      this->Node()->attachObject(mv.get());
       this->dataPtr->noHitRayStrips.push_back(line);
 
       
-      line = new OgreDynamicLines(MT_TRIANGLE_FAN);
-      line->setMaterial("Default/TransGreen");      
-      mv = dynamic_cast<Ogre::MovableObject *>(line);
-      this->Node()->attachObject(mv);
+      line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_TRIANGLE_FAN));
+      line->setMaterial("Lidar/BlackTransparent");      
+      mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
+      this->Node()->attachObject(mv.get());
       this->dataPtr->deadZoneRayFans.push_back(line);
       this->dataPtr->deadZoneRayFans[j]->AddPoint(ignition::math::Vector3d::Zero);
       
 
 
       
-      line = new OgreDynamicLines(MT_LINE_LIST);
-      line->setMaterial("Default/TransYellow");      
-      mv = dynamic_cast<Ogre::MovableObject *>(line);
-      this->Node()->attachObject(mv);
+      line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_LINE_LIST));
+      line->setMaterial("Lidar/Blue");      
+      mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
+      this->Node()->attachObject(mv.get());
       this->dataPtr->rayLines.push_back(line);
       
 
@@ -240,7 +241,7 @@ void OgreLidarVisual::Update()
       // Draw the lines and strips that represent each simulated ray
       if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
       {
-        
+
         this->dataPtr->rayLines[j]->AddPoint(startPt);
         this->dataPtr->rayLines[j]->AddPoint(inf ? noHitPt : pt);
         
@@ -253,7 +254,7 @@ void OgreLidarVisual::Update()
       }
       else
       {
-                
+
         this->dataPtr->rayLines[j]->SetPoint(i*2, startPt);
         this->dataPtr->rayLines[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
         
@@ -277,48 +278,15 @@ void OgreLidarVisual::Update()
       this->dataPtr->noHitRayStrips[j]->Update();
       this->dataPtr->deadZoneRayFans[j]->Update();
 
-/// HOW TO DO THIS??
-
       angle += angleStep;
     }
-    // verticalAngle += this->dataPtr->laserMsg->scan().vertical_angle_step();
+    //verticalAngle += this->dataPtr->laserMsg->scan().vertical_angle_step();
   }
 
 }
 
-void OgreLidarVisual::PrintStatus()
+//////////////////////////////////////////////////
+unsigned int OgreLidarVisual::GetPointCount()
 {
-  
-  std::cerr << "Number of rayStrips" << this->dataPtr->rayStrips.size()<<std::endl;
-  for( int i = 0; i < this->dataPtr->rayStrips.size(); ++i)
-  {
-    std::cerr << i << ") "<< this->dataPtr->rayStrips[i]->PointCount()<<std::endl;
-  }
-
-
-
-  std::cerr << "Number of rayLines" << this->dataPtr->rayLines.size()<<std::endl;
-  for( int i = 0; i < this->dataPtr->rayLines.size(); ++i)
-  {
-    std::cerr << i << ") "<< this->dataPtr->rayLines[i]->PointCount()<<std::endl;
-  }
-
-
-  std::cerr << "Number of noHitRayStrips" << this->dataPtr->noHitRayStrips.size()<<std::endl;
-  for( int i = 0; i < this->dataPtr->noHitRayStrips.size(); ++i)
-  {
-    std::cerr << i << ") "<< this->dataPtr->noHitRayStrips[i]->PointCount()<<std::endl;
-  }
-
-
-
-  std::cerr << "Number of deadZoneRayFans" << this->dataPtr->deadZoneRayFans.size()<<std::endl;
-  for( int i = 0; i < this->dataPtr->deadZoneRayFans.size(); ++i)
-  {
-    std::cerr << i << ") "<< this->dataPtr->deadZoneRayFans[i]->PointCount()<<std::endl;
-  }
-
-
-  std::cerr << "Number of objects attached to this node " << this->ogreNode->numAttachedObjects()<<std::endl;
-
+  return this->dataPtr->laserMsg.size();
 }

@@ -530,8 +530,10 @@ void Ogre2Scene::CreateStores()
 //////////////////////////////////////////////////
 void Ogre2Scene::SetupParticles()
 {
+  // set nonvisible timeout.
+  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
   Ogre::ParticleSystem *ps;
-  ps = this->ogreSceneManager->createParticleSystem("Examples/PurpleFountain");
+  ps = this->ogreSceneManager->createParticleSystem("Examples/Smoke");
   this->ogreSceneManager->getRootSceneNode()->attachObject(ps);
   ps->setVisible(true);
 }

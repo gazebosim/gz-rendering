@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Open Source Robotics Foundation
+ * Copyright (C) 2020 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,8 @@
 namespace ir = ignition::rendering;
 namespace ic = ignition::common;
 
-/// \brief Run the demo and render the scene from the cameras
+/// \brief Run the demo and display Lidar Visual
 /// \param[in] _cameras Cameras in the scene
-/// \param[in] _visuals Actor visuals
-/// \param[in] _skel Actor skeleton
-void run(std::vector<ir::CameraPtr> _cameras,
-    const std::vector<ir::VisualPtr> &_visuals,
-    ic::SkeletonPtr _skel);
+void run(std::vector<ir::CameraPtr> _cameras);
 
 #endif

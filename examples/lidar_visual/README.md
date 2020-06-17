@@ -1,11 +1,11 @@
 # Actor animation
 
-Demo of skeleton animation.
+Demo of a Lidar Visualisation.
 
 ## Build
 
 ~~~
-cd examples/dynamic_lines
+cd examples/lidar_visual
 mkdir build
 cd build
 cmake ..
@@ -16,9 +16,9 @@ make
 
 By default, the demo uses the Ogre 1 engine:
 
-    ./dynamic_lines
+    ./lidar_visual
 
 It's also possible to use Ogre 2, i.e. ( Currently disabled)
 
-    ./dynamic_lines ogre2
+    ./lidar_visual ogre2
 

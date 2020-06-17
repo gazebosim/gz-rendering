@@ -44,8 +44,7 @@ const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
-    common::SkeletonPtr &_skel)
+void buildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
@@ -58,67 +57,6 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
   light0->SetDiffuseColor(0.8, 0.8, 0.8);
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
-
-  // create a visual for the actor, attach mesh and get skeleton
-  // Skeleton will be animated by GlutWindow
-
-  //! [create mesh]
-  ignmsg << "Creating mesh with animations..." << std::endl;
-  MeshDescriptor descriptor;
-  descriptor.meshName = common::joinPaths(RESOURCE_PATH, "walk.dae");
-  common::MeshManager *meshManager = common::MeshManager::Instance();
-  descriptor.mesh = meshManager->Load(descriptor.meshName);
-  //! [create mesh]
-
-  // add bvh animation
-  std::string bvhFile = common::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
-  double scale = 0.055;
-  _skel = descriptor.mesh->MeshSkeleton();
-  _skel->AddBvhAnimation(bvhFile, scale);
-  if (_skel->AnimationCount() == 0)
-  {
-    ignerr << "Failed to load animation." << std::endl;
-    return;
-  }
-  ignmsg << "Loaded animations: " << std::endl;
-  for (unsigned int i = 0; i < _skel->AnimationCount(); ++i)
-    ignmsg << "  * " << _skel->Animation(i)->Name() << std::endl;
-
-  unsigned int size = 25;
-  double halfSize = size * 0.5;
-  unsigned int count = 0;
-  ignmsg << "Creating " << size*size << " meshes with skeleton animation"
-         << std::endl;
-  for (unsigned int i = 0; i < size; ++i)
-  {
-    double x = i + 3;
-    for (unsigned int j = 0; j < size; ++j)
-    {
-      double y = halfSize - j;
-      //! [create a visual for the actor]
-      std::string actorName = "actor" + std::to_string(count++);
-      VisualPtr actorVisual = _scene->CreateVisual(actorName);
-
-      actorVisual->SetLocalPosition(x, y, 0);
-      actorVisual->SetLocalRotation(0, 0, 3.14);
-      //! [create a visual for the actor]
-
-      //! [check skeleton]
-      auto mesh = _scene->CreateMesh(descriptor);
-      if (!mesh)
-      {
-        std::cerr << "Failed to load mesh with animation." << std::endl;
-        return;
-      }
-      //! [check skeleton]
-      //! [added mesh]
-      actorVisual->AddGeometry(mesh);
-      root->AddChild(actorVisual);
-      //! [added mesh]
-
-      _visuals.push_back(actorVisual);
-    }
-  }
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();
@@ -140,46 +78,17 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
     root->AddChild(grid);
   }
 
-
-// create blue material
-  MaterialPtr blue = _scene->CreateMaterial();
-  blue->SetAmbient(0.0, 0.0, 0.3);
-  blue->SetDiffuse(0.0, 0.0, 0.8);
-  blue->SetSpecular(0.5, 0.5, 0.5);
-  blue->SetShininess(50);
-  blue->SetReflectivity(0);
-
   //create lidar visual
-  std::cout << "CREATING LIDAR NOW\n";
   LidarVisualPtr lidar = _scene->CreateLidarVisual();
-  std::cout << "CreateLidarVisual called\n";
+
   if ( !lidar)
   {
     std::cout << "NULLPOINTER IS RETURNED\n";
   }
   std::vector<double> pts{10.0, 4.0, 2.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10};
-
-
   lidar->OnMsg(pts);
   lidar->SetLocalPosition(3,0,0);
-  std::vector<double> pt2{2.0, 2.0, 2.0, 2.0, INFINITY, INFINITY, INFINITY, 10};
-  lidar->OnMsg(pt2);
-  
-  lidar->SetMaterial(blue);
-  std::cout << "sending points\n";
-  
-  std::cout << "sent points\n";
   root->AddChild(lidar);
-  std::cout << "LIDAR CREATED\n";
-
-
-  VisualPtr aV = _scene->CreateArrowVisual();
-  aV->SetMaterial("Default/TransBlue");
-  aV->SetLocalPosition(0,0,2);
-  root->AddChild(aV);
-  AxisVisualPtr axptr = _scene->CreateAxisVisual();
-  axptr->SetLocalPosition(1,1,0);
-  root->AddChild(axptr);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
@@ -192,21 +101,10 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 
-  int childCount = root->ChildCount();
-  std::cout << "TOTAL CHILDREN OF ROOT " << childCount <<std::endl;
-  std::stringstream ss;
-  ss << "LidarVisual::" << "(" << std::to_string(lidar->Id()) << ")";
-  std::cout << ss.str() << std::endl;
-
-  
-  std::cout << "Check if it has name " << root->ChildById(lidar->Id()) << std::endl;
-  std::cout << "Check if it has name " << lidar->Name() << std::endl;
-
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName,
-    std::vector<VisualPtr> &_visuals, common::SkeletonPtr &_skel)
+CameraPtr createCamera(const std::string &_engineName)
 {
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName);
@@ -217,7 +115,7 @@ CameraPtr createCamera(const std::string &_engineName,
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  buildScene(scene, _visuals, _skel);
+  buildScene(scene);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
@@ -251,7 +149,7 @@ int main(int _argc, char** _argv)
     std::cout << "Starting engine [" << engineName << "]" << std::endl;
     try
     {
-      CameraPtr camera = createCamera(engineName, visuals, skel);
+      CameraPtr camera = createCamera(engineName);
       if (camera)
       {
         cameras.push_back(camera);
@@ -262,6 +160,6 @@ int main(int _argc, char** _argv)
       std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }
-  run(cameras, visuals, skel);
+  run(cameras);
   return 0;
 }

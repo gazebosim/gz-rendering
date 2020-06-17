@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Open Source Robotics Foundation
+ * Copyright (C) 2020 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,6 @@
 
 #include <ignition/math/Matrix4.hh>
 #include <ignition/common/Console.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonAnimation.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/OrbitViewController.hh>
@@ -60,15 +57,7 @@ ir::CameraPtr g_camera;
 ir::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
-std::vector<ir::VisualPtr> g_visuals;
-std::vector<ir::VisualPtr> g_allVisuals;
-ic::SkeletonPtr g_skel;
-ic::SkeletonAnimation *g_skelAnim;
-unsigned int g_animIdx = 0;
 bool g_updateAll = false;
-bool g_manualBoneUpdate = false;
-bool g_rootBoneWeight = 1.0;
-bool g_actorUpdateDirty = true;
 std::chrono::steady_clock::duration g_time{0};
 std::chrono::steady_clock::time_point g_startTime;
 std::chrono::steady_clock::time_point prevUpdateTime;
@@ -243,146 +232,6 @@ void handleMouse()
   }
 }
 
-//////////////////////////////////////////////////
-void updatePose(double _time)
-{
-  // manually update the bone pose
-  for (auto &v : g_visuals)
-  {
-    std::map<std::string, ignition::math::Matrix4d> animFrames;
-    animFrames = g_skelAnim->PoseAt(_time, true);
-    std::map<std::string, ignition::math::Matrix4d> skinFrames;
-    for (auto pair : animFrames)
-    {
-      std::string animNodeName = pair.first;
-      auto animTf = pair.second;
-
-      //! [update pose]
-      std::string skinName =
-          g_skel->NodeNameAnimToSkin(g_animIdx, animNodeName);
-      ignition::math::Matrix4d skinTf =
-              g_skel->AlignTranslation(g_animIdx, animNodeName)
-              * animTf * g_skel->AlignRotation(g_animIdx, animNodeName);
-      //! [update pose]
-
-      skinFrames[skinName] = skinTf;
-    }
-
-    // set bone transforms
-    ir::MeshPtr mesh =
-        std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
-    mesh->SetSkeletonLocalTransforms(skinFrames);
-  }
-}
-
-//////////////////////////////////////////////////
-void updateTime(double _time)
-{
-  // set time to advance animation
-  for (auto &v : g_visuals)
-  {
-    ir::MeshPtr mesh =
-        std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
-    mesh->UpdateSkeletonAnimation(
-        std::chrono::duration_cast<std::chrono::steady_clock::duration>(
-        std::chrono::duration<double>(_time)));
-  }
-}
-
-//////////////////////////////////////////////////
-void updateActor()
-{
-  g_time = std::chrono::steady_clock::now() - g_startTime;
-  auto seconds =
-      std::chrono::duration_cast<std::chrono::milliseconds>(g_time).count() /
-      1000.0;
-
-  g_skelAnim = g_skel->Animation(g_animIdx);
-
-  // change detected due to key press
-  if (g_actorUpdateDirty)
-  {
-    // disable all auto animations
-    for (auto &v : g_allVisuals)
-    {
-      ir::MeshPtr mesh =
-          std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
-      for (unsigned int i = 0; i < g_skel->AnimationCount(); ++i)
-      {
-        auto anim = g_skel->Animation(i);
-
-        // disable all
-        mesh->SetSkeletonAnimationEnabled(anim->Name(), false, false, 0.0);
-      }
-      v->SetVisible(false);
-    }
-
-    // set visuals to be updated
-    g_visuals.clear();
-    if (g_updateAll)
-    {
-      std::copy(g_allVisuals.begin(), g_allVisuals.end(),
-          std::back_inserter(g_visuals));
-    }
-    else
-    {
-      unsigned int idx = static_cast<unsigned int>(
-          sqrt(g_allVisuals.size()) * 0.5);
-      g_visuals.push_back(g_allVisuals[idx]);
-    }
-
-    // enabled selected animation
-    for (auto &v : g_visuals)
-    {
-      v->SetVisible(true);
-      ir::MeshPtr mesh =
-          std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
-      if (!g_manualBoneUpdate)
-      {
-        mesh->SetSkeletonAnimationEnabled(g_skelAnim->Name(), true, true, 1.0);
-      }
-      // update root bone weight
-      std::unordered_map<std::string, float> weights;
-      weights[g_skel->RootNode()->Name()] = g_rootBoneWeight;
-      mesh->SetSkeletonWeights(weights);
-    }
-
-
-    g_actorUpdateDirty = false;
-  }
-
-  // manually update skeleton bone pose
-  if (g_manualBoneUpdate)
-  {
-    updatePose(fmod(seconds, g_skelAnim->Length()));
-  }
-  // advance time for built in animations
-  else
-  {
-    updateTime(seconds);
-  }
-}
-
-//////////////////////////////////////////////////
-void drawText(int _x, int _y, const std::string &_text)
-{
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
-  glLoadIdentity();
-  gluOrtho2D(0.0, imgw, 0.0, imgh);
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-  glColor3f(1.0f, 1.0f, 1.0f);
-  glRasterPos2i(_x, _y);
-  void *font = GLUT_BITMAP_9_BY_15;
-  for (auto c : _text)
-    glutBitmapCharacter(font, c);
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix();
-  glMatrixMode(GL_PROJECTION);
-  glPopMatrix();
-}
 
 //////////////////////////////////////////////////
 void displayCB()
@@ -415,28 +264,7 @@ void displayCB()
   glRasterPos2f(-1, 1);
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
-  updateActor();
-
-  // draw FPS
-  auto now = std::chrono::steady_clock::now();
-  double t = std::chrono::duration_cast<std::chrono::milliseconds>(
-      now - prevUpdateTime).count() / 1000.0;
-  prevUpdateTime = now;
-  std::string manual = g_manualBoneUpdate ? "true" : "false";
-  std::stringstream text;
-  text << std::fixed << std::setw(5) << std::setprecision(4) << (1.0/t);
-  text << std::setw(30) << "Manual skeleton update: " << manual;
-  text << std::setw(30) << "Root bone weight:: " << std::setprecision(2)
-       << g_rootBoneWeight;
-  drawText(10, 10, text.str());
-
   glutSwapBuffers();
-}
-
-//////////////////////////////////////////////////
-void idleCB()
-{
-  glutPostRedisplay();
 }
 
 //////////////////////////////////////////////////
@@ -450,34 +278,14 @@ void keyboardCB(unsigned char _key, int, int)
   {
     g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
   }
-  else if (_key == 'a')
-  {
-    g_animIdx = (g_animIdx + 1) % 2;
-    auto anim = g_skel->Animation(g_animIdx);
-    g_actorUpdateDirty = true;
-    std::cout << "Playing animation: " << anim->Name() << std::endl;
-  }
-  else if (_key == 'm')
-  {
-    g_manualBoneUpdate = !g_manualBoneUpdate;
-    g_actorUpdateDirty = true;
-    std::cout << "Manual skeleton bone update: " << g_manualBoneUpdate
-              << std::endl;
-  }
-  else if (_key == 't')
-  {
-    g_updateAll = !g_updateAll;
-    g_actorUpdateDirty = true;
-    std::cout << "Update all meshes " << g_updateAll << std::endl;
-  }
-  else if (_key == 'r')
-  {
-    g_actorUpdateDirty = true;
-    g_rootBoneWeight = g_rootBoneWeight ^ 1;
-    std::cout << "Setting root bone weight to: " << g_rootBoneWeight
-              << std::endl;
-  }
 }
+
+//////////////////////////////////////////////////
+void idleCB()
+{
+  glutPostRedisplay();
+}
+
 
 //////////////////////////////////////////////////
 void initCamera(ir::CameraPtr _camera)
@@ -496,7 +304,7 @@ void initContext()
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
-  glutCreateWindow("Actor animation");
+  glutCreateWindow("Lidar Visual Example");
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);
@@ -505,23 +313,6 @@ void initContext()
   glutMotionFunc(motionCB);
 }
 
-//////////////////////////////////////////////////
-void initAnimation()
-{
-//! [init animation]
-  if (!g_skel || g_skel->AnimationCount() == 0)
-  {
-    std::cerr << "Failed to load animation." << std::endl;
-    return;
-  }
-//! [init animation]
-
-//! [index animation]
-  g_skelAnim = g_skel->Animation(g_animIdx);
-//! [index animation]
-
-  g_startTime = std::chrono::steady_clock::now();
-}
 
 //////////////////////////////////////////////////
 void printUsage()
@@ -529,18 +320,11 @@ void printUsage()
   std::cout << "==========================================" << std::endl;
   std::cout << "  TAB - Switch render engines             " << std::endl;
   std::cout << "  ESC - Exit                              " << std::endl;
-  std::cout << "  A   - Switch animation                  " << std::endl;
-  std::cout << "  M   - Toggle manual skeleton update     " << std::endl;
-  std::cout << "  T   - Toggle animated mesh count        " << std::endl;
-  std::cout << "  R   - Toggle root bone weight           " << std::endl;
-  std::cout << "        (non-manual skeleton update only) " << std::endl;
   std::cout << "==========================================" << std::endl;
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr> _cameras,
-         const std::vector<ir::VisualPtr> &_visuals,
-         ic::SkeletonPtr _skel)
+void run(std::vector<ir::CameraPtr> _cameras)
 {
   if (_cameras.empty())
   {
@@ -558,12 +342,9 @@ void run(std::vector<ir::CameraPtr> _cameras,
 #endif
 
   g_cameras = _cameras;
-  g_allVisuals = _visuals;
-  g_skel = _skel;
 
   initCamera(_cameras[0]);
   initContext();
-  initAnimation();
   printUsage();
 
 #if __APPLE__

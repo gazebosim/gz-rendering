@@ -57,13 +57,12 @@ namespace ignition
       public: virtual void Update() override;
 
       // Documentation inherited
-      public: virtual void OnMsg(std::vector<double> &_msg);
+      public: virtual void SetLidarMessage(std::vector<double> &_msg);
 
       // Documentation inherited
       public: virtual void ClearPoints();
 
-      /// \brief Get the number of points stored in last laser message
-      /// \return Number of Points stored in last laser message
+      // Documentation inherited
       public: virtual unsigned int GetPointCount();
 
       /// \brief Create the Lidar Visual in ogre

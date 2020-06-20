@@ -48,7 +48,7 @@ namespace ignition
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
-      public: virtual void OnMsg(std::vector<double> &msg);
+      public: virtual void SetLidarMessage(std::vector<double> &msg);
 
       // Documentation inherited
       public: virtual void Update();
@@ -122,6 +122,9 @@ namespace ignition
       // Documentation inherited
       public: virtual ignition::math::Pose3d  Offset();
 
+      // Documentation inherited
+      public: virtual unsigned int GetPointCount();
+
       /// \brief Vertical minimal angle
       protected: double minVerticalAngle;
 
@@ -194,6 +197,13 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
+    unsigned int BaseLidarVisual<T>::GetPointCount()
+    {
+        // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
     void BaseLidarVisual<T>::Update()
     {
       // no op
@@ -201,7 +211,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::OnMsg(std::vector<double> &)
+    void BaseLidarVisual<T>::SetLidarMessage(std::vector<double> &)
     {
       // no op
     }

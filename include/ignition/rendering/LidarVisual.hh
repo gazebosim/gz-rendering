@@ -47,15 +47,15 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~LidarVisual();
 
-      /// \brief Clear the points of the LidarVisual, if applicable
+      /// \brief Clear the points of the lidar visual
       public: virtual void ClearPoints() = 0;
 
       /// \brief Update the Visual
       public: virtual void Update() = 0;
 
       /// \brief Callback when the senspr data is recieved
-      /// \param[in] TODO correct message type
-      public: virtual void OnMsg(std::vector<double> &msg) = 0;
+      /// \param[in] _msg The vector of points representing distance of the ray from the lidar
+      public: virtual void SetLidarMessage(std::vector<double> &_msg) = 0;
 
       /// \brief Set minimum vertical angle
       /// \param[in] _minVerticalAngle Minimum vertical angle
@@ -144,6 +144,10 @@ namespace ignition
       /// \brief Get offset of visual
       /// \return The offset of the lidar rays from visual origin
       public: virtual ignition::math::Pose3d  Offset() = 0;
+
+      /// \brief Get number of points in laser data
+      /// \return The number of points in the laser data
+      public: virtual unsigned int GetPointCount() = 0;
 
     };
     }

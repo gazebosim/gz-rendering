@@ -121,11 +121,12 @@ void OgreLidarVisual::ClearPoints()
   this->dataPtr->rayLines.clear();
   this->dataPtr->rayStrips.clear();
   this->dataPtr->laserMsg.clear();
+  this->dataPtr->receivedMsg = false;
 }
 
 
 //////////////////////////////////////////////////
-void OgreLidarVisual::OnMsg(std::vector<double> &_msg)
+void OgreLidarVisual::SetLidarMessage(std::vector<double> &_msg)
 {
   this->dataPtr->laserMsg.clear();
   this->dataPtr->laserMsg = _msg;

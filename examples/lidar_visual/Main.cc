@@ -96,7 +96,7 @@ void buildScene(ScenePtr _scene)
   lidar->SetVerticalRayCount(3);
   lidar->SetMaxRange(50);
   lidar->SetMinRange(0.5);
-  lidar->OnMsg(pts);
+  lidar->SetLidarMessage(pts);
   lidar->Update();
   lidar->SetLocalPosition(3,0,0);
   root->AddChild(lidar);

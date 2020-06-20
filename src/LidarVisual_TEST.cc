@@ -60,7 +60,7 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   EXPECT_NE(root, nullptr);
 
   // check that root visual has no child visuals
-  EXPECT_EQ(root->ChildCount(), 0);
+  EXPECT_EQ(root->ChildCount(), 0u);
   unsigned int count = root->ChildCount();
 
   // check lidar creation
@@ -70,12 +70,9 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   // check update in child count of root visual
   root->AddChild(lidar);
   ASSERT_NE(root->ChildCount(), count);
-  ASSERT_EQ(root->ChildCount(), 1);
+  ASSERT_EQ(root->ChildCount(), 1u);
 
   // check API
-
-  // std::vector<double> pts{10.0, 4.0, 2.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10};
-  // EXPECT_NO_THROW(lidar->OnMsg(pts));
   lidar->SetMinVerticalAngle(0.54);
   EXPECT_DOUBLE_EQ(lidar->MinVerticalAngle(), 0.54);
   lidar->SetMaxVerticalAngle(5.30);
@@ -104,6 +101,12 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   ignition::math::Pose3d p(0.5, 2.56, 3.67, 1.4, 2, 4.5);
   lidar->SetOffset(p);
   EXPECT_EQ(lidar->Offset(), p);
+
+  std::vector<double> pts{10.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10, 3.5};
+  lidar->SetLidarMessage(pts);
+  EXPECT_EQ(pts.size(), lidar->GetPointCount());
+  lidar->ClearPoints();
+  EXPECT_EQ(lidar->GetPointCount(), 0u);
 
 
   // Clean up

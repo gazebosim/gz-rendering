@@ -377,6 +377,9 @@ namespace ignition
       public: virtual MarkerPtr CreateMarker() override;
 
       // Documentation inherited.
+      public: virtual LidarVisualPtr CreateLidarVisual() override;
+
+      // Documentation inherited.
       public: virtual WireBoxPtr CreateWireBox() override;
 
       // Documentation inherited.
@@ -500,6 +503,13 @@ namespace ignition
       /// \param[in] _name unique object name.
       /// \return Pointer to a marker geometry object
       protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a lidar visual geometry object
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a lidar visual geometry object
+      protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
       /// \brief Implementation for creating a wire box geometry

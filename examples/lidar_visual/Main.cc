@@ -85,8 +85,19 @@ void buildScene(ScenePtr _scene)
   {
     std::cout << "NULLPOINTER IS RETURNED\n";
   }
-  std::vector<double> pts{10.0, 4.0, 2.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10};
+  std::vector<double> pts{10.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10, 3.5};
+  lidar->SetMinHorizontalAngle(0.0);
+  lidar->SetHorizontalAngleStep(0.3);
+  lidar->SetHorizontalRayCount(3);
+  lidar->SetMaxHorizontalAngle(5);
+  lidar->SetMaxVerticalAngle(10);
+  lidar->SetMinVerticalAngle(0.2);
+  lidar->SetVerticalAngleStep(0.08);
+  lidar->SetVerticalRayCount(3);
+  lidar->SetMaxRange(50);
+  lidar->SetMinRange(0.5);
   lidar->OnMsg(pts);
+  lidar->Update();
   lidar->SetLocalPosition(3,0,0);
   root->AddChild(lidar);
 

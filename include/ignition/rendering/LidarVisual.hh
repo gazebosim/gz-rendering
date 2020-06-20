@@ -57,6 +57,94 @@ namespace ignition
       /// \param[in] TODO correct message type
       public: virtual void OnMsg(std::vector<double> &msg) = 0;
 
+      /// \brief Set minimum vertical angle
+      /// \param[in] _minVerticalAngle Minimum vertical angle
+      public: virtual void SetMinVerticalAngle(const double _minVerticalAngle) = 0;
+
+      /// \brief Get minimum vertical angle
+      /// \return The minimum vertical angle value of the lidar visual
+      public: virtual double MinVerticalAngle() = 0;
+
+      /// \brief Set maximum vertical angle
+      /// \param[in] _maxVerticalAngle Maximum vertical angle value
+      public: virtual void SetMaxVerticalAngle(const double _maxVerticalAngle) = 0;
+
+      /// \brief Get minimum vertical angle
+      /// \return The maximum vertical angle value of the lidar visual
+      public: virtual double MaxVerticalAngle() = 0;
+
+      /// \brief Set minimum horizontal angle
+      /// \param[in] _minHorizontalAngle Minimum horizontal angle value
+      public: virtual void SetMinHorizontalAngle(const double _minHorizontalAngle) = 0;
+
+      /// \brief Get minimum horizontal angle
+      /// \return The minimum horizontal angle value of the lidar visual
+      public: virtual double MinHorizontalAngle() = 0;
+
+      /// \brief Set maximum horizontal angle
+      /// \param[in] _maxHorizontalAngle Maximum horizontal angle value
+      public: virtual void SetMaxHorizontalAngle(const double _maxHorizontalAngle) = 0;
+
+      /// \brief Get maximum horizontal angle
+      /// \return The maximum horizontal angle value of the lidar visual
+      public: virtual double MaxHorizontalAngle() = 0;
+
+      /// \brief Set number of vertical rays
+      /// \param[in] _verticalRayCount Number of vertical rays
+      public: virtual void SetVerticalRayCount(const unsigned int _verticalRayCount) = 0;
+
+      /// \brief Get number of vertical rays
+      /// \return The number of vertical rays
+      public: virtual unsigned int VerticalRayCount() = 0;
+
+      /// \brief Set number of horizontal rays
+      /// \return _horizontalRayCount Number of vertical rays
+      public: virtual void SetHorizontalRayCount(const unsigned int _horizontalRayCount) = 0;
+
+      /// \brief Get number of horizontal rays
+      /// \return The number of horizontal rays
+      public: virtual unsigned int HorizontalRayCount() = 0;
+
+      /// \brief Set minimum range of lidar rays
+      /// \param[in] _minRange The minimum range for lidar rays
+      public: virtual void SetMinRange(const double _minRange) = 0;
+
+      /// \brief Get minimum range of lidar rays
+      /// \return The minimum range for lidar rays
+      public: virtual double MinRange() = 0;
+
+      /// \brief Set maximum range of lidar rays
+      /// \param[in] _maxRange The maximum range for lidar rays
+      public: virtual void SetMaxRange(const double _maxRange) = 0;
+
+      /// \brief Get maximum range of lidar rays
+      /// \return The maximum range for lidar rays
+      public: virtual double MaxRange() = 0;
+
+      /// \brief Set vertical step angle
+      /// \param[in] _verticalAngleStep Difference in vertical angle between two rays
+      public: virtual void SetVerticalAngleStep(const double _verticalAngleStep) = 0;
+
+      /// \brief Get vertical step angle
+      /// \return The difference in vertical angle between two rays
+      public: virtual double VerticalAngleStep() = 0;
+
+      /// \brief Set horizontal step angle
+      /// \param[in] _horizontalAngleStep Difference in horizontal angle between two rays
+      public: virtual void SetHorizontalAngleStep(const double _horizontalAngleStep) = 0;
+
+      /// \brief Get horizontal step angle
+      /// \return The difference in horizontal angle between two rays
+      public: virtual double HorizontalAngleStep() = 0;
+
+      /// \brief Set offset of visual
+      /// \param[in] _offset The offset of the lidar rays from the visual origin
+      public: virtual void SetOffset(const ignition::math::Pose3d _offset) = 0;
+
+      /// \brief Get offset of visual
+      /// \return The offset of the lidar rays from visual origin
+      public: virtual ignition::math::Pose3d  Offset() = 0;
+
     };
     }
   }

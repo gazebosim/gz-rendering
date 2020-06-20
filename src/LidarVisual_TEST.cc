@@ -66,16 +66,45 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   // check lidar creation
   LidarVisualPtr lidar = scene->CreateLidarVisual();
   ASSERT_NE(nullptr, lidar);
-  root->AddChild(lidar);
 
   // check update in child count of root visual
+  root->AddChild(lidar);
   ASSERT_NE(root->ChildCount(), count);
   ASSERT_EQ(root->ChildCount(), 1);
 
-  // exercise point api
+  // check API
 
-  std::vector<double> pts{10.0, 4.0, 2.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10};
-  EXPECT_NO_THROW(lidar->OnMsg(pts));
+  // std::vector<double> pts{10.0, 4.0, 2.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10};
+  // EXPECT_NO_THROW(lidar->OnMsg(pts));
+  lidar->SetMinVerticalAngle(0.54);
+  EXPECT_DOUBLE_EQ(lidar->MinVerticalAngle(), 0.54);
+  lidar->SetMaxVerticalAngle(5.30);
+  EXPECT_DOUBLE_EQ(lidar->MaxVerticalAngle(), 5.30);
+
+  lidar->SetMinHorizontalAngle(1.30);
+  EXPECT_DOUBLE_EQ(lidar->MinHorizontalAngle(), 1.30);
+  lidar->SetMaxHorizontalAngle(9.30);
+  EXPECT_DOUBLE_EQ(lidar->MaxHorizontalAngle(), 9.30);
+
+  lidar->SetVerticalRayCount(5);
+  EXPECT_EQ(lidar->VerticalRayCount(), 5u);
+  lidar->SetHorizontalRayCount(10);
+  EXPECT_EQ(lidar->HorizontalRayCount(), 10u);
+
+  lidar->SetMaxRange(50.50);
+  EXPECT_DOUBLE_EQ(lidar->MaxRange(), 50.50);
+  lidar->SetMinRange(0.54);
+  EXPECT_DOUBLE_EQ(lidar->MinRange(), 0.54);
+
+  lidar->SetVerticalAngleStep(0.01);
+  EXPECT_DOUBLE_EQ(lidar->VerticalAngleStep(), 0.01);
+  lidar->SetHorizontalAngleStep(0.05);
+  EXPECT_DOUBLE_EQ(lidar->HorizontalAngleStep(), 0.05);
+
+  ignition::math::Pose3d p(0.5, 2.56, 3.67, 1.4, 2, 4.5);
+  lidar->SetOffset(p);
+  EXPECT_EQ(lidar->Offset(), p);
+
 
   // Clean up
   engine->DestroyScene(scene);

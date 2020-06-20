@@ -127,9 +127,9 @@ void OgreLidarVisual::ClearPoints()
 //////////////////////////////////////////////////
 void OgreLidarVisual::OnMsg(std::vector<double> &_msg)
 {
+  this->dataPtr->laserMsg.clear();
   this->dataPtr->laserMsg = _msg;
   this->dataPtr->receivedMsg = true;
-  this->Update();
   
 }
 
@@ -138,27 +138,34 @@ void OgreLidarVisual::Update()
 {
 
   // TODO if(!this->dataPtr->laserMsg for checking  is required in the later stage)
-  if(!this->dataPtr->receivedMsg)
+  if(!this->dataPtr->receivedMsg || this->dataPtr->laserMsg.size() == 0)
   {
+    ignerr << "Message not received. Exiting Updat function"
+           << std::endl;
     return;
   }
   
 
   this->dataPtr->receivedMsg = false;
+  double horizontalAngle = this->minHorizontalAngle;
+  double verticalAngle = this->minVerticalAngle;
 
-  unsigned int vertCount = 1;
-  double minRange = 0.03;
-  double maxRange = 30;
-  double verticalAngle = 0.0;
-
-  ignition::math::Pose3d offset = ignition::math::Pose3d::Zero;
+  if (this->dataPtr->laserMsg.size() != this->verticalCount * this->horizontalCount)
+  {
+    ignerr << "Size of laser message and count of vertical and horizontal rays inconsistent"
+           << std::endl;
+    return;
+  }
+  
 
   // Process each point from message
   // Every line segment, and every individual triangle is saved separately as a pointer to a DynamicLine
-  for (unsigned int j = 0; j < vertCount; ++j)
+  for (unsigned int j = 0; j < this->verticalCount; ++j)
   {
 
-    if (j+1 > this->dataPtr->rayStrips.size())
+    horizontalAngle = this->minHorizontalAngle;
+
+    if (j+1 > this->dataPtr->rayLines.size())
     {
       // Ray Strips fill in between the line areas that have intersected an object
       std::shared_ptr<OgreDynamicLines> line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_TRIANGLE_STRIP));
@@ -196,30 +203,47 @@ void OgreLidarVisual::Update()
 
     }
     
-    this->dataPtr->deadZoneRayFans[j]->SetPoint(0, offset.Pos());
-
-    double angleStep = 0.1;
-    double angle = -verticalAngle;
+    this->dataPtr->deadZoneRayFans[j]->SetPoint(0, this->offset.Pos());
 
 
-    unsigned count = this->dataPtr->laserMsg.size();
+    unsigned count = this->horizontalCount;
     // Process each ray in current scan
     for (unsigned int i = 0; i < count; ++i)
     {
       //calculate range of the ray
-      double r = this->dataPtr->laserMsg[i];
-      if ( r < minRange)
+      double r = this->dataPtr->laserMsg[j * this->verticalCount + i];
+
+      
+      if (verticalAngle > this->maxVerticalAngle)
       {
-        // Less than min range, do not display the ray
-        r = minRange;
+        ignerr << "Vertical angle exceeds maximum limits. Please check the input"
+           << std::endl;
+      }
+
+      if (verticalAngle < this->minVerticalAngle)
+      {
+        ignerr << "Vertical angle less than minimum limits. Please check the input"
+           << std::endl;
+      }
+
+      if (horizontalAngle < this->minHorizontalAngle)
+      {
+        ignerr << "Horizontal angle less than minimum limits. Please check the input"
+           << std::endl;
+      }
+
+      if (horizontalAngle > this->maxHorizontalAngle)
+      {
+        ignerr << "Horizontal angle exceeds maximum limits. Please check the input"
+           << std::endl;
       }
 
       bool inf = std::isinf(r);
       
       ignition::math::Quaterniond ray(
-        ignition::math::Vector3d(0.0, 0.0, angle));
+        ignition::math::Vector3d(0.0, -verticalAngle, horizontalAngle));
 
-      ignition::math::Vector3d axis = offset.Rot() * ray *
+      ignition::math::Vector3d axis = this->offset.Rot() * ray *
         ignition::math::Vector3d(1.0, 0.0, 0.0);
 
       // Check for infinite range, which indicates the ray did not
@@ -227,21 +251,20 @@ void OgreLidarVisual::Update()
       double hitRange = inf ? 0 : r;
 
       // Compute the start point of the ray
-      ignition::math::Vector3d startPt = (axis * minRange) + offset.Pos();
+      ignition::math::Vector3d startPt = (axis * minRange) + this->offset.Pos();
 
       // Compute the end point of the ray
-      ignition::math::Vector3d pt = (axis * hitRange) + offset.Pos();
+      ignition::math::Vector3d pt = (axis * hitRange) + this->offset.Pos();
 
       double noHitRange = inf ? maxRange : hitRange;
 
       // Compute the end point of the no-hit ray
-      ignition::math::Vector3d noHitPt = (axis * noHitRange) + offset.Pos();
+      ignition::math::Vector3d noHitPt = (axis * noHitRange) + this->offset.Pos();
       
 
       // Draw the lines and strips that represent each simulated ray
       if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
       {
-
         this->dataPtr->rayLines[j]->AddPoint(startPt);
         this->dataPtr->rayLines[j]->AddPoint(inf ? noHitPt : pt);
         
@@ -254,7 +277,6 @@ void OgreLidarVisual::Update()
       }
       else
       {
-
         this->dataPtr->rayLines[j]->SetPoint(i*2, startPt);
         this->dataPtr->rayLines[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
         
@@ -278,9 +300,9 @@ void OgreLidarVisual::Update()
       this->dataPtr->noHitRayStrips[j]->Update();
       this->dataPtr->deadZoneRayFans[j]->Update();
 
-      angle += angleStep;
+      horizontalAngle += this->horizontalAngleStep;
     }
-    //verticalAngle += this->dataPtr->laserMsg->scan().vertical_angle_step();
+    verticalAngle += this->verticalAngleStep;
   }
 
 }

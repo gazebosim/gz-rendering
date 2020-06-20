@@ -123,40 +123,40 @@ namespace ignition
       public: virtual ignition::math::Pose3d  Offset();
 
       // Documentation inherited
-      public: virtual unsigned int GetPointCount();
+      public: virtual unsigned int GetPointCount() override;
 
       /// \brief Vertical minimal angle
-      protected: double minVerticalAngle;
+      protected: double minVerticalAngle = 0;
 
       /// \brief Vertical maximum angle
-      protected: double maxVerticalAngle;
+      protected: double maxVerticalAngle = 0;
 
       /// \brief Vertical laser count
-      protected: unsigned int verticalCount;
+      protected: unsigned int verticalCount = 0u;
 
       /// \brief Angle between two vertical rays
-      protected: double verticalAngleStep;
+      protected: double verticalAngleStep = 0;
 
       /// \brief Horizontal minimal angle
-      protected: double minHorizontalAngle;
+      protected: double minHorizontalAngle = 0;
 
       /// \brief Horizontal maximum angle
-      protected: double maxHorizontalAngle;
+      protected: double maxHorizontalAngle = 0;
 
       /// \brief Horizontal laser count
-      protected: unsigned int horizontalCount;
+      protected: unsigned int horizontalCount = 0u;
 
       /// \brief Angle between two horizontal rays
-      protected: double horizontalAngleStep;
+      protected: double horizontalAngleStep = 0;
 
       /// \brief Minimum Range
-      protected: double minRange;
+      protected: double minRange = 0;
 
       /// \brief Maximum Range
-      protected: double maxRange;
+      protected: double maxRange = 0;
 
       /// \brief Offset of visual
-      protected: ignition::math::Pose3d offset;
+      protected: ignition::math::Pose3d offset = ignition::math::Pose3d::Zero;
 
     };
 
@@ -199,7 +199,7 @@ namespace ignition
     template <class T>
     unsigned int BaseLidarVisual<T>::GetPointCount()
     {
-        // no op
+        return 0u;
     }
 
     /////////////////////////////////////////////////

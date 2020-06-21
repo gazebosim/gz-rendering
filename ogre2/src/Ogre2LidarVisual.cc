@@ -45,9 +45,8 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2LidarVisual::Ogre2LidarVisual()
-//   : dataPtr(new Ogre2LidarVisualPrivate)
 {
-   // BaseLidarVisual::Init();
+    // BaseLidarVisual::Init();
 }
 
 //////////////////////////////////////////////////

@@ -234,7 +234,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetMinVerticalAngle(const double _minVerticalAngle)
+    void BaseLidarVisual<T>::SetMinVerticalAngle(
+          const double _minVerticalAngle)
     {
       this->minVerticalAngle = _minVerticalAngle;
     }
@@ -248,7 +249,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetMaxVerticalAngle(const double _maxVerticalAngle)
+    void BaseLidarVisual<T>::SetMaxVerticalAngle(
+                  const double _maxVerticalAngle)
     {
       this->maxVerticalAngle = _maxVerticalAngle;
     }
@@ -262,7 +264,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetVerticalRayCount(const unsigned int _verticalRayCount)
+    void BaseLidarVisual<T>::SetVerticalRayCount(
+          const unsigned int _verticalRayCount)
     {
       this->verticalCount = _verticalRayCount;
     }
@@ -276,7 +279,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetVerticalAngleStep(const double _verticalAngleStep)
+    void BaseLidarVisual<T>::SetVerticalAngleStep(
+          const double _verticalAngleStep)
     {
       this->verticalAngleStep = _verticalAngleStep;
     }
@@ -290,7 +294,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetMinHorizontalAngle(const double _minHorizontalAngle)
+    void BaseLidarVisual<T>::SetMinHorizontalAngle(
+          const double _minHorizontalAngle)
     {
       this->minHorizontalAngle = _minHorizontalAngle;
     }
@@ -304,7 +309,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetMaxHorizontalAngle(const double _maxHorizontalAngle)
+    void BaseLidarVisual<T>::SetMaxHorizontalAngle(
+          const double _maxHorizontalAngle)
     {
       this->maxHorizontalAngle = _maxHorizontalAngle;
     }
@@ -318,7 +324,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetHorizontalRayCount(const unsigned int _horizontalRayCount)
+    void BaseLidarVisual<T>::SetHorizontalRayCount(
+          const unsigned int _horizontalRayCount)
     {
       this->horizontalCount = _horizontalRayCount;
     }
@@ -332,7 +339,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetHorizontalAngleStep(const double _horizontalAngleStep)
+    void BaseLidarVisual<T>::SetHorizontalAngleStep(
+          const double _horizontalAngleStep)
     {
       this->horizontalAngleStep = _horizontalAngleStep;
     }

@@ -54,7 +54,7 @@ namespace ignition
       public: virtual void Update() = 0;
 
       /// \brief Callback when the senspr data is recieved
-      /// \param[in] _msg The vector of points representing distance of the ray from the lidar
+      /// \param[in] _msg Vector of points representing distance of the ray
       public: virtual void SetLidarMessage(std::vector<double> &_msg) = 0;
 
       /// \brief Set minimum vertical angle
@@ -128,7 +128,7 @@ namespace ignition
       public: virtual double MaxRange() = 0;
 
       /// \brief Set vertical step angle
-      /// \param[in] _verticalAngleStep Difference in vertical angle between two rays
+      /// \param[in] _verticalAngleStep Vertical angle between two rays
       public: virtual void SetVerticalAngleStep(
                   const double _verticalAngleStep) = 0;
 
@@ -137,7 +137,7 @@ namespace ignition
       public: virtual double VerticalAngleStep() = 0;
 
       /// \brief Set horizontal step angle
-      /// \param[in] _horizontalAngleStep Difference in horizontal angle between two rays
+      /// \param[in] _horizontalAngleStep Horizontal angle between two rays
       public: virtual void SetHorizontalAngleStep(
                   const double _horizontalAngleStep) = 0;
 
@@ -146,7 +146,7 @@ namespace ignition
       public: virtual double HorizontalAngleStep() = 0;
 
       /// \brief Set offset of visual
-      /// \param[in] _offset The offset of the lidar rays from the visual origin
+      /// \param[in] _offset The offset of the lidar rays from visual origin
       public: virtual void SetOffset(
                   const ignition::math::Pose3d _offset) = 0;
 

@@ -48,7 +48,7 @@ namespace ignition
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
-      public: virtual void SetLidarMessage(std::vector<double> &msg);
+      public: virtual void SetLidarMessage(std::vector<double> &_msg);
 
       // Documentation inherited
       public: virtual void Update();
@@ -57,67 +57,67 @@ namespace ignition
       public: virtual void Init();
 
       // Documentation inherited
-      public: virtual void SetMinVerticalAngle(const double );
+      public: virtual void SetMinVerticalAngle(const double _minVerticalAngle);
 
       // Documentation inherited
       public: virtual double MinVerticalAngle();
 
       // Documentation inherited
-      public: virtual void SetMaxVerticalAngle(const double );
+      public: virtual void SetMaxVerticalAngle(const double _maxVerticalAngle);
 
       // Documentation inherited
       public: virtual double MaxVerticalAngle();
 
       // Documentation inherited
-      public: virtual void SetMinHorizontalAngle(const double );
+      public: virtual void SetMinHorizontalAngle(const double _minHorizontalAngle);
 
       // Documentation inherited
       public: virtual double MinHorizontalAngle();
 
       // Documentation inherited
-      public: virtual void SetMaxHorizontalAngle(const double );
+      public: virtual void SetMaxHorizontalAngle(const double _maxHorizontalAngle);
 
       // Documentation inherited
       public: virtual double MaxHorizontalAngle();
 
       // Documentation inherited
-      public: virtual void SetVerticalRayCount(const unsigned int );
+      public: virtual void SetVerticalRayCount(const unsigned int _verticalRayCount);
 
       // Documentation inherited
       public: virtual unsigned int VerticalRayCount();
 
       // Documentation inherited
-      public: virtual void SetHorizontalRayCount(const unsigned int );
+      public: virtual void SetHorizontalRayCount(const unsigned int _horizontalRayCount);
 
       // Documentation inherited
       public: virtual unsigned int HorizontalRayCount();
 
       // Documentation inherited
-      public: virtual void SetMinRange(const double );
+      public: virtual void SetMinRange(const double _minRange);
 
       // Documentation inherited
       public: virtual double MinRange();
 
       // Documentation inherited
-      public: virtual void SetMaxRange(const double );
+      public: virtual void SetMaxRange(const double _maxRange);
 
       // Documentation inherited
       public: virtual double MaxRange();
 
       // Documentation inherited
-      public: virtual void SetVerticalAngleStep(const double );
+      public: virtual void SetVerticalAngleStep(const double _verticalAngleStep);
 
       // Documentation inherited
       public: virtual double VerticalAngleStep();
 
       // Documentation inherited
-      public: virtual void SetHorizontalAngleStep(const double );
+      public: virtual void SetHorizontalAngleStep(const double _horizontalAngleStep);
 
       // Documentation inherited
       public: virtual double HorizontalAngleStep();
 
       // Documentation inherited
-      public: virtual void SetOffset(const ignition::math::Pose3d );
+      public: virtual void SetOffset(const ignition::math::Pose3d _offset);
 
       // Documentation inherited
       public: virtual ignition::math::Pose3d  Offset();

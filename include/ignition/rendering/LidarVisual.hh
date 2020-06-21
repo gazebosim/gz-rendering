@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_LIDARVISUAL_HH_
 #define IGNITION_RENDERING_LIDARVISUAL_HH_
 
+#include <vector>
 #include <ignition/common/Time.hh>
 #include <ignition/math/Color.hh>
 #include <ignition/math/Vector3.hh>
@@ -33,8 +34,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for LidarVisual types
-	typedef MarkerType LidarVisualType;
-  
+    typedef MarkerType LidarVisualType;
 
     /// \class LidarVisual LidarVisual.hh ignition/rendering/LidarVisual
     /// \brief A LidarVisual geometry class. The visual appearance is based
@@ -59,7 +59,8 @@ namespace ignition
 
       /// \brief Set minimum vertical angle
       /// \param[in] _minVerticalAngle Minimum vertical angle
-      public: virtual void SetMinVerticalAngle(const double _minVerticalAngle) = 0;
+      public: virtual void SetMinVerticalAngle(
+                  const double _minVerticalAngle) = 0;
 
       /// \brief Get minimum vertical angle
       /// \return The minimum vertical angle value of the lidar visual
@@ -67,7 +68,8 @@ namespace ignition
 
       /// \brief Set maximum vertical angle
       /// \param[in] _maxVerticalAngle Maximum vertical angle value
-      public: virtual void SetMaxVerticalAngle(const double _maxVerticalAngle) = 0;
+      public: virtual void SetMaxVerticalAngle(
+                  const double _maxVerticalAngle) = 0;
 
       /// \brief Get minimum vertical angle
       /// \return The maximum vertical angle value of the lidar visual
@@ -75,7 +77,8 @@ namespace ignition
 
       /// \brief Set minimum horizontal angle
       /// \param[in] _minHorizontalAngle Minimum horizontal angle value
-      public: virtual void SetMinHorizontalAngle(const double _minHorizontalAngle) = 0;
+      public: virtual void SetMinHorizontalAngle(
+                  const double _minHorizontalAngle) = 0;
 
       /// \brief Get minimum horizontal angle
       /// \return The minimum horizontal angle value of the lidar visual
@@ -83,7 +86,8 @@ namespace ignition
 
       /// \brief Set maximum horizontal angle
       /// \param[in] _maxHorizontalAngle Maximum horizontal angle value
-      public: virtual void SetMaxHorizontalAngle(const double _maxHorizontalAngle) = 0;
+      public: virtual void SetMaxHorizontalAngle(
+                  const double _maxHorizontalAngle) = 0;
 
       /// \brief Get maximum horizontal angle
       /// \return The maximum horizontal angle value of the lidar visual
@@ -91,7 +95,8 @@ namespace ignition
 
       /// \brief Set number of vertical rays
       /// \param[in] _verticalRayCount Number of vertical rays
-      public: virtual void SetVerticalRayCount(const unsigned int _verticalRayCount) = 0;
+      public: virtual void SetVerticalRayCount(
+                  const unsigned int _verticalRayCount) = 0;
 
       /// \brief Get number of vertical rays
       /// \return The number of vertical rays
@@ -99,7 +104,8 @@ namespace ignition
 
       /// \brief Set number of horizontal rays
       /// \return _horizontalRayCount Number of vertical rays
-      public: virtual void SetHorizontalRayCount(const unsigned int _horizontalRayCount) = 0;
+      public: virtual void SetHorizontalRayCount(
+                  const unsigned int _horizontalRayCount) = 0;
 
       /// \brief Get number of horizontal rays
       /// \return The number of horizontal rays
@@ -123,7 +129,8 @@ namespace ignition
 
       /// \brief Set vertical step angle
       /// \param[in] _verticalAngleStep Difference in vertical angle between two rays
-      public: virtual void SetVerticalAngleStep(const double _verticalAngleStep) = 0;
+      public: virtual void SetVerticalAngleStep(
+                  const double _verticalAngleStep) = 0;
 
       /// \brief Get vertical step angle
       /// \return The difference in vertical angle between two rays
@@ -131,7 +138,8 @@ namespace ignition
 
       /// \brief Set horizontal step angle
       /// \param[in] _horizontalAngleStep Difference in horizontal angle between two rays
-      public: virtual void SetHorizontalAngleStep(const double _horizontalAngleStep) = 0;
+      public: virtual void SetHorizontalAngleStep(
+                  const double _horizontalAngleStep) = 0;
 
       /// \brief Get horizontal step angle
       /// \return The difference in horizontal angle between two rays
@@ -139,7 +147,8 @@ namespace ignition
 
       /// \brief Set offset of visual
       /// \param[in] _offset The offset of the lidar rays from the visual origin
-      public: virtual void SetOffset(const ignition::math::Pose3d _offset) = 0;
+      public: virtual void SetOffset(
+                  const ignition::math::Pose3d _offset) = 0;
 
       /// \brief Get offset of visual
       /// \return The offset of the lidar rays from visual origin
@@ -148,7 +157,6 @@ namespace ignition
       /// \brief Get number of points in laser data
       /// \return The number of points in the laser data
       public: virtual unsigned int GetPointCount() = 0;
-
     };
     }
   }

@@ -57,7 +57,6 @@ namespace ignition
     class Ogre2ThermalCamera;
     class Ogre2Visual;
     class Ogre2WireBox;
-    
 
     typedef BaseGeometryStore<Ogre2Geometry>      Ogre2GeometryStore;
     typedef BaseLightStore<Ogre2Light>            Ogre2LightStore;

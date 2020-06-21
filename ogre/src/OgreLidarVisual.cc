@@ -42,7 +42,6 @@ class ignition::rendering::OgreLidarVisualPrivate
 
   /// \brief True if new message is received
   public: bool receivedMsg;
-
 };
 
 using namespace ignition;
@@ -63,13 +62,12 @@ OgreLidarVisual::~OgreLidarVisual()
 //////////////////////////////////////////////////
 void OgreLidarVisual::PreRender()
 {
-  //no ops
+  // no ops
 }
 
 //////////////////////////////////////////////////
 void OgreLidarVisual::Destroy()
 {
-  
   for (auto ray : this->dataPtr->noHitRayStrips)
   {
     ray.get()->Clear();
@@ -95,7 +93,6 @@ void OgreLidarVisual::Destroy()
   }
 
   this->ClearPoints();
-  
 }
 
 //////////////////////////////////////////////////
@@ -110,7 +107,6 @@ void OgreLidarVisual::Create()
 {
   this->ClearPoints();
   this->dataPtr->receivedMsg = false;
-
 }
 
 //////////////////////////////////////////////////
@@ -137,15 +133,12 @@ void OgreLidarVisual::SetLidarMessage(std::vector<double> &_msg)
 //////////////////////////////////////////////////
 void OgreLidarVisual::Update()
 {
-
-  // TODO if(!this->dataPtr->laserMsg for checking  is required in the later stage)
   if(!this->dataPtr->receivedMsg || this->dataPtr->laserMsg.size() == 0)
   {
     ignerr << "Message not received. Exiting Updat function"
            << std::endl;
     return;
   }
-  
 
   this->dataPtr->receivedMsg = false;
   double horizontalAngle = this->minHorizontalAngle;
@@ -153,11 +146,10 @@ void OgreLidarVisual::Update()
 
   if (this->dataPtr->laserMsg.size() != this->verticalCount * this->horizontalCount)
   {
-    ignerr << "Size of laser message and count of vertical and horizontal rays inconsistent"
+    ignerr << "Size of laser message inconsistent with ray count"
            << std::endl;
     return;
   }
-  
 
   // Process each point from message
   // Every line segment, and every individual triangle is saved separately as a pointer to a DynamicLine
@@ -174,36 +166,29 @@ void OgreLidarVisual::Update()
       std::shared_ptr<Ogre::MovableObject> mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->rayStrips.push_back(line);
-      
-      
+
       line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_TRIANGLE_STRIP));
       line->setMaterial("Lidar/LightBlueLaser");
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->noHitRayStrips.push_back(line);
 
-      
       line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_TRIANGLE_FAN));
       line->setMaterial("Lidar/BlackTransparent");      
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->deadZoneRayFans.push_back(line);
       this->dataPtr->deadZoneRayFans[j]->AddPoint(ignition::math::Vector3d::Zero);
-      
 
 
-      
       line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_LINE_LIST));
       line->setMaterial("Lidar/Blue");      
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->rayLines.push_back(line);
-      
 
       this->SetVisibilityFlags(0x0FFFFFFF);
-
     }
-    
     this->dataPtr->deadZoneRayFans[j]->SetPoint(0, this->offset.Pos());
 
 
@@ -214,7 +199,6 @@ void OgreLidarVisual::Update()
       //calculate range of the ray
       double r = this->dataPtr->laserMsg[j * this->verticalCount + i];
 
-      
       if (verticalAngle > this->maxVerticalAngle)
       {
         ignerr << "Vertical angle exceeds maximum limits. Please check the input"
@@ -240,7 +224,6 @@ void OgreLidarVisual::Update()
       }
 
       bool inf = std::isinf(r);
-      
       ignition::math::Quaterniond ray(
         ignition::math::Vector3d(0.0, -verticalAngle, horizontalAngle));
 
@@ -261,7 +244,6 @@ void OgreLidarVisual::Update()
 
       // Compute the end point of the no-hit ray
       ignition::math::Vector3d noHitPt = (axis * noHitRange) + this->offset.Pos();
-      
 
       // Draw the lines and strips that represent each simulated ray
       if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
@@ -274,7 +256,6 @@ void OgreLidarVisual::Update()
 
         this->dataPtr->noHitRayStrips[j]->AddPoint(startPt);
         this->dataPtr->noHitRayStrips[j]->AddPoint(inf ? noHitPt : pt);
-        
       }
       else
       {
@@ -286,7 +267,6 @@ void OgreLidarVisual::Update()
         
         this->dataPtr->noHitRayStrips[j]->SetPoint(i*2, startPt);
         this->dataPtr->noHitRayStrips[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
-
       }
 
       // Draw the triangle fan that indicates the dead zone.
@@ -305,7 +285,6 @@ void OgreLidarVisual::Update()
     }
     verticalAngle += this->verticalAngleStep;
   }
-
 }
 
 //////////////////////////////////////////////////

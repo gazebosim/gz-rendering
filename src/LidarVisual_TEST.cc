@@ -102,7 +102,9 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   lidar->SetOffset(p);
   EXPECT_EQ(lidar->Offset(), p);
 
-  std::vector<double> pts{10.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10, 3.5};
+  std::vector<double> pts{10.0, 15.0, 15.0, 
+                          15.0, INFINITY, INFINITY, INFINITY,
+                          10, 3.5};
   lidar->SetLidarMessage(pts);
   EXPECT_EQ(pts.size(), lidar->GetPointCount());
   lidar->ClearPoints();

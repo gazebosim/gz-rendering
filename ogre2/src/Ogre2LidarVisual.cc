@@ -47,32 +47,31 @@ using namespace rendering;
 Ogre2LidarVisual::Ogre2LidarVisual()
 //   : dataPtr(new Ogre2LidarVisualPrivate)
 {
-	// BaseLidarVisual::Init();
-
+   // BaseLidarVisual::Init();
 }
 
 //////////////////////////////////////////////////
 Ogre2LidarVisual::~Ogre2LidarVisual()
 {
-	// no ops
+    // no ops
 }
 
 //////////////////////////////////////////////////
 void Ogre2LidarVisual::Init()
 {
-	BaseLidarVisual::Init();
+    BaseLidarVisual::Init();
 }
 
 //////////////////////////////////////////////////
 void Ogre2LidarVisual::PreRender()
 {
-	// no ops
+    // no ops
 }
 
 
 //////////////////////////////////////////////////
 void Ogre2LidarVisual::Destroy()
 {
-	// no ops
+    // no ops
 }
 

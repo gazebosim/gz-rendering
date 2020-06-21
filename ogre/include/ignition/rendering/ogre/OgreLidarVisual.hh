@@ -18,6 +18,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRELIDARVISUAL_HH_
 #define IGNITION_RENDERING_OGRE_OGRELIDARVISUAL_HH_
 
+#include <vector>
 #include <memory>
 #include "ignition/rendering/base/BaseLidarVisual.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
@@ -52,7 +53,6 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
-      
       // Documentation inherited
       public: virtual void Update() override;
 

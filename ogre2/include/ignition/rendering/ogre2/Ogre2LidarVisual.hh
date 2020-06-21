@@ -54,7 +54,6 @@ namespace ignition
 
       /// \brief Marker should only be created by scene.
       private: friend class Ogre2Scene;
-
     };
     }
   }

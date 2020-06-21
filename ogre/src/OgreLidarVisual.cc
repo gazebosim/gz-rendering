@@ -127,13 +127,12 @@ void OgreLidarVisual::SetLidarMessage(std::vector<double> &_msg)
   this->dataPtr->laserMsg.clear();
   this->dataPtr->laserMsg = _msg;
   this->dataPtr->receivedMsg = true;
-  
 }
 
 //////////////////////////////////////////////////
 void OgreLidarVisual::Update()
 {
-  if(!this->dataPtr->receivedMsg || this->dataPtr->laserMsg.size() == 0)
+  if (!this->dataPtr->receivedMsg || this->dataPtr->laserMsg.size() == 0)
   {
     ignerr << "Message not received. Exiting Updat function"
            << std::endl;
@@ -144,7 +143,8 @@ void OgreLidarVisual::Update()
   double horizontalAngle = this->minHorizontalAngle;
   double verticalAngle = this->minVerticalAngle;
 
-  if (this->dataPtr->laserMsg.size() != this->verticalCount * this->horizontalCount)
+  if (this->dataPtr->laserMsg.size() !=
+                  this->verticalCount * this->horizontalCount)
   {
     ignerr << "Size of laser message inconsistent with ray count"
            << std::endl;
@@ -152,37 +152,49 @@ void OgreLidarVisual::Update()
   }
 
   // Process each point from message
-  // Every line segment, and every individual triangle is saved separately as a pointer to a DynamicLine
+  // Every line segment, and every triangle is saved separately,
+  // as a pointer to a DynamicLine
   for (unsigned int j = 0; j < this->verticalCount; ++j)
   {
-
     horizontalAngle = this->minHorizontalAngle;
 
     if (j+1 > this->dataPtr->rayLines.size())
     {
-      // Ray Strips fill in between the line areas that have intersected an object
-      std::shared_ptr<OgreDynamicLines> line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_TRIANGLE_STRIP));
+      // Ray Strips fill in between the line areas that intersect an object
+      std::shared_ptr<OgreDynamicLines> line =
+                  std::shared_ptr<OgreDynamicLines>(
+                              new OgreDynamicLines(MT_TRIANGLE_STRIP));
+
       line->setMaterial("Lidar/BlueLaser");
-      std::shared_ptr<Ogre::MovableObject> mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
+      std::shared_ptr<Ogre::MovableObject> mv =
+                std::dynamic_pointer_cast<Ogre::MovableObject>(line);
+
       this->Node()->attachObject(mv.get());
       this->dataPtr->rayStrips.push_back(line);
 
-      line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_TRIANGLE_STRIP));
+      line = std::shared_ptr<OgreDynamicLines>(
+                  new OgreDynamicLines(MT_TRIANGLE_STRIP));
+
       line->setMaterial("Lidar/LightBlueLaser");
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->noHitRayStrips.push_back(line);
 
-      line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_TRIANGLE_FAN));
-      line->setMaterial("Lidar/BlackTransparent");      
+      line = std::shared_ptr<OgreDynamicLines>(
+                  new OgreDynamicLines(MT_TRIANGLE_FAN));
+
+      line->setMaterial("Lidar/BlackTransparent");
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->deadZoneRayFans.push_back(line);
-      this->dataPtr->deadZoneRayFans[j]->AddPoint(ignition::math::Vector3d::Zero);
+      this->dataPtr->deadZoneRayFans[j]->AddPoint(
+                  ignition::math::Vector3d::Zero);
 
 
-      line = std::shared_ptr<OgreDynamicLines>(new OgreDynamicLines(MT_LINE_LIST));
-      line->setMaterial("Lidar/Blue");      
+      line = std::shared_ptr<OgreDynamicLines>(
+                  new OgreDynamicLines(MT_LINE_LIST));
+
+      line->setMaterial("Lidar/Blue");
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->rayLines.push_back(line);
@@ -196,31 +208,35 @@ void OgreLidarVisual::Update()
     // Process each ray in current scan
     for (unsigned int i = 0; i < count; ++i)
     {
-      //calculate range of the ray
+      // calculate range of the ray
       double r = this->dataPtr->laserMsg[j * this->verticalCount + i];
 
       if (verticalAngle > this->maxVerticalAngle)
       {
-        ignerr << "Vertical angle exceeds maximum limits. Please check the input"
-           << std::endl;
+        ignerr <<
+            "Vertical angle exceeds maximum limits.Please check the input"
+          << std::endl;
       }
 
       if (verticalAngle < this->minVerticalAngle)
       {
-        ignerr << "Vertical angle less than minimum limits. Please check the input"
-           << std::endl;
+        ignerr <<
+            "Vertical angle less than minimum limits. Please check the input"
+          << std::endl;
       }
 
       if (horizontalAngle < this->minHorizontalAngle)
       {
-        ignerr << "Horizontal angle less than minimum limits. Please check the input"
-           << std::endl;
+        ignerr <<
+            "Horizontal angle less than minimum limits. Please check the input"
+          << std::endl;
       }
 
       if (horizontalAngle > this->maxHorizontalAngle)
       {
-        ignerr << "Horizontal angle exceeds maximum limits. Please check the input"
-           << std::endl;
+        ignerr <<
+            "Horizontal angle exceeds maximum limits. Please check the input"
+          << std::endl;
       }
 
       bool inf = std::isinf(r);
@@ -235,22 +251,25 @@ void OgreLidarVisual::Update()
       double hitRange = inf ? 0 : r;
 
       // Compute the start point of the ray
-      ignition::math::Vector3d startPt = (axis * minRange) + this->offset.Pos();
+      ignition::math::Vector3d startPt =
+                  (axis * minRange) + this->offset.Pos();
 
       // Compute the end point of the ray
-      ignition::math::Vector3d pt = (axis * hitRange) + this->offset.Pos();
+      ignition::math::Vector3d pt =
+                  (axis * hitRange) + this->offset.Pos();
 
       double noHitRange = inf ? maxRange : hitRange;
 
       // Compute the end point of the no-hit ray
-      ignition::math::Vector3d noHitPt = (axis * noHitRange) + this->offset.Pos();
+      ignition::math::Vector3d noHitPt =
+                  (axis * noHitRange) + this->offset.Pos();
 
       // Draw the lines and strips that represent each simulated ray
       if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
       {
         this->dataPtr->rayLines[j]->AddPoint(startPt);
         this->dataPtr->rayLines[j]->AddPoint(inf ? noHitPt : pt);
-        
+
         this->dataPtr->rayStrips[j]->AddPoint(startPt);
         this->dataPtr->rayStrips[j]->AddPoint(inf ? startPt : pt);
 
@@ -261,10 +280,10 @@ void OgreLidarVisual::Update()
       {
         this->dataPtr->rayLines[j]->SetPoint(i*2, startPt);
         this->dataPtr->rayLines[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
-        
+
         this->dataPtr->rayStrips[j]->SetPoint(i*2, startPt);
         this->dataPtr->rayStrips[j]->SetPoint(i*2+1, inf ? startPt : pt);
-        
+
         this->dataPtr->noHitRayStrips[j]->SetPoint(i*2, startPt);
         this->dataPtr->noHitRayStrips[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
       }
@@ -274,7 +293,7 @@ void OgreLidarVisual::Update()
         this->dataPtr->deadZoneRayFans[j]->AddPoint(startPt);
       else
         this->dataPtr->deadZoneRayFans[j]->SetPoint(i+1, startPt);
-      
+
       // Update all the DynamicLines after adding points
       this->dataPtr->rayLines[j]->Update();
       this->dataPtr->rayStrips[j]->Update();

@@ -78,8 +78,6 @@ material Lidar/Blue
   }
 }
 
-
-
 material Lidar/BlackTransparent
 {
   technique

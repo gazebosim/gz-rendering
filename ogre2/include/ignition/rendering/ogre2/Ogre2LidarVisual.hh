@@ -29,10 +29,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    // Forward declaration
-    // class Ogre2LidarVisualPrivate;
-
     /// \brief Ogre 2.x implementation of a marker geometry.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2LidarVisual
     : public BaseLidarVisual<Ogre2Visual>

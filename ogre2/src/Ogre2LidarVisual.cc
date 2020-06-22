@@ -24,22 +24,6 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
-// class ignition::rendering::Ogre2LidarVisualPrivate
-// {
-//   /// \brief Marker material
-//   public: Ogre2MaterialPtr material = nullptr;
-
-//   /// \brief Flag to indicate whether or not this mesh should be
-//   /// responsible for destroying the material
-//   public: bool ownsMaterial = false;
-
-//   /// \brief Mesh Object for primitive shapes
-//   public: Ogre2MeshPtr mesh = nullptr;
-
-//   /// \brief DynamicLines Object to display
-//   public: std::shared_ptr<Ogre2DynamicRenderable> dynamicRenderable;
-// };
-
 using namespace ignition;
 using namespace rendering;
 

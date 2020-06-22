@@ -64,7 +64,7 @@ namespace ignition
 
       /// \brief Get minimum vertical angle
       /// \return The minimum vertical angle value of the lidar visual
-      public: virtual double MinVerticalAngle() = 0;
+      public: virtual double MinVerticalAngle() const = 0;
 
       /// \brief Set maximum vertical angle
       /// \param[in] _maxVerticalAngle Maximum vertical angle value
@@ -73,7 +73,7 @@ namespace ignition
 
       /// \brief Get minimum vertical angle
       /// \return The maximum vertical angle value of the lidar visual
-      public: virtual double MaxVerticalAngle() = 0;
+      public: virtual double MaxVerticalAngle() const = 0;
 
       /// \brief Set minimum horizontal angle
       /// \param[in] _minHorizontalAngle Minimum horizontal angle value
@@ -82,7 +82,7 @@ namespace ignition
 
       /// \brief Get minimum horizontal angle
       /// \return The minimum horizontal angle value of the lidar visual
-      public: virtual double MinHorizontalAngle() = 0;
+      public: virtual double MinHorizontalAngle() const = 0;
 
       /// \brief Set maximum horizontal angle
       /// \param[in] _maxHorizontalAngle Maximum horizontal angle value
@@ -91,7 +91,7 @@ namespace ignition
 
       /// \brief Get maximum horizontal angle
       /// \return The maximum horizontal angle value of the lidar visual
-      public: virtual double MaxHorizontalAngle() = 0;
+      public: virtual double MaxHorizontalAngle() const = 0;
 
       /// \brief Set number of vertical rays
       /// \param[in] _verticalRayCount Number of vertical rays
@@ -100,7 +100,7 @@ namespace ignition
 
       /// \brief Get number of vertical rays
       /// \return The number of vertical rays
-      public: virtual unsigned int VerticalRayCount() = 0;
+      public: virtual unsigned int VerticalRayCount() const = 0;
 
       /// \brief Set number of horizontal rays
       /// \return _horizontalRayCount Number of vertical rays
@@ -109,7 +109,7 @@ namespace ignition
 
       /// \brief Get number of horizontal rays
       /// \return The number of horizontal rays
-      public: virtual unsigned int HorizontalRayCount() = 0;
+      public: virtual unsigned int HorizontalRayCount() const = 0;
 
       /// \brief Set minimum range of lidar rays
       /// \param[in] _minRange The minimum range for lidar rays
@@ -117,7 +117,7 @@ namespace ignition
 
       /// \brief Get minimum range of lidar rays
       /// \return The minimum range for lidar rays
-      public: virtual double MinRange() = 0;
+      public: virtual double MinRange() const = 0;
 
       /// \brief Set maximum range of lidar rays
       /// \param[in] _maxRange The maximum range for lidar rays
@@ -125,7 +125,7 @@ namespace ignition
 
       /// \brief Get maximum range of lidar rays
       /// \return The maximum range for lidar rays
-      public: virtual double MaxRange() = 0;
+      public: virtual double MaxRange() const = 0;
 
       /// \brief Set vertical step angle
       /// \param[in] _verticalAngleStep Vertical angle between two rays
@@ -134,7 +134,7 @@ namespace ignition
 
       /// \brief Get vertical step angle
       /// \return The difference in vertical angle between two rays
-      public: virtual double VerticalAngleStep() = 0;
+      public: virtual double VerticalAngleStep() const = 0;
 
       /// \brief Set horizontal step angle
       /// \param[in] _horizontalAngleStep Horizontal angle between two rays
@@ -143,7 +143,7 @@ namespace ignition
 
       /// \brief Get horizontal step angle
       /// \return The difference in horizontal angle between two rays
-      public: virtual double HorizontalAngleStep() = 0;
+      public: virtual double HorizontalAngleStep() const = 0;
 
       /// \brief Set offset of visual
       /// \param[in] _offset The offset of the lidar rays from visual origin
@@ -152,11 +152,11 @@ namespace ignition
 
       /// \brief Get offset of visual
       /// \return The offset of the lidar rays from visual origin
-      public: virtual ignition::math::Pose3d  Offset() = 0;
+      public: virtual ignition::math::Pose3d  Offset() const = 0;
 
       /// \brief Get number of points in laser data
       /// \return The number of points in the laser data
-      public: virtual unsigned int GetPointCount() = 0;
+      public: virtual unsigned int GetPointCount() const = 0;
     };
     }
   }

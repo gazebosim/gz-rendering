@@ -307,7 +307,7 @@ void OgreLidarVisual::Update()
 }
 
 //////////////////////////////////////////////////
-unsigned int OgreLidarVisual::GetPointCount()
+unsigned int OgreLidarVisual::GetPointCount() const
 {
   return this->dataPtr->laserMsg.size();
 }

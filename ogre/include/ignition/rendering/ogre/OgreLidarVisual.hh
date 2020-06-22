@@ -63,7 +63,7 @@ namespace ignition
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
-      public: virtual unsigned int GetPointCount() override;
+      public: virtual unsigned int GetPointCount() const override;
 
       /// \brief Create the Lidar Visual in ogre
       private: void Create();

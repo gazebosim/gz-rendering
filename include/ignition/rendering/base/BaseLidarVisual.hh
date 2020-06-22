@@ -49,91 +49,91 @@ namespace ignition
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
-      public: virtual void SetLidarMessage(std::vector<double> &_msg);
+      public: virtual void SetLidarMessage(std::vector<double> &_msg) override;
 
       // Documentation inherited
-      public: virtual void Update();
+      public: virtual void Update() override;
 
       // Documentation inherited
-      public: virtual void Init();
+      public: virtual void Init() override;
 
       // Documentation inherited
       public: virtual void SetMinVerticalAngle(
-                  const double _minVerticalAngle);
+                  const double _minVerticalAngle) override;
 
       // Documentation inherited
-      public: virtual double MinVerticalAngle();
+      public: virtual double MinVerticalAngle() const override;
 
       // Documentation inherited
       public: virtual void SetMaxVerticalAngle(
-                  const double _maxVerticalAngle);
+                  const double _maxVerticalAngle) override;
 
       // Documentation inherited
-      public: virtual double MaxVerticalAngle();
+      public: virtual double MaxVerticalAngle() const override;
 
       // Documentation inherited
       public: virtual void SetMinHorizontalAngle(
-                  const double _minHorizontalAngle);
+                  const double _minHorizontalAngle) override;
 
       // Documentation inherited
-      public: virtual double MinHorizontalAngle();
+      public: virtual double MinHorizontalAngle() const override;
 
       // Documentation inherited
       public: virtual void SetMaxHorizontalAngle(
-                  const double _maxHorizontalAngle);
+                  const double _maxHorizontalAngle) override;
 
       // Documentation inherited
-      public: virtual double MaxHorizontalAngle();
+      public: virtual double MaxHorizontalAngle() const override;
 
       // Documentation inherited
       public: virtual void SetVerticalRayCount(
-                  const unsigned int _verticalRayCount);
+                  const unsigned int _verticalRayCount) override;
 
       // Documentation inherited
-      public: virtual unsigned int VerticalRayCount();
+      public: virtual unsigned int VerticalRayCount() const override;
 
       // Documentation inherited
       public: virtual void SetHorizontalRayCount(
-                  const unsigned int _horizontalRayCount);
+                  const unsigned int _horizontalRayCount) override;
 
       // Documentation inherited
-      public: virtual unsigned int HorizontalRayCount();
+      public: virtual unsigned int HorizontalRayCount() const override;
 
       // Documentation inherited
-      public: virtual void SetMinRange(const double _minRange);
+      public: virtual void SetMinRange(const double _minRange) override;
 
       // Documentation inherited
-      public: virtual double MinRange();
+      public: virtual double MinRange() const override;
 
       // Documentation inherited
-      public: virtual void SetMaxRange(const double _maxRange);
+      public: virtual void SetMaxRange(const double _maxRange) override;
 
       // Documentation inherited
-      public: virtual double MaxRange();
+      public: virtual double MaxRange() const override;
 
       // Documentation inherited
       public: virtual void SetVerticalAngleStep(
-                  const double _verticalAngleStep);
+                  const double _verticalAngleStep) override;
 
       // Documentation inherited
-      public: virtual double VerticalAngleStep();
+      public: virtual double VerticalAngleStep() const override;
 
       // Documentation inherited
       public: virtual void SetHorizontalAngleStep(
-                  const double _horizontalAngleStep);
+                  const double _horizontalAngleStep) override;
 
       // Documentation inherited
-      public: virtual double HorizontalAngleStep();
+      public: virtual double HorizontalAngleStep() const override;
 
       // Documentation inherited
       public: virtual void SetOffset(
-                  const ignition::math::Pose3d _offset);
+                  const ignition::math::Pose3d _offset) override;
 
       // Documentation inherited
-      public: virtual ignition::math::Pose3d  Offset();
+      public: virtual ignition::math::Pose3d  Offset() const override;
 
       // Documentation inherited
-      public: virtual unsigned int GetPointCount() override;
+      public: virtual unsigned int GetPointCount() const override;
 
       /// \brief Vertical minimal angle
       protected: double minVerticalAngle = 0;
@@ -206,7 +206,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseLidarVisual<T>::GetPointCount()
+    unsigned int BaseLidarVisual<T>::GetPointCount() const
     {
         return 0u;
     }
@@ -242,7 +242,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseLidarVisual<T>::MinVerticalAngle()
+    double BaseLidarVisual<T>::MinVerticalAngle() const
     {
       return this->minVerticalAngle;
     }
@@ -257,7 +257,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseLidarVisual<T>::MaxVerticalAngle()
+    double BaseLidarVisual<T>::MaxVerticalAngle() const
     {
       return this->maxVerticalAngle;
     }
@@ -272,7 +272,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseLidarVisual<T>::VerticalRayCount()
+    unsigned int BaseLidarVisual<T>::VerticalRayCount() const
     {
       return this->verticalCount;
     }
@@ -287,7 +287,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseLidarVisual<T>::VerticalAngleStep()
+    double BaseLidarVisual<T>::VerticalAngleStep() const
     {
       return this->verticalAngleStep;
     }
@@ -302,7 +302,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseLidarVisual<T>::MinHorizontalAngle()
+    double BaseLidarVisual<T>::MinHorizontalAngle() const
     {
       return this->minHorizontalAngle;
     }
@@ -317,7 +317,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseLidarVisual<T>::MaxHorizontalAngle()
+    double BaseLidarVisual<T>::MaxHorizontalAngle() const
     {
       return this->maxHorizontalAngle;
     }
@@ -332,7 +332,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    unsigned int BaseLidarVisual<T>::HorizontalRayCount()
+    unsigned int BaseLidarVisual<T>::HorizontalRayCount() const
     {
       return this->horizontalCount;
     }
@@ -347,7 +347,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseLidarVisual<T>::HorizontalAngleStep()
+    double BaseLidarVisual<T>::HorizontalAngleStep() const
     {
       return this->horizontalAngleStep;
     }
@@ -361,7 +361,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseLidarVisual<T>::MinRange()
+    double BaseLidarVisual<T>::MinRange() const
     {
       return this->minRange;
     }
@@ -375,7 +375,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseLidarVisual<T>::MaxRange()
+    double BaseLidarVisual<T>::MaxRange() const
     {
       return this->maxRange;
     }
@@ -389,7 +389,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    ignition::math::Pose3d BaseLidarVisual<T>::Offset()
+    ignition::math::Pose3d BaseLidarVisual<T>::Offset() const
     {
       return this->offset;
     }

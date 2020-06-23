@@ -348,9 +348,15 @@ void DepthCameraTest::DepthCameraBoxes(
           float x = pointCloudData[step + j*pointCloudChannelCount];
           float y = pointCloudData[step + j*pointCloudChannelCount + 1];
           float z = pointCloudData[step + j*pointCloudChannelCount + 2];
+#ifdef __APPLE__
+          EXPECT_FLOAT_EQ(maxVal, x) << " " << scan[mid] << " vs "
+                   << pointCloudData[step + mid*pointCloudChannelCount]
+                   << " vs " << pointCloudData[0];
+#else
           EXPECT_FLOAT_EQ(maxVal, x);
           EXPECT_FLOAT_EQ(maxVal, y);
           EXPECT_FLOAT_EQ(maxVal, z);
+#endif
         }
       }
 
@@ -384,7 +390,7 @@ void DepthCameraTest::DepthCameraBoxes(
 
     // Verify Depth
     {
-      // box not detected so all should return max val
+      // all points should have the same depth value
       EXPECT_FLOAT_EQ(expectedRange, scan[mid]);
       EXPECT_FLOAT_EQ(expectedRange, scan[left]);
       EXPECT_FLOAT_EQ(expectedRange, scan[right]);
@@ -398,7 +404,11 @@ void DepthCameraTest::DepthCameraBoxes(
         for (unsigned int j = 0; j < depthCamera->ImageWidth(); ++j)
         {
           float x = pointCloudData[step + j*pointCloudChannelCount];
+#ifdef __APPLE__
+          EXPECT_NEAR(expectedRange, x, 1e-6);
+#else
           EXPECT_FLOAT_EQ(expectedRange, x);
+#endif
         }
       }
 

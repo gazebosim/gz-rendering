@@ -99,10 +99,10 @@ public_headers = public_headers_no_gen + [
 ]
 
 cc_binary(
-    name = "libign_rendering-ogre2.so",
+    name = "libignition-rendering4-ogre2.so",
     srcs = sources + public_headers,
     includes = ["include"],
-    linkopts = ["-Wl,-soname,libign_rendering.so"],
+    linkopts = ["-Wl,-soname,libignition-rendering4-ogre2.so"],
     linkshared =  True,
     visibility = [],
     deps = [
@@ -117,20 +117,26 @@ cc_binary(
         "//ogre2/Components:hlms_pbs",
         "//ogre2/Components:hlms_unlit",
         "//ogre2/Components:overlay",
-        "//ogre2:rendersystem_gl",
+        "//ogre2:RenderSystem_GL3Plus.so",
     ],
+    data = ["src/media"],
     local_defines = [
-        "OGRE2_RESOURCE_PATH='\"TODO: replace with correct string\"'",
+        "OGRE2_RESOURCE_PATH='\"./ogre2/\"'",
         "OGRE2_VERSION='\"TODO: replace with correct string\"'",
     ],
 )
 
 cc_library(
-    name = "ign_rendering-ogre2",
-    srcs = ["libign_rendering-ogre2.so"],
+    name = "ogre2",
+    srcs = ["libignition-rendering4-ogre2.so"],
     hdrs = public_headers,
     includes = ["include"],
     visibility = ["//visibility:public"],
+    deps = [
+        "//ogre2:libOgreMain.so",
+        "//ogre2/Components:hlms_pbs",
+        "//ogre2/Components:hlms_unlit",
+        "//ogre2/Components:overlay",
+        "//ogre2:RenderSystem_GL3Plus.so",
+    ]
 )
-
-

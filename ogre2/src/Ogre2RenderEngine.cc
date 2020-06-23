@@ -302,12 +302,19 @@ void Ogre2RenderEngine::LoadAttempt()
   if (!this->useCurrentGLContext)
     this->CreateContext();
   this->CreateRoot();
+  std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
   this->CreateOverlay();
+  std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
   this->LoadPlugins();
+  std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
   this->CreateRenderSystem();
+  std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
   this->ogreRoot->initialise(false);
+  std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
   this->CreateRenderWindow();
+  std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
   this->CreateResources();
+  std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -383,7 +390,7 @@ void Ogre2RenderEngine::CreateRoot()
   }
   catch (Ogre::Exception &ex)
   {
-    ignerr << "Unable to create Ogre root" << std::endl;
+    ignerr << "Unable to create Ogre root: " << ex.what() << std::endl;
   }
 }
 
@@ -400,6 +407,9 @@ void Ogre2RenderEngine::LoadPlugins()
        iter != this->ogrePaths.end(); ++iter)
   {
     std::string path(*iter);
+    ignmsg << "OgrePath: " << path << std::endl;
+    std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
+
     if (!common::isDirectory(path))
       continue;
 
@@ -441,10 +451,13 @@ void Ogre2RenderEngine::LoadPlugins()
       try
       {
         // Load the plugin into OGRE
+        std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
         this->ogreRoot->loadPlugin(filename);
+        std::cout << __LINE__ << " " << Ogre::Codec::getExtensions().size() << std::endl;
       }
       catch(Ogre::Exception &e)
       {
+        ignerr << e.what() << std::endl;
         if ((*piter).find("RenderSystem") != std::string::npos)
         {
           ignerr << "Unable to load Ogre Plugin[" << *piter
@@ -464,10 +477,11 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
   rsList = &(this->ogreRoot->getAvailableRenderers());
 
+  ignerr << rsList->size() << std::endl;
+
   int c = 0;
 
   renderSys = nullptr;
-
   do
   {
     if (c == static_cast<int>(rsList->size()))

@@ -177,7 +177,7 @@ int main(int _argc, char** _argv)
 
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
-  std::string engine("ogre");
+  std::string engine("ogre2");
   if (_argc > 1)
   {
     engine = _argv[1];

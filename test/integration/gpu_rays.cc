@@ -443,6 +443,15 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   delete [] scan;
   scan = nullptr;
 
+  std::string homePath;
+  ignition::common::env(IGN_HOMEDIR, homePath);
+  std::string p = homePath + "/.ignition/rendering/ogre2.log";
+  std::ifstream fs(p);
+  std::string str((std::istreambuf_iterator<char>(fs)),
+                   std::istreambuf_iterator<char>());
+  std::cerr << "================== " << std::endl;
+  std::cerr << str << std::endl;
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

@@ -1200,41 +1200,4 @@ void BaseScene::CreateMaterials()
   material->SetCastShadows(true);
   material->SetReceiveShadows(true);
   material->SetLightingEnabled(true);
-
-  material = this->CreateMaterial("Lidar/Blue");
-  material->SetAmbient(0.0, 0.0, 1.0);
-  material->SetDiffuse(0.0, 0.0, 1.0);
-  material->SetEmissive(0.0, 0.0, 1.0);
-  material->SetTransparency(0.6);
-  material->SetCastShadows(false);
-  material->SetReceiveShadows(false);
-  material->SetLightingEnabled(false);
-
-  material = this->CreateMaterial("Lidar/LightBlue");
-  material->SetAmbient(0.5, 0.5, 1.0);
-  material->SetDiffuse(0.5, 0.5, 1.0);
-  material->SetEmissive(0.5, 0.5, 1.0);
-  material->SetTransparency(0.7);
-  material->SetCastShadows(false);
-  material->SetReceiveShadows(false);
-  material->SetLightingEnabled(false);
-
-  material = this->CreateMaterial("Lidar/TransBlack");
-  material->SetAmbient(0.0, 0.0, 0.0);
-  material->SetDiffuse(0.0, 0.0, 0.0);
-  material->SetEmissive(0.0, 0.0, 0.0);
-  material->SetTransparency(0.7);
-  material->SetCastShadows(false);
-  material->SetReceiveShadows(false);
-  material->SetLightingEnabled(false);
-
-  material = this->CreateMaterial("Lidar/BlueRay");
-  material->SetAmbient(0.0, 0.0, 1.0);
-  material->SetDiffuse(0.0, 0.0, 1.0);
-  material->SetEmissive(0.0, 0.0, 1.0);
-  material->SetSpecular(0.1, 0.1, 1);
-  material->SetTransparency(0.0);
-  material->SetCastShadows(false);
-  material->SetReceiveShadows(false);
-  material->SetLightingEnabled(false);
 }

@@ -21,6 +21,7 @@
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
+#include "ignition/rendering/Material.hh"
 
 namespace ignition
 {
@@ -135,6 +136,9 @@ namespace ignition
       // Documentation inherited
       public: virtual unsigned int PointCount() const override;
 
+      /// \brief Create predefined materials for lidar visual
+      public: virtual void CreateMaterials();
+
       /// \brief Vertical minimal angle
       protected: double minVerticalAngle = 0;
 
@@ -230,6 +234,7 @@ namespace ignition
     void BaseLidarVisual<T>::Init()
     {
       T::Init();
+      this->CreateMaterials();
     }
 
     /////////////////////////////////////////////////
@@ -392,6 +397,51 @@ namespace ignition
     ignition::math::Pose3d BaseLidarVisual<T>::Offset() const
     {
       return this->offset;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseLidarVisual<T>::CreateMaterials()
+    {
+      MaterialPtr mtl;
+
+      mtl = T::Scene()->CreateMaterial("Lidar/Blue");
+      mtl->SetAmbient(0.0, 0.0, 1.0);
+      mtl->SetDiffuse(0.0, 0.0, 1.0);
+      mtl->SetEmissive(0.0, 0.0, 1.0);
+      mtl->SetTransparency(0.6);
+      mtl->SetCastShadows(false);
+      mtl->SetReceiveShadows(false);
+      mtl->SetLightingEnabled(false);
+
+      mtl = T::Scene()->CreateMaterial("Lidar/LightBlue");
+      mtl->SetAmbient(0.5, 0.5, 1.0);
+      mtl->SetDiffuse(0.5, 0.5, 1.0);
+      mtl->SetEmissive(0.5, 0.5, 1.0);
+      mtl->SetTransparency(0.7);
+      mtl->SetCastShadows(false);
+      mtl->SetReceiveShadows(false);
+      mtl->SetLightingEnabled(false);
+
+      mtl = T::Scene()->CreateMaterial("Lidar/TransBlack");
+      mtl->SetAmbient(0.0, 0.0, 0.0);
+      mtl->SetDiffuse(0.0, 0.0, 0.0);
+      mtl->SetEmissive(0.0, 0.0, 0.0);
+      mtl->SetTransparency(0.7);
+      mtl->SetCastShadows(false);
+      mtl->SetReceiveShadows(false);
+      mtl->SetLightingEnabled(false);
+
+      mtl = T::Scene()->CreateMaterial("Lidar/BlueRay");
+      mtl->SetAmbient(0.0, 0.0, 1.0);
+      mtl->SetDiffuse(0.0, 0.0, 1.0);
+      mtl->SetEmissive(0.0, 0.0, 1.0);
+      mtl->SetSpecular(0.1, 0.1, 1);
+      mtl->SetTransparency(0.0);
+      mtl->SetCastShadows(false);
+      mtl->SetReceiveShadows(false);
+      mtl->SetLightingEnabled(false);
+      return;
     }
     }
   }

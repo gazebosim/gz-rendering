@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Added Lidar Visualisation for Ogre1
+    * [Pull request #103](https://github.com/ignitionrobotics/ign-rendering/pull/103)
+
 1. Support setting skeleton node weights
     * [BitBucket pull request 256](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/256)
 

@@ -105,10 +105,10 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   std::vector<double> pts{10.0, 15.0, 15.0,
                           15.0, INFINITY, INFINITY, INFINITY,
                           10, 3.5};
-  lidar->SetLidarMessage(pts);
-  EXPECT_EQ(pts.size(), lidar->GetPointCount());
+  lidar->SetPoints(pts);
+  EXPECT_EQ(pts.size(), lidar->PointCount());
   lidar->ClearPoints();
-  EXPECT_EQ(lidar->GetPointCount(), 0u);
+  EXPECT_EQ(lidar->PointCount(), 0u);
 
 
   // Clean up

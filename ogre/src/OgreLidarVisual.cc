@@ -122,7 +122,7 @@ void OgreLidarVisual::ClearPoints()
 
 
 //////////////////////////////////////////////////
-void OgreLidarVisual::SetLidarMessage(std::vector<double> &_msg)
+void OgreLidarVisual::SetPoints(std::vector<double> &_msg)
 {
   this->dataPtr->laserMsg.clear();
   this->dataPtr->laserMsg = _msg;
@@ -165,7 +165,7 @@ void OgreLidarVisual::Update()
                   std::shared_ptr<OgreDynamicLines>(
                               new OgreDynamicLines(MT_TRIANGLE_STRIP));
 
-      line->setMaterial("Lidar/BlueLaser");
+      line->setMaterial("Lidar/Blue");
       std::shared_ptr<Ogre::MovableObject> mv =
                 std::dynamic_pointer_cast<Ogre::MovableObject>(line);
 
@@ -175,7 +175,7 @@ void OgreLidarVisual::Update()
       line = std::shared_ptr<OgreDynamicLines>(
                   new OgreDynamicLines(MT_TRIANGLE_STRIP));
 
-      line->setMaterial("Lidar/LightBlueLaser");
+      line->setMaterial("Lidar/LightBlue");
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->noHitRayStrips.push_back(line);
@@ -183,7 +183,7 @@ void OgreLidarVisual::Update()
       line = std::shared_ptr<OgreDynamicLines>(
                   new OgreDynamicLines(MT_TRIANGLE_FAN));
 
-      line->setMaterial("Lidar/BlackTransparent");
+      line->setMaterial("Lidar/TransBlack");
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->deadZoneRayFans.push_back(line);
@@ -194,7 +194,7 @@ void OgreLidarVisual::Update()
       line = std::shared_ptr<OgreDynamicLines>(
                   new OgreDynamicLines(MT_LINE_LIST));
 
-      line->setMaterial("Lidar/Blue");
+      line->setMaterial("Lidar/BlueRay");
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->rayLines.push_back(line);
@@ -307,7 +307,7 @@ void OgreLidarVisual::Update()
 }
 
 //////////////////////////////////////////////////
-unsigned int OgreLidarVisual::GetPointCount() const
+unsigned int OgreLidarVisual::PointCount() const
 {
   return this->dataPtr->laserMsg.size();
 }

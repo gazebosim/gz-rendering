@@ -78,14 +78,12 @@ void buildScene(ScenePtr _scene)
     root->AddChild(grid);
   }
 
-  //create lidar visual
+  // create lidar visual
   LidarVisualPtr lidar = _scene->CreateLidarVisual();
 
-  if ( !lidar)
-  {
-    std::cout << "NULLPOINTER IS RETURNED\n";
-  }
-  std::vector<double> pts{10.0, 15.0, 15.0, 15.0, INFINITY, INFINITY, INFINITY, 10, 3.5};
+  std::vector<double> pts{10.0, 15.0, 15.0, 15.0,
+                          INFINITY, INFINITY, INFINITY,
+                          10, 3.5};
   lidar->SetMinHorizontalAngle(0.0);
   lidar->SetHorizontalAngleStep(0.3);
   lidar->SetHorizontalRayCount(3);
@@ -96,9 +94,9 @@ void buildScene(ScenePtr _scene)
   lidar->SetVerticalRayCount(3);
   lidar->SetMaxRange(50);
   lidar->SetMinRange(0.5);
-  lidar->SetLidarMessage(pts);
+  lidar->SetPoints(pts);
   lidar->Update();
-  lidar->SetLocalPosition(3,0,0);
+  lidar->SetLocalPosition(3, 0, 0);
   root->AddChild(lidar);
 
   // create camera
@@ -111,7 +109,6 @@ void buildScene(ScenePtr _scene)
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
-
 }
 
 //////////////////////////////////////////////////

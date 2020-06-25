@@ -55,7 +55,7 @@ namespace ignition
 
       /// \brief Callback when the senspr data is recieved
       /// \param[in] _msg Vector of points representing distance of the ray
-      public: virtual void SetLidarMessage(std::vector<double> &_msg) = 0;
+      public: virtual void SetPoints(std::vector<double> &_msg) = 0;
 
       /// \brief Set minimum vertical angle
       /// \param[in] _minVerticalAngle Minimum vertical angle
@@ -156,7 +156,7 @@ namespace ignition
 
       /// \brief Get number of points in laser data
       /// \return The number of points in the laser data
-      public: virtual unsigned int GetPointCount() const = 0;
+      public: virtual unsigned int PointCount() const = 0;
     };
     }
   }

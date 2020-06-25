@@ -505,10 +505,10 @@ namespace ignition
       protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
-      /// \brief Implementation for creating a lidar visual geometry object
+      /// \brief Implementation for creating a lidar visual
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.
-      /// \return Pointer to a lidar visual geometry object
+      /// \return Pointer to a lidar visual
       protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
 

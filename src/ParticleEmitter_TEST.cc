@@ -43,8 +43,7 @@ void ParticleEmitterTest::ParticleEmitter(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -52,7 +51,6 @@ void ParticleEmitterTest::ParticleEmitter(const std::string &_renderEngine)
 
   // create visual
   ParticleEmitterPtr particleEmitter = scene->CreateParticleEmitter();
-  ASSERT_NE(nullptr, particleEmitter);
 
   // Clean up
   engine->DestroyScene(scene);
@@ -65,7 +63,7 @@ TEST_P(ParticleEmitterTest, ParticleEmitter)
   ParticleEmitter(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Visual, ParticleEmitterTest,
+INSTANTIATE_TEST_CASE_P(ParticleEmitter, ParticleEmitterTest,
     RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 

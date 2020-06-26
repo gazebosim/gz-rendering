@@ -29,7 +29,8 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class ParticleEmitter ParticleEmitter.hh ignition/rendering/ParticleEmitter.hh
+    /// \class ParticleEmitter ParticleEmitter.hh
+    /// ignition/rendering/ParticleEmitter.hh
     /// \brief
     class IGNITION_RENDERING_VISIBLE ParticleEmitter :
       public virtual CompositeVisual

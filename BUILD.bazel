@@ -139,7 +139,7 @@ test_sources = [
     "src/PixelFormat_TEST.cc",
     "src/RayQuery_TEST.cc",
     "src/RenderEngine_TEST.cc",
-    "src/RenderingIface_TEST.cc",
+    # "src/RenderingIface_TEST.cc",
     "src/RenderPassSystem_TEST.cc",
     "src/RenderTarget_TEST.cc",
     "src/Scene_TEST.cc",

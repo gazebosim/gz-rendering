@@ -400,8 +400,6 @@ void Ogre2RenderEngine::LoadPlugins()
        iter != this->ogrePaths.end(); ++iter)
   {
     std::string path(*iter);
-    ignmsg << "OgrePath: " << path << std::endl;
-
     if (!common::isDirectory(path))
       continue;
 

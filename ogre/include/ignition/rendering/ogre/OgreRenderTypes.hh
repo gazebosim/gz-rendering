@@ -43,6 +43,7 @@ namespace ignition
     class OgreMeshFactory;
     class OgreNode;
     class OgreObject;
+    class OgreParticleEmitter;
     class OgrePointLight;
     class OgreRayQuery;
     class OgreRenderEngine;
@@ -85,6 +86,7 @@ namespace ignition
     typedef shared_ptr<OgreMeshFactory>          OgreMeshFactoryPtr;
     typedef shared_ptr<OgreNode>                 OgreNodePtr;
     typedef shared_ptr<OgreObject>               OgreObjectPtr;
+    typedef shared_ptr<OgreParticleEmitter>      OgreParticleEmitterPtr;
     typedef shared_ptr<OgrePointLight>           OgrePointLightPtr;
     typedef shared_ptr<OgreRayQuery>             OgreRayQueryPtr;
     typedef shared_ptr<OgreRenderEngine>         OgreRenderEnginePtr;

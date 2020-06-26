@@ -65,6 +65,7 @@ namespace ignition
     class Node;
     class Object;
     class ObjectFactory;
+    class ParticleEmitter;
     class PointLight;
     class RayQuery;
     class RenderEngine;
@@ -162,6 +163,10 @@ namespace ignition
     /// \def ObjectFactoryPtr
     /// \brief Shared pointer to ObjectFactory
     typedef shared_ptr<ObjectFactory> ObjectFactoryPtr;
+
+    /// \def ParticleEmitterPtr
+    /// \brief Shared pointer to ParticleEmitter
+    typedef shared_ptr<ParticleEmitter> ParticleEmitterPtr;
 
     /// \def PointLightPtr
     /// \brief Shared pointer to PointLight
@@ -292,6 +297,10 @@ namespace ignition
     /// \def const ObjectFactoryPtr
     /// \brief Shared pointer to const ObjectFactory
     typedef shared_ptr<const ObjectFactory> ConstObjectFactoryPtr;
+
+    /// \def const ParticleEmitterPtr
+    /// \brief Shared pointer to const ParticleEmitter
+    typedef shared_ptr<const ParticleEmitter> ConstParticleEmitterPtr;
 
     /// \def const PointLightPtr
     /// \brief Shared pointer to const PointLight

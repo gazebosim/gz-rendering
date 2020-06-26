@@ -395,6 +395,21 @@ namespace ignition
 
       public: virtual RayQueryPtr CreateRayQuery() override;
 
+      // Documentation inherited.
+      public: virtual ParticleEmitterPtr CreateParticleEmitter() override;
+
+      // Documentation inherited.
+      public: virtual ParticleEmitterPtr CreateParticleEmitter(unsigned int _id)
+                  override;
+
+      // Documentation inherited.
+      public: virtual ParticleEmitterPtr CreateParticleEmitter(
+                  const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual ParticleEmitterPtr CreateParticleEmitter(
+                  unsigned int _id, const std::string &_name) override;
+
       public: virtual void PreRender() override;
 
       public: virtual void Clear() override;

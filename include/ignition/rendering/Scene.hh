@@ -886,6 +886,25 @@ namespace ignition
       /// \return The created ray query
       public: virtual RayQueryPtr CreateRayQuery() = 0;
 
+      /// \brief ToDo.
+      /// \return ToDo.
+      public: virtual ParticleEmitterPtr CreateParticleEmitter() = 0;
+
+      /// \brief ToDo.
+      /// \return ToDo.
+      public: virtual ParticleEmitterPtr CreateParticleEmitter(
+                  unsigned int _id) = 0;
+
+      /// \brief ToDo.
+      /// \return ToDo.
+      public: virtual ParticleEmitterPtr CreateParticleEmitter(
+                  const std::string &_name) = 0;
+
+      /// \brief ToDo.
+      /// \return ToDo.
+      public: virtual ParticleEmitterPtr CreateParticleEmitter(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Prepare scene for rendering. The scene will flushing any scene
       /// changes by traversing scene-graph, calling PreRender on all objects
       public: virtual void PreRender() = 0;

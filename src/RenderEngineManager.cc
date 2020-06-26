@@ -381,11 +381,6 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   // Add extra search path.
   systemPaths.AddPluginPaths(_path);
 
-  for (auto path: systemPaths.PluginPaths())
-  {
-    ignmsg << "path: " << path << std::endl;
-  }
-
   auto pathToLib = systemPaths.FindSharedLibrary(_filename);
   if (pathToLib.empty())
   {

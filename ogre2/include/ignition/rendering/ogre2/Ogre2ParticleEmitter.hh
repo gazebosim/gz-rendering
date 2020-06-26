@@ -25,7 +25,8 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
+
+    /// \brief Class to manage a particle emitter.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2ParticleEmitter :
       public BaseParticleEmitter<Ogre2Visual>
     {

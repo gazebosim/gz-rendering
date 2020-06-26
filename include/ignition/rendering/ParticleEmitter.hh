@@ -31,7 +31,8 @@ namespace ignition
     //
     /// \class ParticleEmitter ParticleEmitter.hh
     /// ignition/rendering/ParticleEmitter.hh
-    /// \brief
+    //
+    /// \brief Class to manage a particle emitter.
     class IGNITION_RENDERING_VISIBLE ParticleEmitter :
       public virtual CompositeVisual
     {

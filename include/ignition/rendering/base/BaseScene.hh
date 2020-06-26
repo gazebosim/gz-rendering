@@ -400,7 +400,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual ParticleEmitterPtr CreateParticleEmitter(unsigned int _id)
-                  override;
+                      override;
 
       // Documentation inherited.
       public: virtual ParticleEmitterPtr CreateParticleEmitter(

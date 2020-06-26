@@ -53,10 +53,10 @@ namespace ignition
       // Documentation inherited
       public: virtual void PreRender() override;
 
-      /// \brief Reset the gizmo visual state
+      /// \brief Reset the particle emitter visual state
       public: virtual void Reset();
 
-      /// \brief Only the scene can create a GizmoVisual
+      /// \brief Only the scene can create a particle emitter
       private: friend class BaseScene;
     };
 

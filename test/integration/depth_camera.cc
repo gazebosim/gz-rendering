@@ -194,7 +194,7 @@ void DepthCameraTest::DepthCameraBoxes(
     EXPECT_FLOAT_EQ(maxVal, scan[left]);
     EXPECT_FLOAT_EQ(maxVal, scan[right]);
 
-/*    // Verify Point Cloud XYZ values
+    // Verify Point Cloud XYZ values
     {
       // check mid point
       float mx = pointCloudData[pcMid];
@@ -398,11 +398,7 @@ void DepthCameraTest::DepthCameraBoxes(
         for (unsigned int j = 0; j < depthCamera->ImageWidth(); ++j)
         {
           float x = pointCloudData[step + j*pointCloudChannelCount];
-#ifdef __APPLE__
-          EXPECT_NEAR(expectedRange, x, 1e-6);
-#else
           EXPECT_FLOAT_EQ(expectedRange, x);
-#endif
         }
       }
 
@@ -427,7 +423,6 @@ void DepthCameraTest::DepthCameraBoxes(
       }
     }
 
-*/
     // Clean up
     connection.reset();
     delete [] scan;
@@ -435,31 +430,15 @@ void DepthCameraTest::DepthCameraBoxes(
       delete [] pointCloudData;
   }
 
-  std::string homePath;
-  ignition::common::env(IGN_HOMEDIR, homePath);
-  std::string p = homePath + "/.ignition/rendering/ogre2.log";
-  std::ifstream fs(p);
-  std::string str((std::istreambuf_iterator<char>(fs)),
-                   std::istreambuf_iterator<char>());
-  std::cerr << "================== " << std::endl;
-  std::cerr << str << std::endl;
-  std::cerr << "================== " << std::endl;
-  std::cerr << "========ogre plugin dir iter " << std::endl;
-
-  for (ignition::common::DirIter file("/usr/local/opt/ogre2.1/lib/OGRE-2.1/");
-       file != ignition::common::DirIter(); ++file)
-  {
-    std::string current(*file);
-    std::cerr << current  << std::endl;
-  }
-
-
-
   engine->DestroyScene(scene);
   ignition::rendering::unloadEngine(engine->Name());
 }
 
+#ifdef __APPLE__
+TEST_P(DepthCameraTest, DISABLED_DepthCameraBoxes)
+#else
 TEST_P(DepthCameraTest, DepthCameraBoxes)
+#endif
 {
   DepthCameraBoxes(GetParam());
 }

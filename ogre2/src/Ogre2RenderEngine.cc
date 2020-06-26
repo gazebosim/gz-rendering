@@ -383,7 +383,7 @@ void Ogre2RenderEngine::CreateRoot()
   }
   catch (Ogre::Exception &ex)
   {
-    ignerr << "Unable to create Ogre root" << std::endl;
+    ignerr << "Unable to create Ogre root: " << ex.what() << std::endl;
   }
 }
 
@@ -467,7 +467,6 @@ void Ogre2RenderEngine::CreateRenderSystem()
   int c = 0;
 
   renderSys = nullptr;
-
   do
   {
     if (c == static_cast<int>(rsList->size()))

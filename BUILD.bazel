@@ -8,13 +8,13 @@ load(
     "generate_include_header",
 )
 load(
-    "//ign_bazel:generate_file.bzl",
-    "generate_file",
+    "//ign_bazel:ign_export_header.bzl",
+    "ign_export_header",
 )
 
 package(default_visibility = ["//visibility:public"])
 
-RESOURCE_PATH = "~/.ignition"
+RESOURCE_PATH = "ign_rendering"
 PROJECT_NAME = "ignition-rendering"
 PROJECT_MAJOR = 4
 PROJECT_MINOR = 0
@@ -43,25 +43,10 @@ cmake_configure_file(
     visibility = ["//visibility:private"],
 )
 
-generate_file(
+ign_export_header(
     name = "include/ignition/rendering/Export.hh",
-    content = """
-#pragma once
-// IGN_DEPRECATED is defined by all ignition libraries, but the version below
-// is a simplified version.  When mixing the regular ignition libraries and
-// the drake compiled ignition libraries, the compiler throws a warning about
-// the macro being multiply defined.  We undefine it before redefining it here
-// to work around that issue.  Note that the IGNITION_RENDERING_VISIBLE macro
-// shouldn't be defined multiple times, but we undefine it just in case.
-#ifdef IGNITION_RENDERING_VISIBLE
-#undef IGNITION_RENDERING_VISIBLE
-#endif
-#define IGNITION_RENDERING_VISIBLE __attribute__ ((visibility("default")))
-#ifdef IGN_DEPRECATED
-#undef IGN_DEPRECATED
-#endif
-#define IGN_DEPRECATED(version) __attribute__ ((__deprecated__))
-    """,
+    lib_name = "ignition-rendering",
+    export_base = "IGNITION_RENDERING",
     visibility = ["//visibility:private"],
 )
 
@@ -154,7 +139,7 @@ test_sources = [
     "src/PixelFormat_TEST.cc",
     "src/RayQuery_TEST.cc",
     "src/RenderEngine_TEST.cc",
-    "src/RenderingIface_TEST.cc",
+    # "src/RenderingIface_TEST.cc",
     "src/RenderPassSystem_TEST.cc",
     "src/RenderTarget_TEST.cc",
     "src/Scene_TEST.cc",
@@ -183,7 +168,7 @@ public_headers = public_headers_no_gen + [
 ]
 
 cc_binary(
-    name = "libign_rendering.so",
+    name = "libignition-rendering4.so",
     srcs = [
       "src/base/BaseObject.cc",
       "src/base/BaseRenderEngine.cc",
@@ -206,7 +191,7 @@ cc_binary(
       "src/WireBox.cc",
     ] + public_headers,
     includes = ["include"],
-    linkopts = ["-Wl,-soname,libign_rendering.so", "-lX11"],
+    linkopts = ["-Wl,-soname,libignition-rendering4.so", "-lX11"],
     linkshared =  True,
     visibility = [],
     deps = [
@@ -218,28 +203,69 @@ cc_binary(
         "//ign_math:ign_math",
         "//ign_bazel:utilities",
     ],
-    local_defines = ["IGN_RENDERING_PLUGIN_PATH='\"TODO: insert the correct string\"'"],
+    defines = [
+        "HAVE_OPTIX=0",
+        "HAVE_OGRE=0",
+        "HAVE_OGRE2=1",
+        "IGN_RENDERING_PLUGIN_PATH='\"ign_rendering/ogre2/\"'"
+    ],
 )
 
 cc_library(
     name = "ign_rendering",
-    srcs = ["libign_rendering.so"],
+    srcs = ["libignition-rendering4.so"],
     hdrs = public_headers,
     includes = ["include"],
     visibility = ["//visibility:public"],
+    deps = [
+        "//ign_common",
+        "//ign_common/events",
+        "//ign_common/graphics",
+        "//ign_math",
+        "//ign_plugin/loader",
+    ]
 )
 
 [cc_test(
     name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
     srcs = [src],
     deps = [
-        "//ign_common",
-        "//ign_common/events:events",
-        "//ign_common/graphics:graphics",
-        "//ign_math",
-        "//ign_rendering",
+        ":ign_rendering",
         "//ign_rendering/test:test_utils",
         "@gtest//:gtest",
         "@gtest//:gtest_main",
-    ]
+    ],
+    defines = [
+        "IGN_RENDERING_TEST_PLUGIN_PATH='\"ign_rendering/ogre2/\"'"
+    ],
 ) for src in test_sources]
+
+cc_binary(
+    name = "simple_demo",
+    srcs = [
+        "examples/simple_demo/GlutWindow.cc",
+        "examples/simple_demo/GlutWindow.hh",
+        "examples/simple_demo/Main.cc",
+    ],
+    deps = [
+        ":ign_rendering",
+        "//ign_rendering/ogre2",
+    ],
+    linkopts = ["-lGL", "-lGLU", "-lglut"],
+)
+
+cc_binary(
+    name = "ogre2_demo",
+    srcs = [
+        "examples/ogre2_demo/GlutWindow.cc",
+        "examples/ogre2_demo/GlutWindow.hh",
+        "examples/ogre2_demo/Main.cc",
+    ],
+    deps = [
+        ":ign_rendering",
+        "//ign_rendering/ogre2",
+    ],
+    data = ["examples/ogre2_demo/media"],
+    linkopts = ["-lGL", "-lGLU", "-lglut"],
+)
+

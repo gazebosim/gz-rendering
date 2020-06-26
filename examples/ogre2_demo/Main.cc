@@ -31,7 +31,6 @@
 #include <ignition/common/MeshManager.hh>
 #include <ignition/rendering.hh>
 
-#include "example_config.hh"
 #include "GlutWindow.hh"
 
 using namespace ignition;
@@ -39,8 +38,7 @@ using namespace rendering;
 
 
 const std::string RESOURCE_PATH =
-    common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
-
+    common::joinPaths(std::string("ign_rendering/examples/ogre2_demo"), "media");
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
@@ -305,9 +303,9 @@ int main(int _argc, char** _argv)
         cameras.push_back(camera);
       }
     }
-    catch (...)
+    catch (std::exception& ex)
     {
-      // std::cout << ex.what() << std::endl;
+      std::cout << ex.what() << std::endl;
       std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }

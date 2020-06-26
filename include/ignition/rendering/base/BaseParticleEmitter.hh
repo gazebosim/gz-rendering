@@ -18,10 +18,6 @@
 #ifndef IGNITION_RENDERING_BASE_BASEPARTICLEEMITTER_HH_
 #define IGNITION_RENDERING_BASE_BASEPARTICLEEMITTER_HH_
 
-#include <map>
-#include <string>
-#include <ignition/common/MeshManager.hh>
-
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/ParticleEmitter.hh"

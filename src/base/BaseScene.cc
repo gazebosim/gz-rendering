@@ -1069,20 +1069,21 @@ ParticleEmitterPtr BaseScene::CreateParticleEmitter()
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/)
 {
   return nullptr;
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(const std::string &_name)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(
+    const std::string &/*_name*/)
 {
   return nullptr;
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
-    const std::string &_name)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/,
+    const std::string &/*_name*/)
 {
   return nullptr;
 }

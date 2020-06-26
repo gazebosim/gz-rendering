@@ -180,8 +180,6 @@ bool Ogre2Scene::InitImpl()
   this->CreateStores();
   this->CreateMeshFactory();
 
-  this->SetupParticles();
-
   return true;
 }
 
@@ -525,17 +523,6 @@ void Ogre2Scene::CreateStores()
   this->sensors = Ogre2SensorStorePtr(new Ogre2SensorStore);
   this->visuals = Ogre2VisualStorePtr(new Ogre2VisualStore);
   this->materials = Ogre2MaterialMapPtr(new Ogre2MaterialMap);
-}
-
-//////////////////////////////////////////////////
-void Ogre2Scene::SetupParticles()
-{
-  // set nonvisible timeout.
-  Ogre::ParticleSystem::setDefaultNonVisibleUpdateTimeout(5);
-  Ogre::ParticleSystem *ps;
-  ps = this->ogreSceneManager->createParticleSystem("Examples/Smoke");
-  this->ogreSceneManager->getRootSceneNode()->attachObject(ps);
-  ps->setVisible(true);
 }
 
 //////////////////////////////////////////////////

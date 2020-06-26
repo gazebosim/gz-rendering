@@ -235,6 +235,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   this->ogreCamera->setAspectRatio(this->aspect);
   this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
 
+  std::cerr << " load depth mat  ================================ " << std:::endl;
   // Load depth material
   // The DepthCamera material is defined in script (depth_camera.material).
   // We need to clone it since we are going to modify its uniform variables
@@ -283,6 +284,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
   psParams->setNamedConstant("tolerance",
       static_cast<float>(1e-6));
 
+  std::cerr << " load depth mat done ================================ " << std:::endl;
+
   // Create depth camera compositor
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -319,6 +322,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   //     {
   //       material DepthCamera // Use copy instead of original
   //       input 0 depthTexture
+  //       input 1 colorTexture
   //       quad_normals camera_far_corners_view_space
   //     }
   //   }
@@ -439,10 +443,12 @@ void Ogre2DepthCamera::CreateDepthTexture()
   Ogre::RenderTarget *rt =
     this->dataPtr->ogreDepthTexture->getBuffer()->getRenderTarget();
 
+  std::cerr << " creating compositor workspace ================================ " << std:::endl;
   // create compositor worksspace
   this->dataPtr->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
       rt, this->ogreCamera, wsDefName, false);
+  std::cerr << " creating compositor workspace ================================ done " << std:::endl;
 }
 
 //////////////////////////////////////////////////

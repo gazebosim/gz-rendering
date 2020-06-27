@@ -445,8 +445,9 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   systemPaths.SetPluginPathEnv(this->pluginPathEnv);
 
   // Add default install folder.
-  systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
   systemPaths.AddPluginPaths({IGNITION_RENDERING_ENGINE_INSTALL_DIR});
+  systemPaths.AddPluginPaths(ignition::common::cwd());
+  systemPaths.AddPluginPaths(ignition::common::cwd() + "/" + std::string(IGN_RENDERING_PLUGIN_PATH));
 
   // Add any preset plugin paths.
   for (const auto &path : this->pluginPaths)

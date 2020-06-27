@@ -9,6 +9,15 @@
 1. Added Lidar Visualisation for Ogre1
     * [Pull request #103](https://github.com/ignitionrobotics/ign-rendering/pull/103)
 
+1. Added a method to show the head on arrows and axis
+    * [Pull request #95](https://github.com/ignitionrobotics/ign-rendering/pull/95)
+
+1. Scale BaseAxis properly
+    * [Pull request #88](https://github.com/ignitionrobotics/ign-rendering/pull/88)
+
+1. Add ogre2 AxisVisual and ArrowVisual
+    * [Pull request 87](https://github.com/ignitionrobotics/ign-rendering/pull/87)
+
 1. Support setting skeleton node weights
     * [BitBucket pull request 256](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/256)
 

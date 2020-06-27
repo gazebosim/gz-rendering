@@ -31,15 +31,23 @@ namespace ignition
       public virtual ArrowVisual,
       public virtual T
     {
+      /// \brief Constructor
       protected: BaseArrowVisual();
 
+      /// \brief Destructor
       public: virtual ~BaseArrowVisual();
 
-      public: virtual VisualPtr Head() const;
+      // Documentation inherited.
+      public: virtual VisualPtr Head() const override;
 
-      public: virtual VisualPtr Shaft() const;
+      // Documentation inherited.
+      public: virtual VisualPtr Shaft() const override;
 
-      protected: virtual void Init();
+      // Documentation inherited
+      public: virtual void ShowArrowHead(bool _b) override;
+
+      // Documentation inherited.
+      protected: virtual void Init() override;
     };
 
     //////////////////////////////////////////////////
@@ -58,14 +66,26 @@ namespace ignition
     template <class T>
     VisualPtr BaseArrowVisual<T>::Head() const
     {
-      return nullptr;
+      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(1));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     VisualPtr BaseArrowVisual<T>::Shaft() const
     {
-      return nullptr;
+      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(0));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseArrowVisual<T>::ShowArrowHead(bool _b)
+    {
+      NodePtr child = this->ChildByIndex(1);
+      VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+      if (visual)
+      {
+        visual->SetVisible(_b);
+      }
     }
 
     //////////////////////////////////////////////////

@@ -127,24 +127,6 @@ namespace ignition
       /// \return The maximum range for lidar rays
       public: virtual double MaxRange() const = 0;
 
-      /// \brief Set vertical step angle
-      /// \param[in] _verticalAngleStep Vertical angle between two rays
-      public: virtual void SetVerticalAngleStep(
-                  const double _verticalAngleStep) = 0;
-
-      /// \brief Get vertical step angle
-      /// \return The difference in vertical angle between two rays
-      public: virtual double VerticalAngleStep() const = 0;
-
-      /// \brief Set horizontal step angle
-      /// \param[in] _horizontalAngleStep Horizontal angle between two rays
-      public: virtual void SetHorizontalAngleStep(
-                  const double _horizontalAngleStep) = 0;
-
-      /// \brief Get horizontal step angle
-      /// \return The difference in horizontal angle between two rays
-      public: virtual double HorizontalAngleStep() const = 0;
-
       /// \brief Set offset of visual
       /// \param[in] _offset The offset of the lidar rays from visual origin
       public: virtual void SetOffset(
@@ -157,6 +139,10 @@ namespace ignition
       /// \brief Get number of points in laser data
       /// \return The number of points in the laser data
       public: virtual unsigned int PointCount() const = 0;
+
+      /// \brief Get the points in laser data
+      /// \return The points in the laser data
+      public: virtual std::vector<double> Points() const = 0;
     };
     }
   }

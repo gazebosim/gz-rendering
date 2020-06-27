@@ -143,6 +143,19 @@ void OgreLidarVisual::Update()
   double horizontalAngle = this->minHorizontalAngle;
   double verticalAngle = this->minVerticalAngle;
 
+  if (this->horizontalCount > 1)
+  {
+    this->horizontalAngleStep =
+        (this->maxHorizontalAngle - this->minHorizontalAngle) /
+              (this->horizontalCount - 1);
+  }
+  if (this->verticalCount > 1)
+  {
+    this->verticalAngleStep =
+        (this->maxVerticalAngle - this->minVerticalAngle) /
+              (this->verticalCount - 1);
+  }
+
   if (this->dataPtr->laserMsg.size() !=
                   this->verticalCount * this->horizontalCount)
   {
@@ -165,7 +178,7 @@ void OgreLidarVisual::Update()
                   std::shared_ptr<OgreDynamicLines>(
                               new OgreDynamicLines(MT_TRIANGLE_STRIP));
 
-      line->setMaterial("Lidar/Blue");
+      line->setMaterial("Lidar/BlueStrips");
       std::shared_ptr<Ogre::MovableObject> mv =
                 std::dynamic_pointer_cast<Ogre::MovableObject>(line);
 
@@ -175,7 +188,7 @@ void OgreLidarVisual::Update()
       line = std::shared_ptr<OgreDynamicLines>(
                   new OgreDynamicLines(MT_TRIANGLE_STRIP));
 
-      line->setMaterial("Lidar/LightBlue");
+      line->setMaterial("Lidar/LightBlueStrips");
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->noHitRayStrips.push_back(line);
@@ -209,7 +222,7 @@ void OgreLidarVisual::Update()
     for (unsigned int i = 0; i < count; ++i)
     {
       // calculate range of the ray
-      double r = this->dataPtr->laserMsg[j * this->verticalCount + i];
+      double r = this->dataPtr->laserMsg[ j * this->horizontalCount + i];
 
       if (verticalAngle > this->maxVerticalAngle)
       {
@@ -310,4 +323,10 @@ void OgreLidarVisual::Update()
 unsigned int OgreLidarVisual::PointCount() const
 {
   return this->dataPtr->laserMsg.size();
+}
+
+//////////////////////////////////////////////////
+std::vector<double> OgreLidarVisual::Points() const
+{
+  return this->dataPtr->laserMsg;
 }

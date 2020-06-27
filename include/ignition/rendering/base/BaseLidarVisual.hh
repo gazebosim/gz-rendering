@@ -113,20 +113,6 @@ namespace ignition
       public: virtual double MaxRange() const override;
 
       // Documentation inherited
-      public: virtual void SetVerticalAngleStep(
-                  const double _verticalAngleStep) override;
-
-      // Documentation inherited
-      public: virtual double VerticalAngleStep() const override;
-
-      // Documentation inherited
-      public: virtual void SetHorizontalAngleStep(
-                  const double _horizontalAngleStep) override;
-
-      // Documentation inherited
-      public: virtual double HorizontalAngleStep() const override;
-
-      // Documentation inherited
       public: virtual void SetOffset(
                   const ignition::math::Pose3d _offset) override;
 
@@ -135,6 +121,9 @@ namespace ignition
 
       // Documentation inherited
       public: virtual unsigned int PointCount() const override;
+
+      // Documentation inherited
+      public: virtual std::vector<double> Points() const override;
 
       /// \brief Create predefined materials for lidar visual
       public: virtual void CreateMaterials();
@@ -217,6 +206,15 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
+    std::vector<double> BaseLidarVisual<T>::Points() const
+    {
+        std::vector<double> d;
+        d.push_back(0.0);
+        return d;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
     void BaseLidarVisual<T>::Update()
     {
       // no op
@@ -284,21 +282,6 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetVerticalAngleStep(
-          const double _verticalAngleStep)
-    {
-      this->verticalAngleStep = _verticalAngleStep;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    double BaseLidarVisual<T>::VerticalAngleStep() const
-    {
-      return this->verticalAngleStep;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
     void BaseLidarVisual<T>::SetMinHorizontalAngle(
           const double _minHorizontalAngle)
     {
@@ -340,21 +323,6 @@ namespace ignition
     unsigned int BaseLidarVisual<T>::HorizontalRayCount() const
     {
       return this->horizontalCount;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseLidarVisual<T>::SetHorizontalAngleStep(
-          const double _horizontalAngleStep)
-    {
-      this->horizontalAngleStep = _horizontalAngleStep;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    double BaseLidarVisual<T>::HorizontalAngleStep() const
-    {
-      return this->horizontalAngleStep;
     }
 
     /////////////////////////////////////////////////
@@ -405,42 +373,53 @@ namespace ignition
     {
       MaterialPtr mtl;
 
-      mtl = T::Scene()->CreateMaterial("Lidar/Blue");
-      mtl->SetAmbient(0.0, 0.0, 1.0);
-      mtl->SetDiffuse(0.0, 0.0, 1.0);
-      mtl->SetEmissive(0.0, 0.0, 1.0);
-      mtl->SetTransparency(0.6);
-      mtl->SetCastShadows(false);
-      mtl->SetReceiveShadows(false);
-      mtl->SetLightingEnabled(false);
+      if (!T::Scene()->MaterialRegistered("Lidar/BlueStrips"))
+      {
+        mtl = T::Scene()->CreateMaterial("Lidar/BlueStrips");
+        mtl->SetAmbient(0.0, 0.0, 1.0);
+        mtl->SetDiffuse(0.0, 0.0, 1.0);
+        mtl->SetTransparency(0.4);
+        mtl->SetCastShadows(false);
+        mtl->SetReceiveShadows(false);
+        mtl->SetLightingEnabled(false);
+      }
 
-      mtl = T::Scene()->CreateMaterial("Lidar/LightBlue");
-      mtl->SetAmbient(0.5, 0.5, 1.0);
-      mtl->SetDiffuse(0.5, 0.5, 1.0);
-      mtl->SetEmissive(0.5, 0.5, 1.0);
-      mtl->SetTransparency(0.7);
-      mtl->SetCastShadows(false);
-      mtl->SetReceiveShadows(false);
-      mtl->SetLightingEnabled(false);
+      if (!T::Scene()->MaterialRegistered("Lidar/LightBlueStrips"))
+      {
+        mtl = T::Scene()->CreateMaterial("Lidar/LightBlueStrips");
+        mtl->SetAmbient(0.5, 0.5, 1.0);
+        mtl->SetDiffuse(0.5, 0.5, 1.0);
+        mtl->SetEmissive(0.5, 0.5, 1.0);
+        mtl->SetTransparency(0.8);
+        mtl->SetCastShadows(false);
+        mtl->SetReceiveShadows(false);
+        mtl->SetLightingEnabled(false);
+      }
 
-      mtl = T::Scene()->CreateMaterial("Lidar/TransBlack");
-      mtl->SetAmbient(0.0, 0.0, 0.0);
-      mtl->SetDiffuse(0.0, 0.0, 0.0);
-      mtl->SetEmissive(0.0, 0.0, 0.0);
-      mtl->SetTransparency(0.7);
-      mtl->SetCastShadows(false);
-      mtl->SetReceiveShadows(false);
-      mtl->SetLightingEnabled(false);
+      if (!T::Scene()->MaterialRegistered("Lidar/TransBlack"))
+      {
+        mtl = T::Scene()->CreateMaterial("Lidar/TransBlack");
+        mtl->SetAmbient(0.0, 0.0, 0.0);
+        mtl->SetDiffuse(0.0, 0.0, 0.0);
+        mtl->SetEmissive(0.0, 0.0, 0.0);
+        mtl->SetTransparency(0.7);
+        mtl->SetCastShadows(false);
+        mtl->SetReceiveShadows(false);
+        mtl->SetLightingEnabled(false);
+      }
 
-      mtl = T::Scene()->CreateMaterial("Lidar/BlueRay");
-      mtl->SetAmbient(0.0, 0.0, 1.0);
-      mtl->SetDiffuse(0.0, 0.0, 1.0);
-      mtl->SetEmissive(0.0, 0.0, 1.0);
-      mtl->SetSpecular(0.1, 0.1, 1);
-      mtl->SetTransparency(0.0);
-      mtl->SetCastShadows(false);
-      mtl->SetReceiveShadows(false);
-      mtl->SetLightingEnabled(false);
+      if (!T::Scene()->MaterialRegistered("Lidar/BlueRay"))
+      {
+        mtl = T::Scene()->CreateMaterial("Lidar/BlueRay");
+        mtl->SetAmbient(0.0, 0.0, 1.0);
+        mtl->SetDiffuse(0.0, 0.0, 1.0);
+        mtl->SetEmissive(0.0, 0.0, 1.0);
+        mtl->SetSpecular(0.1, 0.1, 1);
+        mtl->SetTransparency(0.0);
+        mtl->SetCastShadows(false);
+        mtl->SetReceiveShadows(false);
+        mtl->SetLightingEnabled(false);
+      }
       return;
     }
     }

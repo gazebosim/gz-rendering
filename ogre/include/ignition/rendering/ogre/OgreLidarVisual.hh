@@ -65,6 +65,9 @@ namespace ignition
       // Documentation inherited
       public: virtual unsigned int PointCount() const override;
 
+      // Documentation inherited
+      public: virtual std::vector<double> Points() const override;
+
       /// \brief Create the Lidar Visual in ogre
       private: void Create();
 

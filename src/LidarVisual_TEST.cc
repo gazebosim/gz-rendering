@@ -93,11 +93,6 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   lidar->SetMinRange(0.54);
   EXPECT_DOUBLE_EQ(lidar->MinRange(), 0.54);
 
-  lidar->SetVerticalAngleStep(0.01);
-  EXPECT_DOUBLE_EQ(lidar->VerticalAngleStep(), 0.01);
-  lidar->SetHorizontalAngleStep(0.05);
-  EXPECT_DOUBLE_EQ(lidar->HorizontalAngleStep(), 0.05);
-
   ignition::math::Pose3d p(0.5, 2.56, 3.67, 1.4, 2, 4.5);
   lidar->SetOffset(p);
   EXPECT_EQ(lidar->Offset(), p);

@@ -78,19 +78,17 @@ void buildScene(ScenePtr _scene)
     root->AddChild(grid);
   }
 
-  // create lidar visual
+  // create lidar visual and set parameters using the API
   LidarVisualPtr lidar = _scene->CreateLidarVisual();
 
   std::vector<double> pts{10.0, 15.0, 15.0, 15.0,
                           INFINITY, INFINITY, INFINITY,
                           10, 3.5};
-  lidar->SetMinHorizontalAngle(0.0);
-  lidar->SetHorizontalAngleStep(0.3);
+  lidar->SetMinHorizontalAngle(-0.30);
   lidar->SetHorizontalRayCount(3);
-  lidar->SetMaxHorizontalAngle(5);
-  lidar->SetMaxVerticalAngle(10);
-  lidar->SetMinVerticalAngle(0.2);
-  lidar->SetVerticalAngleStep(0.08);
+  lidar->SetMaxHorizontalAngle(0.30);
+  lidar->SetMaxVerticalAngle(0.2);
+  lidar->SetMinVerticalAngle(0.0);
   lidar->SetVerticalRayCount(3);
   lidar->SetMaxRange(50);
   lidar->SetMinRange(0.5);

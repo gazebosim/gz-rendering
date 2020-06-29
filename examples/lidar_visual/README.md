@@ -1,6 +1,8 @@
 # Actor animation
 
-Demo of a Lidar Visualisation.
+Demo of a lidar visualisation using data from a GPU Rays sensor.
+A laser sensor model is used to detect objects in the rendering window
+environment and the collected data is visualised.
 
 ## Build
 
@@ -18,7 +20,7 @@ By default, the demo uses the Ogre 1 engine:
 
     ./lidar_visual
 
-It's also possible to use Ogre 2, i.e. ( Currently disabled)
+It's also possible to use Ogre 2, i.e. (Currently disabled)
 
     ./lidar_visual ogre2
 

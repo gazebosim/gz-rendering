@@ -43,6 +43,18 @@ using namespace rendering;
 const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
+
+//////////////////////////////////////////////////
+void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
+                  unsigned int _width, unsigned int _height,
+                  unsigned int _channels,
+                  const std::string &/*_format*/)
+{
+  float f;
+  int size =  _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(f));
+}
+
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
 {
@@ -64,6 +76,24 @@ void buildScene(ScenePtr _scene)
   gray->SetDiffuse(0.7, 0.7, 0.7);
   gray->SetSpecular(0.7, 0.7, 0.7);
 
+  // create red material
+  MaterialPtr red = _scene->CreateMaterial();
+  red->SetAmbient(1.0, 0.2, 0.1);
+  red->SetDiffuse(1.0, 0.2, 0.1);
+  red->SetSpecular(1.0, 0.2, 0.1);
+
+  // create green material
+  MaterialPtr green = _scene->CreateMaterial();
+  green->SetAmbient(0.1, 1, 0.1);
+  green->SetDiffuse(0.1, 1, 0.1);
+  green->SetSpecular(0.1, 1, 0.1);
+
+  // create yellow material
+  MaterialPtr yellow = _scene->CreateMaterial();
+  yellow->SetAmbient(1, 1, 0.01);
+  yellow->SetDiffuse(1, 1, 0.01);
+  yellow->SetSpecular(1, 1, 0.01);
+
   // create grid visual
   GridPtr gridGeom = _scene->CreateGrid();
   if (gridGeom)
@@ -78,24 +108,99 @@ void buildScene(ScenePtr _scene)
     root->AddChild(grid);
   }
 
-  // create lidar visual and set parameters using the API
-  LidarVisualPtr lidar = _scene->CreateLidarVisual();
+  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(6, 0, 0.5),
+                                   ignition::math::Quaterniond::Identity);
+  VisualPtr visualBox1 = _scene->CreateVisual("UnitBox1");
+  visualBox1->AddGeometry(_scene->CreateBox());
+  visualBox1->SetWorldPosition(box01Pose.Pos());
+  visualBox1->SetWorldRotation(box01Pose.Rot());
+  visualBox1->SetMaterial(red);
+  root->AddChild(visualBox1);
 
-  std::vector<double> pts{10.0, 15.0, 15.0, 15.0,
-                          INFINITY, INFINITY, INFINITY,
-                          10, 3.5};
-  lidar->SetMinHorizontalAngle(-0.30);
-  lidar->SetHorizontalRayCount(3);
-  lidar->SetMaxHorizontalAngle(0.30);
-  lidar->SetMaxVerticalAngle(0.2);
-  lidar->SetMinVerticalAngle(0.0);
-  lidar->SetVerticalRayCount(3);
-  lidar->SetMaxRange(50);
-  lidar->SetMinRange(0.5);
+  ignition::math::Pose3d box02Pose(ignition::math::Vector3d(6, 6, 0.5),
+                                   ignition::math::Quaterniond::Identity);
+  VisualPtr visualBox2 = _scene->CreateVisual("UnitBox2");
+  visualBox2->AddGeometry(_scene->CreateBox());
+  visualBox2->SetWorldPosition(box02Pose.Pos());
+  visualBox2->SetWorldRotation(box02Pose.Rot());
+  visualBox2->SetMaterial(green);
+  root->AddChild(visualBox2);
+
+  ignition::math::Pose3d sphere01Pose(ignition::math::Vector3d(1, -3, 0.5),
+                                   ignition::math::Quaterniond::Identity);
+  VisualPtr visualSphere1 = _scene->CreateVisual("UnitSphere1");
+  visualSphere1->AddGeometry(_scene->CreateSphere());
+  visualSphere1->SetWorldPosition(sphere01Pose.Pos());
+  visualSphere1->SetWorldRotation(sphere01Pose.Rot());
+  visualSphere1->SetMaterial(yellow);
+  root->AddChild(visualSphere1);
+
+  // set parameters for GPU lidar sensor and visualisations
+  // parameters are based on a sample 2D planar laser sensor
+  ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0.5),
+      ignition::math::Quaterniond::Identity);
+  const double hMinAngle = -2.26889;
+  const double hMaxAngle = 2.26889;
+  const double vMinAngle = 0;
+  const double vMaxAngle = 0.1;
+  const double minRange = 0.08;
+  const double maxRange = 10.0;
+  const int hRayCount = 640;
+  const int vRayCount = 1;
+
+  // add GPU lidar sensor and set parameters
+  GpuRaysPtr gpuRays = _scene->CreateGpuRays("gpu_rays_1");
+  gpuRays->SetWorldPosition(testPose.Pos());
+  gpuRays->SetWorldRotation(testPose.Rot());
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalAngleMin(vMinAngle);
+  gpuRays->SetVerticalAngleMax(vMaxAngle);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+
+  common::ConnectionPtr c =
+    gpuRays->ConnectNewGpuRaysFrame(
+        std::bind(&::OnNewGpuRaysFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+  // update the sensor data
+  gpuRays->Update();
+
+  // extract range values from GPU lidar data
+  std::vector<double> pts;
+  for (int j = 0; j < vRayCount; j++)
+  {
+    for (int i = 0; i < gpuRays->RayCount(); ++i)
+    {
+      pts.push_back(scan[j*channels*gpuRays->RayCount() + i * channels]);
+    }
+  }
+
+  // create lidar visual
+  LidarVisualPtr lidar = _scene->CreateLidarVisual();
+  lidar->SetMinHorizontalAngle(hMinAngle);
+  lidar->SetHorizontalRayCount(hRayCount);
+  lidar->SetMaxHorizontalAngle(hMaxAngle);
+  lidar->SetVerticalRayCount(vRayCount);
+  lidar->SetMinVerticalAngle(vMinAngle);
+  lidar->SetMaxVerticalAngle(vMaxAngle);
+  lidar->SetMaxRange(maxRange);
+  lidar->SetMinRange(minRange);
   lidar->SetPoints(pts);
-  lidar->Update();
-  lidar->SetLocalPosition(3, 0, 0);
+  lidar->SetWorldPosition(testPose.Pos());
+  lidar->SetWorldRotation(testPose.Rot());
   root->AddChild(lidar);
+
+  // update lidar visual
+  lidar->Update();
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

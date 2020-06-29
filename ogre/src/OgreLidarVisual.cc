@@ -224,31 +224,31 @@ void OgreLidarVisual::Update()
       // calculate range of the ray
       double r = this->dataPtr->laserMsg[ j * this->horizontalCount + i];
 
-      if (verticalAngle > this->maxVerticalAngle)
+      if (verticalAngle - this->maxVerticalAngle > 1.0e-08)
       {
         ignerr <<
-            "Vertical angle exceeds maximum limits.Please check the input"
+            "Vertical angle exceeds maximum limits."
           << std::endl;
       }
 
-      if (verticalAngle < this->minVerticalAngle)
+      if (this->minVerticalAngle - verticalAngle > 1.0e-08 )
       {
         ignerr <<
-            "Vertical angle less than minimum limits. Please check the input"
+            "Vertical angle less than minimum limits."
           << std::endl;
       }
 
-      if (horizontalAngle < this->minHorizontalAngle)
+      if (this->minHorizontalAngle - horizontalAngle > 1.0e-08 )
       {
         ignerr <<
-            "Horizontal angle less than minimum limits. Please check the input"
+            "Horizontal angle less than minimum limits."
           << std::endl;
       }
 
-      if (horizontalAngle > this->maxHorizontalAngle)
+      if (horizontalAngle - this->maxHorizontalAngle > 1.0e-08)
       {
         ignerr <<
-            "Horizontal angle exceeds maximum limits. Please check the input"
+            "Horizontal angle exceeds maximum limits."
           << std::endl;
       }
 

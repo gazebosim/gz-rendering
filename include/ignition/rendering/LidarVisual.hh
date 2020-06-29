@@ -53,7 +53,7 @@ namespace ignition
       /// \brief Update the Visual
       public: virtual void Update() = 0;
 
-      /// \brief Callback when the senspr data is recieved
+      /// \brief Callback when the sensor data is recieved
       /// \param[in] _msg Vector of points representing distance of the ray
       public: virtual void SetPoints(std::vector<double> &_msg) = 0;
 

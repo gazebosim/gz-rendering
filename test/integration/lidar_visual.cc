@@ -339,7 +339,6 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->Update();
   gpuRays2->Copy(scan2);
 
-
   pts.clear();
   for (int j = 0; j < vRayCount; j++)
   {
@@ -357,7 +356,6 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
       pts2.push_back(scan2[j*channels*gpuRays->RayCount() + i * channels]);
     }
   }
-
 
   for (unsigned int i = 0; i < lidarVis->HorizontalRayCount(); ++i)
     EXPECT_DOUBLE_EQ(pts[i], ignition::math::INF_D);

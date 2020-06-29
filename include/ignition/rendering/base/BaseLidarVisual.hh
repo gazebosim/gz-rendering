@@ -209,7 +209,7 @@ namespace ignition
     std::vector<double> BaseLidarVisual<T>::Points() const
     {
         std::vector<double> d;
-        d.push_back(0.0);
+        d.clear();
         return d;
     }
 

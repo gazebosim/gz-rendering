@@ -134,7 +134,7 @@ void OgreLidarVisual::Update()
 {
   if (!this->dataPtr->receivedMsg || this->dataPtr->laserMsg.size() == 0)
   {
-    ignerr << "Message not received. Exiting Updat function"
+    ignerr << "Message not received. Exiting update function"
            << std::endl;
     return;
   }

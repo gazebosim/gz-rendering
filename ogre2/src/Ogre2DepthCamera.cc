@@ -319,6 +319,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   //     {
   //       material DepthCamera // Use copy instead of original
   //       input 0 depthTexture
+  //       input 1 colorTexture
   //       quad_normals camera_far_corners_view_space
   //     }
   //   }

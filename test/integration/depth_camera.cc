@@ -384,7 +384,7 @@ void DepthCameraTest::DepthCameraBoxes(
 
     // Verify Depth
     {
-      // box not detected so all should return max val
+      // all points should have the same depth value
       EXPECT_FLOAT_EQ(expectedRange, scan[mid]);
       EXPECT_FLOAT_EQ(expectedRange, scan[left]);
       EXPECT_FLOAT_EQ(expectedRange, scan[right]);
@@ -434,7 +434,11 @@ void DepthCameraTest::DepthCameraBoxes(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
+#ifdef __APPLE__
+TEST_P(DepthCameraTest, DISABLED_DepthCameraBoxes)
+#else
 TEST_P(DepthCameraTest, DepthCameraBoxes)
+#endif
 {
   DepthCameraBoxes(GetParam());
 }

@@ -30,6 +30,15 @@ ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})
 
 if(WIN32)
   install(TARGETS ${ogre2_target} DESTINATION ${IGN_RENDERING_PLUGIN_PATH})
+
+
+  set(IGNITION_RENDERING_ENGINE_INSTALL_DIR
+    ${CMAKE_INSTALL_PREFIX}/${IGN_LIB_INSTALL_DIR}/ign-${IGN_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
+  )
+  message("asdf ================== installing to ${IGN_RENDERING_PLUGIN_PATH}")
+  message("asdf ================== engine plugin dir to ${IGNITION_RENDERING_ENGINE_INSTALL_DIR}")
+
+
   # tests needs .dll in the same directory
   add_custom_command(TARGET ${ogre2_target} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy

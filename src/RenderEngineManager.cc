@@ -380,6 +380,8 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   systemPaths.AddPluginPaths(_path);
 
   auto pathToLib = systemPaths.FindSharedLibrary(_filename);
+  std::cerr << "LoadEnginePlugin: " << pathToLib << std::endl;
+
   if (pathToLib.empty())
   {
     ignerr << "Failed to load plugin [" << _filename <<

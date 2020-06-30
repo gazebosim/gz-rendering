@@ -271,7 +271,7 @@ namespace ignition
     {
       if (_verticalRayCount == 0)
       {
-        ignerr << "Cannot have zero vertical rays. Setting value to 1."
+        ignwarn << "Cannot have zero vertical rays. Setting value to 1."
                << std::endl;
         this->verticalCount = 1;
       }
@@ -325,7 +325,7 @@ namespace ignition
     {
       if (_horizontalRayCount == 0)
       {
-        ignerr << "Cannot have zero horizontal rays. Setting value to 1."
+        ignwarn << "Cannot have zero horizontal rays. Setting value to 1."
                << std::endl;
         this->horizontalCount = 1u;
       }

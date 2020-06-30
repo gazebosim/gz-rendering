@@ -18,9 +18,9 @@
 #define IGNITION_RENDERING_PARTICLEEMITTER_HH_
 
 #include "ignition/rendering/config.hh"
-#include "ignition/rendering/CompositeVisual.hh"
-#include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Export.hh"
+#include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/Visual.hh"
 
 namespace ignition
 {
@@ -33,7 +33,7 @@ namespace ignition
     //
     /// \brief Class to manage a particle emitter.
     class IGNITION_RENDERING_VISIBLE ParticleEmitter :
-      public virtual CompositeVisual
+      public virtual Visual
     {
       /// \brief Destructor
       public: virtual ~ParticleEmitter() { }

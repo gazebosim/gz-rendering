@@ -24,10 +24,12 @@ target_link_libraries(${ogre2_target}
 
 install(DIRECTORY "media"  DESTINATION ${IGN_RENDERING_RESOURCE_PATH}/ogre2)
 
+
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})
 
 if(WIN32)
+  install(TARGETS ${ogre2_target} DESTINATION ${IGN_RENDERING_PLUGIN_PATH})
   # tests needs .dll in the same directory
   add_custom_command(TARGET ${ogre2_target} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy

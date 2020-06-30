@@ -46,6 +46,24 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
     return;
   }
 
+  std::string homePath;
+  ignition::common::env(IGN_HOMEDIR, homePath);
+  std::string p = homePath + "/.ignition/rendering/ogre2.log";
+  std::ifstream fs(p);
+  std::string str((std::istreambuf_iterator<char>(fs)),
+                   std::istreambuf_iterator<char>());
+  std::cerr << "================== " << std::endl;
+  std::cerr << str << std::endl;
+  std::cerr << "================== " << std::endl;
+//  std::cerr << "========ogre plugin dir iter " << std::endl;
+//  for (ignition::common::DirIter file("/usr/local/opt/ogre2.1/lib/OGRE-2.1/");
+//       file != ignition::common::DirIter(); ++file)
+//  {
+//    std::string current(*file);
+//    std::cerr << current  << std::endl;
+//  }
+
+
   // Check there are no scenes
   EXPECT_EQ(0u, engine->SceneCount());
   EXPECT_FALSE(engine->HasSceneName("scene1"));

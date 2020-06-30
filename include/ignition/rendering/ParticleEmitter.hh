@@ -36,7 +36,7 @@ namespace ignition
       public virtual Visual
     {
       /// \brief Destructor
-      public: virtual ~ParticleEmitter() { }
+      public: virtual ~ParticleEmitter();
     };
     }
   }

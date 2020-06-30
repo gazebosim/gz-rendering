@@ -28,10 +28,6 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
-#include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonAnimation.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Mesh.hh>
 #include <ignition/rendering.hh>
 
 #include "example_config.hh"
@@ -206,8 +202,8 @@ void buildScene(ScenePtr _scene)
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 2.0);
   camera->SetLocalRotation(0.0, 0.5, 0.0);
-  camera->SetImageWidth(1600);
-  camera->SetImageHeight(1200);
+  camera->SetImageWidth(1200);
+  camera->SetImageHeight(900);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
@@ -251,7 +247,6 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
 
   engineNames.push_back(engine);
-  ic::SkeletonPtr skel = nullptr;
 
   for (auto engineName : engineNames)
   {

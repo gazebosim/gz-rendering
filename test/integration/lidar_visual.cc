@@ -35,8 +35,6 @@
 // vertical range values seem to be less accurate
 #define VERTICAL_LASER_TOL 1e-3
 
-#define WAIT_TIME 0.02
-
 using namespace ignition;
 using namespace rendering;
 
@@ -68,6 +66,13 @@ class LidarVisualTest: public testing::Test,
 void LidarVisualTest::Configure(const std::string &_renderEngine)
 {
   if (_renderEngine == "optix")
+  {
+    igndbg << "LidarVisual not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
+  if (_renderEngine == "ogre2")
   {
     igndbg << "LidarVisual not supported yet in rendering engine: "
             << _renderEngine << std::endl;
@@ -152,6 +157,14 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
     return;
   }
 
+  if (_renderEngine == "ogre2")
+  {
+    igndbg << "LidarVisual not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
+
   // Test lidar visual with 3 boxes in the world, using reading from GPU rays
   // First GPU rays at identity orientation, second at 90 degree roll
   // First place 2 of 3 boxes within range and verify range values from lidar.
@@ -163,8 +176,6 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   const double maxRange = 10.0;
   const int hRayCount = 320;
   const int vRayCount = 1;
-
-  common::Time waitTime = common::Time(WAIT_TIME);
 
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
@@ -387,7 +398,14 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
 
   if (_renderEngine == "optix")
   {
-    igndbg << "GpuRays not supported yet in rendering engine: "
+    igndbg << "LidarVisual not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
+  if (_renderEngine == "ogre2")
+  {
+    igndbg << "LidarVisual not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -404,8 +422,6 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
   double maxRange = 5.0;
   unsigned int hRayCount = 640;
   unsigned int vRayCount = 4;
-
-  common::Time waitTime = common::Time(WAIT_TIME);
 
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
@@ -510,7 +526,7 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
   visualBox1->SetWorldRotation(
       ignition::math::Quaterniond::Identity);
 
-  // wait for a few more laser scans
+  // after a few more laser scans
   gpuRays->Update();
   pts.clear();
   for (unsigned int j = 0; j < vRayCount; j++)

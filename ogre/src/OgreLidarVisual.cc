@@ -38,7 +38,7 @@ class ignition::rendering::OgreLidarVisualPrivate
   public: std::vector<std::shared_ptr<OgreDynamicLines>> rayLines;
 
   /// \brief The current lidar data message
-  public: std::vector<double> laserMsg;
+  public: std::vector<double> lidarPoints;
 
   /// \brief True if new message is received
   public: bool receivedMsg;
@@ -70,25 +70,25 @@ void OgreLidarVisual::Destroy()
 {
   for (auto ray : this->dataPtr->noHitRayStrips)
   {
-    ray.get()->Clear();
+    ray->Clear();
     ray.reset();
   }
 
   for (auto ray : this->dataPtr->rayStrips)
   {
-    ray.get()->Clear();
+    ray->Clear();
     ray.reset();
   }
 
   for (auto ray : this->dataPtr->rayLines)
   {
-    ray.get()->Clear();
+    ray->Clear();
     ray.reset();
   }
 
   for (auto ray : this->dataPtr->deadZoneRayFans)
   {
-    ray.get()->Clear();
+    ray->Clear();
     ray.reset();
   }
 
@@ -116,23 +116,20 @@ void OgreLidarVisual::ClearPoints()
   this->dataPtr->deadZoneRayFans.clear();
   this->dataPtr->rayLines.clear();
   this->dataPtr->rayStrips.clear();
-  this->dataPtr->laserMsg.clear();
-  this->dataPtr->receivedMsg = false;
 }
 
 
 //////////////////////////////////////////////////
-void OgreLidarVisual::SetPoints(std::vector<double> &_msg)
+void OgreLidarVisual::SetPoints(const std::vector<double> &_msg)
 {
-  this->dataPtr->laserMsg.clear();
-  this->dataPtr->laserMsg = _msg;
+  this->dataPtr->lidarPoints = _msg;
   this->dataPtr->receivedMsg = true;
 }
 
 //////////////////////////////////////////////////
 void OgreLidarVisual::Update()
 {
-  if (!this->dataPtr->receivedMsg || this->dataPtr->laserMsg.size() == 0)
+  if (!this->dataPtr->receivedMsg || this->dataPtr->lidarPoints.size() == 0)
   {
     ignerr << "Message not received. Exiting update function"
            << std::endl;
@@ -156,7 +153,7 @@ void OgreLidarVisual::Update()
               (this->verticalCount - 1);
   }
 
-  if (this->dataPtr->laserMsg.size() !=
+  if (this->dataPtr->lidarPoints.size() !=
                   this->verticalCount * this->horizontalCount)
   {
     ignerr << "Size of laser message inconsistent with ray count"
@@ -222,35 +219,7 @@ void OgreLidarVisual::Update()
     for (unsigned int i = 0; i < count; ++i)
     {
       // calculate range of the ray
-      double r = this->dataPtr->laserMsg[ j * this->horizontalCount + i];
-
-      if (verticalAngle - this->maxVerticalAngle > 1.0e-08)
-      {
-        ignerr <<
-            "Vertical angle exceeds maximum limits."
-          << std::endl;
-      }
-
-      if (this->minVerticalAngle - verticalAngle > 1.0e-08 )
-      {
-        ignerr <<
-            "Vertical angle less than minimum limits."
-          << std::endl;
-      }
-
-      if (this->minHorizontalAngle - horizontalAngle > 1.0e-08 )
-      {
-        ignerr <<
-            "Horizontal angle less than minimum limits."
-          << std::endl;
-      }
-
-      if (horizontalAngle - this->maxHorizontalAngle > 1.0e-08)
-      {
-        ignerr <<
-            "Horizontal angle exceeds maximum limits."
-          << std::endl;
-      }
+      double r = this->dataPtr->lidarPoints[ j * this->horizontalCount + i];
 
       bool inf = std::isinf(r);
       ignition::math::Quaterniond ray(
@@ -322,11 +291,11 @@ void OgreLidarVisual::Update()
 //////////////////////////////////////////////////
 unsigned int OgreLidarVisual::PointCount() const
 {
-  return this->dataPtr->laserMsg.size();
+  return this->dataPtr->lidarPoints.size();
 }
 
 //////////////////////////////////////////////////
 std::vector<double> OgreLidarVisual::Points() const
 {
-  return this->dataPtr->laserMsg;
+  return this->dataPtr->lidarPoints;
 }

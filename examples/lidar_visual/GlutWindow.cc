@@ -54,13 +54,8 @@ unsigned int imgh = 0;
 
 std::vector<ir::CameraPtr> g_cameras;
 ir::CameraPtr g_camera;
-ir::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
-bool g_updateAll = false;
-std::chrono::steady_clock::duration g_time{0};
-std::chrono::steady_clock::time_point g_startTime;
-std::chrono::steady_clock::time_point prevUpdateTime;
 
 bool g_initContext = false;
 

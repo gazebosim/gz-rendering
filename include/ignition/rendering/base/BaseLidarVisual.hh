@@ -50,7 +50,7 @@ namespace ignition
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
-      public: virtual void SetPoints(std::vector<double> &_msg) override;
+      public: virtual void SetPoints(const std::vector<double> &_msg) override;
 
       // Documentation inherited
       public: virtual void Update() override;
@@ -60,54 +60,54 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void SetMinVerticalAngle(
-                  const double _minVerticalAngle) override;
+                  double _minVerticalAngle) override;
 
       // Documentation inherited
       public: virtual double MinVerticalAngle() const override;
 
       // Documentation inherited
       public: virtual void SetMaxVerticalAngle(
-                  const double _maxVerticalAngle) override;
+                  double _maxVerticalAngle) override;
 
       // Documentation inherited
       public: virtual double MaxVerticalAngle() const override;
 
       // Documentation inherited
       public: virtual void SetMinHorizontalAngle(
-                  const double _minHorizontalAngle) override;
+                  double _minHorizontalAngle) override;
 
       // Documentation inherited
       public: virtual double MinHorizontalAngle() const override;
 
       // Documentation inherited
       public: virtual void SetMaxHorizontalAngle(
-                  const double _maxHorizontalAngle) override;
+                  double _maxHorizontalAngle) override;
 
       // Documentation inherited
       public: virtual double MaxHorizontalAngle() const override;
 
       // Documentation inherited
       public: virtual void SetVerticalRayCount(
-                  const unsigned int _verticalRayCount) override;
+                  unsigned int _verticalRayCount) override;
 
       // Documentation inherited
       public: virtual unsigned int VerticalRayCount() const override;
 
       // Documentation inherited
       public: virtual void SetHorizontalRayCount(
-                  const unsigned int _horizontalRayCount) override;
+                  unsigned int _horizontalRayCount) override;
 
       // Documentation inherited
       public: virtual unsigned int HorizontalRayCount() const override;
 
       // Documentation inherited
-      public: virtual void SetMinRange(const double _minRange) override;
+      public: virtual void SetMinRange(double _minRange) override;
 
       // Documentation inherited
       public: virtual double MinRange() const override;
 
       // Documentation inherited
-      public: virtual void SetMaxRange(const double _maxRange) override;
+      public: virtual void SetMaxRange(double _maxRange) override;
 
       // Documentation inherited
       public: virtual double MaxRange() const override;
@@ -135,7 +135,7 @@ namespace ignition
       protected: double maxVerticalAngle = 0;
 
       /// \brief Vertical laser count
-      protected: unsigned int verticalCount = 0u;
+      protected: unsigned int verticalCount = 1u;
 
       /// \brief Angle between two vertical rays
       protected: double verticalAngleStep = 0;
@@ -147,7 +147,7 @@ namespace ignition
       protected: double maxHorizontalAngle = 0;
 
       /// \brief Horizontal laser count
-      protected: unsigned int horizontalCount = 0u;
+      protected: unsigned int horizontalCount = 1u;
 
       /// \brief Angle between two horizontal rays
       protected: double horizontalAngleStep = 0;
@@ -209,7 +209,6 @@ namespace ignition
     std::vector<double> BaseLidarVisual<T>::Points() const
     {
         std::vector<double> d;
-        d.clear();
         return d;
     }
 
@@ -222,7 +221,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetPoints(std::vector<double> &)
+    void BaseLidarVisual<T>::SetPoints(const std::vector<double> &)
     {
       // no op
     }
@@ -238,7 +237,7 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::SetMinVerticalAngle(
-          const double _minVerticalAngle)
+          double _minVerticalAngle)
     {
       this->minVerticalAngle = _minVerticalAngle;
     }
@@ -253,7 +252,7 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::SetMaxVerticalAngle(
-                  const double _maxVerticalAngle)
+                  double _maxVerticalAngle)
     {
       this->maxVerticalAngle = _maxVerticalAngle;
     }
@@ -268,9 +267,18 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::SetVerticalRayCount(
-          const unsigned int _verticalRayCount)
+          unsigned int _verticalRayCount)
     {
-      this->verticalCount = _verticalRayCount;
+      if (_verticalRayCount == 0)
+      {
+        ignerr << "Cannot have zero vertical rays. Setting value to 1."
+               << std::endl;
+        this->verticalCount = 1;
+      }
+      else
+      {
+        this->verticalCount = _verticalRayCount;
+      }
     }
 
     /////////////////////////////////////////////////
@@ -283,7 +291,7 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::SetMinHorizontalAngle(
-          const double _minHorizontalAngle)
+          double _minHorizontalAngle)
     {
       this->minHorizontalAngle = _minHorizontalAngle;
     }
@@ -298,7 +306,7 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::SetMaxHorizontalAngle(
-          const double _maxHorizontalAngle)
+          double _maxHorizontalAngle)
     {
       this->maxHorizontalAngle = _maxHorizontalAngle;
     }
@@ -313,9 +321,18 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::SetHorizontalRayCount(
-          const unsigned int _horizontalRayCount)
+          unsigned int _horizontalRayCount)
     {
-      this->horizontalCount = _horizontalRayCount;
+      if (_horizontalRayCount == 0)
+      {
+        ignerr << "Cannot have zero horizontal rays. Setting value to 1."
+               << std::endl;
+        this->horizontalCount = 1u;
+      }
+      else
+      {
+        this->horizontalCount = _horizontalRayCount;
+      }
     }
 
     /////////////////////////////////////////////////
@@ -327,7 +344,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetMinRange(const double _minRange)
+    void BaseLidarVisual<T>::SetMinRange(double _minRange)
     {
       this->minRange = _minRange;
     }
@@ -341,7 +358,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetMaxRange(const double _maxRange)
+    void BaseLidarVisual<T>::SetMaxRange(double _maxRange)
     {
       this->maxRange = _maxRange;
     }

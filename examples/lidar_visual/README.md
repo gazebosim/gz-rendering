@@ -1,4 +1,4 @@
-# Actor animation
+# Lidar Visual Example
 
 Demo of a lidar visualisation using data from a GPU Rays sensor.
 A laser sensor model is used to detect objects in the rendering window

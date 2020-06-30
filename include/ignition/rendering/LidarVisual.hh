@@ -32,10 +32,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \brief Enum for LidarVisual types
-    typedef MarkerType LidarVisualType;
-
     /// \class LidarVisual LidarVisual.hh ignition/rendering/LidarVisual
     /// \brief A LidarVisual geometry class. The visual appearance is based
     /// on the type specified.
@@ -53,14 +49,14 @@ namespace ignition
       /// \brief Update the Visual
       public: virtual void Update() = 0;
 
-      /// \brief Callback when the sensor data is recieved
+      /// \brief Set lidar points to be visualised
       /// \param[in] _msg Vector of points representing distance of the ray
-      public: virtual void SetPoints(std::vector<double> &_msg) = 0;
+      public: virtual void SetPoints(const std::vector<double> &_msg) = 0;
 
       /// \brief Set minimum vertical angle
       /// \param[in] _minVerticalAngle Minimum vertical angle
       public: virtual void SetMinVerticalAngle(
-                  const double _minVerticalAngle) = 0;
+                  double _minVerticalAngle) = 0;
 
       /// \brief Get minimum vertical angle
       /// \return The minimum vertical angle value of the lidar visual
@@ -69,7 +65,7 @@ namespace ignition
       /// \brief Set maximum vertical angle
       /// \param[in] _maxVerticalAngle Maximum vertical angle value
       public: virtual void SetMaxVerticalAngle(
-                  const double _maxVerticalAngle) = 0;
+                  double _maxVerticalAngle) = 0;
 
       /// \brief Get minimum vertical angle
       /// \return The maximum vertical angle value of the lidar visual
@@ -78,7 +74,7 @@ namespace ignition
       /// \brief Set minimum horizontal angle
       /// \param[in] _minHorizontalAngle Minimum horizontal angle value
       public: virtual void SetMinHorizontalAngle(
-                  const double _minHorizontalAngle) = 0;
+                  double _minHorizontalAngle) = 0;
 
       /// \brief Get minimum horizontal angle
       /// \return The minimum horizontal angle value of the lidar visual
@@ -87,7 +83,7 @@ namespace ignition
       /// \brief Set maximum horizontal angle
       /// \param[in] _maxHorizontalAngle Maximum horizontal angle value
       public: virtual void SetMaxHorizontalAngle(
-                  const double _maxHorizontalAngle) = 0;
+                  double _maxHorizontalAngle) = 0;
 
       /// \brief Get maximum horizontal angle
       /// \return The maximum horizontal angle value of the lidar visual
@@ -96,7 +92,7 @@ namespace ignition
       /// \brief Set number of vertical rays
       /// \param[in] _verticalRayCount Number of vertical rays
       public: virtual void SetVerticalRayCount(
-                  const unsigned int _verticalRayCount) = 0;
+                  unsigned int _verticalRayCount) = 0;
 
       /// \brief Get number of vertical rays
       /// \return The number of vertical rays
@@ -105,7 +101,7 @@ namespace ignition
       /// \brief Set number of horizontal rays
       /// \return _horizontalRayCount Number of vertical rays
       public: virtual void SetHorizontalRayCount(
-                  const unsigned int _horizontalRayCount) = 0;
+                  unsigned int _horizontalRayCount) = 0;
 
       /// \brief Get number of horizontal rays
       /// \return The number of horizontal rays
@@ -113,7 +109,7 @@ namespace ignition
 
       /// \brief Set minimum range of lidar rays
       /// \param[in] _minRange The minimum range for lidar rays
-      public: virtual void SetMinRange(const double _minRange) = 0;
+      public: virtual void SetMinRange(double _minRange) = 0;
 
       /// \brief Get minimum range of lidar rays
       /// \return The minimum range for lidar rays
@@ -121,7 +117,7 @@ namespace ignition
 
       /// \brief Set maximum range of lidar rays
       /// \param[in] _maxRange The maximum range for lidar rays
-      public: virtual void SetMaxRange(const double _maxRange) = 0;
+      public: virtual void SetMaxRange(double _maxRange) = 0;
 
       /// \brief Get maximum range of lidar rays
       /// \return The maximum range for lidar rays

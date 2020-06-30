@@ -50,8 +50,8 @@ namespace ignition
       public: virtual void Update() = 0;
 
       /// \brief Set lidar points to be visualised
-      /// \param[in] _msg Vector of points representing distance of the ray
-      public: virtual void SetPoints(const std::vector<double> &_msg) = 0;
+      /// \param[in] _points Vector of points representing distance of the ray
+      public: virtual void SetPoints(const std::vector<double> &_points) = 0;
 
       /// \brief Set minimum vertical angle
       /// \param[in] _minVerticalAngle Minimum vertical angle

@@ -18,10 +18,11 @@
 #define IGNITION_RENDERING_BASELIDARVISUAL_HH_
 
 #include <vector>
+
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/Material.hh"
+#include "ignition/rendering/Scene.hh"
 
 namespace ignition
 {
@@ -50,7 +51,7 @@ namespace ignition
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
-      public: virtual void SetPoints(const std::vector<double> &_msg) override;
+      public: virtual void SetPoints(const std::vector<double> &_points) override;
 
       // Documentation inherited
       public: virtual void Update() override;
@@ -390,9 +391,9 @@ namespace ignition
     {
       MaterialPtr mtl;
 
-      if (!T::Scene()->MaterialRegistered("Lidar/BlueStrips"))
+      if (!this->Scene()->MaterialRegistered("Lidar/BlueStrips"))
       {
-        mtl = T::Scene()->CreateMaterial("Lidar/BlueStrips");
+        mtl = this->Scene()->CreateMaterial("Lidar/BlueStrips");
         mtl->SetAmbient(0.0, 0.0, 1.0);
         mtl->SetDiffuse(0.0, 0.0, 1.0);
         mtl->SetTransparency(0.4);
@@ -401,9 +402,9 @@ namespace ignition
         mtl->SetLightingEnabled(false);
       }
 
-      if (!T::Scene()->MaterialRegistered("Lidar/LightBlueStrips"))
+      if (!this->Scene()->MaterialRegistered("Lidar/LightBlueStrips"))
       {
-        mtl = T::Scene()->CreateMaterial("Lidar/LightBlueStrips");
+        mtl = this->Scene()->CreateMaterial("Lidar/LightBlueStrips");
         mtl->SetAmbient(0.5, 0.5, 1.0);
         mtl->SetDiffuse(0.5, 0.5, 1.0);
         mtl->SetEmissive(0.5, 0.5, 1.0);
@@ -413,9 +414,9 @@ namespace ignition
         mtl->SetLightingEnabled(false);
       }
 
-      if (!T::Scene()->MaterialRegistered("Lidar/TransBlack"))
+      if (!this->Scene()->MaterialRegistered("Lidar/TransBlack"))
       {
-        mtl = T::Scene()->CreateMaterial("Lidar/TransBlack");
+        mtl = this->Scene()->CreateMaterial("Lidar/TransBlack");
         mtl->SetAmbient(0.0, 0.0, 0.0);
         mtl->SetDiffuse(0.0, 0.0, 0.0);
         mtl->SetEmissive(0.0, 0.0, 0.0);
@@ -425,9 +426,9 @@ namespace ignition
         mtl->SetLightingEnabled(false);
       }
 
-      if (!T::Scene()->MaterialRegistered("Lidar/BlueRay"))
+      if (!this->Scene()->MaterialRegistered("Lidar/BlueRay"))
       {
-        mtl = T::Scene()->CreateMaterial("Lidar/BlueRay");
+        mtl = this->Scene()->CreateMaterial("Lidar/BlueRay");
         mtl->SetAmbient(0.0, 0.0, 1.0);
         mtl->SetDiffuse(0.0, 0.0, 1.0);
         mtl->SetEmissive(0.0, 0.0, 1.0);

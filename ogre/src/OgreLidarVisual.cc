@@ -37,11 +37,11 @@ class ignition::rendering::OgreLidarVisualPrivate
   /// \brief Lidar Ray DynamicLines Object to display
   public: std::vector<std::shared_ptr<OgreDynamicLines>> rayLines;
 
-  /// \brief The current lidar data message
+  /// \brief The current lidar points data
   public: std::vector<double> lidarPoints;
 
-  /// \brief True if new message is received
-  public: bool receivedMsg;
+  /// \brief True if new points data is received
+  public: bool receivedData = false;
 };
 
 using namespace ignition;
@@ -106,7 +106,7 @@ void OgreLidarVisual::Init()
 void OgreLidarVisual::Create()
 {
   this->ClearPoints();
-  this->dataPtr->receivedMsg = false;
+  this->dataPtr->receivedData = false;
 }
 
 //////////////////////////////////////////////////
@@ -120,23 +120,23 @@ void OgreLidarVisual::ClearPoints()
 
 
 //////////////////////////////////////////////////
-void OgreLidarVisual::SetPoints(const std::vector<double> &_msg)
+void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 {
-  this->dataPtr->lidarPoints = _msg;
-  this->dataPtr->receivedMsg = true;
+  this->dataPtr->lidarPoints = _points;
+  this->dataPtr->receivedData = true;
 }
 
 //////////////////////////////////////////////////
 void OgreLidarVisual::Update()
 {
-  if (!this->dataPtr->receivedMsg || this->dataPtr->lidarPoints.size() == 0)
+  if (!this->dataPtr->receivedData || this->dataPtr->lidarPoints.size() == 0)
   {
-    ignerr << "Message not received. Exiting update function"
-           << std::endl;
+    ignwarn << "New lidar data not received. Exiting update function"
+            << std::endl;
     return;
   }
 
-  this->dataPtr->receivedMsg = false;
+  this->dataPtr->receivedData = false;
   double horizontalAngle = this->minHorizontalAngle;
   double verticalAngle = this->minVerticalAngle;
 
@@ -156,12 +156,13 @@ void OgreLidarVisual::Update()
   if (this->dataPtr->lidarPoints.size() !=
                   this->verticalCount * this->horizontalCount)
   {
-    ignerr << "Size of laser message inconsistent with ray count"
-           << std::endl;
+    ignwarn << "Size of lidar data inconsistent with rays."
+            << " Exiting update function."
+            << std::endl;
     return;
   }
 
-  // Process each point from message
+  // Process each point from received data
   // Every line segment, and every triangle is saved separately,
   // as a pointer to a DynamicLine
   for (unsigned int j = 0; j < this->verticalCount; ++j)
@@ -208,8 +209,6 @@ void OgreLidarVisual::Update()
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->rayLines.push_back(line);
-
-      this->SetVisibilityFlags(0x0FFFFFFF);
     }
     this->dataPtr->deadZoneRayFans[j]->SetPoint(0, this->offset.Pos());
 

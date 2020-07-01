@@ -106,7 +106,7 @@ cc_binary(
     ],
     data = ["src/media"],
     local_defines = [
-        "OGRE2_RESOURCE_PATH='\"./ogre2/\"'",
+        "OGRE2_RESOURCE_PATH='\"./ogre2\"'",
         "OGRE2_VERSION='\"TODO: replace with correct string\"'",
     ],
 )

@@ -24,23 +24,23 @@ target_link_libraries(${ogre2_target}
 
 install(DIRECTORY "media"  DESTINATION ${IGN_RENDERING_RESOURCE_PATH}/ogre2)
 
-
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})
 
 if(WIN32)
-  install(TARGETS ${ogre2_target} DESTINATION ${IGN_RENDERING_PLUGIN_PATH})
-
 
   set(IGNITION_RENDERING_ENGINE_INSTALL_DIR
     ${CMAKE_INSTALL_PREFIX}/${IGN_LIB_INSTALL_DIR}/ign-${IGN_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
   )
   message("asdf ================== installing to ${IGN_RENDERING_PLUGIN_PATH}")
   message("asdf ================== engine plugin dir to ${IGNITION_RENDERING_ENGINE_INSTALL_DIR}")
+  message("asdf ================== current bindir ${CMAKE_CURRENT_BINARY_DIR}")
+  message("asdf ================== cmake output dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
+  install(TARGETS ${ogre2_target} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
   # tests needs .dll in the same directory
   add_custom_command(TARGET ${ogre2_target} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-    $<TARGET_FILE:${ogre2_target}> ${CMAKE_CURRENT_BINARY_DIR})
+    $<TARGET_FILE:${ogre2_target}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()

@@ -71,6 +71,9 @@ namespace ignition
       /// \brief Create the Lidar Visual in ogre
       private: void Create();
 
+      /// \brief Clear data stored by dynamiclines
+      private: void ClearVisualData();
+
       /// \brief Lidar Visual should only be created by scene.
       private: friend class OgreScene;
 

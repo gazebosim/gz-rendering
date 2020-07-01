@@ -112,12 +112,18 @@ void OgreLidarVisual::Create()
 //////////////////////////////////////////////////
 void OgreLidarVisual::ClearPoints()
 {
+  this->dataPtr->lidarPoints.clear();
+  this->dataPtr->receivedData = false;
+}
+
+//////////////////////////////////////////////////
+void OgreLidarVisual::ClearVisualData()
+{
   this->dataPtr->noHitRayStrips.clear();
   this->dataPtr->deadZoneRayFans.clear();
   this->dataPtr->rayLines.clear();
   this->dataPtr->rayStrips.clear();
 }
-
 
 //////////////////////////////////////////////////
 void OgreLidarVisual::SetPoints(const std::vector<double> &_points)

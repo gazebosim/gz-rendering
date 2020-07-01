@@ -886,6 +886,35 @@ namespace ignition
       /// \return The created ray query
       public: virtual RayQueryPtr CreateRayQuery() = 0;
 
+      /// \brief Create new particle emitter. A unique ID and name will
+      /// automatically be assigned to the visual.
+      /// \return The created particle emitter
+      public: virtual ParticleEmitterPtr CreateParticleEmitter() = 0;
+
+      /// \brief Create new particle emitter with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new particle emitter
+      /// \return The created particle emitter
+      public: virtual ParticleEmitterPtr CreateParticleEmitter(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new particle emitter with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new particle emitter
+      /// \return The created particle emitter
+      public: virtual ParticleEmitterPtr CreateParticleEmitter(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new particle emitter with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new particle emitter
+      /// \param[in] _name Name of the new particle emitter
+      /// \return The created particle emitter
+      public: virtual ParticleEmitterPtr CreateParticleEmitter(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Prepare scene for rendering. The scene will flushing any scene
       /// changes by traversing scene-graph, calling PreRender on all objects
       public: virtual void PreRender() = 0;

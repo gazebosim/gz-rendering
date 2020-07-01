@@ -1063,6 +1063,32 @@ RayQueryPtr BaseScene::CreateRayQuery()
 }
 
 //////////////////////////////////////////////////
+ParticleEmitterPtr BaseScene::CreateParticleEmitter()
+{
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/)
+{
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(
+    const std::string &/*_name*/)
+{
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/,
+    const std::string &/*_name*/)
+{
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
 void BaseScene::PreRender()
 {
   this->RootVisual()->PreRender();

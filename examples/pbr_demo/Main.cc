@@ -56,6 +56,7 @@ void buildScene(ScenePtr _scene)
   meshes.push_back("rescue_randy");
   meshes.push_back("valve");
   meshes.push_back("pump");
+  meshes.push_back("PBRTest");
 
   std::map<std::string, VisualPtr> visuals;
 
@@ -73,7 +74,7 @@ void buildScene(ScenePtr _scene)
     matPBR->SetTexture(textureMap);
 //    matPBR->SetRoughness(0.5);
 
-    if (mesh == "pump" || mesh == "extinguisher" || mesh == "valve")
+    if (mesh == "pump" || mesh == "extinguisher" || mesh == "valve" || mesh == "PBRTest")
     {
       matPBR->SetMetalness(0.9);
       matPBR->SetRoughness(0.5);
@@ -89,8 +90,15 @@ void buildScene(ScenePtr _scene)
     else
       meshPBR->SetLocalRotation(0, 0, 0);
     MeshDescriptor descriptorPBR;
+    std::string extension = ".dae";
+    if (mesh == "PBRTest")
+    {
+      extension = ".obj";
+      meshPBR->SetLocalRotation(1.57, 0, 0);
+      meshPBR->SetLocalPosition(x, y, 1.0);
+    }
     descriptorPBR.meshName = common::joinPaths(RESOURCE_PATH, mesh,
-        mesh + ".dae");
+        mesh + extension);
     common::MeshManager *meshManager = common::MeshManager::Instance();
     descriptorPBR.mesh = meshManager->Load(descriptorPBR.meshName);
     MeshPtr meshPBRGeom = _scene->CreateMesh(descriptorPBR);

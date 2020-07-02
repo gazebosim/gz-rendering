@@ -307,6 +307,7 @@ void updatePbr()
   meshes.push_back("rescue_randy");
   meshes.push_back("valve");
   meshes.push_back("pump");
+  meshes.push_back("PBRTest");
 
   // create PBR material
   std::string environmentMap =

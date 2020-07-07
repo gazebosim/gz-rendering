@@ -182,10 +182,12 @@ void OgreLidarVisual::Update()
                   std::shared_ptr<OgreDynamicLines>(
                               new OgreDynamicLines(MT_TRIANGLE_STRIP));
       #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
-            line->setMaterial("Lidar/BlueStrips");
+        line->setMaterial("Lidar/BlueStrips");
       #else
-            line->setMaterial(
-                this->Scene()->Material("Lidar/BlueStrips")->Clone());
+        Ogre::MaterialPtr mat =
+                Ogre::MaterialManager::getSingleton().getByName(
+                                                "Lidar/BlueStrips");
+        line->setMaterial(mat);
       #endif
       std::shared_ptr<Ogre::MovableObject> mv =
                 std::dynamic_pointer_cast<Ogre::MovableObject>(line);
@@ -197,10 +199,11 @@ void OgreLidarVisual::Update()
                   new OgreDynamicLines(MT_TRIANGLE_STRIP));
 
       #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
-            line->setMaterial("Lidar/LightBlueStrips");
+        line->setMaterial("Lidar/LightBlueStrips");
       #else
-            line->setMaterial(
-                this->Scene()->Material("Lidar/LightBlueStrips")->Clone());
+        mat = Ogre::MaterialManager::getSingleton().getByName(
+                                                "Lidar/LightBlueStrips");
+        line->setMaterial(mat);
       #endif
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
@@ -210,10 +213,11 @@ void OgreLidarVisual::Update()
                   new OgreDynamicLines(MT_TRIANGLE_FAN));
 
       #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
-            line->setMaterial("Lidar/TransBlack");
+        line->setMaterial("Lidar/TransBlack");
       #else
-            line->setMaterial(
-                this->Scene()->Material("Lidar/TransBlack")->Clone());
+        mat = Ogre::MaterialManager::getSingleton().getByName(
+                                                "Lidar/TransBlack");
+        line->setMaterial(mat);
       #endif
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
@@ -226,10 +230,11 @@ void OgreLidarVisual::Update()
                   new OgreDynamicLines(MT_LINE_LIST));
 
       #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
-            line->setMaterial("Lidar/BlueRay");
+        line->setMaterial("Lidar/BlueRay");
       #else
-            line->setMaterial(
-                this->Scene()->Material("Lidar/BlueRay")->Clone());
+        mat = Ogre::MaterialManager::getSingleton().getByName(
+                                                "Lidar/BlueRay");
+        line->setMaterial(mat);
       #endif
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());

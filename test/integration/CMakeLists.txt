@@ -8,6 +8,7 @@ set(tests
   shadows.cc
   scene.cc
   thermal_camera.cc
+  lidar_visual.cc
 )
 
 link_directories(${PROJECT_BINARY_DIR}/test)

@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Added Lidar Visualisation for Ogre1
+    * [Pull request #103](https://github.com/ignitionrobotics/ign-rendering/pull/103)
+
 1. Added a method to show the head on arrows and axis
     * [Pull request #95](https://github.com/ignitionrobotics/ign-rendering/pull/95)
 

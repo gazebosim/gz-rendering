@@ -419,7 +419,11 @@ void Ogre2RenderEngine::LoadPlugins()
 #endif
     std::string p = common::joinPaths(path, "RenderSystem_GL3Plus");
     plugins.push_back(p);
+    p = common::joinPaths(path, "libRenderSystem_GL3Plus");
+    plugins.push_back(p);
     p = common::joinPaths(path, "Plugin_ParticleFX");
+    plugins.push_back(p);
+    p = common::joinPaths(path, "libPlugin_ParticleFX");
     plugins.push_back(p);
 
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)

@@ -249,7 +249,7 @@ cc_binary(
     ],
     deps = [
         ":ign_rendering",
-        "//ign_rendering/ogre2",
+        "//ign_rendering/ogre2:libignition-rendering4-ogre2.so"
     ],
     linkopts = ["-lGL", "-lGLU", "-lglut"],
 )
@@ -263,7 +263,7 @@ cc_binary(
     ],
     deps = [
         ":ign_rendering",
-        "//ign_rendering/ogre2",
+        "//ign_rendering/ogre2:libignition-rendering4-ogre2.so"
     ],
     data = ["examples/ogre2_demo/media"],
     linkopts = ["-lGL", "-lGLU", "-lglut"],

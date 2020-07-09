@@ -576,9 +576,8 @@ RayQueryPtr OgreScene::CreateRayQueryImpl(unsigned int _id,
 ParticleEmitterPtr OgreScene::CreateParticleEmitterImpl(unsigned int _id,
     const std::string &_name)
 {
-  ParticleEmitterPtr visual(new OgreParticleEmitter);
-  // bool result = this->InitObject(visual, _id, _name);
-  bool result = true;
+  OgreParticleEmitterPtr visual(new OgreParticleEmitter);
+  bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }
 

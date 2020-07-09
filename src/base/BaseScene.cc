@@ -32,6 +32,7 @@
 #include "ignition/rendering/GizmoVisual.hh"
 #include "ignition/rendering/GpuRays.hh"
 #include "ignition/rendering/Grid.hh"
+#include "ignition/rendering/ParticleEmitter.hh"
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Text.hh"
@@ -1088,8 +1089,7 @@ ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
     const std::string &_name)
 {
   ParticleEmitterPtr visual = this->CreateParticleEmitterImpl(_id, _name);
-  // bool result = this->RegisterVisual(visual);
-  bool result = true;
+  bool result = this->RegisterVisual(visual);
   return (result) ? visual : nullptr;
 }
 

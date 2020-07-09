@@ -98,10 +98,12 @@ namespace ignition
       public: virtual void SetDuration(const double &_duration) = 0;
 
       /// \brief This is used to turn on or off particle emission.
+      /// Default value is false.
       /// \param[in] _enable True for enabling the emission or false otherwise.
       public: virtual void SetEmitting(const bool _enable) = 0;
 
       /// \brief Sets the particle dimensions (width, height, depth).
+      /// Default value is {100, 100, 100}.
       /// \param[in] _size Particle dimensions.
       public: virtual void SetParticleSize(
                   const ignition::math::Vector3d &_size) = 0;

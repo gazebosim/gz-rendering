@@ -19,6 +19,7 @@
 #include <string>
 
 #include <ignition/common/Console.hh>
+#include <ignition/math/Color.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
@@ -49,8 +50,19 @@ void ParticleEmitterTest::ParticleEmitter(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
 
-  // create visual
+  // Create particle emitter.
   ParticleEmitterPtr particleEmitter = scene->CreateParticleEmitter();
+  particleEmitter->SetType(EmitterType::EM_BOX);
+  particleEmitter->SetRate(5.0);
+  particleEmitter->SetLocalPose({1, 2, 3, 0, 0, 0});
+  particleEmitter->SetLifetime(4);
+  particleEmitter->SetDuration(30);
+  particleEmitter->SetMaterial(nullptr);
+  particleEmitter->SetSize({30, 30, 30});
+  particleEmitter->SetVelocityRange(1, 2);
+  particleEmitter->SetColorRange(
+    ignition::math::Color::Black, ignition::math::Color::White);
+  particleEmitter->SetEmitting(true);
 
   // Clean up
   engine->DestroyScene(scene);

@@ -52,6 +52,76 @@ namespace ignition
       /// \brief Reset the particle emitter visual state
       public: virtual void Reset();
 
+      // Documentation inherited.
+      public: virtual void SetType(const EmitterType _type) override;
+
+      // Documentation inherited.
+      public: virtual void SetRate(const double _rate) override;
+
+      // Documentation inherited.
+      public: virtual void SetLocalPose(
+                  const ignition::math::Pose3d &_pose) override;
+
+      // Documentation inherited.
+      public: virtual void SetLifetime(const double &_lifetime) override;
+
+      // Documentation inherited.
+      public: virtual void SetDuration(const double &_duration) override;
+
+      // Documentation inherited.
+      public: virtual void SetMaterial(const MaterialPtr &_material) override;
+
+      // Documentation inherited.
+      public: virtual void SetSize(
+                  const ignition::math::Vector3d &_size) override;
+
+      // Documentation inherited.
+      public: virtual void SetVelocityRange(const double _minVel,
+                                            const double _maxVel) override;
+
+      // Documentation inherited.
+      public: virtual void SetColorRange(
+                  const ignition::math::Color &_colorStart,
+                  const ignition::math::Color &_colorEnd) override;
+
+      // Documentation inherited.
+      public: virtual void SetEmitting(const bool _enable) override;
+
+      /// \brief Emitter type.
+      protected: EmitterType type = EM_POINT;
+
+      /// \brief Rate of emission.
+      protected: double rate = 10;
+
+      /// \brief Emitter pose.
+      protected: ignition::math::Pose3d pose = {0, 0, 0, 0, 0, 0};
+
+      /// \brief Particle lifetime.
+      protected: double lifetime = 5;
+
+      /// \brief Duration of the emitter.
+      protected: double duration = 0;
+
+      /// \brief Particle material.
+      protected: MaterialPtr material = nullptr;
+
+      /// \brief Particle sizes.
+      protected: ignition::math::Vector3d size = {100, 100, 100};
+
+      /// \brief The minimum velocity of each particle.
+      protected: double minVel = 1;
+
+      /// \brief The maximum velocity of each particle.
+      protected: double maxVel = 1;
+
+      /// \brief The start color of a particle to choose from.
+      protected: ignition::math::Color colorStart =
+          ignition::math::Color::Black;
+
+      /// \brief The end color of a particle to choose from.
+      protected: ignition::math::Color colorEnd =
+          ignition::math::Color::White;
+
       /// \brief Only the scene can create a particle emitter
       private: friend class BaseScene;
     };
@@ -85,6 +155,80 @@ namespace ignition
     template <class T>
     void BaseParticleEmitter<T>::PreRender()
     {
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetType(const EmitterType /*_type*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetRate(const double /*_rate*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetLocalPose(
+                const ignition::math::Pose3d &/*_pose*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetLifetime(const double &/*_lifetime*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetDuration(const double &/*_duration*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetMaterial(const MaterialPtr &/*_material*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetSize(const ignition::math::Vector3d &/*_size*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetVelocityRange(const double /*_minVel*/,
+                                                  const double /*_maxVel*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetColorRange(
+                  const ignition::math::Color &/*_colorStart*/,
+                  const ignition::math::Color &/*_colorEnd*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetEmitting(const bool /*_enable*/)
+    {
+      // no op
     }
     }
   }

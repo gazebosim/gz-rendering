@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_PARTICLEEMITTER_HH_
 #define IGNITION_RENDERING_PARTICLEEMITTER_HH_
 
+#include "ignition/math/Color.hh"
 #include "ignition/math/Pose3.hh"
 #include "ignition/math/Vector3.hh"
 #include "ignition/rendering/config.hh"

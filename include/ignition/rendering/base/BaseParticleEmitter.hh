@@ -56,6 +56,10 @@ namespace ignition
       public: virtual void SetType(const EmitterType _type) override;
 
       // Documentation inherited.
+      public: virtual void SetEmitterSize(
+                  const ignition::math::Vector3d &_size) override;
+
+      // Documentation inherited.
       public: virtual void SetRate(const double _rate) override;
 
       // Documentation inherited.
@@ -63,17 +67,20 @@ namespace ignition
                   const ignition::math::Pose3d &_pose) override;
 
       // Documentation inherited.
-      public: virtual void SetLifetime(const double &_lifetime) override;
-
-      // Documentation inherited.
       public: virtual void SetDuration(const double &_duration) override;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(const MaterialPtr &_material) override;
+      public: virtual void SetEmitting(const bool _enable) override;
 
       // Documentation inherited.
-      public: virtual void SetSize(
+      public: virtual void SetParticleSize(
                   const ignition::math::Vector3d &_size) override;
+
+      // Documentation inherited.
+      public: virtual void SetLifetime(const double &_lifetime) override;
+
+      // Documentation inherited.
+      public: virtual void SetMaterial(const MaterialPtr &_material) override;
 
       // Documentation inherited.
       public: virtual void SetVelocityRange(const double _minVel,
@@ -84,9 +91,6 @@ namespace ignition
                   const ignition::math::Color &_colorStart,
                   const ignition::math::Color &_colorEnd) override;
 
-      // Documentation inherited.
-      public: virtual void SetEmitting(const bool _enable) override;
-
       /// \brief Emitter type.
       protected: EmitterType type = EM_POINT;
 
@@ -94,7 +98,7 @@ namespace ignition
       protected: double rate = 10;
 
       /// \brief Emitter pose.
-      protected: ignition::math::Pose3d pose = {0, 0, 0, 0, 0, 0};
+      protected: ignition::math::Pose3d pose = {1, 1, 1, 0, 0, 0};
 
       /// \brief Particle lifetime.
       protected: double lifetime = 5;
@@ -166,6 +170,14 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
+    void BaseParticleEmitter<T>::SetEmitterSize(
+                const ignition::math::Vector3d &/*_size*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
     void BaseParticleEmitter<T>::SetRate(const double /*_rate*/)
     {
       // no op
@@ -181,13 +193,6 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetLifetime(const double &/*_lifetime*/)
-    {
-      // no op
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
     void BaseParticleEmitter<T>::SetDuration(const double &/*_duration*/)
     {
       // no op
@@ -195,14 +200,29 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetMaterial(const MaterialPtr &/*_material*/)
+    void BaseParticleEmitter<T>::SetEmitting(const bool /*_enable*/)
     {
       // no op
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetSize(const ignition::math::Vector3d &/*_size*/)
+    void BaseParticleEmitter<T>::SetParticleSize(
+                const ignition::math::Vector3d &/*_size*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetLifetime(const double &/*_lifetime*/)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetMaterial(const MaterialPtr &/*_material*/)
     {
       // no op
     }
@@ -220,13 +240,6 @@ namespace ignition
     void BaseParticleEmitter<T>::SetColorRange(
                   const ignition::math::Color &/*_colorStart*/,
                   const ignition::math::Color &/*_colorEnd*/)
-    {
-      // no op
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseParticleEmitter<T>::SetEmitting(const bool /*_enable*/)
     {
       // no op
     }

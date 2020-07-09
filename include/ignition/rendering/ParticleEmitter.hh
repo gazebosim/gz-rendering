@@ -44,12 +44,6 @@ namespace ignition
 
       /// \brief Ellipsoid emitter.
       EM_ELLISOID         = 3,
-
-      /// \brief Hollow ellipsoid emitter.
-      EM_HOLLOW_ELLIPSOID = 4,
-
-      /// \brief Ring emitter.
-      EM_RING             = 5,
     };
 
     /// \class ParticleEmitter ParticleEmitter.hh
@@ -68,6 +62,23 @@ namespace ignition
       /// \sa EmitterType.
       public: virtual void SetType(const EmitterType _type) = 0;
 
+      /// \brief Sets the size of the emitter where the particles are sampled.
+      /// Default value is (1, 1, 1).
+      /// Note that the interpretation of the emitter area varies depending on
+      /// the emmiter type:
+      ///   - EM_POINT: The area is ignored.
+      ///   - EM_BOX: The area is interpreted as width X height X depth.
+      ///   - EM_CYLINDER: The area is interpreted as the bounding box of the
+      ///                  cilinder. The cylinder is oriented along the Z-axis.
+      ///   - EM_ELLIPSOID: The area is interpreted as the bounding box of an
+      ///                   ellipsoid shaped area, i.e. a sphere or
+      ///                   squashed-sphere area. The parameters are again
+      ///                   identical to EM_BOX, except that the dimensions
+      ///                   describe the widest points along each of the axes.
+      /// \param[in] _size Size of the emitter (width, height, depth).
+      public: virtual void SetEmitterSize(
+                  const ignition::math::Vector3d &_size) = 0;
+
       /// \brief Sets how many particles per second should be emitted.
       /// Default value is 10.
       /// \param[in] _rate Particles per second.
@@ -80,26 +91,30 @@ namespace ignition
       public: virtual void SetLocalPose(
                   const ignition::math::Pose3d &_pose) = 0;
 
-      /// \brief Sets the number of seconds each particle will ’live’ for before
-      /// being destroyed.
-      /// Default value is 5.
-      /// \param[in] _timeToLive Lifetime of each particle (seconds).
-      public: virtual void SetLifetime(const double &_lifetime) = 0;
-
       /// \brief Sets the number of seconds the emitter is active.
       /// A value of 0 means infinite duration.
       /// Default value is 0.
       /// \param[in] _duration Total duration of the emitter (seconds).
       public: virtual void SetDuration(const double &_duration) = 0;
 
+      /// \brief This is used to turn on or off particle emission.
+      /// \param[in] _enable True for enabling the emission or false otherwise.
+      public: virtual void SetEmitting(const bool _enable) = 0;
+
+      /// \brief Sets the particle dimensions (width, height, depth).
+      /// \param[in] _size Particle dimensions.
+      public: virtual void SetParticleSize(
+                  const ignition::math::Vector3d &_size) = 0;
+
+      /// \brief Sets the number of seconds each particle will ’live’ for before
+      /// being destroyed.
+      /// Default value is 5.
+      /// \param[in] _timeToLive Lifetime of each particle (seconds).
+      public: virtual void SetLifetime(const double &_lifetime) = 0;
+
       /// \brief Sets the material which all particles in the emitter will use.
       /// \param[in] _material The material pointer.
       public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
-
-      /// \brief Sets the size of particles in world coordinates.
-      /// Default value is (100, 100, 100).
-      /// \param[in] _size Size of each particle (width, height, depth).
-      public: virtual void SetSize(const ignition::math::Vector3d &_size) = 0;
 
       /// \brief Set a velocity range and each particle is emitted with a
       /// random velocity within this range.
@@ -117,10 +132,6 @@ namespace ignition
       public: virtual void SetColorRange(
                   const ignition::math::Color &_colorStart,
                   const ignition::math::Color &_colorEnd) = 0;
-
-      /// \brief This is used to turn on or off particle emission.
-      /// \param[in] _enable True for enabling the emission or false otherwise.
-      public: virtual void SetEmitting(const bool _enable) = 0;
     };
     }
   }

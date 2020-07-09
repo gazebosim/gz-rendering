@@ -53,12 +53,13 @@ void ParticleEmitterTest::ParticleEmitter(const std::string &_renderEngine)
   // Create particle emitter.
   ParticleEmitterPtr particleEmitter = scene->CreateParticleEmitter();
   particleEmitter->SetType(EmitterType::EM_BOX);
+  particleEmitter->SetEmitterSize({0.2, 0.2, 0.2});
   particleEmitter->SetRate(5.0);
   particleEmitter->SetLocalPose({1, 2, 3, 0, 0, 0});
-  particleEmitter->SetLifetime(4);
   particleEmitter->SetDuration(30);
+  particleEmitter->SetParticleSize({10, 10, 10});
+  particleEmitter->SetLifetime(4);
   particleEmitter->SetMaterial(nullptr);
-  particleEmitter->SetSize({30, 30, 30});
   particleEmitter->SetVelocityRange(1, 2);
   particleEmitter->SetColorRange(
     ignition::math::Color::Black, ignition::math::Color::White);

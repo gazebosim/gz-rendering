@@ -15,7 +15,6 @@
  *
  */
 
-
 #include "ignition/rendering/ParticleEmitter.hh"
 
 using namespace ignition;

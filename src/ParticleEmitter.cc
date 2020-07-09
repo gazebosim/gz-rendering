@@ -21,6 +21,6 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-ParticleEmitter::~ParticleEmitter()
-{
-}
+// ParticleEmitter::~ParticleEmitter()
+// {
+// }

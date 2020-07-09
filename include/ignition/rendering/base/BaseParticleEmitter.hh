@@ -96,7 +96,7 @@ namespace ignition
 
       /// \brief Emitter size.
       protected: ignition::math::Vector3d emitterSize =
-          ignition::math::Pose3d::One;
+          ignition::math::Vector3d::One;
 
       /// \brief Rate of emission.
       protected: double rate = 10;

@@ -119,10 +119,10 @@ namespace ignition
       public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
 
       /// \brief Set a velocity range and each particle is emitted with a
-      /// random velocity within this range.
+      /// random velocity within this range (m/s).
       /// Default value is 1 for both velocities.
-      /// \param[in] _minVel Minimum velocity (m/s).
-      /// \param[in] _maxVel Maximum velocity (m/s).
+      /// \param[in] _minVel Minimum velocity.
+      /// \param[in] _maxVel Maximum velocity.
       public: virtual void SetVelocityRange(const double _minVel,
                                             const double _maxVel) = 0;
 

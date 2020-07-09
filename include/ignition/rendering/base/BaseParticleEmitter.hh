@@ -94,23 +94,30 @@ namespace ignition
       /// \brief Emitter type.
       protected: EmitterType type = EM_POINT;
 
+      /// \brief Emitter size.
+      protected: ignition::math::Vector3d emitterSize =
+          ignition::math::Pose3d::One;
+
       /// \brief Rate of emission.
       protected: double rate = 10;
 
       /// \brief Emitter pose.
-      protected: ignition::math::Pose3d pose = {1, 1, 1, 0, 0, 0};
-
-      /// \brief Particle lifetime.
-      protected: double lifetime = 5;
+      protected: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
       /// \brief Duration of the emitter.
       protected: double duration = 0;
 
+      /// \brief Whether particle emitter is enabled or not.
+      protected: bool emitting = false;
+
+      /// \brief Particle size.
+      protected: ignition::math::Vector3d size = {100, 100, 100};
+
+      /// \brief Particle lifetime.
+      protected: double lifetime = 5;
+
       /// \brief Particle material.
       protected: MaterialPtr material = nullptr;
-
-      /// \brief Particle sizes.
-      protected: ignition::math::Vector3d size = {100, 100, 100};
 
       /// \brief The minimum velocity of each particle.
       protected: double minVel = 1;

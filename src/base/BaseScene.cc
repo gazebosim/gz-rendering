@@ -1065,27 +1065,32 @@ RayQueryPtr BaseScene::CreateRayQuery()
 //////////////////////////////////////////////////
 ParticleEmitterPtr BaseScene::CreateParticleEmitter()
 {
-  return nullptr;
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateParticleEmitter(objId);
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id)
 {
-  return nullptr;
+  std::string objName = this->CreateObjectName(_id, "ParticleEmitter");
+  return this->CreateParticleEmitter(_id, objName);
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(
-    const std::string &/*_name*/)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(const std::string &_name)
 {
-  return nullptr;
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateParticleEmitter(objId, _name);
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
+    const std::string &_name)
 {
-  return nullptr;
+  ParticleEmitterPtr visual = this->CreateParticleEmitterImpl(_id, _name);
+  // bool result = this->RegisterVisual(visual);
+  bool result = true;
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

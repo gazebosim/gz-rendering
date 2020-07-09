@@ -50,7 +50,7 @@ void ParticleEmitterTest::ParticleEmitter(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
 
-  // Create particle emitter.
+  // Create a particle emitter.
   ParticleEmitterPtr particleEmitter = scene->CreateParticleEmitter();
   particleEmitter->SetType(EmitterType::EM_BOX);
   particleEmitter->SetEmitterSize({0.2, 0.2, 0.2});

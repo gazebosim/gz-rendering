@@ -54,7 +54,7 @@ namespace ignition
       public virtual Visual
     {
       /// \brief Destructor
-      public: virtual ~ParticleEmitter();
+      public: virtual ~ParticleEmitter() {};
 
       /// \brief \brief Set the emitter type.
       /// Default value is EM_POINT.

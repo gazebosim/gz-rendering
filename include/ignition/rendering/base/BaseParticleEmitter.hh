@@ -53,38 +53,77 @@ namespace ignition
       public: virtual void Reset();
 
       // Documentation inherited.
+      public: virtual EmitterType Type() const override;
+
+      // Documentation inherited.
       public: virtual void SetType(const EmitterType _type) override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::Vector3d EmitterSize() const override;
 
       // Documentation inherited.
       public: virtual void SetEmitterSize(
                   const ignition::math::Vector3d &_size) override;
 
       // Documentation inherited.
+      public: virtual double Rate() const override;
+
+      // Documentation inherited.
       public: virtual void SetRate(double _rate) override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::Pose3d LocalPose() const override;
 
       // Documentation inherited.
       public: virtual void SetLocalPose(
                   const ignition::math::Pose3d &_pose) override;
 
       // Documentation inherited.
+      public: virtual double Duration() const override;
+
+      // Documentation inherited.
       public: virtual void SetDuration(double _duration) override;
 
       // Documentation inherited.
+      public: virtual bool Emitting() const override;
+
+      // Documentation inherited.
       public: virtual void SetEmitting(bool _enable) override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::Vector3d ParticleSize() const override;
 
       // Documentation inherited.
       public: virtual void SetParticleSize(
                   const ignition::math::Vector3d &_size) override;
 
       // Documentation inherited.
+      public: virtual double Lifetime() const override;
+
+      // Documentation inherited.
       public: virtual void SetLifetime(double _lifetime) override;
+
+      // Documentation inherited.
+      public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
       public: virtual void SetMaterial(const MaterialPtr &_material) override;
 
       // Documentation inherited.
+      public: virtual double MinVelocity() const override;
+
+      // Documentation inherited.
+      public: virtual double MaxVelocity() const override;
+
+      // Documentation inherited.
       public: virtual void SetVelocityRange(double _minVel,
                                             double _maxVel) override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::Color ColorStart() const override;
+
+      // Documentation inherited.
+      public: virtual ignition::math::Color ColorEnd() const override;
 
       // Documentation inherited.
       public: virtual void SetColorRange(
@@ -111,7 +150,7 @@ namespace ignition
       protected: bool emitting = false;
 
       /// \brief Particle size.
-      protected: ignition::math::Vector3d size = {100, 100, 100};
+      protected: ignition::math::Vector3d particleSize = {100, 100, 100};
 
       /// \brief Particle lifetime.
       protected: double lifetime = 5;
@@ -120,14 +159,14 @@ namespace ignition
       protected: MaterialPtr material = nullptr;
 
       /// \brief The minimum velocity of each particle.
-      protected: double minVel = 1;
+      protected: double minVelocity = 1;
 
       /// \brief The maximum velocity of each particle.
-      protected: double maxVel = 1;
+      protected: double maxVelocity = 1;
 
       /// \brief The start color of a particle to choose from.
       protected: ignition::math::Color colorStart =
-          ignition::math::Color::Black;
+          ignition::math::Color::White;
 
       /// \brief The end color of a particle to choose from.
       protected: ignition::math::Color colorEnd =
@@ -168,87 +207,180 @@ namespace ignition
     {
     }
 
+    //////////////////////////////////////////////////
+    template <class T>
+    EmitterType BaseParticleEmitter<T>::Type() const
+    {
+      return this->type;
+    }
+
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetType(const EmitterType /*_type*/)
+    void BaseParticleEmitter<T>::SetType(const EmitterType _type)
     {
-      // no op
+      this->type = _type;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Vector3d BaseParticleEmitter<T>::EmitterSize() const
+    {
+      return this->emitterSize;
     }
 
     /////////////////////////////////////////////////
     template <class T>
     void BaseParticleEmitter<T>::SetEmitterSize(
-                const ignition::math::Vector3d &/*_size*/)
+                const ignition::math::Vector3d &_size)
     {
-      // no op
+      this->emitterSize = _size;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseParticleEmitter<T>::Rate() const
+    {
+      return this->rate;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetRate(double /*_rate*/)
+    void BaseParticleEmitter<T>::SetRate(double _rate)
     {
-      // no op
+      this->rate = _rate;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Pose3d BaseParticleEmitter<T>::LocalPose() const
+    {
+      return this->pose;
     }
 
     /////////////////////////////////////////////////
     template <class T>
     void BaseParticleEmitter<T>::SetLocalPose(
-                const ignition::math::Pose3d &/*_pose*/)
+                const ignition::math::Pose3d &_pose)
     {
-      // no op
+      this->pose = _pose;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseParticleEmitter<T>::Duration() const
+    {
+      return this->duration;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetDuration(double /*_duration*/)
+    void BaseParticleEmitter<T>::SetDuration(double _duration)
     {
-      // no op
+      this->duration = _duration;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseParticleEmitter<T>::Emitting() const
+    {
+      return this->emitting;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetEmitting(bool /*_enable*/)
+    void BaseParticleEmitter<T>::SetEmitting(bool _enable)
     {
-      // no op
+      this->emitting = _enable;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Vector3d BaseParticleEmitter<T>::ParticleSize() const
+    {
+      return this->particleSize;
     }
 
     /////////////////////////////////////////////////
     template <class T>
     void BaseParticleEmitter<T>::SetParticleSize(
-                const ignition::math::Vector3d &/*_size*/)
+                const ignition::math::Vector3d &_size)
     {
-      // no op
+      this->particleSize = _size;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseParticleEmitter<T>::Lifetime() const
+    {
+      return this->lifetime;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetLifetime(double /*_lifetime*/)
+    void BaseParticleEmitter<T>::SetLifetime(double _lifetime)
     {
-      // no op
+      this->lifetime = _lifetime;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    MaterialPtr BaseParticleEmitter<T>::Material() const
+    {
+      return this->material;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetMaterial(const MaterialPtr &/*_material*/)
+    void BaseParticleEmitter<T>::SetMaterial(const MaterialPtr &_material)
     {
-      // no op
+      this->material = _material;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseParticleEmitter<T>::MinVelocity() const
+    {
+      return this->minVelocity;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseParticleEmitter<T>::MaxVelocity() const
+    {
+      return this->maxVelocity;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetVelocityRange(double /*_minVel*/,
-                                                  double /*_maxVel*/)
+    void BaseParticleEmitter<T>::SetVelocityRange(double _minVelocity,
+                                                  double _maxVelocity)
     {
-      // no op
+      this->minVelocity = _minVelocity;
+      this->maxVelocity = _maxVelocity;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Color BaseParticleEmitter<T>::ColorStart() const
+    {
+      return this->colorStart;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Color BaseParticleEmitter<T>::ColorEnd() const
+    {
+      return this->colorEnd;
     }
 
     /////////////////////////////////////////////////
     template <class T>
     void BaseParticleEmitter<T>::SetColorRange(
-                  const ignition::math::Color &/*_colorStart*/,
-                  const ignition::math::Color &/*_colorEnd*/)
+                  const ignition::math::Color &_colorStart,
+                  const ignition::math::Color &_colorEnd)
     {
-      // no op
+      this->colorStart = _colorStart;
+      this->colorEnd = _colorEnd;
     }
     }
   }

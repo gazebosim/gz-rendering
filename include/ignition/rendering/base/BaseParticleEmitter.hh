@@ -60,31 +60,31 @@ namespace ignition
                   const ignition::math::Vector3d &_size) override;
 
       // Documentation inherited.
-      public: virtual void SetRate(const double _rate) override;
+      public: virtual void SetRate(double _rate) override;
 
       // Documentation inherited.
       public: virtual void SetLocalPose(
                   const ignition::math::Pose3d &_pose) override;
 
       // Documentation inherited.
-      public: virtual void SetDuration(const double &_duration) override;
+      public: virtual void SetDuration(double _duration) override;
 
       // Documentation inherited.
-      public: virtual void SetEmitting(const bool _enable) override;
+      public: virtual void SetEmitting(bool _enable) override;
 
       // Documentation inherited.
       public: virtual void SetParticleSize(
                   const ignition::math::Vector3d &_size) override;
 
       // Documentation inherited.
-      public: virtual void SetLifetime(const double &_lifetime) override;
+      public: virtual void SetLifetime(double _lifetime) override;
 
       // Documentation inherited.
       public: virtual void SetMaterial(const MaterialPtr &_material) override;
 
       // Documentation inherited.
-      public: virtual void SetVelocityRange(const double _minVel,
-                                            const double _maxVel) override;
+      public: virtual void SetVelocityRange(double _minVel,
+                                            double _maxVel) override;
 
       // Documentation inherited.
       public: virtual void SetColorRange(
@@ -185,7 +185,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetRate(const double /*_rate*/)
+    void BaseParticleEmitter<T>::SetRate(double /*_rate*/)
     {
       // no op
     }
@@ -200,14 +200,14 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetDuration(const double &/*_duration*/)
+    void BaseParticleEmitter<T>::SetDuration(double /*_duration*/)
     {
       // no op
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetEmitting(const bool /*_enable*/)
+    void BaseParticleEmitter<T>::SetEmitting(bool /*_enable*/)
     {
       // no op
     }
@@ -222,7 +222,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetLifetime(const double &/*_lifetime*/)
+    void BaseParticleEmitter<T>::SetLifetime(double /*_lifetime*/)
     {
       // no op
     }
@@ -236,8 +236,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetVelocityRange(const double /*_minVel*/,
-                                                  const double /*_maxVel*/)
+    void BaseParticleEmitter<T>::SetVelocityRange(double /*_minVel*/,
+                                                  double /*_maxVel*/)
     {
       // no op
     }

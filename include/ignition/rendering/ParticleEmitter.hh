@@ -55,7 +55,7 @@ namespace ignition
       public virtual Visual
     {
       /// \brief Destructor
-      public: virtual ~ParticleEmitter() {};
+      public: virtual ~ParticleEmitter() {}
 
       /// \brief \brief Set the emitter type.
       /// Default value is EM_POINT.
@@ -83,12 +83,12 @@ namespace ignition
       /// \brief Sets how many particles per second should be emitted.
       /// Default value is 10.
       /// \param[in] _rate Particles per second.
-      public: virtual void SetRate(const double _rate) = 0;
+      public: virtual void SetRate(double _rate) = 0;
 
       /// \brief Sets the position of the emitter relative to the SceneNode the
       /// particle system is attached to.
       /// Default value is (0, 0, 0, 0, 0, 0).
-      /// \param[in] _pose Position of the emitter.
+      /// \param[in] _pose Pose of the emitter.
       public: virtual void SetLocalPose(
                   const ignition::math::Pose3d &_pose) = 0;
 
@@ -96,12 +96,12 @@ namespace ignition
       /// A value of 0 means infinite duration.
       /// Default value is 0.
       /// \param[in] _duration Total duration of the emitter (seconds).
-      public: virtual void SetDuration(const double &_duration) = 0;
+      public: virtual void SetDuration(double _duration) = 0;
 
       /// \brief This is used to turn on or off particle emission.
       /// Default value is false.
       /// \param[in] _enable True for enabling the emission or false otherwise.
-      public: virtual void SetEmitting(const bool _enable) = 0;
+      public: virtual void SetEmitting(bool _enable) = 0;
 
       /// \brief Sets the particle dimensions (width, height, depth).
       /// Default value is {100, 100, 100}.
@@ -112,8 +112,8 @@ namespace ignition
       /// \brief Sets the number of seconds each particle will ’live’ for before
       /// being destroyed.
       /// Default value is 5.
-      /// \param[in] _timeToLive Lifetime of each particle (seconds).
-      public: virtual void SetLifetime(const double &_lifetime) = 0;
+      /// \param[in] _lifetime Lifetime of each particle (seconds).
+      public: virtual void SetLifetime(double _lifetime) = 0;
 
       /// \brief Sets the material which all particles in the emitter will use.
       /// \param[in] _material The material pointer.
@@ -124,8 +124,8 @@ namespace ignition
       /// Default value is 1 for both velocities.
       /// \param[in] _minVel Minimum velocity.
       /// \param[in] _maxVel Maximum velocity.
-      public: virtual void SetVelocityRange(const double _minVel,
-                                            const double _maxVel) = 0;
+      public: virtual void SetVelocityRange(double _minVel,
+                                            double _maxVel) = 0;
 
       /// \brief Sets a colour for all particle emitted.
       /// The actual colour will be randomly chosen between these two values.

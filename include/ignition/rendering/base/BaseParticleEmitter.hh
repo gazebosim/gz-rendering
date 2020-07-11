@@ -72,13 +72,6 @@ namespace ignition
       public: virtual void SetRate(double _rate) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Pose3d LocalPose() const override;
-
-      // Documentation inherited.
-      public: virtual void SetLocalPose(
-                  const ignition::math::Pose3d &_pose) override;
-
-      // Documentation inherited.
       public: virtual double Duration() const override;
 
       // Documentation inherited.
@@ -139,9 +132,6 @@ namespace ignition
 
       /// \brief Rate of emission.
       protected: double rate = 10;
-
-      /// \brief Emitter pose.
-      protected: ignition::math::Pose3d pose = ignition::math::Pose3d::Zero;
 
       /// \brief Duration of the emitter.
       protected: double duration = 0;
@@ -248,21 +238,6 @@ namespace ignition
     void BaseParticleEmitter<T>::SetRate(double _rate)
     {
       this->rate = _rate;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    ignition::math::Pose3d BaseParticleEmitter<T>::LocalPose() const
-    {
-      return this->pose;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    void BaseParticleEmitter<T>::SetLocalPose(
-                const ignition::math::Pose3d &_pose)
-    {
-      this->pose = _pose;
     }
 
     //////////////////////////////////////////////////

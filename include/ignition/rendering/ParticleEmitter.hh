@@ -105,20 +105,6 @@ namespace ignition
       /// \sa Rate
       public: virtual void SetRate(double _rate) = 0;
 
-      /// \brief Get the position of the emitter relative to the SceneNode the
-      /// particle system is attached to.
-      /// \return Pose of the emitter.
-      /// \sa SetLocalPose
-      public: virtual ignition::math::Pose3d LocalPose() const = 0;
-
-      /// \brief Set the position of the emitter relative to the SceneNode the
-      /// particle system is attached to.
-      /// Default value is (0, 0, 0, 0, 0, 0).
-      /// \param[in] _pose Pose of the emitter.
-      /// \sa LocalPose
-      public: virtual void SetLocalPose(
-                  const ignition::math::Pose3d &_pose) = 0;
-
       /// \brief Get the number of seconds the emitter is active.
       /// A value of 0 means infinite duration.
       /// \return Total duration of the emitter (seconds).

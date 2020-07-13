@@ -202,7 +202,7 @@ void buildScene(ScenePtr _scene)
   // set this value to false if only the rays that are hitting another obstacle
   // are to be displayed.
   // This does NOT work for LVT_TRIANGLE_STRIPS
-  lidar->SetDisplayNonHitting(true);
+  lidar->SetDisplayNonHitting(false);
 
   lidar->SetWorldPosition(testPose.Pos());
   lidar->SetWorldRotation(testPose.Rot());

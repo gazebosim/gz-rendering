@@ -167,6 +167,10 @@ namespace ignition
       protected: virtual RayQueryPtr CreateRayQueryImpl(
                      unsigned int _id, const std::string &_name);
 
+      // Documentation inherited
+      protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
+                     unsigned int _id, const std::string &_name);
+
       protected: virtual bool InitObject(OgreObjectPtr _object,
                      unsigned int _id, const std::string &_name);
 

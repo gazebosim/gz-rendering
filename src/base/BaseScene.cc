@@ -33,6 +33,7 @@
 #include "ignition/rendering/GizmoVisual.hh"
 #include "ignition/rendering/GpuRays.hh"
 #include "ignition/rendering/Grid.hh"
+#include "ignition/rendering/ParticleEmitter.hh"
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Text.hh"
@@ -1074,27 +1075,31 @@ RayQueryPtr BaseScene::CreateRayQuery()
 //////////////////////////////////////////////////
 ParticleEmitterPtr BaseScene::CreateParticleEmitter()
 {
-  return nullptr;
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateParticleEmitter(objId);
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id)
 {
-  return nullptr;
+  std::string objName = this->CreateObjectName(_id, "ParticleEmitter");
+  return this->CreateParticleEmitter(_id, objName);
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(
-    const std::string &/*_name*/)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(const std::string &_name)
 {
-  return nullptr;
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateParticleEmitter(objId, _name);
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
+    const std::string &_name)
 {
-  return nullptr;
+  ParticleEmitterPtr visual = this->CreateParticleEmitterImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

@@ -33,6 +33,7 @@
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
+#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -440,6 +441,15 @@ RayQueryPtr Ogre2Scene::CreateRayQueryImpl(unsigned int _id,
   Ogre2RayQueryPtr rayQuery(new Ogre2RayQuery);
   bool result = this->InitObject(rayQuery, _id, _name);
   return (result) ? rayQuery : nullptr;
+}
+
+//////////////////////////////////////////////////
+ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2ParticleEmitterPtr visual(new Ogre2ParticleEmitter);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

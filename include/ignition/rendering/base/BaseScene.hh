@@ -558,6 +558,18 @@ namespace ignition
       protected: virtual RayQueryPtr CreateRayQueryImpl(
                      unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Implementation for creating a ParticleEmitter.
+      /// \param[in] _id Unique id.
+      /// \param[in] _name Name of ParticleEmitter.
+      /// \return Pointer to the created particle emitter.
+      protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
+                     unsigned int, const std::string &)
+                 {
+                   ignerr << "ParticleEmitter not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return ParticleEmitterPtr();
+                 }
+
       protected: virtual LightStorePtr Lights() const = 0;
 
       protected: virtual SensorStorePtr Sensors() const = 0;

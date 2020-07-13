@@ -32,6 +32,7 @@
 #include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreLidarVisual.hh"
 #include "ignition/rendering/ogre/OgreMeshFactory.hh"
+#include "ignition/rendering/ogre/OgreParticleEmitter.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
@@ -579,6 +580,15 @@ RayQueryPtr OgreScene::CreateRayQueryImpl(unsigned int _id,
   OgreRayQueryPtr rayQuery(new OgreRayQuery);
   bool result = this->InitObject(rayQuery, _id, _name);
   return (result) ? rayQuery : nullptr;
+}
+
+//////////////////////////////////////////////////
+ParticleEmitterPtr OgreScene::CreateParticleEmitterImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreParticleEmitterPtr visual(new OgreParticleEmitter);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

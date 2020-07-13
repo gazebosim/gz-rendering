@@ -37,6 +37,13 @@ class ignition::rendering::OgreLidarVisualPrivate
   /// \brief Lidar Ray DynamicLines Object to display
   public: std::vector<std::shared_ptr<OgreDynamicLines>> rayLines;
 
+  /// \brief Lidar Points DynamicLines Object to display
+  public: std::vector<std::shared_ptr<OgreDynamicLines>> points;
+
+  /// \brief Lidar visual type
+  public: LidarVisualType lidarVisType =
+            LidarVisualType::LVT_TRIANGLE_STRIPS;
+
   /// \brief The current lidar points data
   public: std::vector<double> lidarPoints;
 
@@ -92,6 +99,12 @@ void OgreLidarVisual::Destroy()
     ray.reset();
   }
 
+  for (auto ray : this->dataPtr->points)
+  {
+    ray.get()->Clear();
+    ray.reset();
+  }
+
   this->ClearPoints();
 }
 
@@ -123,6 +136,7 @@ void OgreLidarVisual::ClearVisualData()
   this->dataPtr->deadZoneRayFans.clear();
   this->dataPtr->rayLines.clear();
   this->dataPtr->rayStrips.clear();
+  this->dataPtr->points.clear();
 }
 
 //////////////////////////////////////////////////
@@ -141,6 +155,13 @@ void OgreLidarVisual::Update()
             << std::endl;
     return;
   }
+
+  // if visual type is changed, clear all DynamicLines
+  if (this->lidarVisualType != this->dataPtr->lidarVisType)
+  {
+    this->ClearVisualData();
+  }
+  this->dataPtr->lidarVisType = this->lidarVisualType;
 
   this->dataPtr->receivedData = false;
   double horizontalAngle = this->minHorizontalAngle;
@@ -171,13 +192,38 @@ void OgreLidarVisual::Update()
   // Process each point from received data
   // Every line segment, and every triangle is saved separately,
   // as a pointer to a DynamicLine
+  // This initializes and updates only the selected DynamicLine variables
   for (unsigned int j = 0; j < this->verticalCount; ++j)
   {
     horizontalAngle = this->minHorizontalAngle;
 
-    if (j+1 > this->dataPtr->rayLines.size())
+    if (this->dataPtr->lidarVisType == LidarVisualType::LVT_RAY_LINES)
     {
-      // Ray Strips fill in between the line areas that intersect an object
+      if (j+1 > this->dataPtr->rayLines.size())
+      {
+        std::shared_ptr<OgreDynamicLines> line =
+                    std::shared_ptr<OgreDynamicLines>(
+                          new OgreDynamicLines(MT_LINE_LIST));
+
+        #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
+              line->setMaterial("Lidar/BlueRay");
+        #else
+              line->setMaterial(
+                  this->Scene()->Material("Lidar/BlueRay")->Clone());
+        #endif
+        std::shared_ptr<Ogre::MovableObject> mv =
+                std::dynamic_pointer_cast<Ogre::MovableObject>(line);
+        this->Node()->attachObject(mv.get());
+        this->dataPtr->rayLines.push_back(line);
+      }
+    }
+
+    else if (this->dataPtr->lidarVisType ==
+              LidarVisualType::LVT_TRIANGLE_STRIPS)
+    {
+      if (j+1 > this->dataPtr->rayLines.size())
+      {
+        // Ray Strips fill in between the line areas that intersect an object
       std::shared_ptr<OgreDynamicLines> line =
                   std::shared_ptr<OgreDynamicLines>(
                               new OgreDynamicLines(MT_TRIANGLE_STRIP));
@@ -225,7 +271,6 @@ void OgreLidarVisual::Update()
       this->dataPtr->deadZoneRayFans[j]->AddPoint(
                   ignition::math::Vector3d::Zero);
 
-
       line = std::shared_ptr<OgreDynamicLines>(
                   new OgreDynamicLines(MT_LINE_LIST));
 
@@ -239,9 +284,31 @@ void OgreLidarVisual::Update()
       mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
       this->Node()->attachObject(mv.get());
       this->dataPtr->rayLines.push_back(line);
+      }
+      this->dataPtr->deadZoneRayFans[j]->SetPoint(0, this->offset.Pos());
     }
-    this->dataPtr->deadZoneRayFans[j]->SetPoint(0, this->offset.Pos());
 
+    else if (this->dataPtr->lidarVisType ==
+                  LidarVisualType::LVT_POINTS)
+    {
+      if (j+1 > this->dataPtr->points.size())
+      {
+        std::shared_ptr<OgreDynamicLines> line =
+                  std::shared_ptr<OgreDynamicLines>(
+                              new OgreDynamicLines(MT_POINTS));
+
+        #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
+              line->setMaterial("Default/White");
+        #else
+              line->setMaterial(
+                  this->Scene()->Material("Default/White")->Clone());
+        #endif
+        std::shared_ptr<Ogre::MovableObject> mv =
+                std::dynamic_pointer_cast<Ogre::MovableObject>(line);
+        this->Node()->attachObject(mv.get());
+        this->dataPtr->points.push_back(line);
+      }
+    }
 
     unsigned count = this->horizontalCount;
     // Process each ray in current scan
@@ -275,41 +342,105 @@ void OgreLidarVisual::Update()
       ignition::math::Vector3d noHitPt =
                   (axis * noHitRange) + this->offset.Pos();
 
-      // Draw the lines and strips that represent each simulated ray
-      if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
+      // Update the lines and strips that represent each simulated ray.
+
+      // For RAY_LINES Lidar Visual to be displayed
+      if (this->dataPtr->lidarVisType ==
+                LidarVisualType::LVT_RAY_LINES)
       {
-        this->dataPtr->rayLines[j]->AddPoint(startPt);
-        this->dataPtr->rayLines[j]->AddPoint(inf ? noHitPt : pt);
-
-        this->dataPtr->rayStrips[j]->AddPoint(startPt);
-        this->dataPtr->rayStrips[j]->AddPoint(inf ? startPt : pt);
-
-        this->dataPtr->noHitRayStrips[j]->AddPoint(startPt);
-        this->dataPtr->noHitRayStrips[j]->AddPoint(inf ? noHitPt : pt);
+        if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
+        {
+          if (this->displayNonHitting || !inf)
+          {
+            this->dataPtr->rayLines[j]->AddPoint(startPt);
+            this->dataPtr->rayLines[j]->AddPoint(inf ? noHitPt : pt);
+          }
+        }
+        else
+        {
+          if (this->displayNonHitting || !inf)
+          {
+            this->dataPtr->rayLines[j]->SetPoint(i*2, startPt);
+            this->dataPtr->rayLines[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
+          }
+        }
       }
-      else
+
+      // For TRIANGLE_STRIPS Lidar Visual to be displayed
+      else if (this->dataPtr->lidarVisType ==
+                LidarVisualType::LVT_TRIANGLE_STRIPS)
       {
-        this->dataPtr->rayLines[j]->SetPoint(i*2, startPt);
-        this->dataPtr->rayLines[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
+        if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
+        {
+          {
+            this->dataPtr->rayLines[j]->AddPoint(startPt);
+            this->dataPtr->rayLines[j]->AddPoint(inf ? noHitPt : pt);
 
-        this->dataPtr->rayStrips[j]->SetPoint(i*2, startPt);
-        this->dataPtr->rayStrips[j]->SetPoint(i*2+1, inf ? startPt : pt);
+            this->dataPtr->rayStrips[j]->AddPoint(startPt);
+            this->dataPtr->rayStrips[j]->AddPoint(inf ? startPt : pt);
 
-        this->dataPtr->noHitRayStrips[j]->SetPoint(i*2, startPt);
-        this->dataPtr->noHitRayStrips[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
+            this->dataPtr->noHitRayStrips[j]->AddPoint(startPt);
+            this->dataPtr->noHitRayStrips[j]->AddPoint(inf ? noHitPt : pt);
+          }
+        }
+        else
+        {
+          {
+            this->dataPtr->rayLines[j]->SetPoint(i*2, startPt);
+            this->dataPtr->rayLines[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
+
+            this->dataPtr->rayStrips[j]->SetPoint(i*2, startPt);
+            this->dataPtr->rayStrips[j]->SetPoint(i*2+1, inf ? startPt : pt);
+
+            this->dataPtr->noHitRayStrips[j]->SetPoint(i*2, startPt);
+            this->dataPtr->noHitRayStrips[j]->SetPoint(i*2+1,
+                                                 inf ? noHitPt : pt);
+          }
+        }
+        // Draw the triangle fan that indicates the dead zone.
+        if (i+1 >= this->dataPtr->deadZoneRayFans[j]->PointCount())
+          this->dataPtr->deadZoneRayFans[j]->AddPoint(startPt);
+        else
+          this->dataPtr->deadZoneRayFans[j]->SetPoint(i+1, startPt);
       }
 
-      // Draw the triangle fan that indicates the dead zone.
-      if (i+1 >= this->dataPtr->deadZoneRayFans[j]->PointCount())
-        this->dataPtr->deadZoneRayFans[j]->AddPoint(startPt);
-      else
-        this->dataPtr->deadZoneRayFans[j]->SetPoint(i+1, startPt);
+      // For POINTS Lidar Visual to be displayed
+      else if (this->dataPtr->lidarVisType ==
+                LidarVisualType::LVT_POINTS)
+      {
+        if (i >= this->dataPtr->points[j]->PointCount())
+        {
+          if (this->displayNonHitting || !inf)
+          {
+            this->dataPtr->points[j]->AddPoint(inf ? noHitPt : pt);
+          }
+        }
+        else
+        {
+          if (this->displayNonHitting || !inf)
+          {
+            this->dataPtr->points[j]->SetPoint(i, inf ? noHitPt : pt);
+          }
+        }
+      }
 
-      // Update all the DynamicLines after adding points
-      this->dataPtr->rayLines[j]->Update();
-      this->dataPtr->rayStrips[j]->Update();
-      this->dataPtr->noHitRayStrips[j]->Update();
-      this->dataPtr->deadZoneRayFans[j]->Update();
+      // Update the DynamicLines pointers after adding points based on type
+      if (this->dataPtr->lidarVisType == LidarVisualType::LVT_RAY_LINES)
+      {
+        this->dataPtr->rayLines[j]->Update();
+      }
+      else if (this->dataPtr->lidarVisType ==
+                      LidarVisualType::LVT_TRIANGLE_STRIPS)
+      {
+        this->dataPtr->rayLines[j]->Update();
+        this->dataPtr->rayStrips[j]->Update();
+        this->dataPtr->noHitRayStrips[j]->Update();
+        this->dataPtr->deadZoneRayFans[j]->Update();
+      }
+      else if (this->dataPtr->lidarVisType == LidarVisualType::LVT_POINTS)
+      {
+        this->dataPtr->points[j]->Update();
+      }
 
       horizontalAngle += this->horizontalAngleStep;
     }

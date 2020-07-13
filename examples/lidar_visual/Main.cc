@@ -190,7 +190,20 @@ void buildScene(ScenePtr _scene)
   lidar->SetMaxVerticalAngle(vMaxAngle);
   lidar->SetMaxRange(maxRange);
   lidar->SetMinRange(minRange);
+
+  // the types can be set as follows:-
+  // LVT_POINTS -> Lidar Points at the range value
+  // LVT_RAY_LINES -> Lines along the lidar sensor to the obstacle
+  // LVT_TRIANGLE_STRIPS -> Coloured triangle strips denoting hitting and
+  // non-hitting parts of the scan
+  lidar->SetType(LidarVisualType::LVT_RAY_LINES);
   lidar->SetPoints(pts);
+
+  // set this value to false if only the rays that are hitting another obstacle
+  // are to be displayed.
+  // This does NOT work for LVT_TRIANGLE_STRIPS
+  lidar->SetDisplayNonHitting(true);
+
   lidar->SetWorldPosition(testPose.Pos());
   lidar->SetWorldRotation(testPose.Rot());
   root->AddChild(lidar);

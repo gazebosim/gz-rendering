@@ -172,7 +172,7 @@ namespace ignition
       /// \brief Maximum Range
       protected: double maxRange = 0;
 
-      /// \brief Minimum Range
+      /// \brief Option to display non-hitting rays
       protected: bool displayNonHitting = true;
 
       /// \brief Offset of visual

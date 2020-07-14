@@ -101,7 +101,7 @@ void OgreLidarVisual::Destroy()
 
   for (auto ray : this->dataPtr->points)
   {
-    ray.get()->Clear();
+    ray->Clear();
     ray.reset();
   }
 
@@ -331,8 +331,8 @@ void OgreLidarVisual::Update()
       // Update the lines and strips that represent each simulated ray.
 
       // For TRIANGLE_STRIPS Lidar Visual to be displayed
-      if (this->dataPtr->lidarVisType == LidarVisualType::LVT_TRIANGLE_STRIPS ||
-            this->dataPtr->lidarVisType == LidarVisualType::LVT_RAY_LINES)
+      if (this->dataPtr->lidarVisType == LidarVisualType::LVT_TRIANGLE_STRIPS
+        || this->dataPtr->lidarVisType == LidarVisualType::LVT_RAY_LINES)
       {
         if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
         {
@@ -407,27 +407,27 @@ void OgreLidarVisual::Update()
           }
         }
       }
-
-      // Update the DynamicLines pointers after adding points based on type
-      if (this->dataPtr->lidarVisType == LidarVisualType::LVT_TRIANGLE_STRIPS ||
-            this->dataPtr->lidarVisType == LidarVisualType::LVT_RAY_LINES)
-      {
-        this->dataPtr->rayLines[j]->Update();
-        if (this->dataPtr->lidarVisType ==
-                        LidarVisualType::LVT_TRIANGLE_STRIPS)
-        {
-          this->dataPtr->rayStrips[j]->Update();
-          this->dataPtr->noHitRayStrips[j]->Update();
-          this->dataPtr->deadZoneRayFans[j]->Update();
-        }
-      }
-      else if (this->dataPtr->lidarVisType == LidarVisualType::LVT_POINTS)
-      {
-        this->dataPtr->points[j]->Update();
-      }
-
       horizontalAngle += this->horizontalAngleStep;
     }
+
+    // Update the DynamicLines pointers after adding points based on type
+    if (this->dataPtr->lidarVisType == LidarVisualType::LVT_TRIANGLE_STRIPS
+      || this->dataPtr->lidarVisType == LidarVisualType::LVT_RAY_LINES)
+    {
+      this->dataPtr->rayLines[j]->Update();
+      if (this->dataPtr->lidarVisType ==
+                      LidarVisualType::LVT_TRIANGLE_STRIPS)
+      {
+        this->dataPtr->rayStrips[j]->Update();
+        this->dataPtr->noHitRayStrips[j]->Update();
+        this->dataPtr->deadZoneRayFans[j]->Update();
+      }
+    }
+    else if (this->dataPtr->lidarVisType == LidarVisualType::LVT_POINTS)
+    {
+      this->dataPtr->points[j]->Update();
+    }
+
     verticalAngle += this->verticalAngleStep;
   }
 }

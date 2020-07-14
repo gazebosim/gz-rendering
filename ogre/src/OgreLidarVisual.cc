@@ -310,6 +310,8 @@ void OgreLidarVisual::Update()
       ignition::math::Vector3d axis = this->offset.Rot() * ray *
         ignition::math::Vector3d(1.0, 0.0, 0.0);
 
+      ignition::math::Vector3d zeroPt = ignition::math::Vector3d(0.0, 0.0, 0.0);
+
       // Check for infinite range, which indicates the ray did not
       // intersect an object.
       double hitRange = inf ? 0 : r;
@@ -337,11 +339,9 @@ void OgreLidarVisual::Update()
         if (i >= this->dataPtr->rayLines[j]->PointCount()/2)
         {
           {
-            if (this->displayNonHitting || !inf)
-            {
-              this->dataPtr->rayLines[j]->AddPoint(startPt);
-              this->dataPtr->rayLines[j]->AddPoint(inf ? noHitPt : pt);
-            }
+            this->dataPtr->rayLines[j]->AddPoint(startPt);
+            this->dataPtr->rayLines[j]->AddPoint(
+                  inf ? (this->displayNonHitting? noHitPt: startPt) : pt);
 
             if (this->dataPtr->lidarVisType ==
                   LidarVisualType::LVT_TRIANGLE_STRIPS)
@@ -351,19 +351,16 @@ void OgreLidarVisual::Update()
 
               this->dataPtr->noHitRayStrips[j]->AddPoint(startPt);
               this->dataPtr->noHitRayStrips[j]->AddPoint(
-                  this->displayNonHitting ? (inf ? noHitPt : pt) :
-                                            (inf ? startPt : pt));
+                  inf ? (this->displayNonHitting? noHitPt: startPt) : pt);
             }
           }
         }
         else
         {
           {
-            if (this->displayNonHitting || !inf)
-            {
-              this->dataPtr->rayLines[j]->SetPoint(i*2, startPt);
-              this->dataPtr->rayLines[j]->SetPoint(i*2+1, inf ? noHitPt : pt);
-            }
+            this->dataPtr->rayLines[j]->SetPoint(i*2, startPt);
+            this->dataPtr->rayLines[j]->SetPoint(i*2+1,
+                  inf ? (this->displayNonHitting? noHitPt: startPt) : pt);
 
             if (this->dataPtr->lidarVisType ==
                   LidarVisualType::LVT_TRIANGLE_STRIPS)
@@ -373,8 +370,7 @@ void OgreLidarVisual::Update()
 
               this->dataPtr->noHitRayStrips[j]->SetPoint(i*2, startPt);
               this->dataPtr->noHitRayStrips[j]->SetPoint(i*2+1,
-                  this->displayNonHitting ? (inf ? noHitPt : pt) :
-                                            (inf ? startPt : pt));
+                  inf ? (this->displayNonHitting? noHitPt: startPt) : pt);
             }
           }
         }
@@ -394,17 +390,13 @@ void OgreLidarVisual::Update()
       {
         if (i >= this->dataPtr->points[j]->PointCount())
         {
-          if (this->displayNonHitting || !inf)
-          {
-            this->dataPtr->points[j]->AddPoint(inf ? noHitPt : pt);
-          }
+          this->dataPtr->points[j]->AddPoint(
+              inf ? (this->displayNonHitting? noHitPt: zeroPt) : pt);
         }
         else
         {
-          if (this->displayNonHitting || !inf)
-          {
-            this->dataPtr->points[j]->SetPoint(i, inf ? noHitPt : pt);
-          }
+          this->dataPtr->points[j]->SetPoint(i,
+              inf ? (this->displayNonHitting? noHitPt: zeroPt) : pt);
         }
       }
       horizontalAngle += this->horizontalAngleStep;
@@ -427,7 +419,6 @@ void OgreLidarVisual::Update()
     {
       this->dataPtr->points[j]->Update();
     }
-
     verticalAngle += this->verticalAngleStep;
   }
 }

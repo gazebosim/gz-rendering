@@ -36,9 +36,23 @@
 using namespace ignition;
 using namespace rendering;
 
+
 const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
+// paramters for the LidarVisual and GpuRays API are initialised here
+const double hMinAngle = -2.26889;
+const double hMaxAngle = 2.26889;
+const double vMinAngle = 0;
+const double vMaxAngle = 0.1;
+const double minRange = 0.08;
+const double maxRange = 10.0;
+const int hRayCount = 640;
+const int vRayCount = 1;
+std::vector<double> pts;
+
+ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0.5),
+    ignition::math::Quaterniond::Identity);
 
 //////////////////////////////////////////////////
 void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
@@ -131,21 +145,25 @@ void buildScene(ScenePtr _scene)
   visualSphere1->SetMaterial(yellow);
   root->AddChild(visualSphere1);
 
+  // create camera
+  CameraPtr camera = _scene->CreateCamera("camera");
+  camera->SetLocalPosition(0.0, 0.0, 2.0);
+  camera->SetLocalRotation(0.0, 0.5, 0.0);
+  camera->SetImageWidth(1200);
+  camera->SetImageHeight(900);
+  camera->SetAntiAliasing(2);
+  camera->SetAspectRatio(1.333);
+  camera->SetHFOV(IGN_PI / 2);
+  root->AddChild(camera);
+}
+
+//////////////////////////////////////////////////
+GpuRaysPtr createGpuRaySensor(ScenePtr _scene)
+{
   // set parameters for GPU lidar sensor and visualisations
   // parameters are based on a sample 2D planar laser sensor
-  ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0.5),
-      ignition::math::Quaterniond::Identity);
-  const double hMinAngle = -2.26889;
-  const double hMaxAngle = 2.26889;
-  const double vMinAngle = 0;
-  const double vMaxAngle = 0.1;
-  const double minRange = 0.08;
-  const double maxRange = 10.0;
-  const int hRayCount = 640;
-  const int vRayCount = 1;
-
   // add GPU lidar sensor and set parameters
-  GpuRaysPtr gpuRays = _scene->CreateGpuRays("gpu_rays_1");
+  GpuRaysPtr gpuRays = _scene->CreateGpuRays("gpu_rays");
   gpuRays->SetWorldPosition(testPose.Pos());
   gpuRays->SetWorldRotation(testPose.Rot());
   gpuRays->SetNearClipPlane(minRange);
@@ -156,6 +174,8 @@ void buildScene(ScenePtr _scene)
   gpuRays->SetVerticalAngleMin(vMinAngle);
   gpuRays->SetVerticalAngleMax(vMaxAngle);
   gpuRays->SetVerticalRayCount(vRayCount);
+
+  VisualPtr root = _scene->RootVisual();
   root->AddChild(gpuRays);
 
   unsigned int channels = gpuRays->Channels();
@@ -170,8 +190,7 @@ void buildScene(ScenePtr _scene)
   // update the sensor data
   gpuRays->Update();
 
-  // extract range values from GPU lidar data
-  std::vector<double> pts;
+  pts.clear();
   for (int j = 0; j < vRayCount; j++)
   {
     for (int i = 0; i < gpuRays->RayCount(); ++i)
@@ -179,7 +198,12 @@ void buildScene(ScenePtr _scene)
       pts.push_back(scan[j*channels*gpuRays->RayCount() + i * channels]);
     }
   }
+  return gpuRays;
+}
 
+//////////////////////////////////////////////////
+LidarVisualPtr createLidar(ScenePtr _scene)
+{
   // create lidar visual
   LidarVisualPtr lidar = _scene->CreateLidarVisual();
   lidar->SetMinHorizontalAngle(hMinAngle);
@@ -199,28 +223,20 @@ void buildScene(ScenePtr _scene)
   lidar->SetType(LidarVisualType::LVT_RAY_LINES);
   lidar->SetPoints(pts);
 
+  VisualPtr root = _scene->RootVisual();
+  root->AddChild(lidar);
+
   // set this value to false if only the rays that are hitting another obstacle
   // are to be displayed.
-  // This does NOT work for LVT_TRIANGLE_STRIPS
-  lidar->SetDisplayNonHitting(false);
+  lidar->SetDisplayNonHitting(true);
 
   lidar->SetWorldPosition(testPose.Pos());
   lidar->SetWorldRotation(testPose.Rot());
-  root->AddChild(lidar);
 
   // update lidar visual
   lidar->Update();
 
-  // create camera
-  CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 2.0);
-  camera->SetLocalRotation(0.0, 0.5, 0.0);
-  camera->SetImageWidth(1200);
-  camera->SetImageHeight(900);
-  camera->SetAntiAliasing(2);
-  camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
-  root->AddChild(camera);
+  return lidar;
 }
 
 //////////////////////////////////////////////////
@@ -258,6 +274,8 @@ int main(int _argc, char** _argv)
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
+  std::vector<LidarVisualPtr> nodes;
+  std::vector<GpuRaysPtr> sensors;
 
   engineNames.push_back(engine);
 
@@ -270,6 +288,8 @@ int main(int _argc, char** _argv)
       if (camera)
       {
         cameras.push_back(camera);
+        sensors.push_back(createGpuRaySensor(camera->Scene()));
+        nodes.push_back(createLidar(camera->Scene()));
       }
     }
     catch (...)
@@ -277,6 +297,7 @@ int main(int _argc, char** _argv)
       std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }
-  run(cameras);
+
+  run(cameras, nodes, nodes[0]->Points());
   return 0;
 }

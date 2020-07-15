@@ -75,6 +75,7 @@ void OgreLidarVisual::PreRender()
 //////////////////////////////////////////////////
 void OgreLidarVisual::Destroy()
 {
+  BaseLidarVisual::Destroy();
   for (auto ray : this->dataPtr->noHitRayStrips)
   {
     ray->Clear();

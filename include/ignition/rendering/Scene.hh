@@ -855,9 +855,13 @@ namespace ignition
       /// \return The created marker
       public: virtual MarkerPtr CreateMarker() = 0;
 
-      // /// \brief Create new lidar visual.
-      // /// \return The created lidar visual
+      /// \brief Create new lidar visual.
+      /// \return The created lidar visual
       public: virtual LidarVisualPtr CreateLidarVisual() = 0;
+
+      /// \brief Create new point cloud visual.
+      /// \return The created point cloud visual
+      public: virtual PointCloudVisualPtr CreatePointCloudVisual() = 0;
 
       /// \brief Create new text geometry.
       /// \return The created text

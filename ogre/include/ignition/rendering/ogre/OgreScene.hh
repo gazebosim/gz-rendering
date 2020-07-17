@@ -147,6 +147,10 @@ namespace ignition
                      const std::string &_name);
 
       // Documentation inherited
+      protected: virtual PointCloudVisualPtr CreatePointCloudVisualImpl(
+                     unsigned int _id, const std::string &_name);
+
+      // Documentation inherited
       protected: virtual WireBoxPtr CreateWireBoxImpl(unsigned int _id,
                      const std::string &_name);
 

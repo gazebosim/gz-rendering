@@ -31,6 +31,7 @@
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreLidarVisual.hh"
+#include "ignition/rendering/ogre/OgrePointCloudVisual.hh"
 #include "ignition/rendering/ogre/OgreMeshFactory.hh"
 #include "ignition/rendering/ogre/OgreParticleEmitter.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
@@ -536,6 +537,15 @@ LidarVisualPtr OgreScene::CreateLidarVisualImpl(unsigned int _id,
   OgreLidarVisualPtr lidar(new OgreLidarVisual);
   bool result = this->InitObject(lidar, _id, _name);
   return (result) ? lidar: nullptr;
+}
+
+//////////////////////////////////////////////////
+PointCloudVisualPtr OgreScene::CreatePointCloudVisualImpl(unsigned int _id,
+                                      const std::string &_name)
+{
+  OgrePointCloudVisualPtr pointCloud(new OgrePointCloudVisual);
+  bool result = this->InitObject(pointCloud, _id, _name);
+  return (result) ? pointCloud: nullptr;
 }
 
 //////////////////////////////////////////////////

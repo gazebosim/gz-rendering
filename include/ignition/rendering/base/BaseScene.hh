@@ -380,6 +380,9 @@ namespace ignition
       public: virtual LidarVisualPtr CreateLidarVisual() override;
 
       // Documentation inherited.
+      public: virtual PointCloudVisualPtr CreatePointCloudVisual() override;
+
+      // Documentation inherited.
       public: virtual WireBoxPtr CreateWireBox() override;
 
       // Documentation inherited.
@@ -526,6 +529,13 @@ namespace ignition
       /// \return Pointer to a lidar visual
       protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a point cloud visual
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a point cloud visual
+      protected: virtual PointCloudVisualPtr CreatePointCloudVisualImpl(
+                     unsigned int _id, const std::string &_name) = 0;
 
       /// \brief Implementation for creating a wire box geometry
       /// \param[in] _id unique object id.

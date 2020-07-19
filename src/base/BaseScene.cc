@@ -991,8 +991,10 @@ MarkerPtr BaseScene::CreateMarker()
 LidarVisualPtr BaseScene::CreateLidarVisual()
 {
   unsigned int objId = this->CreateObjectId();
-  std::string objName = this->CreateObjectName(objId, "LidarVisual");
-  return this->CreateLidarVisualImpl(objId, objName);
+  const std::string objName = this->CreateObjectName(objId, "LidarVisual");
+  LidarVisualPtr lidar = this->CreateLidarVisualImpl(objId, objName);
+  bool result = this->RegisterVisual(lidar);
+  return (result) ? lidar : nullptr;
 }
 
 //////////////////////////////////////////////////

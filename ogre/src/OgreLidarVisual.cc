@@ -66,7 +66,7 @@ OgreLidarVisual::OgreLidarVisual()
 //////////////////////////////////////////////////
 OgreLidarVisual::~OgreLidarVisual()
 {
-  this->Destroy();
+  // no ops
 }
 
 //////////////////////////////////////////////////
@@ -110,6 +110,7 @@ void OgreLidarVisual::Destroy()
   }
 
   this->ClearPoints();
+  this->ClearVisualData();
 }
 
 //////////////////////////////////////////////////

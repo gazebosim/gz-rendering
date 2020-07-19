@@ -51,7 +51,7 @@ namespace ignition
       public: virtual void PreRender() override;
 
       // Documentation inherited.
-      public: virtual void Destroy() override;
+      public: virtual void Destroy();
 
       // Documentation inherited
       public: virtual void Update() override;

@@ -991,8 +991,28 @@ MarkerPtr BaseScene::CreateMarker()
 LidarVisualPtr BaseScene::CreateLidarVisual()
 {
   unsigned int objId = this->CreateObjectId();
-  const std::string objName = this->CreateObjectName(objId, "LidarVisual");
-  LidarVisualPtr lidar = this->CreateLidarVisualImpl(objId, objName);
+  return this->CreateLidarVisual(objId);
+}
+
+//////////////////////////////////////////////////
+LidarVisualPtr BaseScene::CreateLidarVisual(unsigned int _id)
+{
+  const std::string objName = this->CreateObjectName(_id, "LidarVisual");
+  return this->CreateLidarVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+LidarVisualPtr BaseScene::CreateLidarVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateLidarVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+LidarVisualPtr BaseScene::CreateLidarVisual(unsigned int _id,
+                                            const std::string &_name)
+{
+  LidarVisualPtr lidar = this->CreateLidarVisualImpl(_id, _name);
   bool result = this->RegisterVisual(lidar);
   return (result) ? lidar : nullptr;
 }

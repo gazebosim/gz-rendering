@@ -855,9 +855,33 @@ namespace ignition
       /// \return The created marker
       public: virtual MarkerPtr CreateMarker() = 0;
 
-      // /// \brief Create new lidar visual.
-      // /// \return The created lidar visual
+      /// \brief Create new lidar visual. A unique ID and name will
+      /// automatically be assigned to the lidar visual.
+      /// \return The created lidar visual
       public: virtual LidarVisualPtr CreateLidarVisual() = 0;
+
+      /// \brief Create new lidar visual with the given ID. A unique name
+      /// will automatically be assigned to the lidar visual. If the given
+      /// ID is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new lidar visual
+      /// \return The created lidar visual
+      public: virtual LidarVisualPtr CreateLidarVisual(unsigned int _id) = 0;
+
+      /// \brief Create new lidar visual with the given name. A unique ID
+      /// will automatically be assigned to the lidar visual. If the given
+      /// name is already in use, NULL will be returned.
+      /// \param[in] _name Name of the new lidar visual
+      /// \return The created lidar visual
+      public: virtual LidarVisualPtr CreateLidarVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new lidar visual with the given name. If either
+      /// the given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the lidar visual.
+      /// \param[in] _name Name of the new lidar visual.
+      /// \return The created lidar visual
+      public: virtual LidarVisualPtr CreateLidarVisual(
+                  unsigned int _id, const std::string &_name) = 0;
 
       /// \brief Create new text geometry.
       /// \return The created text

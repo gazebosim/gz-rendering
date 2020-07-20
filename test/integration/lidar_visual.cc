@@ -133,6 +133,26 @@ void LidarVisualTest::Configure(const std::string &_renderEngine)
     ignition::math::Pose3d offset(1.5, 3.6, 2.9, 1.1, -5.3, -2.9);
     lidarVis->SetOffset(offset);
     EXPECT_EQ(lidarVis->Offset(), offset);
+
+    lidarVis->SetType(LVT_NONE);
+    EXPECT_EQ(lidarVis->Type(), LVT_NONE);
+    lidarVis->SetType(LVT_POINTS);
+    EXPECT_EQ(lidarVis->Type(), LVT_POINTS);
+    lidarVis->SetType(LVT_POINTS);
+    EXPECT_EQ(lidarVis->Type(), LVT_POINTS);
+    lidarVis->SetType(LVT_TRIANGLE_STRIPS);
+    EXPECT_EQ(lidarVis->Type(), LVT_TRIANGLE_STRIPS);
+
+    lidarVis->SetDisplayNonHitting(true);
+    EXPECT_EQ(lidarVis->DisplayNonHitting(), true);
+    lidarVis->SetDisplayNonHitting(false);
+    EXPECT_EQ(lidarVis->DisplayNonHitting(), false);
+
+    std::vector<double> pts = {2, 14, 15, 3, 5, 10, 3};
+    lidarVis->SetPoints(pts);
+    EXPECT_EQ(lidarVis->PointCount(), pts.size());
+    lidarVis->ClearPoints();
+    EXPECT_EQ(lidarVis->PointCount(), 0u);
   }
 
   // Clean up
@@ -216,6 +236,8 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   lidarVis->SetMaxHorizontalAngle(hMaxAngle);
   lidarVis->SetHorizontalRayCount(hRayCount);
   lidarVis->SetVerticalRayCount(vRayCount);
+  lidarVis->SetType(LidarVisualType::LVT_TRIANGLE_STRIPS);
+  lidarVis->SetDisplayNonHitting(true);
   root->AddChild(lidarVis);
 
   // Create a second ray caster rotated
@@ -244,6 +266,8 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   lidarVis2->SetMaxHorizontalAngle(hMaxAngle);
   lidarVis2->SetHorizontalRayCount(hRayCount);
   lidarVis2->SetVerticalRayCount(vRayCount);
+  lidarVis2->SetType(LidarVisualType::LVT_TRIANGLE_STRIPS);
+  lidarVis2->SetDisplayNonHitting(true);
   root->AddChild(lidarVis2);
 
   // Create testing boxes
@@ -463,6 +487,8 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
   lidarVis->SetMaxHorizontalAngle(hMaxAngle);
   lidarVis->SetHorizontalRayCount(hRayCount);
   lidarVis->SetVerticalRayCount(vRayCount);
+  lidarVis->SetType(LidarVisualType::LVT_TRIANGLE_STRIPS);
+  lidarVis->SetDisplayNonHitting(true);
   root->AddChild(lidarVis);
 
   // Create testing boxes

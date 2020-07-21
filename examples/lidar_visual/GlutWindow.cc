@@ -261,7 +261,6 @@ void updateLidarVisual()
   }
 }
 
-
 //////////////////////////////////////////////////
 void drawText(int _x, int _y, const std::string &_text)
 {
@@ -282,7 +281,6 @@ void drawText(int _x, int _y, const std::string &_text)
   glMatrixMode(GL_PROJECTION);
   glPopMatrix();
 }
-
 
 //////////////////////////////////////////////////
 void displayCB()
@@ -319,7 +317,6 @@ void displayCB()
   std::stringstream text;
   text << std::setw(30) << "Update time (microseconds): " << prevUpdateTime;
   drawText(10, 10, text.str());
-
 
   glutSwapBuffers();
 }
@@ -376,7 +373,6 @@ void idleCB()
   glutPostRedisplay();
 }
 
-
 //////////////////////////////////////////////////
 void initCamera(ir::CameraPtr _camera)
 {
@@ -388,13 +384,11 @@ void initCamera(ir::CameraPtr _camera)
   g_camera->Capture(*g_image);
 }
 
-
 //////////////////////////////////////////////////
 void initLidarVisual(ir::LidarVisualPtr _lidar)
 {
   g_lidar = _lidar;
 }
-
 
 //////////////////////////////////////////////////
 void initContext()
@@ -409,7 +403,6 @@ void initContext()
   glutMouseFunc(mouseCB);
   glutMotionFunc(motionCB);
 }
-
 
 //////////////////////////////////////////////////
 void printUsage()

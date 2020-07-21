@@ -36,7 +36,6 @@
 using namespace ignition;
 using namespace rendering;
 
-
 const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 

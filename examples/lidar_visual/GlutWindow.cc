@@ -257,7 +257,7 @@ void updateLidarVisual()
 
     g_time = std::chrono::steady_clock::now() - g_startTime;
     prevUpdateTime = std::chrono::duration_cast<std::chrono::microseconds>(
-                                                            g_time).count();
+        g_time).count();
   }
 }
 

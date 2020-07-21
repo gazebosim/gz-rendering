@@ -11,20 +11,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Bionic CI
         id: ci
-        uses: ignition-tooling/ubuntu-bionic-ci-action@master
+        uses: ignition-tooling/ubuntu-bionic-ci-action@chapulina/package.apt
         with:
-          apt-dependencies: |
-            freeglut3-dev
-            libfreeimage-dev
-            libglew-dev
-            libignition-cmake2-dev
-            libignition-common3-dev
-            libignition-math6-dev
-            libignition-plugin-dev
-            libogre-1.9-dev
-            libogre-2.1-dev
-            libxi-dev
-            libxmu-dev
-            uuid-dev
-            xvfb
           codecov-token: ${{ secrets.CODECOV_TOKEN }}

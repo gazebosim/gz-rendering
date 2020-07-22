@@ -72,13 +72,6 @@ void LidarVisualTest::Configure(const std::string &_renderEngine)
     return;
   }
 
-  if (_renderEngine == "ogre2")
-  {
-    igndbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -176,14 +169,6 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
             << _renderEngine << std::endl;
     return;
   }
-
-  if (_renderEngine == "ogre2")
-  {
-    igndbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
 
   // Test lidar visual with 3 boxes in the world, using reading from GPU rays
   // First GPU rays at identity orientation, second at 90 degree roll
@@ -421,13 +406,6 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
 #endif
 
   if (_renderEngine == "optix")
-  {
-    igndbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
-  if (_renderEngine == "ogre2")
   {
     igndbg << "LidarVisual not supported yet in rendering engine: "
             << _renderEngine << std::endl;

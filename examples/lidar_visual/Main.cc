@@ -219,7 +219,7 @@ LidarVisualPtr createLidar(ScenePtr _scene)
   // LVT_RAY_LINES -> Lines along the lidar sensor to the obstacle
   // LVT_TRIANGLE_STRIPS -> Coloured triangle strips denoting hitting and
   // non-hitting parts of the scan
-  lidar->SetType(LidarVisualType::LVT_RAY_LINES);
+  lidar->SetType(LidarVisualType::LVT_TRIANGLE_STRIPS);
   lidar->SetPoints(pts);
 
   VisualPtr root = _scene->RootVisual();

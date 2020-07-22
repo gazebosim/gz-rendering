@@ -300,8 +300,9 @@ void OgreLidarVisual::Update()
         #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
               line->setMaterial("Lidar/BlueRay");
         #else
-            mat = Ogre::MaterialManager::getSingleton().getByName(
-                                                "Lidar/BlueRay");
+            Ogre::MaterialPtr mat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "Lidar/BlueRay");
             line->setMaterial(mat);
         #endif
         std::shared_ptr<Ogre::MovableObject> mv =

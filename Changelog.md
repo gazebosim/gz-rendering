@@ -6,6 +6,9 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Added Lidar Visual for Ogre2
+    * [Pull request #116](https://github.com/ignitionrobotics/ign-rendering/pull/116)
+
 1. Added Lidar Visual Types for Ogre1
     * [Pull request #114](https://github.com/ignitionrobotics/ign-rendering/pull/114)
 

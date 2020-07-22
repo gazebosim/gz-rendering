@@ -380,6 +380,18 @@ namespace ignition
       public: virtual LidarVisualPtr CreateLidarVisual() override;
 
       // Documentation inherited.
+      public: virtual LidarVisualPtr CreateLidarVisual(
+                                            unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual LidarVisualPtr CreateLidarVisual(
+                                            const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual LidarVisualPtr CreateLidarVisual(unsigned int _id,
+                                            const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual WireBoxPtr CreateWireBox() override;
 
       // Documentation inherited.

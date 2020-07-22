@@ -93,6 +93,21 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   lidar->SetMinRange(0.54);
   EXPECT_DOUBLE_EQ(lidar->MinRange(), 0.54);
 
+  lidar->SetDisplayNonHitting(false);
+  EXPECT_EQ(lidar->DisplayNonHitting(), false);
+  lidar->SetDisplayNonHitting(true);
+  EXPECT_EQ(lidar->DisplayNonHitting(), true);
+
+  lidar->SetType(LVT_NONE);
+  EXPECT_EQ(lidar->Type(), LVT_NONE);
+  lidar->SetType(LVT_POINTS);
+  EXPECT_EQ(lidar->Type(), LVT_POINTS);
+  lidar->SetType(LVT_POINTS);
+  EXPECT_EQ(lidar->Type(), LVT_POINTS);
+  lidar->SetType(LVT_TRIANGLE_STRIPS);
+  EXPECT_EQ(lidar->Type(), LVT_TRIANGLE_STRIPS);
+
+
   ignition::math::Pose3d p(0.5, 2.56, 3.67, 1.4, 2, 4.5);
   lidar->SetOffset(p);
   EXPECT_EQ(lidar->Offset(), p);

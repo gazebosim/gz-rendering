@@ -41,6 +41,10 @@
 #include <ignition/rendering/OrbitViewController.hh>
 #include <ignition/rendering/RayQuery.hh>
 #include <ignition/rendering/Scene.hh>
+#include <ignition/rendering.hh>
+
+using namespace ignition;
+using namespace rendering;
 
 #include "GlutWindow.hh"
 #include "example_config.hh"
@@ -58,6 +62,16 @@ unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
 
 bool g_initContext = false;
+
+std::vector<double> g_lidarData;
+ir::LidarVisualPtr g_lidar;
+bool g_lidarVisualUpdateDirty = false;
+bool g_showNonHitting = true;
+LidarVisualType g_lidarVisType = LidarVisualType::LVT_TRIANGLE_STRIPS;
+
+std::chrono::steady_clock::duration g_time{0};
+std::chrono::steady_clock::time_point g_startTime;
+double prevUpdateTime;
 
 #if __APPLE__
   CGLContextObj g_context;
@@ -227,6 +241,46 @@ void handleMouse()
   }
 }
 
+//////////////////////////////////////////////////
+void updateLidarVisual()
+{
+  g_startTime = std::chrono::steady_clock::now();
+
+  // change detected due to key press
+  if (g_lidarVisualUpdateDirty)
+  {
+    g_lidar->SetDisplayNonHitting(g_showNonHitting);
+    g_lidar->SetPoints(g_lidarData);
+    g_lidar->SetType(g_lidarVisType);
+    g_lidar->Update();
+    g_lidarVisualUpdateDirty = false;
+
+    g_time = std::chrono::steady_clock::now() - g_startTime;
+    prevUpdateTime = std::chrono::duration_cast<std::chrono::microseconds>(
+        g_time).count();
+  }
+}
+
+//////////////////////////////////////////////////
+void drawText(int _x, int _y, const std::string &_text)
+{
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  gluOrtho2D(0.0, imgw, 0.0, imgh);
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  glColor3f(1.0f, 1.0f, 1.0f);
+  glRasterPos2i(_x, _y);
+  void *font = GLUT_BITMAP_9_BY_15;
+  for (auto c : _text)
+    glutBitmapCharacter(font, c);
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+}
 
 //////////////////////////////////////////////////
 void displayCB()
@@ -241,6 +295,7 @@ void displayCB()
   }
 #endif
 
+  updateLidarVisual();
   g_cameras[g_cameraIndex]->Capture(*g_image);
   handleMouse();
 
@@ -259,6 +314,10 @@ void displayCB()
   glRasterPos2f(-1, 1);
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
+  std::stringstream text;
+  text << std::setw(30) << "Update time (microseconds): " << prevUpdateTime;
+  drawText(10, 10, text.str());
+
   glutSwapBuffers();
 }
 
@@ -268,6 +327,39 @@ void keyboardCB(unsigned char _key, int, int)
   if (_key == KEY_ESC || _key == 'q' || _key == 'Q')
   {
     exit(0);
+  }
+  else if (_key == 'h' || _key == 'H')
+  {
+    g_showNonHitting = !g_showNonHitting;
+    g_lidarVisualUpdateDirty = true;
+  }
+  else if (_key == '0')
+  {
+    g_lidarVisType = LidarVisualType::LVT_NONE;
+    g_lidarVisualUpdateDirty = true;
+    ignmsg << "Set lidar visual type to NONE"
+           << std::endl;
+  }
+  else if (_key == '1')
+  {
+    g_lidarVisType = LidarVisualType::LVT_RAY_LINES;
+    g_lidarVisualUpdateDirty = true;
+    ignmsg << "Set lidar visual type to RAY_LINES"
+           << std::endl;
+  }
+  else if (_key == '2')
+  {
+    g_lidarVisType = LidarVisualType::LVT_POINTS;
+    g_lidarVisualUpdateDirty = true;
+    ignmsg << "Set lidar visual type to POINTS"
+           << std::endl;
+  }
+  else if (_key == '3')
+  {
+    g_lidarVisType = LidarVisualType::LVT_TRIANGLE_STRIPS;
+    g_lidarVisualUpdateDirty = true;
+    ignmsg << "Set lidar visual type to TRIANGLE_STRIPS"
+           << std::endl;
   }
   else if (_key == KEY_TAB)
   {
@@ -281,7 +373,6 @@ void idleCB()
   glutPostRedisplay();
 }
 
-
 //////////////////////////////////////////////////
 void initCamera(ir::CameraPtr _camera)
 {
@@ -294,6 +385,12 @@ void initCamera(ir::CameraPtr _camera)
 }
 
 //////////////////////////////////////////////////
+void initLidarVisual(ir::LidarVisualPtr _lidar)
+{
+  g_lidar = _lidar;
+}
+
+//////////////////////////////////////////////////
 void initContext()
 {
   glutInitDisplayMode(GLUT_DOUBLE);
@@ -303,11 +400,9 @@ void initContext()
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);
-
   glutMouseFunc(mouseCB);
   glutMotionFunc(motionCB);
 }
-
 
 //////////////////////////////////////////////////
 void printUsage()
@@ -315,11 +410,20 @@ void printUsage()
   std::cout << "==========================================" << std::endl;
   std::cout << "  TAB - Switch render engines             " << std::endl;
   std::cout << "  ESC - Exit                              " << std::endl;
+  std::cout << "                                          " << std::endl;
+  std::cout << "  H: Toggle display for non-hitting rays  " << std::endl;
+  std::cout << "                                          " << std::endl;
+  std::cout << "  0: Do not display visual                " << std::endl;
+  std::cout << "  1: Display ray lines visual             " << std::endl;
+  std::cout << "  2: Display points visual                " << std::endl;
+  std::cout << "  3: Display triangle strips visual       " << std::endl;
   std::cout << "==========================================" << std::endl;
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr> _cameras)
+void run(std::vector<ir::CameraPtr> _cameras,
+        std::vector<ir::LidarVisualPtr> _nodes,
+        std::vector<double> _pts)
 {
   if (_cameras.empty())
   {
@@ -339,8 +443,14 @@ void run(std::vector<ir::CameraPtr> _cameras)
   g_cameras = _cameras;
 
   initCamera(_cameras[0]);
+  initLidarVisual(_nodes[0]);
   initContext();
   printUsage();
+  g_lidarData.clear();
+  for (int pt =0; pt < _pts.size(); pt++)
+  {
+    g_lidarData.push_back(_pts[pt]);
+  }
 
 #if __APPLE__
   g_glutContext = CGLGetCurrentContext();

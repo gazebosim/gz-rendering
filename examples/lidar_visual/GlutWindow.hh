@@ -26,6 +26,10 @@ namespace ic = ignition::common;
 
 /// \brief Run the demo and display Lidar Visual
 /// \param[in] _cameras Cameras in the scene
-void run(std::vector<ir::CameraPtr> _cameras);
+/// \param[in] nodes Nodes in the scene
+/// \param[in] _pts Lidar points
+void run(std::vector<ir::CameraPtr> _cameras,
+         std::vector<ir::LidarVisualPtr> _nodes,
+         std::vector<double> _pts);
 
 #endif

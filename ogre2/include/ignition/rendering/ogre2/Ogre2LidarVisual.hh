@@ -34,7 +34,7 @@ namespace ignition
     // Forward declaration
     class Ogre2LidarVisualPrivate;
 
-    /// \brief Ogre implementation of a Lidar Visual.
+    /// \brief Ogre 2.x implementation of a Lidar Visual.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2LidarVisual
       : public BaseLidarVisual<Ogre2Visual>
     {

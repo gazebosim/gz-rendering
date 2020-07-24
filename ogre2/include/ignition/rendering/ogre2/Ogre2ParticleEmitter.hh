@@ -25,6 +25,10 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    // Forward declaration
+    class Ogre2ParticleEmitterPrivate;
+
     /// \brief Class to manage a particle emitter.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2ParticleEmitter :
       public BaseParticleEmitter<Ogre2Visual>
@@ -35,8 +39,49 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Ogre2ParticleEmitter();
 
+      // Documentation inherited.
+      public: virtual void SetType(const EmitterType _type) override;
+
+      // Documentation inherited.
+      public: virtual void SetEmitterSize(
+                  const ignition::math::Vector3d &_size) override;
+
+      // Documentation inherited.
+      public: virtual void SetRate(double _rate) override;
+
+      // Documentation inherited.
+      public: virtual void SetDuration(double _duration) override;
+
+      // Documentation inherited.
+      public: virtual void SetEmitting(bool _enable) override;
+
+      // Documentation inherited.
+      public: virtual void SetParticleSize(
+                  const ignition::math::Vector3d &_size) override;
+
+      // Documentation inherited.
+      public: virtual void SetLifetime(double _lifetime) override;
+
+      // Documentation inherited.
+      public: virtual void SetMaterial(const MaterialPtr &_material) override;
+
+      // Documentation inherited.
+      public: virtual void SetVelocityRange(double _minVelocity,
+                                            double _maxVelocity) override;
+
+      // Documentation inherited.
+      public: virtual void SetColorRange(
+                  const ignition::math::Color &_colorStart,
+                  const ignition::math::Color &_colorEnd) override;
+
+      // Documentation inherited.
+      protected: virtual void Init() override;
+
       /// \brief Only the ogre scene can instanstiate this class
       private: friend class Ogre2Scene;
+
+      /// \brief Private data class
+      private: std::unique_ptr<Ogre2ParticleEmitterPrivate> dataPtr;
     };
     }
   }

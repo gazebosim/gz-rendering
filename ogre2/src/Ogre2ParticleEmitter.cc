@@ -17,6 +17,7 @@
 
 // Note this include is placed in the src file because
 // otherwise ogre produces compile errors
+#include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
@@ -40,14 +41,8 @@ class ignition::rendering::Ogre2ParticleEmitterPrivate
   /// \brief Ogre particle emitter.
   public: Ogre::ParticleEmitter *emitter;
 
-  /// \brief Ogre unlit material.
-  public: Ogre::HlmsUnlit *ogreHlmsUnlit;
-
-  /// \brief The datablock Id.
-  public: std::string ogreDatablockId;
-
   /// \brief Pointer to the material datablock.
-  public: Ogre::HlmsUnlitDatablock *ogreDatablock;
+  public: Ogre::HlmsUnlitDatablock *ogreDatablock = nullptr;
 };
 
 //////////////////////////////////////////////////
@@ -108,11 +103,8 @@ void Ogre2ParticleEmitter::SetLifetime(double _lifetime)
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::SetMaterial(const MaterialPtr &_material)
 {
-  // Color.
-  math::Color color = _material->Diffuse();
-  this->dataPtr->ogreDatablock->setColour(Ogre2Conversions::Convert(color));
-
-  // TODO: Other atributes (texture?)
+  auto ogreMaterial = std::dynamic_pointer_cast<Ogre2Material>(_material);
+  ogreMaterial->FillUnlitDatablock(this->dataPtr->ogreDatablock);
 }
 
 //////////////////////////////////////////////////
@@ -148,27 +140,12 @@ void Ogre2ParticleEmitter::Init()
   this->dataPtr->emitter = this->dataPtr->ps->addEmitter("Point");
   this->dataPtr->emitter->setDirection(Ogre::Vector3::UNIT_Z);
 
-  // Create the internal UNLIT material.
-  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-  Ogre::HlmsManager *hlmsManager = root->getHlmsManager();
-  this->dataPtr->ogreHlmsUnlit = static_cast<Ogre::HlmsUnlit*>(
-      hlmsManager->getHlms(Ogre::HLMS_UNLIT));
-
-  if (!this->dataPtr->ogreHlmsUnlit)
-  {
-    ignerr << "Ogre HLMS UNLIT not ready. Is Ogre2 Render Engine initiallized?"
-           << std::endl;
-    return;
-  }
-
-  this->dataPtr->ogreDatablockId = this->dataPtr->kMaterialName;
-  this->dataPtr->ogreDatablock = static_cast<Ogre::HlmsUnlitDatablock *>(
-    this->dataPtr->ogreHlmsUnlit->createDatablock(
-      this->dataPtr->ogreDatablockId, this->dataPtr->kMaterialName,
-      Ogre::HlmsMacroblock(), Ogre::HlmsBlendblock(), Ogre::HlmsParamVec()));
-
   // This is the default material.
-  this->dataPtr->ps->setMaterialName(this->dataPtr->kMaterialName);
+  auto mat = this->scene->CreateMaterial();
+  auto ogreMat = std::dynamic_pointer_cast<Ogre2Material>(mat);
+  this->dataPtr->ogreDatablock = ogreMat->UnlitDatablock();
+  this->dataPtr->ps->setMaterialName(
+      *(this->dataPtr->ogreDatablock->getNameStr()));
 
   this->ogreNode->attachObject(this->dataPtr->ps);
   igndbg << "Particle emitter initialized" << std::endl;

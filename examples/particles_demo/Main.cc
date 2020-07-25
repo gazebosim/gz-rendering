@@ -98,6 +98,12 @@ void buildScene(ScenePtr _scene)
   root->AddChild(camera);
   //! [create camera]
 
+  // create particle material
+  MaterialPtr particleMaterial = _scene->CreateMaterial();
+  particleMaterial->SetDiffuse(0.7, 0.7, 0.7);
+  particleMaterial->SetTexture(RESOURCE_PATH + "/smoke.png");
+  particleMaterial->SetAlphaFromTexture(true);
+
   // create particle emitter.
   ParticleEmitterPtr emitter = _scene->CreateParticleEmitter();
   emitter->SetLocalPosition(0.0, 0.0, 0.0);
@@ -105,6 +111,7 @@ void buildScene(ScenePtr _scene)
   emitter->SetParticleSize({1, 1, 1});
   emitter->SetLifetime(2);
   emitter->SetVelocityRange(10, 20);
+  emitter->SetMaterial(particleMaterial);
   emitter->SetColorRange(
     ignition::math::Color::Red,
     ignition::math::Color::Blue);

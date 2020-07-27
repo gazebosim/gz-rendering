@@ -20,6 +20,7 @@
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
 #include <Plugins/ParticleFX/OgreColourImageAffector.h>
+#include <Plugins/ParticleFX/OgreBoxEmitter.h>
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
@@ -41,6 +42,8 @@ class ignition::rendering::Ogre2ParticleEmitterPrivate
 
   /// \brief Ogre particle emitter.
   public: Ogre::ParticleEmitter *emitter;
+
+  //public: Ogre::ParticleEmitter *boxEmitter;
 
   /// \brief Pointer to the material datablock.
   public: Ogre::HlmsUnlitDatablock *ogreDatablock = nullptr;
@@ -139,6 +142,7 @@ void Ogre2ParticleEmitter::Init()
 
   // Instantiate the particle emitter and default parameters.
   this->dataPtr->emitter = this->dataPtr->ps->addEmitter("Point");
+  //this->dataPtr->emitter = this->dataPtr->ps->addEmitter("Box");
   this->dataPtr->emitter->setDirection(Ogre::Vector3::UNIT_Z);
 
   // This is the default material.
@@ -149,14 +153,22 @@ void Ogre2ParticleEmitter::Init()
       *(this->dataPtr->ogreDatablock->getNameStr()));
 
   // Colour image affector.
-  Ogre::ColourImageAffector *colourImageAffector =
-    dynamic_cast<Ogre::ColourImageAffector*>(
-      this->dataPtr->ps->addAffector("ColourImage"));
-  colourImageAffector->setImageAdjust("smokecolors.png");
+  Ogre::ParticleAffector *colourImageAffector =
+    this->dataPtr->ps->addAffector("ColourImage");
+  colourImageAffector->setParameter("image", "smokecolors.png");
 
-  // Other affectors.
-  // auto rotatorAffector = this->dataPtr->ps->addAffector("Rotator");
-  // auto scalerAffector = this->dataPtr->ps->addAffector("Scaler");
+  // Rotator affector.
+  Ogre::ParticleAffector *rotatorAffector =
+    this->dataPtr->ps->addAffector("Rotator");
+  rotatorAffector->setParameter("rotation_range_start", "0");
+  rotatorAffector->setParameter("rotation_range_end", "360");
+  rotatorAffector->setParameter("rotation_speed_range_start", "-60");
+  rotatorAffector->setParameter("rotation_speed_range_end", "200");
+
+  // Scaler affector
+  Ogre::ParticleAffector *scalerAffector =
+    this->dataPtr->ps->addAffector("Scaler");
+  scalerAffector->setParameter("rate", "10");
 
   this->ogreNode->attachObject(this->dataPtr->ps);
   igndbg << "Particle emitter initialized" << std::endl;

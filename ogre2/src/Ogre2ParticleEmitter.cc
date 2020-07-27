@@ -19,6 +19,7 @@
 // otherwise ogre produces compile errors
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
+#include <Plugins/ParticleFX/OgreColourImageAffector.h>
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
@@ -146,6 +147,16 @@ void Ogre2ParticleEmitter::Init()
   this->dataPtr->ogreDatablock = ogreMat->UnlitDatablock();
   this->dataPtr->ps->setMaterialName(
       *(this->dataPtr->ogreDatablock->getNameStr()));
+
+  // Colour image affector.
+  Ogre::ColourImageAffector *colourImageAffector =
+    dynamic_cast<Ogre::ColourImageAffector*>(
+      this->dataPtr->ps->addAffector("ColourImage"));
+  colourImageAffector->setImageAdjust("smokecolors.png");
+
+  // Other affectors.
+  // auto rotatorAffector = this->dataPtr->ps->addAffector("Rotator");
+  // auto scalerAffector = this->dataPtr->ps->addAffector("Scaler");
 
   this->ogreNode->attachObject(this->dataPtr->ps);
   igndbg << "Particle emitter initialized" << std::endl;

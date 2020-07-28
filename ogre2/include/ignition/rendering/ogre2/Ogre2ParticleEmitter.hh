@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2PARTICLEEMITTER_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2PARTICLEEMITTER_HH_
 
+#include <string>
 #include "ignition/rendering/base/BaseParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
@@ -73,6 +74,12 @@ namespace ignition
       public: virtual void SetColorRange(
                   const ignition::math::Color &_colorStart,
                   const ignition::math::Color &_colorEnd) override;
+
+      // Documentation inherited.
+      public: virtual void SetScaleRate(double _scaleRate);
+
+      // Documentation inherited.
+      public: virtual void SetColorImage(const std::string &_image);
 
       // Documentation inherited.
       protected: virtual void Init() override;

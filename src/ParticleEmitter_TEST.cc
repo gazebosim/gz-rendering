@@ -77,27 +77,31 @@ void ParticleEmitterTest::CheckBasicAPI()
   double                   expectedRate         = 10.0;
   double                   expectedDuration     = 0;
   bool                     expectedEmitting     = false;
-  ignition::math::Vector3d expectedParticleSize = {100, 100, 100};
+  ignition::math::Vector3d expectedParticleSize = {1, 1, 1};
   double                   expectedLifetime     = 5;
   MaterialPtr              expectedMaterial     = nullptr;
   double                   expectedMinVel       = 1;
   double                   expectedMaxVel       = 1;
   ignition::math::Color    expectedColorStart   = ignition::math::Color::White;
   ignition::math::Color    expectedColorEnd     = ignition::math::Color::White;
+  double                   expectedScaleRate    = 1;
+  std::string              expectedColorImage   = "";
 
   // Check default expectations.
-  EXPECT_EQ(expectedEmitterType,     particleEmitter->Type());
-  EXPECT_EQ(expectedEmitterSize,     particleEmitter->EmitterSize());
-  EXPECT_DOUBLE_EQ(expectedRate,     particleEmitter->Rate());
-  EXPECT_DOUBLE_EQ(expectedDuration, particleEmitter->Duration());
-  EXPECT_EQ(expectedEmitting,        particleEmitter->Emitting());
-  EXPECT_EQ(expectedParticleSize,    particleEmitter->ParticleSize());
-  EXPECT_DOUBLE_EQ(expectedLifetime, particleEmitter->Lifetime());
-  EXPECT_EQ(expectedMaterial,        particleEmitter->Material());
-  EXPECT_DOUBLE_EQ(expectedMinVel,   particleEmitter->MinVelocity());
-  EXPECT_DOUBLE_EQ(expectedMaxVel,   particleEmitter->MaxVelocity());
-  EXPECT_EQ(expectedColorStart,      particleEmitter->ColorStart());
-  EXPECT_EQ(expectedColorEnd,        particleEmitter->ColorEnd());
+  EXPECT_EQ(expectedEmitterType,      particleEmitter->Type());
+  EXPECT_EQ(expectedEmitterSize,      particleEmitter->EmitterSize());
+  EXPECT_DOUBLE_EQ(expectedRate,      particleEmitter->Rate());
+  EXPECT_DOUBLE_EQ(expectedDuration,  particleEmitter->Duration());
+  EXPECT_EQ(expectedEmitting,         particleEmitter->Emitting());
+  EXPECT_EQ(expectedParticleSize,     particleEmitter->ParticleSize());
+  EXPECT_DOUBLE_EQ(expectedLifetime,  particleEmitter->Lifetime());
+  EXPECT_EQ(expectedMaterial,         particleEmitter->Material());
+  EXPECT_DOUBLE_EQ(expectedMinVel,    particleEmitter->MinVelocity());
+  EXPECT_DOUBLE_EQ(expectedMaxVel,    particleEmitter->MaxVelocity());
+  EXPECT_EQ(expectedColorStart,       particleEmitter->ColorStart());
+  EXPECT_EQ(expectedColorEnd,         particleEmitter->ColorEnd());
+  EXPECT_DOUBLE_EQ(expectedScaleRate, particleEmitter->ScaleRate());
+  EXPECT_EQ(expectedColorImage,       particleEmitter->ColorImage());
 
   // Modify values.
   expectedEmitterType  = EmitterType::EM_BOX;
@@ -112,6 +116,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   expectedMaxVel       = 3;
   expectedColorStart   = ignition::math::Color::Red;
   expectedColorEnd     = ignition::math::Color::Blue;
+  expectedScaleRate    = 10;
+  expectedColorImage   = "anImage";
 
   // Modify attributes.
   particleEmitter->SetType(expectedEmitterType);
@@ -124,6 +130,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   particleEmitter->SetMaterial(expectedMaterial);
   particleEmitter->SetVelocityRange(expectedMinVel, expectedMaxVel);
   particleEmitter->SetColorRange(expectedColorStart, expectedColorEnd);
+  particleEmitter->SetScaleRate(expectedScaleRate);
+  particleEmitter->SetColorImage(expectedColorImage);
 
   // Check getters.
   EXPECT_EQ(expectedEmitterType,     particleEmitter->Type());
@@ -138,6 +146,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   EXPECT_DOUBLE_EQ(expectedMaxVel,   particleEmitter->MaxVelocity());
   EXPECT_EQ(expectedColorStart,      particleEmitter->ColorStart());
   EXPECT_EQ(expectedColorEnd,        particleEmitter->ColorEnd());
+  EXPECT_DOUBLE_EQ(expectedScaleRate, particleEmitter->ScaleRate());
+  EXPECT_EQ(expectedColorImage,       particleEmitter->ColorImage());
 }
 
 /////////////////////////////////////////////////

@@ -541,13 +541,12 @@ Ogre::HlmsUnlitDatablock *Ogre2Material::UnlitDatablock()
         hlmsManager->getHlms(Ogre::HLMS_UNLIT));
     if (!ogreHlmsUnlit)
     {
-      ignerr << "Ogre HLMS UNLIT not ready. Is Ogre2 Render Engine initiallized?"
-             << std::endl;
+      ignerr << "Ogre HLMS UNLIT not ready. Is Ogre2 Render Engine "
+             << "initiallized?" << std::endl;
       return nullptr;
     }
 
     std::string unlitName = this->name + "::Unlit";
-    std::cerr << "created : " << unlitName << std::endl;
     this->ogreUnlitDatablock =
         static_cast<Ogre::HlmsUnlitDatablock *>(
         ogreHlmsUnlit->createDatablock(

@@ -107,15 +107,14 @@ void buildScene(ScenePtr _scene)
 
   // create particle emitter.
   ParticleEmitterPtr emitter = _scene->CreateParticleEmitter();
-  emitter->SetLocalPosition(0.0, 0.0, 0.0);
+  emitter->SetLocalPose({0, 0, 0, 0, -1.57, 0});
   emitter->SetRate(10);
   emitter->SetParticleSize({1, 1, 1});
   emitter->SetLifetime(2);
   emitter->SetVelocityRange(10, 20);
   emitter->SetMaterial(particleMaterial);
-  emitter->SetColorRange(
-    ignition::math::Color::Red,
-    ignition::math::Color::Blue);
+  emitter->SetColorImage(RESOURCE_PATH + "/smokecolors.png");
+  emitter->SetScaleRate(10);
   emitter->SetEmitting(true);
   root->AddChild(emitter);
 }

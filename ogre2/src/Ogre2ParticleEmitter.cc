@@ -158,12 +158,12 @@ void Ogre2ParticleEmitter::Init()
   colourImageAffector->setParameter("image", "smokecolors.png");
 
   // Rotator affector.
-  Ogre::ParticleAffector *rotatorAffector =
-    this->dataPtr->ps->addAffector("Rotator");
-  rotatorAffector->setParameter("rotation_range_start", "0");
-  rotatorAffector->setParameter("rotation_range_end", "360");
-  rotatorAffector->setParameter("rotation_speed_range_start", "-60");
-  rotatorAffector->setParameter("rotation_speed_range_end", "200");
+//  Ogre::ParticleAffector *rotatorAffector =
+//    this->dataPtr->ps->addAffector("Rotator");
+//  rotatorAffector->setParameter("rotation_range_start", "0");
+//  rotatorAffector->setParameter("rotation_range_end", "360");
+//  rotatorAffector->setParameter("rotation_speed_range_start", "-60");
+//  rotatorAffector->setParameter("rotation_speed_range_end", "200");
 
   // Scaler affector
   Ogre::ParticleAffector *scalerAffector =

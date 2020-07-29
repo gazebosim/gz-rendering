@@ -79,7 +79,7 @@ namespace ignition
       public: virtual void SetScaleRate(double _scaleRate);
 
       // Documentation inherited.
-      public: virtual void SetColorImage(const std::string &_image);
+      public: virtual void SetColorRangeImage(const std::string &_image);
 
       // Documentation inherited.
       protected: virtual void Init() override;

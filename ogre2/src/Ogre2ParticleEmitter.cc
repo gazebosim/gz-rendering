@@ -39,13 +39,14 @@ class ignition::rendering::Ogre2ParticleEmitterPrivate
   public: Ogre::ParticleSystem *ps = nullptr;
 
   /// \brief Ogre particle emitter.
-  public: Ogre::ParticleEmitter *emitter = nullptr;
+  public: std::array<Ogre::ParticleEmitter*,
+                     EmitterType::EM_NUM_EMITTERS> emitters;
 
-  // \brief Ogre colour image affector.
-  public: Ogre::ParticleAffector *colourImageAffector = nullptr;
+  // \brief Ogre color image affector.
+  public: Ogre::ParticleAffector *colorImageAffector = nullptr;
 
-  // \brief Ogre colour interpolator affector.
-  public: Ogre::ParticleAffector *colourInterpolatorAffector = nullptr;
+  // \brief Ogre color interpolator affector.
+  public: Ogre::ParticleAffector *colorInterpolatorAffector = nullptr;
 
   /// \brief Ogre scaler affector.
   public: Ogre::ParticleAffector *scalerAffector = nullptr;
@@ -53,6 +54,16 @@ class ignition::rendering::Ogre2ParticleEmitterPrivate
   /// \brief Pointer to the material datablock.
   public: Ogre::HlmsUnlitDatablock *ogreDatablock = nullptr;
 };
+
+// Names used in Ogre for the supported emitters.
+static const std::array<std::string, EmitterType::EM_NUM_EMITTERS>
+    kOgreEmitterTypes =
+      {
+        "Point",
+        "Box",
+        "Cylinder",
+        "Ellipsoid",
+      };
 
 //////////////////////////////////////////////////
 Ogre2ParticleEmitter::Ogre2ParticleEmitter()
@@ -69,40 +80,18 @@ Ogre2ParticleEmitter::~Ogre2ParticleEmitter()
 void Ogre2ParticleEmitter::Ogre2ParticleEmitter::SetType(
     const EmitterType _type)
 {
-  switch (_type)
+  // Sanity check: Make sure that the emitter type is valid.
+  if (_type == EmitterType::EM_NUM_EMITTERS)
   {
-    case EmitterType::EM_POINT:
-    {
-      this->dataPtr->ps->removeAllEmitters();
-      this->dataPtr->emitter = this->dataPtr->ps->addEmitter("Point");
-      break;
-    }
-    case EmitterType::EM_BOX:
-    {
-      this->dataPtr->ps->removeAllEmitters();
-      this->dataPtr->emitter = this->dataPtr->ps->addEmitter("Box");
-      break;
-    }
-    case EmitterType::EM_CYLINDER:
-    {
-      this->dataPtr->ps->removeAllEmitters();
-      this->dataPtr->emitter = this->dataPtr->ps->addEmitter("Cylinder");
-      break;
-    }
-    case EmitterType::EM_ELLIPSOID:
-    {
-      this->dataPtr->ps->removeAllEmitters();
-      this->dataPtr->emitter = this->dataPtr->ps->addEmitter("Ellipsoid");
-      break;
-    }
-    default:
-    {
-      ignerr << "Unsupported particle emitter type [" << _type << "]"
-             << std::endl;
-      return;
-    }
+    ignerr << "SetType() error: You shouldn't use EM_NUM_EMITTERS as a type."
+           << std::endl;
+    return;
   }
 
+  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
+    this->dataPtr->emitters[i]->setEnabled(false);
+
+  this->dataPtr->emitters[_type]->setEnabled(true);
   this->type = _type;
 }
 
@@ -141,11 +130,15 @@ void Ogre2ParticleEmitter::SetEmitterSize(const ignition::math::Vector3d &_size)
       // Set all parameters.
       for (auto[param, value] : allParamsToSet)
       {
-        if (!this->dataPtr->emitter->setParameter(param,  value))
+        for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
         {
-          ignerr << "Ignoring SetEmitterSize() because SetParameter("
-                 << param << " " << value << ") failed." << std::endl;
-          return;
+          if (!this->dataPtr->emitters[i]->setParameter(param,  value))
+          {
+            ignerr << "SetEmitterSize() error for " << kOgreEmitterTypes[i]
+                   << " emitter because SetParameter(" << param << " " << value
+                   << ") failed." << std::endl;
+            return;
+          }
         }
       }
       break;
@@ -172,21 +165,25 @@ void Ogre2ParticleEmitter::SetRate(double _rate)
     return;
   }
 
-  this->dataPtr->emitter->setEmissionRate(_rate);
+  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
+    this->dataPtr->emitters[i]->setEmissionRate(_rate);
+
   this->rate = _rate;
 }
 
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::SetDuration(double _duration)
 {
-  this->dataPtr->emitter->setDuration(_duration);
+  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
+    this->dataPtr->emitters[i]->setDuration(_duration);
+
   this->duration = _duration;
 }
 
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::SetEmitting(bool _enable)
 {
-  this->dataPtr->emitter->setEnabled(_enable);
+  this->dataPtr->emitters[this->type]->setEnabled(_enable);
   this->dataPtr->ps->setEmitting(_enable);
   this->emitting = _enable;
 }
@@ -217,7 +214,9 @@ void Ogre2ParticleEmitter::SetLifetime(double _lifetime)
     return;
   }
 
-  this->dataPtr->emitter->setTimeToLive(_lifetime);
+  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
+    this->dataPtr->emitters[i]->setTimeToLive(_lifetime);
+
   this->lifetime = _lifetime;
 }
 
@@ -240,7 +239,9 @@ void Ogre2ParticleEmitter::SetMaterial(const MaterialPtr &_material)
 void Ogre2ParticleEmitter::SetVelocityRange(double _minVelocity,
     double _maxVelocity)
 {
-  this->dataPtr->emitter->setParticleVelocity(_minVelocity, _maxVelocity);
+  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
+    this->dataPtr->emitters[i]->setParticleVelocity(_minVelocity, _maxVelocity);
+
   this->minVelocity = _minVelocity;
   this->maxVelocity = _maxVelocity;
 }
@@ -250,10 +251,10 @@ void Ogre2ParticleEmitter::SetColorRange(
     const ignition::math::Color &_colorStart,
     const ignition::math::Color &_colorEnd)
 {
-  // Colour interpolator affector.
-  if (!this->dataPtr->colourInterpolatorAffector)
+  // Color interpolator affector.
+  if (!this->dataPtr->colorInterpolatorAffector)
   {
-    this->dataPtr->colourInterpolatorAffector =
+    this->dataPtr->colorInterpolatorAffector =
       this->dataPtr->ps->addAffector("ColourInterpolator");
   }
 
@@ -278,7 +279,7 @@ void Ogre2ParticleEmitter::SetColorRange(
   // Set all parameters.
   for (auto[param, value] : allParamsToSet)
   {
-    if (!this->dataPtr->colourInterpolatorAffector->setParameter(param,  value))
+    if (!this->dataPtr->colorInterpolatorAffector->setParameter(param,  value))
     {
       ignerr << "Ignoring SetColorRange() because SetParameter("
              << param << " " << value << ") failed." << std::endl;
@@ -327,20 +328,20 @@ void Ogre2ParticleEmitter::SetScaleRate(double _scaleRate)
 }
 
 //////////////////////////////////////////////////
-void Ogre2ParticleEmitter::SetColorImage(const std::string &_image)
+void Ogre2ParticleEmitter::SetColorRangeImage(const std::string &_image)
 {
   // Sanity check: Make sure that the texture can be found.
   if (!common::exists(_image) || !common::isFile(_image))
   {
-    ignerr << "SetColorImage() error: Texture [" << _image << "] not found"
+    ignerr << "SetColorRangeImage() error: Texture [" << _image << "] not found"
            << std::endl;
     return;
   }
 
-  // Colour image affector.
-  if (!this->dataPtr->colourImageAffector)
+  // Color image affector.
+  if (!this->dataPtr->colorImageAffector)
   {
-    this->dataPtr->colourImageAffector =
+    this->dataPtr->colorImageAffector =
       this->dataPtr->ps->addAffector("ColourImage");
   }
 
@@ -352,15 +353,15 @@ void Ogre2ParticleEmitter::SetColorImage(const std::string &_image)
   // Set all parameters.
   for (auto[param, value] : allParamsToSet)
   {
-    if (!this->dataPtr->colourImageAffector->setParameter(param,  value))
+    if (!this->dataPtr->colorImageAffector->setParameter(param,  value))
     {
-      ignerr << "Ignoring SetColorImage() because SetParameter("
+      ignerr << "Ignoring SetColorRangeImage() because SetParameter("
              << param << " " << value << ") failed." << std::endl;
       return;
     }
   }
 
-  this->colorImage = _image;
+  this->colorRangeImage = _image;
 }
 
 //////////////////////////////////////////////////
@@ -374,9 +375,20 @@ void Ogre2ParticleEmitter::Init()
   this->dataPtr->ps->setParticleQuota(500);
   this->dataPtr->ps->setSortingEnabled(true);
 
-  // Instantiate the particle emitter and default parameters.
-  this->dataPtr->emitter = this->dataPtr->ps->addEmitter("Point");
-  this->dataPtr->emitter->setDirection(Ogre::Vector3::UNIT_X);
+  IGN_ASSERT(kOgreEmitterTypes.size() == EmitterType::EM_NUM_EMITTERS,
+             "The nummer of supported emitters does not match the number of "
+             "Ogre emitter types.");
+
+  // Instantiate all particle emitters and their default parameters.
+  // Note that we enable the point emitter by default.
+  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
+  {
+    this->dataPtr->emitters[i] =
+      this->dataPtr->ps->addEmitter(kOgreEmitterTypes[i]);
+    this->dataPtr->emitters[i]->setEnabled(false);
+    this->dataPtr->emitters[i]->setDirection(Ogre::Vector3::UNIT_X);
+  }
+  this->dataPtr->emitters[EmitterType::EM_POINT]->setEnabled(true);
 
   // Instantiate the default material.
   auto mat = this->scene->CreateMaterial();

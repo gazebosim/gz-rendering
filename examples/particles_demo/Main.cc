@@ -113,7 +113,7 @@ void buildScene(ScenePtr _scene)
   emitter->SetLifetime(2);
   emitter->SetVelocityRange(10, 20);
   emitter->SetMaterial(particleMaterial);
-  emitter->SetColorImage(RESOURCE_PATH + "/smokecolors.png");
+  emitter->SetColorRangeImage(RESOURCE_PATH + "/smokecolors.png");
   emitter->SetScaleRate(10);
   emitter->SetEmitting(true);
   root->AddChild(emitter);

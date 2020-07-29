@@ -131,10 +131,11 @@ namespace ignition
       public: virtual void SetScaleRate(double _scaleRate) override;
 
       // Documentation inherited.
-      public: virtual std::string ColorImage() const override;
+      public: virtual std::string ColorRangeImage() const override;
 
       // Documentation inherited.
-      public: virtual void SetColorImage(const std::string &_image) override;
+      public: virtual void SetColorRangeImage(
+                  const std::string &_image) override;
 
       /// \brief Emitter type.
       protected: EmitterType type = EM_POINT;
@@ -179,7 +180,7 @@ namespace ignition
       protected: double scaleRate = 1;
 
       /// \brief The color image.
-      protected: std::string colorImage = "";
+      protected: std::string colorRangeImage = "";
 
       /// \brief Only the scene can create a particle emitter
       private: friend class BaseScene;
@@ -393,16 +394,16 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    std::string BaseParticleEmitter<T>::ColorImage() const
+    std::string BaseParticleEmitter<T>::ColorRangeImage() const
     {
-      return this->colorImage;
+      return this->colorRangeImage;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetColorImage(const std::string &_image)
+    void BaseParticleEmitter<T>::SetColorRangeImage(const std::string &_image)
     {
-      this->colorImage = _image;
+      this->colorRangeImage = _image;
     }
     }
   }

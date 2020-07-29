@@ -46,6 +46,9 @@ namespace ignition
 
       /// \brief Ellipsoid emitter.
       EM_ELLIPSOID        = 3,
+
+      /// \brief Total number of emitters (keep always at the end).
+      EM_NUM_EMITTERS     = 4,
     };
 
     /// \class ParticleEmitter ParticleEmitter.hh
@@ -199,9 +202,12 @@ namespace ignition
       /// \sa SetColorRange
       public: virtual ignition::math::Color ColorEnd() const = 0;
 
-      /// \brief Sets a colour for all particle emitted.
-      /// The actual colour will be interpolated between these two colors.
-      /// Default values are Color::White and Color::White respectively.
+      /// \brief Sets a color for all particle emitted.
+      /// The actual color will be interpolated between these two colors
+      /// Color::White is the default color for the particles unless a specific
+      /// function is used.
+      /// Note that this function overrides the particle colors set with
+      /// SetColorRangeImage().
       /// \param[in] _colorStart Start color.
       /// \param[in] _colorEnd End color.
       /// \sa ColorStart
@@ -225,18 +231,20 @@ namespace ignition
 
       /// \brief Get the path to the color image used as an affector.
       /// \return The color image name or empty string if the image is not set.
-      /// \sa SetColorImage
-      public: virtual std::string ColorImage() const = 0;
+      /// \sa SetColorRangeImage
+      public: virtual std::string ColorRangeImage() const = 0;
 
       /// \brief Set the path to the color image used as an affector. This
-      /// affector modifies the colour of particles in flight. The colors are
-      /// taken from a specified image file. The range of colour values begins
+      /// affector modifies the color of particles in flight. The colors are
+      /// taken from a specified image file. The range of color values begins
       /// from the left side of the image and move to the right over the
       /// lifetime of the particle, therefore only the horizontal dimension of
       /// the image is used.
+      /// Note that this function overrides the particle colors set with
+      /// SetColorRange().
       /// \param[in] _image The color image name.
-      /// \sa ColorImage
-      public: virtual void SetColorImage(const std::string &_image) = 0;
+      /// \sa ColorRangeImage
+      public: virtual void SetColorRangeImage(const std::string &_image) = 0;
     };
     }
   }

@@ -186,14 +186,16 @@ namespace ignition
       if (!this->Scene()->MaterialRegistered("Lidar/BlueRay"))
       {
         mtl = this->Scene()->CreateMaterial("Lidar/BlueRay");
-        mtl->SetAmbient(0.0, 0.0, 1.0);
-        mtl->SetDiffuse(0.0, 0.0, 1.0);
-        mtl->SetEmissive(0.0, 0.0, 1.0);
-        mtl->SetSpecular(0.1, 0.1, 1);
+        mtl->SetAmbient(1.0, 0.0, 1.0);
+        mtl->SetDiffuse(1.0, 0.0, 1.0);
+        mtl->SetEmissive(1.0, 0.0, 1.0);
+        mtl->SetSpecular(1.0, 0.0, 1.0);
         mtl->SetTransparency(0.0);
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
+        mtl->SetMetalness(0.1);
+        mtl->SetReflectivity(0.2);
       }
       return;
     }

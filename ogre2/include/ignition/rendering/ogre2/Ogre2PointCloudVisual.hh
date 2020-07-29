@@ -29,6 +29,10 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    // Forward declaration
+    class Ogre2PointCloudVisualPrivate;
+
     /// \brief Ogre 2.x implementation of a point cloud visual.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2PointCloudVisual
     : public BasePointCloudVisual<Ogre2Visual>
@@ -48,8 +52,21 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
+      // Documentation inherited.
+      public: virtual void SetPoints(
+                  const std::vector<math::Vector3d> &_points) override;
+
+      // Documentation inherited.
+      public: virtual void Update() override;
+
+      // Documentation inherited.
+      public: std::vector<math::Vector3d> Points() const;
+
       /// \brief Marker should only be created by scene.
       private: friend class Ogre2Scene;
+
+      /// \brief Private data pointer.
+      private: std::shared_ptr<Ogre2PointCloudVisualPrivate> dataPtr;
     };
     }
   }

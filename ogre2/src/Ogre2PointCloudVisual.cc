@@ -27,10 +27,19 @@
 using namespace ignition;
 using namespace rendering;
 
+class ignition::rendering::Ogre2PointCloudVisualPrivate
+{
+  /// \brief Lidar Points DynamicLines Object to display
+  public: std::shared_ptr<Ogre2DynamicRenderable> points;
+
+  public: std::vector<math::Vector3d> data;
+};
+
 //////////////////////////////////////////////////
 Ogre2PointCloudVisual::Ogre2PointCloudVisual()
+  : dataPtr(new Ogre2PointCloudVisualPrivate)
 {
-    // BasePointCloudVisual::Init();
+  std::cout << "Ogre2PointCloudVisual\n";
 }
 
 //////////////////////////////////////////////////
@@ -42,7 +51,8 @@ Ogre2PointCloudVisual::~Ogre2PointCloudVisual()
 //////////////////////////////////////////////////
 void Ogre2PointCloudVisual::Init()
 {
-    BasePointCloudVisual::Init();
+  std::cout << "INit\n";
+  BasePointCloudVisual::Init();
 }
 
 //////////////////////////////////////////////////
@@ -51,9 +61,46 @@ void Ogre2PointCloudVisual::PreRender()
     // no ops
 }
 
-
 //////////////////////////////////////////////////
 void Ogre2PointCloudVisual::Destroy()
 {
     // no ops
 }
+
+//////////////////////////////////////////////////
+void Ogre2PointCloudVisual::SetPoints(
+    const std::vector<math::Vector3d> &_points)
+{
+  this->dataPtr->data = _points;
+}
+
+//////////////////////////////////////////////////
+void Ogre2PointCloudVisual::Update()
+{
+  if (!this->dataPtr->points)
+  {
+    this->dataPtr->points = std::shared_ptr<Ogre2DynamicRenderable>(
+        new Ogre2DynamicRenderable(this->Scene()));
+
+    this->dataPtr->points->SetOperationType(MT_POINTS);
+    MaterialPtr mat = this->Scene()->Material("Lidar/BlueRay");
+    this->dataPtr->points->SetMaterial(mat, true);
+
+    this->ogreNode->attachObject(this->dataPtr->points->OgreObject());
+  }
+
+  if (this->dataPtr->data.size() != this->dataPtr->points->PointCount())
+  {
+    for (size_t i = 0; i < this->dataPtr->data.size(); ++i)
+    {
+      this->dataPtr->points->AddPoint(this->dataPtr->data[i]);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+std::vector<math::Vector3d> Ogre2PointCloudVisual::Points() const
+{
+  return this->dataPtr->data;
+}
+

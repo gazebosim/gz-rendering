@@ -249,7 +249,7 @@ void updateLidarVisual()
   // change detected due to key press
   if (g_lidarVisualUpdateDirty)
   {
-    if(g_clear == true)
+    if (g_clear == true)
     {
       g_lidar->ClearVisual();
     }

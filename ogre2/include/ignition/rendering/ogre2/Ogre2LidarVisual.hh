@@ -64,6 +64,9 @@ namespace ignition
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
+      public: virtual void ClearVisual() override;
+
+      // Documentation inherited
       public: virtual unsigned int PointCount() const override;
 
       // Documentation inherited

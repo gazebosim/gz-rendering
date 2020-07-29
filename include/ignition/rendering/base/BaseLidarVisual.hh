@@ -51,6 +51,9 @@ namespace ignition
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
+      public: virtual void ClearVisual() override;
+
+      // Documentation inherited
       public: virtual void SetPoints(
               const std::vector<double> &_points) override;
 
@@ -214,6 +217,13 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::ClearPoints()
+    {
+        // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseLidarVisual<T>::ClearVisual()
     {
         // no op
     }

@@ -154,6 +154,12 @@ void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 //////////////////////////////////////////////////
 void OgreLidarVisual::Update()
 {
+  if (this->lidarVisualType == LidarVisualType::LVT_NONE)
+  {
+    this->ClearVisualData();
+    return;
+  }
+
   if (!this->dataPtr->receivedData || this->dataPtr->lidarPoints.size() == 0)
   {
     ignwarn << "New lidar data not received. Exiting update function"
@@ -456,4 +462,10 @@ unsigned int OgreLidarVisual::PointCount() const
 std::vector<double> OgreLidarVisual::Points() const
 {
   return this->dataPtr->lidarPoints;
+}
+
+//////////////////////////////////////////////////
+void OgreLidarVisual::ClearVisual()
+{
+  this->ClearVisualData();
 }

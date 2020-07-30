@@ -79,10 +79,11 @@ namespace ignition
                   const ignition::math::Color &_colorEnd) override;
 
       // Documentation inherited.
-      public: virtual void SetScaleRate(double _scaleRate);
+      public: virtual void SetScaleRate(double _scaleRate) override;
 
       // Documentation inherited.
-      public: virtual void SetColorRangeImage(const std::string &_image);
+      public: virtual void SetColorRangeImage(const std::string &_image)
+          override;
 
       // Documentation inherited.
       protected: virtual void Init() override;

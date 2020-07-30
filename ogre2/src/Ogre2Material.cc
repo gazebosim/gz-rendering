@@ -18,6 +18,7 @@
 // Note this include is placed in the src file because
 // otherwise ogre produces compile errors
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
+#include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
@@ -54,6 +55,13 @@ void Ogre2Material::Destroy()
 
   this->ogreHlmsPbs->destroyDatablock(this->ogreDatablockId);
   this->ogreDatablock = nullptr;
+
+  if (this->ogreUnlitDatablock)
+  {
+    this->ogreUnlitDatablock->getCreator()->destroyDatablock(
+        this->ogreUnlitDatablock->getName());
+    this->ogreUnlitDatablock = nullptr;
+  }
 
   // remove low level ogre material used by render targets
   if (this->ogreMaterial)
@@ -519,4 +527,53 @@ void Ogre2Material::SetDepthWriteEnabled(bool _enabled)
       *this->ogreDatablock->getMacroblock());
   macroblock.mDepthWrite = _enabled;
   this->ogreDatablock->setMacroblock(macroblock);
+}
+
+//////////////////////////////////////////////////
+Ogre::HlmsUnlitDatablock *Ogre2Material::UnlitDatablock()
+{
+  if (!this->ogreUnlitDatablock)
+  {
+    // Create the internal UNLIT material.
+    Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+    Ogre::HlmsManager *hlmsManager = root->getHlmsManager();
+    Ogre::HlmsUnlit *ogreHlmsUnlit = static_cast<Ogre::HlmsUnlit *>(
+        hlmsManager->getHlms(Ogre::HLMS_UNLIT));
+    if (!ogreHlmsUnlit)
+    {
+      ignerr << "Ogre HLMS UNLIT not ready. Is Ogre2 Render Engine "
+             << "initiallized?" << std::endl;
+      return nullptr;
+    }
+
+    std::string unlitName = this->name + "::Unlit";
+    this->ogreUnlitDatablock =
+        static_cast<Ogre::HlmsUnlitDatablock *>(
+        ogreHlmsUnlit->createDatablock(
+        unlitName, unlitName,
+        Ogre::HlmsMacroblock(), Ogre::HlmsBlendblock(), Ogre::HlmsParamVec()));
+  }
+
+  this->FillUnlitDatablock(this->ogreUnlitDatablock);
+  return this->ogreUnlitDatablock;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::FillUnlitDatablock(Ogre::HlmsUnlitDatablock *_datablock)
+    const
+{
+  auto tex = this->ogreDatablock->getTexture(Ogre::PBSM_DIFFUSE);
+  if (tex)
+    _datablock->setTexture(0, 0, tex);
+  auto samplerblock = this->ogreDatablock->getSamplerblock(Ogre::PBSM_DIFFUSE);
+  if (samplerblock)
+    _datablock->setSamplerblock(0, *samplerblock);
+  _datablock->setMacroblock(
+      this->ogreDatablock->getMacroblock());
+  _datablock->setBlendblock(
+      this->ogreDatablock->getBlendblock());
+
+  _datablock->setUseColour(true);
+  Ogre::Vector3 c = this->ogreDatablock->getDiffuse();
+  _datablock->setColour(Ogre::ColourValue(c.x, c.y, c.z));
 }

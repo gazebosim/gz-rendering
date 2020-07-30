@@ -18,6 +18,7 @@
 #ifndef IGNITION_RENDERING_BASE_BASEPARTICLEEMITTER_HH_
 #define IGNITION_RENDERING_BASE_BASEPARTICLEEMITTER_HH_
 
+#include <string>
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/ParticleEmitter.hh"
@@ -123,6 +124,19 @@ namespace ignition
                   const ignition::math::Color &_colorStart,
                   const ignition::math::Color &_colorEnd) override;
 
+      // Documentation inherited.
+      public: virtual double ScaleRate() const override;
+
+      // Documentation inherited.
+      public: virtual void SetScaleRate(double _scaleRate) override;
+
+      // Documentation inherited.
+      public: virtual std::string ColorRangeImage() const override;
+
+      // Documentation inherited.
+      public: virtual void SetColorRangeImage(
+                  const std::string &_image) override;
+
       /// \brief Emitter type.
       protected: EmitterType type = EM_POINT;
 
@@ -140,7 +154,7 @@ namespace ignition
       protected: bool emitting = false;
 
       /// \brief Particle size.
-      protected: ignition::math::Vector3d particleSize = {100, 100, 100};
+      protected: ignition::math::Vector3d particleSize = {1, 1, 1};
 
       /// \brief Particle lifetime.
       protected: double lifetime = 5;
@@ -161,6 +175,12 @@ namespace ignition
       /// \brief The end color of a particle to choose from.
       protected: ignition::math::Color colorEnd =
           ignition::math::Color::White;
+
+      /// \brief The scale rate.
+      protected: double scaleRate = 1;
+
+      /// \brief The color image.
+      protected: std::string colorRangeImage = "";
 
       /// \brief Only the scene can create a particle emitter
       private: friend class BaseScene;
@@ -356,6 +376,34 @@ namespace ignition
     {
       this->colorStart = _colorStart;
       this->colorEnd = _colorEnd;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    double BaseParticleEmitter<T>::ScaleRate() const
+    {
+      return this->scaleRate;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetScaleRate(double _scaleRate)
+    {
+      this->scaleRate = _scaleRate;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    std::string BaseParticleEmitter<T>::ColorRangeImage() const
+    {
+      return this->colorRangeImage;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetColorRangeImage(const std::string &_image)
+    {
+      this->colorRangeImage = _image;
     }
     }
   }

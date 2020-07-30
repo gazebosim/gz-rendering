@@ -64,6 +64,8 @@
 #include <OgreHardwarePixelBuffer.h>
 #include <OgreShadowCameraSetupPSSM.h>
 #include <OgreDepthBuffer.h>
+#include <OgreParticleEmitter.h>
+#include <OgreParticleSystem.h>
 
 #include <OgreHlmsManager.h>
 #include <OgreHlmsTextureManager.h>

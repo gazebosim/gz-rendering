@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_PARTICLEEMITTER_HH_
 #define IGNITION_RENDERING_PARTICLEEMITTER_HH_
 
+#include <string>
 #include "ignition/math/Color.hh"
 #include "ignition/math/Pose3.hh"
 #include "ignition/math/Vector3.hh"
@@ -44,7 +45,10 @@ namespace ignition
       EM_CYLINDER         = 2,
 
       /// \brief Ellipsoid emitter.
-      EM_ELLISOID         = 3,
+      EM_ELLIPSOID        = 3,
+
+      /// \brief Total number of emitters (keep always at the end).
+      EM_NUM_EMITTERS     = 4,
     };
 
     /// \class ParticleEmitter ParticleEmitter.hh
@@ -135,7 +139,7 @@ namespace ignition
       public: virtual ignition::math::Vector3d ParticleSize() const = 0;
 
       /// \brief Set the particle dimensions (width, height, depth).
-      /// Default value is {100, 100, 100}.
+      /// Default value is {1, 1, 1}.
       /// \param[in] _size Particle dimensions.
       /// \sa ParticleSize
       public: virtual void SetParticleSize(
@@ -198,9 +202,12 @@ namespace ignition
       /// \sa SetColorRange
       public: virtual ignition::math::Color ColorEnd() const = 0;
 
-      /// \brief Sets a colour for all particle emitted.
-      /// The actual colour will be interpolated between these two colors.
-      /// Default values are Color::White and Color::White respectively.
+      /// \brief Sets a color for all particle emitted.
+      /// The actual color will be interpolated between these two colors
+      /// Color::White is the default color for the particles unless a specific
+      /// function is used.
+      /// Note that this function overrides the particle colors set with
+      /// SetColorRangeImage().
       /// \param[in] _colorStart Start color.
       /// \param[in] _colorEnd End color.
       /// \sa ColorStart
@@ -208,6 +215,36 @@ namespace ignition
       public: virtual void SetColorRange(
                   const ignition::math::Color &_colorStart,
                   const ignition::math::Color &_colorEnd) = 0;
+
+      /// \brief Get the amount by which to scale the particles in both x and y
+      /// direction per second.
+      /// Default value is 1.
+      /// \return The scale rate.
+      /// \sa SetScaleRate
+      public: virtual double ScaleRate() const = 0;
+
+      /// \brief Set the amount by which to scale the particles in both x and y
+      /// direction per second.
+      /// \param[in] _scaleRate The scale rate.
+      /// \sa ScaleRate
+      public: virtual void SetScaleRate(double _scaleRate) = 0;
+
+      /// \brief Get the path to the color image used as an affector.
+      /// \return The color image name or empty string if the image is not set.
+      /// \sa SetColorRangeImage
+      public: virtual std::string ColorRangeImage() const = 0;
+
+      /// \brief Set the path to the color image used as an affector. This
+      /// affector modifies the color of particles in flight. The colors are
+      /// taken from a specified image file. The range of color values begins
+      /// from the left side of the image and move to the right over the
+      /// lifetime of the particle, therefore only the horizontal dimension of
+      /// the image is used.
+      /// Note that this function overrides the particle colors set with
+      /// SetColorRange().
+      /// \param[in] _image The color image name.
+      /// \sa ColorRangeImage
+      public: virtual void SetColorRangeImage(const std::string &_image) = 0;
     };
     }
   }

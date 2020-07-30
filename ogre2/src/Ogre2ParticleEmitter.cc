@@ -53,6 +53,9 @@ class ignition::rendering::Ogre2ParticleEmitterPrivate
 
   /// \brief Pointer to the material datablock.
   public: Ogre::HlmsUnlitDatablock *ogreDatablock = nullptr;
+
+  /// \brief Pointer to the unlit material used by particle emitter.
+  public: MaterialPtr materialUnlit;
 };
 
 // Names used in Ogre for the supported emitters.
@@ -74,6 +77,24 @@ Ogre2ParticleEmitter::Ogre2ParticleEmitter()
 //////////////////////////////////////////////////
 Ogre2ParticleEmitter::~Ogre2ParticleEmitter()
 {
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void Ogre2ParticleEmitter::Destroy()
+{
+  if (this->dataPtr->ps)
+  {
+    this->scene->OgreSceneManager()->destroyParticleSystem(
+        this->dataPtr->ps);
+    this->dataPtr->ps = nullptr;
+  }
+
+  if (this->dataPtr->materialUnlit)
+  {
+    this->Scene()->DestroyMaterial(this->dataPtr->materialUnlit);
+    this->dataPtr->materialUnlit.reset();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -337,6 +358,23 @@ void Ogre2ParticleEmitter::SetColorRangeImage(const std::string &_image)
            << std::endl;
     return;
   }
+  else
+  {
+    // add to resource group so ogre can find this image
+    std::string baseName = common::basename(_image);
+    size_t idx = _image.rfind(baseName);
+    if (idx != std::string::npos)
+    {
+      std::string dirPath = _image.substr(0, idx);
+      if (!dirPath.empty() &&
+          !Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+          dirPath))
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            dirPath, "FileSystem", "General");
+      }
+    }
+  }
 
   // Color image affector.
   if (!this->dataPtr->colorImageAffector)
@@ -391,8 +429,9 @@ void Ogre2ParticleEmitter::Init()
   this->dataPtr->emitters[EmitterType::EM_POINT]->setEnabled(true);
 
   // Instantiate the default material.
-  auto mat = this->scene->CreateMaterial();
-  auto ogreMat = std::dynamic_pointer_cast<Ogre2Material>(mat);
+  this->dataPtr->materialUnlit = this->scene->CreateMaterial();
+  auto ogreMat = std::dynamic_pointer_cast<Ogre2Material>(
+      this->dataPtr->materialUnlit);
   this->dataPtr->ogreDatablock = ogreMat->UnlitDatablock();
   this->dataPtr->ps->setMaterialName(
       *(this->dataPtr->ogreDatablock->getNameStr()));

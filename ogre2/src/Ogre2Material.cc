@@ -59,7 +59,7 @@ void Ogre2Material::Destroy()
   if (this->ogreUnlitDatablock)
   {
     this->ogreUnlitDatablock->getCreator()->destroyDatablock(
-        this->ogreDatablockId +"::Unlit");
+        this->ogreUnlitDatablock->getName());
     this->ogreUnlitDatablock = nullptr;
   }
 

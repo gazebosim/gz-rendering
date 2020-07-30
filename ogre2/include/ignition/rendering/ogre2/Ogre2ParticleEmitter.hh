@@ -41,6 +41,9 @@ namespace ignition
       public: virtual ~Ogre2ParticleEmitter();
 
       // Documentation inherited.
+      public: void Destroy() override;
+
+      // Documentation inherited.
       public: virtual void SetType(const EmitterType _type) override;
 
       // Documentation inherited.

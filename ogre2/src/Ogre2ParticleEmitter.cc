@@ -151,7 +151,8 @@ void Ogre2ParticleEmitter::SetEmitterSize(const ignition::math::Vector3d &_size)
       // Set all parameters.
       for (auto[param, value] : allParamsToSet)
       {
-        for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
+        // We skip EM_POINT.
+        for (auto i = 1; i < EmitterType::EM_NUM_EMITTERS; ++i)
         {
           if (!this->dataPtr->emitters[i]->setParameter(param,  value))
           {

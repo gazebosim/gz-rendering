@@ -44,6 +44,11 @@ class ParticleEmitterTest : public testing::Test,
   /// \brief How to tear down the environment.
   public: void TearDown();
 
+  /// \brief A directory under test/ with some textures.
+  protected: const std::string TEST_MEDIA_PATH =
+      common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+      "test", "media", "materials", "textures");
+
   /// \brief The rendering engine used.
   protected: RenderEngine *engine;
 
@@ -117,7 +122,7 @@ void ParticleEmitterTest::CheckBasicAPI()
   expectedColorStart      = ignition::math::Color::Red;
   expectedColorEnd        = ignition::math::Color::Blue;
   expectedScaleRate       = 10;
-  expectedColorRangeImage = "anImage";
+  expectedColorRangeImage = common::joinPaths(TEST_MEDIA_PATH, "texture.png");
 
   // Modify attributes.
   particleEmitter->SetType(expectedEmitterType);

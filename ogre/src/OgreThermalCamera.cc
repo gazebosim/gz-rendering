@@ -33,6 +33,8 @@ namespace ignition
 {
 namespace rendering
 {
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+//
 /// \brief Helper class for switching the ogre item's material to heat source
 /// material when a thermal camera is being rendered.
 class OgreThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener,
@@ -80,6 +82,7 @@ class OgreThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener,
   /// script in media/materials/scripts/thermal_camera.material
   private: const unsigned int customParamIdx = 10u;
 };
+}
 }
 }
 

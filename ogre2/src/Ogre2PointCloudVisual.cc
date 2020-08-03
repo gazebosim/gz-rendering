@@ -96,6 +96,7 @@ void Ogre2PointCloudVisual::Update()
       this->dataPtr->points->AddPoint(this->dataPtr->data[i]);
     }
   }
+  this->dataPtr->points->Update();
 }
 
 //////////////////////////////////////////////////

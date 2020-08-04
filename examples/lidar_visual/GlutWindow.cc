@@ -251,7 +251,7 @@ void updateLidarVisual()
   {
     if (g_clear == true)
     {
-      g_lidar->ClearVisual();
+      g_lidar->ClearPoints();
     }
     else
     {

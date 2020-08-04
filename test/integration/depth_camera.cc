@@ -398,7 +398,7 @@ void DepthCameraTest::DepthCameraBoxes(
         for (unsigned int j = 0; j < depthCamera->ImageWidth(); ++j)
         {
           float x = pointCloudData[step + j*pointCloudChannelCount];
-          EXPECT_FLOAT_EQ(expectedRange, x);
+          EXPECT_NEAR(expectedRange, x, DOUBLE_TOL);
         }
       }
 

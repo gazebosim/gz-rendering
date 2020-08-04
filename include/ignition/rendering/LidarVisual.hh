@@ -63,9 +63,6 @@ namespace ignition
       /// \brief Clear the points of the lidar visual
       public: virtual void ClearPoints() = 0;
 
-      /// \brief Clear the lidar visual
-      public: virtual void ClearVisual() = 0;
-
       /// \brief Update the Visual
       public: virtual void Update() = 0;
 

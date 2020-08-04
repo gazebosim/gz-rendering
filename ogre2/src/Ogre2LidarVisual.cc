@@ -130,6 +130,7 @@ void Ogre2LidarVisual::Create()
 void Ogre2LidarVisual::ClearPoints()
 {
   this->dataPtr->lidarPoints.clear();
+  this->ClearVisualData();
   this->dataPtr->receivedData = false;
 }
 
@@ -440,10 +441,4 @@ unsigned int Ogre2LidarVisual::PointCount() const
 std::vector<double> Ogre2LidarVisual::Points() const
 {
   return this->dataPtr->lidarPoints;
-}
-
-//////////////////////////////////////////////////
-void Ogre2LidarVisual::ClearVisual()
-{
-  this->ClearVisualData();
 }

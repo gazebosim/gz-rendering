@@ -50,6 +50,9 @@ class ignition::rendering::OgreLidarVisualPrivate
   /// \brief The current lidar points data
   public: std::vector<double> lidarPoints;
 
+  /// \brief The colour of rendered points
+  public: std::vector<ignition::math::Color> pointColors;
+
   /// \brief True if new points data is received
   public: bool receivedData = false;
 };
@@ -149,6 +152,20 @@ void OgreLidarVisual::ClearVisualData()
 void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 {
   this->dataPtr->lidarPoints = _points;
+  this->dataPtr->pointColors.clear();
+  for (u_int64_t i = 0; i < this->dataPtr->lidarPoints.size(); i++)
+  {
+    this->dataPtr->pointColors.push_back(ignition::math::Color::White);
+  }
+  this->dataPtr->receivedData = true;
+}
+
+//////////////////////////////////////////////////
+void OgreLidarVisual::SetPoints(const std::vector<double> &_points,
+                        const std::vector<ignition::math::Color> &_colors)
+{
+  this->dataPtr->lidarPoints = _points;
+  this->dataPtr->pointColors = _colors;
   this->dataPtr->receivedData = true;
 }
 
@@ -305,11 +322,14 @@ void OgreLidarVisual::Update()
                               new OgreDynamicLines(MT_POINTS));
 
         #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
-              line->setMaterial("Lidar/BlueRay");
+              Ogre::MaterialPtr mat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "PointCloudPoint");
+            line->setMaterial(mat->getName());
         #else
             Ogre::MaterialPtr mat =
                   Ogre::MaterialManager::getSingleton().getByName(
-                                                    "Lidar/BlueRay");
+                                                    "PointCloudPoint");
             line->setMaterial(mat);
         #endif
         std::shared_ptr<Ogre::MovableObject> mv =
@@ -418,7 +438,8 @@ void OgreLidarVisual::Update()
         {
           if (this->displayNonHitting || !inf)
           {
-            this->dataPtr->points[j]->AddPoint(inf ? noHitPt: pt);
+            this->dataPtr->points[j]->AddPoint(inf ? noHitPt: pt,
+                  this->dataPtr->pointColors[j * this->horizontalCount + i]);
           }
         }
         else

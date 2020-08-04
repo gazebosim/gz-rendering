@@ -61,6 +61,11 @@ namespace ignition
               const std::vector<double> &_points) override;
 
       // Documentation inherited
+      public: virtual void SetPoints(const std::vector<double> &_points,
+                        const std::vector<ignition::math::Color> &_colors)
+                                    override;
+
+      // Documentation inherited
       public: virtual void ClearPoints() override;
 
       // Documentation inherited

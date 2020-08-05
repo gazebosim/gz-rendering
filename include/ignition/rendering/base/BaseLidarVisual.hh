@@ -444,22 +444,27 @@ namespace ignition
         mtl = this->Scene()->CreateMaterial("Lidar/BlueStrips");
         mtl->SetAmbient(0.0, 0.0, 1.0);
         mtl->SetDiffuse(0.0, 0.0, 1.0);
+        mtl->SetEmissive(0.0, 0.0, 1.0);
         mtl->SetTransparency(0.4);
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
+        mtl->SetMetalness(0.0);
+        mtl->SetReflectivity(0.0);
       }
 
       if (!this->Scene()->MaterialRegistered("Lidar/LightBlueStrips"))
       {
         mtl = this->Scene()->CreateMaterial("Lidar/LightBlueStrips");
-        mtl->SetAmbient(0.5, 0.5, 1.0);
-        mtl->SetDiffuse(0.5, 0.5, 1.0);
-        mtl->SetEmissive(0.5, 0.5, 1.0);
+        mtl->SetAmbient(0.0, 0.0, 1.0);
+        mtl->SetDiffuse(0.0, 0.0, 1.0);
+        mtl->SetEmissive(0.0, 0.0, 1.0);
         mtl->SetTransparency(0.8);
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
+        mtl->SetMetalness(0.0);
+        mtl->SetReflectivity(0.0);
       }
 
       if (!this->Scene()->MaterialRegistered("Lidar/TransBlack"))
@@ -468,10 +473,12 @@ namespace ignition
         mtl->SetAmbient(0.0, 0.0, 0.0);
         mtl->SetDiffuse(0.0, 0.0, 0.0);
         mtl->SetEmissive(0.0, 0.0, 0.0);
-        mtl->SetTransparency(0.7);
+        mtl->SetTransparency(0.4);
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
+        mtl->SetMetalness(0.5);
+        mtl->SetReflectivity(0.2);
       }
 
       if (!this->Scene()->MaterialRegistered("Lidar/BlueRay"))
@@ -480,11 +487,13 @@ namespace ignition
         mtl->SetAmbient(0.0, 0.0, 1.0);
         mtl->SetDiffuse(0.0, 0.0, 1.0);
         mtl->SetEmissive(0.0, 0.0, 1.0);
-        mtl->SetSpecular(0.1, 0.1, 1);
+        mtl->SetSpecular(0.0, 0.0, 1.0);
         mtl->SetTransparency(0.0);
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
+        mtl->SetMetalness(0.1);
+        mtl->SetReflectivity(0.2);
       }
       return;
     }

@@ -43,7 +43,7 @@ const std::string RESOURCE_PATH =
 const double hMinAngle = -2.26889;
 const double hMaxAngle = 2.26889;
 const double vMinAngle = 0;
-const double vMaxAngle = 0.1;
+const double vMaxAngle = 0;
 const double minRange = 0.08;
 const double maxRange = 10.0;
 const int hRayCount = 640;
@@ -219,7 +219,7 @@ LidarVisualPtr createLidar(ScenePtr _scene)
   // LVT_RAY_LINES -> Lines along the lidar sensor to the obstacle
   // LVT_TRIANGLE_STRIPS -> Coloured triangle strips denoting hitting and
   // non-hitting parts of the scan
-  lidar->SetType(LidarVisualType::LVT_RAY_LINES);
+  lidar->SetType(LidarVisualType::LVT_TRIANGLE_STRIPS);
   lidar->SetPoints(pts);
 
   VisualPtr root = _scene->RootVisual();

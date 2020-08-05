@@ -62,7 +62,7 @@ unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
 
 bool g_initContext = false;
-
+bool g_clear = false;
 std::vector<double> g_lidarData;
 ir::LidarVisualPtr g_lidar;
 bool g_lidarVisualUpdateDirty = false;
@@ -249,12 +249,19 @@ void updateLidarVisual()
   // change detected due to key press
   if (g_lidarVisualUpdateDirty)
   {
-    g_lidar->SetDisplayNonHitting(g_showNonHitting);
-    g_lidar->SetPoints(g_lidarData);
-    g_lidar->SetType(g_lidarVisType);
-    g_lidar->Update();
+    if (g_clear == true)
+    {
+      g_lidar->ClearPoints();
+    }
+    else
+    {
+      g_lidar->SetDisplayNonHitting(g_showNonHitting);
+      g_lidar->SetPoints(g_lidarData);
+      g_lidar->SetType(g_lidarVisType);
+      g_lidar->Update();
+    }
     g_lidarVisualUpdateDirty = false;
-
+    g_clear = false;
     g_time = std::chrono::steady_clock::now() - g_startTime;
     prevUpdateTime = std::chrono::duration_cast<std::chrono::microseconds>(
         g_time).count();
@@ -331,6 +338,11 @@ void keyboardCB(unsigned char _key, int, int)
   else if (_key == 'h' || _key == 'H')
   {
     g_showNonHitting = !g_showNonHitting;
+    g_lidarVisualUpdateDirty = true;
+  }
+  else if (_key == 'c' || _key == 'C')
+  {
+    g_clear = true;
     g_lidarVisualUpdateDirty = true;
   }
   else if (_key == '0')
@@ -412,6 +424,7 @@ void printUsage()
   std::cout << "  ESC - Exit                              " << std::endl;
   std::cout << "                                          " << std::endl;
   std::cout << "  H: Toggle display for non-hitting rays  " << std::endl;
+  std::cout << "  C: Clear Visual                         " << std::endl;
   std::cout << "                                          " << std::endl;
   std::cout << "  0: Do not display visual                " << std::endl;
   std::cout << "  1: Display ray lines visual             " << std::endl;

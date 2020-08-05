@@ -114,7 +114,7 @@ Install dependencies:
 
 Clone source code
 
-    # This checks out the `default` branch. You can append `-b ign-rendering#` (replace # with a number) to checkout a specific version
+    # This checks out the `master` branch. You can append `-b ign-rendering#` (replace # with a number) to checkout a specific version
     git clone http://github.com/ignitionrobotics/ign-rendering
 
 #### Version 0 (Legacy version for Ubuntu Xenial 16.04 or above)

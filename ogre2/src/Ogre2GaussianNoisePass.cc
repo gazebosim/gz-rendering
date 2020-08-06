@@ -70,14 +70,20 @@ void Ogre2GaussianNoisePass::PreRender()
 //////////////////////////////////////////////////
 void Ogre2GaussianNoisePass::CreateRenderPass()
 {
-  // verify the Gaussian noise material and compositor node exist
-  // since we're not creating anything here (just checking if resources exist),
-  // we don't need to destroy anything.
+  static int gaussianNodeCounter = 0;
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  std::string nodeDefName = "GaussianNoiseNodeNode_"
+      + std::to_string(gaussianNodeCounter);
+
+  if (ogreCompMgr->hasNodeDefinition(nodeDefName))
+    return;
 
   // The GaussianNoise material is defined in script (gaussian_noise.material).
-  // We do not need to clone it since the uniform variables are modified in
-  // every frame. The changes made by other render pass are overriden locally
-  // by this render passes, and vice versa.
+  // clone the material
   std::string matName = "GaussianNoise";
   Ogre::MaterialPtr ogreMat =
       Ogre::MaterialManager::getSingleton().getByName(matName);
@@ -87,22 +93,70 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
            << std::endl;
     return;
   }
-  this->gaussianNoiseMat = ogreMat.get();
-  if (!this->gaussianNoiseMat->isLoaded())
-    this->gaussianNoiseMat->load();
+  if (!ogreMat->isLoaded())
+    ogreMat->load();
+  std::string materialName = matName + "_" +
+      std::to_string(gaussianNodeCounter);
+  this->gaussianNoiseMat = ogreMat->clone(materialName).get();
 
-  // check the compositor node exists
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
-  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+  // create the compostior node definition
 
-  // GaussianNoiseNode is defined in GaussianNoise.compositor
-  this->ogreCompositorNodeDefName = "GaussianNoiseNode";
-  if (!ogreCompMgr->hasNodeDefinition(this->ogreCompositorNodeDefName))
+  // We need to programmatically create the compositor because we need to
+  // configure it to use the cloned gaussian material created earlier.
+  // The compositor workspace definition is equivalent to the following
+  // ogre compositor script:
+  // compositor_node GaussianNoiseNode
+  // {
+  //   // render texture input from previous render pass
+  //   in 0 rt_input
+  //   // render texture output to be passed to next render pass
+  //   in 1 rt_output
+  //
+  //   // Only one target pass is needed.
+  //   // rt_input is used as input to this pass and result is stored
+  //   // in rt_output
+  //   target rt_output
+  //   {
+  //     pass render_quad
+  //     {
+  //       material GaussianNoise // Use copy instead of original
+  //       input 0 rt_input
+  //     }
+  //   }
+  //   // pass the result to the next render pass
+  //   out 0 rt_output
+  //   // pass the rt_input render texture to the next render pass
+  //   // where the texture is reused to store its result
+  //   out 1 rt_input
+  // }
+
+  this->ogreCompositorNodeDefName = nodeDefName;
+  gaussianNodeCounter++;
+
+  Ogre::CompositorNodeDef *nodeDef =
+      ogreCompMgr->addNodeDefinition(nodeDefName);
+
+  // Input texture
+  nodeDef->addTextureSourceName("rt_input", 0,
+      Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+  nodeDef->addTextureSourceName("rt_output", 1,
+      Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+
+  // rt_input target
+  nodeDef->setNumTargetPass(1);
+  Ogre::CompositorTargetDef *inputTargetDef =
+      nodeDef->addTargetPass("rt_output");
+  inputTargetDef->setNumPasses(1);
   {
-    ignerr << "Gaussian noise compositor node not found: '"
-           << this->ogreCompositorNodeDefName << "'"  << std::endl;
+    // quad pass
+    Ogre::CompositorPassQuadDef *passQuad =
+        static_cast<Ogre::CompositorPassQuadDef *>(
+        inputTargetDef->addPass(Ogre::PASS_QUAD));
+    passQuad->mMaterialName = materialName;
+    passQuad->addQuadTextureSource(0, "rt_input", 0);
   }
+  nodeDef->mapOutputChannel(0, "rt_output");
+  nodeDef->mapOutputChannel(1, "rt_input");
 }
 
 IGN_RENDERING_REGISTER_RENDER_PASS(Ogre2GaussianNoisePass, GaussianNoisePass)

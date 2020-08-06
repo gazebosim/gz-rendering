@@ -127,5 +127,3 @@ void main()
 
   fragColor = vec4(xyz, rgba);
 }
-
-

@@ -38,32 +38,32 @@ void main()
 
   vec3 point = p.xyz;
 
-//  // Clamp again in case render passes changed depth values
-//  // to be outside of min/max range
-//
-//  // clamp xyz
-//  if (point.x > far - tolerance)
-//  {
-//    if (isinf(max))
-//    {
-//      point = vec3(max);
-//    }
-//    else
-//    {
-//      point.x = max;
-//    }
-//  }
-//  else if (point.x < near + tolerance)
-//  {
-//    if (isinf(min))
-//    {
-//      point = vec3(min);
-//    }
-//    else
-//    {
-//      point.x = min;
-//    }
-//  }
+  // Clamp again in case render passes changed depth values
+  // to be outside of min/max range
+
+  // clamp xyz
+  if (point.x > far - tolerance)
+  {
+    if (isinf(max))
+    {
+      point = vec3(max);
+    }
+    else
+    {
+      point.x = max;
+    }
+  }
+  else if (point.x < near + tolerance)
+  {
+    if (isinf(min))
+    {
+      point = vec3(min);
+    }
+    else
+    {
+      point.x = min;
+    }
+  }
 
   fragColor = vec4(point, p.a);
 }

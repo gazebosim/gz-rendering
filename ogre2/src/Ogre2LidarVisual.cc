@@ -109,7 +109,7 @@ void Ogre2LidarVisual::Destroy()
     ray.reset();
   }
 
-  this->ClearPoints();
+  this->dataPtr->lidarPoints.clear();
 }
 
 //////////////////////////////////////////////////

@@ -45,6 +45,8 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 /// \brief Gaussian noise render pass for depth cameras
 /// The class implementation is very similar to Ogre2GaussianNoisePass but
 /// uses a different shader material for apply noise to depth cameras
+/// This class is added here since we can not modify Ogre2GaussianNoisePass
+/// as it would break ABI
 class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
 {
   /// \brief Constructor
@@ -132,25 +134,19 @@ using namespace rendering;
 //////////////////////////////////////////////////
 void Ogre2DepthGaussianNoisePass::PreRender()
 {
+  // This function is similar to Ogre2GaussianNoisePass but duplicated here
+  // for Ogre2DepthCamera
+
   if (!this->gaussianNoiseMat)
     return;
 
   if (!this->enabled)
     return;
 
-  // modify material here (wont alter the base material!), called for
-  // every drawn geometry instance (i.e. compositor render_quad)
-
-  // Sample three values within the range [0,1.0] and set them for use in
-  // the fragment shader, which will interpret them as offsets from (0,0)
-  // to use when computing pseudo-random values.
   Ogre::Vector3 offsets(ignition::math::Rand::DblUniform(0.0, 1.0),
                         ignition::math::Rand::DblUniform(0.0, 1.0),
                         ignition::math::Rand::DblUniform(0.0, 1.0));
-  // These calls are setting parameters that are declared in two places:
-  // 1. media/materials/scripts/gaussian_noise.material, in
-  //    fragment_program GaussianNoiseFS
-  // 2. media/materials/scripts/gaussian_noise_fs.glsl
+
   Ogre::Pass *pass = this->gaussianNoiseMat->getTechnique(0)->getPass(0);
   Ogre::GpuProgramParametersSharedPtr psParams =
       pass->getFragmentProgramParameters();
@@ -163,6 +159,9 @@ void Ogre2DepthGaussianNoisePass::PreRender()
 //////////////////////////////////////////////////
 void Ogre2DepthGaussianNoisePass::CreateRenderPass()
 {
+  // This function is similar to Ogre2GaussianNoisePass but duplicated here
+  // for Ogre2DepthCamera.
+
   static int gaussianDepthNodeCounter = 0;
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -577,7 +576,12 @@ void Ogre2DepthCamera::CreateDepthTexture()
           colorTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL
           & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
-      passScene->mShadowNode = "PbsMaterialsShadowNode";
+      // todo(anyone) Fix shadows. The shadow compositor node gets rebuilt
+      // when the number of shadow-casting light changes so we end up with
+      // invalid shadow node here. See Ogre2Scene::PreRender function on how
+      // it destroys and triggers a compositor rebuild in OgreCamera when
+      // the number of shadow-casting light changes
+      // passScene->mShadowNode = "PbsMaterialsShadowNode";
     }
     // rt0 target - converts depth to xyz
     Ogre::CompositorTargetDef *inTargetDef =
@@ -597,7 +601,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
 
     baseNodeDef->mapOutputChannel(0, "rt0");
     baseNodeDef->mapOutputChannel(1, "rt1");
-//    baseNodeDef->mapOutputChannel(2, "colorTexture");
 
     // Programmatically create the final pass node and use the cloned final
     // depth material created earlier.

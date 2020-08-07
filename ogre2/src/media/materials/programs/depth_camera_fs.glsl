@@ -33,7 +33,6 @@ uniform float near;
 uniform float far;
 uniform float min;
 uniform float max;
-uniform float tolerance;
 uniform vec3 backgroundColor;
 
 float getDepth(vec2 uv)
@@ -55,6 +54,8 @@ float packFloat(vec4 color)
 
 void main()
 {
+  float tolerance = 1e-6;
+
   // get linear depth
   float d = getDepth(inPs.uv0);
 

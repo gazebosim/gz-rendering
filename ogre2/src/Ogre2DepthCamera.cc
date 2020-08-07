@@ -27,12 +27,46 @@
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
+#include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+
+
+namespace ignition
+{
+namespace rendering
+{
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+//
+/// \brief Gaussian noise render pass for depth cameras
+/// The class implementation is very similar to Ogre2GaussianNoisePass but
+/// uses a different shader material for apply noise to depth cameras
+/// This class is added here since we can not modify Ogre2GaussianNoisePass
+/// as it would break ABI
+class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
+{
+  /// \brief Constructor
+  public: Ogre2DepthGaussianNoisePass() {}
+
+  /// \brief Destructor
+  public: virtual ~Ogre2DepthGaussianNoisePass() {}
+
+  // Documentation inherited.
+  public: void PreRender() override;
+
+  // Documentation inherited.
+  public: void CreateRenderPass() override;
+
+  /// brief Pointer to the Gaussian noise ogre material
+  private: Ogre::Material *gaussianNoiseMat = nullptr;
+};
+}
+}
+}
 
 /// \internal
 /// \brief Private data for the Ogre2DepthCamera class
@@ -57,12 +91,15 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: std::string ogreCompositorWorkspaceDef;
 
   /// \brief 1st pass compositor node definition
-  public: std::string ogreCompositorNodeDef;
+  public: std::string ogreCompositorBaseNodeDef;
 
-  /// \brief 1st pass compositor workspace. One for each cubemap camera
-  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace;
+  /// \brief Final pass compositor node definition
+  public: std::string ogreCompositorFinalNodeDef;
 
-  /// \brief An array of first pass textures. One for each cubemap camera.
+  /// \brief Compositor workspace.
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
+
+  /// \brief Output texture with depth and color data
   public: Ogre::TexturePtr ogreDepthTexture;
 
   /// \brief Dummy render texture for the depth data
@@ -70,6 +107,15 @@ class ignition::rendering::Ogre2DepthCameraPrivate
 
   /// \brief The depth material
   public: Ogre::MaterialPtr depthMaterial;
+
+  /// \brief The depth material in final pass
+  public: Ogre::MaterialPtr depthFinalMaterial;
+
+  /// \brief A chain of render passes applied to the render target
+  public: std::vector<RenderPassPtr> renderPasses;
+
+  /// \brief Flag to indicate if render pass need to be rebuilt
+  public: bool renderPassDirty = false;
 
   /// \brief Event used to signal rgb point cloud data
   public: ignition::common::EventT<void(const float *,
@@ -84,6 +130,95 @@ class ignition::rendering::Ogre2DepthCameraPrivate
 
 using namespace ignition;
 using namespace rendering;
+
+//////////////////////////////////////////////////
+void Ogre2DepthGaussianNoisePass::PreRender()
+{
+  // This function is similar to Ogre2GaussianNoisePass but duplicated here
+  // for Ogre2DepthCamera
+
+  if (!this->gaussianNoiseMat)
+    return;
+
+  if (!this->enabled)
+    return;
+
+  Ogre::Vector3 offsets(ignition::math::Rand::DblUniform(0.0, 1.0),
+                        ignition::math::Rand::DblUniform(0.0, 1.0),
+                        ignition::math::Rand::DblUniform(0.0, 1.0));
+
+  Ogre::Pass *pass = this->gaussianNoiseMat->getTechnique(0)->getPass(0);
+  Ogre::GpuProgramParametersSharedPtr psParams =
+      pass->getFragmentProgramParameters();
+  psParams->setNamedConstant("offsets", offsets);
+  psParams->setNamedConstant("mean", static_cast<Ogre::Real>(this->mean));
+  psParams->setNamedConstant("stddev",
+      static_cast<Ogre::Real>(this->stdDev));
+}
+
+//////////////////////////////////////////////////
+void Ogre2DepthGaussianNoisePass::CreateRenderPass()
+{
+  // This function is similar to Ogre2GaussianNoisePass but duplicated here
+  // for Ogre2DepthCamera.
+
+  static int gaussianDepthNodeCounter = 0;
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  std::string nodeDefName = "GaussianDepthNoiseNode_"
+      + std::to_string(gaussianDepthNodeCounter);
+
+  if (ogreCompMgr->hasNodeDefinition(nodeDefName))
+    return;
+
+  // The GaussianNoise material is defined in script (gaussian_noise.material).
+  // clone the material
+  std::string matName = "GaussianNoiseDepth";
+  Ogre::MaterialPtr ogreMat =
+      Ogre::MaterialManager::getSingleton().getByName(matName);
+  if (!ogreMat)
+  {
+    ignerr << "Gaussian noise material not found: '" << matName << "'"
+           << std::endl;
+    return;
+  }
+  if (!ogreMat->isLoaded())
+    ogreMat->load();
+  std::string materialName = matName + "_" +
+      std::to_string(gaussianDepthNodeCounter);
+  this->gaussianNoiseMat = ogreMat->clone(materialName).get();
+
+  this->ogreCompositorNodeDefName = nodeDefName;
+  gaussianDepthNodeCounter++;
+
+  Ogre::CompositorNodeDef *nodeDef =
+      ogreCompMgr->addNodeDefinition(nodeDefName);
+
+  // Input texture
+  nodeDef->addTextureSourceName("rt_input", 0,
+      Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+  nodeDef->addTextureSourceName("rt_output", 1,
+      Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+
+  // rt_input target
+  nodeDef->setNumTargetPass(1);
+  Ogre::CompositorTargetDef *inputTargetDef =
+      nodeDef->addTargetPass("rt_output");
+  inputTargetDef->setNumPasses(1);
+  {
+    // quad pass
+    Ogre::CompositorPassQuadDef *passQuad =
+        static_cast<Ogre::CompositorPassQuadDef *>(
+        inputTargetDef->addPass(Ogre::PASS_QUAD));
+    passQuad->mMaterialName = materialName;
+    passQuad->addQuadTextureSource(0, "rt_input", 0);
+  }
+  nodeDef->mapOutputChannel(0, "rt_output");
+  nodeDef->mapOutputChannel(1, "rt_input");
+}
 
 //////////////////////////////////////////////////
 Ogre2DepthCamera::Ogre2DepthCamera()
@@ -160,7 +295,9 @@ void Ogre2DepthCamera::Destroy()
     ogreCompMgr->removeWorkspaceDefinition(
         this->dataPtr->ogreCompositorWorkspaceDef);
     ogreCompMgr->removeNodeDefinition(
-        this->dataPtr->ogreCompositorNodeDef);
+        this->dataPtr->ogreCompositorBaseNodeDef);
+    ogreCompMgr->removeNodeDefinition(
+        this->dataPtr->ogreCompositorFinalNodeDef);
   }
 
   Ogre::SceneManager *ogreSceneManager;
@@ -278,64 +415,112 @@ void Ogre2DepthCamera::CreateDepthTexture()
     this->Scene()->BackgroundColor().G(),
     this->Scene()->BackgroundColor().B());
   psParams->setNamedConstant("backgroundColor", bg);
-  // We need to include a tolerance for Clipping
-  psParams->setNamedConstant("tolerance",
-      static_cast<float>(1e-6));
 
+  std::string matDepthFinalName = "DepthCameraFinal";
+  Ogre::MaterialPtr matDepthFinal =
+      Ogre::MaterialManager::getSingleton().getByName(matDepthFinalName);
+  this->dataPtr->depthFinalMaterial = matDepthFinal->clone(
+      this->Name() + "_" + matDepthFinalName);
+  this->dataPtr->depthFinalMaterial->load();
+  Ogre::Pass *passFinal =
+      this->dataPtr->depthFinalMaterial->getTechnique(0)->getPass(0);
+  Ogre::GpuProgramParametersSharedPtr psParamsFinal =
+      passFinal->getFragmentProgramParameters();
+  psParamsFinal->setNamedConstant("near",
+      static_cast<float>(this->NearClipPlane()));
+  psParamsFinal->setNamedConstant("far",
+      static_cast<float>(this->FarClipPlane()));
+  psParamsFinal->setNamedConstant("max",
+      static_cast<float>(this->dataPtr->dataMaxVal));
+  psParamsFinal->setNamedConstant("min",
+      static_cast<float>(this->dataPtr->dataMinVal));
   // Create depth camera compositor
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  // We need to programmatically create the compositor because we need to
-  // configure it to use the cloned depth material created earlier.
-  // The compositor workspace definition is equivalent to the following
-  // ogre compositor script:
-  // compositor_node DepthCamera
-  // {
-  //   in 0 rt_input
-  //   // colorTexture shares same depth buffer as depthTexture
-  //   texture colorTexture target_width target_height PF_R8G8B8
-  //       depth_texture depth_format PF_D32_FLOAT
-  //   texture depthTexture target_width target_height PF_D32_FLOAT
-  //   target depthTexture
-  //   {
-  //     pass clear
-  //     {
-  //       colour_value 0.0 0.0 0.0 1.0
-  //     }
-  //     pass render_scene
-  //     {
-  //     }
-  //   }
-  //   target rt_input
-  //   {
-  //     pass clear
-  //     {
-  //       colour_value 0.0 0.0 0.0 1.0
-  //     }
-  //     pass render_quad
-  //     {
-  //       material DepthCamera // Use copy instead of original
-  //       input 0 depthTexture
-  //       quad_normals camera_far_corners_view_space
-  //     }
-  //   }
-  //   out 0 rt_input
-  // }
   std::string wsDefName = "DepthCameraWorkspace_" + this->Name();
   this->dataPtr->ogreCompositorWorkspaceDef = wsDefName;
   if (!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
   {
-    std::string nodeDefName = wsDefName + "/Node";
-    this->dataPtr->ogreCompositorNodeDef = nodeDefName;
-    Ogre::CompositorNodeDef *nodeDef =
-        ogreCompMgr->addNodeDefinition(nodeDefName);
-    // Input texture
-    nodeDef->addTextureSourceName("rt_input", 0,
-        Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+    // We need to programmatically create the compositor because we need to
+    // configure it to use the cloned depth material created earlier.
+    // The compositor node definition is equivalent to the following:
+    //
+    // compositor_node DepthCamera
+    // {
+    //   texture rt0 target_width target_height PF_FLOAT32_RGBA
+    //   texture rt1 target_width target_height PF_FLOAT32_RGBA
+    //   // colorTexture shares same depth buffer as depthTexture
+    //   texture colorTexture target_width target_height PF_R8G8B8
+    //       depth_texture depth_format PF_D32_FLOAT
+    //   texture depthTexture target_width target_height PF_D32_FLOAT
+    //   target colorTexture
+    //   {
+    //     pass clear
+    //     {
+    //       colour_value 0.0 0.0 0.0 1.0
+    //     }
+    //     pass render_scene
+    //     {
+    //     }
+    //   }
+    //   target rt0
+    //   {
+    //     pass render_quad
+    //     {
+    //       material DepthCamera // Use copy instead of original
+    //       input 0 depthTexture0
+    //       input 1 colorTexture0
+    //       quad_normals camera_far_corners_view_space
+    //     }
+    //   }
+    //   out 0 rt0
+    //   out 1 rt1
+    // }
+
+    std::string baseNodeDefName = wsDefName + "/BaseNode";
+    this->dataPtr->ogreCompositorBaseNodeDef = baseNodeDefName;
+    Ogre::CompositorNodeDef *baseNodeDef =
+        ogreCompMgr->addNodeDefinition(baseNodeDefName);
+    Ogre::TextureDefinitionBase::TextureDefinition *rt0TexDef =
+        baseNodeDef->addTextureDefinition("rt0");
+    rt0TexDef->textureType = Ogre::TEX_TYPE_2D;
+    rt0TexDef->width = 0;
+    rt0TexDef->height = 0;
+    rt0TexDef->depth = 1;
+    rt0TexDef->numMipmaps = 0;
+    rt0TexDef->widthFactor = 1;
+    rt0TexDef->heightFactor = 1;
+    rt0TexDef->formatList = {Ogre::PF_FLOAT32_RGBA};
+    rt0TexDef->fsaa = 0;
+    rt0TexDef->uav = false;
+    rt0TexDef->automipmaps = false;
+    rt0TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    rt0TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    rt0TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
+    rt0TexDef->fsaaExplicitResolve = false;
+
+    Ogre::TextureDefinitionBase::TextureDefinition *rt1TexDef =
+        baseNodeDef->addTextureDefinition("rt1");
+    rt1TexDef->textureType = Ogre::TEX_TYPE_2D;
+    rt1TexDef->width = 0;
+    rt1TexDef->height = 0;
+    rt1TexDef->depth = 1;
+    rt1TexDef->numMipmaps = 0;
+    rt1TexDef->widthFactor = 1;
+    rt1TexDef->heightFactor = 1;
+    rt1TexDef->formatList = {Ogre::PF_FLOAT32_RGBA};
+    rt1TexDef->fsaa = 0;
+    rt1TexDef->uav = false;
+    rt1TexDef->automipmaps = false;
+    rt1TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    rt1TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    rt1TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
+    rt1TexDef->fsaaExplicitResolve = false;
+
     Ogre::TextureDefinitionBase::TextureDefinition *depthTexDef =
-        nodeDef->addTextureDefinition("depthTexture");
+        baseNodeDef->addTextureDefinition("depthTexture");
     depthTexDef->textureType = Ogre::TEX_TYPE_2D;
     depthTexDef->width = 0;
     depthTexDef->height = 0;
@@ -353,7 +538,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     depthTexDef->fsaaExplicitResolve = false;
 
     Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
-        nodeDef->addTextureDefinition("colorTexture");
+        baseNodeDef->addTextureDefinition("colorTexture");
     colorTexDef->textureType = Ogre::TEX_TYPE_2D;
     colorTexDef->width = 0;
     colorTexDef->height = 0;
@@ -374,9 +559,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
     colorTexDef->preferDepthTexture = true;
     colorTexDef->fsaaExplicitResolve = false;
 
-    nodeDef->setNumTargetPass(2);
+    baseNodeDef->setNumTargetPass(2);
     Ogre::CompositorTargetDef *colorTargetDef =
-        nodeDef->addTargetPass("colorTexture");
+        baseNodeDef->addTargetPass("colorTexture");
     colorTargetDef->setNumPasses(2);
     {
       // clear pass
@@ -391,32 +576,90 @@ void Ogre2DepthCamera::CreateDepthTexture()
           colorTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL
           & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
+      // todo(anyone) Fix shadows. The shadow compositor node gets rebuilt
+      // when the number of shadow-casting light changes so we end up with
+      // invalid shadow node here. See Ogre2Scene::PreRender function on how
+      // it destroys and triggers a compositor rebuild in OgreCamera when
+      // the number of shadow-casting light changes
+      // passScene->mShadowNode = "PbsMaterialsShadowNode";
     }
-
-    // rt_input target - converts depth to range
-    Ogre::CompositorTargetDef *inputTargetDef =
-        nodeDef->addTargetPass("rt_input");
-    inputTargetDef->setNumPasses(2);
+    // rt0 target - converts depth to xyz
+    Ogre::CompositorTargetDef *inTargetDef =
+        baseNodeDef->addTargetPass("rt0");
+    inTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          inputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(), 0, 1.0);
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
-          inputTargetDef->addPass(Ogre::PASS_QUAD));
+          inTargetDef->addPass(Ogre::PASS_QUAD));
       passQuad->mMaterialName = this->dataPtr->depthMaterial->getName();
       passQuad->addQuadTextureSource(0, "depthTexture", 0);
       passQuad->addQuadTextureSource(1, "colorTexture", 0);
       passQuad->mFrustumCorners =
           Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
     }
-    nodeDef->mapOutputChannel(0, "rt_input");
+
+    baseNodeDef->mapOutputChannel(0, "rt0");
+    baseNodeDef->mapOutputChannel(1, "rt1");
+
+    // Programmatically create the final pass node and use the cloned final
+    // depth material created earlier.
+    // The compositor node definition is equivalent to the following:
+    //
+    // compositor_node DepthCameraFinal
+    // {
+    //   in 0 rt_output
+    //   in 1 rt_input
+    //
+    //   target rt_output
+    //   {
+    //     pass render_quad
+    //     {
+    //       material DepthCameraFinal // Use copy instead of original
+    //       input 0 rt_input
+    //     }
+    //   }
+    // }
+
+    std::string finalNodeDefName = wsDefName + "/FinalNode";
+    this->dataPtr->ogreCompositorFinalNodeDef = finalNodeDefName;
+    Ogre::CompositorNodeDef *finalNodeDef =
+        ogreCompMgr->addNodeDefinition(finalNodeDefName);
+
+    // output texture
+    finalNodeDef->addTextureSourceName("rt_output", 0,
+        Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+    finalNodeDef->addTextureSourceName("rt_input", 1,
+        Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+
+    finalNodeDef->setNumTargetPass(1);
+    // rt_output target - converts depth to xyz
+    Ogre::CompositorTargetDef *outputTargetDef =
+        finalNodeDef->addTargetPass("rt_output");
+    outputTargetDef->setNumPasses(1);
+    {
+      // quad pass
+      Ogre::CompositorPassQuadDef *passQuad =
+          static_cast<Ogre::CompositorPassQuadDef *>(
+          outputTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->mMaterialName = this->dataPtr->depthFinalMaterial->getName();
+      passQuad->addQuadTextureSource(0, "rt_input", 0);
+    }
+    finalNodeDef->mapOutputChannel(0, "rt_output");
+
+    // Finally create the workspace.
+    // The compositor workspace definition is equivalent to the following:
+    //
+    // workspace DepthCameraWorkspace
+    // {
+    //   connect_output DepthCameraFinal 0
+    //   connect DepthCamera 0 DepthCameraFinal 1
+    // }
     Ogre::CompositorWorkspaceDef *workDef =
         ogreCompMgr->addWorkspaceDefinition(wsDefName);
-    workDef->connectExternal(0, nodeDef->getName(), 0);
+
+    workDef->connect(baseNodeDefName, 0,  finalNodeDefName, 1);
+    workDef->connectExternal(0, finalNodeDefName, 0);
   }
   Ogre::CompositorWorkspaceDef *wsDef =
       ogreCompMgr->getWorkspaceDefinition(wsDefName);
@@ -460,6 +703,18 @@ void Ogre2DepthCamera::PreRender()
 {
   if (!this->dataPtr->ogreDepthTexture)
     this->CreateDepthTexture();
+
+  // update depth camera render passes
+  Ogre2RenderTarget::UpdateRenderPassChain(
+      this->dataPtr->ogreCompositorWorkspace,
+      this->dataPtr->ogreCompositorWorkspaceDef,
+      this->dataPtr->ogreCompositorBaseNodeDef,
+      this->dataPtr->ogreCompositorFinalNodeDef,
+      this->dataPtr->renderPasses,
+      this->dataPtr->renderPassDirty);
+  for (auto &pass : this->dataPtr->renderPasses)
+    pass->PreRender();
+  this->dataPtr->renderPassDirty = false;
 }
 
 //////////////////////////////////////////////////
@@ -618,4 +873,33 @@ double Ogre2DepthCamera::NearClipPlane() const
 double Ogre2DepthCamera::FarClipPlane() const
 {
   return BaseDepthCamera::FarClipPlane();
+}
+
+//////////////////////////////////////////////////
+void Ogre2DepthCamera::AddRenderPass(const RenderPassPtr &_pass)
+{
+  // hack: check and only allow gaussian noise for depth cameras
+  // We create a new depth gaussion noise render pass object
+  // (class declared in this src file) so that we can change the shader material
+  // to use for applying noise to depth data.
+  // The proper solution would be to either add a new DepthGaussianNoisePass
+  // class or extend the Ogre2GaussianNoisePass to handle both color and
+  // depth cameras
+  std::shared_ptr<Ogre2GaussianNoisePass> pass =
+      std::dynamic_pointer_cast<Ogre2GaussianNoisePass>(_pass);
+  if (!pass)
+  {
+    ignerr << "Depth camera currently only supports a gaussian noise pass"
+           << std::endl;
+    return;
+  }
+
+  // create new depth noise pass
+  std::shared_ptr<Ogre2DepthGaussianNoisePass> depthNoisePass =
+    std::make_shared<Ogre2DepthGaussianNoisePass>();
+  depthNoisePass->SetMean(pass->Mean());
+  depthNoisePass->SetStdDev(pass->StdDev());
+
+  this->dataPtr->renderPasses.push_back(depthNoisePass);
+  this->dataPtr->renderPassDirty = true;
 }

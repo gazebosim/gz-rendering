@@ -1,5 +1,10 @@
 ## Ignition Rendering
 
+### Ignition Rendering 2.5.0 (2020-08-07)
+
+1. Add support for Gaussian noise render pass in Ogre2DepthCamera
+    * [Pull Request 122](https://github.com/ignitionrobotics/ign-rendering/pull/122)
+
 ### Ignition Rendering 2.4.0 (2020-04-17)
 
 1. Fix flaky VisualAt test

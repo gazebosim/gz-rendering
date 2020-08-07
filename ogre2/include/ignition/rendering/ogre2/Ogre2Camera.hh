@@ -97,6 +97,8 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
+      public: Ogre::Camera *OgreCamera() const;
+
       // Documentation inherited.
       public: virtual void SetVisibilityMask(uint32_t _mask) override;
 

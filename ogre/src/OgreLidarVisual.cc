@@ -164,6 +164,12 @@ void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 void OgreLidarVisual::SetPoints(const std::vector<double> &_points,
                         const std::vector<ignition::math::Color> &_colors)
 {
+  if (_points.size() != _colors.size())
+  {
+    ignerr << "Unequal size of point and color vector."
+           << "Setting all point colors white." << std::endl;
+    this->SetPoints(_points);
+  }
   this->dataPtr->lidarPoints = _points;
   this->dataPtr->pointColors = _colors;
   this->dataPtr->receivedData = true;

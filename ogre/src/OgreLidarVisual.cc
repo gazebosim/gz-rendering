@@ -239,6 +239,25 @@ void OgreLidarVisual::Update()
     return;
   }
 
+  #if (!(OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7)))
+  // the Materials are assigned here to avoid repetitive search for materials
+  Ogre::MaterialPtr noHitRayStripsMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "Lidar/LightBlueStrips");
+  Ogre::MaterialPtr rayLineMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "Lidar/BlueRay");
+  Ogre::MaterialPtr hitRayStripsMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "Lidar/BlueStrips");
+  Ogre::MaterialPtr deadZoneMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "Lidar/TransBlack");
+  Ogre::MaterialPtr pointsMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "PointCloudPoint");
+  #endif
+
   // Process each point from received data
   // Every line segment, and every triangle is saved separately,
   // as a pointer to a DynamicLine
@@ -259,10 +278,7 @@ void OgreLidarVisual::Update()
         #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
               line->setMaterial("Lidar/BlueRay");
         #else
-            Ogre::MaterialPtr mat =
-                Ogre::MaterialManager::getSingleton().getByName(
-                                                "Lidar/BlueRay");
-            line->setMaterial(mat);
+            line->setMaterial(rayLineMat);
         #endif
         std::shared_ptr<Ogre::MovableObject> mv =
                 std::dynamic_pointer_cast<Ogre::MovableObject>(line);
@@ -277,9 +293,7 @@ void OgreLidarVisual::Update()
           #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
             line->setMaterial("Lidar/LightBlueStrips");
           #else
-            mat = Ogre::MaterialManager::getSingleton().getByName(
-                                                    "Lidar/LightBlueStrips");
-            line->setMaterial(mat);
+            line->setMaterial(noHitRayStripsMat);
           #endif
           mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
           this->Node()->attachObject(mv.get());
@@ -291,9 +305,7 @@ void OgreLidarVisual::Update()
           #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
             line->setMaterial("Lidar/TransBlack");
           #else
-            mat = Ogre::MaterialManager::getSingleton().getByName(
-                                                    "Lidar/TransBlack");
-            line->setMaterial(mat);
+            line->setMaterial(deadZoneMat);
           #endif
           mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
           this->Node()->attachObject(mv.get());
@@ -307,9 +319,7 @@ void OgreLidarVisual::Update()
           #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
             line->setMaterial("Lidar/BlueStrips");
           #else
-            mat = Ogre::MaterialManager::getSingleton().getByName(
-                                                    "Lidar/BlueStrips");
-            line->setMaterial(mat);
+            line->setMaterial(hitRayStripsMat);
           #endif
           mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
           this->Node()->attachObject(mv.get());
@@ -328,15 +338,9 @@ void OgreLidarVisual::Update()
                               new OgreDynamicLines(MT_POINTS));
 
         #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
-              Ogre::MaterialPtr mat =
-                  Ogre::MaterialManager::getSingleton().getByName(
-                                                    "PointCloudPoint");
-            line->setMaterial(mat->getName());
+            line->setMaterial("PointCloudPoint");
         #else
-            Ogre::MaterialPtr mat =
-                  Ogre::MaterialManager::getSingleton().getByName(
-                                                    "PointCloudPoint");
-            line->setMaterial(mat);
+            line->setMaterial(pointsMat);
         #endif
         std::shared_ptr<Ogre::MovableObject> mv =
                 std::dynamic_pointer_cast<Ogre::MovableObject>(line);

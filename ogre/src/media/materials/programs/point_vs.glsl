@@ -10,5 +10,5 @@ void main()
 {
   gl_Position = worldviewproj_matrix * gl_Vertex;
   gl_FrontColor = gl_Color;
-  gl_PointSize = 20 / gl_Position.w;
+  gl_PointSize = 10 / gl_Position.w;
 }

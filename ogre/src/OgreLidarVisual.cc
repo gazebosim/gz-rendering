@@ -153,7 +153,7 @@ void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 {
   this->dataPtr->lidarPoints = _points;
   this->dataPtr->pointColors.clear();
-  for (u_int64_t i = 0; i < this->dataPtr->lidarPoints.size(); i++)
+  for (auto i = 0ul; i < this->dataPtr->lidarPoints.size(); i++)
   {
     this->dataPtr->pointColors.push_back(ignition::math::Color::Blue);
   }

@@ -105,7 +105,7 @@ void buildScene(ScenePtr _scene)
   particleMaterial->SetAlphaFromTexture(true);
   particleMaterial->SetDepthWriteEnabled(false);
 
-  // create particle emitter.
+  //! [create particle emitter]
   ParticleEmitterPtr emitter = _scene->CreateParticleEmitter();
   emitter->SetLocalPose({0, 0, 0, 0, -1.57, 0});
   emitter->SetRate(10);
@@ -117,6 +117,7 @@ void buildScene(ScenePtr _scene)
   emitter->SetScaleRate(10);
   emitter->SetEmitting(true);
   root->AddChild(emitter);
+  //! [create particle emitter]
 }
 
 //////////////////////////////////////////////////
@@ -148,7 +149,6 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
 
   engineNames.push_back("ogre2");
-  engineNames.push_back("optix");
 
   for (auto engineName : engineNames)
   {

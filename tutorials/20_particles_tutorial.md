@@ -18,7 +18,6 @@ Execute the example:
 ```{.sh}
 ./particles_demo
 [Msg] Loading plugin [ignition-rendering4-ogre2]
-Engine 'optix' is not supported
 ===============================
   TAB - Switch render engines
   ESC - Exit

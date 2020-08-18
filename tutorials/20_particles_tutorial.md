@@ -17,7 +17,7 @@ Execute the example:
 
 ```{.sh}
 ./particles_demo
-[Msg] Loading plugin [ignition-rendering4-ogre]
+[Msg] Loading plugin [ignition-rendering4-ogre2]
 Engine 'optix' is not supported
 ===============================
   TAB - Switch render engines
@@ -71,24 +71,4 @@ set the color.
 Here's the snippet of code from `examples/particles_demo/Main.cc` that includes
 a particle emitter to render particles to look like smoke:
 
-```
-// create particle material
-MaterialPtr particleMaterial = _scene->CreateMaterial();
-particleMaterial->SetDiffuse(0.7, 0.7, 0.7);
-particleMaterial->SetTexture(RESOURCE_PATH + "/smoke.png");
-particleMaterial->SetAlphaFromTexture(true);
-particleMaterial->SetDepthWriteEnabled(false);
-
-// create particle emitter.
-ParticleEmitterPtr emitter = _scene->CreateParticleEmitter();
-emitter->SetLocalPose({0, 0, 0, 0, -1.57, 0});
-emitter->SetRate(10);
-emitter->SetParticleSize({1, 1, 1});
-emitter->SetLifetime(2);
-emitter->SetVelocityRange(10, 20);
-emitter->SetMaterial(particleMaterial);
-emitter->SetColorRangeImage(RESOURCE_PATH + "/smokecolors.png");
-emitter->SetScaleRate(10);
-emitter->SetEmitting(true);
-root->AddChild(emitter);
-```
+\snippet examples/particles_demo/Main.cc create particle emitter

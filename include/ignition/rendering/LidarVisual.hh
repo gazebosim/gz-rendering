@@ -70,6 +70,12 @@ namespace ignition
       /// \param[in] _points Vector of points representing distance of the ray
       public: virtual void SetPoints(const std::vector<double> &_points) = 0;
 
+      /// \brief Set lidar points to be visualised
+      /// \param[in] _points Vector of points representing distance of the ray
+      /// \param[in] _colors Vector of colors for the rendered points
+      public: virtual void SetPoints(const std::vector<double> &_points,
+                        const std::vector<ignition::math::Color> &_colors) = 0;
+
       /// \brief Set minimum vertical angle
       /// \param[in] _minVerticalAngle Minimum vertical angle
       public: virtual void SetMinVerticalAngle(

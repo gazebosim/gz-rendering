@@ -50,6 +50,9 @@ class ignition::rendering::OgreLidarVisualPrivate
   /// \brief The current lidar points data
   public: std::vector<double> lidarPoints;
 
+  /// \brief The colour of rendered points
+  public: std::vector<ignition::math::Color> pointColors;
+
   /// \brief True if new points data is received
   public: bool receivedData = false;
 };
@@ -149,6 +152,26 @@ void OgreLidarVisual::ClearVisualData()
 void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 {
   this->dataPtr->lidarPoints = _points;
+  this->dataPtr->pointColors.clear();
+  for (unsigned int i = 0u; i < this->dataPtr->lidarPoints.size(); ++i)
+  {
+    this->dataPtr->pointColors.push_back(ignition::math::Color::Blue);
+  }
+  this->dataPtr->receivedData = true;
+}
+
+//////////////////////////////////////////////////
+void OgreLidarVisual::SetPoints(const std::vector<double> &_points,
+                        const std::vector<ignition::math::Color> &_colors)
+{
+  if (_points.size() != _colors.size())
+  {
+    ignerr << "Unequal size of point and color vector."
+           << "Setting all point colors blue." << std::endl;
+    this->SetPoints(_points);
+  }
+  this->dataPtr->lidarPoints = _points;
+  this->dataPtr->pointColors = _colors;
   this->dataPtr->receivedData = true;
 }
 
@@ -216,6 +239,25 @@ void OgreLidarVisual::Update()
     return;
   }
 
+  #if (!(OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7)))
+  // the Materials are assigned here to avoid repetitive search for materials
+  Ogre::MaterialPtr noHitRayStripsMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "Lidar/LightBlueStrips");
+  Ogre::MaterialPtr rayLineMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "Lidar/BlueRay");
+  Ogre::MaterialPtr hitRayStripsMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "Lidar/BlueStrips");
+  Ogre::MaterialPtr deadZoneMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "Lidar/TransBlack");
+  Ogre::MaterialPtr pointsMat =
+                  Ogre::MaterialManager::getSingleton().getByName(
+                                                    "PointCloudPoint");
+  #endif
+
   // Process each point from received data
   // Every line segment, and every triangle is saved separately,
   // as a pointer to a DynamicLine
@@ -236,10 +278,7 @@ void OgreLidarVisual::Update()
         #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
               line->setMaterial("Lidar/BlueRay");
         #else
-            Ogre::MaterialPtr mat =
-                Ogre::MaterialManager::getSingleton().getByName(
-                                                "Lidar/BlueRay");
-            line->setMaterial(mat);
+            line->setMaterial(rayLineMat);
         #endif
         std::shared_ptr<Ogre::MovableObject> mv =
                 std::dynamic_pointer_cast<Ogre::MovableObject>(line);
@@ -254,9 +293,7 @@ void OgreLidarVisual::Update()
           #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
             line->setMaterial("Lidar/LightBlueStrips");
           #else
-            mat = Ogre::MaterialManager::getSingleton().getByName(
-                                                    "Lidar/LightBlueStrips");
-            line->setMaterial(mat);
+            line->setMaterial(noHitRayStripsMat);
           #endif
           mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
           this->Node()->attachObject(mv.get());
@@ -268,9 +305,7 @@ void OgreLidarVisual::Update()
           #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
             line->setMaterial("Lidar/TransBlack");
           #else
-            mat = Ogre::MaterialManager::getSingleton().getByName(
-                                                    "Lidar/TransBlack");
-            line->setMaterial(mat);
+            line->setMaterial(deadZoneMat);
           #endif
           mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
           this->Node()->attachObject(mv.get());
@@ -284,9 +319,7 @@ void OgreLidarVisual::Update()
           #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
             line->setMaterial("Lidar/BlueStrips");
           #else
-            mat = Ogre::MaterialManager::getSingleton().getByName(
-                                                    "Lidar/BlueStrips");
-            line->setMaterial(mat);
+            line->setMaterial(hitRayStripsMat);
           #endif
           mv = std::dynamic_pointer_cast<Ogre::MovableObject>(line);
           this->Node()->attachObject(mv.get());
@@ -305,12 +338,9 @@ void OgreLidarVisual::Update()
                               new OgreDynamicLines(MT_POINTS));
 
         #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
-              line->setMaterial("Lidar/BlueRay");
+            line->setMaterial("PointCloudPoint");
         #else
-            Ogre::MaterialPtr mat =
-                  Ogre::MaterialManager::getSingleton().getByName(
-                                                    "Lidar/BlueRay");
-            line->setMaterial(mat);
+            line->setMaterial(pointsMat);
         #endif
         std::shared_ptr<Ogre::MovableObject> mv =
                 std::dynamic_pointer_cast<Ogre::MovableObject>(line);
@@ -418,7 +448,8 @@ void OgreLidarVisual::Update()
         {
           if (this->displayNonHitting || !inf)
           {
-            this->dataPtr->points[j]->AddPoint(inf ? noHitPt: pt);
+            this->dataPtr->points[j]->AddPoint(inf ? noHitPt: pt,
+                  this->dataPtr->pointColors[j * this->horizontalCount + i]);
           }
         }
         else

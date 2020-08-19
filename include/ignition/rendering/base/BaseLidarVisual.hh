@@ -55,6 +55,11 @@ namespace ignition
               const std::vector<double> &_points) override;
 
       // Documentation inherited
+      public: virtual void SetPoints(const std::vector<double> &_points,
+                            const std::vector<ignition::math::Color> &_colors)
+                            override;
+
+      // Documentation inherited
       public: virtual void Update() override;
 
       // Documentation inherited
@@ -243,6 +248,14 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::SetPoints(const std::vector<double> &)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseLidarVisual<T>::SetPoints(const std::vector<double> &,
+                                const std::vector<ignition::math::Color> &)
     {
       // no op
     }

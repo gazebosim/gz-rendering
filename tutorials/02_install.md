@@ -18,7 +18,7 @@ The [Source Install](#source-install) instructions should be used if you need th
 
 ## Binary Install
 
-Ignition Rendering's binary packages are still pre-releases and unstable.
+Ignition Rendering's binary packages are still unstable.
 
 On Ubuntu Bionic, it's possible to install Ignition Rendering's version 1 pre-releases as follows:
 
@@ -68,33 +68,6 @@ Clone source code
 
     # This checks out the `master` branch. You can append `-b ign-rendering#` (replace # with a number) to checkout a specific version
     git clone http://github.com/ignitionrobotics/ign-rendering
-
-#### Version 0 (Legacy version for Ubuntu Xenial 16.04 or above)
-
-Install dependencies:
-
-    sudo apt -y install wget lsb-release gnupg
-    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
-    wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
-    sudo apt update
-    sudo apt install -y \
-        cmake \
-        pkg-config \
-        git \
-        libglew-dev  \
-        libfreeimage-dev \
-        freeglut3-dev \
-        libxmu-dev \
-        libxi-dev \
-        libignition-cmake1-dev \
-        libignition-math5-dev \
-        libignition-common2-dev
-
-Clone source code, note you'll need the `ign-rendering0` branch:
-
-    git clone http://github.com/ignitionrobotics/ign-rendering -b ign-rendering0
-
 
 #### Supported Rendering Engines
 

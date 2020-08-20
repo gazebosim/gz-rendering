@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_OGRE2_OGRE2RENDERTARGET_HH_
 
 #include <string>
+#include <vector>
 #include <ignition/math/Color.hh>
 
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -94,6 +95,13 @@ namespace ignition
 
       /// \brief Get a pointer to the ogre render target
       public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+
+      /// \brief Update the render pass chain
+      public: static void UpdateRenderPassChain(
+          Ogre::CompositorWorkspace *_workspace,
+          const std::string &_workspaceDefName,
+          const std::string &_baseNode, const std::string &_finalNode,
+          const std::vector<RenderPassPtr> &_renderPasses, bool _recreateNodes);
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();

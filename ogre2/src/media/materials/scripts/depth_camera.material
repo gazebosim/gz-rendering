@@ -56,3 +56,40 @@ material DepthCamera
     }
   }
 }
+
+
+vertex_program DepthCameraFinalVS glsl
+{
+  source depth_camera_final_vs.glsl
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
+}
+
+fragment_program DepthCameraFinalFS glsl
+{
+  source depth_camera_final_fs.glsl
+
+  default_params
+  {
+    param_named inputTexture int 0
+  }
+}
+
+material DepthCameraFinal
+{
+  technique
+  {
+    pass
+    {
+      vertex_program_ref DepthCameraFinalVS { }
+      fragment_program_ref DepthCameraFinalFS { }
+      texture_unit inputTexture
+      {
+        filtering none
+        tex_address_mode clamp
+      }
+    }
+  }
+}

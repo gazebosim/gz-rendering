@@ -72,7 +72,10 @@
     * [BitBucket pull request 199](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/199)
     * [BitBucket pull request 204](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/204)
 
-### Ignition Rendering 2.X.X (20XX-XX-XX)
+### Ignition Rendering 2.5.0 (2020-08-07)
+
+1. Add support for Gaussian noise render pass in Ogre2DepthCamera
+    * [Pull Request 122](https://github.com/ignitionrobotics/ign-rendering/pull/122)
 
 
 ### Ignition Rendering 2.4.0 (2020-04-17)

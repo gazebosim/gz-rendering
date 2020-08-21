@@ -52,7 +52,7 @@ of libraries designed to rapidly develop robot applications.
 
 # Install
 
-Review the [tutorial section](https://ignitionrobotics.org/api/rendering/4.0/installation.html).
+See the [installation tutorial](https://ignitionrobotics.org/api/rendering/4.0/installation.html).
 
 # Usage
 

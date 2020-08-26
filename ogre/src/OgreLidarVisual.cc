@@ -361,7 +361,7 @@ void OgreLidarVisual::Update()
       // calculate range of the ray
       double r = this->dataPtr->lidarPoints[ j * this->horizontalCount + i];
 
-      bool inf = std::isinf(r);
+      bool inf = (std::isinf(r) || r >= this->maxRange);
       ignition::math::Quaterniond ray(
         ignition::math::Vector3d(0.0, -verticalAngle, horizontalAngle));
 
@@ -374,13 +374,13 @@ void OgreLidarVisual::Update()
 
       // Compute the start point of the ray
       ignition::math::Vector3d startPt =
-                  (axis * minRange) + this->offset.Pos();
+                  (axis * this->minRange) + this->offset.Pos();
 
       // Compute the end point of the ray
       ignition::math::Vector3d pt =
                   (axis * hitRange) + this->offset.Pos();
 
-      double noHitRange = inf ? maxRange : hitRange;
+      double noHitRange = inf ? this->maxRange : hitRange;
 
       // Compute the end point of the no-hit ray
       ignition::math::Vector3d noHitPt =

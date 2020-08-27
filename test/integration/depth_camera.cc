@@ -163,13 +163,10 @@ void DepthCameraTest::DepthCameraBoxes(
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
             std::placeholders::_4, std::placeholders::_5));
 
-    // update and wait from new data
+    // update and verify we get new data
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;
-    int sleep = 0;
     depthCamera->Update();
-    while ((g_depthCounter == 0u || g_pointCloudCounter == 0u) && sleep++ < 20)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_EQ(1u, g_depthCounter);
     EXPECT_EQ(1u, g_pointCloudCounter);
 
@@ -286,12 +283,9 @@ void DepthCameraTest::DepthCameraBoxes(
         unitBoxSize * 0.5 + nearDist * 0.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionNear);
 
-    // update and wait from new data
+    // update and verify we get new data
     g_depthCounter = 0u;
-    sleep = 0;
     depthCamera->Update();
-    while (g_depthCounter == 0u && sleep++ < 20)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_EQ(1u, g_depthCounter);
 
     // Verify Depth
@@ -343,13 +337,10 @@ void DepthCameraTest::DepthCameraBoxes(
         unitBoxSize * 0.5 + farDist * 1.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionFar);
 
-    // update and wait from new data
+    // update and verify we get new data
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;
-    sleep = 0;
     depthCamera->Update();
-    while ((g_depthCounter == 0u || g_pointCloudCounter == 0u) && sleep++ < 20)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_EQ(1u, g_depthCounter);
     EXPECT_EQ(1u, g_pointCloudCounter);
 
@@ -404,13 +395,10 @@ void DepthCameraTest::DepthCameraBoxes(
         unitBoxSize * 0.5 + 0.2, 0.0, 0.0);
     box->SetLocalPosition(boxPositionFillFrame);
 
-    // update and wait from new data
+    // update and verify we get new data
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;
-    sleep = 0;
     depthCamera->Update();
-    while ((g_depthCounter == 0u || g_pointCloudCounter == 0u) && sleep++ < 20)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_EQ(1u, g_depthCounter);
     EXPECT_EQ(1u, g_pointCloudCounter);
 

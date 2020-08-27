@@ -288,12 +288,9 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
             std::placeholders::_4, std::placeholders::_5));
 
-    // update and wait from new data
+    // update and verify we get new data
     g_pointCloudCounter = 0u;
-    int sleep = 0;
     depthCamera->Update();
-    while ((g_pointCloudCounter == 0u) && sleep++ < 20)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     EXPECT_EQ(1u, g_pointCloudCounter);
 
     // compute mid, left, and right indices to be used later for retrieving data

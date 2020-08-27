@@ -290,6 +290,18 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
     // Update once to create image
     depthCamera->Update();
 
+    std::string homePath;
+    ignition::common::env(IGN_HOMEDIR, homePath);
+    std::string p = homePath + "/.ignition/rendering/ogre2.log";
+    std::ifstream fs(p);
+    std::string str((std::istreambuf_iterator<char>(fs)),
+                     std::istreambuf_iterator<char>());
+    std::cerr << "================== " << std::endl;
+    std::cerr << str << std::endl;
+    std::cerr << "================== " << std::endl;
+
+
+
     // compute mid, left, and right indices to be used later for retrieving data
     // from point cloud image
 

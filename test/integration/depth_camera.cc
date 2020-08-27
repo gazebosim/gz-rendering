@@ -32,6 +32,7 @@
 #define DOUBLE_TOL 1e-6
 
 unsigned int g_depthCounter = 0;
+unsigned int g_pointCloudCounter = 0;
 
 void OnNewDepthFrame(float *_scanDest, const float *_scan,
                   unsigned int _width, unsigned int _height,
@@ -41,6 +42,7 @@ void OnNewDepthFrame(float *_scanDest, const float *_scan,
   float f;
   int size =  _width * _height * _channels;
   memcpy(_scanDest, _scan, size * sizeof(f));
+  g_depthCounter++;
 }
 
 void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
@@ -51,9 +53,8 @@ void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
   float f;
   int size =  _width * _height * _channels;
   memcpy(_scanDest, _scan, size * sizeof(f));
+  g_pointCloudCounter++;
 }
-
-
 
 class DepthCameraTest: public testing::Test,
   public testing::WithParamInterface<const char *>
@@ -162,19 +163,15 @@ void DepthCameraTest::DepthCameraBoxes(
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
             std::placeholders::_4, std::placeholders::_5));
 
-    // Update once to create image
+    // update and wait from new data
+    g_depthCounter = 0u;
+    g_pointCloudCounter = 0u;
+    int sleep = 0;
     depthCamera->Update();
-
-
-    std::string homePath;
-    ignition::common::env(IGN_HOMEDIR, homePath);
-    std::string p = homePath + "/.ignition/rendering/ogre2.log";
-    std::ifstream fs(p);
-    std::string str((std::istreambuf_iterator<char>(fs)),
-                     std::istreambuf_iterator<char>());
-    std::cerr << "================== " << std::endl;
-    std::cerr << str << std::endl;
-    std::cerr << "================== " << std::endl;
+    while ((g_depthCounter == 0u || g_pointCloudCounter == 0u) && sleep++ < 20)
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_EQ(1u, g_depthCounter);
+    EXPECT_EQ(1u, g_pointCloudCounter);
 
     // compute mid, left, and right indices to be used later for retrieving data
     // from depth and point cloud image
@@ -288,7 +285,14 @@ void DepthCameraTest::DepthCameraBoxes(
     ignition::math::Vector3d boxPositionNear(
         unitBoxSize * 0.5 + nearDist * 0.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionNear);
+
+    // update and wait from new data
+    g_depthCounter = 0u;
+    sleep = 0;
     depthCamera->Update();
+    while (g_depthCounter == 0u && sleep++ < 20)
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_EQ(1u, g_depthCounter);
 
     // Verify Depth
     // box not detected
@@ -338,7 +342,16 @@ void DepthCameraTest::DepthCameraBoxes(
     ignition::math::Vector3d boxPositionFar(
         unitBoxSize * 0.5 + farDist * 1.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionFar);
+
+    // update and wait from new data
+    g_depthCounter = 0u;
+    g_pointCloudCounter = 0u;
+    sleep = 0;
     depthCamera->Update();
+    while ((g_depthCounter == 0u || g_pointCloudCounter == 0u) && sleep++ < 20)
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_EQ(1u, g_depthCounter);
+    EXPECT_EQ(1u, g_pointCloudCounter);
 
     // Verify Depth
     {
@@ -390,7 +403,17 @@ void DepthCameraTest::DepthCameraBoxes(
     ignition::math::Vector3d boxPositionFillFrame(
         unitBoxSize * 0.5 + 0.2, 0.0, 0.0);
     box->SetLocalPosition(boxPositionFillFrame);
+
+    // update and wait from new data
+    g_depthCounter = 0u;
+    g_pointCloudCounter = 0u;
+    sleep = 0;
     depthCamera->Update();
+    while ((g_depthCounter == 0u || g_pointCloudCounter == 0u) && sleep++ < 20)
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_EQ(1u, g_depthCounter);
+    EXPECT_EQ(1u, g_pointCloudCounter);
+
     double expectedRange = boxPositionFillFrame.X() - unitBoxSize * 0.5;
 
     // Verify Depth

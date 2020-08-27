@@ -33,7 +33,7 @@
 #include "ignition/rendering/Scene.hh"
 
 #define DOUBLE_TOL 1e-6
-unsigned int g_depthCounter = 0;
+unsigned int g_pointCloudCounter = 0;
 
 void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
                   unsigned int _width, unsigned int _height,
@@ -43,6 +43,7 @@ void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
   float f;
   int size =  _width * _height * _channels;
   memcpy(_scanDest, _scan, size * sizeof(f));
+  g_pointCloudCounter++;
 }
 using namespace ignition;
 using namespace rendering;
@@ -287,20 +288,13 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
             std::placeholders::_4, std::placeholders::_5));
 
-    // Update once to create image
+    // update and wait from new data
+    g_pointCloudCounter = 0u;
+    int sleep = 0;
     depthCamera->Update();
-
-    std::string homePath;
-    ignition::common::env(IGN_HOMEDIR, homePath);
-    std::string p = homePath + "/.ignition/rendering/ogre2.log";
-    std::ifstream fs(p);
-    std::string str((std::istreambuf_iterator<char>(fs)),
-                     std::istreambuf_iterator<char>());
-    std::cerr << "================== " << std::endl;
-    std::cerr << str << std::endl;
-    std::cerr << "================== " << std::endl;
-
-
+    while ((g_pointCloudCounter == 0u) && sleep++ < 20)
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_EQ(1u, g_pointCloudCounter);
 
     // compute mid, left, and right indices to be used later for retrieving data
     // from point cloud image

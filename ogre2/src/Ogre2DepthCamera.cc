@@ -643,8 +643,15 @@ void Ogre2DepthCamera::CreateDepthTexture()
     // rt_output target - converts depth to xyz
     Ogre::CompositorTargetDef *outputTargetDef =
         finalNodeDef->addTargetPass("rt_output");
-    outputTargetDef->setNumPasses(1);
+    outputTargetDef->setNumPasses(2);
     {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          outputTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(),
+          this->FarClipPlane(), this->FarClipPlane());
+
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
@@ -745,7 +752,7 @@ void Ogre2DepthCamera::PostRender()
 
   // blit data from gpu to cpu
   auto rt = this->dataPtr->ogreDepthTexture->getBuffer()->getRenderTarget();
-  rt->copyContentsToMemory(dstBox, Ogre::RenderTarget::FB_FRONT);
+  rt->copyContentsToMemory(dstBox, Ogre::RenderTarget::FB_AUTO);
 
   if (!this->dataPtr->depthImage)
   {

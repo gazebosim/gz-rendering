@@ -471,8 +471,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //     pass render_quad
     //     {
     //       material DepthCamera // Use copy instead of original
-    //       input 0 depthTexture0
-    //       input 1 colorTexture0
+    //       input 0 depthTexture
+    //       input 1 colorTexture
     //       quad_normals camera_far_corners_view_space
     //     }
     //   }
@@ -587,8 +587,14 @@ void Ogre2DepthCamera::CreateDepthTexture()
     // rt0 target - converts depth to xyz
     Ogre::CompositorTargetDef *inTargetDef =
         baseNodeDef->addTargetPass("rt0");
-    inTargetDef->setNumPasses(1);
+    inTargetDef->setNumPasses(2);
     {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          inTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(),
+          this->FarClipPlane(), this->FarClipPlane());
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(

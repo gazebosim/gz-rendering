@@ -285,8 +285,10 @@ void DepthCameraTest::DepthCameraBoxes(
 
     // update and verify we get new data
     g_depthCounter = 0u;
+    g_pointCloudCounter = 0u;
     depthCamera->Update();
     EXPECT_EQ(1u, g_depthCounter);
+    EXPECT_EQ(1u, g_pointCloudCounter);
 
     // Verify Depth
     // box not detected

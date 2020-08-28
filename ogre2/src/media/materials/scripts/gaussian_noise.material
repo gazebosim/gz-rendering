@@ -89,7 +89,6 @@ material GaussianNoiseDepth
       {
         tex_coord_set 0
         tex_address_mode clamp
-        // filtering linear linear linear
         filtering none
       }
     }

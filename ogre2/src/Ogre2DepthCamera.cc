@@ -498,7 +498,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     rt0TexDef->uav = false;
     rt0TexDef->automipmaps = false;
     rt0TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
-    rt0TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    rt0TexDef->depthBufferId = Ogre::DepthBuffer::POOL_INVALID;
     rt0TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
     rt0TexDef->fsaaExplicitResolve = false;
 
@@ -516,7 +516,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     rt1TexDef->uav = false;
     rt1TexDef->automipmaps = false;
     rt1TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
-    rt1TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    rt1TexDef->depthBufferId = Ogre::DepthBuffer::POOL_INVALID;
     rt1TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
     rt1TexDef->fsaaExplicitResolve = false;
 

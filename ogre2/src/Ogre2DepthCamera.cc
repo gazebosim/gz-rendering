@@ -207,11 +207,8 @@ void Ogre2DepthGaussianNoisePass::CreateRenderPass()
   nodeDef->setNumTargetPass(1);
   Ogre::CompositorTargetDef *inputTargetDef =
       nodeDef->addTargetPass("rt_output");
-  inputTargetDef->setNumPasses(2);
+  inputTargetDef->setNumPasses(1);
   {
-    // clear pass
-    inputTargetDef->addPass(Ogre::PASS_CLEAR);
-
     // quad pass
     Ogre::CompositorPassQuadDef *passQuad =
         static_cast<Ogre::CompositorPassQuadDef *>(
@@ -590,14 +587,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
     // rt0 target - converts depth to xyz
     Ogre::CompositorTargetDef *inTargetDef =
         baseNodeDef->addTargetPass("rt0");
-    inTargetDef->setNumPasses(2);
+    inTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          inTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(),
-          this->FarClipPlane(), this->FarClipPlane());
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
@@ -646,15 +637,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
     // rt_output target - converts depth to xyz
     Ogre::CompositorTargetDef *outputTargetDef =
         finalNodeDef->addTargetPass("rt_output");
-    outputTargetDef->setNumPasses(2);
+    outputTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          outputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(),
-          this->FarClipPlane(), this->FarClipPlane());
-
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(

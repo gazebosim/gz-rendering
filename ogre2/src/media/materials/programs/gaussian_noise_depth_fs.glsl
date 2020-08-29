@@ -97,11 +97,11 @@ float pack(vec4 color)
 vec4 unpack(float color)
 {
   int rgba = floatBitsToInt(color);
-  int r = rgba >> 24 & 0xFF;
-  int g = rgba >> 16 & 0xFF;
-  int b = rgba >> 8 & 0xFF;
-  int a = rgba & 0xFF;
-  return vec4(r/255.0, g/255.0, b/255.0, a/255.0);
+  float r = float(rgba >> 24 & 0xFF) / 255.0;
+  float g = float(rgba >> 16 & 0xFF) / 255.0;
+  float b = float(rgba >> 8 & 0xFF) / 255.0;
+  float a = float(rgba >> 0 & 0xFF) / 255.0;
+  return vec4(r, g, b, a);
 }
 
 void main()

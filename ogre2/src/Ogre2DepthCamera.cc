@@ -207,8 +207,11 @@ void Ogre2DepthGaussianNoisePass::CreateRenderPass()
   nodeDef->setNumTargetPass(1);
   Ogre::CompositorTargetDef *inputTargetDef =
       nodeDef->addTargetPass("rt_output");
-  inputTargetDef->setNumPasses(1);
+  inputTargetDef->setNumPasses(2);
   {
+    // clear pass
+    inputTargetDef->addPass(Ogre::PASS_CLEAR);
+
     // quad pass
     Ogre::CompositorPassQuadDef *passQuad =
         static_cast<Ogre::CompositorPassQuadDef *>(

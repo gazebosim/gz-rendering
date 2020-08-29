@@ -123,6 +123,7 @@ void main()
     n = -n;
   vec4 color = unpack(p.a);
   color = clamp(color + vec4(n, n, n, 0.0), 0.0, 1.0);
+
   float rgba = pack(color);
 
   fragColor = vec4(xyz, rgba);

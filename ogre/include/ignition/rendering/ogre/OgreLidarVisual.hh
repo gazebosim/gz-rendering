@@ -81,6 +81,9 @@ namespace ignition
       /// \brief Clear data stored by dynamiclines
       private: void ClearVisualData();
 
+      // Documentation inherited
+      public: virtual void SetVisible(bool _visible) override;
+
       /// \brief Lidar Visual should only be created by scene.
       private: friend class OgreScene;
 

@@ -55,6 +55,9 @@ class ignition::rendering::OgreLidarVisualPrivate
 
   /// \brief True if new points data is received
   public: bool receivedData = false;
+
+  /// \brief The visibility of the visual
+  public: bool visible = true;
 };
 
 using namespace ignition;
@@ -482,6 +485,11 @@ void OgreLidarVisual::Update()
     }
     verticalAngle += this->verticalAngleStep;
   }
+
+  // The newly created dynamic lines are having default visibility as true.
+  // The visibility needs to be set as per the current value after the new
+  // renderables are created.
+  this->SetVisible(this->dataPtr->visible);
 }
 
 //////////////////////////////////////////////////
@@ -494,4 +502,11 @@ unsigned int OgreLidarVisual::PointCount() const
 std::vector<double> OgreLidarVisual::Points() const
 {
   return this->dataPtr->lidarPoints;
+}
+
+//////////////////////////////////////////////////
+void OgreLidarVisual::SetVisible(bool _visible)
+{
+  this->dataPtr->visible = _visible;
+  this->ogreNode->setVisible(this->dataPtr->visible);
 }

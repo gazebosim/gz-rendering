@@ -19,6 +19,7 @@
 
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/Console.hh>
+#include <ignition/math/Helpers.hh>
 #include <ignition/rendering.hh>
 
 #include "SceneManager.hh"
@@ -1813,7 +1814,7 @@ void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
   // record pose timestamp
   int sec = _posesMsg->time().sec();
   int nsec = _posesMsg->time().nsec();
-  this->timePosesReceived = common::Time(sec, nsec);
+  this->timePosesReceived = math::secNsecToTimePoint(sec, nsec);
 
   // process each pose in message
   for (int i = 0; i < _posesMsg->pose_size(); ++i)
@@ -2053,7 +2054,7 @@ void NewSceneManager::ProcessPoses(const gazebo::msgs::PosesStamped &_posesMsg)
   // record pose timestamp
   int sec = _posesMsg.time().sec();
   int nsec = _posesMsg.time().nsec();
-  this->timePosesReceived = common::Time(sec, nsec);
+  this->timePosesReceived = math::secNsecToTimePoint(sec, nsec);
 
   // process each pose in list
   for (int i = 0; i < _posesMsg.pose_size(); ++i)

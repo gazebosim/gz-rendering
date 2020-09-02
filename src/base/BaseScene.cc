@@ -118,13 +118,13 @@ std::string BaseScene::Name() const
 }
 
 //////////////////////////////////////////////////
-common::Time BaseScene::SimTime() const
+std::chrono::steady_clock::time_point BaseScene::SimTime() const
 {
   return this->simTime;
 }
 
 //////////////////////////////////////////////////
-void BaseScene::SetSimTime(const common::Time &_time)
+void BaseScene::SetSimTime(const std::chrono::steady_clock::time_point &_time)
 {
   this->simTime = _time;
 }

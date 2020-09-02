@@ -77,11 +77,13 @@ namespace ignition
 
       /// \brief Get the last simulation update time
       /// \return The last simulation update time
-      public: virtual common::Time SimTime() const = 0;
+      public: virtual std::chrono::steady_clock::time_point
+        SimTime() const = 0;
 
       /// \brief Set the last simulation update time
       /// \param[in] _time Latest simulation update time
-      public: virtual void SetSimTime(const common::Time &_time) = 0;
+      public: virtual void SetSimTime(
+        const std::chrono::steady_clock::time_point &_time) = 0;
 
       /// \brief Get root Visual node. All nodes that are desired to be
       /// rendered in a scene should be added to this Visual or one of its

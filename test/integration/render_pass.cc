@@ -398,7 +398,11 @@ TEST_P(RenderPassTest, GaussianNoise)
 }
 
 /////////////////////////////////////////////////
+#ifdef __APPLE__
+TEST_P(RenderPassTest, DISABLED_DepthGaussianNoise)
+#else
 TEST_P(RenderPassTest, DepthGaussianNoise)
+#endif
 {
   DepthGaussianNoise(GetParam());
 }

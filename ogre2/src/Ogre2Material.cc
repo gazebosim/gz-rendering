@@ -30,11 +30,17 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
+/// \brief Private data for the Ogre2Material class
+class ignition::rendering::Ogre2MaterialPrivate
+{
+};
+
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2Material::Ogre2Material()
+  : dataPtr(new Ogre2MaterialPrivate)
 {
 }
 

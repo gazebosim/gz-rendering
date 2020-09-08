@@ -28,6 +28,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2GaussianNoisePassPrivate;
+
     /* \class Ogre2GaussianNoisePass Ogre2GaussianNoisePass.hh \
      * ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh
      */
@@ -47,8 +50,8 @@ namespace ignition
       // Documentation inherited
       public: void CreateRenderPass() override;
 
-      /// brief Pointer to the Gaussian noise ogre material
-      private: Ogre::Material *gaussianNoiseMat = nullptr;
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2GaussianNoisePassPrivate> dataPtr;
     };
     }
   }

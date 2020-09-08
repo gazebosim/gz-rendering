@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2VISUAL_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2VISUAL_HH_
 
+#include <memory>
 #include <vector>
 
 #include "ignition/rendering/base/BaseVisual.hh"
@@ -29,6 +30,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2VisualPrivate;
+
     /// \brief Ogre2.x implementation of the visual class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Visual :
       public BaseVisual<Ogre2Node>
@@ -89,6 +93,9 @@ namespace ignition
 
       /// \brief Pointer to the attached geometries
       protected: Ogre2GeometryStorePtr geometries;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2VisualPrivate> dataPtr;
 
       /// \brief Make scene our friend so it can create ogre2 visuals
       private: friend class Ogre2Scene;

@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
 
+#include <memory>
 #include <string>
 
 #include "ignition/rendering/base/BaseRenderPass.hh"
@@ -30,6 +31,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2RenderPassPrivate;
+
     /* \class Ogre2RenderPass Ogre2RenderPass.hh \
      * ignition/rendering/ogre2/Ogre2RenderPass.hh
      */
@@ -67,6 +71,9 @@ namespace ignition
 
       /// \brief Name of the ogre compositor node definition
       protected: std::string ogreCompositorNodeDefName;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2RenderPassPrivate> dataPtr;
     };
     }
   }

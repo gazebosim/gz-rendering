@@ -23,11 +23,19 @@
 #include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 
+/// \brief Private data for the Ogre2GaussianNoisePass class
+class ignition::rendering::Ogre2GaussianNoisePassPrivate
+{
+  /// brief Pointer to the Gaussian noise ogre material
+  public: Ogre::Material *gaussianNoiseMat = nullptr;
+};
+
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2GaussianNoisePass::Ogre2GaussianNoisePass()
+  : dataPtr(new Ogre2GaussianNoisePassPrivate)
 {
 }
 
@@ -39,7 +47,7 @@ Ogre2GaussianNoisePass::~Ogre2GaussianNoisePass()
 //////////////////////////////////////////////////
 void Ogre2GaussianNoisePass::PreRender()
 {
-  if (!this->gaussianNoiseMat)
+  if (!this->dataPtr->gaussianNoiseMat)
     return;
 
   if (!this->enabled)
@@ -58,7 +66,8 @@ void Ogre2GaussianNoisePass::PreRender()
   // 1. media/materials/scripts/gaussian_noise.material, in
   //    fragment_program GaussianNoiseFS
   // 2. media/materials/scripts/gaussian_noise_fs.glsl
-  Ogre::Pass *pass = this->gaussianNoiseMat->getTechnique(0)->getPass(0);
+  Ogre::Pass *pass =
+      this->dataPtr->gaussianNoiseMat->getTechnique(0)->getPass(0);
   Ogre::GpuProgramParametersSharedPtr psParams =
       pass->getFragmentProgramParameters();
   psParams->setNamedConstant("offsets", offsets);
@@ -87,9 +96,9 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
            << std::endl;
     return;
   }
-  this->gaussianNoiseMat = ogreMat.get();
-  if (!this->gaussianNoiseMat->isLoaded())
-    this->gaussianNoiseMat->load();
+  this->dataPtr->gaussianNoiseMat = ogreMat.get();
+  if (!this->dataPtr->gaussianNoiseMat->isLoaded())
+    this->dataPtr->gaussianNoiseMat->load();
 
   // check the compositor node exists
   auto engine = Ogre2RenderEngine::Instance();

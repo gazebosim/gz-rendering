@@ -28,8 +28,14 @@
 using namespace ignition;
 using namespace rendering;
 
+/// \brief Private data for the Ogre2Visual class
+class ignition::rendering::Ogre2VisualPrivate
+{
+};
+
 //////////////////////////////////////////////////
 Ogre2Visual::Ogre2Visual()
+  : dataPtr(new Ogre2VisualPrivate)
 {
 }
 

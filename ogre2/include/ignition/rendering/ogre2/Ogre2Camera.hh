@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2CAMERA_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2CAMERA_HH_
 
+#include <memory>
+
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
@@ -33,6 +35,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
+    class Ogre2CameraPrivate;
     class Ogre2SelectionBuffer;
 
     /// \brief Ogre2.x implementation of the camera class
@@ -129,6 +132,9 @@ namespace ignition
 
       /// \brief Color of background
       protected: math::Color backgroundColor;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2CameraPrivate> dataPtr;
 
       /// \brief Make scene our friend so it can create a camera
       private: friend class Ogre2Scene;

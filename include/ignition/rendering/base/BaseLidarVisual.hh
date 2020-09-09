@@ -55,6 +55,11 @@ namespace ignition
               const std::vector<double> &_points) override;
 
       // Documentation inherited
+      public: virtual void SetPoints(const std::vector<double> &_points,
+                            const std::vector<ignition::math::Color> &_colors)
+                            override;
+
+      // Documentation inherited
       public: virtual void Update() override;
 
       // Documentation inherited
@@ -127,8 +132,20 @@ namespace ignition
       // Documentation inherited
       public: virtual std::vector<double> Points() const override;
 
+      // Documentation inherited
+      public: virtual void SetType(const LidarVisualType _type) override;
+
+      // Documentation inherited
+      public: virtual LidarVisualType Type() const override;
+
       /// \brief Create predefined materials for lidar visual
       public: virtual void CreateMaterials();
+
+      // Documentation inherited
+      public: virtual void SetDisplayNonHitting(bool _display) override;
+
+      // Documentation inherited
+      public: virtual bool DisplayNonHitting() const override;
 
       /// \brief Vertical minimal angle
       protected: double minVerticalAngle = 0;
@@ -160,8 +177,15 @@ namespace ignition
       /// \brief Maximum Range
       protected: double maxRange = 0;
 
+      /// \brief Option to display non-hitting rays
+      protected: bool displayNonHitting = true;
+
       /// \brief Offset of visual
       protected: ignition::math::Pose3d offset = ignition::math::Pose3d::Zero;
+
+      /// \brief Type of lidar visualisation
+      protected: LidarVisualType lidarVisualType =
+                      LidarVisualType::LVT_TRIANGLE_STRIPS;
     };
 
     /////////////////////////////////////////////////
@@ -224,6 +248,14 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::SetPoints(const std::vector<double> &)
+    {
+      // no op
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseLidarVisual<T>::SetPoints(const std::vector<double> &,
+                                const std::vector<ignition::math::Color> &)
     {
       // no op
     }
@@ -388,6 +420,34 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
+    void BaseLidarVisual<T>::SetType(const LidarVisualType _type)
+    {
+      this->lidarVisualType = _type;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    LidarVisualType BaseLidarVisual<T>::Type() const
+    {
+      return this->lidarVisualType;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseLidarVisual<T>::SetDisplayNonHitting(bool _display)
+    {
+      this->displayNonHitting = _display;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    bool BaseLidarVisual<T>::DisplayNonHitting() const
+    {
+      return this->displayNonHitting;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
     void BaseLidarVisual<T>::CreateMaterials()
     {
       MaterialPtr mtl;
@@ -397,22 +457,27 @@ namespace ignition
         mtl = this->Scene()->CreateMaterial("Lidar/BlueStrips");
         mtl->SetAmbient(0.0, 0.0, 1.0);
         mtl->SetDiffuse(0.0, 0.0, 1.0);
+        mtl->SetEmissive(0.0, 0.0, 1.0);
         mtl->SetTransparency(0.4);
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
+        mtl->SetMetalness(0.0);
+        mtl->SetReflectivity(0.0);
       }
 
       if (!this->Scene()->MaterialRegistered("Lidar/LightBlueStrips"))
       {
         mtl = this->Scene()->CreateMaterial("Lidar/LightBlueStrips");
-        mtl->SetAmbient(0.5, 0.5, 1.0);
-        mtl->SetDiffuse(0.5, 0.5, 1.0);
-        mtl->SetEmissive(0.5, 0.5, 1.0);
+        mtl->SetAmbient(0.0, 0.0, 1.0);
+        mtl->SetDiffuse(0.0, 0.0, 1.0);
+        mtl->SetEmissive(0.0, 0.0, 1.0);
         mtl->SetTransparency(0.8);
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
+        mtl->SetMetalness(0.0);
+        mtl->SetReflectivity(0.0);
       }
 
       if (!this->Scene()->MaterialRegistered("Lidar/TransBlack"))
@@ -421,10 +486,12 @@ namespace ignition
         mtl->SetAmbient(0.0, 0.0, 0.0);
         mtl->SetDiffuse(0.0, 0.0, 0.0);
         mtl->SetEmissive(0.0, 0.0, 0.0);
-        mtl->SetTransparency(0.7);
+        mtl->SetTransparency(0.4);
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
+        mtl->SetMetalness(0.5);
+        mtl->SetReflectivity(0.2);
       }
 
       if (!this->Scene()->MaterialRegistered("Lidar/BlueRay"))
@@ -433,11 +500,13 @@ namespace ignition
         mtl->SetAmbient(0.0, 0.0, 1.0);
         mtl->SetDiffuse(0.0, 0.0, 1.0);
         mtl->SetEmissive(0.0, 0.0, 1.0);
-        mtl->SetSpecular(0.1, 0.1, 1);
+        mtl->SetSpecular(0.0, 0.0, 1.0);
         mtl->SetTransparency(0.0);
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
+        mtl->SetMetalness(0.1);
+        mtl->SetReflectivity(0.2);
       }
       return;
     }

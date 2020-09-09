@@ -32,6 +32,23 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    /// \brief Enum for LidarVisual types
+    enum IGNITION_RENDERING_VISIBLE LidarVisualType
+    {
+      /// \brief No type
+      LVT_NONE           = 0,
+
+      /// \brief Ray line visual
+      LVT_RAY_LINES     = 1,
+
+      /// \brief Points visual
+      LVT_POINTS         = 2,
+
+      /// \brief Triangle strips visual
+      LVT_TRIANGLE_STRIPS = 3
+    };
+
     /// \class LidarVisual LidarVisual.hh ignition/rendering/LidarVisual
     /// \brief A LidarVisual geometry class. The visual appearance is based
     /// on the type specified.
@@ -52,6 +69,12 @@ namespace ignition
       /// \brief Set lidar points to be visualised
       /// \param[in] _points Vector of points representing distance of the ray
       public: virtual void SetPoints(const std::vector<double> &_points) = 0;
+
+      /// \brief Set lidar points to be visualised
+      /// \param[in] _points Vector of points representing distance of the ray
+      /// \param[in] _colors Vector of colors for the rendered points
+      public: virtual void SetPoints(const std::vector<double> &_points,
+                        const std::vector<ignition::math::Color> &_colors) = 0;
 
       /// \brief Set minimum vertical angle
       /// \param[in] _minVerticalAngle Minimum vertical angle
@@ -139,9 +162,25 @@ namespace ignition
       /// \brief Get the points in laser data
       /// \return The points in the laser data
       public: virtual std::vector<double> Points() const = 0;
+
+      /// \brief Set type for lidar visual
+      /// \param[in] _type The type of visualisation for lidar data
+      public: virtual void SetType(const LidarVisualType _type) = 0;
+
+      /// \brief Get the type for lidar visual
+      /// \return The type for lidar visual
+      public: virtual LidarVisualType Type() const = 0;
+
+      /// \brief Set if non-hitting rays will be displayed
+      /// (this does not work for TRIANGLE_STRIPS visual)
+      /// \param[in] _display Boolean value to display non hitting visuals
+      public: virtual void SetDisplayNonHitting(bool _display) = 0;
+
+      /// \brief Get if non-hitting rays will be displayed
+      /// \return Boolean value if non-hitting rays will be displayed
+      public: virtual bool DisplayNonHitting() const = 0;
     };
     }
   }
 }
-
 #endif

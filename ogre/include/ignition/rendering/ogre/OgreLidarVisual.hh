@@ -61,6 +61,12 @@ namespace ignition
               const std::vector<double> &_points) override;
 
       // Documentation inherited
+      // This only affects lidar visuals with type LVT_POINTS
+      public: virtual void SetPoints(const std::vector<double> &_points,
+                        const std::vector<ignition::math::Color> &_colors)
+                                    override;
+
+      // Documentation inherited
       public: virtual void ClearPoints() override;
 
       // Documentation inherited
@@ -74,6 +80,9 @@ namespace ignition
 
       /// \brief Clear data stored by dynamiclines
       private: void ClearVisualData();
+
+      // Documentation inherited
+      public: virtual void SetVisible(bool _visible) override;
 
       /// \brief Lidar Visual should only be created by scene.
       private: friend class OgreScene;

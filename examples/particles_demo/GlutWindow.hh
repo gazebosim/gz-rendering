@@ -14,22 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_LIDAR_VISUAL_GLUTWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_LIDAR_VISUAL_GLUTWINDOW_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_PARTICLES_GLUTWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_PARTICLES_GLUTWINDOW_HH_
 
 #include <vector>
 #include "ignition/rendering/RenderTypes.hh"
-#include "ignition/common/graphics/Types.hh"
 
 namespace ir = ignition::rendering;
-namespace ic = ignition::common;
 
-/// \brief Run the demo and display Lidar Visual
+/// \brief Run the demo and render the scene from the cameras
 /// \param[in] _cameras Cameras in the scene
-/// \param[in] nodes Nodes in the scene
-/// \param[in] _pts Lidar points
-void run(std::vector<ir::CameraPtr> _cameras,
-         std::vector<ir::LidarVisualPtr> _nodes,
-         std::vector<double> _pts);
+void run(std::vector<ir::CameraPtr> _cameras);
 
 #endif

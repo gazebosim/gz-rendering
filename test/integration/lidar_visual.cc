@@ -72,13 +72,6 @@ void LidarVisualTest::Configure(const std::string &_renderEngine)
     return;
   }
 
-  if (_renderEngine == "ogre2")
-  {
-    igndbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -133,6 +126,26 @@ void LidarVisualTest::Configure(const std::string &_renderEngine)
     ignition::math::Pose3d offset(1.5, 3.6, 2.9, 1.1, -5.3, -2.9);
     lidarVis->SetOffset(offset);
     EXPECT_EQ(lidarVis->Offset(), offset);
+
+    lidarVis->SetType(LVT_NONE);
+    EXPECT_EQ(lidarVis->Type(), LVT_NONE);
+    lidarVis->SetType(LVT_POINTS);
+    EXPECT_EQ(lidarVis->Type(), LVT_POINTS);
+    lidarVis->SetType(LVT_POINTS);
+    EXPECT_EQ(lidarVis->Type(), LVT_POINTS);
+    lidarVis->SetType(LVT_TRIANGLE_STRIPS);
+    EXPECT_EQ(lidarVis->Type(), LVT_TRIANGLE_STRIPS);
+
+    lidarVis->SetDisplayNonHitting(true);
+    EXPECT_EQ(lidarVis->DisplayNonHitting(), true);
+    lidarVis->SetDisplayNonHitting(false);
+    EXPECT_EQ(lidarVis->DisplayNonHitting(), false);
+
+    std::vector<double> pts = {2, 14, 15, 3, 5, 10, 3};
+    lidarVis->SetPoints(pts);
+    EXPECT_EQ(lidarVis->PointCount(), pts.size());
+    lidarVis->ClearPoints();
+    EXPECT_EQ(lidarVis->PointCount(), 0u);
   }
 
   // Clean up
@@ -156,14 +169,6 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
             << _renderEngine << std::endl;
     return;
   }
-
-  if (_renderEngine == "ogre2")
-  {
-    igndbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
 
   // Test lidar visual with 3 boxes in the world, using reading from GPU rays
   // First GPU rays at identity orientation, second at 90 degree roll
@@ -216,6 +221,8 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   lidarVis->SetMaxHorizontalAngle(hMaxAngle);
   lidarVis->SetHorizontalRayCount(hRayCount);
   lidarVis->SetVerticalRayCount(vRayCount);
+  lidarVis->SetType(LidarVisualType::LVT_TRIANGLE_STRIPS);
+  lidarVis->SetDisplayNonHitting(true);
   root->AddChild(lidarVis);
 
   // Create a second ray caster rotated
@@ -244,6 +251,8 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   lidarVis2->SetMaxHorizontalAngle(hMaxAngle);
   lidarVis2->SetHorizontalRayCount(hRayCount);
   lidarVis2->SetVerticalRayCount(vRayCount);
+  lidarVis2->SetType(LidarVisualType::LVT_TRIANGLE_STRIPS);
+  lidarVis2->SetDisplayNonHitting(true);
   root->AddChild(lidarVis2);
 
   // Create testing boxes
@@ -403,13 +412,6 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
     return;
   }
 
-  if (_renderEngine == "ogre2")
-  {
-    igndbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
   // Test a rays that has a vertical range component.
   // Place a box within range and verify range values,
   // then move the box out of range and verify range values
@@ -463,6 +465,8 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
   lidarVis->SetMaxHorizontalAngle(hMaxAngle);
   lidarVis->SetHorizontalRayCount(hRayCount);
   lidarVis->SetVerticalRayCount(vRayCount);
+  lidarVis->SetType(LidarVisualType::LVT_TRIANGLE_STRIPS);
+  lidarVis->SetDisplayNonHitting(true);
   root->AddChild(lidarVis);
 
   // Create testing boxes

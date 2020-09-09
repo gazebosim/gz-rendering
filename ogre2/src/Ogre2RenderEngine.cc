@@ -83,7 +83,7 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   this->ogrePaths.push_back(ogrePath);
 
   const char *env = std::getenv("OGRE2_RESOURCE_PATH");
-  if(env)
+  if (env)
     this->ogrePaths.push_back(std::string(env));
 
 #ifdef __APPLE__

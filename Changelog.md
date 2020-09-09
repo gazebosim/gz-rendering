@@ -6,6 +6,12 @@
 
 ### Ignition Rendering 4.0.0
 
+1. Added Lidar Visual for Ogre2
+    * [Pull request #116](https://github.com/ignitionrobotics/ign-rendering/pull/116)
+
+1. Added Lidar Visual Types for Ogre1
+    * [Pull request #114](https://github.com/ignitionrobotics/ign-rendering/pull/114)
+
 1. Added Lidar Visualisation for Ogre1
     * [Pull request #103](https://github.com/ignitionrobotics/ign-rendering/pull/103)
 
@@ -37,6 +43,9 @@
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
 
 ### Ignition Rendering 3.X.X
+
+1. Update test configuration to use ogre2
+    * [Pull request 83](https://github.com/ignitionrobotics/ign-rendering/pull/83)
 
 1. Ogre2 GPU Ray: Cleanup all resources on destruction
     * [BitBucket pull request 258](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/258)
@@ -107,6 +116,12 @@
 
 ### Ignition Rendering 2.X.X (20XX-XX-XX)
 
+
+### Ignition Rendering 2.4.0 (2020-04-17)
+
+1. Fix flaky VisualAt test
+    * [BitBucket pull request 248](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/248)
+
 1. Port windows fixes
     * [BitBucket pull request 253](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/253)
 
@@ -115,6 +130,8 @@
 
 1. Backport transparency setting based on diffuse alpha
     * [BitBucket pull request 247](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/247)
+
+### Ignition Rendering 2.3.0 (2020-02-19)
 
 1. Add API to check which engines are loaded
     * [BitBucket pull request 233](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/233)

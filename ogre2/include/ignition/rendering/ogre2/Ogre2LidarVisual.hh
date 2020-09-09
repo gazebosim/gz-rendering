@@ -19,6 +19,7 @@
 #define IGNITION_RENDERING_OGRE2_OGRELIDARVISUAL_HH_
 
 #include <memory>
+#include <vector>
 #include "ignition/rendering/base/BaseLidarVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
@@ -29,9 +30,13 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \brief Ogre 2.x implementation of a marker geometry.
+    //
+    // Forward declaration
+    class Ogre2LidarVisualPrivate;
+
+    /// \brief Ogre 2.x implementation of a Lidar Visual.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2LidarVisual
-    : public BaseLidarVisual<Ogre2Visual>
+      : public BaseLidarVisual<Ogre2Visual>
     {
       /// \brief Constructor
       protected: Ogre2LidarVisual();
@@ -48,8 +53,36 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
-      /// \brief Marker should only be created by scene.
+      // Documentation inherited
+      public: virtual void Update() override;
+
+      // Documentation inherited
+      public: virtual void SetPoints(
+              const std::vector<double> &_points) override;
+
+      // Documentation inherited
+      public: virtual void ClearPoints() override;
+
+      // Documentation inherited
+      public: virtual unsigned int PointCount() const override;
+
+      // Documentation inherited
+      public: virtual std::vector<double> Points() const override;
+
+      /// \brief Create the Lidar Visual in ogre
+      private: void Create();
+
+      /// \brief Clear data stored by dynamiclines
+      private: void ClearVisualData();
+
+      // Documentation inherited
+      public: virtual void SetVisible(bool _visible) override;
+
+      /// \brief Lidar Visual should only be created by scene.
       private: friend class Ogre2Scene;
+
+      /// \brief Private data class
+      private: std::unique_ptr<Ogre2LidarVisualPrivate> dataPtr;
     };
     }
   }

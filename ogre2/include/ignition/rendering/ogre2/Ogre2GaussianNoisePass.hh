@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
 
+#include <memory>
+
 #include "ignition/rendering/base/BaseGaussianNoisePass.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderPass.hh"

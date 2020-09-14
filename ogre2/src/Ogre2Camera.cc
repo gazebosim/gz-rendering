@@ -34,7 +34,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2Camera::Ogre2Camera()
-  : dataPtr(new Ogre2CameraPrivate)
+  : dataPtr(std::make_unique<Ogre2CameraPrivate>())
 {
 }
 

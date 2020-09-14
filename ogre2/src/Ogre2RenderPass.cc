@@ -26,7 +26,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2RenderPass::Ogre2RenderPass()
-  : dataPtr(new Ogre2RenderPassPrivate)
+  : dataPtr(std::make_unique<Ogre2RenderPassPrivate>())
 {
 }
 

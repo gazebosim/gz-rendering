@@ -40,7 +40,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2Material::Ogre2Material()
-  : dataPtr(new Ogre2MaterialPrivate)
+  : dataPtr(std::make_unique<Ogre2MaterialPrivate>())
 {
 }
 

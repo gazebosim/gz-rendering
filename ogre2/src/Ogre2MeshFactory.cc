@@ -51,7 +51,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2MeshFactory::Ogre2MeshFactory(Ogre2ScenePtr _scene) :
-  scene(_scene), dataPtr(new Ogre2MeshFactoryPrivate)
+  scene(_scene), dataPtr(std::make_unique<Ogre2MeshFactoryPrivate>())
 {
 }
 

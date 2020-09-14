@@ -35,7 +35,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2GaussianNoisePass::Ogre2GaussianNoisePass()
-  : dataPtr(new Ogre2GaussianNoisePassPrivate)
+  : dataPtr(std::make_unique<Ogre2GaussianNoisePassPrivate>())
 {
 }
 

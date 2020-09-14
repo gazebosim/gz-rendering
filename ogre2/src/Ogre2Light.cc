@@ -35,7 +35,8 @@ using namespace rendering;
 // Ogre2Light
 //////////////////////////////////////////////////
 Ogre2Light::Ogre2Light() :
-  ogreLightType(Ogre::Light::LT_POINT), dataPtr(new Ogre2LightPrivate)
+  ogreLightType(Ogre::Light::LT_POINT),
+  dataPtr(std::make_unique<Ogre2LightPrivate>())
 {
 }
 

@@ -59,3 +59,39 @@ material GaussianNoise
   }
 }
 
+
+fragment_program GaussianNoiseDepthFS glsl
+{
+  source gaussian_noise_depth_fs.glsl
+  default_params
+  {
+    param_named RT int 0
+    param_named mean float 0.0
+    param_named stddev float 1.0
+    param_named offsets float3 0.0 0.0 0.0
+  }
+}
+
+material GaussianNoiseDepth
+{
+  technique
+  {
+    pass
+    {
+      depth_check off
+      depth_write off
+      cull_hardware none
+
+      vertex_program_ref GaussianNoiseVS { }
+      fragment_program_ref GaussianNoiseDepthFS { }
+
+      texture_unit RT
+      {
+        tex_coord_set 0
+        tex_address_mode clamp
+        filtering none
+      }
+    }
+  }
+}
+

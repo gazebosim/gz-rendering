@@ -36,12 +36,22 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+/// \brief Private data for the Ogre2MeshFactory class
+class ignition::rendering::Ogre2MeshFactoryPrivate
+{
+};
+
+/// \brief Private data for the Ogre2SubMeshStoreFactory class
+class ignition::rendering::Ogre2SubMeshStoreFactoryPrivate
+{
+};
+
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2MeshFactory::Ogre2MeshFactory(Ogre2ScenePtr _scene) :
-  scene(_scene)
+  scene(_scene), dataPtr(std::make_unique<Ogre2MeshFactoryPrivate>())
 {
 }
 
@@ -500,7 +510,8 @@ bool Ogre2MeshFactory::Validate(const MeshDescriptor &_desc)
 Ogre2SubMeshStoreFactory::Ogre2SubMeshStoreFactory(Ogre2ScenePtr _scene,
     Ogre::Item *_item) :
   scene(_scene),
-  ogreItem(_item)
+  ogreItem(_item),
+  dataPtr(new Ogre2SubMeshStoreFactoryPrivate)
 {
   this->CreateNameList();
 }

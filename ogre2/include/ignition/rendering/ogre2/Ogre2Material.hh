@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2MATERIAL_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2MATERIAL_HH_
 
+#include <memory>
 #include <string>
 
 #include "ignition/rendering/base/BaseMaterial.hh"
@@ -29,6 +30,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2MaterialPrivate;
+
     /// \brief Ogre 2.x implementation of the material class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Material :
       public BaseMaterial<Ogre2Object>
@@ -245,6 +249,9 @@ namespace ignition
 
       /// \brief Unique id assigned to ogre hlms datablock
       protected: std::string ogreDatablockId;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2MaterialPrivate> dataPtr;
 
       /// \brief Only an ogre scene can create an ogre material
       private: friend class Ogre2Scene;

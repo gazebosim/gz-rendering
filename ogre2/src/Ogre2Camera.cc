@@ -24,11 +24,17 @@
 #include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 #include "ignition/rendering/Utils.hh"
 
+/// \brief Private data for the Ogre2Camera class
+class ignition::rendering::Ogre2CameraPrivate
+{
+};
+
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2Camera::Ogre2Camera()
+  : dataPtr(std::make_unique<Ogre2CameraPrivate>())
 {
 }
 

@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2LIGHT_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2LIGHT_HH_
 
+#include <memory>
+
 #include "ignition/rendering/base/BaseLight.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
@@ -32,6 +34,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2LightPrivate;
+
     /// \brief Ogre 2.x implementation of the light class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Light :
       public BaseLight<Ogre2Node>
@@ -116,6 +121,9 @@ namespace ignition
 
       /// \brief Light type
       protected: Ogre::Light::LightTypes ogreLightType;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2LightPrivate> dataPtr;
     };
 
     /// \brief Ogre 2.x implementation of the directional light class

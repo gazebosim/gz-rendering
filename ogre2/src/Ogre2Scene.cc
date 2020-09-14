@@ -43,15 +43,19 @@
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2WireBox.hh"
 
+/// \brief Private data for the Ogre2Scene class
+class ignition::rendering::Ogre2ScenePrivate
+{
+  /// \brief Flag to indicate if shadows need to be updated
+  public: bool shadowsDirty = true;
+};
+
 using namespace ignition;
 using namespace rendering;
 
-// TODO(anyone) make this a member variable in ign-rendering4
-static bool shadowsDirty = true;
-
 //////////////////////////////////////////////////
 Ogre2Scene::Ogre2Scene(unsigned int _id, const std::string &_name) :
-  BaseScene(_id, _name)
+  BaseScene(_id, _name), dataPtr(std::make_unique<Ogre2ScenePrivate>())
 {
 }
 
@@ -555,11 +559,11 @@ Ogre2ScenePtr Ogre2Scene::SharedThis()
 //////////////////////////////////////////////////
 void Ogre2Scene::SetShadowsDirty(bool _dirty)
 {
-  shadowsDirty = _dirty;
+  this->dataPtr->shadowsDirty = _dirty;
 }
 
 //////////////////////////////////////////////////
 bool Ogre2Scene::ShadowsDirty() const
 {
-  return shadowsDirty;
+  return this->dataPtr->shadowsDirty;
 }

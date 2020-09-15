@@ -55,10 +55,15 @@ namespace ignition
 
       public: virtual std::string Name() const override;
 
-      public: virtual std::chrono::steady_clock::time_point SimTime()
+      public: virtual void IGN_DEPRECATED(4)
+        SetSimTime(const common::Time &_time) override;
+
+      public: virtual common::Time IGN_DEPRECATED(4) SimTime() const override;
+
+      public: virtual std::chrono::steady_clock::time_point Time()
         const override;
 
-      public: virtual void SetSimTime(
+      public: virtual void SetTime(
         const std::chrono::steady_clock::time_point &_time) override;
 
       public: virtual void SetAmbientLight(double _r, double _g, double _b,

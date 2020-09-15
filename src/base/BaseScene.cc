@@ -118,15 +118,36 @@ std::string BaseScene::Name() const
 }
 
 //////////////////////////////////////////////////
-std::chrono::steady_clock::time_point BaseScene::SimTime() const
+std::chrono::steady_clock::time_point BaseScene::Time() const
 {
   return this->simTime;
 }
 
 //////////////////////////////////////////////////
-void BaseScene::SetSimTime(const std::chrono::steady_clock::time_point &_time)
+void BaseScene::SetTime(const std::chrono::steady_clock::time_point &_time)
 {
   this->simTime = _time;
+}
+
+//////////////////////////////////////////////////
+common::Time BaseScene::SimTime() const
+{
+  std::pair<int64_t, int64_t> secsAndNsecs =
+    math::timePointToSecNsec(this->simTime);
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+  return common::Time(secsAndNsecs.first, secsAndNsecs.second);
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetSimTime(const common::Time &_time)
+{
+  this->simTime = math::secNsecToTimePoint(_time.sec, _time.nsec);
 }
 
 //////////////////////////////////////////////////

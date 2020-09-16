@@ -379,7 +379,7 @@ namespace ignition
 
       protected: std::vector<ScenePtr> scenes;
 
-      protected: std::chrono::steady_clock::time_point timePosesReceived;
+      protected: std::chrono::steady_clock::duration timePosesReceived;
 
       protected: std::vector<gazebo::msgs::Light> lightMsgs;
 

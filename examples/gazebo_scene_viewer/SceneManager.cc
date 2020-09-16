@@ -860,7 +860,7 @@ void SubSceneManager::ProcessMessages()
 //! [process message]
 
   // flush changes to scene
-  this->activeScene->SetSimTime(this->timePosesReceived);
+  this->activeScene->SetTime(this->timePosesReceived);
   this->activeScene->PreRender();
 }
 
@@ -1812,9 +1812,8 @@ CurrentSceneManager::~CurrentSceneManager()
 void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
 {
   // record pose timestamp
-  int sec = _posesMsg->time().sec();
-  int nsec = _posesMsg->time().nsec();
-  this->timePosesReceived = math::secNsecToTimePoint(sec, nsec);
+  this->timePosesReceived = math::secNsecToDuration(
+      _posesMsg->time().sec(),  _posesMsg->time().nsec());
 
   // process each pose in message
   for (int i = 0; i < _posesMsg->pose_size(); ++i)
@@ -2052,9 +2051,8 @@ void NewSceneManager::ProcessPoses()
 void NewSceneManager::ProcessPoses(const gazebo::msgs::PosesStamped &_posesMsg)
 {
   // record pose timestamp
-  int sec = _posesMsg.time().sec();
-  int nsec = _posesMsg.time().nsec();
-  this->timePosesReceived = math::secNsecToTimePoint(sec, nsec);
+  this->timePosesReceived = math::secNsecToDuration(
+    _posesMsg.time().sec(), _posesMsg.time().nsec());
 
   // process each pose in list
   for (int i = 0; i < _posesMsg.pose_size(); ++i)

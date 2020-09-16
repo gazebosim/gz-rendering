@@ -81,7 +81,7 @@ namespace ignition
 
       /// \brief Get the last simulation update time
       /// \return The last simulation update time
-      public: virtual std::chrono::steady_clock::time_point
+      public: virtual std::chrono::steady_clock::duration
         Time() const = 0;
 
       /// \brief Set the last simulation update time
@@ -92,7 +92,7 @@ namespace ignition
       /// \brief Set the last simulation update time
       /// \param[in] _time Latest simulation update time
       public: virtual void SetTime(
-        const std::chrono::steady_clock::time_point &_time) = 0;
+        const std::chrono::steady_clock::duration &_time) = 0;
 
       /// \brief Get root Visual node. All nodes that are desired to be
       /// rendered in a scene should be added to this Visual or one of its

@@ -279,12 +279,6 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-
-  // Uncomment to print FPS
-  // static ignition::common::Time previous;
-  // auto now = ignition::common::Time::SystemTime();
-  // std::cerr << (now - previous).Double() << std::endl;
-  // previous = now;
 }
 
 //////////////////////////////////////////////////
@@ -388,5 +382,3 @@ void run(std::vector<ir::CameraPtr> _cameras)
 
   glutMainLoop();
 }
-
-

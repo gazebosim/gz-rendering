@@ -45,6 +45,11 @@
 using namespace ignition;
 using namespace rendering;
 
+// Prevent deprecation warnings for simTime
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 //////////////////////////////////////////////////
 BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   id(_id),
@@ -60,6 +65,9 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
 BaseScene::~BaseScene()
 {
 }
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
 
 //////////////////////////////////////////////////
 void BaseScene::Load()
@@ -120,35 +128,33 @@ std::string BaseScene::Name() const
 //////////////////////////////////////////////////
 std::chrono::steady_clock::duration BaseScene::Time() const
 {
-  return this->simTime;
+  return this->time;
 }
 
 //////////////////////////////////////////////////
 void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)
 {
-  this->simTime = _time;
+  this->time = _time;
 }
 
 //////////////////////////////////////////////////
-common::Time BaseScene::SimTime() const
-{
-  std::pair<int64_t, int64_t> secsAndNsecs =
-    math::durationToSecNsec(this->simTime);
 #ifndef _WIN32
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
-  return common::Time(secsAndNsecs.first, secsAndNsecs.second);
+common::Time BaseScene::SimTime() const
+{
+  return this->simTime;
+}
+
+////////////////////////////////////////////////////
+void BaseScene::SetSimTime(const common::Time &_time)
+{
+  this->simTime = _time;
+}
 #ifndef _WIN32
 # pragma GCC diagnostic pop
 #endif
-}
-
-//////////////////////////////////////////////////
-void BaseScene::SetSimTime(const common::Time &_time)
-{
-  this->simTime = math::secNsecToDuration(_time.sec, _time.nsec);
-}
 
 //////////////////////////////////////////////////
 VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,

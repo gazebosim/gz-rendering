@@ -617,7 +617,9 @@ namespace ignition
 
       protected: std::string name;
 
-      protected: std::chrono::steady_clock::duration simTime =
+      protected: common::Time IGN_DEPRECATED(4) simTime;
+
+      protected: std::chrono::steady_clock::duration time =
         std::chrono::steady_clock::duration::zero();
 
       protected: bool loaded;

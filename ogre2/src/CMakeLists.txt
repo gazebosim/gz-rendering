@@ -2,7 +2,9 @@
 # "gtest_sources" variable.
 ign_get_libsources_and_unittests(sources gtest_sources)
 
-ign_add_component(ogre2 SOURCES ${sources} GET_TARGET_NAME ogre2_target)
+set(engine_name "ogre2")
+
+ign_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
 
 find_package(OpenGL)
 
@@ -21,6 +23,19 @@ target_link_libraries(${ogre2_target}
     ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
     IgnOGRE2::IgnOGRE2)
+
+set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
+set (unversioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_NO_VERSION_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
+
+# Note that plugins are currently being installed in 2 places: /lib and the engine-plugins dir
+install(TARGETS ${ogre2_target} DESTINATION ${IGNITION_RENDERING_ENGINE_INSTALL_DIR})
+
+if (WIN32)
+  # create_symlink requires cmake 3.13 on windows
+  cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+endif()
+EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})
+INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${IGNITION_RENDERING_ENGINE_INSTALL_DIR})
 
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})

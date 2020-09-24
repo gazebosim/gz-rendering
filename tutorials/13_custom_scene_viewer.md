@@ -22,9 +22,10 @@ There are some scenes that are not available in Ogre because we have not or we c
 
 ## Compile and run the example
 
-Create a build directory and use `cmake` and `make` to compile the code:
+Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
+git clone https://github.com/ignitionrobotics/ign-rendering
 cd ign-rendering/examples/custom_scene_viewer
 mkdir build
 cd build

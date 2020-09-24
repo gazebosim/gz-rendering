@@ -4,9 +4,10 @@ This example shows how move the camera automatically.
 
 ## Compile and run the example
 
-Create a build directory and use `cmake` and `make` to compile the code:
+Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
+git clone https://github.com/ignitionrobotics/ign-rendering
 cd ign-rendering/examples/simple_demo
 mkdir build
 cd build
@@ -17,11 +18,16 @@ Execute the example:
 
 ```{.sh}
 ./simple_demo
+```
+
+You'll see:
+
+```{.sh}
 [Msg] Loading plugin [ignition-rendering4-ogre]
 Engine 'optix' is not supported
 ===============================
-  TAB - Switch render engines  
-  ESC - Exit                   
+  TAB - Switch render engines
+  ESC - Exit
 ===============================
 ```
 

@@ -35,16 +35,16 @@ struct EngineInfo
   ignition::rendering::RenderEngine *engine;
 };
 
-/// \brief Private implementation of the RenderEngineManager class
+/// \brief Private implementation of the RenderEngineManager class.
 class ignition::rendering::RenderEngineManagerPrivate
 {
-  /// \brief EngineMap that maps engine name to an engine pointer
+  /// \brief EngineMap that maps engine name to an engine pointer.
   typedef std::map<std::string, RenderEngine *> EngineMap;
 
-  /// \brief EngineMap iterator
+  /// \brief EngineMap iterator.
   typedef EngineMap::iterator EngineIter;
 
-  /// \brief Get a pointer to the render engine from an EngineMap iterator
+  /// \brief Get a pointer to the render engine from an EngineMap iterator.
   /// \param[in] _iter EngineMap iterator
   /// \param[in] _path Another search path for rendering engine plugin.
   public: RenderEngine *Engine(EngineInfo _info,
@@ -67,7 +67,7 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \param[in] _iter EngineMap iterator
   public: void UnregisterEngine(EngineIter _iter);
 
-  /// \brief Load a render engine plugin
+  /// \brief Load a render engine plugin.
   /// \param[in] _filename Filename of plugin shared library
   /// \param[in] _path Another search path for rendering engine plugin.
   /// \return True if the plugin is loaded successfully
@@ -85,12 +85,13 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \brief A map of default engine library names to their plugin names.
   public: std::map<std::string, std::string> defaultEngines;
 
-  /// \brief A map of loaded engine plugins to its plugin name
+  /// \brief A map of loaded engine plugins to its plugin name.
   public: std::map<std::string, std::string> enginePlugins;
 
-  /// \brief Plugin loader for managing render engine plugin libraries
+  /// \brief Plugin loader for managing render engine plugin libraries.
   public: ignition::plugin::Loader pluginLoader;
 
+  /// \brief Environment variable which holds paths to look for engine plugins.
   public: std::string pluginPathEnv = "IGN_GAZEBO_RENDER_ENGINE_PATH";
 
   /// \brief Mutex to protect the engines map.
@@ -161,29 +162,17 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name,
     const std::string &_path)
 {
   EngineInfo info{_name, nullptr};
-  ignwarn << "iin engine\n" << std::endl;
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   // check in the list of available engines
-  //auto iter = this->dataPtr->engines.find(_name);
 
   // Check in the list of registered engines
   auto iter = this->dataPtr->engines.find(_name);
-  for (auto &elem : this->dataPtr->engines)
-    ignwarn << elem.first << std::endl;
   if (iter != this->dataPtr->engines.end())
   {
     info.name = iter->first;
     info.engine = iter->second;
-    ignwarn << "Render-engine registered with name: " << info.name << std::endl;
-    if (!info.engine)
-      ignwarn << "engine is null" << std::endl;
-  }
-  else
-  {
-    ignwarn << "Did not find it" << std::endl;
   }
 
-  //return this->dataPtr->Engine(iter, _params, _path);
   return this->dataPtr->Engine(info, _params, _path);
 }
 
@@ -254,7 +243,6 @@ void RenderEngineManager::RegisterEngine(const std::string &_name,
   }
 
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
-  ignwarn << "Registering " << _name << std::endl;
   this->dataPtr->engines[_name] = _engine;
 }
 
@@ -316,27 +304,21 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineInfo _info,
 
   if (!engine)
   {
-    // check if it's an engine in the list of default engines provided by
-    // ign-rendering. If so, load it
-
-    ignwarn << "name is " << _info.name << std::endl;
     std::string libName = _info.name;
+
+    // Check if the provided name is a name of a default engine, if so,
+    // translate the name to the shared library name
     auto defaultIt = this->defaultEngines.find(_info.name);
     if (defaultIt != this->defaultEngines.end())
-    {
       libName = defaultIt->second;
-    }
-    
-    // Check regular engine map
+
+    // Load the engine plugin
     if (this->LoadEnginePlugin(libName, _path))
     {
       std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
       auto engineIt = this->engines.find(libName);
       if (engineIt != this->engines.end())
         engine = engineIt->second;
-    }
-    else{
-      ignwarn << "Failed to load engine plugin" << std::endl;
     }
   }
 
@@ -371,8 +353,6 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   // TODO(anyone): Find a cleaner way to get the default engine library name
 
   // cppcheck-suppress unreadVariable
-  //std::string libName = "ignition-rendering" +
-  //  std::to_string(IGNITION_RENDERING_MAJOR_VERSION) + "-";
   std::string libName = "ignition-rendering-";
 
   // cppcheck-suppress unusedVariable
@@ -384,13 +364,9 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   this->defaultEngines[engineName] = libName + engineName;
   if (this->engines.find(libName + engineName) == this->engines.end())
     this->engines[libName + engineName] = nullptr;
-  //this->defaultEngines[engineName] = libName + engineName;
-  //if (this->engines.find(engineName) == this->engines.end())
-  //  this->engines[engineName] = nullptr;
 #endif
 #if HAVE_OGRE2
   engineName = "ogre2";
-  //this->defaultEngines[engineName] = libName + engineName;
   this->defaultEngines[engineName] = libName + engineName;
   if (this->engines.find(libName + engineName) == this->engines.end())
     this->engines[libName + engineName] = nullptr;
@@ -400,9 +376,6 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   this->defaultEngines[engineName] = libName + engineName;
   if (this->engines.find(libName + engineName) == this->engines.end())
     this->engines[libName + engineName] = nullptr;
-  //this->defaultEngines[engineName] = libName + engineName;
-  //if (this->engines.find(engineName) == this->engines.end())
-  //  this->engines[engineName] = nullptr;
 #endif
 }
 
@@ -415,10 +388,10 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   ignition::common::SystemPaths systemPaths;
 
   // Add default install folder.
-  ignwarn << "ign rendering plugin path is " << IGN_RENDERING_PLUGIN_PATH << std::endl;
   systemPaths.SetPluginPathEnv(std::string(this->pluginPathEnv));
   systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
   systemPaths.AddPluginPaths({IGNITION_RENDERING_ENGINE_INSTALL_DIR});
+
   // Add extra search path.
   systemPaths.AddPluginPaths(_path);
 
@@ -468,16 +441,14 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     return false;
   }
 
-  // this triggers the engine to be instantiated
-  std::string engineName = plugin->Name();
+  // This triggers the engine to be instantiated
   {
     std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
     this->engines[_filename] = plugin->Engine();
-    ignwarn << "Adding to engine map: " << _filename << std::endl;
   }
 
   // store engine plugin data so plugin can be unloaded later
-  this->enginePlugins[engineName] = pluginName;
+  this->enginePlugins[_filename] = pluginName;
 
   return true;
 }

@@ -28,6 +28,13 @@
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/RenderEnginePlugin.hh"
 
+/// \brief Holds information about an engine
+struct EngineInfo
+{
+  std::string name;
+  ignition::rendering::RenderEngine *engine;
+};
+
 /// \brief Private implementation of the RenderEngineManager class
 class ignition::rendering::RenderEngineManagerPrivate
 {
@@ -40,7 +47,7 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \brief Get a pointer to the render engine from an EngineMap iterator
   /// \param[in] _iter EngineMap iterator
   /// \param[in] _path Another search path for rendering engine plugin.
-  public: RenderEngine *Engine(EngineIter _iter,
+  public: RenderEngine *Engine(EngineInfo _info,
       const std::map<std::string, std::string> &_params,
       const std::string &_path);
 
@@ -75,14 +82,16 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \brief Engines that have been registered
   public: EngineMap engines;
 
-  /// \brief A map of default engine name to its plugin library name
-  public: std::map<std::string, std::string> defaultEngines;
+  /// \brief A map of engine names to their plugin library name
+  public: std::map<std::string, std::string> engineLibraries;
 
   /// \brief A map of loaded engine plugins to its plugin name
   public: std::map<std::string, std::string> enginePlugins;
 
   /// \brief Plugin loader for managing render engine plugin libraries
   public: ignition::plugin::Loader pluginLoader;
+
+  public: std::string pluginPathEnv = "IGN_GAZEBO_RENDER_ENGINE_PATH";
 
   /// \brief Mutex to protect the engines map.
   public: std::recursive_mutex enginesMutex;
@@ -151,17 +160,34 @@ RenderEngine *RenderEngineManager::Engine(const std::string &_name,
     const std::map<std::string, std::string> &_params,
     const std::string &_path)
 {
+  EngineInfo info{_name, nullptr};
+  ignwarn << "name before is " << info.name << std::endl;
+  ignwarn << "engine count is " << this->EngineCount() << std::endl;
+
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   // check in the list of available engines
-  auto iter = this->dataPtr->engines.find(_name);
+  //auto iter = this->dataPtr->engines.find(_name);
 
-  if (iter == this->dataPtr->engines.end())
+  //if (iter == this->dataPtr->engines.end())
+  // Check in the list of registered engines
+  auto iter = this->dataPtr->engines.find(_name);
+  if (iter != this->dataPtr->engines.end())
   {
-    ignerr << "No render-engine registered with name: " << _name << std::endl;
-    return nullptr;
+    //ignerr << "No render-engine registered with name: " << _name << std::endl;
+    //return nullptr;
+    info.name = iter->first;
+    info.engine = iter->second;
+    ignwarn << "Found engine" << std::endl;
+    ignwarn << "default engine name is " << this->dataPtr->engineLibraries[info.name] << std::endl;
+  }
+  else
+  {
+    
   }
 
-  return this->dataPtr->Engine(iter, _params, _path);
+  ignwarn << "name is " << info.name << std::endl;
+  //return this->dataPtr->Engine(iter, _params, _path);
+  return this->dataPtr->Engine(info, _params, _path);
 }
 
 //////////////////////////////////////////////////
@@ -178,13 +204,14 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto iter = this->dataPtr->engines.begin();
   std::advance(iter, _index);
-  return this->dataPtr->Engine(iter, _params, _path);
+  return this->dataPtr->Engine({iter->first, iter->second}, _params, _path);
 }
 
 //////////////////////////////////////////////////
 bool RenderEngineManager::UnloadEngine(const std::string &_name)
 {
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
+
   // check in the list of available engines
   auto iter = this->dataPtr->engines.find(_name);
 
@@ -231,6 +258,7 @@ void RenderEngineManager::RegisterEngine(const std::string &_name,
   }
 
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
+  std::cout << "Registering engine " << _name << std::endl;
   this->dataPtr->engines[_name] = _engine;
 }
 
@@ -284,32 +312,72 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 //////////////////////////////////////////////////
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
-RenderEngine *RenderEngineManagerPrivate::Engine(EngineIter _iter,
+RenderEngine *RenderEngineManagerPrivate::Engine(EngineInfo _info,
     const std::map<std::string, std::string> &_params,
     const std::string &_path)
 {
-  RenderEngine *engine = _iter->second;
+  RenderEngine *engine = _info.engine;
 
   if (!engine)
   {
     // check if it's an engine in the list of default engines provided by
     // ign-rendering. If so, load it
-    auto defaultIt = this->defaultEngines.find(_iter->first);
-    if (defaultIt != this->defaultEngines.end())
+    //auto defaultIt = this->engineLibraries.find(_iter->first);
+    auto defaultIt = this->engineLibraries.find(_info.name);
+    if (defaultIt != this->engineLibraries.end())
     {
       std::string libName = defaultIt->second;
       if (this->LoadEnginePlugin(libName, _path))
       {
         std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
-        auto engineIt = this->engines.find(_iter->first);
+        //auto engineIt = this->engines.find(_iter->first);
+        auto engineIt = this->engines.find(_info.name);
         if (engineIt != this->engines.end())
           engine = engineIt->second;
       }
     }
+    else
+    {
+      ignwarn << "Searching other paths" << std::endl;
+      std::string libName = _info.name;
+      if (this->LoadEnginePlugin(libName, _path))
+      {
+        ignwarn << "Found engine" << std::endl;
+        std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
+        //auto engineIt = this->engines.find(_iter->first);
+        ignwarn << "name is " << _info.name << std::endl;
+        ignwarn << "Searching for name " << this->engineLibraries[_info.name] << std::endl;
+        auto engineIt = this->engines.find(this->engineLibraries[_info.name]);
+        if (engineIt != this->engines.end())
+          engine = engineIt->second;
+        else
+          ignwarn << "engine not found in engine map " << std::endl;
+      }
+    }
+  }
+  // Otherwise, try to load as a shared library
+  else
+  {
+    // TODO
+    // TODO search env var IGN_GAZEBO_RENDER_ENGINE_PATH
+    ignwarn << "Searching other paths" << std::endl;
+    std::string libName = _info.name;
+    if (this->LoadEnginePlugin(libName, _path))
+    {
+      // Register engine?
+      ignwarn << "Found engine" << std::endl;
+    }
   }
 
   if (!engine)
+  {
+    ignwarn << "engine is null" << std::endl;
     return nullptr;
+  }
+  else
+  {
+    ignwarn << "engine is not null" << std::endl;
+  }
 
   if (!engine->IsInitialized())
   {
@@ -348,19 +416,19 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
 #if HAVE_OGRE
   engineName = "ogre";
-  this->defaultEngines[engineName] = libName + engineName;
+  this->engineLibraries[engineName] = libName + engineName;
   if (this->engines.find(engineName) == this->engines.end())
     this->engines[engineName] = nullptr;
 #endif
 #if HAVE_OGRE2
   engineName = "ogre2";
-  this->defaultEngines[engineName] = libName + engineName;
+  this->engineLibraries[engineName] = libName + engineName;
   if (this->engines.find(engineName) == this->engines.end())
     this->engines[engineName] = nullptr;
 #endif
 #if HAVE_OPTIX
   engineName = "optix";
-  this->defaultEngines[engineName] = libName + engineName;
+  this->engineLibraries[engineName] = libName + engineName;
   if (this->engines.find(engineName) == this->engines.end())
     this->engines[engineName] = nullptr;
 #endif
@@ -374,7 +442,8 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
 
   ignition::common::SystemPaths systemPaths;
 
-  // Add default install folder.
+  // Add env var path and default install folder.
+  systemPaths.SetPluginPathEnv(std::string(this->pluginPathEnv));
   systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
   // Add extra search path.
   systemPaths.AddPluginPaths(_path);
@@ -430,10 +499,12 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   {
     std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
     this->engines[engineName] = plugin->Engine();
+    ignwarn << "Registering engine under name " << engineName << std::endl;
   }
 
   // store engine plugin data so plugin can be unloaded later
   this->enginePlugins[engineName] = pluginName;
+  this->engineLibraries[engineName] = _filename;
 
   return true;
 }

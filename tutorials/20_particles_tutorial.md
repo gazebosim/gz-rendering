@@ -4,9 +4,10 @@ This example shows how to include a particle emitter in the scene.
 
 ## Compile and run the example
 
-Create a build directory and use `cmake` and `make` to compile the code:
+Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
+git clone https://github.com/ignitionrobotics/ign-rendering
 cd ign-rendering/examples/particles_demo
 mkdir build
 cd build
@@ -17,6 +18,11 @@ Execute the example:
 
 ```{.sh}
 ./particles_demo
+```
+
+You'll see:
+
+```{.sh}
 [Msg] Loading plugin [ignition-rendering4-ogre2]
 ===============================
   TAB - Switch render engines

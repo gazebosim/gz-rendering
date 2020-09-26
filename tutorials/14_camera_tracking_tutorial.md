@@ -1,7 +1,6 @@
 \page camera_tracking Camera tracking
 
-This example allows you to move a box inside the world.
-Using the `W` and `S` keys you can move the box forward or backward. Pressing `A` or `D` rotates the box. You can also set up how to you want to track the object and fix the offset.
+This example shows a camera tracking a moving target. You can use the keyboard to move the target being tracked, toggle between different tracking modes, and adjust the tracking offsets.
 
 ## Compile and run the example
 
@@ -60,34 +59,22 @@ You'll see:
 
 ## Code
 
-There are three main methods in the `Camera` class that allow us to follow and track the object:
+There are two main methods in the `Camera` class that allow us to follow and track the object:
 
- - **SetTrackTarget**: Set a node for camera to track. The camera will automatically change its orientation to face the target being tracked. If null is specified, tracking is disabled. In contrast to `SetFollowTarget` the camera does not change its position when tracking is enabled.
- ```{.cpp}
- void SetTrackTarget(const NodePtr & 	_target,
-                       const math::Vector3d & 	_offset = math::Vector3d::Zero,
-                       const bool 	_worldFrame = false
- )
- ```
+**SetTrackTarget**: Set a node for camera to track. The camera will automatically change its orientation to face the target being tracked. If null is specified, tracking is disabled. In contrast to `SetFollowTarget` the camera does not change its position when tracking is enabled.
+
+\snippet examples/camera_tracking/GlutWindow.cc camera track
+
 Parameters:
     - \_target:	Target node to track
     - \_offset:	Track a point that is at an offset relative to target
     - \_worldFrame:	If true, the offset point to track will be treated in world frame and its position relative to the target node remains fixed regardless of the target node's rotation. Default is false, which means the camera tracks the point in target node's local frame.
- - **SetWorldPosition**: Set the world pose.
- ```{.cpp}
-void 	SetWorldPose (const math::Pose3d &_pose)
-void 	SetWorldPosition (double _x, double _y, double _z)
-void 	SetWorldPosition (const math::Vector3d &_position)
-void 	SetWorldRotation (double _r, double _p, double _y)
-void 	SetWorldRotation (double _w, double _x, double _y, double _z)
-void 	SetWorldRotation (const math::Quaterniond &_rotation)
- ```
- - **SetFollowTarget**: Set a node for camera to follow. The camera will automatically update its position to keep itself at the specified offset distance from the target being followed. If null is specified, camera follow is disabled. In contrast to `SetTrackTarget`, the camera does not change its orientation when following is enabled.
- ```{.cpp}
- void SetFollowTarget(const NodePtr & 	_target,
-                        const math::Vector3d & 	_offset = math::Vector3d::Zero,
-                        const bool 	_worldFrame = false )
- ```
+
+
+**SetFollowTarget**: Set a node for camera to follow. The camera will automatically update its position to keep itself at the specified offset distance from the target being followed. If null is specified, camera follow is disabled. In contrast to `SetTrackTarget`, the camera does not change its orientation when following is enabled.
+
+\snippet examples/camera_tracking/GlutWindow.cc camera follow
+
  Parameters:
   - \_target:	Target node to follow
   - \_offset:	Tether the camera at an offset distance from the target node

@@ -2,6 +2,27 @@
 
 This tutorial will show you how to use the Ignition Rendering library to create an actor animation.
 
+## Compile and run the example
+
+Clone the source code, Create a build directory and use `cmake` and `make` to compile the code:
+
+```{.sh}
+git clone https://github.com/ignitionrobotics/ign-rendering
+cd ign-rendering/examples/actor_animation
+mkdir build
+cd build
+cmake ..
+make
+```
+
+When the code is compiled you can execute the example with the following command. Using the left and right button of the mouse you can move around the scene and even zoom in and out.
+
+```{.sh}
+./actor_animation
+```
+
+@image html img/actor_animation.png
+
 ## Code
 
 In this section we will describe the main classes and methods used to create the actor. The basic steps are:
@@ -42,23 +63,3 @@ There are two ways to play the animations:
 
 \snippet examples/actor_animation/GlutWindow.cc update pose
 
-
-## Compile and run the example
-
-Create a build directory and use `cmake` and `make` to compile the code:
-
-```{.sh}
-cd ign-rendering/examples/actor_animation
-mkdir build
-cd build
-cmake ..
-make
-```
-
-When the code is compiled you can execute the example with the following command. Using the left and right button of the mouse you can move around the scene and even zoom in and out.
-
-```{.sh}
-./actor_animation
-```
-
-@image html img/actor_animation.png

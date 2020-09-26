@@ -249,6 +249,7 @@ void updatePose(double _time)
   // manually update the bone pose
   for (auto &v : g_visuals)
   {
+  //! [update pose]
     std::map<std::string, ignition::math::Matrix4d> animFrames;
     animFrames = g_skelAnim->PoseAt(_time, true);
     std::map<std::string, ignition::math::Matrix4d> skinFrames;
@@ -257,13 +258,11 @@ void updatePose(double _time)
       std::string animNodeName = pair.first;
       auto animTf = pair.second;
 
-      //! [update pose]
       std::string skinName =
           g_skel->NodeNameAnimToSkin(g_animIdx, animNodeName);
       ignition::math::Matrix4d skinTf =
               g_skel->AlignTranslation(g_animIdx, animNodeName)
               * animTf * g_skel->AlignRotation(g_animIdx, animNodeName);
-      //! [update pose]
 
       skinFrames[skinName] = skinTf;
     }
@@ -272,6 +271,7 @@ void updatePose(double _time)
     ir::MeshPtr mesh =
         std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
     mesh->SetSkeletonLocalTransforms(skinFrames);
+  //! [update pose]
   }
 }
 
@@ -281,11 +281,13 @@ void updateTime(double _time)
   // set time to advance animation
   for (auto &v : g_visuals)
   {
+  //! [update actor]
     ir::MeshPtr mesh =
         std::dynamic_pointer_cast<ir::Mesh>(v->GeometryByIndex(0));
     mesh->UpdateSkeletonAnimation(
         std::chrono::duration_cast<std::chrono::steady_clock::duration>(
         std::chrono::duration<double>(_time)));
+  //! [update actor]
   }
 }
 
@@ -508,17 +510,13 @@ void initContext()
 //////////////////////////////////////////////////
 void initAnimation()
 {
-//! [init animation]
   if (!g_skel || g_skel->AnimationCount() == 0)
   {
     std::cerr << "Failed to load animation." << std::endl;
     return;
   }
-//! [init animation]
 
-//! [index animation]
   g_skelAnim = g_skel->Animation(g_animIdx);
-//! [index animation]
 
   g_startTime = std::chrono::steady_clock::now();
 }

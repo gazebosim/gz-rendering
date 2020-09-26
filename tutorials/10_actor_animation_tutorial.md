@@ -15,7 +15,7 @@ cmake ..
 make
 ```
 
-When the code is compiled you can execute the example with the following command. Using the left and right button of the mouse you can move around the scene and even zoom in and out.
+When the code is compiled you can execute the example with the following command. Using the left and right button of the mouse you can move around the scene and zoom in and out.
 
 ```{.sh}
 ./actor_animation

@@ -29,7 +29,7 @@ In this section we will describe the main classes and methods used to create the
 
  - Load the mesh with animations
  - Create the actor visual
- - Load the mesh in into the render engine
+ - Load the mesh into the render engine
  - Attach the mesh to the actor visual
  - Animate the skeleton
 

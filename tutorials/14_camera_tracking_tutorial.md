@@ -5,9 +5,10 @@ Using the `W` and `S` keys you can move the box forward or backward. Pressing `A
 
 ## Compile and run the example
 
-Create a build directory and use `cmake` and `make` to compile the code:
+Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
+git clone https://github.com/ignitionrobotics/ign-rendering
 cd ign-rendering/examples/camera_tracking
 mkdir build
 cd build
@@ -19,33 +20,38 @@ To run the example:
 
 ```{.sh}
 ./camera_tracking
+```
+
+You'll see:
+
+```{.sh}
 ===============================
-  TAB - Switch render engines  
-  ESC - Exit                   
+  TAB - Switch render engines
+  ESC - Exit
 
-  W: Move box forward          
-  S: Move box backward         
-  A: Rotate box to the left    
-  D: Rotate box to the right   
+  W: Move box forward
+  S: Move box backward
+  A: Rotate box to the left
+  D: Rotate box to the right
 
-  1: Camera tracking only      
-  2: Camera tracking and       
-     following                 
-  3: Camera tracking and       
-     following (world frame)   
+  1: Camera tracking only
+  2: Camera tracking and
+     following
+  3: Camera tracking and
+     following (world frame)
 
-  T: Toggle smooth tracking    
-  F: Toggle smooth following   
+  T: Toggle smooth tracking
+  F: Toggle smooth following
 
-  Track offset                 
-  u/U: +- 0.1 on X             
-  i/I: +- 0.1 on Y             
-  o/O: +- 0.1 on Z             
+  Track offset
+  u/U: +- 0.1 on X
+  i/I: +- 0.1 on Y
+  o/O: +- 0.1 on Z
 
-  Follow offset                
-  j/J: +- 0.1 on X             
-  k/K: +- 0.1 on Y             
-  l/L: +- 0.1 on Z             
+  Follow offset
+  j/J: +- 0.1 on X
+  k/K: +- 0.1 on Y
+  l/L: +- 0.1 on Z
 ===============================
 
 ```

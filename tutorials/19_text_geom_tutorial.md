@@ -1,12 +1,13 @@
-\page text_geom Text geom
+\page text_geom Text geometry
 
 This example shows how to include text in the scene.
 
 ## Compile and run the example
 
-Create a build directory and use `cmake` and `make` to compile the code:
+Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
+git clone https://github.com/ignitionrobotics/ign-rendering
 cd ign-rendering/examples/text_geom
 mkdir build
 cd build
@@ -17,11 +18,16 @@ Execute the example:
 
 ```{.sh}
 ./text_geom
+```
+
+You'll see:
+
+```{.sh}
 [Msg] Loading plugin [ignition-rendering4-ogre]
 Engine 'optix' is not supported
 ===============================
-  TAB - Switch render engines  
-  ESC - Exit                   
+  TAB - Switch render engines
+  ESC - Exit
 ===============================
 ```
 @image html img/text_geom.png

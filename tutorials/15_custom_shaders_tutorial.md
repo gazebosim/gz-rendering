@@ -4,18 +4,24 @@ This example will create two images (RGB and Depth) based on the scene. The scen
 
 ## Compile and run the example
 
-Create a build directory and use `cmake` and `make` to compile the code:
+Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
-cd ign-rendering/examples/camera_tracking
+git clone https://github.com/ignitionrobotics/ign-rendering
+cd ign-rendering/examples/custom_shaders
 mkdir build
 cd build
 cmake ..
 make
 ```
 
+```{.sh}
+./custom_shaders
 ```
-./camera_tracking
+
+You'll see:
+
+```{.sh}
 Image saved: depth.png
 Image saved: regular.png
 ```

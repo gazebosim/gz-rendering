@@ -377,8 +377,13 @@ void keyboardCB(unsigned char _key, int, int)
     }
     else if (_key == '2')
     {
-      cam->SetTrackTarget(node, g_trackOffset);
+      //! [camera track]
+      cam->SetTrackTarget(node, g_trackOffset, false);
+      //! [camera track]
+
+      //! [camera follow]
       cam->SetFollowTarget(node, g_followOffset, false);
+      //! [camera follow]
     }
     else if (_key == '3')
     {

@@ -34,7 +34,6 @@
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/Scene.hh>
-#include <ignition/rendering.hh>
 
 #include "SceneManager.hh"
 

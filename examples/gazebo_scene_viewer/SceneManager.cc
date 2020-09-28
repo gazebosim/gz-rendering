@@ -20,7 +20,10 @@
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/Console.hh>
 #include <ignition/math/Helpers.hh>
-#include <ignition/rendering.hh>
+
+#include <ignition/rendering/Camera.hh>
+#include <ignition/rendering/Scene.hh>
+#include <ignition/rendering/Visual.hh>
 
 #include "SceneManager.hh"
 #include "SceneManagerPrivate.hh"
@@ -1812,8 +1815,8 @@ CurrentSceneManager::~CurrentSceneManager()
 void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
 {
   // record pose timestamp
-  this->timePosesReceived = math::secNsecToDuration(
-      _posesMsg->time().sec(),  _posesMsg->time().nsec());
+  this->timePosesReceived = std::chrono::seconds(_posesMsg->time().sec()) +
+      std::chrono::nanoseconds(_posesMsg->time().nsec());
 
   // process each pose in message
   for (int i = 0; i < _posesMsg->pose_size(); ++i)
@@ -2051,8 +2054,8 @@ void NewSceneManager::ProcessPoses()
 void NewSceneManager::ProcessPoses(const gazebo::msgs::PosesStamped &_posesMsg)
 {
   // record pose timestamp
-  this->timePosesReceived = math::secNsecToDuration(
-    _posesMsg.time().sec(), _posesMsg.time().nsec());
+  this->timePosesReceived = std::chrono::seconds(_posesMsg.time().sec()) +
+      std::chrono::nanoseconds(_posesMsg.time().nsec());
 
   // process each pose in list
   for (int i = 0; i < _posesMsg.pose_size(); ++i)

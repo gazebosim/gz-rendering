@@ -36,3 +36,8 @@ target_link_libraries(custom_shaders
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )
+
+add_custom_command(TARGET custom_shaders POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${CMAKE_SOURCE_DIR}/media
+  $<TARGET_FILE_DIR:custom_shaders>/media)

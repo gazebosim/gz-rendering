@@ -1,6 +1,6 @@
 \page render_pass Render pass
 
-This example demonstrates the of use the render pass system for adding Gaussian noise post-processing effect to a camera.
+This example demonstrates the use of the render pass system for adding Gaussian noise post-processing effect to a camera.
 
 ## Compile and run the example
 

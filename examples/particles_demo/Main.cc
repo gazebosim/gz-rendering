@@ -107,7 +107,7 @@ void buildScene(ScenePtr _scene)
 
   //! [create particle emitter]
   ParticleEmitterPtr emitter = _scene->CreateParticleEmitter();
-  emitter->SetLocalPose({0, 0, 0, 0, -1.57, 0});
+  emitter->SetLocalPose({2, 1.10, 1.25, 1.5708, 0, 2.3});
   emitter->SetRate(10);
   emitter->SetParticleSize({1, 1, 1});
   emitter->SetLifetime(2);

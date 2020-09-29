@@ -30,7 +30,7 @@
     * [Pull request #113](https://github.com/ignitionrobotics/ign-rendering/pull/113)
     * [Pull request #107](https://github.com/ignitionrobotics/ign-rendering/pull/107)
 
-1. Add LidarVisual point clors for Ogre1
+1. Add LidarVisual point colors for Ogre1
     * [Pull request #124](https://github.com/ignitionrobotics/ign-rendering/pull/124)
 
 1. Added Lidar Visual for Ogre2

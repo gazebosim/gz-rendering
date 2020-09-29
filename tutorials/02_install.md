@@ -18,6 +18,7 @@ The [Source Install](#source-install) instructions should be used if you need th
 
 ## Binary Install
 
+### Ubuntu
 
 Setup your computer to accept software from packages.osrfoundation.org:
 

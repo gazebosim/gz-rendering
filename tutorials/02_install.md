@@ -10,8 +10,6 @@
 
     * [Building from Source](#building-from-source)
 
-# Install
-
 We recommend following the [Binary Install](#binary-install) instructions to get up and running as quickly and painlessly as possible.
 
 The [Source Install](#source-install) instructions should be used if you need the very latest software improvements, you need to modify the code, or you plan to make a contribution.

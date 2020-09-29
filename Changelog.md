@@ -4,7 +4,7 @@
 
 ### Ignition Rendering 4.X.X
 
-### Ignition Rendering 4.0.0
+### Ignition Rendering 4.0.0 (2020-09-29)
 
 1. Update tutorials
     * [Pull request #151](https://github.com/ignitionrobotics/ign-rendering/pull/151)

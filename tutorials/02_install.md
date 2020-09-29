@@ -18,15 +18,11 @@ The [Source Install](#source-install) instructions should be used if you need th
 
 ## Binary Install
 
-Ignition Rendering's binary packages are still unstable.
 
-On Ubuntu Bionic, it's possible to install Ignition Rendering's version 1 pre-releases as follows:
-
-Add OSRF packages:
+Setup your computer to accept software from packages.osrfoundation.org:
 
     sudo apt -y install wget lsb-release gnupg
     sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
     wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
     sudo apt update
 
@@ -45,7 +41,6 @@ Install dependencies:
 
     sudo apt -y install wget lsb-release gnupg
     sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
     wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
     sudo apt update
     sudo apt install -y \
@@ -85,7 +80,6 @@ Add OSRF packages if you have not done so already:
 
     sudo apt -y install wget lsb-release gnupg
     sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
-    sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-prerelease `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-prerelease.list'
     wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
     sudo apt update
 

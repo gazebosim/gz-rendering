@@ -352,10 +352,17 @@ void Ogre2RenderTarget::UpdateShadowNode()
   // suggest that the number of uniform variables has exceeded the max number
   // allowed
   unsigned int maxShadowMaps = 25u;
-  dirLightCount = std::min(static_cast<unsigned int>(maxShadowMaps / 3),
-      dirLightCount);
-  spotPointLightCount = std::min(std::max(maxShadowMaps - dirLightCount*3u, 0u),
-      spotPointLightCount);
+  if (dirLightCount * 3 + spotPointLightCount > maxShadowMaps)
+  {
+    dirLightCount = std::min(static_cast<unsigned int>(maxShadowMaps / 3),
+        dirLightCount);
+    spotPointLightCount = std::min(
+        std::max(maxShadowMaps - dirLightCount * 3, 0u), spotPointLightCount);
+    ignwarn << "Number of shadow-casting lights exceeds the limit supported by "
+            << "the underlying rendering engine ogre2. Limiting to "
+            << dirLightCount << " directional lights and "
+            << spotPointLightCount << " point / spot lights" << std::endl;
+  }
 
   auto engine = Ogre2RenderEngine::Instance();
   Ogre::CompositorManager2 *compositorManager =

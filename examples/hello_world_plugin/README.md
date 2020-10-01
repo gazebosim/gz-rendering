@@ -31,8 +31,9 @@ export IGN_GAZEBO_RENDER_ENGINE_PATH=$PWD
 
 to set the environment variable accordingly.
 
+
 Now you can run `ign gazebo` with the name of the resultant library file (without the `lib` prefix
-or the `.so` file extension, i.e., libHelloWorldPlugin.so -> HelloWorldPlugin):
+or the file extension, i.e., libHelloWorldPlugin.so -> HelloWorldPlugin):
 
 ~~~
 ign gazebo --render-engine HelloWorldPlugin

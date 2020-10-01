@@ -38,40 +38,55 @@ namespace mock
     // Documentation Inherited.
     public: virtual std::string Name() const override
     {
-      return "test2";
+      return "HelloWorldPlugin";
     }
 
+    // Documentation Inherited.
     protected: virtual bool LoadImpl(const std::map<std::string, std::string> &_params) override
     {
       return true;
     }
 
+    /// \brief Initialize the render engine.
+    /// \return True if the operation is successful
     protected: virtual bool InitImpl() override
     {
       return true;
     }
 
+    /// \brief Get a pointer to the list of scenes managed by the render
+    /// engine.
+    /// \return list of scenes
     protected: virtual ignition::rendering::SceneStorePtr Scenes() const override
     {
       return nullptr;
     }
 
+    /// \brief Create a scene.
+    /// \param[in] _id Unique scene Id
+    /// \parampin] _name Name of scene
     protected: virtual ignition::rendering::ScenePtr CreateSceneImpl(unsigned int _id,
                 const std::string &_name) override
     {
       return nullptr;
     }
 
+    /// \brief Singelton setup.
     private: friend class ignition::common::SingletonT<HelloWorldRenderEngine>;
   };
 
   class HelloWorldPlugin :
     public ignition::rendering::RenderEnginePlugin
   {
+    /// \brief Get the name of the render engine loaded by this plugin.
+    /// \return Name of render engine
     public: std::string Name() const
     {
-      return "test";
+      return HelloWorldRenderEngine::Instance()->Name();
     }
+
+    /// \brief Get a pointer to the render engine loaded by this plugin.
+    /// \return Render engine instance
     public: ignition::rendering::RenderEngine *Engine() const
     {
       return HelloWorldRenderEngine::Instance();

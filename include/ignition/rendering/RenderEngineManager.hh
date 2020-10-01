@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
 #define IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
 
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -129,6 +130,10 @@ namespace ignition
       /// render-engine is registered at the given index, no work will be done.
       /// \param[in] _index Index of the render-engine to unregister
       public: void UnregisterEngineAt(unsigned int _index);
+
+      /// \brief Set the plugin path from which render engines can be loaded.
+      /// \param[in] _path The name of the environment variable
+      public: void SetPluginPaths(const std::list<std::string> &_paths);
 
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief private implementation details

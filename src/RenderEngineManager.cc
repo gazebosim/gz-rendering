@@ -91,8 +91,8 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \brief Plugin loader for managing render engine plugin libraries.
   public: ignition::plugin::Loader pluginLoader;
 
-  /// \brief Environment variable which holds paths to look for engine plugins.
-  public: std::string pluginPathEnv = "IGN_GAZEBO_RENDER_ENGINE_PATH";
+  /// \brief List which holds paths to look for engine plugins.
+  public: std::list<std::string> pluginPaths;
 
   /// \brief Mutex to protect the engines map.
   public: std::recursive_mutex enginesMutex;
@@ -294,6 +294,12 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 }
 
 //////////////////////////////////////////////////
+void RenderEngineManager::SetPluginPaths(const std::list<std::string> &_paths)
+{
+  this->dataPtr->pluginPaths = _paths;
+}
+
+//////////////////////////////////////////////////
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
 RenderEngine *RenderEngineManagerPrivate::Engine(EngineInfo _info,
@@ -388,9 +394,12 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   ignition::common::SystemPaths systemPaths;
 
   // Add default install folder.
-  systemPaths.SetPluginPathEnv(std::string(this->pluginPathEnv));
   systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
   systemPaths.AddPluginPaths({IGNITION_RENDERING_ENGINE_INSTALL_DIR});
+
+  // Add any preset plugin paths.
+  for (const auto &path : this->pluginPaths)
+    systemPaths.AddPluginPaths(path);
 
   // Add extra search path.
   systemPaths.AddPluginPaths(_path);

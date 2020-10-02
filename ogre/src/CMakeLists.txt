@@ -51,10 +51,14 @@ set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name
 set (unversioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_NO_VERSION_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 if (WIN32)
-  # create_symlink requires cmake 3.13 on windows
-  cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+  # disable MSVC inherit via dominance warning
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250")
+  INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy
+  ${IGNITION_RENDERING_ENGINE_INSTALL_DIR}\/${versioned} 
+  ${IGNITION_RENDERING_ENGINE_INSTALL_DIR}\/${unversioned})")
+else()
+  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${IGNITION_RENDERING_ENGINE_INSTALL_DIR})
 endif()
-EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})
-INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${IGNITION_RENDERING_ENGINE_INSTALL_DIR})
 
 add_subdirectory(media)

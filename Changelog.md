@@ -1,6 +1,6 @@
 ## Ignition Rendering
 
-### Ignition Rendering 2.6.0 (2020-10-05)
+### Ignition Rendering 2.5.1 (2020-10-05)
 
 1. Limit number of shadow casting lights in ogre2
     * [Pull Request 155](https://github.com/ignitionrobotics/ign-rendering/pull/155)

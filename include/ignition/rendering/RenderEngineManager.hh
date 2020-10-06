@@ -131,8 +131,8 @@ namespace ignition
       /// \param[in] _index Index of the render-engine to unregister
       public: void UnregisterEngineAt(unsigned int _index);
 
-      /// \brief Set the plugin path from which render engines can be loaded.
-      /// \param[in] _path The name of the environment variable
+      /// \brief Set the plugin paths from which render engines can be loaded.
+      /// \param[in] _paths The list of the plugin paths
       public: void SetPluginPaths(const std::list<std::string> &_paths);
 
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

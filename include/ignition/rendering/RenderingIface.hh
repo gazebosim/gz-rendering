@@ -127,8 +127,8 @@ namespace ignition
     IGNITION_RENDERING_VISIBLE
     void unregisterEngine(const unsigned int _index);
 
-    /// \brief Set the plugin path from which render engines can be loaded.
-    /// \param[in] _path The name of the environment variable
+    /// \brief Set the plugin paths from which render engines can be loaded.
+    /// \param[in] _path The list of the plugin paths
     IGNITION_RENDERING_VISIBLE
     void setPluginPaths(const std::list<std::string> &_paths);
     }

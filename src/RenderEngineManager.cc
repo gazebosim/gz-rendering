@@ -31,7 +31,11 @@
 /// \brief Holds information about an engine
 struct EngineInfo
 {
+  /// \brief The name of the engine's shared library, default engines can also
+  /// be specified with their regular name (ogre, optix, etc.).
   std::string name;
+
+  /// \brief The pointer to the render engine.
   ignition::rendering::RenderEngine *engine;
 };
 

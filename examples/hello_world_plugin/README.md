@@ -1,7 +1,7 @@
 # Engine plugin
 
 This example shows how to create a plugin that integrates a rendering engine with
-Ignition Rendering.
+Ignition Rendering and how to load it with Ignition Gazebo.
 
 ## Build
 

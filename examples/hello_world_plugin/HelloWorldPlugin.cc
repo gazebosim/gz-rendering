@@ -25,6 +25,7 @@
 
 namespace mock
 {
+  /// \brief The render engine class which implements a render engine.
   class HelloWorldRenderEngine :
     public virtual ignition::rendering::BaseRenderEngine,
     public ignition::common::SingletonT<HelloWorldRenderEngine>
@@ -42,7 +43,8 @@ namespace mock
     }
 
     // Documentation Inherited.
-    protected: virtual bool LoadImpl(const std::map<std::string, std::string> &_params) override
+    protected: virtual bool LoadImpl(const std::map<std::string,
+                   std::string> &_params) override
     {
       return true;
     }
@@ -57,7 +59,8 @@ namespace mock
     /// \brief Get a pointer to the list of scenes managed by the render
     /// engine.
     /// \return list of scenes
-    protected: virtual ignition::rendering::SceneStorePtr Scenes() const override
+    protected: virtual ignition::rendering::SceneStorePtr Scenes()
+                     const override
     {
       return nullptr;
     }
@@ -65,8 +68,9 @@ namespace mock
     /// \brief Create a scene.
     /// \param[in] _id Unique scene Id
     /// \parampin] _name Name of scene
-    protected: virtual ignition::rendering::ScenePtr CreateSceneImpl(unsigned int _id,
-                const std::string &_name) override
+    protected: virtual ignition::rendering::ScenePtr
+                   CreateSceneImpl(unsigned int _id,
+                   const std::string &_name) override
     {
       return nullptr;
     }
@@ -75,19 +79,20 @@ namespace mock
     private: friend class ignition::common::SingletonT<HelloWorldRenderEngine>;
   };
 
+  /// \brief Plugin for loading the HelloWorld render engine.
   class HelloWorldPlugin :
     public ignition::rendering::RenderEnginePlugin
   {
     /// \brief Get the name of the render engine loaded by this plugin.
     /// \return Name of render engine
-    public: std::string Name() const
+    public: std::string Name() const override
     {
       return HelloWorldRenderEngine::Instance()->Name();
     }
 
     /// \brief Get a pointer to the render engine loaded by this plugin.
     /// \return Render engine instance
-    public: ignition::rendering::RenderEngine *Engine() const
+    public: ignition::rendering::RenderEngine *Engine() const override
     {
       return HelloWorldRenderEngine::Instance();
     }

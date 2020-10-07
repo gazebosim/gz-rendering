@@ -29,7 +29,7 @@ You'll see:
   ESC - Exit
 ===============================
 ```
-@image html img/particles.png
+@image html img/particles.gif
 
 ## Code
 

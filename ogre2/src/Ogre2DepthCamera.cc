@@ -471,6 +471,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //   }
     //   target rt0
     //   {
+    //     pass clear
+    //     {
+    //     }
     //     pass render_quad
     //     {
     //       material DepthCamera // Use copy instead of original
@@ -598,6 +601,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
           inTargetDef->addPass(Ogre::PASS_CLEAR));
       passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(),
           this->FarClipPlane(), this->FarClipPlane());
+
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
@@ -623,6 +627,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //
     //   target rt_output
     //   {
+    //     pass clear
+    //     {
+    //     }
     //     pass render_quad
     //     {
     //       material DepthCameraFinal // Use copy instead of original

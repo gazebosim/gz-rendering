@@ -1,6 +1,6 @@
 ## Ignition Rendering
 
-### Ignition Rendering 3.2.0
+### Ignition Rendering 3.2.0 (2020-10-13)
 
 1. Add Custom Render Engine support
     * [Pull request 161](https://github.com/ignitionrobotics/ign-rendering/pull/161)

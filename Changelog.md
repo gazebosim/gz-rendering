@@ -1,6 +1,15 @@
 ## Ignition Rendering
 
-### Ignition Rendering 3.X.X
+### Ignition Rendering 3.2.0 (2020-10-13)
+
+1. Add Custom Render Engine support
+    * [Pull request 161](https://github.com/ignitionrobotics/ign-rendering/pull/161)
+    * [Pull request 154](https://github.com/ignitionrobotics/ign-rendering/pull/154)
+    * [Pull request 142](https://github.com/ignitionrobotics/ign-rendering/pull/142)
+    * [Pull request 141](https://github.com/ignitionrobotics/ign-rendering/pull/141)
+
+1. Add getter for Ogre2Camera
+    * [Pull request 97](https://github.com/ignitionrobotics/ign-rendering/pull/97)
 
 1. Update test configuration to use ogre2
     * [Pull request 83](https://github.com/ignitionrobotics/ign-rendering/pull/83)
@@ -10,6 +19,8 @@
 
 1. Ogre2: Add Grid
     * [BitBucket pull request 246](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/246)
+
+1. Includes all changes up to and including those in version 2.5.1
 
 ### Ignition Rendering 3.1.0 (2020-03-05)
 

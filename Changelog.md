@@ -1,6 +1,6 @@
 ## Ignition Rendering
 
-### Ignition Rendering 3.X.X
+### Ignition Rendering 3.2.X
 
 1. Update test configuration to use ogre2
     * [Pull request 83](https://github.com/ignitionrobotics/ign-rendering/pull/83)
@@ -10,6 +10,8 @@
 
 1. Ogre2: Add Grid
     * [BitBucket pull request 246](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/246)
+
+1. Includes all changes up to and including those in version 2.5.1
 
 ### Ignition Rendering 3.1.0 (2020-03-05)
 

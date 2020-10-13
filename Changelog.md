@@ -1,6 +1,6 @@
 ## Ignition Rendering
 
-### Ignition Rendering 3.2.X
+### Ignition Rendering 3.2.0
 
 1. Update test configuration to use ogre2
     * [Pull request 83](https://github.com/ignitionrobotics/ign-rendering/pull/83)

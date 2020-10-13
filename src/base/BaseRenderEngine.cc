@@ -160,7 +160,7 @@ void BaseRenderEngine::DestroyScene(ScenePtr _scene)
   auto scenes = this->Scenes();
   if (!scenes)
     return;
-  this->Scenes()->Destroy(_scene);
+  scenes->Destroy(_scene);
 }
 
 //////////////////////////////////////////////////
@@ -169,7 +169,7 @@ void BaseRenderEngine::DestroySceneById(unsigned int _id)
   auto scenes = this->Scenes();
   if (!scenes)
     return;
-  this->Scenes()->DestroyById(_id);
+  scenes->DestroyById(_id);
 }
 
 //////////////////////////////////////////////////
@@ -178,7 +178,7 @@ void BaseRenderEngine::DestroySceneByName(const std::string &_name)
   auto scenes = this->Scenes();
   if (!scenes)
     return;
-  this->Scenes()->DestroyByName(_name);
+  scenes->DestroyByName(_name);
 }
 
 //////////////////////////////////////////////////
@@ -187,7 +187,7 @@ void BaseRenderEngine::DestroySceneByIndex(unsigned int _index)
   auto scenes = this->Scenes();
   if (!scenes)
     return;
-  this->Scenes()->DestroyByIndex(_index);
+  scenes->DestroyByIndex(_index);
 }
 
 //////////////////////////////////////////////////
@@ -196,7 +196,7 @@ void BaseRenderEngine::DestroyScenes()
   auto scenes = this->Scenes();
   if (!scenes)
     return;
-  this->Scenes()->DestroyAll();
+  scenes->DestroyAll();
 }
 
 //////////////////////////////////////////////////

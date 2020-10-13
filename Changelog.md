@@ -2,6 +2,15 @@
 
 ### Ignition Rendering 3.2.X
 
+1. Add Custom Render Engine support
+    * [Pull request 161](https://github.com/ignitionrobotics/ign-rendering/pull/161)
+    * [Pull request 154](https://github.com/ignitionrobotics/ign-rendering/pull/154)
+    * [Pull request 142](https://github.com/ignitionrobotics/ign-rendering/pull/142)
+    * [Pull request 141](https://github.com/ignitionrobotics/ign-rendering/pull/141)
+
+1. Add getter for Ogre2Camera
+    * [Pull request 97](https://github.com/ignitionrobotics/ign-rendering/pull/97)
+
 1. Update test configuration to use ogre2
     * [Pull request 83](https://github.com/ignitionrobotics/ign-rendering/pull/83)
 

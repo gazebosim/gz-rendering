@@ -401,7 +401,11 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     return false;
   }
 
-  std::string pluginName = *pluginNames.begin();
+  std::string pluginName;
+  for (auto plugin: pluginNames){
+    if (plugin.find("rendering")!=std::string::npos)
+      pluginName = plugin;
+  }
   if (pluginName.empty())
   {
     ignerr << "Failed to load plugin [" << _filename <<

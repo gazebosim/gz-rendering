@@ -179,6 +179,11 @@ namespace ignition
                      override;
 
       // Documentation inherited
+      protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
+                   const std::string &_name, common::HeightmapData *_data)
+                   override;
+
+      // Documentation inherited
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
                      const std::string &_name) override;
 

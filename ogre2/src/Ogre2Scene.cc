@@ -369,6 +369,14 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int,
+    const std::string &, common::HeightmapData *)
+{
+  // TODO(anyone)
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
 GridPtr Ogre2Scene::CreateGridImpl(unsigned int _id,
     const std::string &_name)
 {

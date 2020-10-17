@@ -21,6 +21,7 @@
 #include <string>
 #include <limits>
 
+#include <ignition/common/HeightmapData.hh>
 #include <ignition/common/Material.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/Time.hh>
@@ -893,6 +894,13 @@ namespace ignition
       /// \return The created lidar visual
       public: virtual LidarVisualPtr CreateLidarVisual(
                   unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new heightmap geomerty. The rendering::Heightmap will be
+      /// created from the given common::HeightmapData.
+      /// \param[in] _data Data about the heightmap
+      /// \return The created heightmap
+      public: virtual HeightmapPtr CreateHeightmap(
+          common::HeightmapData *_data) = 0;
 
       /// \brief Create new text geometry.
       /// \return The created text

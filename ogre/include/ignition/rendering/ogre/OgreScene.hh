@@ -143,6 +143,10 @@ namespace ignition
                      const std::string &_name);
 
       // Documentation inherited
+      protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
+                     const std::string &_name);
+
+      // Documentation inherited
       protected: virtual WireBoxPtr CreateWireBoxImpl(unsigned int _id,
                      const std::string &_name);
 
@@ -161,6 +165,10 @@ namespace ignition
                      unsigned int _id, const std::string &_name);
 
       protected: virtual RayQueryPtr CreateRayQueryImpl(
+                     unsigned int _id, const std::string &_name);
+
+      // Documentation inherited
+      protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
                      unsigned int _id, const std::string &_name);
 
       protected: virtual bool InitObject(OgreObjectPtr _object,

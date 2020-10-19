@@ -169,8 +169,6 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   const int hRayCount = 320;
   const int vRayCount = 1;
 
-  common::Time waitTime = common::Time(WAIT_TIME);
-
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -341,8 +339,6 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   double maxRange = 5.0;
   unsigned int hRayCount = 640;
   unsigned int vRayCount = 4;
-
-  common::Time waitTime = common::Time(WAIT_TIME);
 
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);

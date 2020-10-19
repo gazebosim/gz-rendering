@@ -45,6 +45,9 @@ class SceneTest : public testing::Test,
 
   /// \brief Test creating and destroying materials
   public: void Materials(const std::string &_renderEngine);
+
+  /// \brief Test setting and getting Time
+  public: void Time(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -645,6 +648,40 @@ void SceneTest::Materials(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void SceneTest::Time(const std::string &_renderEngine)
+{
+  auto engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return;
+  }
+
+  auto scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  std::chrono::steady_clock::duration duration =
+    std::chrono::steady_clock::duration::zero();
+
+  EXPECT_EQ(duration, scene->Time());
+
+  duration = std::chrono::seconds(23);
+
+  scene->SetTime(duration);
+  EXPECT_EQ(duration, scene->Time());
+
+  duration = std::chrono::seconds(1) + std::chrono::milliseconds(123);
+  scene->SetTime(duration);
+  EXPECT_EQ(duration, scene->Time());
+
+  duration = std::chrono::hours(24) +
+             std::chrono::seconds(6) +
+             std::chrono::milliseconds(123);
+  scene->SetTime(duration);
+  EXPECT_EQ(duration, scene->Time());
+}
+
+/////////////////////////////////////////////////
 TEST_P(SceneTest, Scene)
 {
   Scene(GetParam());
@@ -678,6 +715,12 @@ TEST_P(SceneTest, NodeCycle)
 TEST_P(SceneTest, Materials)
 {
   Materials(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, Time)
+{
+  Time(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,

@@ -62,15 +62,16 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
   // create a visual for the actor, attach mesh and get skeleton
   // Skeleton will be animated by GlutWindow
 
-  //! [create mesh]
+  //! [load mesh]
   ignmsg << "Creating mesh with animations..." << std::endl;
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "walk.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
-  //! [create mesh]
+  //! [load mesh]
 
   // add bvh animation
+  //! [add animation]
   std::string bvhFile = common::joinPaths(RESOURCE_PATH, "cmu-13_26.bvh");
   double scale = 0.055;
   _skel = descriptor.mesh->MeshSkeleton();
@@ -83,6 +84,7 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
   ignmsg << "Loaded animations: " << std::endl;
   for (unsigned int i = 0; i < _skel->AnimationCount(); ++i)
     ignmsg << "  * " << _skel->Animation(i)->Name() << std::endl;
+  //! [add animation]
 
   unsigned int size = 25;
   double halfSize = size * 0.5;
@@ -103,18 +105,18 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
       actorVisual->SetLocalRotation(0, 0, 3.14);
       //! [create a visual for the actor]
 
-      //! [check skeleton]
+      //! [create mesh]
       auto mesh = _scene->CreateMesh(descriptor);
       if (!mesh)
       {
         std::cerr << "Failed to load mesh with animation." << std::endl;
         return;
       }
-      //! [check skeleton]
-      //! [added mesh]
+      //! [create mesh]
+      //! [attach mesh]
       actorVisual->AddGeometry(mesh);
       root->AddChild(actorVisual);
-      //! [added mesh]
+      //! [attach mesh]
 
       _visuals.push_back(actorVisual);
     }

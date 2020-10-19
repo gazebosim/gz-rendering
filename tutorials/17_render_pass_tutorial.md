@@ -1,12 +1,13 @@
 \page render_pass Render pass
 
-This example shows how to add gaussian mode to the camera
+This example demonstrates the use of the render pass system for adding Gaussian noise post-processing effect to a camera.
 
 ## Compile and run the example
 
-Create a build directory and use `cmake` and `make` to compile the code:
+Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
+git clone https://github.com/ignitionrobotics/ign-rendering
 cd ign-rendering/examples/render_pass
 mkdir build
 cd build
@@ -17,11 +18,16 @@ Execute the example:
 
 ```{.sh}
 ./render_pass
+```
+
+You'll see:
+
+```{.sh}
 [Msg] Loading plugin [ignition-rendering4-ogre]
 Engine 'optix' is not supported
 ===============================
-  TAB - Switch render engines  
-  ESC - Exit                   
+  TAB - Switch render engines
+  ESC - Exit
 ===============================
 ```
 
@@ -29,6 +35,6 @@ Engine 'optix' is not supported
 
 ## Code
 
-Get the render pass system and check if the render engine has a render pass. Then we just need to create some gaussian noise using the mean and the standard deviation and add this noise to the camera.
+Get the render pass system and create a Gaussian noise render pass. Then we just need to set the noise mean and the standard deviation parameters and apply this render pass to the camera.
 
 \snippet examples/render_pass/Main.cc get render pass system

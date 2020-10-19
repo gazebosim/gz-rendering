@@ -27,11 +27,13 @@
 
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
+#include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/DepthCamera.hh"
 #include "ignition/rendering/GizmoVisual.hh"
 #include "ignition/rendering/GpuRays.hh"
 #include "ignition/rendering/Grid.hh"
+#include "ignition/rendering/ParticleEmitter.hh"
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Text.hh"
@@ -43,6 +45,11 @@
 using namespace ignition;
 using namespace rendering;
 
+// Prevent deprecation warnings for simTime
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 //////////////////////////////////////////////////
 BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   id(_id),
@@ -58,6 +65,9 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
 BaseScene::~BaseScene()
 {
 }
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
 
 //////////////////////////////////////////////////
 void BaseScene::Load()
@@ -116,16 +126,35 @@ std::string BaseScene::Name() const
 }
 
 //////////////////////////////////////////////////
+std::chrono::steady_clock::duration BaseScene::Time() const
+{
+  return this->time;
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)
+{
+  this->time = _time;
+}
+
+//////////////////////////////////////////////////
+#ifndef _WIN32
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 common::Time BaseScene::SimTime() const
 {
   return this->simTime;
 }
 
-//////////////////////////////////////////////////
+////////////////////////////////////////////////////
 void BaseScene::SetSimTime(const common::Time &_time)
 {
   this->simTime = _time;
 }
+#ifndef _WIN32
+# pragma GCC diagnostic pop
+#endif
 
 //////////////////////////////////////////////////
 VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,
@@ -987,6 +1016,36 @@ MarkerPtr BaseScene::CreateMarker()
 }
 
 //////////////////////////////////////////////////
+LidarVisualPtr BaseScene::CreateLidarVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateLidarVisual(objId);
+}
+
+//////////////////////////////////////////////////
+LidarVisualPtr BaseScene::CreateLidarVisual(unsigned int _id)
+{
+  const std::string objName = this->CreateObjectName(_id, "LidarVisual");
+  return this->CreateLidarVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+LidarVisualPtr BaseScene::CreateLidarVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateLidarVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+LidarVisualPtr BaseScene::CreateLidarVisual(unsigned int _id,
+                                            const std::string &_name)
+{
+  LidarVisualPtr lidar = this->CreateLidarVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(lidar);
+  return (result) ? lidar : nullptr;
+}
+
+//////////////////////////////////////////////////
 WireBoxPtr BaseScene::CreateWireBox()
 {
   unsigned int objId = this->CreateObjectId();
@@ -1065,27 +1124,31 @@ RayQueryPtr BaseScene::CreateRayQuery()
 //////////////////////////////////////////////////
 ParticleEmitterPtr BaseScene::CreateParticleEmitter()
 {
-  return nullptr;
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateParticleEmitter(objId);
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id)
 {
-  return nullptr;
+  std::string objName = this->CreateObjectName(_id, "ParticleEmitter");
+  return this->CreateParticleEmitter(_id, objName);
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(
-    const std::string &/*_name*/)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(const std::string &_name)
 {
-  return nullptr;
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateParticleEmitter(objId, _name);
 }
 
 //////////////////////////////////////////////////
-ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
+    const std::string &_name)
 {
-  return nullptr;
+  ParticleEmitterPtr visual = this->CreateParticleEmitterImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

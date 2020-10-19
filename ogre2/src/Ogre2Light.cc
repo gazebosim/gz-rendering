@@ -23,6 +23,11 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
+/// \brief Private data for the Ogre2Light class
+class ignition::rendering::Ogre2LightPrivate
+{
+};
+
 using namespace ignition;
 using namespace rendering;
 
@@ -30,7 +35,8 @@ using namespace rendering;
 // Ogre2Light
 //////////////////////////////////////////////////
 Ogre2Light::Ogre2Light() :
-  ogreLightType(Ogre::Light::LT_POINT)
+  ogreLightType(Ogre::Light::LT_POINT),
+  dataPtr(std::make_unique<Ogre2LightPrivate>())
 {
 }
 

@@ -4,10 +4,52 @@
 
 ### Ignition Rendering 4.X.X
 
-### Ignition Rendering 4.0.0
+### Ignition Rendering 4.0.0 (2020-09-29)
+
+1. Update tutorials
+    * [Pull request #151](https://github.com/ignitionrobotics/ign-rendering/pull/151)
+    * [Pull request #150](https://github.com/ignitionrobotics/ign-rendering/pull/150)
+    * [Pull request #149](https://github.com/ignitionrobotics/ign-rendering/pull/149)
+    * [Pull request #148](https://github.com/ignitionrobotics/ign-rendering/pull/148)
+    * [Pull request #147](https://github.com/ignitionrobotics/ign-rendering/pull/147)
+    * [Pull request #146](https://github.com/ignitionrobotics/ign-rendering/pull/146)
+    * [Pull request #145](https://github.com/ignitionrobotics/ign-rendering/pull/145)
+    * [Pull request #144](https://github.com/ignitionrobotics/ign-rendering/pull/144)
+    * [Pull request #143](https://github.com/ignitionrobotics/ign-rendering/pull/143)
+    * [Pull request #125](https://github.com/ignitionrobotics/ign-rendering/pull/125)
+
+1. Pimpl'ize ogre2 classes
+    * [Pull request #137](https://github.com/ignitionrobotics/ign-rendering/pull/137)
+
+1. Replace common::Time with std::chrono
+    * [Pull request #135](https://github.com/ignitionrobotics/ign-rendering/pull/135)
+
+1. Add Ogre2 particle system
+    * [Pull request #126](https://github.com/ignitionrobotics/ign-rendering/pull/126)
+    * [Pull request #117](https://github.com/ignitionrobotics/ign-rendering/pull/117)
+    * [Pull request #113](https://github.com/ignitionrobotics/ign-rendering/pull/113)
+    * [Pull request #107](https://github.com/ignitionrobotics/ign-rendering/pull/107)
+
+1. Add LidarVisual point colors for Ogre1
+    * [Pull request #124](https://github.com/ignitionrobotics/ign-rendering/pull/124)
+
+1. Added Lidar Visual for Ogre2
+    * [Pull request #116](https://github.com/ignitionrobotics/ign-rendering/pull/116)
+
+1. Added Lidar Visual Types for Ogre1
+    * [Pull request #114](https://github.com/ignitionrobotics/ign-rendering/pull/114)
+
+1. Added Lidar Visualisation for Ogre1
+    * [Pull request #103](https://github.com/ignitionrobotics/ign-rendering/pull/103)
+
+1. Add environment variables to locate plugins
+    * [Pull request #104](https://github.com/ignitionrobotics/ign-rendering/pull/104)
 
 1. Added a method to show the head on arrows and axis
     * [Pull request #95](https://github.com/ignitionrobotics/ign-rendering/pull/95)
+
+1. Complete Shaft and Head methods in BaseArrowVisual
+    * [Pull request #95](https://github.com/ignitionrobotics/ign-rendering/pull/94)
 
 1. Scale BaseAxis properly
     * [Pull request #88](https://github.com/ignitionrobotics/ign-rendering/pull/88)
@@ -34,6 +76,9 @@
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
 
 ### Ignition Rendering 3.X.X
+
+1. Update test configuration to use ogre2
+    * [Pull request 83](https://github.com/ignitionrobotics/ign-rendering/pull/83)
 
 1. Ogre2 GPU Ray: Cleanup all resources on destruction
     * [BitBucket pull request 258](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/258)
@@ -104,6 +149,12 @@
 
 ### Ignition Rendering 2.X.X (20XX-XX-XX)
 
+
+### Ignition Rendering 2.4.0 (2020-04-17)
+
+1. Fix flaky VisualAt test
+    * [BitBucket pull request 248](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/248)
+
 1. Port windows fixes
     * [BitBucket pull request 253](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/253)
 
@@ -112,6 +163,8 @@
 
 1. Backport transparency setting based on diffuse alpha
     * [BitBucket pull request 247](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/247)
+
+### Ignition Rendering 2.3.0 (2020-02-19)
 
 1. Add API to check which engines are loaded
     * [BitBucket pull request 233](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/233)

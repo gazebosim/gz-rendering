@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2MATERIAL_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2MATERIAL_HH_
 
+#include <memory>
 #include <string>
 
 #include "ignition/rendering/base/BaseMaterial.hh"
@@ -29,6 +30,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2MaterialPrivate;
+
     /// \brief Ogre 2.x implementation of the material class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Material :
       public BaseMaterial<Ogre2Object>
@@ -162,9 +166,19 @@ namespace ignition
       /// \return Ogre material pointer
       public: virtual Ogre::MaterialPtr Material();
 
-      /// \brief Return ogre Hlms material datablock
-      /// \return Ogre Hlms datablock
+      /// \brief Return ogre Hlms material pbs datablock
+      /// \return Ogre Hlms pbs datablock
       public: virtual Ogre::HlmsPbsDatablock *Datablock() const;
+
+      /// \brief Return ogre Hlms material unlit datablock
+      /// \return Ogre Hlms unlit datablock
+      public: virtual Ogre::HlmsUnlitDatablock *UnlitDatablock();
+
+      /// \brief Fill the input unlit datablock with current material
+      /// properties from the pbs datablock
+      /// \param[in] _datablock Unlit datablock to fill
+      public: virtual void FillUnlitDatablock(
+          Ogre::HlmsUnlitDatablock *_datablock) const;
 
       // Documentation inherited.
       // \sa BaseMaterial::PreRender()
@@ -206,8 +220,11 @@ namespace ignition
       /// \brief  Ogre material. Mainly used for render targets.
       protected: Ogre::MaterialPtr ogreMaterial;
 
-      /// \brief  Ogre data block containing all material properties
+      /// \brief  Ogre data block containing all pbs material properties
       protected: Ogre::HlmsPbsDatablock *ogreDatablock = nullptr;
+
+      /// \brief  Ogre data block containing all unlit material properties
+      protected: Ogre::HlmsUnlitDatablock *ogreUnlitDatablock = nullptr;
 
       /// \brief  Ogre high level physical based shading object
       protected: Ogre::HlmsPbs *ogreHlmsPbs = nullptr;
@@ -232,6 +249,9 @@ namespace ignition
 
       /// \brief Unique id assigned to ogre hlms datablock
       protected: std::string ogreDatablockId;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2MaterialPrivate> dataPtr;
 
       /// \brief Only an ogre scene can create an ogre material
       private: friend class Ogre2Scene;

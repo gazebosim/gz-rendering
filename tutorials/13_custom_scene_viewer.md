@@ -13,18 +13,20 @@ The frame rate may also change based on your computer's capabilities.
 The following scenes have more primitive objects such as cones or cilinders. Again, you can see the scene with different render engines pressing `Tab`.
 Some of the scenes available include:
 
+ - Shapes
  - Textures
  - Normal mapping
  - Reflective property
  - Soft shadows
 
-There are some scenes that are not available in Ogre because we have not or we cannot implement it in Ogre.
+There are some scenes demonstrating reflective materials and mutiple point light shadows but they appear the same in ogre because they are not supported.
 
 ## Compile and run the example
 
-Create a build directory and use `cmake` and `make` to compile the code:
+Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
+git clone https://github.com/ignitionrobotics/ign-rendering
 cd ign-rendering/examples/custom_scene_viewer
 mkdir build
 cd build

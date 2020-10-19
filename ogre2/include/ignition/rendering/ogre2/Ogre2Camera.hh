@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2CAMERA_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2CAMERA_HH_
 
+#include <memory>
+
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
@@ -33,6 +35,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
+    class Ogre2CameraPrivate;
     class Ogre2SelectionBuffer;
 
     /// \brief Ogre2.x implementation of the camera class
@@ -45,41 +48,41 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Ogre2Camera();
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual void SetHFOV(const math::Angle &_angle) override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual double AspectRatio() const override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual void SetAspectRatio(const double _ratio) override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual unsigned int AntiAliasing() const override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual void SetAntiAliasing(const unsigned int _aa) override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual void SetFarClipPlane(const double _far) override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual void SetNearClipPlane(const double _near) override;
 
       public: virtual math::Color BackgroundColor() const;
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual void Render() override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       public: virtual math::Matrix4d ViewMatrix() const override;
 
       // Documentation inherited
@@ -97,13 +100,15 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
+      public: Ogre::Camera *OgreCamera() const;
+
       // Documentation inherited.
       public: virtual void SetVisibilityMask(uint32_t _mask) override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
-      // Documenation inherited.
+      // Documentation inherited.
       protected: virtual void Init() override;
 
       /// \brief Create a render texture for the camera for offscreen rendering
@@ -127,6 +132,9 @@ namespace ignition
 
       /// \brief Color of background
       protected: math::Color backgroundColor;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2CameraPrivate> dataPtr;
 
       /// \brief Make scene our friend so it can create a camera
       private: friend class Ogre2Scene;

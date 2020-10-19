@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2MESHFACTORY_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2MESHFACTORY_HH_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -37,6 +38,10 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class Ogre2MeshFactoryPrivate;
+    class Ogre2SubMeshStoreFactoryPrivate;
+
     /// \brief Ogre2.x implementation of the mesh factory class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2MeshFactory
     {
@@ -88,6 +93,9 @@ namespace ignition
 
       /// \brief Pointer to the scene object
       protected: Ogre2ScenePtr scene;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2MeshFactoryPrivate> dataPtr;
     };
 
     /// \brief Ogre2.x implementation of a submesh store factory class
@@ -129,6 +137,9 @@ namespace ignition
 
       /// \brief A list of names associated with each ogre subitem / submesh
       protected: std::vector<std::string> names;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2SubMeshStoreFactoryPrivate> dataPtr;
     };
     }
   }

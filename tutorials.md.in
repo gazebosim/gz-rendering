@@ -20,6 +20,7 @@ Ignition @IGN_DESIGNATION_CAP@ library and how to use the library effectively.
 7. \subpage render_pass  "Render pass"
 8. \subpage simple_demo  "Simple demo"
 9. \subpage text_geom  "Text geom"
+10. \subpage particles  "Particles"
 
 ## License
 

@@ -16,12 +16,17 @@
  */
 #include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
 
+/// \brief Private data for the Ogre2RenderPass class
+class ignition::rendering::Ogre2RenderPassPrivate
+{
+};
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2RenderPass::Ogre2RenderPass()
+  : dataPtr(std::make_unique<Ogre2RenderPassPrivate>())
 {
 }
 

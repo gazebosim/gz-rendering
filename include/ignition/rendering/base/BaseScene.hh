@@ -55,9 +55,16 @@ namespace ignition
 
       public: virtual std::string Name() const override;
 
-      public: virtual common::Time SimTime() const override;
+      public: virtual void IGN_DEPRECATED(4)
+        SetSimTime(const common::Time &_time) override;
 
-      public: virtual void SetSimTime(const common::Time &_time) override;
+      public: virtual common::Time IGN_DEPRECATED(4) SimTime() const override;
+
+      public: virtual std::chrono::steady_clock::duration Time()
+        const override;
+
+      public: virtual void SetTime(
+        const std::chrono::steady_clock::duration &_time) override;
 
       public: virtual void SetAmbientLight(double _r, double _g, double _b,
                   double _a = 1.0) override;
@@ -377,6 +384,21 @@ namespace ignition
       public: virtual MarkerPtr CreateMarker() override;
 
       // Documentation inherited.
+      public: virtual LidarVisualPtr CreateLidarVisual() override;
+
+      // Documentation inherited.
+      public: virtual LidarVisualPtr CreateLidarVisual(
+                                            unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual LidarVisualPtr CreateLidarVisual(
+                                            const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual LidarVisualPtr CreateLidarVisual(unsigned int _id,
+                                            const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual WireBoxPtr CreateWireBox() override;
 
       // Documentation inherited.
@@ -517,6 +539,13 @@ namespace ignition
       protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
+      /// \brief Implementation for creating a lidar visual
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a lidar visual
+      protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       /// \brief Implementation for creating a wire box geometry
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.
@@ -548,6 +577,18 @@ namespace ignition
       protected: virtual RayQueryPtr CreateRayQueryImpl(
                      unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Implementation for creating a ParticleEmitter.
+      /// \param[in] _id Unique id.
+      /// \param[in] _name Name of ParticleEmitter.
+      /// \return Pointer to the created particle emitter.
+      protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
+                     unsigned int, const std::string &)
+                 {
+                   ignerr << "ParticleEmitter not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return ParticleEmitterPtr();
+                 }
+
       protected: virtual LightStorePtr Lights() const = 0;
 
       protected: virtual SensorStorePtr Sensors() const = 0;
@@ -576,7 +617,10 @@ namespace ignition
 
       protected: std::string name;
 
-      protected: common::Time simTime;
+      protected: common::Time IGN_DEPRECATED(4) simTime;
+
+      protected: std::chrono::steady_clock::duration time =
+        std::chrono::steady_clock::duration::zero();
 
       protected: bool loaded;
 

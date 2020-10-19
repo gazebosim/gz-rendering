@@ -28,10 +28,12 @@
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
+#include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
+#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -41,15 +43,19 @@
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2WireBox.hh"
 
+/// \brief Private data for the Ogre2Scene class
+class ignition::rendering::Ogre2ScenePrivate
+{
+  /// \brief Flag to indicate if shadows need to be updated
+  public: bool shadowsDirty = true;
+};
+
 using namespace ignition;
 using namespace rendering;
 
-// TODO(anyone) make this a member variable in ign-rendering4
-static bool shadowsDirty = true;
-
 //////////////////////////////////////////////////
 Ogre2Scene::Ogre2Scene(unsigned int _id, const std::string &_name) :
-  BaseScene(_id, _name)
+  BaseScene(_id, _name), dataPtr(std::make_unique<Ogre2ScenePrivate>())
 {
 }
 
@@ -390,6 +396,15 @@ MarkerPtr Ogre2Scene::CreateMarkerImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+LidarVisualPtr Ogre2Scene::CreateLidarVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2LidarVisualPtr lidar(new Ogre2LidarVisual);
+  bool result = this->InitObject(lidar, _id, _name);
+  return (result) ? lidar: nullptr;
+}
+
+//////////////////////////////////////////////////
 TextPtr Ogre2Scene::CreateTextImpl(unsigned int /*_id*/,
     const std::string &/*_name*/)
 {
@@ -430,6 +445,15 @@ RayQueryPtr Ogre2Scene::CreateRayQueryImpl(unsigned int _id,
   Ogre2RayQueryPtr rayQuery(new Ogre2RayQuery);
   bool result = this->InitObject(rayQuery, _id, _name);
   return (result) ? rayQuery : nullptr;
+}
+
+//////////////////////////////////////////////////
+ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2ParticleEmitterPtr visual(new Ogre2ParticleEmitter);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -535,11 +559,11 @@ Ogre2ScenePtr Ogre2Scene::SharedThis()
 //////////////////////////////////////////////////
 void Ogre2Scene::SetShadowsDirty(bool _dirty)
 {
-  shadowsDirty = _dirty;
+  this->dataPtr->shadowsDirty = _dirty;
 }
 
 //////////////////////////////////////////////////
 bool Ogre2Scene::ShadowsDirty() const
 {
-  return shadowsDirty;
+  return this->dataPtr->shadowsDirty;
 }

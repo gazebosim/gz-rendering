@@ -84,6 +84,9 @@ class ignition::rendering::RenderEngineManagerPrivate
   /// \brief Plugin loader for managing render engine plugin libraries
   public: ignition::plugin::Loader pluginLoader;
 
+  /// \brief Environment variable which holds paths to look for plugins
+  public: std::string pluginPathEnv = "IGN_RENDERING_PLUGIN_PATH";
+
   /// \brief Mutex to protect the engines map.
   public: std::recursive_mutex enginesMutex;
 };
@@ -373,6 +376,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   ignmsg << "Loading plugin [" << _filename << "]" << std::endl;
 
   ignition::common::SystemPaths systemPaths;
+  systemPaths.SetPluginPathEnv(this->pluginPathEnv);
 
   // Add default install folder.
   systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));

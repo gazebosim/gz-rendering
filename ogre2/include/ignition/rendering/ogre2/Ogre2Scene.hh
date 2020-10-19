@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2SCENE_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2SCENE_HH_
 
+#include <memory>
 #include <string>
 
 #include "ignition/rendering/Storage.hh"
@@ -36,6 +37,9 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    // forward declaration
+    class Ogre2ScenePrivate;
     //
     /// \brief Ogre2.x implementation of the scene class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Scene :
@@ -183,6 +187,10 @@ namespace ignition
                      const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual WireBoxPtr CreateWireBoxImpl(unsigned int _id,
                      const std::string &_name) override;
 
@@ -202,6 +210,10 @@ namespace ignition
 
       // Documentation inherited
       protected: virtual RayQueryPtr CreateRayQueryImpl(
+                     unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
+      protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
                      unsigned int _id, const std::string &_name) override;
 
       /// \brief Helper function to initialize an ogre2 object
@@ -258,6 +270,9 @@ namespace ignition
 
       /// \brief Pointer to the ogre scene manager
       protected: Ogre::SceneManager *ogreSceneManager = nullptr;
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<Ogre2ScenePrivate> dataPtr;
 
       /// \brief Make the render engine our friend
       private: friend class Ogre2RenderEngine;

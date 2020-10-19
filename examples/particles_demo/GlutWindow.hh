@@ -14,14 +14,16 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_EXAMPLES_PARTICLES_GLUTWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_PARTICLES_GLUTWINDOW_HH_
 
+#include <vector>
+#include "ignition/rendering/RenderTypes.hh"
 
-#include "ignition/rendering/ParticleEmitter.hh"
+namespace ir = ignition::rendering;
 
-using namespace ignition;
-using namespace rendering;
+/// \brief Run the demo and render the scene from the cameras
+/// \param[in] _cameras Cameras in the scene
+void run(std::vector<ir::CameraPtr> _cameras);
 
-//////////////////////////////////////////////////
-ParticleEmitter::~ParticleEmitter()
-{
-}
+#endif

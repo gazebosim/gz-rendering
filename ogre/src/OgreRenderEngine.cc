@@ -78,7 +78,11 @@ RenderEngine *OgreRenderEnginePlugin::Engine() const
 OgreRenderEngine::OgreRenderEngine() :
   dataPtr(new OgreRenderEnginePrivate)
 {
-  this->ogrePaths.push_back(std::string(OGRE_RESOURCE_PATH));
+  this->ogrePaths.push_back(OGRE_RESOURCE_PATH);
+
+  const char *env = std::getenv("OGRE_RESOURCE_PATH");
+  if (env)
+    this->ogrePaths.push_back(std::string(env));
 }
 
 //////////////////////////////////////////////////

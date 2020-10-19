@@ -79,7 +79,7 @@ void buildScene(ScenePtr _scene)
       matPBR->SetMetalness(0.9);
       matPBR->SetRoughness(0.5);
     }
-    matPBR->SetSpecular(1.0, 1.0, 1.0);
+//    matPBR->SetSpecular(1.0, 1.0, 1.0);
     matPBR->SetCastShadows(true);
 
       // create mesh for PBR
@@ -204,7 +204,7 @@ void buildScene(ScenePtr _scene)
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
   white->SetDiffuse(1.0, 1.0, 1.0);
-  white->SetSpecular(1.0, 1.0, 1.0);
+//  white->SetSpecular(1.0, 1.0, 1.0);
 
   // create plane visual
   VisualPtr plane = _scene->CreateVisual("plane");
@@ -269,10 +269,10 @@ void buildScene(ScenePtr _scene)
   // light1->SetInnerAngle(1.4);
   light1->SetOuterAngle(2.8);
   light1->SetAttenuationRange(25);
-  light1->SetAttenuationLinear(0.020);
+  light1->SetAttenuationLinear(0.080);
   light1->SetAttenuationConstant(0);
-  light1->SetAttenuationQuadratic(0.001);
-  light1->SetFalloff(0.2);
+  light1->SetAttenuationQuadratic(0.01);
+  light1->SetFalloff(0.7);
   root->AddChild(light1);
 
   // create spot light that does not cast shadows
@@ -285,10 +285,10 @@ void buildScene(ScenePtr _scene)
   // light3->SetInnerAngle(1.4);
   light3->SetOuterAngle(2.8);
   light3->SetAttenuationRange(25);
-  light3->SetAttenuationLinear(0.020);
+  light3->SetAttenuationLinear(0.080);
   light3->SetAttenuationConstant(0);
-  light3->SetAttenuationQuadratic(0.001);
-  light3->SetFalloff(0.2);
+  light3->SetAttenuationQuadratic(0.01);
+  light3->SetFalloff(0.7);
 
   root->AddChild(light3);
 
@@ -356,7 +356,7 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back("ogre2");
+  engineNames.push_back("ogre");
   for (auto engineName : engineNames)
   {
     try

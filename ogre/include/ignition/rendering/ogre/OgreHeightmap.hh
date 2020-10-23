@@ -61,6 +61,53 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material, bool _unique)
           override;
 
+      /// \brief Configure the terrain default values.
+      /// \todo Move to private?
+      private: void ConfigureTerrainDefaults();
+
+      /// \brief Checks if the terrain was previously loaded by comparing its
+      /// hash against the one stored in the terrain directory
+      /// \param[in] _terrainDirPath Path to the directory containing the
+      /// terrain files and hash.
+      /// \return True if the terrain requires to regenerate the terrain files.
+      private: bool PrepareTerrain(const std::string &_terrainDirPath);
+
+      /// \brief Update the hash of a terrain file. The hash will be written in
+      /// a file called gzterrain.SHA1 . This method will be used when the
+      /// paging is enabled and the terrain is loaded for the first time or if
+      /// the heightmap's image has been modified.
+      /// \param[in] _hash New hash value
+      /// \param[in] _terrainDir Directory where the terrain hash and the
+      /// terrain pages are stored. Ex: $TMP/gazebo-paging/heigthmap_bowl
+      private: void UpdateTerrainHash(const std::string &_hash,
+          const std::string &_terrainDir);
+
+      /// \brief Split a terrain into subterrains
+      /// \param[in] _heightmap Source vector of floats with the heights.
+      /// \param[in] _n Number of subterrains.
+      /// \param[out] _v Destination vector with the subterrains.
+      private: void SplitHeights(const std::vector<float> &_heightmap,
+                  const int _n, std::vector<std::vector<float>> &_v);
+
+      /// \brief Define a section of the terrain.
+      /// \param[in] _x X coordinate of the terrain.
+      /// \param[in] _y Y coordinate of the terrain.
+      private: void DefineTerrain(const int _x, const int _y);
+
+      /// \brief Create terrain material generator. There are two types:
+      /// custom material generator that support user material scripts,
+      /// and a default material generator that uses our own glsl shader
+      /// and supports PSSM shadows.
+      private: void CreateMaterial();
+
+      /// \brief Initialize all the blend material maps.
+      /// \param[in] _terrain The terrain to initialize the blend maps.
+      private: bool InitBlendMaps(Ogre::Terrain *_terrain);
+
+      /// \brief Internal function used to setup shadows for the terrain.
+      /// \param[in] _enabled True to enable shadows.
+      private: void SetupShadows(const bool _enabled);
+
       /// \brief Heightmap should only be created by scene.
       private: friend class OgreScene;
 

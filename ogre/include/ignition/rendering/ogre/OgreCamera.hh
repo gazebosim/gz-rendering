@@ -99,6 +99,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVisibilityMask(uint32_t _mask) override;
 
+      /// \brief Get underlying Ogre camera
+      public: Ogre::Camera *Camera() const;
+
       // Documentation inherited.
       // public: virtual uint32_t VisibilityMask() const override;
 

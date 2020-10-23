@@ -48,6 +48,12 @@ class SceneTest : public testing::Test,
 
   /// \brief Test setting and getting Time
   public: void Time(const std::string &_renderEngine);
+
+  /// \brief Test background material
+  public: void BackgroundMaterial(const std::string &_renderEngine);
+
+  /// \brief Test enablng sky
+  public: void Sky(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -679,6 +685,73 @@ void SceneTest::Time(const std::string &_renderEngine)
              std::chrono::milliseconds(123);
   scene->SetTime(duration);
   EXPECT_EQ(duration, scene->Time());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+void SceneTest::BackgroundMaterial(const std::string &_renderEngine)
+{
+  auto engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return;
+  }
+
+  auto scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  EXPECT_EQ(nullptr, scene->BackgroundMaterial());
+
+  rendering::MaterialPtr mat = scene->CreateMaterial("test_mat");
+  scene->SetBackgroundMaterial(mat);
+  EXPECT_EQ(mat, scene->BackgroundMaterial());
+
+  scene->SetBackgroundMaterial(nullptr);
+  EXPECT_EQ(nullptr, scene->BackgroundMaterial());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+void SceneTest::Sky(const std::string &_renderEngine)
+{
+  auto engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return;
+  }
+
+  if (_renderEngine != "ogre2")
+  {
+    igndbg << "Sky not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
+  auto scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  EXPECT_FALSE(scene->SkyEnabled());
+
+  scene->SetSkyEnabled(false);
+  EXPECT_FALSE(scene->SkyEnabled());
+
+  scene->SetSkyEnabled(true);
+  EXPECT_TRUE(scene->SkyEnabled());
+
+  scene->SetSkyEnabled(false);
+  EXPECT_FALSE(scene->SkyEnabled());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -721,6 +794,18 @@ TEST_P(SceneTest, Materials)
 TEST_P(SceneTest, Time)
 {
   Time(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, BackgroundMaterial)
+{
+  BackgroundMaterial(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(SceneTest, Sky)
+{
+  Sky(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,

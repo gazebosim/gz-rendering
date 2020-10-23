@@ -283,6 +283,32 @@ void Ogre2DepthCamera::CreateDepthTexture()
   psParams->setNamedConstant("tolerance",
       static_cast<float>(1e-6));
 
+  // create background material is specified
+  MaterialPtr backgroundMaterial = this->Scene()->BackgroundMaterial();
+  bool validBackground = backgroundMaterial &&
+      !backgroundMaterial->EnvironmentMap().empty();
+
+  if (validBackground)
+  {
+    Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
+    std::string skyMatName = "SkyBox_" + this->Name();
+    auto mat = matManager.getByName(skyMatName);
+    if (!mat)
+    {
+      auto skyboxMat = matManager.getByName("SkyBox");
+      if (!skyboxMat)
+      {
+        ignerr << "Unable to find skybox material" << std::endl;
+        return;
+      }
+      mat = skyboxMat->clone(skyMatName);
+    }
+    Ogre::TextureUnitState *texUnit =
+        mat->getTechnique(0u)->getPass(0u)->getTextureUnitState(0u);
+    texUnit->setTextureName(backgroundMaterial->EnvironmentMap(),
+        Ogre::TEX_TYPE_CUBE_MAP);
+  }
+
   // Create depth camera compositor
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -379,7 +405,11 @@ void Ogre2DepthCamera::CreateDepthTexture()
     nodeDef->setNumTargetPass(2);
     Ogre::CompositorTargetDef *colorTargetDef =
         nodeDef->addTargetPass("colorTexture");
-    colorTargetDef->setNumPasses(2);
+
+    if (validBackground)
+      colorTargetDef->setNumPasses(3);
+    else
+      colorTargetDef->setNumPasses(2);
     {
       // clear pass
       Ogre::CompositorPassClearDef *passClear =
@@ -387,6 +417,18 @@ void Ogre2DepthCamera::CreateDepthTexture()
           colorTargetDef->addPass(Ogre::PASS_CLEAR));
       passClear->mColourValue = Ogre::ColourValue(
           Ogre2Conversions::Convert(this->Scene()->BackgroundColor()));
+
+      if (validBackground)
+      {
+        // quad pass
+        Ogre::CompositorPassQuadDef *passQuad =
+            static_cast<Ogre::CompositorPassQuadDef *>(
+            colorTargetDef->addPass(Ogre::PASS_QUAD));
+        passQuad->mMaterialName = "SkyBox_" + this->Name();
+        passQuad->mFrustumCorners =
+            Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
+      }
+
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(

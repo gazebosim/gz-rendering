@@ -247,6 +247,8 @@ CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int _id,
   Ogre2CameraPtr camera(new Ogre2Camera);
   bool result = this->InitObject(camera, _id, _name);
   camera->SetBackgroundColor(this->backgroundColor);
+  if (this->backgroundMaterial)
+    camera->SetBackgroundMaterial(this->backgroundMaterial);
   return (result) ? camera : nullptr;
 }
 
@@ -566,4 +568,40 @@ void Ogre2Scene::SetShadowsDirty(bool _dirty)
 bool Ogre2Scene::ShadowsDirty() const
 {
   return this->dataPtr->shadowsDirty;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::SetSkyEnabled(bool _enabled)
+{
+  MaterialPtr skyboxMat;
+  if (_enabled)
+  {
+    // get skybox material
+    std::string skyboxMatName = "Default/skybox";
+    skyboxMat = this->Material(skyboxMatName);
+    if (!skyboxMat)
+    {
+      // ogre2 should be able to find this texture as resource search
+      // paths are already set up in Ogre2RenderEngine.cc
+      std::string skyboxEnvMap = "skybox.dds";
+      skyboxMat = this->CreateMaterial(skyboxMatName);
+      skyboxMat->SetEnvironmentMap(skyboxEnvMap);
+    }
+  }
+  this->SetBackgroundMaterial(skyboxMat);
+  for (unsigned int i = 0; i < this->Sensors()->Size(); ++i)
+  {
+    auto sensor = this->Sensors()->GetByIndex(i);
+    auto camera = std::dynamic_pointer_cast<Ogre2Camera>(sensor);
+    if (camera)
+    {
+      camera->SetBackgroundMaterial(skyboxMat);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Scene::SkyEnabled() const
+{
+  return this->BackgroundMaterial() != nullptr;
 }

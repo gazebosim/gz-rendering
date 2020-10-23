@@ -94,6 +94,13 @@ namespace ignition
       // Documentation inherited.
       public: virtual void RemoveGradientBackgroundColor() override;
 
+      // Documentation inherited.
+      public: virtual MaterialPtr BackgroundMaterial() const override;
+
+      // Documentation inherited.
+      public: virtual void SetBackgroundMaterial(MaterialPtr _material)
+          override;
+
       public: virtual unsigned int NodeCount() const override;
 
       public: virtual bool HasNode(ConstNodePtr _node) const override;
@@ -432,6 +439,12 @@ namespace ignition
       public: virtual ParticleEmitterPtr CreateParticleEmitter(
                   unsigned int _id, const std::string &_name) override;
 
+      // Documentation inherited.
+      public: virtual void SetSkyEnabled(bool _enabled) override;
+
+      // Documentation inherited.
+      public: virtual bool SkyEnabled() const override;
+
       public: virtual void PreRender() override;
 
       public: virtual void Clear() override;
@@ -640,6 +653,9 @@ namespace ignition
 
       /// \brief Whether the scene has a gradient background.
       protected: bool isGradientBackgroundColor = false;
+
+      /// \brief Scene background material.
+      protected: MaterialPtr backgroundMaterial;
 
       private: unsigned int nextObjectId;
 

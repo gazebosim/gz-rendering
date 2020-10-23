@@ -47,6 +47,9 @@ class CameraTest : public testing::Test,
 
   /// \brief Test setting visibility mask
   public: void VisibilityMask(const std::string &_renderEngine);
+
+  /// \brief Test setting background material
+//  public: void BackgroundMaterial(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -337,6 +340,7 @@ TEST_P(CameraTest, AddRemoveRenderPass)
 {
   AddRemoveRenderPass(GetParam());
 }
+
 /////////////////////////////////////////////////
 TEST_P(CameraTest, VisibilityMask)
 {

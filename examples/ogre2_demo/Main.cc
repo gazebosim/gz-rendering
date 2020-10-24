@@ -139,7 +139,7 @@ void buildScene(ScenePtr _scene)
   mirrorMat->SetRoughness(0.0);
   mirrorMat->SetMetalness(0.9);
   std::string skyEnvironmentMap =
-      common::joinPaths(RESOURCE_PATH, "skybox.dds");
+      common::joinPaths(RESOURCE_PATH, "skybox_lowres.dds");
   mirrorMat->SetEnvironmentMap(skyEnvironmentMap);
 
   // create box visual

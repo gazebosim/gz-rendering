@@ -1164,7 +1164,7 @@ ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-void BaseScene::SetSkyEnabled(bool /* enabled */)
+void BaseScene::SetSkyEnabled(bool)  // NOLINT(readability/casting)
 {
   // no op, let derived class implement this.
   ignerr << "Sky not supported by: "

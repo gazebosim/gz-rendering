@@ -136,7 +136,7 @@ void buildScene(ScenePtr _scene)
   // create mirror material
   MaterialPtr mirrorMat = _scene->CreateMaterial();
   mirrorMat->SetDiffuse(1.0, 1.0, 1.0);
-  mirrorMat->SetRoughness(0.0);
+  mirrorMat->SetRoughness(0.1);
   mirrorMat->SetMetalness(0.9);
   std::string skyEnvironmentMap =
       common::joinPaths(RESOURCE_PATH, "skybox_lowres.dds");

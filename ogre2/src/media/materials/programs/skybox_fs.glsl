@@ -11,6 +11,6 @@ out vec3 fragColour;
 
 void main()
 {
-  //Cubemaps are left-handed
+  // Cubemaps are left-handed
   fragColour = texture( skyCubemap, vec3( inPs.cameraDir.xy, -inPs.cameraDir.z ) ).xyz;
 }

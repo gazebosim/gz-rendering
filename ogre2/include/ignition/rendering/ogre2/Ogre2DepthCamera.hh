@@ -119,12 +119,12 @@ namespace ignition
       /// ogre camera has not been created.
       public: double FarClipPlane() const override;
 
+      // Documentation inherited.
+      public: void AddRenderPass(const RenderPassPtr &_pass) override;
+
       /// \brief Get a pointer to the render target.
       /// \return Pointer to the render target
       protected: virtual RenderTargetPtr RenderTarget() const override;
-
-      // Documentation inherited.
-      public: virtual void AddRenderPass(const RenderPassPtr &_pass) override;
 
       /// \brief Limit field of view taking care of using a valid value for
       /// an OGRE camera.

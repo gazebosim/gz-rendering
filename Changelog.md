@@ -1,5 +1,12 @@
 ## Ignition Rendering
 
+### Ignition Rendering 5.X
+
+### Ignition Rendering 5.X.X
+
+1. Add ogre2 skybox support
+    * [Pull request #168](https://github.com/ignitionrobotics/ign-rendering/pull/168)
+
 ### Ignition Rendering 4.X
 
 ### Ignition Rendering 4.X.X

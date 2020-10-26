@@ -47,9 +47,6 @@ class CameraTest : public testing::Test,
 
   /// \brief Test setting visibility mask
   public: void VisibilityMask(const std::string &_renderEngine);
-
-  /// \brief Test setting background material
-//  public: void BackgroundMaterial(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////

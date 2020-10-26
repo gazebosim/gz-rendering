@@ -43,9 +43,6 @@ class RenderTargetTest : public testing::Test,
 
   /// \brief test adding and removing render passes
   public: void AddRemoveRenderPass(const std::string &_renderEngine);
-
-  /// \brief Test setting background material
-//  public: void BackgroundMaterial(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////

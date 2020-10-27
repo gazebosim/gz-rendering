@@ -25,6 +25,7 @@
 #include "ignition/rendering/ogre/OgreHeightmap.hh"
 #include "ignition/rendering/ogre/OgreLight.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
+#include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
@@ -355,7 +356,8 @@ class ignition::rendering::OgreHeightmapPrivate
   public: unsigned int sampling{2u};
 
   /// \brief Size of the terrain.
-  public: math::Vector3d terrainSize;
+  /// \todo Set
+  public: math::Vector3d terrainSize{129, 129, 10};
 
   /// \brief The raw height values.
   public: std::vector<float> heights;
@@ -383,7 +385,7 @@ class ignition::rendering::OgreHeightmapPrivate
 
   /// \brief Origin of the terrain.
   /// \todo How to set?
-  public: math::Vector3d terrainOrigin;
+  public: math::Vector3d terrainOrigin{0.0, 0.0, 0.0};
 
   /// \brief Skirt length on LOD tiles
   public: double skirtLength{1.0};
@@ -394,15 +396,23 @@ class ignition::rendering::OgreHeightmapPrivate
 
   /// \brief The diffuse textures.
   /// \todo How to set?
-  public: std::vector<std::string> diffuseTextures;
+  public: std::vector<std::string> diffuseTextures{
+    "../media/dirt_diffusespecular.png",
+    "../media/grass_diffusespecular.png",
+    "../media/fungus_diffusespecular.png"
+  };
 
   /// \brief The normal textures.
   /// \todo How to set?
-  public: std::vector<std::string> normalTextures;
+  public: std::vector<std::string> normalTextures{
+    "../media/flat_normal.png",
+    "../media/flat_normal.png",
+    "../media/flat_normal.png"
+  };
 
   /// \brief The size of the world sections.
   /// \todo How to set?
-  public: std::vector<double> worldSizes;
+  public: std::vector<double> worldSizes{1, 1, 1};
 
   /// \brief True if the terrain's hash does not match the image's hash
   public: bool terrainHashChanged{true};
@@ -457,6 +467,7 @@ class ignition::rendering::OgreHeightmapPrivate
 
   /// \brief Name of custom material to use for the terrain. If empty,
   /// default material with glsl shader will be used.
+  /// \todo Set
   public: std::string materialName;
 
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 11
@@ -466,11 +477,11 @@ class ignition::rendering::OgreHeightmapPrivate
 
   /// \brief The material blending heights.
   /// \todo how to populate
-  public: std::vector<double> blendHeight;
+  public: std::vector<double> blendHeight{2, 4};
 
   /// \brief Material blend fade distances.
   /// \todo how to populate
-  public: std::vector<double> blendFade;
+  public: std::vector<double> blendFade{5, 5};
 };
 
 using namespace ignition;
@@ -488,6 +499,16 @@ OgreHeightmap::OgreHeightmap(common::HeightmapData *_data)
   this->dataPtr->pagingDir =
       common::joinPaths(home, ".ignition", "rendering",
       this->dataPtr->pagingDirname);
+
+  // \todo move
+  for (auto tex : this->dataPtr->diffuseTextures)
+  {
+    OgreRenderEngine::Instance()->AddResourcePath(tex);
+  }
+  for (auto tex : this->dataPtr->normalTextures)
+  {
+    OgreRenderEngine::Instance()->AddResourcePath(tex);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -537,65 +558,41 @@ void OgreHeightmap::Init()
   // ogre. It is later translated back by the setOrigin call.
   double minElevation = 0.0;
 
-//  // try loading heightmap data locally
-//  if (!this->dataPtr->filename.empty())
-//  {
-//    this->dataPtr->heightmapData = common::HeightmapDataLoader::LoadTerrainFile(
-//        this->dataPtr->filename);
-//
-//    if (this->dataPtr->heightmapData)
-//    {
-      // TODO add a virtual HeightmapData::MinElevation function to avoid the
-      // ifdef check. i.e. heightmapSizeZ = MaxElevation - MinElevation
-      double heightmapSizeZ = this->dataPtr->heightmapData->MaxElevation();
-//#ifdef HAVE_GDAL
-//      auto demData =
-//          dynamic_cast<common::Dem *>(this->dataPtr->heightmapData);
-//      if (demData)
-//      {
-//        heightmapSizeZ = heightmapSizeZ - demData->MinElevation();
-//        if (this->dataPtr->terrainSize == math::Vector3d::Zero)
-//        {
-//          this->dataPtr->terrainSize = math::Vector3d(
-//              demData->WorldWidth(), demData->WorldHeight(),
-//              heightmapSizeZ);
-//        }
-//        minElevation = demData->MinElevation();
-//      }
-//#endif
+  // TODO add a virtual HeightmapData::MinElevation function to avoid the
+  // ifdef check. i.e. heightmapSizeZ = MaxElevation - MinElevation
+  double heightmapSizeZ = this->dataPtr->heightmapData->MaxElevation();
 
-      // these params need to be the same as physics/HeightmapShape.cc
-      // in order to generate consistent height data
-      bool flipY = false;
-      // sampling size along image width and height
-      unsigned int vertSize = (this->dataPtr->heightmapData->Width() *
-          this->dataPtr->sampling) - this->dataPtr->sampling + 1;
-      math::Vector3d scale;
-      scale.X(this->dataPtr->terrainSize.X() / vertSize);
-      scale.Y(this->dataPtr->terrainSize.Y() / vertSize);
+  // \todo Parametrize as much as possible
+  // these params need to be the same as physics/HeightmapShape.cc
+  // in order to generate consistent height data
+  bool flipY = false;
+  // sampling size along image width and height
+  unsigned int vertSize = (this->dataPtr->heightmapData->Width() *
+      this->dataPtr->sampling) - this->dataPtr->sampling + 1;
+  math::Vector3d scale;
+  scale.X(this->dataPtr->terrainSize.X() / vertSize);
+  scale.Y(this->dataPtr->terrainSize.Y() / vertSize);
 
-      if (math::equal(heightmapSizeZ, 0.0))
-        scale.Z(1.0);
-      else
-        scale.Z(fabs(this->dataPtr->terrainSize.Z()) / heightmapSizeZ);
+  if (math::equal(heightmapSizeZ, 0.0))
+    scale.Z(1.0);
+  else
+    scale.Z(fabs(this->dataPtr->terrainSize.Z()) / heightmapSizeZ);
 
-      // Construct the heightmap lookup table
-      std::vector<float> lookup;
-      this->dataPtr->heightmapData->FillHeightMap(this->dataPtr->sampling,
-          vertSize, this->dataPtr->terrainSize, scale, flipY, lookup);
+  // Construct the heightmap lookup table
+  std::vector<float> lookup;
+  this->dataPtr->heightmapData->FillHeightMap(this->dataPtr->sampling,
+      vertSize, this->dataPtr->terrainSize, scale, flipY, lookup);
 
-      for (unsigned int y = 0; y < vertSize; ++y)
-      {
-        for (unsigned int x = 0; x < vertSize; ++x)
-        {
-          int index = (vertSize - y - 1) * vertSize + x;
-          this->dataPtr->heights.push_back(lookup[index] - minElevation);
-        }
-      }
+  for (unsigned int y = 0; y < vertSize; ++y)
+  {
+    for (unsigned int x = 0; x < vertSize; ++x)
+    {
+      int index = (vertSize - y - 1) * vertSize + x;
+      this->dataPtr->heights.push_back(lookup[index] - minElevation);
+    }
+  }
 
-      this->dataPtr->dataSize = vertSize;
-//    }
-//  }
+  this->dataPtr->dataSize = vertSize;
 
   if (this->dataPtr->heights.empty())
   {
@@ -610,36 +607,23 @@ void OgreHeightmap::Init()
     return;
   }
 
-  std::string terrainDirPath;
-  std::string prefix;
+  // Get the full path of the image heightmap
+  auto terrainDirPath = common::joinPaths(this->dataPtr->pagingDir,
+      this->Name());
 
-//  boost::filesystem::path imgPath;
-//  boost::filesystem::path terrainName;
-//  boost::filesystem::path terrainDirPath;
-//  boost::filesystem::path prefix;
-//  if (!this->dataPtr->filename.empty())
-//  {
-//    // Get the full path of the image heightmap
-//    imgPath = this->dataPtr->filename;
-//    terrainName = imgPath.filename().stem();
-    terrainDirPath = common::joinPaths(this->dataPtr->pagingDir,
-        this->Name());
-//
-//    // Add the top level terrain paging directory to the OGRE
-//    // ResourceGroupManager
-//    boost::filesystem::path actualPagingDir =
-//        this->dataPtr->pagingDir.make_preferred();
-//    if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
-//          actualPagingDir.string(), "General"))
-//    {
-//      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-//          actualPagingDir.string(), "FileSystem", "General", true);
-//      Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
-//          "General");
-//    }
-//  }
+  // Add the top level terrain paging directory to the OGRE
+  // ResourceGroupManager
+  if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+        this->dataPtr->pagingDir, "General"))
+  {
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        this->dataPtr->pagingDir, "FileSystem", "General", true);
+    Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup(
+        "General");
+  }
 
   // If the paging is enabled we modify the number of subterrains
+  std::string prefix;
   if (this->dataPtr->useTerrainPaging)
   {
     this->dataPtr->splitTerrain = true;
@@ -752,8 +736,7 @@ void OgreHeightmap::Init()
   // Calculate blend maps
   if (this->dataPtr->terrainsImported)
   {
-    Ogre::TerrainGroup::TerrainIterator ti =
-      this->dataPtr->terrainGroup->getTerrainIterator();
+    auto ti = this->dataPtr->terrainGroup->getTerrainIterator();
     while (ti.hasMoreElements())
     {
       Ogre::Terrain *t = ti.getNext()->instance;
@@ -1062,7 +1045,7 @@ void OgreHeightmap::CreateMaterial()
     if (!this->dataPtr->ignMatGen)
       this->dataPtr->ignMatGen = new IgnTerrainMatGen();
 
-    Ogre::TerrainMaterialGeneratorPtr ptr = Ogre::TerrainMaterialGeneratorPtr();
+    auto ptr = Ogre::TerrainMaterialGeneratorPtr();
     ptr.bind(this->dataPtr->ignMatGen);
 
     this->dataPtr->terrainGlobals->setDefaultMaterialGenerator(ptr);
@@ -1136,17 +1119,18 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
   // Bounds check for following loop
   if (_terrain->getLayerCount() < this->dataPtr->blendHeight.size() + 1)
   {
-    ignerr << "Invalid terrain, too few layers to initialize blend map\n";
+    ignerr << "Invalid terrain, too few layers [" << _terrain->getLayerCount()
+           << "] for the number of blends ["
+           << this->dataPtr->blendHeight.size() << "] to initialize blend map"
+           << std::endl;
     return false;
   }
 
-  Ogre::Real val, height;
-  unsigned int i = 0;
-
+  // Create the blend maps
   std::vector<Ogre::TerrainLayerBlendMap *> blendMaps;
   std::vector<float*> pBlend;
+  unsigned int i{0u};
 
-  // Create the blend maps
   for (i = 0; i < this->dataPtr->blendHeight.size(); ++i)
   {
     blendMaps.push_back(_terrain->getLayerBlendMap(i+1));
@@ -1154,6 +1138,7 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
   }
 
   // Set the blend values based on the height of the terrain
+  Ogre::Real val, height;
   for (Ogre::uint16 y = 0; y < _terrain->getLayerBlendMapSize(); ++y)
   {
     for (Ogre::uint16 x = 0; x < _terrain->getLayerBlendMapSize(); ++x)
@@ -1174,14 +1159,27 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
   }
 
   // Make sure the blend maps are properly updated
-  for (i = 0; i < blendMaps.size(); ++i)
+  for (auto map : blendMaps)
   {
-    blendMaps[i]->dirty();
-    blendMaps[i]->update();
+    map->dirty();
+    map->update();
   }
 
   return true;
 }
+
+// \todo Add these setters
+///////////////////////////////////////////////////
+//void OgreHeightmap::SetSize(const math::Vector3d &_size)
+//{
+//  this->dataPtr->terrainSize = _size;
+//}
+//
+///////////////////////////////////////////////////
+//void OgreHeightmap::AddDiffuseTexture(const std::string &_texture)
+//{
+//  this->dataPtr->diffuseTextures.push_back();
+//}
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////

@@ -40,6 +40,8 @@ using namespace rendering;
 const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
+ignition::rendering::HeightmapPtr heightmapGeom{nullptr};
+
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
 {
@@ -61,8 +63,8 @@ void buildScene(ScenePtr _scene)
   vis->SetLocalRotation(1.5708, 0, 2.0);
   auto data = new common::ImageHeightmap();
   data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
-  auto heightmapGeom = _scene->CreateHeightmap(data);
-  vis->AddGeometry(heightmapGeom);
+  heightmapGeom = _scene->CreateHeightmap(data);
+//  vis->AddGeometry(heightmapGeom);
   root->AddChild(vis);
 //! [create a heightmap]
 

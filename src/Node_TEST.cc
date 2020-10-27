@@ -22,10 +22,10 @@
 
 #include "test_config.h"  // NOLINT(build/include)
 
+#include "ignition/rendering/Node.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Node.hh"
 #include "ignition/rendering/Visual.hh"
 
 using namespace ignition;

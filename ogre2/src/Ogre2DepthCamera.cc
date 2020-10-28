@@ -82,7 +82,7 @@ class ignition::rendering::Ogre2DepthCameraPrivate
               const std::string &)> newDepthFrame;
 
   /// \brief Name of sky box material
-  public: std::string skyboxMaterialName = "SkyBox";
+  public: std::string kSkyboxMaterialName = "SkyBox";
 };
 
 using namespace ignition;
@@ -294,12 +294,12 @@ void Ogre2DepthCamera::CreateDepthTexture()
   if (validBackground)
   {
     Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-    std::string skyMatName = this->dataPtr->skyboxMaterialName + "_"
+    std::string skyMatName = this->dataPtr->kSkyboxMaterialName + "_"
         + this->Name();
     auto mat = matManager.getByName(skyMatName);
     if (!mat)
     {
-      auto skyboxMat = matManager.getByName(this->dataPtr->skyboxMaterialName);
+      auto skyboxMat = matManager.getByName(this->dataPtr->kSkyboxMaterialName);
       if (!skyboxMat)
       {
         ignerr << "Unable to find skybox material" << std::endl;
@@ -428,7 +428,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
         Ogre::CompositorPassQuadDef *passQuad =
             static_cast<Ogre::CompositorPassQuadDef *>(
             colorTargetDef->addPass(Ogre::PASS_QUAD));
-        passQuad->mMaterialName = this->dataPtr->skyboxMaterialName + "_"
+        passQuad->mMaterialName = this->dataPtr->kSkyboxMaterialName + "_"
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;

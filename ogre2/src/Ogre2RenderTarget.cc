@@ -84,16 +84,16 @@ class ignition::rendering::Ogre2RenderTargetPrivate
   public: Ogre2RenderTargetCompositorListener *rtListener = nullptr;
 
   /// \brief Name of sky box material
-  public: std::string skyboxMaterialName = "SkyBox";
+  public: const std::string kSkyboxMaterialName = "SkyBox";
 
   /// \brief Name of base rendering compositor node
-  public: std::string baseNodeName = "PbsMaterialsRenderingNode";
+  public: const std::string kBaseNodeName = "PbsMaterialsRenderingNode";
 
   /// \brief Name of final rendering compositor node
-  public: std::string finalNodeName = "FinalComposition";
+  public: const std::string kFinalNodeName = "FinalComposition";
 
   /// \brief Name of shadow compositor node
-  public: std::string shadowNodeName = "PbsMaterialsShadowNode";
+  public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
 };
 
 using namespace ignition;
@@ -143,7 +143,7 @@ void Ogre2RenderTarget::BuildCompositor()
   if (!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
   {
     // PbsMaterialsRenderingNode
-    std::string nodeDefName = wsDefName + "/" + this->dataPtr->baseNodeName;
+    std::string nodeDefName = wsDefName + "/" + this->dataPtr->kBaseNodeName;
     Ogre::CompositorNodeDef *nodeDef =
         ogreCompMgr->addNodeDefinition(nodeDefName);
 
@@ -205,7 +205,7 @@ void Ogre2RenderTarget::BuildCompositor()
         Ogre::CompositorPassQuadDef *passQuad =
             static_cast<Ogre::CompositorPassQuadDef *>(
             rt0TargetDef->addPass(Ogre::PASS_QUAD));
-        passQuad->mMaterialName = this->dataPtr->skyboxMaterialName + "_"
+        passQuad->mMaterialName = this->dataPtr->kSkyboxMaterialName + "_"
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
@@ -215,7 +215,7 @@ void Ogre2RenderTarget::BuildCompositor()
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           rt0TargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->mShadowNode = this->dataPtr->shadowNodeName;
+      passScene->mShadowNode = this->dataPtr->kShadowNodeName;
       passScene->mIncludeOverlays = true;
     }
 
@@ -283,9 +283,9 @@ void Ogre2RenderTarget::DestroyCompositor()
   ogreCompMgr->removeWorkspace(this->ogreCompositorWorkspace);
   ogreCompMgr->removeWorkspaceDefinition(this->ogreCompositorWorkspaceDefName);
   ogreCompMgr->removeNodeDefinition(this->ogreCompositorWorkspaceDefName +
-      "/" + this->dataPtr->baseNodeName);
+      "/" + this->dataPtr->kBaseNodeName);
   ogreCompMgr->removeNodeDefinition(this->ogreCompositorWorkspaceDefName +
-      "/" + this->dataPtr->finalNodeName);
+      "/" + this->dataPtr->kFinalNodeName);
 
   this->ogreCompositorWorkspace = nullptr;
   delete this->dataPtr->rtListener;
@@ -462,12 +462,12 @@ void Ogre2RenderTarget::UpdateBackgroundMaterial()
   if (validBackground)
   {
     Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-    std::string skyMatName = this->dataPtr->skyboxMaterialName + "_"
+    std::string skyMatName = this->dataPtr->kSkyboxMaterialName + "_"
         + this->Name();
     auto mat = matManager.getByName(skyMatName);
     if (!mat)
     {
-      auto skyboxMat = matManager.getByName(this->dataPtr->skyboxMaterialName);
+      auto skyboxMat = matManager.getByName(this->dataPtr->kSkyboxMaterialName);
       if (!skyboxMat)
       {
         ignerr << "Unable to find skybox material" << std::endl;
@@ -536,10 +536,10 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
   // PbsMaterials.compositor
   // the first node is the base scene pass node
   std::string outNodeDefName = this->ogreCompositorWorkspaceDefName +
-      "/" + this->dataPtr->baseNodeName;
+      "/" + this->dataPtr->kBaseNodeName;
   // the final compositor node
   std::string finalNodeDefName = ogreCompositorWorkspaceDefName +
-      "/" + this->dataPtr->finalNodeName;
+      "/" + this->dataPtr->kFinalNodeName;
   std::string inNodeDefName;
 
   // if new nodes need to be added then clear everything,
@@ -675,7 +675,7 @@ void Ogre2RenderTarget::UpdateShadowNode()
     }
   }
 
-  std::string shadowNodeDefName = this->dataPtr->shadowNodeName;
+  std::string shadowNodeDefName = this->dataPtr->kShadowNodeName;
   if (compositorManager->hasShadowNodeDefinition(shadowNodeDefName))
     compositorManager->removeShadowNodeDefinition(shadowNodeDefName);
 

@@ -82,7 +82,7 @@ class ignition::rendering::Ogre2DepthCameraPrivate
               const std::string &)> newDepthFrame;
 
   /// \brief Name of sky box material
-  public: std::string kSkyboxMaterialName = "SkyBox";
+  public: const std::string kSkyboxMaterialName = "SkyBox";
 };
 
 using namespace ignition;

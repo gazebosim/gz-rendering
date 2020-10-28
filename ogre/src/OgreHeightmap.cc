@@ -745,20 +745,14 @@ void OgreHeightmap::Init()
   }
 
   this->dataPtr->terrainGroup->freeTemporaryResources();
-
-//  // save the terrain once its loaded
-//  if (this->dataPtr->terrainsImported)
-//  {
-//    this->dataPtr->connections.push_back(
-//        event::Events::ConnectPreRender(
-//        std::bind(&Heightmap::SaveHeightmap, this)));
-//  }
 }
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreHeightmap::OgreObject() const
 {
+  // Get Ogre::TerrainRenderable
   // \todo Need this, otherwise can't attach to visual
+  ignerr << "Need to return Ogre::TerrainRenderable" << std::endl;
   return this->dataPtr->manualObject;
 }
 
@@ -772,6 +766,44 @@ void OgreHeightmap::SetMaterial(MaterialPtr, bool)
 MaterialPtr OgreHeightmap::Material() const
 {
   return this->dataPtr->material;
+}
+
+//////////////////////////////////////////////////
+void OgreHeightmap::PreRender()
+{
+  // \todo PreRender not being called
+  ignerr << "PRE" << std::endl;
+
+  // save the terrain once its loaded
+  if (!this->dataPtr->terrainsImported)
+    return;
+
+  if (this->dataPtr->terrainGroup->isDerivedDataUpdateInProgress())
+    return;
+
+  // check to see if all terrains have been loaded before saving
+  auto ti = this->dataPtr->terrainGroup->getTerrainIterator();
+  while (ti.hasMoreElements())
+  {
+    auto *t = ti.getNext()->instance;
+    if (!t->isLoaded())
+      return;
+  }
+
+  // saving an ogre terrain data file can take quite some time for large dems.
+  ignmsg << "Saving heightmap cache data to "
+         << common::joinPaths(this->dataPtr->pagingDir, this->Name())
+         << std::endl;
+  auto time = std::chrono::steady_clock::now();
+
+  this->dataPtr->terrainGroup->saveAllTerrains(true);
+
+  ignmsg << "Heightmap cache data saved. Process took "
+        <<  std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now() - time).count()
+        << " ms." << std::endl;
+
+  this->dataPtr->terrainsImported = false;
 }
 
 ///////////////////////////////////////////////////
@@ -834,8 +866,7 @@ void OgreHeightmap::ConfigureTerrainDefaults()
   }
 
   // Configure default import settings for if we use imported image
-  Ogre::Terrain::ImportData &defaultimp =
-    this->dataPtr->terrainGroup->getDefaultImportSettings();
+  auto &defaultimp = this->dataPtr->terrainGroup->getDefaultImportSettings();
 
   defaultimp.terrainSize = this->dataPtr->dataSize;
   defaultimp.worldSize = this->dataPtr->terrainSize.X();

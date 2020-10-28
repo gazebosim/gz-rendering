@@ -61,6 +61,9 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material, bool _unique)
           override;
 
+      // Documentation inherited.
+      public: virtual void PreRender() override;
+
       /// \brief Configure the terrain default values.
       /// \todo Move to private?
       private: void ConfigureTerrainDefaults();

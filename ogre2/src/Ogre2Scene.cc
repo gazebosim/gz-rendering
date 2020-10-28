@@ -48,6 +48,9 @@ class ignition::rendering::Ogre2ScenePrivate
 {
   /// \brief Flag to indicate if shadows need to be updated
   public: bool shadowsDirty = true;
+
+  /// \brief Flag to indicate if sky is enabled or not
+  public: bool skyEnabled = false;
 };
 
 using namespace ignition;
@@ -598,10 +601,11 @@ void Ogre2Scene::SetSkyEnabled(bool _enabled)
       camera->SetBackgroundMaterial(skyboxMat);
     }
   }
+  this->dataPtr->skyEnabled = _enabled;
 }
 
 //////////////////////////////////////////////////
 bool Ogre2Scene::SkyEnabled() const
 {
-  return this->BackgroundMaterial() != nullptr;
+  return this->dataPtr->skyEnabled;
 }

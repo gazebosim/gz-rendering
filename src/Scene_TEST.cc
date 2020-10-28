@@ -31,6 +31,12 @@ using namespace rendering;
 class SceneTest : public testing::Test,
                   public testing::WithParamInterface<const char *>
 {
+  // Documentation inherited
+  public: void SetUp() override
+  {
+    ignition::common::Console::SetVerbosity(4);
+  }
+
   public: void Scene(const std::string &_renderEngine);
   public: void Nodes(const std::string &_renderEngine);
 
@@ -748,6 +754,18 @@ void SceneTest::Sky(const std::string &_renderEngine)
 
   scene->SetSkyEnabled(false);
   EXPECT_FALSE(scene->SkyEnabled());
+
+  // set background material and verify sky remains disabled
+  rendering::MaterialPtr mat = scene->CreateMaterial("test_mat");
+  scene->SetBackgroundMaterial(mat);
+  EXPECT_EQ(mat, scene->BackgroundMaterial());
+  EXPECT_FALSE(scene->SkyEnabled());
+
+  // enable sky and verify it is not affected by background material
+  scene->SetSkyEnabled(true);
+  EXPECT_TRUE(scene->SkyEnabled());
+  scene->SetBackgroundMaterial(nullptr);
+  EXPECT_TRUE(scene->SkyEnabled());
 
   // Clean up
   engine->DestroyScene(scene);

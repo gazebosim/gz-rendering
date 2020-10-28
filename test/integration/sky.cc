@@ -35,6 +35,12 @@ using namespace rendering;
 class SkyTest: public testing::Test,
                public testing::WithParamInterface<const char *>
 {
+  // Documentation inherited
+  public: void SetUp() override
+  {
+    ignition::common::Console::SetVerbosity(4);
+  }
+
   // Test and verify sky is created
   public: void Sky(const std::string &_renderEngine);
 };

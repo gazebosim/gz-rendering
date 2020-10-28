@@ -82,6 +82,18 @@ class ignition::rendering::Ogre2RenderTargetPrivate
 {
   /// \brief Listener for chaning compositor pass properties
   public: Ogre2RenderTargetCompositorListener *rtListener = nullptr;
+
+  /// \brief Name of sky box material
+  public: std::string skyboxMaterialName = "SkyBox";
+
+  /// \brief Name of base rendering compositor node
+  public: std::string baseNodeName = "PbsMaterialsRenderingNode";
+
+  /// \brief Name of final rendering compositor node
+  public: std::string finalNodeName = "FinalComposition";
+
+  /// \brief Name of shadow compositor node
+  public: std::string shadowNodeName = "PbsMaterialsShadowNode";
 };
 
 using namespace ignition;
@@ -131,7 +143,7 @@ void Ogre2RenderTarget::BuildCompositor()
   if (!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
   {
     // PbsMaterialsRenderingNode
-    std::string nodeDefName = wsDefName + "/PbsMaterialsRenderingNode";
+    std::string nodeDefName = wsDefName + "/" + this->dataPtr->baseNodeName;
     Ogre::CompositorNodeDef *nodeDef =
         ogreCompMgr->addNodeDefinition(nodeDefName);
 
@@ -193,7 +205,8 @@ void Ogre2RenderTarget::BuildCompositor()
         Ogre::CompositorPassQuadDef *passQuad =
             static_cast<Ogre::CompositorPassQuadDef *>(
             rt0TargetDef->addPass(Ogre::PASS_QUAD));
-        passQuad->mMaterialName = "SkyBox_" + this->Name();
+        passQuad->mMaterialName = this->dataPtr->skyboxMaterialName + "_"
+            + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
       }
@@ -202,7 +215,7 @@ void Ogre2RenderTarget::BuildCompositor()
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           rt0TargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->mShadowNode = "PbsMaterialsShadowNode";
+      passScene->mShadowNode = this->dataPtr->shadowNodeName;
       passScene->mIncludeOverlays = true;
     }
 
@@ -270,9 +283,10 @@ void Ogre2RenderTarget::DestroyCompositor()
   ogreCompMgr->removeWorkspace(this->ogreCompositorWorkspace);
   ogreCompMgr->removeWorkspaceDefinition(this->ogreCompositorWorkspaceDefName);
   ogreCompMgr->removeNodeDefinition(this->ogreCompositorWorkspaceDefName +
-      "/PbsMaterialsRenderingNode");
+      "/" + this->dataPtr->baseNodeName);
   ogreCompMgr->removeNodeDefinition(this->ogreCompositorWorkspaceDefName +
-      "/FinalComposition");
+      "/" + this->dataPtr->finalNodeName);
+
   this->ogreCompositorWorkspace = nullptr;
   delete this->dataPtr->rtListener;
   this->dataPtr->rtListener = nullptr;
@@ -448,11 +462,12 @@ void Ogre2RenderTarget::UpdateBackgroundMaterial()
   if (validBackground)
   {
     Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-    std::string skyMatName = "SkyBox_" + this->Name();
+    std::string skyMatName = this->dataPtr->skyboxMaterialName + "_"
+        + this->Name();
     auto mat = matManager.getByName(skyMatName);
     if (!mat)
     {
-      auto skyboxMat = matManager.getByName("SkyBox");
+      auto skyboxMat = matManager.getByName(this->dataPtr->skyboxMaterialName);
       if (!skyboxMat)
       {
         ignerr << "Unable to find skybox material" << std::endl;
@@ -521,10 +536,10 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
   // PbsMaterials.compositor
   // the first node is the base scene pass node
   std::string outNodeDefName = this->ogreCompositorWorkspaceDefName +
-      "/PbsMaterialsRenderingNode";
+      "/" + this->dataPtr->baseNodeName;
   // the final compositor node
   std::string finalNodeDefName = ogreCompositorWorkspaceDefName +
-      "/FinalComposition";
+      "/" + this->dataPtr->finalNodeName;
   std::string inNodeDefName;
 
   // if new nodes need to be added then clear everything,
@@ -660,7 +675,7 @@ void Ogre2RenderTarget::UpdateShadowNode()
     }
   }
 
-  std::string shadowNodeDefName = "PbsMaterialsShadowNode";
+  std::string shadowNodeDefName = this->dataPtr->shadowNodeName;
   if (compositorManager->hasShadowNodeDefinition(shadowNodeDefName))
     compositorManager->removeShadowNodeDefinition(shadowNodeDefName);
 

@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <ignition/math/Color.hh>
 
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -108,6 +109,13 @@ namespace ignition
       /// render target
       /// \param[in] _mask Visibility mask
       public: virtual void SetVisibilityMask(uint32_t _mask);
+
+      /// \brief Update the render pass chain
+      public: static void UpdateRenderPassChain(
+          Ogre::CompositorWorkspace *_workspace,
+          const std::string &_workspaceDefName,
+          const std::string &_baseNode, const std::string &_finalNode,
+          const std::vector<RenderPassPtr> &_renderPasses, bool _recreateNodes);
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();

@@ -2,7 +2,31 @@
 
 ### Ignition Rendering 4.X
 
-### Ignition Rendering 4.X.X
+### Ignition Rendering 4.X.X (20XX-XX-XX)
+
+### Ignition Rendering 4.1.0 (2020-11-04)
+
+1. Improve fork experience
+    * [Pull request #165](https://github.com/ignitionrobotics/ign-rendering/pull/165)
+
+1. Add Custom Render Engine support
+    * [Pull request 161](https://github.com/ignitionrobotics/ign-rendering/pull/161)
+    * [Pull request 154](https://github.com/ignitionrobotics/ign-rendering/pull/154)
+    * [Pull request 142](https://github.com/ignitionrobotics/ign-rendering/pull/142)
+    * [Pull request 141](https://github.com/ignitionrobotics/ign-rendering/pull/141)
+
+1. Update tutorials
+    * [Pull request #159](https://github.com/ignitionrobotics/ign-rendering/pull/159)
+    * [Pull request #153](https://github.com/ignitionrobotics/ign-rendering/pull/153)
+
+1. Limit number of shadow casting lights in ogre2
+    * [Pull Request 155](https://github.com/ignitionrobotics/ign-rendering/pull/155)
+
+1. Ogre2 depth camera fix
+    * [Pull Request 138](https://github.com/ignitionrobotics/ign-rendering/pull/138)
+
+1. Add support for Gaussian noise render pass in Ogre2DepthCamera
+    * [Pull Request 122](https://github.com/ignitionrobotics/ign-rendering/pull/122)
 
 ### Ignition Rendering 4.0.0 (2020-09-29)
 

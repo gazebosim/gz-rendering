@@ -561,6 +561,8 @@ void Ogre2RenderEngine::CreateResources()
         std::make_pair(p + "/materials/programs", "General"));
     archNames.push_back(
         std::make_pair(p + "/materials/scripts", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/textures", "General"));
 
     for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
     {

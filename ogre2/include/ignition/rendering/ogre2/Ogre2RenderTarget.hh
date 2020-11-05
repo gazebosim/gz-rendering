@@ -79,6 +79,14 @@ namespace ignition
       /// \param[in] _color Color to set the background to
       public: virtual void SetBackgroundColor(math::Color _color);
 
+      /// \brief Set the background material of this camera
+      /// \param[in] _material Material to set the background to
+      public: virtual void SetBackgroundMaterial(MaterialPtr _material);
+
+      /// \brief Get the background material of this camera
+      /// \return background material
+      public: virtual MaterialPtr BackgroundMaterial() const;
+
       // Documentation inherited
       public: virtual void PreRender() override;
 
@@ -111,6 +119,9 @@ namespace ignition
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
+
+      /// \brief Update the background material
+      protected: virtual void UpdateBackgroundMaterial();
 
       /// \brief Update the render pass chain
       protected: virtual void UpdateRenderPassChain();
@@ -171,6 +182,9 @@ namespace ignition
       /// \brief Stores the background color of the render target
       protected: Ogre::ColourValue ogreBackgroundColor;
 
+      /// \brief Background material of the render target
+      protected: MaterialPtr backgroundMaterial;
+
       /// \brief a material used by for the render target
       protected: MaterialPtr material;
 
@@ -179,6 +193,10 @@ namespace ignition
 
       /// \brief Flag to indicate if the render target color has changed
       protected: bool colorDirty = true;
+
+      /// \brief Flag to indicate if the render target background material has
+      /// changed
+      protected: bool backgroundMaterialDirty = false;
 
       /// \brief Anti-aliasing level
       protected: unsigned int antiAliasing = 4;

@@ -111,6 +111,18 @@ void Ogre2Camera::SetBackgroundColor(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
+MaterialPtr Ogre2Camera::BackgroundMaterial() const
+{
+  return this->renderTexture->BackgroundMaterial();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetBackgroundMaterial(MaterialPtr _material)
+{
+  this->renderTexture->SetBackgroundMaterial(_material);
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::SetMaterial(const MaterialPtr &_material)
 {
   this->renderTexture->SetMaterial(_material);

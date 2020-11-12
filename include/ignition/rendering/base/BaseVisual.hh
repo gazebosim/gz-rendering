@@ -167,6 +167,14 @@ namespace ignition
       math::Pose3d rawPose = _pose;
       math::Vector3d scale = this->LocalScale();
       rawPose.Pos() -= rawPose.Rot() * (scale * this->origin);
+
+      if (!rawPose.IsFinite())
+      {
+        ignerr << "Unable to set pose of a node: "
+               << "non-finite (nan, inf) values detected." << std::endl;
+        return;
+      }
+
       this->SetRawLocalPose(rawPose);
     }
 

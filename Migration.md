@@ -6,6 +6,13 @@ notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
 
+## Ignition Rendering 4.0 to 4.1
+
+## ABI break
+
+1. **ogre2/include/ignition/rendering/ogre2/Ogre2DepthCamera.hh**
+    + Medium severity ABI break with the addition of the `AddRenderPass` override.
+
 ## Ignition Rendering 3.X to 4.X
 
 ### Deprecations

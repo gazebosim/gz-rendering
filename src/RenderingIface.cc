@@ -114,6 +114,12 @@ void unregisterEngine(const unsigned int _index)
 {
   RenderEngineManager::Instance()->UnregisterEngineAt(_index);
 }
+
+//////////////////////////////////////////////////
+void setPluginPaths(const std::list<std::string> &_paths)
+{
+  RenderEngineManager::Instance()->SetPluginPaths(_paths);
+}
 }
 }
 }

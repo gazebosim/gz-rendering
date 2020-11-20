@@ -312,6 +312,14 @@ namespace ignition
     {
       math::Pose3d pose = _pose;
       pose.Pos() = pose.Pos() - pose.Rot() * this->origin;
+
+      if (!pose.IsFinite())
+      {
+        ignerr << "Unable to set pose of a node: "
+               << "non-finite (nan, inf) values detected." << std::endl;
+        return;
+      }
+
       this->SetRawLocalPose(pose);
     }
 

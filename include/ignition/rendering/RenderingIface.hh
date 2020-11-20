@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_RENDERINGIFACE_HH_
 #define IGNITION_RENDERING_RENDERINGIFACE_HH_
 
+#include <list>
 #include <map>
 #include <string>
 #include <vector>
@@ -125,6 +126,11 @@ namespace ignition
     /// \param[in] _index Index of the render-engine to unregister
     IGNITION_RENDERING_VISIBLE
     void unregisterEngine(const unsigned int _index);
+
+    /// \brief Set the plugin paths from which render engines can be loaded.
+    /// \param[in] _paths The list of the plugin paths
+    IGNITION_RENDERING_VISIBLE
+    void setPluginPaths(const std::list<std::string> &_paths);
     }
   }
 }

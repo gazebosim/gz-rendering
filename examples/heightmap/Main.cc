@@ -64,8 +64,6 @@ void buildScene(ScenePtr _scene)
   auto data = new common::ImageHeightmap();
   data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
   heightmapGeom = _scene->CreateHeightmap(data);
-  vis->AddGeometry(heightmapGeom);
-  root->AddChild(vis);
 //! [create a heightmap]
 
   // create gray material

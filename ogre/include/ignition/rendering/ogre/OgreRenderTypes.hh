@@ -81,7 +81,7 @@ namespace ignition
     typedef shared_ptr<OgreGizmoVisual>          OgreGizmoVisualPtr;
     typedef shared_ptr<OgreGpuRays>              OgreGpuRaysPtr;
     typedef shared_ptr<OgreGrid>                 OgreGridPtr;
-    typedef shared_ptr<OgreHeightmap>                 OgreHeightmapPtr;
+    typedef shared_ptr<OgreHeightmap>            OgreHeightmapPtr;
     typedef shared_ptr<OgreJointVisual>          OgreJointVisualPtr;
     typedef shared_ptr<OgreLidarVisual>          OgreLidarVisualPtr;
     typedef shared_ptr<OgreLight>                OgreLightPtr;

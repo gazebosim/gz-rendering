@@ -18,7 +18,7 @@
 #define IGNITION_RENDERING_HEIGHTMAP_HH_
 
 #include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
+#include "ignition/rendering/Object.hh"
 
 namespace ignition
 {
@@ -27,10 +27,9 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Heightmap Heightmap.hh ignition/rendering/Heightmap
-    /// \brief Represents a heightmap geometry drawn along the XY plane.
-    /// If vertical cell count is specified then the heightmap becomes 3D.
+    /// \brief TODO
     class IGNITION_RENDERING_VISIBLE Heightmap :
-      public virtual Geometry
+      public virtual Object
     {
       /// \brief Destructor
       public: virtual ~Heightmap() { }

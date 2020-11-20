@@ -21,7 +21,7 @@
 #include <memory>
 #include <ignition/common/HeightmapData.hh>
 #include "ignition/rendering/base/BaseHeightmap.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
+#include "ignition/rendering/ogre/OgreObject.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
 namespace Ogre
@@ -40,7 +40,7 @@ namespace ignition
 
     /// \brief Ogre implementation of a heightmap geometry.
     class IGNITION_RENDERING_OGRE_VISIBLE OgreHeightmap
-      : public BaseHeightmap<OgreGeometry>
+      : public BaseHeightmap<OgreObject>
     {
       /// \brief Constructor
       protected: OgreHeightmap(common::HeightmapData *_data);
@@ -50,16 +50,6 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void Init();
-
-      // Documentation inherited.
-      public: virtual Ogre::MovableObject *OgreObject() const override;
-
-      // Documentation inherited.
-      public: virtual MaterialPtr Material() const override;
-
-      // Documentation inherited.
-      public: virtual void SetMaterial(MaterialPtr _material, bool _unique)
-          override;
 
       // Documentation inherited.
       public: virtual void PreRender() override;

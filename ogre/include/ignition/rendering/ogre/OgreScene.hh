@@ -208,6 +208,8 @@ namespace ignition
 
       protected: OgreMaterialMapPtr materials;
 
+      protected: OgreHeightmapPtr heightmap;
+
       protected: Ogre::Root *ogreRoot;
 
       protected: Ogre::SceneManager *ogreSceneManager;

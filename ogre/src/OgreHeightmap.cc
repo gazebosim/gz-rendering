@@ -748,38 +748,17 @@ void OgreHeightmap::Init()
 }
 
 //////////////////////////////////////////////////
-Ogre::MovableObject *OgreHeightmap::OgreObject() const
-{
-  // Get Ogre::TerrainRenderable
-  // \todo Need this, otherwise can't attach to visual
-  ignerr << "Need to return Ogre::TerrainRenderable" << std::endl;
-  return this->dataPtr->manualObject;
-}
-
-//////////////////////////////////////////////////
-void OgreHeightmap::SetMaterial(MaterialPtr, bool)
-{
-  // TODO
-}
-
-//////////////////////////////////////////////////
-MaterialPtr OgreHeightmap::Material() const
-{
-  return this->dataPtr->material;
-}
-
-//////////////////////////////////////////////////
 void OgreHeightmap::PreRender()
 {
-  // \todo PreRender not being called
-  ignerr << "PRE" << std::endl;
-
   // save the terrain once its loaded
   if (!this->dataPtr->terrainsImported)
     return;
 
   if (this->dataPtr->terrainGroup->isDerivedDataUpdateInProgress())
+  {
+    Ogre::Root::getSingleton().getWorkQueue()->processResponses();
     return;
+  }
 
   // check to see if all terrains have been loaded before saving
   auto ti = this->dataPtr->terrainGroup->getTerrainIterator();
@@ -790,13 +769,16 @@ void OgreHeightmap::PreRender()
       return;
   }
 
+  // TODO This is crashing with Ogre build from source, it complains about ZIP
+  // support. Try with debs.
+
   // saving an ogre terrain data file can take quite some time for large dems.
   ignmsg << "Saving heightmap cache data to "
          << common::joinPaths(this->dataPtr->pagingDir, this->Name())
          << std::endl;
   auto time = std::chrono::steady_clock::now();
 
-  this->dataPtr->terrainGroup->saveAllTerrains(true);
+//  this->dataPtr->terrainGroup->saveAllTerrains(true);
 
   ignmsg << "Heightmap cache data saved. Process took "
         <<  std::chrono::duration_cast<std::chrono::milliseconds>(

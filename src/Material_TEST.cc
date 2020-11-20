@@ -245,6 +245,20 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     EXPECT_EQ(noSuchEmissiveMapName, material->EmissiveMap());
     EXPECT_TRUE(material->HasEmissiveMap());
 
+    // light map
+    std::string lightMapName = textureName;
+    material->SetLightMap(lightMapName);
+    EXPECT_EQ(lightMapName, material->LightMap());
+    EXPECT_TRUE(material->HasLightMap());
+
+    material->ClearLightMap();
+    EXPECT_FALSE(material->HasLightMap());
+
+    std::string noSuchLightMapName = "no_such_light.png";
+    material->SetLightMap(noSuchLightMapName);
+    EXPECT_EQ(noSuchLightMapName, material->LightMap());
+    EXPECT_TRUE(material->HasLightMap());
+
     // roughness
     float roughness = 0.3;
     material->SetRoughness(roughness);
@@ -308,6 +322,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   std::string metalnessMapName = "metalness_" + textureName;
   std::string envMapName = "env_" + textureName;
   std::string emissiveMapName = "emissive_" + textureName;
+  std::string lightMapName = "light_" + textureName;
   enum ShaderType shaderType = ShaderType::ST_PIXEL;
 
   material->SetAmbient(ambient);
@@ -332,6 +347,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetMetalnessMap(metalnessMapName);
   material->SetEnvironmentMap(envMapName);
   material->SetEmissiveMap(emissiveMapName);
+  material->SetLightMap(lightMapName);
   material->SetRoughness(roughness);
   material->SetMetalness(metalness);
 
@@ -367,6 +383,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(metalnessMapName, clone->MetalnessMap());
     EXPECT_EQ(envMapName, clone->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, clone->EmissiveMap());
+    EXPECT_EQ(lightMapName, clone->LightMap());
   }
 
   // test copying a material
@@ -400,6 +417,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(metalnessMapName, copy->MetalnessMap());
     EXPECT_EQ(envMapName, copy->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, copy->EmissiveMap());
+    EXPECT_EQ(lightMapName, copy->LightMap());
   }
 
   // test copying from a common material
@@ -424,6 +442,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   pbr.SetRoughnessMap(roughnessMapName);
   pbr.SetMetalnessMap(metalnessMapName);
   pbr.SetEmissiveMap(emissiveMapName);
+  pbr.SetLightMap(lightMapName);
   pbr.SetEnvironmentMap(envMapName);
   comMat.SetPbrMaterial(pbr);
 
@@ -455,6 +474,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(metalnessMapName, comCopy->MetalnessMap());
     EXPECT_TRUE(comCopy->HasEmissiveMap());
     EXPECT_EQ(emissiveMapName, comCopy->EmissiveMap());
+    EXPECT_TRUE(comCopy->HasLightMap());
+    EXPECT_EQ(lightMapName, comCopy->LightMap());
     EXPECT_TRUE(comCopy->HasEnvironmentMap());
     EXPECT_EQ(envMapName, comCopy->EnvironmentMap());
   }

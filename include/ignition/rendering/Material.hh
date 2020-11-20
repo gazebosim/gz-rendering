@@ -301,6 +301,23 @@ namespace ignition
       /// \brief Removes any emissive map mapped to this material
       public: virtual void ClearEmissiveMap() = 0;
 
+      /// \brief Determine if this material has a light map
+      /// \return True if this material has a light map
+      public: virtual bool HasLightMap() const = 0;
+
+      /// \brief Get the URI of the light map file
+      /// \return URI of the light map file
+      public: virtual std::string LightMap() const = 0;
+
+      /// \brief Set the material light map
+      /// \param[in] _name URI of the new light map file
+      /// \param[in] _uvSet Texture coordinate set to use
+      public: virtual void SetLightMap(const std::string &_name,
+          unsigned int _uvSet = 0u) = 0;
+
+      /// \brief Removes any light map mapped to this material
+      public: virtual void ClearLightMap() = 0;
+
       /// \brief Set the roughness value. Only affects material of type MT_PBS
       /// \param[in] _roughness Roughness to set to
       public: virtual void SetRoughness(const float _roughness) = 0;

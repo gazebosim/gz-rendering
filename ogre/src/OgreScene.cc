@@ -508,9 +508,9 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 
 //////////////////////////////////////////////////
 HeightmapPtr OgreScene::CreateHeightmapImpl(unsigned int _id,
-    const std::string &_name, common::HeightmapData *_data)
+    const std::string &_name, const HeightmapDescriptor &_desc)
 {
-  this->heightmap.reset(new OgreHeightmap(_data));
+  this->heightmap.reset(new OgreHeightmap(_desc));
   bool result = this->InitObject(this->heightmap, _id, _name);
   return (result) ? heightmap: nullptr;
 }

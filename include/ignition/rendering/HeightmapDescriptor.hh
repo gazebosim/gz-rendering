@@ -14,11 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_HEIGHTMAP_HH_
-#define IGNITION_RENDERING_HEIGHTMAP_HH_
+#ifndef IGNITION_RENDERING_HEIGHTMAPDESCRIPTOR_HH_
+#define IGNITION_RENDERING_HEIGHTMAPDESCRIPTOR_HH_
+
+#include <string>
+#include <ignition/common/HeightmapData.hh>
 
 #include "ignition/rendering/config.hh"
-#include "ignition/rendering/Object.hh"
+#include "ignition/rendering/Export.hh"
 
 namespace ignition
 {
@@ -26,17 +29,18 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Heightmap Heightmap.hh ignition/rendering/Heightmap
-    /// \brief A terrain defined by a heightfield.
-    class IGNITION_RENDERING_VISIBLE Heightmap :
-      public virtual Object
+    /// \struct HeightmapDescriptor HeightmapDescriptor.hh
+    /// ignition/rendering/HeightmapDescriptor.hh
+    /// \brief Describes how a Heightmap should be loaded
+    struct IGNITION_RENDERING_VISIBLE HeightmapDescriptor
     {
-      /// \brief Set terrain size in meters.
-      /// \param[in] _size Size in XYZ.
-      public: virtual const math::Vector3d &Size() const = 0;
+      /// \brief Contains heightfield data.
+      public: std::shared_ptr<common::HeightmapData> data{nullptr};
+
+      /// \brief Heightmap XYZ size in meters.
+      public: math::Vector3d size{1.0, 1.0, 1.0};
     };
     }
   }
 }
-
 #endif

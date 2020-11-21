@@ -28,6 +28,7 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/HeightmapData.hh>
 #include <ignition/common/ImageHeightmap.hh>
 #include <ignition/rendering.hh>
 
@@ -39,8 +40,6 @@ using namespace rendering;
 
 const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
-
-ignition::rendering::HeightmapPtr heightmapGeom{nullptr};
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
@@ -58,12 +57,14 @@ void buildScene(ScenePtr _scene)
   root->AddChild(light0);
 
 //! [create a heightmap]
-  VisualPtr vis = _scene->CreateVisual();
-  vis->SetLocalPosition(3, 0, 0);
-  vis->SetLocalRotation(1.5708, 0, 2.0);
-  auto data = new common::ImageHeightmap();
+  auto data = std::make_shared<common::ImageHeightmap>();
   data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
-  heightmapGeom = _scene->CreateHeightmap(data);
+
+  HeightmapDescriptor desc;
+  desc.data = data;
+  desc.size = {129, 129, 10};
+
+  auto heightmap = _scene->CreateHeightmap(desc);
 //! [create a heightmap]
 
   // create gray material

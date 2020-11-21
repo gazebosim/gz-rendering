@@ -346,7 +346,7 @@ class ignition::rendering::OgreHeightmapPrivate
   public: Ogre::ManualObject *manualObject = nullptr;
 
   /// \brief Pointer to heightmap data
-  public: common::HeightmapData *heightmapData{nullptr};
+  public: std::shared_ptr<common::HeightmapData> heightmapData{nullptr};
 
   /// \brief Global options.
   public: Ogre::TerrainGlobalOptions *terrainGlobals{nullptr};
@@ -488,10 +488,12 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OgreHeightmap::OgreHeightmap(common::HeightmapData *_data)
+OgreHeightmap::OgreHeightmap(const HeightmapDescriptor &_desc)
     : dataPtr(new OgreHeightmapPrivate)
 {
-  this->dataPtr->heightmapData = _data;
+  this->dataPtr->heightmapData = _desc.data;
+  this->size = _desc.size;
+  // this->dataPtr->terrainSize = _desc.size;
 
   std::string home;
   ignition::common::env(IGN_HOMEDIR, home);
@@ -519,6 +521,8 @@ OgreHeightmap::~OgreHeightmap()
 //////////////////////////////////////////////////
 void OgreHeightmap::Init()
 {
+  OgreObject::Init();
+
   if (this->dataPtr->terrainGlobals != nullptr)
     return;
 
@@ -570,18 +574,18 @@ void OgreHeightmap::Init()
   unsigned int vertSize = (this->dataPtr->heightmapData->Width() *
       this->dataPtr->sampling) - this->dataPtr->sampling + 1;
   math::Vector3d scale;
-  scale.X(this->dataPtr->terrainSize.X() / vertSize);
-  scale.Y(this->dataPtr->terrainSize.Y() / vertSize);
+  scale.X(this->size.X() / vertSize);
+  scale.Y(this->size.Y() / vertSize);
 
   if (math::equal(heightmapSizeZ, 0.0))
     scale.Z(1.0);
   else
-    scale.Z(fabs(this->dataPtr->terrainSize.Z()) / heightmapSizeZ);
+    scale.Z(fabs(this->size.Z()) / heightmapSizeZ);
 
   // Construct the heightmap lookup table
   std::vector<float> lookup;
   this->dataPtr->heightmapData->FillHeightMap(this->dataPtr->sampling,
-      vertSize, this->dataPtr->terrainSize, scale, flipY, lookup);
+      vertSize, this->size, scale, flipY, lookup);
 
   for (unsigned int y = 0; y < vertSize; ++y)
   {
@@ -664,19 +668,19 @@ void OgreHeightmap::Init()
   this->dataPtr->terrainGroup = new Ogre::TerrainGroup(
       ogreScene->OgreSceneManager(), Ogre::Terrain::ALIGN_X_Y,
       1 + ((this->dataPtr->dataSize - 1) / sqrtN),
-      this->dataPtr->terrainSize.X() / (sqrtN));
+      this->size.X() / (sqrtN));
 
   this->dataPtr->terrainGroup->setFilenameConvention(
     Ogre::String(prefix), Ogre::String("dat"));
 
-  math::Vector3d origin(
-      this->dataPtr->terrainOrigin.X() - 0.5 * this->dataPtr->terrainSize.X() +
-      0.5 * this->dataPtr->terrainSize.X() / sqrtN,
-      this->dataPtr->terrainOrigin.Y() - 0.5 * this->dataPtr->terrainSize.X() +
-      0.5 * this->dataPtr->terrainSize.X() / sqrtN,
+  math::Vector3d pos(
+      this->dataPtr->terrainOrigin.X() - 0.5 * this->size.X() +
+      0.5 * this->size.X() / sqrtN,
+      this->dataPtr->terrainOrigin.Y() - 0.5 * this->size.X() +
+      0.5 * this->size.X() / sqrtN,
       this->dataPtr->terrainOrigin.Z() + minElevation);
 
-  this->dataPtr->terrainGroup->setOrigin(OgreConversions::Convert(origin));
+  this->dataPtr->terrainGroup->setOrigin(OgreConversions::Convert(pos));
   this->ConfigureTerrainDefaults();
 
   this->dataPtr->terrainHashChanged = this->PrepareTerrain(terrainDirPath);
@@ -710,8 +714,8 @@ void OgreHeightmap::Init()
     this->dataPtr->world = this->dataPtr->pageManager->createWorld();
     this->dataPtr->terrainPaging->createWorldSection(
         this->dataPtr->world, this->dataPtr->terrainGroup,
-        this->dataPtr->loadRadiusFactor * this->dataPtr->terrainSize.X(),
-        this->dataPtr->holdRadiusFactor * this->dataPtr->terrainSize.X(),
+        this->dataPtr->loadRadiusFactor * this->size.X(),
+        this->dataPtr->holdRadiusFactor * this->size.X(),
         0, 0, sqrtN - 1, sqrtN - 1);
   }
 
@@ -769,16 +773,15 @@ void OgreHeightmap::PreRender()
       return;
   }
 
-  // TODO This is crashing with Ogre build from source, it complains about ZIP
-  // support. Try with debs.
-
   // saving an ogre terrain data file can take quite some time for large dems.
   ignmsg << "Saving heightmap cache data to "
          << common::joinPaths(this->dataPtr->pagingDir, this->Name())
          << std::endl;
   auto time = std::chrono::steady_clock::now();
 
-//  this->dataPtr->terrainGroup->saveAllTerrains(true);
+  // TODO Succeeds when saving, but fails when loading
+
+  // this->dataPtr->terrainGroup->saveAllTerrains(true);
 
   ignmsg << "Heightmap cache data saved. Process took "
         <<  std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -851,7 +854,7 @@ void OgreHeightmap::ConfigureTerrainDefaults()
   auto &defaultimp = this->dataPtr->terrainGroup->getDefaultImportSettings();
 
   defaultimp.terrainSize = this->dataPtr->dataSize;
-  defaultimp.worldSize = this->dataPtr->terrainSize.X();
+  defaultimp.worldSize = this->size.X();
 
   defaultimp.inputScale = 1.0;
 
@@ -1182,12 +1185,6 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
 }
 
 // \todo Add these setters
-///////////////////////////////////////////////////
-//void OgreHeightmap::SetSize(const math::Vector3d &_size)
-//{
-//  this->dataPtr->terrainSize = _size;
-//}
-//
 ///////////////////////////////////////////////////
 //void OgreHeightmap::AddDiffuseTexture(const std::string &_texture)
 //{

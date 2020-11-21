@@ -19,15 +19,9 @@
 #define IGNITION_RENDERING_OGRE_OGREHEIGHTMAP_HH_
 
 #include <memory>
-#include <ignition/common/HeightmapData.hh>
 #include "ignition/rendering/base/BaseHeightmap.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
-
-namespace Ogre
-{
-  class MovableObject;
-}
 
 namespace ignition
 {
@@ -43,13 +37,13 @@ namespace ignition
       : public BaseHeightmap<OgreObject>
     {
       /// \brief Constructor
-      protected: OgreHeightmap(common::HeightmapData *_data);
+      protected: OgreHeightmap(const HeightmapDescriptor &_desc);
 
       /// \brief Destructor
       public: virtual ~OgreHeightmap();
 
       // Documentation inherited.
-      public: virtual void Init();
+      public: virtual void Init() override;
 
       // Documentation inherited.
       public: virtual void PreRender() override;

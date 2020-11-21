@@ -20,7 +20,6 @@
 #include <ignition/math/Helpers.hh>
 
 #include <ignition/common/Console.hh>
-#include <ignition/common/HeightmapData.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
 
@@ -1001,11 +1000,11 @@ MeshPtr BaseScene::CreateMesh(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
-HeightmapPtr BaseScene::CreateHeightmap(common::HeightmapData *_data)
+HeightmapPtr BaseScene::CreateHeightmap(const HeightmapDescriptor &_desc)
 {
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Heightmap");
-  return this->CreateHeightmapImpl(objId, objName, _data);
+  return this->CreateHeightmapImpl(objId, objName, _desc);
 }
 
 //////////////////////////////////////////////////

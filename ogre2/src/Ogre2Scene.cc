@@ -370,7 +370,7 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
 
 //////////////////////////////////////////////////
 HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int,
-    const std::string &, common::HeightmapData *)
+    const std::string &, const HeightmapDescriptor &)
 {
   // TODO(anyone)
   return nullptr;

@@ -21,7 +21,6 @@
 #include <string>
 #include <limits>
 
-#include <ignition/common/HeightmapData.hh>
 #include <ignition/common/Material.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/Time.hh>
@@ -29,6 +28,7 @@
 #include <ignition/math/Color.hh>
 
 #include "ignition/rendering/config.hh"
+#include "ignition/rendering/HeightmapDescriptor.hh"
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Storage.hh"
@@ -896,11 +896,11 @@ namespace ignition
                   unsigned int _id, const std::string &_name) = 0;
 
       /// \brief Create new heightmap geomerty. The rendering::Heightmap will be
-      /// created from the given common::HeightmapData.
-      /// \param[in] _data Data about the heightmap
+      /// created from the given HeightmapDescriptor.
+      /// \param[in] _desc Data about the heightmap
       /// \return The created heightmap
       public: virtual HeightmapPtr CreateHeightmap(
-          common::HeightmapData *_data) = 0;
+          const HeightmapDescriptor &_desc) = 0;
 
       /// \brief Create new text geometry.
       /// \return The created text

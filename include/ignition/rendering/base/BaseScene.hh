@@ -400,7 +400,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual HeightmapPtr CreateHeightmap(
-          common::HeightmapData *_data) override;
+          const HeightmapDescriptor &_desc) override;
 
       // Documentation inherited.
       public: virtual WireBoxPtr CreateWireBox() override;
@@ -553,11 +553,11 @@ namespace ignition
       /// \brief Implementation for creating a heightmap geometry
       /// \param[in] _id Unique object id.
       /// \param[in] _name Unique object name.
-      /// \param[in] _data Heightmap data.
+      /// \param[in] _desc Heightmap descriptor.
       /// \return Pointer to a heightmap geometry.
       protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
                      const std::string &_name,
-                     common::HeightmapData *_data) = 0;
+                     const HeightmapDescriptor &_desc) = 0;
 
       /// \brief Implementation for creating a wire box geometry
       /// \param[in] _id unique object id.

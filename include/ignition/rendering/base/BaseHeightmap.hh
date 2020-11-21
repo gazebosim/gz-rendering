@@ -33,26 +33,22 @@ namespace ignition
     {
       protected: BaseHeightmap();
 
-      public: virtual ~BaseHeightmap();
-
       // Documentation inherited
       public: virtual void PreRender() override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
+
+      // Documentation inherited
+      public: virtual const math::Vector3d &Size() const override;
+
+      /// \brief Heightmap size in meters.
+      protected: math::Vector3d size{1.0, 1.0, 1.0};
     };
 
     //////////////////////////////////////////////////
-    // BaseHeightmap
-    //////////////////////////////////////////////////
     template <class T>
     BaseHeightmap<T>::BaseHeightmap()
-    {
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    BaseHeightmap<T>::~BaseHeightmap()
     {
     }
 
@@ -68,6 +64,13 @@ namespace ignition
     void BaseHeightmap<T>::Destroy()
     {
       T::Destroy();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    const math::Vector3d &BaseHeightmap<T>::Size() const
+    {
+      return this->size;
     }
     }
   }

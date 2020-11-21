@@ -136,7 +136,7 @@ namespace ignition
 
       // Documentation inherited
       protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
-                 const std::string &_name, common::HeightmapData *_data);
+                 const std::string &_name, const HeightmapDescriptor &_desc);
 
       // Documentation inherited
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,

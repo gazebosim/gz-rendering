@@ -40,10 +40,10 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited
-      public: virtual const math::Vector3d &Size() const override;
+      public: virtual HeightmapDescriptor &Descriptor() override;
 
-      /// \brief Heightmap size in meters.
-      protected: math::Vector3d size{1.0, 1.0, 1.0};
+      /// \brief Descriptor containing heightmap information
+      public: HeightmapDescriptor descriptor;
     };
 
     //////////////////////////////////////////////////
@@ -68,9 +68,9 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    const math::Vector3d &BaseHeightmap<T>::Size() const
+    HeightmapDescriptor &BaseHeightmap<T>::Descriptor()
     {
-      return this->size;
+      return this->descriptor;
     }
     }
   }

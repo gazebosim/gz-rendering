@@ -34,11 +34,48 @@ namespace ignition
     /// \brief Describes how a Heightmap should be loaded
     struct IGNITION_RENDERING_VISIBLE HeightmapDescriptor
     {
+      struct IGNITION_RENDERING_VISIBLE Texture
+      {
+        /// \brief Texture size.
+        public: double size{1.0};
+
+        /// \brief Path to diffuse texture file.
+        public: std::string diffuse;
+
+        /// \brief Path to normal map file.
+        public: std::string normal;
+      };
+
+      struct IGNITION_RENDERING_VISIBLE Blend
+      {
+        /// \brief Minimum height to blend from.
+        public: double minHeight{0.0};
+
+        /// \brief Distance to blend.
+        public: double fadeDistance{0.0};
+      };
+
       /// \brief Contains heightfield data.
       public: std::shared_ptr<common::HeightmapData> data{nullptr};
 
       /// \brief Heightmap XYZ size in meters.
       public: math::Vector3d size{1.0, 1.0, 1.0};
+
+      /// \brief Heightmap XYZ origin in meters.
+      public: math::Vector3d position{0.0, 0.0, 0.0};
+
+      /// \brief Flag that enables/disables the terrain paging
+      public: bool useTerrainPaging{false};
+
+      /// \brief Number of samples per heightmap datum
+      public: unsigned int sampling{2u};
+
+      /// \brief Textures in this heightmap, in height order.
+      public: std::vector<Texture> textures;
+
+      /// \brief Blends in this heightmap, in height order. There should be one
+      /// less than textures.
+      public: std::vector<Blend> blends;
     };
     }
   }

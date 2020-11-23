@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_HEIGHTMAP_HH_
 
 #include "ignition/rendering/config.hh"
+#include "ignition/rendering/HeightmapDescriptor.hh"
 #include "ignition/rendering/Object.hh"
 
 namespace ignition
@@ -31,9 +32,9 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Heightmap :
       public virtual Object
     {
-      /// \brief Set terrain size in meters.
-      /// \param[in] _size Size in XYZ.
-      public: virtual const math::Vector3d &Size() const = 0;
+      /// \brief Get the mutable heightmap descriptor.
+      /// \return Descriptor with heightmap information.
+      public: virtual HeightmapDescriptor &Descriptor() = 0;
     };
     }
   }

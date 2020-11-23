@@ -62,7 +62,35 @@ void buildScene(ScenePtr _scene)
 
   HeightmapDescriptor desc;
   desc.data = data;
-  desc.size = {129, 129, 10};
+  desc.size = {17, 17, 10};
+
+  HeightmapDescriptor::Texture textureA;
+  textureA.size = 1.0;
+  textureA.diffuse = "../media/dirt_diffusespecular.png";
+  textureA.normal = "../media/flat_normal.png";
+  desc.textures.push_back(textureA);
+
+  HeightmapDescriptor::Blend blendA;
+  blendA.minHeight = 2.0;
+  blendA.fadeDistance = 5.0;
+  desc.blends.push_back(blendA);
+
+  HeightmapDescriptor::Texture textureB;
+  textureB.size = 1.0;
+  textureB.diffuse = "../media/grass_diffusespecular.png";
+  textureB.normal = "../media/flat_normal.png";
+  desc.textures.push_back(textureB);
+
+  HeightmapDescriptor::Blend blendB;
+  blendB.minHeight = 4.0;
+  blendB.fadeDistance = 5.0;
+  desc.blends.push_back(blendB);
+
+  HeightmapDescriptor::Texture textureC;
+  textureC.size = 1.0;
+  textureC.diffuse = "../media/fungus_diffusespecular.png";
+  textureC.normal = "../media/flat_normal.png";
+  desc.textures.push_back(textureC);
 
   auto heightmap = _scene->CreateHeightmap(desc);
 //! [create a heightmap]

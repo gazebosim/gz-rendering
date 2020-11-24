@@ -155,8 +155,8 @@ cc_library(
     name = "test_utils",
     srcs = ["test/test_config.h"],
     data = [
-        "test/media/meshes/walk.dae",
         "test/media/materials/textures/texture.png",
+        "test/media/meshes/walk.dae",
     ],
     includes = ["test"],
     visibility = ["//visibility:private"],
@@ -164,22 +164,22 @@ cc_library(
 
 [
     cc_test(
-      name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
-      srcs = [src],
-      defines = [
-          "IGN_RENDERING_TEST_PLUGIN_PATH='\"ign_rendering/ogre2/\"'",
-      ],
-      data = [
-        IGNITION_ROOT + "ign_rendering/ogre2:libignition-rendering-ogre2.so",
-      ],
-      deps = [
-          ":ign_rendering",
-          ":test_utils",
-          "@gtest",
-          "@gtest//:gtest_main",
-      ],
-  ) 
-  for src in test_sources
+        name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
+        srcs = [src],
+        data = [
+            IGNITION_ROOT + "ign_rendering/ogre2:libignition-rendering-ogre2.so",
+        ],
+        defines = [
+            "IGN_RENDERING_TEST_PLUGIN_PATH='\"ign_rendering/ogre2/\"'",
+        ],
+        deps = [
+            ":ign_rendering",
+            ":test_utils",
+            "@gtest",
+            "@gtest//:gtest_main",
+        ],
+    )
+    for src in test_sources
 ]
 
 [
@@ -190,15 +190,14 @@ cc_library(
             "test/integration",
         ],
         deps = [
-            ":test_utils",
             ":ign_rendering",
+            ":test_utils",
             "@gtest",
             "@gtest//:gtest_main",
         ],
     )
     for test in glob(["test/integration/*.cc"])
 ]
-
 
 cc_binary(
     name = "ogre2_demo",

@@ -69,7 +69,7 @@ namespace ignition
       /// \brief Register a render pass factory to the system
       /// \param[in] _type Render pass type, i.e. type id of render pass class
       /// \param[in] _factory Factory used to create the render pass
-      public: static void Register(const std::string &_type,
+      public: void Register(const std::string &_type,
           RenderPassFactory *_factory);
 
       /// \brief Implementation for creating render passes
@@ -77,32 +77,26 @@ namespace ignition
       /// \return Pointer to the render pass created
       private: RenderPassPtr CreateImpl(const std::string &_type);
 
-      /// \brief A map of render pass type id name to its factory class
-      private: static std::map<std::string, RenderPassFactory *> renderPassMap;
-
       /// \internal
       /// \brief Pointer to private data class
       private: std::unique_ptr<RenderPassSystemPrivate> dataPtr;
     };
 
-    /// \brief Render pass registration macro
-    ///
-    /// Use this macro to register render pass with the render pass factory.
-    #define IGN_RENDERING_REGISTER_RENDER_PASS(classname, interface) \
-    class classname##Factory : public ignition::rendering::RenderPassFactory \
-    { \
-      public: classname##Factory() \
-              { \
-                ignition::rendering::RenderPassSystem::Register( \
-                    typeid(interface).name(), this); \
-              } \
-      public: RenderPass *New() const override \
-              { \
-                return new classname(); \
-              } \
-    }; \
-    static classname##Factory global_##classname##Factory;
     }
   }
 }
+
+
+/// \brief Render pass registration macro
+///
+/// Use this macro to register render pass with the render pass factory.
+#define IGN_RENDERING_REGISTER_RENDER_PASS(classname, interface) \
+class classname##Factory : public ignition::rendering::RenderPassFactory \
+{ \
+  public: ignition::rendering::RenderPass *New() const override \
+          { \
+            return new ignition::rendering::classname(); \
+          } \
+};
+
 #endif

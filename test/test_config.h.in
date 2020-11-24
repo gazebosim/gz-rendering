@@ -9,7 +9,20 @@
 #define RENDER_ENGINE_VALUES ::testing::ValuesIn(\
     ignition::rendering::TestValues())
 
-static const std::vector<const char *> kRenderEngineTestValues{"ogre2", "optix"};
+
+#include <ignition/rendering/config.hh>
+
+static const std::vector<const char *> kRenderEngineTestValues{
+#if HAVE_OGRE2
+  "ogre2",
+#endif
+#if HAVE_OGRE
+  "ogre",
+#endif
+#if HAVE_OPTIX
+  "optix",
+#endif
+};
 
 #include <vector>
 #include <ignition/common/Util.hh>

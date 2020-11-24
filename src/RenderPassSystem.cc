@@ -25,9 +25,9 @@ using namespace rendering;
 /// \brief Private implementation of the RenderPassSystem class
 class ignition::rendering::RenderPassSystemPrivate
 {
+    /// \brief A map of render pass type id name to its factory class
+    public: std::map<std::string, RenderPassFactory *> renderPassMap;
 };
-
-std::map<std::string, RenderPassFactory *> RenderPassSystem::renderPassMap;
 
 //////////////////////////////////////////////////
 // RenderPassSystem
@@ -46,8 +46,8 @@ RenderPassSystem::~RenderPassSystem()
 RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_type)
 {
   RenderPassPtr pass;
-  auto it = renderPassMap.find(_type);
-  if (it != renderPassMap.end())
+  auto it = this->dataPtr->renderPassMap.find(_type);
+  if (it != this->dataPtr->renderPassMap.end())
   {
     pass.reset(it->second->New());
   }
@@ -63,5 +63,6 @@ RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_type)
 void RenderPassSystem::Register(const std::string &_name,
     RenderPassFactory *_factory)
 {
-  renderPassMap[_name] = _factory;
+  ignerr << "Renderpass register: " << _name << std::endl;
+  this->dataPtr->renderPassMap[_name] = _factory;
 }

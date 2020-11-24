@@ -272,6 +272,7 @@ CameraPtr createCamera(const std::string &_engineName)
   {
     // add gaussian noise pass
     RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
+
     GaussianNoisePassPtr noisePass =
         std::dynamic_pointer_cast<GaussianNoisePass>(pass);
     noisePass->SetMean(0.1);

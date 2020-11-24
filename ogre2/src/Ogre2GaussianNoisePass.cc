@@ -167,5 +167,3 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
   nodeDef->mapOutputChannel(0, "rt_output");
   nodeDef->mapOutputChannel(1, "rt_input");
 }
-
-IGN_RENDERING_REGISTER_RENDER_PASS(Ogre2GaussianNoisePass, GaussianNoisePass)

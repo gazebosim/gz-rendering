@@ -1,127 +1,60 @@
-
 load(
-    "//ign_bazel:cmake_configure_file.bzl",
+    "//ign_bazel:build_defs.bzl",
+    "IGNITION_FEATURES",
+    "IGNITION_ROOT",
+    "IGNITION_VISIBILITY",
     "cmake_configure_file",
-)
-load(
-    "//ign_bazel:generate_include_header.bzl",
     "generate_include_header",
-)
-load(
-    "//ign_bazel:ign_export_header.bzl",
+    "ign_config_header",
     "ign_export_header",
 )
 
-package(default_visibility = ["//visibility:public"])
+package(
+    default_visibility = IGNITION_VISIBILITY,
+    features = IGNITION_FEATURES,
+)
+
+licenses(["notice"])
+
+exports_files(["LICENSE"])
 
 RESOURCE_PATH = "ign_rendering"
+
 PROJECT_NAME = "ignition-rendering"
+
 PROJECT_MAJOR = 4
+
 PROJECT_MINOR = 0
+
 PROJECT_PATCH = 0
 
 # Generates config.hh based on the version numbers in CMake code.
-cmake_configure_file(
+ign_config_header(
     name = "config",
     src = "include/ignition/rendering/config.hh.in",
     out = "include/ignition/rendering/config.hh",
-    cmakelists = ["CMakeLists.txt"],
-    defines = [
-        "PROJECT_VERSION_MAJOR=%d" % (PROJECT_MAJOR),
-        "PROJECT_VERSION_MINOR=%d" % (PROJECT_MINOR),
-        "PROJECT_VERSION_PATCH=%d" % (PROJECT_PATCH),
-        "PROJECT_MAJOR_VERSION=%d" % (PROJECT_MAJOR),
-        "PROJECT_MINOR_VERSION=%d" % (PROJECT_MINOR),
-        "PROJECT_PATCH_VERSION=%d" % (PROJECT_PATCH),
-        "PROJECT_VERSION=%d.%d" % (PROJECT_MAJOR, PROJECT_MINOR),
-        "PROJECT_VERSION_FULL=%d.%d.%d" % (PROJECT_MAJOR, PROJECT_MINOR, PROJECT_PATCH),  # noqa
-        "PROJECT_NAME_NO_VERSION=%s" % (PROJECT_NAME),
-        "PROJECT_NAME=%s" % (PROJECT_NAME),
-        "IGN_PROJECT_NAME=%s" % (PROJECT_NAME),
-        "IGN_RENDERING_RESOURCE_PATH=%s" % (RESOURCE_PATH),
+    cmakelists = ["include/ignition/CMakeLists.txt"],
+    extra_defines = [
+        "IGN_PROJECT_NAME=rendering",
+        "IGN_RENDERING_RESOURCE_PATH=./ign_rendering/",
+        "IGNITION_RENDERING_ENGINE_INSTALL_DIR=foo",
+        "HAVE_OGRE2=1",
     ],
-    visibility = ["//visibility:private"],
+    project_name = PROJECT_NAME,
+    project_version = (PROJECT_MAJOR, PROJECT_MINOR, PROJECT_PATCH),
 )
 
 ign_export_header(
     name = "include/ignition/rendering/Export.hh",
-    lib_name = "ignition-rendering",
     export_base = "IGNITION_RENDERING",
+    lib_name = "ignition-rendering",
     visibility = ["//visibility:private"],
 )
 
-public_headers_no_gen = [
-    "include/ignition/rendering/ArrowVisual.hh",
-    "include/ignition/rendering/AxisVisual.hh",
-    "include/ignition/rendering/Camera.hh",
-    "include/ignition/rendering/CompositeVisual.hh",
-    "include/ignition/rendering/DepthCamera.hh",
-    "include/ignition/rendering/GaussianNoisePass.hh",
-    "include/ignition/rendering/Geometry.hh",
-    "include/ignition/rendering/GizmoVisual.hh",
-    "include/ignition/rendering/GpuRays.hh",
-    "include/ignition/rendering/Grid.hh",
-    "include/ignition/rendering/Image.hh",
-    "include/ignition/rendering/Light.hh",
-    "include/ignition/rendering/Marker.hh",
-    "include/ignition/rendering/Material.hh",
-    "include/ignition/rendering/MeshDescriptor.hh",
-    "include/ignition/rendering/Mesh.hh",
-    "include/ignition/rendering/Node.hh",
-    "include/ignition/rendering/Object.hh",
-    "include/ignition/rendering/OrbitViewController.hh",
-    "include/ignition/rendering/PixelFormat.hh",
-    "include/ignition/rendering/RayQuery.hh",
-    "include/ignition/rendering/RenderEngine.hh",
-    "include/ignition/rendering/RenderEngineManager.hh",
-    "include/ignition/rendering/RenderEnginePlugin.hh",
-    "include/ignition/rendering/RenderingIface.hh",
-    "include/ignition/rendering/RenderPass.hh",
-    "include/ignition/rendering/RenderPassSystem.hh",
-    "include/ignition/rendering/RenderTarget.hh",
-    "include/ignition/rendering/RenderTypes.hh",
-    "include/ignition/rendering/Scene.hh",
-    "include/ignition/rendering/Sensor.hh",
-    "include/ignition/rendering/ShaderParam.hh",
-    "include/ignition/rendering/ShaderParams.hh",
-    "include/ignition/rendering/ShaderType.hh",
-    "include/ignition/rendering/Storage.hh",
-    "include/ignition/rendering/Text.hh",
-    "include/ignition/rendering/ThermalCamera.hh",
-    "include/ignition/rendering/TransformController.hh",
-    "include/ignition/rendering/TransformType.hh",
-    "include/ignition/rendering/Utils.hh",
-    "include/ignition/rendering/ViewController.hh",
-    "include/ignition/rendering/Visual.hh",
-    "include/ignition/rendering/WireBox.hh",
-    "include/ignition/rendering/base/BaseArrowVisual.hh",
-    "include/ignition/rendering/base/BaseAxisVisual.hh",
-    "include/ignition/rendering/base/BaseCamera.hh",
-    "include/ignition/rendering/base/BaseDepthCamera.hh",
-    "include/ignition/rendering/base/BaseGaussianNoisePass.hh",
-    "include/ignition/rendering/base/BaseGeometry.hh",
-    "include/ignition/rendering/base/BaseGizmoVisual.hh",
-    "include/ignition/rendering/base/BaseGpuRays.hh",
-    "include/ignition/rendering/base/BaseGrid.hh",
-    "include/ignition/rendering/base/BaseLight.hh",
-    "include/ignition/rendering/base/BaseMarker.hh",
-    "include/ignition/rendering/base/BaseMaterial.hh",
-    "include/ignition/rendering/base/BaseMesh.hh",
-    "include/ignition/rendering/base/BaseNode.hh",
-    "include/ignition/rendering/base/BaseObject.hh",
-    "include/ignition/rendering/base/BaseRayQuery.hh",
-    "include/ignition/rendering/base/BaseRenderEngine.hh",
-    "include/ignition/rendering/base/BaseRenderPass.hh",
-    "include/ignition/rendering/base/BaseRenderTarget.hh",
-    "include/ignition/rendering/base/BaseRenderTypes.hh",
-    "include/ignition/rendering/base/BaseScene.hh",
-    "include/ignition/rendering/base/BaseSensor.hh",
-    "include/ignition/rendering/base/BaseStorage.hh",
-    "include/ignition/rendering/base/BaseText.hh",
-    "include/ignition/rendering/base/BaseThermalCamera.hh",
-    "include/ignition/rendering/base/BaseVisual.hh",
-    "include/ignition/rendering/base/BaseWireBox.hh",
-]
+public_headers_no_gen = glob([
+    "include/ignition/rendering/*.hh",
+    "include/ignition/rendering/base/*.hh",
+])
 
 test_sources = [
     "src/ArrowVisual_TEST.cc",
@@ -139,7 +72,7 @@ test_sources = [
     "src/PixelFormat_TEST.cc",
     "src/RayQuery_TEST.cc",
     "src/RenderEngine_TEST.cc",
-    # "src/RenderingIface_TEST.cc",
+    "src/RenderingIface_TEST.cc",
     "src/RenderPassSystem_TEST.cc",
     "src/RenderTarget_TEST.cc",
     "src/Scene_TEST.cc",
@@ -167,92 +100,105 @@ public_headers = public_headers_no_gen + [
     "include/ignition/rendering.hh",
 ]
 
-cc_binary(
-    name = "libignition-rendering4.so",
+cc_library(
+    name = "ign_rendering",
     srcs = [
-      "src/base/BaseObject.cc",
-      "src/base/BaseRenderEngine.cc",
-      "src/base/BaseScene.cc",
-      "src/GaussianNoisePass.cc",
-      "src/Image.cc",
-      "src/Marker.cc",
-      "src/MeshDescriptor.cc",
-      "src/OrbitViewController.cc",
-      "src/PixelFormat.cc",
-      "src/RenderEngineManager.cc",
-      "src/RenderEnginePlugin.cc",
-      "src/RenderingIface.cc",
-      "src/RenderPassSystem.cc",
-      "src/ShaderParam.cc",
-      "src/ShaderParams.cc",
-      "src/ShaderType.cc",
-      "src/TransformController.cc",
-      "src/Utils.cc",
-      "src/WireBox.cc",
-    ] + public_headers,
-    includes = ["include"],
-    linkopts = ["-Wl,-soname,libignition-rendering4.so", "-lX11"],
-    linkshared =  True,
-    visibility = [],
-    deps = [
-        "//ign_common:ign_common",
-        "//ign_common/graphics:graphics",
-        "//ign_common/events:events",
-        "//ign_plugin/loader:loader",
-        "//ign_plugin/core:ign_plugin",
-        "//ign_math:ign_math",
-        "//ign_bazel:utilities",
+        "src/GaussianNoisePass.cc",
+        "src/Image.cc",
+        "src/LidarVisual.cc",
+        "src/Marker.cc",
+        "src/MeshDescriptor.cc",
+        "src/OrbitViewController.cc",
+        "src/PixelFormat.cc",
+        "src/RenderEngineManager.cc",
+        "src/RenderEnginePlugin.cc",
+        "src/RenderPassSystem.cc",
+        "src/RenderingIface.cc",
+        "src/ShaderParam.cc",
+        "src/ShaderParams.cc",
+        "src/ShaderType.cc",
+        "src/TransformController.cc",
+        "src/Utils.cc",
+        "src/WireBox.cc",
+        "src/base/BaseObject.cc",
+        "src/base/BaseRenderEngine.cc",
+        "src/base/BaseScene.cc",
     ],
+    hdrs = public_headers,
     defines = [
-        "HAVE_OPTIX=0",
-        "HAVE_OGRE=0",
-        "HAVE_OGRE2=1",
-        "IGN_RENDERING_PLUGIN_PATH='\"ign_rendering/ogre2/\"'"
+        "IGN_RENDERING_PLUGIN_PATH='\"ign_rendering/ogre2/\"'",
     ],
+    includes = ["include"],
+    deps = [
+        IGNITION_ROOT + "ign_common",
+        IGNITION_ROOT + "ign_common/events",
+        IGNITION_ROOT + "ign_common/graphics",
+        IGNITION_ROOT + "ign_plugin/loader",
+        "@X//:Xaw",
+    ],
+)
+
+cmake_configure_file(
+    name = "test_config",
+    src = "test/test_config.h.in",
+    out = "test/test_config.h",
+    cmakelists = ["test/CMakeLists.txt"],
+    defines = [
+        "PROJECT_BINARY_DIR=./ign_rendering",
+        "PROJECT_SOURCE_DIR=./ign_rendering",
+        "CMAKE_BINARY_DIR=./ign_rendering",
+    ],
+    visibility = ["//visibility:private"],
 )
 
 cc_library(
-    name = "ign_rendering",
-    srcs = ["libignition-rendering4.so"],
-    hdrs = public_headers,
-    includes = ["include"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "//ign_common",
-        "//ign_common/events",
-        "//ign_common/graphics",
-        "//ign_math",
-        "//ign_plugin/loader",
-    ]
+    name = "test_utils",
+    srcs = ["test/test_config.h"],
+    data = [
+        "test/media/meshes/walk.dae",
+        "test/media/materials/textures/texture.png",
+    ],
+    includes = ["test"],
+    visibility = ["//visibility:private"],
 )
 
-[cc_test(
-    name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
-    srcs = [src],
-    deps = [
-        ":ign_rendering",
-        "//ign_rendering/test:test_utils",
-        "@gtest//:gtest",
-        "@gtest//:gtest_main",
-    ],
-    defines = [
-        "IGN_RENDERING_TEST_PLUGIN_PATH='\"ign_rendering/ogre2/\"'"
-    ],
-) for src in test_sources]
+[
+    cc_test(
+      name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
+      srcs = [src],
+      defines = [
+          "IGN_RENDERING_TEST_PLUGIN_PATH='\"ign_rendering/ogre2/\"'",
+      ],
+      data = [
+        IGNITION_ROOT + "ign_rendering/ogre2:libignition-rendering-ogre2.so",
+      ],
+      deps = [
+          ":ign_rendering",
+          ":test_utils",
+          "@gtest",
+          "@gtest//:gtest_main",
+      ],
+  ) 
+  for src in test_sources
+]
 
-cc_binary(
-    name = "simple_demo",
-    srcs = [
-        "examples/simple_demo/GlutWindow.cc",
-        "examples/simple_demo/GlutWindow.hh",
-        "examples/simple_demo/Main.cc",
-    ],
-    deps = [
-        ":ign_rendering",
-        "//ign_rendering/ogre2:libignition-rendering4-ogre2.so"
-    ],
-    linkopts = ["-lGL", "-lGLU", "-lglut"],
-)
+[
+    cc_test(
+        name = "INTEGRATION_" + test.split("/")[2].replace(".cc", ""),
+        srcs = [test],
+        includes = [
+            "test/integration",
+        ],
+        deps = [
+            ":test_utils",
+            ":ign_rendering",
+            "@gtest",
+            "@gtest//:gtest_main",
+        ],
+    )
+    for test in glob(["test/integration/*.cc"])
+]
+
 
 cc_binary(
     name = "ogre2_demo",
@@ -261,11 +207,14 @@ cc_binary(
         "examples/ogre2_demo/GlutWindow.hh",
         "examples/ogre2_demo/Main.cc",
     ],
+    data = [
+        IGNITION_ROOT + "ign_rendering/ogre2:libignition-rendering-ogre2.so",
+        "examples/ogre2_demo/media",
+    ],
     deps = [
         ":ign_rendering",
-        "//ign_rendering/ogre2:libignition-rendering4-ogre2.so"
+        "@gl//:GL",
+        "@gl//:GLU",
+        "@gl//:glut",
     ],
-    data = ["examples/ogre2_demo/media"],
-    linkopts = ["-lGL", "-lGLU", "-lglut"],
 )
-

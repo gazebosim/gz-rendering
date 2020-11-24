@@ -19,6 +19,7 @@
 
 #include <memory>
 
+#include "ignition/rendering/RenderPassSystem.hh"
 #include "ignition/rendering/base/BaseGaussianNoisePass.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
@@ -55,7 +56,17 @@ namespace ignition
       /// \brief Pointer to private data class
       private: std::unique_ptr<Ogre2GaussianNoisePassPrivate> dataPtr;
     };
+
+    class Ogre2GaussianNoisePassFactory : public ignition::rendering::RenderPassFactory
+    {
+      public: ignition::rendering::RenderPass *New() const override
+              {
+                return new Ogre2GaussianNoisePass();
+              }
+    };
+
     }
   }
 }
+
 #endif

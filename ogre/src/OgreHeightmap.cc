@@ -442,11 +442,8 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreHeightmap::OgreHeightmap(const HeightmapDescriptor &_desc)
-    : dataPtr(new OgreHeightmapPrivate)
+    : BaseHeightmap(_desc), dataPtr(std::make_unique<OgreHeightmapPrivate>())
 {
-  // TODO Do this in base
-  this->descriptor = _desc;
-
   std::string home;
   ignition::common::env(IGN_HOMEDIR, home);
 

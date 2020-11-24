@@ -31,7 +31,9 @@ namespace ignition
       public virtual Heightmap,
       public virtual T
     {
-      protected: BaseHeightmap();
+      /// \brief Constructor
+      /// \param[in] _desc Descriptor containing heightmap information.
+      protected: BaseHeightmap(const HeightmapDescriptor &_desc);
 
       // Documentation inherited
       public: virtual void PreRender() override;
@@ -48,7 +50,8 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    BaseHeightmap<T>::BaseHeightmap()
+    BaseHeightmap<T>::BaseHeightmap(const HeightmapDescriptor &_desc)
+        : descriptor{_desc}
     {
     }
 

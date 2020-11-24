@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2020 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,8 +115,8 @@ void buildScene(ScenePtr _scene)
 
 //! [create camera]
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.5);
-  camera->SetLocalRotation(0.0, 0.0, 0.0);
+  camera->SetLocalPosition(-16.6, 7.3, 8.6);
+  camera->SetLocalRotation(0.0, 0.4, -0.45);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);

@@ -67,7 +67,7 @@ namespace ignition
       /// \brief Flag that enables/disables the terrain paging
       public: bool useTerrainPaging{false};
 
-      /// \brief Number of samples per heightmap datum
+      /// \brief Number of samples per heightmap datum.
       public: unsigned int sampling{2u};
 
       /// \brief Textures in this heightmap, in height order.

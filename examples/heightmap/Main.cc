@@ -63,6 +63,8 @@ void buildScene(ScenePtr _scene)
   HeightmapDescriptor desc;
   desc.data = data;
   desc.size = {17, 17, 10};
+  desc.sampling = 2u;
+  desc.useTerrainPaging = true;
 
   HeightmapDescriptor::Texture textureA;
   textureA.size = 1.0;
@@ -94,6 +96,10 @@ void buildScene(ScenePtr _scene)
 
   auto heightmap = _scene->CreateHeightmap(desc);
 //! [create a heightmap]
+
+  // TODO(chapulina) Support multiple terrains
+//  desc.position.Set(30, 0, 0);
+//  auto heightmap2 = _scene->CreateHeightmap(desc);
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();

@@ -29,7 +29,6 @@
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
-// \todo Make these members?
 static std::string glslVersion = "130";
 static std::string vpInStr = "in";
 static std::string vpOutStr = "out";
@@ -339,14 +338,8 @@ class DummyPageProvider : public Ogre::PageProvider
 //////////////////////////////////////////////////
 class ignition::rendering::OgreHeightmapPrivate
 {
-  /// \brief Heightmap materal
-  public: OgreMaterialPtr material;
-
-  /// \brief Ogre manual object used to render the heightmap.
-  public: Ogre::ManualObject *manualObject = nullptr;
-
   /// \brief Global options.
-  public: Ogre::TerrainGlobalOptions *terrainGlobals{nullptr};
+  public: static Ogre::TerrainGlobalOptions *terrainGlobals;
 
   /// \brief The raw height values.
   public: std::vector<float> heights;
@@ -372,7 +365,7 @@ class ignition::rendering::OgreHeightmapPrivate
   public: double skirtLength{1.0};
 
   /// \brief Terrain casts shadows
-  /// \todo inherit from visual?
+  /// \todo(chapulina) Use Material? Expose through descriptor?
   public: bool castShadows{false};
 
   /// \brief True if the terrain's hash does not match the image's hash
@@ -421,6 +414,8 @@ class ignition::rendering::OgreHeightmapPrivate
   public: const double holdRadiusFactor{1.15};
 
   /// \brief True if the terrain was imported.
+  /// \TODO(chapulina) Gazebo classic initializes to true, but does it make
+  /// sense?
   public: bool terrainsImported{true};
 
   /// \brief Used to iterate over all the terrains
@@ -428,7 +423,7 @@ class ignition::rendering::OgreHeightmapPrivate
 
   /// \brief Name of custom material to use for the terrain. If empty,
   /// default material with glsl shader will be used.
-  /// \todo Set
+  /// \todo(chapulina) Will we ever use this?
   public: std::string materialName;
 
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 11
@@ -436,6 +431,9 @@ class ignition::rendering::OgreHeightmapPrivate
   public: IgnTerrainMatGen *ignMatGen{nullptr};
 #endif
 };
+
+Ogre::TerrainGlobalOptions
+    *ignition::rendering::OgreHeightmapPrivate::terrainGlobals = nullptr;
 
 using namespace ignition;
 using namespace rendering;
@@ -461,9 +459,6 @@ OgreHeightmap::~OgreHeightmap()
 void OgreHeightmap::Init()
 {
   OgreObject::Init();
-
-  if (this->dataPtr->terrainGlobals != nullptr)
-    return;
 
   if (this->descriptor.data == nullptr)
   {
@@ -496,12 +491,6 @@ void OgreHeightmap::Init()
 
   // The terraingGroup is composed by a number of terrains (1 by default)
   int nTerrains = 1;
-
-  this->dataPtr->terrainGlobals = new Ogre::TerrainGlobalOptions();
-
-  // Vertex compression breaks anything, e.g. Gpu laser, that tries to build
-  // a depth map.
-  this->dataPtr->terrainGlobals->setUseVertexCompressionWhenAvailable(false);
 
   // There is an issue with OGRE terrain LOD if heights are not relative to 0.
   // So we move the heightmap so that its min elevation = 0 before feeding to
@@ -552,12 +541,19 @@ void OgreHeightmap::Init()
 
   if (!math::isPowerOfTwo(this->dataPtr->dataSize - 1))
   {
-    ignerr << "Heightmap image size must be square, with a size of 2^n+1"
+    ignerr << "Heightmap final sampling must satisfy 2^n+1."
+           << std::endl << "size = (width * sampling) = sampling + 1"
+           << std::endl << "[" << this->dataPtr->dataSize << "] = (["
+           << this->descriptor.data->Width() << "] * ["
+           << this->descriptor.sampling << "]) = ["
+           << this->descriptor.sampling << "] + 1: "
         << std::endl;
     return;
   }
 
   // Get the full path of the image heightmap
+  // \todo(anyone) Name is generated at runtime and depends on the number of
+  // objects, so it's hard to make sure it's the same across runs
   auto terrainDirPath = common::joinPaths(this->dataPtr->pagingDir,
       this->Name());
 
@@ -592,7 +588,7 @@ void OgreHeightmap::Init()
         this->dataPtr->numTerrainSubdivisions = 4u;
       else
         this->dataPtr->numTerrainSubdivisions = 16u;
-     nTerrains = this->dataPtr->numTerrainSubdivisions;
+      nTerrains = this->dataPtr->numTerrainSubdivisions;
 
       ignmsg << "Large heightmap used with LOD. It will be subdivided into " <<
           this->dataPtr->numTerrainSubdivisions << " terrains." << std::endl;
@@ -684,15 +680,18 @@ void OgreHeightmap::Init()
         << " ms." << std::endl;
 
   // Calculate blend maps
-  if (this->dataPtr->terrainsImported)
+//  if (this->dataPtr->terrainsImported)
   {
     auto ti = this->dataPtr->terrainGroup->getTerrainIterator();
     while (ti.hasMoreElements())
     {
-      Ogre::Terrain *t = ti.getNext()->instance;
-      this->InitBlendMaps(t);
+      this->InitBlendMaps(ti.getNext()->instance);
     }
   }
+//  else
+//  {
+//    ignerr << "Failure importing terrains, can't set blend maps." << std::endl;
+//  }
 
   this->dataPtr->terrainGroup->freeTemporaryResources();
 }
@@ -701,8 +700,11 @@ void OgreHeightmap::Init()
 void OgreHeightmap::PreRender()
 {
   // save the terrain once its loaded
-  if (!this->dataPtr->terrainsImported)
+  if (!this->dataPtr->terrainsImported ||
+      nullptr == this->dataPtr->terrainGroup)
+  {
     return;
+  }
 
   if (this->dataPtr->terrainGroup->isDerivedDataUpdateInProgress())
   {
@@ -719,20 +721,21 @@ void OgreHeightmap::PreRender()
       return;
   }
 
-  // saving an ogre terrain data file can take quite some time for large dems.
-  ignmsg << "Saving heightmap cache data to "
-         << common::joinPaths(this->dataPtr->pagingDir, this->Name())
-         << std::endl;
-  auto time = std::chrono::steady_clock::now();
-
+  // saving an ogre terrain data file can take quite some time for large
+  // terrains.
   // TODO Succeeds when saving, but fails when loading
 
-  // this->dataPtr->terrainGroup->saveAllTerrains(true);
-
-  ignmsg << "Heightmap cache data saved. Process took "
-        <<  std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::steady_clock::now() - time).count()
-        << " ms." << std::endl;
+//  ignmsg << "Saving heightmap cache data to "
+//         << common::joinPaths(this->dataPtr->pagingDir, this->Name())
+//         << std::endl;
+//  auto time = std::chrono::steady_clock::now();
+//
+//  this->dataPtr->terrainGroup->saveAllTerrains(true);
+//
+//  ignmsg << "Heightmap cache data saved. Process took "
+//        <<  std::chrono::duration_cast<std::chrono::milliseconds>(
+//            std::chrono::steady_clock::now() - time).count()
+//        << " ms." << std::endl;
 
   this->dataPtr->terrainsImported = false;
 }
@@ -740,7 +743,15 @@ void OgreHeightmap::PreRender()
 ///////////////////////////////////////////////////
 void OgreHeightmap::ConfigureTerrainDefaults()
 {
+  if (this->dataPtr->terrainGlobals != nullptr)
+    return;
+
   // Configure global
+  this->dataPtr->terrainGlobals = new Ogre::TerrainGlobalOptions();
+
+  // Vertex compression breaks anything, e.g. Gpu laser, that tries to build
+  // a depth map.
+  this->dataPtr->terrainGlobals->setUseVertexCompressionWhenAvailable(false);
 
   // MaxPixelError: Decides how precise our terrain is going to be.
   // A lower number will mean a more accurate terrain, at the cost of
@@ -1081,7 +1092,8 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
   // Bounds check for following loop
   if (_terrain->getLayerCount() < this->descriptor.blends.size() + 1)
   {
-    ignerr << "Invalid terrain, too few layers [" << _terrain->getLayerCount()
+    ignerr << "Invalid terrain, too few layers ["
+           << unsigned(_terrain->getLayerCount())
            << "] for the number of blends ["
            << this->descriptor.blends.size() << "] to initialize blend map"
            << std::endl;

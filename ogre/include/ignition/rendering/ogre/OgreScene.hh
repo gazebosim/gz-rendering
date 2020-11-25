@@ -208,7 +208,8 @@ namespace ignition
 
       protected: OgreMaterialMapPtr materials;
 
-      protected: OgreHeightmapPtr heightmap;
+      // TODO(chapulina) Create store?
+      protected: std::vector<OgreHeightmapPtr> heightmaps;
 
       protected: Ogre::Root *ogreRoot;
 

@@ -42,7 +42,7 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited
-      public: virtual HeightmapDescriptor &Descriptor() override;
+      public: virtual const HeightmapDescriptor &Descriptor() override;
 
       /// \brief Descriptor containing heightmap information
       public: HeightmapDescriptor descriptor;
@@ -71,7 +71,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    HeightmapDescriptor &BaseHeightmap<T>::Descriptor()
+    const HeightmapDescriptor &BaseHeightmap<T>::Descriptor()
     {
       return this->descriptor;
     }

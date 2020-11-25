@@ -32,9 +32,9 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Heightmap :
       public virtual Object
     {
-      /// \brief Get the mutable heightmap descriptor.
+      /// \brief Get the immutable heightmap descriptor.
       /// \return Descriptor with heightmap information.
-      public: virtual HeightmapDescriptor &Descriptor() = 0;
+      public: virtual const HeightmapDescriptor &Descriptor() = 0;
     };
     }
   }

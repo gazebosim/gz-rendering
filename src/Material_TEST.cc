@@ -247,8 +247,9 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 
     // light map
     std::string lightMapName = textureName;
-    material->SetLightMap(lightMapName);
+    material->SetLightMap(lightMapName, 1u);
     EXPECT_EQ(lightMapName, material->LightMap());
+    EXPECT_EQ(1u, material->LightMapTexCoordSet());
     EXPECT_TRUE(material->HasLightMap());
 
     material->ClearLightMap();
@@ -347,7 +348,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetMetalnessMap(metalnessMapName);
   material->SetEnvironmentMap(envMapName);
   material->SetEmissiveMap(emissiveMapName);
-  material->SetLightMap(lightMapName);
+  material->SetLightMap(lightMapName, 1u);
   material->SetRoughness(roughness);
   material->SetMetalness(metalness);
 
@@ -384,6 +385,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(envMapName, clone->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, clone->EmissiveMap());
     EXPECT_EQ(lightMapName, clone->LightMap());
+    EXPECT_EQ(1u, clone->LightMapTexCoordSet());
   }
 
   // test copying a material
@@ -418,6 +420,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(envMapName, copy->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, copy->EmissiveMap());
     EXPECT_EQ(lightMapName, copy->LightMap());
+    EXPECT_EQ(1u, copy->LightMapTexCoordSet());
   }
 
   // test copying from a common material
@@ -442,7 +445,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   pbr.SetRoughnessMap(roughnessMapName);
   pbr.SetMetalnessMap(metalnessMapName);
   pbr.SetEmissiveMap(emissiveMapName);
-  pbr.SetLightMap(lightMapName);
+  pbr.SetLightMap(lightMapName, 2u);
   pbr.SetEnvironmentMap(envMapName);
   comMat.SetPbrMaterial(pbr);
 
@@ -476,6 +479,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(emissiveMapName, comCopy->EmissiveMap());
     EXPECT_TRUE(comCopy->HasLightMap());
     EXPECT_EQ(lightMapName, comCopy->LightMap());
+    EXPECT_EQ(2u, comCopy->LightMapTexCoordSet());
     EXPECT_TRUE(comCopy->HasEnvironmentMap());
     EXPECT_EQ(envMapName, comCopy->EnvironmentMap());
   }

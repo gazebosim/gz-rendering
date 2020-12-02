@@ -309,6 +309,10 @@ namespace ignition
       /// \return URI of the light map file
       public: virtual std::string LightMap() const = 0;
 
+      /// \brief Get the texture coordinate set used by lightmap
+      /// \return texture coordinate set of the light map
+      public: virtual unsigned int LightMapTexCoordSet() const = 0;
+
       /// \brief Set the material light map
       /// \param[in] _name URI of the new light map file
       /// \param[in] _uvSet Texture coordinate set to use

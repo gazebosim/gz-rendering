@@ -57,6 +57,8 @@ void buildScene(ScenePtr _scene)
   root->AddChild(light0);
 
 //! [create a heightmap]
+  VisualPtr vis = _scene->CreateVisual();
+
   auto data = std::make_shared<common::ImageHeightmap>();
   data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
 
@@ -94,7 +96,9 @@ void buildScene(ScenePtr _scene)
   textureC.normal = "../media/flat_normal.png";
   desc.textures.push_back(textureC);
 
-  auto heightmap = _scene->CreateHeightmap(desc);
+  auto heightmapGeom = _scene->CreateHeightmap(desc);
+  vis->AddGeometry(heightmapGeom);
+  root->AddChild(vis);
 //! [create a heightmap]
 
   // TODO(chapulina) Support multiple terrains

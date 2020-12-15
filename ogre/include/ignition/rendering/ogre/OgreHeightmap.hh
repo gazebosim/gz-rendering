@@ -20,7 +20,7 @@
 
 #include <memory>
 #include "ignition/rendering/base/BaseHeightmap.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
 namespace ignition
@@ -34,7 +34,7 @@ namespace ignition
 
     /// \brief Ogre implementation of a heightmap geometry.
     class IGNITION_RENDERING_OGRE_VISIBLE OgreHeightmap
-      : public BaseHeightmap<OgreObject>
+      : public BaseHeightmap<OgreGeometry>
     {
       /// \brief Constructor
       protected: OgreHeightmap(const HeightmapDescriptor &_desc);
@@ -47,6 +47,22 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void PreRender() override;
+
+      /// \brief Returns NULL, heightmaps don't have movable objects.
+      /// \return Null pointer.
+      public: virtual Ogre::MovableObject *OgreObject() const override;
+
+      /// \brief Returns NULL, heightmap materials don't inherit from
+      /// MaterialPtr.
+      /// \return Null pointer.
+      public: virtual MaterialPtr Material() const override;
+
+      /// \brief Has no effect for heightmaps. The material is set through a
+      /// HeightmapDescriptor.
+      /// \param[in] _material Not used.
+      /// \param[in] _unique Not used.
+      public: virtual void SetMaterial(MaterialPtr _material, bool _unique)
+          override;
 
       /// \brief Configure the terrain default values.
       /// \todo Move to private?

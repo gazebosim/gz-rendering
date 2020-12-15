@@ -278,10 +278,6 @@ void OgreScene::RemoveGradientBackgroundColor()
 //////////////////////////////////////////////////
 void OgreScene::PreRender()
 {
-  // TODO(chapulina) Create heightmap storage?
-  for (const auto &heightmap : this->heightmaps)
-    heightmap->PreRender();
-
   BaseScene::PreRender();
   OgreRTShaderSystem::Instance()->Update();
 }
@@ -515,10 +511,6 @@ HeightmapPtr OgreScene::CreateHeightmapImpl(unsigned int _id,
   OgreHeightmapPtr heightmap;
   heightmap.reset(new OgreHeightmap(_desc));
   bool result = this->InitObject(heightmap, _id, _name);
-
-  if (result)
-    this->heightmaps.push_back(heightmap);
-
   return (result) ? heightmap : nullptr;
 }
 

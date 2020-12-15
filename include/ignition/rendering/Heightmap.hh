@@ -18,8 +18,8 @@
 #define IGNITION_RENDERING_HEIGHTMAP_HH_
 
 #include "ignition/rendering/config.hh"
+#include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/HeightmapDescriptor.hh"
-#include "ignition/rendering/Object.hh"
 
 namespace ignition
 {
@@ -30,7 +30,7 @@ namespace ignition
     /// \class Heightmap Heightmap.hh ignition/rendering/Heightmap
     /// \brief A terrain defined by a heightfield.
     class IGNITION_RENDERING_VISIBLE Heightmap :
-      public virtual Object
+      public virtual Geometry
     {
       /// \brief Get the immutable heightmap descriptor.
       /// \return Descriptor with heightmap information.

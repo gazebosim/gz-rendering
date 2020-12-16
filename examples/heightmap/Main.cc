@@ -57,8 +57,6 @@ void buildScene(ScenePtr _scene)
   root->AddChild(light0);
 
 //! [create a heightmap]
-  VisualPtr vis = _scene->CreateVisual();
-
   auto data = std::make_shared<common::ImageHeightmap>();
   data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
 
@@ -97,13 +95,56 @@ void buildScene(ScenePtr _scene)
   desc.textures.push_back(textureC);
 
   auto heightmapGeom = _scene->CreateHeightmap(desc);
+
+  auto vis = _scene->CreateVisual();
   vis->AddGeometry(heightmapGeom);
   root->AddChild(vis);
 //! [create a heightmap]
 
-  // TODO(chapulina) Support multiple terrains
-//  desc.position.Set(30, 0, 0);
-//  auto heightmap2 = _scene->CreateHeightmap(desc);
+//! [create another heightmap]
+  auto data2 = std::make_shared<common::ImageHeightmap>();
+  data2->Load(common::joinPaths(RESOURCE_PATH, "city_terrain.jpg"));
+
+  HeightmapDescriptor desc2;
+  desc2.data = data2;
+  desc2.size = {26, 26, 20};
+  desc2.sampling = 2u;
+  desc2.useTerrainPaging = true;
+
+  HeightmapDescriptor::Texture textureA2;
+  textureA2.size = 1.0;
+  textureA2.diffuse = "../media/fungus_diffusespecular.png";
+  textureA2.normal = "../media/flat_normal.png";
+  desc2.textures.push_back(textureA2);
+
+  HeightmapDescriptor::Blend blendA2;
+  blendA2.minHeight = 2.0;
+  blendA2.fadeDistance = 5.0;
+  desc2.blends.push_back(blendA2);
+
+  HeightmapDescriptor::Texture textureB2;
+  textureB2.size = 1.0;
+  textureB2.diffuse = "../media/grass_diffusespecular.png";
+  textureB2.normal = "../media/flat_normal.png";
+  desc2.textures.push_back(textureB2);
+
+  HeightmapDescriptor::Blend blendB2;
+  blendB2.minHeight = 8.0;
+  blendB2.fadeDistance = 5.0;
+  desc2.blends.push_back(blendB2);
+
+  HeightmapDescriptor::Texture textureC2;
+  textureC2.size = 1.0;
+  textureC2.diffuse = "../media/dirt_diffusespecular.png";
+  textureC2.normal = "../media/flat_normal.png";
+  desc2.textures.push_back(textureC2);
+  desc2.position.Set(30, 0, 0);
+  auto heightmapGeom2 = _scene->CreateHeightmap(desc2);
+
+  auto vis2 = _scene->CreateVisual();
+  vis2->AddGeometry(heightmapGeom2);
+  root->AddChild(vis2);
+//! [create another heightmap]
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();
@@ -125,8 +166,8 @@ void buildScene(ScenePtr _scene)
 
 //! [create camera]
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(-16.6, 7.3, 8.6);
-  camera->SetLocalRotation(0.0, 0.4, -0.45);
+  camera->SetLocalPosition(1.441, 25.787, 17.801);
+  camera->SetLocalRotation(0.0, 0.588, -1.125);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);

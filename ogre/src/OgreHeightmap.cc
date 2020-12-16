@@ -339,7 +339,7 @@ class DummyPageProvider : public Ogre::PageProvider
 class ignition::rendering::OgreHeightmapPrivate
 {
   /// \brief Global options.
-  public: static Ogre::TerrainGlobalOptions *terrainGlobals;
+  public: Ogre::TerrainGlobalOptions *terrainGlobals;
 
   /// \brief The raw height values.
   public: std::vector<float> heights;
@@ -431,9 +431,6 @@ class ignition::rendering::OgreHeightmapPrivate
   public: IgnTerrainMatGen *ignMatGen{nullptr};
 #endif
 };
-
-Ogre::TerrainGlobalOptions
-    *ignition::rendering::OgreHeightmapPrivate::terrainGlobals = nullptr;
 
 using namespace ignition;
 using namespace rendering;
@@ -743,9 +740,6 @@ void OgreHeightmap::PreRender()
 ///////////////////////////////////////////////////
 void OgreHeightmap::ConfigureTerrainDefaults()
 {
-  if (this->dataPtr->terrainGlobals != nullptr)
-    return;
-
   // Configure global
   this->dataPtr->terrainGlobals = new Ogre::TerrainGlobalOptions();
 

@@ -151,17 +151,17 @@ void Ogre2Material::SetAlphaFromTexture(bool _enabled,
     double _alpha, bool _twoSided)
 {
   BaseMaterial::SetAlphaFromTexture(_enabled, _alpha, _twoSided);
+  Ogre::HlmsBlendblock block;
   if (_enabled)
   {
-    Ogre::HlmsBlendblock block;
-    block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_GREATER_EQUAL);
+    block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setBlendblock(block);
-    this->ogreDatablock->setTwoSidedLighting(_twoSided);
   }
   else
   {
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_ALWAYS_PASS);
+    this->ogreDatablock->setBlendblock(block);
   }
   this->ogreDatablock->setAlphaTestThreshold(_alpha);
   this->ogreDatablock->setTwoSidedLighting(_twoSided);
@@ -455,6 +455,17 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
   this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture,
       &samplerBlockRef);
+
+  // disable alpha from texture if texture does not have an alpha channel
+  // otherwise this becomes a transparent material
+  if (_type == Ogre::PBSM_DIFFUSE)
+  {
+    if (this->TextureAlphaEnabled() && !texLocation.texture->hasAlpha())
+    {
+      this->SetAlphaFromTexture(false, this->AlphaThreshold(),
+          this->TwoSidedEnabled());
+    }
+  }
 }
 
 //////////////////////////////////////////////////

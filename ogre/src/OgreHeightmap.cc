@@ -414,10 +414,11 @@ class ignition::rendering::OgreHeightmapPrivate
   /// depends on the terrain size.
   public: const double holdRadiusFactor{1.15};
 
-  /// \brief True if the terrain was imported.
-  /// \TODO(chapulina) Gazebo classic initializes to true, but does it make
-  /// sense?
-  public: bool terrainsImported{true};
+  /// \brief True if the terrain was loaded from the cache.
+  public: bool loadedFromCache{false};
+
+  /// \brief True if the terrain was saved to the cache.
+  public: bool savedToCache{false};
 
   /// \brief Used to iterate over all the terrains
   public: int terrainIdx{0};
@@ -714,7 +715,7 @@ void OgreHeightmap::Init()
         << " ms." << std::endl;
 
   // Calculate blend maps
-  if (this->dataPtr->terrainsImported)
+  if (!this->dataPtr->loadedFromCache)
   {
     auto ti = this->dataPtr->terrainGroup->getTerrainIterator();
     while (ti.hasMoreElements())
@@ -729,9 +730,7 @@ void OgreHeightmap::Init()
 //////////////////////////////////////////////////
 void OgreHeightmap::PreRender()
 {
-  // save the terrain once its loaded
-  if (!this->dataPtr->terrainsImported ||
-      nullptr == this->dataPtr->terrainGroup)
+  if (nullptr == this->dataPtr->terrainGroup)
   {
     return;
   }
@@ -740,6 +739,12 @@ void OgreHeightmap::PreRender()
   if (this->dataPtr->terrainGroup->isDerivedDataUpdateInProgress())
   {
     Ogre::Root::getSingleton().getWorkQueue()->processResponses();
+    return;
+  }
+
+  // save the terrain once its loaded
+  if (this->dataPtr->loadedFromCache || this->dataPtr->savedToCache)
+  {
     return;
   }
 
@@ -756,31 +761,31 @@ void OgreHeightmap::PreRender()
   // terrains.
   // TODO Succeeds when saving, but fails when loading
 
-//  ignmsg << "Saving heightmap cache data to "
-//         << common::joinPaths(this->dataPtr->pagingDir, this->Name())
-//         << std::endl;
-//  auto time = std::chrono::steady_clock::now();
-//
-//  bool saved{false};
-//  try
-//  {
-//    this->dataPtr->terrainGroup->saveAllTerrains(true);
-//    saved = true;
-//  }
-//  catch(Ogre::Exception &_e)
-//  {
-//    ignerr << "Failed to save heightmap: " << _e.what() << std::endl;
-//  }
-//
-//  if (saved)
-//  {
-//    ignmsg << "Heightmap cache data saved. Process took "
-//          <<  std::chrono::duration_cast<std::chrono::milliseconds>(
-//              std::chrono::steady_clock::now() - time).count()
-//          << " ms." << std::endl;
-//  }
+  // ignmsg << "Saving heightmap cache data to "
+  //        << common::joinPaths(this->dataPtr->pagingDir, this->Name())
+  //        << std::endl;
+  // auto time = std::chrono::steady_clock::now();
 
-  this->dataPtr->terrainsImported = false;
+  // bool saved{false};
+  // try
+  // {
+  //   this->dataPtr->terrainGroup->saveAllTerrains(true);
+  //   saved = true;
+  // }
+  // catch(Ogre::Exception &_e)
+  // {
+  //   ignerr << "Failed to save heightmap: " << _e.what() << std::endl;
+  // }
+
+  // if (saved)
+  // {
+  //   ignmsg << "Heightmap cache data saved. Process took "
+  //         <<  std::chrono::duration_cast<std::chrono::milliseconds>(
+  //             std::chrono::steady_clock::now() - time).count()
+  //         << " ms." << std::endl;
+  // }
+
+  this->dataPtr->savedToCache = true;
 }
 
 ///////////////////////////////////////////////////
@@ -926,6 +931,7 @@ void OgreHeightmap::SplitHeights(const std::vector<float> &_heightmap,
   {
     ignerr << "Invalid number of terrain divisions [" << _n
            << "]. It should be 4 or 16." << std::endl;
+    return;
   }
 
   int count = 0;
@@ -981,7 +987,7 @@ void OgreHeightmap::DefineTerrain(const int _x, const int _y)
     ignmsg << "Loading heightmap cache data: " << filename << std::endl;
 
     this->dataPtr->terrainGroup->defineTerrain(_x, _y);
-    this->dataPtr->terrainsImported = false;
+    this->dataPtr->loadedFromCache = true;
   }
   else
   {

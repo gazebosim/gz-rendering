@@ -106,7 +106,8 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  this->ogreNode->detachObject(derived->OgreObject());
+  if (nullptr != derived->OgreObject())
+    this->ogreNode->detachObject(derived->OgreObject());
   derived->SetParent(nullptr);
   return true;
 }

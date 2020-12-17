@@ -457,7 +457,7 @@ void OgreHeightmap::Init()
 {
   OgreObject::Init();
 
-  if (this->descriptor.data == nullptr)
+  if (this->descriptor.Data() == nullptr)
   {
     ignerr << "Failed to initialize: null heightmap data." << std::endl;
     return;
@@ -480,10 +480,11 @@ void OgreHeightmap::Init()
   }
 
   // Add paths
-  for (auto texture : this->descriptor.textures)
+  for (auto i = 0u; i < this->descriptor.TextureCount(); ++i)
   {
-    OgreRenderEngine::Instance()->AddResourcePath(texture.diffuse);
-    OgreRenderEngine::Instance()->AddResourcePath(texture.normal);
+    auto texture = this->descriptor.TextureByIndex(i);
+    OgreRenderEngine::Instance()->AddResourcePath(texture->Diffuse());
+    OgreRenderEngine::Instance()->AddResourcePath(texture->Normal());
   }
 
   // The terraingGroup is composed by a number of terrains (1 by default)
@@ -496,28 +497,28 @@ void OgreHeightmap::Init()
 
   // TODO add a virtual HeightmapData::MinElevation function to avoid the
   // ifdef check. i.e. heightmapSizeZ = MaxElevation - MinElevation
-  double heightmapSizeZ = this->descriptor.data->MaxElevation();
+  double heightmapSizeZ = this->descriptor.Data()->MaxElevation();
 
   // \todo Parametrize as much as possible
   // these params need to be the same as physics/HeightmapShape.cc
   // in order to generate consistent height data
   bool flipY = false;
   // sampling size along image width and height
-  unsigned int vertSize = (this->descriptor.data->Width() *
-      this->descriptor.sampling) - this->descriptor.sampling + 1;
+  unsigned int vertSize = (this->descriptor.Data()->Width() *
+      this->descriptor.Sampling()) - this->descriptor.Sampling() + 1;
   math::Vector3d scale;
-  scale.X(this->descriptor.size.X() / vertSize);
-  scale.Y(this->descriptor.size.Y() / vertSize);
+  scale.X(this->descriptor.Size().X() / vertSize);
+  scale.Y(this->descriptor.Size().Y() / vertSize);
 
   if (math::equal(heightmapSizeZ, 0.0))
     scale.Z(1.0);
   else
-    scale.Z(fabs(this->descriptor.size.Z()) / heightmapSizeZ);
+    scale.Z(fabs(this->descriptor.Size().Z()) / heightmapSizeZ);
 
   // Construct the heightmap lookup table
   std::vector<float> lookup;
-  this->descriptor.data->FillHeightMap(this->descriptor.sampling,
-      vertSize, this->descriptor.size, scale, flipY, lookup);
+  this->descriptor.Data()->FillHeightMap(this->descriptor.Sampling(),
+      vertSize, this->descriptor.Size(), scale, flipY, lookup);
 
   for (unsigned int y = 0; y < vertSize; ++y)
   {
@@ -541,9 +542,9 @@ void OgreHeightmap::Init()
     ignerr << "Heightmap final sampling must satisfy 2^n+1."
            << std::endl << "size = (width * sampling) = sampling + 1"
            << std::endl << "[" << this->dataPtr->dataSize << "] = (["
-           << this->descriptor.data->Width() << "] * ["
-           << this->descriptor.sampling << "]) = ["
-           << this->descriptor.sampling << "] + 1: "
+           << this->descriptor.Data()->Width() << "] * ["
+           << this->descriptor.Sampling() << "]) = ["
+           << this->descriptor.Sampling() << "] + 1: "
         << std::endl;
     return;
   }
@@ -567,7 +568,7 @@ void OgreHeightmap::Init()
 
   // If the paging is enabled we modify the number of subterrains
   std::string prefix;
-  if (this->descriptor.useTerrainPaging)
+  if (this->descriptor.UseTerrainPaging())
   {
     this->dataPtr->splitTerrain = true;
     nTerrains = this->dataPtr->numTerrainSubdivisions;
@@ -607,24 +608,24 @@ void OgreHeightmap::Init()
   this->dataPtr->terrainGroup = new Ogre::TerrainGroup(
       ogreScene->OgreSceneManager(), Ogre::Terrain::ALIGN_X_Y,
       1 + ((this->dataPtr->dataSize - 1) / sqrtN),
-      this->descriptor.size.X() / (sqrtN));
+      this->descriptor.Size().X() / (sqrtN));
 
   this->dataPtr->terrainGroup->setFilenameConvention(
     Ogre::String(prefix), Ogre::String("dat"));
 
   math::Vector3d pos(
-      this->descriptor.position.X() - 0.5 * this->descriptor.size.X() +
-      0.5 * this->descriptor.size.X() / sqrtN,
-      this->descriptor.position.Y() - 0.5 * this->descriptor.size.X() +
-      0.5 * this->descriptor.size.X() / sqrtN,
-      this->descriptor.position.Z() + minElevation);
+      this->descriptor.Position().X() - 0.5 * this->descriptor.Size().X() +
+      0.5 * this->descriptor.Size().X() / sqrtN,
+      this->descriptor.Position().Y() - 0.5 * this->descriptor.Size().X() +
+      0.5 * this->descriptor.Size().X() / sqrtN,
+      this->descriptor.Position().Z() + minElevation);
 
   this->dataPtr->terrainGroup->setOrigin(OgreConversions::Convert(pos));
   this->ConfigureTerrainDefaults();
 
   this->dataPtr->terrainHashChanged = this->PrepareTerrain(terrainDirPath);
 
-  if (this->descriptor.useTerrainPaging)
+  if (this->descriptor.UseTerrainPaging())
   {
     if (this->dataPtr->terrainHashChanged)
     {
@@ -653,8 +654,8 @@ void OgreHeightmap::Init()
     this->dataPtr->world = this->dataPtr->pageManager->createWorld();
     this->dataPtr->terrainPaging->createWorldSection(
         this->dataPtr->world, this->dataPtr->terrainGroup,
-        this->dataPtr->loadRadiusFactor * this->descriptor.size.X(),
-        this->dataPtr->holdRadiusFactor * this->descriptor.size.X(),
+        this->dataPtr->loadRadiusFactor * this->descriptor.Size().X(),
+        this->dataPtr->holdRadiusFactor * this->descriptor.Size().X(),
         0, 0, sqrtN - 1, sqrtN - 1);
   }
 
@@ -805,7 +806,7 @@ void OgreHeightmap::ConfigureTerrainDefaults()
   auto &defaultimp = this->dataPtr->terrainGroup->getDefaultImportSettings();
 
   defaultimp.terrainSize = this->dataPtr->dataSize;
-  defaultimp.worldSize = this->descriptor.size.X();
+  defaultimp.worldSize = this->descriptor.Size().X();
 
   defaultimp.inputScale = 1.0;
 
@@ -818,17 +819,17 @@ void OgreHeightmap::ConfigureTerrainDefaults()
   //    2. normal_height - normal map with a height map in the alpha channel
   {
     // number of texture layers
-    defaultimp.layerList.resize(this->descriptor.textures.size());
+    defaultimp.layerList.resize(this->descriptor.TextureCount());
 
     // The worldSize decides how big each splat of textures will be.
     // A smaller value will increase the resolution
-    for (unsigned int i = 0; i < this->descriptor.textures.size(); ++i)
+    for (unsigned int i = 0; i < this->descriptor.TextureCount(); ++i)
     {
-      auto texture = this->descriptor.textures[i];
+      auto texture = this->descriptor.TextureByIndex(i);
 
-      defaultimp.layerList[i].worldSize = texture.size;
-      defaultimp.layerList[i].textureNames.push_back(texture.diffuse);
-      defaultimp.layerList[i].textureNames.push_back(texture.normal);
+      defaultimp.layerList[i].worldSize = texture->Size();
+      defaultimp.layerList[i].textureNames.push_back(texture->Diffuse());
+      defaultimp.layerList[i].textureNames.push_back(texture->Normal());
     }
   }
 }
@@ -1079,17 +1080,17 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
   }
 
   // no blending to be done if there's only one texture or no textures at all.
-  if (this->descriptor.blends.size() <= 1u ||
-      this->descriptor.textures.size() <= 1u)
+  if (this->descriptor.BlendCount() <= 1u ||
+      this->descriptor.TextureCount() <= 1u)
     return false;
 
   // Bounds check for following loop
-  if (_terrain->getLayerCount() < this->descriptor.blends.size() + 1)
+  if (_terrain->getLayerCount() < this->descriptor.BlendCount() + 1)
   {
     ignerr << "Invalid terrain, too few layers ["
            << unsigned(_terrain->getLayerCount())
            << "] for the number of blends ["
-           << this->descriptor.blends.size() << "] to initialize blend map"
+           << this->descriptor.BlendCount() << "] to initialize blend map"
            << std::endl;
     return false;
   }
@@ -1099,7 +1100,7 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
   std::vector<float*> pBlend;
   unsigned int i{0u};
 
-  for (i = 0; i < this->descriptor.blends.size(); ++i)
+  for (i = 0; i < this->descriptor.BlendCount(); ++i)
   {
     blendMaps.push_back(_terrain->getLayerBlendMap(i+1));
     pBlend.push_back(blendMaps[i]->getBlendPointer());
@@ -1116,10 +1117,10 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
       blendMaps[0]->convertImageToTerrainSpace(x, y, &tx, &ty);
       height = _terrain->getHeightAtTerrainPosition(tx, ty);
 
-      for (i = 0; i < this->descriptor.blends.size(); ++i)
+      for (i = 0; i < this->descriptor.BlendCount(); ++i)
       {
-        val = (height - this->descriptor.blends[i].minHeight) /
-            this->descriptor.blends[i].fadeDistance;
+        auto blend = this->descriptor.BlendByIndex(i);
+        val = (height - blend->MinHeight()) / blend->FadeDistance();
         val = Ogre::Math::Clamp(val, (Ogre::Real)0, (Ogre::Real)1);
         *pBlend[i]++ = val;
       }

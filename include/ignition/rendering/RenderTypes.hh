@@ -280,6 +280,10 @@ namespace ignition
     /// \brief Shared pointer to const JointVisual
     typedef shared_ptr<const JointVisual> ConstJointVisualPtr;
 
+    /// \def const HeightmapPtr
+    /// \brief Shared pointer to const Heightmap
+    typedef shared_ptr<const Heightmap> ConstHeightmapPtr;
+
     /// \def const ImagePtr
     /// \brief Shared pointer to const Image
     typedef shared_ptr<const Image> ConstImagePtr;

@@ -61,38 +61,38 @@ void buildScene(ScenePtr _scene)
   data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
 
   HeightmapDescriptor desc;
-  desc.data = data;
-  desc.size = {17, 17, 10};
-  desc.sampling = 2u;
-  desc.useTerrainPaging = true;
+  desc.SetData(data);
+  desc.SetSize({17, 17, 10});
+  desc.SetSampling(2u);
+  desc.SetUseTerrainPaging(true);
 
-  HeightmapDescriptor::Texture textureA;
-  textureA.size = 1.0;
-  textureA.diffuse = "../media/dirt_diffusespecular.png";
-  textureA.normal = "../media/flat_normal.png";
-  desc.textures.push_back(textureA);
+  HeightmapTexture textureA;
+  textureA.SetSize(1.0);
+  textureA.SetDiffuse("../media/dirt_diffusespecular.png");
+  textureA.SetNormal("../media/flat_normal.png");
+  desc.AddTexture(textureA);
 
-  HeightmapDescriptor::Blend blendA;
-  blendA.minHeight = 2.0;
-  blendA.fadeDistance = 5.0;
-  desc.blends.push_back(blendA);
+  HeightmapBlend blendA;
+  blendA.SetMinHeight(2.0);
+  blendA.SetFadeDistance(5.0);
+  desc.AddBlend(blendA);
 
-  HeightmapDescriptor::Texture textureB;
-  textureB.size = 1.0;
-  textureB.diffuse = "../media/grass_diffusespecular.png";
-  textureB.normal = "../media/flat_normal.png";
-  desc.textures.push_back(textureB);
+  HeightmapTexture textureB;
+  textureB.SetSize(1.0);
+  textureB.SetDiffuse("../media/grass_diffusespecular.png");
+  textureB.SetNormal("../media/flat_normal.png");
+  desc.AddTexture(textureB);
 
-  HeightmapDescriptor::Blend blendB;
-  blendB.minHeight = 4.0;
-  blendB.fadeDistance = 5.0;
-  desc.blends.push_back(blendB);
+  HeightmapBlend blendB;
+  blendB.SetMinHeight(4.0);
+  blendB.SetFadeDistance(5.0);
+  desc.AddBlend(blendB);
 
-  HeightmapDescriptor::Texture textureC;
-  textureC.size = 1.0;
-  textureC.diffuse = "../media/fungus_diffusespecular.png";
-  textureC.normal = "../media/flat_normal.png";
-  desc.textures.push_back(textureC);
+  HeightmapTexture textureC;
+  textureC.SetSize(1.0);
+  textureC.SetDiffuse("../media/fungus_diffusespecular.png");
+  textureC.SetNormal("../media/flat_normal.png");
+  desc.AddTexture(textureC);
 
   auto heightmapGeom = _scene->CreateHeightmap(desc);
 
@@ -106,39 +106,39 @@ void buildScene(ScenePtr _scene)
   data2->Load(common::joinPaths(RESOURCE_PATH, "city_terrain.jpg"));
 
   HeightmapDescriptor desc2;
-  desc2.data = data2;
-  desc2.size = {26, 26, 20};
-  desc2.sampling = 2u;
-  desc2.useTerrainPaging = true;
+  desc2.SetData(data2);
+  desc2.SetSize({26, 26, 20});
+  desc2.SetSampling(2u);
+  desc2.SetUseTerrainPaging(true);
 
-  HeightmapDescriptor::Texture textureA2;
-  textureA2.size = 1.0;
-  textureA2.diffuse = "../media/fungus_diffusespecular.png";
-  textureA2.normal = "../media/flat_normal.png";
-  desc2.textures.push_back(textureA2);
+  HeightmapTexture textureA2;
+  textureA2.SetSize(1.0);
+  textureA2.SetDiffuse("../media/fungus_diffusespecular.png");
+  textureA2.SetNormal("../media/flat_normal.png");
+  desc2.AddTexture(textureA2);
 
-  HeightmapDescriptor::Blend blendA2;
-  blendA2.minHeight = 2.0;
-  blendA2.fadeDistance = 5.0;
-  desc2.blends.push_back(blendA2);
+  HeightmapBlend blendA2;
+  blendA2.SetMinHeight(2.0);
+  blendA2.SetFadeDistance(5.0);
+  desc2.AddBlend(blendA2);
 
-  HeightmapDescriptor::Texture textureB2;
-  textureB2.size = 1.0;
-  textureB2.diffuse = "../media/grass_diffusespecular.png";
-  textureB2.normal = "../media/flat_normal.png";
-  desc2.textures.push_back(textureB2);
+  HeightmapTexture textureB2;
+  textureB2.SetSize(1.0);
+  textureB2.SetDiffuse("../media/grass_diffusespecular.png");
+  textureB2.SetNormal("../media/flat_normal.png");
+  desc2.AddTexture(textureB2);
 
-  HeightmapDescriptor::Blend blendB2;
-  blendB2.minHeight = 8.0;
-  blendB2.fadeDistance = 5.0;
-  desc2.blends.push_back(blendB2);
+  HeightmapBlend blendB2;
+  blendB2.SetMinHeight(8.0);
+  blendB2.SetFadeDistance(5.0);
+  desc2.AddBlend(blendB2);
 
-  HeightmapDescriptor::Texture textureC2;
-  textureC2.size = 1.0;
-  textureC2.diffuse = "../media/dirt_diffusespecular.png";
-  textureC2.normal = "../media/flat_normal.png";
-  desc2.textures.push_back(textureC2);
-  desc2.position.Set(30, 0, 0);
+  HeightmapTexture textureC2;
+  textureC2.SetSize(1.0);
+  textureC2.SetDiffuse("../media/dirt_diffusespecular.png");
+  textureC2.SetNormal("../media/flat_normal.png");
+  desc2.AddTexture(textureC2);
+  desc2.SetPosition({30, 0, 0});
   auto heightmapGeom2 = _scene->CreateHeightmap(desc2);
 
   auto vis2 = _scene->CreateVisual();

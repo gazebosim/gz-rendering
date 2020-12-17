@@ -38,10 +38,6 @@ class HeightmapTest : public testing::Test,
     common::Console::SetVerbosity(4);
   }
 
-  /// \brief Test basic heightmap functionality.
-  /// \param[in] _renderEngine Engine to use.
-  public: void Heightmap(const std::string &_renderEngine);
-
   /// \brief Path to test media files.
   public: const std::string TEST_MEDIA_PATH{
         common::joinPaths(std::string(PROJECT_SOURCE_PATH),
@@ -49,19 +45,20 @@ class HeightmapTest : public testing::Test,
 };
 
 /////////////////////////////////////////////////
-void HeightmapTest::Heightmap(const std::string &_renderEngine)
+TEST_P(HeightmapTest, Heightmap)
 {
-  if (_renderEngine != "ogre")
+  std::string renderEngine{this->GetParam()};
+  if (renderEngine != "ogre")
   {
     igndbg << "Heightmap not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
+            << renderEngine << std::endl;
     return;
   }
 
-  auto engine = rendering::engine(_renderEngine);
+  auto engine = rendering::engine(renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    igndbg << "Engine '" << renderEngine
            << "' is not supported" << std::endl;
     return;
   }
@@ -84,75 +81,276 @@ void HeightmapTest::Heightmap(const std::string &_renderEngine)
   EXPECT_EQ(heightImage, data->Filename());
 
   HeightmapDescriptor desc;
-  desc.data = data;
-  desc.size = size;
-  desc.position = position;
-  desc.useTerrainPaging = true;
-  desc.sampling = 4u;
+  desc.SetData(data);
+  desc.SetSize(size);
+  desc.SetPosition(position);
+  desc.SetUseTerrainPaging(true);
+  desc.SetSampling(4u);
 
-  HeightmapDescriptor::Texture textureA;
-  textureA.size = 0.5;
-  textureA.diffuse = textureImage;
-  textureA.normal = normalImage;
-  desc.textures.push_back(textureA);
+  HeightmapTexture textureA;
+  textureA.SetSize(0.5);
+  textureA.SetDiffuse(textureImage);
+  textureA.SetNormal(normalImage);
+  desc.AddTexture(textureA);
 
-  HeightmapDescriptor::Blend blendA;
-  blendA.minHeight = 2.0;
-  blendA.fadeDistance = 5.0;
-  desc.blends.push_back(blendA);
+  HeightmapBlend blendA;
+  blendA.SetMinHeight(2.0);
+  blendA.SetFadeDistance(5.0);
+  desc.AddBlend(blendA);
 
-  HeightmapDescriptor::Texture textureB;
-  textureB.size = 0.5;
-  textureB.diffuse = textureImage;
-  textureB.normal = normalImage;
-  desc.textures.push_back(textureB);
+  HeightmapTexture textureB;
+  textureB.SetSize(0.5);
+  textureB.SetDiffuse(textureImage);
+  textureB.SetNormal(normalImage);
+  desc.AddTexture(textureB);
 
-  HeightmapDescriptor::Blend blendB;
-  blendB.minHeight = 4.0;
-  blendB.fadeDistance = 5.0;
-  desc.blends.push_back(blendB);
+  HeightmapBlend blendB;
+  blendB.SetMinHeight(4.0);
+  blendB.SetFadeDistance(5.0);
+  desc.AddBlend(blendB);
 
-  HeightmapDescriptor::Texture textureC;
-  textureC.size = 0.5;
-  textureC.diffuse = textureImage;
-  textureC.normal = normalImage;
-  desc.textures.push_back(textureC);
+  HeightmapTexture textureC;
+  textureC.SetSize(0.5);
+  textureC.SetDiffuse(textureImage);
+  textureC.SetNormal(normalImage);
+  desc.AddTexture(textureC);
 
   auto heightmap = scene->CreateHeightmap(desc);
   ASSERT_NE(nullptr, heightmap);
 
-  EXPECT_NE(nullptr, heightmap->Descriptor().data);
-  EXPECT_EQ(size, heightmap->Descriptor().size);
-  EXPECT_EQ(position, heightmap->Descriptor().position);
-  EXPECT_TRUE(heightmap->Descriptor().useTerrainPaging);
-  EXPECT_EQ(4u, heightmap->Descriptor().sampling);
+  EXPECT_NE(nullptr, heightmap->Descriptor().Data());
+  EXPECT_EQ(size, heightmap->Descriptor().Size());
+  EXPECT_EQ(position, heightmap->Descriptor().Position());
+  EXPECT_TRUE(heightmap->Descriptor().UseTerrainPaging());
+  EXPECT_EQ(4u, heightmap->Descriptor().Sampling());
 
-  EXPECT_EQ(3u, heightmap->Descriptor().textures.size());
-  for (auto texture : heightmap->Descriptor().textures)
+  EXPECT_EQ(3u, heightmap->Descriptor().TextureCount());
+  for (auto i = 0u; i < heightmap->Descriptor().TextureCount(); ++i)
   {
-    EXPECT_EQ(textureImage, texture.diffuse);
-    EXPECT_EQ(normalImage, texture.normal);
-    EXPECT_DOUBLE_EQ(0.5, texture.size);
+    auto texture = heightmap->Descriptor().TextureByIndex(i);
+    ASSERT_NE(nullptr, texture);
+    EXPECT_EQ(textureImage, texture->Diffuse());
+    EXPECT_EQ(normalImage, texture->Normal());
+    EXPECT_DOUBLE_EQ(0.5, texture->Size());
   }
 
-  ASSERT_EQ(2u, heightmap->Descriptor().blends.size());
-  EXPECT_DOUBLE_EQ(2.0, heightmap->Descriptor().blends[0].minHeight);
-  EXPECT_DOUBLE_EQ(5.0, heightmap->Descriptor().blends[0].fadeDistance);
-  EXPECT_DOUBLE_EQ(4.0, heightmap->Descriptor().blends[1].minHeight);
-  EXPECT_DOUBLE_EQ(5.0, heightmap->Descriptor().blends[1].fadeDistance);
+  ASSERT_EQ(2u, heightmap->Descriptor().BlendCount());
+
+  auto blend = heightmap->Descriptor().BlendByIndex(0);
+  ASSERT_NE(nullptr, blend);
+  EXPECT_DOUBLE_EQ(2.0, blend->MinHeight());
+  EXPECT_DOUBLE_EQ(5.0, blend->FadeDistance());
+
+  blend = heightmap->Descriptor().BlendByIndex(1);
+  ASSERT_NE(nullptr, blend);
+  EXPECT_DOUBLE_EQ(4.0, blend->MinHeight());
+  EXPECT_DOUBLE_EQ(5.0, blend->FadeDistance());
+
+  // Add to a visual
+  auto vis = scene->CreateVisual();
+  EXPECT_EQ(0u, vis->GeometryCount());
+
+  vis->AddGeometry(heightmap);
+  EXPECT_EQ(1u, vis->GeometryCount());
+  EXPECT_TRUE(vis->HasGeometry(heightmap));
+  EXPECT_EQ(heightmap, vis->GeometryByIndex(0));
+
+  scene->RootVisual()->AddChild(vis);
 
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());
 }
 
-/////////////////////////////////////////////////
-TEST_P(HeightmapTest, Heightmap)
+//////////////////////////////////////////////////
+TEST_P(HeightmapTest, MoveConstructor)
 {
-  this->Heightmap(this->GetParam());
+  HeightmapDescriptor descriptor;
+  descriptor.SetSize({0.1, 0.2, 0.3});
+  descriptor.SetPosition({0.5, 0.6, 0.7});
+  descriptor.SetUseTerrainPaging(true);
+  descriptor.SetSampling(123u);
+
+  HeightmapDescriptor descriptor2(std::move(descriptor));
+  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_TRUE(descriptor2.UseTerrainPaging());
+  EXPECT_EQ(123u, descriptor2.Sampling());
+
+  HeightmapTexture texture;
+  texture.SetSize(123.456);
+  texture.SetDiffuse("diffuse");
+  texture.SetNormal("normal");
+
+  HeightmapTexture texture2(std::move(texture));
+  EXPECT_DOUBLE_EQ(123.456, texture2.Size());
+  EXPECT_EQ("diffuse", texture2.Diffuse());
+  EXPECT_EQ("normal", texture2.Normal());
+
+  HeightmapBlend blend;
+  blend.SetMinHeight(123.456);
+  blend.SetFadeDistance(456.123);
+
+  HeightmapBlend blend2(std::move(blend));
+  EXPECT_DOUBLE_EQ(123.456, blend2.MinHeight());
+  EXPECT_DOUBLE_EQ(456.123, blend2.FadeDistance());
+}
+
+/////////////////////////////////////////////////
+TEST_P(HeightmapTest, CopyConstructor)
+{
+  HeightmapDescriptor descriptor;
+  descriptor.SetSize({0.1, 0.2, 0.3});
+  descriptor.SetPosition({0.5, 0.6, 0.7});
+  descriptor.SetUseTerrainPaging(true);
+  descriptor.SetSampling(123u);
+
+  HeightmapDescriptor descriptor2(descriptor);
+  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_TRUE(descriptor2.UseTerrainPaging());
+  EXPECT_EQ(123u, descriptor2.Sampling());
+
+  HeightmapTexture texture;
+  texture.SetSize(123.456);
+  texture.SetDiffuse("diffuse");
+  texture.SetNormal("normal");
+
+  HeightmapTexture texture2(texture);
+  EXPECT_DOUBLE_EQ(123.456, texture2.Size());
+  EXPECT_EQ("diffuse", texture2.Diffuse());
+  EXPECT_EQ("normal", texture2.Normal());
+
+  HeightmapBlend blend;
+  blend.SetMinHeight(123.456);
+  blend.SetFadeDistance(456.123);
+
+  HeightmapBlend blend2(blend);
+  EXPECT_DOUBLE_EQ(123.456, blend2.MinHeight());
+  EXPECT_DOUBLE_EQ(456.123, blend2.FadeDistance());
+}
+
+/////////////////////////////////////////////////
+TEST_P(HeightmapTest, CopyAssignmentOperator)
+{
+  HeightmapDescriptor descriptor;
+  descriptor.SetSize({0.1, 0.2, 0.3});
+  descriptor.SetPosition({0.5, 0.6, 0.7});
+  descriptor.SetUseTerrainPaging(true);
+  descriptor.SetSampling(123u);
+
+  HeightmapDescriptor descriptor2;
+  descriptor2 = descriptor;
+  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_TRUE(descriptor2.UseTerrainPaging());
+  EXPECT_EQ(123u, descriptor2.Sampling());
+
+  HeightmapTexture texture;
+  texture.SetSize(123.456);
+  texture.SetDiffuse("diffuse");
+  texture.SetNormal("normal");
+
+  HeightmapTexture texture2;
+  texture2 = texture;
+  EXPECT_DOUBLE_EQ(123.456, texture2.Size());
+  EXPECT_EQ("diffuse", texture2.Diffuse());
+  EXPECT_EQ("normal", texture2.Normal());
+
+  HeightmapBlend blend;
+  blend.SetMinHeight(123.456);
+  blend.SetFadeDistance(456.123);
+
+  HeightmapBlend blend2;
+  blend2 = blend;
+  EXPECT_DOUBLE_EQ(123.456, blend2.MinHeight());
+  EXPECT_DOUBLE_EQ(456.123, blend2.FadeDistance());
+}
+
+/////////////////////////////////////////////////
+TEST_P(HeightmapTest, MoveAssignmentOperator)
+{
+  HeightmapDescriptor descriptor;
+  descriptor.SetSize({0.1, 0.2, 0.3});
+  descriptor.SetPosition({0.5, 0.6, 0.7});
+  descriptor.SetUseTerrainPaging(true);
+  descriptor.SetSampling(123u);
+
+  HeightmapDescriptor descriptor2;
+  descriptor2 = std::move(descriptor);
+  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_TRUE(descriptor2.UseTerrainPaging());
+  EXPECT_EQ(123u, descriptor2.Sampling());
+
+  HeightmapTexture texture;
+  texture.SetSize(123.456);
+  texture.SetDiffuse("diffuse");
+  texture.SetNormal("normal");
+
+  HeightmapTexture texture2;
+  texture2 = std::move(texture);
+  EXPECT_DOUBLE_EQ(123.456, texture2.Size());
+  EXPECT_EQ("diffuse", texture2.Diffuse());
+  EXPECT_EQ("normal", texture2.Normal());
+
+  HeightmapBlend blend;
+  blend.SetMinHeight(123.456);
+  blend.SetFadeDistance(456.123);
+
+  HeightmapBlend blend2;
+  blend2 = std::move(blend);
+  EXPECT_DOUBLE_EQ(123.456, blend2.MinHeight());
+  EXPECT_DOUBLE_EQ(456.123, blend2.FadeDistance());
+}
+
+/////////////////////////////////////////////////
+TEST_P(HeightmapTest, CopyAssignmentAfterMove)
+{
+  HeightmapDescriptor descriptor1;
+  descriptor1.SetSampling(123u);
+
+  HeightmapDescriptor descriptor2;
+  descriptor2.SetSampling(456u);
+
+  // This is similar to what std::swap does except it uses std::move for each
+  // assignment
+  HeightmapDescriptor tmp = std::move(descriptor1);
+  descriptor1 = descriptor2;
+  descriptor2 = tmp;
+
+  EXPECT_EQ(456u, descriptor1.Sampling());
+  EXPECT_EQ(123u, descriptor2.Sampling());
+
+  HeightmapTexture texture1;
+  texture1.SetSize(123.456);
+
+  HeightmapTexture texture2;
+  texture2.SetSize(456.123);
+
+  HeightmapTexture tmpTexture = std::move(texture1);
+  texture1 = texture2;
+  texture2 = tmpTexture;
+
+  EXPECT_DOUBLE_EQ(456.123, texture1.Size());
+  EXPECT_DOUBLE_EQ(123.456, texture2.Size());
+
+  HeightmapBlend blend1;
+  blend1.SetMinHeight(123.456);
+
+  HeightmapBlend blend2;
+  blend2.SetMinHeight(456.123);
+
+  HeightmapBlend tmpBlend = std::move(blend1);
+  blend1 = blend2;
+  blend2 = tmpBlend;
+
+  EXPECT_DOUBLE_EQ(456.123, blend1.MinHeight());
+  EXPECT_DOUBLE_EQ(123.456, blend2.MinHeight());
 }
 
 // TODO(anyone) Running test with Ogre1. Update once Ogre2 is supported.
+// https://github.com/ignitionrobotics/ign-rendering/issues/187
 INSTANTIATE_TEST_CASE_P(Heightmap, HeightmapTest,
     ::testing::ValuesIn({"ogre"}),
     ignition::rendering::PrintToStringParam());

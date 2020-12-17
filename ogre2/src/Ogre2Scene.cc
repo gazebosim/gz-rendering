@@ -372,7 +372,9 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
 HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int,
     const std::string &, const HeightmapDescriptor &)
 {
-  // TODO(anyone)
+  ignerr << "Ogre 2 doesn't support heightmaps yet, see " <<
+      "https://github.com/ignitionrobotics/ign-rendering/issues/187"
+      << std::endl;
   return nullptr;
 }
 

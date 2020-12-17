@@ -25,59 +25,221 @@
 
 namespace ignition
 {
-  namespace rendering
+namespace rendering
+{
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+  class HeightmapDescriptorPrivate;
+  class HeightmapTexturePrivate;
+  class HeightmapBlendPrivate;
+
+  /// \brief Texture to be used on heightmaps.
+  class IGNITION_RENDERING_VISIBLE HeightmapTexture
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \struct HeightmapDescriptor HeightmapDescriptor.hh
-    /// ignition/rendering/HeightmapDescriptor.hh
-    /// \brief Describes how a Heightmap should be loaded
-    struct IGNITION_RENDERING_VISIBLE HeightmapDescriptor
-    {
-      struct IGNITION_RENDERING_VISIBLE Texture
-      {
-        /// \brief Texture size.
-        public: double size{1.0};
+    /// \brief Constructor
+    public: HeightmapTexture();
 
-        /// \brief Path to diffuse texture file.
-        public: std::string diffuse;
+    /// \brief Copy constructor
+    /// \param[in] _texture HeightmapTexture to copy.
+    public: HeightmapTexture(const HeightmapTexture &_texture);
 
-        /// \brief Path to normal map file.
-        public: std::string normal;
-      };
+    /// \brief Move constructor
+    /// \param[in] _texture HeightmapTexture to move.
+    public: HeightmapTexture(HeightmapTexture &&_texture) noexcept;
 
-      struct IGNITION_RENDERING_VISIBLE Blend
-      {
-        /// \brief Minimum height to blend from.
-        public: double minHeight{0.0};
+    /// \brief Destructor
+    public: virtual ~HeightmapTexture();
 
-        /// \brief Distance to blend.
-        public: double fadeDistance{0.0};
-      };
+    /// \brief Move assignment operator.
+    /// \param[in] _texture Heightmap texture to move.
+    /// \return Reference to this.
+    public: HeightmapTexture &operator=(HeightmapTexture &&_texture);
 
-      /// \brief Contains heightfield data.
-      public: std::shared_ptr<common::HeightmapData> data{nullptr};
+    /// \brief Copy Assignment operator.
+    /// \param[in] _texture The heightmap texture to set values from.
+    /// \return *this
+    public: HeightmapTexture &operator=(const HeightmapTexture &_texture);
 
-      /// \brief Heightmap XYZ size in meters.
-      public: math::Vector3d size{1.0, 1.0, 1.0};
+    /// \brief Get the heightmap texture's size.
+    /// \return The size of the heightmap texture in meters.
+    public: double Size() const;
 
-      /// \brief Heightmap XYZ origin in meters.
-      public: math::Vector3d position{0.0, 0.0, 0.0};
+    /// \brief Set the size of the texture in meters.
+    /// \param[in] _uri The size of the texture in meters.
+    public: void SetSize(double _uri);
 
-      /// \brief Flag that enables/disables the terrain paging
-      public: bool useTerrainPaging{false};
+    /// \brief Get the heightmap texture's diffuse map.
+    /// \return The diffuse map of the heightmap texture.
+    public: std::string Diffuse() const;
 
-      /// \brief Number of samples per heightmap datum.
-      public: unsigned int sampling{2u};
+    /// \brief Set the filename of the diffuse map.
+    /// \param[in] _diffuse The diffuse map of the heightmap texture.
+    public: void SetDiffuse(const std::string &_diffuse);
 
-      /// \brief Textures in this heightmap, in height order.
-      public: std::vector<Texture> textures;
+    /// \brief Get the heightmap texture's normal map.
+    /// \return The normal map of the heightmap texture.
+    public: std::string Normal() const;
 
-      /// \brief Blends in this heightmap, in height order. There should be one
-      /// less than textures.
-      public: std::vector<Blend> blends;
-    };
-    }
-  }
+    /// \brief Set the filename of the normal map.
+    /// \param[in] _normal The normal map of the heightmap texture.
+    public: void SetNormal(const std::string &_normal);
+
+    /// \brief Private data pointer.
+    private: std::unique_ptr<HeightmapTexturePrivate> dataPtr;
+  };
+
+  /// \brief Blend information to be used between textures on heightmaps.
+  class IGNITION_RENDERING_VISIBLE HeightmapBlend
+  {
+    /// \brief Constructor
+    public: HeightmapBlend();
+
+    /// \brief Copy constructor
+    /// \param[in] _blend HeightmapBlend to copy.
+    public: HeightmapBlend(const HeightmapBlend &_blend);
+
+    /// \brief Move constructor
+    /// \param[in] _blend HeightmapBlend to move.
+    public: HeightmapBlend(HeightmapBlend &&_blend) noexcept;
+
+    /// \brief Destructor
+    public: virtual ~HeightmapBlend();
+
+    /// \brief Move assignment operator.
+    /// \param[in] _blend Heightmap blend to move.
+    /// \return Reference to this.
+    public: HeightmapBlend &operator=(HeightmapBlend &&_blend);
+
+    /// \brief Copy Assignment operator.
+    /// \param[in] _blend The heightmap blend to set values from.
+    /// \return *this
+    public: HeightmapBlend &operator=(const HeightmapBlend &_blend);
+
+    /// \brief Get the heightmap blend's minimum height.
+    /// \return The minimum height of the blend layer.
+    public: double MinHeight() const;
+
+    /// \brief Set the minimum height of the blend in meters.
+    /// \param[in] _uri The minimum height of the blend in meters.
+    public: void SetMinHeight(double _minHeight);
+
+    /// \brief Get the heightmap blend's fade distance.
+    /// \return The fade distance of the heightmap blend in meters.
+    public: double FadeDistance() const;
+
+    /// \brief Set the distance over which the blend occurs.
+    /// \param[in] _uri The distance in meters.
+    public: void SetFadeDistance(double _fadeDistance);
+
+    /// \brief Private data pointer.
+    private: std::unique_ptr<HeightmapBlendPrivate> dataPtr;
+  };
+
+  /// \class HeightmapDescriptor HeightmapDescriptor.hh
+  /// ignition/rendering/HeightmapDescriptor.hh
+  /// \brief Describes how a Heightmap should be loaded
+  class IGNITION_RENDERING_VISIBLE HeightmapDescriptor
+  {
+    /// \brief Constructor
+    public: HeightmapDescriptor();
+
+    /// \brief Copy constructor
+    /// \param[in] _heightmap HeightmapDescriptor to copy.
+    public: HeightmapDescriptor(const HeightmapDescriptor &_desc);
+
+    /// \brief Move constructor
+    /// \param[in] _desc HeightmapDescriptor to move.
+    public: HeightmapDescriptor(HeightmapDescriptor &&_desc) noexcept;
+
+    /// \brief Destructor
+    public: virtual ~HeightmapDescriptor();
+
+    /// \brief Move assignment operator.
+    /// \param[in] _desc HeightmapDescriptor to move.
+    /// \return Reference to this.
+    public: HeightmapDescriptor &operator=(HeightmapDescriptor &&_desc);
+
+    /// \brief Copy Assignment operator.
+    /// \param[in] _desc The heightmap to set values from.
+    /// \return *this
+    public: HeightmapDescriptor &operator=(const HeightmapDescriptor &_desc);
+
+    /// \brief Get the heightfield data.
+    /// \return Heightmap data.
+    public: std::shared_ptr<common::HeightmapData> Data() const;
+
+    /// \brief Set the heightfield data.
+    /// \param[in] _data New data.
+    public: void SetData(const std::shared_ptr<common::HeightmapData> &_data);
+
+    /// \brief Get the heightmap's scaling factor.
+    /// \return The heightmap's size.
+    public: ignition::math::Vector3d Size() const;
+
+    /// \brief Set the heightmap's scaling factor. Defaults to 1x1x1.
+    /// \return The heightmap's size factor.
+    public: void SetSize(const ignition::math::Vector3d &_size);
+
+    /// \brief Get the heightmap's position offset.
+    /// \return The heightmap's position offset.
+    public: ignition::math::Vector3d Position() const;
+
+    /// \brief Set the heightmap's position offset.
+    /// \return The heightmap's position offset.
+    public: void SetPosition(const ignition::math::Vector3d &_position);
+
+    /// \brief Get whether the heightmap uses terrain paging.
+    /// \return True if the heightmap uses terrain paging.
+    public: bool UseTerrainPaging() const;
+
+    /// \brief Set whether the heightmap uses terrain paging. Defaults to false.
+    /// \param[in] _use True to use.
+    public: void SetUseTerrainPaging(bool _use);
+
+    /// \brief Get the heightmap's sampling per datum.
+    /// \return The heightmap's sampling.
+    public: unsigned int Sampling() const;
+
+    /// \brief Set the heightmap's sampling. Defaults to 2.
+    /// \param[in] _sampling The heightmap's sampling per datum.
+    public: void SetSampling(unsigned int _sampling);
+
+    /// \brief Get the number of heightmap textures.
+    /// \return Number of heightmap textures contained in this Heightmap object.
+    public: uint64_t TextureCount() const;
+
+    /// \brief Get a heightmap texture based on an index.
+    /// \param[in] _index Index of the heightmap texture. The index should be in
+    /// the range [0..TextureCount()).
+    /// \return Pointer to the heightmap texture. Nullptr if the index does not
+    /// exist.
+    /// \sa uint64_t TextureCount() const
+    public: const HeightmapTexture *TextureByIndex(uint64_t _index) const;
+
+    /// \brief Add a heightmap texture.
+    /// \param[in] _texture Texture to add.
+    public: void AddTexture(const HeightmapTexture &_texture);
+
+    /// \brief Get the number of heightmap blends.
+    /// \return Number of heightmap blends contained in this Heightmap object.
+    public: uint64_t BlendCount() const;
+
+    /// \brief Get a heightmap blend based on an index.
+    /// \param[in] _index Index of the heightmap blend. The index should be in
+    /// the range [0..BlendCount()).
+    /// \return Pointer to the heightmap blend. Nullptr if the index does not
+    /// exist.
+    /// \sa uint64_t BlendCount() const
+    public: const HeightmapBlend *BlendByIndex(uint64_t _index) const;
+
+    /// \brief Add a heightmap blend.
+    /// \param[in] _blend Blend to add.
+    public: void AddBlend(const HeightmapBlend &_blend);
+
+    /// \internal
+    /// \brief Private data
+    private: std::unique_ptr<HeightmapDescriptorPrivate> dataPtr;
+  };
+}
+}
 }
 #endif

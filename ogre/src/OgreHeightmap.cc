@@ -338,8 +338,9 @@ class DummyPageProvider : public Ogre::PageProvider
 //////////////////////////////////////////////////
 class ignition::rendering::OgreHeightmapPrivate
 {
-  /// \brief Global options.
-  public: Ogre::TerrainGlobalOptions *terrainGlobals;
+  /// \brief Global options - in some Ogre versions, this is enforced as a
+  /// singleton.
+  public: static Ogre::TerrainGlobalOptions *terrainGlobals;
 
   /// \brief The raw height values.
   public: std::vector<float> heights;
@@ -431,6 +432,9 @@ class ignition::rendering::OgreHeightmapPrivate
   public: IgnTerrainMatGen *ignMatGen{nullptr};
 #endif
 };
+
+Ogre::TerrainGlobalOptions
+    *ignition::rendering::OgreHeightmapPrivate::terrainGlobals = nullptr;
 
 using namespace ignition;
 using namespace rendering;
@@ -551,7 +555,7 @@ void OgreHeightmap::Init()
 
   // Get the full path of the image heightmap
   // \todo(anyone) Name is generated at runtime and depends on the number of
-  // objects, so it's hard to make sure it's the same across runs
+  // objects, so it's impossible to make sure it's the same across runs
   auto terrainDirPath = common::joinPaths(this->dataPtr->pagingDir,
       this->Name());
 
@@ -621,7 +625,39 @@ void OgreHeightmap::Init()
       this->descriptor.Position().Z() + minElevation);
 
   this->dataPtr->terrainGroup->setOrigin(OgreConversions::Convert(pos));
+
   this->ConfigureTerrainDefaults();
+
+  // Configure import settings
+  auto &defaultimp = this->dataPtr->terrainGroup->getDefaultImportSettings();
+
+  defaultimp.terrainSize = this->dataPtr->dataSize;
+  defaultimp.worldSize = this->descriptor.Size().X();
+
+  defaultimp.inputScale = 1.0;
+
+  defaultimp.minBatchSize = 17;
+  defaultimp.maxBatchSize = 65;
+
+  // textures. The default material generator takes two materials per layer.
+  //    1. diffuse_specular - diffuse texture with a specular map in the
+  //    alpha channel
+  //    2. normal_height - normal map with a height map in the alpha channel
+  {
+    // number of texture layers
+    defaultimp.layerList.resize(this->descriptor.TextureCount());
+
+    // The worldSize decides how big each splat of textures will be.
+    // A smaller value will increase the resolution
+    for (unsigned int i = 0; i < this->descriptor.TextureCount(); ++i)
+    {
+      auto texture = this->descriptor.TextureByIndex(i);
+
+      defaultimp.layerList[i].worldSize = texture->Size();
+      defaultimp.layerList[i].textureNames.push_back(texture->Diffuse());
+      defaultimp.layerList[i].textureNames.push_back(texture->Normal());
+    }
+  }
 
   this->dataPtr->terrainHashChanged = this->PrepareTerrain(terrainDirPath);
 
@@ -678,7 +714,7 @@ void OgreHeightmap::Init()
         << " ms." << std::endl;
 
   // Calculate blend maps
-//  if (this->dataPtr->terrainsImported)
+  if (this->dataPtr->terrainsImported)
   {
     auto ti = this->dataPtr->terrainGroup->getTerrainIterator();
     while (ti.hasMoreElements())
@@ -686,10 +722,6 @@ void OgreHeightmap::Init()
       this->InitBlendMaps(ti.getNext()->instance);
     }
   }
-//  else
-//  {
-//    ignerr << "Failure importing terrains, can't set blend maps." << std::endl;
-//  }
 
   this->dataPtr->terrainGroup->freeTemporaryResources();
 }
@@ -704,6 +736,7 @@ void OgreHeightmap::PreRender()
     return;
   }
 
+  // Make sure the heightmap finishes loading
   if (this->dataPtr->terrainGroup->isDerivedDataUpdateInProgress())
   {
     Ogre::Root::getSingleton().getWorkQueue()->processResponses();
@@ -728,12 +761,24 @@ void OgreHeightmap::PreRender()
 //         << std::endl;
 //  auto time = std::chrono::steady_clock::now();
 //
-//  this->dataPtr->terrainGroup->saveAllTerrains(true);
+//  bool saved{false};
+//  try
+//  {
+//    this->dataPtr->terrainGroup->saveAllTerrains(true);
+//    saved = true;
+//  }
+//  catch(Ogre::Exception &_e)
+//  {
+//    ignerr << "Failed to save heightmap: " << _e.what() << std::endl;
+//  }
 //
-//  ignmsg << "Heightmap cache data saved. Process took "
-//        <<  std::chrono::duration_cast<std::chrono::milliseconds>(
-//            std::chrono::steady_clock::now() - time).count()
-//        << " ms." << std::endl;
+//  if (saved)
+//  {
+//    ignmsg << "Heightmap cache data saved. Process took "
+//          <<  std::chrono::duration_cast<std::chrono::milliseconds>(
+//              std::chrono::steady_clock::now() - time).count()
+//          << " ms." << std::endl;
+//  }
 
   this->dataPtr->terrainsImported = false;
 }
@@ -741,6 +786,9 @@ void OgreHeightmap::PreRender()
 ///////////////////////////////////////////////////
 void OgreHeightmap::ConfigureTerrainDefaults()
 {
+  if (this->dataPtr->terrainGlobals != nullptr)
+    return;
+
   // Configure global
   this->dataPtr->terrainGlobals = new Ogre::TerrainGlobalOptions();
 
@@ -800,37 +848,6 @@ void OgreHeightmap::ConfigureTerrainDefaults()
         Ogre::Vector3(0, 0, -1));
     this->dataPtr->terrainGlobals->setCompositeMapDiffuse(
         Ogre::ColourValue(.6, .6, .6, 1));
-  }
-
-  // Configure default import settings for if we use imported image
-  auto &defaultimp = this->dataPtr->terrainGroup->getDefaultImportSettings();
-
-  defaultimp.terrainSize = this->dataPtr->dataSize;
-  defaultimp.worldSize = this->descriptor.Size().X();
-
-  defaultimp.inputScale = 1.0;
-
-  defaultimp.minBatchSize = 17;
-  defaultimp.maxBatchSize = 65;
-
-  // textures. The default material generator takes two materials per layer.
-  //    1. diffuse_specular - diffuse texture with a specular map in the
-  //    alpha channel
-  //    2. normal_height - normal map with a height map in the alpha channel
-  {
-    // number of texture layers
-    defaultimp.layerList.resize(this->descriptor.TextureCount());
-
-    // The worldSize decides how big each splat of textures will be.
-    // A smaller value will increase the resolution
-    for (unsigned int i = 0; i < this->descriptor.TextureCount(); ++i)
-    {
-      auto texture = this->descriptor.TextureByIndex(i);
-
-      defaultimp.layerList[i].worldSize = texture->Size();
-      defaultimp.layerList[i].textureNames.push_back(texture->Diffuse());
-      defaultimp.layerList[i].textureNames.push_back(texture->Normal());
-    }
   }
 }
 

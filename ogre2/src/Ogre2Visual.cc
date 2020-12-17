@@ -101,6 +101,7 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
       Ogre::Any(this->Id()));
   ogreObj->setName(this->Name() + "_" + _geometry->Name());
   ogreObj->setVisibilityFlags(this->visibilityFlags);
+  ogreObj->setRenderQueueGroup(this->queueOrder);
 
   derived->SetParent(this->SharedThis());
   this->ogreNode->attachObject(ogreObj);

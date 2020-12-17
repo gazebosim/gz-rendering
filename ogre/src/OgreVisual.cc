@@ -85,7 +85,8 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
   ogreObj->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
   ogreObj->setVisibilityFlags(this->visibilityFlags);
-
+  ignerr << _geometry->Name() << " this->queueOrder " << this->queueOrder << std::endl;
+  ogreObj->setRenderQueueGroup(this->queueOrder);
   derived->SetParent(this->SharedThis());
   this->ogreNode->attachObject(ogreObj);
   return true;

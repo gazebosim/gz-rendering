@@ -88,15 +88,15 @@ void buildScene(ScenePtr _scene)
   red->SetShininess(50);
   red->SetReflectivity(0);
 
-  // create sphere visual
-  VisualPtr sphere = _scene->CreateVisual();
-  sphere->AddGeometry(_scene->CreateSphere());
-  sphere->SetOrigin(0.0, -0.5, 0.0);
-  sphere->SetLocalPosition(3, 0, 0);
-  sphere->SetLocalRotation(0, 0, 0);
-  sphere->SetLocalScale(1, 2.5, 1);
-  sphere->SetMaterial(red);
-  root->AddChild(sphere);
+  // // create sphere visual
+  // VisualPtr sphere = _scene->CreateVisual();
+  // sphere->AddGeometry(_scene->CreateSphere());
+  // sphere->SetOrigin(0.0, -0.5, 0.0);
+  // sphere->SetLocalPosition(3, 0, 0);
+  // sphere->SetLocalRotation(0, 0, 0);
+  // sphere->SetLocalScale(1, 2.5, 1);
+  // sphere->SetMaterial(red);
+  // root->AddChild(sphere);
 
   // create blue material
   MaterialPtr blue = _scene->CreateMaterial();
@@ -106,15 +106,15 @@ void buildScene(ScenePtr _scene)
   blue->SetShininess(50);
   blue->SetReflectivity(0);
 
-  // create box visual
-  VisualPtr box = _scene->CreateVisual();
-  box->AddGeometry(_scene->CreateBox());
-  box->SetOrigin(0.0, 0.5, 0.0);
-  box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
-  box->SetLocalScale(1, 2.5, 1);
-  box->SetMaterial(blue);
-  root->AddChild(box);
+  // // create box visual
+  // VisualPtr box = _scene->CreateVisual();
+  // box->AddGeometry(_scene->CreateBox());
+  // box->SetOrigin(0.0, 0.5, 0.0);
+  // box->SetLocalPosition(3, 0, 0);
+  // box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
+  // box->SetLocalScale(1, 2.5, 1);
+  // box->SetMaterial(blue);
+  // root->AddChild(box);
 
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
@@ -125,11 +125,23 @@ void buildScene(ScenePtr _scene)
 
   // create plane visual
   VisualPtr plane = _scene->CreateVisual();
+  plane->SetQueueOrder(50);
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(5, 8, 1);
   plane->SetLocalPosition(3, 0, -0.5);
+  plane->Scale(0.2, 0.2, 1);
   plane->SetMaterial(white);
   root->AddChild(plane);
+
+  // create plane visual
+  VisualPtr plane2 = _scene->CreateVisual();
+  plane2->SetQueueOrder(75);
+  plane2->AddGeometry(_scene->CreatePlane());
+  plane2->SetLocalScale(5, 8, 1);
+  plane2->SetLocalPosition(3, 0, -0.5);
+  plane2->Scale(0.1, 0.1, 1);
+  plane2->SetMaterial(red);
+  root->AddChild(plane2);
 
   // create axis visual
   VisualPtr axis = _scene->CreateAxisVisual();
@@ -148,7 +160,7 @@ void buildScene(ScenePtr _scene)
   root->AddChild(camera);
 
   // track target
-  camera->SetTrackTarget(box);
+  camera->SetTrackTarget(plane2);
 }
 
 //////////////////////////////////////////////////

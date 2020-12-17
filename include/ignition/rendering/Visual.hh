@@ -122,6 +122,10 @@ namespace ignition
       /// \return visibility flags
       public: virtual uint32_t VisibilityFlags() const = 0;
 
+      public: virtual void SetQueueOrder(uint8_t _queue) = 0;
+
+      public: virtual uint8_t QueueOrder() const = 0;
+
       /// \brief Add visibility flags
       /// \param[in] _visibility flags
       public: virtual void AddVisibilityFlags(uint32_t _flags) = 0;

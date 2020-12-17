@@ -89,6 +89,12 @@ namespace ignition
       public: virtual uint32_t VisibilityFlags() const override;
 
       // Documentation inherited.
+      public: virtual void SetQueueOrder(uint8_t _queueOrder) override;
+
+      // Documentation inherited.
+      public: virtual uint8_t QueueOrder() const override;
+
+      // Documentation inherited.
       public: virtual void AddVisibilityFlags(uint32_t _flags) override;
 
       // Documentation inherited.
@@ -133,6 +139,9 @@ namespace ignition
 
       /// \brief Visual's visibility flags
       protected: uint32_t visibilityFlags = IGN_VISIBILITY_ALL;
+
+      /// \brief Visual's visibility flags
+      protected: uint32_t queueOrder = 50;
 
       /// \brief The bounding box of the visual
       protected: ignition::math::AxisAlignedBox boundingBox;
@@ -428,6 +437,29 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseVisual<T>::SetQueueOrder(uint8_t _queueOrder)
+    {
+      this->queueOrder = _queueOrder;
+      // recursively set child visuals' visibility flags
+      auto childNodes =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!childNodes)
+      {
+        ignerr << "Cast failed in BaseVisual::SetQueueOrder" << std::endl;
+        return;
+      }
+      for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+      {
+        NodePtr child = it->second;
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        if (visual)
+          visual->SetQueueOrder(_queueOrder);
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseVisual<T>::SetVisibilityFlags(uint32_t _flags)
     {
       this->visibilityFlags = _flags;
@@ -455,6 +487,13 @@ namespace ignition
     uint32_t BaseVisual<T>::VisibilityFlags() const
     {
       return this->visibilityFlags;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    uint8_t BaseVisual<T>::QueueOrder() const
+    {
+      return this->queueOrder;
     }
 
     //////////////////////////////////////////////////

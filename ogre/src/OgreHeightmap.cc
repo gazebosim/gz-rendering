@@ -88,6 +88,8 @@ class IgnTerrainMatGen : public Ogre::TerrainMaterialGeneratorA
     protected: class ShaderHelperGLSL :
         public Ogre::TerrainMaterialGeneratorA::SM2Profile::ShaderHelperGLSL
     {
+      public: ShaderHelperGLSL();
+
       public: virtual Ogre::HighLevelGpuProgramPtr generateVertexProgram(
                   const SM2Profile *_prof, const Ogre::Terrain *_terrain,
                   TechniqueType _tt);
@@ -169,6 +171,14 @@ class IgnTerrainMatGen : public Ogre::TerrainMaterialGeneratorA
                      const Ogre::GpuProgramParametersSharedPtr &_params);
 
       private: Ogre::String GetChannel(Ogre::uint _idx);
+
+       /// \brief Capabilities
+       private: std::string glslVersion = "130";
+       private: std::string vpInStr = "in";
+       private: std::string vpOutStr = "out";
+       private: std::string fpInStr = "in";
+       private: std::string fpOutStr = "out";
+       private: std::string textureStr = "texture";
     };
 
     // Needed to allow access from ShaderHelperGLSL to protected members
@@ -222,22 +232,7 @@ class IgnTerrainMatGen : public Ogre::TerrainMaterialGeneratorA
     // of SM2Profile.
     friend ShaderHelperCg;
   };
-
-  /// \brief Capabilities
-  public: static std::string glslVersion;
-  public: static std::string vpInStr;
-  public: static std::string vpOutStr;
-  public: static std::string fpInStr;
-  public: static std::string fpOutStr;
-  public: static std::string textureStr;
 };
-
-std::string IgnTerrainMatGen::glslVersion = "130";
-std::string IgnTerrainMatGen::vpInStr = "in";
-std::string IgnTerrainMatGen::vpOutStr = "out";
-std::string IgnTerrainMatGen::fpInStr = "in";
-std::string IgnTerrainMatGen::fpOutStr = "out";
-std::string IgnTerrainMatGen::textureStr = "texture";
 
 // #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 11
 #endif
@@ -1186,22 +1181,6 @@ MaterialPtr OgreHeightmap::Material() const
 IgnTerrainMatGen::IgnTerrainMatGen()
 : TerrainMaterialGeneratorA()
 {
-  auto capabilities =
-      Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
-  Ogre::DriverVersion glVersion;
-  glVersion.build = 0;
-  glVersion.major = 3;
-  glVersion.minor = 0;
-  glVersion.release = 0;
-  if (capabilities->isDriverOlderThanVersion(glVersion))
-  {
-    IgnTerrainMatGen::glslVersion = "120";
-    IgnTerrainMatGen::vpInStr = "attribute";
-    IgnTerrainMatGen::vpOutStr = "varying";
-    IgnTerrainMatGen::fpInStr = "varying";
-    IgnTerrainMatGen::textureStr = "texture2D";
-  }
-
   /// \TODO(anyone) - This will have to be changed if TerrainMaterialGeneratorA
   /// ever supports more profiles than only CG
 
@@ -1521,6 +1500,25 @@ void IgnTerrainMatGen::SM2Profile::UpdateParamsForCompositeMap(
 /////////////////////////////////////////////////
 
 /////////////////////////////////////////////////
+IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::
+  IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL()
+{
+  auto capabilities =
+      Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+  Ogre::DriverVersion glVersion;
+  glVersion.build = 0;
+  glVersion.major = 3;
+  glVersion.minor = 0;
+  glVersion.release = 0;
+  if (capabilities->isDriverOlderThanVersion(glVersion))
+  {
+    this->glslVersion = "120";
+    this->vpInStr = "attribute";
+    this->vpOutStr = "varying";
+    this->fpInStr = "varying";
+    this->textureStr = "texture2D";
+  }
+}
 Ogre::HighLevelGpuProgramPtr
 IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateVertexProgram(
     const SM2Profile *_prof, const Ogre::Terrain *_terrain,
@@ -1684,7 +1682,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateVpHeader(
 {
   bool compression = false;
 
-  _outStream << "#version " << IgnTerrainMatGen::glslVersion << "\n\n";
+  _outStream << "#version " << this->glslVersion << "\n\n";
 
 #if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 8
   compression = _terrain->_getUseVertexCompression() &&
@@ -1694,21 +1692,21 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateVpHeader(
   {
     // The parameter "in vec4 vertex;" is automatically bound by OGRE.
     // The parameter "in vec4 uv0'" is automatically bound by OGRE.
-    _outStream << IgnTerrainMatGen::vpInStr << " vec4 vertex;\n"
-               << IgnTerrainMatGen::vpInStr << " vec4 uv0;\n";
+    _outStream << this->vpInStr << " vec4 vertex;\n"
+               << this->vpInStr << " vec4 uv0;\n";
   }
   else
 #endif
   {
     // The parameter "in vec4 vertex;" is automatically bound by OGRE.
     // The parameter "in vec4 uv0'" is automatically bound by OGRE.
-    _outStream << IgnTerrainMatGen::vpInStr << " vec4 vertex;\n"
-               << IgnTerrainMatGen::vpInStr << " vec4 uv0;\n";
+    _outStream << this->vpInStr << " vec4 vertex;\n"
+               << this->vpInStr << " vec4 uv0;\n";
   }
 
   if (_tt != RENDER_COMPOSITE_MAP)
     // The parameter "in vec4 uv1'" is automatically bound by OGRE.
-    _outStream << IgnTerrainMatGen::vpInStr << " vec4 uv1;\n";
+    _outStream << this->vpInStr << " vec4 uv1;\n";
 
   _outStream <<
     "uniform mat4 worldMatrix;\n"
@@ -1737,10 +1735,10 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateVpHeader(
     _outStream << "uniform vec4 uvMul" << i << ";\n";
 
   _outStream <<
-    IgnTerrainMatGen::vpOutStr << " vec4 position;\n";
+    this->vpOutStr << " vec4 position;\n";
 
   unsigned int texCoordSet = 1;
-  _outStream << IgnTerrainMatGen::vpOutStr << " vec4 uvMisc;\n";
+  _outStream << this->vpOutStr << " vec4 uvMisc;\n";
 
   // layer UV's premultiplied, packed as xy/zw
   unsigned int numUVSets = numLayers / 2;
@@ -1752,13 +1750,13 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateVpHeader(
   {
     for (unsigned int i = 0; i < numUVSets; ++i)
     {
-      _outStream << IgnTerrainMatGen::vpOutStr << " vec4 layerUV" << i << ";\n";
+      _outStream << this->vpOutStr << " vec4 layerUV" << i << ";\n";
     }
   }
 
   if (_prof->getParent()->getDebugLevel() && _tt != RENDER_COMPOSITE_MAP)
   {
-    _outStream << IgnTerrainMatGen::vpOutStr << " vec2 lodInfo;\n";
+    _outStream << this->vpOutStr << " vec2 lodInfo;\n";
   }
 
   bool fog = _terrain->getSceneManager()->getFogMode() != Ogre::FOG_NONE &&
@@ -1768,7 +1766,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateVpHeader(
   {
     _outStream <<
       "uniform vec4 fogParams;\n"
-      << IgnTerrainMatGen::vpOutStr << " float fogVal;\n";
+      << this->vpOutStr << " float fogVal;\n";
   }
 
   if (_prof->isShadowingEnabled(_tt, _terrain))
@@ -2006,7 +2004,7 @@ generateVpDynamicShadowsParams(unsigned int _texCoord, const SM2Profile *_prof,
 
   for (unsigned int i = 0; i < numTextures; ++i)
   {
-    _outStream << IgnTerrainMatGen::vpOutStr << " vec4 lightSpacePos" << i
+    _outStream << this->vpOutStr << " vec4 lightSpacePos" << i
                << ";\n" << "uniform mat4 texViewProjMatrix" << i << ";\n";
 
     // Don't add depth range params
@@ -2025,7 +2023,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpHeader(
     const SM2Profile *_prof, const Ogre::Terrain *_terrain,
     TechniqueType _tt, Ogre::StringStream &_outStream)
 {
-  _outStream << "#version " << IgnTerrainMatGen::glslVersion << "\n\n";
+  _outStream << "#version " << this->glslVersion << "\n\n";
 
   _outStream <<
     "vec4 expand(vec4 v)\n"
@@ -2044,10 +2042,10 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpHeader(
     this->generateFpDynamicShadowsHelpers(_prof, _terrain, _tt, _outStream);
 
   _outStream <<
-    IgnTerrainMatGen::fpInStr << " vec4 position;\n";
+    this->fpInStr << " vec4 position;\n";
 
   Ogre::uint texCoordSet = 1;
-  _outStream << IgnTerrainMatGen::fpInStr << " vec4 uvMisc;\n";
+  _outStream << this->fpInStr << " vec4 uvMisc;\n";
 
   // UV's premultiplied, packed as xy/zw
   Ogre::uint maxLayers = _prof->getMaxLayers(_terrain);
@@ -2067,13 +2065,13 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpHeader(
     for (Ogre::uint i = 0; i < numUVSets; ++i)
     {
       _outStream <<
-        IgnTerrainMatGen::fpInStr << " vec4 layerUV" << i << ";\n";
+        this->fpInStr << " vec4 layerUV" << i << ";\n";
     }
   }
 
   if (_prof->getParent()->getDebugLevel() && _tt != RENDER_COMPOSITE_MAP)
   {
-    _outStream << IgnTerrainMatGen::fpInStr << " vec2 lodInfo;\n";
+    _outStream << this->fpInStr << " vec2 lodInfo;\n";
   }
 
   bool fog = _terrain->getSceneManager()->getFogMode() != Ogre::FOG_NONE &&
@@ -2083,7 +2081,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpHeader(
   {
     _outStream <<
       "uniform vec3 fogColour;\n"
-      << IgnTerrainMatGen::fpInStr << " float fogVal;\n";
+      << this->fpInStr << " float fogVal;\n";
   }
 
   Ogre::uint currentSamplerIdx = 0;
@@ -2148,7 +2146,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpHeader(
   }
 
   std::string outputColTypeStr = "vec4";
-  if (IgnTerrainMatGen::glslVersion != "120")
+  if (this->glslVersion != "120")
   {
     _outStream << "out vec4 outputCol;\n";
     outputColTypeStr = "";
@@ -2165,7 +2163,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpHeader(
   {
     // global normal
     _outStream << "  vec3 normal = expand("
-               << IgnTerrainMatGen::textureStr << "(globalNormal, uv)).xyz;\n";
+               << this->textureStr << "(globalNormal, uv)).xyz;\n";
   }
 
   _outStream <<
@@ -2180,7 +2178,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpHeader(
   if (_tt == LOW_LOD)
   {
     // we just do a single calculation from composite map
-    _outStream << "  vec4 composite = " << IgnTerrainMatGen::textureStr
+    _outStream << "  vec4 composite = " << this->textureStr
                << "(compositeMap, uv);\n  diffuse = composite.xyz;\n";
     // TODO(anyone) - specular; we'll need normals for this!
   }
@@ -2190,7 +2188,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpHeader(
     for (Ogre::uint i = 0; i < numBlendTextures; ++i)
     {
       _outStream << "  vec4 blendTexVal" << i << " = "
-                 << IgnTerrainMatGen::textureStr << "(blendTex" << i
+                 << this->textureStr << "(blendTex" << i
                  << ", uv);\n";
     }
 
@@ -2272,7 +2270,7 @@ IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpDynamicShadowsParams(
 
   for (Ogre::uint i = 0; i < numTextures; ++i)
   {
-    _outStream << IgnTerrainMatGen::fpInStr <<
+    _outStream << this->fpInStr <<
       " vec4 lightSpacePos" << i << ";\n" <<
       "uniform sampler2D shadowMap" << i << ";\n";
 
@@ -2315,14 +2313,14 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpLayer(
     if (_prof->isLayerParallaxMappingEnabled() && _tt != RENDER_COMPOSITE_MAP)
     {
       // modify UV - note we have to sample an extra time
-      _outStream << "  displacement = " << IgnTerrainMatGen::textureStr
+      _outStream << "  displacement = " << this->textureStr
                  << "(normtex" << _layer << ", uv" << _layer << ").w\n"
         "   * scaleBiasSpecular.x + scaleBiasSpecular.y;\n";
       _outStream << "  uv" << _layer << " += TSeyeDir.xy * displacement;\n";
     }
 
     // access TS normal map
-    _outStream << "  TSnormal = expand(" << IgnTerrainMatGen::textureStr
+    _outStream << "  TSnormal = expand(" << this->textureStr
                << "(normtex" << _layer << ", uv" << _layer << ")).xyz;\n";
     _outStream << "  TShalfAngle = normalize(TSlightDir + TSeyeDir);\n";
 
@@ -2338,7 +2336,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpLayer(
 
   // sample diffuse texture
   _outStream << "  vec4 diffuseSpecTex" << _layer << " = "
-             << IgnTerrainMatGen::textureStr << "(difftex" << _layer << ", uv"
+             << this->textureStr << "(difftex" << _layer << ", uv"
              << _layer << ");\n";
 
   // apply to common
@@ -2389,14 +2387,14 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpFooter(
         _prof->isGlobalColourMapEnabled())
     {
       // sample colour map and apply to diffuse
-      _outStream << "  diffuse *= " << IgnTerrainMatGen::textureStr
+      _outStream << "  diffuse *= " << this->textureStr
                  << "(globalColourMap, uv).xyz;\n";
     }
 
     if (_prof->isLightmapEnabled())
     {
       // sample lightmap
-      _outStream << "  shadow = " << IgnTerrainMatGen::textureStr
+      _outStream << "  shadow = " << this->textureStr
                  << "(lightMap, uv).x;\n";
     }
 
@@ -2438,7 +2436,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpFooter(
     _outStream << "  outputCol.xyz = mix(outputCol.xyz, fogColour, fogVal);\n";
   }
 
-  if (IgnTerrainMatGen::glslVersion == "120")
+  if (this->glslVersion == "120")
     _outStream << "  gl_FragColor = outputCol;\n";
 
   // Final return
@@ -2484,7 +2482,7 @@ IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpDynamicShadowsHelpers(
       "      newUV = newUV / newUV.w;\n";
       // The following line used to be:
       // "      float depth = tex2d(shadowMap, newUV.xy).x;\n"
-    if (IgnTerrainMatGen::glslVersion == "120")
+    if (this->glslVersion == "120")
       _outStream <<
           "      float depth = texture2D(shadowMap, newUV.xy).x;\n";
     else
@@ -2507,7 +2505,7 @@ IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpDynamicShadowsHelpers(
     _outStream <<
       "float calcSimpleShadow(sampler2D shadowMap, vec4 shadowMapPos)\n"
       "{\n"
-      "  return " << IgnTerrainMatGen::textureStr
+      "  return " << this->textureStr
                   << "Proj(shadowMap, shadowMapPos).x;\n"
       "}\n";
   }

@@ -481,7 +481,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
     c++;
   }
   while (renderSys &&
-         renderSys->getName().compare("OpenGL 3+ Rendering Subsystem") != 0);
+         renderSys->getName().compare("OpenGL 3+ Rendering Subsystem") != 0); // NOLINT
 
   if (renderSys == nullptr)
   {

@@ -498,7 +498,7 @@ void OgreRenderEngine::CreateRenderSystem()
     c++;
   }
   while (renderSys &&
-         renderSys->getName().compare("OpenGL Rendering Subsystem") != 0);
+         renderSys->getName().compare("OpenGL Rendering Subsystem") != 0); // NOLINT
 
   if (renderSys == nullptr)
   {

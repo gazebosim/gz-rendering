@@ -2,6 +2,8 @@
 
 This example shows how to add a heigntmap to the scene.
 
+It loads 2 different heightmaps with different parameters.
+
 ## Compile and run the example
 
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:

@@ -164,6 +164,15 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \return *this
     public: HeightmapDescriptor &operator=(const HeightmapDescriptor &_desc);
 
+    /// \brief Get the heightmap's name used for caching.
+    /// This is different from its unique `Heightmap::Name()`.
+    /// \return Heightmap's given name. Defaults to `Heightmap::Name()`.
+    public: const std::string &Name() const;
+
+    /// \brief Set the heightmap's name.
+    /// \param[in] _name Heightmap's name.
+    public: void SetName(const std::string &_name);
+
     /// \brief Get the heightfield data.
     /// \return Heightmap data.
     public: std::shared_ptr<common::HeightmapData> Data() const;

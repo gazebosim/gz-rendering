@@ -476,6 +476,9 @@ void OgreHeightmap::Init()
     return;
   }
 
+  if (this->descriptor.Name().empty())
+    this->descriptor.SetName(this->Name());
+
   // Add paths
   for (auto i = 0u; i < this->descriptor.TextureCount(); ++i)
   {
@@ -550,7 +553,7 @@ void OgreHeightmap::Init()
   // \todo(anyone) Name is generated at runtime and depends on the number of
   // objects, so it's impossible to make sure it's the same across runs
   auto terrainDirPath = common::joinPaths(this->dataPtr->pagingDir,
-      this->Name());
+      this->descriptor.Name());
 
   // Add the top level terrain paging directory to the OGRE
   // ResourceGroupManager
@@ -688,7 +691,7 @@ void OgreHeightmap::Init()
         0, 0, sqrtN - 1, sqrtN - 1);
   }
 
-  ignmsg << "Loading heightmap: " << this->Name() << std::endl;
+  ignmsg << "Loading heightmap: " << this->descriptor.Name() << std::endl;
   auto time = std::chrono::steady_clock::now();
 
   for (int y = 0; y <= sqrtN - 1; ++y)
@@ -754,31 +757,29 @@ void OgreHeightmap::PreRender()
 
   // saving an ogre terrain data file can take quite some time for large
   // terrains.
-  // TODO(anyone) Succeeds when saving, but fails when loading
+  ignmsg << "Saving heightmap cache data to "
+         << common::joinPaths(this->dataPtr->pagingDir, this->descriptor.Name())
+         << std::endl;
+  auto time = std::chrono::steady_clock::now();
 
-  // ignmsg << "Saving heightmap cache data to "
-  //        << common::joinPaths(this->dataPtr->pagingDir, this->Name())
-  //        << std::endl;
-  // auto time = std::chrono::steady_clock::now();
+  bool saved{false};
+  try
+  {
+    this->dataPtr->terrainGroup->saveAllTerrains(true);
+    saved = true;
+  }
+  catch(Ogre::Exception &_e)
+  {
+    ignerr << "Failed to save heightmap: " << _e.what() << std::endl;
+  }
 
-  // bool saved{false};
-  // try
-  // {
-  //   this->dataPtr->terrainGroup->saveAllTerrains(true);
-  //   saved = true;
-  // }
-  // catch(Ogre::Exception &_e)
-  // {
-  //   ignerr << "Failed to save heightmap: " << _e.what() << std::endl;
-  // }
-
-  // if (saved)
-  // {
-  //   ignmsg << "Heightmap cache data saved. Process took "
-  //         <<  std::chrono::duration_cast<std::chrono::milliseconds>(
-  //             std::chrono::steady_clock::now() - time).count()
-  //         << " ms." << std::endl;
-  // }
+  if (saved)
+  {
+    ignmsg << "Heightmap cache data saved. Process took "
+          <<  std::chrono::duration_cast<std::chrono::milliseconds>(
+              std::chrono::steady_clock::now() - time).count()
+          << " ms." << std::endl;
+  }
 
   this->dataPtr->savedToCache = true;
 }

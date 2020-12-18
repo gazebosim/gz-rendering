@@ -47,6 +47,9 @@ class ignition::rendering::HeightmapBlendPrivate
 //////////////////////////////////////////////////
 class ignition::rendering::HeightmapDescriptorPrivate
 {
+  /// \brief Name used for caching
+  public: std::string name;
+
   /// \brief Contains heightfield data.
   public: std::shared_ptr<common::HeightmapData> data{nullptr};
 
@@ -239,6 +242,18 @@ HeightmapDescriptor &HeightmapDescriptor::operator=(
 {
   std::swap(this->dataPtr, _heightmap.dataPtr);
   return *this;
+}
+
+//////////////////////////////////////////////////
+const std::string &HeightmapDescriptor::Name() const
+{
+  return this->dataPtr->name;
+}
+
+//////////////////////////////////////////////////
+void HeightmapDescriptor::SetName(const std::string &_name)
+{
+  this->dataPtr->name = _name;
 }
 
 //////////////////////////////////////////////////

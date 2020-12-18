@@ -61,6 +61,7 @@ void buildScene(ScenePtr _scene)
   data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
 
   HeightmapDescriptor desc;
+  desc.SetName("example_bowl");
   desc.SetData(data);
   desc.SetSize({17, 17, 10});
   desc.SetSampling(2u);
@@ -106,6 +107,7 @@ void buildScene(ScenePtr _scene)
   data2->Load(common::joinPaths(RESOURCE_PATH, "city_terrain.jpg"));
 
   HeightmapDescriptor desc2;
+  desc2.SetName("example_city");
   desc2.SetData(data2);
   desc2.SetSize({26, 26, 20});
   desc2.SetSampling(2u);

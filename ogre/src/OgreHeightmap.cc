@@ -231,6 +231,14 @@ class IgnTerrainMatGen : public Ogre::TerrainMaterialGeneratorA
   public: static std::string fpOutStr;
   public: static std::string textureStr;
 };
+
+std::string IgnTerrainMatGen::glslVersion = "130";
+std::string IgnTerrainMatGen::vpInStr = "in";
+std::string IgnTerrainMatGen::vpOutStr = "out";
+std::string IgnTerrainMatGen::fpInStr = "in";
+std::string IgnTerrainMatGen::fpOutStr = "out";
+std::string IgnTerrainMatGen::textureStr = "texture";
+
 // #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 11
 #endif
 
@@ -1191,15 +1199,6 @@ IgnTerrainMatGen::IgnTerrainMatGen()
     IgnTerrainMatGen::vpOutStr = "varying";
     IgnTerrainMatGen::fpInStr = "varying";
     IgnTerrainMatGen::textureStr = "texture2D";
-  }
-  else
-  {
-    IgnTerrainMatGen::glslVersion = "130";
-    IgnTerrainMatGen::vpInStr = "in";
-    IgnTerrainMatGen::vpOutStr = "out";
-    IgnTerrainMatGen::fpInStr = "in";
-    IgnTerrainMatGen::fpOutStr = "out";
-    IgnTerrainMatGen::textureStr = "texture";
   }
 
   /// \TODO(anyone) - This will have to be changed if TerrainMaterialGeneratorA
@@ -3135,7 +3134,7 @@ IgnTerrainMatGen::SM2Profile::ShaderHelperCg::generateFragmentProgram(
 /////////////////////////////////////////////////
 
 //////////////////////////////////////////////////
-TerrainMaterial::TerrainMaterial(const std::string &_materialname)
+TerrainMaterial::TerrainMaterial(const std::string &_materialName)
   : materialName(_materialName)
 {
   this->mProfiles.push_back(OGRE_NEW Profile(this, "OgreMaterial",

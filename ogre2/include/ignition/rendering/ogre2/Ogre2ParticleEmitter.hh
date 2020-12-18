@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2PARTICLEEMITTER_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2PARTICLEEMITTER_HH_
 
+#include <memory>
 #include <string>
 #include "ignition/rendering/base/BaseParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"

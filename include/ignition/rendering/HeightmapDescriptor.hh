@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_HEIGHTMAPDESCRIPTOR_HH_
 #define IGNITION_RENDERING_HEIGHTMAPDESCRIPTOR_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/common/HeightmapData.hh>
 

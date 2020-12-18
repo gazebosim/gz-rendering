@@ -211,9 +211,7 @@ HeightmapDescriptor::HeightmapDescriptor() :
 }
 
 /////////////////////////////////////////////////
-HeightmapDescriptor::~HeightmapDescriptor()
-{
-}
+HeightmapDescriptor::~HeightmapDescriptor() = default;
 
 //////////////////////////////////////////////////
 HeightmapDescriptor::HeightmapDescriptor(const HeightmapDescriptor &_heightmap)
@@ -222,19 +220,22 @@ HeightmapDescriptor::HeightmapDescriptor(const HeightmapDescriptor &_heightmap)
 }
 
 //////////////////////////////////////////////////
-HeightmapDescriptor::HeightmapDescriptor(HeightmapDescriptor &&_heightmap) noexcept
+HeightmapDescriptor::HeightmapDescriptor(HeightmapDescriptor &&_heightmap)
+  noexcept
   : dataPtr(std::exchange(_heightmap.dataPtr, nullptr))
 {
 }
 
 /////////////////////////////////////////////////
-HeightmapDescriptor &HeightmapDescriptor::operator=(const HeightmapDescriptor &_heightmap)
+HeightmapDescriptor &HeightmapDescriptor::operator=(
+    const HeightmapDescriptor &_heightmap)
 {
   return *this = HeightmapDescriptor(_heightmap);
 }
 
 /////////////////////////////////////////////////
-HeightmapDescriptor &HeightmapDescriptor::operator=(HeightmapDescriptor &&_heightmap)
+HeightmapDescriptor &HeightmapDescriptor::operator=(
+    HeightmapDescriptor &&_heightmap)
 {
   std::swap(this->dataPtr, _heightmap.dataPtr);
   return *this;

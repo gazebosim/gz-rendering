@@ -33,7 +33,7 @@ namespace ignition
     {
       /// \brief Constructor
       /// \param[in] _desc Descriptor containing heightmap information.
-      protected: BaseHeightmap(const HeightmapDescriptor &_desc);
+      protected: explicit BaseHeightmap(const HeightmapDescriptor &_desc);
 
       // Documentation inherited
       public: virtual void PreRender() override;

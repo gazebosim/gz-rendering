@@ -735,26 +735,29 @@ void OgreHeightmap::PreRender()
     return;
   }
 
-  // Make sure the heightmap finishes loading
+  // Make sure the heightmap finishes loading by processing responses until all
+  // derived data and terrains are loaded
   if (this->dataPtr->terrainGroup->isDerivedDataUpdateInProgress())
   {
     Ogre::Root::getSingleton().getWorkQueue()->processResponses();
     return;
   }
 
-  // save the terrain once its loaded
-  if (this->dataPtr->loadedFromCache || this->dataPtr->savedToCache)
-  {
-    return;
-  }
-
-  // check to see if all terrains have been loaded before saving
   auto ti = this->dataPtr->terrainGroup->getTerrainIterator();
   while (ti.hasMoreElements())
   {
     auto *t = ti.getNext()->instance;
     if (!t->isLoaded())
+    {
+      Ogre::Root::getSingleton().getWorkQueue()->processResponses();
       return;
+    }
+  }
+
+  // save the terrain once its loaded
+  if (this->dataPtr->loadedFromCache || this->dataPtr->savedToCache)
+  {
+    return;
   }
 
   // saving an ogre terrain data file can take quite some time for large

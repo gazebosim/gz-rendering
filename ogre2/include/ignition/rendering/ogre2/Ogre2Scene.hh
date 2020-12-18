@@ -77,6 +77,12 @@ namespace ignition
       // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
+      public: virtual void SetSkyEnabled(bool _enabled) override;
+
+      // Documentation inherited
+      public: virtual bool SkyEnabled() const override;
+
       /// \brief Get a pointer to the ogre scene manager
       /// \return Pointer to the ogre scene manager
       public: virtual Ogre::SceneManager *OgreSceneManager() const;

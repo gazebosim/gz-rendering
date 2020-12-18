@@ -337,6 +337,7 @@ TEST_P(CameraTest, AddRemoveRenderPass)
 {
   AddRemoveRenderPass(GetParam());
 }
+
 /////////////////////////////////////////////////
 TEST_P(CameraTest, VisibilityMask)
 {

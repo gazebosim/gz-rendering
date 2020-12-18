@@ -172,6 +172,16 @@ namespace ignition
       ///            const std::array<math::Color, 4> &_colors)
       public: virtual void RemoveGradientBackgroundColor() = 0;
 
+      /// \brief Get the scene background material
+      /// e.g. a material with skybox cubemap texture
+      /// \return  Material of the background
+      public: virtual MaterialPtr BackgroundMaterial() const = 0;
+
+      /// \brief Set the scene background material
+      /// e.g. a material with skybox cubemap texture
+      /// \param[in] _material Material to set the background to
+      public: virtual void SetBackgroundMaterial(MaterialPtr _material) = 0;
+
       /// \brief Get the number of nodes managed by this scene. Note these
       /// nodes may not be directly or indirectly attached to the root node.
       /// \return The number of nodes managed by this scene
@@ -961,6 +971,14 @@ namespace ignition
       /// \return The created particle emitter
       public: virtual ParticleEmitterPtr CreateParticleEmitter(
                   unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Enable sky in the scene.
+      /// \param[in] _enabled True to enable sky
+      public: virtual void SetSkyEnabled(bool _enabled) = 0;
+
+      /// \brief Get whether the sky is enabled in the scene.
+      /// \return true to sky is enabled, false otherwise
+      public: virtual bool SkyEnabled() const = 0;
 
       /// \brief Prepare scene for rendering. The scene will flushing any scene
       /// changes by traversing scene-graph, calling PreRender on all objects

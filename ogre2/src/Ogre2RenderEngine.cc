@@ -480,8 +480,11 @@ void Ogre2RenderEngine::CreateRenderSystem()
     renderSys = rsList->at(c);
     c++;
   }
-  while (renderSys &&
-         renderSys->getName().compare("OpenGL 3+ Rendering Subsystem") != 0); // NOLINT
+  // cpplint has a false positive when extending a while call to multiple lines
+  // (it thinks the while loop is empty), so we must put the whole while
+  // statement on one line and add NOLINT at the end so that cpplint doesn't
+  // complain about the line being too long
+  while (renderSys && renderSys->getName().compare("OpenGL 3+ Rendering Subsystem") != 0); // NOLINT
 
   if (renderSys == nullptr)
   {
@@ -561,6 +564,8 @@ void Ogre2RenderEngine::CreateResources()
         std::make_pair(p + "/materials/programs", "General"));
     archNames.push_back(
         std::make_pair(p + "/materials/scripts", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/textures", "General"));
 
     for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
     {

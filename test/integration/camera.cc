@@ -230,8 +230,14 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 
-  // render a frame
-  camera->Update();
+  // render a few frames
+  for (auto i = 0; i < 30; ++i)
+  {
+    camera->Update();
+  }
+
+  EXPECT_EQ(800u, camera->ImageWidth());
+  EXPECT_EQ(600u, camera->ImageHeight());
 
   for (auto x = 0u; x < camera->ImageWidth(); x = x + 100)
   {
@@ -239,12 +245,16 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
 
     if (x <= 100)
     {
-     EXPECT_EQ(nullptr, vis);
+      EXPECT_EQ(nullptr, vis);
     }
     else if (x > 100 && x <= 300)
     {
-      ASSERT_NE(nullptr, vis);
-      EXPECT_EQ("sphere", vis->Name());
+      // Don't end test here on failure, this condition is flaky
+      EXPECT_NE(nullptr, vis) << x;
+      if (vis)
+      {
+        EXPECT_EQ("sphere", vis->Name());
+      }
     }
     else if (x > 300 && x <= 400)
     {
@@ -252,8 +262,12 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
     }
     else if (x > 400 && x <= 700)
     {
-      ASSERT_NE(nullptr, vis);
-      EXPECT_EQ("box", vis->Name());
+      // Don't end test here on failure, this condition is flaky
+      EXPECT_NE(nullptr, vis) << x;
+      if (vis)
+      {
+        EXPECT_EQ("box", vis->Name());
+      }
     }
     else
     {

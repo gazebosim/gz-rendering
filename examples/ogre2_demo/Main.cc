@@ -47,8 +47,11 @@ void buildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.2, 0.2, 0.2);
-  _scene->SetBackgroundColor(0.0, 0.0, 0.0);
+  _scene->SetBackgroundColor(0.2, 0.2, 0.2);
   VisualPtr root = _scene->RootVisual();
+
+  // enable sky
+  _scene->SetSkyEnabled(true);
 
   // create PBR material
   MaterialPtr matPBR = _scene->CreateMaterial();
@@ -64,6 +67,8 @@ void buildScene(ScenePtr _scene)
   matPBR->SetNormalMap(normalMap);
   matPBR->SetRoughnessMap(roughnessMap);
   matPBR->SetMetalnessMap(metalnessMap);
+  matPBR->SetMetalness(0.7);
+  matPBR->SetRoughness(0.3);
   matPBR->SetEnvironmentMap(environmentMap);
 
   // create mesh for PBR
@@ -130,8 +135,12 @@ void buildScene(ScenePtr _scene)
 
   // create mirror material
   MaterialPtr mirrorMat = _scene->CreateMaterial();
-  mirrorMat->SetRoughness(0.01);
-  mirrorMat->SetEnvironmentMap(environmentMap);
+  mirrorMat->SetDiffuse(1.0, 1.0, 1.0);
+  mirrorMat->SetRoughness(0.1);
+  mirrorMat->SetMetalness(0.9);
+  std::string skyEnvironmentMap =
+      common::joinPaths(RESOURCE_PATH, "skybox_lowres.dds");
+  mirrorMat->SetEnvironmentMap(skyEnvironmentMap);
 
   // create box visual
   VisualPtr box = _scene->CreateVisual("box");
@@ -189,6 +198,10 @@ void buildScene(ScenePtr _scene)
   light1->SetSpecularColor(0.2, 0.2, 0.2);
   light1->SetLocalPosition(0, 3, 3);
   light1->SetDirection(1, -1, -1);
+  light1->SetAttenuationConstant(0.1);
+  light1->SetAttenuationLinear(0.001);
+  light1->SetAttenuationQuadratic(0.0001);
+  light1->SetFalloff(0.8);
   light1->SetCastShadows(true);
   root->AddChild(light1);
 
@@ -197,6 +210,9 @@ void buildScene(ScenePtr _scene)
   light2->SetDiffuseColor(0.2, 0.4, 0.8);
   light2->SetSpecularColor(0.2, 0.2, 0.2);
   light2->SetLocalPosition(3, 0, 2);
+  light2->SetAttenuationConstant(0.1);
+  light2->SetAttenuationLinear(0.001);
+  light2->SetAttenuationQuadratic(0.0001);
   light2->SetCastShadows(true);
   root->AddChild(light2);
 
@@ -206,6 +222,10 @@ void buildScene(ScenePtr _scene)
   light3->SetSpecularColor(0.2, 0.2, 0.2);
   light3->SetLocalPosition(0, -3, 3);
   light3->SetDirection(1, 1, -1);
+  light3->SetAttenuationConstant(0.1);
+  light3->SetAttenuationLinear(0.001);
+  light3->SetAttenuationQuadratic(0.0001);
+  light3->SetFalloff(0.8);
   light3->SetCastShadows(false);
   root->AddChild(light3);
 

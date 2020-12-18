@@ -238,6 +238,18 @@ void BaseScene::RemoveGradientBackgroundColor()
 }
 
 //////////////////////////////////////////////////
+MaterialPtr BaseScene::BackgroundMaterial() const
+{
+  return this->backgroundMaterial;
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetBackgroundMaterial(MaterialPtr _material)
+{
+  this->backgroundMaterial = _material;
+}
+
+//////////////////////////////////////////////////
 unsigned int BaseScene::NodeCount() const
 {
   return this->nodes->Size();
@@ -1158,6 +1170,21 @@ ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
   bool result = this->RegisterVisual(visual);
   return (result) ? visual : nullptr;
 }
+
+//////////////////////////////////////////////////
+void BaseScene::SetSkyEnabled(bool)  // NOLINT(readability/casting)
+{
+  // no op, let derived class implement this.
+  ignerr << "Sky not supported by: "
+         << this->Engine()->Name() << std::endl;
+}
+
+//////////////////////////////////////////////////
+bool BaseScene::SkyEnabled() const
+{
+  return false;
+}
+
 
 //////////////////////////////////////////////////
 void BaseScene::PreRender()

@@ -88,7 +88,24 @@ class IgnTerrainMatGen : public Ogre::TerrainMaterialGeneratorA
     protected: class ShaderHelperGLSL :
         public Ogre::TerrainMaterialGeneratorA::SM2Profile::ShaderHelperGLSL
     {
-      public: ShaderHelperGLSL();
+      public: ShaderHelperGLSL()
+        {
+          auto capabilities =
+              Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
+          Ogre::DriverVersion glVersion;
+          glVersion.build = 0;
+          glVersion.major = 3;
+          glVersion.minor = 0;
+          glVersion.release = 0;
+          if (capabilities->isDriverOlderThanVersion(glVersion))
+          {
+            this->glslVersion = "120";
+            this->vpInStr = "attribute";
+            this->vpOutStr = "varying";
+            this->fpInStr = "varying";
+            this->textureStr = "texture2D";
+          }
+        };
 
       public: virtual Ogre::HighLevelGpuProgramPtr generateVertexProgram(
                   const SM2Profile *_prof, const Ogre::Terrain *_terrain,
@@ -172,13 +189,13 @@ class IgnTerrainMatGen : public Ogre::TerrainMaterialGeneratorA
 
       private: Ogre::String GetChannel(Ogre::uint _idx);
 
-       /// \brief Capabilities
-       private: std::string glslVersion = "130";
-       private: std::string vpInStr = "in";
-       private: std::string vpOutStr = "out";
-       private: std::string fpInStr = "in";
-       private: std::string fpOutStr = "out";
-       private: std::string textureStr = "texture";
+      /// \brief Capabilities
+      private: std::string glslVersion = "130";
+      private: std::string vpInStr = "in";
+      private: std::string vpOutStr = "out";
+      private: std::string fpInStr = "in";
+      private: std::string fpOutStr = "out";
+      private: std::string textureStr = "texture";
     };
 
     // Needed to allow access from ShaderHelperGLSL to protected members
@@ -1500,25 +1517,6 @@ void IgnTerrainMatGen::SM2Profile::UpdateParamsForCompositeMap(
 /////////////////////////////////////////////////
 
 /////////////////////////////////////////////////
-IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::
-  IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL()
-{
-  auto capabilities =
-      Ogre::Root::getSingleton().getRenderSystem()->getCapabilities();
-  Ogre::DriverVersion glVersion;
-  glVersion.build = 0;
-  glVersion.major = 3;
-  glVersion.minor = 0;
-  glVersion.release = 0;
-  if (capabilities->isDriverOlderThanVersion(glVersion))
-  {
-    this->glslVersion = "120";
-    this->vpInStr = "attribute";
-    this->vpOutStr = "varying";
-    this->fpInStr = "varying";
-    this->textureStr = "texture2D";
-  }
-}
 Ogre::HighLevelGpuProgramPtr
 IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateVertexProgram(
     const SM2Profile *_prof, const Ogre::Terrain *_terrain,

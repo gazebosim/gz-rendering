@@ -301,6 +301,17 @@ namespace ignition
       /// \brief Removes any emissive map mapped to this material
       public: virtual void ClearEmissiveMap() = 0;
 
+      /// \brief Set the render order. When polygons are coplanar, you can get
+      /// problems with 'depth fighting' where the pixels from the two polys
+      /// compete for the same screen pixel. This param help to avoid this
+      /// problem.
+      /// \param[in] _renderOrder Render order to set to
+      public: virtual void SetRenderOrder(const float _renderOrder) = 0;
+
+      /// \brief Get the render order value of this material.
+      /// \return Material render order
+      public: virtual float RenderOrder() const = 0;
+
       /// \brief Set the roughness value. Only affects material of type MT_PBS
       /// \param[in] _roughness Roughness to set to
       public: virtual void SetRoughness(const float _roughness) = 0;

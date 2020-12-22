@@ -233,6 +233,12 @@ namespace ignition
       public: virtual void ClearEmissiveMap() override;
 
       // Documentation inherited
+      public: virtual void SetRenderOrder(const float _renderOrder) override;
+
+      // Documentation inherited
+      public: virtual float RenderOrder() const override;
+
+      // Documentation inherited
       public: virtual void SetRoughness(const float _roughness) override;
 
       // Documentation inherited
@@ -321,6 +327,9 @@ namespace ignition
 
       /// \brief Enable two sided rendering
       protected: bool twoSidedEnabled = false;
+
+      /// \brief Material render order
+      protected: double renderOrder = 0.0;
 
       /// \brief Shininess factor
       protected: double shininess = 0.0;
@@ -515,6 +524,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMaterial<T>::SetRenderOrder(const float _renderorder)
+    {
+      this->renderOrder = _renderorder;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     math::Color BaseMaterial<T>::Ambient() const
     {
       return this->ambient;
@@ -553,6 +569,13 @@ namespace ignition
     double BaseMaterial<T>::Transparency() const
     {
       return this->transparency;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    float BaseMaterial<T>::RenderOrder() const
+    {
+      return this->renderOrder;
     }
 
     //////////////////////////////////////////////////
@@ -872,6 +895,7 @@ namespace ignition
       this->SetDiffuse(_material->Diffuse());
       this->SetSpecular(_material->Specular());
       this->SetEmissive(_material->Emissive());
+      this->SetRenderOrder(_material->RenderOrder());
       this->SetShininess(_material->Shininess());
       this->SetTransparency(_material->Transparency());
       this->SetAlphaFromTexture(_material->TextureAlphaEnabled(),
@@ -910,6 +934,7 @@ namespace ignition
       this->SetAlphaFromTexture(_material.TextureAlphaEnabled(),
           _material.AlphaThreshold(), _material.TwoSidedEnabled());
       // TODO(anyone): update common::Material
+      this->SetRenderOrder(_material.RenderOrder());
       this->SetReflectivity(0);
       this->SetTexture(_material.TextureImage());
       // TODO(anyone): update common::Material
@@ -961,6 +986,7 @@ namespace ignition
       this->SetDiffuse(1.0, 1.0, 1.0);
       this->SetSpecular(0.2, 0.2, 0.2);
       this->SetEmissive(0, 0, 0);
+      this->SetRenderOrder(0);
       this->SetShininess(1.5);
       this->SetTransparency(0);
       this->SetReflectivity(0);

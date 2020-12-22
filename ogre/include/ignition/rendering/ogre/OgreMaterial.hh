@@ -103,6 +103,12 @@ namespace ignition
       public: virtual void SetReceiveShadows(const bool _receiveShadows)
                   override;
 
+      // Documentation inherited
+      public: virtual float RenderOrder() const override;
+
+      // Documentation inherited
+      public: virtual void SetRenderOrder(const float _enabled) override;
+
       public: virtual bool ReflectionEnabled() const override;
 
       public: virtual void SetReflectionEnabled(const bool _enabled) override;

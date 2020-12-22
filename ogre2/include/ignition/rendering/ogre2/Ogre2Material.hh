@@ -72,6 +72,12 @@ namespace ignition
           double _alpha = 0.5, bool _twoSided = true) override;
 
       // Documentation inherited
+      public: virtual float RenderOrder() const override;
+
+      // Documentation inherited
+      public: virtual void SetRenderOrder(const float _enabled) override;
+
+      // Documentation inherited
       public: virtual bool ReceiveShadows() const override;
 
       // Documentation inherited

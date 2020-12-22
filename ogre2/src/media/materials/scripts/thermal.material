@@ -98,3 +98,19 @@ material ThermalHeatSource
     }
   }
 }
+
+material ThermalHeatSignature
+{
+  technique
+  {
+    pass
+    {
+      fog_override true
+
+      texture_unit
+      {
+        texture RescueRandy_Thermal.png
+      }
+    }
+  }
+}

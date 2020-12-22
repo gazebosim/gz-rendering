@@ -22,7 +22,10 @@
 #endif
 
 #include <math.h>
+
 #include <limits>
+#include <string>
+#include <variant>
 
 #include <ignition/common/Console.hh>
 #include <ignition/math/Helpers.hh>
@@ -72,6 +75,9 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
 
   /// \brief Pointer to the heat source material
   private: Ogre::MaterialPtr heatSourceMaterial;
+
+  /// \brief Pointer to heat signature material
+  private: Ogre::MaterialPtr heatSignatureMaterial;
 
   /// \brief Custom parameter index of temperature data in an ogre subitem.
   /// This has to match the custom index specifed in ThermalHeatSource material
@@ -145,6 +151,12 @@ Ogre2ThermalCameraMaterialSwitcher::Ogre2ThermalCameraMaterialSwitcher(
 
   this->heatSourceMaterial = res.staticCast<Ogre::Material>();
   this->heatSourceMaterial->load();
+
+  Ogre::ResourcePtr res2 =
+    Ogre::MaterialManager::getSingleton().load("ThermalHeatSignature",
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  this->heatSignatureMaterial = res2.staticCast<Ogre::Material>();
+  this->heatSignatureMaterial->load();
 }
 
 //////////////////////////////////////////////////
@@ -162,7 +174,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
     Ogre::MovableObject *object = itor.peekNext();
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
-    std::string tempKey = "temperature";
+    const std::string tempKey = "temperature";
     // get visual
     Ogre::Any userAny = item->getUserObjectBindings().getUserAny();
     if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
@@ -181,7 +193,8 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
 
       // get temperature
       Variant tempAny = ogreVisual->UserData(tempKey);
-      if (tempAny.index() != 0)
+      if (tempAny.index() != 0 &&
+          !std::holds_alternative<std::string>(tempAny))
       {
         float temp = -1.0;
         try
@@ -229,6 +242,26 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
 
             subItem->setMaterial(this->heatSourceMaterial);
           }
+        }
+      }
+      // see if a heat signature exists
+      else if (auto heatSignature = std::get_if<std::string>(&tempAny))
+      {
+        // TODO(adlarkin) set the texture in the material to heatSignature
+        // before applying the material? Right now, the texture is hardcoded,
+        // so heatSignature is unused
+
+        // set visibility flag so thermal camera can see it
+        item->addVisibilityFlags(0x10000000);
+
+        for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+        {
+          Ogre::SubItem *subItem = item->getSubItem(i);
+
+          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+          this->datablockMap[subItem] = datablock;
+
+          subItem->setMaterial(this->heatSignatureMaterial);
         }
       }
     }

@@ -75,7 +75,9 @@ namespace ignition
       public: virtual float RenderOrder() const override;
 
       // Documentation inherited
-      public: virtual void SetRenderOrder(const float _enabled) override;
+      // Review the official documentation to get more details about this
+      // parameter, in particular mDepthBiasConstant
+      public: virtual void SetRenderOrder(const float _renderOrder) override;
 
       // Documentation inherited
       public: virtual bool ReceiveShadows() const override;

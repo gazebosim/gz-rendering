@@ -107,7 +107,10 @@ namespace ignition
       public: virtual float RenderOrder() const override;
 
       // Documentation inherited
-      public: virtual void SetRenderOrder(const float _enabled) override;
+      // Review the official documentation to get more details about this
+      // parameter, in particular Ogre::Pass::setDepthBias()
+      // https://www.ogre3d.org/docs/api/1.8/class_ogre_1_1_pass.html
+      public: virtual void SetRenderOrder(const float _renderOrder) override;
 
       public: virtual bool ReflectionEnabled() const override;
 

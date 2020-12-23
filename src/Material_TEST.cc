@@ -36,6 +36,12 @@ using namespace rendering;
 class MaterialTest : public testing::Test,
                      public testing::WithParamInterface<const char *>
 {
+  // Documentation inherited
+  public: void SetUp() override
+  {
+    ignition::common::Console::SetVerbosity(4);
+  }
+
   /// \brief Test material basic API
   public: void MaterialProperties(const std::string &_renderEngine);
 
@@ -423,32 +429,6 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(1u, copy->LightMapTexCoordSet());
   }
 
-  // test copying from a common material
-  // common::Material currently only has a subset of material properties
-  common::Material comMat;
-  comMat.SetAmbient(ambient);
-  comMat.SetDiffuse(ambient);
-  comMat.SetSpecular(ambient);
-  comMat.SetEmissive(ambient);
-  comMat.SetShininess(shininess);
-  comMat.SetTransparency(transparency);
-  comMat.SetAlphaFromTexture(alphaFromTexture, alphaThreshold,
-      twoSidedEnabled);
-  comMat.SetLighting(lightingEnabled);
-  comMat.SetTextureImage(textureName);
-  common::Pbr pbr;
-  pbr.SetType(common::PbrType::METAL);
-  pbr.SetRoughness(roughness);
-  pbr.SetMetalness(metalness);
-  pbr.SetAlbedoMap(textureName);
-  pbr.SetNormalMap(normalMapName);
-  pbr.SetRoughnessMap(roughnessMapName);
-  pbr.SetMetalnessMap(metalnessMapName);
-  pbr.SetEmissiveMap(emissiveMapName);
-  pbr.SetLightMap(lightMapName, 2u);
-  pbr.SetEnvironmentMap(envMapName);
-  comMat.SetPbrMaterial(pbr);
-
   MaterialPtr comCopy = scene->CreateMaterial("comCopy");
   EXPECT_TRUE(scene->MaterialRegistered("comCopy"));
   comCopy->CopyFrom(material);
@@ -479,7 +459,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(emissiveMapName, comCopy->EmissiveMap());
     EXPECT_TRUE(comCopy->HasLightMap());
     EXPECT_EQ(lightMapName, comCopy->LightMap());
-    EXPECT_EQ(2u, comCopy->LightMapTexCoordSet());
+    EXPECT_EQ(1u, comCopy->LightMapTexCoordSet());
     EXPECT_TRUE(comCopy->HasEnvironmentMap());
     EXPECT_EQ(envMapName, comCopy->EnvironmentMap());
   }

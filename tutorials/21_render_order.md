@@ -6,7 +6,7 @@ The material API allows to change the render order. When polygons are coplanar, 
 with `depth fighting` where the pixels from the two polys compete for the same screen pixel. As you
 can see in the following image:
 
-@image html img/render_order_bad.gif
+@image html img/render_order_bad.png
 
 The method `SetRenderOrder` in the Material class allows to avoid this issues. The higher value will
 be rendered on top of the other coplanar polygons.
@@ -20,7 +20,7 @@ has a higher value than the white material (SetRenderOrder(3)).
 
 As you can see in the following image the z-fighting issue is resolved.
 
-@image html img/render_order_good.gif
+@image html img/render_order_good.png
 
 You can set this in your SDF file including in the material tag a new tag called `render_order` with
 a float value:

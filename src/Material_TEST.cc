@@ -429,9 +429,35 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(1u, copy->LightMapTexCoordSet());
   }
 
+  // test copying from a common material
+  // common::Material currently only has a subset of material properties
+  common::Material comMat;
+  comMat.SetAmbient(ambient);
+  comMat.SetDiffuse(diffuse);
+  comMat.SetSpecular(specular);
+  comMat.SetEmissive(emissive);
+  comMat.SetShininess(shininess);
+  comMat.SetTransparency(transparency);
+  comMat.SetAlphaFromTexture(alphaFromTexture, alphaThreshold,
+      twoSidedEnabled);
+  comMat.SetLighting(lightingEnabled);
+  comMat.SetTextureImage(textureName);
+  common::Pbr pbr;
+  pbr.SetType(common::PbrType::METAL);
+  pbr.SetRoughness(roughness);
+  pbr.SetMetalness(metalness);
+  pbr.SetAlbedoMap(textureName);
+  pbr.SetNormalMap(normalMapName);
+  pbr.SetRoughnessMap(roughnessMapName);
+  pbr.SetMetalnessMap(metalnessMapName);
+  pbr.SetEmissiveMap(emissiveMapName);
+  pbr.SetEnvironmentMap(envMapName);
+  pbr.SetLightMap(lightMapName, 1u);
+  comMat.SetPbrMaterial(pbr);
+
   MaterialPtr comCopy = scene->CreateMaterial("comCopy");
   EXPECT_TRUE(scene->MaterialRegistered("comCopy"));
-  comCopy->CopyFrom(material);
+  comCopy->CopyFrom(comMat);
   EXPECT_EQ(ambient, comCopy->Ambient());
   EXPECT_EQ(diffuse, comCopy->Diffuse());
   EXPECT_EQ(specular, comCopy->Specular());
@@ -441,7 +467,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(alphaFromTexture, comCopy->TextureAlphaEnabled());
   EXPECT_DOUBLE_EQ(alphaThreshold, comCopy->AlphaThreshold());
   EXPECT_EQ(twoSidedEnabled, comCopy->TwoSidedEnabled());
-  EXPECT_DOUBLE_EQ(reflectivity, comCopy->Reflectivity());
+  // \todo(anyon) add reflectivity to common::Material?
+  // EXPECT_DOUBLE_EQ(reflectivity, comCopy->Reflectivity());
   EXPECT_EQ(lightingEnabled, comCopy->LightingEnabled());
   EXPECT_EQ(textureName, comCopy->Texture());
   EXPECT_TRUE(comCopy->HasTexture());

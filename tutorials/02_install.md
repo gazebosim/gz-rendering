@@ -1,18 +1,8 @@
 \page installation Installation
 
-[Install](#install)
+We recommend following the Binary Install instructions to get up and running as quickly and painlessly as possible.
 
-* [Binary Install](#binary-install)
-
-* [Source Install](#source-install)
-
-    * [Prerequisites](#prerequisites)
-
-    * [Building from Source](#building-from-source)
-
-We recommend following the [Binary Install](#binary-install) instructions to get up and running as quickly and painlessly as possible.
-
-The [Source Install](#source-install) instructions should be used if you need the very latest software improvements, you need to modify the code, or you plan to make a contribution.
+The Source Install instructions should be used if you need the very latest software improvements, you need to modify the code, or you plan to make a contribution.
 
 ## Binary Install
 
@@ -29,6 +19,27 @@ Install Ignition Rendering:
 
     # This installs ign-rendering3. Change the number after libignition-rendering to the version you want
     sudo apt install libignition-rendering3-dev
+
+### Windows
+
+Install [Conda package management system](https://docs.conda.io/projects/conda/en/latest/user-guide/install/download.html).
+Miniconda suffices.
+
+Create if necessary, and activate a Conda environment:
+
+```
+conda create -n ign-ws
+conda activate ign-ws
+```
+
+Install:
+
+```
+conda install libignition-rendering<#> --channel conda-forge
+```
+
+Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
+which version you need.
 
 ## Source Install
 
@@ -58,10 +69,38 @@ Install dependencies:
         libignition-plugin-dev
     sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
 
-Clone source code
+#### Windows 10
 
-    # This checks out the `master` branch. You can append `-b ign-rendering#` (replace # with a number) to checkout a specific version
-    git clone http://github.com/ignitionrobotics/ign-rendering
+First, follow the [ign-cmake](https://github.com/ignitionrobotics/ign-cmake) tutorial for installing Conda, Visual Studio, CMake, etc., prerequisites, and creating a Conda environment.
+
+Navigate to ``condabin`` if necessary to use the ``conda`` command (i.e., if Conda is not in your `PATH` environment variable. You can find the location of ``condabin`` in Anaconda Prompt, ``where conda``).
+
+Create if necessary, and activate a Conda environment:
+
+```
+conda create -n ign-ws
+conda activate ign-ws
+```
+
+Install dependencies:
+
+```
+conda install ogre --channel conda-forge
+```
+
+Install Ignition dependencies:
+
+You can view available versions and their dependencies:
+
+```
+conda search libignition-rendering* --channel conda-forge --info
+```
+
+Install dependencies, replacing `<#>` with the desired versions:
+
+```
+conda install libignition-cmake<#> libignition-common<#> libignition-math<#> libignition-plugin<#> --channel conda-forge
+```
 
 #### Supported Rendering Engines
 
@@ -110,16 +149,57 @@ when building Ign Rendering OptiX plugin, edit
 out the section that defines `fminf`, fmaxf, and `copysignf` (for optix
 sdk 4.0.2, comment out lines 167-206).
 
-
 ### Building from source
+
+#### Ubuntu
+
+Clone source code
+
+```
+# This checks out the `master` branch. You can append `-b ign-rendering#` (replace # with a number) to checkout a specific version
+git clone http://github.com/ignitionrobotics/ign-rendering
+```
 
 Build and install as follows:
 
+```
+cd ign-rendering
+mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/install/dir
+make -j4
+make install
+```
+
+Replace `/path/to/install/dir` to whatever directory you want to install this package to
+
+#### Windows
+
+1. Activate the Conda environment created in the prerequisites:
+
+    ```
+    conda activate ign-ws
+    ```
+
+1. Navigate to where you would like to build the library, and clone the repository.
+
+    ```
+    # Optionally, append `-b ign-rendering#` (replace # with a number) to check out a specific version
+    git clone https://github.com/ignitionrobotics/ign-rendering.git
+    ```
+
+1. Configure and build
+
+    ```
     cd ign-rendering
     mkdir build
     cd build
-    cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/install/dir
-    make -j4
-    make install
+    cmake .. -DBUILD_TESTING=OFF  # Optionally, -DCMAKE_INSTALL_PREFIX=path\to\install
+    cmake --build . --config Release
+    ```
 
-Replace `/path/to/install/dir` to whatever directory you want to install this package to
+1. Optionally, install
+
+    ```
+    cmake --install . --config Release
+    ```

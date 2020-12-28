@@ -73,6 +73,14 @@ namespace ignition
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
+      /// \brief Get the background material of this camera
+      /// \return Background  material of this camera
+      public: virtual MaterialPtr BackgroundMaterial() const;
+
+      /// \brief Set the background material of this camera
+      /// \param[in] _material Material to set the background to
+      public: virtual void SetBackgroundMaterial(MaterialPtr _material);
+
       // Documentation inherited.
       public: virtual void Render() override;
 

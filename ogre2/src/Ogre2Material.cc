@@ -168,6 +168,22 @@ void Ogre2Material::SetAlphaFromTexture(bool _enabled,
 }
 
 //////////////////////////////////////////////////
+float Ogre2Material::RenderOrder() const
+{
+  return this->renderOrder;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetRenderOrder(const float _renderOrder)
+{
+  this->renderOrder = _renderOrder;
+  Ogre::HlmsMacroblock macroblock(
+      *this->ogreDatablock->getMacroblock());
+  macroblock.mDepthBiasConstant = _renderOrder;
+  this->ogreDatablock->setMacroblock(macroblock);
+}
+
+//////////////////////////////////////////////////
 bool Ogre2Material::ReceiveShadows() const
 {
   return this->ogreDatablock->getReceiveShadows();

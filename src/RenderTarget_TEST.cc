@@ -179,6 +179,10 @@ void RenderTargetTest::AddRemoveRenderPass(const std::string &_renderEngine)
   renderTexture->RemoveRenderPass(pass1);
   EXPECT_EQ(1u, renderTexture->RenderPassCount());
   EXPECT_EQ(pass2, renderTexture->RenderPassByIndex(0u));
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -198,7 +202,6 @@ TEST_P(RenderTargetTest, AddRemoveRenderPass)
 {
   AddRemoveRenderPass(GetParam());
 }
-
 
 INSTANTIATE_TEST_CASE_P(RenderTarget, RenderTargetTest,
     RENDER_ENGINE_VALUES,

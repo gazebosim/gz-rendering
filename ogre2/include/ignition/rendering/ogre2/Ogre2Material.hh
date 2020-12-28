@@ -72,6 +72,14 @@ namespace ignition
           double _alpha = 0.5, bool _twoSided = true) override;
 
       // Documentation inherited
+      public: virtual float RenderOrder() const override;
+
+      // Documentation inherited
+      // Review the official documentation to get more details about this
+      // parameter, in particular mDepthBiasConstant
+      public: virtual void SetRenderOrder(const float _renderOrder) override;
+
+      // Documentation inherited
       public: virtual bool ReceiveShadows() const override;
 
       // Documentation inherited

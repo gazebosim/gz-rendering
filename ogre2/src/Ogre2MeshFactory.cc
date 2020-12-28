@@ -333,11 +333,15 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       // TODO(anyone): specular colors
 
       // two dimensional texture coordinates
-      if (subMesh.TexCoordCount() > 0)
+      // add all texture coordinate sets
+      for (unsigned int k = 0u; k < subMesh.TexCoordSetCount(); ++k)
       {
-        vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT2,
-            Ogre::VES_TEXTURE_COORDINATES, 0);
-        currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
+        if (subMesh.TexCoordCountBySet(k) > 0)
+        {
+          vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT2,
+              Ogre::VES_TEXTURE_COORDINATES, k);
+          currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
+        }
       }
 
       // allocate the vertex buffer
@@ -375,6 +379,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
         *vertices++ = subMesh.Vertex(j).Y();
         *vertices++ = subMesh.Vertex(j).Z();
 
+        // Add all normals
         if (subMesh.NormalCount() > 0)
         {
           *vertices++ = subMesh.Normal(j).X();
@@ -382,10 +387,14 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
           *vertices++ = subMesh.Normal(j).Z();
         }
 
-        if (subMesh.TexCoordCount() > 0)
+        // Add all texture coordinate sets
+        for (unsigned int k = 0u; k < subMesh.TexCoordSetCount(); ++k)
         {
-          *vertices++ = subMesh.TexCoord(j).X();
-          *vertices++ = subMesh.TexCoord(j).Y();
+          if (subMesh.TexCoordCountBySet(k) > 0u)
+          {
+            *vertices++ = subMesh.TexCoordBySet(j, k).X();
+            *vertices++ = subMesh.TexCoordBySet(j, k).Y();
+          }
         }
       }
 

@@ -151,17 +151,17 @@ void Ogre2Material::SetAlphaFromTexture(bool _enabled,
     double _alpha, bool _twoSided)
 {
   BaseMaterial::SetAlphaFromTexture(_enabled, _alpha, _twoSided);
+  Ogre::HlmsBlendblock block;
   if (_enabled)
   {
-    Ogre::HlmsBlendblock block;
     block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_GREATER_EQUAL);
     this->ogreDatablock->setBlendblock(block);
-    this->ogreDatablock->setTwoSidedLighting(_twoSided);
   }
   else
   {
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_ALWAYS_PASS);
+    this->ogreDatablock->setBlendblock(block);
   }
   this->ogreDatablock->setAlphaTestThreshold(_alpha);
   this->ogreDatablock->setTwoSidedLighting(_twoSided);
@@ -372,6 +372,56 @@ void Ogre2Material::ClearEmissiveMap()
 }
 
 //////////////////////////////////////////////////
+bool Ogre2Material::HasLightMap() const
+{
+  return !this->lightMapName.empty();
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2Material::LightMap() const
+{
+  return this->lightMapName;
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2Material::LightMapTexCoordSet() const
+{
+  return this->lightMapUvSet;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetLightMap(const std::string &_name, unsigned int _uvSet)
+{
+  if (_name.empty())
+  {
+    this->ClearLightMap();
+    return;
+  }
+
+  this->lightMapName = _name;
+  this->lightMapUvSet = _uvSet;
+
+  // reserve detail map 0 for light map
+  Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
+
+  // lightmap usually uses a different tex coord set
+  this->SetTextureMapImpl(this->lightMapName, type);
+
+  this->ogreDatablock->setTextureUvSource(type, this->lightMapUvSet);
+
+  // PBSM_BLEND_OVERLAY and PBSM_BLEND_MULTIPLY2X produces better results
+  this->ogreDatablock->setDetailMapBlendMode(0, Ogre::PBSM_BLEND_OVERLAY);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::ClearLightMap()
+{
+  this->lightMapName = "";
+  this->lightMapUvSet = 0u;
+  this->ogreDatablock->setTexture(Ogre::PBSM_DETAIL0, 0, Ogre::TexturePtr());
+}
+
+//////////////////////////////////////////////////
 void Ogre2Material::SetRoughness(const float _roughness)
 {
   this->ogreDatablock->setRoughness(_roughness);
@@ -455,6 +505,17 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
   this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture,
       &samplerBlockRef);
+
+  // disable alpha from texture if texture does not have an alpha channel
+  // otherwise this becomes a transparent material
+  if (_type == Ogre::PBSM_DIFFUSE)
+  {
+    if (this->TextureAlphaEnabled() && !texLocation.texture->hasAlpha())
+    {
+      this->SetAlphaFromTexture(false, this->AlphaThreshold(),
+          this->TwoSidedEnabled());
+    }
+  }
 }
 
 //////////////////////////////////////////////////

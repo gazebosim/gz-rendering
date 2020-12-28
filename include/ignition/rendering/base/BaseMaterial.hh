@@ -233,6 +233,22 @@ namespace ignition
       public: virtual void ClearEmissiveMap() override;
 
       // Documentation inherited
+      public: virtual bool HasLightMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string LightMap() const override;
+
+      // Documentation inherited
+      public: virtual unsigned int LightMapTexCoordSet() const override;
+
+      // Documentation inherited
+      public: virtual void SetLightMap(const std::string &_lightMap,
+          unsigned int uvSet = 0u) override;
+
+      // Documentation inherited
+      public: virtual void ClearLightMap() override;
+
+      // Documentation inherited
       public: virtual void SetRoughness(const float _roughness) override;
 
       // Documentation inherited
@@ -823,6 +839,41 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    bool BaseMaterial<T>::HasLightMap() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::LightMap() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseMaterial<T>::LightMapTexCoordSet() const
+    {
+      return 0u;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetLightMap(const std::string &, unsigned int)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::ClearLightMap()
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMaterial<T>::SetRoughness(const float)
     {
       // no op
@@ -891,6 +942,8 @@ namespace ignition
       this->SetMetalness(_material->Metalness());
       this->SetEnvironmentMap(_material->EnvironmentMap());
       this->SetEmissiveMap(_material->EmissiveMap());
+      this->SetLightMap(_material->LightMap(),
+          _material->LightMapTexCoordSet());
       this->SetShaderType(_material->ShaderType());
       this->SetVertexShader(_material->VertexShader());
       this->SetFragmentShader(_material->FragmentShader());
@@ -933,6 +986,7 @@ namespace ignition
       this->SetMetalness(pbrMat->Metalness());
       this->SetEnvironmentMap(pbrMat->EnvironmentMap());
       this->SetEmissiveMap(pbrMat->EmissiveMap());
+      this->SetLightMap(pbrMat->LightMap(), pbrMat->LightMapTexCoordSet());
     }
 
     //////////////////////////////////////////////////

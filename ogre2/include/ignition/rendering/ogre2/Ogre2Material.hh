@@ -154,6 +154,22 @@ namespace ignition
       public: virtual void ClearEmissiveMap() override;
 
       // Documentation inherited
+      public: virtual bool HasLightMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string LightMap() const override;
+
+      // Documentation inherited
+      public: virtual unsigned int LightMapTexCoordSet() const override;
+
+      // Documentation inherited
+      public: virtual void SetLightMap(const std::string &_name,
+          unsigned int _uvSet = 0u) override;
+
+      // Documentation inherited
+      public: virtual void ClearLightMap() override;
+
+      // Documentation inherited
       public: virtual float Roughness() const override;
 
       // Documentation inherited
@@ -246,6 +262,12 @@ namespace ignition
 
       /// \brief Name of the emissive map
       protected: std::string emissiveMapName;
+
+      /// \brief Name of the light map
+      protected: std::string lightMapName;
+
+      /// \brief Texture coorindate set used by the light map
+      protected: unsigned int lightMapUvSet = 0u;
 
       /// \brief Unique id assigned to ogre hlms datablock
       protected: std::string ogreDatablockId;

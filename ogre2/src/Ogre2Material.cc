@@ -388,6 +388,56 @@ void Ogre2Material::ClearEmissiveMap()
 }
 
 //////////////////////////////////////////////////
+bool Ogre2Material::HasLightMap() const
+{
+  return !this->lightMapName.empty();
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2Material::LightMap() const
+{
+  return this->lightMapName;
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2Material::LightMapTexCoordSet() const
+{
+  return this->lightMapUvSet;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetLightMap(const std::string &_name, unsigned int _uvSet)
+{
+  if (_name.empty())
+  {
+    this->ClearLightMap();
+    return;
+  }
+
+  this->lightMapName = _name;
+  this->lightMapUvSet = _uvSet;
+
+  // reserve detail map 0 for light map
+  Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
+
+  // lightmap usually uses a different tex coord set
+  this->SetTextureMapImpl(this->lightMapName, type);
+
+  this->ogreDatablock->setTextureUvSource(type, this->lightMapUvSet);
+
+  // PBSM_BLEND_OVERLAY and PBSM_BLEND_MULTIPLY2X produces better results
+  this->ogreDatablock->setDetailMapBlendMode(0, Ogre::PBSM_BLEND_OVERLAY);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::ClearLightMap()
+{
+  this->lightMapName = "";
+  this->lightMapUvSet = 0u;
+  this->ogreDatablock->setTexture(Ogre::PBSM_DETAIL0, 0, Ogre::TexturePtr());
+}
+
+//////////////////////////////////////////////////
 void Ogre2Material::SetRoughness(const float _roughness)
 {
   this->ogreDatablock->setRoughness(_roughness);

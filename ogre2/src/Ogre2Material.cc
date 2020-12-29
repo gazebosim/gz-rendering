@@ -154,8 +154,8 @@ void Ogre2Material::SetAlphaFromTexture(bool _enabled,
   Ogre::HlmsBlendblock block;
   if (_enabled)
   {
-    block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_GREATER_EQUAL);
+    block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setBlendblock(block);
   }
   else

@@ -986,8 +986,8 @@ namespace ignition
       this->SetTransparency(_material.Transparency());
       this->SetAlphaFromTexture(_material.TextureAlphaEnabled(),
           _material.AlphaThreshold(), _material.TwoSidedEnabled());
-      // TODO(anyone): update common::Material
       this->SetRenderOrder(_material.RenderOrder());
+      // TODO(anyone): update common::Material
       this->SetReflectivity(0);
       this->SetTexture(_material.TextureImage());
       // TODO(anyone): update common::Material

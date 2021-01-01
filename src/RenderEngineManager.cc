@@ -409,7 +409,7 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   // TODO(anyone): Find a cleaner way to get the default engine library name
 
   // cppcheck-suppress unreadVariable
-  std::string libName = "ignition-rendering-";
+  std::string libName = "ignition-rendering4-";
 
   // cppcheck-suppress unusedVariable
   std::string engineName;

@@ -1,24 +1,24 @@
 \page render_order Render order
 
-This example shows how to set the render order for coplanar poligons.
+This example shows how to set the render order for coplanar polygons.
 
 The material API allows changing the render order. When polygons are coplanar, you can get problems
-with `depth fighting` where the pixels from the two polys compete for the same screen pixel. As you
-can see in the following image:
+with `depth fighting` (also known as z fighting) where the pixels from the two polys compete for the same screen pixel.
+As you can see in the following image:
 
 @image html img/render_order_bad.png
 
-The method `SetRenderOrder` in the Material class allows avoiding this issue. The higher value will
-be rendered on top of other coplanar polygons.
+The method `SetRenderOrder` in the Material class allows you to avoid this issue. The higher value will
+be rendered on top of other coplanar polygons. This method will set the depth bias value of objects that the material is assigned to.
 
 In the `simple_demo` example you can find two materials with different render orders. The red material
 (`SetRenderOrder(3)`) has a higher value than the white material (`SetRenderOrder(3)`).
 
-\snippet examples/render_pass/Main.cc red material
+\snippet examples/simple_demo/Main.cc red material
 
 \snippet examples/simple_demo/Main.cc white material
 
-As you can see in the following image the z-fighting issue is resolved.
+As you can see in the following image the depth fighting issue is resolved.
 
 @image html img/render_order_good.png
 

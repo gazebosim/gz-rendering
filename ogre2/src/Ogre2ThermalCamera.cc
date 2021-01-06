@@ -28,6 +28,7 @@
 #include <variant>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Filesystem.hh>
 #include <ignition/math/Helpers.hh>
 
 #include "ignition/rendering/RenderTypes.hh"
@@ -250,6 +251,46 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
         // TODO(adlarkin) set the texture in the material to heatSignature
         // before applying the material? Right now, the texture is hardcoded,
         // so heatSignature is unused
+        // (for now, temporary check to see if the hardcoded texture is in
+        // Ogre's resource path)
+        static const std::string texture =
+          "/ws/install/ignition-rendering4/share/ignition/ignition-rendering4/"
+          "ogre2/media/materials/textures/RescueRandy_Thermal.png";
+        if (!common::isFile(texture))
+        {
+          ignerr << "texture given is not a file\n";
+        }
+        else
+        {
+          auto baseName = common::basename(texture);
+          auto idx = texture.rfind(baseName);
+          if (idx != std::string::npos)
+          {
+            std::string dirPath = texture.substr(0, idx);
+            if (!dirPath.empty())
+            {
+              if (!Ogre::ResourceGroupManager::getSingleton().
+                    resourceLocationExists(dirPath))
+              {
+                ignerr << "dirPath is "
+                  << dirPath << "\n";
+                ignerr << "texture didn't exist in Ogre resource path; "
+                       << "adding it now\n";
+                Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+                    dirPath, "FileSystem", "General");
+              }
+            }
+            else
+            {
+              ignerr << "directory path is empty, so unable to check if "
+                     << "texure is in Ogre resource path\n";
+            }
+          }
+          else
+          {
+            ignerr << "unable to find baseName in given texture\n";
+          }
+        }
 
         // set visibility flag so thermal camera can see it
         item->addVisibilityFlags(0x10000000);

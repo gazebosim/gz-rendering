@@ -201,53 +201,6 @@ class IgnTerrainMatGen : public Ogre::TerrainMaterialGeneratorA
     // Needed to allow access from ShaderHelperGLSL to protected members
     // of SM2Profile.
     friend ShaderHelperGLSL;
-
-    /// Keeping the CG shader for reference.
-    /// \brief Utility class to help with generating shaders for Cg / HLSL.
-    /// Original implementation from Ogre that generates Cg shaders
-    protected: class ShaderHelperCg :
-        public Ogre::TerrainMaterialGeneratorA::SM2Profile::ShaderHelperCg
-
-    {
-      public: virtual Ogre::HighLevelGpuProgramPtr generateFragmentProgram(
-                  const SM2Profile *_prof, const Ogre::Terrain *_terrain,
-                  TechniqueType _tt);
-
-      public: virtual Ogre::HighLevelGpuProgramPtr generateVertexProgram(
-                  const SM2Profile *_prof, const Ogre::Terrain *_terrain,
-                  TechniqueType _tt);
-
-      protected: virtual void generateVpHeader(const SM2Profile *_prof,
-                     const Ogre::Terrain *_terrain, TechniqueType _tt,
-                     Ogre::StringStream &_outStream);
-
-      protected: virtual void generateVpFooter(const SM2Profile *_prof,
-                     const Ogre::Terrain *_terrain, TechniqueType _tt,
-                     Ogre::StringStream &_outStream);
-
-      protected: virtual void generateVertexProgramSource(
-                     const SM2Profile *_prof, const Ogre::Terrain *_terrain,
-                     TechniqueType _tt,
-                     Ogre::StringStream &_outStream);
-
-      protected: virtual void defaultVpParams(const SM2Profile *_prof,
-                     const Ogre::Terrain *_terrain, TechniqueType _tt,
-                     const Ogre::HighLevelGpuProgramPtr &_prog);
-
-      protected: virtual unsigned int generateVpDynamicShadowsParams(
-                     unsigned int _texCoordStart, const SM2Profile *_prof,
-                     const Ogre::Terrain *_terrain, TechniqueType _tt,
-                     Ogre::StringStream &_outStream);
-
-      protected: virtual void generateVpDynamicShadows(
-                     const SM2Profile *_prof, const Ogre::Terrain *_terrain,
-                     TechniqueType _tt,
-                     Ogre::StringStream &_outStream);
-    };
-
-    // Needed to allow access from ShaderHelperCg to protected members
-    // of SM2Profile.
-    friend ShaderHelperCg;
   };
 };
 
@@ -406,7 +359,7 @@ class ignition::rendering::OgreHeightmapPrivate
 
   /// \brief Name of the top level directory where all the paging info is
   /// stored
-  public: const std::string pagingDirname{"paging"};
+  public: const std::string pagingDirname{"ogre-paging"};
 
   /// \brief Central registration point for extension classes,
   /// such as the PageStrategy, PageContentFactory.
@@ -511,9 +464,9 @@ void OgreHeightmap::Init()
   // avoid the ifdef check. i.e. heightmapSizeZ = MaxElevation - MinElevation
   double heightmapSizeZ = this->descriptor.Data()->MaxElevation();
 
-  // \todo Parametrize as much as possible
-  // these params need to be the same as physics/HeightmapShape.cc
-  // in order to generate consistent height data
+  // \todo These parameters shouldn't be hardcoded, and instead parametrized so
+  // that they can be made consistent across different libraries (like
+  // ign-physics)
   bool flipY = false;
   // sampling size along image width and height
   unsigned int vertSize = (this->descriptor.Data()->Width() *
@@ -932,7 +885,7 @@ void OgreHeightmap::UpdateTerrainHash(const std::string &_hash,
 
 //////////////////////////////////////////////////
 void OgreHeightmap::SplitHeights(const std::vector<float> &_heightmap,
-    const int _n, std::vector<std::vector<float>> &_v)
+    int _n, std::vector<std::vector<float>> &_v)
 {
   // We support splitting the terrain in 4 or 16 pieces
   if (_n != 4 && _n != 16)
@@ -982,7 +935,7 @@ void OgreHeightmap::SplitHeights(const std::vector<float> &_heightmap,
 }
 
 /////////////////////////////////////////////////
-void OgreHeightmap::DefineTerrain(const int _x, const int _y)
+void OgreHeightmap::DefineTerrain(int _x, int _y)
 {
   Ogre::String filename = this->dataPtr->terrainGroup->generateFilename(_x, _y);
 
@@ -1051,7 +1004,7 @@ void OgreHeightmap::CreateMaterial()
 #else
     // init custom material generator
     Ogre::TerrainMaterialGeneratorPtr terrainMaterialGenerator;
-    auto terrainMaterial = OGRE_NEW TerrainMaterial("Ignition/Grey");
+    auto terrainMaterial = OGRE_NEW TerrainMaterial("Default/White");
     if (this->dataPtr->splitTerrain)
       terrainMaterial->setGridSize(this->dataPtr->numTerrainSubdivisions);
     terrainMaterialGenerator.bind(terrainMaterial);
@@ -1260,19 +1213,6 @@ void IgnTerrainMatGen::SM2Profile::addTechnique(
       return;
     }
 
-    // Uncomment this to use cg shaders. I'm keeping the CG
-    // shader for reference. There is some more code to switch, located
-    // below, to enable CG shaders.
-    // if (hmgr.isLanguageSupported("cg"))
-    // {
-    //   this->mShaderGen = OGRE_NEW
-    //     // This will use Ogre's CG shader
-    //     // Ogre::TerrainMaterialGeneratorA::SM2Profile::ShaderHelperCg();
-    //     //
-    //     // This will use our CG shader, which has terrain shadows
-    //     IgnTerrainMatGen::SM2Profile::ShaderHelperCg();
-    // }
-
     // check SM3 features
     this->mSM3Available =
       Ogre::GpuProgramManager::getSingleton().isSyntaxSupported("ps_3_0");
@@ -1295,10 +1235,6 @@ void IgnTerrainMatGen::SM2Profile::addTechnique(
   // Doesn't delegate to the proper method otherwise
   Ogre::HighLevelGpuProgramPtr vprog =
     ((IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL*)this->mShaderGen)
-  // Use this line if running Ogre's CG shaders
-  // ((TerrainMaterialGeneratorA::SM2Profile::ShaderHelperCg*)this->mShaderGen)
-  // Use this line if running our CG shaders
-  // ((IgnTerrainMatGen::SM2Profile::ShaderHelperCg*)this->mShaderGen)
     ->generateVertexProgram(this, _terrain, _tt);
 
   // DEBUG: std::cout << "VertShader[" << vprog->getName() << "]:\n"
@@ -1306,10 +1242,6 @@ void IgnTerrainMatGen::SM2Profile::addTechnique(
 
   Ogre::HighLevelGpuProgramPtr fprog =
     ((IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL*)this->mShaderGen)
-  // Use this line if running Ogre's CG shaders
-  // ((TerrainMaterialGeneratorA::SM2Profile::ShaderHelperCg*)this->mShaderGen)
-  // Use this line if running our CG shaders
-  // ((IgnTerrainMatGen::SM2Profile::ShaderHelperCg*)this->mShaderGen)
     ->generateFragmentProgram(this, _terrain, _tt);
 
   // DEBUG: std::cout << "FragShader[" << fprog->getName() << "]:\n"
@@ -2715,410 +2647,6 @@ Ogre::uint _idx)
     case 3:
       return "w";
   };
-}
-
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-// CG Shader helper
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
-
-/////////////////////////////////////////////////
-Ogre::HighLevelGpuProgramPtr
-IgnTerrainMatGen::SM2Profile::ShaderHelperCg::generateVertexProgram(
-    const SM2Profile *_prof, const Ogre::Terrain *_terrain,
-    TechniqueType _tt)
-{
-  Ogre::HighLevelGpuProgramPtr ret =
-    this->createVertexProgram(_prof, _terrain, _tt);
-
-  Ogre::StringStream sourceStr;
-  this->generateVertexProgramSource(_prof, _terrain, _tt, sourceStr);
-
-  ret->setSource(sourceStr.str());
-  ret->load();
-  this->defaultVpParams(_prof, _terrain, _tt, ret);
-
-  return ret;
-}
-
-/////////////////////////////////////////////////
-void IgnTerrainMatGen::SM2Profile::ShaderHelperCg::defaultVpParams(
-    const SM2Profile *_prof, const Ogre::Terrain *_terrain,
-    TechniqueType _tt, const Ogre::HighLevelGpuProgramPtr &_prog)
-{
-  Ogre::GpuProgramParametersSharedPtr params = _prog->getDefaultParameters();
-  params->setIgnoreMissingParams(true);
-
-  params->setNamedAutoConstant("worldMatrix",
-      Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
-
-  params->setNamedAutoConstant("viewProjMatrix",
-      Ogre::GpuProgramParameters::ACT_VIEWPROJ_MATRIX);
-
-  params->setNamedAutoConstant("lodMorph",
-      Ogre::GpuProgramParameters::ACT_CUSTOM,
-      Ogre::Terrain::LOD_MORPH_CUSTOM_PARAM);
-
-  params->setNamedAutoConstant("fogParams",
-      Ogre::GpuProgramParameters::ACT_FOG_PARAMS);
-
-  if (_prof->isShadowingEnabled(_tt, _terrain))
-  {
-    unsigned int numTextures = 1;
-    if (_prof->getReceiveDynamicShadowsPSSM())
-    {
-      numTextures = _prof->getReceiveDynamicShadowsPSSM()->getSplitCount();
-    }
-    for (unsigned int i = 0; i < numTextures; ++i)
-    {
-      params->setNamedAutoConstant("texViewProjMatrix" +
-          Ogre::StringConverter::toString(i),
-          Ogre::GpuProgramParameters::ACT_TEXTURE_VIEWPROJ_MATRIX, i);
-
-      // Don't add depth range params
-      // if (prof->getReceiveDynamicShadowsDepth())
-      // {
-      //   params->setNamedAutoConstant("depthRange" +
-      //       Ogre::StringConverter::toString(i),
-      //       Ogre::GpuProgramParameters::ACT_SHADOW_SCENE_DEPTH_RANGE, i);
-      // }
-    }
-  }
-
-#if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 8
-  if (_terrain->_getUseVertexCompression() && _tt != RENDER_COMPOSITE_MAP)
-  {
-    Ogre::Matrix4 posIndexToObjectSpace;
-    _terrain->getPointTransform(&posIndexToObjectSpace);
-    params->setNamedConstant("posIndexToObjectSpace", posIndexToObjectSpace);
-  }
-#endif
-}
-
-/////////////////////////////////////////////////
-void
-IgnTerrainMatGen::SM2Profile::ShaderHelperCg::generateVpDynamicShadows(
-    const SM2Profile *_prof, const Ogre::Terrain * /*_terrain*/,
-    TechniqueType /*_tt*/, Ogre::StringStream &_outStream)
-{
-  unsigned int numTextures = 1;
-
-  if (_prof->getReceiveDynamicShadowsPSSM())
-  {
-    numTextures = _prof->getReceiveDynamicShadowsPSSM()->getSplitCount();
-  }
-
-  // Calculate the position of vertex in light space
-  for (unsigned int i = 0; i < numTextures; ++i)
-  {
-    _outStream << "  oLightSpacePos" << i << " = mul(texViewProjMatrix"
-               << i << ", worldPos);\n";
-
-    // Don't linearize depth range: RTSS PSSM implementation uses
-    // view-space depth
-    // if (prof->getReceiveDynamicShadowsDepth())
-    // {
-    //   // make linear
-    //   outStream << "oLightSpacePos" << i << ".z = (oLightSpacePos" << i
-    //             << ".z - depthRange" << i << ".x) * depthRange" << i
-    //             << ".w;\n";
-    // }
-  }
-
-  if (_prof->getReceiveDynamicShadowsPSSM())
-  {
-    _outStream << "  // pass cam depth\n   oUVMisc.z = oPos.z;\n";
-  }
-}
-
-/////////////////////////////////////////////////
-unsigned int IgnTerrainMatGen::SM2Profile::ShaderHelperCg::
-generateVpDynamicShadowsParams(unsigned int _texCoord, const SM2Profile *_prof,
-    const Ogre::Terrain * /*_terrain*/, TechniqueType /*_tt*/,
-    Ogre::StringStream &_outStream)
-{
-  // out semantics & params
-  unsigned int numTextures = 1;
-
-  if (_prof->getReceiveDynamicShadowsPSSM())
-  {
-    numTextures = _prof->getReceiveDynamicShadowsPSSM()->getSplitCount();
-  }
-
-  for (unsigned int i = 0; i < numTextures; ++i)
-  {
-    _outStream << ", out float4 oLightSpacePos" << i
-               << " : TEXCOORD" << _texCoord++ << "\n"
-               << ", uniform float4x4 texViewProjMatrix" << i << "\n";
-
-    // Don't add depth range params
-    // if (prof->getReceiveDynamicShadowsDepth())
-    // {
-    //   _outStream << ", uniform float4 depthRange" << i
-    //             << " // x = min, y = max, z = range, w = 1/range\n";
-    // }
-  }
-
-  return _texCoord;
-}
-
-/////////////////////////////////////////////////
-// This method is identical to
-// TerrainMaterialGeneratorA::SM2Profile::ShaderHelperCg::generateVpHeader()
-// but is needed because generateVpDynamicShadowsParams() is not declared
-// virtual.
-void IgnTerrainMatGen::SM2Profile::ShaderHelperCg::generateVpHeader(
-    const SM2Profile *_prof, const Ogre::Terrain *_terrain,
-    TechniqueType _tt, Ogre::StringStream &_outStream)
-{
-  _outStream << "void main_vp(\n";
-
-  bool compression = false;
-
-#if OGRE_VERSION_MAJOR >= 1 && OGRE_VERSION_MINOR >= 8
-  compression = _terrain->_getUseVertexCompression() &&
-                _tt != RENDER_COMPOSITE_MAP;
-#endif
-
-  if (compression)
-  {
-    _outStream << "float2 posIndex : POSITION,\nfloat height  : TEXCOORD0,\n";
-  }
-  else
-  {
-    _outStream << "float4 pos : POSITION,\nfloat2 uv  : TEXCOORD0,\n";
-  }
-
-  if (_tt != RENDER_COMPOSITE_MAP)
-    _outStream << "float2 delta  : TEXCOORD1,\n";
-
-  _outStream <<
-    "uniform float4x4 worldMatrix,\n"
-    "uniform float4x4 viewProjMatrix,\n"
-    "uniform float2   lodMorph,\n";
-
-  if (compression)
-  {
-    _outStream <<
-      "uniform float4x4   posIndexToObjectSpace,\n"
-      "uniform float    baseUVScale,\n";
-  }
-
-  // uv multipliers
-  Ogre::uint maxLayers = _prof->getMaxLayers(_terrain);
-  Ogre::uint numLayers = std::min(maxLayers,
-      static_cast<unsigned int>(_terrain->getLayerCount()));
-
-  unsigned int numUVMultipliers = (numLayers / 4);
-
-  if (numLayers % 4)
-    ++numUVMultipliers;
-
-  for (unsigned int i = 0; i < numUVMultipliers; ++i)
-    _outStream << "uniform float4 uvMul" << i << ",\n";
-
-  _outStream <<
-    "out float4 oPos : POSITION,\n"
-    "out float4 oPosObj : TEXCOORD0\n";
-
-  unsigned int texCoordSet = 1;
-  _outStream << ", out float4 oUVMisc : TEXCOORD" << texCoordSet++
-            << " // xy = uv, z = camDepth\n";
-
-  // layer UV's premultiplied, packed as xy/zw
-  unsigned int numUVSets = numLayers / 2;
-
-  if (numLayers % 2)
-    ++numUVSets;
-
-  if (_tt != LOW_LOD)
-  {
-    for (unsigned int i = 0; i < numUVSets; ++i)
-    {
-      _outStream << ", out float4 oUV" << i
-                << " : TEXCOORD" << texCoordSet++ << "\n";
-    }
-  }
-
-  if (_prof->getParent()->getDebugLevel() && _tt != RENDER_COMPOSITE_MAP)
-  {
-    _outStream << ", out float2 lodInfo : TEXCOORD" << texCoordSet++ << "\n";
-  }
-
-  bool fog = _terrain->getSceneManager()->getFogMode() != Ogre::FOG_NONE &&
-             _tt != RENDER_COMPOSITE_MAP;
-
-  if (fog)
-  {
-    _outStream <<
-      ", uniform float4 fogParams\n"
-      ", out float fogVal : COLOR\n";
-  }
-
-  if (_prof->isShadowingEnabled(_tt, _terrain))
-  {
-    texCoordSet = generateVpDynamicShadowsParams(texCoordSet, _prof,
-        _terrain, _tt, _outStream);
-  }
-
-  // check we haven't exceeded texture coordinates
-  if (texCoordSet > 8)
-  {
-    OGRE_EXCEPT(Ogre::Exception::ERR_INVALIDPARAMS,
-        "Requested options require too many texture coordinate sets! "
-        "Try reducing the number of layers.",
-        __FUNCTION__);
-  }
-
-  _outStream <<
-    ")\n"
-    "{\n";
-
-  if (compression)
-  {
-    _outStream << "  float4 pos;\n"
-      << "  pos = mul(posIndexToObjectSpace, float4(posIndex, height, 1));\n"
-      << "  float2 uv = float2(posIndex.x * baseUVScale, 1.0 - "
-      << "(posIndex.y * baseUVScale));\n";
-  }
-
-  _outStream <<
-    "  float4 worldPos = mul(worldMatrix, pos);\n"
-    "  oPosObj = pos;\n";
-
-  if (_tt != RENDER_COMPOSITE_MAP)
-  {
-    // determine whether to apply the LOD morph to this vertex
-    // we store the deltas against all vertices so we only want to apply
-    // the morph to the ones which would disappear. The target LOD which is
-    // being morphed to is stored in lodMorph.y, and the LOD at which
-    // the vertex should be morphed is stored in uv.w. If we subtract
-    // the former from the latter, and arrange to only morph if the
-    // result is negative (it will only be -1 in fact, since after that
-    // the vertex will never be indexed), we will achieve our aim.
-    // sign(vertexLOD - targetLOD) == -1 is to morph
-    _outStream <<
-      "  float toMorph = -min(0, sign(delta.y - lodMorph.y));\n";
-
-    // this will either be 1 (morph) or 0 (don't morph)
-    if (_prof->getParent()->getDebugLevel())
-    {
-      // x == LOD level (-1 since value is target level, we want to
-      // display actual)
-      _outStream << "lodInfo.x = (lodMorph.y - 1) / "
-                 << _terrain->getNumLodLevels() << ";\n";
-
-      // y == LOD morph
-      _outStream << "lodInfo.y = toMorph * lodMorph.x;\n";
-    }
-
-    // morph
-    switch (_terrain->getAlignment())
-    {
-      case Ogre::Terrain::ALIGN_X_Y:
-        _outStream << "  worldPos.z += delta.x * toMorph * lodMorph.x;\n";
-        break;
-      case Ogre::Terrain::ALIGN_X_Z:
-        _outStream << "  worldPos.y += delta.x * toMorph * lodMorph.x;\n";
-        break;
-      case Ogre::Terrain::ALIGN_Y_Z:
-        _outStream << "  worldPos.x += delta.x * toMorph * lodMorph.x;\n";
-        break;
-      default:
-        ignerr << "Invalid alignment\n";
-    };
-  }
-
-  // generate UVs
-  if (_tt != LOW_LOD)
-  {
-    for (unsigned int i = 0; i < numUVSets; ++i)
-    {
-      unsigned int layer  =  i * 2;
-      unsigned int uvMulIdx = layer / 4;
-
-      _outStream << "  oUV" << i << ".xy = " << " uv.xy * uvMul"
-                 << uvMulIdx << "." << getChannel(layer) << ";\n";
-      _outStream << "  oUV" << i << ".zw = " << " uv.xy * uvMul"
-                 << uvMulIdx << "." << getChannel(layer+1) << ";\n";
-    }
-  }
-}
-
-/////////////////////////////////////////////////
-// This method is identical to
-// TerrainMaterialGeneratorA::SM2Profile::ShaderHelperCg::generateVpFooter()
-// but is needed because generateVpDynamicShadows() is not declared virtual.
-void IgnTerrainMatGen::SM2Profile::ShaderHelperCg::generateVpFooter(
-    const SM2Profile *_prof, const Ogre::Terrain *_terrain,
-    TechniqueType _tt, Ogre::StringStream &_outStream)
-{
-  _outStream << "  oPos = mul(viewProjMatrix, worldPos);\n"
-             << "  oUVMisc.xy = uv.xy;\n";
-
-  bool fog = _terrain->getSceneManager()->getFogMode() != Ogre::FOG_NONE &&
-             _tt != RENDER_COMPOSITE_MAP;
-  if (fog)
-  {
-    if (_terrain->getSceneManager()->getFogMode() == Ogre::FOG_LINEAR)
-    {
-      _outStream <<
-        "  fogVal = saturate((oPos.z - fogParams.y) * fogParams.w);\n";
-    }
-    else
-    {
-      _outStream <<
-        "  fogVal = 1 - saturate(1 / (exp(oPos.z * fogParams.x)));\n";
-    }
-  }
-
-  if (_prof->isShadowingEnabled(_tt, _terrain))
-    this->generateVpDynamicShadows(_prof, _terrain, _tt, _outStream);
-
-  _outStream << "}\n";
-}
-
-/////////////////////////////////////////////////
-void IgnTerrainMatGen::SM2Profile::ShaderHelperCg::
-generateVertexProgramSource(const SM2Profile *_prof,
-    const Ogre::Terrain* _terrain, TechniqueType _tt,
-    Ogre::StringStream &_outStream)
-{
-  this->generateVpHeader(_prof, _terrain, _tt, _outStream);
-
-  if (_tt != LOW_LOD)
-  {
-    unsigned int maxLayers = _prof->getMaxLayers(_terrain);
-    unsigned int numLayers = std::min(maxLayers,
-        static_cast<unsigned int>(_terrain->getLayerCount()));
-
-    for (unsigned int i = 0; i < numLayers; ++i)
-      this->generateVpLayer(_prof, _terrain, _tt, i, _outStream);
-  }
-
-  this->generateVpFooter(_prof, _terrain, _tt, _outStream);
-}
-
-/////////////////////////////////////////////////
-Ogre::HighLevelGpuProgramPtr
-IgnTerrainMatGen::SM2Profile::ShaderHelperCg::generateFragmentProgram(
-    const SM2Profile *_prof, const Ogre::Terrain *_terrain, TechniqueType _tt)
-{
-  Ogre::HighLevelGpuProgramPtr ret = this->createFragmentProgram(_prof,
-      _terrain, _tt);
-
-  Ogre::StringStream sourceStr;
-
-  this->generateFragmentProgramSource(_prof, _terrain, _tt, sourceStr);
-
-  ret->setSource(sourceStr.str());
-
-  ret->load();
-
-  this->defaultFpParams(_prof, _terrain, _tt, ret);
-
-  return ret;
 }
 
 // #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 11

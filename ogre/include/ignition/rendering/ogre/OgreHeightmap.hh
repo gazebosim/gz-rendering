@@ -93,12 +93,12 @@ namespace ignition
       /// \param[in] _n Number of subterrains.
       /// \param[out] _v Destination vector with the subterrains.
       private: void SplitHeights(const std::vector<float> &_heightmap,
-                  const int _n, std::vector<std::vector<float>> &_v);
+                  int _n, std::vector<std::vector<float>> &_v);
 
       /// \brief Define a section of the terrain.
       /// \param[in] _x X coordinate of the terrain.
       /// \param[in] _y Y coordinate of the terrain.
-      private: void DefineTerrain(const int _x, const int _y);
+      private: void DefineTerrain(int _x, int _y);
 
       /// \brief Create terrain material generator. There are two types:
       /// custom material generator that support user material scripts,
@@ -112,7 +112,7 @@ namespace ignition
 
       /// \brief Internal function used to setup shadows for the terrain.
       /// \param[in] _enabled True to enable shadows.
-      private: void SetupShadows(const bool _enabled);
+      private: void SetupShadows(bool _enabled);
 
       /// \brief Heightmap should only be created by scene.
       private: friend class OgreScene;

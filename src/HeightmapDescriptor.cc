@@ -63,7 +63,7 @@ class ignition::rendering::HeightmapDescriptorPrivate
   public: bool useTerrainPaging{false};
 
   /// \brief Number of samples per heightmap datum.
-  public: unsigned int sampling{2u};
+  public: unsigned int sampling{1u};
 
   /// \brief Textures in this heightmap, in height order.
   public: std::vector<HeightmapTexture> textures;

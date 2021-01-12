@@ -154,8 +154,8 @@ void Ogre2Material::SetAlphaFromTexture(bool _enabled,
   Ogre::HlmsBlendblock block;
   if (_enabled)
   {
-    block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_GREATER_EQUAL);
+    block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setBlendblock(block);
   }
   else
@@ -165,6 +165,22 @@ void Ogre2Material::SetAlphaFromTexture(bool _enabled,
   }
   this->ogreDatablock->setAlphaTestThreshold(_alpha);
   this->ogreDatablock->setTwoSidedLighting(_twoSided);
+}
+
+//////////////////////////////////////////////////
+float Ogre2Material::RenderOrder() const
+{
+  return this->renderOrder;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetRenderOrder(const float _renderOrder)
+{
+  this->renderOrder = _renderOrder;
+  Ogre::HlmsMacroblock macroblock(
+      *this->ogreDatablock->getMacroblock());
+  macroblock.mDepthBiasConstant = _renderOrder;
+  this->ogreDatablock->setMacroblock(macroblock);
 }
 
 //////////////////////////////////////////////////

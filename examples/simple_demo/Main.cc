@@ -79,7 +79,7 @@ void buildScene(ScenePtr _scene)
   center->SetMaterial(green);
   root->AddChild(center);
 
-
+//! [red material]
   // create red material
   MaterialPtr red = _scene->CreateMaterial();
   red->SetAmbient(0.5, 0.0, 0.0);
@@ -87,6 +87,8 @@ void buildScene(ScenePtr _scene)
   red->SetSpecular(0.5, 0.5, 0.5);
   red->SetShininess(50);
   red->SetReflectivity(0);
+  red->SetRenderOrder(3);
+//! [red material]
 
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual();
@@ -116,12 +118,15 @@ void buildScene(ScenePtr _scene)
   box->SetMaterial(blue);
   root->AddChild(box);
 
+//! [white material]
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
   white->SetAmbient(0.5, 0.5, 0.5);
   white->SetDiffuse(0.8, 0.8, 0.8);
   white->SetReceiveShadows(true);
   white->SetReflectivity(0);
+  white->SetRenderOrder(0);
+//! [white material]
 
   // create plane visual
   VisualPtr plane = _scene->CreateVisual();
@@ -130,6 +135,15 @@ void buildScene(ScenePtr _scene)
   plane->SetLocalPosition(3, 0, -0.5);
   plane->SetMaterial(white);
   root->AddChild(plane);
+
+  // create plane visual
+  VisualPtr plane2 = _scene->CreateVisual();
+  plane2->AddGeometry(_scene->CreatePlane());
+  plane2->SetLocalScale(5, 8, 1);
+  plane2->SetLocalPosition(4, 0.5, -0.5);
+  plane2->Scale(0.1, 0.1, 1);
+  plane2->SetMaterial(red);
+  root->AddChild(plane2);
 
   // create axis visual
   VisualPtr axis = _scene->CreateAxisVisual();

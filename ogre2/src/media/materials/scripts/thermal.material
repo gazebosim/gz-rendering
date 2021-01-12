@@ -138,10 +138,8 @@ material ThermalHeatSignature
       {
         tex_coord_set 0
 
-        // temporarily hardcoding the texture for testing
-        // TODO(adlarkin) modify the texture name to be set programmatically
-	//  once texture works with VS and FS
-        texture RescueRandy_Thermal.png
+        // the texture for this texture unit is set programmatically
+        // since the texture file location and name are specified by the user
       }
     }
   }

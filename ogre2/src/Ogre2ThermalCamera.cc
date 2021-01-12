@@ -152,12 +152,6 @@ Ogre2ThermalCameraMaterialSwitcher::Ogre2ThermalCameraMaterialSwitcher(
 
   this->heatSourceMaterial = res.staticCast<Ogre::Material>();
   this->heatSourceMaterial->load();
-
-  Ogre::ResourcePtr res2 =
-    Ogre::MaterialManager::getSingleton().load("ThermalHeatSignature",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  this->heatSignatureMaterial = res2.staticCast<Ogre::Material>();
-  this->heatSignatureMaterial->load();
 }
 
 //////////////////////////////////////////////////
@@ -245,51 +239,73 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           }
         }
       }
-      // see if a heat signature exists
       else if (auto heatSignature = std::get_if<std::string>(&tempAny))
       {
-        // TODO(adlarkin) set the texture in the material to heatSignature
-        // before applying the material? Right now, the texture is hardcoded,
-        // so heatSignature is unused
-        // (for now, temporary check to see if the hardcoded texture is in
-        // Ogre's resource path)
-        static const std::string texture =
-          "/ws/install/ignition-rendering4/share/ignition/ignition-rendering4/"
-          "ogre2/media/materials/textures/RescueRandy_Thermal.png";
-        if (!common::isFile(texture))
+        // if this is the first time rendering the heat signature,
+        // we need to make sure that the texture is loaded and applied to
+        // the heat signature material (if the texture exists) before loading
+        // the heat signature material
+        if (!this->heatSignatureMaterial)
         {
-          ignerr << "texture given is not a file\n";
-        }
-        else
-        {
-          auto baseName = common::basename(texture);
-          auto idx = texture.rfind(baseName);
-          if (idx != std::string::npos)
+          bool foundTexture = false;
+          std::string baseName;
+
+          const auto& texture = *heatSignature;
+          if (!common::isFile(texture))
           {
-            std::string dirPath = texture.substr(0, idx);
-            if (!dirPath.empty())
+            ignerr << "texture given is not a file\n";
+          }
+          else
+          {
+            baseName = common::basename(texture);
+            auto idx = texture.rfind(baseName);
+            if (idx != std::string::npos)
             {
-              if (!Ogre::ResourceGroupManager::getSingleton().
-                    resourceLocationExists(dirPath))
+              std::string dirPath = texture.substr(0, idx);
+              if (!dirPath.empty())
               {
+                foundTexture = true;
                 ignerr << "dirPath is "
                   << dirPath << "\n";
-                ignerr << "texture didn't exist in Ogre resource path; "
-                       << "adding it now\n";
-                Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-                    dirPath, "FileSystem", "General");
+                if (!Ogre::ResourceGroupManager::getSingleton().
+                      resourceLocationExists(dirPath))
+                {
+                  ignerr << "texture didn't exist in Ogre resource path; "
+                         << "adding it now\n";
+                  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+                      dirPath, "FileSystem", "General");
+                }
+                else
+                  ignerr << "texture is already in Ogre resource path\n";
+              }
+              else
+              {
+                ignerr << "directory path is empty, so unable to check if "
+                       << "texure is in Ogre resource path\n";
               }
             }
             else
             {
-              ignerr << "directory path is empty, so unable to check if "
-                     << "texure is in Ogre resource path\n";
+              ignerr << "unable to find baseName in given texture\n";
             }
+          }
+
+          // load the material, now that the texture has been searched for
+          this->heatSignatureMaterial = Ogre::MaterialManager::getSingleton().
+            getByName("ThermalHeatSignature");
+          if (foundTexture)
+          {
+            auto textureUnitStatePtr = this->heatSignatureMaterial->
+              getTechnique(0)->getPass(0)->getTextureUnitState(0);
+            Ogre::String textureName = baseName;
+            textureUnitStatePtr->setTextureName(textureName);
           }
           else
           {
-            ignerr << "unable to find baseName in given texture\n";
+            ignerr << "Error loading texture: " << texture << "\n"
+              << "(material will be loaded without a texture applied to it)\n";
           }
+          this->heatSignatureMaterial->load();
         }
 
         // set visibility flag so thermal camera can see it

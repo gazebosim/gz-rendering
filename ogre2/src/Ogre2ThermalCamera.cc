@@ -207,8 +207,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
 
       // get temperature
       Variant tempAny = ogreVisual->UserData(tempKey);
-      if (tempAny.index() != 0 &&
-          !std::holds_alternative<std::string>(tempAny))
+      if (!std::holds_alternative<std::string>(tempAny))
       {
         float temp = -1.0;
         try
@@ -258,7 +257,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           }
         }
       }
-      // get heat signature
+      // get heat signature and the corresponding min/max temperature values
       else if (auto heatSignature = std::get_if<std::string>(&tempAny))
       {
         // if this is the first time rendering the heat signature,
@@ -319,6 +318,23 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           {
             ignerr << "Error loading texture: " << texture << "\n"
               << "(material will be loaded without a texture applied to it)\n";
+          }
+          // set temperature range for the heat signature
+          auto minTempVariant = ogreVisual->UserData("minTemp");
+          auto maxTempVariant = ogreVisual->UserData("maxTemp");
+          auto minTemperature = std::get_if<float>(&minTempVariant);
+          auto maxTemperature = std::get_if<float>(&maxTempVariant);
+          if (minTemperature && maxTemperature)
+          {
+            // TODO(adlarkin) check for bad input
+            // (negative temps, values above the camera's max kelvin, etc)
+            Ogre::GpuProgramParametersSharedPtr params =
+              heatSignatureMaterial->getTechnique(0)->getPass(0)->
+              getFragmentProgramParameters();
+            params->setNamedConstant("minTemp",
+                static_cast<float>(*minTemperature));
+            params->setNamedConstant("maxTemp",
+                static_cast<float>(*maxTemperature));
           }
           heatSignatureMaterial->load();
           this->heatSignatureMaterials[item->getId()] = heatSignatureMaterial;

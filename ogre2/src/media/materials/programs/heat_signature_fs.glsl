@@ -29,7 +29,22 @@ in block
 // final output color
 out vec4 fragColor;
 
+// The minimum and maximum temprature values (in Kelvin) that the
+// heat signature texture should be normalized to
+// (users can override these defaults)
+uniform float minTemp = 0.0;
+uniform float maxTemp = 100.0;
+
+// map a temperature from the [0, 655.35] range to the [minTemp, maxTemp]
+// range (655.35 is the largest Kelvin value allowed)
+float mapNormalized(float num)
+{
+  float mappedKelvin = ((maxTemp - minTemp) * num) + minTemp;
+  return mappedKelvin / 655.35;
+}
+
 void main()
 {
-  fragColor = texture(RT, inPs.uv0.xy);
+  float heat = texture(RT, inPs.uv0.xy).x;
+  fragColor = vec4(mapNormalized(heat), 0, 0, 1.0);
 }

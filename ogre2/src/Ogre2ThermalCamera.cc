@@ -25,6 +25,7 @@
 
 #include <limits>
 #include <string>
+#include <unordered_map>
 #include <variant>
 
 #include <ignition/common/Console.hh>
@@ -54,7 +55,9 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
 {
   /// \brief constructor
   /// \param[in] _scene the scene manager responsible for rendering
-  public: explicit Ogre2ThermalCameraMaterialSwitcher(Ogre2ScenePtr _scene);
+  /// \param[in] _name the name of the thermal camera
+  public: explicit Ogre2ThermalCameraMaterialSwitcher(Ogre2ScenePtr _scene,
+              const std::string & _name);
 
   /// \brief destructor
   public: ~Ogre2ThermalCameraMaterialSwitcher() = default;
@@ -77,8 +80,20 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   /// \brief Pointer to the heat source material
   private: Ogre::MaterialPtr heatSourceMaterial;
 
-  /// \brief Pointer to heat signature material
-  private: Ogre::MaterialPtr heatSignatureMaterial;
+  /// \brief Pointer to the "base" heat signature material.
+  /// All renderable items with a heat signature texture use their own
+  /// copy of this base material, with the item's specific heat
+  /// signature texture applied to it
+  private: Ogre::MaterialPtr baseHeatSigMaterial;
+
+  /// \brief A map of all items that have a heat signature material.
+  /// The key is the item's ID, and the value is the heat signature
+  /// for that item.
+  private: std::unordered_map<Ogre::IdType, Ogre::MaterialPtr>
+            heatSignatureMaterials;
+
+  /// \brief The name of the thermal camera sensor
+  private: const std::string name;
 
   /// \brief Custom parameter index of temperature data in an ogre subitem.
   /// This has to match the custom index specifed in ThermalHeatSource material
@@ -142,7 +157,8 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2ThermalCameraMaterialSwitcher::Ogre2ThermalCameraMaterialSwitcher(
-    Ogre2ScenePtr _scene)
+    Ogre2ScenePtr _scene, const std::string & _name) :
+  name(_name)
 {
   this->scene = _scene;
   // plain opaque material
@@ -152,6 +168,9 @@ Ogre2ThermalCameraMaterialSwitcher::Ogre2ThermalCameraMaterialSwitcher(
 
   this->heatSourceMaterial = res.staticCast<Ogre::Material>();
   this->heatSourceMaterial->load();
+
+  this->baseHeatSigMaterial = Ogre::MaterialManager::getSingleton().
+    getByName("ThermalHeatSignature");
 }
 
 //////////////////////////////////////////////////
@@ -239,21 +258,26 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           }
         }
       }
+      // get heat signature
       else if (auto heatSignature = std::get_if<std::string>(&tempAny))
       {
         // if this is the first time rendering the heat signature,
         // we need to make sure that the texture is loaded and applied to
         // the heat signature material (if the texture exists) before loading
         // the heat signature material
-        if (!this->heatSignatureMaterial)
+        if (this->heatSignatureMaterials.find(item->getId()) ==
+            this->heatSignatureMaterials.end())
         {
           bool foundTexture = false;
           std::string baseName;
 
+          // TODO(adlarkin) re-use the texture searching code from
+          // Ogre2Material::SetTextureMapImpl somehow?
+          // This may require an API breaking change in Ogre2Material.cc
           const auto& texture = *heatSignature;
           if (!common::isFile(texture))
           {
-            ignerr << "texture given is not a file\n";
+            ignerr << "texture given (" << texture << ") is not a file\n";
           }
           else
           {
@@ -265,37 +289,28 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
               if (!dirPath.empty())
               {
                 foundTexture = true;
-                ignerr << "dirPath is "
-                  << dirPath << "\n";
                 if (!Ogre::ResourceGroupManager::getSingleton().
                       resourceLocationExists(dirPath))
                 {
-                  ignerr << "texture didn't exist in Ogre resource path; "
-                         << "adding it now\n";
                   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
                       dirPath, "FileSystem", "General");
                 }
-                else
-                  ignerr << "texture is already in Ogre resource path\n";
               }
-              else
-              {
-                ignerr << "directory path is empty, so unable to check if "
-                       << "texure is in Ogre resource path\n";
-              }
-            }
-            else
-            {
-              ignerr << "unable to find baseName in given texture\n";
             }
           }
 
-          // load the material, now that the texture has been searched for
-          this->heatSignatureMaterial = Ogre::MaterialManager::getSingleton().
-            getByName("ThermalHeatSignature");
+          // create a material for this item, now that the texture has been
+          // searched for. We must clone the base heat signature material since
+          // different items may use different textures. We also append the
+          // item's ID to the end of the new material name to ensure new
+          // material uniqueness in case two items use the same heat signature
+          // texture, but have different temperature ranges
+          auto heatSignatureMaterial = this->baseHeatSigMaterial->clone(
+              this->name + "_" + baseName + "_" +
+              Ogre::StringConverter::toString(item->getId()));
           if (foundTexture)
           {
-            auto textureUnitStatePtr = this->heatSignatureMaterial->
+            auto textureUnitStatePtr = heatSignatureMaterial->
               getTechnique(0)->getPass(0)->getTextureUnitState(0);
             Ogre::String textureName = baseName;
             textureUnitStatePtr->setTextureName(textureName);
@@ -305,7 +320,8 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
             ignerr << "Error loading texture: " << texture << "\n"
               << "(material will be loaded without a texture applied to it)\n";
           }
-          this->heatSignatureMaterial->load();
+          heatSignatureMaterial->load();
+          this->heatSignatureMaterials[item->getId()] = heatSignatureMaterial;
         }
 
         // set visibility flag so thermal camera can see it
@@ -318,7 +334,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           Ogre::HlmsDatablock *datablock = subItem->getDatablock();
           this->datablockMap[subItem] = datablock;
 
-          subItem->setMaterial(this->heatSignatureMaterial);
+          subItem->setMaterial(this->heatSignatureMaterials[item->getId()]);
         }
       }
     }
@@ -723,7 +739,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     if (c.textures[0]->getSrcFormat() == Ogre::PF_R8G8B8)
     {
       this->dataPtr->thermalMaterialSwitcher.reset(
-          new Ogre2ThermalCameraMaterialSwitcher(this->scene));
+          new Ogre2ThermalCameraMaterialSwitcher(this->scene, this->Name()));
       c.target->addListener(this->dataPtr->thermalMaterialSwitcher.get());
       break;
     }

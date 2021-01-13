@@ -207,7 +207,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
 
       // get temperature
       Variant tempAny = ogreVisual->UserData(tempKey);
-      if (!std::holds_alternative<std::string>(tempAny))
+      if (tempAny.index() != 0 && !std::holds_alternative<std::string>(tempAny))
       {
         float temp = -1.0;
         try

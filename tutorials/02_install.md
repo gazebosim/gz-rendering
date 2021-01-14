@@ -137,6 +137,8 @@ sdk 4.0.2, comment out lines 167-206).
 
 # Windows
 
+On Windows, only OGRE 1 is currently supported.
+
 ## Prerequisites
 
 First, follow the [ign-cmake](https://github.com/ignitionrobotics/ign-cmake) tutorial for installing Conda, Visual Studio, CMake, and other prerequisites, and also for creating a Conda environment.
@@ -151,12 +153,7 @@ conda activate ign-ws
 
 ## Binary Installation
 
-```
-conda install libignition-rendering<#> --channel conda-forge
-```
-
-Be sure to replace `<#>` with a number value, such as 1 or 2, depending on
-which version you need.
+`libignition-rendering<#>` Conda feedstock is not yet available, pending [conda-forge/staged-recipes#13551](https://github.com/conda-forge/staged-recipes/issues/13551).
 
 ## Source Installation
 

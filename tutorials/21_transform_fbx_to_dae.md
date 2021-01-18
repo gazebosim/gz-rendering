@@ -1,6 +1,6 @@
-\page transform_fbx_to_dae Transform FBX to Collada
+\page transform_fbx_to_dae Transform FBX to Collada in Blender
 
-This tutorial shows how to transform a mesh in fbx format to collada with Blender and and change its origin.
+This tutorial shows how to transform a mesh in fbx format to collada with Blender and change its origin.
 
 You can download Blender +2.81 from [this web site](https://www.blender.org/download/).
 

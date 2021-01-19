@@ -826,6 +826,10 @@ namespace ignition
       /// \return The created box
       public: virtual GeometryPtr CreateBox() = 0;
 
+      /// \brief Create new capsule geometry
+      /// \return The created capsule
+      public: virtual CapsulePtr CreateCapsule() = 0;
+
       /// \brief Create new cone geometry
       /// \return The created cone
       public: virtual GeometryPtr CreateCone() = 0;

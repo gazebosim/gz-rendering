@@ -185,6 +185,10 @@ namespace ignition
                      override;
 
       // Documentation inherited
+      protected: virtual CapsulePtr CreateCapsuleImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
                      const std::string &_name) override;
 

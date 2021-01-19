@@ -135,6 +135,10 @@ namespace ignition
                      const std::string &_name, const MeshDescriptor &_desc);
 
       // Documentation inherited
+      protected: virtual CapsulePtr CreateCapsuleImpl(unsigned int _id,
+                     const std::string &_name);
+
+      // Documentation inherited
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
                      const std::string &_name);
 

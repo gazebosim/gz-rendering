@@ -29,6 +29,7 @@
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/Capsule.hh"
 #include "ignition/rendering/DepthCamera.hh"
 #include "ignition/rendering/GizmoVisual.hh"
 #include "ignition/rendering/GpuRays.hh"
@@ -976,6 +977,14 @@ GeometryPtr BaseScene::CreatePlane()
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Plane");
   return this->CreatePlaneImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+CapsulePtr BaseScene::CreateCapsule()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Capsule");
+  return this->CreateCapsuleImpl(objId, objName);
 }
 
 //////////////////////////////////////////////////

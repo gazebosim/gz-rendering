@@ -160,7 +160,7 @@ namespace ignition
       prevRow = 0;
       for (unsigned int j = 0; j <= (rings + 1); j++) {
         v = j;
-        gf
+
         v /= (rings + 1);
         w = sin(0.5 * M_PI * v);
         y = this->radius * cos(0.5 * M_PI * v);
@@ -168,7 +168,7 @@ namespace ignition
         for (unsigned int i = 0; i <= radialSegments; i++) {
           u = i;
           u /= radialSegments;
-          a
+
           x = -sin(u * (M_PI * 2.0));
           z = cos(u * (M_PI * 2.0));
 

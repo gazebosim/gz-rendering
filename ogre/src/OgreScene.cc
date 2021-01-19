@@ -505,7 +505,8 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-CapsulePtr OgreScene::CreateCapsuleImpl(unsigned int _id, const std::string &_name)
+CapsulePtr OgreScene::CreateCapsuleImpl(
+  unsigned int _id, const std::string &_name)
 {
   OgreCapsulePtr capsule(new OgreCapsule);
   bool result = this->InitObject(capsule, _id, _name);

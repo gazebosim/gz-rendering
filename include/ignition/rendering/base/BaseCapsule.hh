@@ -147,39 +147,39 @@ namespace ignition
     {
       // Based on https://github.com/godotengine/godot primitive_meshes.cpp
       int prevRow, thisRow, point;
-    	float x, y, z, u, v, w;
+      float x, y, z, u, v, w;
       float oneThird = 1.0 / 3.0;
-    	float twoThirds = 2.0 / 3.0;
+      float twoThirds = 2.0 / 3.0;
       unsigned int rings = 12;
       unsigned int radialSegments = 32;
 
-    	point = 0;
+      point = 0;
 
       /* top hemisphere */
-    	thisRow = 0;
-    	prevRow = 0;
-    	for (unsigned int j = 0; j <= (rings + 1); j++) {
-    		v = j;
+      thisRow = 0;
+      prevRow = 0;
+      for (unsigned int j = 0; j <= (rings + 1); j++) {
+        v = j;
+        gf
+        v /= (rings + 1);
+        w = sin(0.5 * M_PI * v);
+        y = this->radius * cos(0.5 * M_PI * v);
 
-    		v /= (rings + 1);
-    		w = sin(0.5 * M_PI * v);
-    		y = this->radius * cos(0.5 * M_PI * v);
+        for (unsigned int i = 0; i <= radialSegments; i++) {
+          u = i;
+          u /= radialSegments;
+          a
+          x = -sin(u * (M_PI * 2.0));
+          z = cos(u * (M_PI * 2.0));
 
-    		for (unsigned int i = 0; i <= radialSegments; i++) {
-    			u = i;
-    			u /= radialSegments;
-
-    			x = -sin(u * (M_PI * 2.0));
-    			z = cos(u * (M_PI * 2.0));
-
-    			ignition::math::Vector3d p(
+          ignition::math::Vector3d p(
             x * this->radius * w, y, -z * this->radius * w);
-    			_positions.push_back(
+          _positions.push_back(
             p + ignition::math::Vector3d(0.0, 0.5 * this->length, 0.0));
           _uv.emplace_back(ignition::math::Vector2d(u, v * oneThird));
-    			point++;
+          point++;
 
-    			if (i > 0 && j > 0) {
+          if (i > 0 && j > 0) {
             _indexes.emplace_back(thisRow + i - 1);
             _indexes.emplace_back(prevRow + i);
             _indexes.emplace_back(prevRow + i - 1);
@@ -187,37 +187,37 @@ namespace ignition
             _indexes.emplace_back(thisRow + i - 1);
             _indexes.emplace_back(thisRow + i);
             _indexes.emplace_back(prevRow + i);
-    			}
-    		}
-    		prevRow = thisRow;
-    		thisRow = point;
-    	}
+          }
+        }
+        prevRow = thisRow;
+        thisRow = point;
+      }
 
       /* cylinder */
-    	thisRow = point;
-    	prevRow = 0;
-    	for (unsigned int j = 0; j <= (rings + 1); j++) {
-    		v = j;
-    		v /= (rings + 1);
+      thisRow = point;
+      prevRow = 0;
+      for (unsigned int j = 0; j <= (rings + 1); j++) {
+        v = j;
+        v /= (rings + 1);
 
-    		y = this->length * v;
-    		y = (this->length * 0.5) - y;
+        y = this->length * v;
+        y = (this->length * 0.5) - y;
 
-    		for (unsigned int i = 0; i <= radialSegments; i++) {
-    			u = i;
-    			u /= radialSegments;
+        for (unsigned int i = 0; i <= radialSegments; i++) {
+          u = i;
+          u /= radialSegments;
 
-    			x = -sin(u * (M_PI * 2.0));
-    			z = cos(u * (M_PI * 2.0));
+          x = -sin(u * (M_PI * 2.0));
+          z = cos(u * (M_PI * 2.0));
 
-    			ignition::math::Vector3d p(
+          ignition::math::Vector3d p(
             x * this->radius, y, -z * this->radius);
-    			_positions.emplace_back(p);
+          _positions.emplace_back(p);
           _uv.emplace_back(
             ignition::math::Vector2d(u, oneThird + (v * oneThird)));
-    			point++;
+          point++;
 
-    			if (i > 0 && j > 0) {
+          if (i > 0 && j > 0) {
             _indexes.emplace_back(thisRow + i - 1);
             _indexes.emplace_back(prevRow + i);
             _indexes.emplace_back(prevRow + i - 1);
@@ -225,39 +225,39 @@ namespace ignition
             _indexes.emplace_back(thisRow + i - 1);
             _indexes.emplace_back(thisRow + i);
             _indexes.emplace_back(prevRow + i);
-    			}
-    		}
-    		prevRow = thisRow;
-    		thisRow = point;
-    	}
+          }
+        }
+        prevRow = thisRow;
+        thisRow = point;
+      }
 
-    	/* bottom hemisphere */
-    	thisRow = point;
-    	prevRow = 0;
-    	for (unsigned int j = 0; j <= (rings + 1); j++) {
-    		v = j;
+      /* bottom hemisphere */
+      thisRow = point;
+      prevRow = 0;
+      for (unsigned int j = 0; j <= (rings + 1); j++) {
+        v = j;
 
-    		v /= (rings + 1);
-    		v += 1.0;
-    		w = sin(0.5 * M_PI * v);
-    		y = this->radius * cos(0.5 * M_PI * v);
+        v /= (rings + 1);
+        v += 1.0;
+        w = sin(0.5 * M_PI * v);
+        y = this->radius * cos(0.5 * M_PI * v);
 
-    		for (unsigned int i = 0; i <= radialSegments; i++) {
-    			float u2 = i;
-    			u2 /= radialSegments;
+        for (unsigned int i = 0; i <= radialSegments; i++) {
+          float u2 = i;
+          u2 /= radialSegments;
 
-    			x = -sin(u2 * (M_PI * 2.0));
-    			z = cos(u2 * (M_PI * 2.0));
+          x = -sin(u2 * (M_PI * 2.0));
+          z = cos(u2 * (M_PI * 2.0));
 
-    			ignition::math::Vector3d p(
+          ignition::math::Vector3d p(
             x * this->radius * w, y, -z * this->radius * w);
-    			_positions.emplace_back(
+          _positions.emplace_back(
             p + ignition::math::Vector3d(0.0, -0.5 * this->length, 0.0));
           _uv.emplace_back(
             ignition::math::Vector2d(u2, twoThirds + ((v - 1.0) * oneThird)));
-    			point++;
+          point++;
 
-    			if (i > 0 && j > 0) {
+          if (i > 0 && j > 0) {
             _indexes.emplace_back(thisRow + i - 1);
             _indexes.emplace_back(prevRow + i);
             _indexes.emplace_back(prevRow + i - 1);
@@ -265,12 +265,12 @@ namespace ignition
             _indexes.emplace_back(thisRow + i - 1);
             _indexes.emplace_back(thisRow + i);
             _indexes.emplace_back(prevRow + i);
-    			}
-    		}
+          }
+        }
 
-    		prevRow = thisRow;
-    		thisRow = point;
-    	}
+        prevRow = thisRow;
+        thisRow = point;
+      }
     }
     }
   }

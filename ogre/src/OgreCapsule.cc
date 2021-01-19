@@ -101,7 +101,8 @@ void OgreCapsule::Create()
   {
     this->dataPtr->manualObject->position(
       Ogre::Vector3(positions[i].X(), positions[i].Y(), positions[i].Z()));
-    this->dataPtr->manualObject->textureCoord(Ogre::Vector2(uvs[i].X(), uvs[i].Y()));
+    this->dataPtr->manualObject->textureCoord(
+      Ogre::Vector2(uvs[i].X(), uvs[i].Y()));
     this->dataPtr->manualObject->normal(
       positions[i].Normalize().X(),
       positions[i].Normalize().Y(),

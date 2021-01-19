@@ -19,6 +19,8 @@
 #define IGNITION_RENDERING_OGRE2_OGRECAPSULE_HH_
 
 #include <memory>
+#include <vector>
+
 #include "ignition/rendering/base/BaseCapsule.hh"
 #include "ignition/rendering/ogre2/Ogre2Geometry.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"

@@ -195,3 +195,35 @@ This assumes you have created and activated a Conda environment while installing
   ```
   cmake --install . --config Release
   ```
+
+# Documentation
+
+API documentation can be generated using Doxygen
+  ```
+  sudo apt install -y doxygen
+  ```
+
+Build documentation
+  ```
+  cd build
+  make doc
+  ```
+
+View documentation
+  ```
+  firefox doxygen/html/index.html
+  ```
+
+# Testing
+
+Tests can be run by building the `test` target:
+  ```
+  cd build
+  make test
+  ```
+
+To run tests specific to a render engine, set the `RENDER_ENGINE_VALUES` environment variable, e.g.
+  ```
+  RENDER_ENGINE_VALUES=ogre2 make test
+  ```
+

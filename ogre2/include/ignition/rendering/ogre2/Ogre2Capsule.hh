@@ -63,14 +63,14 @@ namespace ignition
         // Documentation inherited.
         public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
 
-        /// \brief Set material to grid geometry.
+        /// \brief Set material to capsule geometry.
         /// \param[in] _material Ogre material.
         protected: virtual void SetMaterialImpl(Ogre2MaterialPtr _material);
 
         /// \brief Create the Capsule Visual in ogre
         private: void Create();
 
-        /// \brief Grid should only be created by scene.
+        /// \brief Capsule should only be created by scene.
         private: friend class Ogre2Scene;
 
         private: void calculateRing(

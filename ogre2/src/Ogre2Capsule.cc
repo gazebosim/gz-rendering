@@ -26,7 +26,7 @@
 
 class ignition::rendering::Ogre2CapsulePrivate
 {
-  /// \brief Grid materal
+  /// \brief Capsule materal
   public: Ogre2MaterialPtr material;
 
   public: std::shared_ptr<Ogre2DynamicRenderable> capsule = nullptr;

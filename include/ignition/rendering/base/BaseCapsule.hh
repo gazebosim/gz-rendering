@@ -77,7 +77,7 @@ namespace ignition
       /// \brief Length of the capsule
       protected: double length = 0.5;
 
-      /// \brief Flag to indicate grid properties have changed
+      /// \brief Flag to indicate capsule properties have changed
       protected: bool capsuleDirty = false;
     };
 

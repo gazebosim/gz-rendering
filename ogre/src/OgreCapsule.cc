@@ -25,7 +25,7 @@
 
 class ignition::rendering::OgreCapsulePrivate
 {
-  /// \brief Grid materal
+  /// \brief Capsule materal
   public: OgreMaterialPtr material;
 
   public: Ogre::ManualObject *manualObject = nullptr;

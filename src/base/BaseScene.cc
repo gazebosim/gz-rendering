@@ -30,6 +30,7 @@
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/DepthCamera.hh"
+#include "ignition/rendering/Ellipsoid.hh"
 #include "ignition/rendering/GizmoVisual.hh"
 #include "ignition/rendering/GpuRays.hh"
 #include "ignition/rendering/Grid.hh"
@@ -976,6 +977,14 @@ GeometryPtr BaseScene::CreatePlane()
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Plane");
   return this->CreatePlaneImpl(objId, objName);
+}
+
+//////////////////////////////////////////////////
+EllipsoidPtr BaseScene::CreateEllipsoid()
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Ellipsoid");
+  return this->CreateEllipsoidImpl(objId, objName);
 }
 
 //////////////////////////////////////////////////

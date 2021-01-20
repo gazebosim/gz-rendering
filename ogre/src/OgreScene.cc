@@ -22,6 +22,7 @@
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
+#include "ignition/rendering/ogre/OgreEllipsoid.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreGizmoVisual.hh"
 #include "ignition/rendering/ogre/OgreGpuRays.hh"
@@ -489,6 +490,15 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 {
   MeshDescriptor descriptor(_meshName);
   return this->CreateMeshImpl(_id, _name, descriptor);
+}
+
+//////////////////////////////////////////////////
+EllipsoidPtr OgreScene::CreateEllipsoidImpl(
+  unsigned int _id, const std::string &_name)
+{
+  OgreEllipsoidPtr ellipsoid(new OgreEllipsoid);
+  bool result = this->InitObject(ellipsoid, _id, _name);
+  return (result) ? ellipsoid : nullptr;
 }
 
 //////////////////////////////////////////////////

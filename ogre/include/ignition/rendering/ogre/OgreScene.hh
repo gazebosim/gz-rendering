@@ -122,6 +122,10 @@ namespace ignition
       protected: virtual GeometryPtr CreateCylinderImpl(unsigned int _id,
                      const std::string &_name);
 
+      // Documentation inherited
+      protected: virtual EllipsoidPtr CreateEllipsoidImpl(unsigned int _id,
+                     const std::string &_name);
+
       protected: virtual GeometryPtr CreatePlaneImpl(unsigned int _id,
                      const std::string &_name);
 

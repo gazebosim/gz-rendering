@@ -834,6 +834,10 @@ namespace ignition
       /// \return The created cylinder
       public: virtual GeometryPtr CreateCylinder() = 0;
 
+      /// \brief Create new ellipsoid geometry
+      /// \return The created ellipsoid
+      public: virtual EllipsoidPtr CreateEllipsoid() = 0;
+
       /// \brief Create new plane geometry
       /// \return The created plane
       public: virtual GeometryPtr CreatePlane() = 0;

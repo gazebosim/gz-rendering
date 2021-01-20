@@ -51,6 +51,7 @@ namespace ignition
     class Camera;
     class DepthCamera;
     class DirectionalLight;
+    class Ellipsoid;
     class GaussianNoisePass;
     class Geometry;
     class GizmoVisual;
@@ -100,6 +101,10 @@ namespace ignition
     /// \def DepthCameraPtr
     /// \brief Shared pointer to DepthCamera
     typedef shared_ptr<DepthCamera> DepthCameraPtr;
+
+    /// \def EllipsoidPtr
+    /// \brief Shared pointer to Ellipsoid
+    typedef shared_ptr<Ellipsoid> EllipsoidPtr;
 
     /// \def ThermalCameraPtr
     /// \brief Shared pointer to ThermalCamera

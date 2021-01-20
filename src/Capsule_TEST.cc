@@ -59,8 +59,8 @@ void CapsuleTest::Capsule(const std::string &_renderEngine)
   EXPECT_DOUBLE_EQ(capsule->Radius(), 0.5);
   EXPECT_DOUBLE_EQ(capsule->Length(), 0.5);
 
-  capsule->Radius(0.7);
-  capsule->Length(1.9);
+  capsule->SetRadius(0.7);
+  capsule->SetLength(1.9);
 
   EXPECT_DOUBLE_EQ(capsule->Radius(), 0.7);
   EXPECT_DOUBLE_EQ(capsule->Length(), 1.9);

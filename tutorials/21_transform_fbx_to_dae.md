@@ -33,7 +33,7 @@ In the `Options` menu select `Origins` and then select in the object menu `Objec
 Now your origin is at the desired place. We can move this origin to another place by editing the
 transform dialog.
 
-@image html img/transform_fbx_to_dae/edit_orgin.gif
+@image html img/transform_fbx_to_dae/edit_origin.gif
 
 # Exporting to Collada
 

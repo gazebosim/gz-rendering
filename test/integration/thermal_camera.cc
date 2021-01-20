@@ -145,9 +145,9 @@ void ThermalCameraTest::ThermalCameraBoxes(
 
     // thermal-specific params
     // set room temperature: 294 ~ 298 Kelvin
-    float ambientTemp = 296.0;
-    float ambientTempRange = 4.0;
-    float linearResolution = 0.01;
+    float ambientTemp = 296.0f;
+    float ambientTempRange = 4.0f;
+    float linearResolution = 0.01f;
     thermalCamera->SetAmbientTemperature(ambientTemp);
     EXPECT_FLOAT_EQ(ambientTemp, thermalCamera->AmbientTemperature());
     thermalCamera->SetAmbientTemperatureRange(ambientTempRange);

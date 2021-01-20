@@ -18,10 +18,10 @@
 #define IGNITION_RENDERING_OGRE_OGREINCLUDES_HH_
 
 // This disables warning messages for OGRE
-#pragma GCC system_header
-
-#ifdef _MSC_VER
-#pragma warning(push, 0)
+#ifndef _MSC_VER
+  #pragma GCC system_header
+#else
+  #pragma warning(push, 0)
 #endif
 
 // This prevents some deprecation #warning messages on OSX 10.9

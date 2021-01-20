@@ -51,7 +51,8 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited
-      public: virtual void SetRadii(const ignition::math::Vector3d &_radii) override;
+      public: virtual void SetRadii(
+        const ignition::math::Vector3d &_radii) override;
 
       // Documentation inherited
       public: virtual ignition::math::Vector3d Radii() override;
@@ -66,7 +67,8 @@ namespace ignition
         std::vector<ignition::math::Vector2d> &_uv);
 
       /// \brief Radius of the ellipsoid
-      protected: ignition::math::Vector3d radii = ignition::math::Vector3d(1, 1, 1);
+      protected: ignition::math::Vector3d radii =
+        ignition::math::Vector3d(1, 1, 1);
 
       /// \brief Flag to indicate grid properties have changed
       protected: bool ellipsoidDirty = false;
@@ -128,26 +130,25 @@ namespace ignition
       double vmax = 2.0 * M_PI;
       float n = 32;
       float m = 32;
-      int i, j;
-  		float theta, phi;
-  		float d_phi = (umax-umin)/((float)n-1);
-  		float d_theta = (vmax-vmin)/((float)m-1);
+      float theta, phi;
+      float d_phi = (umax - umin) / (n - 1.0);
+      float d_theta = (vmax - vmin) / (m - 1.0);
 
-  		float c_theta, s_theta, c_phi, s_phi;
+      float c_theta, s_theta, c_phi, s_phi;
 
-  		for (i = 0, theta = vmin; i < m; ++i, theta += d_theta){
-  			c_theta = cos(theta);
-  			s_theta = sin(theta);
+      for (i = 0, theta = vmin; i < m; ++i, theta += d_theta){
+      	c_theta = cos(theta);
+      	s_theta = sin(theta);
 
-  			for (j = 0, phi = umin; j < n; ++j, phi += d_phi) {
-  				c_phi = cos(phi);
-  				s_phi = sin(phi);
+      	for (unsigned int j = 0, phi = umin; j < n; ++j, phi += d_phi) {
+          c_phi = cos(phi);
+          s_phi = sin(phi);
 
+          // Compute vertex
           _positions.emplace_back(ignition::math::Vector3d(
             this->radii.X() * c_phi * c_theta,
             this->radii.Y() * c_phi * s_theta,
             this->radii.Z() * s_phi));
-  				// Compute vertex
 
           if (i > 0)
           {
@@ -166,8 +167,8 @@ namespace ignition
               _indexes.emplace_back(firstIndex + n + 1);
             }
           }
-  			}
-  		}
+      	}
+      }
     }
     }
   }

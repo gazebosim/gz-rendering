@@ -30,7 +30,8 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-    /// \class EllipsoidVisual EllipsoidVisual.hh ignition/rendering/EllipsoidVisual
+    /// \class EllipsoidVisual EllipsoidVisual.hh
+    /// ignition/rendering/EllipsoidVisual
     /// \brief A EllipsoidVisual geometry class. The visual appearance is based
     /// on the type specified.
     class IGNITION_RENDERING_VISIBLE Ellipsoid :

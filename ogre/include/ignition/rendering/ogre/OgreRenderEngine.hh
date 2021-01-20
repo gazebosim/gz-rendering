@@ -167,7 +167,7 @@ namespace ignition
       /// \brief Paths to ogre plugins
       private: std::vector<std::string> ogrePaths;
 
-#if not (__APPLE__ || _WIN32)
+#if not defined(__APPLE__) && not defined(_WIN32)
       private: void *dummyDisplay = nullptr;
 
       private: void *dummyContext = nullptr;

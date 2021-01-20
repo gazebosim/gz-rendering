@@ -18,6 +18,8 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRELIGHTVISUAL_HH_
 #define IGNITION_RENDERING_OGRE_OGRELIGHTVISUAL_HH_
 
+#include <memory>
+
 #include "ignition/rendering/base/BaseLightVisual.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"

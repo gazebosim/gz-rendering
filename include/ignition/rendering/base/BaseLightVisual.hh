@@ -112,7 +112,7 @@ namespace ignition
 
       if (this->type == LightVisualType::LightVisual_DIRECTIONAL)
       {
-        float s =.5;
+        float s = 0.5;
         positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
         positions.emplace_back(ignition::math::Vector3d(-s, s, 0));
 

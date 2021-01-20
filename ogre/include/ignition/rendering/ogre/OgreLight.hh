@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRELIGHT_HH_
 #define IGNITION_RENDERING_OGRE_OGRELIGHT_HH_
 
+#include <memory>
+
 #include "ignition/rendering/base/BaseLight.hh"
 #include "ignition/rendering/ogre/OgreNode.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"

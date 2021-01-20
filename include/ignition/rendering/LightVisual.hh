@@ -49,7 +49,7 @@ namespace ignition
       public virtual Visual
     {
       /// \brief Deconstructor
-      public: virtual ~LightVisual() {};
+      public: virtual ~LightVisual() {}
 
       /// \brief set type of the light
       /// \param[in] _type type of the light

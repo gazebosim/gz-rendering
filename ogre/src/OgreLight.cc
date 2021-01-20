@@ -177,11 +177,13 @@ void OgreLight::CreateLight()
     if (!this->dataPtr->lightVisual)
     {
       this->dataPtr->lightVisual =
-        std::dynamic_pointer_cast<OgreLightVisual>(this->scene->CreateLightVisual());
+        std::dynamic_pointer_cast<OgreLightVisual>(
+          this->scene->CreateLightVisual());
 
       if (this->ogreLightType == Ogre::Light::LT_DIRECTIONAL)
       {
-        this->dataPtr->lightVisual->SetType(LightVisualType::LightVisual_DIRECTIONAL);
+        this->dataPtr->lightVisual->SetType(
+          LightVisualType::LightVisual_DIRECTIONAL);
         this->dataPtr->lightVisual->CreateVisual();
       }
       else if (this->ogreLightType == Ogre::Light::LT_POINT)

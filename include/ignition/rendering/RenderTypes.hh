@@ -59,6 +59,7 @@ namespace ignition
     class JointVisual;
     class Image;
     class Light;
+    class LightVisual;
     class LidarVisual;
     class Material;
     class Marker;
@@ -140,6 +141,10 @@ namespace ignition
     /// \def LightPtr
     /// \brief Shared pointer to Light
     typedef shared_ptr<Light> LightPtr;
+
+    /// \def LightVisualPtr
+    /// \brief Shared pointer to Light
+    typedef shared_ptr<LightVisual> LightVisualPtr;
 
     /// \def LidarVisualPtr
     /// \brief Shared pointer to LidarVisual

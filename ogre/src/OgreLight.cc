@@ -18,10 +18,17 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre/OgreLight.hh"
+#include "ignition/rendering/ogre/OgreLightVisual.hh"
 
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+
+/// \brief Private data for the Ogre2Light class
+class ignition::rendering::OgreLightPrivate
+{
+  public: OgreLightVisualPtr lightVisual = nullptr;
+};
 
 using namespace ignition;
 using namespace rendering;
@@ -31,7 +38,8 @@ using namespace rendering;
 //////////////////////////////////////////////////
 OgreLight::OgreLight() :
   ogreLight(nullptr),
-  ogreLightType(Ogre::Light::LT_POINT)
+  ogreLightType(Ogre::Light::LT_POINT),
+  dataPtr(std::make_unique<OgreLightPrivate>())
 {
 }
 
@@ -164,6 +172,32 @@ void OgreLight::CreateLight()
     this->ogreNode->attachObject(this->ogreLight);
     this->ogreLight->setCastShadows(true);
     this->UpdateAttenuation();
+
+    // Attach the light visual
+    if (!this->dataPtr->lightVisual)
+    {
+      this->dataPtr->lightVisual =
+        std::dynamic_pointer_cast<OgreLightVisual>(this->scene->CreateLightVisual());
+
+      if (this->ogreLightType == Ogre::Light::LT_DIRECTIONAL)
+      {
+        this->dataPtr->lightVisual->SetType(LightVisualType::LightVisual_DIRECTIONAL);
+        this->dataPtr->lightVisual->CreateVisual();
+      }
+      else if (this->ogreLightType == Ogre::Light::LT_POINT)
+      {
+        this->dataPtr->lightVisual->SetType(LightVisualType::LightVisual_POINT);
+        this->dataPtr->lightVisual->CreateVisual();
+      }
+      else if (this->ogreLightType == Ogre::Light::LT_SPOTLIGHT)
+      {
+        this->dataPtr->lightVisual->SetType(LightVisualType::LightVisual_SPOT);
+        this->dataPtr->lightVisual->CreateVisual(
+          this->ogreLight->getSpotlightInnerAngle().valueRadians(),
+          this->ogreLight->getSpotlightOuterAngle().valueRadians());
+      }
+      AttachChild(this->dataPtr->lightVisual);
+    }
   }
   catch (Ogre::Exception &ex)
   {

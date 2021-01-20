@@ -822,6 +822,35 @@ namespace ignition
       public: virtual GizmoVisualPtr CreateGizmoVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new light visual. A unique ID and name will
+      /// automatically be assigned to the light visual.
+      /// \return The created light visual
+      public: virtual LightVisualPtr CreateLightVisual() = 0;
+
+      /// \brief Create new light visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light visual
+      /// \return The created light visual
+      public: virtual LightVisualPtr CreateLightVisual(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new light visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new light visual
+      /// \return The created light visual
+      public: virtual LightVisualPtr CreateLightVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new light visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light visual
+      /// \param[in] _name Name of the new light visual
+      /// \return The created light visual
+      public: virtual LightVisualPtr CreateLightVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new box geometry
       /// \return The created box
       public: virtual GeometryPtr CreateBox() = 0;

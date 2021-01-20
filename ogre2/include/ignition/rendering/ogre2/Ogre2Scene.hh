@@ -109,6 +109,10 @@ namespace ignition
       protected: virtual bool InitImpl() override;
 
       // Documentation inherited
+      protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual DirectionalLightPtr CreateDirectionalLightImpl(
                      unsigned int _id, const std::string &_name) override;
 

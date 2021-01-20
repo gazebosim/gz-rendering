@@ -136,11 +136,13 @@ namespace ignition
 
       float c_theta, s_theta, c_phi, s_phi;
 
-      for (i = 0, theta = vmin; i < m; ++i, theta += d_theta){
-      	c_theta = cos(theta);
-      	s_theta = sin(theta);
+      for (unsigned int i = 0, theta = vmin; i < m; ++i, theta += d_theta)
+      {
+        c_theta = cos(theta);
+        s_theta = sin(theta);
 
-      	for (unsigned int j = 0, phi = umin; j < n; ++j, phi += d_phi) {
+        for (unsigned int j = 0, phi = umin; j < n; ++j, phi += d_phi)
+        {
           c_phi = cos(phi);
           s_phi = sin(phi);
 
@@ -167,7 +169,7 @@ namespace ignition
               _indexes.emplace_back(firstIndex + n + 1);
             }
           }
-      	}
+        }
       }
     }
     }

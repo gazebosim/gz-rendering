@@ -20,6 +20,10 @@
 // This disables warning messages for OGRE
 #pragma GCC system_header
 
+#ifdef _MSC_VER
+#pragma warning(push, 0)
+#endif
+
 // This prevents some deprecation #warning messages on OSX 10.9
 #pragma clang diagnostic ignored "-W#warnings"
 
@@ -77,6 +81,10 @@
   #include <Overlay/OgreOverlaySystem.h>
 #else
   #include <OgreFontManager.h>
+#endif
+
+#ifdef _MSC_VER
+#pragma warning(pop)
 #endif
 
 #endif

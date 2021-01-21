@@ -16,7 +16,7 @@
  */
 
 // Not Apple or Windows
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if (not defined(__APPLE__) && not defined(_WIN32))
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 # include <GL/glx.h>

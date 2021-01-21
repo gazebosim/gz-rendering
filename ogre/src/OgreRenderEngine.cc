@@ -16,7 +16,7 @@
  */
 
 // Not Apple or Windows
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if (not defined(__APPLE__) && not defined(_WIN32))
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 # include <GL/glx.h>
@@ -119,7 +119,7 @@ void OgreRenderEngine::Destroy()
   delete this->ogreLogManager;
   this->ogreLogManager = nullptr;
 
-#if not (__APPLE__ || _WIN32)
+#if (not defined(__APPLE__) && not defined(_WIN32))
   if (this->dummyDisplay)
   {
     Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -337,7 +337,7 @@ void OgreRenderEngine::CreateLogger()
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateContext()
 {
-#if not (__APPLE__ || _WIN32)
+#if (not defined(__APPLE__) && not defined(_WIN32))
   // create X11 display
   this->dummyDisplay = XOpenDisplay(0);
   Display *x11Display = static_cast<Display*>(this->dummyDisplay);

@@ -236,12 +236,12 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     EXPECT_TRUE(material->HasEmissiveMap());
 
     // roughness
-    float roughness = 0.3;
+    float roughness = 0.3f;
     material->SetRoughness(roughness);
     EXPECT_FLOAT_EQ(roughness, material->Roughness());
 
     // metalness
-    float metalness = 0.9;
+    float metalness = 0.9f;
     material->SetMetalness(metalness);
     EXPECT_FLOAT_EQ(metalness, material->Metalness());
   }
@@ -272,10 +272,10 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   MaterialPtr material = scene->CreateMaterial();
   ASSERT_TRUE(material != nullptr);
 
-  math::Color ambient(0.5, 0.2, 0.4, 1.0);
-  math::Color diffuse(0.1, 0.9, 0.3, 1.0);
-  math::Color specular(0.8, 0.7, 0.0, 1.0);
-  math::Color emissive(0.6, 0.4, 0.2, 1.0);
+  math::Color ambient(0.5f, 0.2f, 0.4f, 1.0f);
+  math::Color diffuse(0.1f, 0.9f, 0.3f, 1.0f);
+  math::Color specular(0.8f, 0.7f, 0.0f, 1.0f);
+  math::Color emissive(0.6f, 0.4f, 0.2f, 1.0f);
   double shininess = 0.8;
   double transparency = 0.3;
   double reflectivity = 0.5;
@@ -285,8 +285,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   bool lightingEnabled = false;
   bool depthCheckEnabled = false;
   bool depthWriteEnabled = false;
-  float roughness = 0.5;
-  float metalness = 0.1;
+  float roughness = 0.5f;
+  float metalness = 0.1f;
 
   std::string textureName =
     common::joinPaths(TEST_MEDIA_PATH, "texture.png");

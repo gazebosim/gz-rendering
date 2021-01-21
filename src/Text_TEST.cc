@@ -75,13 +75,13 @@ void TextTest::Text(const std::string &_renderEngine)
   EXPECT_EQ("abc def", text->TextString());
 
   text->SetCharHeight(1.8f);
-  EXPECT_FLOAT_EQ(1.8, text->CharHeight());
+  EXPECT_FLOAT_EQ(1.8f, text->CharHeight());
 
   text->SetSpaceWidth(1.5f);
-  EXPECT_FLOAT_EQ(1.5, text->SpaceWidth());
+  EXPECT_FLOAT_EQ(1.5f, text->SpaceWidth());
 
   text->SetBaseline(0.5f);
-  EXPECT_FLOAT_EQ(0.5, text->Baseline());
+  EXPECT_FLOAT_EQ(0.5f, text->Baseline());
 
   text->SetTextAlignment(TextHorizontalAlign::CENTER, TextVerticalAlign::TOP);
   EXPECT_EQ(TextHorizontalAlign::CENTER, text->HorizontalAlignment());

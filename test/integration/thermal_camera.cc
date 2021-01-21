@@ -171,8 +171,8 @@ void ThermalCameraTest::ThermalCameraBoxes(
     thermalCamera->Update();
 
     // thermal image indices
-    int midWidth = thermalCamera->ImageWidth() * 0.5;
-    int midHeight = thermalCamera->ImageHeight() * 0.5;
+    int midWidth = static_cast<int>(thermalCamera->ImageWidth() * 0.5);
+    int midHeight = static_cast<int>(thermalCamera->ImageHeight() * 0.5);
     int mid = midHeight * thermalCamera->ImageWidth() + midWidth -1;
     int left = midHeight * thermalCamera->ImageWidth();
     int right = (midHeight+1) * thermalCamera->ImageWidth() - 1;

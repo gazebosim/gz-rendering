@@ -341,7 +341,10 @@ void VisualTest::UserData(const std::string &_renderEngine)
   EXPECT_EQ(stringValue, std::get<std::string>(value));
 
   // test invalid access
-  EXPECT_THROW(std::get<int>(value), std::bad_variant_access);
+  EXPECT_THROW(
+  {
+    auto res = std::get<int>(value);
+  }, std::bad_variant_access);
 
   // Clean up
   engine->DestroyScene(scene);

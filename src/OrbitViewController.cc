@@ -42,7 +42,7 @@ using namespace ignition;
 using namespace rendering;
 
 static const float PITCH_LIMIT_LOW = -static_cast<float>(IGN_PI)*0.5f + 0.001f;
-static const float PITCH_LIMIT_LOW = static_cast<float>(IGN_PI)*0.5f - 0.001f;
+static const float PITCH_LIMIT_HIGH = static_cast<float>(IGN_PI)*0.5f - 0.001f;
 
 //////////////////////////////////////////////////
 OrbitViewController::OrbitViewController()

@@ -50,6 +50,9 @@ namespace ignition
         public: virtual void Init() override;
 
         // Documentation inherited.
+        public: virtual void Destroy() override;
+
+        // Documentation inherited.
         public: virtual Ogre::MovableObject *OgreObject() const;
 
         // Documentation inherited.

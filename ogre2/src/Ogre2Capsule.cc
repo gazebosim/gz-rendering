@@ -17,10 +17,14 @@
 
 #include <cmath>
 
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/MeshManager.hh>
+
 #include "ignition/rendering/ogre2/Ogre2Capsule.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
+#include "ignition/rendering/ogre2/Ogre2Mesh.hh"
+#include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
 #include <ignition/math/Vector3.hh>
 
@@ -29,7 +33,8 @@ class ignition::rendering::Ogre2CapsulePrivate
   /// \brief Capsule materal
   public: Ogre2MaterialPtr material;
 
-  public: std::shared_ptr<Ogre2DynamicRenderable> capsule = nullptr;
+  /// \brief Mesh Object for capsule shape
+  public: Ogre2MeshPtr ogreMesh = nullptr;
 };
 
 using namespace ignition;
@@ -50,7 +55,7 @@ Ogre2Capsule::~Ogre2Capsule()
 //////////////////////////////////////////////////
 Ogre::MovableObject *Ogre2Capsule::OgreObject() const
 {
-  return this->dataPtr->capsule->OgreObject();
+  return this->dataPtr->ogreMesh->OgreObject();
 }
 
 //////////////////////////////////////////////////
@@ -69,31 +74,66 @@ void Ogre2Capsule::Init()
   this->Create();
 }
 
+//////////////////////////////////////////////////
+void Ogre2Capsule::Destroy()
+{
+  if (!this->Scene())
+    return;
+
+  if (this->dataPtr->ogreMesh)
+  {
+    this->dataPtr->ogreMesh->Destroy();
+    this->dataPtr->ogreMesh.reset();
+  }
+
+  if (this->dataPtr->material && this->Scene())
+  {
+    this->Scene()->DestroyMaterial(this->dataPtr->material);
+    this->dataPtr->material.reset();
+  }
+}
+
 ////////////////////////////////////////////////
 void Ogre2Capsule::Create()
 {
-  if (!this->dataPtr->capsule)
+  std::cerr << "Create" << '\n';
+  common::MeshManager *meshMgr = common::MeshManager::Instance();
+  std::string capsuleMeshName = this->Name() + "_capsule_mesh"
+    + "_" + std::to_string(this->radius)
+    + "_" + std::to_string(this->length);
+  std::cerr << "capsuleMeshName " << capsuleMeshName << '\n';
+  if (!meshMgr->HasMesh(capsuleMeshName))
   {
-    this->dataPtr->capsule.reset(new Ogre2DynamicRenderable(this->Scene()));
+    meshMgr->CreateCapsule(capsuleMeshName, this->radius, this->length, 12, 32);
+    MeshDescriptor meshDescriptor;
+    meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
+    if (meshDescriptor.mesh != nullptr)
+    {
+      auto visual = std::dynamic_pointer_cast<Ogre2Visual>(this->Parent());
+
+      // clear geom if needed
+      if (this->dataPtr->ogreMesh)
+      {
+        if (visual)
+        {
+          visual->RemoveGeometry(
+              std::dynamic_pointer_cast<Geometry>(shared_from_this()));
+        }
+        this->dataPtr->ogreMesh->Destroy();
+      }
+      this->dataPtr->ogreMesh =
+        std::dynamic_pointer_cast<Ogre2Mesh>(this->Scene()->CreateMesh(meshDescriptor));
+      if (this->dataPtr->material != nullptr)
+      {
+        this->dataPtr->ogreMesh->SetMaterial(this->dataPtr->material, false);
+      }
+      if (visual)
+      {
+        visual->AddGeometry(
+            std::dynamic_pointer_cast<Geometry>(shared_from_this()));
+      }
+    }
   }
-
-  this->dataPtr->capsule->Clear();
-  this->dataPtr->capsule->Update();
-
-  this->dataPtr->capsule->SetOperationType(MT_TRIANGLE_LIST);
-
-  std::vector<ignition::math::Vector3d> positions;
-  std::vector<int> indexes;
-  std::vector<ignition::math::Vector2d> uvs;
-
-  this->CapsuleMesh(positions, indexes, uvs);
-
-  for (auto index : indexes)
-  {
-    this->dataPtr->capsule->AddPoint(positions[index]);
-  }
-
-  this->dataPtr->capsule->Update();
 }
 
 //////////////////////////////////////////////////
@@ -113,7 +153,7 @@ void Ogre2Capsule::SetMaterial(MaterialPtr _material, bool _unique)
   }
 
   // Set material for the underlying dynamic renderable
-  this->dataPtr->capsule->SetMaterial(_material, false);
+  this->dataPtr->ogreMesh->SetMaterial(_material, false);
   this->SetMaterialImpl(derived);
 }
 

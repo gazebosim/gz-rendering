@@ -17,9 +17,14 @@
 
 #include <cmath>
 
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/MeshManager.hh>
+
 #include "ignition/rendering/ogre/OgreCapsule.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreMesh.hh"
+#include "ignition/rendering/ogre/OgreVisual.hh"
 
 #include <ignition/math/Vector3.hh>
 
@@ -28,7 +33,8 @@ class ignition::rendering::OgreCapsulePrivate
   /// \brief Capsule materal
   public: OgreMaterialPtr material;
 
-  public: Ogre::ManualObject *manualObject = nullptr;
+  /// \brief Mesh Object for capsule shape
+  public: OgreMeshPtr ogreMesh = nullptr;
 };
 
 using namespace ignition;
@@ -59,13 +65,32 @@ void OgreCapsule::PreRender()
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreCapsule::OgreObject() const
 {
-  return this->dataPtr->manualObject;
+  return this->dataPtr->ogreMesh->OgreObject();
 }
 
 //////////////////////////////////////////////////
 void OgreCapsule::Init()
 {
   this->Create();
+}
+
+//////////////////////////////////////////////////
+void OgreCapsule::Destroy()
+{
+  if (!this->Scene())
+    return;
+
+  if (this->dataPtr->ogreMesh)
+  {
+    this->dataPtr->ogreMesh->Destroy();
+    this->dataPtr->ogreMesh.reset();
+  }
+
+  if (this->dataPtr->material && this->Scene())
+  {
+    this->Scene()->DestroyMaterial(this->dataPtr->material);
+    this->dataPtr->material.reset();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -77,43 +102,41 @@ void OgreCapsuleCapsule()
 //////////////////////////////////////////////////
 void OgreCapsule::Create()
 {
-  if (!this->dataPtr->manualObject)
+  common::MeshManager *meshMgr = common::MeshManager::Instance();
+  std::string capsuleMeshName = this->Name() + "_capsule_mesh"
+    + "_" + std::to_string(this->radius)
+    + "_" + std::to_string(this->length);
+  if (!meshMgr->HasMesh(capsuleMeshName))
   {
-    this->dataPtr->manualObject =
-      this->scene->OgreSceneManager()->createManualObject(this->name);
+    meshMgr->CreateCapsule(capsuleMeshName, this->radius, this->length, 32, 32);
+    MeshDescriptor meshDescriptor;
+    meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
+    if (meshDescriptor.mesh != nullptr)
+    {
+      auto visual = std::dynamic_pointer_cast<OgreVisual>(this->Parent());
+      // clear geom if needed
+      if (this->dataPtr->ogreMesh)
+      {
+        if (visual)
+        {
+          visual->RemoveGeometry(
+              std::dynamic_pointer_cast<Geometry>(shared_from_this()));
+        }
+        this->dataPtr->ogreMesh->Destroy();
+      }
+      this->dataPtr->ogreMesh =
+        std::dynamic_pointer_cast<OgreMesh>(this->Scene()->CreateMesh(meshDescriptor));
+      if (this->dataPtr->material != nullptr)
+      {
+        this->dataPtr->ogreMesh->SetMaterial(this->dataPtr->material, false);
+      }
+      if (visual)
+      {
+        visual->AddGeometry(
+            std::dynamic_pointer_cast<Geometry>(shared_from_this()));
+      }
+    }
   }
-  this->dataPtr->manualObject->clear();
-
-  this->dataPtr->manualObject->setCastShadows(false);
-
-  std::string materialName = this->dataPtr->material ?
-      this->dataPtr->material->Name() : "Default/White";
-  this->dataPtr->manualObject->begin(materialName,
-      Ogre::RenderOperation::OT_TRIANGLE_LIST);
-
-  std::vector<ignition::math::Vector3d> positions;
-  std::vector<int> indexes;
-  std::vector<ignition::math::Vector2d> uvs;
-
-  this->CapsuleMesh(positions, indexes, uvs);
-
-  for (unsigned int i = 0; i < positions.size(); i++)
-  {
-    this->dataPtr->manualObject->position(
-      Ogre::Vector3(positions[i].X(), positions[i].Y(), positions[i].Z()));
-    this->dataPtr->manualObject->textureCoord(
-      Ogre::Vector2(uvs[i].X(), uvs[i].Y()));
-    this->dataPtr->manualObject->normal(
-      positions[i].Normalize().X(),
-      positions[i].Normalize().Y(),
-      positions[i].Normalize().Z());
-  }
-
-  for (auto index : indexes)
-  {
-    this->dataPtr->manualObject->index(index);
-  }
-  this->dataPtr->manualObject->end();
 }
 
 //////////////////////////////////////////////////
@@ -140,7 +163,7 @@ void OgreCapsule::SetMaterialImpl(OgreMaterialPtr _material)
 {
   std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
-  this->dataPtr->manualObject->setMaterialName(0, materialName);
+  this->dataPtr->ogreMesh->SetMaterial(_material, false);
   this->dataPtr->material = _material;
 }
 

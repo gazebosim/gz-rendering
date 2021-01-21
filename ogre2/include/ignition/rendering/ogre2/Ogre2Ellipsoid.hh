@@ -52,6 +52,9 @@ namespace ignition
         public: virtual void Init() override;
 
         // Documentation inherited.
+        public: virtual void Destroy() override;
+
+        // Documentation inherited.
         public: virtual Ogre::MovableObject *OgreObject() const;
 
         // Documentation inherited.
@@ -72,10 +75,6 @@ namespace ignition
 
         /// \brief Ellipsoid should only be created by scene.
         private: friend class Ogre2Scene;
-
-        private: void calculateRing(
-          size_t segments, float radius, float y, float dy,
-          std::vector<ignition::math::Vector3d> & positions);
 
         /// \brief Private data class
         private: std::unique_ptr<Ogre2EllipsoidPrivate> dataPtr;

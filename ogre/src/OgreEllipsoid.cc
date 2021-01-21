@@ -17,9 +17,14 @@
 
 #include <cmath>
 
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/MeshManager.hh>
+
 #include "ignition/rendering/ogre/OgreEllipsoid.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreMesh.hh"
+#include "ignition/rendering/ogre/OgreVisual.hh"
 
 #include <ignition/math/Vector3.hh>
 #include <ignition/math/Vector2.hh>
@@ -29,7 +34,8 @@ class ignition::rendering::OgreEllipsoidPrivate
   /// \brief Grid materal
   public: OgreMaterialPtr material;
 
-  public: Ogre::ManualObject *manualObject = nullptr;
+  /// \brief Mesh Object for primitive shapes
+  public: OgreMeshPtr ogreMesh = nullptr;
 };
 
 using namespace ignition;
@@ -60,7 +66,26 @@ void OgreEllipsoid::PreRender()
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreEllipsoid::OgreObject() const
 {
-  return this->dataPtr->manualObject;
+  return this->dataPtr->ogreMesh->OgreObject();;
+}
+
+//////////////////////////////////////////////////
+void OgreEllipsoid::Destroy()
+{
+  if (!this->Scene())
+    return;
+
+  if (this->dataPtr->ogreMesh)
+  {
+    this->dataPtr->ogreMesh->Destroy();
+    this->dataPtr->ogreMesh.reset();
+  }
+
+  if (this->dataPtr->material && this->Scene())
+  {
+    this->Scene()->DestroyMaterial(this->dataPtr->material);
+    this->dataPtr->material.reset();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -78,44 +103,43 @@ void OgreEllipsoidEllipsoid()
 //////////////////////////////////////////////////
 void OgreEllipsoid::Create()
 {
-  if (!this->dataPtr->manualObject)
+  common::MeshManager *meshMgr = common::MeshManager::Instance();
+  std::string ellipsoidMeshName = this->Name() + "_ellipsoid_mesh"
+    + "_" + std::to_string(this->radii.X())
+    + "_" + std::to_string(this->radii.Y())
+    + "_" + std::to_string(this->radii.Z());
+  if (!meshMgr->HasMesh(ellipsoidMeshName))
   {
-    this->dataPtr->manualObject =
-      this->scene->OgreSceneManager()->createManualObject(this->name);
+    meshMgr->CreateEllipsoid(ellipsoidMeshName, this->radii, 32, 32);
+    MeshDescriptor meshDescriptor;
+    meshDescriptor.mesh = meshMgr->MeshByName(ellipsoidMeshName);
+    if (meshDescriptor.mesh != nullptr)
+    {
+      auto visual = std::dynamic_pointer_cast<OgreVisual>(this->Parent());
+      // clear geom if needed
+      if (this->dataPtr->ogreMesh)
+      {
+        if (visual)
+        {
+          visual->RemoveGeometry(
+              std::dynamic_pointer_cast<Geometry>(shared_from_this()));
+        }
+        this->dataPtr->ogreMesh->Destroy();
+      }
+      this->dataPtr->ogreMesh =
+        std::dynamic_pointer_cast<OgreMesh>(
+          this->Scene()->CreateMesh(meshDescriptor));
+      if (this->dataPtr->material != nullptr)
+      {
+        this->dataPtr->ogreMesh->SetMaterial(this->dataPtr->material, false);
+      }
+      if (visual)
+      {
+        visual->AddGeometry(
+            std::dynamic_pointer_cast<Geometry>(shared_from_this()));
+      }
+    }
   }
-  this->dataPtr->manualObject->clear();
-
-  this->dataPtr->manualObject->setCastShadows(false);
-
-  std::string materialName = this->dataPtr->material ?
-      this->dataPtr->material->Name() : "Default/White";
-  this->dataPtr->manualObject->begin(materialName,
-      Ogre::RenderOperation::OT_TRIANGLE_LIST);
-
-  std::vector<ignition::math::Vector3d> positions;
-  std::vector<int> indexes;
-  std::vector<ignition::math::Vector2d> uvs;
-
-  this->EllipsoidMesh(positions, indexes, uvs);
-
-  for (unsigned int i = 0; i < positions.size(); i++)
-  {
-    this->dataPtr->manualObject->position(
-      Ogre::Vector3(positions[i].X(), positions[i].Y(), positions[i].Z()));
-    if (i < uvs.size())
-      this->dataPtr->manualObject->textureCoord(
-        Ogre::Vector2(uvs[i].X(), uvs[i].Y()));
-    this->dataPtr->manualObject->normal(
-      positions[i].Normalize().X(),
-      positions[i].Normalize().Y(),
-      positions[i].Normalize().Z());
-  }
-
-  for (auto index : indexes)
-  {
-    this->dataPtr->manualObject->index(index);
-  }
-  this->dataPtr->manualObject->end();
 }
 
 //////////////////////////////////////////////////
@@ -142,7 +166,7 @@ void OgreEllipsoid::SetMaterialImpl(OgreMaterialPtr _material)
 {
   std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
-  this->dataPtr->manualObject->setMaterialName(0, materialName);
+  this->dataPtr->ogreMesh->SetMaterial(_material, false);
   this->dataPtr->material = _material;
 }
 

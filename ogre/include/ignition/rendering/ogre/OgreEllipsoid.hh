@@ -36,7 +36,7 @@ namespace ignition
       // Forward declaration
       class OgreEllipsoidPrivate;
 
-      /// \brief Ogre 2.x implementation of a Ellipsoid Visual.
+      /// \brief Ogre 1.x implementation of a Ellipsoid Visual.
       class IGNITION_RENDERING_OGRE_VISIBLE OgreEllipsoid
         : public BaseEllipsoid<OgreGeometry>
       {
@@ -48,6 +48,9 @@ namespace ignition
 
         // Documentation inherited.
         public: virtual void Init() override;
+
+        // Documentation inherited.
+        public: virtual void Destroy() override;
 
         // Documentation inherited.
         public: virtual Ogre::MovableObject *OgreObject() const;

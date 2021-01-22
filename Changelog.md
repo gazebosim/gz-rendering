@@ -1,5 +1,22 @@
 ## Ignition Rendering
 
+### Ignition Rendering 3.3.0 (2021-01-22)
+
+1. Add Windows installation.
+    * [Pull request 196](https://github.com/ignitionrobotics/ign-rendering/pull/196)
+
+1. Make flaky VisualAt test more verbose.
+    * [Pull request 174](https://github.com/ignitionrobotics/ign-rendering/pull/174)
+
+1. Resolve updated codecheck issues.
+    * [Pull request 173](https://github.com/ignitionrobotics/ign-rendering/pull/173)
+
+1. Fix crash due to NaN pose values.
+    * [Pull request 169](https://github.com/ignitionrobotics/ign-rendering/pull/169)
+
+1. Improve fork experience.
+    * [Pull request 165](https://github.com/ignitionrobotics/ign-rendering/pull/165)
+
 ### Ignition Rendering 3.2.0 (2020-10-13)
 
 1. Add Custom Render Engine support

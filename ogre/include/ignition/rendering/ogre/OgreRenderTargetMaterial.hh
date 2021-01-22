@@ -44,7 +44,16 @@ namespace ignition
     /// material provided to this class's constructor.
     class IGNITION_RENDERING_OGRE_VISIBLE  OgreRenderTargetMaterial :
       public Ogre::RenderTargetListener,
+// Ogre::MaterialManager::Listener isn't a dll-interface class, this may cause
+// issues
+#ifdef _MSC_VER
+ #pragma warning(push)
+ #pragma warning(disable:4275)
+#endif
       public Ogre::MaterialManager::Listener
+#ifdef _MSC_VER
+ #pragma warning(pop)
+#endif
     {
       /// \brief constructor
       /// \param[in] _scene the scene manager responsible for rendering

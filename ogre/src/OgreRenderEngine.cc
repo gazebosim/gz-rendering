@@ -676,7 +676,7 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     return std::string();
   }
 
-  if (window)
+  if (nullptr != window)
   {
     window->setActive(true);
     window->setVisible(true);

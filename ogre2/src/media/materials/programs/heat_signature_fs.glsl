@@ -46,5 +46,5 @@ float mapNormalized(float num)
 void main()
 {
   float heat = texture(RT, inPs.uv0.xy).x;
-  fragColor = vec4(mapNormalized(heat), 0, 0, 1.0);
+  fragColor = vec4(mapNormalized(heat), 0, 0, 0.0);
 }

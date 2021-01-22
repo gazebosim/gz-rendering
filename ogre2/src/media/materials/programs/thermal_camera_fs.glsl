@@ -58,21 +58,51 @@ void main()
   vec3 viewSpacePos = inPs.cameraDir * d;
 
   d = -viewSpacePos.z;
-  d = (d-near) / (far-near);
+  float dNorm = (d-near) / (far-near);
 
   // check for heat source
-  float heat = texture(colorTexture, inPs.uv0).x;
+  vec4 rgba = texture(colorTexture, inPs.uv0).rgba;
+  float heat = rgba.r;
+
+  // The custom heat source / signature shaders stores heat data in
+  // a vec4 of [heat, 0, 0, 0] so we test to see if it is a heat
+  // source by checking gba == 0. This is more of a hack but the idea is to
+  // avoid having to render an extra pass to create a mask of heat source
+  // objects
+  bool isHeatSource = (rgba.g == 0.0 && rgba.b == 0.0 && rgba.a == 0.0);
+
   if (heat > 0.0)
   {
-    // heat is normalized so convert back to work in kelvin
-    temp = heat * 655.35;
+    if (isHeatSource)
+    {
+      // heat is normalized so convert back to work in kelvin
+      temp = heat * 655.35;
 
-    // set temperature variation for heat source
-    heatRange = heatSourceTempRange;
+      // set temperature variation for heat source
+      heatRange = heatSourceTempRange;
+    }
+    else
+    {
+      temp = ambient;
+    }
   }
 
-  // simulate temp variation as a function of depth
-  float delta = (1.0 - d) * heatRange;
+
+  // enable color to temp variation by default
+  // for non-heat source objects
+  bool colorToTemp = true;
+  // simulate non heat source temp variation
+  if (colorToTemp)
+  {
+    // variation based on color
+    if (heat > 0.0 && !isHeatSource)
+    {
+      dNorm = heat;
+    }
+  }
+
+  // simulate temp variations
+  float delta = (1.0 - dNorm) * heatRange;
   temp = temp - heatRange / 2.0 + delta;
   clamp(temp, min, max);
 

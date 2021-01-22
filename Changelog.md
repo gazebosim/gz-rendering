@@ -2,7 +2,18 @@
 
 ### Ignition Rendering 4.X
 
-### Ignition Rendering 4.X.X (20XX-XX-XX)
+### Ignition Rendering 4.2.0 (2021-01-22)
+
+1. Remove some windows warnings.
+    * [Pull request #183](https://github.com/ignitionrobotics/ign-rendering/pull/183)
+
+1. Fix transparency issue for textures without alpha channel.
+    * [Pull request #186](https://github.com/ignitionrobotics/ign-rendering/pull/186)
+
+1. Call XCloseDisplay in screenScalingFactor.
+    * [Pull request #204](https://github.com/ignitionrobotics/ign-rendering/pull/204)
+
+1. All changes up to version 3.3.0.
 
 ### Ignition Rendering 4.1.0 (2020-11-04)
 

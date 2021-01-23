@@ -253,8 +253,6 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
         // only accept positive temperature (in kelvin)
         if (temp >= 0.0)
         {
-          // set visibility flag so thermal camera can see it
-          // item->addVisibilityFlags(0x10000000);
           for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
           {
             Ogre::SubItem *subItem = item->getSubItem(i);

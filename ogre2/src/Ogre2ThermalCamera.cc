@@ -160,6 +160,10 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   /// \brief Pointer to material switcher
   public: std::unique_ptr<Ogre2ThermalCameraMaterialSwitcher>
       thermalMaterialSwitcher = nullptr;
+
+  /// \brief Add variation to temperature values based on object rgb values
+  /// This only affects objects that are not heat sources
+  public: bool rgbToTemp = true;
 };
 
 using namespace ignition;
@@ -607,6 +611,8 @@ void Ogre2ThermalCamera::CreateThermalTexture()
       static_cast<float>(this->ambientRange));
   psParams->setNamedConstant("heatSourceTempRange",
       static_cast<float>(this->heatSourceTempRange));
+  psParams->setNamedConstant("rgbToTemp",
+      static_cast<int>(this->dataPtr->rgbToTemp));
 
   // Create thermal camera compositor
   auto engine = Ogre2RenderEngine::Instance();
@@ -710,9 +716,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
           colorTargetDef->addPass(Ogre::PASS_CLEAR));
       passClear->mColourValue = Ogre::ColourValue(0, 0, 0);
       // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          colorTargetDef->addPass(Ogre::PASS_SCENE));
+      colorTargetDef->addPass(Ogre::PASS_SCENE);
     }
 
     // rt_input target - converts to thermal

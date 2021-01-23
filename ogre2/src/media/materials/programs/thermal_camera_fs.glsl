@@ -37,6 +37,7 @@ uniform float range;
 uniform float resolution;
 uniform float heatSourceTempRange;
 uniform float ambient;
+uniform int rgbToTemp;
 
 float getDepth(vec2 uv)
 {
@@ -51,25 +52,22 @@ void main()
   float temp = ambient;
   float heatRange = range;
 
-  // get depth
-  float d = getDepth(inPs.uv0);
-
-  // reconstruct 3d viewspace pos from depth
-  vec3 viewSpacePos = inPs.cameraDir * d;
-
-  d = -viewSpacePos.z;
-  float dNorm = (d-near) / (far-near);
+  // dNorm value is between [0, 1]. It is used to for varying temperature
+  // value of a fragment.
+  // When dNorm = 1, temp = temp + heatRange*0.5.
+  // When dNorm = 0, temp = temp - heatRange*0.5.
+  float dNorm = 0.5;
 
   // check for heat source
-  vec4 rgba = texture(colorTexture, inPs.uv0).rgba;
-  float heat = rgba.r;
-
+  // heat source are objects with uniform temperature or heat signature
   // The custom heat source / signature shaders stores heat data in
   // a vec4 of [heat, 0, 0, 0] so we test to see if it is a heat
   // source by checking gba == 0. This is more of a hack but the idea is to
   // avoid having to render an extra pass to create a mask of heat source
   // objects
+  vec4 rgba = texture(colorTexture, inPs.uv0).rgba;
   bool isHeatSource = (rgba.g == 0.0 && rgba.b == 0.0 && rgba.a == 0.0);
+  float heat = rgba.r;
 
   if (heat > 0.0)
   {
@@ -83,22 +81,29 @@ void main()
     }
     else
     {
+      // other non-heat source objects are assigned ambient temperature
       temp = ambient;
     }
   }
 
-
-  // enable color to temp variation by default
-  // for non-heat source objects
-  bool colorToTemp = true;
-  // simulate non heat source temp variation
-  if (colorToTemp)
+  // add temperature variation, either as a function of color or depth
+  if (rgbToTemp == 1)
   {
-    // variation based on color
     if (heat > 0.0 && !isHeatSource)
     {
-      dNorm = heat;
+      // convert to grayscale: darker = warmer
+      float gray = rgba.r * 0.3 + rgba.g * 0.59 + rgba.b*0.11;
+      dNorm = 1.0 - gray;
     }
+  }
+  else
+  {
+    // get depth
+    float d = getDepth(inPs.uv0);
+    // reconstruct 3d viewspace pos from depth
+    vec3 viewSpacePos = inPs.cameraDir * d;
+    d = -viewSpacePos.z;
+    dNorm = (d-near) / (far-near);
   }
 
   // simulate temp variations

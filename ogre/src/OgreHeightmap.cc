@@ -241,28 +241,29 @@ class TerrainMaterial : public Ogre::TerrainMaterialGenerator
     public: ~Profile();
 
     // Documentation Inherited
-    public: bool isVertexCompressionSupported() const;
+    public: bool isVertexCompressionSupported() const override;
 
     // Documentation Inherited
-    public: Ogre::MaterialPtr generate(const Ogre::Terrain *_terrain);
+    public: Ogre::MaterialPtr generate(const Ogre::Terrain *_terrain) override;
 
     // Documentation Inherited
     public: Ogre::MaterialPtr generateForCompositeMap(
-        const Ogre::Terrain *_terrain);
+        const Ogre::Terrain *_terrain) override;
 
     // Documentation Inherited
-    public: void setLightmapEnabled(bool _enabled);
+    public: void setLightmapEnabled(bool _enabled) override;
 
     // Documentation Inherited
-    public: Ogre::uint8 getMaxLayers(const Ogre::Terrain *_terrain) const;
+    public: Ogre::uint8 getMaxLayers(const Ogre::Terrain *_terrain) const
+        override;
 
     // Documentation Inherited
     public: void updateParams(const Ogre::MaterialPtr& mat,
-        const Ogre::Terrain *_terrain);
+        const Ogre::Terrain *_terrain) override;
 
     // Documentation Inherited
     public: void updateParamsForCompositeMap(const Ogre::MaterialPtr& mat,
-        const Ogre::Terrain *_terrain);
+        const Ogre::Terrain *_terrain) override;
 
     // Documentation Inherited
     public: void requestOptions(Ogre::Terrain *_terrain) override;

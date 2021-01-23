@@ -609,7 +609,12 @@ void OgreRenderEngine::CreateResources()
 void OgreRenderEngine::CreateRenderWindow()
 {
   // create dummy window
-  this->CreateRenderWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
+  auto res = this->CreateRenderWindow(std::to_string(this->dummyWindowId), 1, 1,
+      1, 0);
+  if (res.empty())
+  {
+    ignerr << "Failed to create dummy render window." << std::endl;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -663,16 +668,18 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
       window = this->ogreRoot->createRenderWindow(
           stream.str(), _width, _height, false, &params);
     }
-    catch(...)
+    catch(Ogre::Exception &_e)
     {
-      ignerr << " Unable to create the rendering window\n";
+      ignerr << "Unable to create the rendering window. Attempt [" << attempts
+             << "]. Exception [" << _e.what() << "]" << std::endl;
       window = nullptr;
     }
   }
 
   if (attempts >= 10)
   {
-    ignerr << "Unable to create the rendering window\n" << std::endl;
+    ignerr << "Unable to create the rendering window after [" << attempts
+           << "] attempts." << std::endl;
     return std::string();
   }
 
@@ -691,11 +698,23 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
 //////////////////////////////////////////////////
 void OgreRenderEngine::CheckCapabilities()
 {
+  if (nullptr == this->ogreRoot ||nullptr == this->ogreRoot->getRenderSystem())
+  {
+    ignerr << "No ogreRoot or render system" << std::endl;
+    return;
+  }
+
   const Ogre::RenderSystemCapabilities *capabilities;
   Ogre::RenderSystemCapabilities::ShaderProfiles profiles;
   Ogre::RenderSystemCapabilities::ShaderProfiles::const_iterator iter;
 
   capabilities = this->ogreRoot->getRenderSystem()->getCapabilities();
+  if (nullptr == capabilities)
+  {
+    ignerr << "Failed to get capabilities" << std::endl;
+    return;
+  }
+
   profiles = capabilities->getSupportedShaderProfiles();
 
   bool hasFragmentPrograms =
@@ -717,17 +736,23 @@ void OgreRenderEngine::CheckCapabilities()
     std::find(profiles.begin(), profiles.end(), "glsl") != profiles.end();
 
   if (!hasFragmentPrograms || !hasVertexPrograms)
+  {
     ignwarn << "Vertex and fragment shaders are missing. "
            << "Fixed function rendering will be used.\n";
+  }
 
   if (!hasGLSL)
+  {
     ignwarn << "GLSL is missing."
            << "Fixed function rendering will be used.\n";
+  }
 
   // cppcheck-suppress knownConditionTrueFalse
   if (!hasFBO)
+  {
     ignwarn << "Frame Buffer Objects (FBO) is missing. "
            << "Rendering will be disabled.\n";
+  }
 
   this->renderPathType = OgreRenderEngine::NONE;
 

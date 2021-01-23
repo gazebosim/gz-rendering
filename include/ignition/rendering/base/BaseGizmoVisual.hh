@@ -538,11 +538,17 @@ namespace ignition
 
       std::string rotFullMeshName = "gizmo_rotate_full";
       if (!meshMgr->HasMesh(rotFullMeshName))
-        meshMgr->CreateTube(rotFullMeshName, 1.0f, 1.02f, 0.02f, 1, 64, 2*IGN_PI);
+      {
+        meshMgr->CreateTube(rotFullMeshName, 1.0f, 1.02f, 0.02f, 1, 64,
+            2 * IGN_PI);
+      }
 
       std::string rotHandleMeshName = "gizmo_rotate_handle";
       if (!meshMgr->HasMesh(rotHandleMeshName))
-        meshMgr->CreateTube(rotHandleMeshName, 0.95f, 1.07f, 0.1f, 1, 64, IGN_PI);
+      {
+        meshMgr->CreateTube(rotHandleMeshName, 0.95f, 1.07f, 0.1f, 1, 64,
+            IGN_PI);
+      }
 
       VisualPtr rotVis = this->Scene()->CreateVisual();
 

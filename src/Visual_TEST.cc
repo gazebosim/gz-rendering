@@ -344,6 +344,7 @@ void VisualTest::UserData(const std::string &_renderEngine)
   EXPECT_THROW(
   {
     auto res = std::get<int>(value);
+    igndbg << res << std::endl;
   }, std::bad_variant_access);
 
   // Clean up

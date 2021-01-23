@@ -263,6 +263,10 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
               // normalize temperature value
               float color = temp * 100.0 /
                   static_cast<float>(std::numeric_limits<uint16_t>::max());
+
+              // set g, b, a to 0. This will be used by shaders to determine
+              // if particular fragment is a heat source or not
+              // see media/materials/programs/thermal_camera_fs.glsl
               subItem->setCustomParameter(this->customParamIdx,
                   Ogre::Vector4(color, 0, 0, 0.0));
             }
@@ -679,7 +683,6 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     thermalTexDef->uav = false;
     thermalTexDef->automipmaps = false;
     thermalTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
-    // thermalTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
     // set to default pool so that when the colorTexture pass is rendered, its
     // depth data get populated to depthTexture
     thermalTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;

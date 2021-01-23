@@ -33,7 +33,7 @@ You'll see:
   ESC - Exit
 ===============================
 ```
-@image html img/heightmap.png
+@image html img/heightmaps.png
 
 ## Code
 

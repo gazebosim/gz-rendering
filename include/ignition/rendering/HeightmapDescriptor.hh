@@ -209,7 +209,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \return The heightmap's sampling.
     public: unsigned int Sampling() const;
 
-    /// \brief Set the heightmap's sampling. Defaults to 2.
+    /// \brief Set the heightmap's sampling. Defaults to 1.
     /// \param[in] _sampling The heightmap's sampling per datum.
     public: void SetSampling(unsigned int _sampling);
 

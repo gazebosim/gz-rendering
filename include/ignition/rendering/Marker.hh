@@ -65,7 +65,10 @@ namespace ignition
       MT_TRIANGLE_LIST  = 9,
 
       /// \brief Triangle strip primitive
-      MT_TRIANGLE_STRIP = 10
+      MT_TRIANGLE_STRIP = 10,
+
+      /// \brief Ellipsoid geometry
+      MT_ELLIPSOID      = 12,
     };
 
     /// \class Marker Marker.hh ignition/rendering/Marker

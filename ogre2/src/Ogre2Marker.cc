@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre2/Ogre2Ellipsoid.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -95,6 +96,7 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
       return nullptr;
     case MT_BOX:
     case MT_CYLINDER:
+    case MT_ELLIPSOID:
     case MT_SPHERE:
       return this->dataPtr->mesh->OgreObject();
     case MT_LINE_STRIP:
@@ -159,6 +161,7 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
       break;
     case MT_BOX:
     case MT_CYLINDER:
+    case MT_ELLIPSOID:
     case MT_SPHERE:
       this->dataPtr->mesh->SetMaterial(derived, false);
       break;
@@ -240,6 +243,9 @@ void Ogre2Marker::SetType(MarkerType _markerType)
       break;
     case MT_CYLINDER:
       newMesh = this->scene->CreateCylinder();
+      break;
+    case MT_ELLIPSOID:
+      newMesh = this->scene->CreateEllipsoid();
       break;
     case MT_SPHERE:
       newMesh = this->scene->CreateSphere();

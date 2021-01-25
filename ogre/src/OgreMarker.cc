@@ -18,6 +18,7 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "ignition/rendering/ogre/OgreEllipsoid.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreMesh.hh"
@@ -82,6 +83,7 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
       return nullptr;
     case MT_BOX:
     case MT_CYLINDER:
+    case MT_ELLIPSOID:
     case MT_SPHERE:
       return this->dataPtr->mesh->OgreObject();
     case MT_LINE_STRIP:
@@ -146,6 +148,7 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
       break;
     case MT_BOX:
     case MT_CYLINDER:
+    case MT_ELLIPSOID:
     case MT_SPHERE:
       this->dataPtr->mesh->SetMaterial(derived, false);
       break;
@@ -208,6 +211,10 @@ void OgreMarker::SetType(MarkerType _markerType)
     case MT_CYLINDER:
       this->dataPtr->mesh =
         std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateCylinder());
+      break;
+    case MT_ELLIPSOID:
+      this->dataPtr->mesh =
+        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateEllipsoid());
       break;
     case MT_SPHERE:
       this->dataPtr->mesh =

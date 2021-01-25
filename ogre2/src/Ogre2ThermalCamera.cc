@@ -108,10 +108,8 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   private: const unsigned int customParamIdx = 10u;
 
   /// \brief A map of ogre sub item pointer to their original hlms material
-  private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
-
-  /// \brief A map of ogre sub item pointer to their unlit hlms material
-  private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> unlitDatablockMap;
+  private: std::unordered_map<Ogre::SubItem *, Ogre::HlmsDatablock *>
+      datablockMap;
 };
 }
 }
@@ -163,6 +161,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
 
   /// \brief Add variation to temperature values based on object rgb values
   /// This only affects objects that are not heat sources
+  /// TODO(anyone) add API for setting this value?
   public: bool rgbToTemp = true;
 };
 
@@ -381,28 +380,20 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
         if (ogreVisual->GeometryCount() > 0u && this->ogreCamera->isVisible(box))
         {
           auto geom = ogreVisual->GeometryByIndex(0);
-          MaterialPtr mat = geom->Material();
-          Ogre2MaterialPtr ogreMat = std::dynamic_pointer_cast<Ogre2Material>(mat);
-          Ogre::HlmsUnlitDatablock *unlit = ogreMat->UnlitDatablock();
-
-          for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+          if (geom)
           {
-            Ogre::SubItem *subItem = item->getSubItem(i);
-            auto it = this->unlitDatablockMap.find(subItem);
-            if (it == this->unlitDatablockMap.end())
+            MaterialPtr mat = geom->Material();
+            Ogre2MaterialPtr ogreMat =
+                std::dynamic_pointer_cast<Ogre2Material>(mat);
+            Ogre::HlmsUnlitDatablock *unlit = ogreMat->UnlitDatablock();
+            for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
             {
-              this->unlitDatablockMap[subItem] = unlit;
+              Ogre::SubItem *subItem = item->getSubItem(i);
+              Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+              this->datablockMap[subItem] = datablock;
+              subItem->setDatablock(unlit);
             }
-            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-            this->datablockMap[subItem] = datablock;
-            subItem->setDatablock(unlit);
           }
-
-          // make sure background objects are not visible in depth texture
-          // we are using this info to determine what pixels are background
-          // background objects vs heat source
-          // auto flags = item->getVisibilityFlags();
-          // item->setVisibilityFlags(flags & ~0x01000000);
         }
       }
     }
@@ -415,7 +406,7 @@ void Ogre2ThermalCameraMaterialSwitcher::postRenderTargetUpdate(
     const Ogre::RenderTargetEvent & /*_evt*/)
 {
   // restore item to use pbs hlms material
-  for (auto &it : this->datablockMap)
+  for (auto it : this->datablockMap)
   {
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);

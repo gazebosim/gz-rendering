@@ -92,7 +92,7 @@ void main()
     if (heat > 0.0 && !isHeatSource)
     {
       // convert to grayscale: darker = warmer
-      float gray = rgba.r * 0.3 + rgba.g * 0.59 + rgba.b*0.11;
+      float gray = rgba.r * 0.299 + rgba.g * 0.587 + rgba.b*0.114;
       dNorm = 1.0 - gray;
     }
   }

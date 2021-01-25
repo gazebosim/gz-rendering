@@ -1466,6 +1466,19 @@ void SubSceneManager::ProcessCone(
 }
 
 //////////////////////////////////////////////////
+void SubSceneManager::ProcessCapsule(
+    const gazebo::msgs::Geometry & _geometryMsg, VisualPtr _parent)
+{
+  GeometryPtr capsule = this->activeScene->CreateCapsule();
+  const gazebo::msgs::CapsuleGeom &capsuleMsg = _geometryMsg.capsule();
+  double x = 2 * capsuleMsg.radius();
+  double y = 2 * capsuleMsg.radius();
+  double z = capsuleMsg.length();
+  _parent->SetLocalScale(x, y, z);
+  _parent->AddGeometry(capsule);
+}
+
+//////////////////////////////////////////////////
 //! [process cylinder]
 void SubSceneManager::ProcessCylinder(
     const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)

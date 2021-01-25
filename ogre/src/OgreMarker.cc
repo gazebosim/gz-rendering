@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreCapsule.hh"
 #include "ignition/rendering/ogre/OgreDynamicLines.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
@@ -81,6 +82,7 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
     case MT_NONE:
       return nullptr;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
       return this->dataPtr->mesh->OgreObject();
@@ -145,6 +147,7 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
     case MT_NONE:
       break;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
       this->dataPtr->mesh->SetMaterial(derived, false);
@@ -204,6 +207,10 @@ void OgreMarker::SetType(MarkerType _markerType)
     case MT_BOX:
       this->dataPtr->mesh =
         std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
+      break;
+    case MT_CAPSULE:
+      this->dataPtr->mesh =
+        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateCapsule());
       break;
     case MT_CYLINDER:
       this->dataPtr->mesh =

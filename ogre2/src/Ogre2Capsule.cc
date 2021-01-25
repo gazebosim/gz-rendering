@@ -96,12 +96,10 @@ void Ogre2Capsule::Destroy()
 ////////////////////////////////////////////////
 void Ogre2Capsule::Create()
 {
-  std::cerr << "Create" << '\n';
   common::MeshManager *meshMgr = common::MeshManager::Instance();
   std::string capsuleMeshName = this->Name() + "_capsule_mesh"
     + "_" + std::to_string(this->radius)
     + "_" + std::to_string(this->length);
-  std::cerr << "capsuleMeshName " << capsuleMeshName << '\n';
   if (!meshMgr->HasMesh(capsuleMeshName))
   {
     meshMgr->CreateCapsule(capsuleMeshName, this->radius, this->length, 12, 32);

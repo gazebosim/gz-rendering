@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre2/Ogre2Capsule.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -94,6 +95,7 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
     case MT_NONE:
       return nullptr;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
       return this->dataPtr->mesh->OgreObject();
@@ -158,6 +160,7 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
     case MT_NONE:
       break;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
       this->dataPtr->mesh->SetMaterial(derived, false);
@@ -237,6 +240,9 @@ void Ogre2Marker::SetType(MarkerType _markerType)
       break;
     case MT_BOX:
       newMesh = this->scene->CreateBox();
+      break;
+    case MT_CAPSULE:
+      newMesh = this->scene->CreateCapsule();
       break;
     case MT_CYLINDER:
       newMesh = this->scene->CreateCylinder();

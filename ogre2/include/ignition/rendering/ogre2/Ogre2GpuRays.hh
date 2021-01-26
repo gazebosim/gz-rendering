@@ -23,10 +23,23 @@
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/base/BaseGpuRays.hh"
+#include "ignition/rendering/ogre2/Export.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+
+#include "ignition/common/Event.hh"
+#include "ignition/common/Console.hh"
+
+namespace Ogre
+{
+  class Material;
+  class RenderTarget;
+  class Texture;
+  class Viewport;
+}
 
 namespace ignition
 {

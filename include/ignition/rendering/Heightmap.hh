@@ -32,6 +32,9 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Heightmap :
       public virtual Geometry
     {
+      /// \brief Destructor
+      public: virtual ~Heightmap() = default;
+
       /// \brief Get the immutable heightmap descriptor.
       /// \return Descriptor with heightmap information.
       public: virtual const HeightmapDescriptor &Descriptor() = 0;

@@ -92,6 +92,7 @@ void main()
     if (heat > 0.0 && !isHeatSource)
     {
       // convert to grayscale: darker = warmer
+      // (https://docs.opencv.org/3.4/de/d25/imgproc_color_conversions.html)
       float gray = rgba.r * 0.299 + rgba.g * 0.587 + rgba.b*0.114;
       dNorm = 1.0 - gray;
     }

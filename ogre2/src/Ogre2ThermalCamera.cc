@@ -23,6 +23,7 @@
 
 #include <math.h>
 
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <unordered_map>
@@ -290,7 +291,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           // TODO(adlarkin) re-use the texture searching code from
           // Ogre2Material::SetTextureMapImpl somehow?
           // This may require an API breaking change in Ogre2Material.cc
-          const auto& texture = *heatSignature;
+          const auto &texture = *heatSignature;
           if (!common::isFile(texture))
           {
             ignerr << "texture given (" << texture << ") is not a file\n";
@@ -343,15 +344,14 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           auto maxTemperature = std::get_if<float>(&maxTempVariant);
           if (minTemperature && maxTemperature)
           {
-            // TODO(adlarkin) check for bad input
-            // (negative temps, values above the camera's max kelvin, etc)
+            // make sure the temperature range is between [0, 655.35] kelvin
             Ogre::GpuProgramParametersSharedPtr params =
               heatSignatureMaterial->getTechnique(0)->getPass(0)->
               getFragmentProgramParameters();
             params->setNamedConstant("minTemp",
-                static_cast<float>(*minTemperature));
+                std::max(static_cast<float>(*minTemperature), 0.0f));
             params->setNamedConstant("maxTemp",
-                static_cast<float>(*maxTemperature));
+                std::min(static_cast<float>(*maxTemperature), 655.35f));
           }
           heatSignatureMaterial->load();
           this->heatSignatureMaterials[item->getId()] = heatSignatureMaterial;

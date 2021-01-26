@@ -28,6 +28,9 @@
 #include <unordered_map>
 #include <variant>
 
+#include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
+#include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
+
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/math/Helpers.hh>
@@ -35,6 +38,7 @@
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -95,13 +99,17 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   /// \brief The name of the thermal camera sensor
   private: const std::string name;
 
+  /// \brief The thermal camera
+  private: const Ogre::Camera* ogreCamera{nullptr};
+
   /// \brief Custom parameter index of temperature data in an ogre subitem.
   /// This has to match the custom index specifed in ThermalHeatSource material
   /// script in media/materials/scripts/thermal_camera.material
   private: const unsigned int customParamIdx = 10u;
 
   /// \brief A map of ogre sub item pointer to their original hlms material
-  private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
+  private: std::unordered_map<Ogre::SubItem *, Ogre::HlmsDatablock *>
+      datablockMap;
 };
 }
 }
@@ -150,6 +158,11 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   /// \brief Pointer to material switcher
   public: std::unique_ptr<Ogre2ThermalCameraMaterialSwitcher>
       thermalMaterialSwitcher = nullptr;
+
+  /// \brief Add variation to temperature values based on object rgb values
+  /// This only affects objects that are not heat sources
+  /// TODO(anyone) add API for setting this value?
+  public: bool rgbToTemp = true;
 };
 
 using namespace ignition;
@@ -171,6 +184,8 @@ Ogre2ThermalCameraMaterialSwitcher::Ogre2ThermalCameraMaterialSwitcher(
 
   this->baseHeatSigMaterial = Ogre::MaterialManager::getSingleton().
     getByName("ThermalHeatSignature");
+
+  this->ogreCamera = this->scene->OgreSceneManager()->findCamera(this->name);
 }
 
 //////////////////////////////////////////////////
@@ -237,8 +252,6 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
         // only accept positive temperature (in kelvin)
         if (temp >= 0.0)
         {
-          // set visibility flag so thermal camera can see it
-          item->addVisibilityFlags(0x10000000);
           for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
           {
             Ogre::SubItem *subItem = item->getSubItem(i);
@@ -247,8 +260,12 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
               // normalize temperature value
               float color = temp * 100.0 /
                   static_cast<float>(std::numeric_limits<uint16_t>::max());
+
+              // set g, b, a to 0. This will be used by shaders to determine
+              // if particular fragment is a heat source or not
+              // see media/materials/programs/thermal_camera_fs.glsl
               subItem->setCustomParameter(this->customParamIdx,
-                  Ogre::Vector4(color, color, color, 1.0));
+                  Ogre::Vector4(color, 0, 0, 0.0));
             }
             Ogre::HlmsDatablock *datablock = subItem->getDatablock();
             this->datablockMap[subItem] = datablock;
@@ -340,9 +357,6 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           this->heatSignatureMaterials[item->getId()] = heatSignatureMaterial;
         }
 
-        // set visibility flag so thermal camera can see it
-        item->addVisibilityFlags(0x10000000);
-
         for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
         {
           Ogre::SubItem *subItem = item->getSubItem(i);
@@ -351,6 +365,35 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           this->datablockMap[subItem] = datablock;
 
           subItem->setMaterial(this->heatSignatureMaterials[item->getId()]);
+        }
+      }
+      // background objects
+      else
+      {
+        Ogre::Aabb aabb = item->getWorldAabbUpdated();
+        Ogre::AxisAlignedBox box = Ogre::AxisAlignedBox(aabb.getMinimum(), aabb.getMaximum());
+
+        // we will be converting rgb values to tempearture values in shaders
+        // but we want to make sure the object rgb values are not affected by lighting
+        // so disable lighting
+        // Also check if objects are within camera view
+        if (ogreVisual->GeometryCount() > 0u && this->ogreCamera->isVisible(box))
+        {
+          auto geom = ogreVisual->GeometryByIndex(0);
+          if (geom)
+          {
+            MaterialPtr mat = geom->Material();
+            Ogre2MaterialPtr ogreMat =
+                std::dynamic_pointer_cast<Ogre2Material>(mat);
+            Ogre::HlmsUnlitDatablock *unlit = ogreMat->UnlitDatablock();
+            for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+            {
+              Ogre::SubItem *subItem = item->getSubItem(i);
+              Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+              this->datablockMap[subItem] = datablock;
+              subItem->setDatablock(unlit);
+            }
+          }
         }
       }
     }
@@ -362,7 +405,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
 void Ogre2ThermalCameraMaterialSwitcher::postRenderTargetUpdate(
     const Ogre::RenderTargetEvent & /*_evt*/)
 {
-  // restore item to use hlms material
+  // restore item to use pbs hlms material
   for (auto it : this->datablockMap)
   {
     Ogre::SubItem *subItem = it.first;
@@ -561,6 +604,8 @@ void Ogre2ThermalCamera::CreateThermalTexture()
       static_cast<float>(this->ambientRange));
   psParams->setNamedConstant("heatSourceTempRange",
       static_cast<float>(this->heatSourceTempRange));
+  psParams->setNamedConstant("rgbToTemp",
+      static_cast<int>(this->dataPtr->rgbToTemp));
 
   // Create thermal camera compositor
   auto engine = Ogre2RenderEngine::Instance();
@@ -575,17 +620,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   // {
   //   in 0 rt_input
   //   texture depthTexture target_width target_height PF_D32_FLOAT
-  //   texture colorTexture target_width target_height PF_R8G8B8
-  //   target depthTexture
-  //   {
-  //     pass clear
-  //     {
-  //       colour_value 0.0 0.0 0.0 1.0
-  //     }
-  //     pass render_scene
-  //     {
-  //     }
-  //   }
+  //   texture colorTexture target_width target_height PF_R8G8B8A8
   //   target colorTexture
   //   {
   //     pass clear
@@ -637,7 +672,9 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     thermalTexDef->uav = false;
     thermalTexDef->automipmaps = false;
     thermalTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
-    thermalTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
+    // set to default pool so that when the colorTexture pass is rendered, its
+    // depth data get populated to depthTexture
+    thermalTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     thermalTexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
     thermalTexDef->fsaaExplicitResolve = false;
 
@@ -650,7 +687,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     colorTexDef->numMipmaps = 0;
     colorTexDef->widthFactor = 1;
     colorTexDef->heightFactor = 1;
-    colorTexDef->formatList = {Ogre::PF_R8G8B8};
+    colorTexDef->formatList = {Ogre::PF_R8G8B8A8};
     colorTexDef->fsaa = 0;
     colorTexDef->uav = false;
     colorTexDef->automipmaps = false;
@@ -660,24 +697,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     colorTexDef->preferDepthTexture = true;
     colorTexDef->fsaaExplicitResolve = false;
 
-    nodeDef->setNumTargetPass(3);
-    Ogre::CompositorTargetDef *depthTargetDef =
-        nodeDef->addTargetPass("depthTexture");
-    depthTargetDef->setNumPasses(2);
-    {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          depthTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(), 0, 0);
-      // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          depthTargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL
-          & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
-    }
-
+    nodeDef->setNumTargetPass(2);
     Ogre::CompositorTargetDef *colorTargetDef =
         nodeDef->addTargetPass("colorTexture");
     colorTargetDef->setNumPasses(2);
@@ -688,14 +708,10 @@ void Ogre2ThermalCamera::CreateThermalTexture()
           colorTargetDef->addPass(Ogre::PASS_CLEAR));
       passClear->mColourValue = Ogre::ColourValue(0, 0, 0);
       // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          colorTargetDef->addPass(Ogre::PASS_SCENE));
-      // set thermal camera custom visibility mask when rendering heat sources
-      passScene->mVisibilityMask = 0x10000000;
+      colorTargetDef->addPass(Ogre::PASS_SCENE);
     }
 
-    // rt_input target - converts depth to thermal
+    // rt_input target - converts to thermal
     Ogre::CompositorTargetDef *inputTargetDef =
         nodeDef->addTargetPass("rt_input");
     inputTargetDef->setNumPasses(2);
@@ -752,7 +768,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   auto channels = node->getLocalTextures();
   for (auto c : channels)
   {
-    if (c.textures[0]->getSrcFormat() == Ogre::PF_R8G8B8)
+    if (c.textures[0]->getSrcFormat() == Ogre::PF_R8G8B8A8)
     {
       this->dataPtr->thermalMaterialSwitcher.reset(
           new Ogre2ThermalCameraMaterialSwitcher(this->scene, this->Name()));
@@ -819,14 +835,14 @@ void Ogre2ThermalCamera::PostRender()
         this->dataPtr->thermalImage, width, height, 1, "L16");
 
   // Uncomment to debug thermal output
-  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // std::cout << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     igndbg << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
+  //     std::cout << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
   //   }
-  //   igndbg << std::endl;
+  //   std::cout << std::endl;
   // }
 }
 

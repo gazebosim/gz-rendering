@@ -46,5 +46,8 @@ float mapNormalized(float num)
 void main()
 {
   float heat = texture(RT, inPs.uv0.xy).x;
-  fragColor = vec4(mapNormalized(heat), 0, 0, 1.0);
+
+  // set g, b, a to 0. This will be used by thermal_camera_fs.glsl to determine
+  // if a particular fragment is a heat source or not
+  fragColor = vec4(mapNormalized(heat), 0, 0, 0.0);
 }

@@ -33,7 +33,7 @@ namespace ignition
       public virtual Geometry
     {
       /// \brief Destructor
-      public: virtual ~Heightmap() = default;
+      public: virtual ~Heightmap() = {};
 
       /// \brief Get the immutable heightmap descriptor.
       /// \return Descriptor with heightmap information.

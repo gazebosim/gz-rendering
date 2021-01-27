@@ -29,12 +29,9 @@ namespace ignition
     //
     /// \class Heightmap Heightmap.hh ignition/rendering/Heightmap
     /// \brief A terrain defined by a heightfield.
-    class IGNITION_RENDERING_VISIBLE Heightmap :
+    class Heightmap :
       public virtual Geometry
     {
-      /// \brief Destructor
-      public: virtual ~Heightmap() { }
-
       /// \brief Get the immutable heightmap descriptor.
       /// \return Descriptor with heightmap information.
       public: virtual const HeightmapDescriptor &Descriptor() = 0;

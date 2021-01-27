@@ -309,8 +309,8 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
                 if (!Ogre::ResourceGroupManager::getSingleton().
                       resourceLocationExists(dirPath))
                 {
-                  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-                      dirPath, "FileSystem", "General");
+                  Ogre::ResourceGroupManager::getSingleton().
+                    addResourceLocation(dirPath, "FileSystem", "General");
                 }
               }
             }
@@ -371,13 +371,15 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
       else
       {
         Ogre::Aabb aabb = item->getWorldAabbUpdated();
-        Ogre::AxisAlignedBox box = Ogre::AxisAlignedBox(aabb.getMinimum(), aabb.getMaximum());
+        Ogre::AxisAlignedBox box = Ogre::AxisAlignedBox(aabb.getMinimum(),
+            aabb.getMaximum());
 
         // we will be converting rgb values to tempearture values in shaders
-        // but we want to make sure the object rgb values are not affected by lighting
-        // so disable lighting
+        // but we want to make sure the object rgb values are not affected by
+        // lighting, so disable lighting
         // Also check if objects are within camera view
-        if (ogreVisual->GeometryCount() > 0u && this->ogreCamera->isVisible(box))
+        if (ogreVisual->GeometryCount() > 0u &&
+            this->ogreCamera->isVisible(box))
         {
           auto geom = ogreVisual->GeometryByIndex(0);
           if (geom)

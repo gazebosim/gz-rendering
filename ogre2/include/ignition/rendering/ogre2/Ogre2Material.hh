@@ -199,7 +199,8 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetDepthWriteEnabled(bool _enabled) override;
 
-      /// \brief Helper function to convert an ogre Pbs datablck to Unlit datablock
+      /// \brief Helper function to convert an ogre Pbs datablck to Unlit
+      /// datablock
       /// \param[in] _in Input pbs datablock
       /// \param[out] _out Output unlit datablock
       public: static void PbsToUnlitDatablock(Ogre::HlmsPbsDatablock *_in,

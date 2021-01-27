@@ -21,6 +21,7 @@
 #include <map>
 #include <string>
 #include <ignition/common/MeshManager.hh>
+#include <ignition/common/SuppressWarning.hh>
 
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/base/BaseNode.hh"
@@ -92,6 +93,7 @@ namespace ignition
       /// \brief Current gizmo mode
       protected: TransformMode mode = TransformMode::TM_NONE;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief A map of gizmo axis and their visuals
       protected: std::map<unsigned int, VisualPtr> visuals;
 
@@ -109,6 +111,7 @@ namespace ignition
 
       /// \brief A map of axis enums to materials
       protected: std::map<unsigned int, MaterialPtr> materials;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Material used by axes
       protected: enum AxisMaterial
@@ -531,15 +534,21 @@ namespace ignition
       common::MeshManager *meshMgr = common::MeshManager::Instance();
       std::string rotMeshName = "gizmo_rotate";
       if (!meshMgr->HasMesh(rotMeshName))
-        meshMgr->CreateTube(rotMeshName, 1.0, 1.02, 0.02, 1, 64, IGN_PI);
+        meshMgr->CreateTube(rotMeshName, 1.0f, 1.02f, 0.02f, 1, 64, IGN_PI);
 
       std::string rotFullMeshName = "gizmo_rotate_full";
       if (!meshMgr->HasMesh(rotFullMeshName))
-        meshMgr->CreateTube(rotFullMeshName, 1.0, 1.02, 0.02, 1, 64, 2*IGN_PI);
+      {
+        meshMgr->CreateTube(rotFullMeshName, 1.0f, 1.02f, 0.02f, 1, 64,
+            2 * IGN_PI);
+      }
 
       std::string rotHandleMeshName = "gizmo_rotate_handle";
       if (!meshMgr->HasMesh(rotHandleMeshName))
-        meshMgr->CreateTube(rotHandleMeshName, 0.95, 1.07, 0.1, 1, 64, IGN_PI);
+      {
+        meshMgr->CreateTube(rotHandleMeshName, 0.95f, 1.07f, 0.1f, 1, 64,
+            IGN_PI);
+      }
 
       VisualPtr rotVis = this->Scene()->CreateVisual();
 

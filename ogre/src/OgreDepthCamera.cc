@@ -17,7 +17,9 @@
 
 #if (_WIN32)
   /* Needed for std::min */
-  #define NOMINMAX
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
   #include <windows.h>
 #endif
 #include <ignition/math/Helpers.hh>
@@ -313,7 +315,7 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
   // Which normally equates to infinite distance. We don't want this. So
   // we have to set the distance every time.
   this->ogreCamera->setFarClipDistance(this->FarClipPlane());
-  this->ogreCamera->setNearClipDistance(1e-4);
+  this->ogreCamera->setNearClipDistance(1e-4f);
 
   Ogre::AutoParamDataSource autoParamDataSource;
 
@@ -383,10 +385,10 @@ void OgreDepthCamera::PostRender()
 
   // color data
   unsigned int colorChannelCount = 3;
-  int bgColorR = this->scene->BackgroundColor().R() * 255;
-  int bgColorG = this->scene->BackgroundColor().G() * 255;
-  int bgColorB = this->scene->BackgroundColor().B() * 255;
-  int bgColorA = this->scene->BackgroundColor().A() * 255;
+  int bgColorR = static_cast<int>(this->scene->BackgroundColor().R() * 255);
+  int bgColorG = static_cast<int>(this->scene->BackgroundColor().G() * 255);
+  int bgColorB = static_cast<int>(this->scene->BackgroundColor().B() * 255);
+  int bgColorA = static_cast<int>(this->scene->BackgroundColor().A() * 255);
   if (this->dataPtr->outputPoints)
   {
     PixelFormat colorFormat = this->dataPtr->colorTexture->Format();

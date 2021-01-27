@@ -2,6 +2,15 @@
 # "gtest_sources" variable.
 ign_get_libsources_and_unittests(sources gtest_sources)
 
+if (MSVC)
+  # Warning #4251 is the "dll-interface" warning that tells you when types used
+  # by a class are not being exported. These generated source files have private
+  # members that don't get exported, so they trigger this warning. However, the
+  # warning is not important since those members do not need to be interfaced
+  # with.
+  set_source_files_properties(${sources} ${gtest_sources} COMPILE_FLAGS "/wd4251")
+endif()
+
 set(engine_name "ogre2")
 
 ign_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
@@ -34,7 +43,7 @@ if (WIN32)
   # disable MSVC inherit via dominance warning
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250")
   INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy
-  ${IGNITION_RENDERING_ENGINE_INSTALL_DIR}\/${versioned} 
+  ${IGNITION_RENDERING_ENGINE_INSTALL_DIR}\/${versioned}
   ${IGNITION_RENDERING_ENGINE_INSTALL_DIR}\/${unversioned})")
 else()
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})

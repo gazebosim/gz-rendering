@@ -1,4 +1,5 @@
-/* * Copyright (C) 2017 Open Source Robotics Foundation
+/*
+ * Copyright (C) 2017 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,9 +79,9 @@ void GridTest::Grid(const std::string &_renderEngine)
   grid->SetMaterial(mat);
   MaterialPtr gridMat = grid->Material();
   ASSERT_NE(nullptr, gridMat);
-  EXPECT_EQ(math::Color(0.6, 0.7, 0.8), gridMat->Ambient());
-  EXPECT_EQ(math::Color(0.3, 0.8, 0.2), gridMat->Diffuse());
-  EXPECT_EQ(math::Color(0.4, 0.9, 1.0), gridMat->Specular());
+  EXPECT_EQ(math::Color(0.6f, 0.7f, 0.8f), gridMat->Ambient());
+  EXPECT_EQ(math::Color(0.3f, 0.8f, 0.2f), gridMat->Diffuse());
+  EXPECT_EQ(math::Color(0.4f, 0.9f, 1.0f), gridMat->Specular());
 
   // Clean up
   engine->DestroyScene(scene);

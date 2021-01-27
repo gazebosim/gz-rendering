@@ -76,7 +76,7 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
 
   EXPECT_GT(camera->AspectRatio(), 0);
   camera->SetAspectRatio(1.7777);
-  EXPECT_FLOAT_EQ(1.7777, camera->AspectRatio());
+  EXPECT_NEAR(1.7777, camera->AspectRatio(), 1e-6);
 
   camera->SetAntiAliasing(1u);
   EXPECT_EQ(1u, camera->AntiAliasing());

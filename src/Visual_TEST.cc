@@ -78,9 +78,9 @@ void VisualTest::Material(const std::string &_renderEngine)
   EXPECT_EQ(nullptr, visual->Material());
 
   // create material
-  math::Color ambient(0.5, 0.2, 0.4, 1.0);
-  math::Color diffuse(0.1, 0.9, 0.3, 1.0);
-  math::Color specular(0.8, 0.7, 0.0, 1.0);
+  math::Color ambient(0.5f, 0.2f, 0.4f, 1.0f);
+  math::Color diffuse(0.1f, 0.9f, 0.3f, 1.0f);
+  math::Color specular(0.8f, 0.7f, 0.0f, 1.0f);
   double transparency = 0.3;
   MaterialPtr material = scene->CreateMaterial("unique");
   ASSERT_NE(nullptr, material);
@@ -108,9 +108,9 @@ void VisualTest::Material(const std::string &_renderEngine)
   EXPECT_DOUBLE_EQ(transparency, cloneMat->Transparency());
 
   // create another material
-  math::Color ambient2(0.0, 0.0, 1.0, 1.0);
-  math::Color diffuse2(1.0, 0.0, 1.0, 1.0);
-  math::Color specular2(0.0, 1.0, 0.0, 1.0);
+  math::Color ambient2(0.0f, 0.0f, 1.0f, 1.0f);
+  math::Color diffuse2(1.0f, 0.0f, 1.0f, 1.0f);
+  math::Color specular2(0.0f, 1.0f, 0.0f, 1.0f);
   double transparency2 = 0;
   MaterialPtr material2 = scene->CreateMaterial("unique2");
   ASSERT_NE(nullptr, material2);
@@ -348,7 +348,11 @@ void VisualTest::UserData(const std::string &_renderEngine)
   EXPECT_EQ(stringValue, std::get<std::string>(value));
 
   // test invalid access
-  EXPECT_THROW(std::get<int>(value), std::bad_variant_access);
+  EXPECT_THROW(
+  {
+    auto res = std::get<int>(value);
+    igndbg << res << std::endl;
+  }, std::bad_variant_access);
 
   // Clean up
   engine->DestroyScene(scene);

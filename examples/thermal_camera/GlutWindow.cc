@@ -25,7 +25,7 @@
   #include <GL/glut.h>
 #endif
 
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
   #include <GL/glx.h>
 #endif
 

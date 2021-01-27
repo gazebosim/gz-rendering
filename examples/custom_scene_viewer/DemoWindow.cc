@@ -18,13 +18,13 @@
 #if defined(__APPLE__)
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
-#elif not defined(_WIN32)
+#elif !defined(_WIN32)
   #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glut.h>
 #endif
 
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
   #include <GL/glx.h>
 #endif
 

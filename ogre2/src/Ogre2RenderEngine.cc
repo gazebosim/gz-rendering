@@ -16,7 +16,7 @@
  */
 
 // Not Apple or Windows
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 # include <GL/glx.h>
@@ -43,7 +43,7 @@
 
 class ignition::rendering::Ogre2RenderEnginePrivate
 {
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
 #endif
 

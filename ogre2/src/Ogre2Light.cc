@@ -18,7 +18,6 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
-#include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
@@ -27,7 +26,6 @@
 /// \brief Private data for the Ogre2Light class
 class ignition::rendering::Ogre2LightPrivate
 {
-  public: Ogre2LightVisualPtr lightVisual = nullptr;
 };
 
 using namespace ignition;
@@ -174,35 +172,6 @@ void Ogre2Light::CreateLight()
   this->ogreLight->setCastShadows(true);
   this->ogreLight->setPowerScale(Ogre::Math::PI);
   this->UpdateAttenuation();
-
-  // Attach the light visual
-  if (!this->dataPtr->lightVisual)
-  {
-    this->dataPtr->lightVisual =
-      std::dynamic_pointer_cast<Ogre2LightVisual>(
-        this->scene->CreateLightVisual());
-
-    if (this->ogreLightType == Ogre::Light::LT_DIRECTIONAL)
-    {
-      this->dataPtr->lightVisual->SetType(
-        LightVisualType::LightVisual_DIRECTIONAL);
-      this->dataPtr->lightVisual->CreateVisual();
-    }
-    else if (this->ogreLightType == Ogre::Light::LT_POINT)
-    {
-      this->dataPtr->lightVisual->SetType(LightVisualType::LightVisual_POINT);
-      this->dataPtr->lightVisual->CreateVisual();
-    }
-    else if (this->ogreLightType == Ogre::Light::LT_SPOTLIGHT)
-    {
-      this->dataPtr->lightVisual->SetType(LightVisualType::LightVisual_SPOT);
-      this->dataPtr->lightVisual->CreateVisual(
-        this->ogreLight->getSpotlightInnerAngle().valueRadians(),
-        this->ogreLight->getSpotlightOuterAngle().valueRadians());
-    }
-
-    AttachChild(this->dataPtr->lightVisual);
-  }
 }
 
 //////////////////////////////////////////////////

@@ -100,9 +100,7 @@ material ThermalHeatSource
 }
 
 // copied from gaussian_noise.material
-// TODO(adlarkin) try to reference the GaussianNoiseVS definition in
-// gaussian_noise.material so that we don't have a duplicate definition here?
-vertex_program GaussianNoiseVS glsl
+vertex_program HeatSignatureVS glsl
 {
   source gaussian_noise_vs.glsl
   default_params
@@ -130,7 +128,7 @@ material ThermalHeatSignature
 
       // using gaussian noise VS because this is a simple VS that accomplishes
       // what we need for a heat signature VS
-      vertex_program_ref GaussianNoiseVS { }
+      vertex_program_ref HeatSignatureVS { }
 
       fragment_program_ref HeatSignatureFS { }
 

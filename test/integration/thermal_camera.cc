@@ -256,9 +256,13 @@ void ThermalCameraTest::ThermalCameraBoxes(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
-TEST_P(ThermalCameraTest, ThermalCameraBoxes)
+TEST_P(ThermalCameraTest, ThermalCameraBoxesUniformTemp)
 {
   ThermalCameraBoxes(GetParam(), false);
+}
+
+TEST_P(ThermalCameraTest, ThermalCameraBoxesHeatSignature)
+{
   ThermalCameraBoxes(GetParam(), true);
 }
 

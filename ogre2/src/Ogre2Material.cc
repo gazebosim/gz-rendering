@@ -579,23 +579,18 @@ Ogre::HlmsUnlitDatablock *Ogre2Material::UnlitDatablock()
 void Ogre2Material::FillUnlitDatablock(Ogre::HlmsUnlitDatablock *_datablock)
     const
 {
-  PbsToUnlitDatablock(this->ogreDatablock, _datablock);
-}
-
-//////////////////////////////////////////////////
-void Ogre2Material::PbsToUnlitDatablock(Ogre::HlmsPbsDatablock *_in,
-    Ogre::HlmsUnlitDatablock *_out)
-{
-  auto tex = _in->getTexture(Ogre::PBSM_DIFFUSE);
+  auto tex = this->ogreDatablock->getTexture(Ogre::PBSM_DIFFUSE);
   if (tex)
-    _out->setTexture(0, 0, tex);
-  auto samplerblock = _in->getSamplerblock(Ogre::PBSM_DIFFUSE);
+    _datablock->setTexture(0, 0, tex);
+  auto samplerblock = this->ogreDatablock->getSamplerblock(Ogre::PBSM_DIFFUSE);
   if (samplerblock)
-    _out->setSamplerblock(0, *samplerblock);
-  _out->setMacroblock(_in->getMacroblock());
-  _out->setBlendblock(_in->getBlendblock());
+    _datablock->setSamplerblock(0, *samplerblock);
+  _datablock->setMacroblock(
+      this->ogreDatablock->getMacroblock());
+  _datablock->setBlendblock(
+      this->ogreDatablock->getBlendblock());
 
-  _out->setUseColour(true);
-  Ogre::Vector3 c = _in->getDiffuse();
-  _out->setColour(Ogre::ColourValue(c.x, c.y, c.z));
+  _datablock->setUseColour(true);
+  Ogre::Vector3 c = this->ogreDatablock->getDiffuse();
+  _datablock->setColour(Ogre::ColourValue(c.x, c.y, c.z));
 }

@@ -199,13 +199,6 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetDepthWriteEnabled(bool _enabled) override;
 
-      /// \brief Helper function to convert an ogre Pbs datablck to Unlit
-      /// datablock
-      /// \param[in] _in Input pbs datablock
-      /// \param[out] _out Output unlit datablock
-      public: static void PbsToUnlitDatablock(Ogre::HlmsPbsDatablock *_in,
-          Ogre::HlmsUnlitDatablock *_out);
-
       /// \brief Set the texture map for this material
       /// \param[in] _texture Name of the texture.
       /// \param[in] _type Type of texture, i.e. diffuse, normal, roughness,

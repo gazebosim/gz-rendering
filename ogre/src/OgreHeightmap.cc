@@ -2819,7 +2819,7 @@ void TerrainMaterial::Profile::updateParams(const Ogre::MaterialPtr &/*_mat*/,
 
 //////////////////////////////////////////////////
 void TerrainMaterial::Profile::updateParamsForCompositeMap(
-    const Ogre::MaterialPtr &/*_mat*/, const Ogre::Terrain */*_terrain*/)
+    const Ogre::MaterialPtr &/*_mat*/, const Ogre::Terrain * /*_terrain*/)
 {
 }
 

@@ -573,7 +573,7 @@ void OgreHeightmap::Init()
 
   this->dataPtr->terrainGroup = new Ogre::TerrainGroup(
       ogreScene->OgreSceneManager(), Ogre::Terrain::ALIGN_X_Y,
-      1 + ((this->dataPtr->dataSize - 1) / sqrtN),
+      1 + ((this->dataPtr->dataSize - 1) / static_cast<unsigned int>(sqrtN)),
       this->descriptor.Size().X() / (sqrtN));
 
   this->dataPtr->terrainGroup->setFilenameConvention(
@@ -654,7 +654,8 @@ void OgreHeightmap::Init()
         this->dataPtr->world, this->dataPtr->terrainGroup,
         this->dataPtr->loadRadiusFactor * this->descriptor.Size().X(),
         this->dataPtr->holdRadiusFactor * this->descriptor.Size().X(),
-        0, 0, sqrtN - 1, sqrtN - 1);
+        0, 0, static_cast<unsigned int>(sqrtN) - 1,
+        static_cast<unsigned int>(sqrtN) - 1);
   }
 
   ignmsg << "Loading heightmap: " << this->descriptor.Name() << std::endl;
@@ -814,7 +815,7 @@ void OgreHeightmap::ConfigureTerrainDefaults()
     this->dataPtr->terrainGlobals->setLightMapDirection(
         Ogre::Vector3(0, 0, -1));
     this->dataPtr->terrainGlobals->setCompositeMapDiffuse(
-        Ogre::ColourValue(.6, .6, .6, 1));
+        Ogre::ColourValue(0.6f, 0.6f, 0.6f, 1.0f));
   }
 }
 
@@ -897,15 +898,15 @@ void OgreHeightmap::SplitHeights(const std::vector<float> &_heightmap,
   }
 
   int count = 0;
-  int width = sqrt(_heightmap.size());
-  int newWidth = 1 + (width - 1) / sqrt(_n);
+  int width = static_cast<int>(sqrt(_heightmap.size()));
+  int newWidth = static_cast<int>(1 + (width - 1) / sqrt(_n));
 
   // Memory allocation
   _v.resize(_n);
 
   for (int tileR = 0; tileR < sqrt(_n); ++tileR)
   {
-    int tileIndex = tileR * sqrt(_n);
+    int tileIndex = static_cast<int>(tileR * sqrt(_n));
     for (int row = 0; row < newWidth - 1; ++row)
     {
       for (int tileC = 0; tileC < sqrt(_n); ++tileC)
@@ -918,15 +919,15 @@ void OgreHeightmap::SplitHeights(const std::vector<float> &_heightmap,
         // Copy last value into the last column
         _v[tileIndex].push_back(_v[tileIndex].back());
 
-        tileIndex = tileR * sqrt(_n) +
-            (tileIndex + 1) % static_cast<int>(sqrt(_n));
+        tileIndex = static_cast<int>(tileR * sqrt(_n) +
+            (tileIndex + 1) % static_cast<int>(sqrt(_n)));
       }
       ++count;
     }
     // Copy the last row
     for (int i = 0; i < sqrt(_n); ++i)
     {
-      tileIndex = tileR * sqrt(_n) + i;
+      tileIndex = static_cast<int>(tileR * sqrt(_n) + i);
       std::vector<float> lastRow(_v[tileIndex].end() - newWidth,
           _v[tileIndex].end());
       _v[tileIndex].insert(_v[tileIndex].end(),
@@ -2805,14 +2806,14 @@ void TerrainMaterial::Profile::setLightmapEnabled(
 
 //////////////////////////////////////////////////
 Ogre::uint8 TerrainMaterial::Profile::getMaxLayers(
-    const Ogre::Terrain */*_terrain*/) const
+    const Ogre::Terrain * /*_terrain*/) const
 {
   return 0;
 }
 
 //////////////////////////////////////////////////
 void TerrainMaterial::Profile::updateParams(const Ogre::MaterialPtr &/*_mat*/,
-    const Ogre::Terrain */*_terrain*/)
+    const Ogre::Terrain * /*_terrain*/)
 {
 }
 

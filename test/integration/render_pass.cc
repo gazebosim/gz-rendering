@@ -297,8 +297,8 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
     // from point cloud image
 
     // point cloud image indices
-    int midWidth = depthCamera->ImageWidth() * 0.5;
-    int midHeight = depthCamera->ImageHeight() * 0.5;
+    int midWidth = static_cast<int>(depthCamera->ImageWidth() * 0.5);
+    int midHeight = static_cast<int>(depthCamera->ImageHeight() * 0.5);
     double expectedRangeAtMidPoint = boxPosition.X() - unitBoxSize * 0.5;
 
     int pcMid = midHeight * depthCamera->ImageWidth() * pointCloudChannelCount

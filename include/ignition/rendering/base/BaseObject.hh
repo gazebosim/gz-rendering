@@ -19,6 +19,7 @@
 
 #include <map>
 #include <string>
+#include <ignition/common/SuppressWarning.hh>
 #include "ignition/rendering/Object.hh"
 
 namespace ignition
@@ -28,7 +29,9 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     class IGNITION_RENDERING_VISIBLE BaseObject :
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       public virtual std::enable_shared_from_this<BaseObject>,
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
       public virtual Object
     {
       protected: BaseObject();
@@ -56,7 +59,9 @@ namespace ignition
 
       protected: unsigned int id;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: std::string name;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

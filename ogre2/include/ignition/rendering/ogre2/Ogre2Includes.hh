@@ -18,7 +18,11 @@
 #define IGNITION_RENDERING_OGRE2_OGRE2INCLUDES_HH_
 
 // This disables warning messages for OGRE
-#pragma GCC system_header
+#ifndef _MSC_VER
+  #pragma GCC system_header
+#else
+  #pragma warning(push, 0)
+#endif
 
 // This prevents some deprecation #warning messages on OSX 10.9
 #pragma clang diagnostic ignored "-W#warnings"
@@ -98,5 +102,9 @@
 // #include <Terrain/OgreTerrainMaterialGeneratorA.h>
 // #include <Terrain/OgreTerrain.h>
 // #include <Terrain/OgreTerrainGroup.h>
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

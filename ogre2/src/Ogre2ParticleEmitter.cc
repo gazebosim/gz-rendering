@@ -17,8 +17,14 @@
 
 // Note this include is placed in the src file because
 // otherwise ogre produces compile errors
+#ifdef _MSC_VER
+#pragma warning(push, 0)
+#endif
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"

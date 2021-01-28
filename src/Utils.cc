@@ -34,8 +34,15 @@ float screenScalingFactor()
   // todo(anyone) set device pixel ratio for high dpi displays on Windows
   float ratio = 1.0;
 #ifdef __linux__
-  Display *disp = XOpenDisplay(nullptr);
-  char *resourceString = XResourceManagerString(disp);
+  auto closeDisplay = [](Display * display)
+  {
+    if (display)
+      XCloseDisplay(display);
+  };
+  auto display =
+    std::unique_ptr<Display, decltype(closeDisplay)>(
+      XOpenDisplay(nullptr), closeDisplay);
+  char *resourceString = XResourceManagerString(display.get());
 
   if (resourceString)
   {
@@ -68,8 +75,8 @@ float screenScalingFactor()
     // We can use either the width or height in the following line. The zero
     // values in DisplayHeight and DisplayHeightMM is the screen number. A
     // value of zero uses the default screen.
-    float yDpiRes = (DisplayHeight(disp, 0) * 25.4) /
-      DisplayHeightMM(disp, 0);
+    float yDpiRes = (DisplayHeight(display.get(), 0) * 25.4) /
+      DisplayHeightMM(display.get(), 0);
 
     if (!math::equal(dpiDesktop, 0.0f) && !math::equal(yDpiRes, 0.0f))
       ratio = dpiDesktop / yDpiRes;

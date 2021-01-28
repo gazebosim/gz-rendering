@@ -17,7 +17,9 @@
 
 #if (_WIN32)
   /* Needed for std::min */
-  #define NOMINMAX
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
   #include <windows.h>
 #endif
 
@@ -228,13 +230,13 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
     {
       try
       {
-        temp = std::get<double>(tempAny);
+        temp = static_cast<float>(std::get<double>(tempAny));
       }
       catch(...)
       {
         try
         {
-          temp = std::get<int>(tempAny);
+          temp = static_cast<float>(std::get<int>(tempAny));
         }
         catch(std::bad_variant_access &e)
         {
@@ -410,7 +412,7 @@ void OgreThermalCamera::CreateThermalTexture()
   // without being clipped.
   double nearPlane = this->NearClipPlane();
   double farPlane = this->FarClipPlane();
-  this->ogreCamera->setNearClipDistance(1e-4);
+  this->ogreCamera->setNearClipDistance(1e-4f);
   this->ogreCamera->setFarClipDistance(farPlane);
 
   // create thermal material

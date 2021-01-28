@@ -50,13 +50,28 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetType(LightVisualType _type) override;
 
-      public: std::vector<ignition::math::Vector3d> CreateVisualLines(
-          float _innerAngle = 0, float _outerAngle = 0);
+      // Documentation inherited
+      public: virtual void SetInnerAngle(double _innerAngle) override;
+
+      // Documentation inherited
+      public: virtual double InnerAngle() override;
+
+      // Documentation inherited
+      public: virtual void SetOuterAngle(double _innerAngle) override;
+
+      // Documentation inherited
+      public: virtual double OuterAngle() override;
+
+      public: std::vector<ignition::math::Vector3d> CreateVisualLines();
 
       // Documentation inherited
       public: virtual LightVisualType Type() override;
 
       protected: LightVisualType type = LightVisualType::LightVisual_NONE;
+
+      protected: double innerAngle = 0;
+
+      protected: double outerAngle = 0;
 
       /// \brief Flag to indicate grid properties have changed
       protected: bool dirtyLightVisual = false;
@@ -103,10 +118,39 @@ namespace ignition
       return this->type;
     }
 
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseLightVisual<T>::SetInnerAngle(double _innerAngle)
+    {
+      this->innerAngle = _innerAngle;
+      this->dirtyLightVisual = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseLightVisual<T>::InnerAngle()
+    {
+      return this->innerAngle;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseLightVisual<T>::SetOuterAngle(double _outerAngle)
+    {
+      this->outerAngle = _outerAngle;
+      this->dirtyLightVisual = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseLightVisual<T>::OuterAngle()
+    {
+      return this->outerAngle;
+    }
+
     template <class T>
     std::vector<ignition::math::Vector3d>
-    BaseLightVisual<T>::CreateVisualLines(
-      float _innerAngle, float _outerAngle)
+    BaseLightVisual<T>::CreateVisualLines()
     {
       std::vector<ignition::math::Vector3d> positions;
 
@@ -128,7 +172,7 @@ namespace ignition
         positions.emplace_back(ignition::math::Vector3d(0, 0, 0));
         positions.emplace_back(ignition::math::Vector3d(0, 0, -s));
       }
-      else if (this->type ==LightVisualType::LightVisual_POINT)
+      else if (this->type == LightVisualType::LightVisual_POINT)
       {
         float s = 0.1;
         positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
@@ -167,12 +211,12 @@ namespace ignition
         positions.emplace_back(ignition::math::Vector3d(s, -s, 0));
         positions.emplace_back(ignition::math::Vector3d(0, 0, -s));
       }
-      else if (this->type ==LightVisualType::LightVisual_SPOT)
+      else if (this->type == LightVisualType::LightVisual_SPOT)
       {
         double angles[2];
         double range = 0.2;
-        angles[0] = range * tan(_outerAngle);
-        angles[1] = range * tan(_innerAngle);
+        angles[0] = range * tan(outerAngle);
+        angles[1] = range * tan(innerAngle);
 
         unsigned int i = 0;
         positions.emplace_back(ignition::math::Vector3d(0, 0, 0));

@@ -65,7 +65,7 @@ Ogre::MovableObject *Ogre2LightVisual::OgreObject() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2LightVisual::CreateVisual(float _innerAngle, float _outerAngle)
+void Ogre2LightVisual::CreateVisual()
 {
   if (!this->dataPtr->lightVisual)
   {
@@ -85,8 +85,7 @@ void Ogre2LightVisual::CreateVisual(float _innerAngle, float _outerAngle)
     this->SetMaterial(defaultMat, false);
   }
 
-  std::vector<ignition::math::Vector3d> positions = this->CreateVisualLines(
-    _innerAngle, _outerAngle);
+  std::vector<ignition::math::Vector3d> positions = this->CreateVisualLines();
 
   for (auto p : positions)
   {

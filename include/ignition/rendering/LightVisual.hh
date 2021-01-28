@@ -58,6 +58,23 @@ namespace ignition
       /// \brief Get light visual type
       /// \return The light visual type
       public: virtual LightVisualType Type() = 0;
+
+      /// \brief set inner angle for spot lights
+      /// \param[in] _type inner angle
+      public: virtual void SetInnerAngle(double _innerAngle) = 0;
+
+      /// \brief Get inner angle
+      /// \return The light inner angle
+      public: virtual double InnerAngle() = 0;
+
+      /// \brief set inner angle for spot lights
+      /// \param[in] _type inner angle
+      public: virtual void SetOuterAngle(double _outerAngle) = 0;
+
+      /// \brief Get inner angle
+      /// \return The light inner angle
+      public: virtual double OuterAngle() = 0;
+
     };
     }
   }

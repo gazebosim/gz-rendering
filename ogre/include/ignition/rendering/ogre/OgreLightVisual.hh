@@ -56,7 +56,7 @@ namespace ignition
       public: Ogre::MovableObject *OgreObject() const;
 
       /// \brief Create the Light Visual in Ogre
-      public: void CreateVisual(float _innerAngle = 0, float _outerAngle = 0);
+      public: void CreateVisual();
 
       // Documentation inherited.
       public: virtual MaterialPtr Material() const;

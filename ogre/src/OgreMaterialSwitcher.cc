@@ -28,7 +28,7 @@ using namespace rendering;
 OgreMaterialSwitcher::OgreMaterialSwitcher()
   : lastTechnique(nullptr)
 {
-  this->currentColor = ignition::math::Color(0.0, 0.0, 0.1);
+  this->currentColor = ignition::math::Color(0.0f, 0.0f, 0.1f);
 }
 
 /////////////////////////////////////////////////

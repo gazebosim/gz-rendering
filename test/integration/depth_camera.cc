@@ -174,8 +174,8 @@ void DepthCameraTest::DepthCameraBoxes(
     // from depth and point cloud image
 
     // depth image indices
-    int midWidth = depthCamera->ImageWidth() * 0.5;
-    int midHeight = depthCamera->ImageHeight() * 0.5;
+    int midWidth = static_cast<int>(depthCamera->ImageWidth() * 0.5);
+    int midHeight = static_cast<int>(depthCamera->ImageHeight() * 0.5);
     int mid = midHeight * depthCamera->ImageWidth() + midWidth -1;
     double expectedRangeAtMidPoint = boxPosition.X() - unitBoxSize * 0.5;
     int left = midHeight * depthCamera->ImageWidth();

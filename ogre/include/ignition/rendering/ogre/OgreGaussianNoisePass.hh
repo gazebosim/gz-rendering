@@ -19,6 +19,8 @@
 
 #include <memory>
 
+#include <ignition/common/SuppressWarning.hh>
+
 #include "ignition/rendering/base/BaseGaussianNoisePass.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderPass.hh"
@@ -59,8 +61,10 @@ namespace ignition
       public: Ogre::CompositorInstance *gaussianNoiseInstance = nullptr;
 
       /// \brief Gaussian noise compositor listener
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::shared_ptr<GaussianNoiseCompositorListener>
           gaussianNoiseCompositorListener;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

@@ -75,12 +75,13 @@ void LightTest::Light(const std::string &_renderEngine)
   EXPECT_FALSE(light->CastShadows());
 
   // attenuation
+  // Checking near because Ogre stores it as float
   light->SetAttenuationConstant(0.6);
-  EXPECT_FLOAT_EQ(0.6, light->AttenuationConstant());
+  EXPECT_NEAR(0.6, light->AttenuationConstant(), 1e-6);
   light->SetAttenuationLinear(0.2);
-  EXPECT_FLOAT_EQ(0.2, light->AttenuationLinear());
+  EXPECT_NEAR(0.2, light->AttenuationLinear(), 1e-6);
   light->SetAttenuationQuadratic(0.01);
-  EXPECT_FLOAT_EQ(0.01, light->AttenuationQuadratic());
+  EXPECT_NEAR(0.01, light->AttenuationQuadratic(), 1e-6);
   light->SetAttenuationRange(10);
   EXPECT_DOUBLE_EQ(10, light->AttenuationRange());
 
@@ -122,7 +123,7 @@ void LightTest::Light(const std::string &_renderEngine)
   spotLight->SetOuterAngle(math::Angle(0.2));
   EXPECT_EQ(math::Angle(0.2), spotLight->OuterAngle());
   spotLight->SetFalloff(0.2);
-  EXPECT_FLOAT_EQ(0.2, spotLight->Falloff());
+  EXPECT_NEAR(0.2, spotLight->Falloff(), 1e-6);
 
   // remove lights
   scene->DestroyLightById(light->Id());

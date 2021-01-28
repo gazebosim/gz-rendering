@@ -63,7 +63,6 @@ namespace ignition
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief common::Mesh object
       public: const common::Mesh *mesh = nullptr;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief Name of the registered Mesh

@@ -344,13 +344,13 @@ void OgreGpuRays::ConfigureCameras()
     if ((horzRangeCountPerCamera / this->rangeCountRatio) >
          vertRangeCountPerCamera)
     {
-      vertRangeCountPerCamera =
-          std::round(horzRangeCountPerCamera / this->rangeCountRatio);
+      vertRangeCountPerCamera = static_cast<unsigned int>(
+          std::round(horzRangeCountPerCamera / this->rangeCountRatio));
     }
     else
     {
-      horzRangeCountPerCamera =
-          round(vertRangeCountPerCamera * this->rangeCountRatio);
+      horzRangeCountPerCamera = static_cast<unsigned int>(std::round(
+          vertRangeCountPerCamera * this->rangeCountRatio));
     }
   }
   else
@@ -468,7 +468,7 @@ void OgreGpuRays::CreateGpuRaysTextures()
   Ogre::Matrix4 p = this->BuildScaledOrthoMatrix(
       0, static_cast<float>(this->dataPtr->w2nd / 10.0),
       0, static_cast<float>(this->dataPtr->h2nd / 10.0),
-      0.01, 0.02);
+      0.01f, 0.02f);
 
   this->dataPtr->orthoCam->setCustomProjectionMatrix(true, p);
 
@@ -724,9 +724,9 @@ void OgreGpuRays::CreateOrthoCam()
 
   if (this->dataPtr->orthoCam)
   {
-    this->dataPtr->orthoCam->setNearClipDistance(0.01);
-    this->dataPtr->orthoCam->setFarClipDistance(0.02);
-    this->dataPtr->orthoCam->setRenderingDistance(0.02);
+    this->dataPtr->orthoCam->setNearClipDistance(0.01f);
+    this->dataPtr->orthoCam->setFarClipDistance(0.02f);
+    this->dataPtr->orthoCam->setRenderingDistance(0.02f);
 
     this->dataPtr->orthoCam->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
   }
@@ -837,7 +837,8 @@ void OgreGpuRays::CreateMesh()
       double delta = hstep * i;
 
       // index of texture that contains the depth value
-      unsigned int texture = delta / this->CosHorzFOV();
+      unsigned int texture = static_cast<unsigned int>(
+          delta / this->CosHorzFOV());
 
       // cap texture index and horizontal angle
       if (texture > this->dataPtr->textureCount-1)

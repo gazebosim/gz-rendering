@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <ignition/common/SuppressWarning.hh>
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Storage.hh"
 
@@ -112,12 +113,14 @@ namespace ignition
 
       protected: unsigned int nextSceneId;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief a list of paths that render engines use to locate their
       /// resources
       protected: std::vector<std::string> resourcePaths;
 
       /// \brief Render pass system for this render engine.
       protected: RenderPassSystemPtr renderPassSystem;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

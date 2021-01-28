@@ -68,38 +68,38 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   EXPECT_TRUE(scene->MaterialRegistered("unique"));
 
   // ambient
-  math::Color ambient(0.5, 0.2, 0.4, 1.0);
+  math::Color ambient(0.5f, 0.2f, 0.4f, 1.0f);
   material->SetAmbient(ambient);
   EXPECT_EQ(ambient, material->Ambient());
 
-  ambient.Set(0.55, 0.22, 0.44, 1.0);
+  ambient.Set(0.55f, 0.22f, 0.44f, 1.0f);
   material->SetAmbient(ambient.R(), ambient.G(), ambient.B(), ambient.A());
   EXPECT_EQ(ambient, material->Ambient());
 
   // diffuse
-  math::Color diffuse(0.1, 0.9, 0.3, 1.0);
+  math::Color diffuse(0.1f, 0.9f, 0.3f, 1.0f);
   material->SetDiffuse(diffuse);
   EXPECT_EQ(diffuse, material->Diffuse());
 
-  diffuse.Set(0.11, 0.99, 0.33, 1.0);
+  diffuse.Set(0.11f, 0.99f, 0.33f, 1.0f);
   material->SetDiffuse(diffuse.R(), diffuse.G(), diffuse.B(), diffuse.A());
   EXPECT_EQ(diffuse, material->Diffuse());
 
   // specular
-  math::Color specular(0.8, 0.7, 0.0, 1.0);
+  math::Color specular(0.8f, 0.7f, 0.0f, 1.0f);
   material->SetSpecular(specular);
   EXPECT_EQ(specular, material->Specular());
 
-  specular.Set(0.88, 0.77, 0.66, 1.0);
+  specular.Set(0.88f, 0.77f, 0.66f, 1.0f);
   material->SetSpecular(specular.R(), specular.G(), specular.B(), specular.A());
   EXPECT_EQ(specular, material->Specular());
 
   // emissive
-  math::Color emissive(0.6, 0.4, 0.2, 1.0);
+  math::Color emissive(0.6f, 0.4f, 0.2f, 1.0f);
   material->SetEmissive(emissive);
   EXPECT_EQ(emissive, material->Emissive());
 
-  emissive.Set(0.66, 0.44, 0.22, 1.0);
+  emissive.Set(0.66f, 0.44f, 0.22f, 1.0f);
   material->SetEmissive(emissive.R(), emissive.G(), emissive.B(), emissive.A());
   EXPECT_EQ(emissive, material->Emissive());
 
@@ -246,12 +246,12 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     EXPECT_TRUE(material->HasEmissiveMap());
 
     // roughness
-    float roughness = 0.3;
+    float roughness = 0.3f;
     material->SetRoughness(roughness);
     EXPECT_FLOAT_EQ(roughness, material->Roughness());
 
     // metalness
-    float metalness = 0.9;
+    float metalness = 0.9f;
     material->SetMetalness(metalness);
     EXPECT_FLOAT_EQ(metalness, material->Metalness());
   }
@@ -282,10 +282,10 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   MaterialPtr material = scene->CreateMaterial();
   ASSERT_TRUE(material != nullptr);
 
-  math::Color ambient(0.5, 0.2, 0.4, 1.0);
-  math::Color diffuse(0.1, 0.9, 0.3, 1.0);
-  math::Color specular(0.8, 0.7, 0.0, 1.0);
-  math::Color emissive(0.6, 0.4, 0.2, 1.0);
+  math::Color ambient(0.5f, 0.2f, 0.4f, 1.0f);
+  math::Color diffuse(0.1f, 0.9f, 0.3f, 1.0f);
+  math::Color specular(0.8f, 0.7f, 0.0f, 1.0f);
+  math::Color emissive(0.6f, 0.4f, 0.2f, 1.0f);
   double shininess = 0.8;
   double transparency = 0.3;
   bool alphaFromTexture = true;
@@ -298,8 +298,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   bool lightingEnabled = false;
   bool depthCheckEnabled = false;
   bool depthWriteEnabled = false;
-  float roughness = 0.5;
-  float metalness = 0.1;
+  float roughness = 0.5f;
+  float metalness = 0.1f;
 
   std::string textureName =
     common::joinPaths(TEST_MEDIA_PATH, "texture.png");

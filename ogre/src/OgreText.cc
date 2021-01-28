@@ -380,7 +380,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 #if OGRE_VERSION_LT_1_10_1
       this->ogreMaterial.setNull();
 #else
-      this->ogreMaterial == nullptr;
+      this->ogreMaterial = nullptr;
 #endif
     }
 

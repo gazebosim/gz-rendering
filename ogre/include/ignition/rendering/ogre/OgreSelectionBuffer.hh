@@ -37,7 +37,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
-    struct OgreSelectionBufferPrivate;
+    class OgreSelectionBufferPrivate;
 
     /// \brief Generates a selection buffer object for a given camera.
     /// The selection buffer is used of entity selection. On setup, a unique

@@ -30,10 +30,6 @@ of libraries designed to rapidly develop robot applications.
 
 [Usage](#usage)
 
-[Documentation](#documentation)
-
-[Testing](#testing)
-
 [Folder Structure](#folder-structure)
 
 [Code of Conduct](#code-of-conduct)
@@ -57,36 +53,10 @@ See the [installation tutorial](https://ignitionrobotics.org/api/rendering/4.0/i
 # Usage
 
 The Ign Rendering API can be found in the documentation. See the
-[Documentation](#documentation) section on how to build the
-documentation files using Doxygen.
+[installation tutorial](https://ignitionrobotics.org/api/rendering/4.0/installation.html)
+on how to build the documentation files using Doxygen.
 
 You can also take a look at the sample applications in the `examples` folder.
-
-# Documentation
-
-API documentation can be generated using Doxygen
-
-    sudo apt install -y doxygen
-
-Build documentation
-
-    cd build
-    make doc
-
-View documentation
-
-    firefox doxygen/html/index.html
-
-# Testing
-
-Tests can be run by building the `test` target:
-
-    cd build
-    make test
-
-To run tests specific to a render engine, set the `RENDER_ENGINE_VALUES` environment variable, e.g.
-
-    RENDER_ENGINE_VALUES=ogre2 make test
 
 # Folder Structure
 

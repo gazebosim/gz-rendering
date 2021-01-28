@@ -83,10 +83,10 @@ namespace ignition
           unsigned int, const std::string &)>  _subscriber) override;
 
       /// \brief Ambient temperature of the environment
-      protected: float ambient = 0.0;
+      protected: float ambient = 0.0f;
 
       /// \brief Ambient temperature range
-      protected: float ambientRange = 0.0;
+      protected: float ambientRange = 0.0f;
 
       /// \brief Minimum temperature
       protected: float minTemp = -ignition::math::INF_F;
@@ -95,10 +95,10 @@ namespace ignition
       protected: float maxTemp = ignition::math::INF_F;
 
       /// \brief Linear resolution. Defaults to 10mK.
-      protected: float resolution = 0.01;
+      protected: float resolution = 0.01f;
 
       /// \brief Range of heat source temperature variation
-      protected: float heatSourceTempRange = 0.0;
+      protected: float heatSourceTempRange = 0.0f;
     };
 
     //////////////////////////////////////////////////

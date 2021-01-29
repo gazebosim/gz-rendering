@@ -462,7 +462,7 @@ namespace ignition
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
-        mtl->SetMetalness(0.0);
+        mtl->SetMetalness(0.0f);
         mtl->SetReflectivity(0.0);
       }
 
@@ -476,7 +476,7 @@ namespace ignition
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
-        mtl->SetMetalness(0.0);
+        mtl->SetMetalness(0.0f);
         mtl->SetReflectivity(0.0);
       }
 
@@ -490,7 +490,7 @@ namespace ignition
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
-        mtl->SetMetalness(0.5);
+        mtl->SetMetalness(0.5f);
         mtl->SetReflectivity(0.2);
       }
 
@@ -505,7 +505,7 @@ namespace ignition
         mtl->SetCastShadows(false);
         mtl->SetReceiveShadows(false);
         mtl->SetLightingEnabled(false);
-        mtl->SetMetalness(0.1);
+        mtl->SetMetalness(0.1f);
         mtl->SetReflectivity(0.2);
       }
       return;

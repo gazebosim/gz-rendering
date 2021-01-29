@@ -37,8 +37,8 @@ set_property(
 target_link_libraries(${ogre_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
-    IgnOGRE::IgnOGRE
   PRIVATE
+    IgnOGRE::IgnOGRE
     ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
     )

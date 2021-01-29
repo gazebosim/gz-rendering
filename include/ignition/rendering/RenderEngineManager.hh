@@ -49,7 +49,7 @@ namespace ignition
       /// \brief Constructor
       public: RenderEngineManager();
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: ~RenderEngineManager();
 
       /// \brief Get the number of available render-engines

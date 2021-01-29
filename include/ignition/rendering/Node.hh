@@ -37,7 +37,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Node :
       public virtual Object
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Node() { }
 
       /// \brief Determine if this Node is attached to another Node.

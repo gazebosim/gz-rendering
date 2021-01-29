@@ -28,17 +28,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     class BaseHeightmap :
-// Ignoring warning: "non dll-interface class
-// 'ignition::rendering::v5::Heightmap' used as base for dll-interface class"
-// because `Heightmap` is header-only
-#ifdef _MSC_VER
- #pragma warning(push)
- #pragma warning(disable:4275)
-#endif
       public virtual Heightmap,
-#ifdef _MSC_VER
- #pragma warning(pop)
-#endif
       public virtual T
     {
       /// \brief Constructor

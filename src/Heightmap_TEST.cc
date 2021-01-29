@@ -19,6 +19,7 @@
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/ImageHeightmap.hh>
+#include <ignition/utilities/ExtraTestMacros.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/RenderEngine.hh"
@@ -45,7 +46,8 @@ class HeightmapTest : public testing::Test,
 };
 
 /////////////////////////////////////////////////
-TEST_P(HeightmapTest, Heightmap)
+// ogre1 not supported on Windows
+TEST_P(HeightmapTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
   std::string renderEngine{this->GetParam()};
   if (renderEngine != "ogre")

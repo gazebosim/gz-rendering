@@ -31,6 +31,7 @@ namespace ignition
       /// \brief Enum for LightVisual types
       enum IGNITION_RENDERING_VISIBLE LightVisualType
       {
+        /// \brief No type
         LightVisual_NONE                = 0,
 
         /// \brief Point light
@@ -48,7 +49,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE LightVisual :
       public virtual Visual
     {
-      /// \brief Deconstructor
+      /// \brief Descructor
       public: virtual ~LightVisual() {}
 
       /// \brief set type of the light
@@ -74,7 +75,6 @@ namespace ignition
       /// \brief Get inner angle
       /// \return The light inner angle
       public: virtual double OuterAngle() = 0;
-
     };
     }
   }

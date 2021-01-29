@@ -23,10 +23,10 @@ using namespace rendering;
 
 class ignition::rendering::Ogre2LightVisualPrivate
 {
-  /// \brief Grid materal
+  /// \brief light visual materal
   public: Ogre2MaterialPtr material = nullptr;
 
-  /// \brief Ogre renderable used to render the grid.
+  /// \brief Ogre renderable used to render the light visual.
   public: std::shared_ptr<Ogre2DynamicRenderable> lightVisual = nullptr;
 };
 
@@ -87,7 +87,7 @@ void Ogre2LightVisual::CreateVisual()
 
   std::vector<ignition::math::Vector3d> positions = this->CreateVisualLines();
 
-  for (auto p : positions)
+  for (const auto &p : positions)
   {
     this->dataPtr->lightVisual->AddPoint(p.X(), p.Y(), p.Z());
   }

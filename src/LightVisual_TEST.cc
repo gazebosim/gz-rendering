@@ -56,9 +56,15 @@ void LightVisualTest::LightVisual(const std::string &_renderEngine)
 
   // check initial values
   EXPECT_EQ(LightVisualType::LightVisual_NONE, lightVisual->Type());
+  EXPECT_DOUBLE_EQ(0, lightVisual->InnerAngle());
+  EXPECT_DOUBLE_EQ(0, lightVisual->OuterAngle());
 
   lightVisual->SetType(LightVisualType::LightVisual_POINT);
+  lightVisual->SetInnerAngle(0.7);
+  lightVisual->SetOuterAngle(1.3);
   EXPECT_EQ(LightVisualType::LightVisual_POINT, lightVisual->Type());
+  EXPECT_DOUBLE_EQ(0.7, lightVisual->InnerAngle());
+  EXPECT_DOUBLE_EQ(1.3, lightVisual->OuterAngle());
 
   // Clean up
   engine->DestroyScene(scene);

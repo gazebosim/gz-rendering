@@ -42,8 +42,10 @@ namespace ignition
     class IGNITION_RENDERING_OGRE_VISIBLE OgreLightVisual :
       public BaseLightVisual<OgreVisual>
     {
+      /// \brief Constructor
       protected: OgreLightVisual();
 
+      /// \brief Destructor
       public: virtual ~OgreLightVisual();
 
       // Documentation inherited.

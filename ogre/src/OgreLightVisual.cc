@@ -45,11 +45,11 @@ OgreLightVisual::~OgreLightVisual()
 //////////////////////////////////////////////////
 void OgreLightVisual::PreRender()
 {
-  // if (this->dirtyLightVisual)
-  // {
+  if (this->dirtyLightVisual)
+  {
     this->CreateVisual();
     this->dirtyLightVisual = false;
-  // }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -75,11 +75,11 @@ void OgreLightVisual::CreateVisual()
     this->dataPtr->line = std::shared_ptr<OgreDynamicLines>(
       new OgreDynamicLines(MT_LINE_LIST));
     this->ogreNode->attachObject(this->OgreObject());
-    this->dataPtr->line->setMaterial("Default/TransRed");
+    this->dataPtr->line->setMaterial("Default/TransGreen");
   }
   std::vector<ignition::math::Vector3d> positions = this->CreateVisualLines();
 
-  for (auto p : positions)
+  for (const auto &p : positions)
   {
     this->dataPtr->line->AddPoint(p.X(), p.Y(), p.Z());
   }

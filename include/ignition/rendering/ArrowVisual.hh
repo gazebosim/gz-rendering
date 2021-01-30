@@ -31,7 +31,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE ArrowVisual :
       public virtual CompositeVisual
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~ArrowVisual() { }
 
       /// \brief Get arrow-head visual

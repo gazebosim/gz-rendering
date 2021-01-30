@@ -37,7 +37,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Visual :
       public virtual Node
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Visual() { }
 
       /// \brief Get the number of geometries attached to this visual

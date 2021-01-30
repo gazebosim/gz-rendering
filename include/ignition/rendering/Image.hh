@@ -48,7 +48,7 @@ namespace ignition
       public: Image(unsigned int _width, unsigned int _height,
                   PixelFormat _format);
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: ~Image();
 
       /// \brief Get image width in pixels

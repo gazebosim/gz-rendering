@@ -47,7 +47,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Material :
       public virtual Object
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Material() { }
 
       /// \brief Determine if lighting affects this material

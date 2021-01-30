@@ -34,7 +34,7 @@ namespace ignition
     /// \brief A camera view controller
     class IGNITION_RENDERING_VISIBLE ViewController
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~ViewController() { }
 
       /// \brief Set the camera that will be controlled by this view controller.

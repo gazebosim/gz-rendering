@@ -374,6 +374,16 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int,
+    const std::string &, const HeightmapDescriptor &)
+{
+  ignerr << "Ogre 2 doesn't support heightmaps yet, see " <<
+      "https://github.com/ignitionrobotics/ign-rendering/issues/187"
+      << std::endl;
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
 GridPtr Ogre2Scene::CreateGridImpl(unsigned int _id,
     const std::string &_name)
 {

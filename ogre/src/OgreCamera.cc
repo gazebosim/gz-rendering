@@ -39,6 +39,12 @@ OgreCamera::~OgreCamera()
 }
 
 //////////////////////////////////////////////////
+Ogre::Camera *OgreCamera::Camera() const
+{
+  return this->ogreCamera;
+}
+
+//////////////////////////////////////////////////
 void OgreCamera::Destroy()
 {
   if (!this->ogreCamera)

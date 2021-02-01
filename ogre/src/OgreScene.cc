@@ -20,26 +20,27 @@
 #include "ignition/rendering/ogre/OgreArrowVisual.hh"
 #include "ignition/rendering/ogre/OgreAxisVisual.hh"
 #include "ignition/rendering/ogre/OgreCamera.hh"
-#include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
+#include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreGizmoVisual.hh"
 #include "ignition/rendering/ogre/OgreGpuRays.hh"
 #include "ignition/rendering/ogre/OgreGrid.hh"
+#include "ignition/rendering/ogre/OgreHeightmap.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreText.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreLidarVisual.hh"
 #include "ignition/rendering/ogre/OgreLightVisual.hh"
+#include "ignition/rendering/ogre/OgreMarker.hh"
+#include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreMeshFactory.hh"
 #include "ignition/rendering/ogre/OgreParticleEmitter.hh"
+#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
-#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
+#include "ignition/rendering/ogre/OgreText.hh"
 #include "ignition/rendering/ogre/OgreThermalCamera.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 #include "ignition/rendering/ogre/OgreWireBox.hh"
@@ -511,6 +512,16 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
+}
+
+//////////////////////////////////////////////////
+HeightmapPtr OgreScene::CreateHeightmapImpl(unsigned int _id,
+    const std::string &_name, const HeightmapDescriptor &_desc)
+{
+  OgreHeightmapPtr heightmap;
+  heightmap.reset(new OgreHeightmap(_desc));
+  bool result = this->InitObject(heightmap, _id, _name);
+  return (result) ? heightmap : nullptr;
 }
 
 //////////////////////////////////////////////////

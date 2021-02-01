@@ -1043,6 +1043,14 @@ MeshPtr BaseScene::CreateMesh(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
+HeightmapPtr BaseScene::CreateHeightmap(const HeightmapDescriptor &_desc)
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Heightmap");
+  return this->CreateHeightmapImpl(objId, objName, _desc);
+}
+
+//////////////////////////////////////////////////
 GridPtr BaseScene::CreateGrid()
 {
   unsigned int objId = this->CreateObjectId();

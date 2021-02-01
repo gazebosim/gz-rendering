@@ -28,6 +28,7 @@
 #include <ignition/math/Color.hh>
 
 #include "ignition/rendering/config.hh"
+#include "ignition/rendering/HeightmapDescriptor.hh"
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Storage.hh"
@@ -932,6 +933,13 @@ namespace ignition
       /// \return The created lidar visual
       public: virtual LidarVisualPtr CreateLidarVisual(
                   unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new heightmap geomerty. The rendering::Heightmap will be
+      /// created from the given HeightmapDescriptor.
+      /// \param[in] _desc Data about the heightmap
+      /// \return The created heightmap
+      public: virtual HeightmapPtr CreateHeightmap(
+          const HeightmapDescriptor &_desc) = 0;
 
       /// \brief Create new text geometry.
       /// \return The created text

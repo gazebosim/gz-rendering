@@ -429,6 +429,10 @@ namespace ignition
                                             const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual HeightmapPtr CreateHeightmap(
+          const HeightmapDescriptor &_desc) override;
+
+      // Documentation inherited.
       public: virtual WireBoxPtr CreateWireBox() override;
 
       // Documentation inherited.
@@ -581,6 +585,15 @@ namespace ignition
       /// \return Pointer to a lidar visual
       protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a heightmap geometry
+      /// \param[in] _id Unique object id.
+      /// \param[in] _name Unique object name.
+      /// \param[in] _desc Heightmap descriptor.
+      /// \return Pointer to a heightmap geometry.
+      protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
+                     const std::string &_name,
+                     const HeightmapDescriptor &_desc) = 0;
 
       /// \brief Implementation for creating a wire box geometry
       /// \param[in] _id unique object id.

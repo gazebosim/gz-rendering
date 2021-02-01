@@ -32,16 +32,16 @@ namespace ignition
       enum IGNITION_RENDERING_VISIBLE LightVisualType
       {
         /// \brief No type
-        LightVisual_NONE                = 0,
+        LVT_EMPTY                = 0,
 
         /// \brief Point light
-        LightVisual_POINT               = 1,
+        LVT_POINT               = 1,
 
         /// \brief Directional light
-        LightVisual_DIRECTIONAL         = 2,
+        LVT_DIRECTIONAL         = 2,
 
         /// \brief Spot light
-        LightVisual_SPOT                = 3
+        LVT_SPOT                = 3
       };
 
     /// \class LightVisual LightVisual.hh ignition/rendering/LightVisual.hh

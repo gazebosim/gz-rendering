@@ -67,7 +67,7 @@ namespace ignition
       // Documentation inherited
       public: virtual LightVisualType Type() override;
 
-      protected: LightVisualType type = LightVisualType::LightVisual_NONE;
+      protected: LightVisualType type = LightVisualType::LVT_EMPTY;
 
       protected: double innerAngle = 0;
 
@@ -154,7 +154,7 @@ namespace ignition
     {
       std::vector<ignition::math::Vector3d> positions;
 
-      if (this->type == LightVisualType::LightVisual_DIRECTIONAL)
+      if (this->type == LightVisualType::LVT_DIRECTIONAL)
       {
         float s = 0.5;
         positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
@@ -172,7 +172,7 @@ namespace ignition
         positions.emplace_back(ignition::math::Vector3d(0, 0, 0));
         positions.emplace_back(ignition::math::Vector3d(0, 0, -s));
       }
-      else if (this->type == LightVisualType::LightVisual_POINT)
+      else if (this->type == LightVisualType::LVT_POINT)
       {
         float s = 0.1;
         positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
@@ -211,7 +211,7 @@ namespace ignition
         positions.emplace_back(ignition::math::Vector3d(s, -s, 0));
         positions.emplace_back(ignition::math::Vector3d(0, 0, -s));
       }
-      else if (this->type == LightVisualType::LightVisual_SPOT)
+      else if (this->type == LightVisualType::LVT_SPOT)
       {
         double angles[2];
         double range = 0.2;

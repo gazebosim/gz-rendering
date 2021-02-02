@@ -215,6 +215,11 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->SetVerticalRayCount(vRayCount);
   root->AddChild(gpuRays2);
 
+  // Laser retro test values
+  double laserRetro1 = 2000;
+  double laserRetro2 = 1000;
+  std::string userDataKey = "laser_retro";
+
   // Create testing boxes
   // box in the center
   ignition::math::Pose3d box01Pose(ignition::math::Vector3d(3, 0, 0.5),
@@ -223,7 +228,10 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   visualBox1->AddGeometry(scene->CreateBox());
   visualBox1->SetWorldPosition(box01Pose.Pos());
   visualBox1->SetWorldRotation(box01Pose.Rot());
+  visualBox1->SetUserData(userDataKey, laserRetro1);
   root->AddChild(visualBox1);
+
+
 
   // box on the right of the first gpu rays caster
   ignition::math::Pose3d box02Pose(ignition::math::Vector3d(0, -5, 0.5),
@@ -232,6 +240,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   visualBox2->AddGeometry(scene->CreateBox());
   visualBox2->SetWorldPosition(box02Pose.Pos());
   visualBox2->SetWorldRotation(box02Pose.Rot());
+  visualBox2->SetUserData(userDataKey, laserRetro2);
   root->AddChild(visualBox2);
 
   // box on the left of the rays caster 1 but out of range
@@ -266,6 +275,12 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);
   EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
   EXPECT_DOUBLE_EQ(scan[last], ignition::math::INF_D);
+
+  // rays cater should see box01 with laser retro value set to laserRetro1
+  // and box02 with laser retro value set to laserRetro2
+  EXPECT_NEAR(scan[mid+1], laserRetro1, 5.0);
+  EXPECT_NEAR(scan[0+1], laserRetro2, 5.0);
+  EXPECT_DOUBLE_EQ(scan[last+1], 0.0);
 
   // Verify rays caster 2 range readings
   // listen to new gpu rays frames

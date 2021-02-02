@@ -2,6 +2,25 @@
 
 ### Ignition Rendering 4.X
 
+### Ignition Rendering 4.3.0 (2021-02-02)
+
+1. Tutorial: Transform FBX to Collada and change its origin
+    * [Pull request #195](https://github.com/ignitionrobotics/ign-rendering/pull/195)
+
+1. Remove Windows Warnings
+    * [Pull request #206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
+    * [Pull request #213](https://github.com/ignitionrobotics/ign-rendering/pull/213)
+    * [Pull request #215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
+
+1. Fix spelling Desconstructor -> Destructor
+    * [Pull request #220](https://github.com/ignitionrobotics/ign-rendering/pull/220)
+
+1. Thermal Camera: Visualize objects with a heat signature
+    * [Pull request #189](https://github.com/ignitionrobotics/ign-rendering/pull/189)
+
+1. Add laser retro support in Ogre2
+    * [Pull request #194](https://github.com/ignitionrobotics/ign-rendering/pull/194)
+
 ### Ignition Rendering 4.2.0 (2021-01-22)
 
 1. Remove some windows warnings.

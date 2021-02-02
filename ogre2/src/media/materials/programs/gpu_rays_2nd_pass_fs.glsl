@@ -54,9 +54,9 @@ uniform sampler2D tex5;
 
 out vec4 fragColor;
 
-float getRange(vec2 uv, sampler2D tex)
+vec2 getRange(vec2 uv, sampler2D tex)
 {
-  float range = texture(tex, uv).x;
+  vec2 range = texture(tex, uv).xy;
   return range;
 }
 
@@ -71,7 +71,9 @@ void main()
   // uv coordinates on texture that stores the range data
   vec2 uv = data.xy;
 
-  float d = 0;
+  vec2 d;
+  d.x = 0;
+  d.y = 0;
   if (faceIdx == 0)
     d = getRange(uv, tex0);
   else if (faceIdx == 1)
@@ -88,6 +90,6 @@ void main()
   // todo(anyone) set retro values
   float retro = 0.0;
 
-  fragColor = vec4(d, retro, 0, 1.0);
+  fragColor = vec4(d.x, d.y, 0, 1.0);
   return;
 }

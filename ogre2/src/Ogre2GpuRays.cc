@@ -254,7 +254,7 @@ void Ogre2LaserRetroMaterialSwitcher::preRenderTargetUpdate(
             {
               // limit laser retro value to 2000 (as in gazebo)
               if (retroValue > 2000.0)
-               {
+              {
                 retroValue = 2000.0;
               }
               float color = retroValue / 2000.0;

@@ -796,7 +796,8 @@ void Ogre2GpuRays::Setup1stPass()
         rt, this->dataPtr->cubeCam[i], wsDefName, false);
 
     // add laser retro material switcher to render target listener
-    // so we can switch to use laser retro material when the camera is being udpated
+    // so we can switch to use laser retro material when the camera is being
+    // updated
     Ogre::CompositorNode *node =
         this->dataPtr->ogreCompositorWorkspace1st[i]->getNodeSequence()[0];
     auto channelsTex = node->getLocalTextures();
@@ -807,7 +808,8 @@ void Ogre2GpuRays::Setup1stPass()
       {
         this->dataPtr->laserRetroMaterialSwitcher[i].reset(
             new Ogre2LaserRetroMaterialSwitcher(this->scene));
-        c.target->addListener(this->dataPtr->laserRetroMaterialSwitcher[i].get());
+        c.target->addListener(
+            this->dataPtr->laserRetroMaterialSwitcher[i].get());
         break;
       }
     }

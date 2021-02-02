@@ -81,6 +81,72 @@ float screenScalingFactor()
 #endif
   return ratio;
 }
+
+/////////////////////////////////////////////////
+void screenScalingFactor(float &_xScale, float &_yScale)
+{
+  // todo(anyone) set device pixel ratio for high dpi displays on Windows
+#ifdef __linux__
+  auto closeDisplay = [](Display * display)
+  {
+    if (display)
+      XCloseDisplay(display);
+  };
+  auto display =
+    std::unique_ptr<Display, decltype(closeDisplay)>(
+      XOpenDisplay(nullptr), closeDisplay);
+  char *resourceString = XResourceManagerString(display.get());
+
+  if (resourceString)
+  {
+    char *type = nullptr;
+    float dpiDesktop = 0.0;
+
+    // Need to initialize the DB before calling Xrm* functions
+    XrmInitialize();
+
+    XrmValue value;
+    XrmDatabase db = XrmGetStringDatabase(resourceString);
+
+    // Debug:
+    // printf("Entire DB:\n%s\n", resourceString);
+
+    if (XrmGetResource(db, "Xft.dpi", "String", &type, &value) == True)
+    {
+      if (value.addr)
+        dpiDesktop = atof(value.addr);
+    }
+
+    // To get the ratio we need the DPI as reported by the Xrmdatabase,
+    // which takes into account desktop scaling, and the DPI computed by the
+    // actual display resolution.
+    //
+    // dpiRes = N pixels / (M millimeters / (25.4 millimeters / 1 inch))
+    //        = N pixels / (M inch / 25.4)
+    //        = (N * 25.4 pixels) / M inch
+    //
+    // We can use either the width or height in the following line. The zero
+    // values in DisplayHeight and DisplayHeightMM is the screen number. A
+    // value of zero uses the default screen.
+    float xDpiRes = (DisplayWidth(display.get(), 0) * 25.4) /
+      DisplayWidthMM(display.get(), 0);
+    float yDpiRes = (DisplayHeight(display.get(), 0) * 25.4) /
+      DisplayHeightMM(display.get(), 0);
+
+    if (!math::equal(dpiDesktop, 0.0f) && !math::equal(yDpiRes, 0.0f))
+      _yScale = yDpiRes / dpiDesktop;
+    if (_yScale < 1) _yScale = 1;
+
+    if (!math::equal(dpiDesktop, 0.0f) && !math::equal(xDpiRes, 0.0f))
+      _xScale = xDpiRes / dpiDesktop;
+    if (_xScale < 1) _xScale = 1;
+
+    // Debug:
+    // printf("DPI Desktop: %f, DPI XY: [%f, %f], Scale XY: [%f, %f]\n",
+    //   dpiDesktop, xDpiRes, yDpiRes, _xScale, _yScale);
+  }
+#endif
+}
 }
 }
 }

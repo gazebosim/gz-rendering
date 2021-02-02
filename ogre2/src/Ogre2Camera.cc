@@ -201,10 +201,11 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
     }
   }
 
-  float ratio = screenScalingFactor();
+  float xScale, YScale;
+  screenScalingFactor(xScale, YScale);
   ignition::math::Vector2i mousePos(
-      static_cast<int>(std::rint(ratio * _mousePos.X())),
-      static_cast<int>(std::rint(ratio * _mousePos.Y())));
+      static_cast<int>(std::rint(xScale * _mousePos.X())),
+      static_cast<int>(std::rint(YScale * _mousePos.Y())));
 
   Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(
       mousePos.X(), mousePos.Y());

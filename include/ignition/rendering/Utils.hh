@@ -34,6 +34,12 @@ namespace ignition
     /// \return The screen scaling factor.
     IGNITION_RENDERING_VISIBLE
     float screenScalingFactor();
+    /// \brief Get the screen scaling factor.
+    /// \param[out] _xScale The X screen scaling factor.
+    /// \param[out] _yScale The Y screen scaling factor.
+    /// \return The screen scaling factor.
+    IGNITION_RENDERING_VISIBLE
+    void screenScalingFactor(float &_xScale, float &_yScale);
     }
   }
 }

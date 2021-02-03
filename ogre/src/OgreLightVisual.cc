@@ -75,7 +75,9 @@ void OgreLightVisual::CreateVisual()
     this->dataPtr->line = std::shared_ptr<OgreDynamicLines>(
       new OgreDynamicLines(MT_LINE_LIST));
     this->ogreNode->attachObject(this->OgreObject());
-    this->dataPtr->line->setMaterial("Default/TransGreen");
+    MaterialPtr lightVisualMaterial =
+      this->Scene()->Material("Default/TransGreen")->Clone();
+    this->SetMaterial(lightVisualMaterial, false);
   }
   std::vector<ignition::math::Vector3d> positions = this->CreateVisualLines();
 

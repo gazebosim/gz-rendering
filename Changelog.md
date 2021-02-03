@@ -7,9 +7,6 @@
 1. Add ogre2 skybox support
     * [Pull request #168](https://github.com/ignitionrobotics/ign-rendering/pull/168)
 
-1. Add light visual support
-    * [Pull request #202](https://github.com/ignitionrobotics/ign-rendering/pull/202)
-
 ### Ignition Rendering 4.X
 
 ### Ignition Rendering 4.2.0 (2021-01-22)

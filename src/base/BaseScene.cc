@@ -28,7 +28,6 @@
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/LidarVisual.hh"
-#include "ignition/rendering/LightVisual.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/DepthCamera.hh"
 #include "ignition/rendering/GizmoVisual.hh"
@@ -913,36 +912,6 @@ AxisVisualPtr BaseScene::CreateAxisVisual(unsigned int _id,
     const std::string &_name)
 {
   AxisVisualPtr visual = this->CreateAxisVisualImpl(_id, _name);
-  bool result = this->RegisterVisual(visual);
-  return (result) ? visual : nullptr;
-}
-
-//////////////////////////////////////////////////
-LightVisualPtr BaseScene::CreateLightVisual()
-{
-  unsigned int objId = this->CreateObjectId();
-  return this->CreateLightVisual(objId);
-}
-
-//////////////////////////////////////////////////
-LightVisualPtr BaseScene::CreateLightVisual(unsigned int _id)
-{
-  std::string objName = this->CreateObjectName(_id, "LightVisual");
-  return this->CreateLightVisual(_id, objName);
-}
-
-//////////////////////////////////////////////////
-LightVisualPtr BaseScene::CreateLightVisual(const std::string &_name)
-{
-  unsigned int objId = this->CreateObjectId();
-  return this->CreateLightVisual(objId, _name);
-}
-
-//////////////////////////////////////////////////
-LightVisualPtr BaseScene::CreateLightVisual(unsigned int _id,
-    const std::string &_name)
-{
-  LightVisualPtr visual = this->CreateLightVisualImpl(_id, _name);
   bool result = this->RegisterVisual(visual);
   return (result) ? visual : nullptr;
 }

@@ -139,6 +139,24 @@ namespace ignition
       // Documentation inherited.
       public: virtual unsigned int Channels() const override;
 
+      /// \brief Set the horizontal resolution.
+      /// \param[in] _resolution The new horizontal resolution, which has
+      /// a default value of 1.0. The absolute value of this parameter is
+      /// used.
+      public: void SetHorizontalResolution(double _resolution)
+      {
+        this->hResolution = std::abs(_resolution);
+      }
+
+      /// \brief Set the vertical resolution.
+      /// \param[in] _resolution The new vertical resolution, which has
+      /// a default value of 1.0. The absolute value of this parameter is
+      /// used.
+      public: void SetVerticalResolution(double _resolution)
+      {
+        this->vResolution = std::abs(_resolution);
+      }
+
       /// \brief maximum value used for data outside sensor range
       public: float dataMaxVal = ignition::math::INF_D;
 
@@ -180,10 +198,10 @@ namespace ignition
       protected: int vSamples = 0;
 
       /// \brief Resolution of horizontal rays
-      protected: int hResolution = 1;
+      protected: double hResolution = 1;
 
       /// \brief Resolution of vertical rays
-      protected: int vResolution = 1;
+      protected: double vResolution = 1;
 
       /// \brief Number of channels used to store the data
       protected: unsigned int channels = 1u;

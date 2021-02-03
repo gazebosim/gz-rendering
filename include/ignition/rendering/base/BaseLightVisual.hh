@@ -30,6 +30,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Base implementation of a light visual
     template <class T>
     class BaseLightVisual :
       public virtual LightVisual,
@@ -62,18 +63,22 @@ namespace ignition
       // Documentation inherited
       public: virtual double OuterAngle() override;
 
+      /// \brief Draw the light visual using dynamic renderables
       public: std::vector<ignition::math::Vector3d> CreateVisualLines();
 
       // Documentation inherited
       public: virtual LightVisualType Type() override;
 
+      /// \brief Type of light visual
       protected: LightVisualType type = LightVisualType::LVT_EMPTY;
 
+      /// \brief Inner angle for spot lights
       protected: double innerAngle = 0;
 
+      /// \brief Outer angle for spot lights
       protected: double outerAngle = 0;
 
-      /// \brief Flag to indicate grid properties have changed
+      /// \brief Flag to indicate light properties have changed
       protected: bool dirtyLightVisual = false;
     };
 

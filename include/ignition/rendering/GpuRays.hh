@@ -160,7 +160,9 @@ namespace ignition
       public: virtual unsigned int Channels() const = 0;
 
       /// \brief Set the horizontal resolution.
-      /// \param[in] _resolution The new horizontal resolution.
+      /// \param[in] _resolution The new horizontal resolution. The
+      /// absolute value of this parameter is used to prevent a
+      /// negative resolution value.
       public: virtual void SetHorizontalResolution(double _resolution) = 0;
 
       /// \brief Get the horizontal resolution.
@@ -168,7 +170,9 @@ namespace ignition
       public: virtual double HorizontalResolution() const = 0;
 
       /// \brief Set the vertical resolution.
-      /// \param[in] _resolution The new vertical resolution.
+      /// \param[in] _resolution The new vertical resolution. The
+      /// absolute value of this parameter is used to prevent a
+      /// negative resolution value.
       public: virtual void SetVerticalResolution(double _resolution) = 0;
 
       /// \brief Get the vertical resolution.

@@ -139,9 +139,16 @@ namespace ignition
       // Documentation inherited.
       public: virtual unsigned int Channels() const override;
 
+      // Documentation inherited.
       public: virtual void SetHorizontalResolution(double _resolution) override;
+
+      // Documentation inherited.
       public: virtual double HorizontalResolution() const override;
+
+      // Documentation inherited.
       public: virtual void SetVerticalResolution(double resolution) override;
+
+      // Documentation inherited.
       public: virtual double VerticalResolution() const override;
 
       /// \brief maximum value used for data outside sensor range

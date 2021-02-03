@@ -585,16 +585,23 @@ Ogre::HlmsUnlitDatablock *Ogre2Material::UnlitDatablock()
 void Ogre2Material::FillUnlitDatablock(Ogre::HlmsUnlitDatablock *_datablock)
     const
 {
-  auto tex = this->ogreDatablock->getTexture(Ogre::PBSM_DIFFUSE);
-  if (tex)
-    _datablock->setTexture(0, 0, tex);
+  if (!this->textureName.empty())
+  {
+    std::string baseName = common::basename(this->textureName);
+    Ogre::HlmsTextureManager *hlmsTextureManager =
+        this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
+    Ogre::HlmsTextureManager::TextureLocation texLocation =
+        hlmsTextureManager->createOrRetrieveTexture(baseName,
+        this->ogreDatablock->suggestMapTypeBasedOnTextureType(
+        Ogre::PBSM_DIFFUSE));
+    _datablock->setTexture(0, texLocation.xIdx, texLocation.texture);
+  }
+
   auto samplerblock = this->ogreDatablock->getSamplerblock(Ogre::PBSM_DIFFUSE);
   if (samplerblock)
     _datablock->setSamplerblock(0, *samplerblock);
-  _datablock->setMacroblock(
-      this->ogreDatablock->getMacroblock());
-  _datablock->setBlendblock(
-      this->ogreDatablock->getBlendblock());
+  _datablock->setMacroblock(this->ogreDatablock->getMacroblock());
+  _datablock->setBlendblock(this->ogreDatablock->getBlendblock());
 
   _datablock->setUseColour(true);
   Ogre::Vector3 c = this->ogreDatablock->getDiffuse();

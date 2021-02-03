@@ -179,7 +179,7 @@ namespace ignition
       }
       else if (this->type == LightVisualType::LVT_POINT)
       {
-        float s = 0.1;
+        float s = 0.1f;
         positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
         positions.emplace_back(ignition::math::Vector3d(-s, s, 0));
 

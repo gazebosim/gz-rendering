@@ -58,6 +58,8 @@ namespace ignition
     class Grid;
     class Heightmap;
     class Image;
+    class Light;
+    class LightVisual;
     class JointVisual;
     class LidarVisual;
     class Light;
@@ -145,6 +147,10 @@ namespace ignition
     /// \def LightPtr
     /// \brief Shared pointer to Light
     typedef shared_ptr<Light> LightPtr;
+
+    /// \def LightVisualPtr
+    /// \brief Shared pointer to Light
+    typedef shared_ptr<LightVisual> LightVisualPtr;
 
     /// \def LidarVisualPtr
     /// \brief Shared pointer to LidarVisual

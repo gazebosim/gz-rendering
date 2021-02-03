@@ -265,6 +265,12 @@ namespace ignition
       public: virtual PointLightPtr CreatePointLight(unsigned int _id,
                   const std::string &_name) override;
 
+      /// \brief Implementation for creating Light visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of light visual
+      protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       public: virtual SpotLightPtr CreateSpotLight() override;
 
       public: virtual SpotLightPtr CreateSpotLight(unsigned int _id) override;
@@ -354,6 +360,20 @@ namespace ignition
       public: virtual AxisVisualPtr CreateAxisVisual(unsigned int _id,
                   const std::string &_name) override;
 
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual() override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual(const std::string &_name)
+                      override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual(unsigned int _id,
+                  const std::string &_name) override;
 
       // Documentation inherited
       public: virtual GizmoVisualPtr CreateGizmoVisual() override;

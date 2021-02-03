@@ -77,6 +77,10 @@ namespace ignition
       protected: virtual DirectionalLightPtr CreateDirectionalLightImpl(
                      unsigned int _id, const std::string &_name);
 
+      // Documentation inherited
+      protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
+
       protected: virtual PointLightPtr CreatePointLightImpl(unsigned int _id,
                      const std::string &_name);
 

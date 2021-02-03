@@ -28,6 +28,7 @@
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
+#include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -305,6 +306,15 @@ AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int _id,
     const std::string &_name)
 {
   Ogre2AxisVisualPtr visual(new Ogre2AxisVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+LightVisualPtr Ogre2Scene::CreateLightVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2LightVisualPtr visual(new Ogre2LightVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }

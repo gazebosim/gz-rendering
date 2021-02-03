@@ -348,7 +348,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
         Ogre::AxisAlignedBox box = Ogre::AxisAlignedBox(aabb.getMinimum(),
             aabb.getMaximum());
 
-        // we will be converting rgb values to tempearture values in shaders
+        // we will be converting rgb values to temperature values in shaders
         // but we want to make sure the object rgb values are not affected by
         // lighting, so disable lighting
         // Also check if objects are within camera view

@@ -139,6 +139,11 @@ namespace ignition
       // Documentation inherited.
       public: virtual unsigned int Channels() const override;
 
+      public: virtual void SetHorizontalResolution(double _resolution) override;
+      public: virtual double HorizontalResolution() const override;
+      public: virtual void SetVerticalResolution(double resolution) override;
+      public: virtual double VerticalResolution() const override;
+
       /// \brief maximum value used for data outside sensor range
       public: float dataMaxVal = ignition::math::INF_D;
 
@@ -180,10 +185,10 @@ namespace ignition
       protected: int vSamples = 0;
 
       /// \brief Resolution of horizontal rays
-      protected: int hResolution = 1;
+      protected: double hResolution = 1;
 
       /// \brief Resolution of vertical rays
-      protected: int vResolution = 1;
+      protected: double vResolution = 1;
 
       /// \brief Number of channels used to store the data
       protected: unsigned int channels = 1u;
@@ -405,6 +410,34 @@ namespace ignition
     unsigned int BaseGpuRays<T>::Channels() const
     {
       return this->channels;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    void BaseGpuRays<T>::SetHorizontalResolution(double _resolution)
+    {
+      this->hResolution = std::abs(_resolution);
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    double BaseGpuRays<T>::HorizontalResolution() const
+    {
+      return this->hResolution;
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    void BaseGpuRays<T>::SetVerticalResolution(double _resolution)
+    {
+      this->vResolution = std::abs(_resolution);
+    }
+
+    template <class T>
+    //////////////////////////////////////////////////
+    double BaseGpuRays<T>::VerticalResolution() const
+    {
+      return this->vResolution;
     }
     }
   }

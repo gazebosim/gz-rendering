@@ -158,6 +158,22 @@ namespace ignition
       /// \brief Get the number of channels used to store the ray data.
       /// \return Channel count.
       public: virtual unsigned int Channels() const = 0;
+
+      /// \brief Set the horizontal resolution.
+      /// \param[in] _resolution The new horizontal resolution.
+      public: virtual void SetHorizontalResolution(double _resolution) = 0;
+
+      /// \brief Get the horizontal resolution.
+      /// \return The horizontal resolution
+      public: virtual double HorizontalResolution() const = 0;
+
+      /// \brief Set the vertical resolution.
+      /// \param[in] _resolution The new vertical resolution.
+      public: virtual void SetVerticalResolution(double _resolution) = 0;
+
+      /// \brief Get the vertical resolution.
+      /// \return The vertical resolution
+      public: virtual double VerticalResolution() const = 0;
     };
   }
   }

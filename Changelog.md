@@ -2,6 +2,11 @@
 
 ### Ignition Rendering 4.X
 
+### Ignition Rendering 4.3.1 (2021-02-03)
+
+1. Fix converting Pbs to Unlit material conversion (#230)
+    * [Pull Request #230](https://github.com/ignitionrobotics/ign-rendering/pull/230)
+
 ### Ignition Rendering 4.3.0 (2021-02-02)
 
 1. Tutorial: Transform FBX to Collada and change its origin

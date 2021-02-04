@@ -67,6 +67,12 @@ namespace ignition
 
       public: virtual void SetCastShadows(bool _castShadows);
 
+      // Documentation Inherited
+      public: virtual double Intensity() const override;
+
+      // Documentation Inherited
+      public: virtual void SetIntensity(double _intensity) override;
+
       public: virtual Ogre::Light *Light() const;
 
       public: virtual void Destroy();

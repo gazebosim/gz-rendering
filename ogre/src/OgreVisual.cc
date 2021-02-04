@@ -74,20 +74,18 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
     return false;
   }
 
+  // Some geometries, like heightmaps, may not have an OgreObject
   Ogre::MovableObject *ogreObj = derived->OgreObject();
-  if (!ogreObj)
+  if (ogreObj)
   {
-    ignerr << "Cannot attach a null geometry object" << std::endl;
-    return false;
+    // set user data for mouse queries
+    ogreObj->getUserObjectBindings().setUserAny(
+        Ogre::Any(this->Id()));
+    ogreObj->setVisibilityFlags(this->visibilityFlags);
+    this->ogreNode->attachObject(ogreObj);
   }
 
-  // set user data for mouse queries
-  ogreObj->getUserObjectBindings().setUserAny(
-      Ogre::Any(this->Id()));
-  ogreObj->setVisibilityFlags(this->visibilityFlags);
-
   derived->SetParent(this->SharedThis());
-  this->ogreNode->attachObject(ogreObj);
   return true;
 }
 
@@ -108,7 +106,8 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  this->ogreNode->detachObject(derived->OgreObject());
+  if (nullptr != derived->OgreObject())
+    this->ogreNode->detachObject(derived->OgreObject());
   derived->SetParent(nullptr);
   return true;
 }

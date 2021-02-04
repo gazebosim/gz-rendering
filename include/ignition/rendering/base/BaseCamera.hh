@@ -24,6 +24,7 @@
 
 #include <ignition/common/Event.hh>
 #include <ignition/common/Console.hh>
+#include <ignition/common/SuppressWarning.hh>
 
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Image.hh"
@@ -185,6 +186,7 @@ namespace ignition
 
       protected: virtual RenderTargetPtr RenderTarget() const = 0;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: common::EventT<void(const void *, unsigned int, unsigned int,
                      unsigned int, const std::string &)> newFrameEvent;
 
@@ -221,6 +223,7 @@ namespace ignition
 
       /// \brief Target node to follow
       protected: NodePtr followNode;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Follow target in world frame.
       protected: bool followWorldFrame = false;

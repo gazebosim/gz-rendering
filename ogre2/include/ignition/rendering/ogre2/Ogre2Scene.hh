@@ -109,6 +109,10 @@ namespace ignition
       protected: virtual bool InitImpl() override;
 
       // Documentation inherited
+      protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual DirectionalLightPtr CreateDirectionalLightImpl(
                      unsigned int _id, const std::string &_name) override;
 
@@ -183,6 +187,11 @@ namespace ignition
       protected: virtual MeshPtr CreateMeshImpl(unsigned int _id,
                      const std::string &_name, const MeshDescriptor &_desc)
                      override;
+
+      // Documentation inherited
+      protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
+                   const std::string &_name, const HeightmapDescriptor &_desc)
+                   override;
 
       // Documentation inherited
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,

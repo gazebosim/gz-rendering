@@ -7,9 +7,23 @@
 1. Add ogre2 skybox support
     * [Pull request #168](https://github.com/ignitionrobotics/ign-rendering/pull/168)
 
+1. Add light visual support
+    * [Pull request #202](https://github.com/ignitionrobotics/ign-rendering/pull/202)
+
 ### Ignition Rendering 4.X
 
-### Ignition Rendering 4.X.X (20XX-XX-XX)
+### Ignition Rendering 4.2.0 (2021-01-22)
+
+1. Remove some windows warnings.
+    * [Pull request #183](https://github.com/ignitionrobotics/ign-rendering/pull/183)
+
+1. Fix transparency issue for textures without alpha channel.
+    * [Pull request #186](https://github.com/ignitionrobotics/ign-rendering/pull/186)
+
+1. Call XCloseDisplay in screenScalingFactor.
+    * [Pull request #204](https://github.com/ignitionrobotics/ign-rendering/pull/204)
+
+1. All changes up to version 3.3.0.
 
 ### Ignition Rendering 4.1.0 (2020-11-04)
 
@@ -105,6 +119,23 @@
 
 1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
+
+### Ignition Rendering 3.3.0 (2021-01-22)
+
+1. Add Windows installation.
+    * [Pull request 196](https://github.com/ignitionrobotics/ign-rendering/pull/196)
+
+1. Make flaky VisualAt test more verbose.
+    * [Pull request 174](https://github.com/ignitionrobotics/ign-rendering/pull/174)
+
+1. Resolve updated codecheck issues.
+    * [Pull request 173](https://github.com/ignitionrobotics/ign-rendering/pull/173)
+
+1. Fix crash due to NaN pose values.
+    * [Pull request 169](https://github.com/ignitionrobotics/ign-rendering/pull/169)
+
+1. Improve fork experience.
+    * [Pull request 165](https://github.com/ignitionrobotics/ign-rendering/pull/165)
 
 ### Ignition Rendering 3.2.0 (2020-10-13)
 

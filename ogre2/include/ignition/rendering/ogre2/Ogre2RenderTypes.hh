@@ -33,7 +33,6 @@ namespace ignition
     class Ogre2Camera;
     class Ogre2DepthCamera;
     class Ogre2DirectionalLight;
-    class Ogre2Ellipsoid;
     class Ogre2Geometry;
     class Ogre2GizmoVisual;
     class Ogre2GpuRays;
@@ -77,7 +76,6 @@ namespace ignition
     typedef shared_ptr<Ogre2Camera>               Ogre2CameraPtr;
     typedef shared_ptr<Ogre2DepthCamera>          Ogre2DepthCameraPtr;
     typedef shared_ptr<Ogre2DirectionalLight>     Ogre2DirectionalLightPtr;
-    typedef shared_ptr<Ogre2Ellipsoid>            Ogre2EllipsoidPtr;
     typedef shared_ptr<Ogre2Geometry>             Ogre2GeometryPtr;
     typedef shared_ptr<Ogre2GizmoVisual>          Ogre2GizmoVisualPtr;
     typedef shared_ptr<Ogre2GpuRays>              Ogre2GpuRaysPtr;

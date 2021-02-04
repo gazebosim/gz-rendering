@@ -165,7 +165,7 @@ namespace ignition
                      const std::string &_name) override;
 
       // Documentation inherited
-      protected: virtual EllipsoidPtr CreateEllipsoidImpl(unsigned int _id,
+      protected: virtual MeshPtr CreateEllipsoidImpl(unsigned int _id,
                      const std::string &_name);
 
       // Documentation inherited

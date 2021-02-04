@@ -18,7 +18,6 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre/OgreDynamicLines.hh"
-#include "ignition/rendering/ogre/OgreEllipsoid.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreMesh.hh"

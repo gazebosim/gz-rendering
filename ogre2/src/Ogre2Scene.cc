@@ -23,7 +23,6 @@
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Ellipsoid.hh"
 #include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
@@ -363,12 +362,10 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-EllipsoidPtr Ogre2Scene::CreateEllipsoidImpl(unsigned int _id,
+MeshPtr Ogre2Scene::CreateEllipsoidImpl(unsigned int _id,
     const std::string &_name)
 {
-  Ogre2EllipsoidPtr ellipsoid(new Ogre2Ellipsoid);
-  bool result = this->InitObject(ellipsoid, _id, _name);
-  return (result) ? ellipsoid : nullptr;
+  return this->CreateMeshImpl(_id, _name, "unit_ellipsoid");
 }
 //////////////////////////////////////////////////
 MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,

@@ -836,7 +836,7 @@ namespace ignition
 
       /// \brief Create new ellipsoid geometry
       /// \return The created ellipsoid
-      public: virtual EllipsoidPtr CreateEllipsoid() = 0;
+      public: virtual MeshPtr CreateEllipsoid() = 0;
 
       /// \brief Create new plane geometry
       /// \return The created plane

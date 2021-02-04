@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE_OGRENODE_HH_
 #define IGNITION_RENDERING_OGRE_OGRENODE_HH_
 
+#include <ignition/common/SuppressWarning.hh>
+
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
@@ -87,7 +89,9 @@ namespace ignition
 
       protected: virtual void Init() override;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: OgreNodePtr parent;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       protected: Ogre::SceneNode *ogreNode = nullptr;
 

@@ -28,6 +28,7 @@
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/LidarVisual.hh"
+#include "ignition/rendering/LightVisual.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/DepthCamera.hh"
 #include "ignition/rendering/GizmoVisual.hh"
@@ -917,6 +918,36 @@ AxisVisualPtr BaseScene::CreateAxisVisual(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+LightVisualPtr BaseScene::CreateLightVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateLightVisual(objId);
+}
+
+//////////////////////////////////////////////////
+LightVisualPtr BaseScene::CreateLightVisual(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "LightVisual");
+  return this->CreateLightVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+LightVisualPtr BaseScene::CreateLightVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateLightVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+LightVisualPtr BaseScene::CreateLightVisual(unsigned int _id,
+    const std::string &_name)
+{
+  LightVisualPtr visual = this->CreateLightVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
 GizmoVisualPtr BaseScene::CreateGizmoVisual()
 {
   unsigned int objId = this->CreateObjectId();
@@ -1017,6 +1048,14 @@ MeshPtr BaseScene::CreateMesh(const MeshDescriptor &_desc)
   unsigned int objId = this->CreateObjectId();
   std::string objName = this->CreateObjectName(objId, "Mesh-" + meshName);
   return this->CreateMeshImpl(objId, objName, _desc);
+}
+
+//////////////////////////////////////////////////
+HeightmapPtr BaseScene::CreateHeightmap(const HeightmapDescriptor &_desc)
+{
+  unsigned int objId = this->CreateObjectId();
+  std::string objName = this->CreateObjectName(objId, "Heightmap");
+  return this->CreateHeightmapImpl(objId, objName, _desc);
 }
 
 //////////////////////////////////////////////////

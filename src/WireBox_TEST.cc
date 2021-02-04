@@ -73,9 +73,9 @@ void WireBoxTest::WireBox(const std::string &_renderEngine)
   wireBox->SetMaterial(mat);
   MaterialPtr wireBoxMat = wireBox->Material();
   ASSERT_NE(nullptr, wireBoxMat);
-  EXPECT_EQ(math::Color(0.6, 0.7, 0.8), wireBoxMat->Ambient());
-  EXPECT_EQ(math::Color(0.3, 0.8, 0.2), wireBoxMat->Diffuse());
-  EXPECT_EQ(math::Color(0.4, 0.9, 1.0), wireBoxMat->Specular());
+  EXPECT_EQ(math::Color(0.6f, 0.7f, 0.8f), wireBoxMat->Ambient());
+  EXPECT_EQ(math::Color(0.3f, 0.8f, 0.2f), wireBoxMat->Diffuse());
+  EXPECT_EQ(math::Color(0.4f, 0.9f, 1.0f), wireBoxMat->Specular());
 
   // Clean up
   engine->DestroyScene(scene);

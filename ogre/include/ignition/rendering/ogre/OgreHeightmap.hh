@@ -26,6 +26,14 @@
 #include "ignition/rendering/ogre/OgreGeometry.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
+// Ignoring warning: "non dll-interface class
+// 'ignition::rendering::v5::Heightmap' used as base for dll-interface class"
+// because `Heightmap` and `BaseHeightmap` are header-only
+#ifdef _MSC_VER
+ #pragma warning(push)
+ #pragma warning(disable:4275)
+#endif
+
 namespace ignition
 {
   namespace rendering
@@ -37,17 +45,7 @@ namespace ignition
 
     /// \brief Ogre implementation of a heightmap geometry.
     class IGNITION_RENDERING_OGRE_VISIBLE OgreHeightmap
-// Ignoring warning: "non dll-interface class
-// 'ignition::rendering::v5::Heightmap' used as base for dll-interface class"
-// because `Heightmap` and `BaseHeightmap` are header-only
-#ifdef _MSC_VER
- #pragma warning(push)
- #pragma warning(disable:4275)
-#endif
       : public BaseHeightmap<OgreGeometry>
-#ifdef _MSC_VER
- #pragma warning(pop)
-#endif
     {
       /// \brief Constructor
       protected: explicit OgreHeightmap(const HeightmapDescriptor &_desc);
@@ -133,4 +131,8 @@ namespace ignition
     }
   }
 }
+#ifdef _MSC_VER
+ #pragma warning(pop)
+#endif
+
 #endif

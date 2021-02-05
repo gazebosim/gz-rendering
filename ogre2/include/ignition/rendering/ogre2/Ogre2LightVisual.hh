@@ -63,7 +63,8 @@ namespace ignition
       public: virtual MaterialPtr Material() const;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
+      public: virtual void SetMaterial(
+        MaterialPtr _material, bool _unique) override;
 
       /// \brief Set material to grid geometry.
       /// \param[in] _material Ogre material.

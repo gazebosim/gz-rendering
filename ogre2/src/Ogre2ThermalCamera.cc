@@ -79,7 +79,8 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   /// \param[in] _format Inage format
   public: void SetFormat(PixelFormat _format);
 
-  /// \brieft Set linear resolution
+  /// \brief Set temperature linear resolution
+  /// \param[in] _resolution Temperature linear resolution
   public: void SetLinearResolution(double _resolution);
 
   /// \brief Callback when a render target is about to be rendered
@@ -133,7 +134,7 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   /// \brief thermal camera image format
   private: PixelFormat format = PF_L16;
 
-  /// \brief thermal camera image format
+  /// \brief thermal camera image bit depth
   private: int bitDepth = 16u;
 };
 }

@@ -75,6 +75,13 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   /// \brief destructor
   public: ~Ogre2ThermalCameraMaterialSwitcher() = default;
 
+  /// \brief Set image format
+  /// \param[in] _format Inage format
+  public: void SetFormat(PixelFormat _format);
+
+  /// \brieft Set linear resolution
+  public: void SetLinearResolution(double _resolution);
+
   /// \brief Callback when a render target is about to be rendered
   /// \param[in] _evt Ogre render target event containing information about
   /// the source render target.
@@ -119,6 +126,15 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   /// \brief A map of ogre sub item pointer to their original hlms material
   private: std::unordered_map<Ogre::SubItem *, Ogre::HlmsDatablock *>
       datablockMap;
+
+  /// \brief linear temperature resolution. Defaults to 10mK
+  private: double resolution = 0.01;
+
+  /// \brief thermal camera image format
+  private: PixelFormat format = PF_L16;
+
+  /// \brief thermal camera image format
+  private: int bitDepth = 16u;
 };
 }
 }
@@ -130,7 +146,7 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
 class ignition::rendering::Ogre2ThermalCameraPrivate
 {
   /// \brief The thermal buffer
-  public: uint16_t *thermalBuffer = nullptr;
+  public: unsigned char *thermalBuffer = nullptr;
 
   /// \brief Outgoing thermal data, used by newThermalFrame event.
   public: uint16_t *thermalImage = nullptr;
@@ -172,6 +188,9 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   /// This only affects objects that are not heat sources
   /// TODO(anyone) add API for setting this value?
   public: bool rgbToTemp = true;
+
+  /// \brief bit depth of each pixel
+  public: unsigned int bitDepth = 16u;
 };
 
 using namespace ignition;
@@ -196,6 +215,18 @@ Ogre2ThermalCameraMaterialSwitcher::Ogre2ThermalCameraMaterialSwitcher(
   this->ogreCamera = this->scene->OgreSceneManager()->findCamera(this->name);
 }
 
+//////////////////////////////////////////////////
+void Ogre2ThermalCameraMaterialSwitcher::SetFormat(PixelFormat _format)
+{
+  this->format = _format;
+  this->bitDepth = 8u * PixelUtil::BytesPerChannel(format);
+}
+
+//////////////////////////////////////////////////
+void Ogre2ThermalCameraMaterialSwitcher::SetLinearResolution(double _resolution)
+{
+  this->resolution = _resolution;
+}
 //////////////////////////////////////////////////
 void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent & /*_evt*/)
@@ -263,18 +294,14 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
           {
             Ogre::SubItem *subItem = item->getSubItem(i);
-            if (!subItem->hasCustomParameter(this->customParamIdx))
-            {
-              // normalize temperature value
-              float color = temp * 100.0 /
-                  static_cast<float>(std::numeric_limits<uint16_t>::max());
+            // normalize temperature value
+            float color = (temp / this->resolution) / ((1 << bitDepth) - 1.0);
 
-              // set g, b, a to 0. This will be used by shaders to determine
-              // if particular fragment is a heat source or not
-              // see media/materials/programs/thermal_camera_fs.glsl
-              subItem->setCustomParameter(this->customParamIdx,
-                  Ogre::Vector4(color, 0, 0, 0.0));
-            }
+            // set g, b, a to 0. This will be used by shaders to determine
+            // if particular fragment is a heat source or not
+            // see media/materials/programs/thermal_camera_fs.glsl
+            subItem->setCustomParameter(this->customParamIdx,
+                Ogre::Vector4(color, 0, 0, 0.0));
             Ogre::HlmsDatablock *datablock = subItem->getDatablock();
             this->datablockMap[subItem] = datablock;
 
@@ -319,13 +346,18 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           if (minTemperature && maxTemperature)
           {
             // make sure the temperature range is between [0, 655.35] kelvin
+            // for 16 bit format and 10mK resolution
+            float maxTemp = ((1 << bitDepth) - 1.0) * this->resolution;
             Ogre::GpuProgramParametersSharedPtr params =
               heatSignatureMaterial->getTechnique(0)->getPass(0)->
               getFragmentProgramParameters();
             params->setNamedConstant("minTemp",
                 std::max(static_cast<float>(*minTemperature), 0.0f));
             params->setNamedConstant("maxTemp",
-                std::min(static_cast<float>(*maxTemperature), 655.35f));
+                std::min(static_cast<float>(*maxTemperature), maxTemp));
+            params->setNamedConstant("bitDepth", this->bitDepth);
+            params->setNamedConstant("resolution",
+                static_cast<float>(this->resolution));
           }
           heatSignatureMaterial->load();
           this->heatSignatureMaterials[item->getId()] = heatSignatureMaterial;
@@ -552,6 +584,22 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   this->ogreCamera->setNearClipDistance(nearPlane);
   this->ogreCamera->setFarClipDistance(farPlane);
 
+  // only support 8 bit and 16 bit formats for now.
+  // default to 16 bit
+  Ogre::PixelFormat ogrePF;
+  if (this->ImageFormat() == PF_L8)
+  {
+    ogrePF = Ogre::PF_L8;
+  }
+  else
+  {
+    this->SetImageFormat(PF_L16);
+    ogrePF = Ogre::PF_L16;
+  }
+
+  PixelFormat format = this->ImageFormat();
+  this->dataPtr->bitDepth = 8u * PixelUtil::BytesPerChannel(format);
+
   // Set the uniform variables (thermal_camera_fs.glsl).
   // The projectParams is used to linearize thermal buffer data
   // The other params are used to clamp the range output
@@ -582,6 +630,8 @@ void Ogre2ThermalCamera::CreateThermalTexture()
       static_cast<float>(this->heatSourceTempRange));
   psParams->setNamedConstant("rgbToTemp",
       static_cast<int>(this->dataPtr->rgbToTemp));
+  psParams->setNamedConstant("bitDepth",
+      static_cast<int>(this->dataPtr->bitDepth));
 
   // Create thermal camera compositor
   auto engine = Ogre2RenderEngine::Instance();
@@ -726,7 +776,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     Ogre::TextureManager::getSingleton().createManual(
     this->Name() + "_thermal", "General", Ogre::TEX_TYPE_2D,
     this->ImageWidth(), this->ImageHeight(), 1, 0,
-    Ogre::PF_L16, Ogre::TU_RENDERTARGET,
+    ogrePF, Ogre::TU_RENDERTARGET,
     0, false, 0, Ogre::BLANKSTRING, false, true);
 
   Ogre::RenderTarget *rt =
@@ -748,6 +798,9 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     {
       this->dataPtr->thermalMaterialSwitcher.reset(
           new Ogre2ThermalCameraMaterialSwitcher(this->scene, this->Name()));
+      this->dataPtr->thermalMaterialSwitcher->SetFormat(this->ImageFormat());
+      this->dataPtr->thermalMaterialSwitcher->SetLinearResolution(
+          this->resolution);
       c.target->addListener(this->dataPtr->thermalMaterialSwitcher.get());
       break;
     }
@@ -779,8 +832,7 @@ void Ogre2ThermalCamera::PostRender()
 
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();
-
-  PixelFormat format = PF_L16;
+  PixelFormat format = this->ImageFormat();
   Ogre::PixelFormat imageFormat = Ogre2Conversions::Convert(format);
 
   int len = width * height;
@@ -789,7 +841,8 @@ void Ogre2ThermalCamera::PostRender()
 
   if (!this->dataPtr->thermalBuffer)
   {
-    this->dataPtr->thermalBuffer = new uint16_t[len * channelCount];
+    this->dataPtr->thermalBuffer =
+        new unsigned char[len * channelCount * bytesPerChannel];
   }
   Ogre::PixelBox dstBox(width, height,
         1, imageFormat, this->dataPtr->thermalBuffer);
@@ -803,12 +856,32 @@ void Ogre2ThermalCamera::PostRender()
     this->dataPtr->thermalImage = new uint16_t[len];
   }
 
-  // fill thermal data
-  memcpy(this->dataPtr->thermalImage, this->dataPtr->thermalBuffer,
-      height*width*channelCount*bytesPerChannel);
+  if (format == PF_L8)
+  {
+    // workaround for populating a 16bit image buffer with 8bit data
+    // \todo(anyone) add a new ConnectNewThermalFrame function that accepts
+    // a generic unsigned char array instead of uint16_t so we can do a direct
+    // memcpy of the data
+    for (unsigned int i = 0u; i < height; ++i)
+    {
+      for (unsigned int j = 0u; j < width; ++j)
+      {
+        unsigned int idx = i*width + j;
+        int v = static_cast<int>(this->dataPtr->thermalBuffer[idx]);
+        this->dataPtr->thermalImage[idx] = static_cast<uint16_t>(v);
+      }
+    }
+  }
+  else
+  {
+    // fill thermal data
+    memcpy(this->dataPtr->thermalImage, this->dataPtr->thermalBuffer,
+        height*width*channelCount*bytesPerChannel);
+  }
 
   this->dataPtr->newThermalFrame(
-        this->dataPtr->thermalImage, width, height, 1, "L16");
+      this->dataPtr->thermalImage, width, height, 1,
+      PixelUtil::Name(format));
 
   // Uncomment to debug thermal output
   // std::cout << "wxh: " << width << " x " << height << std::endl;

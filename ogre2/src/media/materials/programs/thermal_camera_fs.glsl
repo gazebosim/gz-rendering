@@ -38,6 +38,7 @@ uniform float resolution;
 uniform float heatSourceTempRange;
 uniform float ambient;
 uniform int rgbToTemp;
+uniform int bitDepth;
 
 float getDepth(vec2 uv)
 {
@@ -51,6 +52,7 @@ void main()
   // temperature defaults to ambient
   float temp = ambient;
   float heatRange = range;
+  int bitMaxValue = (1 << bitDepth) - 1;
 
   // dNorm value is between [0, 1]. It is used to for varying temperature
   // value of a fragment.
@@ -74,7 +76,9 @@ void main()
     if (isHeatSource)
     {
       // heat is normalized so convert back to work in kelvin
-      temp = heat * 655.35;
+      // for 16 bit camera and 0.01 resolution:
+      //     ((1 << bitDepth) - 1)* resolution = 655.35
+      temp = heat * bitMaxValue * resolution;
 
       // set temperature variation for heat source
       heatRange = heatSourceTempRange;
@@ -115,7 +119,8 @@ void main()
   // apply resolution factor
   temp /= resolution;
   // normalize
-  temp /= 65535.0;
+  float denorm = float(bitMaxValue);
+  temp /= denorm;
 
   fragColor = vec4(temp, 0, 0, 1.0);
 }

@@ -35,12 +35,16 @@ out vec4 fragColor;
 uniform float minTemp = 0.0;
 uniform float maxTemp = 100.0;
 
+uniform int bitDepth;
+uniform float resolution;
+
 // map a temperature from the [0, 655.35] range to the [minTemp, maxTemp]
-// range (655.35 is the largest Kelvin value allowed)
+// range (655.35 is the largest Kelvin value allowed for 16 bit with
+// 10mK resolution)
 float mapNormalized(float num)
 {
   float mappedKelvin = ((maxTemp - minTemp) * num) + minTemp;
-  return mappedKelvin / 655.35;
+  return mappedKelvin / (((1 << bitDepth) - 1.0) * resolution);
 }
 
 void main()

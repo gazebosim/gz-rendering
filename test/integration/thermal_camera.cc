@@ -40,7 +40,7 @@ void OnNewThermalFrame(uint16_t *_scanDest, const uint16_t *_scan,
                   unsigned int _channels,
                   const std::string &_format)
 {
-  // EXPECT_EQ("L16", _format);
+  EXPECT_TRUE(_format == "L16" || _format == "L8");
   EXPECT_EQ(50u, _width);
   EXPECT_EQ(50u, _height);
   EXPECT_EQ(1u, _channels);
@@ -400,8 +400,6 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
         ambientTempRange);
     EXPECT_FLOAT_EQ(thermalData[right], thermalData[left]);
     EXPECT_NEAR(boxTemp, thermalData[mid] * linearResolution, boxTempRange);
-
-    std::cerr << " mid " << thermalData[mid] << std::endl;
 
     // move box in front of near clip plane and verify the thermal
     // image returns all box temperature values

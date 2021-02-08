@@ -77,7 +77,7 @@ void main()
     {
       // heat is normalized so convert back to work in kelvin
       // for 16 bit camera and 0.01 resolution:
-      //     ((1 << bitDepth) - 1)* resolution = 655.35
+      //     ((1 << bitDepth) - 1) * resolution = 655.35
       temp = heat * bitMaxValue * resolution;
 
       // set temperature variation for heat source

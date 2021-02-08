@@ -266,7 +266,7 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
 {
   int imgWidth = 50;
   int imgHeight = 50;
-  double aspectRatio = imgWidth/imgHeight;
+  double aspectRatio = imgWidth / imgHeight;
 
   double unitBoxSize = 1.0;
   ignition::math::Vector3d boxPosition(1.8, 0.0, 0.0);
@@ -312,7 +312,7 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
   root->AddChild(box);
   {
     // range is hardcoded in shaders
-    float boxTempRange = 3.0;
+    float boxTempRange = 3.0f;
     double farDist = 10.0;
     double nearDist = 0.15;
     double hfov = 1.05;

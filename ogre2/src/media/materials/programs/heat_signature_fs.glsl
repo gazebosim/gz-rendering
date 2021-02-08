@@ -38,9 +38,8 @@ uniform float maxTemp = 100.0;
 uniform int bitDepth;
 uniform float resolution;
 
-// map a temperature from the [0, 655.35] range to the [minTemp, maxTemp]
-// range (655.35 is the largest Kelvin value allowed for 16 bit with
-// 10mK resolution)
+// map a temperature from the [min, max] range to the user defined
+// [minTemp, maxTemp] range
 float mapNormalized(float num)
 {
   float mappedKelvin = ((maxTemp - minTemp) * num) + minTemp;

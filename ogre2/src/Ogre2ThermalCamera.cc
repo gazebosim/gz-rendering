@@ -76,7 +76,7 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   public: ~Ogre2ThermalCameraMaterialSwitcher() = default;
 
   /// \brief Set image format
-  /// \param[in] _format Inage format
+  /// \param[in] _format Image format
   public: void SetFormat(PixelFormat _format);
 
   /// \brief Set temperature linear resolution
@@ -135,7 +135,7 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   private: PixelFormat format = PF_L16;
 
   /// \brief thermal camera image bit depth
-  private: int bitDepth = 16u;
+  private: unsigned int bitDepth = 16u;
 };
 }
 }
@@ -295,6 +295,7 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
           {
             Ogre::SubItem *subItem = item->getSubItem(i);
+
             // normalize temperature value
             float color = (temp / this->resolution) / ((1 << bitDepth) - 1.0);
 
@@ -346,8 +347,8 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
           auto maxTemperature = std::get_if<float>(&maxTempVariant);
           if (minTemperature && maxTemperature)
           {
-            // make sure the temperature range is between [0, 655.35] kelvin
-            // for 16 bit format and 10mK resolution
+            // make sure the temperature range is between [min, max] kelvin
+            // for the given pixel format and camera resolution
             float maxTemp = ((1 << bitDepth) - 1.0) * this->resolution;
             Ogre::GpuProgramParametersSharedPtr params =
               heatSignatureMaterial->getTechnique(0)->getPass(0)->
@@ -356,7 +357,8 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
                 std::max(static_cast<float>(*minTemperature), 0.0f));
             params->setNamedConstant("maxTemp",
                 std::min(static_cast<float>(*maxTemperature), maxTemp));
-            params->setNamedConstant("bitDepth", this->bitDepth);
+            params->setNamedConstant("bitDepth",
+                static_cast<int>(this->bitDepth));
             params->setNamedConstant("resolution",
                 static_cast<float>(this->resolution));
           }
@@ -867,9 +869,9 @@ void Ogre2ThermalCamera::PostRender()
     {
       for (unsigned int j = 0u; j < width; ++j)
       {
-        unsigned int idx = i*width + j;
-        int v = static_cast<int>(this->dataPtr->thermalBuffer[idx]);
-        this->dataPtr->thermalImage[idx] = static_cast<uint16_t>(v);
+        unsigned int idx = (i * width) + j;
+        this->dataPtr->thermalImage[idx] = static_cast<uint16_t>(
+            this->dataPtr->thermalBuffer[idx]);
       }
     }
   }
@@ -877,7 +879,7 @@ void Ogre2ThermalCamera::PostRender()
   {
     // fill thermal data
     memcpy(this->dataPtr->thermalImage, this->dataPtr->thermalBuffer,
-        height*width*channelCount*bytesPerChannel);
+        height * width * channelCount * bytesPerChannel);
   }
 
   this->dataPtr->newThermalFrame(

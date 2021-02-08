@@ -132,7 +132,7 @@ double Ogre2Light::Intensity() const
 //////////////////////////////////////////////////
 void Ogre2Light::SetIntensity(double _intensity)
 {
-  this->ogreLight->setPowerScale(_intensity * Ogre::Math::PI);
+  this->ogreLight->setPowerScale(_intensity);
 }
 
 //////////////////////////////////////////////////

@@ -316,6 +316,10 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
     double farDist = 10.0;
     double nearDist = 0.15;
     double hfov = 1.05;
+    // set min max values based on thermal camera spec
+    // using the Vividia HTi HT-301 camera as example:
+    // https://hti-instrument.com/products/ht-301-mobile-phone-thermal-imager
+    // The range is ~= -20 to 400 degree Celsius
     double minTemp = 253.0;
     double maxTemp = 673.0;
     // Create thermal camera

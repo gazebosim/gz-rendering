@@ -399,7 +399,6 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   bool isObj = false;
   if (common::isFile(_texture))
   {
-
     // check if the model is a OBJ file
     {
       size_t idx = _texture.rfind("meshes");

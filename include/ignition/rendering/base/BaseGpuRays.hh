@@ -360,7 +360,7 @@ namespace ignition
     //////////////////////////////////////////////////
     int BaseGpuRays<T>::RangeCount() const
     {
-      return this->RayCount() * this->hResolution;
+      return static_cast<int>(this->RayCount() * this->hResolution);
     }
 
     template <class T>
@@ -381,7 +381,7 @@ namespace ignition
     //////////////////////////////////////////////////
     int BaseGpuRays<T>::VerticalRangeCount() const
     {
-      return this->VerticalRayCount() * this->vResolution;
+      return static_cast<int>(this->VerticalRayCount() * this->vResolution);
     }
 
     template <class T>

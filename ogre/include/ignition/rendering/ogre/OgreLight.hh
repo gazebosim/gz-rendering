@@ -39,39 +39,46 @@ namespace ignition
 
       public: virtual ~OgreLight();
 
-      public: virtual math::Color DiffuseColor() const;
+      public: virtual math::Color DiffuseColor() const override;
 
-      public: virtual void SetDiffuseColor(const math::Color &_color);
+      public: virtual void SetDiffuseColor(const math::Color &_color) override;
 
-      public: virtual math::Color SpecularColor() const;
+      public: virtual math::Color SpecularColor() const override;
 
-      public: virtual void SetSpecularColor(const math::Color &_color);
+      public: virtual void SetSpecularColor(
+        const math::Color &_color) override;
 
-      public: virtual double AttenuationConstant() const;
+      public: virtual double AttenuationConstant() const override;
 
-      public: virtual void SetAttenuationConstant(double _value);
+      public: virtual void SetAttenuationConstant(double _value) override;
 
-      public: virtual double AttenuationLinear() const;
+      public: virtual double AttenuationLinear() const override;
 
-      public: virtual void SetAttenuationLinear(double _value);
+      public: virtual void SetAttenuationLinear(double _value) override;
 
-      public: virtual double AttenuationQuadratic() const;
+      public: virtual double AttenuationQuadratic() const override;
 
-      public: virtual void SetAttenuationQuadratic(double _value);
+      public: virtual void SetAttenuationQuadratic(double _value) override;
 
-      public: virtual double AttenuationRange() const;
+      public: virtual double AttenuationRange() const override;
 
-      public: virtual void SetAttenuationRange(double _range);
+      public: virtual void SetAttenuationRange(double _range) override;
 
-      public: virtual bool CastShadows() const;
+      public: virtual bool CastShadows() const override;
 
-      public: virtual void SetCastShadows(bool _castShadows);
+      public: virtual void SetCastShadows(bool _castShadows) override;
+
+      // Documentation Inherited
+      public: virtual double Intensity() const override;
+
+      // Documentation Inherited
+      public: virtual void SetIntensity(double _intensity) override;
 
       public: virtual Ogre::Light *Light() const;
 
-      public: virtual void Destroy();
+      public: virtual void Destroy() override;
 
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
       private: void CreateLight();
 

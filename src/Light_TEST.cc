@@ -74,6 +74,10 @@ void LightTest::Light(const std::string &_renderEngine)
   light->SetCastShadows(false);
   EXPECT_FALSE(light->CastShadows());
 
+  // intensity
+  light->SetIntensity(1.25);
+  EXPECT_DOUBLE_EQ(1.25, light->Intensity());
+
   // attenuation
   // Checking near because Ogre stores it as float
   light->SetAttenuationConstant(0.6);

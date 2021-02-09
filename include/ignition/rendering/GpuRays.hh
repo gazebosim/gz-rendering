@@ -159,24 +159,36 @@ namespace ignition
       /// \return Channel count.
       public: virtual unsigned int Channels() const = 0;
 
-      /// \brief Set the horizontal resolution.
+      /// \brief Set the horizontal resolution. This number is multiplied by
+      /// RayCount to calculate RangeCount, which is the the number range data
+      /// points.
+      /// \sa RayCount()
       /// \param[in] _resolution The new horizontal resolution. The
       /// absolute value of this parameter is used to prevent a
       /// negative resolution value.
       public: virtual void SetHorizontalResolution(double _resolution) = 0;
 
-      /// \brief Get the horizontal resolution.
+      /// \brief Get the horizontal resolution. This number is multiplied by
+      /// RayCount to calculate RangeCount, which is the the number range data
+      /// points.
+      /// \sa RayCount()
       /// \return The horizontal resolution
       public: virtual double HorizontalResolution() const = 0;
 
-      /// \brief Set the vertical resolution.
+      /// \brief Set the vertical resolution. This number is multiplied by
+      /// VerticalRayCount to calculate VerticalRangeCount, which is the the
+      /// number vertical range data points.
       /// \param[in] _resolution The new vertical resolution. The
       /// absolute value of this parameter is used to prevent a
       /// negative resolution value.
+      /// \sa VerticalRayCount()
       public: virtual void SetVerticalResolution(double _resolution) = 0;
 
-      /// \brief Get the vertical resolution.
-      /// \return The vertical resolution
+      /// \brief Get the vertical resolution. This number is multiplied by
+      /// VerticalRayCount to calculate VerticalRangeCount, which is the the
+      /// number vertical range data points.
+      /// \return The vertical resolution.
+      /// \sa VerticalRayCount()
       public: virtual double VerticalResolution() const = 0;
     };
   }

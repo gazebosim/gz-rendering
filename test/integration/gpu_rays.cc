@@ -133,6 +133,19 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 
     gpuRays->SetVerticalRayCount(67);
     EXPECT_NEAR(gpuRays->VerticalRayCount(), 67, 1e-6);
+
+    EXPECT_DOUBLE_EQ(1.0, gpuRays->HorizontalResolution());
+    EXPECT_DOUBLE_EQ(1.0, gpuRays->VerticalResolution());
+
+    gpuRays->SetHorizontalResolution(0.1);
+    gpuRays->SetVerticalResolution(10.5);
+    EXPECT_DOUBLE_EQ(0.1, gpuRays->HorizontalResolution());
+    EXPECT_DOUBLE_EQ(10.5, gpuRays->VerticalResolution());
+
+    gpuRays->SetHorizontalResolution(-2.4);
+    gpuRays->SetVerticalResolution(-0.8);
+    EXPECT_DOUBLE_EQ(2.4, gpuRays->HorizontalResolution());
+    EXPECT_DOUBLE_EQ(0.8, gpuRays->VerticalResolution());
   }
 
   // Clean up

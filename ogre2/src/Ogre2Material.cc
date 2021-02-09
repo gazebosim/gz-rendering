@@ -396,21 +396,8 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   Ogre::PbsTextureTypes _type)
 {
   std::string baseName = _texture;
-  bool isObj = false;
   if (common::isFile(_texture))
   {
-    // check if the model is a OBJ file
-    {
-      size_t idx = _texture.rfind("meshes");
-      if (idx != std::string::npos)
-      {
-        std::string objFile =
-            common::joinPaths(_texture.substr(0, idx), "meshes", "model.obj");
-        if (common::isFile(objFile))
-          isObj = true;
-      }
-    }
-
     baseName = common::basename(_texture);
     size_t idx = _texture.rfind(baseName);
     if (idx != std::string::npos)
@@ -423,6 +410,18 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
         Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
             dirPath, "FileSystem", "General");
       }
+    }
+  }
+
+  // check if the model is a OBJ file
+  {
+    size_t idx = _texture.rfind("meshes");
+    if (idx != std::string::npos)
+    {
+      std::string objFile =
+        common::joinPaths(_texture.substr(0, idx), "meshes", "model.obj");
+      if (common::isFile(objFile))
+        baseName = _texture;
     }
   }
 
@@ -439,9 +438,6 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
   this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture,
       &samplerBlockRef);
-
-  if (isObj)
-    hlmsTextureManager->destroyTexture(baseName);
 }
 
 //////////////////////////////////////////////////

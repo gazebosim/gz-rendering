@@ -45,7 +45,7 @@ namespace ignition
       /// \brief Constructor
       public: SceneManager();
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: ~SceneManager();
 
       /// \brief Load resources

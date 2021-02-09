@@ -32,7 +32,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Light :
       public virtual Node
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Light() { }
 
       /// \brief Get the diffuse color
@@ -136,7 +136,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE PointLight :
       public virtual Light
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~PointLight() { }
     };
 
@@ -145,7 +145,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE SpotLight :
       public virtual Light
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~SpotLight() { }
 
       /// \brief Get direction of the light

@@ -53,8 +53,16 @@ void OnNewThermalFrame(uint16_t *_scanDest, const uint16_t *_scan,
 class ThermalCameraTest: public testing::Test,
   public testing::WithParamInterface<const char *>
 {
-  // Create a Camera sensor from a SDF and gets a image message
-  public: void ThermalCameraBoxes(const std::string &_renderEngine);
+  // Create a Camera sensor from a SDF and gets a image message.
+  // If _useHeatSignature is false, uniform surface temperature is tested
+  // (if _useHeatSignature is true, applying a heat signature is tested)
+  public: void ThermalCameraBoxes(const std::string &_renderEngine,
+              const bool _useHeatSignature);
+
+  // Path to test textures
+  public: const std::string TEST_MEDIA_PATH =
+          ignition::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+                "test", "media", "materials", "textures");
 
   // Documentation inherited
   protected: void SetUp() override
@@ -65,7 +73,7 @@ class ThermalCameraTest: public testing::Test,
 
 //////////////////////////////////////////////////
 void ThermalCameraTest::ThermalCameraBoxes(
-    const std::string &_renderEngine)
+    const std::string &_renderEngine, const bool _useHeatSignature)
 {
   int imgWidth = 50;
   int imgHeight = 50;
@@ -79,6 +87,13 @@ void ThermalCameraTest::ThermalCameraBoxes(
   {
     igndbg << "Engine '" << _renderEngine
               << "' doesn't support thermal cameras" << std::endl;
+    return;
+  }
+  // Only ogre2 supports heat signatures
+  else if (_useHeatSignature && (_renderEngine.compare("ogre2") != 0))
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' doesn't support heat signatures" << std::endl;
     return;
   }
 
@@ -111,6 +126,17 @@ void ThermalCameraTest::ThermalCameraBoxes(
   // set box temperature
   float boxTemp = 310.0;
   box->SetUserData("temperature", boxTemp);
+  if (_useHeatSignature)
+  {
+    std::string textureName =
+      ignition::common::joinPaths(TEST_MEDIA_PATH, "gray_texture.png");
+    box->SetUserData("temperature", textureName);
+    box->SetUserData("minTemp", 100.0f);
+    box->SetUserData("maxTemp", 200.0f);
+    // (the heat signature is just a texture of gray pixels,
+    // so the box's temperature should be midway between minTemp and maxTemp)
+    boxTemp = 150.0f;
+  }
 
   root->AddChild(box);
   {
@@ -230,9 +256,14 @@ void ThermalCameraTest::ThermalCameraBoxes(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
-TEST_P(ThermalCameraTest, ThermalCameraBoxes)
+TEST_P(ThermalCameraTest, ThermalCameraBoxesUniformTemp)
 {
-  ThermalCameraBoxes(GetParam());
+  ThermalCameraBoxes(GetParam(), false);
+}
+
+TEST_P(ThermalCameraTest, ThermalCameraBoxesHeatSignature)
+{
+  ThermalCameraBoxes(GetParam(), true);
 }
 
 INSTANTIATE_TEST_CASE_P(ThermalCamera, ThermalCameraTest,

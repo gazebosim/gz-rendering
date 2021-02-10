@@ -45,9 +45,6 @@ class ignition::rendering::Ogre2ParticleEmitterPrivate
   public: Ogre::ParticleSystem *ps = nullptr;
 
   /// \brief Ogre particle emitter.
-  //public: std::array<Ogre::ParticleEmitter*,
-//                     EmitterType::EM_NUM_EMITTERS> emitters;
-
   public: Ogre::ParticleEmitter *emitter = nullptr;
 
   // \brief Ogre color image affector.
@@ -126,12 +123,6 @@ void Ogre2ParticleEmitter::Ogre2ParticleEmitter::SetType(
     return;
   }
 
-//  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-//    this->dataPtr->emitters[i]->setEnabled(false);
-
-//  this->dataPtr->emitters[_type]->setEnabled(true);
-//  this->dataPtr->emitter->setEnabled(true);
-
   if (this->type == _type)
     return;
 
@@ -178,7 +169,6 @@ void Ogre2ParticleEmitter::SetEmitterSize(const ignition::math::Vector3d &_size)
         // We skip EM_POINT.
         for (auto i = 1; i < EmitterType::EM_NUM_EMITTERS; ++i)
         {
-          // if (!this->dataPtr->emitters[i]->setParameter(param,  value))
           if (!this->dataPtr->emitter->setParameter(param,  value))
           {
             ignerr << "SetEmitterSize() error for " << kOgreEmitterTypes[i]
@@ -212,8 +202,6 @@ void Ogre2ParticleEmitter::SetRate(double _rate)
     return;
   }
 
- // for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-  //  this->dataPtr->emitters[i]->setEmissionRate(_rate);
   this->dataPtr->emitter->setEmissionRate(_rate);
 
   this->rate = _rate;
@@ -222,9 +210,6 @@ void Ogre2ParticleEmitter::SetRate(double _rate)
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::SetDuration(double _duration)
 {
-//  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-//    this->dataPtr->emitters[i]->setDuration(_duration);
-
   this->dataPtr->emitter->setDuration(_duration);
 
 
@@ -234,7 +219,6 @@ void Ogre2ParticleEmitter::SetDuration(double _duration)
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::SetEmitting(bool _enable)
 {
-  // this->dataPtr->emitters[this->type]->setEnabled(_enable);
   this->dataPtr->emitter->setEnabled(_enable);
   this->dataPtr->ps->setEmitting(_enable);
   this->emitting = _enable;
@@ -270,11 +254,7 @@ void Ogre2ParticleEmitter::SetLifetime(double _lifetime)
     return;
   }
 
-//  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-//    this->dataPtr->emitters[i]->setTimeToLive(_lifetime);
   this->dataPtr->emitter->setTimeToLive(_lifetime);
-
-
 
   this->lifetime = _lifetime;
 }
@@ -298,8 +278,6 @@ void Ogre2ParticleEmitter::SetMaterial(const MaterialPtr &_material)
 void Ogre2ParticleEmitter::SetVelocityRange(double _minVelocity,
     double _maxVelocity)
 {
-//  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-//    this->dataPtr->emitters[i]->setParticleVelocity(_minVelocity, _maxVelocity);
   this->dataPtr->emitter->setParticleVelocity(_minVelocity, _maxVelocity);
 
 
@@ -498,16 +476,8 @@ void Ogre2ParticleEmitter::CreateParticleSystem()
              "The nummer of supported emitters does not match the number of "
              "Ogre emitter types.");
 
-  // Instantiate all particle emitters and their default parameters.
-  // Note that we enable the point emitter by default.
-//  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-//  {
-//    this->dataPtr->emitters[i] =
-//      this->dataPtr->ps->addEmitter(kOgreEmitterTypes[i]);
-//    this->dataPtr->emitters[i]->setEnabled(false);
-//    this->dataPtr->emitters[i]->setDirection(Ogre::Vector3::UNIT_X);
-//  }
-
+  // Instantiate particle emitter and their default parameters.
+  // default in point emitter
   this->dataPtr->emitter =
       this->dataPtr->ps->addEmitter(kOgreEmitterTypes[this->type]);
   this->dataPtr->emitter->setDirection(Ogre::Vector3::UNIT_X);
@@ -520,9 +490,6 @@ void Ogre2ParticleEmitter::CreateParticleSystem()
   this->dataPtr->ogreDatablock = ogreMat->UnlitDatablock();
   this->dataPtr->ps->setMaterialName(
       *(this->dataPtr->ogreDatablock->getNameStr()));
-
-  // Default emitter parameters.
-  // this->SetParticleSize({1, 1, 1});
 
   this->ogreNode->attachObject(this->dataPtr->ps);
   igndbg << "Particle emitter initialized" << std::endl;

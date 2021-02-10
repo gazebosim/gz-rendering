@@ -2,10 +2,12 @@
 
 ### Ignition Rendering 4.X
 
-### Ignition Rendering 4.x.x (202x-xx-xx)
+### Ignition Rendering 4.4.0 (2021-02-11)
 
 1. Add support for 8 bit thermal camera image format
     * [Pull Request #235](https://github.com/ignitionrobotics/ign-rendering/pull/235)
+
+1. All changes up to version 3.4.0
 
 ### Ignition Rendering 4.3.1 (2021-02-03)
 

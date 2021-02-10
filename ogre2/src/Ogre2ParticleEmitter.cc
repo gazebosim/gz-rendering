@@ -491,6 +491,8 @@ void Ogre2ParticleEmitter::CreateParticleSystem()
   this->dataPtr->ps->setMaterialName(
       *(this->dataPtr->ogreDatablock->getNameStr()));
 
+  this->dataPtr->ps->setDefaultDimensions(1, 1);
+
   this->ogreNode->attachObject(this->dataPtr->ps);
   igndbg << "Particle emitter initialized" << std::endl;
 }

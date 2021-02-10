@@ -106,34 +106,19 @@ void buildScene(ScenePtr _scene)
   particleMaterial->SetDepthWriteEnabled(false);
 
   //! [create particle emitter]
-  //ParticleEmitterPtr emitter = _scene->CreateParticleEmitter();
-  //emitter->SetType(EM_POINT);
-  //emitter->SetEmitterSize({1.0, 1.0, 1.0});
-  //emitter->SetLocalPose({2, 1.10, 1.25, 1.5708, 0, 2.3});
-  //emitter->SetRate(10);
-  //emitter->SetParticleSize({0.1, 0.1, 0.1});
-  //emitter->SetLifetime(2);
-  //emitter->SetVelocityRange(10, 20);
-  //emitter->SetMaterial(particleMaterial);
-  //emitter->SetColorRangeImage(RESOURCE_PATH + "/smokecolors.png");
-  //emitter->SetScaleRate(10);
-  //emitter->SetEmitting(true);
-  //root->AddChild(emitter);
-
   ParticleEmitterPtr emitter = _scene->CreateParticleEmitter();
   emitter->SetType(EM_POINT);
-  emitter->SetEmitterSize({50.0, 50.0, 50.0});
+  emitter->SetEmitterSize({1.0, 1.0, 1.0});
   emitter->SetLocalPose({2, 1.10, 1.25, 1.5708, 0, 2.3});
   emitter->SetRate(10);
-  emitter->SetParticleSize({0.1, 0.1, 0.1});
-  emitter->SetLifetime(5);
-  emitter->SetVelocityRange(1, 2);
+  emitter->SetParticleSize({0.01, 0.1, 0.1});
+  emitter->SetLifetime(2);
+  emitter->SetVelocityRange(10, 20);
   emitter->SetMaterial(particleMaterial);
   emitter->SetColorRangeImage(RESOURCE_PATH + "/smokecolors.png");
-  emitter->SetScaleRate(2);
+  emitter->SetScaleRate(10);
   emitter->SetEmitting(true);
   root->AddChild(emitter);
-
   //! [create particle emitter]
 }
 

@@ -141,6 +141,20 @@
 1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
 
+### Ignition Rendering 3.X.X (2021-XX-XX)
+
+
+
+### Ignition Rendering 3.4.0 (2021-02-09)
+
+1. Clear all Windows warnings
+    * [Pull request 206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
+    * [Pull request 215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
+    * [Pull request 225](https://github.com/ignitionrobotics/ign-rendering/pull/225)
+
+1. Add laser_retro support
+    * [Pull request 194](https://github.com/ignitionrobotics/ign-rendering/pull/194)
+
 ### Ignition Rendering 3.3.0 (2021-01-22)
 
 1. Add Windows installation.

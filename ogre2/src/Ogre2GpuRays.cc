@@ -253,7 +253,8 @@ void Ogre2LaserRetroMaterialSwitcher::preRenderTargetUpdate(
             if (!subItem->hasCustomParameter(this->customParamIdx))
             {
               // limit laser retro value to 2000 (as in gazebo)
-              if (retroValue > 2000.0){
+              if (retroValue > 2000.0)
+              {
                 retroValue = 2000.0;
               }
               float color = retroValue / 2000.0;
@@ -696,7 +697,7 @@ void Ogre2GpuRays::Setup1stPass()
     colorTexDef->preferDepthTexture = true;
     colorTexDef->fsaaExplicitResolve = false;
 
-   nodeDef->setNumTargetPass(2);
+    nodeDef->setNumTargetPass(2);
 
     Ogre::CompositorTargetDef *colorTargetDef =
         nodeDef->addTargetPass("colorTexture");
@@ -813,7 +814,6 @@ void Ogre2GpuRays::Setup1stPass()
         break;
       }
     }
-
   }
 }
 

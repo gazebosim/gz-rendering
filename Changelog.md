@@ -2,6 +2,11 @@
 
 ### Ignition Rendering 4.X
 
+### Ignition Rendering 4.x.x (202x-xx-xx)
+
+1. Add support for 8 bit thermal camera image format
+    * [Pull Request #235](https://github.com/ignitionrobotics/ign-rendering/pull/235)
+
 ### Ignition Rendering 4.3.1 (2021-02-03)
 
 1. Fix converting Pbs to Unlit material conversion (#230)

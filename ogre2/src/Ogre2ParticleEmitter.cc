@@ -36,6 +36,8 @@
 using namespace ignition;
 using namespace rendering;
 
+uint32_t Ogre2ParticleEmitter::kParticleVisibilityFlags = 0x00100000;
+
 class ignition::rendering::Ogre2ParticleEmitterPrivate
 {
   /// \brief Internal material name.
@@ -419,6 +421,8 @@ void Ogre2ParticleEmitter::Init()
   this->dataPtr->ps->setCullIndividually(true);
   this->dataPtr->ps->setParticleQuota(500);
   this->dataPtr->ps->setSortingEnabled(true);
+
+  this->dataPtr->ps->setVisibilityFlags(kParticleVisibilityFlags);
 
   IGN_ASSERT(kOgreEmitterTypes.size() == EmitterType::EM_NUM_EMITTERS,
              "The nummer of supported emitters does not match the number of "

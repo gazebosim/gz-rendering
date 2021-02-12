@@ -372,12 +372,6 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-MeshPtr Ogre2Scene::CreateEllipsoidImpl(unsigned int _id,
-    const std::string &_name)
-{
-  return this->CreateMeshImpl(_id, _name, "unit_ellipsoid");
-}
-//////////////////////////////////////////////////
 MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
     const std::string &_name, const MeshDescriptor &_desc)
 {

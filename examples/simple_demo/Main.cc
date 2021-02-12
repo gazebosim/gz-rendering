@@ -120,8 +120,8 @@ void buildScene(ScenePtr _scene)
 
   // create ellipsoid visual
   VisualPtr ellipsoidVisual = _scene->CreateVisual();
-  auto ellipsoid = _scene->CreateEllipsoid();
-  ellipsoid->SetRadii(ignition::math::Vector3d(1.2, 0.7, 0.5));
+  auto ellipsoid = _scene->CreateSphere();
+  ellipsoidVisual->SetLocalScale(1.2, 0.7, 0.5);
   ellipsoidVisual->AddGeometry(ellipsoid);
   ellipsoidVisual->SetLocalPosition(3, -1, 0);
   ellipsoidVisual->SetMaterial(green);

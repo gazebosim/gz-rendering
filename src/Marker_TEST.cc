@@ -81,9 +81,6 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   marker->SetType(MarkerType::MT_NONE);
   EXPECT_EQ(MarkerType::MT_NONE, marker->Type());
 
-  marker->SetType(MarkerType::MT_ELLIPSOID);
-  EXPECT_EQ(MarkerType::MT_ELLIPSOID, marker->Type());
-
   marker->SetType(MarkerType::MT_POINTS);
   EXPECT_EQ(MarkerType::MT_POINTS, marker->Type());
 

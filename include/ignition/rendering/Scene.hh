@@ -864,15 +864,13 @@ namespace ignition
       /// \return The created cylinder
       public: virtual GeometryPtr CreateCylinder() = 0;
 
-      /// \brief Create new ellipsoid geometry
-      /// \return The created ellipsoid
-      public: virtual MeshPtr CreateEllipsoid() = 0;
-
       /// \brief Create new plane geometry
       /// \return The created plane
       public: virtual GeometryPtr CreatePlane() = 0;
 
-      /// \brief Create new sphere geometry
+      /// \brief Create new sphere or ellipsoid geometry
+      /// This method allow to create ellipsoid too, because it can be scaled
+      /// in 3 dimensions.
       /// \return The created sphere
       public: virtual GeometryPtr CreateSphere() = 0;
 

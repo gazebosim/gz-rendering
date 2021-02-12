@@ -397,9 +397,6 @@ namespace ignition
 
       public: virtual GeometryPtr CreateCylinder() override;
 
-      // Documentation inherited.
-      public: virtual MeshPtr CreateEllipsoid() override;
-
       public: virtual GeometryPtr CreatePlane() override;
 
       public: virtual GeometryPtr CreateSphere() override;
@@ -557,13 +554,6 @@ namespace ignition
 
       protected: virtual GeometryPtr CreateCylinderImpl(unsigned int _id,
                      const std::string &_name) = 0;
-
-     /// \brief Implementation for creating a ellipsoid geometry object
-     /// \param[in] _id unique object id.
-     /// \param[in] _name unique object name.
-     /// \return Pointer to a ellipsoid geometry object
-     protected: virtual MeshPtr CreateEllipsoidImpl(unsigned int _id,
-                    const std::string &_name) = 0;
 
       protected: virtual GeometryPtr CreatePlaneImpl(unsigned int _id,
                      const std::string &_name) = 0;

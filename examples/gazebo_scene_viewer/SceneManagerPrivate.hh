@@ -327,9 +327,6 @@ namespace ignition
       protected: virtual void ProcessCylinder(
           const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
-      protected: virtual void ProcessEllipsoid(
-          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
-
       protected: virtual void ProcessEmpty(
           const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 

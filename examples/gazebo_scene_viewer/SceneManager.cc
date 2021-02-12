@@ -1481,19 +1481,6 @@ void SubSceneManager::ProcessCylinder(
 //! [process cylinder]
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessEllipsoid(
-    const gazebo::msgs::Geometry & _geometryMsg, VisualPtr _parent)
-{
-  GeometryPtr ellipsoid = this->activeScene->CreateEllipsoid();
-  const gazebo::msgs::EllipsoidGeom &ellipsoidMsg = _geometryMsg.ellipsoid();
-  double x = 2 * ellipsoidMsg.radii().X();
-  double y = 2 * ellipsoidMsg.radii().Y();
-  double z = 2 * ellipsoidMsg.radii().Z();
-  _parent->SetLocalScale(x, y, z);
-  _parent->AddGeometry(ellipsoid);
-}
-
-//////////////////////////////////////////////////
 void SubSceneManager::ProcessEmpty(const gazebo::msgs::Geometry&, VisualPtr)
 {
   // do nothing

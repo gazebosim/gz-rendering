@@ -1010,14 +1010,6 @@ GeometryPtr BaseScene::CreatePlane()
 }
 
 //////////////////////////////////////////////////
-MeshPtr BaseScene::CreateEllipsoid()
-{
-  unsigned int objId = this->CreateObjectId();
-  std::string objName = this->CreateObjectName(objId, "Ellipsoid");
-  return this->CreateEllipsoidImpl(objId, objName);
-}
-
-//////////////////////////////////////////////////
 GeometryPtr BaseScene::CreateSphere()
 {
   unsigned int objId = this->CreateObjectId();

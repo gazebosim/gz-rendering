@@ -430,6 +430,9 @@ Ogre::HlmsPbsDatablock *Ogre2Material::Datablock() const
 void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   Ogre::PbsTextureTypes _type)
 {
+  // FIXME(anyone) need to keep baseName = _texture for all meshes. Refer to
+  // https://github.com/ignitionrobotics/ign-rendering/issues/139
+  // for more details
   std::string baseName = _texture;
   if (common::isFile(_texture))
   {
@@ -445,6 +448,18 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
         Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
             dirPath, "FileSystem", "General");
       }
+    }
+  }
+
+  // temp workaround check if the model is a OBJ file
+  {
+    size_t idx = _texture.rfind("meshes");
+    if (idx != std::string::npos)
+    {
+      std::string objFile =
+        common::joinPaths(_texture.substr(0, idx), "meshes", "model.obj");
+      if (common::isFile(objFile))
+        baseName = _texture;
     }
   }
 

@@ -87,10 +87,11 @@ namespace ignition
           override;
 
       // Documentation inherited.
-      public: void PreRender() override;
-
-      // Documentation inherited.
       protected: virtual void Init() override;
+
+      /// \brief Internal pre-render function added to avoid breaking ABI
+      /// compatibility
+      private: void PreRenderImpl();
 
       /// \brief Create the particle system
       private: void CreateParticleSystem();

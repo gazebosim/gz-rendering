@@ -129,6 +129,10 @@ void Ogre2ParticleEmitter::Ogre2ParticleEmitter::SetType(
   this->type = _type;
 
   this->dataPtr->emitterDirty = true;
+  // todo(anyone) remove this call. We had to do this since we can't override
+  // PreRender() as it breaks ABI. We should rename PreRenderImp to PreRender()
+  // in next release.
+  this->PreRenderImpl();
 }
 
 //////////////////////////////////////////////////
@@ -167,15 +171,13 @@ void Ogre2ParticleEmitter::SetEmitterSize(const ignition::math::Vector3d &_size)
       for (auto[param, value] : allParamsToSet)
       {
         // We skip EM_POINT.
-        for (auto i = 1; i < EmitterType::EM_NUM_EMITTERS; ++i)
+        if (!this->dataPtr->emitter->setParameter(param,  value))
         {
-          if (!this->dataPtr->emitter->setParameter(param,  value))
-          {
-            ignerr << "SetEmitterSize() error for " << kOgreEmitterTypes[i]
-                   << " emitter because SetParameter(" << param << " " << value
-                   << ") failed." << std::endl;
-            return;
-          }
+          ignerr << "SetEmitterSize() error for "
+                 << this->dataPtr->emitter->getType()
+                 << " emitter because SetParameter(" << param << " " << value
+                 << ") failed." << std::endl;
+          return;
         }
       }
       break;
@@ -236,11 +238,13 @@ void Ogre2ParticleEmitter::SetParticleSize(
     return;
   }
 
-  std::cerr << "setting default dimension " << _size << std::endl;
-
   this->particleSize = _size;
 
   this->dataPtr->emitterDirty = true;
+  // todo(anyone) remove this call. We had to do this since we can't override
+  // PreRender() as it breaks ABI. We should rename PreRenderImp to PreRender()
+  // in next release.
+  this->PreRenderImpl();
 }
 
 //////////////////////////////////////////////////
@@ -428,8 +432,11 @@ void Ogre2ParticleEmitter::Init()
 }
 
 //////////////////////////////////////////////////
-void Ogre2ParticleEmitter::PreRender()
+void Ogre2ParticleEmitter::PreRenderImpl()
 {
+  // \todo(anyone) rename this function to PreRender() so it overrides function
+  // from base class
+
   // recreate the particle system if needed
   // currently this is needed when user changes type or particle size
   if (this->dataPtr->emitterDirty)
@@ -456,7 +463,6 @@ void Ogre2ParticleEmitter::PreRender()
     else
       this->SetColorRange(this->colorStart, this->colorEnd);
 
-    std::cerr << "setting scale rate " << this->scaleRate << std::endl;
     this->SetScaleRate(this->scaleRate);
 
     this->dataPtr->emitterDirty = false;

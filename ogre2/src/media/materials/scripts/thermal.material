@@ -98,3 +98,47 @@ material ThermalHeatSource
     }
   }
 }
+
+// copied from gaussian_noise.material
+vertex_program HeatSignatureVS glsl
+{
+  source gaussian_noise_vs.glsl
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
+}
+
+fragment_program HeatSignatureFS glsl
+{
+  source heat_signature_fs.glsl
+  default_params
+  {
+    param_named RT int 0
+  }
+}
+
+material ThermalHeatSignature
+{
+  technique
+  {
+    pass
+    {
+      fog_override true
+
+      // using gaussian noise VS because this is a simple VS that accomplishes
+      // what we need for a heat signature VS
+      vertex_program_ref HeatSignatureVS { }
+
+      fragment_program_ref HeatSignatureFS { }
+
+      texture_unit RT
+      {
+        tex_coord_set 0
+
+        // the texture for this texture unit is set programmatically
+        // since the texture file location and name are specified by the user
+      }
+    }
+  }
+}

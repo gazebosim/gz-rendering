@@ -48,7 +48,7 @@ namespace ignition
     /// factory for all scene objects.
     class IGNITION_RENDERING_VISIBLE Scene
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Scene() { }
 
       /// \brief Load scene-specific resources

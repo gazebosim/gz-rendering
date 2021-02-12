@@ -42,13 +42,13 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE OrbitViewController
         : public virtual ViewController
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: OrbitViewController();
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: explicit OrbitViewController(const CameraPtr &_camera);
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~OrbitViewController();
 
       /// \brief Set the camera that will be controlled by this view controller.

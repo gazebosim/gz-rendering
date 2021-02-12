@@ -469,7 +469,7 @@ void ThermalCameraTest::ThermalCameraParticles(
   if (_renderEngine.compare("ogre2") != 0)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' doesn't support 8 bit thermal cameras" << std::endl;
+           << "' doesn't support 8 bit thermal cameras" << std::endl;
     return;
   }
 
@@ -546,13 +546,13 @@ void ThermalCameraTest::ThermalCameraParticles(
     EXPECT_EQ(thermalCamera->ImageHeight(),
       static_cast<unsigned int>(imgHeight));
     thermalCamera->SetFarClipPlane(farDist);
-    EXPECT_NEAR(thermalCamera->FarClipPlane(), farDist, DOUBLE_TOL);
+    EXPECT_DOUBLE_EQ(thermalCamera->FarClipPlane(), farDist);
     thermalCamera->SetNearClipPlane(nearDist);
-    EXPECT_NEAR(thermalCamera->NearClipPlane(), nearDist, DOUBLE_TOL);
+    EXPECT_DOUBLE_EQ(thermalCamera->NearClipPlane(), nearDist);
     thermalCamera->SetAspectRatio(aspectRatio);
-    EXPECT_NEAR(thermalCamera->AspectRatio(), aspectRatio, DOUBLE_TOL);
+    EXPECT_DOUBLE_EQ(thermalCamera->AspectRatio(), aspectRatio);
     thermalCamera->SetHFOV(hfov);
-    EXPECT_NEAR(thermalCamera->HFOV().Radian(), hfov, DOUBLE_TOL);
+    EXPECT_DOUBLE_EQ(thermalCamera->HFOV().Radian(), hfov);
 
     // set bit depth
     thermalCamera->SetImageFormat(ignition::rendering::PF_L8);

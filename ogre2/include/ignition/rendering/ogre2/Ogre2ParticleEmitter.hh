@@ -87,13 +87,10 @@ namespace ignition
           override;
 
       /// \brief Particle system visibility flags
-      public: static uint32_t kParticleVisibilityFlags;
+      public: static const uint32_t kParticleVisibilityFlags;
 
       // Documentation inherited.
       protected: virtual void Init() override;
-
-      /// \brief Create the particle system
-      private: void CreateParticleSystem();
 
       /// \brief Only the ogre scene can instanstiate this class
       private: friend class Ogre2Scene;

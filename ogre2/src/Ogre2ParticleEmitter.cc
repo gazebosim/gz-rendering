@@ -36,7 +36,7 @@
 using namespace ignition;
 using namespace rendering;
 
-uint32_t Ogre2ParticleEmitter::kParticleVisibilityFlags = 0x00100000;
+const uint32_t Ogre2ParticleEmitter::kParticleVisibilityFlags = 0x00100000;
 
 class ignition::rendering::Ogre2ParticleEmitterPrivate
 {

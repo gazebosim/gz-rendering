@@ -27,8 +27,8 @@
 // Ogre::MaterialManager::Listener isn't a dll-interface class, this may cause
 // issues
 #ifdef _MSC_VER
- #pragma warning(push)
- #pragma warning(disable:4275)
+  #pragma warning(push)
+  #pragma warning(disable:4275)
 #endif
 
 namespace ignition
@@ -107,7 +107,7 @@ namespace ignition
 }
 
 #ifdef _MSC_VER
- #pragma warning(pop)
+  #pragma warning(pop)
 #endif
 
 #endif

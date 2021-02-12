@@ -120,7 +120,8 @@ void Ogre2Capsule::Create()
         this->dataPtr->ogreMesh->Destroy();
       }
       this->dataPtr->ogreMesh =
-        std::dynamic_pointer_cast<Ogre2Mesh>(this->Scene()->CreateMesh(meshDescriptor));
+        std::dynamic_pointer_cast<Ogre2Mesh>(
+          this->Scene()->CreateMesh(meshDescriptor));
       if (this->dataPtr->material != nullptr)
       {
         this->dataPtr->ogreMesh->SetMaterial(this->dataPtr->material, false);

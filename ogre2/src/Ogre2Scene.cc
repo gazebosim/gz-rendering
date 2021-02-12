@@ -29,6 +29,7 @@
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
+#include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -311,6 +312,15 @@ AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+LightVisualPtr Ogre2Scene::CreateLightVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2LightVisualPtr visual(new Ogre2LightVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
 GizmoVisualPtr Ogre2Scene::CreateGizmoVisualImpl(unsigned int _id,
     const std::string &_name)
 {
@@ -381,6 +391,16 @@ CapsulePtr Ogre2Scene::CreateCapsuleImpl(unsigned int _id,
   Ogre2CapsulePtr capsule(new Ogre2Capsule);
   bool result = this->InitObject(capsule, _id, _name);
   return (result) ? capsule : nullptr;
+}
+
+//////////////////////////////////////////////////
+HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int,
+    const std::string &, const HeightmapDescriptor &)
+{
+  ignerr << "Ogre 2 doesn't support heightmaps yet, see " <<
+      "https://github.com/ignitionrobotics/ign-rendering/issues/187"
+      << std::endl;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////

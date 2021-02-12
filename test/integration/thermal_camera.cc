@@ -145,9 +145,9 @@ void ThermalCameraTest::ThermalCameraBoxes(
 
     // thermal-specific params
     // set room temperature: 294 ~ 298 Kelvin
-    float ambientTemp = 296.0;
-    float ambientTempRange = 4.0;
-    float linearResolution = 0.01;
+    float ambientTemp = 296.0f;
+    float ambientTempRange = 4.0f;
+    float linearResolution = 0.01f;
     thermalCamera->SetAmbientTemperature(ambientTemp);
     EXPECT_FLOAT_EQ(ambientTemp, thermalCamera->AmbientTemperature());
     thermalCamera->SetAmbientTemperatureRange(ambientTempRange);
@@ -171,8 +171,8 @@ void ThermalCameraTest::ThermalCameraBoxes(
     thermalCamera->Update();
 
     // thermal image indices
-    int midWidth = thermalCamera->ImageWidth() * 0.5;
-    int midHeight = thermalCamera->ImageHeight() * 0.5;
+    int midWidth = static_cast<int>(thermalCamera->ImageWidth() * 0.5);
+    int midHeight = static_cast<int>(thermalCamera->ImageHeight() * 0.5);
     int mid = midHeight * thermalCamera->ImageWidth() + midWidth -1;
     int left = midHeight * thermalCamera->ImageWidth();
     int right = (midHeight+1) * thermalCamera->ImageWidth() - 1;

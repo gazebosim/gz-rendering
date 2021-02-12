@@ -23,6 +23,8 @@ Ignition @IGN_DESIGNATION_CAP@ library and how to use the library effectively.
 9. \subpage text_geom  "Text geom"
 10. \subpage particles  "Particles"
 11. \subpage render_order  "Render Order"
+12. \subpage transform_fbx_to_dae  "Transform FBX to Collada in Blender"
+13. \subpage heightmap  "Heightmap"
 
 ## License
 

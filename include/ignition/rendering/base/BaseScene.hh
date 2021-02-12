@@ -22,6 +22,7 @@
 #include <string>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/SuppressWarning.hh>
 
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Scene.hh"
@@ -34,7 +35,9 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     class IGNITION_RENDERING_VISIBLE BaseScene :
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       public std::enable_shared_from_this<BaseScene>,
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
       public virtual Scene
     {
       protected: BaseScene(unsigned int _id, const std::string &_name);
@@ -262,6 +265,12 @@ namespace ignition
       public: virtual PointLightPtr CreatePointLight(unsigned int _id,
                   const std::string &_name) override;
 
+      /// \brief Implementation for creating Light visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of light visual
+      protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       public: virtual SpotLightPtr CreateSpotLight() override;
 
       public: virtual SpotLightPtr CreateSpotLight(unsigned int _id) override;
@@ -351,6 +360,20 @@ namespace ignition
       public: virtual AxisVisualPtr CreateAxisVisual(unsigned int _id,
                   const std::string &_name) override;
 
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual() override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual(const std::string &_name)
+                      override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual(unsigned int _id,
+                  const std::string &_name) override;
 
       // Documentation inherited
       public: virtual GizmoVisualPtr CreateGizmoVisual() override;
@@ -407,6 +430,10 @@ namespace ignition
       // Documentation inherited.
       public: virtual LidarVisualPtr CreateLidarVisual(unsigned int _id,
                                             const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual HeightmapPtr CreateHeightmap(
+          const HeightmapDescriptor &_desc) override;
 
       // Documentation inherited.
       public: virtual WireBoxPtr CreateWireBox() override;
@@ -569,6 +596,15 @@ namespace ignition
       protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
+      /// \brief Implementation for creating a heightmap geometry
+      /// \param[in] _id Unique object id.
+      /// \param[in] _name Unique object name.
+      /// \param[in] _desc Heightmap descriptor.
+      /// \return Pointer to a heightmap geometry.
+      protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
+                     const std::string &_name,
+                     const HeightmapDescriptor &_desc) = 0;
+
       /// \brief Implementation for creating a wire box geometry
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.
@@ -638,7 +674,9 @@ namespace ignition
 
       protected: unsigned int id;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: std::string name;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       protected: common::Time IGN_DEPRECATED(4) simTime;
 
@@ -669,7 +707,9 @@ namespace ignition
 
       private: unsigned int nextObjectId;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: NodeStorePtr nodes;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

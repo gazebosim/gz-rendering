@@ -119,6 +119,18 @@ void OgreLight::SetAttenuationRange(double _range)
 }
 
 //////////////////////////////////////////////////
+double OgreLight::Intensity() const
+{
+  return this->ogreLight->getPowerScale();
+}
+
+//////////////////////////////////////////////////
+void OgreLight::SetIntensity(double _intensity)
+{
+  this->ogreLight->setPowerScale(_intensity);
+}
+
+//////////////////////////////////////////////////
 bool OgreLight::CastShadows() const
 {
   return this->ogreLight->getCastShadows();

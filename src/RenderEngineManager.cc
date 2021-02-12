@@ -473,42 +473,64 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     return false;
   }
 
-  std::string pluginName = *pluginNames.begin();
-  if (pluginName.empty())
+  auto engineNames = pluginLoader.PluginsImplementing<
+      ignition::rendering::RenderEnginePlugin>();
+
+  if (engineNames.empty())
   {
-    ignerr << "Failed to load plugin [" << _filename <<
-              "] : couldn't load library on path [" << pathToLib <<
-              "]." << std::endl;
+    std::stringstream error;
+    error << "Found no render engine plugins in ["
+          << _filename << "], available interfaces are:"
+          << std::endl;
+    for (auto pluginName : pluginNames)
+    {
+      error << "- " << pluginName << std::endl;
+    }
+    ignerr << error.str();
     return false;
   }
 
-  auto commonPlugin = this->pluginLoader.Instantiate(pluginName);
-  if (!commonPlugin)
+  auto engineName = *engineNames.begin();
+  if (engineNames.size() > 1)
   {
-    ignerr << "Failed to load plugin [" << _filename <<
-              "] : couldn't instantiate plugin on path [" << pathToLib <<
-              "]." << std::endl;
-    return false;
+    std::stringstream warn;
+    warn << "Found multiple render engine plugins in ["
+          << _filename << "]:"
+          << std::endl;
+    for (auto pluginName : engineNames)
+    {
+      warn << "- " << pluginName << std::endl;
+    }
+    warn << "Loading [" << engineName << "]." << std::endl;
+    ignwarn << warn.str();
   }
 
-  auto plugin =
-      commonPlugin->QueryInterface<ignition::rendering::RenderEnginePlugin>();
+  auto plugin = pluginLoader.Instantiate(engineName);
   if (!plugin)
   {
-    ignerr << "Failed to load plugin [" << _filename <<
-              "] : couldn't get interface [" << pluginName <<
-              "]." << std::endl;
+    ignerr << "Failed to instantiate plugin [" << engineName << "]"
+           << std::endl;
+    return false;
+  }
+
+  auto renderPlugin =
+      plugin->QueryInterface<ignition::rendering::RenderEnginePlugin>();
+
+  if (!renderPlugin)
+  {
+    ignerr << "Failed to query interface from [" << engineName << "]"
+           << std::endl;
     return false;
   }
 
   // This triggers the engine to be instantiated
   {
     std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
-    this->engines[_filename] = plugin->Engine();
+    this->engines[_filename] = renderPlugin->Engine();
   }
 
   // store engine plugin data so plugin can be unloaded later
-  this->enginePlugins[_filename] = pluginName;
+  this->enginePlugins[_filename] = engineName;
 
   return true;
 }

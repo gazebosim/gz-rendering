@@ -740,7 +740,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
-      colorTargetDef->addPass(Ogre::PASS_SCENE));
+          colorTargetDef->addPass(Ogre::PASS_SCENE));
       // thermal camera should not see particles
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;

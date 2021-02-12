@@ -195,10 +195,26 @@ void ThermalCameraTest::ThermalCameraBoxes(
           std::bind(&::OnNewThermalFrame, thermalData,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
             std::placeholders::_4, std::placeholders::_5));
-    EXPECT_NE(nullptr, connection);
+    ASSERT_NE(nullptr, connection);
 
     // Update once to create image
     thermalCamera->Update();
+
+    {
+      // Make sure the image has been received before proceeding
+      bool imgReceived = false;
+      for (auto sleep = 0; sleep < 30; ++sleep)
+      {
+        if (!thermalData)
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        else
+        {
+          imgReceived = true;
+          break;
+        }
+      }
+      ASSERT_TRUE(imgReceived);
+    }
 
     // thermal image indices
     int midWidth = static_cast<int>(thermalCamera->ImageWidth() * 0.5);
@@ -224,13 +240,30 @@ void ThermalCameraTest::ThermalCameraBoxes(
     box->SetLocalPosition(boxPositionNear);
     thermalCamera->Update();
 
+    {
+      // Make sure the image has been received before proceeding
+      bool imgReceived = false;
+      for (auto sleep = 0; sleep < 30; ++sleep)
+      {
+        if (!thermalData)
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        else
+        {
+          imgReceived = true;
+          break;
+        }
+      }
+      ASSERT_TRUE(imgReceived);
+    }
+
     for (unsigned int i = 0; i < thermalCamera->ImageHeight(); ++i)
     {
       unsigned int step = i * thermalCamera->ImageWidth();
       for (unsigned int j = 0; j < thermalCamera->ImageWidth(); ++j)
       {
         float temp = thermalData[step + j] * linearResolution;
-        EXPECT_NEAR(boxTemp, temp, boxTempRange) << "i is " << i << " j is " << j;
+        EXPECT_NEAR(boxTemp, temp, boxTempRange)
+          << "i is " << i << " j is " << j;
       }
     }
 
@@ -240,6 +273,22 @@ void ThermalCameraTest::ThermalCameraBoxes(
         unitBoxSize * 0.5 + farDist * 1.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionFar);
     thermalCamera->Update();
+
+    {
+      // Make sure the image has been received before proceeding
+      bool imgReceived = false;
+      for (auto sleep = 0; sleep < 30; ++sleep)
+      {
+        if (!thermalData)
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        else
+        {
+          imgReceived = true;
+          break;
+        }
+      }
+      ASSERT_TRUE(imgReceived);
+    }
 
     for (unsigned int i = 0; i < thermalCamera->ImageHeight(); ++i)
     {

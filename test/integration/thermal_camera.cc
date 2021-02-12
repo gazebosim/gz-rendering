@@ -508,14 +508,14 @@ void ThermalCameraTest::ThermalCameraParticles(
   // create particle emitter between camera and box
   ignition::rendering::ParticleEmitterPtr emitter =
       scene->CreateParticleEmitter();
-  emitter->SetLocalPosition(boxPosition - 0.5);
+  emitter->SetLocalPosition(0.5);
   emitter->SetRate(10);
   emitter->SetParticleSize({1, 1, 1});
-  emitter->SetLifetime(20);
-  emitter->SetVelocityRange(10, 20);
+  emitter->SetLifetime(2);
+  emitter->SetVelocityRange(0.1, 0.5);
   emitter->SetColorRange(ignition::math::Color::Red,
       ignition::math::Color::Black);
-  emitter->SetScaleRate(10);
+  emitter->SetScaleRate(1);
   emitter->SetEmitting(true);
 
   root->AddChild(emitter);

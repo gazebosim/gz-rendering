@@ -107,6 +107,7 @@ void buildScene(ScenePtr _scene)
 
   //! [create particle emitter]
   ParticleEmitterPtr emitter = _scene->CreateParticleEmitter();
+  emitter->SetType(EM_POINT);
   emitter->SetLocalPose({2, 1.10, 1.25, 1.5708, 0, 2.3});
   emitter->SetRate(10);
   emitter->SetParticleSize({1, 1, 1});
@@ -118,6 +119,21 @@ void buildScene(ScenePtr _scene)
   emitter->SetEmitting(true);
   root->AddChild(emitter);
   //! [create particle emitter]
+
+  // area emitter
+  ParticleEmitterPtr areaEmitter = _scene->CreateParticleEmitter();
+  areaEmitter->SetType(EM_BOX);
+  areaEmitter->SetEmitterSize({3.0, 3.0, 3.0});
+  areaEmitter->SetLocalPose({3, 0, 0, 0, -1.5707, 0});
+  areaEmitter->SetRate(10);
+  areaEmitter->SetParticleSize({0.01, 0.01, 0.01});
+  areaEmitter->SetLifetime(1);
+  areaEmitter->SetVelocityRange(0.5, 1);
+  areaEmitter->SetMaterial(particleMaterial);
+  areaEmitter->SetColorRangeImage(RESOURCE_PATH + "/smokecolors.png");
+  areaEmitter->SetScaleRate(1);
+  areaEmitter->SetEmitting(true);
+  root->AddChild(areaEmitter);
 }
 
 //////////////////////////////////////////////////

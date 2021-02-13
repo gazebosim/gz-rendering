@@ -37,6 +37,7 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
+#include "Ogre2ParticleEffector.hh"
 
 namespace ignition
 {
@@ -128,6 +129,11 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: ignition::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newDepthFrame;
+
+  /// \brief Pointer to particle effector
+  public: std::unique_ptr<Ogre2ParticleEffector>
+      particleEffector = nullptr;
+
 };
 
 using namespace ignition;
@@ -711,6 +717,23 @@ void Ogre2DepthCamera::CreateDepthTexture()
   this->dataPtr->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
       rt, this->ogreCamera, wsDefName, false);
+
+  // add particle effector to render target listener
+  // so apply scatter effects to particles when rendering depth
+  Ogre::CompositorNode *node =
+      this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
+  auto channels = node->getLocalTextures();
+  for (auto c : channels)
+  {
+    if (c.textures[0]->getSrcFormat() == Ogre::PF_R8G8B8)
+    {
+      this->dataPtr->particleEffector = std::make_unique<Ogre2ParticleEffector>(
+          std::dynamic_pointer_cast<Ogre2Sensor>(shared_from_this()));
+      this->dataPtr->particleEffector->Init();
+      c.target->addListener(this->dataPtr->particleEffector.get());
+      break;
+    }
+  }
 }
 
 //////////////////////////////////////////////////

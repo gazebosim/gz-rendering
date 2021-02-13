@@ -48,6 +48,9 @@ class ignition::rendering::Ogre2ScenePrivate
 {
   /// \brief Flag to indicate if shadows need to be updated
   public: bool shadowsDirty = true;
+
+  /// \brief A list of particle emitters
+  public: std::vector<ParticleEmitterPtr> particleEmitters;
 };
 
 using namespace ignition;
@@ -453,7 +456,29 @@ ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
 {
   Ogre2ParticleEmitterPtr visual(new Ogre2ParticleEmitter);
   bool result = this->InitObject(visual, _id, _name);
+
+  this->dataPtr->particleEmitters.push_back(visual);
+
   return (result) ? visual : nullptr;
+}
+
+
+//////////////////////////////////////////////////
+unsigned int Ogre2Scene::ParticleEmitterCount() const
+{
+  return this->dataPtr->particleEmitters.size();
+}
+
+//////////////////////////////////////////////////
+ParticleEmitterPtr Ogre2Scene::ParticleEmitterByIndex(unsigned int _idx) const
+{
+  if (_idx >= this->dataPtr->particleEmitters.size());
+  {
+    ignerr << "Unable to get particle emitter. Index out of range: " << _idx
+           << std::endl;
+  }
+
+  this->dataPtr->particleEmitters[_idx];
 }
 
 //////////////////////////////////////////////////

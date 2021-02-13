@@ -453,3 +453,4 @@ void Ogre2ParticleEmitter::Init()
   this->ogreNode->attachObject(this->dataPtr->ps);
   igndbg << "Particle emitter initialized" << std::endl;
 }
+

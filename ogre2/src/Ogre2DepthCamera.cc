@@ -476,7 +476,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //       set detph data to d1
     //   set color data to c1
 
-
     // We need to programmatically create the compositor because we need to
     // configure it to use the cloned depth material created earlier.
     // The compositor node definition is equivalent to the following:
@@ -626,8 +625,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleTexDef->height = 0;
     particleTexDef->depth = 1;
     particleTexDef->numMipmaps = 0;
-    particleTexDef->widthFactor = 0.75;
-    particleTexDef->heightFactor = 0.75;
+    particleTexDef->widthFactor = 0.5;
+    particleTexDef->heightFactor = 0.5;
     particleTexDef->formatList = {Ogre::PF_L8};
     particleTexDef->fsaa = 0;
     particleTexDef->uav = false;
@@ -645,8 +644,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleDepthTexDef->height = 0;
     particleDepthTexDef->depth = 1;
     particleDepthTexDef->numMipmaps = 0;
-    particleDepthTexDef->widthFactor = 0.75;
-    particleDepthTexDef->heightFactor = 0.75;
+    particleDepthTexDef->widthFactor = 0.5;
+    particleDepthTexDef->heightFactor = 0.5;
     particleDepthTexDef->formatList = {Ogre::PF_D32_FLOAT};
     particleDepthTexDef->fsaa = 0;
     particleDepthTexDef->uav = false;
@@ -699,7 +698,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL
           & ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
-
 
     Ogre::CompositorTargetDef *particleTargetDef =
         baseNodeDef->addTargetPass("particleTexture");

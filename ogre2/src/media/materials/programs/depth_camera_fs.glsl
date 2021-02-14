@@ -98,7 +98,7 @@ void main()
   // color
   vec4 color = texture(colorTexture, inPs.uv0);
 
-  // particle mask
+  // particle mask - color and depth
   vec4 particle = texture(particleTexture, inPs.uv0);
   float particleDepth = texture(particleDepthTexture, inPs.uv0).x;
 
@@ -106,7 +106,7 @@ void main()
   // by other objects in the camera view
   if (particle.x > 0 && particleDepth < fDepth)
   {
-    // apply scatter ratio so that only some of the smoke pixels are visible
+    // apply scatter effect so that only some of the smoke pixels are visible
     float r = rand(inPs.uv0 + vec2(time, time));
     if (r < particleScatterRatio)
     {
@@ -116,7 +116,7 @@ void main()
       point = vec3(-particleViewSpacePos.z, -particleViewSpacePos.x,
           particleViewSpacePos.y);
 
-      // apply gaussian noise to detph data for particles
+      // apply gaussian noise to particle depth data
       point = point + gaussrand(inPs.uv0, vec3(time, time, time),
           particleStddev, 1.0 - particle.x).xyz;
     }
@@ -133,9 +133,10 @@ void main()
     {
       point.x = max;
     }
-    // clamp to background color only if is not a particle pixel
+    // clamp to background color only if it is not a particle pixel
     // this is because point.x may have been set to background depth value
-    // due to the scatter effect. We should still render the color particles
+    // due to the scatter effect. We should still render particles in the color
+    // image
     if (particle.x < 1e-6)
       color = vec4(backgroundColor, 1.0);
   }

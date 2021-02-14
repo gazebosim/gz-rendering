@@ -472,13 +472,14 @@ unsigned int Ogre2Scene::ParticleEmitterCount() const
 //////////////////////////////////////////////////
 ParticleEmitterPtr Ogre2Scene::ParticleEmitterByIndex(unsigned int _idx) const
 {
-  if (_idx >= this->dataPtr->particleEmitters.size());
+  if (_idx >= this->dataPtr->particleEmitters.size())
   {
     ignerr << "Unable to get particle emitter. Index out of range: " << _idx
            << std::endl;
+    return ParticleEmitterPtr();
   }
 
-  this->dataPtr->particleEmitters[_idx];
+  return this->dataPtr->particleEmitters[_idx];
 }
 
 //////////////////////////////////////////////////

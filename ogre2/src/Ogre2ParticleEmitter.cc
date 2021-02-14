@@ -33,8 +33,6 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
-#include "Ogre2ParticleEffector.hh"
-
 using namespace ignition;
 using namespace rendering;
 
@@ -50,9 +48,6 @@ class ignition::rendering::Ogre2ParticleEmitterPrivate
 
   /// \brief Ogre particle emitter.
   public: Ogre::ParticleEmitter *emitter = nullptr;
-
-
-  public: Ogre2ScatterAffector *scatterAffector = nullptr;
 
   // \brief Ogre color image affector.
   public: Ogre::ParticleAffector *colorImageAffector = nullptr;
@@ -510,27 +505,4 @@ void Ogre2ParticleEmitter::CreateParticleSystem()
 
   this->ogreNode->attachObject(this->dataPtr->ps);
   igndbg << "Particle emitter initialized" << std::endl;
-}
-
-//////////////////////////////////////////////////
-Ogre::ParticleSystem *Ogre2ParticleEmitter::OgreParticleSystem() const
-{
-  return this->dataPtr->ps;
-}
-
-//////////////////////////////////////////////////
-void Ogre2ParticleEmitter::SetEffectEnabled(const std::string &_effect,
-    bool _enabled)
-{
-//  if (_effect == "scatter")
-//  {
-//    if (!this->dataPtr->scatterAffector)
-//    {
-//      this->dataPtr->scatterAffector =
-//          dynamic_cast<Ogre2ScatterAffector *>(
-//        this->dataPtr->ps->addAffector("scatter"));
-//    }
-//    this->dataPtr->scatterAffector->SetEnabled(_enabled);
-//  }
-
 }

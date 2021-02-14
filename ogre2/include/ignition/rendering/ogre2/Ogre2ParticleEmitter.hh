@@ -86,11 +86,6 @@ namespace ignition
       public: virtual void SetColorRangeImage(const std::string &_image)
           override;
 
-      public: Ogre::ParticleSystem *OgreParticleSystem() const;
-
-      public: void SetEffectEnabled(const std::string &_effect,
-          bool _enabled);
-
       /// \brief Particle system visibility flags
       public: static const uint32_t kParticleVisibilityFlags;
 

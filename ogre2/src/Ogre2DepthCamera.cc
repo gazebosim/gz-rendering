@@ -130,11 +130,11 @@ class ignition::rendering::Ogre2DepthCameraPrivate
               const std::string &)> newDepthFrame;
 
   /// \brief standard deviation of particle noise
-  public: double particleStddev = 0.1;
+  public: double particleStddev = 0.01;
 
   /// \brief Particle scatter ratio. This is used to determine the ratio of
   /// particles that will detected by the depth camera
-  public: double particleScatterRatio= 0.1;
+  public: double particleScatterRatio = 0.1;
 };
 
 using namespace ignition;
@@ -651,11 +651,11 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleDepthTexDef->uav = false;
     particleDepthTexDef->automipmaps = false;
     particleDepthTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
-    particleDepthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    particleDepthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
     particleDepthTexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
     particleDepthTexDef->fsaaExplicitResolve = false;
 
-    baseNodeDef->setNumTargetPass(4);
+    baseNodeDef->setNumTargetPass(5);
 
     Ogre::CompositorTargetDef *colorTargetDef =
         baseNodeDef->addTargetPass("colorTexture");
@@ -713,6 +713,24 @@ void Ogre2DepthCamera::CreateDepthTexture()
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           particleTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->mVisibilityMask =
+          Ogre2ParticleEmitter::kParticleVisibilityFlags;
+    }
+
+    Ogre::CompositorTargetDef *particleDepthTargetDef =
+        baseNodeDef->addTargetPass("particleDepthTexture");
+    particleDepthTargetDef->setNumPasses(2);
+    {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          particleDepthTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(0, 0, 0, 0);
+
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          particleDepthTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }

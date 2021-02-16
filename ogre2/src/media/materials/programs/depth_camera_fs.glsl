@@ -104,7 +104,7 @@ void main()
 
   // return particle depth if it can be seen by the camera and not obstructed
   // by other objects in the camera view
-  if (particle.x > 0 && particleDepth < fDepth)
+  if (particle.x > 0 && particleDepth > 0.0 && particleDepth < fDepth)
   {
     // apply scatter effect so that only some of the smoke pixels are visible
     float r = rand(inPs.uv0 + vec2(time, time));
@@ -118,7 +118,7 @@ void main()
 
       // apply gaussian noise to particle depth data
       point = point + gaussrand(inPs.uv0, vec3(time, time, time),
-          particleStddev, 1.0 - particle.x).xyz;
+          particleStddev, 0.0).xyz;
     }
   }
 
@@ -138,7 +138,9 @@ void main()
     // due to the scatter effect. We should still render particles in the color
     // image
     if (particle.x < 1e-6)
+    {
       color = vec4(backgroundColor, 1.0);
+    }
   }
   else if (point.x < near + tolerance)
   {

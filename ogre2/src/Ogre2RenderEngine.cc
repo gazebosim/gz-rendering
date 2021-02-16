@@ -15,7 +15,6 @@
  *
  */
 
-
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
@@ -49,7 +48,7 @@ static Ogre::GL3PlusPlugin* mGlPlugin {nullptr};
 
 class ignition::rendering::Ogre2RenderEnginePrivate
 {
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
 #endif
 

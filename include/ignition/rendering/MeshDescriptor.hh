@@ -63,14 +63,17 @@ namespace ignition
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief common::Mesh object
       public: const common::Mesh *mesh = nullptr;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief Name of the registered Mesh
       public: std::string meshName;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief Name of the sub-mesh to be loaded. An empty string signifies
       /// all sub-meshes should be loaded.
       public: std::string subMeshName;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Denotes if the loaded sub-mesh vertices should be centered
       public: bool centerSubMesh = false;

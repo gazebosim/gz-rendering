@@ -18,12 +18,16 @@
 #ifndef _WIN32
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wunused-parameter"
+#else
+# pragma warning(push, 0)
 #endif
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
 #include <OgreGLFBORenderTexture.h>
 #ifndef _WIN32
 # pragma GCC diagnostic pop
+#else
+# pragma warning(pop)
 #endif
 
 
@@ -64,6 +68,9 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
+  if (nullptr == this->RenderTarget())
+    return;
+
   // TODO(anyone): handle Bayer conversions
   // TODO(anyone): handle ogre version differences
 
@@ -206,7 +213,7 @@ void OgreRenderTarget::SetMaterial(MaterialPtr _material)
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildMaterial()
 {
-  if (this->material)
+  if (this->material && this->RenderTarget())
   {
     OgreMaterial *ogreMaterial = dynamic_cast<OgreMaterial*>(
         this->material.get());
@@ -238,6 +245,13 @@ void OgreRenderTarget::UpdateRenderPassChain()
 Ogre::Viewport *OgreRenderTarget::Viewport(const int _viewportId) const
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+
+  if (nullptr == ogreRenderTarget)
+  {
+    ignerr << "Failed to get viewport: null render target" << std::endl;
+    return nullptr;
+  }
+
   return ogreRenderTarget->getViewport(_viewportId);
 }
 
@@ -245,6 +259,13 @@ Ogre::Viewport *OgreRenderTarget::Viewport(const int _viewportId) const
 Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *_camera)
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+
+  if (nullptr == ogreRenderTarget)
+  {
+    ignerr << "Failed to add viewport: null render target" << std::endl;
+    return nullptr;
+  }
+
   return ogreRenderTarget->addViewport(_camera);
 }
 
@@ -252,6 +273,13 @@ Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *_camera)
 void OgreRenderTarget::SetAutoUpdated(const bool _value)
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+
+  if (nullptr == ogreRenderTarget)
+  {
+    ignerr << "Failed to set auto update: null render target" << std::endl;
+    return;
+  }
+
   ogreRenderTarget->setAutoUpdated(_value);
 }
 
@@ -259,6 +287,13 @@ void OgreRenderTarget::SetAutoUpdated(const bool _value)
 void OgreRenderTarget::SetUpdate(const bool _value)
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+
+  if (nullptr == ogreRenderTarget)
+  {
+    ignerr << "Failed to set update: null render target" << std::endl;
+    return;
+  }
+
   ogreRenderTarget->update(_value);
 }
 
@@ -378,6 +413,13 @@ void OgreRenderTexture::PostRender()
 void OgreRenderTexture::Buffer(float *_buffer)
 {
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
+
+  if (nullptr == ogreRenderTarget)
+  {
+    ignerr << "Failed to set buffer: null render target" << std::endl;
+    return;
+  }
+
   ogreRenderTarget->swapBuffers();
 
   Ogre::HardwarePixelBufferSharedPtr pcdPixelBuffer;
@@ -428,6 +470,13 @@ void OgreRenderWindow::RebuildTarget()
 
   Ogre::RenderWindow *window =
       dynamic_cast<Ogre::RenderWindow *>(this->ogreRenderWindow);
+
+  if (nullptr == window)
+  {
+    ignerr << "Failed to cast render window." << std::endl;
+    return;
+  }
+
   window->resize(this->width, this->height);
   window->windowMovedOrResized();
 }
@@ -442,6 +491,13 @@ void OgreRenderWindow::BuildTarget()
           this->height,
           this->ratio,
           this->antiAliasing);
+
+  if (renderTargetName.empty())
+  {
+    ignerr << "Failed to build target." << std::endl;
+    return;
+  }
+
   this->ogreRenderWindow =
       engine->OgreRoot()->getRenderTarget(renderTargetName);
 }

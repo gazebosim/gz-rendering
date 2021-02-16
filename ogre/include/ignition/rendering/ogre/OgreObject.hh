@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_OGRE_OGREOBJECT_HH_
 #define IGNITION_RENDERING_OGRE_OGREOBJECT_HH_
 
+#include <ignition/common/SuppressWarning.hh>
+
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/Export.hh"
@@ -36,7 +38,9 @@ namespace ignition
 
       public: virtual ScenePtr Scene() const;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: OgreScenePtr scene;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       private: friend class OgreScene;
     };

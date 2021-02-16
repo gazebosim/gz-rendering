@@ -32,7 +32,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE CompositeVisual :
       public virtual Visual
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~CompositeVisual() { }
     };
     }

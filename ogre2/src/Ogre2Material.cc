@@ -17,8 +17,14 @@
 
 // Note this include is placed in the src file because
 // otherwise ogre produces compile errors
+#ifdef _MSC_VER
+#pragma warning(push, 0)
+#endif
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
@@ -151,17 +157,17 @@ void Ogre2Material::SetAlphaFromTexture(bool _enabled,
     double _alpha, bool _twoSided)
 {
   BaseMaterial::SetAlphaFromTexture(_enabled, _alpha, _twoSided);
+  Ogre::HlmsBlendblock block;
   if (_enabled)
   {
-    Ogre::HlmsBlendblock block;
-    block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_GREATER_EQUAL);
+    block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
     this->ogreDatablock->setBlendblock(block);
-    this->ogreDatablock->setTwoSidedLighting(_twoSided);
   }
   else
   {
     this->ogreDatablock->setAlphaTest(Ogre::CMPF_ALWAYS_PASS);
+    this->ogreDatablock->setBlendblock(block);
   }
   this->ogreDatablock->setAlphaTestThreshold(_alpha);
   this->ogreDatablock->setTwoSidedLighting(_twoSided);
@@ -424,6 +430,9 @@ Ogre::HlmsPbsDatablock *Ogre2Material::Datablock() const
 void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   Ogre::PbsTextureTypes _type)
 {
+  // FIXME(anyone) need to keep baseName = _texture for all meshes. Refer to
+  // https://github.com/ignitionrobotics/ign-rendering/issues/139
+  // for more details
   std::string baseName = _texture;
   if (common::isFile(_texture))
   {
@@ -442,6 +451,18 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     }
   }
 
+  // temp workaround check if the model is a OBJ file
+  {
+    size_t idx = _texture.rfind("meshes");
+    if (idx != std::string::npos)
+    {
+      std::string objFile =
+        common::joinPaths(_texture.substr(0, idx), "meshes", "model.obj");
+      if (common::isFile(objFile))
+        baseName = _texture;
+    }
+  }
+
   Ogre::HlmsTextureManager *hlmsTextureManager =
       this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
   Ogre::HlmsTextureManager::TextureLocation texLocation =
@@ -455,6 +476,17 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
   this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture,
       &samplerBlockRef);
+
+  // disable alpha from texture if texture does not have an alpha channel
+  // otherwise this becomes a transparent material
+  if (_type == Ogre::PBSM_DIFFUSE)
+  {
+    if (this->TextureAlphaEnabled() && !texLocation.texture->hasAlpha())
+    {
+      this->SetAlphaFromTexture(false, this->AlphaThreshold(),
+          this->TwoSidedEnabled());
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -568,16 +600,23 @@ Ogre::HlmsUnlitDatablock *Ogre2Material::UnlitDatablock()
 void Ogre2Material::FillUnlitDatablock(Ogre::HlmsUnlitDatablock *_datablock)
     const
 {
-  auto tex = this->ogreDatablock->getTexture(Ogre::PBSM_DIFFUSE);
-  if (tex)
-    _datablock->setTexture(0, 0, tex);
+  if (!this->textureName.empty())
+  {
+    std::string baseName = common::basename(this->textureName);
+    Ogre::HlmsTextureManager *hlmsTextureManager =
+        this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
+    Ogre::HlmsTextureManager::TextureLocation texLocation =
+        hlmsTextureManager->createOrRetrieveTexture(baseName,
+        this->ogreDatablock->suggestMapTypeBasedOnTextureType(
+        Ogre::PBSM_DIFFUSE));
+    _datablock->setTexture(0, texLocation.xIdx, texLocation.texture);
+  }
+
   auto samplerblock = this->ogreDatablock->getSamplerblock(Ogre::PBSM_DIFFUSE);
   if (samplerblock)
     _datablock->setSamplerblock(0, *samplerblock);
-  _datablock->setMacroblock(
-      this->ogreDatablock->getMacroblock());
-  _datablock->setBlendblock(
-      this->ogreDatablock->getBlendblock());
+  _datablock->setMacroblock(this->ogreDatablock->getMacroblock());
+  _datablock->setBlendblock(this->ogreDatablock->getBlendblock());
 
   _datablock->setUseColour(true);
   Ogre::Vector3 c = this->ogreDatablock->getDiffuse();

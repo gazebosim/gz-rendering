@@ -24,6 +24,13 @@
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/Export.hh"
 
+// Ogre::MaterialManager::Listener isn't a dll-interface class, this may cause
+// issues
+#ifdef _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable:4275)
+#endif
+
 namespace ignition
 {
   namespace rendering
@@ -98,5 +105,9 @@ namespace ignition
     }
   }
 }
+
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 #endif

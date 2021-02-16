@@ -17,7 +17,13 @@
 
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
+#ifdef _MSC_VER
+#pragma warning(push, 0)
+#endif
 #include <OgreGL3PlusFBORenderTexture.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include <ignition/common/Console.hh>
 

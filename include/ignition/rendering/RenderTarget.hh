@@ -103,7 +103,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE RenderTexture :
       public virtual RenderTarget
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~RenderTexture() { }
 
       /// \brief Returns the OpenGL texture Id. A valid Id is returned only
@@ -119,7 +119,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE RenderWindow :
       public virtual RenderTarget
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~RenderWindow() { }
 
       /// \brief Get the window handle that the render window is attached to.

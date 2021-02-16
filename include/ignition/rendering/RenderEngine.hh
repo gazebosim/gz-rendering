@@ -35,7 +35,7 @@ namespace ignition
     /// creating, storing, and destroying scenes.
     class IGNITION_RENDERING_VISIBLE RenderEngine
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~RenderEngine() { }
 
       /// \brief Load any necessary resources to set up render-engine. This

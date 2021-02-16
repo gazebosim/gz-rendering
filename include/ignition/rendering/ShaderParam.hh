@@ -21,6 +21,8 @@
 #include <cstdint>
 #include <memory>
 
+#include <ignition/common/SuppressWarning.hh>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
@@ -86,7 +88,9 @@ namespace ignition
       public: bool Value(int *_value) const;
 
       /// \brief private implementation
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: std::unique_ptr<ShaderParamPrivate> dataPtr;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

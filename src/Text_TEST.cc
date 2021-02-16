@@ -74,14 +74,14 @@ void TextTest::Text(const std::string &_renderEngine)
   text->SetTextString("abc def");
   EXPECT_EQ("abc def", text->TextString());
 
-  text->SetCharHeight(1.8);
-  EXPECT_FLOAT_EQ(1.8, text->CharHeight());
+  text->SetCharHeight(1.8f);
+  EXPECT_FLOAT_EQ(1.8f, text->CharHeight());
 
-  text->SetSpaceWidth(1.5);
-  EXPECT_FLOAT_EQ(1.5, text->SpaceWidth());
+  text->SetSpaceWidth(1.5f);
+  EXPECT_FLOAT_EQ(1.5f, text->SpaceWidth());
 
-  text->SetBaseline(0.5);
-  EXPECT_FLOAT_EQ(0.5, text->Baseline());
+  text->SetBaseline(0.5f);
+  EXPECT_FLOAT_EQ(0.5f, text->Baseline());
 
   text->SetTextAlignment(TextHorizontalAlign::CENTER, TextVerticalAlign::TOP);
   EXPECT_EQ(TextHorizontalAlign::CENTER, text->HorizontalAlignment());
@@ -90,24 +90,24 @@ void TextTest::Text(const std::string &_renderEngine)
   text->SetShowOnTop(true);
   EXPECT_TRUE(text->ShowOnTop());
 
-  text->SetColor(math::Color(1, 0.2, 0.3, 1.0));
-  EXPECT_EQ(math::Color(1, 0.2, 0.3, 1.0), text->Color());
+  text->SetColor(math::Color(1.0f, 0.2f, 0.3f, 1.0f));
+  EXPECT_EQ(math::Color(1.0f, 0.2f, 0.3f, 1.0f), text->Color());
 
   // create material
   MaterialPtr mat = scene->CreateMaterial();
-  mat->SetAmbient(0.6, 0.7, 0.8);
-  mat->SetDiffuse(0.3, 0.8, 0.2);
-  mat->SetSpecular(0.4, 0.9, 1.0);
+  mat->SetAmbient(0.6f, 0.7f, 0.8f);
+  mat->SetDiffuse(0.3f, 0.8f, 0.2f);
+  mat->SetSpecular(0.4f, 0.9f, 1.0f);
 
   text->SetMaterial(mat);
   MaterialPtr textMat = text->Material();
   ASSERT_NE(nullptr, textMat);
-  EXPECT_EQ(math::Color(0.6, 0.7, 0.8), textMat->Ambient());
-  EXPECT_EQ(math::Color(0.3, 0.8, 0.2), textMat->Diffuse());
-  EXPECT_EQ(math::Color(0.4, 0.9, 1.0), textMat->Specular());
+  EXPECT_EQ(math::Color(0.6f, 0.7f, 0.8f), textMat->Ambient());
+  EXPECT_EQ(math::Color(0.3f, 0.8f, 0.2f), textMat->Diffuse());
+  EXPECT_EQ(math::Color(0.4f, 0.9f, 1.0f), textMat->Specular());
 
   // color is affected by material but currently only by the diffuse component
-  EXPECT_EQ(math::Color(0.3, 0.8, 0.2, 1.0), text->Color());
+  EXPECT_EQ(math::Color(0.3f, 0.8f, 0.2f, 1.0f), text->Color());
 
   // Clean up
   engine->DestroyScene(scene);

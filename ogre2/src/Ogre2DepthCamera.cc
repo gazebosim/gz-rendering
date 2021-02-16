@@ -521,6 +521,16 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //       visibility_mask 0x00100000
     //     }
     //   }
+    //   target particleDepthTexture
+    //   {
+    //     pass clear
+    //     {
+    //     }
+    //     pass render_scene
+    //     {
+    //       visibility_mask 0x00100000
+    //     }
+    //   }
     //   target rt0
     //   {
     //     pass clear

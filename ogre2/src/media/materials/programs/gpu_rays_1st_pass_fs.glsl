@@ -72,7 +72,6 @@ vec4 gaussrand(vec2 co, vec3 offsets, float stddev, float mean)
 void main()
 {
   // get linear depth
-//  float d = getDepth(inPs.uv0);
   float fDepth = texture(depthTexture, inPs.uv0).x;
   float d = projectionParams.y / (fDepth - projectionParams.x);
 
@@ -89,7 +88,7 @@ void main()
   vec4 particle = texture(particleTexture, inPs.uv0);
   float particleDepth = texture(particleDepthTexture, inPs.uv0).x;
 
-  if (particle.x > 0 && particleDepth < fDepth)
+  if (particle.x > 0.0 && particleDepth > 0.0 && particleDepth < fDepth)
   {
     // apply scatter effect so that only some of the smoke pixels are visible
     float r = rand(inPs.uv0 + vec2(time, time));
@@ -100,7 +99,7 @@ void main()
 
       // apply gaussian noise to particle depth data
       point = point + gaussrand(inPs.uv0, vec3(time, time, time),
-          particleStddev, 1.0 - particle.x).xyz;
+          particleStddev, 0.0).xyz;
 
       l = length(point);
     }

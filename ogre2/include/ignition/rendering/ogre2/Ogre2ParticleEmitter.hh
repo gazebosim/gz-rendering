@@ -86,6 +86,9 @@ namespace ignition
       public: virtual void SetColorRangeImage(const std::string &_image)
           override;
 
+      /// \brief Particle system visibility flags
+      public: static const uint32_t kParticleVisibilityFlags;
+
       // Documentation inherited.
       protected: virtual void Init() override;
 

@@ -48,6 +48,7 @@
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
+#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -737,7 +738,12 @@ void Ogre2ThermalCamera::CreateThermalTexture()
           colorTargetDef->addPass(Ogre::PASS_CLEAR));
       passClear->mColourValue = Ogre::ColourValue(0, 0, 0);
       // scene pass
-      colorTargetDef->addPass(Ogre::PASS_SCENE);
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          colorTargetDef->addPass(Ogre::PASS_SCENE));
+      // thermal camera should not see particles
+      passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
+          ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 
     // rt_input target - converts to thermal

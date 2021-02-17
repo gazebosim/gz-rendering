@@ -21,8 +21,11 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Event.hh>
 
+#include <ignition/math/Color.hh>
+
 #include "test_config.h"  // NOLINT(build/include)
 
+#include "ignition/rendering/ParticleEmitter.hh"
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
@@ -62,6 +65,9 @@ class ThermalCameraTest: public testing::Test,
 
   // Test 8 bit thermal camera output
   public: void ThermalCameraBoxes8Bit(const std::string &_renderEngine);
+
+  // Test that particles do not appear in thermal camera image
+  public: void ThermalCameraParticles(const std::string &_renderEngine);
 
   // Path to test textures
   public: const std::string TEST_MEDIA_PATH =
@@ -448,6 +454,176 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
+//////////////////////////////////////////////////
+void ThermalCameraTest::ThermalCameraParticles(
+    const std::string &_renderEngine)
+{
+  int imgWidth = 50;
+  int imgHeight = 50;
+  double aspectRatio = imgWidth / imgHeight;
+
+  double unitBoxSize = 1.0;
+  ignition::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+
+  // Only ogre2 supports 8 bit image format
+  if (_renderEngine.compare("ogre2") != 0)
+  {
+    igndbg << "Engine '" << _renderEngine
+           << "' doesn't support 8 bit thermal cameras" << std::endl;
+    return;
+  }
+
+  // Setup ign-rendering with an empty scene
+  auto *engine = ignition::rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+
+  // red background
+  scene->SetBackgroundColor(1.0, 0.0, 0.0);
+
+  // Create an scene with a box in it
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  ignition::rendering::VisualPtr root = scene->RootVisual();
+
+  // create box visual
+  ignition::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(boxPosition);
+  box->SetLocalRotation(0, 0, 0);
+  box->SetLocalScale(unitBoxSize, unitBoxSize, unitBoxSize);
+
+  // set box temperature
+  float boxTemp = 310.0;
+  box->SetUserData("temperature", boxTemp);
+
+  root->AddChild(box);
+
+  // create particle emitter between camera and box
+  ignition::rendering::ParticleEmitterPtr emitter =
+      scene->CreateParticleEmitter();
+  emitter->SetLocalPosition({0.5, 0, 0});
+  emitter->SetRate(10);
+  emitter->SetParticleSize({1, 1, 1});
+  emitter->SetLifetime(2);
+  emitter->SetVelocityRange(0.1, 0.5);
+  emitter->SetColorRange(ignition::math::Color::Red,
+      ignition::math::Color::Black);
+  emitter->SetScaleRate(1);
+  emitter->SetEmitting(true);
+
+  root->AddChild(emitter);
+
+  {
+    double farDist = 10.0;
+    double nearDist = 0.15;
+    double hfov = 1.05;
+    // set min max values based on thermal camera spec
+    // using the Vividia HTi HT-301 camera as example:
+    // https://hti-instrument.com/products/ht-301-mobile-phone-thermal-imager
+    // The range is ~= -20 to 400 degree Celsius
+    double minTemp = 253.0;
+    double maxTemp = 673.0;
+    // Create thermal camera
+    auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
+    ASSERT_NE(thermalCamera, nullptr);
+
+    ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0),
+        ignition::math::Quaterniond::Identity);
+    thermalCamera->SetLocalPose(testPose);
+
+    // Configure thermal camera
+    thermalCamera->SetImageWidth(imgWidth);
+    EXPECT_EQ(thermalCamera->ImageWidth(),
+      static_cast<unsigned int>(imgWidth));
+    thermalCamera->SetImageHeight(imgHeight);
+    EXPECT_EQ(thermalCamera->ImageHeight(),
+      static_cast<unsigned int>(imgHeight));
+    thermalCamera->SetFarClipPlane(farDist);
+    EXPECT_DOUBLE_EQ(thermalCamera->FarClipPlane(), farDist);
+    thermalCamera->SetNearClipPlane(nearDist);
+    EXPECT_DOUBLE_EQ(thermalCamera->NearClipPlane(), nearDist);
+    thermalCamera->SetAspectRatio(aspectRatio);
+    EXPECT_DOUBLE_EQ(thermalCamera->AspectRatio(), aspectRatio);
+    thermalCamera->SetHFOV(hfov);
+    EXPECT_DOUBLE_EQ(thermalCamera->HFOV().Radian(), hfov);
+
+    // set bit depth
+    thermalCamera->SetImageFormat(ignition::rendering::PF_L8);
+    EXPECT_EQ(ignition::rendering::PF_L8, thermalCamera->ImageFormat());
+
+    // set min max temp
+    thermalCamera->SetMinTemperature(minTemp);
+    EXPECT_DOUBLE_EQ(minTemp, thermalCamera->MinTemperature());
+    thermalCamera->SetMaxTemperature(maxTemp);
+    EXPECT_DOUBLE_EQ(maxTemp, thermalCamera->MaxTemperature());
+
+    // thermal-specific params
+    // set room temperature: 294 ~ 298 Kelvin
+    float ambientTemp = 296.0f;
+    float ambientTempRange = 4.0f;
+
+    // 8 bit format so higher number here (lower resolution)
+    // +- 3 degrees
+    float linearResolution = 3.0f;
+    thermalCamera->SetAmbientTemperature(ambientTemp);
+    EXPECT_FLOAT_EQ(ambientTemp, thermalCamera->AmbientTemperature());
+    thermalCamera->SetAmbientTemperatureRange(ambientTempRange);
+    EXPECT_FLOAT_EQ(ambientTempRange, thermalCamera->AmbientTemperatureRange());
+    thermalCamera->SetLinearResolution(linearResolution);
+    EXPECT_FLOAT_EQ(linearResolution, thermalCamera->LinearResolution());
+    scene->RootVisual()->AddChild(thermalCamera);
+
+    // Set a callback on the camera sensor to get a thermal camera frame
+    // todo(anyone) change this to uint8_t when thermal cameras supports a
+    // ConnectNewThermalFrame event that provides this format
+    uint16_t *thermalData = new uint16_t[imgHeight * imgWidth];
+    ignition::common::ConnectionPtr connection =
+      thermalCamera->ConnectNewThermalFrame(
+          std::bind(&::OnNewThermalFrame, thermalData,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+            std::placeholders::_4, std::placeholders::_5));
+    EXPECT_NE(nullptr, connection);
+
+    // thermal image indices
+    int midWidth = static_cast<int>(thermalCamera->ImageWidth() * 0.5);
+    int midHeight = static_cast<int>(thermalCamera->ImageHeight() * 0.5);
+    int mid = midHeight * thermalCamera->ImageWidth() + midWidth -1;
+    int left = midHeight * thermalCamera->ImageWidth();
+    int right = (midHeight+1) * thermalCamera->ImageWidth() - 1;
+
+    // Update a few times to make sure the flow of particles do not affect
+    // the readings
+    for (unsigned int i = 0; i < 100u; ++i)
+    {
+      thermalCamera->Update();
+
+      // verify temperature
+      // Box should be in the middle of image and return box temp
+      // Left and right side of the image frame should be ambient temp
+      EXPECT_NEAR(ambientTemp, thermalData[left] * linearResolution,
+          ambientTempRange);
+      EXPECT_NEAR(ambientTemp, thermalData[right] * linearResolution,
+          ambientTempRange);
+      EXPECT_FLOAT_EQ(thermalData[right], thermalData[left]);
+      EXPECT_NEAR(boxTemp, thermalData[mid] * linearResolution,
+          linearResolution);
+    }
+
+    // Clean up
+    connection.reset();
+    delete [] thermalData;
+  }
+
+  engine->DestroyScene(scene);
+  ignition::rendering::unloadEngine(engine->Name());
+}
 
 TEST_P(ThermalCameraTest, ThermalCameraBoxesUniformTemp)
 {
@@ -462,6 +638,11 @@ TEST_P(ThermalCameraTest, ThermalCameraBoxesHeatSignature)
 TEST_P(ThermalCameraTest, ThermalCameraBoxesUniformTemp8Bit)
 {
   ThermalCameraBoxes8Bit(GetParam());
+}
+
+TEST_P(ThermalCameraTest, ThermalCameraParticles)
+{
+  ThermalCameraParticles(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(ThermalCamera, ThermalCameraTest,

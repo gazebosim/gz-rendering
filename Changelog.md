@@ -2,6 +2,23 @@
 
 ### Ignition Rendering 4.X
 
+### Ignition Rendering 4.5.0 (2021-02-17)
+
+1. More verbose messages when failing to load render engines
+    * [Pull Request #236](https://github.com/ignitionrobotics/ign-rendering/pull/236)
+
+1. Fixed OBJ textures with the same name
+    * [Pull Request #239](https://github.com/ignitionrobotics/ign-rendering/pull/239)
+
+1. Fix setting particle size
+    * [Pull Request #241](https://github.com/ignitionrobotics/ign-rendering/pull/241)
+
+1. Make particle emitter invisible in thermal camera image
+    * [Pull Request #240](https://github.com/ignitionrobotics/ign-rendering/pull/240)
+
+1. Apply particle scattering effect to depth cameras
+    * [Pull Request #251](https://github.com/ignitionrobotics/ign-rendering/pull/251)
+
 ### Ignition Rendering 4.4.0 (2021-02-11)
 
 1. Add support for 8 bit thermal camera image format

@@ -628,7 +628,9 @@ void DepthCameraTest::DepthCameraParticles(
     double depthParticleAvg = 0.0;
 
     // set a larger tol for particle depth
-    double depthNoiseTol = particleSize.X();
+    // tol is particle size + 4 sigma of noise stddev
+    double noiseStddev = 0.01;
+    double depthNoiseTol = particleSize.X() + 4 * noiseStddev;;
     double expectedParticleDepth = particlePosition.X();
 
     // Verify depth and point cloud data after particle effects

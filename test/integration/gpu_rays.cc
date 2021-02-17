@@ -24,6 +24,7 @@
 #include "test_config.h"  // NOLINT(build/include)
 
 #include "ignition/rendering/GpuRays.hh"
+#include "ignition/rendering/ParticleEmitter.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
@@ -60,6 +61,9 @@ class GpuRaysTest: public testing::Test,
 
   // Test vertical measurements
   public: void LaserVertical(const std::string &_renderEngine);
+
+  // Test detection of particles
+  public: void RaysParticles(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -460,6 +464,173 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+/// \brief Test detection of particles
+void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
+{
+#ifdef __APPLE__
+  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  return;
+#endif
+
+  if (_renderEngine != "ogre2")
+  {
+    igndbg << "GpuRays with particle effect is not supported yet in rendering "
+           << "engine: " << _renderEngine << std::endl;
+    return;
+  }
+
+  // Test GPU ray with 3 boxes in the world.
+  // Add noise in btewen GPU ray and box in the center
+
+  const double hMinAngle = -IGN_PI / 2.0;
+  const double hMaxAngle = IGN_PI / 2.0;
+  const double minRange = 0.1;
+  const double maxRange = 10.0;
+  const int hRayCount = 320;
+  const int vRayCount = 1;
+
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+
+  VisualPtr root = scene->RootVisual();
+
+  // Create ray caster
+  ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0.1),
+      ignition::math::Quaterniond::Identity);
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays_1");
+  gpuRays->SetWorldPosition(testPose.Pos());
+  gpuRays->SetWorldRotation(testPose.Rot());
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  // Create testing boxes
+  // box in the center
+  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(3, 0, 0.5),
+                                   ignition::math::Quaterniond::Identity);
+  VisualPtr visualBox1 = scene->CreateVisual("UnitBox1");
+  visualBox1->AddGeometry(scene->CreateBox());
+  visualBox1->SetWorldPosition(box01Pose.Pos());
+  visualBox1->SetWorldRotation(box01Pose.Rot());
+  root->AddChild(visualBox1);
+
+  // box on the right of the first gpu rays caster
+  ignition::math::Pose3d box02Pose(ignition::math::Vector3d(0, -5, 0.5),
+                                   ignition::math::Quaterniond::Identity);
+  VisualPtr visualBox2 = scene->CreateVisual("UnitBox2");
+  visualBox2->AddGeometry(scene->CreateBox());
+  visualBox2->SetWorldPosition(box02Pose.Pos());
+  visualBox2->SetWorldRotation(box02Pose.Rot());
+  root->AddChild(visualBox2);
+
+  // box on the left of the rays caster 1 but out of range
+  ignition::math::Pose3d box03Pose(
+      ignition::math::Vector3d(0, maxRange + 1, 0.5),
+      ignition::math::Quaterniond::Identity);
+  VisualPtr visualBox3 = scene->CreateVisual("UnitBox3");
+  visualBox3->AddGeometry(scene->CreateBox());
+  visualBox3->SetWorldPosition(box03Pose.Pos());
+  visualBox3->SetWorldRotation(box03Pose.Rot());
+  root->AddChild(visualBox3);
+
+  // create particle emitter between sensor and box in the center
+  ignition::math::Vector3d particlePosition(1.0, 0, 0);
+  ignition::math::Vector3d particleSize(0.2, 0.2, 0.2);
+  ignition::rendering::ParticleEmitterPtr emitter =
+      scene->CreateParticleEmitter();
+  emitter->SetLocalPosition(particlePosition);
+  emitter->SetParticleSize(particleSize);
+  emitter->SetRate(100);
+  emitter->SetLifetime(2);
+  emitter->SetVelocityRange(0.1, 0.1);
+  emitter->SetScaleRate(0.2);
+  emitter->SetColorRange(ignition::math::Color::Red,
+      ignition::math::Color::Black);
+  emitter->SetEmitting(true);
+  root->AddChild(emitter);
+
+  // Verify rays caster 1 range readings
+  // listen to new gpu rays frames
+  unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+  common::ConnectionPtr c =
+    gpuRays->ConnectNewGpuRaysFrame(
+        std::bind(&::OnNewGpuRaysFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+
+  int mid = static_cast<int>(hRayCount / 2) * channels;
+  int last = (hRayCount - 1) * channels;
+  double unitBoxSize = 1.0;
+  double expectedRangeAtMidPointBox1 =
+      abs(box01Pose.Pos().X()) - unitBoxSize / 2;
+  double expectedRangeAtMidPointBox2 =
+      abs(box02Pose.Pos().Y()) - unitBoxSize / 2;
+
+  // set a larger tol for particle range
+  double laserNoiseTol = particleSize.X();
+  double expectedParticleRange = particlePosition.X();
+
+  // update 100 frames. There should be a descent chance that we will see both
+  // a particle hit and miss in the readings returned by the sensor
+  unsigned int particleHitCount = 0u;
+  unsigned int particleMissCount = 0u;
+  for (unsigned int i = 0u; i < 100u; ++i)
+  {
+    gpuRays->Update();
+
+    // sensor should see ether a particle or box01
+    double particleRange = static_cast<double>(scan[mid]);
+    bool particleHit = ignition::math::equal(
+        expectedParticleRange, particleRange, laserNoiseTol);
+    bool particleMiss = ignition::math::equal(
+        expectedRangeAtMidPointBox1, particleRange, LASER_TOL);
+    EXPECT_TRUE(particleHit || particleMiss)
+        << "actual vs expected particle range: "
+        << particleRange << " vs " << expectedParticleRange;
+
+    particleHitCount += particleHit ? 1u : 0u;
+    particleMissCount += particleMiss ? 1u : 0u;
+
+    // sensor should see box02 without noise or scatter effect
+    EXPECT_NEAR(expectedRangeAtMidPointBox2, scan[0], LASER_TOL);
+
+    // sensor should not see box03 as it is out of range
+    EXPECT_DOUBLE_EQ(ignition::math::INF_D, scan[last]);
+  }
+
+  // particles are sparse so there should be more misses than hits
+  EXPECT_GT(particleMissCount, particleHitCount);
+  // there should be at least one hit
+  EXPECT_GT(particleHitCount, 0u);
+
+  c.reset();
+
+  delete [] scan;
+
+  scan = nullptr;
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+/////////////////////////////////////////////////
 TEST_P(GpuRaysTest, Configure)
 {
   Configure(GetParam());
@@ -475,6 +646,12 @@ TEST_P(GpuRaysTest, RaysUnitBox)
 TEST_P(GpuRaysTest, LaserVertical)
 {
   LaserVertical(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(GpuRaysTest, RaysParticles)
+{
+  RaysParticles(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(GpuRays, GpuRaysTest,

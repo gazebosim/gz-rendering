@@ -651,7 +651,7 @@ void Ogre2GpuRays::Setup1stPass()
   //   {
   //     pass clear
   //     {
-  //       colour_value 0.0 0.0 0.0 0.0
+  //       colour_value 0.0 0.0 0.0 1.0
   //     }
   //     pass render_scene
   //     {
@@ -786,7 +786,7 @@ void Ogre2GpuRays::Setup1stPass()
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(
           particleTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(0, 0, 0, 0);
+      passClear->mColourValue = Ogre::ColourValue::Black;
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(

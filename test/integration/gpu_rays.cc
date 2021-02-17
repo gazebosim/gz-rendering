@@ -479,13 +479,11 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
     return;
   }
 
-  // Test GPU rays with 3 boxes in the world.
-  // First GPU rays at identity orientation, second at 90 degree roll
-  // First place 2 of 3 boxes within range and verify range values.
-  // then move all 3 boxes out of range and verify range values
+  // Test GPU ray with 3 boxes in the world.
+  // Add noise in btewen GPU ray and box in the center
 
-  const double hMinAngle = -IGN_PI/2.0;
-  const double hMaxAngle = IGN_PI/2.0;
+  const double hMinAngle = -IGN_PI / 2.0;
+  const double hMaxAngle = IGN_PI / 2.0;
   const double minRange = 0.1;
   const double maxRange = 10.0;
   const int hRayCount = 320;
@@ -577,11 +575,13 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
           std::placeholders::_4, std::placeholders::_5));
 
 
-  int mid = static_cast<int>(hRayCount/2) * channels;
+  int mid = static_cast<int>(hRayCount / 2) * channels;
   int last = (hRayCount - 1) * channels;
   double unitBoxSize = 1.0;
-  double expectedRangeAtMidPointBox1 = abs(box01Pose.Pos().X()) - unitBoxSize/2;
-  double expectedRangeAtMidPointBox2 = abs(box02Pose.Pos().Y()) - unitBoxSize/2;
+  double expectedRangeAtMidPointBox1 =
+      abs(box01Pose.Pos().X()) - unitBoxSize / 2;
+  double expectedRangeAtMidPointBox2 =
+      abs(box02Pose.Pos().Y()) - unitBoxSize / 2;
 
   // set a larger tol for particle range
   double laserNoiseTol = particleSize.X();
@@ -589,8 +589,8 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
 
   // update 100 frames. There should be a descent chance that we will see both
   // a particle hit and miss in the readings returned by the sensor
-  unsigned particleHitCount = 0u;
-  unsigned particleMissCount = 0u;
+  unsigned int particleHitCount = 0u;
+  unsigned int particleMissCount = 0u;
   for (unsigned int i = 0u; i < 100u; ++i)
   {
     gpuRays->Update();

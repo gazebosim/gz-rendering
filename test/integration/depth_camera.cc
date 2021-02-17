@@ -537,13 +537,13 @@ void DepthCameraTest::DepthCameraParticles(
     EXPECT_EQ(depthCamera->ImageHeight(),
       static_cast<unsigned int>(imgHeight_));
     depthCamera->SetFarClipPlane(farDist);
-    EXPECT_NEAR(depthCamera->FarClipPlane(), farDist, DOUBLE_TOL);
+    EXPECT_DOUBLE_EQ(depthCamera->FarClipPlane(), farDist);
     depthCamera->SetNearClipPlane(nearDist);
-    EXPECT_NEAR(depthCamera->NearClipPlane(), nearDist, DOUBLE_TOL);
+    EXPECT_DOUBLE_EQ(depthCamera->NearClipPlane(), nearDist);
     depthCamera->SetAspectRatio(aspectRatio_);
-    EXPECT_NEAR(depthCamera->AspectRatio(), aspectRatio_, DOUBLE_TOL);
+    EXPECT_DOUBLE_EQ(depthCamera->AspectRatio(), aspectRatio_);
     depthCamera->SetHFOV(hfov_);
-    EXPECT_NEAR(depthCamera->HFOV().Radian(), hfov_, DOUBLE_TOL);
+    EXPECT_DOUBLE_EQ(depthCamera->HFOV().Radian(), hfov_);
 
     depthCamera->CreateDepthTexture();
     scene->RootVisual()->AddChild(depthCamera);
@@ -578,14 +578,15 @@ void DepthCameraTest::DepthCameraParticles(
     double pointAvg = 0.0;
     double depthAvg = 0.0;
     // Verify depth and point cloud data before particle effects
-    for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
+    for (unsigned int i = 0u; i < depthCamera->ImageHeight(); ++i)
     {
-      unsigned int step = i*depthCamera->ImageWidth()*pointCloudChannelCount;
-      for (unsigned int j = 0; j < depthCamera->ImageWidth(); ++j)
+      unsigned int step =
+          i * depthCamera->ImageWidth() * pointCloudChannelCount;
+      for (unsigned int j = 0u; j < depthCamera->ImageWidth(); ++j)
       {
-        float x = pointCloudData[step + j*pointCloudChannelCount];
-        float y = pointCloudData[step + j*pointCloudChannelCount + 1];
-        float z = pointCloudData[step + j*pointCloudChannelCount + 2];
+        float x = pointCloudData[step + j * pointCloudChannelCount];
+        float y = pointCloudData[step + j * pointCloudChannelCount + 1];
+        float z = pointCloudData[step + j * pointCloudChannelCount + 2];
         EXPECT_NEAR(expectedDepth, x, DEPTH_TOL);
         float d = scan[i * depthCamera->ImageWidth() + j];
         EXPECT_NEAR(expectedDepth, d, DEPTH_TOL);
@@ -631,14 +632,15 @@ void DepthCameraTest::DepthCameraParticles(
     double expectedParticleDepth = particlePosition.X();
 
     // Verify depth and point cloud data after particle effects
-    for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
+    for (unsigned int i = 0u; i < depthCamera->ImageHeight(); ++i)
     {
-      unsigned int step = i*depthCamera->ImageWidth()*pointCloudChannelCount;
-      for (unsigned int j = 0; j < depthCamera->ImageWidth(); ++j)
+      unsigned int step =
+          i * depthCamera->ImageWidth() * pointCloudChannelCount;
+      for (unsigned int j = 0u; j < depthCamera->ImageWidth(); ++j)
       {
-        float x = pointCloudData[step + j*pointCloudChannelCount];
-        float y = pointCloudData[step + j*pointCloudChannelCount + 1];
-        float z = pointCloudData[step + j*pointCloudChannelCount + 2];
+        float x = pointCloudData[step + j * pointCloudChannelCount];
+        float y = pointCloudData[step + j * pointCloudChannelCount + 1];
+        float z = pointCloudData[step + j * pointCloudChannelCount + 2];
 
         double xd = static_cast<double>(x);
         // depth camera sees only certain percentage of particles

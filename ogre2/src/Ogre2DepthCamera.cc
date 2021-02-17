@@ -473,7 +473,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //       apply noise and scatterbility to d2
     //       set depth data to d2
     //     else
-    //       set detph data to d1
+    //       set depth data to d1
     //   set color data to c1
 
     // We need to programmatically create the compositor because we need to
@@ -699,7 +699,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(
           depthTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue::Black;
+      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(),
+          this->FarClipPlane(), this->FarClipPlane());
+
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
@@ -717,7 +719,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(
           particleTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(0, 0, 0, 0);
+      passClear->mColourValue = Ogre::ColourValue::Black;
 
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
@@ -735,7 +737,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(
           particleDepthTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(0, 0, 0, 0);
+      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(),
+          this->FarClipPlane(), this->FarClipPlane());
 
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =

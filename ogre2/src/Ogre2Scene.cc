@@ -453,6 +453,7 @@ ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
 {
   Ogre2ParticleEmitterPtr visual(new Ogre2ParticleEmitter);
   bool result = this->InitObject(visual, _id, _name);
+
   return (result) ? visual : nullptr;
 }
 

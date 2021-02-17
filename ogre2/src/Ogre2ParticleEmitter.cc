@@ -114,7 +114,7 @@ void Ogre2ParticleEmitter::Destroy()
 }
 
 //////////////////////////////////////////////////
-void Ogre2ParticleEmitter::Ogre2ParticleEmitter::SetType(
+void Ogre2ParticleEmitter::SetType(
     const EmitterType _type)
 {
   // Sanity check: Make sure that the emitter type is valid.
@@ -132,7 +132,7 @@ void Ogre2ParticleEmitter::Ogre2ParticleEmitter::SetType(
 
   this->dataPtr->emitterDirty = true;
   // todo(anyone) remove this call. We had to do this since we can't override
-  // PreRender() as it breaks ABI. We should rename PreRenderImp to PreRender()
+  // PreRender() as it breaks ABI. We should rename PreRenderImpl to PreRender()
   // in next release.
   this->PreRenderImpl();
 }
@@ -244,7 +244,7 @@ void Ogre2ParticleEmitter::SetParticleSize(
 
   this->dataPtr->emitterDirty = true;
   // todo(anyone) remove this call. We had to do this since we can't override
-  // PreRender() as it breaks ABI. We should rename PreRenderImp to PreRender()
+  // PreRender() as it breaks ABI. We should rename PreRenderImpl to PreRender()
   // in next release.
   this->PreRenderImpl();
 }
@@ -436,8 +436,9 @@ void Ogre2ParticleEmitter::Init()
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::PreRenderImpl()
 {
-  // \todo(anyone) rename this function to PreRender() so it overrides function
-  // from base class
+  // todo(anyone) rename this function to PreRender() so it overrides function
+  // from base class. Since this rename breaks ABI, we should rename this
+  // function in the next release
 
   // recreate the particle system if needed
   // currently this is needed when user changes type or particle size
@@ -453,6 +454,8 @@ void Ogre2ParticleEmitter::PreRenderImpl()
     this->SetEmitterSize(this->emitterSize);
 
     // set other properties
+    this->SetDuration(this->duration);
+    this->SetEmitting(this->emitting);
     this->SetLifetime(this->lifetime);
     this->SetRate(this->rate);
     this->SetVelocityRange(this->minVelocity, this->maxVelocity);
@@ -487,7 +490,7 @@ void Ogre2ParticleEmitter::CreateParticleSystem()
              "Ogre emitter types.");
 
   // Instantiate particle emitter and their default parameters.
-  // default in point emitter
+  // Emitter type is point unless otherwise specified.
   this->dataPtr->emitter =
       this->dataPtr->ps->addEmitter(kOgreEmitterTypes[this->type]);
   this->dataPtr->emitter->setDirection(Ogre::Vector3::UNIT_X);

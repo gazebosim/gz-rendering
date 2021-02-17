@@ -48,9 +48,6 @@ class ignition::rendering::Ogre2ScenePrivate
 {
   /// \brief Flag to indicate if shadows need to be updated
   public: bool shadowsDirty = true;
-
-  /// \brief A list of particle emitters
-  public: std::vector<ParticleEmitterPtr> particleEmitters;
 };
 
 using namespace ignition;
@@ -456,8 +453,6 @@ ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
 {
   Ogre2ParticleEmitterPtr visual(new Ogre2ParticleEmitter);
   bool result = this->InitObject(visual, _id, _name);
-
-  this->dataPtr->particleEmitters.push_back(visual);
 
   return (result) ? visual : nullptr;
 }

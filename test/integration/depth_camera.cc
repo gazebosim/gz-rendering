@@ -469,7 +469,7 @@ void DepthCameraTest::DepthCameraParticles(
 {
   int imgWidth_ = 256;
   int imgHeight_ = 256;
-  double aspectRatio_ = imgWidth_/imgHeight_;
+  double aspectRatio_ = imgWidth_ / imgHeight_;
 
   // box should fill camera view
   // we will add particle emitter in between box and depth camera later

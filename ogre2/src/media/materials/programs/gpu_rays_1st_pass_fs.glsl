@@ -24,6 +24,7 @@ in block
 } inPs;
 
 uniform sampler2D depthTexture;
+uniform sampler2D colorTexture;
 
 out vec4 fragColor;
 
@@ -45,6 +46,9 @@ void main()
 {
   // get linear depth
   float d = getDepth(inPs.uv0);
+  
+  // get retro
+  float retro = texture(colorTexture, inPs.uv0).x * 2000.0;
 
   // reconstruct 3d viewspace pos from depth
   vec3 viewSpacePos = inPs.cameraDir * d;
@@ -57,5 +61,5 @@ void main()
   else if (l < near)
     l = min;
 
-  fragColor = vec4(l, 0.0, 0, 1.0);
+  fragColor = vec4(l, retro, 0.0, 1.0);
 }

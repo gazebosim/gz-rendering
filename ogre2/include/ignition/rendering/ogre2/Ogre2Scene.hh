@@ -247,13 +247,6 @@ namespace ignition
       /// \brief Create the vaiours storage objects
       private: void CreateStores();
 
-      /// \brief return number of particle emitters
-      public: unsigned int ParticleEmitterCount() const;
-
-      /// \brief Get particle emitter by index
-      /// \param[in] _idx Index of particle emitter
-      public: ParticleEmitterPtr ParticleEmitterByIndex(unsigned int _idx) const;
-
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();
 

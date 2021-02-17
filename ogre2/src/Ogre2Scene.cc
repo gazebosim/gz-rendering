@@ -462,26 +462,6 @@ ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
   return (result) ? visual : nullptr;
 }
 
-
-//////////////////////////////////////////////////
-unsigned int Ogre2Scene::ParticleEmitterCount() const
-{
-  return this->dataPtr->particleEmitters.size();
-}
-
-//////////////////////////////////////////////////
-ParticleEmitterPtr Ogre2Scene::ParticleEmitterByIndex(unsigned int _idx) const
-{
-  if (_idx >= this->dataPtr->particleEmitters.size())
-  {
-    ignerr << "Unable to get particle emitter. Index out of range: " << _idx
-           << std::endl;
-    return ParticleEmitterPtr();
-  }
-
-  return this->dataPtr->particleEmitters[_idx];
-}
-
 //////////////////////////////////////////////////
 bool Ogre2Scene::InitObject(Ogre2ObjectPtr _object, unsigned int _id,
     const std::string &_name)

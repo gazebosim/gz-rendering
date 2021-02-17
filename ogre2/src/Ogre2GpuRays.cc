@@ -165,7 +165,7 @@ class ignition::rendering::Ogre2GpuRaysPrivate
       laserRetroMaterialSwitcher[6];
 
   /// \brief standard deviation of particle noise
-  public: double particleStddev = 0.1;
+  public: double particleStddev = 0.01;
 
   /// \brief Particle scatter ratio. This is used to determine the ratio of
   /// particles that will detected by the depth camera

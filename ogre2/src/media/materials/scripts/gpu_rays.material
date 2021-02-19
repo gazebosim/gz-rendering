@@ -31,6 +31,7 @@ fragment_program GpuRaysScan1stFS glsl
   default_params
   {
     param_named depthTexture int 0
+    param_named colorTexture int 1
   }
 }
 
@@ -43,6 +44,11 @@ material GpuRaysScan1st
       vertex_program_ref GpuRaysScan1stVS { }
       fragment_program_ref GpuRaysScan1stFS { }
       texture_unit depthTexture
+      {
+        filtering none
+        tex_address_mode clamp
+      }
+      texture_unit colorTexture
       {
         filtering none
         tex_address_mode clamp
@@ -102,6 +108,48 @@ material GpuRaysScan2nd
       texture_unit tex5
       {
         filtering none
+      }
+    }
+  }
+}
+
+vertex_program laser_retro_vs glsl
+{
+  source plain_color_vs.glsl
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
+}
+
+fragment_program laser_retro_fs glsl
+{
+  source plain_color_fs.glsl
+
+  default_params
+  {
+    param_named inColor float4 0 0 0 1
+  }
+}
+
+material LaserRetroSource
+{
+  // Material has one technique
+  technique
+  {
+    // This technique has one pass
+    pass
+    {
+      fog_override true
+
+      vertex_program_ref laser_retro_vs
+      {
+      }
+
+      fragment_program_ref laser_retro_fs
+      {
+        param_named_auto inColor custom 10
       }
     }
   }

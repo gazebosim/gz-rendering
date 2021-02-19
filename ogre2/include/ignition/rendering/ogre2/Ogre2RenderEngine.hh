@@ -90,8 +90,8 @@ namespace ignition
       // Documentation Inherited.
       public: virtual std::string Name() const override;
 
-      /// \brief Add path to resourcea in ogre2's resource manager
-      /// \param[in] _uri Reousrce path in the form of an uri
+      /// \brief Add path to resource in ogre2's resource manager
+      /// \param[in] _uri Resource path in the form of an uri
       public: void AddResourcePath(const std::string &_uri) override;
 
       /// \brief Get the ogre2 root object

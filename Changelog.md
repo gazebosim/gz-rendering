@@ -12,6 +12,37 @@
 
 ### Ignition Rendering 4.X
 
+### Ignition Rendering 4.4.0 (2021-02-11)
+
+1. Add support for 8 bit thermal camera image format
+    * [Pull Request #235](https://github.com/ignitionrobotics/ign-rendering/pull/235)
+
+1. All changes up to version 3.4.0
+
+### Ignition Rendering 4.3.1 (2021-02-03)
+
+1. Fix converting Pbs to Unlit material conversion (#230)
+    * [Pull Request #230](https://github.com/ignitionrobotics/ign-rendering/pull/230)
+
+### Ignition Rendering 4.3.0 (2021-02-02)
+
+1. Tutorial: Transform FBX to Collada and change its origin
+    * [Pull request #195](https://github.com/ignitionrobotics/ign-rendering/pull/195)
+
+1. Remove Windows Warnings
+    * [Pull request #206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
+    * [Pull request #213](https://github.com/ignitionrobotics/ign-rendering/pull/213)
+    * [Pull request #215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
+
+1. Fix spelling Desconstructor -> Destructor
+    * [Pull request #220](https://github.com/ignitionrobotics/ign-rendering/pull/220)
+
+1. Thermal Camera: Visualize objects with a heat signature
+    * [Pull request #189](https://github.com/ignitionrobotics/ign-rendering/pull/189)
+
+1. Add laser retro support in Ogre2
+    * [Pull request #194](https://github.com/ignitionrobotics/ign-rendering/pull/194)
+
 ### Ignition Rendering 4.2.0 (2021-01-22)
 
 1. Remove some windows warnings.
@@ -119,6 +150,20 @@
 
 1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
+
+### Ignition Rendering 3.X.X (2021-XX-XX)
+
+
+
+### Ignition Rendering 3.4.0 (2021-02-09)
+
+1. Clear all Windows warnings
+    * [Pull request 206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
+    * [Pull request 215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
+    * [Pull request 225](https://github.com/ignitionrobotics/ign-rendering/pull/225)
+
+1. Add laser_retro support
+    * [Pull request 194](https://github.com/ignitionrobotics/ign-rendering/pull/194)
 
 ### Ignition Rendering 3.3.0 (2021-01-22)
 

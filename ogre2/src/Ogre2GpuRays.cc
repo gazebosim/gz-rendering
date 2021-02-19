@@ -18,9 +18,68 @@
 #include <ignition/math/Vector2.hh>
 #include <ignition/math/Vector3.hh>
 
+#include <ignition/common/Console.hh>
+#include <ignition/math/Helpers.hh>
+
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+
+namespace ignition
+{
+namespace rendering
+{
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+//
+/// \brief Helper class for switching the ogre item's material to laser retro
+/// source material when a thermal camera is being rendered.
+class Ogre2LaserRetroMaterialSwitcher : public Ogre::RenderTargetListener
+{
+  /// \brief constructor
+  /// \param[in] _scene the scene manager responsible for rendering
+  public: explicit Ogre2LaserRetroMaterialSwitcher(Ogre2ScenePtr _scene);
+
+  /// \brief destructor
+  public: ~Ogre2LaserRetroMaterialSwitcher() = default;
+
+  /// \brief Callback when a render target is about to be rendered
+  /// \param[in] _evt Ogre render target event containing information about
+  /// the source render target.
+  private: virtual void preRenderTargetUpdate(
+      const Ogre::RenderTargetEvent &_evt) override;
+
+  /// \brief Callback when a render target is finisned being rendered
+  /// \param[in] _evt Ogre render target event containing information about
+  /// the source render target.
+  private: virtual void postRenderTargetUpdate(
+      const Ogre::RenderTargetEvent &_evt) override;
+
+  /// \brief Scene manager
+  private: Ogre2ScenePtr scene = nullptr;
+
+  /// \brief Pointer to the laser retro source material
+  private: Ogre::MaterialPtr laserRetroSourceMaterial;
+
+  /// \brief Custom parameter index of laser retro value in an ogre subitem.
+  /// This has to match the custom index specifed in LaserRetroSource material
+  /// script in media/materials/scripts/gpu_rays.material
+  private: const unsigned int customParamIdx = 10u;
+
+  /// \brief A map of ogre sub item pointer to their original hlms material
+  private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
+};
+}
+}
+}
+
 
 /// \internal
 /// \brief Private data for the Ogre2GpuRays class
@@ -99,10 +158,132 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 
   /// \brief Dummy render texture for the gpu rays
   public: RenderTexturePtr renderTexture;
+
+  /// \brief Pointer to material switcher
+  public: std::unique_ptr<Ogre2LaserRetroMaterialSwitcher>
+      laserRetroMaterialSwitcher[6];
 };
 
 using namespace ignition;
 using namespace rendering;
+
+
+//////////////////////////////////////////////////
+Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
+    Ogre2ScenePtr _scene)
+{
+  this->scene = _scene;
+  // plain opaque material
+  Ogre::ResourcePtr res =
+    Ogre::MaterialManager::getSingleton().load("LaserRetroSource",
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+  this->laserRetroSourceMaterial = res.staticCast<Ogre::Material>();
+  this->laserRetroSourceMaterial->load();
+}
+
+//////////////////////////////////////////////////
+void Ogre2LaserRetroMaterialSwitcher::preRenderTargetUpdate(
+    const Ogre::RenderTargetEvent & /*_evt*/)
+{
+  // swap item to use v1 shader material
+  // Note: keep an eye out for performance impact on switching materials
+  // on the fly. We are not doing this often so should be ok.
+  this->datablockMap.clear();
+  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
+      Ogre::ItemFactory::FACTORY_TYPE_NAME);
+  while (itor.hasMoreElements())
+  {
+    Ogre::MovableObject *object = itor.peekNext();
+    Ogre::Item *item = static_cast<Ogre::Item *>(object);
+
+    std::string laserRetroKey = "laser_retro";
+    // get visual
+    Ogre::Any userAny = item->getUserObjectBindings().getUserAny();
+    if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
+    {
+      VisualPtr result;
+      try
+      {
+        result = this->scene->VisualById(Ogre::any_cast<unsigned int>(userAny));
+      }
+      catch(Ogre::Exception &e)
+      {
+        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+      }
+      Ogre2VisualPtr ogreVisual =
+          std::dynamic_pointer_cast<Ogre2Visual>(result);
+
+      // get laser_retro
+      Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
+
+        float retroValue = -1.0;
+        try
+        {
+          retroValue = std::get<float>(tempLaserRetro);
+        }
+        catch(...)
+        {
+          try
+          {
+            retroValue = std::get<double>(tempLaserRetro);
+          }
+          catch(...)
+          {
+            try
+            {
+              retroValue = std::get<int>(tempLaserRetro);
+            }
+            catch(std::bad_variant_access &e)
+            {
+              ignerr << "Error casting user data: " << e.what() << "\n";
+              retroValue = -1.0;
+            }
+          }
+        }
+
+        // only accept positive laser retro value
+        if (retroValue >= 0)
+        {
+          // set visibility flag so the camera can see it
+          item->addVisibilityFlags(0x01000000);
+          for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+          {
+            Ogre::SubItem *subItem = item->getSubItem(i);
+            if (!subItem->hasCustomParameter(this->customParamIdx))
+            {
+              // limit laser retro value to 2000 (as in gazebo)
+              if (retroValue > 2000.0)
+              {
+                retroValue = 2000.0;
+              }
+              float color = retroValue / 2000.0;
+              subItem->setCustomParameter(this->customParamIdx,
+                  Ogre::Vector4(color, color, color, 1.0));
+            }
+            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+            this->datablockMap[subItem] = datablock;
+
+            subItem->setMaterial(this->laserRetroSourceMaterial);
+          }
+        }
+      }
+      itor.moveNext();
+    }
+  }
+
+//////////////////////////////////////////////////
+void Ogre2LaserRetroMaterialSwitcher::postRenderTargetUpdate(
+    const Ogre::RenderTargetEvent & /*_evt*/)
+{
+  // restore item to use hlms material
+  for (auto it : this->datablockMap)
+  {
+    Ogre::SubItem *subItem = it.first;
+    subItem->setDatablock(it.second);
+  }
+}
+
 
 //////////////////////////////////////////////////
 Ogre2GpuRays::Ogre2GpuRays()
@@ -115,6 +296,7 @@ Ogre2GpuRays::Ogre2GpuRays()
   {
     this->dataPtr->cubeCam[i] = nullptr;
     this->dataPtr->ogreCompositorWorkspace1st[i] = nullptr;
+    this->dataPtr->laserRetroMaterialSwitcher[i] = nullptr;
   }
 }
 
@@ -439,7 +621,8 @@ void Ogre2GpuRays::Setup1stPass()
   // {
   //   in 0 rt_input
   //   texture depthTexture target_width target_height PF_D32_FLOAT
-  //   target depthTexture
+  //   texture colorTexture target_width target_height PF_R8G8B8
+  //   target colorTexture
   //   {
   //     pass clear
   //     {
@@ -459,6 +642,7 @@ void Ogre2GpuRays::Setup1stPass()
   //     {
   //       material GpuRaysScan1st // Use copy instead of original
   //       input 0 depthTexture
+  //       input 1 colorTexture
   //       quad_normals camera_far_corners_view_space
   //     }
   //   }
@@ -489,28 +673,49 @@ void Ogre2GpuRays::Setup1stPass()
     depthTexDef->uav = false;
     depthTexDef->automipmaps = false;
     depthTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
-    depthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
+    depthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+
     depthTexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
     depthTexDef->fsaaExplicitResolve = false;
 
+    Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
+        nodeDef->addTextureDefinition("colorTexture");
+    colorTexDef->textureType = Ogre::TEX_TYPE_2D;
+    colorTexDef->width = 0;
+    colorTexDef->height = 0;
+    colorTexDef->depth = 1;
+    colorTexDef->numMipmaps = 0;
+    colorTexDef->widthFactor = 1;
+    colorTexDef->heightFactor = 1;
+    colorTexDef->formatList = {Ogre::PF_R8G8B8};
+    colorTexDef->fsaa = 0;
+    colorTexDef->uav = false;
+    colorTexDef->automipmaps = false;
+    colorTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    colorTexDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+    colorTexDef->preferDepthTexture = true;
+    colorTexDef->fsaaExplicitResolve = false;
+
     nodeDef->setNumTargetPass(2);
-    // depthTexture target - renders depth
-    Ogre::CompositorTargetDef *depthTargetDef =
-        nodeDef->addTargetPass("depthTexture");
-    depthTargetDef->setNumPasses(2);
+
+    Ogre::CompositorTargetDef *colorTargetDef =
+        nodeDef->addTargetPass("colorTexture");
+    colorTargetDef->setNumPasses(2);
     {
       // clear pass
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(
-          depthTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(this->dataMaxVal, 0, 1.0);
+          colorTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(0, 0, 0);
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
-          depthTargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL
-          & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
+          colorTargetDef->addPass(Ogre::PASS_SCENE));
+      // set camera custom visibility mask when rendering laser retro
+      passScene->mVisibilityMask = 0x01000000;
     }
+
     // rt_input target - converts depth to range
     Ogre::CompositorTargetDef *inputTargetDef =
         nodeDef->addTargetPass("rt_input");
@@ -527,6 +732,7 @@ void Ogre2GpuRays::Setup1stPass()
           inputTargetDef->addPass(Ogre::PASS_QUAD));
       passQuad->mMaterialName = this->dataPtr->matFirstPass->getName();
       passQuad->addQuadTextureSource(0, "depthTexture", 0);
+      passQuad->addQuadTextureSource(1, "colorTexture", 0);
       passQuad->mFrustumCorners =
           Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
     }
@@ -580,7 +786,7 @@ void Ogre2GpuRays::Setup1stPass()
       Ogre::TextureManager::getSingleton().createManual(
       texName.str(), "General", Ogre::TEX_TYPE_2D,
       this->dataPtr->w1st, this->dataPtr->h1st, 1, 0,
-      Ogre::PF_FLOAT32_R, Ogre::TU_RENDERTARGET,
+      Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET,
       0, false, 0, Ogre::BLANKSTRING, false, true);
 
     Ogre::RenderTarget *rt =
@@ -589,6 +795,25 @@ void Ogre2GpuRays::Setup1stPass()
     this->dataPtr->ogreCompositorWorkspace1st[i] =
         ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
         rt, this->dataPtr->cubeCam[i], wsDefName, false);
+
+    // add laser retro material switcher to render target listener
+    // so we can switch to use laser retro material when the camera is being
+    // updated
+    Ogre::CompositorNode *node =
+        this->dataPtr->ogreCompositorWorkspace1st[i]->getNodeSequence()[0];
+    auto channelsTex = node->getLocalTextures();
+
+    for (auto c : channelsTex)
+    {
+      if (c.textures[0]->getSrcFormat() == Ogre::PF_R8G8B8)
+      {
+        this->dataPtr->laserRetroMaterialSwitcher[i].reset(
+            new Ogre2LaserRetroMaterialSwitcher(this->scene));
+        c.target->addListener(
+            this->dataPtr->laserRetroMaterialSwitcher[i].get());
+        break;
+      }
+    }
   }
 }
 

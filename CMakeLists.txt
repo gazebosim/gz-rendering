@@ -34,10 +34,9 @@ set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-common
-ign_find_package(ignition-common3 REQUIRED
-  COMPONENTS graphics events
-  VERSION 3.10)
-set(IGN_COMMON_VER ${ignition-common3_VERSION_MAJOR})
+ign_find_package(ignition-common4 REQUIRED
+  COMPONENTS graphics events)
+set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-plugin

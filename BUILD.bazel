@@ -56,34 +56,15 @@ public_headers_no_gen = glob([
     "include/ignition/rendering/base/*.hh",
 ])
 
-test_sources = [
-    "src/ArrowVisual_TEST.cc",
-    "src/AxisVisual_TEST.cc",
-    "src/Camera_TEST.cc",
-    "src/GaussianNoisePass_TEST.cc",
-    "src/GizmoVisual_TEST.cc",
-    "src/Grid_TEST.cc",
-    "src/Light_TEST.cc",
-    "src/Marker_TEST.cc",
-    "src/Material_TEST.cc",
-    "src/MeshDescriptor_TEST.cc",
-    "src/Mesh_TEST.cc",
-    "src/OrbitViewController_TEST.cc",
-    "src/PixelFormat_TEST.cc",
-    "src/RayQuery_TEST.cc",
-    "src/RenderEngine_TEST.cc",
-    "src/RenderingIface_TEST.cc",
-    "src/RenderPassSystem_TEST.cc",
-    "src/RenderTarget_TEST.cc",
-    "src/Scene_TEST.cc",
-    "src/ShaderParams_TEST.cc",
-    "src/ShaderParam_TEST.cc",
-    "src/Text_TEST.cc",
-    "src/ThermalCamera_TEST.cc",
-    "src/TransformController_TEST.cc",
-    "src/Visual_TEST.cc",
-    "src/WireBox_TEST.cc",
-]
+sources = glob(
+    [
+        "src/*.cc",
+        "src/base/*.cc",
+    ],
+    exclude = ["src/*_TEST.cc"],
+)
+
+test_sources = glob(["src/*_TEST.cc"])
 
 generate_include_header(
     name = "renderinghh_genrule",
@@ -102,28 +83,7 @@ public_headers = public_headers_no_gen + [
 
 cc_library(
     name = "ign_rendering",
-    srcs = [
-        "src/GaussianNoisePass.cc",
-        "src/Image.cc",
-        "src/LidarVisual.cc",
-        "src/Marker.cc",
-        "src/MeshDescriptor.cc",
-        "src/OrbitViewController.cc",
-        "src/PixelFormat.cc",
-        "src/RenderEngineManager.cc",
-        "src/RenderEnginePlugin.cc",
-        "src/RenderPassSystem.cc",
-        "src/RenderingIface.cc",
-        "src/ShaderParam.cc",
-        "src/ShaderParams.cc",
-        "src/ShaderType.cc",
-        "src/TransformController.cc",
-        "src/Utils.cc",
-        "src/WireBox.cc",
-        "src/base/BaseObject.cc",
-        "src/base/BaseRenderEngine.cc",
-        "src/base/BaseScene.cc",
-    ],
+    srcs = sources,
     hdrs = public_headers,
     defines = [
         "IGN_RENDERING_PLUGIN_PATH='\"ign_rendering/ogre2/\"'",

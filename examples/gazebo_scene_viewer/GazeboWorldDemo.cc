@@ -14,6 +14,16 @@
  * limitations under the License.
  *
  */
+
+#if defined(__APPLE__)
+  #include <OpenGL/gl.h>
+  #include <GLUT/glut.h>
+#elif not defined(_WIN32)
+  #include <GL/glew.h>
+  #include <GL/gl.h>
+  #include <GL/glut.h>
+#endif
+
 #include <iostream>
 #include <ignition/common/Console.hh>
 #include <gazebo/transport/TransportIface.hh>
@@ -76,13 +86,23 @@ CameraPtr CreateCamera(const std::string &_engine)
   return camera;
 }
 
-int main(int, char**)
+int main(int _argc, char** _argv)
 {
+  glutInit(&_argc, _argv);
+
+  // Expose engine name to command line because we can't instantiate both
+  // ogre and ogre2 at the same time
+  std::string ogre_engine("ogre");
+  if (_argc > 1)
+  {
+    ogre_engine = _argv[1];
+  }
+
   Connect();
   std::vector<CameraPtr> cameras;
   std::vector<std::string> engineNames;
 
-  engineNames.push_back("ogre");
+  engineNames.push_back(ogre_engine);
   engineNames.push_back("optix");
 
   for (auto engineName : engineNames)

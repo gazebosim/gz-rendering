@@ -735,7 +735,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
       window = this->ogreRoot->createRenderWindow(
           stream.str(), _width, _height, false, &params);
     }
-    catch(std::exception _e)
+    catch(const std::exception &_e)
     {
       ignerr << " Unable to create the rendering window: " << _e.what()
              << std::endl;

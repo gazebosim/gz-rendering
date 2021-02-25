@@ -19,6 +19,7 @@
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Geometry.hh"
+#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
@@ -59,7 +60,10 @@ void Ogre2Visual::SetVisibilityFlags(uint32_t _flags)
     return;
 
   for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects(); ++i)
-    this->ogreNode->getAttachedObject(i)->setVisibilityFlags(_flags);
+  {
+    this->ogreNode->getAttachedObject(i)->setVisibilityFlags(_flags
+      & ~Ogre2ParticleEmitter::kParticleVisibilityFlags);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -100,7 +104,8 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
   ogreObj->getUserObjectBindings().setUserAny(
       Ogre::Any(this->Id()));
   ogreObj->setName(this->Name() + "_" + _geometry->Name());
-  ogreObj->setVisibilityFlags(this->visibilityFlags);
+  ogreObj->setVisibilityFlags(this->visibilityFlags
+      & ~Ogre2ParticleEmitter::kParticleVisibilityFlags);
 
   derived->SetParent(this->SharedThis());
   this->ogreNode->attachObject(ogreObj);

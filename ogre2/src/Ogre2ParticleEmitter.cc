@@ -36,6 +36,8 @@
 using namespace ignition;
 using namespace rendering;
 
+const uint32_t Ogre2ParticleEmitter::kParticleVisibilityFlags = 0x00100000;
+
 class ignition::rendering::Ogre2ParticleEmitterPrivate
 {
   /// \brief Internal material name.
@@ -45,8 +47,7 @@ class ignition::rendering::Ogre2ParticleEmitterPrivate
   public: Ogre::ParticleSystem *ps = nullptr;
 
   /// \brief Ogre particle emitter.
-  public: std::array<Ogre::ParticleEmitter*,
-                     EmitterType::EM_NUM_EMITTERS> emitters;
+  public: Ogre::ParticleEmitter *emitter = nullptr;
 
   // \brief Ogre color image affector.
   public: Ogre::ParticleAffector *colorImageAffector = nullptr;
@@ -62,6 +63,10 @@ class ignition::rendering::Ogre2ParticleEmitterPrivate
 
   /// \brief Pointer to the unlit material used by particle emitter.
   public: MaterialPtr materialUnlit;
+
+  /// \brief Flag to indicate that the emitter is dirty and needs to be
+  /// recreated
+  public: bool emitterDirty = false;
 };
 
 // Names used in Ogre for the supported emitters.
@@ -91,6 +96,11 @@ void Ogre2ParticleEmitter::Destroy()
 {
   if (this->dataPtr->ps)
   {
+    this->dataPtr->ps->removeAllAffectors();
+    this->dataPtr->colorInterpolatorAffector = nullptr;
+    this->dataPtr->colorImageAffector = nullptr;
+    this->dataPtr->scalerAffector = nullptr;
+
     this->scene->OgreSceneManager()->destroyParticleSystem(
         this->dataPtr->ps);
     this->dataPtr->ps = nullptr;
@@ -104,7 +114,7 @@ void Ogre2ParticleEmitter::Destroy()
 }
 
 //////////////////////////////////////////////////
-void Ogre2ParticleEmitter::Ogre2ParticleEmitter::SetType(
+void Ogre2ParticleEmitter::SetType(
     const EmitterType _type)
 {
   // Sanity check: Make sure that the emitter type is valid.
@@ -115,11 +125,16 @@ void Ogre2ParticleEmitter::Ogre2ParticleEmitter::SetType(
     return;
   }
 
-  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-    this->dataPtr->emitters[i]->setEnabled(false);
+  if (this->type == _type)
+    return;
 
-  this->dataPtr->emitters[_type]->setEnabled(true);
   this->type = _type;
+
+  this->dataPtr->emitterDirty = true;
+  // todo(anyone) remove this call. We had to do this since we can't override
+  // PreRender() as it breaks ABI. We should rename PreRenderImpl to PreRender()
+  // in next release.
+  this->PreRenderImpl();
 }
 
 //////////////////////////////////////////////////
@@ -158,15 +173,13 @@ void Ogre2ParticleEmitter::SetEmitterSize(const ignition::math::Vector3d &_size)
       for (auto[param, value] : allParamsToSet)
       {
         // We skip EM_POINT.
-        for (auto i = 1; i < EmitterType::EM_NUM_EMITTERS; ++i)
+        if (!this->dataPtr->emitter->setParameter(param,  value))
         {
-          if (!this->dataPtr->emitters[i]->setParameter(param,  value))
-          {
-            ignerr << "SetEmitterSize() error for " << kOgreEmitterTypes[i]
-                   << " emitter because SetParameter(" << param << " " << value
-                   << ") failed." << std::endl;
-            return;
-          }
+          ignerr << "SetEmitterSize() error for "
+                 << this->dataPtr->emitter->getType()
+                 << " emitter because SetParameter(" << param << " " << value
+                 << ") failed." << std::endl;
+          return;
         }
       }
       break;
@@ -193,8 +206,7 @@ void Ogre2ParticleEmitter::SetRate(double _rate)
     return;
   }
 
-  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-    this->dataPtr->emitters[i]->setEmissionRate(_rate);
+  this->dataPtr->emitter->setEmissionRate(_rate);
 
   this->rate = _rate;
 }
@@ -202,8 +214,8 @@ void Ogre2ParticleEmitter::SetRate(double _rate)
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::SetDuration(double _duration)
 {
-  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-    this->dataPtr->emitters[i]->setDuration(_duration);
+  this->dataPtr->emitter->setDuration(_duration);
+
 
   this->duration = _duration;
 }
@@ -211,7 +223,7 @@ void Ogre2ParticleEmitter::SetDuration(double _duration)
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::SetEmitting(bool _enable)
 {
-  this->dataPtr->emitters[this->type]->setEnabled(_enable);
+  this->dataPtr->emitter->setEnabled(_enable);
   this->dataPtr->ps->setEmitting(_enable);
   this->emitting = _enable;
 }
@@ -227,8 +239,14 @@ void Ogre2ParticleEmitter::SetParticleSize(
            << "Particle size values should be non-negative." << std::endl;
     return;
   }
-  this->dataPtr->ps->setDefaultDimensions(_size[0], _size[1]);
+
   this->particleSize = _size;
+
+  this->dataPtr->emitterDirty = true;
+  // todo(anyone) remove this call. We had to do this since we can't override
+  // PreRender() as it breaks ABI. We should rename PreRenderImpl to PreRender()
+  // in next release.
+  this->PreRenderImpl();
 }
 
 //////////////////////////////////////////////////
@@ -242,8 +260,7 @@ void Ogre2ParticleEmitter::SetLifetime(double _lifetime)
     return;
   }
 
-  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-    this->dataPtr->emitters[i]->setTimeToLive(_lifetime);
+  this->dataPtr->emitter->setTimeToLive(_lifetime);
 
   this->lifetime = _lifetime;
 }
@@ -267,8 +284,8 @@ void Ogre2ParticleEmitter::SetMaterial(const MaterialPtr &_material)
 void Ogre2ParticleEmitter::SetVelocityRange(double _minVelocity,
     double _maxVelocity)
 {
-  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-    this->dataPtr->emitters[i]->setParticleVelocity(_minVelocity, _maxVelocity);
+  this->dataPtr->emitter->setParticleVelocity(_minVelocity, _maxVelocity);
+
 
   this->minVelocity = _minVelocity;
   this->maxVelocity = _maxVelocity;
@@ -413,27 +430,71 @@ void Ogre2ParticleEmitter::SetColorRangeImage(const std::string &_image)
 void Ogre2ParticleEmitter::Init()
 {
   Ogre2Visual::Init();
+  this->CreateParticleSystem();
+}
 
+//////////////////////////////////////////////////
+void Ogre2ParticleEmitter::PreRenderImpl()
+{
+  // todo(anyone) rename this function to PreRender() so it overrides function
+  // from base class. Since this rename breaks ABI, we should rename this
+  // function in the next release
+
+  // recreate the particle system if needed
+  // currently this is needed when user changes type or particle size
+  if (this->dataPtr->emitterDirty)
+  {
+    this->Destroy();
+    this->CreateParticleSystem();
+
+    // make direct ogre calls here so we don't mark emitter as dirty again
+    this->dataPtr->ps->setDefaultDimensions(
+        this->particleSize[0], this->particleSize[1]);
+
+    this->SetEmitterSize(this->emitterSize);
+
+    // set other properties
+    this->SetDuration(this->duration);
+    this->SetEmitting(this->emitting);
+    this->SetLifetime(this->lifetime);
+    this->SetRate(this->rate);
+    this->SetVelocityRange(this->minVelocity, this->maxVelocity);
+
+    if (this->material)
+      this->SetMaterial(this->material);
+
+    if (!this->colorRangeImage.empty())
+      this->SetColorRangeImage(this->colorRangeImage);
+    else
+      this->SetColorRange(this->colorStart, this->colorEnd);
+
+    this->SetScaleRate(this->scaleRate);
+
+    this->dataPtr->emitterDirty = false;
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2ParticleEmitter::CreateParticleSystem()
+{
   // Instantiate the particle system and default parameters.
   this->dataPtr->ps = this->scene->OgreSceneManager()->createParticleSystem();
   this->dataPtr->ps->setCullIndividually(true);
   this->dataPtr->ps->setParticleQuota(500);
   this->dataPtr->ps->setSortingEnabled(true);
 
+  this->dataPtr->ps->setVisibilityFlags(kParticleVisibilityFlags);
+
   IGN_ASSERT(kOgreEmitterTypes.size() == EmitterType::EM_NUM_EMITTERS,
              "The nummer of supported emitters does not match the number of "
              "Ogre emitter types.");
 
-  // Instantiate all particle emitters and their default parameters.
-  // Note that we enable the point emitter by default.
-  for (auto i = 0; i < EmitterType::EM_NUM_EMITTERS; ++i)
-  {
-    this->dataPtr->emitters[i] =
-      this->dataPtr->ps->addEmitter(kOgreEmitterTypes[i]);
-    this->dataPtr->emitters[i]->setEnabled(false);
-    this->dataPtr->emitters[i]->setDirection(Ogre::Vector3::UNIT_X);
-  }
-  this->dataPtr->emitters[EmitterType::EM_POINT]->setEnabled(true);
+  // Instantiate particle emitter and their default parameters.
+  // Emitter type is point unless otherwise specified.
+  this->dataPtr->emitter =
+      this->dataPtr->ps->addEmitter(kOgreEmitterTypes[this->type]);
+  this->dataPtr->emitter->setDirection(Ogre::Vector3::UNIT_X);
+  this->dataPtr->emitter->setEnabled(true);
 
   // Instantiate the default material.
   this->dataPtr->materialUnlit = this->scene->CreateMaterial();
@@ -443,8 +504,7 @@ void Ogre2ParticleEmitter::Init()
   this->dataPtr->ps->setMaterialName(
       *(this->dataPtr->ogreDatablock->getNameStr()));
 
-  // Default emitter parameters.
-  this->SetParticleSize({1, 1, 1});
+  this->dataPtr->ps->setDefaultDimensions(1, 1);
 
   this->ogreNode->attachObject(this->dataPtr->ps);
   igndbg << "Particle emitter initialized" << std::endl;

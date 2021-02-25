@@ -87,9 +87,9 @@ void main()
   else if (faceIdx == 5)
     d = getRange(uv, tex5);
 
-  // todo(anyone) set retro values
-  float retro = 0.0;
+  float range = d.x;
+  float retro = d.y;
 
-  fragColor = vec4(d.x, d.y, 0, 1.0);
+  fragColor = vec4(range, retro, 0, 1.0);
   return;
 }

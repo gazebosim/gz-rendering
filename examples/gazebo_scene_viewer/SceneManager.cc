@@ -461,7 +461,10 @@ void SceneManagerPrivate::OnLightUpdate(::ConstLightPtr &_lightMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
 
-  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr) return;
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnLightUpdate(_lightMsg);
   this->newSceneManager->OnLightUpdate(_lightMsg);
@@ -473,7 +476,10 @@ void SceneManagerPrivate::OnModelUpdate(::ConstModelPtr &_modelMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
 
-  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr) return;
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnModelUpdate(_modelMsg);
   this->newSceneManager->OnModelUpdate(_modelMsg);
@@ -485,7 +491,10 @@ void SceneManagerPrivate::OnJointUpdate(::ConstJointPtr &_jointMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
 
-  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr) return;
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnJointUpdate(_jointMsg);
   this->newSceneManager->OnJointUpdate(_jointMsg);
@@ -497,7 +506,10 @@ void SceneManagerPrivate::OnVisualUpdate(::ConstVisualPtr &_visualMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
 
-  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr) return;
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnVisualUpdate(_visualMsg);
   this->newSceneManager->OnVisualUpdate(_visualMsg);
@@ -509,7 +521,10 @@ void SceneManagerPrivate::OnSensorUpdate(::ConstSensorPtr &_sensorMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
 
-  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr) return;
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnSensorUpdate(_sensorMsg);
   this->newSceneManager->OnSensorUpdate(_sensorMsg);
@@ -521,7 +536,10 @@ void SceneManagerPrivate::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->poseMutex);
 
-  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr) return;
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnPoseUpdate(_posesMsg);
   this->newSceneManager->OnPoseUpdate(_posesMsg);
@@ -533,7 +551,10 @@ void SceneManagerPrivate::OnRemovalUpdate(const std::string &_name)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->poseMutex);
 
-  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr) return;
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnRemovalUpdate(_name);
   this->newSceneManager->OnRemovalUpdate(_name);

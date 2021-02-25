@@ -245,12 +245,13 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
 
     if (x <= 100)
     {
-      EXPECT_EQ(nullptr, vis);
+      EXPECT_EQ(nullptr, vis)
+          << "Found [" << vis->Name() << "] at X [" << x << "]";
     }
     else if (x > 100 && x <= 300)
     {
       // Don't end test here on failure, this condition is flaky
-      EXPECT_NE(nullptr, vis) << x;
+      EXPECT_NE(nullptr, vis) << "X: " << x;
       if (vis)
       {
         EXPECT_EQ("sphere", vis->Name());
@@ -258,12 +259,13 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
     }
     else if (x > 300 && x <= 400)
     {
-      EXPECT_EQ(nullptr, vis);
+      EXPECT_EQ(nullptr, vis)
+          << "Found [" << vis->Name() << "] at X [" << x << "]";
     }
     else if (x > 400 && x <= 700)
     {
       // Don't end test here on failure, this condition is flaky
-      EXPECT_NE(nullptr, vis) << x;
+      EXPECT_NE(nullptr, vis) << "X: " << x;
       if (vis)
       {
         EXPECT_EQ("box", vis->Name());

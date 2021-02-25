@@ -88,7 +88,8 @@ void main()
   vec4 particle = texture(particleTexture, inPs.uv0);
   float particleDepth = texture(particleDepthTexture, inPs.uv0).x;
 
-  if (particle.x > 0.0 && particleDepth > 0.0 && particleDepth < fDepth)
+  // check if need to apply scatter effect
+  if (particle.x > 0.0 && particleDepth < fDepth)
   {
     // apply scatter effect so that only some of the smoke pixels are visible
     float r = rand(inPs.uv0 + vec2(time, time));
@@ -97,11 +98,23 @@ void main()
       float pd = projectionParams.y / (particleDepth - projectionParams.x);
       vec3 point = inPs.cameraDir * pd;
 
-      // apply gaussian noise to particle depth data
-      point = point + gaussrand(inPs.uv0, vec3(time, time, time),
+      vec3 noise = gaussrand(inPs.uv0, vec3(time, time, time),
           particleStddev, 0.0).xyz;
+      float noiseLength = length(noise);
 
-      l = length(point);
+      // shift noise distribution
+      // noiseLength = noiseLength - 3.0*particleStddev;
+      // if (noiseLength < 0.0)
+      //   noiseLength = 0.0;
+
+      // apply gaussian noise to particle depth data
+      float newLength = length(point) + noiseLength;
+
+      // make sure we do not produce values larger than the range of the first
+      // non-particle obstacle, e.g. a box behind particle should still return
+      // a hit
+      if (newLength < l)
+        l = newLength;
     }
   }
 

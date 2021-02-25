@@ -88,7 +88,6 @@ void main()
   float fDepth = texture(depthTexture, inPs.uv0).x;
   float d = projectionParams.y / (fDepth - projectionParams.x);
 
-
   // reconstruct 3d viewspace pos from depth
   vec3 viewSpacePos = inPs.cameraDir * d;
 
@@ -104,7 +103,7 @@ void main()
 
   // return particle depth if it can be seen by the camera and not obstructed
   // by other objects in the camera view
-  if (particle.x > 0 && particleDepth > 0.0 && particleDepth < fDepth)
+  if (particle.x > 0 && particleDepth < fDepth)
   {
     // apply scatter effect so that only some of the smoke pixels are visible
     float r = rand(inPs.uv0 + vec2(time, time));
@@ -113,12 +112,20 @@ void main()
       // set point to 3d pos of particle pixel
       float pd = projectionParams.y / (particleDepth - projectionParams.x);
       vec3 particleViewSpacePos = inPs.cameraDir * pd;
-      point = vec3(-particleViewSpacePos.z, -particleViewSpacePos.x,
+      vec3 particlePoint = vec3(-particleViewSpacePos.z, -particleViewSpacePos.x,
           particleViewSpacePos.y);
 
       // apply gaussian noise to particle depth data
-      point = point + gaussrand(inPs.uv0, vec3(time, time, time),
+      particlePoint = particlePoint +
+          gaussrand(inPs.uv0, vec3(time, time, time),
           particleStddev, 0.0).xyz;
+
+      // make sure we do not produce z values larger than depth of first
+      // non-particle obstacle, e.g. a box behind particle should still return
+      // a hit
+      if (particlePoint.z > point.z)
+        particlePoint.z = point.z;
+      point = particlePoint;
     }
   }
 
@@ -153,7 +160,11 @@ void main()
       point.x = min;
     }
 
-    color = vec4(backgroundColor, 1.0);
+    // clamp to background color only if it is not a particle pixel
+    if (particle.x < 1e-6)
+    {
+      color = vec4(backgroundColor, 1.0);
+    }
   }
 
   // gamma correct - using same method as:

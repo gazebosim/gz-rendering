@@ -38,6 +38,8 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
+#include "Ogre2ParticleNoiseListener.hh"
+
 namespace ignition
 {
 namespace rendering
@@ -135,6 +137,8 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   /// \brief Particle scatter ratio. This is used to determine the ratio of
   /// particles that will detected by the depth camera
   public: double particleScatterRatio = 0.1;
+
+  public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener;
 };
 
 using namespace ignition;

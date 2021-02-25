@@ -34,6 +34,8 @@
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
+#include "Ogre2ParticleNoiseListener.hh"
+
 namespace ignition
 {
 namespace rendering
@@ -170,6 +172,8 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Particle scatter ratio. This is used to determine the ratio of
   /// particles that will detected by the depth camera
   public: double particleScatterRatio = 0.1;
+
+  public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
 };
 
 using namespace ignition;
@@ -893,9 +897,15 @@ void Ogre2GpuRays::Setup1stPass()
             new Ogre2LaserRetroMaterialSwitcher(this->scene));
         c.target->addListener(
             this->dataPtr->laserRetroMaterialSwitcher[i].get());
+
+        this->dataPtr->particleNoiseListener[i].reset(
+            new Ogre2ParticleNoiseListener(this->scene,
+            this->dataPtr->cubeCam[i], this->dataPtr->matFirstPass));
+        c.target->addListener(this->dataPtr->particleNoiseListener[i].get());
         break;
       }
     }
+
   }
 }
 

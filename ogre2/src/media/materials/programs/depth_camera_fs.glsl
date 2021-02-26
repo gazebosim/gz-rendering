@@ -115,10 +115,12 @@ void main()
       vec3 particlePoint = vec3(-particleViewSpacePos.z, -particleViewSpacePos.x,
           particleViewSpacePos.y);
 
+      float rr = rand(inPs.uv0 + vec2(1.0/time, time)) - 0.5;
+
       // apply gaussian noise to particle depth data
       particlePoint = particlePoint +
           gaussrand(inPs.uv0, vec3(time, time, time),
-          particleStddev, 0.0).xyz;
+          particleStddev, rr*rr*particleStddev*0.5).xyz;
 
       // make sure we do not produce z values larger than depth of first
       // non-particle obstacle, e.g. a box behind particle should still return

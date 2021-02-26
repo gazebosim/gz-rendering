@@ -98,14 +98,18 @@ void main()
       float pd = projectionParams.y / (particleDepth - projectionParams.x);
       vec3 point = inPs.cameraDir * pd;
 
+      float rr = rand(inPs.uv0 + vec2(1.0/time, time)) - 0.5;
+      // float noiseLength = rr*rr * particleStddev *0.5;
+      // noiseLength = 0.0;
+
       vec3 noise = gaussrand(inPs.uv0, vec3(time, time, time),
-          particleStddev, 0.0).xyz;
+           particleStddev, rr*rr*particleStddev*0.5).xyz;
       float noiseLength = length(noise);
 
-      // shift noise distribution
-      // noiseLength = noiseLength - 3.0*particleStddev;
-      // if (noiseLength < 0.0)
-      //   noiseLength = 0.0;
+      // // shift noise distribution
+      // // noiseLength = noiseLength - 3.0*particleStddev;
+      // // if (noiseLength < 0.0)
+      // //   noiseLength = 0.0;
 
       // apply gaussian noise to particle depth data
       float newLength = length(point) + noiseLength;

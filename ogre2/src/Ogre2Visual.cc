@@ -32,6 +32,8 @@ using namespace rendering;
 /// \brief Private data for the Ogre2Visual class
 class ignition::rendering::Ogre2VisualPrivate
 {
+  /// \brief True if wireframe mode is enabled
+  public: bool wireframe;
 };
 
 //////////////////////////////////////////////////
@@ -44,6 +46,65 @@ Ogre2Visual::Ogre2Visual()
 Ogre2Visual::~Ogre2Visual()
 {
 }
+
+//////////////////////////////////////////////////
+void Ogre2Visual::SetWireframe(bool _show)
+{
+  if (this->dataPtr->wireframe == _show)
+    return;
+
+  this->dataPtr->wireframe = _show;
+  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
+      i++)
+  {
+    Ogre::v1::Entity *entity = nullptr;
+    Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+
+    entity = dynamic_cast<Ogre::v1::Entity*>(obj);
+
+    if (!entity)
+      continue;
+
+    // For each ogre::entity
+    for (unsigned int j = 0; j < entity->getNumSubEntities(); j++)
+    {
+      Ogre::v1::SubEntity *subEntity = entity->getSubEntity(j);
+      Ogre::MaterialPtr entityMaterial = subEntity->getMaterial();
+      if (entityMaterial.isNull())
+        continue;
+
+      unsigned int techniqueCount, passCount;
+      Ogre::Technique *technique;
+      Ogre::Pass *pass;
+
+      for (techniqueCount = 0;
+           techniqueCount < entityMaterial->getNumTechniques();
+           ++techniqueCount)
+      {
+        technique = entityMaterial->getTechnique(techniqueCount);
+
+        for (passCount = 0; passCount < technique->getNumPasses(); passCount++)
+        {
+          pass = technique->getPass(passCount);
+          auto macroblock = *(pass->getMacroblock());
+          if (_show)
+            macroblock.mPolygonMode = Ogre::PM_WIREFRAME;
+          else
+            macroblock.mPolygonMode = Ogre::PM_SOLID;
+
+          pass->setMacroblock(macroblock);
+        }
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Visual::Wireframe() const
+{
+  return this->dataPtr->wireframe;
+}
+
 
 //////////////////////////////////////////////////
 void Ogre2Visual::SetVisible(bool _visible)

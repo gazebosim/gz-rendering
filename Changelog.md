@@ -2,6 +2,30 @@
 
 ### Ignition Rendering 4.X
 
+### Ignition Rendering 4.5.0 (2021-02-17)
+
+1. More verbose messages when failing to load render engines
+    * [Pull Request #236](https://github.com/ignitionrobotics/ign-rendering/pull/236)
+
+1. Fixed OBJ textures with the same name
+    * [Pull Request #239](https://github.com/ignitionrobotics/ign-rendering/pull/239)
+
+1. Fix setting particle size
+    * [Pull Request #241](https://github.com/ignitionrobotics/ign-rendering/pull/241)
+
+1. Make particle emitter invisible in thermal camera image
+    * [Pull Request #240](https://github.com/ignitionrobotics/ign-rendering/pull/240)
+
+1. Apply particle scattering effect to depth cameras
+    * [Pull Request #251](https://github.com/ignitionrobotics/ign-rendering/pull/251)
+
+### Ignition Rendering 4.4.0 (2021-02-11)
+
+1. Add support for 8 bit thermal camera image format
+    * [Pull Request #235](https://github.com/ignitionrobotics/ign-rendering/pull/235)
+
+1. All changes up to version 3.4.0
+
 ### Ignition Rendering 4.3.1 (2021-02-03)
 
 1. Fix converting Pbs to Unlit material conversion (#230)
@@ -133,6 +157,20 @@
 
 1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
+
+### Ignition Rendering 3.X.X (2021-XX-XX)
+
+
+
+### Ignition Rendering 3.4.0 (2021-02-09)
+
+1. Clear all Windows warnings
+    * [Pull request 206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
+    * [Pull request 215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
+    * [Pull request 225](https://github.com/ignitionrobotics/ign-rendering/pull/225)
+
+1. Add laser_retro support
+    * [Pull request 194](https://github.com/ignitionrobotics/ign-rendering/pull/194)
 
 ### Ignition Rendering 3.3.0 (2021-01-22)
 

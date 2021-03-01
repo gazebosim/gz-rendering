@@ -31,12 +31,12 @@
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
-
 
 namespace ignition
 {
@@ -128,6 +128,13 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: ignition::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newDepthFrame;
+
+  /// \brief standard deviation of particle noise
+  public: double particleStddev = 0.01;
+
+  /// \brief Particle scatter ratio. This is used to determine the ratio of
+  /// particles that will detected by the depth camera
+  public: double particleScatterRatio = 0.1;
 };
 
 using namespace ignition;
@@ -421,6 +428,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
     this->Scene()->BackgroundColor().G(),
     this->Scene()->BackgroundColor().B());
   psParams->setNamedConstant("backgroundColor", bg);
+  psParams->setNamedConstant("particleStddev",
+    static_cast<float>(this->dataPtr->particleStddev));
+  psParams->setNamedConstant("particleScatterRatio",
+    static_cast<float>(this->dataPtr->particleScatterRatio));
 
   std::string matDepthFinalName = "DepthCameraFinal";
   Ogre::MaterialPtr matDepthFinal =
@@ -449,6 +460,22 @@ void Ogre2DepthCamera::CreateDepthTexture()
   this->dataPtr->ogreCompositorWorkspaceDef = wsDefName;
   if (!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
   {
+    // The depth camera compositor does a few passes in order to simulate
+    // particles effects in depth / point cloud image data
+    //
+    // render scene (color) with particles, c1
+    // render scene (depth) without particles, d1
+    // render scene (grayscale) with particles only, g2
+    // render scene (depth) with particles only, d2
+    //
+    //   if g2 is non-zero // pixel with particle
+    //     if d2 < d1 // particle is in view
+    //       apply noise and scatterbility to d2
+    //       set depth data to d2
+    //     else
+    //       set depth data to d1
+    //   set color data to c1
+
     // We need to programmatically create the compositor because we need to
     // configure it to use the cloned depth material created earlier.
     // The compositor node definition is equivalent to the following:
@@ -457,10 +484,12 @@ void Ogre2DepthCamera::CreateDepthTexture()
     // {
     //   texture rt0 target_width target_height PF_FLOAT32_RGBA
     //   texture rt1 target_width target_height PF_FLOAT32_RGBA
-    //   // colorTexture shares same depth buffer as depthTexture
     //   texture colorTexture target_width target_height PF_R8G8B8
     //       depth_texture depth_format PF_D32_FLOAT
     //   texture depthTexture target_width target_height PF_D32_FLOAT
+    //   texture particleTexture target_width target_height PF_L8
+    //   // particleDepthTexture shares same depth buffer as particleTexture
+    //   texture particleDepthTexture target_width target_height PF_D32_FLOAT
     //   target colorTexture
     //   {
     //     pass clear
@@ -469,6 +498,37 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //     }
     //     pass render_scene
     //     {
+    //     }
+    //   }
+    //   target depthTexture
+    //   {
+    //     pass clear
+    //     {
+    //       colour_value 0.0 0.0 0.0 1.0
+    //     }
+    //     pass render_scene
+    //     {
+    //       visibility_mask 0x11011111
+    //     }
+    //   }
+    //   target particleTexture
+    //   {
+    //     pass clear
+    //     {
+    //     }
+    //     pass render_scene
+    //     {
+    //       visibility_mask 0x00100000
+    //     }
+    //   }
+    //   target particleDepthTexture
+    //   {
+    //     pass clear
+    //     {
+    //     }
+    //     pass render_scene
+    //     {
+    //       visibility_mask 0x00100000
     //     }
     //   }
     //   target rt0
@@ -568,7 +628,45 @@ void Ogre2DepthCamera::CreateDepthTexture()
     colorTexDef->preferDepthTexture = true;
     colorTexDef->fsaaExplicitResolve = false;
 
-    baseNodeDef->setNumTargetPass(2);
+    Ogre::TextureDefinitionBase::TextureDefinition *particleTexDef =
+        baseNodeDef->addTextureDefinition("particleTexture");
+    particleTexDef->textureType = Ogre::TEX_TYPE_2D;
+    particleTexDef->width = 0;
+    particleTexDef->height = 0;
+    particleTexDef->depth = 1;
+    particleTexDef->numMipmaps = 0;
+    particleTexDef->widthFactor = 0.5;
+    particleTexDef->heightFactor = 0.5;
+    particleTexDef->formatList = {Ogre::PF_L8};
+    particleTexDef->fsaa = 0;
+    particleTexDef->uav = false;
+    particleTexDef->automipmaps = false;
+    particleTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    particleTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    particleTexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
+    particleTexDef->preferDepthTexture = false;
+    particleTexDef->fsaaExplicitResolve = false;
+
+    Ogre::TextureDefinitionBase::TextureDefinition *particleDepthTexDef =
+        baseNodeDef->addTextureDefinition("particleDepthTexture");
+    particleDepthTexDef->textureType = Ogre::TEX_TYPE_2D;
+    particleDepthTexDef->width = 0;
+    particleDepthTexDef->height = 0;
+    particleDepthTexDef->depth = 1;
+    particleDepthTexDef->numMipmaps = 0;
+    particleDepthTexDef->widthFactor = 0.5;
+    particleDepthTexDef->heightFactor = 0.5;
+    particleDepthTexDef->formatList = {Ogre::PF_D32_FLOAT};
+    particleDepthTexDef->fsaa = 0;
+    particleDepthTexDef->uav = false;
+    particleDepthTexDef->automipmaps = false;
+    particleDepthTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    particleDepthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
+    particleDepthTexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
+    particleDepthTexDef->fsaaExplicitResolve = false;
+
+    baseNodeDef->setNumTargetPass(5);
+
     Ogre::CompositorTargetDef *colorTargetDef =
         baseNodeDef->addTargetPass("colorTexture");
     colorTargetDef->setNumPasses(2);
@@ -583,8 +681,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           colorTargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL
-          & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE);
+      passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
+
       // todo(anyone) Fix shadows. The shadow compositor node gets rebuilt
       // when the number of shadow-casting light changes so we end up with
       // invalid shadow node here. See Ogre2Scene::PreRender function on how
@@ -592,6 +690,64 @@ void Ogre2DepthCamera::CreateDepthTexture()
       // the number of shadow-casting light changes
       // passScene->mShadowNode = "PbsMaterialsShadowNode";
     }
+
+    Ogre::CompositorTargetDef *depthTargetDef =
+        baseNodeDef->addTargetPass("depthTexture");
+    depthTargetDef->setNumPasses(2);
+    {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          depthTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(),
+          this->FarClipPlane(), this->FarClipPlane());
+
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          depthTargetDef->addPass(Ogre::PASS_SCENE));
+      // depth texute does not contain particles
+      passScene->mVisibilityMask = IGN_VISIBILITY_ALL
+          & ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
+    }
+
+    Ogre::CompositorTargetDef *particleTargetDef =
+        baseNodeDef->addTargetPass("particleTexture");
+    particleTargetDef->setNumPasses(2);
+    {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          particleTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue::Black;
+
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          particleTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->mVisibilityMask =
+          Ogre2ParticleEmitter::kParticleVisibilityFlags;
+    }
+
+    Ogre::CompositorTargetDef *particleDepthTargetDef =
+        baseNodeDef->addTargetPass("particleDepthTexture");
+    particleDepthTargetDef->setNumPasses(2);
+    {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          particleDepthTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(this->FarClipPlane(),
+          this->FarClipPlane(), this->FarClipPlane());
+
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          particleDepthTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->mVisibilityMask =
+          Ogre2ParticleEmitter::kParticleVisibilityFlags;
+    }
+
     // rt0 target - converts depth to xyz
     Ogre::CompositorTargetDef *inTargetDef =
         baseNodeDef->addTargetPass("rt0");
@@ -611,6 +767,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
       passQuad->mMaterialName = this->dataPtr->depthMaterial->getName();
       passQuad->addQuadTextureSource(0, "depthTexture", 0);
       passQuad->addQuadTextureSource(1, "colorTexture", 0);
+      passQuad->addQuadTextureSource(2, "particleTexture", 0);
+      passQuad->addQuadTextureSource(3, "particleDepthTexture", 0);
       passQuad->mFrustumCorners =
           Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
     }

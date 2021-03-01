@@ -24,6 +24,7 @@
 #include "test_config.h"  // NOLINT(build/include)
 
 #include "ignition/rendering/DepthCamera.hh"
+#include "ignition/rendering/ParticleEmitter.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
@@ -61,6 +62,10 @@ class DepthCameraTest: public testing::Test,
 {
   // Create a Camera sensor from a SDF and gets a image message
   public: void DepthCameraBoxes(const std::string &_renderEngine);
+
+  // Compare depth camera image before and after adding particles
+  // in the scene
+  public: void DepthCameraParticles(const std::string &_renderEngine);
 };
 
 void DepthCameraTest::DepthCameraBoxes(
@@ -458,6 +463,233 @@ void DepthCameraTest::DepthCameraBoxes(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
+
+void DepthCameraTest::DepthCameraParticles(
+    const std::string &_renderEngine)
+{
+  int imgWidth_ = 256;
+  int imgHeight_ = 256;
+  double aspectRatio_ = imgWidth_ / imgHeight_;
+
+  // box should fill camera view
+  // we will add particle emitter in between box and depth camera later
+  ignition::math::Vector3d boxSize(1.0, 10.0, 10.0);
+  ignition::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+
+  // particle emitter is only supported in ogre2
+  if (_renderEngine.compare("ogre2") != 0)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' doesn't support depth cameras" << std::endl;
+    return;
+  }
+
+  // Setup ign-rendering with an empty scene
+  auto *engine = ignition::rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+
+  // red background
+  scene->SetBackgroundColor(1.0, 0.0, 0.0);
+
+  // Create an scene with a box in it
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  ignition::rendering::VisualPtr root = scene->RootVisual();
+
+  // create blue material
+  ignition::rendering::MaterialPtr blue = scene->CreateMaterial();
+  blue->SetAmbient(0.0, 0.0, 1.0);
+  blue->SetDiffuse(0.0, 0.0, 1.0);
+  blue->SetSpecular(0.0, 0.0, 1.0);
+
+  // create box visual
+  ignition::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(boxPosition);
+  box->SetLocalRotation(0, 0, 0);
+  box->SetLocalScale(boxSize);
+  box->SetMaterial(blue);
+  root->AddChild(box);
+  {
+    double farDist = 10.0;
+    double nearDist = 0.01;
+    double hfov_ = 1.05;
+    // Create depth camera
+    auto depthCamera = scene->CreateDepthCamera("DepthCamera");
+    ASSERT_NE(depthCamera, nullptr);
+
+    ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0),
+        ignition::math::Quaterniond::Identity);
+    depthCamera->SetLocalPose(testPose);
+
+    // Configure depth camera
+    depthCamera->SetImageWidth(imgWidth_);
+    EXPECT_EQ(depthCamera->ImageWidth(),
+      static_cast<unsigned int>(imgWidth_));
+    depthCamera->SetImageHeight(imgHeight_);
+    EXPECT_EQ(depthCamera->ImageHeight(),
+      static_cast<unsigned int>(imgHeight_));
+    depthCamera->SetFarClipPlane(farDist);
+    EXPECT_DOUBLE_EQ(depthCamera->FarClipPlane(), farDist);
+    depthCamera->SetNearClipPlane(nearDist);
+    EXPECT_DOUBLE_EQ(depthCamera->NearClipPlane(), nearDist);
+    depthCamera->SetAspectRatio(aspectRatio_);
+    EXPECT_DOUBLE_EQ(depthCamera->AspectRatio(), aspectRatio_);
+    depthCamera->SetHFOV(hfov_);
+    EXPECT_DOUBLE_EQ(depthCamera->HFOV().Radian(), hfov_);
+
+    depthCamera->CreateDepthTexture();
+    scene->RootVisual()->AddChild(depthCamera);
+
+    // Set a callback on the camera sensor to get a depth camera frame
+    float *scan = new float[imgHeight_ * imgWidth_];
+    ignition::common::ConnectionPtr connection =
+      depthCamera->ConnectNewDepthFrame(
+          std::bind(&::OnNewDepthFrame, scan,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+            std::placeholders::_4, std::placeholders::_5));
+
+    // rgb point cloud data callback
+    unsigned int pointCloudChannelCount = 4u;
+    float *pointCloudData = new float[
+        imgHeight_ * imgWidth_ * pointCloudChannelCount];
+    ignition::common::ConnectionPtr connection2 =
+      depthCamera->ConnectNewRgbPointCloud(
+          std::bind(&::OnNewRgbPointCloud, pointCloudData,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+            std::placeholders::_4, std::placeholders::_5));
+
+    // update and verify we get new data
+    g_depthCounter = 0u;
+    g_pointCloudCounter = 0u;
+    depthCamera->Update();
+    EXPECT_EQ(1u, g_depthCounter);
+    EXPECT_EQ(1u, g_pointCloudCounter);
+
+    double expectedDepth = boxPosition.X() - boxSize.X() * 0.5;
+
+    double pointAvg = 0.0;
+    double depthAvg = 0.0;
+    // Verify depth and point cloud data before particle effects
+    for (unsigned int i = 0u; i < depthCamera->ImageHeight(); ++i)
+    {
+      unsigned int step =
+          i * depthCamera->ImageWidth() * pointCloudChannelCount;
+      for (unsigned int j = 0u; j < depthCamera->ImageWidth(); ++j)
+      {
+        float x = pointCloudData[step + j * pointCloudChannelCount];
+        float y = pointCloudData[step + j * pointCloudChannelCount + 1];
+        float z = pointCloudData[step + j * pointCloudChannelCount + 2];
+        EXPECT_NEAR(expectedDepth, x, DEPTH_TOL);
+        float d = scan[i * depthCamera->ImageWidth() + j];
+        EXPECT_NEAR(expectedDepth, d, DEPTH_TOL);
+
+        pointAvg += ignition::math::Vector3d(x, y, z).Length();
+        depthAvg += d;
+      }
+    }
+
+    // create particle emitter between depth camera and box
+    ignition::math::Vector3d particlePosition(1.0, 0, 0);
+    ignition::math::Vector3d particleSize(0.2, 0.2, 0.2);
+    ignition::rendering::ParticleEmitterPtr emitter =
+        scene->CreateParticleEmitter();
+    emitter->SetLocalPosition(particlePosition);
+    emitter->SetParticleSize(particleSize);
+    emitter->SetRate(100);
+    emitter->SetLifetime(2);
+    emitter->SetVelocityRange(0.1, 0.1);
+    emitter->SetScaleRate(0.2);
+    emitter->SetColorRange(ignition::math::Color::Red,
+        ignition::math::Color::Black);
+    emitter->SetEmitting(true);
+    root->AddChild(emitter);
+
+    // update and verify we get new data
+    // make sure to update for a few frames for particles for flow into
+    // camera view.
+    g_depthCounter = 0u;
+    g_pointCloudCounter = 0u;
+    for (unsigned int i = 0; i < 100; ++i)
+    {
+      depthCamera->Update();
+    }
+    EXPECT_EQ(100u, g_depthCounter);
+    EXPECT_EQ(100u, g_pointCloudCounter);
+
+    double pointParticleAvg = 0.0;
+    double depthParticleAvg = 0.0;
+
+    // set a larger tol for particle depth
+    // tol is particle size + 4 sigma of noise stddev
+    double noiseStddev = 0.01;
+    double depthNoiseTol = particleSize.X() + 4 * noiseStddev;;
+    double expectedParticleDepth = particlePosition.X();
+
+    // Verify depth and point cloud data after particle effects
+    for (unsigned int i = 0u; i < depthCamera->ImageHeight(); ++i)
+    {
+      unsigned int step =
+          i * depthCamera->ImageWidth() * pointCloudChannelCount;
+      for (unsigned int j = 0u; j < depthCamera->ImageWidth(); ++j)
+      {
+        float x = pointCloudData[step + j * pointCloudChannelCount];
+        float y = pointCloudData[step + j * pointCloudChannelCount + 1];
+        float z = pointCloudData[step + j * pointCloudChannelCount + 2];
+
+        double xd = static_cast<double>(x);
+        // depth camera sees only certain percentage of particles
+        // so the values should be either
+        //   * box depth (depth camera does not see particles), or
+        //   * noisy particle depth (depth camera see particles but values
+        //     are affected by noise)
+        EXPECT_TRUE(
+            ignition::math::equal(expectedParticleDepth, xd, depthNoiseTol) ||
+            ignition::math::equal(expectedDepth, xd, DEPTH_TOL))
+            << "actual vs expected particle depth: "
+            << xd << " vs " << expectedParticleDepth;
+        float depth = scan[i * depthCamera->ImageWidth() + j];
+        double depthd = static_cast<double>(depth);
+        EXPECT_TRUE(
+            ignition::math::equal(expectedParticleDepth, depthd, depthNoiseTol)
+            || ignition::math::equal(expectedDepth, depthd, DEPTH_TOL))
+            << "actual vs expected particle depth: "
+            << depthd << " vs " << expectedParticleDepth;
+
+        pointParticleAvg += ignition::math::Vector3d(x, y, z).Length();
+        depthParticleAvg += depthd;
+      }
+    }
+
+    // compare point and depth data before and after particle effects
+    // the avg point length and depth values in the image with particle effects
+    // should be lower than the image without particle effects
+    double pixelCount = depthCamera->ImageWidth() * depthCamera->ImageHeight();
+    pointAvg /= pixelCount;
+    depthAvg /= pixelCount;
+    pointParticleAvg /= pixelCount;
+    depthParticleAvg /= pixelCount;
+    EXPECT_LT(pointParticleAvg, pointAvg);
+    EXPECT_LT(depthParticleAvg, depthAvg);
+
+    // Clean up
+    connection.reset();
+    delete [] scan;
+    if (pointCloudData)
+      delete [] pointCloudData;
+  }
+
+  engine->DestroyScene(scene);
+  ignition::rendering::unloadEngine(engine->Name());
+}
+
 #ifdef __APPLE__
 TEST_P(DepthCameraTest, DISABLED_DepthCameraBoxes)
 #else
@@ -465,6 +697,15 @@ TEST_P(DepthCameraTest, DepthCameraBoxes)
 #endif
 {
   DepthCameraBoxes(GetParam());
+}
+
+#ifdef __APPLE__
+TEST_P(DepthCameraTest, DISABLED_DepthCameraParticles)
+#else
+TEST_P(DepthCameraTest, DepthCameraParticles)
+#endif
+{
+  DepthCameraParticles(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(DepthCamera, DepthCameraTest,

@@ -171,7 +171,7 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 
   /// \brief Particle scatter ratio. This is used to determine the ratio of
   /// particles that will detected by the depth camera
-  public: double particleScatterRatio = 0.1;
+  public: double particleScatterRatio = 0.5;
 
   public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
 };
@@ -882,9 +882,6 @@ void Ogre2GpuRays::Setup1stPass()
         ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
         rt, this->dataPtr->cubeCam[i], wsDefName, false);
 
-    // add laser retro material switcher to render target listener
-    // so we can switch to use laser retro material when the camera is being
-    // updated
     Ogre::CompositorNode *node =
         this->dataPtr->ogreCompositorWorkspace1st[i]->getNodeSequence()[0];
     auto channelsTex = node->getLocalTextures();
@@ -893,11 +890,16 @@ void Ogre2GpuRays::Setup1stPass()
     {
       if (c.textures[0]->getSrcFormat() == Ogre::PF_R8G8B8)
       {
+        // add laser retro material switcher to render target listener
+        // so we can switch to use laser retro material when the camera is being
+        // updated
         this->dataPtr->laserRetroMaterialSwitcher[i].reset(
             new Ogre2LaserRetroMaterialSwitcher(this->scene));
         c.target->addListener(
             this->dataPtr->laserRetroMaterialSwitcher[i].get());
 
+        // add particle noise / scatter effects listener so we can set the
+        // amount of noise based on size of emitter
         this->dataPtr->particleNoiseListener[i].reset(
             new Ogre2ParticleNoiseListener(this->scene,
             this->dataPtr->cubeCam[i], this->dataPtr->matFirstPass));
@@ -905,7 +907,6 @@ void Ogre2GpuRays::Setup1stPass()
         break;
       }
     }
-
   }
 }
 

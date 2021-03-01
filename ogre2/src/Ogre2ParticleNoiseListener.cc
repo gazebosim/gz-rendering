@@ -70,14 +70,12 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
     Ogre::AxisAlignedBox box = Ogre::AxisAlignedBox(aabb.getMinimum(),
         aabb.getMaximum());
 
+
     if (this->ogreCamera->isVisible(box))
     {
       // set stddev to half of size of particle emitter aabb
       auto hs = box.getHalfSize() * 0.5;
       double particleStddev = hs.x;
-
-      // std::cerr << "box " << box << std::endl;
-      // std::cerr << "setting stddev " <<  particleStddev << std::endl;
 
       Ogre::Pass *pass = this->ogreMaterial->getTechnique(0)->getPass(0);
       Ogre::GpuProgramParametersSharedPtr psParams =

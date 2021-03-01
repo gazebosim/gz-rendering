@@ -99,17 +99,15 @@ void main()
       vec3 point = inPs.cameraDir * pd;
 
       float rr = rand(inPs.uv0 + vec2(1.0/time, time)) - 0.5;
-      // float noiseLength = rr*rr * particleStddev *0.5;
-      // noiseLength = 0.0;
 
+      // Add noise. We notice that in large particle emitter regions, the
+      // range returned are all from the first large particle. So we add noise
+      // with some mean values so that all the points are shifted further out.
+      // This simulates rays passing through some particles and avoiding
+      // too many early returns
       vec3 noise = gaussrand(inPs.uv0, vec3(time, time, time),
            particleStddev, rr*rr*particleStddev*0.5).xyz;
       float noiseLength = length(noise);
-
-      // // shift noise distribution
-      // // noiseLength = noiseLength - 3.0*particleStddev;
-      // // if (noiseLength < 0.0)
-      // //   noiseLength = 0.0;
 
       // apply gaussian noise to particle depth data
       float newLength = length(point) + noiseLength;

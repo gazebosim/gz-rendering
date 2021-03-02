@@ -674,7 +674,12 @@ void Ogre2RenderEngine::CreateResources()
 void Ogre2RenderEngine::CreateRenderWindow()
 {
   // create dummy window
-  this->CreateRenderWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
+  auto res = this->CreateRenderWindow(std::to_string(this->dummyWindowId),
+      1, 1, 1, 0);
+  if (res.empty())
+  {
+    ignerr << "Failed to create dummy render window." << std::endl;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -734,16 +739,18 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
       window = this->ogreRoot->createRenderWindow(
           stream.str(), _width, _height, false, &params);
     }
-    catch(...)
+    catch(const std::exception &_e)
     {
-      ignerr << " Unable to create the rendering window\n";
+      ignerr << " Unable to create the rendering window: " << _e.what()
+             << std::endl;
       window = nullptr;
     }
   }
 
   if (attempts >= 10)
   {
-    ignerr << "Unable to create the rendering window\n" << std::endl;
+    ignerr << "Unable to create the rendering window after [" << attempts
+           << "] attempts." << std::endl;
     return std::string();
   }
 

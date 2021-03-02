@@ -117,22 +117,24 @@ void main()
 
       float rr = rand(inPs.uv0 + vec2(1.0/time, time)) - 0.5;
 
-      // apply gaussian noise to particle depth data
-      // We notice that in large particle emitter regions, the
-      // range returned are all from the first large particle. So we add noise
-      // with some mean values so that all the points are shifted further out.
-      // This gives us depth readings beyond the first few particles and avoid
-      // too many early returns
+      // apply gaussian noise to particle point cloud data
+      // With large particles, the range returned are all from the first large
+      // particle. So add noise with some mean values so that all the points are
+      // shifted further out. This gives depth readings beyond the first few
+      // particles and avoid too many early returns
       vec3 noise = gaussrand(inPs.uv0, vec3(time, time, time),
           particleStddev, rr*rr*particleStddev*0.5).xyz;
-      particlePoint.x = particlePoint.x + noise.x;
+      float noiseLength = length(noise);
+      float particlePointLength = length(particlePoint);
+      float newLength = particlePointLength + noiseLength;
+      vec3 newPoint = particlePoint * (newLength / particlePointLength);
 
       // make sure we do not produce depth values larger than depth of first
       // non-particle obstacle, e.g. a box behind particle should still return
       // a hit
-      if (particlePoint.x > point.x)
-        particlePoint.x = point.x;
-      point = particlePoint;
+      float pointLength = length(point);
+      if (newLength < pointLength)
+        point = newPoint;
     }
   }
 

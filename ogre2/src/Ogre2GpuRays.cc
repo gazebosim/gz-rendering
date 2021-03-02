@@ -171,8 +171,10 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 
   /// \brief Particle scatter ratio. This is used to determine the ratio of
   /// particles that will detected by the depth camera
-  public: double particleScatterRatio = 0.5;
+  public: double particleScatterRatio = 0.65;
 
+  /// \brief Listener for setting particle noise value based on particle
+  /// emitter region
   public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
 };
 

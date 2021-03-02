@@ -107,7 +107,7 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Pointer to Ogre material for the first rendering pass.
   public: Ogre::MaterialPtr matFirstPass;
 
-  /// \brief Pointer to Ogre material for the sencod rendering pass.
+  /// \brief Pointer to Ogre material for the second rendering pass.
   public: Ogre::MaterialPtr matSecondPass;
 
   /// \brief Cubemap cameras

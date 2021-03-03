@@ -31,7 +31,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE AxisVisual :
       public virtual CompositeVisual
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~AxisVisual() { }
 
       /// \brief set true to show the axis heads, false otherwise

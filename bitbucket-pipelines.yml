@@ -20,12 +20,12 @@ pipelines:
             libignition-cmake2-dev
             libignition-math6-dev
             libignition-plugin-dev
-          #  libignition-common3-dev
+          #  libignition-common4-dev
           # Ignition common (uncomment if a specific branch is needed)
           - apt-get -y install
             libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev
             libfreeimage-dev libgts-dev libswscale-dev libtinyxml2-dev
-          - git clone http://github.com/ignitionrobotics/ign-common -b ign-common3
+          - git clone http://github.com/ignitionrobotics/ign-common -b main
           - cd ign-common
           - mkdir build
           - cd build

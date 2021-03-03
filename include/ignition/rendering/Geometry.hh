@@ -34,7 +34,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Geometry :
       public virtual Object
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Geometry() { }
 
       /// \brief Determine if this Geometry is attached to a Visual

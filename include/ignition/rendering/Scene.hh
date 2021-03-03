@@ -48,7 +48,7 @@ namespace ignition
     /// factory for all scene objects.
     class IGNITION_RENDERING_VISIBLE Scene
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Scene() { }
 
       /// \brief Load scene-specific resources
@@ -872,7 +872,9 @@ namespace ignition
       /// \return The created plane
       public: virtual GeometryPtr CreatePlane() = 0;
 
-      /// \brief Create new sphere geometry
+      /// \brief Create new sphere or ellipsoid geometry
+      /// This method allow to create ellipsoid too, because it can be scaled
+      /// in 3 dimensions.
       /// \return The created sphere
       public: virtual GeometryPtr CreateSphere() = 0;
 

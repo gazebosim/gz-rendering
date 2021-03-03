@@ -29,7 +29,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-    /// \brief Base implementation of a Capsule Visual
+    /// \brief Base implementation of a Capsule Geometry
     template <class T>
     class BaseCapsule :
       public virtual Capsule,
@@ -42,10 +42,10 @@ namespace ignition
       public: virtual ~BaseCapsule();
 
       // Documentation inherited
-      public: virtual void SetRadius(const double _radius) override;
+      public: virtual void SetRadius(double _radius) override;
 
       // Documentation inherited
-      public: virtual void SetLength(const  double _length) override;
+      public: virtual void SetLength(double _length) override;
 
       // Documentation inherited
       public: virtual double Radius() override;
@@ -79,7 +79,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseCapsule<T>::SetRadius(const double _radius)
+    void BaseCapsule<T>::SetRadius(double _radius)
     {
       this->radius = _radius;
       this->capsuleDirty = true;
@@ -94,7 +94,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseCapsule<T>::SetLength(const double _length)
+    void BaseCapsule<T>::SetLength(double _length)
     {
       this->length = _length;
       this->capsuleDirty = true;

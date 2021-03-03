@@ -68,7 +68,7 @@ namespace ignition
         /// \param[in] _material Ogre material.
         protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
 
-        /// \brief Create the Capsule Visual in ogre
+        /// \brief Create the Capsule geometry in ogre
         private: void Create();
 
         /// \brief Capsule should only be created by scene.

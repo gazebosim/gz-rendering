@@ -1797,6 +1797,9 @@ void SubSceneManager::CreateGeometryFunctionMap()
   // this->geomFunctions[gazebo::msgs::Geometry::CONE] =
   //     &SubSceneManager::ProcessCone;
 
+  this->geomFunctions[gazebo::msgs::Geometry::CAPSULE] =
+      &SubSceneManager::ProcessSphere;
+
   this->geomFunctions[gazebo::msgs::Geometry::CYLINDER] =
       &SubSceneManager::ProcessCylinder;
 

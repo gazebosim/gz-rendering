@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRECAPSULE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRECAPSULE_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2CAPSULE_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2CAPSULE_HH_
 
 #include <memory>
 #include <vector>
@@ -70,15 +70,11 @@ namespace ignition
         /// \param[in] _material Ogre material.
         protected: virtual void SetMaterialImpl(Ogre2MaterialPtr _material);
 
-        /// \brief Create the Capsule Visual in ogre
+        /// \brief Create the Capsule geometry in ogre
         private: void Create();
 
         /// \brief Capsule should only be created by scene.
         private: friend class Ogre2Scene;
-
-        private: void calculateRing(
-          size_t segments, float radius, float y, float dy,
-          std::vector<ignition::math::Vector3d> & positions);
 
         /// \brief Private data class
         private: std::unique_ptr<Ogre2CapsulePrivate> dataPtr;

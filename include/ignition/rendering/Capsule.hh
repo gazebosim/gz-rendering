@@ -37,12 +37,16 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Capsule() { }
 
-      public: virtual void SetRadius(const double _radius) = 0;
+      /// \brief Set the radius of the capsule
+      public: virtual void SetRadius(double _radius) = 0;
 
-      public: virtual void SetLength(const double _length) = 0;
+      /// \brief Set the length of the capsule
+      public: virtual void SetLength(double _length) = 0;
 
+      /// \brief Get the radius of the capsule
       public: virtual double Radius() = 0;
 
+      /// \brief Get the length of the capsule
       public: virtual double Length() = 0;
     };
     }

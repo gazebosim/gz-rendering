@@ -20,9 +20,6 @@ if (NOT APPLE)
   set(STD_CXX_FS_LIBRARIES "stdc++fs")
 endif()
 
-find_package(bullet REQUIRED)
-link_directories(${BULLET_LIBRARY_DIRS})
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
 add_executable(gazebo_scene_viewer
@@ -38,7 +35,6 @@ target_link_libraries(gazebo_scene_viewer
   ${GAZEBO_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
   ${STD_CXX_FS_LIBRARIES}
-  ${BULLET_LIBRARIES}
 )
 
 add_executable(gazebo_scene_viewer2_demo
@@ -54,5 +50,4 @@ target_link_libraries(gazebo_scene_viewer2_demo
   ${GAZEBO_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
   ${STD_CXX_FS_LIBRARIES}
-  ${BULLET_LIBRARIES}
 )

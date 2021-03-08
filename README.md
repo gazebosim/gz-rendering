@@ -9,10 +9,10 @@
 
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/master/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
-Ubuntu Xenial | [![](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-xenial-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-xenial-amd64/)
-Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-bionic-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-homebrew-amd64)
+Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/ign-rendering3/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
+Ubuntu Xenial | [![](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering3-xenial-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering3-xenial-amd64/)
+Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering3-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering3-bionic-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering3-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering3-homebrew-amd64)
 Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ign_rendering-ci-win)](https://build.osrfoundation.org/job/ign_rendering-ci-win)
 
 Ignition Rendering is a C++ library designed to provide an abstraction
@@ -87,7 +87,7 @@ Please see
 # Code of Conduct
 
 Please see
-[CODE_OF_CONDUCT.md](https://github.com/ignitionrobotics/ign-gazebo/blob/master/CODE_OF_CONDUCT.md).
+[CODE_OF_CONDUCT.md](https://github.com/ignitionrobotics/ign-gazebo/blob/main/CODE_OF_CONDUCT.md).
 
 # Versioning
 
@@ -95,4 +95,4 @@ This library uses [Semantic Versioning](https://semver.org/). Additionally, this
 
 # License
 
-This library is licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). See also the [LICENSE](https://github.com/ignitionrobotics/ign-rendering/blob/master/LICENSE) file.
+This library is licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). See also the [LICENSE](https://github.com/ignitionrobotics/ign-rendering/blob/main/LICENSE) file.

@@ -10,7 +10,6 @@
 Build | Status
 -- | --
 Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/ign-rendering3/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
-Ubuntu Xenial | [![](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering3-xenial-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering3-xenial-amd64/)
 Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering3-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering3-bionic-amd64)
 Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering3-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering3-homebrew-amd64)
 Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ign_rendering-ci-win)](https://build.osrfoundation.org/job/ign_rendering-ci-win)

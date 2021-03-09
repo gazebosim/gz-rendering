@@ -25,6 +25,8 @@ in block
 
 uniform sampler2D depthTexture;
 uniform sampler2D colorTexture;
+uniform sampler2D particleDepthTexture;
+uniform sampler2D particleTexture;
 
 out vec4 fragColor;
 
@@ -34,19 +36,45 @@ uniform float far;
 uniform float min;
 uniform float max;
 
-float getDepth(vec2 uv)
+uniform float particleStddev;
+uniform float particleScatterRatio;
+uniform float time;
+
+// see gaussian_noise_fs.glsl for documentation on the rand and gaussrand
+// functions
+
+#define PI 3.14159265358979323846264
+
+float rand(vec2 co)
 {
-  float fDepth = texture(depthTexture, uv).x;
-  float linearDepth = projectionParams.y / (fDepth - projectionParams.x);
-  return linearDepth;
+  float r = fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
+  // Make sure that we don't return 0.0
+  if(r == 0.0)
+    return 0.000000000001;
+  else
+    return r;
 }
 
+vec4 gaussrand(vec2 co, vec3 offsets, float stddev, float mean)
+{
+  float U, V, R, Z;
+  U = rand(co + vec2(offsets.x, offsets.x));
+  V = rand(co + vec2(offsets.y, offsets.y));
+  R = rand(co + vec2(offsets.z, offsets.z));
+  if(R < 0.5)
+    Z = sqrt(-2.0 * log(U)) * sin(2.0 * PI * V);
+  else
+    Z = sqrt(-2.0 * log(U)) * cos(2.0 * PI * V);
+  Z = Z * stddev + mean;
+  return vec4(Z, Z, Z, 0.0);
+}
 
 void main()
 {
   // get linear depth
-  float d = getDepth(inPs.uv0);
-  
+  float fDepth = texture(depthTexture, inPs.uv0).x;
+  float d = projectionParams.y / (fDepth - projectionParams.x);
+
   // get retro
   float retro = texture(colorTexture, inPs.uv0).x * 2000.0;
 
@@ -55,6 +83,42 @@ void main()
 
   // get length of 3d point, i.e.range
   float l = length(viewSpacePos);
+
+  // particle mask - color and depth
+  vec4 particle = texture(particleTexture, inPs.uv0);
+  float particleDepth = texture(particleDepthTexture, inPs.uv0).x;
+
+  // check if need to apply scatter effect
+  if (particle.x > 0.0 && particleDepth < fDepth)
+  {
+    // apply scatter effect so that only some of the smoke pixels are visible
+    float r = rand(inPs.uv0 + vec2(time, time));
+    if (r < particleScatterRatio)
+    {
+      float pd = projectionParams.y / (particleDepth - projectionParams.x);
+      vec3 point = inPs.cameraDir * pd;
+
+      float rr = rand(inPs.uv0 + vec2(1.0/time, time)) - 0.5;
+
+      // apply gaussian noise to particle range data
+      // With large particles, the range returned are all from the first large
+      // particle. So add noise with some mean values so that all the points are
+      // shifted further out. This gives depth readings beyond the first few
+      // particles and avoid too many early returns
+      vec3 noise = gaussrand(inPs.uv0, vec3(time, time, time),
+           particleStddev, rr*rr*particleStddev*0.5).xyz;
+      float noiseLength = length(noise);
+
+      // apply gaussian noise to particle depth data
+      float newLength = length(point) + noiseLength;
+
+      // make sure we do not produce values larger than the range of the first
+      // non-particle obstacle, e.g. a box behind particle should still return
+      // a hit
+      if (newLength < l)
+        l = newLength;
+    }
+  }
 
   if (l > far)
     l = max;

@@ -27,11 +27,14 @@
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
+
+#include "Ogre2ParticleNoiseListener.hh"
 
 namespace ignition
 {
@@ -104,7 +107,7 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Pointer to Ogre material for the first rendering pass.
   public: Ogre::MaterialPtr matFirstPass;
 
-  /// \brief Pointer to Ogre material for the sencod rendering pass.
+  /// \brief Pointer to Ogre material for the second rendering pass.
   public: Ogre::MaterialPtr matSecondPass;
 
   /// \brief Cubemap cameras
@@ -162,6 +165,17 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Pointer to material switcher
   public: std::unique_ptr<Ogre2LaserRetroMaterialSwitcher>
       laserRetroMaterialSwitcher[6];
+
+  /// \brief standard deviation of particle noise
+  public: double particleStddev = 0.01;
+
+  /// \brief Particle scatter ratio. This is used to determine the ratio of
+  /// particles that will detected by the depth camera
+  public: double particleScatterRatio = 0.65;
+
+  /// \brief Listener for setting particle noise value based on particle
+  /// emitter region
+  public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
 };
 
 using namespace ignition;
@@ -607,6 +621,10 @@ void Ogre2GpuRays::Setup1stPass()
       static_cast<float>(this->dataMaxVal));
   psParams->setNamedConstant("min",
       static_cast<float>(this->dataMinVal));
+  psParams->setNamedConstant("particleStddev",
+    static_cast<float>(this->dataPtr->particleStddev));
+  psParams->setNamedConstant("particleScatterRatio",
+    static_cast<float>(this->dataPtr->particleScatterRatio));
 
   // Create 1st pass compositor
   auto engine = Ogre2RenderEngine::Instance();
@@ -622,6 +640,8 @@ void Ogre2GpuRays::Setup1stPass()
   //   in 0 rt_input
   //   texture depthTexture target_width target_height PF_D32_FLOAT
   //   texture colorTexture target_width target_height PF_R8G8B8
+  //   texture particleTexture target_width target_height PF_L8
+  //   texture particleDepthTexture target_width target_height PF_D32_FLOAT
   //   target colorTexture
   //   {
   //     pass clear
@@ -630,6 +650,18 @@ void Ogre2GpuRays::Setup1stPass()
   //     }
   //     pass render_scene
   //     {
+  //       visibility_mask 0x11011111
+  //     }
+  //   }
+  //   target particleTexture
+  //   {
+  //     pass clear
+  //     {
+  //       colour_value 0.0 0.0 0.0 1.0
+  //     }
+  //     pass render_scene
+  //     {
+  //       visibility_mask 0.00100000
   //     }
   //   }
   //   target rt_input
@@ -697,7 +729,42 @@ void Ogre2GpuRays::Setup1stPass()
     colorTexDef->preferDepthTexture = true;
     colorTexDef->fsaaExplicitResolve = false;
 
-    nodeDef->setNumTargetPass(2);
+    Ogre::TextureDefinitionBase::TextureDefinition *particleDepthTexDef =
+        nodeDef->addTextureDefinition("particleDepthTexture");
+    particleDepthTexDef->textureType = Ogre::TEX_TYPE_2D;
+    particleDepthTexDef->width = 0;
+    particleDepthTexDef->height = 0;
+    particleDepthTexDef->depth = 1;
+    particleDepthTexDef->numMipmaps = 0;
+    particleDepthTexDef->widthFactor = 0.5;
+    particleDepthTexDef->heightFactor = 0.5;
+    particleDepthTexDef->formatList = {Ogre::PF_D32_FLOAT};
+    particleDepthTexDef->fsaa = 0;
+    particleDepthTexDef->uav = false;
+    particleDepthTexDef->automipmaps = false;
+    particleDepthTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    particleDepthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+
+    Ogre::TextureDefinitionBase::TextureDefinition *particleTexDef =
+        nodeDef->addTextureDefinition("particleTexture");
+    particleTexDef->textureType = Ogre::TEX_TYPE_2D;
+    particleTexDef->width = 0;
+    particleTexDef->height = 0;
+    particleTexDef->depth = 1;
+    particleTexDef->numMipmaps = 0;
+    particleTexDef->widthFactor = 0.5;
+    particleTexDef->heightFactor = 0.5;
+    particleTexDef->formatList = {Ogre::PF_R8G8B8};
+    particleTexDef->fsaa = 0;
+    particleTexDef->uav = false;
+    particleTexDef->automipmaps = false;
+    particleTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    particleTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    particleTexDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+    particleTexDef->preferDepthTexture = true;
+    particleTexDef->fsaaExplicitResolve = false;
+
+    nodeDef->setNumTargetPass(3);
 
     Ogre::CompositorTargetDef *colorTargetDef =
         nodeDef->addTargetPass("colorTexture");
@@ -713,7 +780,26 @@ void Ogre2GpuRays::Setup1stPass()
           static_cast<Ogre::CompositorPassSceneDef *>(
           colorTargetDef->addPass(Ogre::PASS_SCENE));
       // set camera custom visibility mask when rendering laser retro
-      passScene->mVisibilityMask = 0x01000000;
+      passScene->mVisibilityMask = 0x01000000 &
+          ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
+    }
+
+    Ogre::CompositorTargetDef *particleTargetDef =
+        nodeDef->addTargetPass("particleTexture");
+    particleTargetDef->setNumPasses(2);
+    {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          particleTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue::Black;
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          particleTargetDef->addPass(Ogre::PASS_SCENE));
+      // set camera custom visibility mask when rendering laser retro
+      passScene->mVisibilityMask =
+          Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 
     // rt_input target - converts depth to range
@@ -733,6 +819,8 @@ void Ogre2GpuRays::Setup1stPass()
       passQuad->mMaterialName = this->dataPtr->matFirstPass->getName();
       passQuad->addQuadTextureSource(0, "depthTexture", 0);
       passQuad->addQuadTextureSource(1, "colorTexture", 0);
+      passQuad->addQuadTextureSource(2, "particleDepthTexture", 0);
+      passQuad->addQuadTextureSource(3, "particleTexture", 0);
       passQuad->mFrustumCorners =
           Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
     }
@@ -796,9 +884,6 @@ void Ogre2GpuRays::Setup1stPass()
         ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
         rt, this->dataPtr->cubeCam[i], wsDefName, false);
 
-    // add laser retro material switcher to render target listener
-    // so we can switch to use laser retro material when the camera is being
-    // updated
     Ogre::CompositorNode *node =
         this->dataPtr->ogreCompositorWorkspace1st[i]->getNodeSequence()[0];
     auto channelsTex = node->getLocalTextures();
@@ -807,10 +892,20 @@ void Ogre2GpuRays::Setup1stPass()
     {
       if (c.textures[0]->getSrcFormat() == Ogre::PF_R8G8B8)
       {
+        // add laser retro material switcher to render target listener
+        // so we can switch to use laser retro material when the camera is being
+        // updated
         this->dataPtr->laserRetroMaterialSwitcher[i].reset(
             new Ogre2LaserRetroMaterialSwitcher(this->scene));
         c.target->addListener(
             this->dataPtr->laserRetroMaterialSwitcher[i].get());
+
+        // add particle noise / scatter effects listener so we can set the
+        // amount of noise based on size of emitter
+        this->dataPtr->particleNoiseListener[i].reset(
+            new Ogre2ParticleNoiseListener(this->scene,
+            this->dataPtr->cubeCam[i], this->dataPtr->matFirstPass));
+        c.target->addListener(this->dataPtr->particleNoiseListener[i].get());
         break;
       }
     }

@@ -558,7 +558,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   emitter->SetRate(100);
   emitter->SetLifetime(2);
   emitter->SetVelocityRange(0.1, 0.1);
-  emitter->SetScaleRate(0.1);
+  emitter->SetScaleRate(0.0);
   emitter->SetColorRange(ignition::math::Color::Red,
       ignition::math::Color::Black);
   emitter->SetEmitting(true);

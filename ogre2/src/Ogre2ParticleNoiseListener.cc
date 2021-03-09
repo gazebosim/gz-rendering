@@ -15,6 +15,8 @@
  *
  */
 
+#include <string>
+
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
@@ -92,7 +94,8 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
         VisualPtr result;
         try
         {
-          result = this->scene->VisualById(Ogre::any_cast<unsigned int>(userAny));
+          result = this->scene->VisualById(
+              Ogre::any_cast<unsigned int>(userAny));
         }
         catch(Ogre::Exception &e)
         {
@@ -102,7 +105,8 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
             std::dynamic_pointer_cast<Ogre2Visual>(result);
 
         std::string particleScatterRatioKey = "particle_scatter_ratio";
-        Variant particleScatterRatioAny = ogreVisual->UserData(particleScatterRatioKey);
+        Variant particleScatterRatioAny =
+            ogreVisual->UserData(particleScatterRatioKey);
         if (particleScatterRatioAny.index() != std::variant_npos)
         {
           float ratio = -1.0;

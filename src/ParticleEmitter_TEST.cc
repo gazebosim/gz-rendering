@@ -91,6 +91,9 @@ void ParticleEmitterTest::CheckBasicAPI()
   math::Color    expectedColorEnd        = ignition::math::Color::White;
   double         expectedScaleRate       = 1;
   std::string    expectedColorRangeImage = "";
+  // Particle scatter ratio is stored in user data
+  // \todo(anyone) Add API to set scatter ratio
+  Variant        emptyVariant;
 
   // Check default expectations.
   EXPECT_EQ(expectedEmitterType,      particleEmitter->Type());
@@ -107,6 +110,7 @@ void ParticleEmitterTest::CheckBasicAPI()
   EXPECT_EQ(expectedColorEnd,         particleEmitter->ColorEnd());
   EXPECT_DOUBLE_EQ(expectedScaleRate, particleEmitter->ScaleRate());
   EXPECT_EQ(expectedColorRangeImage,  particleEmitter->ColorRangeImage());
+  EXPECT_EQ(emptyVariant,  particleEmitter->UserData("particle_scatter_ratio"));
 
   // Modify values.
   expectedEmitterType     = EmitterType::EM_BOX;
@@ -123,6 +127,9 @@ void ParticleEmitterTest::CheckBasicAPI()
   expectedColorEnd        = ignition::math::Color::Blue;
   expectedScaleRate       = 10;
   expectedColorRangeImage = common::joinPaths(TEST_MEDIA_PATH, "texture.png");
+  // Particle scatter ratio is stored in user data
+  // \todo(anyone) Add API to set scatter ratio
+  double expectedScatterRatio  = 0.24;
 
   // Modify attributes.
   particleEmitter->SetType(expectedEmitterType);
@@ -137,6 +144,7 @@ void ParticleEmitterTest::CheckBasicAPI()
   particleEmitter->SetColorRange(expectedColorStart, expectedColorEnd);
   particleEmitter->SetScaleRate(expectedScaleRate);
   particleEmitter->SetColorRangeImage(expectedColorRangeImage);
+  particleEmitter->SetUserData("particle_scatter_ratio", expectedScatterRatio);
 
   // Check getters.
   EXPECT_EQ(expectedEmitterType,      particleEmitter->Type());
@@ -153,6 +161,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   EXPECT_EQ(expectedColorEnd,         particleEmitter->ColorEnd());
   EXPECT_DOUBLE_EQ(expectedScaleRate, particleEmitter->ScaleRate());
   EXPECT_EQ(expectedColorRangeImage,  particleEmitter->ColorRangeImage());
+  Variant v = particleEmitter->UserData("particle_scatter_ratio");
+  EXPECT_DOUBLE_EQ(expectedScatterRatio,  std::get<double>(v));
 }
 
 /////////////////////////////////////////////////

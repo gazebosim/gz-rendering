@@ -40,9 +40,19 @@ namespace ignition
       private: virtual void preRenderTargetUpdate(
           const Ogre::RenderTargetEvent &_evt) override;
 
+      /// \brief Pointer to scene
       private: Ogre2ScenePtr scene;
+
+      /// \brief Pointer to camera
       private: Ogre::Camera *ogreCamera = nullptr;
+
+      /// \brief Pointer to ogre matieral with shaders for applying particle
+      /// scattering effect to sensors
       private: Ogre::MaterialPtr ogreMaterial;
+
+      /// \brief Particle scatter ratio. This is used to determine the ratio of
+      /// particles that will detected by sensors
+      private: double particleScatterRatio = 0.65;
     };
     }
   }

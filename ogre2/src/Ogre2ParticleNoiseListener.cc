@@ -87,7 +87,7 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
           static_cast<float>(particleStddev));
 
       // get particle scatter ratio value from particle emitter user data
-      // set pass that to the shaders
+      // and pass that to the shaders
       Ogre::Any userAny = ps->getUserObjectBindings().getUserAny();
       if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
       {
@@ -103,39 +103,41 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
         }
         Ogre2VisualPtr ogreVisual =
             std::dynamic_pointer_cast<Ogre2Visual>(result);
-
-        std::string particleScatterRatioKey = "particle_scatter_ratio";
-        Variant particleScatterRatioAny =
-            ogreVisual->UserData(particleScatterRatioKey);
-        if (particleScatterRatioAny.index() != std::variant_npos)
+        if (ogreVisual)
         {
-          float ratio = -1.0;
-          try
+          const std::string particleScatterRatioKey = "particle_scatter_ratio";
+          Variant particleScatterRatioAny =
+              ogreVisual->UserData(particleScatterRatioKey);
+          if (particleScatterRatioAny.index() != std::variant_npos)
           {
-            ratio = std::get<float>(particleScatterRatioAny);
-          }
-          catch(...)
-          {
+            float ratio = -1.0;
             try
             {
-              ratio = std::get<double>(particleScatterRatioAny);
+              ratio = std::get<float>(particleScatterRatioAny);
             }
             catch(...)
             {
               try
               {
-                ratio = std::get<int>(particleScatterRatioAny);
+                ratio = std::get<double>(particleScatterRatioAny);
               }
-              catch(std::bad_variant_access &e)
+              catch(...)
               {
-                ignerr << "Error casting user data: " << e.what() << "\n";
-                ratio = -1.0;
+                try
+                {
+                  ratio = std::get<int>(particleScatterRatioAny);
+                }
+                catch(std::bad_variant_access &e)
+                {
+                  ignerr << "Error casting user data: " << e.what() << "\n";
+                  ratio = -1.0;
+                }
               }
             }
-          }
-          if (ratio > 0)
-          {
-            this->particleScatterRatio = ratio;
+            if (ratio > 0)
+            {
+              this->particleScatterRatio = ratio;
+            }
           }
         }
       }

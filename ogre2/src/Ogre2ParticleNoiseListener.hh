@@ -51,8 +51,13 @@ namespace ignition
       private: Ogre::MaterialPtr ogreMaterial;
 
       /// \brief Particle scatter ratio. This is used to determine the ratio of
-      /// particles that will detected by sensors
-      private: double particleScatterRatio = 0.65;
+      /// particles that will detected by sensors. Increasing the ratio
+      /// increases the scatter of the particles, which means there is a higher
+      /// chance of particles reflecting and interfering with depth sensing,
+      /// making the emitter appear more dense. Decreasing the ratio decreases
+      /// the scatter of the particles, making it appear less dense. This value
+      /// should be > 0.
+      private: float particleScatterRatio = 0.65f;
     };
     }
   }

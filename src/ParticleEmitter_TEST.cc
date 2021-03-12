@@ -92,7 +92,9 @@ void ParticleEmitterTest::CheckBasicAPI()
   double         expectedScaleRate       = 1;
   std::string    expectedColorRangeImage = "";
   // Particle scatter ratio is stored in user data
-  // \todo(anyone) Add API to set scatter ratio
+  // TODO(anyone) Add API to set scatter ratio
+  // (this requires adding a virtual function in the base class,
+  // which breaks ABI, so this should be done in an unreleased version)
   Variant        emptyVariant;
 
   // Check default expectations.
@@ -128,7 +130,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   expectedScaleRate       = 10;
   expectedColorRangeImage = common::joinPaths(TEST_MEDIA_PATH, "texture.png");
   // Particle scatter ratio is stored in user data
-  // \todo(anyone) Add API to set scatter ratio
+  // TODO(anyone) Add API to set scatter ratio
+  // (see note above in the other todo about how this breaks ABI)
   double expectedScatterRatio  = 0.24;
 
   // Modify attributes.

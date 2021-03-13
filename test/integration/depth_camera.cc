@@ -598,15 +598,18 @@ void DepthCameraTest::DepthCameraParticles(
 
     // create particle emitter between depth camera and box
     ignition::math::Vector3d particlePosition(1.0, 0, 0);
+    ignition::math::Quaterniond particleRotation(
+        ignition::math::Vector3d(0, -1.57, 0));
     ignition::math::Vector3d particleSize(0.2, 0.2, 0.2);
     ignition::rendering::ParticleEmitterPtr emitter =
         scene->CreateParticleEmitter();
     emitter->SetLocalPosition(particlePosition);
+    emitter->SetLocalRotation(particleRotation);
     emitter->SetParticleSize(particleSize);
     emitter->SetRate(100);
     emitter->SetLifetime(2);
     emitter->SetVelocityRange(0.1, 0.1);
-    emitter->SetScaleRate(0.1);
+    emitter->SetScaleRate(0.0);
     emitter->SetColorRange(ignition::math::Color::Red,
         ignition::math::Color::Black);
     emitter->SetEmitting(true);

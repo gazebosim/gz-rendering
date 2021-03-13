@@ -549,11 +549,14 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   root->AddChild(visualBox3);
 
   // create particle emitter between sensor and box in the center
-  ignition::math::Vector3d particlePosition(1.5, 0, 0);
+  ignition::math::Vector3d particlePosition(1.0, 0, 0);
+  ignition::math::Quaterniond particleRotation(
+      ignition::math::Vector3d(0, -1.57, 0));
   ignition::math::Vector3d particleSize(0.2, 0.2, 0.2);
   ignition::rendering::ParticleEmitterPtr emitter =
       scene->CreateParticleEmitter();
   emitter->SetLocalPosition(particlePosition);
+  emitter->SetLocalRotation(particleRotation);
   emitter->SetParticleSize(particleSize);
   emitter->SetRate(100);
   emitter->SetLifetime(2);
@@ -599,8 +602,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
     // sensor should see ether a particle or box01
     double particleRange = static_cast<double>(scan[mid]);
     bool particleHit = ignition::math::equal(
-        expectedParticleRange, particleRange, 0.00001);
-        // expectedParticleRange, particleRange, laserNoiseTol);
+        expectedParticleRange, particleRange, laserNoiseTol);
     bool particleMiss = ignition::math::equal(
         expectedRangeAtMidPointBox1, particleRange, LASER_TOL);
     EXPECT_TRUE(particleHit || particleMiss)

@@ -110,8 +110,7 @@ void main()
       float noiseLength = length(noise);
 
       // apply gaussian noise to particle depth data
-      // float newLength = length(point) + noiseLength;
-      float newLength = length(point);
+      float newLength = length(point) + noiseLength;
 
       // make sure we do not produce values larger than the range of the first
       // non-particle obstacle, e.g. a box behind particle should still return

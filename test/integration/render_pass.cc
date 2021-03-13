@@ -310,8 +310,8 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
 
     float maxVal = ignition::math::INF_D;
 
-    // values should be well within 4-sigma
-    float noiseTol = 4.0*noiseStdDev;
+    // values should be well within 3-sigma
+    float noiseTol = 3.0*noiseStdDev;
     unsigned int colorNoiseTol = static_cast<unsigned int>(255.0*noiseTol);
 
     // Verify Point Cloud XYZ values
@@ -339,8 +339,9 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
       float mz = pointCloudData[pcMid + 2];
       float midLeftZ = pointCloudData[pcMid + 2 - pointCloudChannelCount];
       float midRightZ = pointCloudData[pcMid + 2 + pointCloudChannelCount];
-      EXPECT_NEAR(mz, midLeftZ, noiseTol);
-      EXPECT_NEAR(mz, midRightZ, noiseTol);
+      // 2 noisy values should be within 2 * 3 sigma
+      EXPECT_NEAR(mz, midLeftZ, 2*noiseTol);
+      EXPECT_NEAR(mz, midRightZ, 2*noiseTol);
 
       // Verify Point Cloud RGB values
       // The mid point should be blue

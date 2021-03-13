@@ -600,7 +600,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
     double particleRange = static_cast<double>(scan[mid]);
     bool particleHit = ignition::math::equal(
         expectedParticleRange, particleRange, 0.00001);
-        //expectedParticleRange, particleRange, laserNoiseTol);
+        // expectedParticleRange, particleRange, laserNoiseTol);
     bool particleMiss = ignition::math::equal(
         expectedRangeAtMidPointBox1, particleRange, LASER_TOL);
     EXPECT_TRUE(particleHit || particleMiss)

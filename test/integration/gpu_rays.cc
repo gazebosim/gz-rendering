@@ -549,7 +549,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   root->AddChild(visualBox3);
 
   // create particle emitter between sensor and box in the center
-  ignition::math::Vector3d particlePosition(1.0, 0, 0);
+  ignition::math::Vector3d particlePosition(1.5, 0, 0);
   ignition::math::Vector3d particleSize(0.2, 0.2, 0.2);
   ignition::rendering::ParticleEmitterPtr emitter =
       scene->CreateParticleEmitter();

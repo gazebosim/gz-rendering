@@ -484,7 +484,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
 
   const double hMinAngle = -IGN_PI / 2.0;
   const double hMaxAngle = IGN_PI / 2.0;
-  const double minRange = 0.1;
+  const double minRange = 0.12;
   const double maxRange = 10.0;
   const int hRayCount = 320;
   const int vRayCount = 1;
@@ -599,7 +599,8 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
     // sensor should see ether a particle or box01
     double particleRange = static_cast<double>(scan[mid]);
     bool particleHit = ignition::math::equal(
-        expectedParticleRange, particleRange, laserNoiseTol);
+        expectedParticleRange, particleRange, 0.00001);
+        //expectedParticleRange, particleRange, laserNoiseTol);
     bool particleMiss = ignition::math::equal(
         expectedRangeAtMidPointBox1, particleRange, LASER_TOL);
     EXPECT_TRUE(particleHit || particleMiss)

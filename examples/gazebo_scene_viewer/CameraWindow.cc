@@ -18,6 +18,7 @@
 
 #if __APPLE__
   #include <OpenGL/gl.h>
+  #include <OpenGL/OpenGL.h>
   #include <GLUT/glut.h>
 #else
   #include <GL/glew.h>
@@ -30,6 +31,7 @@
 #endif
 
 #include <gazebo/common/Console.hh>
+#include <gazebo/transport/TransportIface.hh>
 
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
@@ -52,7 +54,11 @@ gz::ImagePtr g_image;
 
 bool g_initContext = false;
 
-#if not (__APPLE__ || _WIN32)
+#if __APPLE__
+  CGLContextObj g_context;
+  CGLContextObj g_glutContext;
+#elif _WIN32
+#else
   GLXContext g_context;
   Display *g_display;
   GLXDrawable g_drawable;
@@ -66,7 +72,10 @@ double g_offset = 0.0;
 //////////////////////////////////////////////////
 void GlutRun(std::vector<gz::CameraPtr> _cameras)
 {
-#if not (__APPLE__ || _WIN32)
+#if __APPLE__
+  g_context = CGLGetCurrentContext();
+#elif _WIN32
+#else
   g_context = glXGetCurrentContext();
   g_display = glXGetCurrentDisplay();
   g_drawable = glXGetCurrentDrawable();
@@ -77,7 +86,10 @@ void GlutRun(std::vector<gz::CameraPtr> _cameras)
   GlutInitContext();
   GlutPrintUsage();
 
-#if not (__APPLE__ || _WIN32)
+#if __APPLE__
+  g_glutContext = CGLGetCurrentContext();
+#elif _WIN32
+#else
   g_glutDisplay = glXGetCurrentDisplay();
   g_glutDrawable = glXGetCurrentDrawable();
   g_glutContext = glXGetCurrentContext();
@@ -89,7 +101,10 @@ void GlutRun(std::vector<gz::CameraPtr> _cameras)
 //////////////////////////////////////////////////
 void GlutDisplay()
 {
-#if not (__APPLE__ || _WIN32)
+#if __APPLE__
+  CGLSetCurrentContext(g_context);
+#elif _WIN32
+#else
   if (g_display)
   {
     glXMakeCurrent(g_display, g_drawable, g_context);
@@ -98,7 +113,10 @@ void GlutDisplay()
 
   g_cameras[g_cameraIndex]->Capture(*g_image);
 
-#if not (__APPLE__ || _WIN32)
+#if __APPLE__
+  CGLSetCurrentContext(g_glutContext);
+#elif _WIN32
+#else
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 #endif
 
@@ -116,7 +134,10 @@ void GlutDisplay()
 //////////////////////////////////////////////////
 void GlutIdle()
 {
-#if not (__APPLE__ || _WIN32)
+#if __APPLE__
+  CGLSetCurrentContext(g_context);
+#elif _WIN32
+#else
   if (g_display)
   {
     glXMakeCurrent(g_display, g_drawable, g_context);
@@ -128,7 +149,10 @@ void GlutIdle()
 
   manager->UpdateScenes();
 
-#if not (__APPLE__ || _WIN32)
+#if __APPLE__
+  CGLSetCurrentContext(g_glutContext);
+#elif _WIN32
+#else
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 #endif
 
@@ -140,6 +164,9 @@ void GlutKeyboard(unsigned char _key, int, int)
 {
   if (_key == KEY_ESC || _key == 'q' || _key == 'Q')
   {
+    // stop transport
+    gazebo::transport::stop();
+    gazebo::transport::fini();  
     exit(0);
   }
   else if (_key == KEY_TAB)
@@ -167,9 +194,6 @@ void GlutInitCamera(gz::CameraPtr _camera)
 //////////////////////////////////////////////////
 void GlutInitContext()
 {
-  int argc = 0;
-  char **argv = 0;
-  glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);

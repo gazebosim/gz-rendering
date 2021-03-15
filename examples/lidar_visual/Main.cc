@@ -40,13 +40,13 @@ const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 // paramters for the LidarVisual and GpuRays API are initialised here
-const double hMinAngle = -2.26889;
-const double hMaxAngle = 2.26889;
+const double hMinAngle = -0.1;
+const double hMaxAngle = 0.1;
 const double vMinAngle = 0;
 const double vMaxAngle = 0;
 const double minRange = 0.08;
 const double maxRange = 10.0;
-const int hRayCount = 640;
+const int hRayCount = 2;
 const int vRayCount = 1;
 std::vector<double> pts;
 
@@ -59,9 +59,14 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
                   unsigned int _channels,
                   const std::string &/*_format*/)
 {
-  float f;
   int size =  _width * _height * _channels;
-  memcpy(_scanDest, _scan, size * sizeof(f));
+  memcpy(_scanDest, _scan, size * sizeof(float));
+  for(int j = 0; j < _width * _height * _channels; j++)
+  {
+    std::cerr << "_scan " << _scan[j] << '\n';
+
+  }
+  std::cerr << "/* OnNewGpuRaysFrame */" << '\n';
 }
 
 //////////////////////////////////////////////////
@@ -135,7 +140,42 @@ void buildScene(ScenePtr _scene)
   visualBox2->SetMaterial(green);
   root->AddChild(visualBox2);
 
-  ignition::math::Pose3d sphere01Pose(ignition::math::Vector3d(1, -3, 0.5),
+  {
+    ignition::math::Pose3d box01Pose(ignition::math::Vector3d(-6, 0, 0.5),
+                                     ignition::math::Quaterniond::Identity);
+    VisualPtr visualBox1 = _scene->CreateVisual("UnitBox3");
+    visualBox1->AddGeometry(_scene->CreateBox());
+    visualBox1->SetWorldPosition(box01Pose.Pos());
+    visualBox1->SetWorldRotation(box01Pose.Rot());
+    visualBox1->SetMaterial(red);
+    root->AddChild(visualBox1);
+  }
+
+  {
+    ignition::math::Pose3d box01Pose(ignition::math::Vector3d(0, 0, 6),
+                                     ignition::math::Quaterniond::Identity);
+    VisualPtr visualBox1 = _scene->CreateVisual("UnitBox4");
+    visualBox1->AddGeometry(_scene->CreateBox());
+    visualBox1->SetWorldPosition(box01Pose.Pos());
+    visualBox1->SetWorldRotation(box01Pose.Rot());
+    visualBox1->SetMaterial(red);
+    visualBox1->Scale(5, 5, 2);
+    root->AddChild(visualBox1);
+  }
+
+  {
+    ignition::math::Pose3d box01Pose(ignition::math::Vector3d(0, 0, -6),
+                                     ignition::math::Quaterniond::Identity);
+    VisualPtr visualBox1 = _scene->CreateVisual("UnitBox5");
+    visualBox1->AddGeometry(_scene->CreateBox());
+    visualBox1->SetWorldPosition(box01Pose.Pos());
+    visualBox1->SetWorldRotation(box01Pose.Rot());
+    visualBox1->SetMaterial(red);
+    visualBox1->Scale(5, 5, 2);
+    root->AddChild(visualBox1);
+  }
+
+  ignition::math::Pose3d sphere01Pose(ignition::math::Vector3d(0, -3, 0.5),
                                    ignition::math::Quaterniond::Identity);
   VisualPtr visualSphere1 = _scene->CreateVisual("UnitSphere1");
   visualSphere1->AddGeometry(_scene->CreateSphere());
@@ -144,12 +184,45 @@ void buildScene(ScenePtr _scene)
   visualSphere1->SetMaterial(yellow);
   root->AddChild(visualSphere1);
 
+  // // create particle material
+  // MaterialPtr particleMaterial = _scene->CreateMaterial();
+  // particleMaterial->SetDiffuse(0.7, 0.7, 0.7);
+  // particleMaterial->SetTexture(RESOURCE_PATH + "/smoke.png");
+  // particleMaterial->SetAlphaFromTexture(true);
+  // particleMaterial->SetDepthWriteEnabled(false);
+  //
+  //
+  // //! [create particle emitter]
+  // ParticleEmitterPtr emitter = _scene->CreateParticleEmitter();
+  // emitter->SetLocalPose({2, 1.10, 1.25, 1.5708, 0, 2.3});
+  // emitter->SetRate(10);
+  // emitter->SetParticleSize({1, 1, 1});
+  // emitter->SetLifetime(2);
+  // emitter->SetVelocityRange(10, 20);
+  // emitter->SetMaterial(particleMaterial);
+  // emitter->SetColorRangeImage(RESOURCE_PATH + "/smokecolors.png");
+  // emitter->SetScaleRate(10);
+  // emitter->SetEmitting(true);
+  // root->AddChild(emitter);
+  //
+  // //! [create a mesh]
+  // VisualPtr mesh = _scene->CreateVisual();
+  // mesh->SetLocalPosition(3, 0, 0);
+  // mesh->SetLocalRotation(1.5708, 0, 2.0);
+  // MeshDescriptor descriptor;
+  // descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
+  // common::MeshManager *meshManager = common::MeshManager::Instance();
+  // descriptor.mesh = meshManager->Load(descriptor.meshName);
+  // MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+  // mesh->AddGeometry(meshGeom);
+  // root->AddChild(mesh);
+
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 2.0);
   camera->SetLocalRotation(0.0, 0.5, 0.0);
-  camera->SetImageWidth(1200);
-  camera->SetImageHeight(900);
+  camera->SetImageWidth(800);
+  camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
@@ -297,6 +370,6 @@ int main(int _argc, char** _argv)
     }
   }
 
-  run(cameras, nodes, nodes[0]->Points());
+  run(cameras, nodes, sensors);
   return 0;
 }

@@ -65,6 +65,7 @@ bool g_initContext = false;
 bool g_clear = false;
 std::vector<double> g_lidarData;
 ir::LidarVisualPtr g_lidar;
+ir::GpuRaysPtr g_gpurays;
 bool g_lidarVisualUpdateDirty = false;
 bool g_showNonHitting = true;
 LidarVisualType g_lidarVisType = LidarVisualType::LVT_TRIANGLE_STRIPS;
@@ -249,6 +250,7 @@ void updateLidarVisual()
   // change detected due to key press
   if (g_lidarVisualUpdateDirty)
   {
+    g_gpurays->Update();
     if (g_clear == true)
     {
       g_lidar->ClearPoints();
@@ -436,7 +438,7 @@ void printUsage()
 //////////////////////////////////////////////////
 void run(std::vector<ir::CameraPtr> _cameras,
         std::vector<ir::LidarVisualPtr> _nodes,
-        std::vector<double> _pts)
+        std::vector<ir::GpuRaysPtr> _sensors)
 {
   if (_cameras.empty())
   {
@@ -459,7 +461,9 @@ void run(std::vector<ir::CameraPtr> _cameras,
   initLidarVisual(_nodes[0]);
   initContext();
   printUsage();
+  g_gpurays = _sensors[0];
   g_lidarData.clear();
+  std::vector<double> _pts = _nodes[0]->Points();
   for (int pt =0; pt < _pts.size(); pt++)
   {
     g_lidarData.push_back(_pts[pt]);

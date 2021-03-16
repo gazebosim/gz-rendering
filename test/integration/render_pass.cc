@@ -339,8 +339,9 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
       float mz = pointCloudData[pcMid + 2];
       float midLeftZ = pointCloudData[pcMid + 2 - pointCloudChannelCount];
       float midRightZ = pointCloudData[pcMid + 2 + pointCloudChannelCount];
-      EXPECT_NEAR(mz, midLeftZ, noiseTol);
-      EXPECT_NEAR(mz, midRightZ, noiseTol);
+      // 2 noisy values should be within 2 * 4 sigma
+      EXPECT_NEAR(mz, midLeftZ, 2*noiseTol);
+      EXPECT_NEAR(mz, midRightZ, 2*noiseTol);
 
       // Verify Point Cloud RGB values
       // The mid point should be blue

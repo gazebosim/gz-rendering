@@ -96,7 +96,7 @@ void buildScene(ScenePtr _scene)
   sphere->SetOrigin(0.0, -0.5, 0.0);
   sphere->SetLocalPosition(3, 0, 0);
   sphere->SetLocalRotation(0, 0, 0);
-  sphere->SetLocalScale(1, 2.5, 1);
+  sphere->SetLocalScale(1, 1, 1);
   sphere->SetMaterial(red);
   root->AddChild(sphere);
 
@@ -117,6 +117,15 @@ void buildScene(ScenePtr _scene)
   box->SetLocalScale(1, 2.5, 1);
   box->SetMaterial(blue);
   root->AddChild(box);
+
+  // create ellipsoid visual
+  VisualPtr ellipsoidVisual = _scene->CreateVisual();
+  auto ellipsoid = _scene->CreateSphere();
+  ellipsoidVisual->SetLocalScale(1.2, 0.7, 0.5);
+  ellipsoidVisual->AddGeometry(ellipsoid);
+  ellipsoidVisual->SetLocalPosition(3, -1, 0);
+  ellipsoidVisual->SetMaterial(green);
+  root->AddChild(ellipsoidVisual);
 
 //! [white material]
   // create white material

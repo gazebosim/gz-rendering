@@ -126,7 +126,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE SubMesh :
       public virtual Object
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~SubMesh() { }
 
       /// \brief Get the currently assigned material

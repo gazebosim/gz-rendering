@@ -56,7 +56,7 @@ namespace ignition
       /// \brief Shared pointer to const T
       typedef std::shared_ptr<const T> ConstTPtr;
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Map() { }
 
       /// \brief Get the number of elements in this map
@@ -121,7 +121,7 @@ namespace ignition
       /// \brief Shared pointer to const T
       typedef std::shared_ptr<const T> ConstTPtr;
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Store() { }
 
       /// \brief Get number of elements in this store
@@ -243,7 +243,7 @@ namespace ignition
       /// \brief Shared pointer to const TStore
       typedef std::shared_ptr<const TStore> ConstTStorePtr;
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~CompositeStore() { }
 
       /// \brief Get number of Stores

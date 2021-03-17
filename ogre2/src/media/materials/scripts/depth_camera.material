@@ -30,8 +30,12 @@ fragment_program DepthCameraFS glsl
 
   default_params
   {
+    param_named_auto time time
+
     param_named depthTexture int 0
     param_named colorTexture int 1
+    param_named particleTexture int 2
+    param_named particleDepthTexture int 3
   }
 }
 
@@ -49,6 +53,16 @@ material DepthCamera
         tex_address_mode clamp
       }
       texture_unit colorTexture
+      {
+        filtering none
+        tex_address_mode clamp
+      }
+      texture_unit particleTexture
+      {
+        filtering none
+        tex_address_mode clamp
+      }
+      texture_unit particleDepthTexture
       {
         filtering none
         tex_address_mode clamp

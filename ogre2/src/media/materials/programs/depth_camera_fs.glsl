@@ -25,6 +25,8 @@ in block
 
 uniform sampler2D depthTexture;
 uniform sampler2D colorTexture;
+uniform sampler2D particleTexture;
+uniform sampler2D particleDepthTexture;
 
 out vec4 fragColor;
 
@@ -35,12 +37,9 @@ uniform float min;
 uniform float max;
 uniform vec3 backgroundColor;
 
-float getDepth(vec2 uv)
-{
-  float fDepth = texture(depthTexture, uv).x;
-  float linearDepth = projectionParams.y / (fDepth - projectionParams.x);
-  return linearDepth;
-}
+uniform float particleStddev;
+uniform float particleScatterRatio;
+uniform float time;
 
 float packFloat(vec4 color)
 {
@@ -52,12 +51,43 @@ float packFloat(vec4 color)
 }
 
 
+// see gaussian_noise_fs.glsl for documentation on the rand and gaussrand
+// functions
+
+#define PI 3.14159265358979323846264
+
+float rand(vec2 co)
+{
+  float r = fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
+  // Make sure that we don't return 0.0
+  if(r == 0.0)
+    return 0.000000000001;
+  else
+    return r;
+}
+
+vec4 gaussrand(vec2 co, vec3 offsets, float stddev, float mean)
+{
+  float U, V, R, Z;
+  U = rand(co + vec2(offsets.x, offsets.x));
+  V = rand(co + vec2(offsets.y, offsets.y));
+  R = rand(co + vec2(offsets.z, offsets.z));
+  if(R < 0.5)
+    Z = sqrt(-2.0 * log(U)) * sin(2.0 * PI * V);
+  else
+    Z = sqrt(-2.0 * log(U)) * cos(2.0 * PI * V);
+  Z = Z * stddev + mean;
+  return vec4(Z, Z, Z, 0.0);
+}
+
 void main()
 {
   float tolerance = 1e-6;
 
   // get linear depth
-  float d = getDepth(inPs.uv0);
+  float fDepth = texture(depthTexture, inPs.uv0).x;
+  float d = projectionParams.y / (fDepth - projectionParams.x);
+
 
   // reconstruct 3d viewspace pos from depth
   vec3 viewSpacePos = inPs.cameraDir * d;
@@ -67,6 +97,30 @@ void main()
 
   // color
   vec4 color = texture(colorTexture, inPs.uv0);
+
+  // particle mask - color and depth
+  vec4 particle = texture(particleTexture, inPs.uv0);
+  float particleDepth = texture(particleDepthTexture, inPs.uv0).x;
+
+  // return particle depth if it can be seen by the camera and not obstructed
+  // by other objects in the camera view
+  if (particle.x > 0 && particleDepth > 0.0 && particleDepth < fDepth)
+  {
+    // apply scatter effect so that only some of the smoke pixels are visible
+    float r = rand(inPs.uv0 + vec2(time, time));
+    if (r < particleScatterRatio)
+    {
+      // set point to 3d pos of particle pixel
+      float pd = projectionParams.y / (particleDepth - projectionParams.x);
+      vec3 particleViewSpacePos = inPs.cameraDir * pd;
+      point = vec3(-particleViewSpacePos.z, -particleViewSpacePos.x,
+          particleViewSpacePos.y);
+
+      // apply gaussian noise to particle depth data
+      point = point + gaussrand(inPs.uv0, vec3(time, time, time),
+          particleStddev, 0.0).xyz;
+    }
+  }
 
   // clamp xyz and set rgb to background color
   if (point.x > far - tolerance)
@@ -79,7 +133,14 @@ void main()
     {
       point.x = max;
     }
-    color = vec4(backgroundColor, 1.0);
+    // clamp to background color only if it is not a particle pixel
+    // this is because point.x may have been set to background depth value
+    // due to the scatter effect. We should still render particles in the color
+    // image
+    if (particle.x < 1e-6)
+    {
+      color = vec4(backgroundColor, 1.0);
+    }
   }
   else if (point.x < near + tolerance)
   {
@@ -91,6 +152,7 @@ void main()
     {
       point.x = min;
     }
+
     color = vec4(backgroundColor, 1.0);
   }
 

@@ -31,7 +31,7 @@
 class ignition::rendering::Ogre2CapsulePrivate
 {
   /// \brief Capsule materal
-  public: Ogre2MaterialPtr material;
+  public: Ogre2MaterialPtr material{nullptr};
 
   /// \brief Mesh Object for capsule shape
   public: Ogre2MeshPtr ogreMesh = nullptr;
@@ -105,7 +105,12 @@ void Ogre2Capsule::Create()
     meshMgr->CreateCapsule(capsuleMeshName, this->radius, this->length, 12, 32);
     MeshDescriptor meshDescriptor;
     meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
-    if (meshDescriptor.mesh != nullptr)
+    if (meshDescriptor.mesh == nullptr)
+    {
+      ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
+      return;
+    }
+    else
     {
       auto visual = std::dynamic_pointer_cast<Ogre2Visual>(this->Parent());
 
@@ -153,14 +158,7 @@ void Ogre2Capsule::SetMaterial(MaterialPtr _material, bool _unique)
 
   // Set material for the underlying dynamic renderable
   this->dataPtr->ogreMesh->SetMaterial(_material, false);
-  this->SetMaterialImpl(derived);
-}
-
-//////////////////////////////////////////////////
-void Ogre2Capsule::SetMaterialImpl(Ogre2MaterialPtr _material)
-{
-  Ogre::MaterialPtr ogreMaterial = _material->Material();
-  this->dataPtr->material = _material;
+  this->dataPtr->material = derived;
 }
 
 //////////////////////////////////////////////////

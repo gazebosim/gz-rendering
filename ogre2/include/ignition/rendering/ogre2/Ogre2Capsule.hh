@@ -55,20 +55,16 @@ namespace ignition
         public: virtual void Destroy() override;
 
         // Documentation inherited.
-        public: virtual Ogre::MovableObject *OgreObject() const;
+        public: virtual Ogre::MovableObject *OgreObject() const override;
 
         // Documentation inherited.
         public: virtual void PreRender() override;
 
         // Documentation inherited.
-        public: virtual MaterialPtr Material() const;
+        public: virtual MaterialPtr Material() const override;
 
         // Documentation inherited.
-        public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
-
-        /// \brief Set material to capsule geometry.
-        /// \param[in] _material Ogre material.
-        protected: virtual void SetMaterialImpl(Ogre2MaterialPtr _material);
+        public: virtual void SetMaterial(MaterialPtr _material, bool _unique) override;
 
         /// \brief Create the Capsule geometry in ogre
         private: void Create();

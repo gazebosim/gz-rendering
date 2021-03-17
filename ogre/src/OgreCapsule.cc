@@ -94,12 +94,6 @@ void OgreCapsule::Destroy()
 }
 
 //////////////////////////////////////////////////
-void OgreCapsuleCapsule()
-{
-  // no ops
-}
-
-//////////////////////////////////////////////////
 void OgreCapsule::Create()
 {
   common::MeshManager *meshMgr = common::MeshManager::Instance();
@@ -111,7 +105,12 @@ void OgreCapsule::Create()
     meshMgr->CreateCapsule(capsuleMeshName, this->radius, this->length, 32, 32);
     MeshDescriptor meshDescriptor;
     meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
-    if (meshDescriptor.mesh != nullptr)
+    if (meshDescriptor.mesh == nullptr)
+    {
+      ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
+      return;
+    }
+    else
     {
       auto visual = std::dynamic_pointer_cast<OgreVisual>(this->Parent());
       // clear geom if needed
@@ -156,16 +155,8 @@ void OgreCapsule::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
-  this->SetMaterialImpl(derived);
-}
-
-//////////////////////////////////////////////////
-void OgreCapsule::SetMaterialImpl(OgreMaterialPtr _material)
-{
-  std::string materialName = _material->Name();
-  Ogre::MaterialPtr ogreMaterial = _material->Material();
-  this->dataPtr->ogreMesh->SetMaterial(_material, false);
-  this->dataPtr->material = _material;
+  this->dataPtr->ogreMesh->SetMaterial(derived, false);
+  this->dataPtr->material = derived;
 }
 
 //////////////////////////////////////////////////

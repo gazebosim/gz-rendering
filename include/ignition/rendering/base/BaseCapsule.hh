@@ -18,8 +18,6 @@
 #ifndef IGNITION_RENDERING_BASECAPSULE_HH_
 #define IGNITION_RENDERING_BASECAPSULE_HH_
 
-#include <vector>
-
 #include "ignition/rendering/Capsule.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 

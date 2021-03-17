@@ -2,6 +2,29 @@
 
 ### Ignition Rendering 4.X
 
+### Ignition Rendering 4.7.0 (2021-03-17)
+
+1. Enable depth write in particles example
+    * [Pull Request #217](https://github.com/ignitionrobotics/ign-rendering/pull/217)
+
+1. Fix gazebo_scene_viewer for macOS and ensure clean exit
+    * [Pull Request #259](https://github.com/ignitionrobotics/ign-rendering/pull/259)
+
+1. Master branch updates
+    * [Pull Request #268](https://github.com/ignitionrobotics/ign-rendering/pull/268)
+
+1. Expose particle scatter ratio parameter
+    * [Pull Request #269](https://github.com/ignitionrobotics/ign-rendering/pull/269)
+
+1. Fix overriding blend mode
+    * [Pull Request #266](https://github.com/ignitionrobotics/ign-rendering/pull/266)
+
+1. Fix DepthGaussianNoise test
+    * [Pull Request #271](https://github.com/ignitionrobotics/ign-rendering/pull/271)
+
+1. Handle non-positive object temperatures
+    * [Pull Request #243](https://github.com/ignitionrobotics/ign-rendering/pull/243)
+
 ### Ignition Rendering 4.6.0 (2021-03-01)
 
 1. Improve particle scattering noise

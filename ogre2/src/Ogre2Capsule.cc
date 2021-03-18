@@ -158,7 +158,13 @@ void Ogre2Capsule::SetMaterial(MaterialPtr _material, bool _unique)
 
   // Set material for the underlying dynamic renderable
   this->dataPtr->ogreMesh->SetMaterial(_material, false);
-  this->dataPtr->material = derived;
+  this->SetMaterialImpl(derived);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Capsule::SetMaterialImpl(Ogre2MaterialPtr _material)
+{
+  this->dataPtr->material = _material;
 }
 
 //////////////////////////////////////////////////

@@ -257,7 +257,8 @@ void Ogre2Marker::SetType(MarkerType _markerType)
         meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
         if (meshDescriptor.mesh == nullptr)
         {
-          ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
+          ignerr << "Capsule mesh is unavailable in the Mesh Manager"
+            << std::endl;
           return;
         }
         else

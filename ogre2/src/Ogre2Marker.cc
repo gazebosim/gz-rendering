@@ -17,6 +17,9 @@
 
 #include <ignition/common/Console.hh>
 
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/MeshManager.hh>
+
 #include "ignition/rendering/ogre2/Ogre2Capsule.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
@@ -95,6 +98,7 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
     case MT_NONE:
       return nullptr;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
       return this->dataPtr->mesh->OgreObject();
@@ -159,6 +163,7 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
     case MT_NONE:
       break;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
       this->dataPtr->mesh->SetMaterial(derived, false);
@@ -239,6 +244,40 @@ void Ogre2Marker::SetType(MarkerType _markerType)
     case MT_BOX:
       newMesh = this->scene->CreateBox();
       break;
+    case MT_CAPSULE:
+    {
+      common::MeshManager *meshMgr = common::MeshManager::Instance();
+      std::string capsuleMeshName = std::string("marker_capsule_mesh")
+        + "_" + std::to_string(0.5)
+        + "_" + std::to_string(1.0);
+      if (!meshMgr->HasMesh(capsuleMeshName))
+      {
+        meshMgr->CreateCapsule(capsuleMeshName, 0.5, 1.0, 12, 32);
+        MeshDescriptor meshDescriptor;
+        meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
+        if (meshDescriptor.mesh == nullptr)
+        {
+          ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
+          return;
+        }
+        else
+        {
+          this->dataPtr->mesh =
+            std::dynamic_pointer_cast<Ogre2Mesh>(
+              this->Scene()->CreateMesh(meshDescriptor));
+          if (this->dataPtr->material != nullptr)
+          {
+            this->dataPtr->mesh->SetMaterial(this->dataPtr->material, false);
+          }
+          if (visual)
+          {
+            visual->AddGeometry(
+                std::dynamic_pointer_cast<Geometry>(shared_from_this()));
+          }
+        }
+      }
+    }
+    return;
     case MT_CYLINDER:
       newMesh = this->scene->CreateCylinder();
       break;

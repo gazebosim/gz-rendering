@@ -64,7 +64,8 @@ namespace ignition
         public: virtual MaterialPtr Material() const override;
 
         // Documentation inherited.
-        public: virtual void SetMaterial(MaterialPtr _material, bool _unique) override;
+        public: virtual void
+          SetMaterial(MaterialPtr _material, bool _unique) override;
 
         /// \brief Set material to capsule geometry.
         /// \param[in] _material Ogre material.

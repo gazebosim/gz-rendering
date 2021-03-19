@@ -137,16 +137,16 @@ void buildScene(ScenePtr _scene)
   white->SetRenderOrder(0);
 //! [white material]
 
-  VisualPtr capsule_visual = _scene->CreateVisual();
+  VisualPtr capsuleVisual = _scene->CreateVisual();
   CapsulePtr capsule = _scene->CreateCapsule();
   capsule->SetLength(0.2);
   capsule->SetRadius(0.2);
-  capsule_visual->AddGeometry(capsule);
-  capsule_visual->SetOrigin(0.0, 0.0, 0.0);
-  capsule_visual->SetLocalPosition(4, 2, 0);
-  capsule_visual->SetLocalScale(1, 1, 1);
-  capsule_visual->SetMaterial(red);
-  root->AddChild(capsule_visual);
+  capsuleVisual->AddGeometry(capsule);
+  capsuleVisual->SetOrigin(0.0, 0.0, 0.0);
+  capsuleVisual->SetLocalPosition(4, 2, 0);
+  capsuleVisual->SetLocalScale(1, 1, 1);
+  capsuleVisual->SetMaterial(red);
+  root->AddChild(capsuleVisual);
 
   // create plane visual
   VisualPtr plane = _scene->CreateVisual();

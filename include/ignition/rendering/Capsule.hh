@@ -44,10 +44,10 @@ namespace ignition
       public: virtual void SetLength(double _length) = 0;
 
       /// \brief Get the radius of the capsule
-      public: virtual double Radius() = 0;
+      public: virtual double Radius() const = 0;
 
       /// \brief Get the length of the capsule
-      public: virtual double Length() = 0;
+      public: virtual double Length() const = 0;
     };
     }
   }

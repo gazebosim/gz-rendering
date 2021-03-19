@@ -46,10 +46,10 @@ namespace ignition
       public: virtual void SetLength(double _length) override;
 
       // Documentation inherited
-      public: virtual double Radius() override;
+      public: virtual double Radius() const override;
 
       // Documentation inherited
-      public: virtual double Length() override;
+      public: virtual double Length() const override;
 
       /// \brief Radius of the capsule
       protected: double radius = 0.5;
@@ -85,7 +85,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseCapsule<T>::Radius()
+    double BaseCapsule<T>::Radius() const
     {
       return this->radius;
     }
@@ -100,7 +100,7 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseCapsule<T>::Length()
+    double BaseCapsule<T>::Length() const
     {
       return this->length;
     }

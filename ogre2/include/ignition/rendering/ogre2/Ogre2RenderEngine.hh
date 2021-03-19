@@ -138,6 +138,9 @@ namespace ignition
       /// \brief Create GL context
       private: void CreateContext();
 
+      /// \brief Register Hlms
+      private: void registerHlms();
+
       /// \brief Create ogre root
       private: void CreateRoot();
 
@@ -191,6 +194,12 @@ namespace ignition
 
       /// \brief Dummy window Id needed for linux platform
       private: uint64_t dummyWindowId = 0u;
+
+      /// \brief Ogre Window
+      private: Ogre::Window * window;
+
+      /// \brief return the ogre window
+      public: Ogre::Window *getWindow(){ return this->window; }
 
       /// \brief True to use the current opengl context
       private: bool useCurrentGLContext = false;

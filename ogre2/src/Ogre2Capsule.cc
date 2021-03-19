@@ -34,7 +34,7 @@ class ignition::rendering::Ogre2CapsulePrivate
   public: Ogre2MaterialPtr material{nullptr};
 
   /// \brief Mesh Object for capsule shape
-  public: Ogre2MeshPtr ogreMesh = nullptr;
+  public: Ogre2MeshPtr ogreMesh{nullptr};
 };
 
 using namespace ignition;
@@ -49,13 +49,16 @@ Ogre2Capsule::Ogre2Capsule()
 //////////////////////////////////////////////////
 Ogre2Capsule::~Ogre2Capsule()
 {
-  // no ops
+  this->Destroy();
 }
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *Ogre2Capsule::OgreObject() const
 {
-  return this->dataPtr->ogreMesh->OgreObject();
+  if (this->dataPtr->ogreMesh)
+    return this->dataPtr->ogreMesh->OgreObject();
+  else
+    return nullptr;
 }
 
 //////////////////////////////////////////////////

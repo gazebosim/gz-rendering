@@ -325,9 +325,12 @@ void Ogre2RenderTarget::Copy(Image &_image) const
   {
     for (int column = 0; column < texture->getWidth(); ++column)
     {
-      dataImage[row*texture->getWidth() * 3 + column * 3] = dataImage2[row * texture->getWidth() * 4 + column * 4];
-      dataImage[row*texture->getWidth() * 3 + column * 3 + 1] = dataImage2[row * texture->getWidth() * 4 + column * 4 + 1];
-      dataImage[row*texture->getWidth() * 3 + column * 3 + 2] = dataImage2[row * texture->getWidth() * 4 + column * 4 + 2];
+      dataImage[row*texture->getWidth() * 3 + column * 3] =
+        dataImage2[row * texture->getWidth() * 4 + column * 4];
+      dataImage[row*texture->getWidth() * 3 + column * 3 + 1] =
+        dataImage2[row * texture->getWidth() * 4 + column * 4 + 1];
+      dataImage[row*texture->getWidth() * 3 + column * 3 + 2] =
+        dataImage2[row * texture->getWidth() * 4 + column * 4 + 2];
     }
   }
 }
@@ -515,7 +518,8 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
 
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::UpdateRenderPassChain(
-    Ogre::CompositorWorkspace *_workspace, const std::string &_workspaceDefName,
+    Ogre::CompositorWorkspace *_workspace,
+    const std::string &_workspaceDefName,
     const std::string &_baseNode, const std::string &_finalNode,
     const std::vector<RenderPassPtr> &_renderPasses,
     bool _recreateNodes)
@@ -650,8 +654,8 @@ void Ogre2RenderTarget::UpdateShadowNode()
         dirLightCount);
     spotPointLightCount = std::min(
         std::max(maxShadowMaps - dirLightCount * 3, 0u), spotPointLightCount);
-    ignwarn << "Number of shadow-casting lights exceeds the limit supported by "
-            << "the underlying rendering engine ogre2. Limiting to "
+    ignwarn << "Number of shadow-casting lights exceeds the limit supported "
+            << "by the underlying rendering engine ogre2. Limiting to "
             << dirLightCount << " directional lights and "
             << spotPointLightCount << " point / spot lights" << std::endl;
   }
@@ -833,7 +837,8 @@ void Ogre2RenderTarget::CreateShadowNodeWithSettings(
       texDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
       texDef->preferDepthTexture = false;
       texDef->fsaa = "0";
-      Ogre::RenderTargetViewDef *rtv = shadowNodeDef->addRenderTextureView(texName);
+      Ogre::RenderTargetViewDef *rtv =
+        shadowNodeDef->addRenderTextureView(texName);
       rtv->setForTextureDefinition(texName, texDef);
     }
 
@@ -852,7 +857,8 @@ void Ogre2RenderTarget::CreateShadowNodeWithSettings(
       texDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
       texDef->preferDepthTexture = false;
       texDef->fsaa = "0";
-      Ogre::RenderTargetViewDef *rtv = shadowNodeDef->addRenderTextureView( "tmpCubemap" );
+      Ogre::RenderTargetViewDef *rtv =
+        shadowNodeDef->addRenderTextureView( "tmpCubemap" );
       rtv->setForTextureDefinition( "tmpCubemap", texDef );
     }
   }
@@ -974,11 +980,13 @@ void Ogre2RenderTarget::CreateShadowNodeWithSettings(
               shadowParam.supportedLightTypes & pointMask);
           {
               //Scene pass
-              Ogre::CompositorPassDef *passDef = targetDef->addPass(Ogre::PASS_SCENE);
+              Ogre::CompositorPassDef *passDef =
+                targetDef->addPass(Ogre::PASS_SCENE);
               Ogre::CompositorPassSceneDef *passScene =
                       static_cast<Ogre::CompositorPassSceneDef*>(passDef);
               passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-              passScene->setAllClearColours(Ogre::ColourValue(0.0f, 0.0f, 0.0f, 0.0f));
+              passScene->setAllClearColours(
+                  Ogre::ColourValue(0.0f, 0.0f, 0.0f, 0.0f));
               passScene->mClearDepth = 1.0f;
               passScene->mCameraCubemapReorient = true;
               passScene->mShadowMapIdx = shadowMapIdx;
@@ -1022,7 +1030,8 @@ void Ogre2RenderTarget::SetMaterial(MaterialPtr _material)
 {
   this->material = _material;
 
-  // Have to rebuild the target so there is something to apply the applicator to
+  // Have to rebuild the target so there is something to apply
+  // the applicator to
   this->targetDirty = true;
 }
 
@@ -1086,7 +1095,8 @@ void Ogre2RenderTexture::DestroyTarget()
   compositorManager->removeAllNodeDefinitions();
   compositorManager->removeAllWorkspaceDefinitions();
 
-  Ogre::TextureGpuManager *textureManager = root->getRenderSystem()->getTextureGpuManager();
+  Ogre::TextureGpuManager *textureManager =
+    root->getRenderSystem()->getTextureGpuManager();
   textureManager->destroyTexture(this->ogreTexture);
 
   this->ogreTexture = nullptr;
@@ -1119,7 +1129,8 @@ void Ogre2RenderTexture::BuildTarget()
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
-  Ogre::TextureGpuManager *textureMgr = ogreRoot->getRenderSystem()->getTextureGpuManager();
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
   this->ogreTexture = textureMgr->createOrRetrieveTexture(
     this->name,
     Ogre::GpuPageOutStrategy::SaveToSystemRam,

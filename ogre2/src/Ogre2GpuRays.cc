@@ -533,7 +533,8 @@ void Ogre2GpuRays::CreateSampleTexture()
   // this texture is passed to the 2nd pass fragment shader
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
-  Ogre::TextureGpuManager *textureMgr = ogreRoot->getRenderSystem()->getTextureGpuManager();
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
   std::string texName = this->Name() + "_samplerTex";
   this->dataPtr->cubeUVTexture =
     textureMgr->createOrRetrieveTexture(
@@ -559,7 +560,8 @@ void Ogre2GpuRays::CreateSampleTexture()
     this->dataPtr->cubeUVTexture->getPixelFormat(),
     rowAlignment);
 
-  const size_t bytesPerRow = this->dataPtr->cubeUVTexture->_getSysRamCopyBytesPerRow( 0 );
+  const size_t bytesPerRow =
+    this->dataPtr->cubeUVTexture->_getSysRamCopyBytesPerRow( 0 );
   float *pDest = reinterpret_cast<float*>(
     OGRE_MALLOC_SIMD(dataSize, Ogre::MEMCATEGORY_RESOURCE));
 
@@ -597,8 +599,8 @@ void Ogre2GpuRays::CreateSampleTexture()
     reinterpret_cast<Ogre::uint8*>(pDest) );
   this->dataPtr->cubeUVTexture->_setNextResidencyStatus(
     Ogre::GpuResidency::Resident);
-  //We have to upload the data via a StagingTexture, which acts as an intermediate stash
-  //memory that is both visible to CPU and GPU.
+  // We have to upload the data via a StagingTexture, which acts as an
+  // intermediate stash memory that is both visible to CPU and GPU.
   Ogre::StagingTexture *stagingTexture = textureMgr->getStagingTexture(
     this->dataPtr->cubeUVTexture->getWidth(),
     this->dataPtr->cubeUVTexture->getHeight(),
@@ -606,8 +608,8 @@ void Ogre2GpuRays::CreateSampleTexture()
     this->dataPtr->cubeUVTexture->getNumSlices(),
     this->dataPtr->cubeUVTexture->getPixelFormat() );
   stagingTexture->startMapRegion();
-  //Map region of the staging texture. This function can be called from any thread after
-  //startMapRegion has already been called.
+  // Map region of the staging texture. This function can be called from
+  // any thread after startMapRegion has already been called.
   Ogre::TextureBox texBox = stagingTexture->mapRegion(
     this->dataPtr->cubeUVTexture->getWidth(),
     this->dataPtr->cubeUVTexture->getHeight(),
@@ -622,10 +624,12 @@ void Ogre2GpuRays::CreateSampleTexture()
     bytesPerRow);
   stagingTexture->stopMapRegion();
   stagingTexture->upload(texBox, this->dataPtr->cubeUVTexture, 0, 0, 0, true);
-  //Tell the TextureGpuManager we're done with this StagingTexture. Otherwise it will leak.
+  // Tell the TextureGpuManager we're done with this StagingTexture.
+  // Otherwise it will leak.
   textureMgr->removeStagingTexture(stagingTexture);
   stagingTexture = 0;
-  //Do not free the pointer if texture's paging strategy is GpuPageOutStrategy::AlwaysKeepSystemRamCopy
+  // Do not free the pointer if texture's paging strategy is
+  // GpuPageOutStrategy::AlwaysKeepSystemRamCopy
   this->dataPtr->cubeUVTexture->notifyDataIsReady();
 }
 
@@ -647,7 +651,8 @@ void Ogre2GpuRays::Setup1stPass()
   // Set the uniform variables (see gpu_rays_1st_pass_fs.glsl).
   // The projectParams is used to linearize depth buffer data
   // The other params are used to clamp the range output
-  Ogre::Vector2 projectionAB = this->dataPtr->ogreCamera->getProjectionParamsAB();
+  Ogre::Vector2 projectionAB =
+    this->dataPtr->ogreCamera->getProjectionParamsAB();
   double projectionA = projectionAB.x;
   double projectionB = projectionAB.y;
   projectionB /= this->FarClipPlane();
@@ -746,7 +751,8 @@ void Ogre2GpuRays::Setup1stPass()
     depthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     depthTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
 
-    Ogre::RenderTargetViewDef *rtv = nodeDef->addRenderTextureView("depthTexture");
+    Ogre::RenderTargetViewDef *rtv =
+      nodeDef->addRenderTextureView("depthTexture");
     rtv->setForTextureDefinition("depthTexture", depthTexDef);
 
     Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
@@ -764,7 +770,8 @@ void Ogre2GpuRays::Setup1stPass()
     colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
     colorTexDef->preferDepthTexture = true;
 
-    Ogre::RenderTargetViewDef *rtv2 = nodeDef->addRenderTextureView("colorTexture");
+    Ogre::RenderTargetViewDef *rtv2 =
+      nodeDef->addRenderTextureView("colorTexture");
     rtv2->setForTextureDefinition("colorTexture", colorTexDef);
 
     Ogre::TextureDefinitionBase::TextureDefinition *particleDepthTexDef =
@@ -1178,7 +1185,8 @@ void Ogre2GpuRays::PostRender()
     this->dataPtr->gpuRaysScan = new float[len];
   }
 
-  memcpy(this->dataPtr->gpuRaysScan, this->dataPtr->gpuRaysBuffer, len * sizeof(float));
+  memcpy(this->dataPtr->gpuRaysScan,
+    this->dataPtr->gpuRaysBuffer, len * sizeof(float));
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
       width, height, this->Channels(), "PF_FLOAT32_RGB");
@@ -1189,9 +1197,9 @@ void Ogre2GpuRays::PostRender()
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     igndbg << "[" << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
-  //     igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1] <<  " ";
-  //     igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2] <<  "] ";
+  //   igndbg << "[" << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
+  //   igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1] <<  " ";
+  //   igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2] <<  "] ";
   //   }
   //   igndbg << std::endl;
   // }
@@ -1209,7 +1217,8 @@ void Ogre2GpuRays::Copy(float *_dataDest)
   unsigned int width = this->dataPtr->w2nd;
   unsigned int height = this->dataPtr->h2nd;
 
-  memcpy(_dataDest, this->dataPtr->gpuRaysScan, width * height * 3 * sizeof(float));
+  memcpy(_dataDest, this->dataPtr->gpuRaysScan,
+    width * height * 3 * sizeof(float));
 }
 
 /////////////////////////////////////////////////

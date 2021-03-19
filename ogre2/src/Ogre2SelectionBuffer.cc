@@ -79,10 +79,13 @@ Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
       this->dataPtr->sceneMgr->createCamera(_cameraName + "_selection_buffer");
 
   this->dataPtr->selectionCamera->setFOVy(this->dataPtr->camera->getFOVy());
-  this->dataPtr->selectionCamera->setNearClipDistance(this->dataPtr->camera->getNearClipDistance());
-  this->dataPtr->selectionCamera->setFarClipDistance(this->dataPtr->camera->getFarClipDistance());
+  this->dataPtr->selectionCamera->setNearClipDistance(
+    this->dataPtr->camera->getNearClipDistance());
+  this->dataPtr->selectionCamera->setFarClipDistance(
+    this->dataPtr->camera->getFarClipDistance());
   this->dataPtr->selectionCamera->detachFromParent();
-  this->dataPtr->sceneMgr->getRootSceneNode()->attachObject(this->dataPtr->selectionCamera);
+  this->dataPtr->sceneMgr->getRootSceneNode()->attachObject(
+    this->dataPtr->selectionCamera);
 
   this->dataPtr->materialSwitcher.reset(
       new Ogre2MaterialSwitcher(this->dataPtr->scene));
@@ -129,18 +132,22 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
 
-  Ogre::TextureGpuManager *textureMgr = ogreRoot->getRenderSystem()->getTextureGpuManager();
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
   this->dataPtr->renderTexture =
-      textureMgr->createOrRetrieveTexture("SelectionPassTex",
-                                          Ogre::GpuPageOutStrategy::SaveToSystemRam,
-                                          Ogre::TextureFlags::RenderToTexture,
-                                          Ogre::TextureTypes::Type2D );
-  this->dataPtr->renderTexture->setResolution(engine->getWindow()->getTexture()->getWidth(),
+      textureMgr->createOrRetrieveTexture(
+        "SelectionPassTex",
+        Ogre::GpuPageOutStrategy::SaveToSystemRam,
+        Ogre::TextureFlags::RenderToTexture,
+        Ogre::TextureTypes::Type2D );
+  this->dataPtr->renderTexture->setResolution(
+    engine->getWindow()->getTexture()->getWidth(),
     engine->getWindow()->getTexture()->getHeight());
   this->dataPtr->renderTexture->setNumMipmaps(1u);
   this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
 
-  this->dataPtr->renderTexture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+  this->dataPtr->renderTexture->scheduleTransitionTo(
+    Ogre::GpuResidency::Resident);
 
   this->dataPtr->selectionCamera->addListener(
       this->dataPtr->materialSwitcher.get());

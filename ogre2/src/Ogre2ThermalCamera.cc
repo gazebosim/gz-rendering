@@ -695,7 +695,8 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     thermalTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     thermalTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
 
-    Ogre::RenderTargetViewDef *rtv = nodeDef->addRenderTextureView("depthTexture");
+    Ogre::RenderTargetViewDef *rtv =
+      nodeDef->addRenderTextureView("depthTexture");
     rtv->setForTextureDefinition("depthTexture", thermalTexDef);
 
     Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
@@ -713,7 +714,8 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
     colorTexDef->preferDepthTexture = true;
 
-    Ogre::RenderTargetViewDef *rtv2 = nodeDef->addRenderTextureView("colorTexture");
+    Ogre::RenderTargetViewDef *rtv2 =
+      nodeDef->addRenderTextureView("colorTexture");
     rtv2->setForTextureDefinition("colorTexture", colorTexDef);
 
     nodeDef->setNumTargetPass(2);
@@ -769,7 +771,8 @@ void Ogre2ThermalCamera::CreateThermalTexture()
            << " for " << this->Name();
   }
 
-  Ogre::TextureGpuManager *textureMgr = ogreRoot->getRenderSystem()->getTextureGpuManager();
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
   // create render texture - these textures pack the thermal data
   this->dataPtr->ogreThermalTexture =
     textureMgr->createOrRetrieveTexture(this->Name() + "_thermal",
@@ -809,7 +812,8 @@ void Ogre2ThermalCamera::CreateThermalTexture()
       this->dataPtr->thermalMaterialSwitcher->SetFormat(this->ImageFormat());
       this->dataPtr->thermalMaterialSwitcher->SetLinearResolution(
           this->resolution);
-      this->ogreCamera->addListener(this->dataPtr->thermalMaterialSwitcher.get());
+      this->ogreCamera->addListener(
+        this->dataPtr->thermalMaterialSwitcher.get());
       break;
     }
   }

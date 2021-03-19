@@ -529,7 +529,8 @@ void Ogre2Scene::CreateContext()
   // enable forward plus to support multiple lights
   // this is required for non-shadow-casting point lights and
   // spot lights to work
-  this->ogreSceneManager->setForwardClustered(true, 16, 8, 24, 96, 0, 0, 1, 500);
+  this->ogreSceneManager->setForwardClustered(
+    true, 16, 8, 24, 96, 0, 0, 1, 500);
 }
 
 //////////////////////////////////////////////////

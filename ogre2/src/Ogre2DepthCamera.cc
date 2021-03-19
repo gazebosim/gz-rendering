@@ -914,7 +914,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
            << " for " << this->Name();
   }
 
-  Ogre::TextureGpuManager *textureMgr = ogreRoot->getRenderSystem()->getTextureGpuManager();
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
   // create render texture - these textures pack the range data
   this->dataPtr->ogreDepthTexture =
     textureMgr->createOrRetrieveTexture(

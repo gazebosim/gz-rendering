@@ -71,29 +71,26 @@ void main()
   bool isHeatSource = (rgba.g == 0.0 && rgba.b == 0.0 && rgba.a == 0.0);
   float heat = rgba.r;
 
-  if (heat > 0.0)
+  if (isHeatSource)
   {
-    if (isHeatSource)
-    {
-      // heat is normalized so convert back to work in kelvin
-      // for 16 bit camera and 0.01 resolution:
-      //     ((1 << bitDepth) - 1) * resolution = 655.35
-      temp = heat * bitMaxValue * resolution;
+    // heat is normalized so convert back to work in kelvin
+    // for 16 bit camera and 0.01 resolution:
+    //     ((1 << bitDepth) - 1) * resolution = 655.35
+    temp = heat * bitMaxValue * resolution;
 
-      // set temperature variation for heat source
-      heatRange = heatSourceTempRange;
-    }
-    else
-    {
-      // other non-heat source objects are assigned ambient temperature
-      temp = ambient;
-    }
+    // set temperature variation for heat source
+    heatRange = heatSourceTempRange;
+  }
+  else
+  {
+    // other non-heat source objects are assigned ambient temperature
+    temp = ambient;
   }
 
   // add temperature variation, either as a function of color or depth
   if (rgbToTemp == 1)
   {
-    if (heat > 0.0 && !isHeatSource)
+    if (!isHeatSource)
     {
       // convert to grayscale: darker = warmer
       // (https://docs.opencv.org/3.4/de/d25/imgproc_color_conversions.html)

@@ -91,11 +91,7 @@ void ParticleEmitterTest::CheckBasicAPI()
   math::Color    expectedColorEnd        = ignition::math::Color::White;
   double         expectedScaleRate       = 1;
   std::string    expectedColorRangeImage = "";
-  // Particle scatter ratio is stored in user data
-  // TODO(anyone) Add API to set scatter ratio
-  // (this requires adding a virtual function in the base class,
-  // which breaks ABI, so this should be done in an unreleased version)
-  Variant        emptyVariant;
+  float          particleScatterRatio    = 0.65f;
 
   // Check default expectations.
   EXPECT_EQ(expectedEmitterType,      particleEmitter->Type());
@@ -112,7 +108,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   EXPECT_EQ(expectedColorEnd,         particleEmitter->ColorEnd());
   EXPECT_DOUBLE_EQ(expectedScaleRate, particleEmitter->ScaleRate());
   EXPECT_EQ(expectedColorRangeImage,  particleEmitter->ColorRangeImage());
-  EXPECT_EQ(emptyVariant,  particleEmitter->UserData("particle_scatter_ratio"));
+  EXPECT_FLOAT_EQ(particleScatterRatio,
+      particleEmitter->ParticleScatterRatio());
 
   // Modify values.
   expectedEmitterType     = EmitterType::EM_BOX;
@@ -129,10 +126,7 @@ void ParticleEmitterTest::CheckBasicAPI()
   expectedColorEnd        = ignition::math::Color::Blue;
   expectedScaleRate       = 10;
   expectedColorRangeImage = common::joinPaths(TEST_MEDIA_PATH, "texture.png");
-  // Particle scatter ratio is stored in user data
-  // TODO(anyone) Add API to set scatter ratio
-  // (see note above in the other todo about how this breaks ABI)
-  double expectedScatterRatio  = 0.24;
+  float expectedScatterRatio  = 0.24f;
 
   // Modify attributes.
   particleEmitter->SetType(expectedEmitterType);
@@ -147,7 +141,7 @@ void ParticleEmitterTest::CheckBasicAPI()
   particleEmitter->SetColorRange(expectedColorStart, expectedColorEnd);
   particleEmitter->SetScaleRate(expectedScaleRate);
   particleEmitter->SetColorRangeImage(expectedColorRangeImage);
-  particleEmitter->SetUserData("particle_scatter_ratio", expectedScatterRatio);
+  particleEmitter->SetParticleScatterRatio(expectedScatterRatio);
 
   // Check getters.
   EXPECT_EQ(expectedEmitterType,      particleEmitter->Type());
@@ -164,8 +158,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   EXPECT_EQ(expectedColorEnd,         particleEmitter->ColorEnd());
   EXPECT_DOUBLE_EQ(expectedScaleRate, particleEmitter->ScaleRate());
   EXPECT_EQ(expectedColorRangeImage,  particleEmitter->ColorRangeImage());
-  Variant v = particleEmitter->UserData("particle_scatter_ratio");
-  EXPECT_DOUBLE_EQ(expectedScatterRatio,  std::get<double>(v));
+  EXPECT_FLOAT_EQ(expectedScatterRatio,
+      particleEmitter->ParticleScatterRatio());
 }
 
 /////////////////////////////////////////////////

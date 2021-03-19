@@ -642,7 +642,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   // reduce particle scatter ratio - this creates a "less dense" particle
   // emitter so we should have larger range values on avg since fewer
   // rays are occluded by particles
-  emitter->SetUserData("particle_scatter_ratio", 0.1);
+  emitter->SetParticleScatterRatio(0.1f);
 
   unsigned int particleHitLowScatterCount = 0u;
   unsigned int particleMissLowScatterCount = 0u;

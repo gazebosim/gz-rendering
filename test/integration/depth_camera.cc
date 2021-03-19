@@ -685,7 +685,7 @@ void DepthCameraTest::DepthCameraParticles(
     // reduce particle scatter ratio - this creates a "less dense" particle
     // emitter so we should have larger depth values on avg since fewers
     // depth readings are occluded by particles
-    emitter->SetUserData("particle_scatter_ratio", 0.1);
+    emitter->SetParticleScatterRatio(0.1f);
 
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;

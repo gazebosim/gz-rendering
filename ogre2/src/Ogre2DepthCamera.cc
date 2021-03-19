@@ -38,6 +38,8 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
+#include "Ogre2ParticleNoiseListener.hh"
+
 namespace ignition
 {
 namespace rendering
@@ -131,6 +133,10 @@ class ignition::rendering::Ogre2DepthCameraPrivate
 
   /// \brief standard deviation of particle noise
   public: double particleStddev = 0.01;
+
+  /// \brief Listener for setting particle noise value based on particle
+  /// emitter region
+  public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener;
 
   /// \brief Particle scatter ratio. This is used to determine the ratio of
   /// particles that will detected by the depth camera
@@ -433,8 +439,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
   psParams->setNamedConstant("backgroundColor", bg);
   psParams->setNamedConstant("particleStddev",
     static_cast<float>(this->dataPtr->particleStddev));
-  psParams->setNamedConstant("particleScatterRatio",
-    static_cast<float>(this->dataPtr->particleScatterRatio));
 
   std::string matDepthFinalName = "DepthCameraFinal";
   Ogre::MaterialPtr matDepthFinal =
@@ -941,6 +945,24 @@ void Ogre2DepthCamera::CreateDepthTexture()
         this->ogreCamera,
         wsDefName,
         false);
+  // add the listener
+  Ogre::CompositorNode *node =
+      this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
+  auto channelsTex = node->getLocalTextures();
+
+  for (auto c : channelsTex)
+  {
+    if (c->getPixelFormat() == Ogre::PFG_RGB8_UNORM)
+    {
+      // add particle noise / scatter effects listener so we can set the
+      // amount of noise based on size of emitter
+      this->dataPtr->particleNoiseListener.reset(
+          new Ogre2ParticleNoiseListener(this->scene,
+          this->dataPtr->depthMaterial));
+      this->ogreCamera->addListener(this->dataPtr->particleNoiseListener.get());
+      break;
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -969,6 +991,31 @@ void Ogre2DepthCamera::PreRender()
       this->dataPtr->renderPassDirty);
   for (auto &pass : this->dataPtr->renderPasses)
     pass->PreRender();
+
+
+  // add the particle noise listener again if worksapce is recreated due to
+  // dirty render pass
+  if (this->dataPtr->renderPassDirty)
+  {
+    Ogre::CompositorNode *node =
+        this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
+    auto channelsTex = node->getLocalTextures();
+
+    for (auto c : channelsTex)
+    {
+      if (c->getPixelFormat() == Ogre::PFG_RGB8_UNORM)
+      {
+        // add particle noise / scatter effects listener so we can set the
+        // amount of noise based on size of emitter
+        this->dataPtr->particleNoiseListener.reset(
+            new Ogre2ParticleNoiseListener(this->scene,
+              this->dataPtr->depthMaterial));
+        this->ogreCamera->addListener(this->dataPtr->particleNoiseListener.get());
+        break;
+      }
+    }
+  }
+
   this->dataPtr->renderPassDirty = false;
 }
 
@@ -979,7 +1026,6 @@ void Ogre2DepthCamera::PostRender()
   unsigned int height = this->ImageHeight();
 
   PixelFormat format = PF_FLOAT32_RGBA;
-  Ogre::PixelFormatGpu imageFormat = Ogre2Conversions::Convert(format);
 
   int len = width * height;
   unsigned int channelCount = PixelUtil::ChannelCount(format);

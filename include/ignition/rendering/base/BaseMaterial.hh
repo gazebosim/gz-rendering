@@ -948,9 +948,10 @@ namespace ignition
       this->SetEmissive(_material->Emissive());
       this->SetRenderOrder(_material->RenderOrder());
       this->SetShininess(_material->Shininess());
-      this->SetTransparency(_material->Transparency());
       this->SetAlphaFromTexture(_material->TextureAlphaEnabled(),
           _material->AlphaThreshold(), _material->TwoSidedEnabled());
+      // override transparency / blend setting after setting alpha from texture
+      this->SetTransparency(_material->Transparency());
       // override depth check / depth write after setting transparency
       this->SetDepthCheckEnabled(_material->DepthCheckEnabled());
       this->SetDepthWriteEnabled(_material->DepthWriteEnabled());

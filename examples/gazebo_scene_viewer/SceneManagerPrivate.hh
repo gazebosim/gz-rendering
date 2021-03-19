@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <ignition/common/Time.hh>
 
@@ -110,9 +111,9 @@ namespace ignition
 
       private: void DemoteCurrentScenes();
 
-      private: CurrentSceneManager *currentSceneManager;
+      private: std::unique_ptr<CurrentSceneManager> currentSceneManager;
 
-      private: NewSceneManager *newSceneManager;
+      private: std::unique_ptr<NewSceneManager> newSceneManager;
 
       private: gazebo::transport::NodePtr transportNode;
 

@@ -34,6 +34,8 @@
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
+#include "Ogre2ParticleNoiseListener.hh"
+
 namespace ignition
 {
 namespace rendering
@@ -105,7 +107,7 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Pointer to Ogre material for the first rendering pass.
   public: Ogre::MaterialPtr matFirstPass;
 
-  /// \brief Pointer to Ogre material for the sencod rendering pass.
+  /// \brief Pointer to Ogre material for the second rendering pass.
   public: Ogre::MaterialPtr matSecondPass;
 
   /// \brief Cubemap cameras
@@ -167,9 +169,9 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief standard deviation of particle noise
   public: double particleStddev = 0.01;
 
-  /// \brief Particle scatter ratio. This is used to determine the ratio of
-  /// particles that will detected by the depth camera
-  public: double particleScatterRatio = 0.1;
+  /// \brief Listener for setting particle noise value based on particle
+  /// emitter region
+  public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
 };
 
 using namespace ignition;
@@ -617,8 +619,6 @@ void Ogre2GpuRays::Setup1stPass()
       static_cast<float>(this->dataMinVal));
   psParams->setNamedConstant("particleStddev",
     static_cast<float>(this->dataPtr->particleStddev));
-  psParams->setNamedConstant("particleScatterRatio",
-    static_cast<float>(this->dataPtr->particleScatterRatio));
 
   // Create 1st pass compositor
   auto engine = Ogre2RenderEngine::Instance();
@@ -878,9 +878,6 @@ void Ogre2GpuRays::Setup1stPass()
         ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
         rt, this->dataPtr->cubeCam[i], wsDefName, false);
 
-    // add laser retro material switcher to render target listener
-    // so we can switch to use laser retro material when the camera is being
-    // updated
     Ogre::CompositorNode *node =
         this->dataPtr->ogreCompositorWorkspace1st[i]->getNodeSequence()[0];
     auto channelsTex = node->getLocalTextures();
@@ -889,10 +886,20 @@ void Ogre2GpuRays::Setup1stPass()
     {
       if (c.textures[0]->getSrcFormat() == Ogre::PF_R8G8B8)
       {
+        // add laser retro material switcher to render target listener
+        // so we can switch to use laser retro material when the camera is being
+        // updated
         this->dataPtr->laserRetroMaterialSwitcher[i].reset(
             new Ogre2LaserRetroMaterialSwitcher(this->scene));
         c.target->addListener(
             this->dataPtr->laserRetroMaterialSwitcher[i].get());
+
+        // add particle noise / scatter effects listener so we can set the
+        // amount of noise based on size of emitter
+        this->dataPtr->particleNoiseListener[i].reset(
+            new Ogre2ParticleNoiseListener(this->scene,
+            this->dataPtr->cubeCam[i], this->dataPtr->matFirstPass));
+        c.target->addListener(this->dataPtr->particleNoiseListener[i].get());
         break;
       }
     }

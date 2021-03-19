@@ -81,6 +81,7 @@ void MarkerTest::Marker(const std::string &_renderEngine)
 
   marker->SetType(MarkerType::MT_CYLINDER);
   EXPECT_EQ(MarkerType::MT_CYLINDER, marker->Type());
+
   marker->SetType(MarkerType::MT_NONE);
   EXPECT_EQ(MarkerType::MT_NONE, marker->Type());
 

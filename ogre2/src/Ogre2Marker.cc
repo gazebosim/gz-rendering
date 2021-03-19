@@ -245,40 +245,8 @@ void Ogre2Marker::SetType(MarkerType _markerType)
       newMesh = this->scene->CreateBox();
       break;
     case MT_CAPSULE:
-    {
-      common::MeshManager *meshMgr = common::MeshManager::Instance();
-      std::string capsuleMeshName = std::string("marker_capsule_mesh")
-        + "_" + std::to_string(0.5)
-        + "_" + std::to_string(1.0);
-      if (!meshMgr->HasMesh(capsuleMeshName))
-      {
-        meshMgr->CreateCapsule(capsuleMeshName, 0.5, 1.0, 12, 32);
-        MeshDescriptor meshDescriptor;
-        meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
-        if (meshDescriptor.mesh == nullptr)
-        {
-          ignerr << "Capsule mesh is unavailable in the Mesh Manager"
-            << std::endl;
-          return;
-        }
-        else
-        {
-          this->dataPtr->mesh =
-            std::dynamic_pointer_cast<Ogre2Mesh>(
-              this->Scene()->CreateMesh(meshDescriptor));
-          if (this->dataPtr->material != nullptr)
-          {
-            this->dataPtr->mesh->SetMaterial(this->dataPtr->material, false);
-          }
-          if (visual)
-          {
-            visual->AddGeometry(
-                std::dynamic_pointer_cast<Geometry>(shared_from_this()));
-          }
-        }
-      }
-    }
-    return;
+      newMesh = this->scene->CreateCapsule();
+      break;
     case MT_CYLINDER:
       newMesh = this->scene->CreateCylinder();
       break;

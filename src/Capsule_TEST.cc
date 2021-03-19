@@ -75,9 +75,9 @@ void CapsuleTest::Capsule(const std::string &_renderEngine)
   capsule->SetMaterial(mat);
   MaterialPtr capsuleMat = capsule->Material();
   ASSERT_NE(nullptr, capsuleMat);
-  EXPECT_EQ(math::Color(0.6, 0.7, 0.8), capsuleMat->Ambient());
-  EXPECT_EQ(math::Color(0.3, 0.8, 0.2), capsuleMat->Diffuse());
-  EXPECT_EQ(math::Color(0.4, 0.9, 1.0), capsuleMat->Specular());
+  EXPECT_EQ(math::Color(0.6f, 0.7f, 0.8f), capsuleMat->Ambient());
+  EXPECT_EQ(math::Color(0.3f, 0.8f, 0.2f), capsuleMat->Diffuse());
+  EXPECT_EQ(math::Color(0.4f, 0.9f, 1.0f), capsuleMat->Specular());
 
   // Clean up
   engine->DestroyScene(scene);

@@ -28,9 +28,8 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-    /// \class CapsuleVisual CapsuleVisual.hh ignition/rendering/CapsuleVisual
-    /// \brief A CapsuleVisual geometry class. The visual appearance is based
-    /// on the type specified.
+    /// \class Capsule Capsule.hh ignition/rendering/Capsule
+    /// \brief Geometry for a capsule shape.
     class IGNITION_RENDERING_VISIBLE Capsule :
       public virtual Geometry
     {

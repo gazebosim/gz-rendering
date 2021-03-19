@@ -67,12 +67,8 @@ namespace ignition
         public: virtual void
           SetMaterial(MaterialPtr _material, bool _unique) override;
 
-        /// \brief Set material to capsule geometry.
-        /// \param[in] _material Ogre material.
-        protected: virtual void SetMaterialImpl(Ogre2MaterialPtr _material);
-
-        /// \brief Create the Capsule geometry in ogre
-        private: void Create();
+        /// \brief Update the capsule geometry in ogre
+        private: void Update();
 
         /// \brief Capsule should only be created by scene.
         private: friend class Ogre2Scene;

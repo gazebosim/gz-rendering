@@ -63,7 +63,7 @@ void Ogre2Capsule::PreRender()
 {
   if (this->capsuleDirty)
   {
-    this->Create();
+    this->Update();
     this->capsuleDirty = false;
   }
 }
@@ -71,15 +71,12 @@ void Ogre2Capsule::PreRender()
 //////////////////////////////////////////////////
 void Ogre2Capsule::Init()
 {
-  this->Create();
+  this->Update();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Capsule::Destroy()
 {
-  if (!this->Scene())
-    return;
-
   if (this->dataPtr->ogreMesh)
   {
     this->dataPtr->ogreMesh->Destroy();
@@ -93,50 +90,50 @@ void Ogre2Capsule::Destroy()
   }
 }
 
-////////////////////////////////////////////////
-void Ogre2Capsule::Create()
+//////////////////////////////////////////////////
+void Ogre2Capsule::Update()
 {
   common::MeshManager *meshMgr = common::MeshManager::Instance();
   std::string capsuleMeshName = this->Name() + "_capsule_mesh"
     + "_" + std::to_string(this->radius)
     + "_" + std::to_string(this->length);
+
+  // Create new mesh if needed
   if (!meshMgr->HasMesh(capsuleMeshName))
   {
-    meshMgr->CreateCapsule(capsuleMeshName, this->radius, this->length, 12, 32);
-    MeshDescriptor meshDescriptor;
-    meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
-    if (meshDescriptor.mesh == nullptr)
-    {
-      ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
-      return;
-    }
-    else
-    {
-      auto visual = std::dynamic_pointer_cast<Ogre2Visual>(this->Parent());
+    meshMgr->CreateCapsule(capsuleMeshName, this->radius, this->length, 32, 32);
+  }
 
-      // clear geom if needed
-      if (this->dataPtr->ogreMesh)
-      {
-        if (visual)
-        {
-          visual->RemoveGeometry(
-              std::dynamic_pointer_cast<Geometry>(shared_from_this()));
-        }
-        this->dataPtr->ogreMesh->Destroy();
-      }
-      this->dataPtr->ogreMesh =
-        std::dynamic_pointer_cast<Ogre2Mesh>(
-          this->Scene()->CreateMesh(meshDescriptor));
-      if (this->dataPtr->material != nullptr)
-      {
-        this->dataPtr->ogreMesh->SetMaterial(this->dataPtr->material, false);
-      }
-      if (visual)
-      {
-        visual->AddGeometry(
-            std::dynamic_pointer_cast<Geometry>(shared_from_this()));
-      }
+  MeshDescriptor meshDescriptor;
+  meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
+  if (meshDescriptor.mesh == nullptr)
+  {
+    ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
+    return;
+  }
+
+  auto visual = std::dynamic_pointer_cast<Ogre2Visual>(this->Parent());
+
+  // clear geom if needed
+  if (this->dataPtr->ogreMesh)
+  {
+    if (visual)
+    {
+      visual->RemoveGeometry(
+          std::dynamic_pointer_cast<Geometry>(shared_from_this()));
     }
+    this->dataPtr->ogreMesh->Destroy();
+  }
+  this->dataPtr->ogreMesh = std::dynamic_pointer_cast<Ogre2Mesh>(
+      this->Scene()->CreateMesh(meshDescriptor));
+  if (this->dataPtr->material != nullptr)
+  {
+    this->dataPtr->ogreMesh->SetMaterial(this->dataPtr->material, false);
+  }
+  if (visual)
+  {
+    visual->AddGeometry(
+        std::dynamic_pointer_cast<Geometry>(shared_from_this()));
   }
 }
 
@@ -157,14 +154,8 @@ void Ogre2Capsule::SetMaterial(MaterialPtr _material, bool _unique)
   }
 
   // Set material for the underlying dynamic renderable
-  this->dataPtr->ogreMesh->SetMaterial(_material, false);
-  this->SetMaterialImpl(derived);
-}
-
-//////////////////////////////////////////////////
-void Ogre2Capsule::SetMaterialImpl(Ogre2MaterialPtr _material)
-{
-  this->dataPtr->material = _material;
+  this->dataPtr->ogreMesh->SetMaterial(derived, false);
+  this->dataPtr->material = derived;
 }
 
 //////////////////////////////////////////////////

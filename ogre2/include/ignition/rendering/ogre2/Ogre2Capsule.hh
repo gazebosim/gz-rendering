@@ -38,7 +38,7 @@ namespace ignition
       // Forward declaration
       class Ogre2CapsulePrivate;
 
-      /// \brief Ogre 2.x implementation of a Capsule Visual.
+      /// \brief Ogre 2.x implementation of a Capsule Geometry.
       class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Capsule
         : public BaseCapsule<Ogre2Geometry>
       {

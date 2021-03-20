@@ -26,15 +26,13 @@
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 
-#include <ignition/math/Vector3.hh>
-
 class ignition::rendering::OgreCapsulePrivate
 {
   /// \brief Capsule materal
-  public: OgreMaterialPtr material;
+  public: OgreMaterialPtr material{nullptr};
 
   /// \brief Mesh Object for capsule shape
-  public: OgreMeshPtr ogreMesh = nullptr;
+  public: OgreMeshPtr ogreMesh{nullptr};
 };
 
 using namespace ignition;
@@ -42,14 +40,20 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreCapsule::OgreCapsule()
- : dataPtr(new OgreCapsulePrivate)
+  : dataPtr(new OgreCapsulePrivate)
 {
 }
 
 //////////////////////////////////////////////////
-OgreCapsule::~OgreCapsule()
+OgreCapsule::~OgreCapsule() = default;
+
+//////////////////////////////////////////////////
+Ogre::MovableObject *OgreCapsule::OgreObject() const
 {
-  // no ops
+  if (this->dataPtr->ogreMesh)
+    return this->dataPtr->ogreMesh->OgreObject();
+  else
+    return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -57,29 +61,20 @@ void OgreCapsule::PreRender()
 {
   if (this->capsuleDirty)
   {
-    this->Create();
+    this->Update();
     this->capsuleDirty = false;
   }
 }
 
 //////////////////////////////////////////////////
-Ogre::MovableObject *OgreCapsule::OgreObject() const
-{
-  return this->dataPtr->ogreMesh->OgreObject();
-}
-
-//////////////////////////////////////////////////
 void OgreCapsule::Init()
 {
-  this->Create();
+  this->Update();
 }
 
 //////////////////////////////////////////////////
 void OgreCapsule::Destroy()
 {
-  if (!this->Scene())
-    return;
-
   if (this->dataPtr->ogreMesh)
   {
     this->dataPtr->ogreMesh->Destroy();
@@ -94,48 +89,49 @@ void OgreCapsule::Destroy()
 }
 
 //////////////////////////////////////////////////
-void OgreCapsule::Create()
+void OgreCapsule::Update()
 {
   common::MeshManager *meshMgr = common::MeshManager::Instance();
   std::string capsuleMeshName = this->Name() + "_capsule_mesh"
     + "_" + std::to_string(this->radius)
     + "_" + std::to_string(this->length);
+
+  // Create new mesh if needed
   if (!meshMgr->HasMesh(capsuleMeshName))
   {
     meshMgr->CreateCapsule(capsuleMeshName, this->radius, this->length, 32, 32);
-    MeshDescriptor meshDescriptor;
-    meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
-    if (meshDescriptor.mesh == nullptr)
+  }
+
+  MeshDescriptor meshDescriptor;
+  meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
+  if (meshDescriptor.mesh == nullptr)
+  {
+    ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
+    return;
+  }
+
+  auto visual = std::dynamic_pointer_cast<OgreVisual>(this->Parent());
+
+  // clear geom if needed
+  if (this->dataPtr->ogreMesh)
+  {
+    if (visual)
     {
-      ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
-      return;
+      visual->RemoveGeometry(
+          std::dynamic_pointer_cast<Geometry>(shared_from_this()));
     }
-    else
-    {
-      auto visual = std::dynamic_pointer_cast<OgreVisual>(this->Parent());
-      // clear geom if needed
-      if (this->dataPtr->ogreMesh)
-      {
-        if (visual)
-        {
-          visual->RemoveGeometry(
-              std::dynamic_pointer_cast<Geometry>(shared_from_this()));
-        }
-        this->dataPtr->ogreMesh->Destroy();
-      }
-      this->dataPtr->ogreMesh =
-        std::dynamic_pointer_cast<OgreMesh>(
-          this->Scene()->CreateMesh(meshDescriptor));
-      if (this->dataPtr->material != nullptr)
-      {
-        this->dataPtr->ogreMesh->SetMaterial(this->dataPtr->material, false);
-      }
-      if (visual)
-      {
-        visual->AddGeometry(
-            std::dynamic_pointer_cast<Geometry>(shared_from_this()));
-      }
-    }
+    this->dataPtr->ogreMesh->Destroy();
+  }
+  this->dataPtr->ogreMesh = std::dynamic_pointer_cast<OgreMesh>(
+      this->Scene()->CreateMesh(meshDescriptor));
+  if (this->dataPtr->material != nullptr)
+  {
+    this->dataPtr->ogreMesh->SetMaterial(this->dataPtr->material, false);
+  }
+  if (visual)
+  {
+    visual->AddGeometry(
+        std::dynamic_pointer_cast<Geometry>(shared_from_this()));
   }
 }
 
@@ -155,6 +151,7 @@ void OgreCapsule::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
+  // Set material for the underlying dynamic renderable
   this->dataPtr->ogreMesh->SetMaterial(derived, false);
   this->dataPtr->material = derived;
 }

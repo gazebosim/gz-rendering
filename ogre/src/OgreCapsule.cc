@@ -45,10 +45,7 @@ OgreCapsule::OgreCapsule()
 }
 
 //////////////////////////////////////////////////
-OgreCapsule::~OgreCapsule()
-{
-  this->Destroy();
-}
+OgreCapsule::~OgreCapsule() = default;
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreCapsule::OgreObject() const

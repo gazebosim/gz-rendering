@@ -26,8 +26,6 @@
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
-#include <ignition/math/Vector3.hh>
-
 class ignition::rendering::Ogre2CapsulePrivate
 {
   /// \brief Capsule materal
@@ -42,15 +40,12 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2Capsule::Ogre2Capsule()
- : dataPtr(new Ogre2CapsulePrivate)
+  : dataPtr(new Ogre2CapsulePrivate)
 {
 }
 
 //////////////////////////////////////////////////
-Ogre2Capsule::~Ogre2Capsule()
-{
-  this->Destroy();
-}
+Ogre2Capsule::~Ogre2Capsule() = default;
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *Ogre2Capsule::OgreObject() const

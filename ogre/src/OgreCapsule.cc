@@ -26,8 +26,6 @@
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 
-#include <ignition/math/Vector3.hh>
-
 class ignition::rendering::OgreCapsulePrivate
 {
   /// \brief Capsule materal
@@ -42,7 +40,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreCapsule::OgreCapsule()
- : dataPtr(new OgreCapsulePrivate)
+  : dataPtr(new OgreCapsulePrivate)
 {
 }
 

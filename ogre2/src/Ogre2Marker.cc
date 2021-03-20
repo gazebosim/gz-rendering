@@ -319,8 +319,8 @@ void Ogre2Marker::SetType(MarkerType _markerType)
   }
   else if (isGeom)
   {
-    ignerr << "Failed to create geometry for marker type [" << _markerType << "]"
-           << std::endl;
+    ignerr << "Failed to create geometry for marker type [" << _markerType
+           << "]" << std::endl;
   }
 }
 

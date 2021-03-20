@@ -27,7 +27,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-
     /// \class Capsule Capsule.hh ignition/rendering/Capsule
     /// \brief Geometry for a capsule shape.
     class IGNITION_RENDERING_VISIBLE Capsule :

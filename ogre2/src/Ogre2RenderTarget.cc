@@ -1143,9 +1143,6 @@ void Ogre2RenderTexture::BuildTarget()
 
   this->ogreTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
-
-  engine->getWindow()->reposition(0, 0);
-
 }
 
 //////////////////////////////////////////////////

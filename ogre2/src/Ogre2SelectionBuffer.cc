@@ -54,6 +54,14 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
   /// \brief Ogre render texture
   public: Ogre::TextureGpu *renderTexture = nullptr;
 
+  public: Ogre::CompositorManager2 *ogreCompMgr;
+
+  /// \brief selection buffer width
+  public: unsigned int width = 0;
+
+  /// \brief selection buffer height
+  public: unsigned int height = 0;
+
   /// \brief Ogre's compositor workspace - the main interface to render
   /// into a render target or render texture.
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
@@ -61,10 +69,19 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
 
 /////////////////////////////////////////////////
 Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
-    Ogre2ScenePtr _scene): dataPtr(new Ogre2SelectionBufferPrivate)
+    Ogre2ScenePtr _scene, int _width, int _height):
+    dataPtr(new Ogre2SelectionBufferPrivate)
 {
   this->dataPtr->scene = _scene;
   this->dataPtr->sceneMgr = _scene->OgreSceneManager();
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  this->dataPtr->ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  this->dataPtr->width = _width;
+  this->dataPtr->height = _height;
+
 
   this->dataPtr->camera = this->dataPtr->sceneMgr->findCameraNoThrow(
       _cameraName);
@@ -78,14 +95,17 @@ Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
   this->dataPtr->selectionCamera =
       this->dataPtr->sceneMgr->createCamera(_cameraName + "_selection_buffer");
 
+  this->dataPtr->selectionCamera->detachFromParent();
+  this->dataPtr->sceneMgr->getRootSceneNode()->attachObject(
+    this->dataPtr->selectionCamera);
+
   this->dataPtr->selectionCamera->setFOVy(this->dataPtr->camera->getFOVy());
   this->dataPtr->selectionCamera->setNearClipDistance(
     this->dataPtr->camera->getNearClipDistance());
   this->dataPtr->selectionCamera->setFarClipDistance(
     this->dataPtr->camera->getFarClipDistance());
-  this->dataPtr->selectionCamera->detachFromParent();
-  this->dataPtr->sceneMgr->getRootSceneNode()->attachObject(
-    this->dataPtr->selectionCamera);
+  this->dataPtr->selectionCamera->setAspectRatio(
+    this->dataPtr->camera->getAspectRatio());
 
   this->dataPtr->materialSwitcher.reset(
       new Ogre2MaterialSwitcher(this->dataPtr->scene));
@@ -139,12 +159,11 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
         "SelectionPassTex",
         Ogre::GpuPageOutStrategy::SaveToSystemRam,
         Ogre::TextureFlags::RenderToTexture,
-        Ogre::TextureTypes::Type2D );
+        Ogre::TextureTypes::Type2D);
   this->dataPtr->renderTexture->setResolution(
-    engine->getWindow()->getTexture()->getWidth(),
-    engine->getWindow()->getTexture()->getHeight());
+    this->dataPtr->width, this->dataPtr->height);
   this->dataPtr->renderTexture->setNumMipmaps(1u);
-  this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+  this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
 
   this->dataPtr->renderTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -152,20 +171,18 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   this->dataPtr->selectionCamera->addListener(
       this->dataPtr->materialSwitcher.get());
 
-  // create compositor workspace for rendering
-  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
-
-  // Setup the cubemap's compositor.
+  // Setup the selection buffer compositor.
   const Ogre::String workspaceName = "SelectionBufferWorkspace" +
-      this->dataPtr->camera->getName();
-  ogreCompMgr->createBasicWorkspaceDef(workspaceName,
+    this->dataPtr->camera->getName();
+  this->dataPtr->ogreCompMgr->createBasicWorkspaceDef(workspaceName,
       Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f));
   this->dataPtr->ogreCompositorWorkspace =
-      ogreCompMgr->addWorkspace(this->dataPtr->scene->OgreSceneManager(),
-      this->dataPtr->renderTexture,
-      this->dataPtr->selectionCamera,
-      workspaceName,
-      false);
+      this->dataPtr->ogreCompMgr->addWorkspace(
+        this->dataPtr->scene->OgreSceneManager(),
+        this->dataPtr->renderTexture,
+        this->dataPtr->selectionCamera,
+        workspaceName,
+        false);
 
   // set visibility mask to see only items that are selectable
   auto nodeSeq = this->dataPtr->ogreCompositorWorkspace->getNodeSequence();
@@ -173,6 +190,27 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   auto scenePass = dynamic_cast<const Ogre::CompositorPassSceneDef *>(pass);
   const_cast<Ogre::CompositorPassSceneDef *>(scenePass)->mVisibilityMask =
       IGN_VISIBILITY_SELECTABLE;
+}
+
+/////////////////////////////////////////////////
+void Ogre2SelectionBuffer::setDimensions(unsigned int _width, unsigned int _height)
+{
+  if (this->dataPtr->width == _width && this->dataPtr->height == _height)
+    return;
+
+  this->dataPtr->width = _width;
+  this->dataPtr->height = _height;
+
+  DeleteRTTBuffer();
+
+  if (this->dataPtr->ogreCompositorWorkspace)
+  {
+    // TODO(ahcorde): Remove the workspace. Potential leak here
+    // this->dataPtr->ogreCompMgr->removeWorkspace(
+    //     this->dataPtr->ogreCompositorWorkspace);
+  }
+
+  CreateRTTBuffer();
 }
 
 /////////////////////////////////////////////////
@@ -184,21 +222,6 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
   if (!this->dataPtr->camera)
     return nullptr;
 
-  Ogre::Viewport *vp = this->dataPtr->camera->getLastViewport();
-
-  if (!vp)
-    return nullptr;
-
-  const unsigned int targetWidth = vp->getWidth();
-  const unsigned int targetHeight = vp->getHeight();
-
-  // TODO(ahcorde): Revisit this part. It's partially working
-  if (_x < 0 || _y < 0 || _x >= static_cast<int>(targetWidth)
-      || _y >= static_cast<int>(targetHeight))
-    return nullptr;
-
-  this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
-      this->dataPtr->camera->getProjectionMatrix());
   this->dataPtr->selectionCamera->setPosition(
       this->dataPtr->camera->getDerivedPosition());
   this->dataPtr->selectionCamera->setOrientation(

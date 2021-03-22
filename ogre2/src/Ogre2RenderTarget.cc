@@ -1089,8 +1089,12 @@ void Ogre2RenderTexture::DestroyTarget()
 
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
   Ogre::CompositorManager2 *compositorManager = root->getCompositorManager2();
-  compositorManager->removeAllWorkspaces();
-  this->ogreCompositorWorkspace = 0;
+  if (this->ogreCompositorWorkspace)
+  {
+    compositorManager->removeWorkspace(
+        this->ogreCompositorWorkspace);
+    this->ogreCompositorWorkspace = nullptr;
+  }
 
   compositorManager->removeAllNodeDefinitions();
   compositorManager->removeAllWorkspaceDefinitions();

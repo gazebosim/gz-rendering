@@ -206,8 +206,8 @@ void Ogre2SelectionBuffer::setDimensions(unsigned int _width, unsigned int _heig
   if (this->dataPtr->ogreCompositorWorkspace)
   {
     // TODO(ahcorde): Remove the workspace. Potential leak here
-    // this->dataPtr->ogreCompMgr->removeWorkspace(
-    //     this->dataPtr->ogreCompositorWorkspace);
+    this->dataPtr->ogreCompMgr->removeWorkspace(
+        this->dataPtr->ogreCompositorWorkspace);
   }
 
   CreateRTTBuffer();

@@ -883,7 +883,8 @@ void Ogre2GpuRays::Setup1stPass()
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(
           inputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(this->dataMaxVal, 0, 1.0));
+      passClear->setAllClearColours(Ogre::ColourValue(
+        this->dataMaxVal, 0, 1.0));
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
@@ -940,7 +941,8 @@ void Ogre2GpuRays::Setup1stPass()
 
     // create render texture - these textures pack the range data
     // that will be used in the 2nd pass
-    Ogre::TextureGpuManager *textureMgr = ogreRoot->getRenderSystem()->getTextureGpuManager();
+    Ogre::TextureGpuManager *textureMgr =
+      ogreRoot->getRenderSystem()->getTextureGpuManager();
     std::stringstream texName;
     texName << this->Name() << "_first_pass_" << i;
     this->dataPtr->firstPassTextures[i] =
@@ -989,7 +991,8 @@ void Ogre2GpuRays::Setup1stPass()
         this->dataPtr->particleNoiseListener[i].reset(
             new Ogre2ParticleNoiseListener(this->scene,
             this->dataPtr->matFirstPass));
-        this->dataPtr->cubeCam[i]->addListener(this->dataPtr->particleNoiseListener[i].get());
+        this->dataPtr->cubeCam[i]->addListener(
+          this->dataPtr->particleNoiseListener[i].get());
         break;
       }
     }
@@ -1003,7 +1006,8 @@ void Ogre2GpuRays::Setup2ndPass()
   // see PostRender on how we retrieve data from this texture
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
-  Ogre::TextureGpuManager *textureMgr = ogreRoot->getRenderSystem()->getTextureGpuManager();
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
 
   this->dataPtr->secondPassTexture =
     textureMgr->createOrRetrieveTexture(
@@ -1093,7 +1097,8 @@ void Ogre2GpuRays::Setup2ndPass()
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(
           inputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(this->dataMaxVal, 0, 1.0));
+      passClear->setAllClearColours(Ogre::ColourValue(
+        this->dataMaxVal, 0, 1.0));
       // quad pass - sample from cubemap textures
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(

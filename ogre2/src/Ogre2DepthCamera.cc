@@ -1010,7 +1010,8 @@ void Ogre2DepthCamera::PreRender()
         this->dataPtr->particleNoiseListener.reset(
             new Ogre2ParticleNoiseListener(this->scene,
               this->dataPtr->depthMaterial));
-        this->ogreCamera->addListener(this->dataPtr->particleNoiseListener.get());
+        this->ogreCamera->addListener(
+          this->dataPtr->particleNoiseListener.get());
         break;
       }
     }

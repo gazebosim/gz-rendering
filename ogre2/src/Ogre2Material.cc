@@ -359,7 +359,8 @@ void Ogre2Material::SetEnvironmentMap(const std::string &_name)
 void Ogre2Material::ClearEnvironmentMap()
 {
   this->environmentMapName = "";
-  this->ogreDatablock->setTexture(Ogre::PBSM_REFLECTION, this->environmentMapName);
+  this->ogreDatablock->setTexture(
+    Ogre::PBSM_REFLECTION, this->environmentMapName);
 }
 
 //////////////////////////////////////////////////
@@ -530,7 +531,8 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     }
   }
 
-  // Ogre::HlmsSamplerblock samplerblock( *datablock->getSamplerblock( Ogre::PBSM_ROUGHNESS ) );
+  // Ogre::HlmsSamplerblock samplerblock(
+  // *datablock->getSamplerblock( Ogre::PBSM_ROUGHNESS ) );
   Ogre::HlmsSamplerblock samplerBlockRef;
   samplerBlockRef.mU = Ogre::TAM_WRAP;
   samplerBlockRef.mV = Ogre::TAM_WRAP;

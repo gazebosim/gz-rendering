@@ -155,7 +155,7 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   // create compositor workspace for rendering
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  //Setup the cubemap's compositor.
+  // Setup the cubemap's compositor.
   const Ogre::String workspaceName = "SelectionBufferWorkspace" +
       this->dataPtr->camera->getName();
   ogreCompMgr->createBasicWorkspaceDef(workspaceName,
@@ -192,7 +192,7 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
   const unsigned int targetWidth = vp->getWidth();
   const unsigned int targetHeight = vp->getHeight();
 
-  // TODO (ahcorde): Revisit this part. It's partially working
+  // TODO(ahcorde): Revisit this part. It's partially working
   if (_x < 0 || _y < 0 || _x >= static_cast<int>(targetWidth)
       || _y >= static_cast<int>(targetHeight))
     return nullptr;

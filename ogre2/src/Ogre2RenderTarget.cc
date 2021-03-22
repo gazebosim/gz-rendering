@@ -979,7 +979,7 @@ void Ogre2RenderTarget::CreateShadowNodeWithSettings(
           targetDef->setShadowMapSupportedLightTypes(
               shadowParam.supportedLightTypes & pointMask);
           {
-              //Scene pass
+              // Scene pass
               Ogre::CompositorPassDef *passDef =
                 targetDef->addPass(Ogre::PASS_SCENE);
               Ogre::CompositorPassSceneDef *passScene =

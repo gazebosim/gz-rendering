@@ -193,7 +193,8 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
 }
 
 /////////////////////////////////////////////////
-void Ogre2SelectionBuffer::setDimensions(unsigned int _width, unsigned int _height)
+void Ogre2SelectionBuffer::setDimensions(
+  unsigned int _width, unsigned int _height)
 {
   if (this->dataPtr->width == _width && this->dataPtr->height == _height)
     return;

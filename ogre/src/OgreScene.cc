@@ -20,6 +20,7 @@
 #include "ignition/rendering/ogre/OgreArrowVisual.hh"
 #include "ignition/rendering/ogre/OgreAxisVisual.hh"
 #include "ignition/rendering/ogre/OgreCamera.hh"
+#include "ignition/rendering/ogre/OgreCapsule.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
@@ -512,6 +513,15 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
 
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
+}
+
+//////////////////////////////////////////////////
+CapsulePtr OgreScene::CreateCapsuleImpl(
+  unsigned int _id, const std::string &_name)
+{
+  OgreCapsulePtr capsule(new OgreCapsule);
+  bool result = this->InitObject(capsule, _id, _name);
+  return (result) ? capsule : nullptr;
 }
 
 //////////////////////////////////////////////////

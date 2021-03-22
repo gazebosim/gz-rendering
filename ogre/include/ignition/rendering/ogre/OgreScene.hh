@@ -148,6 +148,9 @@ namespace ignition
         const HeightmapDescriptor &_desc) override;
 
       // Documentation inherited
+      protected: virtual CapsulePtr CreateCapsuleImpl(unsigned int _id,
+                     const std::string &_name) override;
+
       protected: virtual GridPtr CreateGridImpl(
         unsigned int _id,
         const std::string &_name) override;

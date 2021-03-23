@@ -163,6 +163,15 @@ namespace ignition
       public: virtual ScenePtr CreateScene(unsigned int _id,
                   const std::string &_name) = 0;
 
+      /// \brief Set headless mode
+      /// Only avaiable in OGRE 2.2
+      /// \param[in] _headless Set to true to enable headless mode.
+      public: virtual void SetHeadless(const bool &_headless) = 0;
+
+      /// \brief Get headless mode
+      /// \return True if headless mode is enable, false otherwise.
+      public: virtual bool Headless() const = 0;
+
       /// \brief Add path to media resource location
       /// \param[in] _paths Absolute path to resource location
       public: virtual void AddResourcePath(const std::string &_path) = 0;

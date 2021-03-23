@@ -267,6 +267,10 @@ bool Ogre2RenderEngine::LoadImpl(
   if (it != _params.end())
     std::istringstream(it->second) >> this->useCurrentGLContext;
 
+  it = _params.find("headless");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->isHeadless;
+
   try
   {
     this->LoadAttempt();
@@ -340,6 +344,8 @@ void Ogre2RenderEngine::CreateContext()
 
   if (!this->dummyDisplay)
   {
+    // Not able to create a Xwindow, try to run in headless mode
+    SetHeadless(true);
     ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
     return;
   }
@@ -524,15 +530,32 @@ void Ogre2RenderEngine::CreateRenderSystem()
             "and make sure OpenGL is enabled." << std::endl;
   }
 
-  // We operate in windowed mode
-  renderSys->setConfigOption("Full Screen", "No");
+  if (!Headless())
+  {
 
-  /// We used to allow the user to set the RTT mode to PBuffer, FBO, or Copy.
-  ///   Copy is slow, and there doesn't seem to be a good reason to use it
-  ///   PBuffer limits the size of the renderable area of the RTT to the
-  ///           size of the first window created.
-  ///   FBO seem to be the only good option
-  renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+    // We operate in windowed mode
+    renderSys->setConfigOption("Full Screen", "No");
+
+    /// We used to allow the user to set the RTT mode to PBuffer, FBO, or Copy.
+    ///   Copy is slow, and there doesn't seem to be a good reason to use it
+    ///   PBuffer limits the size of the renderable area of the RTT to the
+    ///           size of the first window created.
+    ///   FBO seem to be the only good option
+    renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+  }
+  else
+  {
+    try
+    {
+        // This may fail if Ogre was *only* build with EGL support, but in that
+        // case we can ignore the error
+        renderSys->setConfigOption( "Interface", "Headless EGL / PBuffer" );
+    }
+    catch( Ogre::Exception & )
+    {
+      std::cerr << "Unable to setup EGL (headless mode)" << '\n';
+    }
+  }
 
   // get all supported fsaa values
   Ogre::ConfigOptionMap configMap = renderSys->getConfigOptions();

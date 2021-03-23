@@ -513,8 +513,6 @@ void Ogre2Scene::CreateContext()
 {
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
 
-  Ogre::InstancingThreadedCullingMethod threadedCullingMethod =
-      Ogre::INSTANCING_CULLING_SINGLETHREAD;
   // getNumLogicalCores() may return 0 if couldn't detect
   const size_t numThreads = std::max<size_t>(
       1, Ogre::PlatformInformation::getNumLogicalCores());
@@ -525,8 +523,7 @@ void Ogre2Scene::CreateContext()
   //   threadedCullingMethod = Ogre::INSTANCING_CULLING_THREADED;
   // Create the SceneManager, in this case a generic one
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC,
-                                                    numThreads,
-                                                    threadedCullingMethod);
+                                                    numThreads);
 
   this->ogreSceneManager->addRenderQueueListener(
       Ogre2RenderEngine::Instance()->OverlaySystem());
@@ -542,7 +539,8 @@ void Ogre2Scene::CreateContext()
   // enable forward plus to support multiple lights
   // this is required for non-shadow-casting point lights and
   // spot lights to work
-  this->ogreSceneManager->setForwardClustered(true, 16, 8, 24, 96, 1, 500);
+  this->ogreSceneManager->setForwardClustered(
+    true, 16, 8, 24, 96, 0, 0, 1, 500);
 }
 
 //////////////////////////////////////////////////

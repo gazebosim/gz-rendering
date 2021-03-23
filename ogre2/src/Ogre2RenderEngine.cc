@@ -570,8 +570,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
   this->ogreRoot->setRenderSystem(renderSys);
 }
 
-//////////////////////////////////////////////////
-void Ogre2RenderEngine::CreateResources()
+void Ogre2RenderEngine::registerHlms()
 {
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
@@ -582,35 +581,6 @@ void Ogre2RenderEngine::CreateResources()
   {
     // src path
     mediaPath = common::joinPaths(resourcePath, "ogre2", "src", "media");
-  }
-
-  // register low level materials (ogre v1 materials)
-  std::vector< std::pair<std::string, std::string> > archNames;
-  std::string p = mediaPath;
-  if (common::isDirectory(p))
-  {
-    archNames.push_back(
-        std::make_pair(p, "General"));
-    archNames.push_back(
-        std::make_pair(p + "/materials/programs", "General"));
-    archNames.push_back(
-        std::make_pair(p + "/materials/scripts", "General"));
-    archNames.push_back(
-        std::make_pair(p + "/materials/textures", "General"));
-
-    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
-    {
-      try
-      {
-        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-            aiter->first, "FileSystem", aiter->second);
-      }
-      catch(Ogre::Exception &/*_e*/)
-      {
-        ignerr << "Unable to load Ogre Resources. Make sure the resources "
-            "path in the world file is set correctly." << std::endl;
-      }
-    }
   }
 
   // register PbsMaterial resources
@@ -627,6 +597,10 @@ void Ogre2RenderEngine::CreateResources()
       rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSL");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       commonGLSLMaterialFolder, "FileSystem", "General");
+  Ogre::String commonGLSLESMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSLES");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonGLSLESMaterialFolder, "FileSystem", "General");
 
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework
@@ -704,6 +678,50 @@ void Ogre2RenderEngine::CreateResources()
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderEngine::CreateResources()
+{
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+  // install path
+  std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
+  if (!common::exists(mediaPath))
+  {
+    // src path
+    mediaPath = common::joinPaths(resourcePath, "ogre2", "src", "media");
+  }
+
+  // register low level materials (ogre v1 materials)
+  std::vector< std::pair<std::string, std::string> > archNames;
+  std::string p = mediaPath;
+  if (common::isDirectory(p))
+  {
+    archNames.push_back(
+        std::make_pair(p, "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/programs", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/scripts", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/textures", "General"));
+
+    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+    {
+      try
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            aiter->first, "FileSystem", aiter->second);
+      }
+      catch(Ogre::Exception &/*_e*/)
+      {
+        ignerr << "Unable to load Ogre Resources. Make sure the resources "
+            "path in the world file is set correctly." << std::endl;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateRenderWindow()
 {
   // create dummy window
@@ -722,7 +740,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 {
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
-  Ogre::RenderWindow *window = nullptr;
+  window = nullptr;
 
   // if use current gl then don't include window handle params
   if (!this->useCurrentGLContext)
@@ -756,7 +774,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   params["contentScalingFactor"] = std::to_string(_ratio);
 
   // Ogre 2 PBS expects gamma correction
-  params["gamma"] = "true";
+  params["gamma"] = "Yes";
 
   if (this->useCurrentGLContext)
   {
@@ -769,8 +787,9 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   {
     try
     {
-      window = this->ogreRoot->createRenderWindow(
+      window = Ogre::Root::getSingleton().createRenderWindow(
           stream.str(), _width, _height, false, &params);
+      this->registerHlms();
     }
     catch(const std::exception &_e)
     {
@@ -789,8 +808,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   if (window)
   {
-    window->setActive(true);
-    window->setVisible(true);
+    window->_setVisible(true);
 
     // Windows needs to reposition the render window to 0,0.
     window->reposition(0, 0);

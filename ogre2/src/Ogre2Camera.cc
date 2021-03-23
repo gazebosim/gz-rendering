@@ -202,7 +202,8 @@ unsigned int Ogre2Camera::RenderTextureGLId() const
 //////////////////////////////////////////////////
 void Ogre2Camera::SetSelectionBuffer()
 {
-  this->selectionBuffer = new Ogre2SelectionBuffer(this->name, this->scene);
+  this->selectionBuffer = new Ogre2SelectionBuffer(this->name, this->scene,
+    this->ImageWidth(), this->ImageHeight());
 }
 
 //////////////////////////////////////////////////
@@ -218,6 +219,11 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
     {
       return result;
     }
+  }
+  else
+  {
+    this->selectionBuffer->setDimensions(
+      this->ImageWidth(), this->ImageHeight());
   }
 
   float ratio = screenScalingFactor();

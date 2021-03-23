@@ -54,6 +54,7 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
   /// \brief Ogre render texture
   public: Ogre::TextureGpu *renderTexture = nullptr;
 
+  /// \brief Ogre compositor manager
   public: Ogre::CompositorManager2 *ogreCompMgr;
 
   /// \brief selection buffer width

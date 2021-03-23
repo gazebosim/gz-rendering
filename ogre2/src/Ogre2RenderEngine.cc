@@ -95,6 +95,12 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
 }
 
 //////////////////////////////////////////////////
+Ogre::Window * Ogre2RenderEngine::getWindow()
+{
+  return this->window;
+}
+
+//////////////////////////////////////////////////
 Ogre2RenderEngine::~Ogre2RenderEngine()
 {
 }

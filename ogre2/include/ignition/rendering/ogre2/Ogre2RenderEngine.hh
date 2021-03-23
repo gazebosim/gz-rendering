@@ -94,6 +94,9 @@ namespace ignition
       /// \param[in] _uri Resource path in the form of an uri
       public: void AddResourcePath(const std::string &_uri) override;
 
+      /// \brief return the ogre window
+      public: Ogre::Window * getWindow();
+
       /// \brief Get the ogre2 root object
       /// \return ogre2 root object
       public: virtual Ogre::Root *OgreRoot() const;
@@ -197,9 +200,6 @@ namespace ignition
 
       /// \brief Ogre Window
       private: Ogre::Window * window;
-
-      /// \brief return the ogre window
-      public: Ogre::Window *getWindow(){ return this->window; }
 
       /// \brief True to use the current opengl context
       private: bool useCurrentGLContext = false;

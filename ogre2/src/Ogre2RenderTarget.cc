@@ -302,10 +302,6 @@ void Ogre2RenderTarget::Copy(Image &_image) const
 {
   Ogre::TextureGpu * texture = this->RenderTarget();
 
-  if (texture == nullptr){
-    return;
-  }
-
   // TODO(anyone) handle Bayer conversions
   // TODO(anyone) handle ogre version differences
 

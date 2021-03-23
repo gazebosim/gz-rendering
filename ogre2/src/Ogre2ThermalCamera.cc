@@ -648,7 +648,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   // {
   //   in 0 rt_input
   //   texture depthTexture target_width target_height PFG_D32_FLOAT
-  //   texture colorTexture target_width target_height PF_R8G8B8A8
+  //   texture colorTexture target_width target_height PFG_RGBA8_UNORM
   //   target colorTexture
   //   {
   //     pass clear

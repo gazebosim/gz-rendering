@@ -531,8 +531,6 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     }
   }
 
-  // Ogre::HlmsSamplerblock samplerblock(
-  // *datablock->getSamplerblock( Ogre::PBSM_ROUGHNESS ) );
   Ogre::HlmsSamplerblock samplerBlockRef;
   samplerBlockRef.mU = Ogre::TAM_WRAP;
   samplerBlockRef.mV = Ogre::TAM_WRAP;
@@ -540,17 +538,18 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
   this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
 
-  // TODO(ahcorde)
   // disable alpha from texture if texture does not have an alpha channel
   // otherwise this becomes a transparent material
-  // if (_type == Ogre::PBSM_DIFFUSE)
-  // {
-  //   if (this->TextureAlphaEnabled() && !texture->hasAlpha())
-  //   {
-  //     this->SetAlphaFromTexture(false, this->AlphaThreshold(),
-  //         this->TwoSidedEnabled());
-  //   }
-  // }
+  if (_type == Ogre::PBSM_DIFFUSE)
+  {
+    if (this->TextureAlphaEnabled() &&
+        !Ogre::PixelFormatGpuUtils::hasAlpha(
+          this->Texture(this->textureName)->getPixelFormat()))
+    {
+      this->SetAlphaFromTexture(false, this->AlphaThreshold(),
+          this->TwoSidedEnabled());
+    }
+  }
 }
 
 //////////////////////////////////////////////////

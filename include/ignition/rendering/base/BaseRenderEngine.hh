@@ -89,7 +89,7 @@ namespace ignition
       public: virtual void AddResourcePath(const std::string &_path) override;
 
       // Documentation Inherited
-      public: virtual void SetHeadless(const bool &_headless) override;
+      public: virtual void SetHeadless(bool _headless) override;
 
       // Documentation Inherited
       public: virtual bool Headless() const override;

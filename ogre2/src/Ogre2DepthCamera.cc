@@ -104,7 +104,7 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
 
   /// \brief Output texture with depth and color data
-  public: Ogre::TextureGpu * ogreDepthTexture;
+  public: Ogre::TextureGpu *ogreDepthTexture;
 
   /// \brief Dummy render texture for the depth data
   public: RenderTexturePtr depthTexture;
@@ -597,7 +597,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     rt0TexDef->widthFactor = 1;
     rt0TexDef->heightFactor = 1;
     rt0TexDef->format = Ogre::PFG_RGBA32_FLOAT;
-    rt0TexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    rt0TexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     rt0TexDef->depthBufferId = Ogre::DepthBuffer::POOL_INVALID;
     rt0TexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
     rt0TexDef->fsaa = "0";
@@ -615,7 +615,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     rt1TexDef->widthFactor = 1;
     rt1TexDef->heightFactor = 1;
     rt1TexDef->format = Ogre::PFG_RGBA32_FLOAT;
-    rt1TexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    rt1TexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     rt1TexDef->depthBufferId = Ogre::DepthBuffer::POOL_INVALID;
     rt1TexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
     rt1TexDef->fsaa = "0";
@@ -633,7 +633,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     depthTexDef->widthFactor = 1;
     depthTexDef->heightFactor = 1;
     depthTexDef->format = Ogre::PFG_D32_FLOAT;
-    depthTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    depthTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     depthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     depthTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
     depthTexDef->fsaa = "0";
@@ -651,11 +651,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
     colorTexDef->numMipmaps = 0;
     colorTexDef->widthFactor = 1;
     colorTexDef->heightFactor = 1;
-    colorTexDef->format = Ogre::PFG_RGB8_UNORM;
-    // Enable gamma write to avoid discretization in the color values
+    colorTexDef->format = Ogre::PFG_RGB8_UNORM_SRGB;
     // Note we are using low level materials in quad pass so also had to perform
     // gamma correction in the fragment shaders (depth_camera_fs.glsl)
-    colorTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    colorTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
     colorTexDef->preferDepthTexture = true;
@@ -675,7 +674,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleTexDef->widthFactor = 0.5;
     particleTexDef->heightFactor = 0.5;
     particleTexDef->format = Ogre::PFG_R8_UNORM;
-    particleTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    particleTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     particleTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     particleTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
     particleTexDef->preferDepthTexture = false;
@@ -699,7 +698,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleDepthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
     particleDepthTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
     particleDepthTexDef->fsaa = "0";
-    particleDepthTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    particleDepthTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
 
     Ogre::RenderTargetViewDef *rtvparticleDepthTex =
       baseNodeDef->addRenderTextureView("particleDepthTexture");

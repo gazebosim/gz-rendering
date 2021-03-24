@@ -696,7 +696,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     thermalTexDef->widthFactor = 1;
     thermalTexDef->heightFactor = 1;
     thermalTexDef->format = Ogre::PFG_D32_FLOAT;
-    thermalTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    thermalTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     // set to default pool so that when the colorTexture pass is rendered, its
     // depth data get populated to depthTexture
     thermalTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
@@ -716,7 +716,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     colorTexDef->widthFactor = 1;
     colorTexDef->heightFactor = 1;
     colorTexDef->format = Ogre::PFG_RGBA8_UNORM;
-    colorTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    colorTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
     colorTexDef->preferDepthTexture = true;

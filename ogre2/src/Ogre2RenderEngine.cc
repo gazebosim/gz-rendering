@@ -95,7 +95,7 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
 }
 
 //////////////////////////////////////////////////
-Ogre::Window * Ogre2RenderEngine::getWindow()
+Ogre::Window * Ogre2RenderEngine::OgreWindow() const
 {
   return this->window;
 }
@@ -351,7 +351,7 @@ void Ogre2RenderEngine::CreateContext()
   if (!this->dummyDisplay)
   {
     // Not able to create a Xwindow, try to run in headless mode
-    SetHeadless(true);
+    this->SetHeadless(true);
     ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
     return;
   }
@@ -536,7 +536,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
             "and make sure OpenGL is enabled." << std::endl;
   }
 
-  if (!Headless())
+  if (!this->Headless())
   {
 
     // We operate in windowed mode
@@ -599,7 +599,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
   this->ogreRoot->setRenderSystem(renderSys);
 }
 
-void Ogre2RenderEngine::registerHlms()
+void Ogre2RenderEngine::RegisterHlms()
 {
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
@@ -818,7 +818,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     {
       window = Ogre::Root::getSingleton().createRenderWindow(
           stream.str(), _width, _height, false, &params);
-      this->registerHlms();
+      this->RegisterHlms();
     }
     catch(const std::exception &_e)
     {

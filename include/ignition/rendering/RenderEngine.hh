@@ -164,9 +164,9 @@ namespace ignition
                   const std::string &_name) = 0;
 
       /// \brief Set headless mode
-      /// Only avaiable in OGRE 2.2
+      /// Only available in OGRE 2.2, which makes use of EGL
       /// \param[in] _headless Set to true to enable headless mode.
-      public: virtual void SetHeadless(const bool &_headless) = 0;
+      public: virtual void SetHeadless(bool _headless) = 0;
 
       /// \brief Get headless mode
       /// \return True if headless mode is enable, false otherwise.

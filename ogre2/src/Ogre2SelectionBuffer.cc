@@ -55,7 +55,7 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
   public: Ogre::TextureGpu *renderTexture = nullptr;
 
   /// \brief Ogre compositor manager
-  public: Ogre::CompositorManager2 *ogreCompMgr;
+  public: Ogre::CompositorManager2 *ogreCompMgr = nullptr;
 
   /// \brief selection buffer width
   public: unsigned int width = 0;
@@ -70,7 +70,7 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
 
 /////////////////////////////////////////////////
 Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
-    Ogre2ScenePtr _scene, int _width, int _height):
+    Ogre2ScenePtr _scene, unsigned int _width, unsigned int _height):
     dataPtr(new Ogre2SelectionBufferPrivate)
 {
   this->dataPtr->scene = _scene;
@@ -82,7 +82,6 @@ Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
 
   this->dataPtr->width = _width;
   this->dataPtr->height = _height;
-
 
   this->dataPtr->camera = this->dataPtr->sceneMgr->findCameraNoThrow(
       _cameraName);
@@ -194,7 +193,7 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
 }
 
 /////////////////////////////////////////////////
-void Ogre2SelectionBuffer::setDimensions(
+void Ogre2SelectionBuffer::SetDimensions(
   unsigned int _width, unsigned int _height)
 {
   if (this->dataPtr->width == _width && this->dataPtr->height == _height)

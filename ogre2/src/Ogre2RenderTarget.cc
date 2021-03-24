@@ -154,8 +154,8 @@ void Ogre2RenderTarget::BuildCompositor()
     rt0TexDef->numMipmaps = 0;
     rt0TexDef->widthFactor = 1;
     rt0TexDef->heightFactor = 1;
-    rt0TexDef->format = Ogre::PFG_RGBA8_UNORM;
-    rt0TexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    rt0TexDef->format = Ogre::PFG_RGBA8_UNORM_SRGB;
+    rt0TexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     rt0TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     rt0TexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
 
@@ -170,8 +170,8 @@ void Ogre2RenderTarget::BuildCompositor()
     rt1TexDef->depthOrSlices = 1;
     rt1TexDef->widthFactor = 1;
     rt1TexDef->heightFactor = 1;
-    rt1TexDef->format = Ogre::PFG_RGBA8_UNORM;
-    rt1TexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    rt1TexDef->format = Ogre::PFG_RGBA8_UNORM_SRGB;
+    rt1TexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     rt1TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     rt1TexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
 
@@ -317,9 +317,9 @@ void Ogre2RenderTarget::Copy(Image &_image) const
   auto dataImage = static_cast<unsigned char *>(_image.Data());
   auto dataImage2 = static_cast<Ogre::uint8 *>(image2.getRawBuffer());
 
-  for (int row = 0; row < texture->getHeight(); ++row)
+  for (unsigned int row = 0; row < texture->getHeight(); ++row)
   {
-    for (int column = 0; column < texture->getWidth(); ++column)
+    for (unsigned int column = 0; column < texture->getWidth(); ++column)
     {
       dataImage[row*texture->getWidth() * 3 + column * 3] =
         dataImage2[row * texture->getWidth() * 4 + column * 4];
@@ -1139,7 +1139,7 @@ void Ogre2RenderTexture::BuildTarget()
 
   this->ogreTexture->setResolution(this->width, this->height);
   this->ogreTexture->setNumMipmaps(1u);
-  this->ogreTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
+  this->ogreTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
 
   this->ogreTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -1152,7 +1152,6 @@ unsigned int Ogre2RenderTexture::GLId() const
     return 0;
 
   unsigned int texId;
-  auto engine = Ogre2RenderEngine::Instance();
   this->ogreTexture->getCustomAttribute("msFinalTextureBuffer", &texId);
   return static_cast<unsigned int>(texId);
 }
@@ -1219,5 +1218,5 @@ void Ogre2RenderWindow::BuildTarget()
       this->ratio,
       this->antiAliasing);
 
-  this->ogreRenderWindow = engine->getWindow()->getTexture();
+  this->ogreRenderWindow = engine->OgreWindow()->getTexture();
 }

@@ -53,7 +53,8 @@ namespace ignition
       /// \param[in] _width width of the camera
       /// \param[in] _height height of the camera
       public: Ogre2SelectionBuffer(const std::string &_cameraName,
-                  Ogre2ScenePtr _scene, int _width, int _height);
+                  Ogre2ScenePtr _scene, unsigned int _width,
+                  unsigned int _height);
 
       /// \brief Destructor
       public: ~Ogre2SelectionBuffer();
@@ -67,7 +68,7 @@ namespace ignition
       /// \brief Set dimension of the selection buffer
       /// \param[in] _x X coordinate in pixels.
       /// \param[in] _y Y coordinate in pixels.
-      public: void setDimensions(unsigned int _width, unsigned int _height);
+      public: void SetDimensions(unsigned int _width, unsigned int _height);
 
       /// \brief Debug show overlay
       /// \param[in] _show True to show the selection buffer in an overlay.

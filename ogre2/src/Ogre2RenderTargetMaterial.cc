@@ -22,9 +22,9 @@ using namespace ignition::rendering;
 
 //////////////////////////////////////////////////
 Ogre2RenderTargetMaterial::Ogre2RenderTargetMaterial(
-    Ogre::SceneManager *_scene, Ogre::Camera *renderCamera,
+    Ogre::SceneManager *_scene, Ogre::Camera *_renderCamera,
     Ogre::Material *_material):
-  scene(_scene), renderCamera(renderCamera), material(_material)
+  scene(_scene), renderCamera(_renderCamera), material(_material)
 {
   // Pick a name that's unlikely to collide with a real material scheme
   this->schemeName = "__ignition__rendering__Ogre2RenderTargetMaterial";

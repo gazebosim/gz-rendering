@@ -95,7 +95,7 @@ namespace ignition
       public: void AddResourcePath(const std::string &_uri) override;
 
       /// \brief return the ogre window
-      public: Ogre::Window * getWindow();
+      public: Ogre::Window * OgreWindow() const;
 
       /// \brief Get the ogre2 root object
       /// \return ogre2 root object
@@ -142,7 +142,7 @@ namespace ignition
       private: void CreateContext();
 
       /// \brief Register Hlms
-      private: void registerHlms();
+      private: void RegisterHlms();
 
       /// \brief Create ogre root
       private: void CreateRoot();
@@ -199,7 +199,7 @@ namespace ignition
       private: uint64_t dummyWindowId = 0u;
 
       /// \brief Ogre Window
-      private: Ogre::Window * window;
+      private: Ogre::Window *window = nullptr;
 
       /// \brief True to use the current opengl context
       private: bool useCurrentGLContext = false;

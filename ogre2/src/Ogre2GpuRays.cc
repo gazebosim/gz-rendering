@@ -747,7 +747,7 @@ void Ogre2GpuRays::Setup1stPass()
     depthTexDef->heightFactor = 1;
     depthTexDef->fsaa = "0";
     depthTexDef->format = Ogre::PFG_D32_FLOAT;
-    depthTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    depthTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     depthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     depthTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
 
@@ -765,7 +765,7 @@ void Ogre2GpuRays::Setup1stPass()
     colorTexDef->heightFactor = 1;
     colorTexDef->format = Ogre::PFG_RGB8_UNORM;
     colorTexDef->fsaa = "0";
-    depthTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    colorTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
     colorTexDef->preferDepthTexture = true;
@@ -786,7 +786,7 @@ void Ogre2GpuRays::Setup1stPass()
     particleDepthTexDef->format = Ogre::PFG_D32_FLOAT;
     particleDepthTexDef->fsaa = "0";
     particleDepthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
-    particleDepthTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    particleDepthTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
 
     Ogre::RenderTargetViewDef *rtvparticleDepthTex =
       nodeDef->addRenderTextureView("particleDepthTexture");
@@ -804,7 +804,7 @@ void Ogre2GpuRays::Setup1stPass()
     particleTexDef->heightFactor = 0.5;
     particleTexDef->format = Ogre::PFG_RGB8_UNORM;
     particleTexDef->fsaa = "0";
-    particleTexDef->textureFlags |= !Ogre::TextureFlags::Uav;
+    particleTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     particleTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     particleTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
     particleTexDef->preferDepthTexture = true;
@@ -852,8 +852,8 @@ void Ogre2GpuRays::Setup1stPass()
           static_cast<Ogre::CompositorPassSceneDef *>(
           depthTargetDef->addPass(Ogre::PASS_SCENE));
       // depth texute does not contain particles
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL
-          & ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
+      passScene->mVisibilityMask = 0x01000000 &
+          ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 
     Ogre::CompositorTargetDef *particleTargetDef =

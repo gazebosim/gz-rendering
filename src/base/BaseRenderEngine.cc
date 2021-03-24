@@ -248,7 +248,7 @@ void BaseRenderEngine::AddResourcePath(const std::string &_path)
 }
 
 //////////////////////////////////////////////////
-void BaseRenderEngine::SetHeadless(const bool &_headless)
+void BaseRenderEngine::SetHeadless(bool _headless)
 {
   this->isHeadless = _headless;
 }

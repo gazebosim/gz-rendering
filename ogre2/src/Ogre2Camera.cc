@@ -222,7 +222,7 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
   }
   else
   {
-    this->selectionBuffer->setDimensions(
+    this->selectionBuffer->SetDimensions(
       this->ImageWidth(), this->ImageHeight());
   }
 

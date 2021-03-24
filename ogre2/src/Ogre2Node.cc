@@ -164,6 +164,9 @@ bool Ogre2Node::AttachChild(NodePtr _child)
 //////////////////////////////////////////////////
 bool Ogre2Node::DetachChild(NodePtr _child)
 {
+  if (nullptr == this->ogreNode)
+    return false;
+
   Ogre2NodePtr derived = std::dynamic_pointer_cast<Ogre2Node>(_child);
 
   if (!derived)

@@ -651,7 +651,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
     colorTexDef->numMipmaps = 0;
     colorTexDef->widthFactor = 1;
     colorTexDef->heightFactor = 1;
-    colorTexDef->format = Ogre::PFG_RGB8_UNORM_SRGB;
+    colorTexDef->format = Ogre::PFG_RGBA8_UNORM_SRGB;
     // Note we are using low level materials in quad pass so also had to perform
     // gamma correction in the fragment shaders (depth_camera_fs.glsl)
     colorTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
@@ -951,7 +951,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
 
   for (auto c : channelsTex)
   {
-    if (c->getPixelFormat() == Ogre::PFG_RGB8_UNORM)
+    if (c->getPixelFormat() == Ogre::PFG_R8_UNORM)
     {
       // add particle noise / scatter effects listener so we can set the
       // amount of noise based on size of emitter

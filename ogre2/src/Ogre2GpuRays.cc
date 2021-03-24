@@ -225,60 +225,61 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
       // get laser_retro
       Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
 
-        float retroValue = -1.0;
+      float retroValue = -1.0;
+      try
+      {
+        retroValue = std::get<float>(tempLaserRetro);
+      }
+      catch(...)
+      {
         try
         {
-          retroValue = std::get<float>(tempLaserRetro);
+          retroValue = std::get<double>(tempLaserRetro);
         }
         catch(...)
         {
           try
           {
-            retroValue = std::get<double>(tempLaserRetro);
+            retroValue = std::get<int>(tempLaserRetro);
           }
-          catch(...)
+          catch(std::bad_variant_access &e)
           {
-            try
-            {
-              retroValue = std::get<int>(tempLaserRetro);
-            }
-            catch(std::bad_variant_access &e)
-            {
-              ignerr << "Error casting user data: " << e.what() << "\n";
-              retroValue = -1.0;
-            }
-          }
-        }
-
-        // only accept positive laser retro value
-        if (retroValue >= 0)
-        {
-          // set visibility flag so the camera can see it
-          item->addVisibilityFlags(0x01000000);
-          for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
-          {
-            Ogre::SubItem *subItem = item->getSubItem(i);
-            if (!subItem->hasCustomParameter(this->customParamIdx))
-            {
-              // limit laser retro value to 2000 (as in gazebo)
-              if (retroValue > 2000.0)
-              {
-                retroValue = 2000.0;
-              }
-              float color = retroValue / 2000.0;
-              subItem->setCustomParameter(this->customParamIdx,
-                  Ogre::Vector4(color, color, color, 1.0));
-            }
-            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-            this->datablockMap[subItem] = datablock;
-
-            subItem->setMaterial(this->laserRetroSourceMaterial);
+            ignerr << "Error casting user data: " << e.what() << "\n";
+            retroValue = -1.0;
           }
         }
       }
-      itor.moveNext();
+
+      // only accept positive laser retro value
+      if (retroValue >= 0)
+      {
+        // set visibility flag so the camera can see it
+        item->addVisibilityFlags(0x01000000);
+        for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+        {
+          Ogre::SubItem *subItem = item->getSubItem(i);
+          if (!subItem->hasCustomParameter(this->customParamIdx))
+          {
+            // limit laser retro value to 2000 (as in gazebo)
+            if (retroValue > 2000.0)
+            {
+              retroValue = 2000.0;
+            }
+            float color = retroValue / 2000.0;
+
+            subItem->setCustomParameter(this->customParamIdx,
+                Ogre::Vector4(color, color, color, 1.0));
+          }
+          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+          this->datablockMap[subItem] = datablock;
+
+          subItem->setMaterial(this->laserRetroSourceMaterial);
+        }
+      }
     }
+    itor.moveNext();
   }
+}
 
 //////////////////////////////////////////////////
 void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
@@ -763,7 +764,7 @@ void Ogre2GpuRays::Setup1stPass()
     colorTexDef->depthOrSlices = 1;
     colorTexDef->widthFactor = 1;
     colorTexDef->heightFactor = 1;
-    colorTexDef->format = Ogre::PFG_RGB8_UNORM;
+    colorTexDef->format = Ogre::PFG_R8_UNORM;
     colorTexDef->fsaa = "0";
     colorTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
@@ -773,6 +774,27 @@ void Ogre2GpuRays::Setup1stPass()
     Ogre::RenderTargetViewDef *rtv2 =
       nodeDef->addRenderTextureView("colorTexture");
     rtv2->setForTextureDefinition("colorTexture", colorTexDef);
+
+    Ogre::TextureDefinitionBase::TextureDefinition *particleTexDef =
+        nodeDef->addTextureDefinition("particleTexture");
+    particleTexDef->textureType = Ogre::TextureTypes::Type2D;
+    particleTexDef->width = 0;
+    particleTexDef->height = 0;
+    particleTexDef->depthOrSlices = 1;
+    particleTexDef->numMipmaps = 0;
+    particleTexDef->widthFactor = 0.5;
+    particleTexDef->heightFactor = 0.5;
+    particleTexDef->format = Ogre::PFG_RGBA8_UNORM;
+    particleTexDef->fsaa = "0";
+    particleTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
+    particleTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    particleTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
+    particleTexDef->preferDepthTexture = true;
+
+    Ogre::RenderTargetViewDef *rtvParticleTexture =
+      nodeDef->addRenderTextureView("particleTexture");
+    rtvParticleTexture->setForTextureDefinition(
+      "particleTexture", particleTexDef);
 
     Ogre::TextureDefinitionBase::TextureDefinition *particleDepthTexDef =
         nodeDef->addTextureDefinition("particleDepthTexture");
@@ -785,36 +807,16 @@ void Ogre2GpuRays::Setup1stPass()
     particleDepthTexDef->heightFactor = 0.5;
     particleDepthTexDef->format = Ogre::PFG_D32_FLOAT;
     particleDepthTexDef->fsaa = "0";
-    particleDepthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    particleDepthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
     particleDepthTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
+    particleDepthTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
 
     Ogre::RenderTargetViewDef *rtvparticleDepthTex =
       nodeDef->addRenderTextureView("particleDepthTexture");
     rtvparticleDepthTex->setForTextureDefinition(
       "particleDepthTexture", particleDepthTexDef);
 
-    Ogre::TextureDefinitionBase::TextureDefinition *particleTexDef =
-        nodeDef->addTextureDefinition("particleTexture");
-    particleTexDef->textureType = Ogre::TextureTypes::Type2D;
-    particleTexDef->width = 0;
-    particleTexDef->height = 0;
-    particleTexDef->depthOrSlices = 1;
-    particleTexDef->numMipmaps = 0;
-    particleTexDef->widthFactor = 0.5;
-    particleTexDef->heightFactor = 0.5;
-    particleTexDef->format = Ogre::PFG_RGB8_UNORM;
-    particleTexDef->fsaa = "0";
-    particleTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
-    particleTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
-    particleTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
-    particleTexDef->preferDepthTexture = true;
-
-    Ogre::RenderTargetViewDef *rtvParticleTexture =
-      nodeDef->addRenderTextureView("particleTexture");
-    rtvParticleTexture->setForTextureDefinition(
-      "particleTexture", particleTexDef);
-
-    nodeDef->setNumTargetPass(4);
+    nodeDef->setNumTargetPass(5);
 
     Ogre::CompositorTargetDef *colorTargetDef =
         nodeDef->addTargetPass("colorTexture");
@@ -851,9 +853,30 @@ void Ogre2GpuRays::Setup1stPass()
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           depthTargetDef->addPass(Ogre::PASS_SCENE));
-      // depth texute does not contain particles
+      // depth texture does not contain particles
       passScene->mVisibilityMask = 0x01000000 &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
+    }
+
+    Ogre::CompositorTargetDef *particleDepthTargetDef =
+        nodeDef->addTargetPass("particleDepthTexture");
+    particleDepthTargetDef->setNumPasses(2);
+    {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          particleDepthTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->setAllClearColours(Ogre::ColourValue(
+        this->FarClipPlane(),
+        this->FarClipPlane(),
+        this->FarClipPlane()));
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          particleDepthTargetDef->addPass(Ogre::PASS_SCENE));
+      // set camera custom visibility mask when rendering laser retro
+      passScene->mVisibilityMask =
+          Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 
     Ogre::CompositorTargetDef *particleTargetDef =
@@ -961,7 +984,7 @@ void Ogre2GpuRays::Setup1stPass()
     this->dataPtr->firstPassTextures[i]->scheduleTransitionTo(
       Ogre::GpuResidency::Resident);
 
-    // create compositor worksspace
+    // create compositor workspace
     this->dataPtr->ogreCompositorWorkspace1st[i] =
         ogreCompMgr->addWorkspace(
           this->scene->OgreSceneManager(),
@@ -976,7 +999,7 @@ void Ogre2GpuRays::Setup1stPass()
 
     for (auto c : channelsTex)
     {
-      if (c->getPixelFormat() == Ogre::PFG_RGB8_UNORM)
+      if (c->getPixelFormat() == Ogre::PFG_R8_UNORM)
       {
         // add laser retro material switcher to render target listener
         // so we can switch to use laser retro material when the camera is being
@@ -1204,16 +1227,18 @@ void Ogre2GpuRays::PostRender()
       width, height, this->Channels(), "PF_FLOAT32_RGB");
 
   // Uncomment to debug output
-  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // std::cerr << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //   igndbg << "[" << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
-  //   igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1] <<  " ";
-  //   igndbg << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2] <<  "] ";
+  //     if (this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] < 20) {
+  //       std::cerr << "[" << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
+  //       std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1] <<  " ";
+  //       std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2] <<  "]\n";
+  //     }
   //   }
-  //   igndbg << std::endl;
+  //   // igndbg << std::endl;
   // }
 }
 

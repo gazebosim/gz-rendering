@@ -43,7 +43,4 @@ void main()
 {
   // Cubemaps are left-handed
   fragColour = texture( skyCubemap, vec3( inPs.cameraDir.xy, -inPs.cameraDir.z ) ).xyz;
-  // apply gamma correction
-  float gamma = 2.2;
-  fragColour.rgb = pow(fragColour.rgb, vec3(1.0/gamma));
 }

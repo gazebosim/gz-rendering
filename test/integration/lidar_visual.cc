@@ -111,7 +111,7 @@ void LidarVisualTest::Configure(const std::string &_renderEngine)
     lidarVis->SetMaxRange(105.20);
     EXPECT_DOUBLE_EQ(lidarVis->MaxRange(), 105.20);
 
-    lidarVis->SetMinHorizontalAngle(-1.513);
+    lidarVis->SetMinHorizontalAngle(-1.5136);
     EXPECT_DOUBLE_EQ(lidarVis->MinHorizontalAngle(), -1.5136);
 
     lidarVis->SetMaxHorizontalAngle(2.513);

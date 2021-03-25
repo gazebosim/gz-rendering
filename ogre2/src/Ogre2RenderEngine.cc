@@ -119,7 +119,7 @@ void Ogre2RenderEngine::Destroy()
   this->ogreOverlaySystem = nullptr;
 
   // Clean up any textures that may still be in flight.
-  Ogre::TextureGpuManager *mgr = 
+  Ogre::TextureGpuManager *mgr =
     this->ogreRoot->getRenderSystem()->getTextureGpuManager();
 
   auto entries = mgr->getEntries();

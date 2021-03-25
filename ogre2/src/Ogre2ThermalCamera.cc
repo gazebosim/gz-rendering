@@ -893,7 +893,8 @@ void Ogre2ThermalCamera::PostRender()
     {
       unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
       unsigned int rowIdx = i * width * channelCount;
-      memcpy(&this->dataPtr->thermalImage[rowIdx], &thermalBuffer[rawDataRowIdx],
+      memcpy(&this->dataPtr->thermalImage[rowIdx],
+          &thermalBuffer[rawDataRowIdx],
           width * channelCount * bytesPerChannel);
     }
   }

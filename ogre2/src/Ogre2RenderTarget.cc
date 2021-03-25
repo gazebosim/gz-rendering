@@ -1115,16 +1115,12 @@ void Ogre2RenderTexture::DestroyTarget()
 void Ogre2RenderTexture::BuildTarget()
 {
   // check if target fsaa is supported
-  unsigned int fsaa = 0;
   std::vector<unsigned int> fsaaLevels =
       Ogre2RenderEngine::Instance()->FSAALevels();
   unsigned int targetFSAA = this->antiAliasing;
   auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
-  if (it != fsaaLevels.end())
-  {
-    fsaa = targetFSAA;
-  }
-  else
+
+  if (it == fsaaLevels.end())
   {
     // output warning but only do it once
     static bool ogre2FSAAWarn = false;

@@ -1029,17 +1029,26 @@ void Ogre2DepthCamera::PostRender()
 
   int len = width * height;
   unsigned int channelCount = PixelUtil::ChannelCount(format);
+  unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
   Ogre::Image2 image;
   image.convertFromTexture(this->dataPtr->ogreDepthTexture, 0u, 0u);
-  float * depthBufferTmp = static_cast<float *>(image.getRawBuffer());
+  Ogre::TextureBox box = image.getData(0);
+  float *depthBufferTmp = static_cast<float *>(box.data);
   if (!this->dataPtr->depthBuffer)
   {
     this->dataPtr->depthBuffer = new float[len * channelCount];
   }
 
-  memcpy(this->dataPtr->depthBuffer, depthBufferTmp,
-      len * channelCount * sizeof(float));
+  // copy data row by row. The texture box may not be a contiguous region of
+  // a texture
+  for (unsigned int i = 0; i < height; ++i)
+  {
+    unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
+    unsigned int rowIdx = i * width * channelCount;
+    memcpy(&this->dataPtr->depthBuffer[rowIdx], &depthBufferTmp[rawDataRowIdx],
+        width * channelCount * bytesPerChannel);
+  }
 
   if (!this->dataPtr->depthImage)
   {

@@ -57,6 +57,8 @@
 #include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
+#include <ignition/common/Image.hh>
+
 namespace ignition
 {
 namespace rendering
@@ -164,7 +166,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace;
 
   /// \brief Thermal textures.
-  public: Ogre::TextureGpu * ogreThermalTexture;
+  public: Ogre::TextureGpu *ogreThermalTexture;
 
   /// \brief Dummy render texture for the thermal data
   public: RenderTexturePtr thermalTexture = nullptr;
@@ -865,29 +867,35 @@ void Ogre2ThermalCamera::PostRender()
     this->dataPtr->thermalImage = new uint16_t[len];
   }
 
+  Ogre::TextureBox box = image.getData(0u);
   if (format == PF_L8)
   {
-    // workaround for populating a 16bit image buffer with 8bit data
-    // \todo(anyone) add a new ConnectNewThermalFrame function that accepts
-    // a generic unsigned char array instead of uint16_t so we can do a direct
-    // memcpy of the data
-    uint8_t *thermalBuffer = static_cast<uint8_t *>(image.getRawBuffer());
+    uint8_t *thermalBuffer = static_cast<uint8_t*>(box.data);
     for (unsigned int i = 0u; i < height; ++i)
     {
+      // the texture box step size could be larger than our image buffer step
+      // size
+      unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
       for (unsigned int j = 0u; j < width; ++j)
       {
         unsigned int idx = (i * width) + j;
-        this->dataPtr->thermalImage[idx] = static_cast<uint16_t>(
-            thermalBuffer[idx]);
+        this->dataPtr->thermalImage[idx] = thermalBuffer[rawDataRowIdx + j];
       }
     }
   }
   else
   {
     // fill thermal data
-    uint16_t * thermalBuffer = static_cast<uint16_t *>(image.getRawBuffer());
-    memcpy(this->dataPtr->thermalImage, thermalBuffer,
-        height * width * channelCount * bytesPerChannel);
+    // copy data row by row. The texture box may not be a contiguous region of
+    // a texture
+    uint16_t * thermalBuffer = static_cast<uint16_t *>(box.data);
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
+      unsigned int rowIdx = i * width * channelCount;
+      memcpy(&this->dataPtr->thermalImage[rowIdx], &thermalBuffer[rawDataRowIdx],
+          width * channelCount * bytesPerChannel);
+    }
   }
 
   this->dataPtr->newThermalFrame(

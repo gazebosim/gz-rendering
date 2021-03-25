@@ -300,7 +300,7 @@ void Ogre2RenderTarget::RebuildCompositor()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
-  Ogre::TextureGpu * texture = this->RenderTarget();
+  Ogre::TextureGpu *texture = this->RenderTarget();
 
   // TODO(anyone) handle Bayer conversions
   // TODO(anyone) handle ogre version differences
@@ -313,20 +313,29 @@ void Ogre2RenderTarget::Copy(Image &_image) const
 
   Ogre::Image2 image2;
   image2.convertFromTexture(texture, 0u, 0u);
+  Ogre::TextureBox box = image2.getData(0);
 
   auto dataImage = static_cast<unsigned char *>(_image.Data());
-  auto dataImage2 = static_cast<Ogre::uint8 *>(image2.getRawBuffer());
+  auto dataImage2 = static_cast<Ogre::uint8 *>(box.data);
 
-  for (unsigned int row = 0; row < texture->getHeight(); ++row)
+  unsigned int channelCount = 3u;
+  unsigned int rawChannelCount = 4u;
+  unsigned int bytesPerChannel = 1u;
+  for (unsigned int row = 0; row < this->height; ++row)
   {
-    for (unsigned int column = 0; column < texture->getWidth(); ++column)
+    // the texture box step size could be larger than our image buffer step
+    // size
+    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
+    for (unsigned int column = 0; column < this->width; ++column)
     {
-      dataImage[row*texture->getWidth() * 3 + column * 3] =
-        dataImage2[row * texture->getWidth() * 4 + column * 4];
-      dataImage[row*texture->getWidth() * 3 + column * 3 + 1] =
-        dataImage2[row * texture->getWidth() * 4 + column * 4 + 1];
-      dataImage[row*texture->getWidth() * 3 + column * 3 + 2] =
-        dataImage2[row * texture->getWidth() * 4 + column * 4 + 2];
+      unsigned int idx = (row * this->width * channelCount) +
+          column * channelCount;
+      unsigned int rawIdx = rawDataRowIdx +
+          column * rawChannelCount;
+
+      dataImage[idx] = dataImage2[rawIdx];
+      dataImage[idx + 1] = dataImage2[rawIdx + 1];
+      dataImage[idx + 2] = dataImage2[rawIdx + 2];
     }
   }
 }

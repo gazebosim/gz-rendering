@@ -118,7 +118,18 @@ void Ogre2RenderEngine::Destroy()
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
 
-  if (ogreRoot)
+  // Clean up any textures that may still be in flight.
+  Ogre::TextureGpuManager *mgr = 
+    this->ogreRoot->getRenderSystem()->getTextureGpuManager();
+
+  auto entries = mgr->getEntries();
+  for (auto& [name, entry] : entries)
+  {
+    if (entry.resourceGroup == "General")
+      mgr->destroyTexture(entry.texture);
+  }
+
+  if (this->ogreRoot)
   {
     try
     {

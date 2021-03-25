@@ -1233,9 +1233,14 @@ void Ogre2GpuRays::PostRender()
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
   //     if (this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] < 20) {
-  //       std::cerr << "[" << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] <<  " ";
-  //       std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1] <<  " ";
-  //       std::cerr << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2] <<  "]\n";
+  //       std::cerr 
+  //       << "[" 
+  //       << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] 
+  //       <<  " "
+  //       << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1] 
+  //       <<  " "
+  //       << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2] 
+  //       <<  "]\n";
   //     }
   //   }
   //   // igndbg << std::endl;

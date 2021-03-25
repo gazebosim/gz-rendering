@@ -859,7 +859,6 @@ void Ogre2ThermalCamera::PostRender()
 
   Ogre::Image2 image;
   image.convertFromTexture(this->dataPtr->ogreThermalTexture, 0u, 0u);
-  uint16_t * thermalBuffer = static_cast<uint16_t *>(image.getRawBuffer());
 
   if (!this->dataPtr->thermalImage)
   {
@@ -872,6 +871,7 @@ void Ogre2ThermalCamera::PostRender()
     // \todo(anyone) add a new ConnectNewThermalFrame function that accepts
     // a generic unsigned char array instead of uint16_t so we can do a direct
     // memcpy of the data
+    uint8_t *thermalBuffer = static_cast<uint8_t *>(image.getRawBuffer());
     for (unsigned int i = 0u; i < height; ++i)
     {
       for (unsigned int j = 0u; j < width; ++j)
@@ -885,6 +885,7 @@ void Ogre2ThermalCamera::PostRender()
   else
   {
     // fill thermal data
+    uint16_t * thermalBuffer = static_cast<uint16_t *>(image.getRawBuffer());
     memcpy(this->dataPtr->thermalImage, thermalBuffer,
         height * width * channelCount * bytesPerChannel);
   }

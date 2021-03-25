@@ -9,6 +9,38 @@
 
 1. Add light visual support
     * [Pull request #202](https://github.com/ignitionrobotics/ign-rendering/pull/202)
+    * [Pull request #228](https://github.com/ignitionrobotics/ign-rendering/pull/228)
+
+1. Add API for particle emitter scatter ratio
+    * [Pull request #275](https://github.com/ignitionrobotics/ign-rendering/pull/275)
+
+1. Added capsule geometry
+    * [Pull request #200](https://github.com/ignitionrobotics/ign-rendering/pull/200)
+    * [Pull request #278](https://github.com/ignitionrobotics/ign-rendering/pull/278)
+
+1. Added ellipsoid Geometry
+    * [Pull request #203](https://github.com/ignitionrobotics/ign-rendering/pull/203)
+
+1. ogre2: explicitly request OpenGL 3.3 core profile context.
+    * [Pull request #244](https://github.com/ignitionrobotics/ign-rendering/pull/244)
+
+1. Bump in edifice: ign-common4
+    * [Pull request #209](https://github.com/ignitionrobotics/ign-rendering/pull/209)
+
+1. Support setting horizontal and vertical resolution for GpuRays
+    * [Pull request #229](https://github.com/ignitionrobotics/ign-rendering/pull/229)
+
+1. Added Light Intensity
+    * [Pull request #233](https://github.com/ignitionrobotics/ign-rendering/pull/233)
+
+1. Heightmap for Ogre 1
+    * [Pull request #180](https://github.com/ignitionrobotics/ign-rendering/pull/180)
+
+1. Added render order to material
+    * [Pull request #188](https://github.com/ignitionrobotics/ign-rendering/pull/188)
+
+1. Add support for lightmaps in ogre2
+    * [Pull request #182](https://github.com/ignitionrobotics/ign-rendering/pull/182)
 
 ### Ignition Rendering 4.X
 

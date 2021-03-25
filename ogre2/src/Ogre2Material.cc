@@ -518,6 +518,10 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       }
     }
   }
+  else
+  {
+    return;
+  }
 
   // temp workaround check if the model is a OBJ file
   {
@@ -542,28 +546,36 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   // otherwise this becomes a transparent material
   if (_type == Ogre::PBSM_DIFFUSE)
   {
-    if (this->TextureAlphaEnabled() &&
-        !Ogre::PixelFormatGpuUtils::hasAlpha(
-          this->Texture(this->textureName)->getPixelFormat()))
+    if (this->TextureAlphaEnabled())
     {
-      this->SetAlphaFromTexture(false, this->AlphaThreshold(),
-          this->TwoSidedEnabled());
+      Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+      Ogre::TextureGpuManager *textureMgr =
+          root->getRenderSystem()->getTextureGpuManager();
+      auto tex = textureMgr->findTextureNoThrow(baseName);
+      if (tex)
+      {
+        tex->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+        tex->waitForData();
+
+        if (!Ogre::PixelFormatGpuUtils::hasAlpha(tex->getPixelFormat()))
+        {
+          this->SetAlphaFromTexture(false, this->AlphaThreshold(),
+              this->TwoSidedEnabled());
+        }
+      }
     }
   }
 }
 
-//////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 Ogre::TextureGpu* Ogre2Material::Texture(const std::string &_name)
 {
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
   Ogre::TextureGpuManager *textureMgr =
     root->getRenderSystem()->getTextureGpuManager();
-  Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(_name,
-        Ogre::GpuPageOutStrategy::Discard,
-        Ogre::TextureFlags::ManualTexture,
-        Ogre::TextureTypes::Type2D);
 
-  return texture;
+  auto tex = textureMgr->findTextureNoThrow(_name);
+  return tex;
 }
 
 //////////////////////////////////////////////////

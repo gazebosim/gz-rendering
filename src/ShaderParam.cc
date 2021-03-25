@@ -31,6 +31,9 @@ class ignition::rendering::ShaderParamPrivate
       float vFloat;
       int vInt;
     } paramValue;
+
+  public: void* buffer;
+  public: uint32_t count;
 };
 
 
@@ -52,12 +55,21 @@ ShaderParam::ShaderParam(const ShaderParam &_other)
 //////////////////////////////////////////////////
 ShaderParam::~ShaderParam()
 {
+  if (this->dataPtr->count > 0) {
+    free(this->dataPtr->buffer);
+  }
 }
 
 //////////////////////////////////////////////////
 ShaderParam::ParamType ShaderParam::Type() const
 {
   return this->dataPtr->type;
+}
+
+//////////////////////////////////////////////////
+uint32_t ShaderParam::Count() const
+{
+  return this->dataPtr->count;
 }
 
 //////////////////////////////////////////////////
@@ -82,6 +94,20 @@ void ShaderParam::operator=(const int _value)
 }
 
 //////////////////////////////////////////////////
+void ShaderParam::InitializeBuffer(const uint32_t _count) 
+{
+  this->dataPtr->type = PARAM_BUFFER;
+  this->dataPtr->count = _count;
+  this->dataPtr->buffer = malloc(sizeof(float) * _count);
+}
+
+//////////////////////////////////////////////////
+void ShaderParam::UpdateBuffer(void* _buffer, const uint32_t _count) 
+{
+  memcpy(this->dataPtr->buffer, _buffer, sizeof(float) * _count);
+}
+
+//////////////////////////////////////////////////
 bool ShaderParam::Value(float *_value) const
 {
   if (PARAM_FLOAT == this->dataPtr->type)
@@ -101,4 +127,14 @@ bool ShaderParam::Value(int *_value) const
     return true;
   }
   return false;
+}
+
+//////////////////////////////////////////////////
+void* ShaderParam::Buffer() const
+{
+  if (this->dataPtr->buffer)
+  {
+    return this->dataPtr->buffer;
+  }
+  return nullptr;
 }

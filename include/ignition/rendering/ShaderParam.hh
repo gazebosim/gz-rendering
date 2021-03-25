@@ -19,7 +19,9 @@
 #define IGNITION_RENDERING_SHADERPARAM_HH_
 
 #include <cstdint>
+#include <cstdlib>
 #include <memory>
+#include <cstring>
 
 #include <ignition/common/SuppressWarning.hh>
 
@@ -48,6 +50,8 @@ namespace ignition
 
         /// \brief Integer type param
         PARAM_INT = 2,
+
+        PARAM_BUFFER = 3,
       };
 
       /// \brief constructor
@@ -64,6 +68,8 @@ namespace ignition
       /// \return Type of this parameter
       public: ParamType Type() const;
 
+      public: uint32_t Count() const;
+
       /// \brief Set from another ShaderParam.
       /// \param[in] _other Another ShaderParam.
       /// \return Reference to this ShaderParam.
@@ -77,6 +83,10 @@ namespace ignition
       /// \param[in] _value Value to set this param to.
       public: void operator=(const int _value);
 
+      public: void InitializeBuffer(const uint32_t _count);
+
+      public: void UpdateBuffer(void* _buffer, const uint32_t _count);
+
       /// \brief Get the value of this parameter if it is a float
       /// \param[out] _value variable the value will be copied to
       /// \return true if the param is the expected type
@@ -86,6 +96,8 @@ namespace ignition
       /// \param[out] _value variable the value will be copied to
       /// \return true if the param is the expected type
       public: bool Value(int *_value) const;
+
+      public: void* Buffer() const;
 
       /// \brief private implementation
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

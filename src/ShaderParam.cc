@@ -41,6 +41,8 @@ class ignition::rendering::ShaderParamPrivate
 ShaderParam::ShaderParam() :
   dataPtr(new ShaderParamPrivate)
 {
+  this->dataPtr->buffer = nullptr;
+  this->dataPtr->count = 0;
 }
 
 //////////////////////////////////////////////////
@@ -55,7 +57,7 @@ ShaderParam::ShaderParam(const ShaderParam &_other)
 //////////////////////////////////////////////////
 ShaderParam::~ShaderParam()
 {
-  if (this->dataPtr->count > 0) {
+  if (this->dataPtr->buffer) {
     free(this->dataPtr->buffer);
   }
 }

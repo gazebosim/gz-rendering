@@ -112,7 +112,10 @@ void displayCB()
   ir::VisualPtr sphere = std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("sphere"));
   ir::MaterialPtr shader = sphere->Material();
   ir::ShaderParamsPtr shaderParams = shader->FragmentShaderParams();
-  (*shaderParams)["testFloat"] = 1.0f;
+
+  (*shaderParams)["testFloat"].InitializeBuffer(1);
+  float values[1] = {1};
+  (*shaderParams)["testFloat"].UpdateBuffer((void*)values, 1);
 
   unsigned char *data = g_image->Data<unsigned char>();
 

@@ -76,7 +76,7 @@ void LightTest::Light(const std::string &_renderEngine)
 
   // intensity
   light->SetIntensity(1.25);
-  EXPECT_DOUBLE_EQ(1.25, light->Intensity());
+  EXPECT_NEAR(1.25, light->Intensity(), 1e-6);
 
   // attenuation
   // Checking near because Ogre stores it as float

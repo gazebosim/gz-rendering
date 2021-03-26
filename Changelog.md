@@ -2,7 +2,7 @@
 
 ### Ignition Rendering 5.X
 
-### Ignition Rendering 5.X.X
+### Ignition Rendering 5.X.X (20XX-XX-XX)
 
 1. Add ogre2 skybox support
     * [Pull request #168](https://github.com/ignitionrobotics/ign-rendering/pull/168)
@@ -32,6 +32,7 @@
 
 1. Added Light Intensity
     * [Pull request #233](https://github.com/ignitionrobotics/ign-rendering/pull/233)
+    * [Pull request #284](https://github.com/ignitionrobotics/ign-rendering/pull/284)
 
 1. Heightmap for Ogre 1
     * [Pull request #180](https://github.com/ignitionrobotics/ign-rendering/pull/180)

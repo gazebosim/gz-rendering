@@ -113,9 +113,15 @@ void displayCB()
   ir::MaterialPtr shader = sphere->Material();
   ir::ShaderParamsPtr shaderParams = shader->FragmentShaderParams();
 
-  (*shaderParams)["testFloat"].InitializeBuffer(1);
-  float values[1] = {1};
-  (*shaderParams)["testFloat"].UpdateBuffer((void*)values, 1);
+  float testMatrix[16] = {
+    0.1, 0.2, 0.3, 0.4,
+    0.5, 0.6, 0.7, 0.8,
+    0.9, 0.1, 0.2, 0.3,
+    0.4, 0.5, 0.6, 0.7,
+  };
+  
+  (*shaderParams)["textMatrix4"].InitializeBuffer(16);
+  (*shaderParams)["textMatrix4"].UpdateBuffer((void*)&testMatrix, 16);
 
   unsigned char *data = g_image->Data<unsigned char>();
 

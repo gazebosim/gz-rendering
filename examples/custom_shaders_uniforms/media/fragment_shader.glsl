@@ -7,5 +7,5 @@ uniform mat4 textMatrix4;
 
 void main()
 {
-  gl_FragColor = vec4(testFloat, 0, 0, 1.0);
+  gl_FragColor = vec4(textMatrix4[0][0], textMatrix4[3][1], textMatrix4[3][3], 1.0);
 }

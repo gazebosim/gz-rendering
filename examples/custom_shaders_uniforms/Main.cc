@@ -91,8 +91,8 @@ void buildScene(ScenePtr _scene)
   //! [add shader to visual]
   // create shader material
   MaterialPtr shader = _scene->CreateMaterial("shaderMaterial");
-  shader->SetVertexShader("/home/wlew/ignition/ign-rendering/examples/custom_shaders_uniforms/media/vertex_shader.glsl");
-  shader->SetFragmentShader("/home/wlew/ignition/ign-rendering/examples/custom_shaders_uniforms/media/fragment_shader.glsl");
+  shader->SetVertexShader("/home/wlew/work/ign-rendering/examples/custom_shaders_uniforms/media/vertex_shader.glsl");
+  shader->SetFragmentShader("/home/wlew/work/ign-rendering/examples/custom_shaders_uniforms/media/fragment_shader.glsl");
 
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual("sphere");

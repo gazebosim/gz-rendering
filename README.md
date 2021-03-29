@@ -47,12 +47,12 @@ of libraries designed to rapidly develop robot applications.
 
 # Install
 
-See the [installation tutorial](https://ignitionrobotics.org/api/rendering/4.0/installation.html).
+See the [installation tutorial](https://ignitionrobotics.org/api/rendering/5.0/installation.html).
 
 # Usage
 
 The Ign Rendering API can be found in the documentation. See the
-[installation tutorial](https://ignitionrobotics.org/api/rendering/4.0/installation.html)
+[installation tutorial](https://ignitionrobotics.org/api/rendering/5.0/installation.html)
 on how to build the documentation files using Doxygen.
 
 You can also take a look at the sample applications in the `examples` folder.

@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-simple-demo)
+project(ignition-rendering-custom_shaders_uniforms)
+
+include_directories(SYSTEM
+  ${PROJECT_BINARY_DIR}
+)
 
 find_package(ignition-rendering4)
 
@@ -17,13 +21,20 @@ if (NOT APPLE)
   link_directories(${GLEW_LIBRARY_DIRS})
 endif()
 
+configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
-add_executable(simple_demo Main.cc GlutWindow.cc)
+add_executable(custom_shaders_uniforms Main.cc GlutWindow.cc)
 
-target_link_libraries(simple_demo
+target_link_libraries(custom_shaders_uniforms
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
   )
+
+add_custom_command(TARGET custom_shaders_uniforms POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${CMAKE_SOURCE_DIR}/media
+  $<TARGET_FILE_DIR:custom_shaders_uniforms>/media)

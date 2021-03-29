@@ -30,10 +30,19 @@
 #include <ignition/common/Console.hh>
 #include <ignition/rendering.hh>
 
+#include "example_config.hh"
+
 #include "GlutWindow.hh"
 
 using namespace ignition;
 using namespace rendering;
+
+const std::string vertex_shader_file = "vertex_shader.glsl";
+const std::string fragment_shader_file = "fragment_shader.glsl";
+//! [init shaders variables]
+
+const std::string RESOURCE_PATH =
+    ignition::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
@@ -88,11 +97,19 @@ void buildScene(ScenePtr _scene)
   red->SetShininess(50);
   red->SetReflectivity(0);
 
+  // create shader materials
+  // path to look for vertex and fragment shader parameters
+  std::string vertex_shader_path = ignition::common::joinPaths(
+      RESOURCE_PATH, vertex_shader_file);
+
+  std::string fragment_shader_path = ignition::common::joinPaths(
+      RESOURCE_PATH, fragment_shader_file);
+
   //! [add shader to visual]
   // create shader material
-  MaterialPtr shader = _scene->CreateMaterial("shaderMaterial");
-  shader->SetVertexShader("/home/wlew/work/ign-rendering/examples/custom_shaders_uniforms/media/vertex_shader.glsl");
-  shader->SetFragmentShader("/home/wlew/work/ign-rendering/examples/custom_shaders_uniforms/media/fragment_shader.glsl");
+  ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
+  shader->SetVertexShader(vertex_shader_path);
+  shader->SetFragmentShader(fragment_shader_path);
 
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual("sphere");

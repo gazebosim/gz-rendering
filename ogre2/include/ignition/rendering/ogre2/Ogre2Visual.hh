@@ -52,6 +52,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
+      // Documentation inherited
+      public: virtual void SetTransparency(double _transp) override;
+
       // Documentation inherited.
       public: virtual void SetVisibilityFlags(uint32_t _flags) override;
 

@@ -65,7 +65,6 @@ void Ogre2Visual::SetWireframe(bool _show)
     if (!entity)
       continue;
 
-    // For each ogre::entity
     for (unsigned int j = 0; j < entity->getNumSubEntities(); j++)
     {
       Ogre::v1::SubEntity *subEntity = entity->getSubEntity(j);
@@ -110,6 +109,12 @@ bool Ogre2Visual::Wireframe() const
 void Ogre2Visual::SetVisible(bool _visible)
 {
   this->ogreNode->setVisible(_visible);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Visual::SetTransparency(double _transp)
+{
+  
 }
 
 //////////////////////////////////////////////////

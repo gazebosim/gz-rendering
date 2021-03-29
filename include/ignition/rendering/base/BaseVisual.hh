@@ -88,6 +88,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
+      // Documentation inherited
+      public: virtual void SetTransparency(double _transp) override;
+
       // Documentation inherited.
       public: virtual void SetVisibilityFlags(uint32_t _flags) override;
 
@@ -142,6 +145,9 @@ namespace ignition
 
       /// \brief The bounding box of the visual
       protected: ignition::math::AxisAlignedBox boundingBox;
+
+      /// \brief True if wireframe mode is enabled
+      protected: bool wireframe;
     };
 
     //////////////////////////////////////////////////
@@ -357,9 +363,34 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    bool BaseVisual<T>::Wireframe() const
+    {
+      return this->wireframe;
+    }
+    
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetWireframe(bool _show)
+    {
+      ignerr << "SetWireframe(" << _show << ") not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseVisual<T>::SetVisible(bool _visible)
     {
       ignerr << "SetVisible(" << _visible << ") not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetTransparency(double _transp)
+    {
+      ignerr << "SetTransparency(" << _transp << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
     }

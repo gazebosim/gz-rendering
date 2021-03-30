@@ -91,6 +91,7 @@ void ParticleEmitterTest::CheckBasicAPI()
   math::Color    expectedColorEnd        = ignition::math::Color::White;
   double         expectedScaleRate       = 1;
   std::string    expectedColorRangeImage = "";
+  float          particleScatterRatio    = 0.65f;
 
   // Check default expectations.
   EXPECT_EQ(expectedEmitterType,      particleEmitter->Type());
@@ -107,6 +108,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   EXPECT_EQ(expectedColorEnd,         particleEmitter->ColorEnd());
   EXPECT_DOUBLE_EQ(expectedScaleRate, particleEmitter->ScaleRate());
   EXPECT_EQ(expectedColorRangeImage,  particleEmitter->ColorRangeImage());
+  EXPECT_FLOAT_EQ(particleScatterRatio,
+      particleEmitter->ParticleScatterRatio());
 
   // Modify values.
   expectedEmitterType     = EmitterType::EM_BOX;
@@ -123,6 +126,7 @@ void ParticleEmitterTest::CheckBasicAPI()
   expectedColorEnd        = ignition::math::Color::Blue;
   expectedScaleRate       = 10;
   expectedColorRangeImage = common::joinPaths(TEST_MEDIA_PATH, "texture.png");
+  float expectedScatterRatio  = 0.24f;
 
   // Modify attributes.
   particleEmitter->SetType(expectedEmitterType);
@@ -137,6 +141,7 @@ void ParticleEmitterTest::CheckBasicAPI()
   particleEmitter->SetColorRange(expectedColorStart, expectedColorEnd);
   particleEmitter->SetScaleRate(expectedScaleRate);
   particleEmitter->SetColorRangeImage(expectedColorRangeImage);
+  particleEmitter->SetParticleScatterRatio(expectedScatterRatio);
 
   // Check getters.
   EXPECT_EQ(expectedEmitterType,      particleEmitter->Type());
@@ -153,6 +158,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   EXPECT_EQ(expectedColorEnd,         particleEmitter->ColorEnd());
   EXPECT_DOUBLE_EQ(expectedScaleRate, particleEmitter->ScaleRate());
   EXPECT_EQ(expectedColorRangeImage,  particleEmitter->ColorRangeImage());
+  EXPECT_FLOAT_EQ(expectedScatterRatio,
+      particleEmitter->ParticleScatterRatio());
 }
 
 /////////////////////////////////////////////////

@@ -71,9 +71,9 @@ void SceneTest::AddRemoveVisuals(const std::string &_renderEngine)
   root->AddChild(camera);
 
   // create material assigned to all geoms
-  math::Color ambient(0.5, 0.2, 0.4, 1.0);
-  math::Color diffuse(0.1, 0.9, 0.3, 1.0);
-  math::Color specular(0.8, 0.7, 0.0, 1.0);
+  math::Color ambient(0.5f, 0.2f, 0.4f, 1.0f);
+  math::Color diffuse(0.1f, 0.9f, 0.3f, 1.0f);
+  math::Color specular(0.8f, 0.7f, 0.0f, 1.0f);
   double transparency = 0.3;
   MaterialPtr material = scene->CreateMaterial("mat");
   ASSERT_NE(nullptr, material);

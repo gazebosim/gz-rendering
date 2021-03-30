@@ -17,7 +17,13 @@
 
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
+#ifdef _MSC_VER
+#pragma warning(push, 0)
+#endif
 #include <OgreGL3PlusFBORenderTexture.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include <ignition/common/Console.hh>
 
@@ -62,7 +68,7 @@ class Ogre2RenderTargetCompositorListener :
       IGN_ASSERT(scenePass != nullptr, "Unable to get scene pass");
       Ogre::Viewport *vp = scenePass->getViewport();
       // make sure we do not alter the reserved visibility flags
-      uint32_t f = ogreRenderTarget->VisibilityMask() |
+      uint32_t f = this->ogreRenderTarget->VisibilityMask() |
           ~Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS;
       // apply the new visibility mask
       uint32_t flags = f & vp->getVisibilityMask();
@@ -82,6 +88,18 @@ class ignition::rendering::Ogre2RenderTargetPrivate
 {
   /// \brief Listener for chaning compositor pass properties
   public: Ogre2RenderTargetCompositorListener *rtListener = nullptr;
+
+  /// \brief Name of sky box material
+  public: const std::string kSkyboxMaterialName = "SkyBox";
+
+  /// \brief Name of base rendering compositor node
+  public: const std::string kBaseNodeName = "PbsMaterialsRenderingNode";
+
+  /// \brief Name of final rendering compositor node
+  public: const std::string kFinalNodeName = "FinalComposition";
+
+  /// \brief Name of shadow compositor node
+  public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
 };
 
 using namespace ignition;
@@ -110,11 +128,145 @@ Ogre2RenderTarget::~Ogre2RenderTarget()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::BuildCompositor()
 {
-  this->UpdateShadowNode();
-
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  this->UpdateBackgroundMaterial();
+
+  bool validBackground = this->backgroundMaterial &&
+      !this->backgroundMaterial->EnvironmentMap().empty();
+
+  // The function build a similar compositor as the one defined in
+  // ogre2/media/2.0/scripts/Compositors/PbsMaterials.compositor
+  // but supports an extra quad pass to render the skybox cubemap if
+  // sky is enabled.
+  // todo(anyone) Note the definition programmatically created here
+  // replaces the one defined in the script so it maybe safe to remove the
+  // PbsMaterials.compositor file
+  std::string wsDefName = "PbsMaterialWorkspace_" + this->Name();
+  this->ogreCompositorWorkspaceDefName = wsDefName;
+  if (!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
+  {
+    // PbsMaterialsRenderingNode
+    std::string nodeDefName = wsDefName + "/" + this->dataPtr->kBaseNodeName;
+    Ogre::CompositorNodeDef *nodeDef =
+        ogreCompMgr->addNodeDefinition(nodeDefName);
+
+    // Input texture
+    Ogre::TextureDefinitionBase::TextureDefinition *rt0TexDef =
+        nodeDef->addTextureDefinition("rt0");
+    rt0TexDef->textureType = Ogre::TEX_TYPE_2D;
+    rt0TexDef->width = 0;
+    rt0TexDef->height = 0;
+    rt0TexDef->depth = 1;
+    rt0TexDef->numMipmaps = 0;
+    rt0TexDef->widthFactor = 1;
+    rt0TexDef->heightFactor = 1;
+    rt0TexDef->formatList = {Ogre::PF_R8G8B8};
+    rt0TexDef->fsaa = 0;
+    rt0TexDef->uav = false;
+    rt0TexDef->automipmaps = false;
+    rt0TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolTrue;
+    rt0TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    rt0TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
+    rt0TexDef->fsaaExplicitResolve = false;
+
+    Ogre::TextureDefinitionBase::TextureDefinition *rt1TexDef =
+        nodeDef->addTextureDefinition("rt1");
+    rt1TexDef->textureType = Ogre::TEX_TYPE_2D;
+    rt1TexDef->width = 0;
+    rt1TexDef->height = 0;
+    rt1TexDef->depth = 1;
+    rt1TexDef->numMipmaps = 0;
+    rt1TexDef->widthFactor = 1;
+    rt1TexDef->heightFactor = 1;
+    rt1TexDef->formatList = {Ogre::PF_R8G8B8};
+    rt1TexDef->fsaa = 0;
+    rt1TexDef->uav = false;
+    rt1TexDef->automipmaps = false;
+    rt1TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolTrue;
+    rt1TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    rt1TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
+    rt1TexDef->fsaaExplicitResolve = false;
+
+    nodeDef->setNumTargetPass(2);
+    Ogre::CompositorTargetDef *rt0TargetDef =
+        nodeDef->addTargetPass("rt0");
+
+    if (validBackground)
+      rt0TargetDef->setNumPasses(3);
+    else
+      rt0TargetDef->setNumPasses(2);
+    {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          rt0TargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = this->ogreBackgroundColor;
+
+      if (validBackground)
+      {
+        // quad pass
+        Ogre::CompositorPassQuadDef *passQuad =
+            static_cast<Ogre::CompositorPassQuadDef *>(
+            rt0TargetDef->addPass(Ogre::PASS_QUAD));
+        passQuad->mMaterialName = this->dataPtr->kSkyboxMaterialName + "_"
+            + this->Name();
+        passQuad->mFrustumCorners =
+            Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
+      }
+
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          rt0TargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->mShadowNode = this->dataPtr->kShadowNodeName;
+      passScene->mIncludeOverlays = true;
+    }
+
+    nodeDef->mapOutputChannel(0, "rt0");
+    nodeDef->mapOutputChannel(1, "rt1");
+
+    // Final Composition
+    std::string finalNodeDefName = wsDefName + "/" +
+        this->dataPtr->kFinalNodeName;
+    Ogre::CompositorNodeDef *finalNodeDef =
+        ogreCompMgr->addNodeDefinition(finalNodeDefName);
+    finalNodeDef->addTextureSourceName("rt_output", 0,
+        Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+    finalNodeDef->addTextureSourceName("rtN", 1,
+        Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+
+    finalNodeDef->setNumTargetPass(2);
+    Ogre::CompositorTargetDef *outTargetDef =
+        finalNodeDef->addTargetPass("rt_output");
+    outTargetDef->setNumPasses(2);
+    {
+      // quad pass
+      Ogre::CompositorPassQuadDef *passQuad =
+          static_cast<Ogre::CompositorPassQuadDef *>(
+          outTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->mMaterialName = "Ogre/Copy/4xFP32";
+      passQuad->addQuadTextureSource(0, "rtN", 0);
+
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          outTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->mUpdateLodLists = false;
+      passScene->mIncludeOverlays = true;
+      passScene->mFirstRQ = 254;
+      passScene->mLastRQ = 255;
+    }
+
+    Ogre::CompositorWorkspaceDef *workDef =
+        ogreCompMgr->addWorkspaceDefinition(wsDefName);
+    workDef->connectExternal(0, finalNodeDefName, 0);
+    workDef->connect(nodeDefName, 0, finalNodeDefName, 1);
+  }
+
+  this->UpdateShadowNode();
 
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
@@ -136,6 +288,12 @@ void Ogre2RenderTarget::DestroyCompositor()
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
   this->ogreCompositorWorkspace->setListener(nullptr);
   ogreCompMgr->removeWorkspace(this->ogreCompositorWorkspace);
+  ogreCompMgr->removeWorkspaceDefinition(this->ogreCompositorWorkspaceDefName);
+  ogreCompMgr->removeNodeDefinition(this->ogreCompositorWorkspaceDefName +
+      "/" + this->dataPtr->kBaseNodeName);
+  ogreCompMgr->removeNodeDefinition(this->ogreCompositorWorkspaceDefName +
+      "/" + this->dataPtr->kFinalNodeName);
+
   this->ogreCompositorWorkspace = nullptr;
   delete this->dataPtr->rtListener;
   this->dataPtr->rtListener = nullptr;
@@ -190,6 +348,20 @@ void Ogre2RenderTarget::SetBackgroundColor(math::Color _color)
 {
   this->ogreBackgroundColor = Ogre2Conversions::Convert(_color);
   this->colorDirty = true;
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::SetBackgroundMaterial(MaterialPtr _material)
+{
+  this->backgroundMaterial = _material;
+  this->backgroundMaterialDirty = true;
+  this->targetDirty = true;
+}
+
+//////////////////////////////////////////////////
+MaterialPtr Ogre2RenderTarget::BackgroundMaterial() const
+{
+  return this->backgroundMaterial;
 }
 
 //////////////////////////////////////////////////
@@ -286,23 +458,79 @@ void Ogre2RenderTarget::UpdateBackgroundColor()
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTarget::UpdateBackgroundMaterial()
+{
+  if (!this->backgroundMaterialDirty)
+    return;
+
+  bool validBackground = this->backgroundMaterial &&
+      !this->backgroundMaterial->EnvironmentMap().empty();
+
+  if (validBackground)
+  {
+    Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
+    std::string skyMatName = this->dataPtr->kSkyboxMaterialName + "_"
+        + this->Name();
+    auto mat = matManager.getByName(skyMatName);
+    if (!mat)
+    {
+      auto skyboxMat = matManager.getByName(this->dataPtr->kSkyboxMaterialName);
+      if (!skyboxMat)
+      {
+        ignerr << "Unable to find skybox material" << std::endl;
+        return;
+      }
+      mat = skyboxMat->clone(skyMatName);
+    }
+    Ogre::TextureUnitState *texUnit =
+        mat->getTechnique(0u)->getPass(0u)->getTextureUnitState(0u);
+    texUnit->setTextureName(this->backgroundMaterial->EnvironmentMap(),
+        Ogre::TEX_TYPE_CUBE_MAP);
+  }
+
+  this->backgroundMaterialDirty = false;
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::UpdateRenderPassChain()
 {
+  UpdateRenderPassChain(this->ogreCompositorWorkspace,
+      this->ogreCompositorWorkspaceDefName,
+      this->ogreCompositorWorkspaceDefName + "/" +
+      this->dataPtr->kBaseNodeName,
+      this->ogreCompositorWorkspaceDefName + "/" +
+      this->dataPtr->kFinalNodeName,
+      this->renderPasses, this->renderPassDirty);
+
+  this->renderPassDirty = false;
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::UpdateRenderPassChain(
+    Ogre::CompositorWorkspace *_workspace, const std::string &_workspaceDefName,
+    const std::string &_baseNode, const std::string &_finalNode,
+    const std::vector<RenderPassPtr> &_renderPasses,
+    bool _recreateNodes)
+{
+  if (!_workspace || _workspaceDefName.empty() ||
+      _baseNode.empty() || _finalNode.empty() || _renderPasses.empty())
+    return;
+
   // check pass enabled state and update connections if necessary.
   // If render pass is dirty then skip the enabled state check since the whole
   // workspace nodes and connections will be recreated
   bool updateConnection = false;
-  if (!this->renderPassDirty)
+  if (!_recreateNodes)
   {
-    auto nodeSeq = this->ogreCompositorWorkspace->getNodeSequence();
+    auto nodeSeq = _workspace->getNodeSequence();
 
     // set node instance to render pass and update enabled state
-    for (auto &pass : this->renderPasses)
+    for (const auto &pass : _renderPasses)
     {
       Ogre2RenderPass *ogre2RenderPass =
           dynamic_cast<Ogre2RenderPass *>(pass.get());
       Ogre::CompositorNode *node =
-          this->ogreCompositorWorkspace->findNodeNoThrow(
+          _workspace->findNodeNoThrow(
           ogre2RenderPass->OgreCompositorNodeDefinitionName());
 
       // check if we need to create all nodes or just update the connections.
@@ -311,7 +539,7 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
       // connections
       if (!node)
       {
-        renderPassDirty = true;
+        _recreateNodes = true;
       }
       else if (node && node->getEnabled() != ogre2RenderPass->IsEnabled())
       {
@@ -321,7 +549,7 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
     }
   }
 
-  if (!this->renderPassDirty && !updateConnection)
+  if (!_recreateNodes && !updateConnection)
     return;
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -329,28 +557,28 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
   Ogre::CompositorWorkspaceDef *workspaceDef =
-    ogreCompMgr->getWorkspaceDefinition(this->ogreCompositorWorkspaceDefName);
+    ogreCompMgr->getWorkspaceDefinition(_workspaceDefName);
 
-  auto nodeSeq = this->ogreCompositorWorkspace->getNodeSequence();
+  auto nodeSeq = _workspace->getNodeSequence();
 
   // The first node and final node in the workspace are defined in
   // PbsMaterials.compositor
   // the first node is the base scene pass node
-  std::string outNodeDefName = "PbsMaterialsRenderingNode";
+  std::string outNodeDefName = _baseNode;
   // the final compositor node
-  std::string finalNodeDefName = "FinalComposition";
+  std::string finalNodeDefName = _finalNode;
   std::string inNodeDefName;
 
   // if new nodes need to be added then clear everything,
   // otherwise clear only the node connections
-  if (this->renderPassDirty)
+  if (_recreateNodes)
     workspaceDef->clearAll();
   else
     workspaceDef->clearAllInterNodeConnections();
 
   // chain the render passes by connecting all the ogre compositor nodes
   // in between the base scene pass node and the final compositor node
-  for (auto &pass : this->renderPasses)
+  for (const auto &pass : _renderPasses)
   {
     Ogre2RenderPass *ogre2RenderPass =
         dynamic_cast<Ogre2RenderPass *>(pass.get());
@@ -369,18 +597,16 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
 
   // if new node definitions were added then recreate all the compositor nodes,
   // otherwise update the connections
-  if (this->renderPassDirty)
+  if (_recreateNodes)
   {
     // clearAll requires the output to be connected again.
     workspaceDef->connectExternal(0, finalNodeDefName, 0);
-    this->ogreCompositorWorkspace->recreateAllNodes();
+    _workspace->recreateAllNodes();
   }
   else
   {
-    this->ogreCompositorWorkspace->reconnectAllNodes();
+    _workspace->reconnectAllNodes();
   }
-
-  this->renderPassDirty = false;
 }
 
 //////////////////////////////////////////////////
@@ -402,6 +628,24 @@ void Ogre2RenderTarget::UpdateShadowNode()
       else
         spotPointLightCount++;
     }
+  }
+
+  // limit number of shadow maps
+  // shaders dynamically generated by ogre produce compile error at runtime if
+  // the number of shadow maps exceeds certain number. The error seems to
+  // suggest that the number of uniform variables has exceeded the max number
+  // allowed
+  unsigned int maxShadowMaps = 25u;
+  if (dirLightCount * 3 + spotPointLightCount > maxShadowMaps)
+  {
+    dirLightCount = std::min(static_cast<unsigned int>(maxShadowMaps / 3),
+        dirLightCount);
+    spotPointLightCount = std::min(
+        std::max(maxShadowMaps - dirLightCount * 3, 0u), spotPointLightCount);
+    ignwarn << "Number of shadow-casting lights exceeds the limit supported by "
+            << "the underlying rendering engine ogre2. Limiting to "
+            << dirLightCount << " directional lights and "
+            << spotPointLightCount << " point / spot lights" << std::endl;
   }
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -444,6 +688,7 @@ void Ogre2RenderTarget::UpdateShadowNode()
   unsigned int colIdx = 0;
   unsigned int rowSize = maxTexSize / texSize;
   unsigned int colSize = rowSize;
+
   for (unsigned int i = 0; i < spotPointLightCount; ++i)
   {
     shadowParam.technique = Ogre::SHADOWMAP_FOCUSED;
@@ -474,7 +719,7 @@ void Ogre2RenderTarget::UpdateShadowNode()
     }
   }
 
-  std::string shadowNodeDefName = "PbsMaterialsShadowNode";
+  std::string shadowNodeDefName = this->dataPtr->kShadowNodeName;
   if (compositorManager->hasShadowNodeDefinition(shadowNodeDefName))
     compositorManager->removeShadowNodeDefinition(shadowNodeDefName);
 

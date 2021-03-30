@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre2/Ogre2ArrowVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2AxisVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
+#include "ignition/rendering/ogre2/Ogre2Capsule.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
@@ -28,6 +29,7 @@
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
+#include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -48,6 +50,9 @@ class ignition::rendering::Ogre2ScenePrivate
 {
   /// \brief Flag to indicate if shadows need to be updated
   public: bool shadowsDirty = true;
+
+  /// \brief Flag to indicate if sky is enabled or not
+  public: bool skyEnabled = false;
 };
 
 using namespace ignition;
@@ -247,6 +252,8 @@ CameraPtr Ogre2Scene::CreateCameraImpl(unsigned int _id,
   Ogre2CameraPtr camera(new Ogre2Camera);
   bool result = this->InitObject(camera, _id, _name);
   camera->SetBackgroundColor(this->backgroundColor);
+  if (this->backgroundMaterial)
+    camera->SetBackgroundMaterial(this->backgroundMaterial);
   return (result) ? camera : nullptr;
 }
 
@@ -300,6 +307,15 @@ AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int _id,
     const std::string &_name)
 {
   Ogre2AxisVisualPtr visual(new Ogre2AxisVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+LightVisualPtr Ogre2Scene::CreateLightVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2LightVisualPtr visual(new Ogre2LightVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }
@@ -366,6 +382,25 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
 
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
+}
+
+//////////////////////////////////////////////////
+CapsulePtr Ogre2Scene::CreateCapsuleImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2CapsulePtr capsule(new Ogre2Capsule);
+  bool result = this->InitObject(capsule, _id, _name);
+  return (result) ? capsule : nullptr;
+}
+
+//////////////////////////////////////////////////
+HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int,
+    const std::string &, const HeightmapDescriptor &)
+{
+  ignerr << "Ogre 2 doesn't support heightmaps yet, see " <<
+      "https://github.com/ignitionrobotics/ign-rendering/issues/187"
+      << std::endl;
+  return nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -453,6 +488,7 @@ ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
 {
   Ogre2ParticleEmitterPtr visual(new Ogre2ParticleEmitter);
   bool result = this->InitObject(visual, _id, _name);
+
   return (result) ? visual : nullptr;
 }
 
@@ -566,4 +602,41 @@ void Ogre2Scene::SetShadowsDirty(bool _dirty)
 bool Ogre2Scene::ShadowsDirty() const
 {
   return this->dataPtr->shadowsDirty;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::SetSkyEnabled(bool _enabled)
+{
+  MaterialPtr skyboxMat;
+  if (_enabled)
+  {
+    // get skybox material
+    std::string skyboxMatName = "Default/skybox";
+    skyboxMat = this->Material(skyboxMatName);
+    if (!skyboxMat)
+    {
+      // ogre2 should be able to find this texture as resource search
+      // paths are already set up in Ogre2RenderEngine.cc
+      std::string skyboxEnvMap = "skybox.dds";
+      skyboxMat = this->CreateMaterial(skyboxMatName);
+      skyboxMat->SetEnvironmentMap(skyboxEnvMap);
+    }
+  }
+  this->SetBackgroundMaterial(skyboxMat);
+  for (unsigned int i = 0; i < this->Sensors()->Size(); ++i)
+  {
+    auto sensor = this->Sensors()->GetByIndex(i);
+    auto camera = std::dynamic_pointer_cast<Ogre2Camera>(sensor);
+    if (camera)
+    {
+      camera->SetBackgroundMaterial(skyboxMat);
+    }
+  }
+  this->dataPtr->skyEnabled = _enabled;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Scene::SkyEnabled() const
+{
+  return this->dataPtr->skyEnabled;
 }

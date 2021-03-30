@@ -9,11 +9,10 @@
 
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/master/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
-Ubuntu Xenial | [![](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-xenial-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-xenial-amd64/)
-Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-bionic-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-master-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-master-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ign_rendering-ci-win)](https://build.osrfoundation.org/job/ign_rendering-ci-win)
+Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/main/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
+Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-bionic-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/job/ign_rendering-ci-win/badge/icon)](https://build.osrfoundation.org/job/ign_rendering-ci-win/)
 
 Ignition Rendering is a C++ library designed to provide an abstraction
 for different rendering engines. It offers unified APIs for creating
@@ -29,10 +28,6 @@ of libraries designed to rapidly develop robot applications.
 [Install](#install)
 
 [Usage](#usage)
-
-[Documentation](#documentation)
-
-[Testing](#testing)
 
 [Folder Structure](#folder-structure)
 
@@ -57,36 +52,10 @@ See the [installation tutorial](https://ignitionrobotics.org/api/rendering/4.0/i
 # Usage
 
 The Ign Rendering API can be found in the documentation. See the
-[Documentation](#documentation) section on how to build the
-documentation files using Doxygen.
+[installation tutorial](https://ignitionrobotics.org/api/rendering/4.0/installation.html)
+on how to build the documentation files using Doxygen.
 
 You can also take a look at the sample applications in the `examples` folder.
-
-# Documentation
-
-API documentation can be generated using Doxygen
-
-    sudo apt install -y doxygen
-
-Build documentation
-
-    cd build
-    make doc
-
-View documentation
-
-    firefox doxygen/html/index.html
-
-# Testing
-
-Tests can be run by building the `test` target:
-
-    cd build
-    make test
-
-To run tests specific to a render engine, set the `RENDER_ENGINE_VALUES` environment variable, e.g.
-
-    RENDER_ENGINE_VALUES=ogre2 make test
 
 # Folder Structure
 
@@ -117,7 +86,7 @@ Please see
 # Code of Conduct
 
 Please see
-[CODE_OF_CONDUCT.md](https://github.com/ignitionrobotics/ign-gazebo/blob/master/CODE_OF_CONDUCT.md).
+[CODE_OF_CONDUCT.md](https://github.com/ignitionrobotics/ign-gazebo/blob/main/CODE_OF_CONDUCT.md).
 
 # Versioning
 
@@ -125,4 +94,5 @@ This library uses [Semantic Versioning](https://semver.org/). Additionally, this
 
 # License
 
-This library is licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). See also the [LICENSE](https://github.com/ignitionrobotics/ign-rendering/blob/master/LICENSE) file.
+This library is licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). See also the [LICENSE](https://github.com/ignitionrobotics/ign-rendering/blob/main/LICENSE) file.
+

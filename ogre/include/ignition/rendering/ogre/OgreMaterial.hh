@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include <ignition/common/SuppressWarning.hh>
+
 #include "ignition/rendering/base/BaseMaterial.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
@@ -102,6 +104,15 @@ namespace ignition
 
       public: virtual void SetReceiveShadows(const bool _receiveShadows)
                   override;
+
+      // Documentation inherited
+      public: virtual float RenderOrder() const override;
+
+      // Documentation inherited
+      // Review the official documentation to get more details about this
+      // parameter, in particular Ogre::Pass::setDepthBias()
+      // https://www.ogre3d.org/docs/api/1.8/class_ogre_1_1_pass.html
+      public: virtual void SetRenderOrder(const float _renderOrder) override;
 
       public: virtual bool ReflectionEnabled() const override;
 
@@ -190,6 +201,7 @@ namespace ignition
 
       protected: virtual void Init() override;
 
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: Ogre::MaterialPtr ogreMaterial;
 
       protected: Ogre::Technique *ogreTechnique = nullptr;
@@ -220,6 +232,7 @@ namespace ignition
 
       /// \brief Parameters to be bound to the fragment shader
       protected: ShaderParamsPtr fragmentShaderParams;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       private: friend class OgreScene;
     };

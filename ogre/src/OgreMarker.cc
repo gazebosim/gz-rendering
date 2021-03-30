@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreCapsule.hh"
 #include "ignition/rendering/ogre/OgreDynamicLines.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
 #include "ignition/rendering/ogre/OgreMaterial.hh"
@@ -31,8 +32,8 @@ class ignition::rendering::OgreMarkerPrivate
   /// \brief DynamicLines Object to display
   public: std::shared_ptr<OgreDynamicLines> dynamicRenderable;
 
-  /// \brief Mesh Object for primitive shapes
-  public: OgreMeshPtr mesh = nullptr;
+  /// \brief Geometry Object for primitive shapes
+  public: OgreGeometryPtr geom{nullptr};
 };
 
 using namespace ignition;
@@ -59,10 +60,10 @@ void OgreMarker::PreRender()
 //////////////////////////////////////////////////
 void OgreMarker::Destroy()
 {
-  if (this->dataPtr->mesh)
+  if (this->dataPtr->geom)
   {
-    this->dataPtr->mesh->Destroy();
-    this->dataPtr->mesh.reset();
+    this->dataPtr->geom->Destroy();
+    this->dataPtr->geom.reset();
   }
 
   if (this->dataPtr->material && this->Scene())
@@ -76,14 +77,22 @@ void OgreMarker::Destroy()
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreMarker::OgreObject() const
 {
-  switch (markerType)
+  switch (this->markerType)
   {
     case MT_NONE:
       return nullptr;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
-      return this->dataPtr->mesh->OgreObject();
+    {
+      if (nullptr != this->dataPtr->geom)
+      {
+        return this->dataPtr->geom->OgreObject();
+      }
+      return nullptr;
+      break;
+    }
     case MT_LINE_STRIP:
     case MT_LINE_LIST:
     case MT_POINTS:
@@ -93,7 +102,7 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
       return std::dynamic_pointer_cast<Ogre::MovableObject>
         (this->dataPtr->dynamicRenderable).get();
     default:
-      ignerr << "Invalid Marker type " << markerType << "\n";
+      ignerr << "Invalid Marker type " << this->markerType << "\n";
       return nullptr;
   }
 }
@@ -110,16 +119,22 @@ void OgreMarker::Create()
   this->markerType = MT_NONE;
   this->dataPtr->dynamicRenderable.reset(new OgreDynamicLines(MT_LINE_STRIP));
 
-  if (!this->dataPtr->mesh)
+  if (!this->dataPtr->geom)
   {
-    this->dataPtr->mesh =
-      std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
+    this->dataPtr->geom =
+      std::dynamic_pointer_cast<OgreGeometry>(this->scene->CreateBox());
   }
 }
 
 //////////////////////////////////////////////////
 void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
 {
+  if (nullptr == _material)
+  {
+    ignerr << "Cannot assign null material" << std::endl;
+    return;
+  }
+
   _material = (_unique) ? _material->Clone() : _material;
 
   OgreMaterialPtr derived =
@@ -145,10 +160,20 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
     case MT_NONE:
       break;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
-      this->dataPtr->mesh->SetMaterial(derived, false);
+    {
+      if (nullptr != this->dataPtr->geom)
+      {
+        this->dataPtr->geom->SetMaterial(derived, false);
+      }
+      else
+      {
+        ignerr << "Failed to set material, null geometry." << std::endl;
+      }
       break;
+    }
     case MT_LINE_STRIP:
     case MT_LINE_LIST:
     case MT_POINTS:
@@ -202,16 +227,20 @@ void OgreMarker::SetType(MarkerType _markerType)
     case MT_NONE:
       break;
     case MT_BOX:
-      this->dataPtr->mesh =
-        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateBox());
+      this->dataPtr->geom =
+        std::dynamic_pointer_cast<OgreGeometry>(this->scene->CreateBox());
+      break;
+    case MT_CAPSULE:
+      this->dataPtr->geom =
+        std::dynamic_pointer_cast<OgreGeometry>(this->scene->CreateCapsule());
       break;
     case MT_CYLINDER:
-      this->dataPtr->mesh =
-        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateCylinder());
+      this->dataPtr->geom =
+        std::dynamic_pointer_cast<OgreGeometry>(this->scene->CreateCylinder());
       break;
     case MT_SPHERE:
-      this->dataPtr->mesh =
-        std::dynamic_pointer_cast<OgreMesh>(this->scene->CreateSphere());
+      this->dataPtr->geom =
+        std::dynamic_pointer_cast<OgreGeometry>(this->scene->CreateSphere());
       break;
     case MT_LINE_STRIP:
     case MT_LINE_LIST:

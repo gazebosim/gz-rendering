@@ -157,6 +157,19 @@ void OgreMaterial::SetEmissive(const math::Color &_color)
 }
 
 //////////////////////////////////////////////////
+float OgreMaterial::RenderOrder() const
+{
+  return this->renderOrder;
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetRenderOrder(const float _renderOrder)
+{
+  this->renderOrder = _renderOrder;
+  this->ogrePass->setDepthBias(this->renderOrder);
+}
+
+//////////////////////////////////////////////////
 double OgreMaterial::Shininess() const
 {
   return this->shininess;

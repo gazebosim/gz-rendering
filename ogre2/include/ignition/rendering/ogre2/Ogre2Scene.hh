@@ -77,6 +77,12 @@ namespace ignition
       // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
+      public: virtual void SetSkyEnabled(bool _enabled) override;
+
+      // Documentation inherited
+      public: virtual bool SkyEnabled() const override;
+
       /// \brief Get a pointer to the ogre scene manager
       /// \return Pointer to the ogre scene manager
       public: virtual Ogre::SceneManager *OgreSceneManager() const;
@@ -101,6 +107,10 @@ namespace ignition
 
       // Documentation inherited
       protected: virtual bool InitImpl() override;
+
+      // Documentation inherited
+      protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
 
       // Documentation inherited
       protected: virtual DirectionalLightPtr CreateDirectionalLightImpl(
@@ -177,6 +187,14 @@ namespace ignition
       protected: virtual MeshPtr CreateMeshImpl(unsigned int _id,
                      const std::string &_name, const MeshDescriptor &_desc)
                      override;
+
+      // Documentation inherited
+      protected: virtual CapsulePtr CreateCapsuleImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
+                   const std::string &_name, const HeightmapDescriptor &_desc)
+                   override;
 
       // Documentation inherited
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,

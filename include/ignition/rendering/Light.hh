@@ -32,7 +32,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE Light :
       public virtual Node
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Light() { }
 
       /// \brief Get the diffuse color
@@ -106,6 +106,14 @@ namespace ignition
       /// \brief Specify if this light should cast shadows
       /// \param[in] _castShadows True if this light cast shadows
       public: virtual void SetCastShadows(bool _castShadows) = 0;
+
+      /// \brief Get the light intensity
+      /// \return The light intensity
+      public: virtual double Intensity() const = 0;
+
+      /// \brief Set the light intensity
+      /// \param[in] _intensity New light intensity
+      public: virtual void SetIntensity(double _intensity) = 0;
     };
 
     /// \class DirectionalLight Light.hh ignition/rendering/Light.hh
@@ -136,7 +144,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE PointLight :
       public virtual Light
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~PointLight() { }
     };
 
@@ -145,7 +153,7 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE SpotLight :
       public virtual Light
     {
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~SpotLight() { }
 
       /// \brief Get direction of the light

@@ -25,7 +25,7 @@
   #include <GL/glut.h>
 #endif
 
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
   #include <GL/glx.h>
 #endif
 
@@ -310,6 +310,14 @@ void keyboardCB(unsigned char _key, int, int)
       }
     }
   }
+  else if (_key == 's')
+  {
+    // toggle sky
+    for (ir::CameraPtr camera : g_cameras)
+    {
+      camera->Scene()->SetSkyEnabled(!camera->Scene()->SkyEnabled());
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -345,6 +353,7 @@ void printUsage()
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
   std::cout << "  P   - Toggle render pass     " << std::endl;
+  std::cout << "  S   - Toggle skybox          " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 

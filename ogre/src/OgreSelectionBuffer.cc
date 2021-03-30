@@ -201,8 +201,8 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(const int _x, const int _y)
 
   // 1x1 selection buffer, adapted from rviz
   // http://docs.ros.org/indigo/api/rviz/html/c++/selection__manager_8cpp.html
-  unsigned int width = 1;
-  unsigned int height = 1;
+  float width = 1.0f;
+  float height = 1.0f;
   float x1 = static_cast<float>(_x) /
       static_cast<float>(targetWidth - 1) - 0.5f;
   float y1 = static_cast<float>(_y) /

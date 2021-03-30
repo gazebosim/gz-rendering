@@ -245,6 +245,17 @@ namespace ignition
       /// \param[in] _image The color image name.
       /// \sa ColorRangeImage
       public: virtual void SetColorRangeImage(const std::string &_image) = 0;
+
+      /// \brief Get the particle scatter ratio.
+      /// \return The particle scatter ratio.
+      /// \sa SetParticleScatterRatio
+      public: virtual float ParticleScatterRatio() const = 0;
+
+      /// \brief Set the particle scatter ratio.
+      /// \param[in] _ratio The scatter ratio. The particle emitter's scatter
+      /// ratio will only be set to _ratio if _ratio > 0.
+      /// \sa ParticleScatterRatio
+      public: virtual void SetParticleScatterRatio(float _ratio) = 0;
     };
     }
   }

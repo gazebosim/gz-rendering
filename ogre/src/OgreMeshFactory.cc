@@ -18,7 +18,6 @@
 
 #include <sstream>
 
-
 #include <ignition/common/Console.hh>
 #include <ignition/common/Material.hh>
 #include <ignition/common/MeshManager.hh>

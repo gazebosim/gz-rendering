@@ -40,6 +40,7 @@ SceneManager::SceneManager() :
 //////////////////////////////////////////////////
 SceneManager::~SceneManager()
 {
+  this->Fini();
   delete this->pimpl;
 }
 
@@ -157,8 +158,8 @@ SceneManagerPrivate::SceneManagerPrivate() :
 //////////////////////////////////////////////////
 SceneManagerPrivate::~SceneManagerPrivate()
 {
-  delete currentSceneManager;
-  delete newSceneManager;
+    newSceneManager.reset();
+    currentSceneManager.reset();
 }
 
 //////////////////////////////////////////////////
@@ -224,7 +225,11 @@ void SceneManagerPrivate::Init()
 //////////////////////////////////////////////////
 void SceneManagerPrivate::Fini()
 {
-  // TODO(anyone): disconnect
+  // block all message receival during cleanup
+  std::lock_guard<std::mutex> generalLock(this->generalMutex);
+  std::lock_guard<std::mutex> poseLock(this->poseMutex);
+
+  this->transportNode->Fini();
 }
 
 //////////////////////////////////////////////////
@@ -456,6 +461,11 @@ void SceneManagerPrivate::OnLightUpdate(::ConstLightPtr &_lightMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
 
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
+
   this->currentSceneManager->OnLightUpdate(_lightMsg);
   this->newSceneManager->OnLightUpdate(_lightMsg);
 }
@@ -465,6 +475,11 @@ void SceneManagerPrivate::OnModelUpdate(::ConstModelPtr &_modelMsg)
 {
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
+
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnModelUpdate(_modelMsg);
   this->newSceneManager->OnModelUpdate(_modelMsg);
@@ -476,6 +491,11 @@ void SceneManagerPrivate::OnJointUpdate(::ConstJointPtr &_jointMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
 
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
+
   this->currentSceneManager->OnJointUpdate(_jointMsg);
   this->newSceneManager->OnJointUpdate(_jointMsg);
 }
@@ -485,6 +505,11 @@ void SceneManagerPrivate::OnVisualUpdate(::ConstVisualPtr &_visualMsg)
 {
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
+
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnVisualUpdate(_visualMsg);
   this->newSceneManager->OnVisualUpdate(_visualMsg);
@@ -496,6 +521,11 @@ void SceneManagerPrivate::OnSensorUpdate(::ConstSensorPtr &_sensorMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->generalMutex);
 
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
+
   this->currentSceneManager->OnSensorUpdate(_sensorMsg);
   this->newSceneManager->OnSensorUpdate(_sensorMsg);
 }
@@ -506,6 +536,11 @@ void SceneManagerPrivate::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->poseMutex);
 
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
+
   this->currentSceneManager->OnPoseUpdate(_posesMsg);
   this->newSceneManager->OnPoseUpdate(_posesMsg);
 }
@@ -515,6 +550,11 @@ void SceneManagerPrivate::OnRemovalUpdate(const std::string &_name)
 {
   // wait for update unlock before adding message
   std::lock_guard<std::mutex> lock(this->poseMutex);
+
+  if (this->currentSceneManager == nullptr || this->newSceneManager == nullptr)
+  {
+    return;
+  }
 
   this->currentSceneManager->OnRemovalUpdate(_name);
   this->newSceneManager->OnRemovalUpdate(_name);
@@ -1466,6 +1506,19 @@ void SubSceneManager::ProcessCone(
 }
 
 //////////////////////////////////////////////////
+void SubSceneManager::ProcessCapsule(
+    const gazebo::msgs::Geometry & _geometryMsg, VisualPtr _parent)
+{
+  GeometryPtr capsule = this->activeScene->CreateCapsule();
+  const gazebo::msgs::CapsuleGeom &capsuleMsg = _geometryMsg.capsule();
+  double x = 2 * capsuleMsg.radius();
+  double y = 2 * capsuleMsg.radius();
+  double z = capsuleMsg.length();
+  _parent->SetLocalScale(x, y, z);
+  _parent->AddGeometry(capsule);
+}
+
+//////////////////////////////////////////////////
 //! [process cylinder]
 void SubSceneManager::ProcessCylinder(
     const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)
@@ -1783,6 +1836,9 @@ void SubSceneManager::CreateGeometryFunctionMap()
   // TODO(anyone): enable when cone protobuf msg created
   // this->geomFunctions[gazebo::msgs::Geometry::CONE] =
   //     &SubSceneManager::ProcessCone;
+
+  this->geomFunctions[gazebo::msgs::Geometry::CAPSULE] =
+      &SubSceneManager::ProcessSphere;
 
   this->geomFunctions[gazebo::msgs::Geometry::CYLINDER] =
       &SubSceneManager::ProcessCylinder;

@@ -44,7 +44,7 @@ namespace ignition
       public: typedef std::function<void(const void*, unsigned int,
           unsigned int, unsigned int, const std::string&)> NewFrameListener;
 
-      /// \brief Deconstructor
+      /// \brief Destructor
       public: virtual ~Camera() { }
 
       /// \brief Get the image width in pixels

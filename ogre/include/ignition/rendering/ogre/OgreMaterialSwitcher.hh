@@ -21,6 +21,7 @@
 #include <map>
 #include <string>
 
+#include <ignition/common/SuppressWarning.hh>
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre/Export.hh"
@@ -38,7 +39,17 @@ namespace ignition
 
     /// \brief Helper class to assign unique colors to renderables
     class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterialSwitcher :
-      public Ogre::MaterialManager::Listener, Ogre::RenderTargetListener
+// Ogre::MaterialManager::Listener isn't a dll-interface class, this may cause
+// issues
+#ifdef _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable:4275)
+#endif
+      public Ogre::MaterialManager::Listener,
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+      Ogre::RenderTargetListener
     {
       /// \brief Constructor
       public: OgreMaterialSwitcher();
@@ -92,7 +103,9 @@ namespace ignition
 
       /// \brief Color dictionary that maps the unique color value to
       /// renderable name
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: std::map<unsigned int, std::string> colorDict;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Increment unique color value that will be assigned to the
       /// next renderable

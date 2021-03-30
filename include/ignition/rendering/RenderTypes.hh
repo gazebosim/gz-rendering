@@ -49,6 +49,7 @@ namespace ignition
     class ArrowVisual;
     class AxisVisual;
     class Camera;
+    class Capsule;
     class DepthCamera;
     class DirectionalLight;
     class GaussianNoisePass;
@@ -56,12 +57,15 @@ namespace ignition
     class GizmoVisual;
     class GpuRays;
     class Grid;
-    class JointVisual;
+    class Heightmap;
     class Image;
     class Light;
+    class LightVisual;
+    class JointVisual;
     class LidarVisual;
-    class Material;
+    class Light;
     class Marker;
+    class Material;
     class Mesh;
     class Node;
     class Object;
@@ -125,6 +129,10 @@ namespace ignition
     /// \brief Shared pointer to GizmoVisual
     typedef shared_ptr<GizmoVisual> GizmoVisualPtr;
 
+    /// \def CapsulePtr
+    /// \brief Shared pointer to Capsule
+    typedef shared_ptr<Capsule> CapsulePtr;
+
     /// \def GridPtr
     /// \brief Shared pointer to Grid
     typedef shared_ptr<Grid> GridPtr;
@@ -133,6 +141,10 @@ namespace ignition
     /// \brief Shared pointer to JointVisual
     typedef shared_ptr<JointVisual> JointVisualPtr;
 
+    /// \def HeightmapPtr
+    /// \brief Shared pointer to Heightmap
+    typedef shared_ptr<Heightmap> HeightmapPtr;
+
     /// \def ImagePtr
     /// \brief Shared pointer to Image
     typedef shared_ptr<Image> ImagePtr;
@@ -140,6 +152,10 @@ namespace ignition
     /// \def LightPtr
     /// \brief Shared pointer to Light
     typedef shared_ptr<Light> LightPtr;
+
+    /// \def LightVisualPtr
+    /// \brief Shared pointer to Light
+    typedef shared_ptr<LightVisual> LightVisualPtr;
 
     /// \def LidarVisualPtr
     /// \brief Shared pointer to LidarVisual
@@ -274,6 +290,10 @@ namespace ignition
     /// \def const JointVisualPtr
     /// \brief Shared pointer to const JointVisual
     typedef shared_ptr<const JointVisual> ConstJointVisualPtr;
+
+    /// \def const HeightmapPtr
+    /// \brief Shared pointer to const Heightmap
+    typedef shared_ptr<const Heightmap> ConstHeightmapPtr;
 
     /// \def const ImagePtr
     /// \brief Shared pointer to const Image

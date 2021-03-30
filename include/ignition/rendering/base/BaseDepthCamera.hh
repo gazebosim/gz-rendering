@@ -30,7 +30,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     template <class T>
-    class IGNITION_RENDERING_VISIBLE BaseDepthCamera :
+    class BaseDepthCamera :
       public virtual DepthCamera,
       public virtual BaseCamera<T>,
       public virtual T

@@ -36,6 +36,12 @@ using namespace rendering;
 class MaterialTest : public testing::Test,
                      public testing::WithParamInterface<const char *>
 {
+  // Documentation inherited
+  public: void SetUp() override
+  {
+    ignition::common::Console::SetVerbosity(4);
+  }
+
   /// \brief Test material basic API
   public: void MaterialProperties(const std::string &_renderEngine);
 
@@ -68,38 +74,38 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   EXPECT_TRUE(scene->MaterialRegistered("unique"));
 
   // ambient
-  math::Color ambient(0.5, 0.2, 0.4, 1.0);
+  math::Color ambient(0.5f, 0.2f, 0.4f, 1.0f);
   material->SetAmbient(ambient);
   EXPECT_EQ(ambient, material->Ambient());
 
-  ambient.Set(0.55, 0.22, 0.44, 1.0);
+  ambient.Set(0.55f, 0.22f, 0.44f, 1.0f);
   material->SetAmbient(ambient.R(), ambient.G(), ambient.B(), ambient.A());
   EXPECT_EQ(ambient, material->Ambient());
 
   // diffuse
-  math::Color diffuse(0.1, 0.9, 0.3, 1.0);
+  math::Color diffuse(0.1f, 0.9f, 0.3f, 1.0f);
   material->SetDiffuse(diffuse);
   EXPECT_EQ(diffuse, material->Diffuse());
 
-  diffuse.Set(0.11, 0.99, 0.33, 1.0);
+  diffuse.Set(0.11f, 0.99f, 0.33f, 1.0f);
   material->SetDiffuse(diffuse.R(), diffuse.G(), diffuse.B(), diffuse.A());
   EXPECT_EQ(diffuse, material->Diffuse());
 
   // specular
-  math::Color specular(0.8, 0.7, 0.0, 1.0);
+  math::Color specular(0.8f, 0.7f, 0.0f, 1.0f);
   material->SetSpecular(specular);
   EXPECT_EQ(specular, material->Specular());
 
-  specular.Set(0.88, 0.77, 0.66, 1.0);
+  specular.Set(0.88f, 0.77f, 0.66f, 1.0f);
   material->SetSpecular(specular.R(), specular.G(), specular.B(), specular.A());
   EXPECT_EQ(specular, material->Specular());
 
   // emissive
-  math::Color emissive(0.6, 0.4, 0.2, 1.0);
+  math::Color emissive(0.6f, 0.4f, 0.2f, 1.0f);
   material->SetEmissive(emissive);
   EXPECT_EQ(emissive, material->Emissive());
 
-  emissive.Set(0.66, 0.44, 0.22, 1.0);
+  emissive.Set(0.66f, 0.44f, 0.22f, 1.0f);
   material->SetEmissive(emissive.R(), emissive.G(), emissive.B(), emissive.A());
   EXPECT_EQ(emissive, material->Emissive());
 
@@ -245,13 +251,28 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     EXPECT_EQ(noSuchEmissiveMapName, material->EmissiveMap());
     EXPECT_TRUE(material->HasEmissiveMap());
 
+    // light map
+    std::string lightMapName = textureName;
+    material->SetLightMap(lightMapName, 1u);
+    EXPECT_EQ(lightMapName, material->LightMap());
+    EXPECT_EQ(1u, material->LightMapTexCoordSet());
+    EXPECT_TRUE(material->HasLightMap());
+
+    material->ClearLightMap();
+    EXPECT_FALSE(material->HasLightMap());
+
+    std::string noSuchLightMapName = "no_such_light.png";
+    material->SetLightMap(noSuchLightMapName);
+    EXPECT_EQ(noSuchLightMapName, material->LightMap());
+    EXPECT_TRUE(material->HasLightMap());
+
     // roughness
-    float roughness = 0.3;
+    float roughness = 0.3f;
     material->SetRoughness(roughness);
     EXPECT_FLOAT_EQ(roughness, material->Roughness());
 
     // metalness
-    float metalness = 0.9;
+    float metalness = 0.9f;
     material->SetMetalness(metalness);
     EXPECT_FLOAT_EQ(metalness, material->Metalness());
   }
@@ -282,10 +303,10 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   MaterialPtr material = scene->CreateMaterial();
   ASSERT_TRUE(material != nullptr);
 
-  math::Color ambient(0.5, 0.2, 0.4, 1.0);
-  math::Color diffuse(0.1, 0.9, 0.3, 1.0);
-  math::Color specular(0.8, 0.7, 0.0, 1.0);
-  math::Color emissive(0.6, 0.4, 0.2, 1.0);
+  math::Color ambient(0.5f, 0.2f, 0.4f, 1.0f);
+  math::Color diffuse(0.1f, 0.9f, 0.3f, 1.0f);
+  math::Color specular(0.8f, 0.7f, 0.0f, 1.0f);
+  math::Color emissive(0.6f, 0.4f, 0.2f, 1.0f);
   double shininess = 0.8;
   double transparency = 0.3;
   bool alphaFromTexture = true;
@@ -298,8 +319,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   bool lightingEnabled = false;
   bool depthCheckEnabled = false;
   bool depthWriteEnabled = false;
-  float roughness = 0.5;
-  float metalness = 0.1;
+  float roughness = 0.5f;
+  float metalness = 0.1f;
 
   std::string textureName =
     common::joinPaths(TEST_MEDIA_PATH, "texture.png");
@@ -308,6 +329,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   std::string metalnessMapName = "metalness_" + textureName;
   std::string envMapName = "env_" + textureName;
   std::string emissiveMapName = "emissive_" + textureName;
+  std::string lightMapName = "light_" + textureName;
   enum ShaderType shaderType = ShaderType::ST_PIXEL;
 
   material->SetAmbient(ambient);
@@ -332,6 +354,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetMetalnessMap(metalnessMapName);
   material->SetEnvironmentMap(envMapName);
   material->SetEmissiveMap(emissiveMapName);
+  material->SetLightMap(lightMapName, 1u);
   material->SetRoughness(roughness);
   material->SetMetalness(metalness);
 
@@ -367,6 +390,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(metalnessMapName, clone->MetalnessMap());
     EXPECT_EQ(envMapName, clone->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, clone->EmissiveMap());
+    EXPECT_EQ(lightMapName, clone->LightMap());
+    EXPECT_EQ(1u, clone->LightMapTexCoordSet());
   }
 
   // test copying a material
@@ -400,15 +425,17 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(metalnessMapName, copy->MetalnessMap());
     EXPECT_EQ(envMapName, copy->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, copy->EmissiveMap());
+    EXPECT_EQ(lightMapName, copy->LightMap());
+    EXPECT_EQ(1u, copy->LightMapTexCoordSet());
   }
 
   // test copying from a common material
   // common::Material currently only has a subset of material properties
   common::Material comMat;
   comMat.SetAmbient(ambient);
-  comMat.SetDiffuse(ambient);
-  comMat.SetSpecular(ambient);
-  comMat.SetEmissive(ambient);
+  comMat.SetDiffuse(diffuse);
+  comMat.SetSpecular(specular);
+  comMat.SetEmissive(emissive);
   comMat.SetShininess(shininess);
   comMat.SetTransparency(transparency);
   comMat.SetAlphaFromTexture(alphaFromTexture, alphaThreshold,
@@ -425,11 +452,12 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   pbr.SetMetalnessMap(metalnessMapName);
   pbr.SetEmissiveMap(emissiveMapName);
   pbr.SetEnvironmentMap(envMapName);
+  pbr.SetLightMap(lightMapName, 1u);
   comMat.SetPbrMaterial(pbr);
 
   MaterialPtr comCopy = scene->CreateMaterial("comCopy");
   EXPECT_TRUE(scene->MaterialRegistered("comCopy"));
-  comCopy->CopyFrom(material);
+  comCopy->CopyFrom(comMat);
   EXPECT_EQ(ambient, comCopy->Ambient());
   EXPECT_EQ(diffuse, comCopy->Diffuse());
   EXPECT_EQ(specular, comCopy->Specular());
@@ -439,7 +467,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(alphaFromTexture, comCopy->TextureAlphaEnabled());
   EXPECT_DOUBLE_EQ(alphaThreshold, comCopy->AlphaThreshold());
   EXPECT_EQ(twoSidedEnabled, comCopy->TwoSidedEnabled());
-  EXPECT_DOUBLE_EQ(reflectivity, comCopy->Reflectivity());
+  // \todo(anyon) add reflectivity to common::Material?
+  // EXPECT_DOUBLE_EQ(reflectivity, comCopy->Reflectivity());
   EXPECT_EQ(lightingEnabled, comCopy->LightingEnabled());
   EXPECT_EQ(textureName, comCopy->Texture());
   EXPECT_TRUE(comCopy->HasTexture());
@@ -455,6 +484,9 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(metalnessMapName, comCopy->MetalnessMap());
     EXPECT_TRUE(comCopy->HasEmissiveMap());
     EXPECT_EQ(emissiveMapName, comCopy->EmissiveMap());
+    EXPECT_TRUE(comCopy->HasLightMap());
+    EXPECT_EQ(lightMapName, comCopy->LightMap());
+    EXPECT_EQ(1u, comCopy->LightMapTexCoordSet());
     EXPECT_TRUE(comCopy->HasEnvironmentMap());
     EXPECT_EQ(envMapName, comCopy->EnvironmentMap());
   }

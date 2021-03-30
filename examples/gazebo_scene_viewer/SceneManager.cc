@@ -1615,9 +1615,7 @@ void SubSceneManager::ProcessPlane(const gazebo::msgs::Geometry &_geometryMsg,
     VisualPtr _parent)
 {
   // TODO(anyone): handle plane normal
-  std::cerr << "before create plane " << std::endl;
   GeometryPtr plane = this->activeScene->CreatePlane();
-  std::cerr << "after create plane " << std::endl;
   const gazebo::msgs::PlaneGeom &planeMsg = _geometryMsg.plane();
   const gazebo::msgs::Vector2d planeSize = planeMsg.size();
   _parent->SetLocalScale(planeSize.x(), planeSize.y(), 1);

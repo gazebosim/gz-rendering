@@ -227,8 +227,6 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
       // Copy the original submesh. We may need to modify the vertices, and
       // we don't want to change the original.
-      std::cerr << " ================= _desc.mesh->SubMeshCount()  " << _desc.mesh->SubMeshCount() << " vs " << i << std::endl;
-
       common::SubMesh subMesh(*s.get());
 
       // Recenter the vertices if requested.

@@ -22,6 +22,12 @@
   #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glut.h>
+#elif _WIN32
+  #define NOMINMAX
+  #include <windows.h>			/* must include this before GL/gl.h */
+  #include <GL/glew.h>
+  #include <GL/glu.h>			/* OpenGL utilities header file */
+  #include <GL/glut.h>			/* OpenGL utilities header file */
 #endif
 
 #include <iostream>
@@ -133,7 +139,7 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back("ogre2");
+  engineNames.push_back("ogre");
 
   for (auto engineName : engineNames)
   {

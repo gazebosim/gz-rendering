@@ -14,16 +14,23 @@
  * limitations under the License.
  *
  */
-
-#if __APPLE__
-  #include <OpenGL/gl.h>
-  #include <OpenGL/OpenGL.h>
-  #include <GLUT/glut.h>
-#else
+//
+// #if __APPLE__
+//   #include <OpenGL/gl.h>
+//   #include <OpenGL/OpenGL.h>
+//   #include <GLUT/glut.h>
+// #elif not defined(_WIN32)
+//   #include <GL/glew.h>
+//   #include <GL/gl.h>
+//   #include <GL/glut.h>
+// #elif _WIN32
+  #define NOMINMAX
+  #include <windows.h>			/* must include this before GL/gl.h */
   #include <GL/glew.h>
-  #include <GL/gl.h>
-  #include <GL/glut.h>
-#endif
+  #include <GL/glu.h>			/* OpenGL utilities header file */
+  #include <GL/glut.h>			/* OpenGL utilities header file */
+  #include "Wingdi.h"
+// #endif
 
 #if !defined(__APPLE__) && !defined(_WIN32)
   #include <GL/glx.h>
@@ -32,6 +39,7 @@
 #include <mutex>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Image.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/Scene.hh>
@@ -57,6 +65,10 @@ bool g_initContext = false;
   CGLContextObj g_context;
   CGLContextObj g_glutContext;
 #elif _WIN32
+  HGLRC g_context = 0;
+  HDC g_display = 0;
+  HGLRC g_glutContext = 0;
+  HDC g_glutDisplay = 0;
 #else
   GLXContext g_context;
   Display *g_display;
@@ -73,7 +85,7 @@ double g_offset = 0.0;
 void updateCameras()
 
 {
-  double angle = g_offset / 2 * M_PI;
+  double angle = g_offset / 2 * IGN_PI;
   double x = sin(angle) * 3.0 + 3.0;
   double y = cos(angle) * 3.0;
   for (ir::CameraPtr camera : g_cameras)
@@ -91,6 +103,11 @@ void displayCB()
 #if __APPLE__
   CGLSetCurrentContext(g_context);
 #elif _WIN32
+   if(!wglMakeCurrent(g_display, g_context))
+   {
+     std::cerr << "Not able to wglMakeCurrent" << '\n';
+     exit(-1);
+   }
 #else
   if (g_display)
   {
@@ -100,9 +117,27 @@ void displayCB()
 
   g_cameras[g_cameraIndex]->Capture(*g_image);
 
+  const unsigned char *dataImage = reinterpret_cast<const unsigned char*>(
+      g_image->Data());
+  auto format = static_cast<ignition::common::Image::PixelFormatType>(
+      g_image->Format());
+
+  std::cerr << "g_cameras[g_cameraIndex]->ImageWidth() " << g_cameras[g_cameraIndex]->ImageWidth()
+    << " g_cameras[g_cameraIndex]->ImageHeight()" << g_cameras[g_cameraIndex]->ImageHeight() << '\n';
+
+  ignition::common::Image image;
+  image.SetFromData(dataImage,
+    g_cameras[g_cameraIndex]->ImageWidth(),
+    g_cameras[g_cameraIndex]->ImageHeight(),
+    ignition::common::Image::PixelFormatType::BGR_INT8);
+  // std::cout << "Saving image.png\n";
+  static int i = 0;
+  image.SavePNG("Release/image" + std::to_string(i++) + ".png");
+
 #if __APPLE__
   CGLSetCurrentContext(g_glutContext);
 #elif _WIN32
+  wglMakeCurrent(g_glutDisplay, g_glutContext);
 #else
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 #endif
@@ -182,6 +217,8 @@ void run(std::vector<ir::CameraPtr> _cameras)
 #if __APPLE__
   g_context = CGLGetCurrentContext();
 #elif _WIN32
+  g_context = wglGetCurrentContext();
+  g_display = wglGetCurrentDC();
 #else
   g_context = glXGetCurrentContext();
   g_display = glXGetCurrentDisplay();
@@ -196,6 +233,8 @@ void run(std::vector<ir::CameraPtr> _cameras)
 #if __APPLE__
   g_glutContext = CGLGetCurrentContext();
 #elif _WIN32
+  g_glutContext = wglGetCurrentContext();
+  g_glutDisplay = wglGetCurrentDC();
 #else
   g_glutDisplay = glXGetCurrentDisplay();
   g_glutDrawable = glXGetCurrentDrawable();

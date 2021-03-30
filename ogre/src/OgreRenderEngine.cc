@@ -332,6 +332,7 @@ void OgreRenderEngine::CreateLogger()
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
+  std::cerr << "logPath" << logPath << '\n';
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
@@ -393,6 +394,8 @@ void OgreRenderEngine::CreateRoot()
   try
   {
     this->ogreRoot = new Ogre::Root("", "", "");
+    if (!this->ogreRoot->showConfigDialog())
+ 		 return;
   }
   catch (Ogre::Exception &ex)
   {
@@ -518,7 +521,9 @@ void OgreRenderEngine::CreateRenderSystem()
   ///   PBuffer limits the size of the renderable area of the RTT to the
   ///           size of the first window created.
   ///   FBO seem to be the only good option
-  renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+  // renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+
+  renderSys->setConfigOption("Video Mode", "800 x 600 @ 32-bit colour");
 
   // get all supported fsaa values
   Ogre::ConfigOptionMap configMap = renderSys->getConfigOptions();
@@ -586,6 +591,8 @@ void OgreRenderEngine::CreateResources()
         std::make_pair(p + "/materials/programs", "General"));
     archNames.push_back(
         std::make_pair(p + "/materials/scripts", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/ShadowVolume", "General"));
     // archNames.push_back(
     //     std::make_pair(prefix + "/materials/textures", "General"));
     // archNames.push_back(
@@ -646,8 +653,8 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
   // TODO(anyone): determine api without qt
 
   // Set the macAPI for Ogre based on the Qt implementation
-  params["macAPI"] = "cocoa";
-  params["macAPICocoaUseNSView"] = "true";
+  // params["macAPI"] = "cocoa";
+  // params["macAPICocoaUseNSView"] = "true";
 
   // Hide window if dimensions are less than or equal to one.
   params["border"] = "none";

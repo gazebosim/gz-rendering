@@ -26,73 +26,31 @@ THE SOFTWARE.
 */
 
 //-----------------------------------------------------------------------------
-// Program Name: FFPLib_Transform
-// Program Desc: Transform functions of the FFP.
-// Program Type: Vertex shader
+// Program Name: SGXLib_NormalMapLighting
+// Program Desc: Normal map lighting functions.
+// Program Type: Vertex/Pixel shader
 // Language: GLSL
-// Notes: Implements core functions for FFPTransform class.
-// based on transform engine. 
-// See http://msdn.microsoft.com/en-us/library/bb206269.aspx
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
-void FFP_Transform(in mat3 m, 
-             in vec3 v, 
-             out vec3 vOut)
+void SGX_ConstructTBNMatrix(in vec3 vNormal,
+				   in vec3 vTangent,
+				   out mat3 vOut)
 {
-    vOut = m * v;
+	vec3 vBinormal = cross(vNormal, vTangent);
+	vOut = mtxFromRows(vTangent, vBinormal, vNormal);
 }
 
 //-----------------------------------------------------------------------------
-void FFP_Transform(in mat4 m, 
-			 in vec4 v, 
-			 out vec4 vOut)
+void SGX_Generate_Parallax_Texcoord(in sampler2D normalHeightMap,
+						in vec2 texCoord,
+						in vec3 eyeVec,
+						in vec2 scaleBias,
+						out vec2 newTexCoord)
 {
-	vOut = m * v;
-}
-
-//-----------------------------------------------------------------------------
-void FFP_Transform(in mat4 m, 
-				   in vec4 v, 
-				   out vec3 vOut)
-{
-	vOut = (m * v).xyz;
-}
-
-#if !defined(OGRE_GLSLES) || OGRE_GLSLES > 100
-//-----------------------------------------------------------------------------
-void FFP_Transform(in mat3x4 m,
-				   in vec4 v,
-				   out vec3 vOut)
-{
-/* transpose non-square uniform matrix for correct row-major > column-major mapping
- * to keep the indexing inside the shader so mat[0] returns the same data in both GLSL and HLSL
- * although it will be the first row in HLSL and the first column in GLSL
- */
-	vOut = v * m;
-}
-
-void FFP_Transform(in mat3x4 m,
-				   in vec3 v,
-				   out vec3 vOut)
-{
-	vOut = v * mat3(m);
-}
-#endif
-
-//-----------------------------------------------------------------------------
-void FFP_Transform(in mat4 m, 
-				   in vec3 v, 
-				   out vec3 vOut)
-{
-	vOut = mat3(m) * v;
-}
-
-//-----------------------------------------------------------------------------
-void FFP_DerivePointSize(in vec4 params,
-                         in float d,
-                         out float sz)
-{
-	sz = params.x/sqrt(params.y + params.z*d + params.w*d*d);
+	eyeVec = normalize(eyeVec);
+	float height = texture2D(normalHeightMap, texCoord).a;
+	float displacement = (height * scaleBias.x) + scaleBias.y;
+	vec2 scaledEyeDir = eyeVec.xy * displacement;
+	newTexCoord = scaledEyeDir + texCoord;
 }

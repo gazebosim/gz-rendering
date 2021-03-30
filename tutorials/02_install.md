@@ -162,6 +162,7 @@ This assumes you have created and activated a Conda environment while installing
 1. Install dependencies:
   ```
   conda install ogre --channel conda-forge
+  conda install freeglut glew --channel conda-forge
   ```
 
 2. Install Ignition dependencies:
@@ -226,4 +227,3 @@ To run tests specific to a render engine, set the `RENDER_ENGINE_VALUES` environ
   ```
   RENDER_ENGINE_VALUES=ogre2 make test
   ```
-

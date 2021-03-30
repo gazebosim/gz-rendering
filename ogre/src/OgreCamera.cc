@@ -119,10 +119,25 @@ void OgreCamera::SetMaterial(const MaterialPtr &_material)
   this->renderTexture->SetMaterial(_material);
 }
 
+#include <windows.h>
 //////////////////////////////////////////////////
 void OgreCamera::Render()
 {
-  this->renderTexture->Render();
+  std::cerr << "OgreCamera::Render()" << '\n';
+  // MessageBox( NULL, "Render", "An exception has Render!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+
+  // if (this->renderTexture == nullptr)
+  //   MessageBox( NULL, "Render is null", "An exception has Render!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+  // else
+  //   MessageBox( NULL, "Render is not null", "An exception has Render!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
+
+  try{
+    this->renderTexture->Render();
+  }		catch (Ogre::Exception& e) {
+    std::cerr << "An exception has occured: " <<
+    e.getFullDescription().c_str() << std::endl;
+  }
+  // MessageBox( NULL, "Rende 2r", "An exception has Render!", MB_OK | MB_ICONERROR | MB_TASKMODAL);
 }
 
 //////////////////////////////////////////////////
@@ -175,6 +190,7 @@ void OgreCamera::CreateCamera()
 //////////////////////////////////////////////////
 void OgreCamera::CreateRenderTexture()
 {
+  std::cerr << "CreateRenderTexture" << '\n';
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->renderTexture = std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);

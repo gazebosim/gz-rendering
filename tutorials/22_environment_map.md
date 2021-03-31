@@ -34,9 +34,9 @@ Now run it:
 There two meshes in the scene with environment maps. One is the pump and the
 other is the gray box on the left. The effect is more evident on the gray box
 as it uses a mirror-like material with low roughness and high metalness values.
- If you look at the box mesh from different angles, you will notice that there
-are reflections the sky. This mesh is using the same cube map as the one that is
-used to create the skybox.
+If you look at the box mesh from different angles, you will notice that there
+are reflections of the sky. This mesh is using the same cube map as the one
+that is used to create the skybox.
 
 ## Code
 
@@ -59,7 +59,7 @@ to see that each face of the cube map is in its own individual layer.
 
 To create a new cube map, you will need to have a similar setup to the one
 shown above. One way to do this is to modify an existing cube map in
-ign-rendering and replace the image in each layer with your new cube map
+ignition rendering and replace the image in each layer with your new cube map
 images (there should be 6 of them - one for each face). You can resize the
 canvas to match the texture size of you new cube map. Pay attention
 to the orientation of the image in each layer as it could be different from

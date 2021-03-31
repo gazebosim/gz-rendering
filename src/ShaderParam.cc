@@ -96,7 +96,7 @@ void ShaderParam::operator=(const int _value)
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::InitializeBuffer(const uint32_t _count) 
+void ShaderParam::InitializeBuffer(const uint32_t _count)
 {
   this->dataPtr->type = PARAM_BUFFER;
   this->dataPtr->count = _count;
@@ -104,7 +104,7 @@ void ShaderParam::InitializeBuffer(const uint32_t _count)
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::UpdateBuffer(void* _buffer, const uint32_t _count) 
+void ShaderParam::UpdateBuffer(void* _buffer, const uint32_t _count)
 {
   memcpy(this->dataPtr->buffer, _buffer, sizeof(float) * _count);
 }

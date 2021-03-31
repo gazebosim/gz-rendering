@@ -32,7 +32,7 @@ class ignition::rendering::ShaderParamPrivate
       int vInt;
     } paramValue;
 
-  public: std::shared_ptr<float> buffer;
+  public: std::shared_ptr<float> wordBuffer;
   public: uint32_t count;
 };
 
@@ -42,7 +42,7 @@ ShaderParam::ShaderParam() :
   dataPtr(new ShaderParamPrivate)
 {
   this->dataPtr->count = 0;
-  this->dataPtr->buffer.reset();
+  this->dataPtr->wordBuffer.reset();
 }
 
 //////////////////////////////////////////////////
@@ -57,7 +57,7 @@ ShaderParam::ShaderParam(const ShaderParam &_other)
 //////////////////////////////////////////////////
 ShaderParam::~ShaderParam()
 {
-  this->dataPtr->buffer.reset();
+  this->dataPtr->wordBuffer.reset();
 }
 
 //////////////////////////////////////////////////
@@ -94,17 +94,17 @@ void ShaderParam::operator=(const int _value)
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::InitializeBuffer(const uint32_t _count)
+void ShaderParam::InitializeWordBuffer(const uint32_t _count)
 {
-  this->dataPtr->type = PARAM_BUFFER;
+  this->dataPtr->type = PARAM_WORD_BUFFER;
   this->dataPtr->count = _count;
-  this->dataPtr->buffer.reset(new float[_count], std::default_delete<float[]>());
+  this->dataPtr->wordBuffer.reset(new float[_count], std::default_delete<float[]>());
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::UpdateBuffer(void* _buffer, const uint32_t _count)
+void ShaderParam::UpdateWordBuffer(float* _wordBuffer, const uint32_t _count)
 {
-  memcpy(this->dataPtr->buffer.get(), _buffer, sizeof(float) * _count);
+  memcpy(this->dataPtr->wordBuffer.get(), _wordBuffer, sizeof(float) * _count);
 }
 
 //////////////////////////////////////////////////
@@ -130,11 +130,11 @@ bool ShaderParam::Value(int *_value) const
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<float> ShaderParam::Buffer() const
+std::shared_ptr<float> ShaderParam::WordBuffer() const
 {
-  if (this->dataPtr->buffer)
+  if (this->dataPtr->wordBuffer)
   {
-    return this->dataPtr->buffer;
+    return this->dataPtr->wordBuffer;
   }
   return nullptr;
 }

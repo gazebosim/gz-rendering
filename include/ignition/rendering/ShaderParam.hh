@@ -50,7 +50,7 @@ namespace ignition
         /// \brief Integer type param
         PARAM_INT = 2,
 
-        PARAM_BUFFER = 3,
+        PARAM_WORD_BUFFER = 3,
       };
 
       /// \brief constructor
@@ -82,9 +82,9 @@ namespace ignition
       /// \param[in] _value Value to set this param to.
       public: void operator=(const int _value);
 
-      public: void InitializeBuffer(const uint32_t _count);
+      public: void InitializeWordBuffer(const uint32_t _count);
 
-      public: void UpdateBuffer(void* _buffer, const uint32_t _count);
+      public: void UpdateWordBuffer(float* _wordBuffer, const uint32_t _count);
 
       /// \brief Get the value of this parameter if it is a float
       /// \param[out] _value variable the value will be copied to
@@ -96,7 +96,7 @@ namespace ignition
       /// \return true if the param is the expected type
       public: bool Value(int *_value) const;
 
-      public: std::shared_ptr<float> Buffer() const;
+      public: std::shared_ptr<float> WordBuffer() const;
 
       /// \brief private implementation
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

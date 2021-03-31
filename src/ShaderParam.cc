@@ -32,7 +32,7 @@ class ignition::rendering::ShaderParamPrivate
       int vInt;
     } paramValue;
 
-  public: void* buffer;
+  public: std::shared_ptr<float> buffer;
   public: uint32_t count;
 };
 
@@ -41,8 +41,8 @@ class ignition::rendering::ShaderParamPrivate
 ShaderParam::ShaderParam() :
   dataPtr(new ShaderParamPrivate)
 {
-  this->dataPtr->buffer = nullptr;
   this->dataPtr->count = 0;
+  this->dataPtr->buffer.reset();
 }
 
 //////////////////////////////////////////////////
@@ -57,9 +57,7 @@ ShaderParam::ShaderParam(const ShaderParam &_other)
 //////////////////////////////////////////////////
 ShaderParam::~ShaderParam()
 {
-  if (this->dataPtr->buffer) {
-    free(this->dataPtr->buffer);
-  }
+  this->dataPtr->buffer.reset();
 }
 
 //////////////////////////////////////////////////
@@ -100,13 +98,13 @@ void ShaderParam::InitializeBuffer(const uint32_t _count)
 {
   this->dataPtr->type = PARAM_BUFFER;
   this->dataPtr->count = _count;
-  this->dataPtr->buffer = malloc(sizeof(float) * _count);
+  this->dataPtr->buffer.reset(new float[_count], std::default_delete<float[]>());
 }
 
 //////////////////////////////////////////////////
 void ShaderParam::UpdateBuffer(void* _buffer, const uint32_t _count)
 {
-  memcpy(this->dataPtr->buffer, _buffer, sizeof(float) * _count);
+  memcpy(this->dataPtr->buffer.get(), _buffer, sizeof(float) * _count);
 }
 
 //////////////////////////////////////////////////
@@ -132,7 +130,7 @@ bool ShaderParam::Value(int *_value) const
 }
 
 //////////////////////////////////////////////////
-void* ShaderParam::Buffer() const
+std::shared_ptr<float> ShaderParam::Buffer() const
 {
   if (this->dataPtr->buffer)
   {

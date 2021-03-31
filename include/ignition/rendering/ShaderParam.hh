@@ -19,9 +19,8 @@
 #define IGNITION_RENDERING_SHADERPARAM_HH_
 
 #include <cstdint>
-#include <cstdlib>
-#include <memory>
 #include <cstring>
+#include <memory>
 
 #include <ignition/common/SuppressWarning.hh>
 
@@ -97,7 +96,7 @@ namespace ignition
       /// \return true if the param is the expected type
       public: bool Value(int *_value) const;
 
-      public: void* Buffer() const;
+      public: std::shared_ptr<float> Buffer() const;
 
       /// \brief private implementation
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

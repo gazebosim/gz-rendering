@@ -20,6 +20,7 @@
 
 #include <cstdint>
 #include <cstring>
+
 #include <memory>
 
 #include <ignition/common/SuppressWarning.hh>
@@ -44,12 +45,13 @@ namespace ignition
         /// \brief Type none
         PARAM_NONE = 0,
 
-        /// \brief  Float type param
+        /// \brief Float type parameter
         PARAM_FLOAT = 1,
 
-        /// \brief Integer type param
+        /// \brief Integer type parameter
         PARAM_INT = 2,
 
+        /// \brief Word Buffer type parameter
         PARAM_WORD_BUFFER = 3,
       };
 
@@ -67,36 +69,46 @@ namespace ignition
       /// \return Type of this parameter
       public: ParamType Type() const;
 
+      /// \brief Get the element count of this parameter's buffer
+      /// \return Count of elements in this parameter's buffer
       public: uint32_t Count() const;
 
-      /// \brief Set from another ShaderParam.
-      /// \param[in] _other Another ShaderParam.
-      /// \return Reference to this ShaderParam.
+      /// \brief Set from another ShaderParam
+      /// \param[in] _other Another ShaderParam
+      /// \return Reference to this ShaderParam
       public: ShaderParam &operator=(const ShaderParam &_other);
 
-      /// \brief Set this to be a float param
-      /// \param[in] _value Value to set this param to.
+      /// \brief Set this to be a float parameter
+      /// \param[in] _value Value to set this parameter to
       public: void operator=(const float _value);
 
-      /// \brief Set this to be an integer param;
-      /// \param[in] _value Value to set this param to.
+      /// \brief Set this to be an integer parameter
+      /// \param[in] _value Value to set this parameter to
       public: void operator=(const int _value);
 
+      /// \brief Set this to be a word buffer parameter
+      /// \param[in] _count Number of elements in the word buffer
       public: void InitializeWordBuffer(const uint32_t _count);
 
+      /// \brief Copy a buffer to this parameter
+      /// \param[in] _wordBuffer Source buffer to copy from
+      /// \param[in] _count Number of elements in the word buffer
       public: void UpdateWordBuffer(float* _wordBuffer, const uint32_t _count);
 
       /// \brief Get the value of this parameter if it is a float
       /// \param[out] _value variable the value will be copied to
-      /// \return true if the param is the expected type
+      /// \return true if the parameter is the expected type
       public: bool Value(float *_value) const;
 
       /// \brief Get the value of this parameter if it is an int
       /// \param[out] _value variable the value will be copied to
-      /// \return true if the param is the expected type
+      /// \return true if the parameter is the expected type
       public: bool Value(int *_value) const;
 
-      public: std::shared_ptr<float> WordBuffer() const;
+      /// \brief Get the value of this parameter if it is a word buffer
+      /// \param[out] _wordBuffer variable the value will be copied to
+      /// \return true if the parameter is the expected type
+      public: bool WordBuffer(std::shared_ptr<float> *_wordBuffer) const;
 
       /// \brief private implementation
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

@@ -32,7 +32,10 @@ class ignition::rendering::ShaderParamPrivate
       int vInt;
     } paramValue;
 
+  /// \brief Word buffer of parameter held
   public: std::shared_ptr<float> wordBuffer;
+
+  /// \brief Count of elements in buffer of parameter held
   public: uint32_t count;
 };
 
@@ -131,11 +134,12 @@ bool ShaderParam::Value(int *_value) const
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<float> ShaderParam::WordBuffer() const
+bool ShaderParam::WordBuffer(std::shared_ptr<float> *_wordBuffer) const
 {
-  if (this->dataPtr->wordBuffer)
+  if (PARAM_WORD_BUFFER == this->dataPtr->type)
   {
-    return this->dataPtr->wordBuffer;
+    *_wordBuffer = this->dataPtr->wordBuffer;
+    return true;
   }
-  return nullptr;
+  return false;
 }

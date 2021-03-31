@@ -156,7 +156,6 @@ void Ogre2Material::UpdateTransparency()
 void Ogre2Material::SetAlphaFromTexture(bool _enabled,
     double _alpha, bool _twoSided)
 {
-  return;
   BaseMaterial::SetAlphaFromTexture(_enabled, _alpha, _twoSided);
   if (_enabled)
   {

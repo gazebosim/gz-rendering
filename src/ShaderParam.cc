@@ -98,7 +98,8 @@ void ShaderParam::InitializeWordBuffer(const uint32_t _count)
 {
   this->dataPtr->type = PARAM_WORD_BUFFER;
   this->dataPtr->count = _count;
-  this->dataPtr->wordBuffer.reset(new float[_count], std::default_delete<float[]>());
+  this->dataPtr->wordBuffer.reset(new float[_count],
+      std::default_delete<float[]>());
 }
 
 //////////////////////////////////////////////////

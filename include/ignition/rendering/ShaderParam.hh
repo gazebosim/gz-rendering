@@ -114,7 +114,7 @@ namespace ignition
       /// \brief Get the value of this parameter if it is a buffer
       /// \param[out] _buffer variable the value will be copied to
       /// \return true if the parameter is the expected type
-      public: bool Buffer(std::shared_ptr<void> *_buffer) const;
+      public: bool Buffer(std::shared_ptr<void> &_buffer) const;
 
       /// \brief private implementation
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

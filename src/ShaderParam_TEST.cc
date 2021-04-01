@@ -103,7 +103,7 @@ TEST(ShaderParam, FloatBufferType)
   EXPECT_EQ(10, static_cast<int>(p.Count()));
 
   std::shared_ptr<void> buffer;
-  EXPECT_TRUE(p.Buffer(&buffer));
+  EXPECT_TRUE(p.Buffer(buffer));
   for (int x = 0; x < 10; ++x)
   {
     EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
@@ -117,7 +117,7 @@ TEST(ShaderParam, FloatBufferType)
   EXPECT_EQ(10, static_cast<int>(p2.Count()));
 
   std::shared_ptr<void> buffer2;
-  EXPECT_TRUE(p2.Buffer(&buffer2));
+  EXPECT_TRUE(p2.Buffer(buffer2));
   for (int x = 0; x < 10; ++x)
   {
     EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
@@ -130,7 +130,7 @@ TEST(ShaderParam, FloatBufferType)
   EXPECT_EQ(10, static_cast<int>(p3.Count()));
 
   std::shared_ptr<void> buffer3;
-  EXPECT_TRUE(p3.Buffer(&buffer3));
+  EXPECT_TRUE(p3.Buffer(buffer3));
   for (int x = 0; x < 10; ++x)
   {
     EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
@@ -140,7 +140,7 @@ TEST(ShaderParam, FloatBufferType)
   ShaderParam p4;
   p4 = 1;
   std::shared_ptr<void> buffer4;
-  EXPECT_FALSE(p4.Buffer(&buffer4));
+  EXPECT_FALSE(p4.Buffer(buffer4));
 }
 
 /////////////////////////////////////////////////
@@ -159,7 +159,7 @@ TEST(ShaderParam, IntBufferType)
   EXPECT_EQ(10, static_cast<int>(p.Count()));
 
   std::shared_ptr<void> buffer;
-  EXPECT_TRUE(p.Buffer(&buffer));
+  EXPECT_TRUE(p.Buffer(buffer));
   for (int x = 0; x < 10; ++x)
   {
     EXPECT_EQ(x, reinterpret_cast<int*>(buffer.get())[x]);
@@ -172,7 +172,7 @@ TEST(ShaderParam, IntBufferType)
   EXPECT_EQ(10, static_cast<int>(p2.Count()));
 
   std::shared_ptr<void> buffer2;
-  EXPECT_TRUE(p2.Buffer(&buffer2));
+  EXPECT_TRUE(p2.Buffer(buffer2));
   for (int x = 0; x < 10; ++x)
   {
     EXPECT_EQ(x, reinterpret_cast<int*>(buffer2.get())[x]);
@@ -184,7 +184,7 @@ TEST(ShaderParam, IntBufferType)
   EXPECT_EQ(10, static_cast<int>(p3.Count()));
 
   std::shared_ptr<void> buffer3;
-  EXPECT_TRUE(p3.Buffer(&buffer3));
+  EXPECT_TRUE(p3.Buffer(buffer3));
   for (int x = 0; x < 10; ++x)
   {
     EXPECT_EQ(x, reinterpret_cast<int*>(buffer3.get())[x]);
@@ -193,7 +193,7 @@ TEST(ShaderParam, IntBufferType)
   ShaderParam p4;
   p4 = 1;
   std::shared_ptr<void> buffer4;
-  EXPECT_FALSE(p4.Buffer(&buffer4));
+  EXPECT_FALSE(p4.Buffer(buffer4));
 }
 
 //////////////////////////////////////////////////

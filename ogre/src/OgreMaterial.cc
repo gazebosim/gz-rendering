@@ -354,7 +354,7 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
     else if (ShaderParam::PARAM_FLOAT_BUFFER == name_param.second.Type())
     {
       std::shared_ptr<void> buffer;
-      name_param.second.Buffer(&buffer);
+      name_param.second.Buffer(buffer);
       uint32_t count = name_param.second.Count();
 
       // multiple other than 4 is currently only supported by GLSL
@@ -365,7 +365,7 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
     else if (ShaderParam::PARAM_INT_BUFFER == name_param.second.Type())
     {
       std::shared_ptr<void> buffer;
-      name_param.second.Buffer(&buffer);
+      name_param.second.Buffer(buffer);
       uint32_t count = name_param.second.Count();
 
       // multiple other than 4 is currently only supported by GLSL

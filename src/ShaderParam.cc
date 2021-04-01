@@ -144,12 +144,12 @@ bool ShaderParam::Value(int *_value) const
 }
 
 //////////////////////////////////////////////////
-bool ShaderParam::Buffer(std::shared_ptr<void> *_buffer) const
+bool ShaderParam::Buffer(std::shared_ptr<void> &_buffer) const
 {
   if (PARAM_FLOAT_BUFFER == this->dataPtr->type ||
       PARAM_INT_BUFFER == this->dataPtr->type)
   {
-    *_buffer = this->dataPtr->buffer;
+    _buffer = this->dataPtr->buffer;
     return true;
   }
   return false;

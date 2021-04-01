@@ -133,6 +133,7 @@ void buildScene(ScenePtr _scene)
   sphere->SetMaterial(red);
   root->AddChild(sphere);
 
+  //! [create envmap]
   // create mirror material
   MaterialPtr mirrorMat = _scene->CreateMaterial();
   mirrorMat->SetDiffuse(1.0, 1.0, 1.0);
@@ -141,6 +142,7 @@ void buildScene(ScenePtr _scene)
   std::string skyEnvironmentMap =
       common::joinPaths(RESOURCE_PATH, "skybox_lowres.dds");
   mirrorMat->SetEnvironmentMap(skyEnvironmentMap);
+  //! [create envmap]
 
   // create box visual
   VisualPtr box = _scene->CreateVisual("box");

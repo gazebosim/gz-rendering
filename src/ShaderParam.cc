@@ -32,8 +32,9 @@ class ignition::rendering::ShaderParamPrivate
       int vInt;
     } paramValue;
 
-  /// \brief Word buffer of parameter held
-  public: std::shared_ptr<void> wordBuffer;
+  /// \brief buffer of parameter held
+  //   Currently only 32-bit elements will be supported for buffers
+  public: std::shared_ptr<void> buffer;
 
   /// \brief Count of elements in buffer of parameter held
   public: uint32_t count;
@@ -45,7 +46,7 @@ ShaderParam::ShaderParam() :
   dataPtr(new ShaderParamPrivate)
 {
   this->dataPtr->count = 0u;
-  this->dataPtr->wordBuffer.reset();
+  this->dataPtr->buffer.reset();
 }
 
 //////////////////////////////////////////////////
@@ -60,7 +61,7 @@ ShaderParam::ShaderParam(const ShaderParam &_other)
 //////////////////////////////////////////////////
 ShaderParam::~ShaderParam()
 {
-  this->dataPtr->wordBuffer.reset();
+  this->dataPtr->buffer.reset();
 }
 
 //////////////////////////////////////////////////
@@ -97,26 +98,26 @@ void ShaderParam::operator=(const int _value)
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::InitializeWordBuffer(uint32_t _count)
+void ShaderParam::InitializeBuffer(uint32_t _count)
 {
   this->dataPtr->count = _count;
-  this->dataPtr->wordBuffer.reset(new float[_count],
+  this->dataPtr->buffer.reset(new float[_count],
       std::default_delete<float[]>());
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::UpdateWordBuffer(float *_floatBuffer)
+void ShaderParam::UpdateBuffer(float *_floatBuffer)
 {
   this->dataPtr->type = PARAM_FLOAT_BUFFER;
-  memcpy(this->dataPtr->wordBuffer.get(), _floatBuffer,
+  memcpy(this->dataPtr->buffer.get(), _floatBuffer,
       4 * this->dataPtr->count);
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::UpdateWordBuffer(int *_intBuffer)
+void ShaderParam::UpdateBuffer(int *_intBuffer)
 {
   this->dataPtr->type = PARAM_INT_BUFFER;
-  memcpy(this->dataPtr->wordBuffer.get(), _intBuffer,
+  memcpy(this->dataPtr->buffer.get(), _intBuffer,
       4 * this->dataPtr->count);
 }
 
@@ -143,12 +144,12 @@ bool ShaderParam::Value(int *_value) const
 }
 
 //////////////////////////////////////////////////
-bool ShaderParam::WordBuffer(std::shared_ptr<void> *_wordBuffer) const
+bool ShaderParam::Buffer(std::shared_ptr<void> *_buffer) const
 {
   if (PARAM_FLOAT_BUFFER == this->dataPtr->type ||
       PARAM_INT_BUFFER == this->dataPtr->type)
   {
-    *_wordBuffer = this->dataPtr->wordBuffer;
+    *_buffer = this->dataPtr->buffer;
     return true;
   }
   return false;

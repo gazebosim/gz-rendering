@@ -89,17 +89,17 @@ namespace ignition
       /// \param[in] _value Value to set this parameter to
       public: void operator=(const int _value);
 
-      /// \brief Set this to be a word buffer parameter
-      /// \param[in] _count Number of elements in the word buffer
-      public: void InitializeWordBuffer(uint32_t _count);
+      /// \brief Set this to be a buffer parameter
+      /// \param[in] _count Number of 32-bit elements in the buffer
+      public: void InitializeBuffer(uint32_t _count);
 
       /// \brief Copy a buffer to this parameter
       /// \param[in] _floatBuffer Source buffer to copy from
-      public: void UpdateWordBuffer(float *_floatBuffer);
+      public: void UpdateBuffer(float *_floatBuffer);
 
       /// \brief Copy a buffer to this parameter
       /// \param[in] _intBuffer Source buffer to copy from
-      public: void UpdateWordBuffer(int *_intBuffer);
+      public: void UpdateBuffer(int *_intBuffer);
 
       /// \brief Get the value of this parameter if it is a float
       /// \param[out] _value variable the value will be copied to
@@ -111,10 +111,10 @@ namespace ignition
       /// \return true if the parameter is the expected type
       public: bool Value(int *_value) const;
 
-      /// \brief Get the value of this parameter if it is a word buffer
-      /// \param[out] _wordBuffer variable the value will be copied to
+      /// \brief Get the value of this parameter if it is a buffer
+      /// \param[out] _buffer variable the value will be copied to
       /// \return true if the parameter is the expected type
-      public: bool WordBuffer(std::shared_ptr<void> *_wordBuffer) const;
+      public: bool Buffer(std::shared_ptr<void> *_buffer) const;
 
       /// \brief private implementation
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

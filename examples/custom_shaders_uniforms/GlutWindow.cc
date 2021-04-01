@@ -100,17 +100,10 @@ void updateCameras()
 //! [update uniforms]
 void updateUniforms()
 { 
-  (*g_shaderParams)["u_seed"].InitializeWordBuffer(1);
-  (*g_shaderParams)["u_seed"].UpdateWordBuffer(g_seed); 
-
-  (*g_shaderParams)["u_resolution"].InitializeWordBuffer(2);
-  (*g_shaderParams)["u_resolution"].UpdateWordBuffer(g_resolution);
-
-  (*g_shaderParams)["u_color"].InitializeWordBuffer(3);
-  (*g_shaderParams)["u_color"].UpdateWordBuffer(g_color);
-
-  (*g_shaderParams)["u_adjustments"].InitializeWordBuffer(16);
-  (*g_shaderParams)["u_adjustments"].UpdateWordBuffer(g_adjustments);
+  (*g_shaderParams)["u_seed"].UpdateBuffer(g_seed); 
+  (*g_shaderParams)["u_resolution"].UpdateBuffer(g_resolution);
+  (*g_shaderParams)["u_color"].UpdateBuffer(g_color);
+  (*g_shaderParams)["u_adjustments"].UpdateBuffer(g_adjustments);
 }
 //! [update uniforms]
 
@@ -191,10 +184,10 @@ void initUniforms()
   ir::MaterialPtr shader = sphere->Material();
   g_shaderParams = shader->FragmentShaderParams();
   
-  (*g_shaderParams)["u_seed"].InitializeWordBuffer(1);
-  (*g_shaderParams)["u_resolution"].InitializeWordBuffer(2);
-  (*g_shaderParams)["u_color"].InitializeWordBuffer(3);
-  (*g_shaderParams)["u_adjustments"].InitializeWordBuffer(16);
+  (*g_shaderParams)["u_seed"].InitializeBuffer(1);
+  (*g_shaderParams)["u_resolution"].InitializeBuffer(2);
+  (*g_shaderParams)["u_color"].InitializeBuffer(3);
+  (*g_shaderParams)["u_adjustments"].InitializeBuffer(16);
 }
 
 //////////////////////////////////////////////////

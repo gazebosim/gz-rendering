@@ -96,18 +96,18 @@ TEST(ShaderParam, FloatBufferType)
   };
 
   ShaderParam p;
-  p.InitializeWordBuffer(10);
-  p.UpdateWordBuffer(b);
+  p.InitializeBuffer(10);
+  p.UpdateBuffer(b);
 
   EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p.Type());
   EXPECT_EQ(10, static_cast<int>(p.Count()));
 
-  std::shared_ptr<void> wordBuffer;
-  EXPECT_TRUE(p.WordBuffer(&wordBuffer));
+  std::shared_ptr<void> buffer;
+  EXPECT_TRUE(p.Buffer(&buffer));
   for (int x = 0; x < 10; ++x)
   {
     EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
-        reinterpret_cast<float*>(wordBuffer.get())[x]);
+        reinterpret_cast<float*>(buffer.get())[x]);
   }
 
   // test copy assignment
@@ -116,12 +116,12 @@ TEST(ShaderParam, FloatBufferType)
   EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p2.Type());
   EXPECT_EQ(10, static_cast<int>(p2.Count()));
 
-  std::shared_ptr<void> wordBuffer2;
-  EXPECT_TRUE(p2.WordBuffer(&wordBuffer2));
+  std::shared_ptr<void> buffer2;
+  EXPECT_TRUE(p2.Buffer(&buffer2));
   for (int x = 0; x < 10; ++x)
   {
     EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
-        reinterpret_cast<float*>(wordBuffer2.get())[x]);
+        reinterpret_cast<float*>(buffer2.get())[x]);
   }
 
   // test copy constructor
@@ -129,18 +129,18 @@ TEST(ShaderParam, FloatBufferType)
   EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p3.Type());
   EXPECT_EQ(10, static_cast<int>(p3.Count()));
 
-  std::shared_ptr<void> wordBuffer3;
-  EXPECT_TRUE(p3.WordBuffer(&wordBuffer3));
+  std::shared_ptr<void> buffer3;
+  EXPECT_TRUE(p3.Buffer(&buffer3));
   for (int x = 0; x < 10; ++x)
   {
     EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
-        reinterpret_cast<float*>(wordBuffer3.get())[x]);
+        reinterpret_cast<float*>(buffer3.get())[x]);
   }
 
   ShaderParam p4;
   p4 = 1;
-  std::shared_ptr<void> wordBuffer4;
-  EXPECT_FALSE(p4.WordBuffer(&wordBuffer4));
+  std::shared_ptr<void> buffer4;
+  EXPECT_FALSE(p4.Buffer(&buffer4));
 }
 
 /////////////////////////////////////////////////
@@ -152,17 +152,17 @@ TEST(ShaderParam, IntBufferType)
   };
 
   ShaderParam p;
-  p.InitializeWordBuffer(10);
-  p.UpdateWordBuffer(b);
+  p.InitializeBuffer(10);
+  p.UpdateBuffer(b);
 
   EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p.Type());
   EXPECT_EQ(10, static_cast<int>(p.Count()));
 
-  std::shared_ptr<void> wordBuffer;
-  EXPECT_TRUE(p.WordBuffer(&wordBuffer));
+  std::shared_ptr<void> buffer;
+  EXPECT_TRUE(p.Buffer(&buffer));
   for (int x = 0; x < 10; ++x)
   {
-    EXPECT_EQ(x, reinterpret_cast<int*>(wordBuffer.get())[x]);
+    EXPECT_EQ(x, reinterpret_cast<int*>(buffer.get())[x]);
   }
 
   // test copy assignment
@@ -171,11 +171,11 @@ TEST(ShaderParam, IntBufferType)
   EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p2.Type());
   EXPECT_EQ(10, static_cast<int>(p2.Count()));
 
-  std::shared_ptr<void> wordBuffer2;
-  EXPECT_TRUE(p2.WordBuffer(&wordBuffer2));
+  std::shared_ptr<void> buffer2;
+  EXPECT_TRUE(p2.Buffer(&buffer2));
   for (int x = 0; x < 10; ++x)
   {
-    EXPECT_EQ(x, reinterpret_cast<int*>(wordBuffer2.get())[x]);
+    EXPECT_EQ(x, reinterpret_cast<int*>(buffer2.get())[x]);
   }
 
   // test copy constructor
@@ -183,17 +183,17 @@ TEST(ShaderParam, IntBufferType)
   EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p3.Type());
   EXPECT_EQ(10, static_cast<int>(p3.Count()));
 
-  std::shared_ptr<void> wordBuffer3;
-  EXPECT_TRUE(p3.WordBuffer(&wordBuffer3));
+  std::shared_ptr<void> buffer3;
+  EXPECT_TRUE(p3.Buffer(&buffer3));
   for (int x = 0; x < 10; ++x)
   {
-    EXPECT_EQ(x, reinterpret_cast<int*>(wordBuffer3.get())[x]);
+    EXPECT_EQ(x, reinterpret_cast<int*>(buffer3.get())[x]);
   }
 
   ShaderParam p4;
   p4 = 1;
-  std::shared_ptr<void> wordBuffer4;
-  EXPECT_FALSE(p4.WordBuffer(&wordBuffer4));
+  std::shared_ptr<void> buffer4;
+  EXPECT_FALSE(p4.Buffer(&buffer4));
 }
 
 //////////////////////////////////////////////////

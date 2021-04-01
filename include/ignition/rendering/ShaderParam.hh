@@ -91,7 +91,7 @@ namespace ignition
 
       /// \brief Set this to be a word buffer parameter
       /// \param[in] _count Number of elements in the word buffer
-      public: void InitializeWordBuffer(const uint32_t _count);
+      public: void InitializeWordBuffer(uint32_t _count);
 
       /// \brief Copy a buffer to this parameter
       /// \param[in] _floatBuffer Source buffer to copy from

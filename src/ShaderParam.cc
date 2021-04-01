@@ -44,7 +44,7 @@ class ignition::rendering::ShaderParamPrivate
 ShaderParam::ShaderParam() :
   dataPtr(new ShaderParamPrivate)
 {
-  this->dataPtr->count = 0;
+  this->dataPtr->count = 0u;
   this->dataPtr->wordBuffer.reset();
 }
 
@@ -97,7 +97,7 @@ void ShaderParam::operator=(const int _value)
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::InitializeWordBuffer(const uint32_t _count)
+void ShaderParam::InitializeWordBuffer(uint32_t _count)
 {
   this->dataPtr->count = _count;
   this->dataPtr->wordBuffer.reset(new float[_count],

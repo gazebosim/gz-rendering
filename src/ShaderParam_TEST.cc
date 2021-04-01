@@ -100,13 +100,13 @@ TEST(ShaderParam, FloatBufferType)
   p.UpdateWordBuffer(b);
 
   EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p.Type());
-  EXPECT_EQ(10, (int)p.Count());
+  EXPECT_EQ(10, static_cast<int>(p.Count()));
 
   std::shared_ptr<void> wordBuffer;
   EXPECT_TRUE(p.WordBuffer(&wordBuffer));
   for (int x = 0; x < 10; ++x)
   {
-    EXPECT_FLOAT_EQ((float)x / 10.0f,
+    EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
         reinterpret_cast<float*>(wordBuffer.get())[x]);
   }
 
@@ -114,26 +114,26 @@ TEST(ShaderParam, FloatBufferType)
   ShaderParam p2;
   p2 = p;
   EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p2.Type());
-  EXPECT_EQ(10, (int)p2.Count());
+  EXPECT_EQ(10, static_cast<int>(p2.Count()));
 
   std::shared_ptr<void> wordBuffer2;
   EXPECT_TRUE(p2.WordBuffer(&wordBuffer2));
   for (int x = 0; x < 10; ++x)
   {
-    EXPECT_FLOAT_EQ((float)x / 10.0f,
+    EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
         reinterpret_cast<float*>(wordBuffer2.get())[x]);
   }
 
   // test copy constructor
   ShaderParam p3(p);
   EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p3.Type());
-  EXPECT_EQ(10, (int)p3.Count());
+  EXPECT_EQ(10, static_cast<int>(p3.Count()));
 
   std::shared_ptr<void> wordBuffer3;
   EXPECT_TRUE(p3.WordBuffer(&wordBuffer3));
   for (int x = 0; x < 10; ++x)
   {
-    EXPECT_FLOAT_EQ((float)x / 10.0f,
+    EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
         reinterpret_cast<float*>(wordBuffer3.get())[x]);
   }
 
@@ -156,7 +156,7 @@ TEST(ShaderParam, IntBufferType)
   p.UpdateWordBuffer(b);
 
   EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p.Type());
-  EXPECT_EQ(10, (int)p.Count());
+  EXPECT_EQ(10, static_cast<int>(p.Count()));
 
   std::shared_ptr<void> wordBuffer;
   EXPECT_TRUE(p.WordBuffer(&wordBuffer));
@@ -169,7 +169,7 @@ TEST(ShaderParam, IntBufferType)
   ShaderParam p2;
   p2 = p;
   EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p2.Type());
-  EXPECT_EQ(10, (int)p2.Count());
+  EXPECT_EQ(10, static_cast<int>(p2.Count()));
 
   std::shared_ptr<void> wordBuffer2;
   EXPECT_TRUE(p2.WordBuffer(&wordBuffer2));
@@ -181,7 +181,7 @@ TEST(ShaderParam, IntBufferType)
   // test copy constructor
   ShaderParam p3(p);
   EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p3.Type());
-  EXPECT_EQ(10, (int)p3.Count());
+  EXPECT_EQ(10, static_cast<int>(p3.Count()));
 
   std::shared_ptr<void> wordBuffer3;
   EXPECT_TRUE(p3.WordBuffer(&wordBuffer3));

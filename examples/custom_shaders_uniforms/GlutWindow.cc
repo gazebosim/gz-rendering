@@ -51,6 +51,7 @@ ir::CameraPtr g_camera;
 ir::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
+ir::ShaderParamsPtr g_shaderParams;
 
 bool g_initContext = false;
 
@@ -98,23 +99,18 @@ void updateCameras()
 //////////////////////////////////////////////////
 //! [update uniforms]
 void updateUniforms()
-{
-  ir::NodePtr node = g_camera->Parent();
-  ir::VisualPtr sphere = std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("box"));
-  ir::MaterialPtr shader = sphere->Material();
-  ir::ShaderParamsPtr shaderParams = shader->FragmentShaderParams();
-  
-  (*shaderParams)["u_seed"].InitializeWordBuffer(1);
-  (*shaderParams)["u_seed"].UpdateWordBuffer(g_seed); 
+{ 
+  (*g_shaderParams)["u_seed"].InitializeWordBuffer(1);
+  (*g_shaderParams)["u_seed"].UpdateWordBuffer(g_seed); 
 
-  (*shaderParams)["u_resolution"].InitializeWordBuffer(2);
-  (*shaderParams)["u_resolution"].UpdateWordBuffer(g_resolution);
+  (*g_shaderParams)["u_resolution"].InitializeWordBuffer(2);
+  (*g_shaderParams)["u_resolution"].UpdateWordBuffer(g_resolution);
 
-  (*shaderParams)["u_color"].InitializeWordBuffer(3);
-  (*shaderParams)["u_color"].UpdateWordBuffer(g_color);
+  (*g_shaderParams)["u_color"].InitializeWordBuffer(3);
+  (*g_shaderParams)["u_color"].UpdateWordBuffer(g_color);
 
-  (*shaderParams)["u_adjustments"].InitializeWordBuffer(16);
-  (*shaderParams)["u_adjustments"].UpdateWordBuffer(g_adjustments);
+  (*g_shaderParams)["u_adjustments"].InitializeWordBuffer(16);
+  (*g_shaderParams)["u_adjustments"].UpdateWordBuffer(g_adjustments);
 }
 //! [update uniforms]
 
@@ -188,6 +184,20 @@ void initCamera(ir::CameraPtr _camera)
 }
 
 //////////////////////////////////////////////////
+void initUniforms()
+{
+  ir::NodePtr node = g_camera->Parent();
+  ir::VisualPtr sphere = std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("box"));
+  ir::MaterialPtr shader = sphere->Material();
+  g_shaderParams = shader->FragmentShaderParams();
+  
+  (*g_shaderParams)["u_seed"].InitializeWordBuffer(1);
+  (*g_shaderParams)["u_resolution"].InitializeWordBuffer(2);
+  (*g_shaderParams)["u_color"].InitializeWordBuffer(3);
+  (*g_shaderParams)["u_adjustments"].InitializeWordBuffer(16);
+}
+
+//////////////////////////////////////////////////
 void initContext()
 {
   glutInitDisplayMode(GLUT_DOUBLE);
@@ -230,6 +240,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
 
   g_cameras = _cameras;
   initCamera(_cameras[0]);
+  initUniforms();
   initContext();
   printUsage();
 

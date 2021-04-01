@@ -37,8 +37,8 @@
 using namespace ignition;
 using namespace rendering;
 
-const std::string vertex_shader_file = "vertex_shader.glsl";
-const std::string fragment_shader_file = "fragment_shader.glsl";
+const std::string vertexShaderFile = "vertex_shader.glsl";
+const std::string fragmentShaderFile = "fragment_shader.glsl";
 //! [init shaders variables]
 
 const std::string RESOURCE_PATH =
@@ -61,16 +61,16 @@ void buildScene(ScenePtr _scene)
   // create shader materials
   // path to look for vertex and fragment shader parameters
   std::string vertexShaderPath = ignition::common::joinPaths(
-      RESOURCE_PATH, vertex_shader_file);
+      RESOURCE_PATH, vertexShaderFile);
 
-  std::string fragment_shader_path = ignition::common::joinPaths(
-      RESOURCE_PATH, fragment_shader_file);
+  std::string fragmentShaderPath = ignition::common::joinPaths(
+      RESOURCE_PATH, fragmentShaderFile);
 
   //! [add shader to visual]
   // create shader material
   ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
-  shader->SetVertexShader(vertex_shader_path);
-  shader->SetFragmentShader(fragment_shader_path);
+  shader->SetVertexShader(vertexShaderPath);
+  shader->SetFragmentShader(fragmentShaderPath);
 
   // create box visual
   VisualPtr box = _scene->CreateVisual("box");

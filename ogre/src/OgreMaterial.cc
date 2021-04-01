@@ -356,16 +356,22 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
       std::shared_ptr<void> wordBuffer;
       name_param.second.WordBuffer(&wordBuffer);
       uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
       _ogreParams->setNamedConstant(name_param.first,
-          reinterpret_cast<float*>(wordBuffer.get()), count, 1);
+          reinterpret_cast<float*>(wordBuffer.get()), count, multiple);
     }
     else if (ShaderParam::PARAM_INT_BUFFER == name_param.second.Type())
     {
       std::shared_ptr<void> wordBuffer;
       name_param.second.WordBuffer(&wordBuffer);
       uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
       _ogreParams->setNamedConstant(name_param.first,
-        reinterpret_cast<int*>(wordBuffer.get()), count, 1);
+        reinterpret_cast<int*>(wordBuffer.get()), count, multiple);
     }
   }
 }

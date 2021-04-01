@@ -69,6 +69,16 @@ bool g_initContext = false;
 
 double g_offset = 0.0;
 
+int g_seed[1] = {0};
+float g_resolution[2] = {400, 200};
+float g_color[3] = {1.0, 1.0, 1.0};
+float g_adjustments[16] = {
+  0, 0, 0, 0.0005,
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0
+};
+
 //////////////////////////////////////////////////
 //! [update camera]
 void updateCameras()
@@ -95,16 +105,18 @@ void updateUniforms()
   ir::VisualPtr sphere = std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("box"));
   ir::MaterialPtr shader = sphere->Material();
   ir::ShaderParamsPtr shaderParams = shader->FragmentShaderParams();
-
-  static int g_frameCount = 0;
-  int frameCount[1] =
-  {
-    g_frameCount
-  };
   
-  (*shaderParams)["frameCount"].InitializeWordBuffer(1);
-  (*shaderParams)["frameCount"].UpdateWordBuffer(frameCount);
-  g_frameCount += 1;
+  (*shaderParams)["u_seed"].InitializeWordBuffer(1);
+  (*shaderParams)["u_seed"].UpdateWordBuffer(g_seed); 
+
+  (*shaderParams)["u_resolution"].InitializeWordBuffer(2);
+  (*shaderParams)["u_resolution"].UpdateWordBuffer(g_resolution);
+
+  (*shaderParams)["u_color"].InitializeWordBuffer(3);
+  (*shaderParams)["u_color"].UpdateWordBuffer(g_color);
+
+  (*shaderParams)["u_adjustments"].InitializeWordBuffer(16);
+  (*shaderParams)["u_adjustments"].UpdateWordBuffer(g_adjustments);
 }
 //! [update uniforms]
 
@@ -156,9 +168,13 @@ void keyboardCB(unsigned char _key, int, int)
   {
     exit(0);
   }
-  else if (_key == KEY_TAB)
+  else if (_key == 'o')
   {
-    g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
+    g_adjustments[3] -= 0.0001;
+  }
+  else if (_key == 'p')
+  {
+    g_adjustments[3] += 0.0001;
   }
 }
 
@@ -189,8 +205,10 @@ void initContext()
 void printUsage()
 {
   std::cout << "===============================" << std::endl;
-  std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
+  std::cout << "                               " << std::endl;
+  std::cout << "  o - Decrease Frequency       " << std::endl;
+  std::cout << "  p - Increase Frequency       " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 

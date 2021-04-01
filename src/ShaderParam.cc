@@ -105,17 +105,19 @@ void ShaderParam::InitializeWordBuffer(const uint32_t _count)
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::UpdateWordBuffer(float *_floatBuffer, const uint32_t _count)
+void ShaderParam::UpdateWordBuffer(float *_floatBuffer)
 {
   this->dataPtr->type = PARAM_FLOAT_BUFFER;
-  memcpy(this->dataPtr->wordBuffer.get(), _floatBuffer, 4 * _count);
+  memcpy(this->dataPtr->wordBuffer.get(), _floatBuffer,
+      4 * this->dataPtr->count);
 }
 
 //////////////////////////////////////////////////
-void ShaderParam::UpdateWordBuffer(int *_intBuffer, const uint32_t _count)
+void ShaderParam::UpdateWordBuffer(int *_intBuffer)
 {
   this->dataPtr->type = PARAM_INT_BUFFER;
-  memcpy(this->dataPtr->wordBuffer.get(), _intBuffer, 4 * _count);
+  memcpy(this->dataPtr->wordBuffer.get(), _intBuffer,
+      4 * this->dataPtr->count);
 }
 
 //////////////////////////////////////////////////

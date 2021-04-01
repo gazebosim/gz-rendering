@@ -103,7 +103,7 @@ void updateUniforms()
   };
   
   (*shaderParams)["frameCount"].InitializeWordBuffer(1);
-  (*shaderParams)["frameCount"].UpdateWordBuffer(frameCount, 1);
+  (*shaderParams)["frameCount"].UpdateWordBuffer(frameCount);
   g_frameCount += 1;
 }
 //! [update uniforms]

@@ -88,55 +88,108 @@ TEST(ShaderParam, IntType)
 }
 
 /////////////////////////////////////////////////
-TEST(ShaderParam, BufferType)
+TEST(ShaderParam, FloatBufferType)
 {
-  // ShaderParam p;
-  // p.InitializeWordBuffer(12);
-  // EXPECT_EQ(ShaderParam::PARAM_WORD_BUFFER, p.Type());
-  // EXPECT_EQ(12, (int)p.Count());
 
-  // float b[12] =
-  // {
-  //   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
-  // };
+  float b[10] =
+  {
+    0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
+  };
 
-  // p.UpdateWordBuffer(b, 12);
-  // std::shared_ptr<float> wordBuffer;
-  // EXPECT_TRUE(p.WordBuffer(&wordBuffer));
+  ShaderParam p;
+  p.InitializeWordBuffer(10);
+  p.UpdateWordBuffer(b);
 
-  // for (int x = 0; x < 12; ++x) {
-  //   EXPECT_EQ(x, (int)wordBuffer.get()[x]);
-  // }
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p.Type());
+  EXPECT_EQ(10, (int)p.Count());
 
-  // // test copy assignment
-  // ShaderParam p2;
-  // p2 = p;
-  // EXPECT_EQ(ShaderParam::PARAM_WORD_BUFFER, p2.Type());
-  // EXPECT_EQ(12, (int)p2.Count());
+  std::shared_ptr<void> wordBuffer;
+  EXPECT_TRUE(p.WordBuffer(&wordBuffer));
+  for (int x = 0; x < 10; ++x) {
+    EXPECT_FLOAT_EQ((float)x / 10.0f,
+        reinterpret_cast<float*>(wordBuffer.get())[x]);
+  }
 
-  // std::shared_ptr<float> wordBuffer2;
-  // EXPECT_TRUE(p2.WordBuffer(&wordBuffer2));
+  // test copy assignment
+  ShaderParam p2;
+  p2 = p;
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p2.Type());
+  EXPECT_EQ(10, (int)p2.Count());
 
-  // for (int x = 0; x < 12; ++x) {
-  //   EXPECT_EQ(x, (int)wordBuffer2.get()[x]);
-  // }
+  std::shared_ptr<void> wordBuffer2;
+  EXPECT_TRUE(p2.WordBuffer(&wordBuffer2));
+  for (int x = 0; x < 10; ++x) {
+    EXPECT_FLOAT_EQ((float)x / 10.0f,
+        reinterpret_cast<float*>(wordBuffer2.get())[x]);
+  }
 
-  // // test copy constructor
-  // ShaderParam p3(p);
-  // EXPECT_EQ(ShaderParam::PARAM_WORD_BUFFER, p3.Type());
-  // EXPECT_EQ(12, (int)p3.Count());
+  // test copy constructor
+  ShaderParam p3(p);
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p3.Type());
+  EXPECT_EQ(10, (int)p3.Count());
 
-  // std::shared_ptr<float> wordBuffer3;
-  // EXPECT_TRUE(p2.WordBuffer(&wordBuffer3));
+  std::shared_ptr<void> wordBuffer3;
+  EXPECT_TRUE(p3.WordBuffer(&wordBuffer3));
+  for (int x = 0; x < 10; ++x) {
+    EXPECT_FLOAT_EQ((float)x / 10.0f,
+        reinterpret_cast<float*>(wordBuffer3.get())[x]);
+  }
 
-  // for (int x = 0; x < 12; ++x) {
-  //   EXPECT_EQ(x, (int)wordBuffer3.get()[x]);
-  // }
+  ShaderParam p4;
+  p4 = 1;
+  std::shared_ptr<void> wordBuffer4;
+  EXPECT_FALSE(p4.WordBuffer(&wordBuffer4));
+}
 
-  // ShaderParam p4;
-  // p4 = 1;
-  // std::shared_ptr<float> wordBuffer4;
-  // EXPECT_FALSE(p4.WordBuffer(&wordBuffer4));
+/////////////////////////////////////////////////
+TEST(ShaderParam, IntBufferType)
+{
+
+  int b[10] =
+  {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+  };
+
+  ShaderParam p;
+  p.InitializeWordBuffer(10);
+  p.UpdateWordBuffer(b);
+
+  EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p.Type());
+  EXPECT_EQ(10, (int)p.Count());
+
+  std::shared_ptr<void> wordBuffer;
+  EXPECT_TRUE(p.WordBuffer(&wordBuffer));
+  for (int x = 0; x < 10; ++x) {
+    EXPECT_EQ(x, reinterpret_cast<int*>(wordBuffer.get())[x]);
+  }
+
+  // test copy assignment
+  ShaderParam p2;
+  p2 = p;
+  EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p2.Type());
+  EXPECT_EQ(10, (int)p2.Count());
+
+  std::shared_ptr<void> wordBuffer2;
+  EXPECT_TRUE(p2.WordBuffer(&wordBuffer2));
+  for (int x = 0; x < 10; ++x) {
+    EXPECT_EQ(x, reinterpret_cast<int*>(wordBuffer2.get())[x]);
+  }
+
+  // test copy constructor
+  ShaderParam p3(p);
+  EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p3.Type());
+  EXPECT_EQ(10, (int)p3.Count());
+
+  std::shared_ptr<void> wordBuffer3;
+  EXPECT_TRUE(p3.WordBuffer(&wordBuffer3));
+  for (int x = 0; x < 10; ++x) {
+    EXPECT_EQ(x, reinterpret_cast<int*>(wordBuffer3.get())[x]);
+  }
+
+  ShaderParam p4;
+  p4 = 1;
+  std::shared_ptr<void> wordBuffer4;
+  EXPECT_FALSE(p4.WordBuffer(&wordBuffer4));
 }
 
 //////////////////////////////////////////////////

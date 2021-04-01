@@ -95,13 +95,11 @@ namespace ignition
 
       /// \brief Copy a buffer to this parameter
       /// \param[in] _floatBuffer Source buffer to copy from
-      /// \param[in] _count Number of elements in the word buffer
-      public: void UpdateWordBuffer(float *_floatBuffer, const uint32_t _count);
+      public: void UpdateWordBuffer(float *_floatBuffer);
 
       /// \brief Copy a buffer to this parameter
       /// \param[in] _intBuffer Source buffer to copy from
-      /// \param[in] _count Number of elements in the word buffer
-      public: void UpdateWordBuffer(int *_intBuffer, const uint32_t _count);
+      public: void UpdateWordBuffer(int *_intBuffer);
 
       /// \brief Get the value of this parameter if it is a float
       /// \param[out] _value variable the value will be copied to

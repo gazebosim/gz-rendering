@@ -32,7 +32,7 @@ target_link_libraries(custom_shaders_uniforms
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
-  )
+)
 
 add_custom_command(TARGET custom_shaders_uniforms POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory

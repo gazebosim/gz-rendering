@@ -90,7 +90,6 @@ TEST(ShaderParam, IntType)
 /////////////////////////////////////////////////
 TEST(ShaderParam, FloatBufferType)
 {
-
   float b[10] =
   {
     0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f
@@ -105,7 +104,8 @@ TEST(ShaderParam, FloatBufferType)
 
   std::shared_ptr<void> wordBuffer;
   EXPECT_TRUE(p.WordBuffer(&wordBuffer));
-  for (int x = 0; x < 10; ++x) {
+  for (int x = 0; x < 10; ++x)
+  {
     EXPECT_FLOAT_EQ((float)x / 10.0f,
         reinterpret_cast<float*>(wordBuffer.get())[x]);
   }
@@ -118,7 +118,8 @@ TEST(ShaderParam, FloatBufferType)
 
   std::shared_ptr<void> wordBuffer2;
   EXPECT_TRUE(p2.WordBuffer(&wordBuffer2));
-  for (int x = 0; x < 10; ++x) {
+  for (int x = 0; x < 10; ++x)
+  {
     EXPECT_FLOAT_EQ((float)x / 10.0f,
         reinterpret_cast<float*>(wordBuffer2.get())[x]);
   }
@@ -130,7 +131,8 @@ TEST(ShaderParam, FloatBufferType)
 
   std::shared_ptr<void> wordBuffer3;
   EXPECT_TRUE(p3.WordBuffer(&wordBuffer3));
-  for (int x = 0; x < 10; ++x) {
+  for (int x = 0; x < 10; ++x)
+  {
     EXPECT_FLOAT_EQ((float)x / 10.0f,
         reinterpret_cast<float*>(wordBuffer3.get())[x]);
   }
@@ -144,7 +146,6 @@ TEST(ShaderParam, FloatBufferType)
 /////////////////////////////////////////////////
 TEST(ShaderParam, IntBufferType)
 {
-
   int b[10] =
   {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9
@@ -159,7 +160,8 @@ TEST(ShaderParam, IntBufferType)
 
   std::shared_ptr<void> wordBuffer;
   EXPECT_TRUE(p.WordBuffer(&wordBuffer));
-  for (int x = 0; x < 10; ++x) {
+  for (int x = 0; x < 10; ++x)
+  {
     EXPECT_EQ(x, reinterpret_cast<int*>(wordBuffer.get())[x]);
   }
 
@@ -171,7 +173,8 @@ TEST(ShaderParam, IntBufferType)
 
   std::shared_ptr<void> wordBuffer2;
   EXPECT_TRUE(p2.WordBuffer(&wordBuffer2));
-  for (int x = 0; x < 10; ++x) {
+  for (int x = 0; x < 10; ++x)
+  {
     EXPECT_EQ(x, reinterpret_cast<int*>(wordBuffer2.get())[x]);
   }
 
@@ -182,7 +185,8 @@ TEST(ShaderParam, IntBufferType)
 
   std::shared_ptr<void> wordBuffer3;
   EXPECT_TRUE(p3.WordBuffer(&wordBuffer3));
-  for (int x = 0; x < 10; ++x) {
+  for (int x = 0; x < 10; ++x)
+  {
     EXPECT_EQ(x, reinterpret_cast<int*>(wordBuffer3.get())[x]);
   }
 

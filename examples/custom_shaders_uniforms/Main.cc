@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ void buildScene(ScenePtr _scene)
 
   // create shader materials
   // path to look for vertex and fragment shader parameters
-  std::string vertex_shader_path = ignition::common::joinPaths(
+  std::string vertexShaderPath = ignition::common::joinPaths(
       RESOURCE_PATH, vertex_shader_file);
 
   std::string fragment_shader_path = ignition::common::joinPaths(
@@ -147,7 +147,6 @@ int main(int _argc, char** _argv)
     }
     catch (...)
     {
-      // std::cout << ex.what() << std::endl;
       std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }

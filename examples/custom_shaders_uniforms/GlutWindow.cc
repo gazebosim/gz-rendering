@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,6 @@ float g_adjustments[16] = {
 //////////////////////////////////////////////////
 //! [update camera]
 void updateCameras()
-
 {
   double angle = g_offset / 2 * M_PI;
   double x = sin(angle) * 3.0 + 3.0;
@@ -99,7 +98,6 @@ void updateCameras()
 //////////////////////////////////////////////////
 //! [update uniforms]
 void updateUniforms()
-
 {
   ir::NodePtr node = g_camera->Parent();
   ir::VisualPtr sphere = std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("box"));

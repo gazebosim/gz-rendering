@@ -351,13 +351,21 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
       name_param.second.Value(&value);
       _ogreParams->setNamedConstant(name_param.first, value);
     }
-    else if (ShaderParam::PARAM_WORD_BUFFER == name_param.second.Type())
+    else if (ShaderParam::PARAM_FLOAT_BUFFER == name_param.second.Type())
     {
-      std::shared_ptr<float> wordBuffer;
+      std::shared_ptr<void> wordBuffer;
       name_param.second.WordBuffer(&wordBuffer);
       uint32_t count = name_param.second.Count();
-      _ogreParams->setNamedConstant(name_param.first, wordBuffer.get(), count,
-          1);
+      _ogreParams->setNamedConstant(name_param.first,
+          reinterpret_cast<float*>(wordBuffer.get()), count, 1);
+    }
+    else if (ShaderParam::PARAM_INT_BUFFER == name_param.second.Type())
+    {
+      std::shared_ptr<void> wordBuffer;
+      name_param.second.WordBuffer(&wordBuffer);
+      uint32_t count = name_param.second.Count();
+      _ogreParams->setNamedConstant(name_param.first,
+        reinterpret_cast<int*>(wordBuffer.get()), count, 1);
     }
   }
 }

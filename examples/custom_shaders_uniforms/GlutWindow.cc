@@ -87,6 +87,28 @@ void updateCameras()
 //! [update camera]
 
 //////////////////////////////////////////////////
+//! [update uniforms]
+void updateUniforms()
+
+{
+  ir::NodePtr node = g_camera->Parent();
+  ir::VisualPtr sphere = std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("box"));
+  ir::MaterialPtr shader = sphere->Material();
+  ir::ShaderParamsPtr shaderParams = shader->FragmentShaderParams();
+
+  static int g_frameCount = 0;
+  int frameCount[1] =
+  {
+    g_frameCount
+  };
+  
+  (*shaderParams)["frameCount"].InitializeWordBuffer(1);
+  (*shaderParams)["frameCount"].UpdateWordBuffer(frameCount, 1);
+  g_frameCount += 1;
+}
+//! [update uniforms]
+
+//////////////////////////////////////////////////
 void displayCB()
 {
 #if __APPLE__
@@ -108,22 +130,6 @@ void displayCB()
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 #endif
 
-  ir::NodePtr node = g_camera->Parent();
-  ir::VisualPtr sphere = std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("sphere"));
-  ir::MaterialPtr shader = sphere->Material();
-  ir::ShaderParamsPtr shaderParams = shader->FragmentShaderParams();
-
-  float testMatrix[16] = 
-  {
-    0.1, 0.2, 0.3, 0.4,
-    0.5, 0.6, 0.7, 0.8,
-    0.9, 0.1, 0.2, 0.3,
-    0.4, 0.5, 0.6, 0.7,
-  };
-  
-  (*shaderParams)["textMatrix4"].InitializeWordBuffer(16);
-  (*shaderParams)["textMatrix4"].UpdateWordBuffer(testMatrix, 16);
-
   unsigned char *data = g_image->Data<unsigned char>();
 
   glClearColor(0.5, 0.5, 0.5, 1);
@@ -134,6 +140,7 @@ void displayCB()
 
   glutSwapBuffers();
   updateCameras();
+  updateUniforms();
 }
 
 //////////////////////////////////////////////////

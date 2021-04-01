@@ -58,45 +58,6 @@ void buildScene(ScenePtr _scene)
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
-  // // create point light
-  // PointLightPtr light1 = _scene->CreatePointLight();
-  // light1->SetDiffuseColor(0.5, 0.5, 0.5);
-  // light1->SetSpecularColor(0.5, 0.5, 0.5);
-  // light1->SetLocalPosition(5, -5, 10);
-  // root->AddChild(light1);
-
-  // create point light
-  PointLightPtr light2 = _scene->CreatePointLight();
-  light2->SetDiffuseColor(0.5, 0.5, 0.5);
-  light2->SetSpecularColor(0.5, 0.5, 0.5);
-  light2->SetLocalPosition(3, 5, 5);
-  root->AddChild(light2);
-
-  // create green material
-  MaterialPtr green = _scene->CreateMaterial();
-  green->SetAmbient(0.0, 0.5, 0.0);
-  green->SetDiffuse(0.0, 0.7, 0.0);
-  green->SetSpecular(0.5, 0.5, 0.5);
-  green->SetShininess(50);
-  green->SetReflectivity(0);
-
-  // create center visual
-  VisualPtr center = _scene->CreateVisual();
-  center->AddGeometry(_scene->CreateSphere());
-  center->SetLocalPosition(3, 0, 0);
-  center->SetLocalScale(0.1, 0.1, 0.1);
-  center->SetMaterial(green);
-  root->AddChild(center);
-
-
-  // create red material
-  MaterialPtr red = _scene->CreateMaterial();
-  red->SetAmbient(0.5, 0.0, 0.0);
-  red->SetDiffuse(1.0, 0.0, 0.0);
-  red->SetSpecular(0.5, 0.5, 0.5);
-  red->SetShininess(50);
-  red->SetReflectivity(0);
-
   // create shader materials
   // path to look for vertex and fragment shader parameters
   std::string vertex_shader_path = ignition::common::joinPaths(
@@ -111,53 +72,14 @@ void buildScene(ScenePtr _scene)
   shader->SetVertexShader(vertex_shader_path);
   shader->SetFragmentShader(fragment_shader_path);
 
-  // create sphere visual
-  VisualPtr sphere = _scene->CreateVisual("sphere");
-  sphere->AddGeometry(_scene->CreateSphere());
-  sphere->SetOrigin(0.0, -0.5, 0.0);
-  sphere->SetLocalPosition(3, 0, 0);
-  sphere->SetLocalRotation(0, 0, 0);
-  sphere->SetLocalScale(1, 2.5, 1);
-  sphere->SetMaterial(shader);
-  root->AddChild(sphere);
-
-  // create blue material
-  MaterialPtr blue = _scene->CreateMaterial();
-  blue->SetAmbient(0.0, 0.0, 0.3);
-  blue->SetDiffuse(0.0, 0.0, 0.8);
-  blue->SetSpecular(0.5, 0.5, 0.5);
-  blue->SetShininess(50);
-  blue->SetReflectivity(0);
-
   // create box visual
-  VisualPtr box = _scene->CreateVisual();
+  VisualPtr box = _scene->CreateVisual("box");
   box->AddGeometry(_scene->CreateBox());
-  box->SetOrigin(0.0, 0.5, 0.0);
-  box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
-  box->SetLocalScale(1, 2.5, 1);
-  box->SetMaterial(blue);
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(0, 1, 0);
+  box->SetLocalScale(2, 2, 2);
+  box->SetMaterial(shader);
   root->AddChild(box);
-
-  // create white material
-  MaterialPtr white = _scene->CreateMaterial();
-  white->SetAmbient(0.5, 0.5, 0.5);
-  white->SetDiffuse(0.8, 0.8, 0.8);
-  white->SetReceiveShadows(true);
-  white->SetReflectivity(0);
-
-  // create plane visual
-  VisualPtr plane = _scene->CreateVisual();
-  plane->AddGeometry(_scene->CreatePlane());
-  plane->SetLocalScale(5, 8, 1);
-  plane->SetLocalPosition(3, 0, -0.5);
-  plane->SetMaterial(white);
-  root->AddChild(plane);
-
-  // create axis visual
-  VisualPtr axis = _scene->CreateAxisVisual();
-  axis->SetLocalPosition(4.0, 0.5, -0.4);
-  root->AddChild(axis);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

@@ -2,10 +2,9 @@
 
 This tutorial shows how to add an environment map to a mesh.
 
-An environment map, also known as reflection map, is an efficient way to
+An environment map, also known as a reflection map, is an efficient way to
 create reflective surfaces using a precomputed texture. The environment
 map texture used by ignition rendering needs to be the form of a cube map.
-
 
 ## Example mesh with Environment map
 
@@ -13,7 +12,6 @@ An example of a mesh with an environment map can be found in the `ogre2_demo`,
 which uses the ogre2 render engine.
 
 To see the example mesh, build and run the demo:
-
 
 ```{.sh}
 cd ign-rendering/examples/ogre2_demo
@@ -31,7 +29,7 @@ Now run it:
 
 @image html img/ogre2_sky_envmap.png
 
-There two meshes in the scene with environment maps. One is the pump and the
+There are two meshes in the scene with environment maps. One is the pump and the
 other is the gray box on the left. The effect is more evident on the gray box
 as it uses a mirror-like material with low roughness and high metalness values.
 If you look at the box mesh from different angles, you will notice that there

@@ -36,6 +36,11 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
+#include <Hlms/Pbs/OgreHlmsPbs.h>
+#include <Hlms/Unlit/OgreHlmsUnlit.h>
+#include <OgreHlmsManager.h>
+#include <OgreMaterialManager.h>
+
 /// \brief Private data for the Ogre2Material class
 class ignition::rendering::Ogre2MaterialPrivate
 {

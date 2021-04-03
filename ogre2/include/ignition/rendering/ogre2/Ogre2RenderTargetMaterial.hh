@@ -20,8 +20,10 @@
 #include <vector>
 
 #include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
+
+#include <OgreRenderTargetListener.h>
+#include <OgreMaterialManager.h>
 
 namespace ignition
 {

@@ -17,12 +17,14 @@
 
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-// #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 #include "ignition/rendering/Utils.hh"
+
+#include <OgreCamera.h>
+#include <OgreItem.h>
+#include <OgreSceneManager.h>
 
 /// \brief Private data for the Ogre2Camera class
 class ignition::rendering::Ogre2CameraPrivate

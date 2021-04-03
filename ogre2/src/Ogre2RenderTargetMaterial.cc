@@ -17,6 +17,9 @@
 
 #include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
 
+#include <OgreRenderTarget.h>
+#include <OgreViewport.h>
+
 using namespace ignition::rendering;
 
 

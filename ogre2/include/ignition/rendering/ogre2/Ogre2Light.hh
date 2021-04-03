@@ -21,7 +21,8 @@
 
 #include "ignition/rendering/base/BaseLight.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+
+#include <OgreLight.h>
 
 namespace Ogre
 {

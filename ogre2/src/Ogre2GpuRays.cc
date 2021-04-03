@@ -26,7 +26,6 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -35,6 +34,20 @@
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
 #include "Ogre2ParticleNoiseListener.hh"
+
+#include <Compositor/OgreCompositorManager2.h>
+#include <Compositor/OgreCompositorWorkspace.h>
+#include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
+#include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
+#include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
+#include <OgreDepthBuffer.h>
+#include <OgreHardwarePixelBuffer.h>
+#include <OgreItem.h>
+#include <OgreRenderTexture.h>
+#include <OgreRoot.h>
+#include <OgreSceneManager.h>
+#include <OgreTechnique.h>
+#include <OgreTextureManager.h>
 
 namespace ignition
 {

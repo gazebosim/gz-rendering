@@ -28,7 +28,6 @@
 #include <string>
 
 #include "ignition/rendering/base/BaseDepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 #include "ignition/common/Event.hh"

@@ -28,13 +28,26 @@
 #include <ignition/math/Matrix4.hh>
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
+
+#include <OgreHardwareBufferManager.h>
+#include <OgreItem.h>
+#include <OgreKeyFrame.h>
+#include <OgreMesh2.h>
+#include <OgreMeshManager.h>
+#include <OgreMeshManager2.h>
+#include <OgreOldBone.h>
+#include <OgreOldSkeletonManager.h>
+#include <OgreSceneManager.h>
+#include <OgreSkeleton.h>
+#include <OgreSubItem.h>
+#include <OgreSubMesh.h>
+#include <OgreSubMesh2.h>
 
 /// \brief Private data for the Ogre2MeshFactory class
 class ignition::rendering::Ogre2MeshFactoryPrivate

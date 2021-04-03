@@ -16,6 +16,8 @@
  */
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 
+#include <OgreMatrix4.h>
+
 using namespace ignition;
 using namespace rendering;
 

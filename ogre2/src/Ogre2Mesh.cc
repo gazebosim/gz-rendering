@@ -29,10 +29,12 @@
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+#include <Animation/OgreSkeletonInstance.h>
+#include <OgreItem.h>
+#include <OgreSceneManager.h>
 
 /// brief Private implementation of the Ogre2Mesh class
 class ignition::rendering::Ogre2MeshPrivate

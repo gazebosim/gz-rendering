@@ -22,9 +22,15 @@
 #include <vector>
 
 #include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/Marker.hh"
+
+#include <OgreHlmsPso.h>
+
+namespace Ogre
+{
+	class MovableObject;
+}
 
 namespace ignition
 {

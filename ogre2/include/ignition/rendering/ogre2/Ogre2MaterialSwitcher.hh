@@ -24,8 +24,10 @@
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+
+#include <OgreMaterial.h>
+#include <OgreRenderTargetListener.h>
 
 namespace ignition
 {

@@ -20,8 +20,9 @@
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+
+#include <OgreSceneManager.h>
 
 /// \brief Private data for the Ogre2Light class
 class ignition::rendering::Ogre2LightPrivate

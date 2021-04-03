@@ -24,8 +24,11 @@
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
+
+#include <OgreColourValue.h>
+#include <OgreVector3.h>
+#include <OgrePixelFormat.h>
 
 namespace ignition
 {

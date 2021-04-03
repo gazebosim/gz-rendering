@@ -18,6 +18,8 @@
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 
+#include <OgreSceneNode.h>
+
 using namespace ignition;
 using namespace rendering;
 

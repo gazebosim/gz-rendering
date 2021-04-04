@@ -282,6 +282,12 @@ namespace ignition
       /// \return Texture Id of type GLuint.
       public: virtual unsigned int RenderTextureGLId() const = 0;
 
+      /// \brief Notifies us that the shadow node definition is about to be
+      /// updated. This means our compositor workspace must be destroyed
+      /// because the shadow node definition it's using will become a
+      /// dangling pointer otherwise
+      public: virtual void SetShadowsNodeDefDirty() = 0;
+
       /// \brief Add a render pass to the camera
       /// \param[in] _pass New render pass to add
       public: virtual void AddRenderPass(const RenderPassPtr &_pass) = 0;

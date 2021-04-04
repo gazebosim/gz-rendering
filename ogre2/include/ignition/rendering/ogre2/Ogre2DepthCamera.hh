@@ -73,6 +73,10 @@ namespace ignition
       /// \brief Set up 1st pass material, texture, and compositor
       public: virtual void CreateDepthTexture() override;
 
+      /// \brief Creates an Ogre Workspace instance. Assumes the definition
+      /// already and the depth texture have already been created
+      private: void CreateWorkspaceInstance();
+
       // Documentation inherited
       public: virtual void PreRender() override;
 
@@ -117,6 +121,9 @@ namespace ignition
       /// \return Far clip distance. A value of zero is returned if the
       /// ogre camera has not been created.
       public: double FarClipPlane() const override;
+
+      // Documentation inherited.
+      public: virtual void SetShadowsNodeDefDirty() override;
 
       // Documentation inherited.
       public: void AddRenderPass(const RenderPassPtr &_pass) override;

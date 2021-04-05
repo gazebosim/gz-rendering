@@ -22,6 +22,7 @@
 #include <ignition/math/Helpers.hh>
 
 #include <ignition/rendering/Camera.hh>
+#include <ignition/rendering/Capsule.hh>
 #include <ignition/rendering/Scene.hh>
 #include <ignition/rendering/Visual.hh>
 
@@ -1509,13 +1510,14 @@ void SubSceneManager::ProcessCone(
 void SubSceneManager::ProcessCapsule(
     const gazebo::msgs::Geometry & _geometryMsg, VisualPtr _parent)
 {
-  GeometryPtr capsule = this->activeScene->CreateCapsule();
-  const gazebo::msgs::CapsuleGeom &capsuleMsg = _geometryMsg.capsule();
-  double x = 2 * capsuleMsg.radius();
-  double y = 2 * capsuleMsg.radius();
-  double z = capsuleMsg.length();
-  _parent->SetLocalScale(x, y, z);
-  _parent->AddGeometry(capsule);
+  // \todo(anyone) needs gazebo capsule msg
+  CapsulePtr capsule = this->activeScene->CreateCapsule();
+  // Const gazebo::msgs::CapsuleGeom &capsuleMsg = _geometryMsg.capsule();
+  // Double x = 2 * capsuleMsg.radius();
+  // Double y = 2 * capsuleMsg.radius();
+  // Double z = capsuleMsg.length();
+  // _parent->SetLocalScale(x, y, z);
+  _parent->AddGeometry(std::dynamic_pointer_cast<Geometry>(capsule));
 }
 
 //////////////////////////////////////////////////
@@ -1833,12 +1835,13 @@ void SubSceneManager::CreateGeometryFunctionMap()
   this->geomFunctions[gazebo::msgs::Geometry::BOX] =
       &SubSceneManager::ProcessBox;
 
-  // TODO(anyone): enable when cone protobuf msg created
+  // todo(anyone): enable when cone protobuf msg is created
   // this->geomFunctions[gazebo::msgs::Geometry::CONE] =
   //     &SubSceneManager::ProcessCone;
 
-  this->geomFunctions[gazebo::msgs::Geometry::CAPSULE] =
-      &SubSceneManager::ProcessSphere;
+  // todo(anyone): enable when capsule protobuf msg is created
+  // this->geomFunctions[gazebo::msgs::Geometry::CAPSULE] =
+  //     &SubSceneManager::ProcessSphere;
 
   this->geomFunctions[gazebo::msgs::Geometry::CYLINDER] =
       &SubSceneManager::ProcessCylinder;

@@ -497,8 +497,8 @@ void Ogre2GpuRays::ConfigureCamera()
   v |= v >> 16;
   v++;
   v += (v==0u);
-  // limit max texture size to 4k
-  unsigned int max1stPassSamples = 4096u;
+  // limit max texture size to 1024
+  unsigned int max1stPassSamples = 1024u;
   unsigned int samples1stPass = std::min(v, max1stPassSamples);
 
   this->Set1stTextureSize(samples1stPass, samples1stPass);

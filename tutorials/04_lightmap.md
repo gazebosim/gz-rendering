@@ -43,7 +43,7 @@ If the texture is black use the color picker and select the UV island and it sho
 
 ### Step 4: Material shader
 
-In order to have the texture show we must assign it to a new material. WIth your model selected open the Shader tab and select `Add` > `Image` > `Image texture`. This will create a new image texture node.
+In order to have the texture show we must assign it to a new material. With your model selected open the Shader tab and select `Add` > `Image` > `Image texture`. This will create a new image texture node.
 * Add an image texture
 * Connect the color from the image node to the base color of the material color (principled BSDF)
 
@@ -51,7 +51,6 @@ After this step add another image texture in the shader editor
 * Give this one a new name (ex: MeshLightBake)
 
 @image html img/lightmap_material_shader.png
-
 
 ### Step 5: Render/Bake
 
@@ -62,7 +61,7 @@ Scroll down to where it says bake, and then with the second image node selected 
 
 @image html img/lightmap_new_texture.png
 
-The above image shows the model with baked in lighting (Blender Viewport Shading turned on)
+The above image shows the model with baked in lighting (Blender Viewport Shading turned on).
 
 ### Step 6: Test/Export
 

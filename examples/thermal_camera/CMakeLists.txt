@@ -8,7 +8,7 @@ include_directories(SYSTEM
 
 set(TARGET_THIRD_PARTY_DEPENDS "")
 
-if (APPLE OR LINUX)
+if (APPLE OR UNIX)
 	find_package(GLUT REQUIRED)
 	include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
 	link_directories(${GLUT_LIBRARY_DIRS})
@@ -20,19 +20,23 @@ if (APPLE OR LINUX)
 	set(TARGET_THIRD_PARTY_DEPENDS
 		${TARGET_THIRD_PARTY_DEPENDS}
 		${OPENGL_LIBRARIES}
-		${GLUT_LIBRARIES})
+		${GLUT_LIBRARIES}
+  )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 endif()
 
 if (NOT APPLE)
   find_package(GLEW REQUIRED)
-	set(TARGET_THIRD_PARTY_DEPENDS ${TARGET_THIRD_PARTY_DEPENDS} GLEW::glew)
+  set(TARGET_THIRD_PARTY_DEPENDS
+    ${TARGET_THIRD_PARTY_DEPENDS}
+    GLEW::glew
+  )
 endif()
 
 if (WIN32)
 	find_package(FreeGLUT REQUIRED)
 	set(TARGET_THIRD_PARTY_DEPENDS ${TARGET_THIRD_PARTY_DEPENDS} FreeGLUT::freeglut)
 endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
 

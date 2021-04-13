@@ -18,7 +18,13 @@
 #if defined(__APPLE__)
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
-#elif not defined(_WIN32)
+#elif _WIN32
+  #define NOMINMAX
+  #include <windows.h>			/* must include this before GL/gl.h */
+  #include <GL/glew.h>
+  #include <GL/glu.h>			/* OpenGL utilities header file */
+  #include <GL/glut.h>			/* OpenGL utilities header file */
+#else
   #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glut.h>
@@ -209,8 +215,6 @@ int main(int _argc, char** _argv)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
 //! [add scenes]
   sceneDemo->AddCamera(ogreEngine);
-  sceneDemo->AddCamera("optix");
   sceneDemo->Run();
   return 0;
 }
-

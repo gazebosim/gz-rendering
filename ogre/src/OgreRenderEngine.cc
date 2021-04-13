@@ -394,8 +394,6 @@ void OgreRenderEngine::CreateRoot()
   try
   {
     this->ogreRoot = new Ogre::Root("", "", "");
-    if (!this->ogreRoot->showConfigDialog())
- 		 return;
   }
   catch (Ogre::Exception &ex)
   {

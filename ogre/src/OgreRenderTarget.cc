@@ -68,7 +68,6 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
-  std::cerr << "OgreRenderTarget::Copy" << '\n';
   if (nullptr == this->RenderTarget())
     return;
 
@@ -80,7 +79,6 @@ void OgreRenderTarget::Copy(Image &_image) const
     ignerr << "Invalid image dimensions" << std::endl;
     return;
   }
-  std::cerr << "_image.Width() " << _image.Width() << " _image.Heigth() " << _image.Height() << '\n';
 
   void* data = _image.Data();
   Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());

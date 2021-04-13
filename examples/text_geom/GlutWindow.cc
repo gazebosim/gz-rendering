@@ -15,15 +15,22 @@
  *
  */
 
-#if __APPLE__
-  #include <OpenGL/gl.h>
-  #include <OpenGL/OpenGL.h>
-  #include <GLUT/glut.h>
-#else
-  #include <GL/glew.h>
-  #include <GL/gl.h>
-  #include <GL/glut.h>
-#endif
+ #if __APPLE__
+   #include <OpenGL/gl.h>
+   #include <OpenGL/OpenGL.h>
+   #include <GLUT/glut.h>
+ #elif _WIN32
+   #define NOMINMAX
+   #include <windows.h>			/* must include this before GL/gl.h */
+   #include <GL/glew.h>
+   #include <GL/glu.h>			/* OpenGL utilities header file */
+   #include <GL/glut.h>			/* OpenGL utilities header file */
+   #include "Wingdi.h"
+ #else
+   #include <GL/glew.h>
+   #include <GL/gl.h>
+   #include <GL/glut.h>
+ #endif
 
 #if !defined(__APPLE__) && !defined(_WIN32)
   #include <GL/glx.h>
@@ -57,6 +64,10 @@ bool g_initContext = false;
   CGLContextObj g_context;
   CGLContextObj g_glutContext;
 #elif _WIN32
+  HGLRC g_context = 0;
+  HDC g_display = 0;
+  HGLRC g_glutContext = 0;
+  HDC g_glutDisplay = 0;
 #else
   GLXContext g_context;
   Display *g_display;
@@ -74,6 +85,11 @@ void displayCB()
 #if __APPLE__
   CGLSetCurrentContext(g_context);
 #elif _WIN32
+  if(!wglMakeCurrent(g_display, g_context))
+  {
+    std::cerr << "Not able to wglMakeCurrent" << '\n';
+    exit(-1);
+  }
 #else
   if (g_display)
   {
@@ -86,6 +102,7 @@ void displayCB()
 #if __APPLE__
   CGLSetCurrentContext(g_glutContext);
 #elif _WIN32
+  wglMakeCurrent(g_glutDisplay, g_glutContext);
 #else
   glXMakeCurrent(g_glutDisplay, g_glutDrawable, g_glutContext);
 #endif
@@ -164,6 +181,8 @@ void run(std::vector<ir::CameraPtr> _cameras)
 #if __APPLE__
   g_context = CGLGetCurrentContext();
 #elif _WIN32
+  g_context = wglGetCurrentContext();
+  g_display = wglGetCurrentDC();
 #else
   g_context = glXGetCurrentContext();
   g_display = glXGetCurrentDisplay();
@@ -178,6 +197,8 @@ void run(std::vector<ir::CameraPtr> _cameras)
 #if __APPLE__
   g_glutContext = CGLGetCurrentContext();
 #elif _WIN32
+  g_glutContext = wglGetCurrentContext();
+  g_glutDisplay = wglGetCurrentDC();
 #else
   g_glutDisplay = glXGetCurrentDisplay();
   g_glutDrawable = glXGetCurrentDrawable();
@@ -186,5 +207,3 @@ void run(std::vector<ir::CameraPtr> _cameras)
 
   glutMainLoop();
 }
-
-

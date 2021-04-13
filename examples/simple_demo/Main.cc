@@ -15,25 +15,24 @@
  *
  */
 
-#if defined(__APPLE__)
-  #include <OpenGL/gl.h>
-  #include <GLUT/glut.h>
-#elif not defined(_WIN32)
+ #if defined(__APPLE__)
+   #include <OpenGL/gl.h>
+   #include <GLUT/glut.h>
+ #elif _WIN32
+   #define NOMINMAX
+   #include <windows.h>			/* must include this before GL/gl.h */
+   #include <GL/glew.h>
+   #include <GL/glu.h>			/* OpenGL utilities header file */
+   #include <GL/glut.h>			/* OpenGL utilities header file */
+#else
   #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glut.h>
-#elif _WIN32
-  #define NOMINMAX
-  #include <windows.h>			/* must include this before GL/gl.h */
-  #include <GL/glew.h>
-  #include <GL/glu.h>			/* OpenGL utilities header file */
-  #include <GL/glut.h>			/* OpenGL utilities header file */
 #endif
 
 #include <iostream>
 #include <vector>
 
-#include <ignition/math/Helpers.hh>
 #include <ignition/common/Console.hh>
 #include <ignition/rendering.hh>
 
@@ -211,34 +210,25 @@ CameraPtr createCamera(const std::string &_engineName)
   return std::dynamic_pointer_cast<Camera>(sensor);
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 //////////////////////////////////////////////////
-// #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-  // INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT )
-// #else
-  int main(int _argc, char *_argv[])
-// #endif
+int main(int _argc, char** _argv)
 {
-  // int _argc = 1;
-  // char* _argv[] = {"simple_demo"};
   glutInit(&_argc, _argv);
 
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
   std::string engine("ogre");
-  // if (_argc > 1)
-  // {
-  //   engine = _argv[1];
-  // }
+  if (_argc > 1)
+  {
+    engine = _argv[1];
+  }
 
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
   engineNames.push_back(engine);
-  // engineNames.push_back("optix");
+  engineNames.push_back("optix");
 
   for (auto engineName : engineNames)
   {
@@ -259,7 +249,3 @@ extern "C" {
   run(cameras);
   return 0;
 }
-
-#ifdef __cplusplus
-}
-#endif

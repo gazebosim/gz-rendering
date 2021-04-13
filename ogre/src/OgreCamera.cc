@@ -175,6 +175,7 @@ void OgreCamera::CreateCamera()
 //////////////////////////////////////////////////
 void OgreCamera::CreateRenderTexture()
 {
+  std::cerr << "CreateRenderTexture" << '\n';
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->renderTexture = std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);

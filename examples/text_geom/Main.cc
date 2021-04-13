@@ -15,10 +15,16 @@
  *
  */
 
-#if defined(__APPLE__)
-  #include <OpenGL/gl.h>
-  #include <GLUT/glut.h>
-#elif not defined(_WIN32)
+ #if defined(__APPLE__)
+   #include <OpenGL/gl.h>
+   #include <GLUT/glut.h>
+ #elif _WIN32
+   #define NOMINMAX
+   #include <windows.h>			/* must include this before GL/gl.h */
+   #include <GL/glew.h>
+   #include <GL/glu.h>			/* OpenGL utilities header file */
+   #include <GL/glut.h>			/* OpenGL utilities header file */
+#else
   #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glut.h>
@@ -126,7 +132,6 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
 
   engineNames.push_back("ogre");
-  engineNames.push_back("optix");
   for (auto engineName : engineNames)
   {
     try

@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2013 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -37,6 +37,14 @@ THE SOFTWARE.
 
 
 //-----------------------------------------------------------------------------
+void FFP_Transform(in mat3 m, 
+             in vec3 v, 
+             out vec3 vOut)
+{
+    vOut = m * v;
+}
+
+//-----------------------------------------------------------------------------
 void FFP_Transform(in mat4 m, 
 			 in vec4 v, 
 			 out vec4 vOut)
@@ -52,14 +60,26 @@ void FFP_Transform(in mat4 m,
 	vOut = (m * v).xyz;
 }
 
+#if !defined(OGRE_GLSLES) || OGRE_GLSLES > 100
 //-----------------------------------------------------------------------------
-void FFP_Transform(in mat3x4 m, 
-				   in vec3 v, 
+void FFP_Transform(in mat3x4 m,
+				   in vec4 v,
 				   out vec3 vOut)
 {
-	vOut = mat3(m) * v;
+/* transpose non-square uniform matrix for correct row-major > column-major mapping
+ * to keep the indexing inside the shader so mat[0] returns the same data in both GLSL and HLSL
+ * although it will be the first row in HLSL and the first column in GLSL
+ */
+	vOut = v * m;
 }
 
+void FFP_Transform(in mat3x4 m,
+				   in vec3 v,
+				   out vec3 vOut)
+{
+	vOut = v * mat3(m);
+}
+#endif
 
 //-----------------------------------------------------------------------------
 void FFP_Transform(in mat4 m, 
@@ -67,4 +87,12 @@ void FFP_Transform(in mat4 m,
 				   out vec3 vOut)
 {
 	vOut = mat3(m) * v;
+}
+
+//-----------------------------------------------------------------------------
+void FFP_DerivePointSize(in vec4 params,
+                         in float d,
+                         out float sz)
+{
+	sz = params.x/sqrt(params.y + params.z*d + params.w*d*d);
 }

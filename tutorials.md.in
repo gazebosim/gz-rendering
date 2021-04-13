@@ -25,6 +25,7 @@ Ignition @IGN_DESIGNATION_CAP@ library and how to use the library effectively.
 11. \subpage render_order  "Render Order"
 12. \subpage transform_fbx_to_dae  "Transform FBX to Collada in Blender"
 13. \subpage heightmap  "Heightmap"
+14. \subpage envmap "Environment map"
 
 ## License
 

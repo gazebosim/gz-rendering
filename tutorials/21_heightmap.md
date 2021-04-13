@@ -25,7 +25,7 @@ Execute the example:
 You'll see:
 
 ```{.sh}
-[Msg] Loading plugin [ignition-rendering5-ogre]
+[Msg] Loading plugin [ignition-rendering6-ogre]
 [Msg] Loading heightmap: scene::Heightmap(65528)
 [Msg] Heightmap loaded. Process took 217 ms.
 ===============================

@@ -1,5 +1,9 @@
 ## Ignition Rendering
 
+### Ignition Rendering 6.X
+
+### Ignition Rendering 6.0.0 (20XX-XX-XX)
+
 ### Ignition Rendering 5.X
 
 ### Ignition Rendering 5.X.X

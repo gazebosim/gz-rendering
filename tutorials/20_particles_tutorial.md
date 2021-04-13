@@ -23,7 +23,7 @@ Execute the example:
 You'll see:
 
 ```{.sh}
-[Msg] Loading plugin [ignition-rendering5-ogre2]
+[Msg] Loading plugin [ignition-rendering6-ogre2]
 ===============================
   TAB - Switch render engines
   ESC - Exit

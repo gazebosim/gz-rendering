@@ -425,16 +425,19 @@ void Ogre2Material::SetLightMap(const std::string &_name, unsigned int _uvSet)
   this->lightMapName = _name;
   this->lightMapUvSet = _uvSet;
 
-  // reserve detail map 0 for light map
-  Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
+  // in ign-rendering5 + ogre 2.1, we reserved detail map 0 for light map
+  // and set a blend mode (PBSM_BLEND_OVERLAY AND PBSM_BLEND_MULTIPLY2X
+  // produces better results) to blend with base albedo map. However, this
+  // creates unwanted red highlights with ogre 2.2. So switching to use the
+  // emissive map slot and calling setUseEmissiveAsLightmap(true)
+  // Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
+  // this->ogreDatablock->setDetailMapBlendMode(0, Ogre::PBSM_BLEND_OVERLAY);
+  Ogre::PbsTextureTypes type = Ogre::PBSM_EMISSIVE;
 
   // lightmap usually uses a different tex coord set
   this->SetTextureMapImpl(this->lightMapName, type);
-
   this->ogreDatablock->setTextureUvSource(type, this->lightMapUvSet);
-
-  // PBSM_BLEND_OVERLAY and PBSM_BLEND_MULTIPLY2X produces better results
-  this->ogreDatablock->setDetailMapBlendMode(0, Ogre::PBSM_BLEND_OVERLAY);
+  this->ogreDatablock->setUseEmissiveAsLightmap(true);
 }
 
 //////////////////////////////////////////////////
@@ -442,7 +445,10 @@ void Ogre2Material::ClearLightMap()
 {
   this->lightMapName = "";
   this->lightMapUvSet = 0u;
-  this->ogreDatablock->setTexture(Ogre::PBSM_DETAIL0, this->lightMapName);
+
+  // in ogre 2.2, we swtiched to use the emissive map slot for light map
+  this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->lightMapName);
+  this->ogreDatablock->setUseEmissiveAsLightmap(false);
 }
 
 //////////////////////////////////////////////////
@@ -557,10 +563,18 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
         tex->scheduleTransitionTo(Ogre::GpuResidency::Resident);
         tex->waitForData();
 
+        // only enable alpha from texture if texture has alpha component
         if (!Ogre::PixelFormatGpuUtils::hasAlpha(tex->getPixelFormat()))
         {
           this->SetAlphaFromTexture(false, this->AlphaThreshold(),
               this->TwoSidedEnabled());
+        }
+
+        // treat grayscale texture as RGB
+        if (Ogre::PixelFormatGpuUtils::getNumberOfComponents(
+            tex->getPixelFormat()) == 1u)
+        {
+          this->ogreDatablock->setUseDiffuseMapAsGrayscale(true);
         }
       }
     }

@@ -502,6 +502,7 @@ void Ogre2RenderTarget::UpdateBackgroundMaterial()
         mat->getTechnique(0u)->getPass(0u)->getTextureUnitState(0u);
     texUnit->setTextureName(this->backgroundMaterial->EnvironmentMap(),
         Ogre::TextureTypes::TypeCube);
+    texUnit->setHardwareGammaEnabled(false);
   }
 
   this->backgroundMaterialDirty = false;

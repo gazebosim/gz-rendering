@@ -27,7 +27,6 @@
 #include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
@@ -44,6 +43,17 @@
 #include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2WireBox.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreRoot.h>
+#include <OgreSceneManager.h>
+#include <Overlay/OgreOverlayManager.h>
+#include <Overlay/OgreOverlaySystem.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 /// \brief Private data for the Ogre2Scene class
 class ignition::rendering::Ogre2ScenePrivate

@@ -24,9 +24,16 @@
 
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <Compositor/OgreCompositorShadowNode.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 namespace Ogre
 {

@@ -21,7 +21,6 @@
 
 #include "ignition/rendering/base/BaseLightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 
 namespace Ogre
 {

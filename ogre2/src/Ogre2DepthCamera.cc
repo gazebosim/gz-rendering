@@ -304,6 +304,7 @@ void Ogre2DepthCamera::Destroy()
   }
   if (this->dataPtr->ogreCompositorWorkspace)
   {
+    removeWorkspaceCrashWorkaround();
     ogreCompMgr->removeWorkspace(
         this->dataPtr->ogreCompositorWorkspace);
   }
@@ -1174,8 +1175,26 @@ void Ogre2DepthCamera::SetShadowsNodeDefDirty()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
+  removeWorkspaceCrashWorkaround();
   ogreCompMgr->removeWorkspace( this->dataPtr->ogreCompositorWorkspace );
   this->dataPtr->ogreCompositorWorkspace = nullptr;
+}
+
+//////////////////////////////////////////////////
+void Ogre2DepthCamera::removeWorkspaceCrashWorkaround()
+{
+  Ogre::MaterialPtr material =
+      Ogre::MaterialManager::getSingleton().
+      getByName (this->dataPtr->depthMaterial->getName());
+
+  if (!material.isNull())
+  {
+    for (size_t i = 0; i < 4; ++i)
+    {
+      material->getBestTechnique()->getPass(0)->
+          getTextureUnitState(i)->setBlank();
+    }
+  }
 }
 
 //////////////////////////////////////////////////

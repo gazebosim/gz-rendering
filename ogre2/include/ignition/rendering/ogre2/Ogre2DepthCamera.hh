@@ -125,6 +125,21 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetShadowsNodeDefDirty() override;
 
+      // TODO(anyone): This fixes the pass quad material leaving dangling
+      // pointers when we remove the workspace, so we have to cleanup the
+      // material first.
+      // This bug was fixed in Ogre 2.2 thus the workaround should not be
+      // necessary there
+      //
+      // See https://github.com/ignitionrobotics/ign-rendering/
+      // pull/303#pullrequestreview-635228897
+      // Repro:
+      //  1.run the sensors_demo.sdf world: ign gazebo -v 4 -r sensors_demo.sdf
+      //  2.open Lights plugin, top right menu (3 dots) and select Lights
+      //  3.insert a spot light into the scene (needs to be spot light)
+      //  4.ign gazebo crashes
+      private: void removeWorkspaceCrashWorkaround();
+
       // Documentation inherited.
       public: void AddRenderPass(const RenderPassPtr &_pass) override;
 

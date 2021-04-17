@@ -143,7 +143,22 @@ void Ogre2Scene::PreRender()
           this->SensorByIndex(i));
       if (camera)
       {
-        camera->SetShadowsNodeDefDirty();
+        // TODO(anyone): this function should rely on virtual functions instead
+        // of dynamic casts
+        // Looks in commit history for '#SetShadowsNodeDefDirtyABI' to
+        // see changes made and revert
+        {
+          auto cameraDerived = std::dynamic_pointer_cast<Ogre2DepthCamera>(
+                                 this->SensorByIndex(i));
+          if (cameraDerived)
+            cameraDerived->SetShadowsNodeDefDirty();
+        }
+        {
+          auto cameraDerived = std::dynamic_pointer_cast<Ogre2Camera>(
+                                 this->SensorByIndex(i));
+          if (cameraDerived)
+            cameraDerived->SetShadowsNodeDefDirty();
+        }
       }
     }
 

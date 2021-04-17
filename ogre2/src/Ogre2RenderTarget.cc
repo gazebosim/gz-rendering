@@ -608,6 +608,14 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTarget::UpdateShadowNode()
+{
+  ignwarn << "Ogre2RenderTarget::UpdateShadowNode() is deprecated and "
+             "replaced by Ogre2Scene:UpdateShadowNode()"
+          << std::endl;
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::RebuildImpl()
 {
   this->RebuildTarget();

@@ -144,6 +144,9 @@ namespace ignition
       /// \brief Update the render pass chain
       protected: virtual void UpdateRenderPassChain();
 
+      /// \brief Deprecated. Use Ogre2Scene:UpdateShadowNode instead
+      protected: void IGN_DEPRECATED(5) UpdateShadowNode();
+
       /// \brief Implementation of the Rebuild function
       protected: virtual void RebuildImpl() override;
 

@@ -79,6 +79,9 @@ namespace ignition
 
       protected: virtual void RebuildImpl() = 0;
 
+      // Documentation inherited.
+      public: virtual void SwapFromThread() override;
+
       protected: PixelFormat format = PF_UNKNOWN;
 
       protected: bool targetDirty = true;
@@ -174,6 +177,12 @@ namespace ignition
         this->RebuildImpl();
         this->targetDirty = false;
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::SwapFromThread()
+    {
     }
 
     //////////////////////////////////////////////////

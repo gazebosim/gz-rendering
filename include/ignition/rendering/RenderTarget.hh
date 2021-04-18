@@ -93,6 +93,10 @@ namespace ignition
       /// \return Render pass at the specified index
       public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
           const = 0;
+
+      /// \brief Informs this RenderTarget we're done updating from worker
+      /// thread and for this iteration of the loop
+      public: virtual void SwapFromThread() = 0;
     };
 
     /* \class RenderTexture RenderTexture.hh \

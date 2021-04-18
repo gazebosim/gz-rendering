@@ -191,6 +191,9 @@ namespace ignition
       /// into a render target or render texture.
       protected: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
 
+      /// \brief See Ogre2RenderTexture::ogreTexture
+      protected: Ogre::CompositorWorkspace *ogreCompositorWorkspaceInDisplay = nullptr;
+
       /// \brief Ogre's compositor workspace definition name
       protected: std::string ogreCompositorWorkspaceDefName;
 
@@ -246,6 +249,9 @@ namespace ignition
       public: virtual unsigned int GLId() const override;
 
       // Documentation inherited.
+      public: virtual void SwapFromThread() override;
+
+      // Documentation inherited.
       public: virtual Ogre::RenderTarget *RenderTarget() const override;
 
       // Documentation inherited.
@@ -258,7 +264,11 @@ namespace ignition
       protected: virtual void BuildTarget();
 
       /// \brief Pointer to the internal ogre render texture object
+      /// This value may get swapped with ogreTextureInDisplay
+      /// after calling SwapFromThread
       protected: Ogre::Texture *ogreTexture = nullptr;
+
+      protected: Ogre::Texture *ogreTextureInDisplay = nullptr;
 
       /// \brief Make scene our friend so it can create a ogre2 render texture
       private: friend class Ogre2Scene;

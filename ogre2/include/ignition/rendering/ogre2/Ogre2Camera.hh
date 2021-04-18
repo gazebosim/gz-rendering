@@ -106,6 +106,9 @@ namespace ignition
       public: virtual unsigned int RenderTextureGLId() const override;
 
       // Documentation inherited.
+      public: virtual void SwapFromThread() override;
+
+      // Documentation inherited.
       public: virtual void Destroy() override;
 
       public: Ogre::Camera *OgreCamera() const;

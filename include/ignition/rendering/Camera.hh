@@ -279,8 +279,13 @@ namespace ignition
       /// \brief Get the OpenGL texture id associated with the render texture
       /// used by this camera. A valid id is returned only if the underlying
       /// render engine is OpenGL based.
-      /// \return Texture Id of type GLuint.
+      /// \return Texture Id of type GLuint. Returned value is
+      /// valid until the next SwapFromThread() call
       public: virtual unsigned int RenderTextureGLId() const = 0;
+
+      /// \brief Informs this Camera we're done updating from worker thread
+      /// and for this iteration of the loop
+      public: virtual void SwapFromThread() = 0;
 
       /// \brief Add a render pass to the camera
       /// \param[in] _pass New render pass to add

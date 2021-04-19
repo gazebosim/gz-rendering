@@ -333,7 +333,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       // TODO(anyone): specular colors
 
       // two dimensional texture coordinates
-      if (subMesh.TexCoordCount() > 0)
+      if (subMesh.TexCoordCountBySet(0) > 0)
       {
         vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT2,
             Ogre::VES_TEXTURE_COORDINATES, 0);
@@ -382,10 +382,10 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
           *vertices++ = subMesh.Normal(j).Z();
         }
 
-        if (subMesh.TexCoordCount() > 0)
+        if (subMesh.TexCoordCountBySet(0) > 0)
         {
-          *vertices++ = subMesh.TexCoord(j).X();
-          *vertices++ = subMesh.TexCoord(j).Y();
+          *vertices++ = subMesh.TexCoordBySet(j, 0).X();
+          *vertices++ = subMesh.TexCoordBySet(j, 0).Y();
         }
       }
 

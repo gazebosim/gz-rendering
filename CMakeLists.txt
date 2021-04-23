@@ -61,7 +61,7 @@ endif()
 # Find OGRE
 list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
 
-ign_find_package(IgnOGRE VERSION 1.8.0
+ign_find_package(IgnOGRE VERSION 1.8.0 QUIET
   COMPONENTS ${ign_ogre_components}
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
@@ -78,7 +78,7 @@ endif()
 
 #--------------------------------------
 # Find OGRE2
-ign_find_package(IgnOGRE2 VERSION 2.1.0
+ign_find_package(IgnOGRE2 VERSION 2.1.0 QUIET
     COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
@@ -101,7 +101,7 @@ if(NOT MSVC)
 
   #--------------------------------------
   # Find OptiX
-  ign_find_package(OptiX VERSION 3.8.0
+  ign_find_package(OptiX VERSION 3.8.0 QUIET
       REQUIRED_BY optix
       PRIVATE_FOR optix)
 

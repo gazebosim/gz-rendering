@@ -304,7 +304,7 @@ void Ogre2DepthCamera::Destroy()
   }
   if (this->dataPtr->ogreCompositorWorkspace)
   {
-    removeWorkspaceCrashWorkaround();
+    this->RemoveWorkspaceCrashWorkaround();
     ogreCompMgr->removeWorkspace(
         this->dataPtr->ogreCompositorWorkspace);
   }
@@ -1175,13 +1175,13 @@ void Ogre2DepthCamera::SetShadowsNodeDefDirty()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  removeWorkspaceCrashWorkaround();
+  this->RemoveWorkspaceCrashWorkaround();
   ogreCompMgr->removeWorkspace( this->dataPtr->ogreCompositorWorkspace );
   this->dataPtr->ogreCompositorWorkspace = nullptr;
 }
 
 //////////////////////////////////////////////////
-void Ogre2DepthCamera::removeWorkspaceCrashWorkaround()
+void Ogre2DepthCamera::RemoveWorkspaceCrashWorkaround()
 {
   Ogre::MaterialPtr material =
       Ogre::MaterialManager::getSingleton().

@@ -142,7 +142,7 @@ namespace ignition
       //  2.open Lights plugin, top right menu (3 dots) and select Lights
       //  3.insert a spot light into the scene (needs to be spot light)
       //  4.ign gazebo crashes
-      private: void removeWorkspaceCrashWorkaround();
+      private: void RemoveWorkspaceCrashWorkaround();
 
       // Documentation inherited.
       public: void AddRenderPass(const RenderPassPtr &_pass) override;

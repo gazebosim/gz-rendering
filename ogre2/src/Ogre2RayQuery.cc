@@ -20,11 +20,22 @@
 #include <ignition/common/MeshManager.hh>
 #include <ignition/common/SubMesh.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreCamera.h>
+#include <OgreItem.h>
+#include <OgreMesh2.h>
+#include <OgreRay.h>
+#include <OgreSceneManager.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 /// \brief Private data class for Ogre2RayQuery
 class ignition::rendering::Ogre2RayQueryPrivate

@@ -21,7 +21,6 @@
 #include <memory>
 #include "ignition/rendering/base/BaseMarker.hh"
 #include "ignition/rendering/ogre2/Ogre2Geometry.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 
 namespace ignition
 {

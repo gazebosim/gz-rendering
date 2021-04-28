@@ -20,7 +20,10 @@
 #ifdef _MSC_VER
 #pragma warning(push, 0)
 #endif
+#include <Animation/OgreSkeletonInstance.h>
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
+#include <OgreItem.h>
+#include <OgreSceneManager.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -29,10 +32,8 @@
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
-
 
 /// brief Private implementation of the Ogre2Mesh class
 class ignition::rendering::Ogre2MeshPrivate

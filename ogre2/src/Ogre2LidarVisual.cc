@@ -23,6 +23,14 @@
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Geometry.hh"
 
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreSceneNode.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 class ignition::rendering::Ogre2LidarVisualPrivate
 {
   /// \brief Non Hitting DynamicLines Object to display

@@ -19,9 +19,16 @@
 
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreSceneManager.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 using namespace ignition;
 using namespace rendering;

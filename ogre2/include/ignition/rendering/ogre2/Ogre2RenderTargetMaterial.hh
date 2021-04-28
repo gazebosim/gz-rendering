@@ -20,8 +20,22 @@
 #include <vector>
 
 #include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreRenderTargetListener.h>
+#include <OgreMaterialManager.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
+#ifdef _MSC_VER
+  #pragma warning(push)
+  // Silence deriving from Ogre::RenderTargetListener dll-linkage warnings
+  #pragma warning(disable:4275)
+#endif
 
 namespace ignition
 {
@@ -97,5 +111,9 @@ namespace ignition
     }
   }
 }
+
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 #endif

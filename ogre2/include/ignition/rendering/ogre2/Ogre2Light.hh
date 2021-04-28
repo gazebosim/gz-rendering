@@ -21,7 +21,14 @@
 
 #include "ignition/rendering/base/BaseLight.hh"
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreLight.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 namespace Ogre
 {

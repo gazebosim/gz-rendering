@@ -88,9 +88,6 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
-      // Documentation inherited
-      public: virtual void SetTransparency(double _transp) override;
-
       // Documentation inherited.
       public: virtual void SetVisibilityFlags(uint32_t _flags) override;
 
@@ -367,7 +364,7 @@ namespace ignition
     {
       return this->wireframe;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     void BaseVisual<T>::SetWireframe(bool _show)
@@ -382,15 +379,6 @@ namespace ignition
     void BaseVisual<T>::SetVisible(bool _visible)
     {
       ignerr << "SetVisible(" << _visible << ") not supported for "
-             << "render engine: " << this->Scene()->Engine()->Name()
-             << std::endl;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::SetTransparency(double _transp)
-    {
-      ignerr << "SetTransparency(" << _transp << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
     }

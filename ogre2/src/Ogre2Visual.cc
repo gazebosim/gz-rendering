@@ -40,6 +40,7 @@ class ignition::rendering::Ogre2VisualPrivate
 Ogre2Visual::Ogre2Visual()
   : dataPtr(new Ogre2VisualPrivate)
 {
+  this->dataPtr->wireframe = false;
 }
 
 //////////////////////////////////////////////////
@@ -57,43 +58,26 @@ void Ogre2Visual::SetWireframe(bool _show)
   for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
       i++)
   {
-    Ogre::v1::Entity *entity = nullptr;
+    Ogre::Item *item = nullptr;
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
 
-    entity = dynamic_cast<Ogre::v1::Entity*>(obj);
+    item = dynamic_cast<Ogre::Item*>(obj);
 
-    if (!entity)
+    if (!item)
       continue;
 
-    for (unsigned int j = 0; j < entity->getNumSubEntities(); j++)
+    for (unsigned int j = 0; j < item->getNumSubItems(); j++)
     {
-      Ogre::v1::SubEntity *subEntity = entity->getSubEntity(j);
-      Ogre::MaterialPtr entityMaterial = subEntity->getMaterial();
-      if (entityMaterial.isNull())
-        continue;
+      Ogre::SubItem *subItem = item->getSubItem(j);
+      auto datablock = subItem->getDatablock();
+      auto macroblock = *(datablock->getMacroblock());
 
-      unsigned int techniqueCount, passCount;
-      Ogre::Technique *technique;
-      Ogre::Pass *pass;
+      if (_show)
+        macroblock.mPolygonMode = Ogre::PM_WIREFRAME;
+      else
+        macroblock.mPolygonMode = Ogre::PM_SOLID;
 
-      for (techniqueCount = 0;
-           techniqueCount < entityMaterial->getNumTechniques();
-           ++techniqueCount)
-      {
-        technique = entityMaterial->getTechnique(techniqueCount);
-
-        for (passCount = 0; passCount < technique->getNumPasses(); passCount++)
-        {
-          pass = technique->getPass(passCount);
-          auto macroblock = *(pass->getMacroblock());
-          if (_show)
-            macroblock.mPolygonMode = Ogre::PM_WIREFRAME;
-          else
-            macroblock.mPolygonMode = Ogre::PM_SOLID;
-
-          pass->setMacroblock(macroblock);
-        }
-      }
+      datablock->setMacroblock(macroblock);
     }
   }
 }
@@ -109,12 +93,6 @@ bool Ogre2Visual::Wireframe() const
 void Ogre2Visual::SetVisible(bool _visible)
 {
   this->ogreNode->setVisible(_visible);
-}
-
-//////////////////////////////////////////////////
-void Ogre2Visual::SetTransparency(double _transp)
-{
-  
 }
 
 //////////////////////////////////////////////////

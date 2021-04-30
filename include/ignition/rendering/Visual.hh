@@ -122,10 +122,6 @@ namespace ignition
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;
 
-      /// \brief Set the visibility of this visual
-      /// \param[in] _visibility Value of the visiblity
-      public: virtual void SetTransparency(double _transp) = 0;
-
       /// \brief Set visibility flags
       /// \param[in] _flags Visibility flags
       public: virtual void SetVisibilityFlags(uint32_t _flags) = 0;

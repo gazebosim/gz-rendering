@@ -115,8 +115,16 @@ namespace ignition
       /// \see Camera::SetShadowsNodeDefDirty
       public: void SetShadowsNodeDefDirty();
 
+      /// \brief Get a pointer to the ogre's internal texture name
+      /// \param[in] _idx In range [0; 1]
+      /// \see Ogre2RenderTarget::renderTargetResultsIdx
+      public: virtual const std::string* InternalTextureName(
+            size_t _idx) const = 0;
+
       /// \brief Get a pointer to the ogre render target
-      public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+      /// \param[in] _idx In range [0; 1]
+      /// \see Ogre2RenderTarget::renderTargetResultsIdx
+      public: virtual Ogre::RenderTarget *RenderTarget(size_t _idx) const = 0;
 
       /// \brief Get visibility mask for the viewport associated with this
       /// render target
@@ -133,7 +141,8 @@ namespace ignition
           Ogre::CompositorWorkspace *_workspace,
           const std::string &_workspaceDefName,
           const std::string &_baseNode, const std::string &_finalNode,
-          const std::vector<RenderPassPtr> &_renderPasses, bool _recreateNodes);
+          const std::vector<RenderPassPtr> &_renderPasses,
+          uint8_t &_renderTargetResultsIdx, bool _recreateNodes);
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
@@ -188,7 +197,7 @@ namespace ignition
       protected: MaterialPtr material;
 
       /// \brief Helper class that applies the material to the render target
-      protected: Ogre2RenderTargetMaterialPtr materialApplicator;
+      protected: Ogre2RenderTargetMaterialPtr materialApplicator[2];
 
       /// \brief Flag to indicate if the render target color has changed
       protected: bool colorDirty = true;
@@ -196,6 +205,10 @@ namespace ignition
       /// \brief Flag to indicate if the render target background material has
       /// changed
       protected: bool backgroundMaterialDirty = false;
+
+      /// \brief The index to RenderTarget(_idx) where the results are being
+      /// stored. In range [0; 1]
+      protected: uint8_t renderTargetResultsIdx = 0u;
 
       /// \brief Anti-aliasing level
       protected: unsigned int antiAliasing = 4;
@@ -230,7 +243,12 @@ namespace ignition
       public: virtual unsigned int GLId() const override;
 
       // Documentation inherited.
-      public: virtual Ogre::RenderTarget *RenderTarget() const override;
+      public: virtual const std::string* InternalTextureName(
+            size_t _idx) const override;
+
+      // Documentation inherited.
+      public: virtual Ogre::RenderTarget *RenderTarget(
+            size_t _idx) const override;
 
       // Documentation inherited.
       protected: virtual void RebuildTarget() override;
@@ -242,7 +260,9 @@ namespace ignition
       protected: virtual void BuildTarget();
 
       /// \brief Pointer to the internal ogre render texture object
-      protected: Ogre::Texture *ogreTexture = nullptr;
+      /// There's two because we ping pong postprocessing effects
+      /// and the final result may be in either of them
+      protected: Ogre::Texture *ogreTexture[2] = {nullptr, nullptr};
 
       /// \brief Make scene our friend so it can create a ogre2 render texture
       private: friend class Ogre2Scene;
@@ -262,7 +282,8 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: virtual Ogre::RenderTarget *RenderTarget() const override;
+      public: virtual Ogre::RenderTarget *RenderTarget(
+            size_t _idx) const override;
 
       // Documentation inherited.
       protected: virtual void RebuildTarget() override;

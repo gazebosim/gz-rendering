@@ -122,6 +122,12 @@ namespace ignition
             size_t _idx) const = 0;
 
       /// \brief Get a pointer to the ogre render target
+      /// \remarks Same as calling RenderTarget(this->renderTargetResultsIdx)
+      /// which is most likely what's intended (i.e. access to the final
+      /// results of rendering)
+      public: virtual Ogre::RenderTarget *RenderTarget() const;
+
+      /// \brief Get a pointer to the ogre render target
       /// \param[in] _idx In range [0; 1]
       /// \see Ogre2RenderTarget::renderTargetResultsIdx
       public: virtual Ogre::RenderTarget *RenderTarget(size_t _idx) const = 0;

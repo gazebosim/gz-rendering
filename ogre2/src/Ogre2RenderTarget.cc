@@ -408,6 +408,12 @@ void Ogre2RenderTarget::Render()
 }
 
 //////////////////////////////////////////////////
+Ogre::RenderTarget *Ogre2RenderTarget::RenderTarget() const
+{
+  return this->RenderTarget(this->renderTargetResultsIdx);
+}
+
+//////////////////////////////////////////////////
 uint32_t Ogre2RenderTarget::VisibilityMask() const
 {
   return this->visibilityMask;

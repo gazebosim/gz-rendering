@@ -22,7 +22,21 @@
 
 #include "ignition/rendering/base/BaseMaterial.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <Hlms/Pbs/OgreHlmsPbsPrerequisites.h>
+#include <OgreMaterial.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
+namespace Ogre
+{
+  class HlmsPbsDatablock;
+  class HlmsUnlitDatablock;
+}  // namespace Ogre
 
 namespace ignition
 {

@@ -107,6 +107,13 @@ namespace ignition
       public: virtual unsigned int RenderTextureGLId() const override;
 
       // Documentation inherited.
+      // TODO(anyone): this function should be virtual, declared in 'Camera'
+      // and 'BaseCamera'. We didn't do it to preserve ABI.
+      // Looks in commit history for '#SetShadowsNodeDefDirtyABI' to
+      // see changes made and revert
+      public: void SetShadowsNodeDefDirty();
+
+      // Documentation inherited.
       public: virtual void Destroy() override;
 
       public: Ogre::Camera *OgreCamera() const;

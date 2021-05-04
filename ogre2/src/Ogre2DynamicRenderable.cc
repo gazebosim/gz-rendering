@@ -32,7 +32,17 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
-#include "Vao/OgreVaoManager.h"
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreItem.h>
+#include <OgreMesh2.h>
+#include <OgreMeshManager2.h>
+#include <OgreSceneManager.h>
+#include <OgreSubMesh2.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 /// \brief Private implementation
 class ignition::rendering::Ogre2DynamicRenderablePrivate
@@ -133,8 +143,8 @@ void Ogre2DynamicRenderable::DestroyBuffer()
   if (this->dataPtr->vbuffer)
     delete [] this->dataPtr->vbuffer;
 
-  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+  Ogre::RenderSystem *renderSystem =
+      this->dataPtr->sceneManager->getDestinationRenderSystem();
   Ogre::VaoManager *vaoManager = renderSystem->getVaoManager();
 
   if (!vaoManager)
@@ -189,8 +199,8 @@ void Ogre2DynamicRenderable::UpdateBuffer()
   if (!this->dataPtr->dirty)
     return;
 
-  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+  Ogre::RenderSystem *renderSystem =
+      this->dataPtr->sceneManager->getDestinationRenderSystem();
 
   Ogre::VaoManager *vaoManager = renderSystem->getVaoManager();
   if (!vaoManager)

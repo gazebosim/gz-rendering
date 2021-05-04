@@ -20,8 +20,12 @@
 #ifdef _MSC_VER
 #pragma warning(push, 0)
 #endif
+#include <Hlms/Pbs/OgreHlmsPbs.h>
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
+#include <Hlms/Unlit/OgreHlmsUnlit.h>
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
+#include <OgreHlmsManager.h>
+#include <OgreMaterialManager.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -35,6 +39,7 @@
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+
 
 /// \brief Private data for the Ogre2Material class
 class ignition::rendering::Ogre2MaterialPrivate

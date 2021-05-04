@@ -22,7 +22,6 @@
 
 #include "ignition/rendering/base/BaseRenderPass.hh"
 #include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
 
 namespace ignition

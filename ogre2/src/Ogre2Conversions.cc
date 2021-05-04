@@ -16,6 +16,14 @@
  */
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreMatrix4.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 using namespace ignition;
 using namespace rendering;
 

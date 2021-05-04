@@ -19,9 +19,24 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/RenderPassSystem.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <Compositor/OgreCompositorManager2.h>
+#include <Compositor/OgreCompositorNodeDef.h>
+#include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
+#include <OgreMaterial.h>
+#include <OgreMaterialManager.h>
+#include <OgrePass.h>
+#include <OgreRoot.h>
+#include <OgreTechnique.h>
+#include <OgreVector3.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 /// \brief Private data for the Ogre2GaussianNoisePass class
 class ignition::rendering::Ogre2GaussianNoisePassPrivate

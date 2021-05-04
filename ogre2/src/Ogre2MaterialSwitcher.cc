@@ -16,10 +16,21 @@
 */
 
 #include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2MaterialSwitcher.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/RenderTypes.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreItem.h>
+#include <OgreMaterialManager.h>
+#include <OgrePass.h>
+#include <OgreSceneManager.h>
+#include <OgreTechnique.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 using namespace ignition;
 using namespace rendering;

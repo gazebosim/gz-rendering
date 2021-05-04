@@ -220,8 +220,8 @@ namespace ignition
       {
         double angles[2];
         double range = 0.2;
-        angles[0] = range * tan(outerAngle);
-        angles[1] = range * tan(innerAngle);
+        angles[0] = range * tan(outerAngle / 2.0);
+        angles[1] = range * tan(innerAngle / 2.0);
 
         unsigned int i = 0;
         positions.emplace_back(ignition::math::Vector3d(0, 0, 0));

@@ -567,6 +567,7 @@ void VisualTest::Wireframe(const std::string &_renderEngine)
   // create visual
   VisualPtr visual = scene->CreateVisual();
   ASSERT_NE(nullptr, visual);
+  EXPECT_EQ(false, visual->Wireframe());
 
   // set wireframe
   visual->SetWireframe(true);

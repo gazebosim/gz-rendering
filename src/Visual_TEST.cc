@@ -562,7 +562,7 @@ void VisualTest::Wireframe(const std::string &_renderEngine)
     return;
   }
 
-  ScenePtr scene = engine->CreateScene("scene6");
+  ScenePtr scene = engine->CreateScene("scene7");
 
   // create visual
   VisualPtr visual = scene->CreateVisual();

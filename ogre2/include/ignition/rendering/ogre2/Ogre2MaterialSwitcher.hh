@@ -29,8 +29,8 @@
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
+#include <OgreCamera.h>
 #include <OgreMaterial.h>
-#include <OgreRenderTargetListener.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif

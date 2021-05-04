@@ -34,6 +34,7 @@ namespace Ogre
 {
   class LogManager;
   class Root;
+  class Window;
   namespace v1
   {
     class OverlaySystem;

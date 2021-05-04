@@ -26,6 +26,8 @@
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
 #include <OgreHlmsManager.h>
 #include <OgreMaterialManager.h>
+#include <OgrePixelFormatGpuUtils.h>
+#include <OgreTextureGpuManager.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif

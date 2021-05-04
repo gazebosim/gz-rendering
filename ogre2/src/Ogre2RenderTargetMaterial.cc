@@ -20,7 +20,7 @@
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
-#include <OgreRenderTarget.h>
+#include <OgreSceneManager.h>
 #include <OgreViewport.h>
 #ifdef _MSC_VER
   #pragma warning(pop)

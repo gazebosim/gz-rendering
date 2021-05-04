@@ -33,12 +33,10 @@
 #include <Compositor/OgreCompositorWorkspace.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 #include <OgreCamera.h>
-#include <OgreHardwarePixelBuffer.h>
 #include <OgreItem.h>
-#include <OgreRenderTexture.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
-#include <OgreTextureManager.h>
+#include <OgreTextureGpuManager.h>
 #include <OgreViewport.h>
 #ifdef _MSC_VER
   #pragma warning(pop)

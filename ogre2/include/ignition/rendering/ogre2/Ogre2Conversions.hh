@@ -32,7 +32,7 @@
 
 #include <OgreColourValue.h>
 #include <OgreVector3.h>
-#include <OgrePixelFormat.h>
+#include <OgrePixelFormatGpu.h>
 
 #ifdef _MSC_VER
   #pragma warning(pop)

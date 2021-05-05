@@ -944,13 +944,14 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  Ogre::RenderTarget *rt =
-    this->dataPtr->ogreDepthTexture->getBuffer()->getRenderTarget();
-
   // create compositor worksspace
   this->dataPtr->ogreCompositorWorkspace =
-      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      rt, this->ogreCamera, this->dataPtr->ogreCompositorWorkspaceDef, false);
+      ogreCompMgr->addWorkspace(
+          this->scene->OgreSceneManager(),
+          this->dataPtr->ogreDepthTexture,
+          this->ogreCamera,
+          this->dataPtr->ogreCompositorWorkspaceDef, 
+          false);
 
   // add the listener
   Ogre::CompositorNode *node =

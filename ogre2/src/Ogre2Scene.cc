@@ -430,9 +430,9 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
 
       texDef->width = std::max(atlasRes.x, 1u);
       texDef->height = std::max(atlasRes.y, 1u);
-      texDef->formatList.push_back(Ogre::PF_D32_FLOAT);
+      texDef->format = Ogre::PFG_D32_FLOAT;
       texDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
-      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+      texDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
       texDef->preferDepthTexture = false;
       texDef->fsaa = false;
     }
@@ -445,11 +445,11 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
 
       texDef->width   = pointLightCubemapResolution;
       texDef->height  = pointLightCubemapResolution;
-      texDef->depth   = 6u;
-      texDef->textureType = Ogre::TEX_TYPE_CUBE_MAP;
-      texDef->formatList.push_back(Ogre::PF_FLOAT32_R);
+      texDef->depthOrSlices = 6u;
+      texDef->textureType = Ogre::TextureTypes::TypeCube;
+      texDef->format = Ogre::PFG_R16_UNORM; 
       texDef->depthBufferId = 1u;
-      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+      texDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
       texDef->preferDepthTexture = false;
       texDef->fsaa = false;
     }
@@ -489,7 +489,7 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
 
       Ogre::ShadowTextureDefinition *shadowTexDef =
           shadowNodeDef->addShadowTextureDefinition(lightIdx, j, texName,
-          0, uvOffset, uvLength, 0);
+          uvOffset, uvLength, 0);
       shadowTexDef->shadowMapTechnique = shadowParam.technique;
       shadowTexDef->pssmLambda = pssmLambda;
       shadowTexDef->splitPadding = splitPadding;
@@ -516,8 +516,8 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
       Ogre::CompositorPassDef *passDef = targetDef->addPass(Ogre::PASS_CLEAR);
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(passDef);
-      passClear->mColourValue = Ogre::ColourValue::White;
-      passClear->mDepthValue = 1.0f;
+      passClear->setAllClearColours(Ogre::ColourValue::White);
+      passClear->mClearDepth = 1.0f;
     }
 
     // Pass scene for directional and spot lights first
@@ -576,8 +576,8 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
                 targetDef->addPass(Ogre::PASS_CLEAR);
             Ogre::CompositorPassClearDef *passClear =
                 static_cast<Ogre::CompositorPassClearDef *>(passDef);
-            passClear->mColourValue = Ogre::ColourValue::White;
-            passClear->mDepthValue = 1.0f;
+            passClear->setAllClearColours(Ogre::ColourValue::White);
+            passClear->mClearDepth = 1.0f;
             passClear->mShadowMapIdx = shadowMapIdx;
           }
 
@@ -605,7 +605,7 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
             static_cast<Ogre::CompositorPassQuadDef *>(passDef);
         passQuad->mMaterialIsHlms = false;
         passQuad->mMaterialName = "Ogre/DPSM/CubeToDpsm";
-        passQuad->addQuadTextureSource(0, "tmpCubemap", 0);
+        passQuad->addQuadTextureSource(0, "tmpCubemap");
         passQuad->mShadowMapIdx = shadowMapIdx;
       }
       const size_t numSplits = shadowParam.technique ==

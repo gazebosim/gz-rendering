@@ -44,13 +44,10 @@
 #include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 #include <OgreDepthBuffer.h>
-#include <OgreHardwarePixelBuffer.h>
 #include <OgreItem.h>
-#include <OgreRenderTexture.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreTechnique.h>
-#include <OgreTextureManager.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif

@@ -121,10 +121,6 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   /// \brief Flag to indicate if render pass need to be rebuilt
   public: bool renderPassDirty = false;
 
-  /// \brief The index to ogreDepthTexture[idx] where the results are being
-  /// stored. In range [0; 1]
-  public: uint8_t renderTargetResultsIdx = 0u;
-
   /// \brief Event used to signal rgb point cloud data
   public: ignition::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
@@ -897,8 +893,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
     rt->setDepthBufferPool(Ogre::DepthBuffer::POOL_INVALID);
   }
 
-  this->dataPtr->renderTargetResultsIdx = 1u;
-
   CreateWorkspaceInstance();
 }
 
@@ -962,6 +956,12 @@ void Ogre2DepthCamera::PreRender()
   if (!this->dataPtr->ogreCompositorWorkspace)
     this->CreateWorkspaceInstance();
 
+  Ogre::Texture *rawDepthTextures[2] =
+  {
+    this->dataPtr->ogreDepthTexture[0].get(),
+    this->dataPtr->ogreDepthTexture[1].get()
+  };
+
   // update depth camera render passes
   Ogre2RenderTarget::UpdateRenderPassChain(
       this->dataPtr->ogreCompositorWorkspace,
@@ -969,8 +969,16 @@ void Ogre2DepthCamera::PreRender()
       this->dataPtr->ogreCompositorBaseNodeDef,
       this->dataPtr->ogreCompositorFinalNodeDef,
       this->dataPtr->renderPasses,
-      this->dataPtr->renderTargetResultsIdx,
-      this->dataPtr->renderPassDirty);
+      this->dataPtr->renderPassDirty,
+      &rawDepthTextures,
+      false);
+
+  if (rawDepthTextures[0] != this->dataPtr->ogreDepthTexture[0].get())
+  {
+    std::swap( this->dataPtr->ogreDepthTexture[0],
+               this->dataPtr->ogreDepthTexture[1] );
+  }
+
   for (auto &pass : this->dataPtr->renderPasses)
     pass->PreRender();
 
@@ -1022,9 +1030,7 @@ void Ogre2DepthCamera::PostRender()
         1, imageFormat, this->dataPtr->depthBuffer);
 
   // blit data from gpu to cpu
-  auto rt = this->dataPtr->ogreDepthTexture[
-            this->dataPtr->renderTargetResultsIdx]->
-            getBuffer()->getRenderTarget();
+  auto rt = this->dataPtr->ogreDepthTexture[1]->getBuffer()->getRenderTarget();
   rt->copyContentsToMemory(dstBox, Ogre::RenderTarget::FB_AUTO);
 
   if (!this->dataPtr->depthImage)

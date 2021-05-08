@@ -115,22 +115,12 @@ namespace ignition
       /// \see Camera::SetShadowsNodeDefDirty
       public: void SetShadowsNodeDefDirty();
 
-      /// \brief Get a pointer to the ogre's internal texture name
-      /// \param[in] _idx In range [0; 1]
-      /// \see Ogre2RenderTarget::renderTargetResultsIdx
-      public: virtual const std::string* InternalTextureName(
-            size_t _idx) const = 0;
+      /// \brief Returns true if this is a render window
+      public: virtual bool isRenderWindow() const;
 
-      /// \brief Get a pointer to the ogre render target
-      /// \remarks Same as calling RenderTarget(this->renderTargetResultsIdx)
-      /// which is most likely what's intended (i.e. access to the final
-      /// results of rendering)
+      /// \brief Get a pointer to the ogre render target containing
+      /// the results of the render
       public: virtual Ogre::RenderTarget *RenderTarget() const;
-
-      /// \brief Get a pointer to the ogre render target
-      /// \param[in] _idx In range [0; 1]
-      /// \see Ogre2RenderTarget::renderTargetResultsIdx
-      public: virtual Ogre::RenderTarget *RenderTarget(size_t _idx) const = 0;
 
       /// \brief Get visibility mask for the viewport associated with this
       /// render target
@@ -148,7 +138,9 @@ namespace ignition
           const std::string &_workspaceDefName,
           const std::string &_baseNode, const std::string &_finalNode,
           const std::vector<RenderPassPtr> &_renderPasses,
-          uint8_t &_renderTargetResultsIdx, bool _recreateNodes);
+          bool _recreateNodes,
+          Ogre::Texture *(*_ogreTextures)[2],
+          bool _isRenderWindow);
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
@@ -205,16 +197,19 @@ namespace ignition
       /// \brief Helper class that applies the material to the render target
       protected: Ogre2RenderTargetMaterialPtr materialApplicator[2];
 
+      /// \brief Pointer to the internal ogre render texture objects
+      /// There's two because we ping pong postprocessing effects
+      /// and the final result is always in ogreTexture[1]
+      /// RenderWindows may have a 3rd texture which is the
+      /// actual window
+      protected: Ogre::Texture *ogreTexture[2] = {nullptr, nullptr};
+
       /// \brief Flag to indicate if the render target color has changed
       protected: bool colorDirty = true;
 
       /// \brief Flag to indicate if the render target background material has
       /// changed
       protected: bool backgroundMaterialDirty = false;
-
-      /// \brief The index to RenderTarget(_idx) where the results are being
-      /// stored. In range [0; 1]
-      protected: uint8_t renderTargetResultsIdx = 0u;
 
       /// \brief Anti-aliasing level
       protected: unsigned int antiAliasing = 4;
@@ -249,14 +244,6 @@ namespace ignition
       public: virtual unsigned int GLId() const override;
 
       // Documentation inherited.
-      public: virtual const std::string* InternalTextureName(
-            size_t _idx) const override;
-
-      // Documentation inherited.
-      public: virtual Ogre::RenderTarget *RenderTarget(
-            size_t _idx) const override;
-
-      // Documentation inherited.
       protected: virtual void RebuildTarget() override;
 
       /// \brief Destroy the render texture
@@ -264,11 +251,6 @@ namespace ignition
 
       /// \brief Build the render texture
       protected: virtual void BuildTarget();
-
-      /// \brief Pointer to the internal ogre render texture object
-      /// There's two because we ping pong postprocessing effects
-      /// and the final result may be in either of them
-      protected: Ogre::Texture *ogreTexture[2] = {nullptr, nullptr};
 
       /// \brief Make scene our friend so it can create a ogre2 render texture
       private: friend class Ogre2Scene;
@@ -288,8 +270,10 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: virtual Ogre::RenderTarget *RenderTarget(
-            size_t _idx) const override;
+      public: virtual bool isRenderWindow() const override;
+
+      // Documentation inherited.
+      public: virtual Ogre::RenderTarget *RenderTarget() const override;
 
       // Documentation inherited.
       protected: virtual void RebuildTarget() override;

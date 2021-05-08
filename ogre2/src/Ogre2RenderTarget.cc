@@ -226,29 +226,42 @@ void Ogre2RenderTarget::BuildCompositor()
       passScene->mIncludeOverlays = true;
       passScene->mFirstRQ = 254;
       passScene->mLastRQ = 255;
-    }
 
+    }
     Ogre::CompositorWorkspaceDef *workDef =
         ogreCompMgr->addWorkspaceDefinition(wsDefName);
+
     workDef->connectExternal(0, nodeDefName, 0);
     workDef->connectExternal(1, nodeDefName, 1);
-    workDef->connect(nodeDefName, finalNodeDefName);
+
+    if (!this->isRenderWindow())
+    {
+      workDef->connect(nodeDefName, finalNodeDefName);
+    }
+    else
+    {
+      // connect the last render pass to the final compositor node
+      // but only input, since output goes to the render window
+      workDef->connect(nodeDefName, 0, finalNodeDefName, 0);
+      workDef->connectExternal(2,  finalNodeDefName, 1);
+    }
   }
 
   auto &manager = Ogre::TextureManager::getSingleton();
   Ogre::CompositorChannelVec externalTargets(2u);
   for( size_t i = 0u; i < 2u; ++i )
   {
-    externalTargets[i].target = this->RenderTarget(i);
+    // Connect them in reverse order
+    const size_t srcIdx = 2u - i - 1u;
+    externalTargets[i].target =
+        this->ogreTexture[srcIdx]->getBuffer()->getRenderTarget();
     externalTargets[i].textures.push_back(
-          manager.getByName(*this->InternalTextureName(i)));
+          manager.getByName(this->ogreTexture[srcIdx]->getName()));
   }
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
       externalTargets, this->ogreCamera,
       this->ogreCompositorWorkspaceDefName, false);
-
-  this->renderTargetResultsIdx = 1u;
 
   this->dataPtr->rtListener = new Ogre2RenderTargetCompositorListener(this);
   this->ogreCompositorWorkspace->setListener(this->dataPtr->rtListener);
@@ -259,6 +272,16 @@ void Ogre2RenderTarget::DestroyCompositor()
 {
   if (!this->ogreCompositorWorkspace)
     return;
+
+  // Restore the original order so that this->ogreTexture[1] is the one with
+  // FSAA (which we need for BuildCompositor to connect correctly)
+  const Ogre::CompositorChannelVec &externalTargets =
+      this->ogreCompositorWorkspace->getExternalRenderTargets();
+  for( size_t i = 0u; i < 2u; ++i )
+  {
+    const size_t srcIdx = (2u - i - 1u);
+    this->ogreTexture[srcIdx] = externalTargets[i].textures.front().get();
+  }
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -298,8 +321,7 @@ void Ogre2RenderTarget::Copy(Image &_image) const
   void *data = _image.Data();
   Ogre::PixelFormat imageFormat = Ogre2Conversions::Convert(_image.Format());
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
-  this->RenderTarget(this->renderTargetResultsIdx)->
-      copyContentsToMemory(ogrePixelBox);
+  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
 }
 
 //////////////////////////////////////////////////
@@ -408,9 +430,15 @@ void Ogre2RenderTarget::Render()
 }
 
 //////////////////////////////////////////////////
+bool Ogre2RenderTarget::isRenderWindow() const
+{
+  return false;
+}
+
+//////////////////////////////////////////////////
 Ogre::RenderTarget *Ogre2RenderTarget::RenderTarget() const
 {
-  return this->RenderTarget(this->renderTargetResultsIdx);
+  return this->ogreTexture[1]->getBuffer()->getRenderTarget();
 }
 
 //////////////////////////////////////////////////
@@ -485,8 +513,9 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
       this->ogreCompositorWorkspaceDefName + "/" +
       this->dataPtr->kFinalNodeName,
       this->renderPasses,
-      this->renderTargetResultsIdx,
-      this->renderPassDirty);
+      this->renderPassDirty,
+      &this->ogreTexture,
+      this->isRenderWindow());
 
   this->renderPassDirty = false;
 }
@@ -496,7 +525,8 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     Ogre::CompositorWorkspace *_workspace, const std::string &_workspaceDefName,
     const std::string &_baseNode, const std::string &_finalNode,
     const std::vector<RenderPassPtr> &_renderPasses,
-    uint8_t &_renderTargetResultsIdx, bool _recreateNodes)
+    bool _recreateNodes, Ogre::Texture *(*_ogreTextures)[2],
+    bool _isRenderWindow)
 {
   if (!_workspace || _workspaceDefName.empty() ||
       _baseNode.empty() || _finalNode.empty() || _renderPasses.empty())
@@ -581,21 +611,39 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     }
   }
 
-  // connect the last render pass to the final compositor node
-  workspaceDef->connect(outNodeDefName, finalNodeDefName);
+  workspaceDef->connectExternal(0, _baseNode, 0);
+  workspaceDef->connectExternal(1, _baseNode, 1);
 
-  if( numActiveNodes & 0x01 )
-    _renderTargetResultsIdx = 0;
+  if (!_isRenderWindow)
+  {
+    // connect the last render pass to the final compositor node
+    workspaceDef->connect(outNodeDefName, finalNodeDefName);
+
+    // We must ensure the output is always in ogreTextures[1]
+    const bool bMustSwapRts = (numActiveNodes & 0x01) == 0u;
+
+    const Ogre::CompositorChannelVec &externalTargets =
+        _workspace->getExternalRenderTargets();
+    for( size_t i = 0u; i < 2u; ++i )
+    {
+      const size_t srcIdx = bMustSwapRts ? (2u - i - 1u) : i;
+      *_ogreTextures[srcIdx] = externalTargets[i].textures.front().get();
+    }
+  }
   else
-    _renderTargetResultsIdx = 1;
+  {
+    // connect the last render pass to the final compositor node
+    // but only input, since output goes to the render window
+    workspaceDef->connect(outNodeDefName, 0, finalNodeDefName, 0);
+    workspaceDef->connectExternal(2, _finalNode, 1);
+  }
+
 
   // if new node definitions were added then recreate all the compositor nodes,
   // otherwise update the connections
   if (_recreateNodes)
   {
     // clearAll requires the output to be connected again.
-    workspaceDef->connectExternal(0, _baseNode, 0);
-    workspaceDef->connectExternal(1, _baseNode, 1);
     _workspace->recreateAllNodes();
   }
   else
@@ -650,7 +698,8 @@ void Ogre2RenderTarget::RebuildMaterial()
     Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
     for( size_t i = 0u; i < 2u; ++i )
     {
-      Ogre::RenderTarget *target = this->RenderTarget(i);
+      Ogre::RenderTarget *target =
+          this->ogreTexture[i]->getBuffer()->getRenderTarget();
       this->materialApplicator[i].reset(new Ogre2RenderTargetMaterial(
                                           sceneMgr, target, matPtr.get()));
     }
@@ -676,22 +725,6 @@ void Ogre2RenderTexture::Destroy()
 }
 
 //////////////////////////////////////////////////
-const std::string* Ogre2RenderTexture::InternalTextureName(size_t _idx) const
-{
-  if(nullptr == this->ogreTexture[_idx])
-    return nullptr;
-
-  return &this->ogreTexture[_idx]->getName();
-}
-
-//////////////////////////////////////////////////
-Ogre::RenderTarget *Ogre2RenderTexture::RenderTarget(size_t _idx) const
-{
-  return this->ogreTexture[_idx]->getBuffer()->getRenderTarget();
-}
-
-
-//////////////////////////////////////////////////
 void Ogre2RenderTexture::RebuildTarget()
 {
   this->DestroyTarget();
@@ -703,6 +736,8 @@ void Ogre2RenderTexture::DestroyTarget()
 {
   if (nullptr == this->ogreTexture[0])
     return;
+
+  this->DestroyCompositor();
 
   auto &manager = Ogre::TextureManager::getSingleton();
 
@@ -750,11 +785,13 @@ void Ogre2RenderTexture::BuildTarget()
   for( size_t i = 0u; i < 2u; ++i )
   {
     // Ogre 2 PBS expects gamma correction to be enabled
-    // Only the first target uses FSAA
+    // Only the second target uses FSAA.
+    // Note: It's not guaranteed the 2nd target will remain
+    // the one using FSAA
     this->ogreTexture[i] = (manager.createManual(
         this->name + std::to_string(i), "General",
         Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-        Ogre::TU_RENDERTARGET, 0, true, i == 0 ? fsaa : 0)).get();
+        Ogre::TU_RENDERTARGET, 0, true, i == 1u ? fsaa : 0)).get();
   }
 }
 
@@ -765,8 +802,7 @@ unsigned int Ogre2RenderTexture::GLId() const
     return 0;
 
   GLuint texId;
-  this->ogreTexture[this->renderTargetResultsIdx]->
-      getCustomAttribute("GLID", &texId);
+  this->ogreTexture[1]->getCustomAttribute("GLID", &texId);
 
   return static_cast<unsigned int>(texId);
 }
@@ -796,7 +832,13 @@ Ogre2RenderWindow::~Ogre2RenderWindow()
 }
 
 //////////////////////////////////////////////////
-Ogre::RenderTarget *Ogre2RenderWindow::RenderTarget(size_t /*_idx*/) const
+bool Ogre2RenderWindow::isRenderWindow() const
+{
+  return true;
+}
+
+//////////////////////////////////////////////////
+Ogre::RenderTarget *Ogre2RenderWindow::RenderTarget() const
 {
   return this->ogreRenderWindow;
 }

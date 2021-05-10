@@ -66,9 +66,9 @@ namespace ignition
 
         /// \brief Move the camera to look at the specified target
         /// param[in] _camera Camera to be moved
-        /// param[in] _direction The pose to assume relative to the entit(y/ies),
-        /// (0, 0, 0) indicates to return the camera back to the home pose
-        /// originally loaded in from the sdf.
+        /// param[in] _direction The pose to assume relative to the
+        /// entit(y/ies), (0, 0, 0) indicates to return the camera back to the
+        /// home pose originally loaded in from the sdf.
         /// param[in] _duration Duration of the move to animation, in seconds.
         /// param[in] _onAnimationComplete Callback function when animation is
         /// complete

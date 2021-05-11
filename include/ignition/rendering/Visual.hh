@@ -110,6 +110,14 @@ namespace ignition
       /// material will be returned.
       public: virtual MaterialPtr Material() = 0;
 
+      /// \brief Enable or disable wireframe
+      /// \param[in] _show True to enable wireframe
+      public: virtual void SetWireframe(bool _show) = 0;
+
+      /// \brief Get whether wireframe is enabled for this visual.
+      /// \return True if wireframe is enabled for this visual.
+      public: virtual bool Wireframe() const = 0;
+
       /// \brief Specify if this visual is visible
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;

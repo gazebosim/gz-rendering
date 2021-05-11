@@ -55,6 +55,9 @@ class VisualTest : public testing::Test,
 
   /// \brief Test getting setting bounding boxes
   public: void BoundingBox(const std::string &_renderEngine);
+
+  /// \brief Test changing to wireframe
+  public: void Wireframe(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -546,6 +549,35 @@ void VisualTest::BoundingBox(const std::string &_renderEngine)
 TEST_P(VisualTest, BoundingBox)
 {
   BoundingBox(GetParam());
+}
+
+/////////////////////////////////////////////////
+void VisualTest::Wireframe(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene7");
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+  EXPECT_EQ(false, visual->Wireframe());
+
+  // set wireframe
+  visual->SetWireframe(true);
+  EXPECT_EQ(true, visual->Wireframe());
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, Wireframe)
+{
+  Wireframe(GetParam());
 }
 
 

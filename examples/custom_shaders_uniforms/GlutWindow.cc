@@ -19,17 +19,17 @@
   #include <OpenGL/gl.h>
   #include <OpenGL/OpenGL.h>
   #include <GLUT/glut.h>
-#elif _WIN32
-  #define NOMINMAX
-  #include <windows.h>
-  #include <GL/glew.h>
-  #include <GL/glu.h>
-  #include <GL/glut.h>
-  #include "Wingdi.h"
 #else
   #include <GL/glew.h>
-  #include <GL/gl.h>
   #include <GL/glut.h>
+  #if _WIN32
+    #define NOMINMAX
+    #include <windows.h>
+    #include <Wingdi.h>
+    #include <GL/glu.h>
+  #else
+    #include <GL/gl.h>
+  #endif
 #endif
 
 #if !defined(__APPLE__) && !defined(_WIN32)
@@ -110,8 +110,8 @@ void updateCameras()
 //////////////////////////////////////////////////
 //! [update uniforms]
 void updateUniforms()
-{ 
-  (*g_shaderParams)["u_seed"].UpdateBuffer(g_seed); 
+{
+  (*g_shaderParams)["u_seed"].UpdateBuffer(g_seed);
   (*g_shaderParams)["u_resolution"].UpdateBuffer(g_resolution);
   (*g_shaderParams)["u_color"].UpdateBuffer(g_color);
   (*g_shaderParams)["u_adjustments"].UpdateBuffer(g_adjustments);
@@ -124,7 +124,7 @@ void displayCB()
 #if __APPLE__
   CGLSetCurrentContext(g_context);
 #elif _WIN32
-  if(!wglMakeCurrent(g_display, g_context))
+  if (!wglMakeCurrent(g_display, g_context))
   {
     std::cerr << "Not able to wglMakeCurrent" << '\n';
     exit(-1);
@@ -197,10 +197,11 @@ void initCamera(ir::CameraPtr _camera)
 void initUniforms()
 {
   ir::NodePtr node = g_camera->Parent();
-  ir::VisualPtr sphere = std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("box"));
+  ir::VisualPtr sphere =
+      std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("box"));
   ir::MaterialPtr shader = sphere->Material();
   g_shaderParams = shader->FragmentShaderParams();
-  
+
   (*g_shaderParams)["u_seed"].InitializeBuffer(1);
   (*g_shaderParams)["u_resolution"].InitializeBuffer(2);
   (*g_shaderParams)["u_color"].InitializeBuffer(3);

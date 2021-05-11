@@ -16,18 +16,18 @@
  */
 
 #if defined(__APPLE__)
-   #include <OpenGL/gl.h>
-   #include <GLUT/glut.h>
- #elif _WIN32
-   #define NOMINMAX
-   #include <windows.h>
-   #include <GL/glew.h>
-   #include <GL/glu.h>
-   #include <GL/glut.h>
+  #include <OpenGL/gl.h>
+  #include <GLUT/glut.h>
 #else
   #include <GL/glew.h>
-  #include <GL/gl.h>
   #include <GL/glut.h>
+  #if _WIN32
+    #define NOMINMAX
+    #include <windows.h>
+    #include <GL/glu.h>
+  #else
+    #include <GL/gl.h>
+  #endif
 #endif
 
 #include <iostream>

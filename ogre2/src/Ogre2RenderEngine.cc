@@ -15,14 +15,6 @@
  *
  */
 
-// Not Apple or Windows
-#if !defined(__APPLE__) && !defined(_WIN32)
-# include <X11/Xlib.h>
-# include <X11/Xutil.h>
-# include <GL/glx.h>
-# include <GL/glxext.h>
-#endif
-
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
@@ -41,6 +33,17 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+#ifdef OGRE_STATIC_LIB
+#include "OgreGL3PlusPlugin.h"
+static Ogre::GL3PlusPlugin* mGlPlugin {nullptr};
+#endif
+
+// Not Apple or Windows
+#if not defined(__APPLE__) && not defined(_WIN32)
+# include <X11/Xlib.h>
+# include <X11/Xutil.h>
+# include <GL/glx.h>
+#endif
 
 class ignition::rendering::Ogre2RenderEnginePrivate
 {
@@ -92,6 +95,10 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   if (ogrePath.rfind("OGRE") == ogrePath.size()-4u)
     this->ogrePaths.push_back(ogrePath.substr(0, ogrePath.size()-5));
 #endif
+
+  this->RenderPassSystem()->Register(
+      typeid(ignition::rendering::GaussianNoisePass).name(),
+      new Ogre2GaussianNoisePassFactory);
 }
 
 //////////////////////////////////////////////////
@@ -441,7 +448,6 @@ void Ogre2RenderEngine::CreateRoot()
   }
   catch (Ogre::Exception &ex)
   {
-    ignerr << "Unable to create Ogre root" << std::endl;
   }
 }
 
@@ -454,6 +460,12 @@ void Ogre2RenderEngine::CreateOverlay()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::LoadPlugins()
 {
+#if OGRE_STATIC_LIB
+  if (!mGlPlugin)
+    mGlPlugin = OGRE_NEW Ogre::GL3PlusPlugin();
+  this->ogreRoot->installPlugin(mGlPlugin);
+#endif
+
   for (auto iter = this->ogrePaths.begin();
        iter != this->ogrePaths.end(); ++iter)
   {
@@ -487,9 +499,11 @@ void Ogre2RenderEngine::LoadPlugins()
         {
           if ((*piter).find("RenderSystem") != std::string::npos)
           {
+#ifndef OGRE_STATIC_LIB
             ignerr << "Unable to find Ogre Plugin[" << *piter
                    << "]. Rendering will not be possible."
                    << "Make sure you have installed OGRE properly.\n";
+#endif
           }
           continue;
         }

@@ -30,6 +30,8 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
+#include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
+#include "ignition/rendering/RenderPassSystem.hh"
 namespace Ogre
 {
   class LogManager;

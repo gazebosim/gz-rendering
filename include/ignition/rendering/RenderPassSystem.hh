@@ -89,23 +89,18 @@ namespace ignition
       IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
 
-    /// \brief Render pass registration macro
-    ///
-    /// Use this macro to register render pass with the render pass factory.
-    #define IGN_RENDERING_REGISTER_RENDER_PASS(classname, interface) \
-    class classname##Factory : public ignition::rendering::RenderPassFactory \
-    { \
-      public: classname##Factory() \
-              { \
-                ignition::rendering::RenderPassSystem::Register( \
-                    typeid(interface).name(), this); \
-              } \
-      public: RenderPass *New() const override \
-              { \
-                return new classname(); \
-              } \
-    }; \
-    static classname##Factory global_##classname##Factory;
+/// \brief Render pass registration macro
+///
+/// Use this macro to register render pass with the render pass factory.
+#define IGN_RENDERING_REGISTER_RENDER_PASS(classname, interface) \
+class classname##Factory : public ignition::rendering::RenderPassFactory \
+{ \
+  public: ignition::rendering::RenderPass *New() const override \
+          { \
+            return new ignition::rendering::classname(); \
+          } \
+};
+
     }
   }
 }

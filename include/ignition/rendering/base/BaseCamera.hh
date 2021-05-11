@@ -178,6 +178,9 @@ namespace ignition
       public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
           const override;
 
+      // Documentation inherited.
+      public: virtual void SetShadowsDirty() override;
+
       protected: virtual void *CreateImageBuffer() const;
 
       protected: virtual void Load() override;
@@ -734,6 +737,13 @@ namespace ignition
     RenderPassPtr BaseCamera<T>::RenderPassByIndex(unsigned int _index) const
     {
       return this->RenderTarget()->RenderPassByIndex(_index);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetShadowsDirty()
+    {
+      // no op
     }
     }
   }

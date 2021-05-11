@@ -107,11 +107,7 @@ namespace ignition
       public: virtual unsigned int RenderTextureGLId() const override;
 
       // Documentation inherited.
-      // TODO(anyone): this function should be virtual, declared in 'Camera'
-      // and 'BaseCamera'. We didn't do it to preserve ABI.
-      // Looks in commit history for '#SetShadowsNodeDefDirtyABI' to
-      // see changes made and revert
-      public: void SetShadowsNodeDefDirty();
+      public: void SetShadowsDirty() override;
 
       // Documentation inherited.
       public: virtual void Destroy() override;
@@ -136,6 +132,13 @@ namespace ignition
 
       /// \brief Create internal camera object
       private: void CreateCamera();
+
+      /// \brief Notifies us that the shadow node definition is about to be
+      /// updated. This means our compositor workspace must be destroyed
+      /// because the shadow node definition it's using will become a
+      /// dangling pointer otherwise
+      /// \sa SetShadowsDirty
+      private: void SetShadowsNodeDefDirty();
 
       /// \brief Pointer to ogre camera object
       protected: Ogre::Camera *ogreCamera = nullptr;

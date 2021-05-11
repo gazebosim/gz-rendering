@@ -104,7 +104,7 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
 
   /// \brief Output texture with depth and color data
-  public: Ogre::TextureGpu *ogreDepthTexture;
+  public: Ogre::TextureGpu *ogreDepthTexture = nullptr;
 
   /// \brief Dummy render texture for the depth data
   public: RenderTexturePtr depthTexture;
@@ -305,7 +305,6 @@ void Ogre2DepthCamera::Destroy()
   }
   if (this->dataPtr->ogreCompositorWorkspace)
   {
-    this->RemoveWorkspaceCrashWorkaround();
     ogreCompMgr->removeWorkspace(
         this->dataPtr->ogreCompositorWorkspace);
   }
@@ -934,7 +933,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   this->dataPtr->ogreDepthTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
 
-  CreateWorkspaceInstance();
+  this->CreateWorkspaceInstance();
 }
 
 //////////////////////////////////////////////////
@@ -950,7 +949,7 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
           this->scene->OgreSceneManager(),
           this->dataPtr->ogreDepthTexture,
           this->ogreCamera,
-          this->dataPtr->ogreCompositorWorkspaceDef, 
+          this->dataPtr->ogreCompositorWorkspaceDef,
           false);
 
   // add the listener
@@ -1198,6 +1197,12 @@ double Ogre2DepthCamera::FarClipPlane() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2DepthCamera::SetShadowsDirty()
+{
+  this->SetShadowsNodeDefDirty();
+}
+
+//////////////////////////////////////////////////
 void Ogre2DepthCamera::SetShadowsNodeDefDirty()
 {
   if (!this->dataPtr->ogreCompositorWorkspace)
@@ -1207,26 +1212,10 @@ void Ogre2DepthCamera::SetShadowsNodeDefDirty()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  this->RemoveWorkspaceCrashWorkaround();
-  ogreCompMgr->removeWorkspace( this->dataPtr->ogreCompositorWorkspace );
+  ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorWorkspace);
   this->dataPtr->ogreCompositorWorkspace = nullptr;
-}
-
-//////////////////////////////////////////////////
-void Ogre2DepthCamera::RemoveWorkspaceCrashWorkaround()
-{
-  Ogre::MaterialPtr material =
-      Ogre::MaterialManager::getSingleton().
-      getByName (this->dataPtr->depthMaterial->getName());
-
-  if (!material.isNull())
-  {
-    for (size_t i = 0; i < 4; ++i)
-    {
-      material->getBestTechnique()->getPass(0)->
-          getTextureUnitState(i)->setBlank();
-    }
-  }
+  if (this->dataPtr->particleNoiseListener)
+    this->ogreCamera->removeListener(this->dataPtr->particleNoiseListener.get());
 }
 
 //////////////////////////////////////////////////

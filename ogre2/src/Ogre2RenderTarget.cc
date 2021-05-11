@@ -721,9 +721,6 @@ void Ogre2RenderTexture::DestroyTarget()
     this->ogreCompositorWorkspace = nullptr;
   }
 
-  compositorManager->removeAllNodeDefinitions();
-  compositorManager->removeAllWorkspaceDefinitions();
-
   Ogre::TextureGpuManager *textureManager =
     root->getRenderSystem()->getTextureGpuManager();
   textureManager->destroyTexture(this->ogreTexture);

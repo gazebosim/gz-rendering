@@ -1,0 +1,75 @@
+load(
+    "//ign_bazel:build_defs.bzl",
+    "IGNITION_FEATURES",
+    "IGNITION_ROOT",
+    "IGNITION_VISIBILITY",
+    "ign_export_header",
+)
+
+package(
+    default_visibility = IGNITION_VISIBILITY,
+    features = IGNITION_FEATURES,
+)
+
+public_headers_no_gen = glob(["include/ignition/rendering/ogre2/*.hh"])
+
+sources = glob(["src/*.cc", "src/*.hh"])
+
+ign_export_header(
+    name = "include/ignition/rendering/ogre2/Export.hh",
+    export_base = "IGNITION_RENDERING_OGRE2",
+    lib_name = "ignition-rendering",
+    visibility = ["//visibility:private"],
+)
+
+public_headers = public_headers_no_gen + [
+    "include/ignition/rendering/ogre2/Export.hh",
+]
+
+cc_library(
+    name = "ogre2",
+    srcs = sources,
+    hdrs = public_headers,
+    data = [
+        "src/media",
+    ],
+    includes = ["include"],
+    local_defines = [
+        "OGRE2_RESOURCE_PATH='\"./ogre2\"'",
+        "OGRE2_VERSION='\"TODO: replace with correct string\"'",
+    ],
+    deps = [
+        IGNITION_ROOT + "ign_common",
+        IGNITION_ROOT + "ign_plugin/register",
+        IGNITION_ROOT + "ign_rendering",
+        IGNITION_ROOT + "ogre2:ogre_main",
+        IGNITION_ROOT + "ogre2/Components:hlms_pbs",
+        IGNITION_ROOT + "ogre2/Components:hlms_unlit",
+        IGNITION_ROOT + "ogre2/Components:overlay",
+    ],
+)
+
+cc_binary(
+    name = "libignition-rendering-ogre2.so",
+    srcs = sources + public_headers,
+    data = [
+        "src/media",
+    ],
+    includes = ["include"],
+    linkshared = True,
+    local_defines = [
+        "OGRE2_RESOURCE_PATH='\"./ogre2\"'",
+        "OGRE2_VERSION='\"TODO: replace with correct string\"'",
+    ],
+    deps = [
+        IGNITION_ROOT + "ign_common",
+        IGNITION_ROOT + "ign_plugin/register",
+        IGNITION_ROOT + "ign_rendering",
+        IGNITION_ROOT + "ogre2:ogre_main",
+        IGNITION_ROOT + "ogre2/Components:hlms_pbs",
+        IGNITION_ROOT + "ogre2/Components:hlms_unlit",
+        IGNITION_ROOT + "ogre2/Components:overlay",
+    ],
+)
+
+exports_files(glob(["src/media"]))

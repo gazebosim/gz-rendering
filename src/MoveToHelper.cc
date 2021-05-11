@@ -43,11 +43,13 @@ class ignition::rendering::MoveToHelperPrivate
 using namespace ignition;
 using namespace rendering;
 
+////////////////////////////////////////////////
 MoveToHelper::MoveToHelper() :
   dataPtr(new MoveToHelperPrivate)
 {
 }
 
+////////////////////////////////////////////////
 MoveToHelper::~MoveToHelper() = default;
 
 ////////////////////////////////////////////////

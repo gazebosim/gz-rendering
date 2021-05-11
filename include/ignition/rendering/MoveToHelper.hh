@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_GUI_MOVETOHELPER_HH_
-#define IGNITION_GUI_MOVETOHELPER_HH_
+#ifndef IGNITION_RENDERING_MOVETOHELPER_HH_
+#define IGNITION_RENDERING_MOVETOHELPER_HH_
 
 #include <memory>
 

@@ -280,6 +280,34 @@ math::Matrix4d OgreCamera::ViewMatrix() const
 }
 
 //////////////////////////////////////////////////
+void OgreCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
+{
+  BaseCamera::SetProjectionMatrix(_matrix);
+  this->ogreCamera->setCustomProjectionMatrix(true,
+      OgreConversions::Convert(this->projectionMatrix));
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetProjectionType(CameraProjectionType _type)
+{
+  BaseCamera::SetProjectionType(_type);
+  if (this->projectionType == CPT_PERSPECTIVE)
+  {
+    this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
+  }
+  else if (this->projectionType == CPT_ORTHOGRAPHIC)
+  {
+    this->ogreCamera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+  }
+  else
+  {
+    return;
+  }
+  // reset projection matrix when projection type changes
+  this->ogreCamera->setCustomProjectionMatrix(false);
+}
+
+//////////////////////////////////////////////////
 void OgreCamera::SetNearClipPlane(const double _near)
 {
   // this->nearClip = _near;

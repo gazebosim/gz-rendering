@@ -528,19 +528,19 @@ namespace ignition
         double right = -left;
         double top = height * 0.5;
         double bottom = -top;
-        double near = this->NearClipPlane();
-        double far = this->FarClipPlane();
+        double _near = this->NearClipPlane();
+        double _far = this->FarClipPlane();
 
         double invw = 1.0 / (right - left);
         double invh = 1.0 / (top - bottom);
-        double invd = 1.0 / (far - near);
+        double invd = 1.0 / (_far - _near);
 
         result(0, 0) = 2.0 * invw;
         result(0, 3) = -(right + left) * invw;
         result(1, 1) = 2.0 * invh;
         result(1, 3) = -(top + bottom) * invh;
         result(2, 2) = -2.0 * invd;
-        result(2, 3) = -(far + near) * invd;
+        result(2, 3) = -(_far + _near) * invd;
         result(3, 3) = 1.0;
       }
       else

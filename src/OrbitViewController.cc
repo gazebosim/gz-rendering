@@ -66,6 +66,8 @@ OrbitViewController::~OrbitViewController()
 void OrbitViewController::SetCamera(const CameraPtr &_camera)
 {
   this->dataPtr->camera = _camera;
+  if (!this->dataPtr->camera)
+    return;
   this->dataPtr->camera->SetProjectionType(CPT_PERSPECTIVE);
 }
 

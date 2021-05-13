@@ -77,15 +77,15 @@ void OrthoViewController::SetCamera(const CameraPtr &_camera)
   if (!this->dataPtr->camera)
     return;
 
-  // initialize projection
+  // reset scale and update projection
   if (this->dataPtr->camera->ProjectionType() != CPT_ORTHOGRAPHIC)
   {
-    this->dataPtr->camera->SetProjectionType(CPT_ORTHOGRAPHIC);
     this->dataPtr->scale = 100;
-    double width = this->dataPtr->camera->ImageWidth();
-    double height = this->dataPtr->camera->ImageHeight();
-    this->Resize(width, height);
   }
+  this->dataPtr->camera->SetProjectionType(CPT_ORTHOGRAPHIC);
+  double width = this->dataPtr->camera->ImageWidth();
+  double height = this->dataPtr->camera->ImageHeight();
+  this->Resize(width, height);
 }
 
 //////////////////////////////////////////////////
@@ -105,136 +105,6 @@ math::Vector3d OrthoViewController::Target() const
 {
   return this->dataPtr->target;
 }
-
-/*
-//////////////////////////////////////////////////
-void OrthoViewController::HandleMouseEvent(const common::MouseEvent &_event)
-{
-  if (!this->enabled)
-    return;
-
-  ignition::math::Vector2i drag = _event.Pos() - _event.PrevPos();
-
-  int width = this->camera->ViewportWidth();
-  int height = this->camera->ViewportHeight();
-  double orthoWidth = width/this->dataPtr->scale;
-  double orthoHeight = height/this->dataPtr->scale;
-
-  // If the event is the initial press of a mouse button, then update
-  // the focal point and distance.
-  if (_event.PressPos() == _event.Pos())
-  {
-    if (!this->camera->GetScene()->FirstContact(
-         this->camera, _event.PressPos(), this->focalPoint))
-    {
-      ignition::math::Vector3d origin, dir;
-      this->camera->CameraToViewportRay(
-          _event.PressPos().X(), _event.PressPos().Y(), origin, dir);
-      this->focalPoint = origin + dir * 10.0;
-    }
-
-    // pseudo distance
-    this->distance = 1000.0/this->dataPtr->scale;
-
-    this->yaw = this->camera->WorldRotation().Euler().Z();
-    this->pitch = this->camera->WorldRotation().Euler().Y();
-  }
-
-  // Middle mouse button or Shift + Left button is used to Orbit.
-  if (_event.Dragging() &&
-      (_event.Buttons() & common::MouseEvent::MIDDLE ||
-      (_event.Buttons() & common::MouseEvent::LEFT && _event.Shift())))
-  {
-    // Compute the delta yaw and pitch.
-    double dy = this->NormalizeYaw(drag.X() * _event.MoveScale() * -0.4);
-    double dp = this->NormalizePitch(drag.Y() * _event.MoveScale() * 0.4);
-
-    // Limit rotation to pitch only if the "y" key is pressed.
-    if (!this->key.empty() && this->key == "y")
-      dy = 0.0;
-    // Limit rotation to yaw if the "z" key is pressed.
-    else if (!this->key.empty() && this->key == "z")
-      dp = 0.0;
-
-    this->Orbit(dy, dp);
-  }
-  // The left mouse button is used to translate the camera.
-  else if ((_event.Buttons() & common::MouseEvent::LEFT) && _event.Dragging())
-  {
-    ignition::math::Vector3d translation;
-
-    double factor = 1.0;
-
-    // The control key increases zoom speed by a factor of two.
-    if (_event.Control())
-      factor *= 2.0;
-
-    // If the "x", "y", or "z" key is pressed, then lock translation to the
-    // indicated axis.
-    if (!this->key.empty())
-    {
-      if (this->key == "x")
-        translation.Set((drag.Y() / static_cast<float>(height)) *
-                        orthoHeight * factor, 0.0, 0.0);
-      else if (this->key == "y")
-        translation.Set(0.0, (drag.X() / static_cast<float>(width)) *
-                        orthoWidth * factor, 0.0);
-      else if (this->key == "z")
-        translation.Set(0.0, 0.0, (drag.Y() / static_cast<float>(height)) *
-                        orthoHeight * factor);
-      else
-        gzerr << "Unable to handle key [" << this->key << "] in orbit view "
-              << "controller.\n";
-
-      // Translate in the global coordinate frame
-      this->TranslateGlobal(translation);
-    }
-    else
-    {
-      // Translate in the "y" "z" plane.
-      translation.Set(0.0,
-          (drag.X() / static_cast<float>(width)) * orthoWidth * factor,
-          (drag.Y() / static_cast<float>(height)) * orthoHeight * factor);
-
-      // Translate in the local coordinate frame
-      this->TranslateLocal(translation);
-    }
-  }
-  // The right mouse button is used to zoom the camera.
-  else if ((_event.Buttons() & common::MouseEvent::RIGHT) && _event.Dragging())
-  {
-    double amount = 1.0 + (drag.Y() / static_cast<float>(height));
-    this->Zoom(amount, _event.PressPos());
-  }
-  // The scroll wheel controls zoom.
-  else if (_event.Type() == common::MouseEvent::SCROLL)
-  {
-    if (!this->camera->GetScene()->FirstContact(
-         this->camera, _event.Pos(), this->focalPoint))
-    {
-      ignition::math::Vector3d origin, dir;
-      this->camera->CameraToViewportRay(
-          _event.Pos().X(), _event.Pos().Y(), origin, dir);
-      this->focalPoint = origin + dir * 10.0;
-    }
-
-    // pseudo distance
-    this->distance = 1000.0/this->dataPtr->scale;
-
-    double factor = 1.0;
-
-    // The control key increases zoom speed by a factor of two.
-    if (_event.Control())
-      factor *= 2;
-
-    // This assumes that _event.scroll.y is -1 or +1
-    double zoomFactor = 10;
-    double amount = 1.0 + _event.Scroll().Y() * factor * _event.MoveScale()
-        * zoomFactor;
-    this->Zoom(amount, _event.Pos());
-  }
-}
-*/
 
 //////////////////////////////////////////////////
 void OrthoViewController::Zoom(double _value)

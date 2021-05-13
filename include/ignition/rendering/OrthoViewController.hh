@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_ORTHOVIEWCONTROLLER_HH_
 #define IGNITION_RENDERING_ORTHOVIEWCONTROLLER_HH_
 
+#include <memory>
 #include <string>
 #include <ignition/math/Vector2.hh>
 

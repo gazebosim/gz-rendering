@@ -65,7 +65,7 @@ namespace ignition
 
       /// \brief Get target point for pan, zoom, oribit
       /// \return target point in world coordinates
-      public: virtual math::Vector3d Target() const;
+      public: virtual const math::Vector3d &Target() const;
 
       /// \brief Set zoom amount
       /// \param[in] _value Camera zoon value, e.g. mouse scroll delta

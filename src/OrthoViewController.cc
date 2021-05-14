@@ -101,7 +101,7 @@ void OrthoViewController::SetTarget(const math::Vector3d &_target)
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OrthoViewController::Target() const
+const math::Vector3d &OrthoViewController::Target() const
 {
   return this->dataPtr->target;
 }
@@ -198,16 +198,6 @@ void OrthoViewController::Pan(const math::Vector2d &_value)
 
   double viewportWidth = this->dataPtr->camera->ImageWidth();
   double viewportHeight = this->dataPtr->camera->ImageHeight();
-
-//  double distance =
-//      this->dataPtr->camera->WorldPosition().Distance(this->dataPtr->target);
-
-  // pseudo distance
-//   double distance = 1000.0/this->dataPtr->scale;
-
-//  double hfov = this->dataPtr->camera->HFOV().Radian();
-//  double vfov = 2.0f * atan(tan(hfov / 2.0f) /
-//        this->dataPtr->camera->AspectRatio());
 
   ignition::math::Vector3d translation;
 

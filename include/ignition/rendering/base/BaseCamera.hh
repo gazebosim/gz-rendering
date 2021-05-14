@@ -126,7 +126,7 @@ namespace ignition
           CameraProjectionType _projectionType) override;
 
       // Documentation inherited.
-      public: virtual math::Vector2i Project(const math::Vector3d &_pt)
+      public: virtual math::Vector2i Project(const math::Vector3d &_pt) const
                   override;
 
       // Documentation inherited.
@@ -594,7 +594,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    math::Vector2i BaseCamera<T>::Project(const math::Vector3d &_pt)
+    math::Vector2i BaseCamera<T>::Project(const math::Vector3d &_pt) const
     {
       math::Vector2i screenPos;
       math::Matrix4d m = this->ProjectionMatrix() *  this->ViewMatrix();
@@ -604,8 +604,10 @@ namespace ignition
       pos.X() = pos.X() / w;
       pos.Y() = pos.Y() / w;
 
-      screenPos.X() = ((pos.X() / 2.0) + 0.5) * this->ImageWidth();
-      screenPos.Y() = (1 - ((pos.Y() / 2.0) + 0.5)) * this->ImageHeight();
+      screenPos.X() = static_cast<int>(
+          ((pos.X() / 2.0) + 0.5) * this->ImageWidth());
+      screenPos.Y() = static_cast<int>(
+          (1 - ((pos.Y() / 2.0) + 0.5)) * this->ImageHeight());
       return screenPos;
     }
 

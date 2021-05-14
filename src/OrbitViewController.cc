@@ -84,7 +84,7 @@ void OrbitViewController::SetTarget(const math::Vector3d &_target)
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OrbitViewController::Target() const
+const math::Vector3d &OrbitViewController::Target() const
 {
   return this->dataPtr->target;
 }

@@ -61,7 +61,7 @@ namespace ignition
 
       /// \brief Get target point for pan, zoom, oribit
       /// \return target point in world coordinates
-      public: virtual math::Vector3d Target() const;
+      public: virtual const math::Vector3d &Target() const;
 
       /// \brief Set zoom amount
       /// \param[in] _value Camera zoon value, e.g. mouse scroll delta
@@ -75,7 +75,10 @@ namespace ignition
       /// \param[in] _value robit amount in image plane, e.g. mouse drag delta
       public: virtual void Orbit(const math::Vector2d &_value);
 
-      public: virtual void Resize(const unsigned int _width,
+      /// \brief Resize and update the camera projection matrix
+      /// \param[in] _width Image width
+      /// \param[in] _height Image height
+      private: virtual void Resize(const unsigned int _width,
                                   const unsigned int _height);
 
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

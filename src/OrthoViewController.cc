@@ -84,8 +84,8 @@ void OrthoViewController::SetCamera(const CameraPtr &_camera)
     this->dataPtr->scale = 100;
   }
   this->dataPtr->camera->SetProjectionType(CPT_ORTHOGRAPHIC);
-  double width = this->dataPtr->camera->ImageWidth();
-  double height = this->dataPtr->camera->ImageHeight();
+  unsigned int width = this->dataPtr->camera->ImageWidth();
+  unsigned int height = this->dataPtr->camera->ImageHeight();
   this->Resize(width, height);
 }
 

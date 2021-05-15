@@ -24,6 +24,7 @@
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
+#include "ignition/rendering/RenderTypes.hh"
 
 namespace ignition
 {
@@ -131,6 +132,17 @@ namespace ignition
     /// \param[in] _paths The list of the plugin paths
     IGNITION_RENDERING_VISIBLE
     void setPluginPaths(const std::list<std::string> &_paths);
+
+    /// \brief Most applications will only have one rendering engine loaded
+    /// at a time, and only one scene within that. This helper function gets
+    /// the first scene that can be found in the first loaded rendering engine.
+    ///
+    /// It's not recommended to call this function when there's more than one
+    /// engine or scene.
+    ///
+    /// \return Pointer to a scene that was found, null if no scene is loaded.
+    IGNITION_RENDERING_VISIBLE
+    ScenePtr sceneFromFirstRenderEngine();
     }
   }
 }

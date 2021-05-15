@@ -301,17 +301,15 @@ void Ogre2Camera::SetProjectionMatrix(const math::Matrix4d &_matrix)
 void Ogre2Camera::SetProjectionType(CameraProjectionType _type)
 {
   BaseCamera::SetProjectionType(_type);
-  if (this->projectionType == CPT_PERSPECTIVE)
+  switch (this->projectionType)
   {
-    this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
-  }
-  else if (this->projectionType == CPT_ORTHOGRAPHIC)
-  {
-    this->ogreCamera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
-  }
-  else
-  {
-    return;
+    default:
+    case CPT_PERSPECTIVE:
+      this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
+      break;
+    case CPT_ORTHOGRAPHIC:
+      this->ogreCamera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+      break;
   }
   // reset projection matrix when projection type changes
   this->ogreCamera->setCustomProjectionMatrix(false);

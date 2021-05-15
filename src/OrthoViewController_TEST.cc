@@ -50,10 +50,10 @@ void OrthoViewControllerTest::OrthoViewControl(const std::string &_renderEngine)
     return;
   }
   ScenePtr scene = engine->CreateScene("scene");
-  EXPECT_NE(scene, nullptr);
+  EXPECT_NE(nullptr, scene);
 
   CameraPtr camera =  scene->CreateCamera("camera");
-  EXPECT_NE(camera, nullptr);
+  EXPECT_NE(nullptr, camera);
 
   OrthoViewController viewControl;
 
@@ -67,7 +67,6 @@ void OrthoViewControllerTest::OrthoViewControl(const std::string &_renderEngine)
 
   viewControl.SetCamera(CameraPtr());
   EXPECT_EQ(CameraPtr(), viewControl.Camera());
-
 
   // test setting target
   math::Vector3d target(1, 0, 0);
@@ -145,12 +144,12 @@ void OrthoViewControllerTest::Control(const std::string &_renderEngine)
   // test pan in viewport x
   viewControl.Pan(math::Vector2d(2, 0));
   EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
-  EXPECT_GT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
+  EXPECT_LT(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
   EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
   EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
   viewControl.Pan(math::Vector2d(-8, 0));
   EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
-  EXPECT_LT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
+  EXPECT_GT(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
   EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
   EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
 
@@ -162,12 +161,12 @@ void OrthoViewControllerTest::Control(const std::string &_renderEngine)
   viewControl.Pan(math::Vector2d(0, 7));
   EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
   EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-  EXPECT_GT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
+  EXPECT_LT(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
   EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
   viewControl.Pan(math::Vector2d(0, -25));
   EXPECT_DOUBLE_EQ(initialPose.Pos().X(), camera->WorldPose().Pos().X());
   EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-  EXPECT_LT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
+  EXPECT_GT(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
   EXPECT_EQ(initialPose.Rot(), camera->WorldPose().Rot());
 
   // reset camera pose
@@ -180,23 +179,23 @@ void OrthoViewControllerTest::Control(const std::string &_renderEngine)
 
   // test orbit in viewport x (yaw)
   viewControl.Orbit(math::Vector2d(100, 0));
-  EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
-  EXPECT_GT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
+  EXPECT_LT(initialPose.Pos().X(), camera->WorldPose().Pos().X());
+  EXPECT_LT(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
   EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
   EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
   EXPECT_DOUBLE_EQ(initialPose.Rot().Y(), camera->WorldPose().Rot().Y());
-  EXPECT_LT(camera->WorldPose().Rot().Z(), initialPose.Rot().Z());
+  EXPECT_GT(initialPose.Rot().Z(), camera->WorldPose().Rot().Z());
 
   camera->SetWorldPose(initialPose);
   EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
   viewControl.Orbit(math::Vector2d(-80, 0));
-  EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
-  EXPECT_LT(camera->WorldPose().Pos().Y(), initialPose.Pos().Y());
+  EXPECT_LT(initialPose.Pos().X(), camera->WorldPose().Pos().X());
+  EXPECT_GT(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
   EXPECT_DOUBLE_EQ(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
   EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
   EXPECT_DOUBLE_EQ(initialPose.Rot().Y(), camera->WorldPose().Rot().Y());
-  EXPECT_GT(camera->WorldPose().Rot().Z(), initialPose.Rot().Z());
+  EXPECT_LT(initialPose.Rot().Z(), camera->WorldPose().Rot().Z());
 
   // reset camera pose
   camera->SetWorldPose(initialPose);
@@ -204,22 +203,22 @@ void OrthoViewControllerTest::Control(const std::string &_renderEngine)
 
   // test orbit in viewport y (pitch)
   viewControl.Orbit(math::Vector2d(0, 80));
-  EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
+  EXPECT_LT(initialPose.Pos().X(), camera->WorldPose().Pos().X());
   EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-  EXPECT_GT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
+  EXPECT_LT(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
   EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
-  EXPECT_GT(camera->WorldPose().Rot().Y(), initialPose.Rot().Y());
+  EXPECT_LT(initialPose.Rot().Y(), camera->WorldPose().Rot().Y());
   EXPECT_DOUBLE_EQ(initialPose.Rot().Z(), camera->WorldPose().Rot().Z());
 
   camera->SetWorldPose(initialPose);
   EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
   viewControl.Orbit(math::Vector2d(0, -90));
-  EXPECT_GT(camera->WorldPose().Pos().X(), initialPose.Pos().X());
+  EXPECT_LT(initialPose.Pos().X(), camera->WorldPose().Pos().X());
   EXPECT_DOUBLE_EQ(initialPose.Pos().Y(), camera->WorldPose().Pos().Y());
-  EXPECT_LT(camera->WorldPose().Pos().Z(), initialPose.Pos().Z());
+  EXPECT_GT(initialPose.Pos().Z(), camera->WorldPose().Pos().Z());
   EXPECT_DOUBLE_EQ(initialPose.Rot().X(), camera->WorldPose().Rot().X());
-  EXPECT_LT(camera->WorldPose().Rot().Y(), initialPose.Rot().Y());
+  EXPECT_GT(initialPose.Rot().Y(), camera->WorldPose().Rot().Y());
   EXPECT_DOUBLE_EQ(initialPose.Rot().Z(), camera->WorldPose().Rot().Z());
 
   // Clean up

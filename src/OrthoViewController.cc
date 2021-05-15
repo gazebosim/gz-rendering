@@ -32,6 +32,7 @@ class ignition::rendering::OrthoViewControllerPrivate
   /// \param[in] _top Top position
   /// \param[in] _near Near clip distance
   /// \param[in] _far Far clip distance
+  /// \return Custom orthographic projection matrix
   public: math::Matrix4d BuildScaledOrthoMatrix(
               float _left, float _right,
               float _bottom, float _top,
@@ -168,7 +169,6 @@ void OrthoViewController::Zoom(double _value)
       ((screenPos.Y() - height/2.0) / static_cast<double>(height))
       * newOrthoHeight);
 
-//  this->TranslateLocal(translation);
   this->dataPtr->camera->SetWorldPosition(
       this->dataPtr->camera->WorldPosition() +
       this->dataPtr->camera->WorldRotation() * translation);

@@ -351,6 +351,28 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
       name_param.second.Value(&value);
       _ogreParams->setNamedConstant(name_param.first, value);
     }
+    else if (ShaderParam::PARAM_FLOAT_BUFFER == name_param.second.Type())
+    {
+      std::shared_ptr<void> buffer;
+      name_param.second.Buffer(buffer);
+      uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
+      _ogreParams->setNamedConstant(name_param.first,
+          reinterpret_cast<float*>(buffer.get()), count, multiple);
+    }
+    else if (ShaderParam::PARAM_INT_BUFFER == name_param.second.Type())
+    {
+      std::shared_ptr<void> buffer;
+      name_param.second.Buffer(buffer);
+      uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
+      _ogreParams->setNamedConstant(name_param.first,
+        reinterpret_cast<int*>(buffer.get()), count, multiple);
+    }
   }
 }
 

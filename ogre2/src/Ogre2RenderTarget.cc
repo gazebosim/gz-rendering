@@ -432,6 +432,11 @@ void Ogre2RenderTarget::Render()
 //////////////////////////////////////////////////
 bool Ogre2RenderTarget::isRenderWindow() const
 {
+  const Ogre2RenderWindow *asWindow =
+      dynamic_cast<const Ogre2RenderWindow*>(this);
+  if (asWindow)
+    return true;
+
   return false;
 }
 

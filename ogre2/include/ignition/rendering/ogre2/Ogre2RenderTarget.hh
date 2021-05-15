@@ -116,7 +116,11 @@ namespace ignition
       public: void SetShadowsNodeDefDirty();
 
       /// \brief Returns true if this is a render window
-      public: virtual bool isRenderWindow() const;
+      /// TODO(anyone): this function should be virtual.
+      /// We didn't do it to preserve ABI.
+      /// Look in commit history for '#Ogre2IsRenderWindowABI' to
+      /// see changes made and revert
+      public: bool isRenderWindow() const;
 
       /// \brief Get a pointer to the ogre render target containing
       /// the results of the render
@@ -269,8 +273,11 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
-      // Documentation inherited.
-      public: virtual bool isRenderWindow() const override;
+      // TODO(anyone): this function should be virtual.
+      // We didn't do it to preserve ABI.
+      // Looks in commit history for '#Ogre2IsRenderWindowABI' to
+      // see changes made and revert
+      public: bool isRenderWindow() const;
 
       // Documentation inherited.
       public: virtual Ogre::RenderTarget *RenderTarget() const override;

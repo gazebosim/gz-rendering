@@ -827,10 +827,16 @@ void Ogre2ThermalCamera::CreateThermalTexture()
 void Ogre2ThermalCamera::Render()
 {
   // update the compositors
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
+  this->scene->OgreSceneManager()->updateSceneGraph();
+  this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
+  //engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
+  this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
+  this->dataPtr->ogreCompositorWorkspace->_update();
+  this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
+
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve( 2u );
+  this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget( swappedTargets );
 }
 
 //////////////////////////////////////////////////

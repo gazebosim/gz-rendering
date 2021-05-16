@@ -1297,6 +1297,11 @@ void BaseScene::PreRender()
 }
 
 //////////////////////////////////////////////////
+void BaseScene::PostRenderGpuFlush()
+{
+}
+
+//////////////////////////////////////////////////
 void BaseScene::Clear()
 {
   this->nodes->DestroyAll();

@@ -59,6 +59,10 @@
 #include <OgreSceneManager.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
+#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
+#include <OgreHlms.h>
+#include <OgreHlmsManager.h>
+#endif
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -174,6 +178,37 @@ void Ogre2Scene::PreRender()
   }
 
   BaseScene::PreRender();
+
+  this->ogreSceneManager->updateSceneGraph();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::PostRenderGpuFlush()
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  //engine->OgreRoot()->renderOneFrame();
+
+#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
+  auto hlmsManager = ogreRoot->getHlmsManager();
+  // Updating the compositor with all workspaces disables achieves our goal
+  ogreCompMgr->_update( Ogre::SceneManagerEnumerator::getSingleton(),
+                        hlmsManager );
+#else
+  // Updating the compositor with all workspaces disables achieves our goal
+  ogreCompMgr->_update();
+#endif
+
+  ogreCompMgr->_swapAllFinalTargets();
+
+  auto itor = ogreRoot->getSceneManagerIterator();
+  while( itor.hasMoreElements() )
+  {
+      Ogre::SceneManager *sceneManager = itor.getNext();
+      sceneManager->clearFrameData();
+  }
 }
 
 //////////////////////////////////////////////////

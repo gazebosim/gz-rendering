@@ -425,33 +425,15 @@ void Ogre2RenderTarget::PostRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
-  // TODO(anyone)
-  // There is current not an easy solution to manually updating
-  // render textures:
-  // https://forums.ogre3d.org/viewtopic.php?t=84687
-  this->ogreCompositorWorkspace->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  this->ogreCompositorWorkspace->setEnabled(false);
+  this->ogreCompositorWorkspace->_validateFinalTarget();
+  //engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
+  this->ogreCompositorWorkspace->_beginUpdate(false);
+  this->ogreCompositorWorkspace->_update();
+  this->ogreCompositorWorkspace->_endUpdate(false);
 
-  // The code below for manual updating render textures was suggested in ogre
-  // forum but it does not seem to work
-  // this->scene->OgreSceneManager()->updateSceneGraph();
-  // this->ogreCompositorWorkspace->_validateFinalTarget();
-  // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
-  // this->ogreCompositorWorkspace->_beginUpdate(false);
-  // this->ogreCompositorWorkspace->_update();
-  // this->ogreCompositorWorkspace->_endUpdate(false);
-
-  // this->scene->OgreSceneManager()->_frameEnded();
-  // for (size_t i=0; i < Ogre::HLMS_MAX; ++i)
-  // {
-  //   Ogre::Hlms *hlms = engine->OgreRoot()->getHlmsManager()->getHlms(
-  //       static_cast<Ogre::HlmsTypes>(i));
-  //   if(hlms)
-  //     hlms->frameEnded();
-  // }
-  // engine->OgreRoot()->getRenderSystem()->_update();
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve( 2u );
+  this->ogreCompositorWorkspace->_swapFinalTarget( swappedTargets );
 }
 
 //////////////////////////////////////////////////

@@ -1077,6 +1077,35 @@ namespace ignition
       /// changes by traversing scene-graph, calling PreRender on all objects
       public: virtual void PreRender() = 0;
 
+      /// \brief Flushes all buffered frame data and starts 'a new frame'.
+      /// CPUs queue up a bunch of rendering commands and then waits
+      /// for the GPU to finish up.
+      /// If we flush too often, the CPU will often have to wait for the GPU
+      /// doing nothing.
+      /// If we flush too infrequently, RAM consumption will rise due to
+      /// queueing up unsubmitted work.
+      /// Note that work may be submitted earlier if required by a specific
+      /// operation (e.g. reading GPU -> CPU), however RAM may still
+      /// rise if FlushFrame() isn't called
+      /// This function must be called at least once per frame
+      /// This function may be called for any camera, but affects all cameras
+      ///
+      /// \remarks
+      /// This function should be called after updating all cameras / once per
+      /// frame, but it may be called more often if you're updating too many
+      /// cameras and running out of memory
+      ///
+      /// Example:
+      ///
+      /// Cubemap rendering w/ 3 probes and 5 shadowmaps can cause
+      /// a blow up of passes:
+      ///
+      /// (5 shadow maps per face + 1 regular render) x 6 faces x 3 probes =
+      /// 108 render_scene passes.
+      /// 108 is way too much, causing out of memory situations;
+      /// so flushing once per probe may make better sense.
+      public: virtual void PostRenderGpuFlush() = 0;
+
       /// \brief Remove and destroy all objects from the scene graph. This does
       /// not completely destroy scene resources, so new objects can be created
       /// and added to the scene afterwards.

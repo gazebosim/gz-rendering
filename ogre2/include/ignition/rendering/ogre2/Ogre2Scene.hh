@@ -94,6 +94,9 @@ namespace ignition
       // Documentation inherited
       public: virtual bool SkyEnabled() const override;
 
+      // Documentation inherited
+      public: virtual void PostRenderGpuFlush() override;
+
       /// \brief Get a pointer to the ogre scene manager
       /// \return Pointer to the ogre scene manager
       public: virtual Ogre::SceneManager *OgreSceneManager() const;

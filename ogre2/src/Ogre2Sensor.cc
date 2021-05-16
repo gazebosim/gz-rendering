@@ -16,6 +16,13 @@
  */
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
+#include <ignition/rendering/ogre2/Ogre2RenderEngine.hh>
+
+#include <Compositor/OgreCompositorManager2.h>
+#include <OgreHlms.h>
+#include <OgreHlmsManager.h>
+#include <OgreRoot.h>
+
 using namespace ignition;
 using namespace rendering;
 

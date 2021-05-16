@@ -522,6 +522,9 @@ namespace ignition
 
       public: virtual void Destroy() override;
 
+      // Documentation inherited.
+      public: virtual void PostRenderGpuFlush() override;
+
       protected: virtual unsigned int CreateObjectId();
 
       protected: virtual std::string CreateObjectName(unsigned int _id,

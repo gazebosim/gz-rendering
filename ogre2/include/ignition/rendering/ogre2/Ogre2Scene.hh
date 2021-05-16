@@ -97,6 +97,12 @@ namespace ignition
       // Documentation inherited
       public: virtual void PostRenderGpuFlush() override;
 
+      // Documentation inherited.
+      public: virtual void SetLegacyAutoGpuFlush( bool _autoFlush ) override;
+
+      // Documentation inherited.
+      public: virtual bool GetLegacyAutoGpuFlush() const override;
+
       /// \brief Get a pointer to the ogre scene manager
       /// \return Pointer to the ogre scene manager
       public: virtual Ogre::SceneManager *OgreSceneManager() const;

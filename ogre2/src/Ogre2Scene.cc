@@ -76,6 +76,9 @@ class ignition::rendering::Ogre2ScenePrivate
   /// \brief Flag to indicate if sky is enabled or not
   public: bool skyEnabled = false;
 
+  /// \brief Flag to indicate if we should flush GPU very often (per camera)
+  public: bool legacyAutoGpuFlush = false;
+
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
 };
@@ -209,6 +212,18 @@ void Ogre2Scene::PostRenderGpuFlush()
       Ogre::SceneManager *sceneManager = itor.getNext();
       sceneManager->clearFrameData();
   }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::SetLegacyAutoGpuFlush(bool _autoFlush)
+{
+  this->dataPtr->legacyAutoGpuFlush = _autoFlush;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Scene::GetLegacyAutoGpuFlush() const
+{
+  return this->dataPtr->legacyAutoGpuFlush;
 }
 
 //////////////////////////////////////////////////

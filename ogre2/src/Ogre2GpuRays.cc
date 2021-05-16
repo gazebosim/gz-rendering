@@ -1091,6 +1091,10 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 {
+  const bool legacyAutoGpuFlush = this->scene->GetLegacyAutoGpuFlush();
+  if (legacyAutoGpuFlush)
+    this->scene->OgreSceneManager()->updateSceneGraph();
+
   this->dataPtr->ogreCompositorWorkspace2nd->_validateFinalTarget();
   //engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
   this->dataPtr->ogreCompositorWorkspace2nd->_beginUpdate(false);
@@ -1100,6 +1104,9 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
   Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
   swappedTargets.reserve( 2u );
   this->dataPtr->ogreCompositorWorkspace2nd->_swapFinalTarget( swappedTargets );
+
+  if (legacyAutoGpuFlush)
+    this->scene->PostRenderGpuFlush();
 }
 
 //////////////////////////////////////////////////

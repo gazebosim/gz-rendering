@@ -1302,6 +1302,17 @@ void BaseScene::PostRenderGpuFlush()
 }
 
 //////////////////////////////////////////////////
+void BaseScene::SetLegacyAutoGpuFlush(bool _autoFlush)
+{
+}
+
+//////////////////////////////////////////////////
+bool BaseScene::GetLegacyAutoGpuFlush() const
+{
+  return true;
+}
+
+//////////////////////////////////////////////////
 void BaseScene::Clear()
 {
   this->nodes->DestroyAll();

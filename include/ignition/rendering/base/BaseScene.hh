@@ -525,6 +525,12 @@ namespace ignition
       // Documentation inherited.
       public: virtual void PostRenderGpuFlush() override;
 
+      // Documentation inherited.
+      public: virtual void SetLegacyAutoGpuFlush( bool _autoFlush ) override;
+
+      // Documentation inherited.
+      public: virtual bool GetLegacyAutoGpuFlush() const override;
+
       protected: virtual unsigned int CreateObjectId();
 
       protected: virtual std::string CreateObjectName(unsigned int _id,

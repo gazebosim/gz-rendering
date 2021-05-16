@@ -1106,6 +1106,31 @@ namespace ignition
       /// so flushing once per probe may make better sense.
       public: virtual void PostRenderGpuFlush() = 0;
 
+      /// \brief Old projects migrating to newer versions will
+      /// leak memory if they don't call PostRenderGpuFlush
+      ///
+      /// Settings this value to true forces Gazebo to flush commands for
+      /// every camera.
+      ///
+      /// This is much slower but will ease porting, specially
+      /// if it's not easy to adapt your code to call PostRenderGpuFlush
+      /// at regular intervals for some reason
+      ///
+      /// New projects should set this value to false
+      ///
+      /// \remarks Not all rendering engines care about this.
+      /// ogre2 plugin does.
+      ///
+      /// \param[in] _autoFlush True for old projects who can't or don't know
+      /// when to call PostRenderGpuFlush and prefer to penalize rendering
+      /// performance
+      public: virtual void SetLegacyAutoGpuFlush( bool _autoFlush ) = 0;
+
+      /// \brief Gets the value of SetLegacyAutoGpuFlush
+      /// \return True if Gazebo is using the old method.
+      /// Returns always true for plugins that ignore SetLegacyAutoGpuFlush
+      public: virtual bool GetLegacyAutoGpuFlush() const = 0;
+
       /// \brief Remove and destroy all objects from the scene graph. This does
       /// not completely destroy scene resources, so new objects can be created
       /// and added to the scene afterwards.

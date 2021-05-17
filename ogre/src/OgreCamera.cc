@@ -291,7 +291,6 @@ void OgreCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
 void OgreCamera::SetProjectionType(CameraProjectionType _type)
 {
   BaseCamera::SetProjectionType(_type);
-  BaseCamera::SetProjectionType(_type);
   switch (this->projectionType)
   {
     default:

@@ -69,7 +69,15 @@ namespace ignition
 
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
+      // Documentation inherited.
+      public: virtual void SetProjectionMatrix(
+          const math::Matrix4d &_matrix) override;
+
       public: virtual math::Matrix4d ViewMatrix() const override;
+
+      // Documentation inherited.
+      public: virtual void SetProjectionType(CameraProjectionType _type)
+          override;
 
       public: void SetVFOV(double cameraVFOV) const;
 

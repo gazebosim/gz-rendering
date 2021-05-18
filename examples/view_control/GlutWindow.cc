@@ -37,6 +37,7 @@
 #include <ignition/rendering/RayQuery.hh>
 #include <ignition/rendering/Scene.hh>
 #include <ignition/rendering/OrbitViewController.hh>
+#include <ignition/rendering/OrthoViewController.hh>
 
 #include "GlutWindow.hh"
 
@@ -70,7 +71,9 @@ bool g_initContext = false;
 
 // view control variables
 ir::RayQueryPtr g_rayQuery;
-ir::OrbitViewController g_viewControl;
+ir::OrbitViewController g_orbitViewControl;
+ir::OrthoViewController g_orthoViewControl;
+ir::ViewController *g_viewControl = &g_orbitViewControl;
 ir::RayQueryResult g_target;
 struct mouseButton
 {
@@ -169,11 +172,12 @@ void handleMouse()
           g_target.point);
       int factor = 1;
       double amount = -(scroll * factor) * (distance / 5.0);
+
       for (ir::CameraPtr camera : g_cameras)
       {
-        g_viewControl.SetCamera(camera);
-        g_viewControl.SetTarget(g_target.point);
-        g_viewControl.Zoom(amount);
+        g_viewControl->SetCamera(camera);
+        g_viewControl->SetTarget(g_target.point);
+        g_viewControl->Zoom(amount);
       }
     }
   }
@@ -188,18 +192,18 @@ void handleMouse()
     {
       for (ir::CameraPtr camera : g_cameras)
       {
-        g_viewControl.SetCamera(camera);
-        g_viewControl.SetTarget(g_target.point);
-        g_viewControl.Pan(drag);
+        g_viewControl->SetCamera(camera);
+        g_viewControl->SetTarget(g_target.point);
+        g_viewControl->Pan(drag);
       }
     }
     else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN)
     {
       for (ir::CameraPtr camera : g_cameras)
       {
-        g_viewControl.SetCamera(camera);
-        g_viewControl.SetTarget(g_target.point);
-        g_viewControl.Orbit(drag);
+        g_viewControl->SetCamera(camera);
+        g_viewControl->SetTarget(g_target.point);
+        g_viewControl->Orbit(drag);
       }
     }
     // right mouse button zoom
@@ -215,9 +219,9 @@ void handleMouse()
           * distance * tan(vfov/2.0) * 6.0);
       for (ir::CameraPtr camera : g_cameras)
       {
-        g_viewControl.SetCamera(camera);
-        g_viewControl.SetTarget(g_target.point);
-        g_viewControl.Zoom(amount);
+        g_viewControl->SetCamera(camera);
+        g_viewControl->SetTarget(g_target.point);
+        g_viewControl->Zoom(amount);
       }
     }
   }
@@ -275,6 +279,23 @@ void keyboardCB(unsigned char _key, int, int)
   {
     g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
   }
+  else if (_key == 'o')
+  {
+    if (g_viewControl == &g_orbitViewControl)
+    {
+      g_viewControl = &g_orthoViewControl;
+      std::cout << "Switching to Orthographic View Controller" << std::endl;
+    }
+    else
+    {
+      g_viewControl = &g_orbitViewControl;
+      std::cout << "Switching to Orbit View Controller" << std::endl;
+    }
+    for (ir::CameraPtr camera : g_cameras)
+    {
+      g_viewControl->SetCamera(camera);
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -309,6 +330,7 @@ void printUsage()
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
+  std::cout << "  O   - Toggle view controler  " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 

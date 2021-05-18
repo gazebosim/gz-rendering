@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
-#ifndef IGNITION_RENDERING_ORBITVIEWCONTROLLER_HH_
-#define IGNITION_RENDERING_ORBITVIEWCONTROLLER_HH_
+*/
+#ifndef IGNITION_RENDERING_ORTHOVIEWCONTROLLER_HH_
+#define IGNITION_RENDERING_ORTHOVIEWCONTROLLER_HH_
 
 #include <memory>
+#include <string>
+#include <ignition/math/Vector2.hh>
 
-#include <ignition/common/SuppressWarning.hh>
-
-#include <ignition/math/Vector3.hh>
-
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/ViewController.hh"
 
 namespace ignition
@@ -33,23 +29,23 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    // forward declarations
-    class OrbitViewControllerPrivate;
+    // Forward declare private data pointer.
+    class OrthoViewControllerPrivate;
 
-    /// \class OrbitViewController OrbitViewController.hh
-    /// ignition/rendering/OrbitViewController.hh
-    /// \brief A camera view controller
-    class IGNITION_RENDERING_VISIBLE OrbitViewController
+    /// \class OrthoViewController OrbitVeiwController.hh
+    /// \brief Orthographic view controller
+    class IGNITION_RENDERING_VISIBLE OrthoViewController
         : public virtual ViewController
     {
-      /// \brief Destructor
-      public: OrbitViewController();
+      /// \brief Constructor
+      public: OrthoViewController();
 
-      /// \brief Destructor
-      public: explicit OrbitViewController(const CameraPtr &_camera);
+      /// \brief Constructor.
+      /// \param[in] _camera Pointer to the camera to control.
+      public: explicit OrthoViewController(const CameraPtr &_camera);
 
-      /// \brief Destructor
-      public: virtual ~OrbitViewController();
+      /// \brief Destructor.
+      public: virtual ~OrthoViewController();
 
       /// \brief Set the camera that will be controlled by this view controller.
       /// \param[in] _camera Camera to control
@@ -79,9 +75,15 @@ namespace ignition
       /// \param[in] _value robit amount in image plane, e.g. mouse drag delta
       public: virtual void Orbit(const math::Vector2d &_value);
 
+      /// \brief Resize and update the camera projection matrix
+      /// \param[in] _width Image width
+      /// \param[in] _height Image height
+      private: virtual void Resize(const unsigned int _width,
+                                  const unsigned int _height);
+
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief Private data pointer
-      public: std::unique_ptr<OrbitViewControllerPrivate> dataPtr;
+      public: std::unique_ptr<OrthoViewControllerPrivate> dataPtr;
       IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }

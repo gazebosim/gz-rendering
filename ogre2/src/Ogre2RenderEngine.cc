@@ -299,6 +299,7 @@ bool Ogre2RenderEngine::LoadImpl(
   {
     this->LoadAttempt();
     this->loaded = true;
+    ignerr << "Successfully loaded engine" << std::endl;
     return true;
   }
   catch (Ogre::Exception &ex)
@@ -362,6 +363,9 @@ void Ogre2RenderEngine::CreateLogger()
 void Ogre2RenderEngine::CreateContext()
 {
 #if not (__APPLE__ || _WIN32)
+  if (this->isHeadless)
+    return;
+
   // create X11 display
   this->dummyDisplay = XOpenDisplay(0);
   Display *x11Display = static_cast<Display*>(this->dummyDisplay);

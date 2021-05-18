@@ -298,6 +298,9 @@ namespace ignition
       /// \brief Create the vaiours storage objects
       private: void CreateStores();
 
+      // Documentation inherited
+      public: virtual void ClearMaterialsCache() override;
+
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();
 

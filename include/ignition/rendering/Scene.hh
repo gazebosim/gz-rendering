@@ -1028,6 +1028,11 @@ namespace ignition
       /// use of this scene after its destruction will result in undefined
       /// behavior.
       public: virtual void Destroy() = 0;
+
+      /// \brief When a mesh is loaded some material are cached in memory, then
+      /// these materials are copied to the meshes. The method allows to remove
+      /// this cache.
+      public: virtual void ClearMaterialsCache() = 0;
     };
     }
   }

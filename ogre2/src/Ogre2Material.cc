@@ -70,6 +70,13 @@ void Ogre2Material::Destroy()
   if (!this->ogreDatablock)
     return;
 
+  if (!this->textureName.empty())
+  {
+    Ogre::HlmsTextureManager *hlmsTextureManager =
+        this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
+    hlmsTextureManager->destroyTexture(this->textureName);
+  }
+
   this->ogreHlmsPbs->destroyDatablock(this->ogreDatablockId);
   this->ogreDatablock = nullptr;
 

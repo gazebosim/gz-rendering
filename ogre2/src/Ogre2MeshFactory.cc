@@ -58,6 +58,7 @@
 /// \brief Private data for the Ogre2MeshFactory class
 class ignition::rendering::Ogre2MeshFactoryPrivate
 {
+  public: std::vector<MaterialPtr> materialCache;
 };
 
 /// \brief Private data for the Ogre2SubMeshStoreFactory class
@@ -86,6 +87,17 @@ void Ogre2MeshFactory::Clear()
     Ogre::MeshManager::getSingleton().remove(m);
 
   this->ogreMeshes.clear();
+}
+
+void Ogre2MeshFactory::ClearMaterialsCache()
+{
+  for (auto mat : this->dataPtr->materialCache)
+  {
+    std::string matName = mat->Name();
+    mat->Destroy();
+    this->scene->UnregisterMaterial(matName);
+  }
+  this->dataPtr->materialCache.clear();
 }
 
 //////////////////////////////////////////////////
@@ -455,6 +467,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
           mat->CopyFrom(defaultMat);
       }
       ogreSubMesh->setMaterialName(mat->Name());
+      this->dataPtr->materialCache.push_back(mat);
     }
 
     math::Vector3d max = _desc.mesh->Max();

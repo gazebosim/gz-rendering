@@ -117,6 +117,12 @@ math::Color Ogre2Scene::AmbientLight() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2Scene::ClearMaterialsCache()
+{
+  this->meshFactory->ClearMaterialsCache();
+}
+
+//////////////////////////////////////////////////
 void Ogre2Scene::SetAmbientLight(const math::Color &_color)
 {
   // We set the same ambient light for both hemispheres for a

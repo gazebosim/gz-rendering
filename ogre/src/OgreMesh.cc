@@ -58,6 +58,7 @@ void OgreMesh::Destroy()
 
   auto ogreScene = std::dynamic_pointer_cast<OgreScene>(this->Scene());
 
+  Ogre::MeshManager::getSingleton().remove(this->Name());
   ogreScene->OgreSceneManager()->destroyEntity(this->ogreEntity);
   this->ogreEntity = nullptr;
 }
@@ -284,6 +285,9 @@ Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
 //////////////////////////////////////////////////
 void OgreSubMesh::Destroy()
 {
+  Ogre::MeshManager::getSingleton().remove(this->Name());
+  Ogre::MaterialManager::getSingleton().remove(
+        this->ogreSubEntity->getMaterialName());
   OgreRTShaderSystem::Instance()->DetachEntity(this);
 
   BaseSubMesh::Destroy();

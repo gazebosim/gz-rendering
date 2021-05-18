@@ -56,7 +56,11 @@ namespace ignition
 
       protected: virtual bool Validate(const MeshDescriptor &_desc);
 
+      public: void ClearMaterialsCache();
+
       protected: OgreScenePtr scene;
+      
+      protected: std::vector<MaterialPtr> materialCache;
     };
 
     class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMeshStoreFactory

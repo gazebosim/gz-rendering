@@ -200,6 +200,8 @@ namespace ignition
 
       protected: virtual MaterialMapPtr Materials() const override;
 
+      public: virtual void ClearMaterialsCache() override;
+
       private: void CreateContext();
 
       private: void CreateRootVisual();

@@ -51,7 +51,8 @@ void OgreMaterial::Destroy()
   {
     Ogre::TextureManager &texManager = Ogre::TextureManager::getSingleton();
 
-    auto indexUnitStateToRemove = this->ogrePass->getTextureUnitStateIndex(this->ogreTexState);
+    auto indexUnitStateToRemove =
+      this->ogrePass->getTextureUnitStateIndex(this->ogreTexState);
     this->ogrePass->removeTextureUnitState(indexUnitStateToRemove);
 
     texManager.remove(this->textureName);

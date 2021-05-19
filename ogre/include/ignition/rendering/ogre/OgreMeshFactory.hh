@@ -59,7 +59,7 @@ namespace ignition
       public: void ClearMaterialsCache();
 
       protected: OgreScenePtr scene;
-      
+
       protected: std::vector<MaterialPtr> materialCache;
     };
 

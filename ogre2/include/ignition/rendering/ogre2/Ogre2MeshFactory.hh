@@ -95,7 +95,7 @@ namespace ignition
       protected: Ogre2ScenePtr scene;
 
       /// \brief Remove internal material cache
-      public: void ClearMaterialsCache();
+      public: void ClearMaterialsCache(const std::string &_name);
 
       /// \brief Pointer to private data class
       private: std::unique_ptr<Ogre2MeshFactoryPrivate> dataPtr;

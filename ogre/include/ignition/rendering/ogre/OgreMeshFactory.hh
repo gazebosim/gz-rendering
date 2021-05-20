@@ -56,7 +56,7 @@ namespace ignition
 
       protected: virtual bool Validate(const MeshDescriptor &_desc);
 
-      public: void ClearMaterialsCache();
+      public: void ClearMaterialsCache(const std::string &_name);
 
       protected: OgreScenePtr scene;
 

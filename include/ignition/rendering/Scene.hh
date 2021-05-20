@@ -1032,7 +1032,7 @@ namespace ignition
       /// \brief When a mesh is loaded some material are cached in memory, then
       /// these materials are copied to the meshes. The method allows to remove
       /// this cache.
-      public: virtual void ClearMaterialsCache() = 0;
+      public: virtual void ClearMaterialsCache(const std::string &_name) = 0;
     };
     }
   }

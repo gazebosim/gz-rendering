@@ -89,7 +89,7 @@ void Ogre2MeshFactory::Clear()
   this->ogreMeshes.clear();
 }
 
-void Ogre2MeshFactory::ClearMaterialsCache()
+void Ogre2MeshFactory::ClearMaterialsCache(const std::string &_name)
 {
   for (auto mat : this->dataPtr->materialCache)
   {

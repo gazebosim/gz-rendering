@@ -44,21 +44,20 @@ void OgreMaterial::Destroy()
 {
   if (!this->Scene()->IsInitialized())
     return;
-
+  std::string materialName;
   Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
 #if OGRE_VERSION_LT_1_10_1
   if (!this->ogreMaterial.isNull())
   {
-    Ogre::TextureManager &texManager = Ogre::TextureManager::getSingleton();
+    materialName = this->ogreMaterial->getName();
 
+    this->ogreTexState->setBlank();
     auto indexUnitStateToRemove =
       this->ogrePass->getTextureUnitStateIndex(this->ogreTexState);
     this->ogrePass->removeTextureUnitState(indexUnitStateToRemove);
 
-    texManager.remove(this->textureName);
     matManager.remove(this->ogreMaterial->getName());
     this->ogreMaterial.setNull();
-  }
 #else
   if (this->ogreMaterial)
   {
@@ -66,6 +65,30 @@ void OgreMaterial::Destroy()
     this->ogreMaterial.reset();
   }
 #endif
+  auto iend = Ogre::TextureManager::getSingleton().getResourceIterator().end();
+  for (auto i = Ogre::TextureManager::getSingleton().getResourceIterator().begin(); i != iend;)
+  {
+      // A use count of 4 means that only RGM, RM and MeshManager have references
+      // RGM has one (this one) and RM has 2 (by name and by handle)
+      // and MeshManager keep another one int the template
+      Ogre::Resource* res = i->second.get();
+      if (i->second.useCount() == 4)
+      {
+        if (this->textureName == res->getName() &&
+          res->getName().find("scene::RenderTexture") == std::string::npos)
+        {
+          this->Scene()->ClearMaterialsCache(this->textureName);
+          this->Scene()->UnregisterMaterial(materialName);
+          if (i->second.useCount() == 3)
+          {
+            Ogre::TextureManager::getSingleton().remove(res->getHandle());
+          }
+          break;
+        }
+      }
+      ++i;
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -273,6 +296,7 @@ void OgreMaterial::SetTexture(const std::string &_name)
   }
 
   this->textureName = _name;
+  std::cerr << "OgreMaterial::SetTexture " << name << '\n';
   this->SetTextureImpl(this->textureName);
 }
 

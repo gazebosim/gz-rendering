@@ -346,9 +346,9 @@ VisualStorePtr OgreScene::Visuals() const
 }
 
 //////////////////////////////////////////////////
-void OgreScene::ClearMaterialsCache()
+void OgreScene::ClearMaterialsCache(const std::string &_name)
 {
-  this->meshFactory->ClearMaterialsCache();
+  this->meshFactory->ClearMaterialsCache(_name);
 }
 
 //////////////////////////////////////////////////

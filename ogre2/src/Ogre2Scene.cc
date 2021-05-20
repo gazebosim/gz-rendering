@@ -117,9 +117,9 @@ math::Color Ogre2Scene::AmbientLight() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::ClearMaterialsCache()
+void Ogre2Scene::ClearMaterialsCache(const std::string &_name)
 {
-  this->meshFactory->ClearMaterialsCache();
+  this->meshFactory->ClearMaterialsCache(_name);
 }
 
 //////////////////////////////////////////////////

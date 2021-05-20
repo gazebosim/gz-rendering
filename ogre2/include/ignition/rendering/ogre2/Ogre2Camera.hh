@@ -91,7 +91,15 @@ namespace ignition
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
       // Documentation inherited.
+      public: virtual void SetProjectionMatrix(
+          const math::Matrix4d &_matrix) override;
+
+      // Documentation inherited.
       public: virtual math::Matrix4d ViewMatrix() const override;
+
+      // Documentation inherited.
+      public: virtual void SetProjectionType(CameraProjectionType _type)
+          override;
 
       // Documentation inherited
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i

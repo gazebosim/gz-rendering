@@ -65,8 +65,9 @@ void OgreMaterial::Destroy()
     this->ogreMaterial.reset();
   }
 #endif
-  auto iend = Ogre::TextureManager::getSingleton().getResourceIterator().end();
-  for (auto i = Ogre::TextureManager::getSingleton().getResourceIterator().begin(); i != iend;)
+  auto &textureManager = Ogre::TextureManager::getSingleton();
+  auto iend = textureManager.getResourceIterator().end();
+  for (auto i = textureManager.getResourceIterator().begin(); i != iend;)
   {
       // A use count of 4 means that only RGM, RM and MeshManager have references
       // RGM has one (this one) and RM has 2 (by name and by handle)
@@ -81,7 +82,7 @@ void OgreMaterial::Destroy()
           this->Scene()->UnregisterMaterial(materialName);
           if (i->second.useCount() == 3)
           {
-            Ogre::TextureManager::getSingleton().remove(res->getHandle());
+            textureManager.remove(res->getHandle());
           }
           break;
         }
@@ -296,7 +297,6 @@ void OgreMaterial::SetTexture(const std::string &_name)
   }
 
   this->textureName = _name;
-  std::cerr << "OgreMaterial::SetTexture " << name << '\n';
   this->SetTextureImpl(this->textureName);
 }
 

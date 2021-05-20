@@ -109,17 +109,13 @@ bool OgreMeshFactory::IsLoaded(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 void OgreMeshFactory::ClearMaterialsCache(const std::string &_name)
 {
-  std::cerr << "Unregisting material " << _name << '\n';
   auto it = this->materialCache.begin();
   for (auto &mat : this->materialCache)
   {
     std::string matName = mat->Name();
     std::string textureName = mat->Texture();
-    std::cerr << "Unregisting material " << matName << " " << textureName << '\n';
-
     if (textureName == _name)
     {
-      std::cerr << "Unregisting ok " << _name << '\n';
       this->scene->UnregisterMaterial(matName);
       break;
     }

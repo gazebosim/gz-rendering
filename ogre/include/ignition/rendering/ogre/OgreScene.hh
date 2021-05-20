@@ -200,7 +200,8 @@ namespace ignition
 
       protected: virtual MaterialMapPtr Materials() const override;
 
-      public: virtual void ClearMaterialsCache(const std::string &_name) override;
+      public: virtual void
+        ClearMaterialsCache(const std::string &_name) override;
 
       private: void CreateContext();
 

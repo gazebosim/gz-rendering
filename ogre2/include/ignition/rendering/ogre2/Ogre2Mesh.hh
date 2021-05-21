@@ -118,6 +118,12 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Ogre2SubMesh();
 
+      // Documentation inherited
+      public: virtual void Destroy() override;
+
+      // Documentation inherited
+      public: void SetMeshName(const std::string &_name);
+
       /// \brief Get internal ogre subitem created from this submesh
       public: virtual Ogre::SubItem *Ogre2SubItem() const;
 

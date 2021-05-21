@@ -91,13 +91,20 @@ void Ogre2MeshFactory::Clear()
 
 void Ogre2MeshFactory::ClearMaterialsCache(const std::string &_name)
 {
-  for (auto mat : this->dataPtr->materialCache)
+  auto it = this->dataPtr->materialCache.begin();
+  for (auto &mat : this->dataPtr->materialCache)
   {
     std::string matName = mat->Name();
-    mat->Destroy();
-    this->scene->UnregisterMaterial(matName);
+    std::string textureName = mat->Texture();
+    if (textureName == _name)
+    {
+      std::cerr << "UnregisterMaterial " << _name << '\n';
+      this->scene->UnregisterMaterial(matName);
+      break;
+    }
+    ++it;
   }
-  this->dataPtr->materialCache.clear();
+  this->dataPtr->materialCache.erase(it);
 }
 
 //////////////////////////////////////////////////
@@ -120,6 +127,12 @@ Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
   // create sub-mesh store
   Ogre2SubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreItem);
   mesh->subMeshes = subMeshFactory.Create();
+  for (unsigned int i = 0; i < mesh->subMeshes->Size(); i++)
+  {
+    Ogre2SubMeshPtr submesh =
+        std::dynamic_pointer_cast<Ogre2SubMesh>(mesh->subMeshes->GetById(i));
+    submesh->SetMeshName(this->MeshName(_desc));
+  }
   return mesh;
 }
 
@@ -459,6 +472,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       if (material)
       {
         mat->CopyFrom(*material);
+        this->dataPtr->materialCache.push_back(mat);
       }
       else
       {
@@ -467,7 +481,6 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
           mat->CopyFrom(defaultMat);
       }
       ogreSubMesh->setMaterialName(mat->Name());
-      this->dataPtr->materialCache.push_back(mat);
     }
 
     math::Vector3d max = _desc.mesh->Max();

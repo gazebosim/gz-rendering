@@ -26,6 +26,7 @@
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
 #include <OgreHlmsManager.h>
 #include <OgreMaterialManager.h>
+#include <OgreTextureManager.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -44,6 +45,7 @@
 /// \brief Private data for the Ogre2Material class
 class ignition::rendering::Ogre2MaterialPrivate
 {
+  public: std::string hashName;
 };
 
 using namespace ignition;
@@ -70,13 +72,6 @@ void Ogre2Material::Destroy()
   if (!this->ogreDatablock)
     return;
 
-  if (!this->textureName.empty())
-  {
-    Ogre::HlmsTextureManager *hlmsTextureManager =
-        this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
-    hlmsTextureManager->destroyTexture(this->textureName);
-  }
-
   this->ogreHlmsPbs->destroyDatablock(this->ogreDatablockId);
   this->ogreDatablock = nullptr;
 
@@ -93,6 +88,40 @@ void Ogre2Material::Destroy()
     Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
     matManager.remove(this->ogreMaterial);
     this->ogreMaterial.reset();
+  }
+
+  auto &textureManager = Ogre::TextureManager::getSingleton();
+  auto iend = textureManager.getResourceIterator().end();
+  for (auto i = textureManager.getResourceIterator().begin(); i != iend;)
+  {
+    // A use count of 4 means that only RGM, RM and MeshManager have references
+    // RGM has one (this one) and RM has 2 (by name and by handle)
+    // and MeshManager keep another one int the template
+    Ogre::Resource* res = i->second.get();
+    std::cerr << "res " << res->getName() << " " << i->second.useCount() << '\n';
+    if (i->second.useCount() == 5)
+    {
+      if (this->dataPtr->hashName == res->getName() &&
+          res->getName().find("scene::RenderTexture") == std::string::npos)
+      {
+        std::cerr << "Ogre2Material::Destroy materialName " << Name() << this->textureName << '\n';
+
+        this->Scene()->ClearMaterialsCache(this->textureName);
+        this->Scene()->UnregisterMaterial(this->name);
+        if (i->second.useCount() == 4)
+        {
+          textureManager.remove(res->getHandle());
+          if (!this->textureName.empty())
+          {
+            Ogre::HlmsTextureManager *hlmsTextureManager =
+                this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
+            hlmsTextureManager->destroyTexture(this->textureName);
+          }
+        }
+        break;
+      }
+    }
+    ++i;
   }
 }
 
@@ -235,6 +264,19 @@ void Ogre2Material::SetTexture(const std::string &_name)
 
   this->textureName = _name;
   this->SetTextureMapImpl(this->textureName, Ogre::PBSM_DIFFUSE);
+
+  auto &textureManager = Ogre::TextureManager::getSingleton();
+  auto iend = textureManager.getResourceIterator().end();
+  for (auto i = textureManager.getResourceIterator().begin(); i != iend;)
+  {
+    // A use count of 4 means that only RGM, RM and MeshManager have references
+    // RGM has one (this one) and RM has 2 (by name and by handle)
+    // and MeshManager keep another one int the template
+    Ogre::Resource* res = i->second.get();
+    std::cerr << "res 4 " << res->getName() << " " << i->second.useCount() << '\n';
+    i++;
+  }
+
 }
 
 //////////////////////////////////////////////////
@@ -545,6 +587,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   Ogre::HlmsTextureManager::TextureLocation texLocation =
       hlmsTextureManager->createOrRetrieveTexture(baseName,
       this->ogreDatablock->suggestMapTypeBasedOnTextureType(_type));
+  this->dataPtr->hashName = texLocation.texture->getName();
 
   Ogre::HlmsSamplerblock samplerBlockRef;
   samplerBlockRef.mU = Ogre::TAM_WRAP;
@@ -687,6 +730,7 @@ void Ogre2Material::FillUnlitDatablock(Ogre::HlmsUnlitDatablock *_datablock)
         this->ogreDatablock->suggestMapTypeBasedOnTextureType(
         Ogre::PBSM_DIFFUSE));
     _datablock->setTexture(0, texLocation.xIdx, texLocation.texture);
+    std::cerr << "NAME LAEX " << texLocation.texture->getName() << '\n';
   }
 
   auto samplerblock = this->ogreDatablock->getSamplerblock(Ogre::PBSM_DIFFUSE);

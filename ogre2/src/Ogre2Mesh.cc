@@ -24,6 +24,9 @@
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <OgreItem.h>
 #include <OgreSceneManager.h>
+#include <OgreMeshManager.h>
+#include <OgreMeshManager2.h>
+#include <OgreMaterialManager.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -278,6 +281,19 @@ Ogre2SubMesh::Ogre2SubMesh()
 Ogre2SubMesh::~Ogre2SubMesh()
 {
   this->Destroy();
+}
+
+std::string subMeshName;
+void Ogre2SubMesh::SetMeshName(const std::string &_name)
+{
+  subMeshName = _name;
+}
+
+void Ogre2SubMesh::Destroy()
+{
+  Ogre::v1::MeshManager::getSingleton().remove(subMeshName);
+  Ogre::MeshManager::getSingleton().remove(subMeshName);
+  BaseSubMesh::Destroy();
 }
 
 //////////////////////////////////////////////////

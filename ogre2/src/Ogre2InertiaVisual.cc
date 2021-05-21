@@ -40,7 +40,7 @@ class ignition::rendering::Ogre2InertiaVisualPrivate
 
 //////////////////////////////////////////////////
 Ogre2InertiaVisual::Ogre2InertiaVisual()
-  : dataPtr(new Ogre2LightVisualPrivate)
+  : dataPtr(new Ogre2InertiaVisualPrivate)
 {
 }
 
@@ -57,7 +57,7 @@ void Ogre2InertiaVisual::PreRender()
 //////////////////////////////////////////////////
 void Ogre2InertiaVisual::Init()
 {
-  BaseLightVisual::Init();
+  BaseInertiaVisual::Init();
 }
 
 //////////////////////////////////////////////////
@@ -139,7 +139,7 @@ void Ogre2InertiaVisual::SetMaterial(MaterialPtr _material, bool _unique)
 }
 
 //////////////////////////////////////////////////
-void Ogre2InertiaVisual::SetMaterialImpl(OgreMaterialPtr _material)
+void Ogre2InertiaVisual::SetMaterialImpl(Ogre2MaterialPtr _material)
 {
   Ogre::MaterialPtr ogreMaterial = _material->Material();
   this->dataPtr->material = _material;

@@ -29,6 +29,7 @@
 #include "ignition/rendering/ogre/OgreGrid.hh"
 #include "ignition/rendering/ogre/OgreHeightmap.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreInertiaVisual.hh"
 #include "ignition/rendering/ogre/OgreLidarVisual.hh"
 #include "ignition/rendering/ogre/OgreLightVisual.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
@@ -367,6 +368,15 @@ PointLightPtr OgreScene::CreatePointLightImpl(unsigned int _id,
   OgrePointLightPtr light(new OgrePointLight);
   bool result = this->InitObject(light, _id, _name);
   return (result) ? light : nullptr;
+}
+
+//////////////////////////////////////////////////
+InertiaVisualPtr OgreScene::CreateInertiaVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreInertiaVisualPtr visual(new OgreInertiaVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

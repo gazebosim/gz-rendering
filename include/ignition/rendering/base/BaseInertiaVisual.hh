@@ -74,6 +74,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseInertiaVisual<T>::Init()
+    {
+      T::Init();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseInertiaVisual<T>::Load(const ignition::math::Pose3d &_pose,
         const ignition::math::Vector3d &_scale)
     {

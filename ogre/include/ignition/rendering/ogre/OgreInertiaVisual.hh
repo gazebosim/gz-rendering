@@ -58,7 +58,7 @@ namespace ignition
       /// \param[in] _pose Pose of the Inertia visual
       /// \param[in] _scale scale factor of the box visual
       public: void Load(const ignition::math::Pose3d &_pose,
-          const ignition::math::Vector3d &_scale) = 0;
+          const ignition::math::Vector3d &_scale);
 
       // Documentation inherited.
       public: virtual MaterialPtr Material() const;

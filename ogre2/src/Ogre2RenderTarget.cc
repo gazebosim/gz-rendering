@@ -245,7 +245,7 @@ void Ogre2RenderTarget::BuildCompositor()
     workDef->connectExternal(0, nodeDefName, 0);
     workDef->connectExternal(1, nodeDefName, 1);
 
-    if (!this->isRenderWindow())
+    if (!this->IsRenderWindow())
     {
       workDef->connect(nodeDefName, finalNodeDefName);
     }
@@ -300,7 +300,7 @@ void Ogre2RenderTarget::DestroyCompositor()
   this->SyncOgreTextureVars();
 
   if (this->dataPtr->materialApplicator[0] &&
-      this->dataPtr->materialApplicator[0]->isSameRenderTarget(
+      this->dataPtr->materialApplicator[0]->IsSameRenderTarget(
         this->dataPtr->ogreTexture[0]->getBuffer()->getRenderTarget()))
   {
     std::swap( this->dataPtr->materialApplicator[0],
@@ -455,7 +455,7 @@ void Ogre2RenderTarget::Render()
 }
 
 //////////////////////////////////////////////////
-bool Ogre2RenderTarget::isRenderWindow() const
+bool Ogre2RenderTarget::IsRenderWindow() const
 {
   const Ogre2RenderWindow *asWindow =
       dynamic_cast<const Ogre2RenderWindow*>(this);
@@ -628,11 +628,11 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
       this->renderPasses,
       this->renderPassDirty,
       &this->dataPtr->ogreTexture,
-      this->isRenderWindow());
+      this->IsRenderWindow());
 
   // this->dataPtr->ogreTexture[0] may have changed
   if (this->dataPtr->materialApplicator[0] &&
-      this->dataPtr->materialApplicator[0]->isSameRenderTarget(
+      this->dataPtr->materialApplicator[0]->IsSameRenderTarget(
         this->dataPtr->ogreTexture[0]->getBuffer()->getRenderTarget()))
   {
     std::swap( this->dataPtr->materialApplicator[0],
@@ -933,7 +933,7 @@ Ogre2RenderWindow::~Ogre2RenderWindow()
 }
 
 //////////////////////////////////////////////////
-bool Ogre2RenderWindow::isRenderWindow() const
+bool Ogre2RenderWindow::IsRenderWindow() const
 {
   return true;
 }

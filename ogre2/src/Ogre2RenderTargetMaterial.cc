@@ -77,7 +77,7 @@ Ogre::Technique *Ogre2RenderTargetMaterial::handleSchemeNotFound(
 }
 
 //////////////////////////////////////////////////
-bool Ogre2RenderTargetMaterial::isSameRenderTarget(
+bool Ogre2RenderTargetMaterial::IsSameRenderTarget(
     Ogre::RenderTarget *_renderTarget)
 {
   return this->renderTarget == _renderTarget;

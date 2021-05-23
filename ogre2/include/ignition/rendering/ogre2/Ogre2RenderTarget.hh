@@ -115,12 +115,16 @@ namespace ignition
       /// \see Camera::SetShadowsNodeDefDirty
       public: void SetShadowsNodeDefDirty();
 
+      /// \brief Get a pointer to the ogre render target containing
+      /// the results of the render
+      public: virtual Ogre::RenderTarget *RenderTarget() const;
+
       /// \brief Returns true if this is a render window
       /// TODO(anyone): this function should be virtual.
       /// We didn't do it to preserve ABI.
       /// Look in commit history for '#Ogre2IsRenderWindowABI' to
       /// see changes made and revert
-      public: bool isRenderWindow() const;
+      public: bool IsRenderWindow() const;
 
       // Documentation inherited
       public: unsigned int GLIdImpl() const;
@@ -130,10 +134,6 @@ namespace ignition
 
       /// \brief Build the render texture
       protected: void BuildTargetImpl();
-
-      /// \brief Get a pointer to the ogre render target containing
-      /// the results of the render
-      public: virtual Ogre::RenderTarget *RenderTarget() const;
 
       /// \brief Get visibility mask for the viewport associated with this
       /// render target
@@ -315,7 +315,7 @@ namespace ignition
       // We didn't do it to preserve ABI.
       // Looks in commit history for '#Ogre2IsRenderWindowABI' to
       // see changes made and revert
-      public: bool isRenderWindow() const;
+      public: bool IsRenderWindow() const;
 
       // Documentation inherited.
       public: virtual Ogre::RenderTarget *RenderTarget() const override;

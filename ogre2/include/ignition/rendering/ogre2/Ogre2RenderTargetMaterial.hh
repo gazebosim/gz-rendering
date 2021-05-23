@@ -97,7 +97,7 @@ namespace ignition
                   const Ogre::Renderable *_rend) override;
 
       /// \brief Returns this->renderTarget == _renderTarget
-      public: bool isSameRenderTarget(Ogre::RenderTarget *_renderTarget);
+      public: bool IsSameRenderTarget(Ogre::RenderTarget *_renderTarget);
 
       /// \brief scene manager responsible for rendering
       private: Ogre::SceneManager *scene = nullptr;

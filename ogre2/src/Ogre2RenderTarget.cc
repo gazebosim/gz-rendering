@@ -100,6 +100,17 @@ class ignition::rendering::Ogre2RenderTargetPrivate
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
+
+  /// \brief Helper class that applies the material to the render target
+  Ogre2RenderTargetMaterialPtr materialApplicator[2];
+
+  /// \brief Pointer to the internal ogre render texture objects
+  /// There's two because we ping pong postprocessing effects
+  /// and the final result is always in ogreTexture[1]
+  /// RenderWindows may have a 3rd texture which is the
+  /// actual window
+  ///
+  Ogre::Texture *ogreTexture[2] = {nullptr, nullptr};
 };
 
 using namespace ignition;
@@ -254,10 +265,13 @@ void Ogre2RenderTarget::BuildCompositor()
     // Connect them in reverse order
     const size_t srcIdx = 2u - i - 1u;
     externalTargets[i].target =
-        this->ogreTexture[srcIdx]->getBuffer()->getRenderTarget();
+        this->dataPtr->ogreTexture[srcIdx]->getBuffer()->getRenderTarget();
     externalTargets[i].textures.push_back(
-          manager.getByName(this->ogreTexture[srcIdx]->getName()));
+          manager.getByName(this->dataPtr->ogreTexture[srcIdx]->getName()));
   }
+
+  this->SyncOgreTextureVars();
+
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
       externalTargets, this->ogreCamera,
@@ -280,8 +294,19 @@ void Ogre2RenderTarget::DestroyCompositor()
   for( size_t i = 0u; i < 2u; ++i )
   {
     const size_t srcIdx = (2u - i - 1u);
-    this->ogreTexture[srcIdx] = externalTargets[i].textures.front().get();
+    this->dataPtr->ogreTexture[srcIdx] =
+        externalTargets[i].textures.front().get();
   }
+  this->SyncOgreTextureVars();
+
+  if (this->dataPtr->materialApplicator[0] &&
+      this->dataPtr->materialApplicator[0]->isSameRenderTarget(
+        this->dataPtr->ogreTexture[0]->getBuffer()->getRenderTarget()))
+  {
+    std::swap( this->dataPtr->materialApplicator[0],
+               this->dataPtr->materialApplicator[1] );
+  }
+  this->materialApplicator = this->dataPtr->materialApplicator[0];
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -441,9 +466,92 @@ bool Ogre2RenderTarget::isRenderWindow() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTarget::DestroyTargetImpl()
+{
+  if (nullptr == this->dataPtr->ogreTexture[0])
+    return;
+
+  this->DestroyCompositor();
+
+  auto &manager = Ogre::TextureManager::getSingleton();
+
+  this->materialApplicator.reset();
+
+  for( size_t i = 0u; i < 2u; ++i )
+  {
+    manager.unload(this->dataPtr->ogreTexture[i]->getName());
+    manager.remove(this->dataPtr->ogreTexture[i]->getName());
+
+    // TODO(anyone) there is memory leak when a render texture is destroyed.
+    // The RenderSystem::_cleanupDepthBuffers method used in ogre1 does not
+    // seem to work in ogre2
+
+    this->dataPtr->materialApplicator[i].reset();
+    this->dataPtr->ogreTexture[i] = nullptr;
+  }
+
+  this->SyncOgreTextureVars();
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::BuildTargetImpl()
+{
+  Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
+  Ogre::PixelFormat ogreFormat = Ogre2Conversions::Convert(this->format);
+
+  // check if target fsaa is supported
+  unsigned int fsaa = 0;
+  std::vector<unsigned int> fsaaLevels =
+      Ogre2RenderEngine::Instance()->FSAALevels();
+  unsigned int targetFSAA = this->antiAliasing;
+  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
+  if (it != fsaaLevels.end())
+  {
+    fsaa = targetFSAA;
+  }
+  else
+  {
+    // output warning but only do it once
+    static bool ogre2FSAAWarn = false;
+    if (ogre2FSAAWarn)
+    {
+      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+              << "is not supported. Setting to 0" << std::endl;
+      ogre2FSAAWarn = true;
+    }
+  }
+
+  for( size_t i = 0u; i < 2u; ++i )
+  {
+    // Ogre 2 PBS expects gamma correction to be enabled
+    // Only the second target uses FSAA.
+    // Note: It's not guaranteed the 2nd target will remain
+    // the one using FSAA
+    this->dataPtr->ogreTexture[i] = (manager.createManual(
+        this->name + std::to_string(i), "General",
+        Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
+        Ogre::TU_RENDERTARGET, 0, true, i == 1u ? fsaa : 0)).get();
+  }
+
+  this->SyncOgreTextureVars();
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2RenderTarget::GLIdImpl() const
+{
+  if (!this->dataPtr->ogreTexture[0])
+    return 0;
+
+  GLuint texId;
+  this->dataPtr->ogreTexture[1]->getCustomAttribute("GLID", &texId);
+
+  return static_cast<unsigned int>(texId);
+}
+
+//////////////////////////////////////////////////
 Ogre::RenderTarget *Ogre2RenderTarget::RenderTarget() const
 {
-  return this->ogreTexture[1]->getBuffer()->getRenderTarget();
+  return this->dataPtr->ogreTexture[1]->getBuffer()->getRenderTarget();
 }
 
 //////////////////////////////////////////////////
@@ -519,10 +627,33 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
       this->dataPtr->kFinalNodeName,
       this->renderPasses,
       this->renderPassDirty,
-      &this->ogreTexture,
+      &this->dataPtr->ogreTexture,
       this->isRenderWindow());
 
+  // this->dataPtr->ogreTexture[0] may have changed
+  if (this->dataPtr->materialApplicator[0] &&
+      this->dataPtr->materialApplicator[0]->isSameRenderTarget(
+        this->dataPtr->ogreTexture[0]->getBuffer()->getRenderTarget()))
+  {
+    std::swap( this->dataPtr->materialApplicator[0],
+               this->dataPtr->materialApplicator[1] );
+  }
+  this->materialApplicator = this->dataPtr->materialApplicator[0];
+
+  this->SyncOgreTextureVars();
+
   this->renderPassDirty = false;
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::UpdateRenderPassChain(
+    Ogre::CompositorWorkspace *_workspace, const std::string &_workspaceDefName,
+    const std::string &_baseNode, const std::string &_finalNode,
+    const std::vector<RenderPassPtr> &_renderPasses,
+    bool _recreateNodes)
+{
+  ignwarn << "Warning: This Ogre2RenderTarget::UpdateRenderPassChain "
+          << "overload is deprecated" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -704,11 +835,22 @@ void Ogre2RenderTarget::RebuildMaterial()
     for( size_t i = 0u; i < 2u; ++i )
     {
       Ogre::RenderTarget *target =
-          this->ogreTexture[i]->getBuffer()->getRenderTarget();
-      this->materialApplicator[i].reset(new Ogre2RenderTargetMaterial(
-                                          sceneMgr, target, matPtr.get()));
+          this->dataPtr->ogreTexture[i]->getBuffer()->getRenderTarget();
+      this->dataPtr->materialApplicator[i].reset(
+            new Ogre2RenderTargetMaterial(sceneMgr, target, matPtr.get()));
     }
+
+    this->materialApplicator = this->dataPtr->materialApplicator[0];
   }
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::SyncOgreTextureVars()
+{
+  Ogre2RenderTexture *asRenderTexture =
+      dynamic_cast<Ogre2RenderTexture*>(this);
+  if (asRenderTexture)
+   asRenderTexture->SetOgreTexture(this->dataPtr->ogreTexture[1]);
 }
 
 //////////////////////////////////////////////////
@@ -739,77 +881,19 @@ void Ogre2RenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::DestroyTarget()
 {
-  if (nullptr == this->ogreTexture[0])
-    return;
-
-  this->DestroyCompositor();
-
-  auto &manager = Ogre::TextureManager::getSingleton();
-
-  for( size_t i = 0u; i < 2u; ++i )
-  {
-    manager.unload(this->ogreTexture[i]->getName());
-    manager.remove(this->ogreTexture[i]->getName());
-
-    // TODO(anyone) there is memory leak when a render texture is destroyed.
-    // The RenderSystem::_cleanupDepthBuffers method used in ogre1 does not
-    // seem to work in ogre2
-
-    this->ogreTexture[i] = nullptr;
-  }
+  Ogre2RenderTarget::DestroyTargetImpl();
 }
 
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::BuildTarget()
 {
-  Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
-  Ogre::PixelFormat ogreFormat = Ogre2Conversions::Convert(this->format);
-
-  // check if target fsaa is supported
-  unsigned int fsaa = 0;
-  std::vector<unsigned int> fsaaLevels =
-      Ogre2RenderEngine::Instance()->FSAALevels();
-  unsigned int targetFSAA = this->antiAliasing;
-  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
-  if (it != fsaaLevels.end())
-  {
-    fsaa = targetFSAA;
-  }
-  else
-  {
-    // output warning but only do it once
-    static bool ogre2FSAAWarn = false;
-    if (ogre2FSAAWarn)
-    {
-      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
-              << "is not supported. Setting to 0" << std::endl;
-      ogre2FSAAWarn = true;
-    }
-  }
-
-  for( size_t i = 0u; i < 2u; ++i )
-  {
-    // Ogre 2 PBS expects gamma correction to be enabled
-    // Only the second target uses FSAA.
-    // Note: It's not guaranteed the 2nd target will remain
-    // the one using FSAA
-    this->ogreTexture[i] = (manager.createManual(
-        this->name + std::to_string(i), "General",
-        Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-        Ogre::TU_RENDERTARGET, 0, true, i == 1u ? fsaa : 0)).get();
-  }
+  Ogre2RenderTarget::BuildTargetImpl();
 }
 
 //////////////////////////////////////////////////
 unsigned int Ogre2RenderTexture::GLId() const
 {
-  if (!this->ogreTexture[0])
-    return 0;
-
-  GLuint texId;
-  this->ogreTexture[1]->getCustomAttribute("GLID", &texId);
-
-  return static_cast<unsigned int>(texId);
+  return Ogre2RenderTarget::GLIdImpl();
 }
 
 //////////////////////////////////////////////////
@@ -822,6 +906,18 @@ void Ogre2RenderTexture::PreRender()
 void Ogre2RenderTexture::PostRender()
 {
   Ogre2RenderTarget::PostRender();
+}
+
+//////////////////////////////////////////////////
+Ogre::RenderTarget *Ogre2RenderTexture::RenderTarget() const
+{
+  return Ogre2RenderTarget::RenderTarget();
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::SetOgreTexture(Ogre::Texture *_ogreTexture)
+{
+  this->ogreTexture = _ogreTexture;
 }
 
 //////////////////////////////////////////////////

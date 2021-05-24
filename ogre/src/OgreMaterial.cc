@@ -78,7 +78,8 @@ void OgreMaterial::Destroy()
         if (this->textureName == res->getName() &&
           res->getName().find("scene::RenderTexture") == std::string::npos)
         {
-          this->Scene()->ClearMaterialsCache(this->textureName);
+          OgreScenePtr s = std::dynamic_pointer_cast<OgreScene>(this->Scene());
+          s->ClearMaterialsCache(this->textureName);
           this->Scene()->UnregisterMaterial(materialName);
           if (i->second.useCount() == 3)
           {

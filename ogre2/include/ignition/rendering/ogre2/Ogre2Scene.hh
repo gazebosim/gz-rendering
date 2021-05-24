@@ -299,8 +299,7 @@ namespace ignition
       private: void CreateStores();
 
       // Documentation inherited
-      public: virtual void ClearMaterialsCache(const std::string &_name)
-        override;
+      public: void ClearMaterialsCache(const std::string &_name);
 
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();

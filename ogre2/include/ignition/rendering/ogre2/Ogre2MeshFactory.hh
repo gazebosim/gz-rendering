@@ -94,7 +94,7 @@ namespace ignition
       /// \brief Pointer to the scene object
       protected: Ogre2ScenePtr scene;
 
-      /// \brief Remove internal material cache
+      /// \brief Remove internal material cache fot a specific material
       public: void ClearMaterialsCache(const std::string &_name);
 
       /// \brief Pointer to private data class

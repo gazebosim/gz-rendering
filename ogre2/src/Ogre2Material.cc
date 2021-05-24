@@ -103,7 +103,8 @@ void Ogre2Material::Destroy()
       if (this->dataPtr->hashName == res->getName() &&
           res->getName().find("scene::RenderTexture") == std::string::npos)
       {
-        this->Scene()->ClearMaterialsCache(this->textureName);
+        Ogre2ScenePtr s = std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+        s->ClearMaterialsCache(this->textureName);
         this->Scene()->UnregisterMaterial(this->name);
         if (i->second.useCount() == 4)
         {

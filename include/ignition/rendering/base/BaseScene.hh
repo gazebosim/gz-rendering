@@ -664,9 +664,6 @@ namespace ignition
 
       private: virtual void CreateMaterials();
 
-      // Documentation inherited.
-      public: virtual void ClearMaterialsCache(const std::string &_name) = 0;
-
       /// \brief Helper function to recursively destory nodes while checking
       /// for loops.
       /// \param[in] _node Node to be destroyed

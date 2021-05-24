@@ -103,7 +103,8 @@ void Ogre2MeshFactory::ClearMaterialsCache(const std::string &_name)
     }
     ++it;
   }
-  this->dataPtr->materialCache.erase(it);
+  if (it != this->dataPtr->materialCache.end())
+    this->dataPtr->materialCache.erase(it);
 }
 
 //////////////////////////////////////////////////

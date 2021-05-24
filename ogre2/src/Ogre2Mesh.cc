@@ -299,25 +299,28 @@ void Ogre2SubMesh::SetMeshName(const std::string &_name)
 
 void Ogre2SubMesh::Destroy()
 {
-  auto &meshManager = Ogre::MeshManager::getSingleton();
-  auto iend = meshManager.getResourceIterator().end();
-  for (auto i = meshManager.getResourceIterator().begin(); i != iend;)
+  auto meshManager = Ogre::MeshManager::getSingletonPtr();
+  if (meshManager)
   {
-    // A use count of 4 means that only RGM, RM and MeshManager have references
-    // RGM has one (this one) and RM has 2 (by name and by handle)
-    // and MeshManager keep another one int the template
-    Ogre::Resource* res = i->second.get();
-    if (i->second.useCount() == 3)
+    auto iend = meshManager->getResourceIterator().end();
+    for (auto i = meshManager->getResourceIterator().begin(); i != iend;)
     {
-      if (res->getName() == this->dataPtr->subMeshName)
+      // A use count of 4 means that only RGM, RM and MeshManager have
+      // references RGM has one (this one) and RM has 2 (by name and by handle)
+      // and MeshManager keep another one int the template
+      Ogre::Resource* res = i->second.get();
+      if (i->second.useCount() == 3)
       {
-        Ogre::v1::MeshManager::getSingleton().remove(
-          this->dataPtr->subMeshName);
-        Ogre::MeshManager::getSingleton().remove(this->dataPtr->subMeshName);
-        break;
+        if (res->getName() == this->dataPtr->subMeshName)
+        {
+          Ogre::v1::MeshManager::getSingleton().remove(
+            this->dataPtr->subMeshName);
+          Ogre::MeshManager::getSingleton().remove(this->dataPtr->subMeshName);
+          break;
+        }
       }
+      ++i;
     }
-    ++i;
   }
   BaseSubMesh::Destroy();
 }

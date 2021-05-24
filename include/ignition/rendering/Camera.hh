@@ -35,6 +35,15 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Enum for projection types
+    enum IGNITION_RENDERING_VISIBLE CameraProjectionType
+    {
+      /// \brief Perspective projection
+      CPT_PERSPECTIVE,
+      /// \brief Orthographic projection
+      CPT_ORTHOGRAPHIC
+    };
+
     /// \class Camera Camera.hh ignition/rendering/Camera.hh
     /// \brief Posable camera used for rendering the scene graph
     class IGNITION_RENDERING_VISIBLE Camera :
@@ -192,6 +201,32 @@ namespace ignition
       /// \brief Get the view matrix for this camera
       /// \return Camera view matrix
       public: virtual math::Matrix4d ViewMatrix() const = 0;
+
+      /// \brief Set the projection matrix for this camera. This overrides
+      /// the standard projection matrix computed based on camera parameters.
+      /// \param[in] _matrix Camera projection matrix
+      public: virtual void SetProjectionMatrix(const math::Matrix4d &_matrix)
+          = 0;
+
+      /// \brief Get the projection type for this camera
+      /// \return Camera projection type
+      public: virtual CameraProjectionType ProjectionType() const = 0;
+
+      /// \brief Set the projection type for this camera
+      /// This changes the projection matrix of the camera based on the camera
+      /// projection type. A custom projection matrix can be specified via
+      /// `SetProjectionMatrix` to override the provided one. To disable the
+      /// custom projection matrix, just call this function again with the
+      /// desired projection type.
+      /// \param[in] _matrix Camera projection type
+      /// \sa SetProjectionMatrix
+      public: virtual void SetProjectionType(CameraProjectionType _type) = 0;
+
+      /// \brief Project point in 3d world space to 2d screen space
+      /// \param[in] _pt Point in 3d world space
+      /// \return Point in 2d screen space
+      public: virtual math::Vector2i Project(const math::Vector3d &_pt) const
+           = 0;
 
       /// \brief Set a node for camera to track. The camera will automatically
       /// change its orientation to face the target being tracked. If null is

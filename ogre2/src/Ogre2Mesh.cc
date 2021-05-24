@@ -291,8 +291,25 @@ void Ogre2SubMesh::SetMeshName(const std::string &_name)
 
 void Ogre2SubMesh::Destroy()
 {
-  Ogre::v1::MeshManager::getSingleton().remove(subMeshName);
-  Ogre::MeshManager::getSingleton().remove(subMeshName);
+  auto &meshManager = Ogre::MeshManager::getSingleton();
+  auto iend = meshManager.getResourceIterator().end();
+  for (auto i = meshManager.getResourceIterator().begin(); i != iend;)
+  {
+    // A use count of 4 means that only RGM, RM and MeshManager have references
+    // RGM has one (this one) and RM has 2 (by name and by handle)
+    // and MeshManager keep another one int the template
+    Ogre::Resource* res = i->second.get();
+    if (i->second.useCount() == 3)
+    {
+      if (res->getName() == subMeshName)
+      {
+        Ogre::v1::MeshManager::getSingleton().remove(subMeshName);
+        Ogre::MeshManager::getSingleton().remove(subMeshName);
+        break;
+      }
+    }
+    ++i;
+  }
   BaseSubMesh::Destroy();
 }
 

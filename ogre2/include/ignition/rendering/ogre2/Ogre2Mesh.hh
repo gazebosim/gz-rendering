@@ -41,6 +41,7 @@ namespace ignition
     //
     // forward declaration
     class Ogre2MeshPrivate;
+    class Ogre2SubMeshPrivate;
 
     /// \brief Ogre2.x implementation of the mesh class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Mesh :
@@ -143,6 +144,9 @@ namespace ignition
       /// \brief Make submesh factory our friend so it can create an
       /// ogre2 submesh
       private: friend class Ogre2SubMeshStoreFactory;
+
+      /// \brief Pointer to private data
+      private: std::unique_ptr<Ogre2SubMeshPrivate> dataPtr;
     };
     }
   }

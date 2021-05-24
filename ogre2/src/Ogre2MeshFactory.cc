@@ -98,7 +98,6 @@ void Ogre2MeshFactory::ClearMaterialsCache(const std::string &_name)
     std::string textureName = mat->Texture();
     if (textureName == _name)
     {
-      std::cerr << "UnregisterMaterial " << _name << '\n';
       this->scene->UnregisterMaterial(matName);
       break;
     }

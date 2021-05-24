@@ -69,8 +69,8 @@ void OgreMaterial::Destroy()
   auto iend = textureManager.getResourceIterator().end();
   for (auto i = textureManager.getResourceIterator().begin(); i != iend;)
   {
-      // A use count of 4 means that only RGM, RM and MeshManager have references
-      // RGM has one (this one) and RM has 2 (by name and by handle)
+      // A use count of 4 means that only RGM, RM and MeshManager have
+      // references RGM has one (this one) and RM has 2 (by name and by handle)
       // and MeshManager keep another one int the template
       Ogre::Resource* res = i->second.get();
       if (i->second.useCount() == 4)

@@ -43,6 +43,14 @@ class ignition::rendering::Ogre2MeshPrivate
 {
 };
 
+/// brief Private implementation of the Ogre2SubMesh class
+class ignition::rendering::Ogre2SubMeshPrivate
+{
+  /// \brief name of the mesh inside the mesh manager to be able to
+  /// remove it
+  public: std::string subMeshName;
+};
+
 using namespace ignition;
 using namespace rendering;
 
@@ -274,6 +282,7 @@ SubMeshStorePtr Ogre2Mesh::SubMeshes() const
 
 //////////////////////////////////////////////////
 Ogre2SubMesh::Ogre2SubMesh()
+  : dataPtr(new Ogre2SubMeshPrivate)
 {
 }
 
@@ -283,10 +292,9 @@ Ogre2SubMesh::~Ogre2SubMesh()
   this->Destroy();
 }
 
-std::string subMeshName;
 void Ogre2SubMesh::SetMeshName(const std::string &_name)
 {
-  subMeshName = _name;
+  this->dataPtr->subMeshName = _name;
 }
 
 void Ogre2SubMesh::Destroy()
@@ -301,10 +309,10 @@ void Ogre2SubMesh::Destroy()
     Ogre::Resource* res = i->second.get();
     if (i->second.useCount() == 3)
     {
-      if (res->getName() == subMeshName)
+      if (res->getName() == this->dataPtr->subMeshName)
       {
-        Ogre::v1::MeshManager::getSingleton().remove(subMeshName);
-        Ogre::MeshManager::getSingleton().remove(subMeshName);
+        Ogre::v1::MeshManager::getSingleton().remove(this->dataPtr->subMeshName);
+        Ogre::MeshManager::getSingleton().remove(this->dataPtr->subMeshName);
         break;
       }
     }

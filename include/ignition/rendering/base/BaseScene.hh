@@ -267,7 +267,7 @@ namespace ignition
 
       /// \brief Implementation for creating Inertia visual.
       /// \param[in] _id Unique id
-      /// \param[in] _name Name of light visual
+      /// \param[in] _name Name of inertia visual
       protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
                      unsigned int _id, const std::string &_name) = 0;
 

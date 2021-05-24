@@ -823,32 +823,32 @@ namespace ignition
       public: virtual GizmoVisualPtr CreateGizmoVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
-      /// \brief Create new light visual. A unique ID and name will
-      /// automatically be assigned to the light visual.
-      /// \return The created light visual
+      /// \brief Create new inertia visual. A unique ID and name will
+      /// automatically be assigned to the inertia visual.
+      /// \return The created inertia visual
       public: virtual InertiaVisualPtr CreateInertiaVisual() = 0;
 
-      /// \brief Create new light visual with the given ID. A unique name
+      /// \brief Create new inertia visual with the given ID. A unique name
       /// will automatically be assigned to the visual. If the given ID is
       /// already in use, NULL will be returned.
-      /// \param[in] _id ID of the new light visual
+      /// \param[in] _id ID of the new inertia visual
       /// \return The created light visual
       public: virtual InertiaVisualPtr CreateInertiaVisual(
                   unsigned int _id) = 0;
 
-      /// \brief Create new light visual with the given name. A unique ID
+      /// \brief Create new inertia visual with the given name. A unique ID
       /// will automatically be assigned to the visual. If the given name is
       /// already in use, NULL will be returned.
-      /// \param[in] _name Name of the new light visual
+      /// \param[in] _name Name of the new inertia visual
       /// \return The created light visual
       public: virtual InertiaVisualPtr CreateInertiaVisual(
                   const std::string &_name) = 0;
 
-      /// \brief Create new light visual with the given name. If either the
+      /// \brief Create new inertia visual with the given name. If either the
       /// given ID or name is already in use, NULL will be returned.
-      /// \param[in] _id ID of the new light visual
-      /// \param[in] _name Name of the new light visual
-      /// \return The created light visual
+      /// \param[in] _id ID of the new inertia visual
+      /// \param[in] _name Name of the new inertia visual
+      /// \return The created inertia visual
       public: virtual InertiaVisualPtr CreateInertiaVisual(
                   unsigned int _id, const std::string &_name) = 0;
 

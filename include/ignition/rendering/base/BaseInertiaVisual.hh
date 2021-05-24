@@ -49,8 +49,8 @@ namespace ignition
       protected: virtual void PreRender() override;
 
       // Documentation inherited.
-      public: virtual void Load(const ignition::math::Pose3d &_pose,
-          const ignition::math::Vector3d &_scale) = 0;
+      public: virtual void Load(const ignition::math::Pose3d &,
+          const ignition::math::Vector3d &) override;
     };
 
     //////////////////////////////////////////////////
@@ -81,8 +81,8 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseInertiaVisual<T>::Load(const ignition::math::Pose3d &_pose,
-        const ignition::math::Vector3d &_scale)
+    void BaseInertiaVisual<T>::Load(const ignition::math::Pose3d &,
+        const ignition::math::Vector3d &)
     {
       // no op
     }

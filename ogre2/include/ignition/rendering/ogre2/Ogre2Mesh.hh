@@ -130,10 +130,10 @@ namespace ignition
 
       /// \brief Helper function for setting the material to use
       /// \param[in] _material Material to be assigned to the submesh
-      protected: virtual void SetMaterialImpl(MaterialPtr _material);
+      protected: virtual void SetMaterialImpl(MaterialPtr _material) override;
 
       /// \brief Initialize the submesh
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
       /// \brief Ogre subitem representing the submesh
       protected: Ogre::SubItem *ogreSubItem = nullptr;

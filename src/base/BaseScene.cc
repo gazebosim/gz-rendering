@@ -1297,13 +1297,19 @@ void BaseScene::PreRender()
 }
 
 //////////////////////////////////////////////////
-void BaseScene::PostRenderGpuFlush()
+void BaseScene::PostRender()
 {
 }
 
 //////////////////////////////////////////////////
-void BaseScene::SetLegacyAutoGpuFlush(bool _autoFlush)
+void BaseScene::SetNumCameraPassesPerGpuFlush(uint8_t _numPass)
 {
+}
+
+//////////////////////////////////////////////////
+uint8_t BaseScene::GetNumCameraPassesPerGpuFlush() const
+{
+  return 0u;
 }
 
 //////////////////////////////////////////////////

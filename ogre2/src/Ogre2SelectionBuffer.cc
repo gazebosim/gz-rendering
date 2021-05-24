@@ -127,15 +127,13 @@ void Ogre2SelectionBuffer::Update()
 
   this->dataPtr->materialSwitcher->Reset();
 
-  const bool legacyAutoGpuFlush =
-      this->dataPtr->scene->GetLegacyAutoGpuFlush();
-  if (legacyAutoGpuFlush)
+  if (this->dataPtr->scene->GetLegacyAutoGpuFlush())
     this->dataPtr->scene->OgreSceneManager()->updateSceneGraph();
 
   // manual update
   this->dataPtr->scene->OgreSceneManager()->updateSceneGraph();
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
-  //engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
+  // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
   this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
   this->dataPtr->ogreCompositorWorkspace->_update();
   this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
@@ -144,8 +142,7 @@ void Ogre2SelectionBuffer::Update()
   swappedTargets.reserve( 2u );
   this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget( swappedTargets );
 
-  if (legacyAutoGpuFlush)
-    this->dataPtr->scene->PostRenderGpuFlush();
+  this->dataPtr->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
   this->dataPtr->renderTexture->copyContentsToMemory(*this->dataPtr->pixelBox,
       Ogre::RenderTarget::FB_FRONT);

@@ -425,12 +425,11 @@ void Ogre2RenderTarget::PostRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
-  const bool legacyAutoGpuFlush = this->scene->GetLegacyAutoGpuFlush();
-  if (legacyAutoGpuFlush)
+  if (this->scene->GetLegacyAutoGpuFlush())
     this->scene->OgreSceneManager()->updateSceneGraph();
 
   this->ogreCompositorWorkspace->_validateFinalTarget();
-  //engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
+  // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
   this->ogreCompositorWorkspace->_beginUpdate(false);
   this->ogreCompositorWorkspace->_update();
   this->ogreCompositorWorkspace->_endUpdate(false);
@@ -439,8 +438,7 @@ void Ogre2RenderTarget::Render()
   swappedTargets.reserve( 2u );
   this->ogreCompositorWorkspace->_swapFinalTarget( swappedTargets );
 
-  if (legacyAutoGpuFlush)
-    this->scene->PostRenderGpuFlush();
+  this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 }
 
 //////////////////////////////////////////////////

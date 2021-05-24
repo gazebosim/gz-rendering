@@ -1079,24 +1079,33 @@ void Ogre2GpuRays::CreateGpuRaysTextures()
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget1stPass()
 {
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve( 2u );
+
   // update the compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
+  {
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  for (auto i : this->dataPtr->cubeFaceIdx)
+
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_validateFinalTarget();
+    // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_beginUpdate(false);
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_update();
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_endUpdate(false);
+
+    swappedTargets.clear();
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_swapFinalTarget(
+          swappedTargets );
+
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(false);
+  }
 }
 
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 {
-  const bool legacyAutoGpuFlush = this->scene->GetLegacyAutoGpuFlush();
-  if (legacyAutoGpuFlush)
-    this->scene->OgreSceneManager()->updateSceneGraph();
-
   this->dataPtr->ogreCompositorWorkspace2nd->_validateFinalTarget();
-  //engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
+  // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
   this->dataPtr->ogreCompositorWorkspace2nd->_beginUpdate(false);
   this->dataPtr->ogreCompositorWorkspace2nd->_update();
   this->dataPtr->ogreCompositorWorkspace2nd->_endUpdate(false);
@@ -1104,16 +1113,18 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
   Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
   swappedTargets.reserve( 2u );
   this->dataPtr->ogreCompositorWorkspace2nd->_swapFinalTarget( swappedTargets );
-
-  if (legacyAutoGpuFlush)
-    this->scene->PostRenderGpuFlush();
 }
 
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
+  if (this->scene->GetLegacyAutoGpuFlush())
+    this->scene->OgreSceneManager()->updateSceneGraph();
+
   this->UpdateRenderTarget1stPass();
   this->UpdateRenderTarget2ndPass();
+
+  this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
 }
 
 //////////////////////////////////////////////////

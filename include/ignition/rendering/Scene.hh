@@ -1077,25 +1077,48 @@ namespace ignition
       /// changes by traversing scene-graph, calling PreRender on all objects
       public: virtual void PreRender() = 0;
 
-      /// \brief Flushes all buffered frame data and starts 'a new frame'.
-      /// CPUs queue up a bunch of rendering commands and then waits
-      /// for the GPU to finish up.
-      /// If we flush too often, the CPU will often have to wait for the GPU
-      /// doing nothing.
+      /// \brief Call this function after you're done updating ALL cameras
+      /// \remark Each PreRender must have a correspondent PostRender
+      ///
+      /// \see Scene::SetNumCameraPassesPerGpuFlush
+      public: virtual void PostRender() = 0;
+
+      /// \brief
+      /// # Legacy mode: Set this value to 0.
+      ///
+      /// Old projects migrating to newer ign versions may
+      /// leak memory if they don't call PostRender or
+      /// see strange behavior or even crash.
+      ///
+      /// Setting this value to 0 forces Gazebo to flush commands for
+      /// every camera.
+      ///
+      /// This is much slower but will ease porting, specially
+      /// if it's not easy to adapt your code to call PostRender for some
+      /// reason (in non-legacy mode each call *must* correspond to a
+      /// previous PreRender call)
+      ///
+      /// # New mode i.e. values greater than 0:
+      ///
+      /// The CPUs queue up a bunch of rendering commands and then waits
+      /// for the GPU to finish up. If we flush too often, the CPU will often
+      /// have to wait for the GPU doing nothing.
+      ///
       /// If we flush too infrequently, RAM consumption will rise due to
       /// queueing up unsubmitted work.
+      ///
       /// Note that work may be submitted earlier if required by a specific
-      /// operation (e.g. reading GPU -> CPU), however RAM may still
-      /// rise if FlushFrame() isn't called
-      /// This function must be called at least once per frame
-      /// This function may be called for any camera, but affects all cameras
+      /// operation (e.g. reading GPU -> CPU)
       ///
-      /// \remarks
-      /// This function should be called after updating all cameras / once per
-      /// frame, but it may be called more often if you're updating too many
-      /// cameras and running out of memory
+      /// A sensible value in the range of [2; 6] is probably the best
+      /// ratio between parallel performance / RAM cost.
       ///
-      /// Example:
+      /// Actual value depends on scene complexity and number of shadow
+      /// casting lights
+      ///
+      /// If you're too tight on RAM consumption, try setting this value to 1.
+      ///
+      /// ## Example:
       ///
       /// Cubemap rendering w/ 3 probes and 5 shadowmaps can cause
       /// a blow up of passes:
@@ -1103,32 +1126,30 @@ namespace ignition
       /// (5 shadow maps per face + 1 regular render) x 6 faces x 3 probes =
       /// 108 render_scene passes.
       /// 108 is way too much, causing out of memory situations;
-      /// so flushing once per probe may make better sense.
-      public: virtual void PostRenderGpuFlush() = 0;
-
-      /// \brief Old projects migrating to newer versions will
-      /// leak memory if they don't call PostRenderGpuFlush
       ///
-      /// Settings this value to true forces Gazebo to flush commands for
-      /// every camera.
-      ///
-      /// This is much slower but will ease porting, specially
-      /// if it's not easy to adapt your code to call PostRenderGpuFlush
-      /// at regular intervals for some reason
-      ///
-      /// New projects should set this value to false
+      /// so setting the value to 6 (1 cubemap face = 1 pass) will
+      /// force one flush per cubemap face, flushing a total of 3 times
+      /// (one per cubemap).
       ///
       /// \remarks Not all rendering engines care about this.
       /// ogre2 plugin does.
       ///
-      /// \param[in] _autoFlush True for old projects who can't or don't know
-      /// when to call PostRenderGpuFlush and prefer to penalize rendering
+      /// \param[in] _numPass 0 for old projects who can't or don't know
+      /// when to call PostRender and prefer to penalize rendering
       /// performance
-      public: virtual void SetLegacyAutoGpuFlush( bool _autoFlush ) = 0;
+      /// Value in range [1; 255] for
+      public: virtual void SetNumCameraPassesPerGpuFlush(uint8_t _numPass) = 0;
 
-      /// \brief Gets the value of SetLegacyAutoGpuFlush
-      /// \return True if Gazebo is using the old method.
-      /// Returns always true for plugins that ignore SetLegacyAutoGpuFlush
+      /// \brief Returns the value set in SetNumCameraPassesPerGpuFlush
+      /// \return Value in range [0; 255].
+      /// ALWAYS returns 0 for plugins that ignore
+      /// SetNumCameraPassesPerGpuFlush
+      public: virtual uint8_t GetNumCameraPassesPerGpuFlush() const = 0;
+
+      /// \brief Checks if SetNumCameraPassesPerGpuFlush is 0
+      /// \return True if Gazebo is using the old method (i.e. 0).
+      /// ALWAYS returns true for plugins that ignore
+      /// SetNumCameraPassesPerGpuFlush
       public: virtual bool GetLegacyAutoGpuFlush() const = 0;
 
       /// \brief Remove and destroy all objects from the scene graph. This does

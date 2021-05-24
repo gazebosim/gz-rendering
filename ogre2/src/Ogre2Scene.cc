@@ -77,7 +77,10 @@ class ignition::rendering::Ogre2ScenePrivate
   public: bool skyEnabled = false;
 
   /// \brief Flag to indicate if we should flush GPU very often (per camera)
-  public: bool legacyAutoGpuFlush = false;
+  public: uint32_t currNumCameraPasses = 0u;
+
+  /// \brief Flag to indicate if we should flush GPU very often (per camera)
+  public: uint8_t numCameraPassesPerGpuFlush = 1u;
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
@@ -182,17 +185,63 @@ void Ogre2Scene::PreRender()
 
   BaseScene::PreRender();
 
-  this->ogreSceneManager->updateSceneGraph();
+  if (!GetLegacyAutoGpuFlush())
+    this->ogreSceneManager->updateSceneGraph();
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::PostRenderGpuFlush()
+void Ogre2Scene::PostRender()
+{
+  if (dataPtr->numCameraPassesPerGpuFlush == 0u)
+  {
+    ignwarn << "Calling Scene::PostRender but"
+               "SetNumCameraPassesPerGpuFlush is 0 (legacy mode for clients"
+               " not calling PostRender)."
+               "Read the documentation on SetNumCameraPassesPerGpuFlush, "
+               "you very likely want to increase this number" << std::endl;
+  }
+  else
+  {
+    if (dataPtr->currNumCameraPasses > 0u)
+      FlushGpuCommandsAndStartNewFrame(0u, true);
+    else
+    {
+      // Every camera already calls FlushGpuCommandsAndStartNewFrame(false)
+      // right after rendering. So likely commands are already flushed.
+      //
+      // If we're here then we are only missing to perform the last step of
+      // FlushGpuCommandsAndStartNewFrame in order to start a new frame
+      EndFrame();
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
+                                                  bool _startNewFrame)
+{
+  dataPtr->currNumCameraPasses += _numPasses;
+
+  if (dataPtr->currNumCameraPasses >= dataPtr->numCameraPassesPerGpuFlush ||
+      _startNewFrame)
+  {
+    dataPtr->currNumCameraPasses = 0;
+    FlushGpuCommandsOnly();
+
+    // Legacy mode requires to do EndFrame here every time
+    if (dataPtr->numCameraPassesPerGpuFlush == 0u)
+      EndFrame();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::FlushGpuCommandsOnly()
 {
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  //engine->OgreRoot()->renderOneFrame();
+  // engine->OgreRoot()->renderOneFrame();
 
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
   auto hlmsManager = ogreRoot->getHlmsManager();
@@ -205,9 +254,15 @@ void Ogre2Scene::PostRenderGpuFlush()
 #endif
 
   ogreCompMgr->_swapAllFinalTargets();
+}
 
+//////////////////////////////////////////////////
+void Ogre2Scene::EndFrame()
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
   auto itor = ogreRoot->getSceneManagerIterator();
-  while( itor.hasMoreElements() )
+  while (itor.hasMoreElements())
   {
       Ogre::SceneManager *sceneManager = itor.getNext();
       sceneManager->clearFrameData();
@@ -215,15 +270,15 @@ void Ogre2Scene::PostRenderGpuFlush()
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::SetLegacyAutoGpuFlush(bool _autoFlush)
+void Ogre2Scene::SetNumCameraPassesPerGpuFlush(uint8_t _numPass)
 {
-  this->dataPtr->legacyAutoGpuFlush = _autoFlush;
+  this->dataPtr->numCameraPassesPerGpuFlush = _numPass;
 }
 
 //////////////////////////////////////////////////
 bool Ogre2Scene::GetLegacyAutoGpuFlush() const
 {
-  return this->dataPtr->legacyAutoGpuFlush;
+  return this->dataPtr->numCameraPassesPerGpuFlush == 0u;
 }
 
 //////////////////////////////////////////////////

@@ -94,11 +94,9 @@ namespace ignition
       // Documentation inherited
       public: virtual bool SkyEnabled() const override;
 
-      // Documentation inherited
-      public: virtual void PostRenderGpuFlush() override;
-
       // Documentation inherited.
-      public: virtual void SetLegacyAutoGpuFlush( bool _autoFlush ) override;
+      public: virtual void SetNumCameraPassesPerGpuFlush(
+            uint8_t _numPass) override;
 
       // Documentation inherited.
       public: virtual bool GetLegacyAutoGpuFlush() const override;
@@ -107,7 +105,42 @@ namespace ignition
       /// \return Pointer to the ogre scene manager
       public: virtual Ogre::SceneManager *OgreSceneManager() const;
 
+      // Documentation inherited
+      public: virtual void PostRender() override;
+
       /// \cond PRIVATE
+      /// \internal
+      /// \brief Every Render() function calls this function with
+      /// the number of pass_scene passes it just performed, so
+      /// that we decide if we should flush or not (based on
+      /// SetNumCameraPassesPerGpuFlush)
+      ///
+      /// \param[in] _numPasses Number of pass_scene passes just performed
+      /// (excluding shadow nodes', otherwise it becomes too unpredictable)
+      /// \param[in] _startNewFrame whether we ignore
+      /// SetNumCameraPassesPerGpuFlush.
+      /// Only PostFrame should set this to true.
+      public: void FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
+                                                    bool _startNewFrame);
+
+      /// \internal
+      /// \brief Performs actual flushing to GPU
+      protected: void FlushGpuCommandsOnly();
+
+      /// \internal
+      /// \brief Ends the frame, i.e. PostFrame wants to do this.
+      ///
+      /// Ogre::SceneManager::updateSceneGraph can't be called again until
+      /// this function is called
+      ///
+      /// After calling this function again,
+      /// Ogre::SceneManager::updateSceneGraph must be called before
+      /// rendering anything (i.e. done inside PreRender)
+      ///
+      /// This is why every PreRender should be paired with a PostRender
+      /// call when in GetLegacyAutoGpuFlush == false
+      protected: void EndFrame();
+
       /// \internal
       /// \brief Mark shadows dirty to rebuild compostior shadow node
       /// This is set when the number of shadow casting lighst changes

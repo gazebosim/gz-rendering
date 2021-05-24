@@ -523,10 +523,14 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: virtual void PostRenderGpuFlush() override;
+      public: virtual void PostRender() override;
 
       // Documentation inherited.
-      public: virtual void SetLegacyAutoGpuFlush( bool _autoFlush ) override;
+      public: virtual void SetNumCameraPassesPerGpuFlush(
+            uint8_t _numPass) override;
+
+      // Documentation inherited.
+      public: virtual uint8_t GetNumCameraPassesPerGpuFlush() const override;
 
       // Documentation inherited.
       public: virtual bool GetLegacyAutoGpuFlush() const override;

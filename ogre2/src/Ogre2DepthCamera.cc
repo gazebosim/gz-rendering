@@ -940,13 +940,12 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Render()
 {
-  const bool legacyAutoGpuFlush = this->scene->GetLegacyAutoGpuFlush();
-  if (legacyAutoGpuFlush)
+  if (this->scene->GetLegacyAutoGpuFlush())
     this->scene->OgreSceneManager()->updateSceneGraph();
 
   // update the compositors
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
-  //engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
+  // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
   this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
   this->dataPtr->ogreCompositorWorkspace->_update();
   this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
@@ -955,8 +954,7 @@ void Ogre2DepthCamera::Render()
   swappedTargets.reserve( 2u );
   this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget( swappedTargets );
 
-  if (legacyAutoGpuFlush)
-    this->scene->PostRenderGpuFlush();
+  this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 }
 
 //////////////////////////////////////////////////

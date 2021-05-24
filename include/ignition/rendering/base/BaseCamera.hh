@@ -409,7 +409,7 @@ namespace ignition
       this->Scene()->PreRender();
       this->Render();
       this->PostRender();
-      this->Scene()->PostRenderGpuFlush();
+      this->Scene()->PostRender();
     }
 
     //////////////////////////////////////////////////

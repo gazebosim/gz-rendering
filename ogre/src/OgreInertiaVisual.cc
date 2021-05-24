@@ -117,6 +117,12 @@ void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
 }
 
 //////////////////////////////////////////////////
+VisualPtr OgreInertiaVisual::BoxVisual() const
+{
+  return this->dataPtr->boxVis;
+}
+
+//////////////////////////////////////////////////
 void OgreInertiaVisual::SetMaterial(MaterialPtr _material, bool _unique)
 {
   _material = (_unique) ? _material->Clone() : _material;

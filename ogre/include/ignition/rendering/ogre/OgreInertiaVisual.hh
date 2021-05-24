@@ -63,6 +63,10 @@ namespace ignition
       public: void Load(const ignition::math::Pose3d &_pose,
           const ignition::math::Vector3d &_scale) override;
 
+      /// \brief Get the box visual
+      /// \return Pointer to the box visual
+      public: VisualPtr BoxVisual() const override;
+
       // Documentation inherited.
       public: virtual MaterialPtr Material() const;
 

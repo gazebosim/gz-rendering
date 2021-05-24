@@ -51,6 +51,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Load(const ignition::math::Pose3d &,
           const ignition::math::Vector3d &) override;
+
+      // Documentation inherited
+      public: virtual VisualPtr BoxVisual() const override;
     };
 
     //////////////////////////////////////////////////
@@ -85,6 +88,13 @@ namespace ignition
         const ignition::math::Vector3d &)
     {
       // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    VisualPtr BaseInertiaVisual<T>::BoxVisual() const
+    {
+      return nullptr;
     }
     }
   }

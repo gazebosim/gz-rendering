@@ -39,9 +39,13 @@ namespace ignition
 
       /// \brief Load the Inertia visual from its pose and scale
       /// \param[in] _pose Pose of the Inertia visual
-      /// \param[in] _scale scale factor of the box visual
+      /// \param[in] _scale Scale factor of the box visual
       public: virtual void Load(const ignition::math::Pose3d &_pose,
           const ignition::math::Vector3d &_scale) = 0;
+
+      /// \brief Get the box visual
+      /// \return Pointer to the box visual
+      public: virtual VisualPtr BoxVisual() const = 0;
     };
     }
   }

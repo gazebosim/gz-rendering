@@ -31,11 +31,14 @@ using namespace rendering;
 
 class ignition::rendering::Ogre2InertiaVisualPrivate
 {
-  /// \brief light visual materal
+  /// \brief inertia visual materal
   public: Ogre2MaterialPtr material = nullptr;
 
   /// \brief Ogre renderable used to render the cross lines.
   public: std::shared_ptr<Ogre2DynamicRenderable> crossLines = nullptr;
+
+  /// \brief Box visual
+  VisualPtr boxVis = nullptr;
 };
 
 //////////////////////////////////////////////////
@@ -111,11 +114,11 @@ void Ogre2InertiaVisual::Load(const ignition::math::Pose3d &_pose,
 
   this->dataPtr->crossLines->Update();
 
-  VisualPtr boxVis = this->Scene()->CreateVisual();
-  boxVis->AddGeometry(this->Scene()->CreateBox());
-  boxVis->SetLocalScale(_scale);
-  boxVis->SetLocalPosition(_pose.Pos());
-  boxVis->SetLocalRotation(_pose.Rot());
+  this->dataPtr->boxVis = this->Scene()->CreateVisual();
+  this->dataPtr->boxVis->AddGeometry(this->Scene()->CreateBox());
+  this->dataPtr->boxVis->SetLocalScale(_scale);
+  this->dataPtr->boxVis->SetMaterial("Default/TransPurple");
+  this->AddChild(this->dataPtr->boxVis);
 }
 
 //////////////////////////////////////////////////

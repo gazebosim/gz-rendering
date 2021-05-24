@@ -54,6 +54,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void PreRender() override;
 
+      // Documentation inherited.
+      public: Ogre::MovableObject *OgreObject() const;
+
       /// \brief Load the Inertia visual from its pose and scale
       /// \param[in] _pose Pose of the Inertia visual
       /// \param[in] _scale scale factor of the box visual

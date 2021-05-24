@@ -25,7 +25,11 @@ class ignition::rendering::OgreInertiaVisualPrivate
   /// \brief Grid materal
   public: OgreMaterialPtr material = nullptr;
 
+  /// \brief Ogre renderable used to render the cross lines.
   std::shared_ptr<OgreDynamicLines> crossLines = nullptr;
+
+  /// \brief Box visual
+  VisualPtr boxVis = nullptr;
 };
 
 using namespace ignition;
@@ -54,6 +58,14 @@ void OgreInertiaVisual::Init()
 }
 
 //////////////////////////////////////////////////
+Ogre::MovableObject *OgreInertiaVisual::OgreObject() const
+{
+  std::shared_ptr<Ogre::MovableObject> mv =
+    std::dynamic_pointer_cast<Ogre::MovableObject>(this->dataPtr->crossLines);
+  return mv.get();
+}
+
+//////////////////////////////////////////////////
 void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
                              const ignition::math::Vector3d &_scale)
 {
@@ -61,6 +73,10 @@ void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
   {
     this->dataPtr->crossLines = std::shared_ptr<OgreDynamicLines>(
       new OgreDynamicLines(MT_LINE_LIST));
+    this->ogreNode->attachObject(this->OgreObject());
+    MaterialPtr inertiaVisualMaterial =
+      this->Scene()->Material("Default/TransGreen");
+    this->SetMaterial(inertiaVisualMaterial, false);
   }
 
   // Inertia position indicator
@@ -93,11 +109,11 @@ void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
   this->dataPtr->crossLines->Update();
   this->ogreNode->setVisible(true);
 
-  VisualPtr boxVis = this->Scene()->CreateVisual();
-  boxVis->AddGeometry(this->Scene()->CreateBox());
-  boxVis->SetLocalScale(_scale);
-  boxVis->SetLocalPosition(_pose.Pos());
-  boxVis->SetLocalRotation(_pose.Rot());
+  this->dataPtr->boxVis = this->Scene()->CreateVisual();
+  this->dataPtr->boxVis->AddGeometry(this->Scene()->CreateBox());
+  this->dataPtr->boxVis->SetLocalScale(_scale);
+  this->dataPtr->boxVis->SetMaterial("Default/TransPurple");
+  this->AddChild(this->dataPtr->boxVis);
 }
 
 //////////////////////////////////////////////////

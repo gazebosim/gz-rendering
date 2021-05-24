@@ -1381,6 +1381,15 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
 
+  material = this->CreateMaterial("Default/TransPurple");
+  material->SetAmbient(1.0, 0.0, 1.0);
+  material->SetDiffuse(1.0, 0.0, 1.0);
+  material->SetEmissive(1.0, 0.0, 1.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
+
   material = this->CreateMaterial("Default/White");
   material->SetAmbient(1.0, 1.0, 1.0);
   material->SetDiffuse(1.0, 1.0, 1.0);

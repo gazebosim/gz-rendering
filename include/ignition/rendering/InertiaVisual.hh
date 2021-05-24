@@ -28,7 +28,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-    /// \class InertiaVisual InertiaVisual.hh 
+    /// \class InertiaVisual InertiaVisual.hh
     /// ignition/rendering/InertiaVisual.hh
     /// \brief Represents a inertia visual
     class IGNITION_RENDERING_VISIBLE InertiaVisual :

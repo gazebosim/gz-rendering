@@ -26,10 +26,10 @@ class ignition::rendering::OgreInertiaVisualPrivate
   public: OgreMaterialPtr material = nullptr;
 
   /// \brief Ogre renderable used to render the cross lines.
-  std::shared_ptr<OgreDynamicLines> crossLines = nullptr;
+  public: std::shared_ptr<OgreDynamicLines> crossLines = nullptr;
 
   /// \brief Box visual
-  VisualPtr boxVis = nullptr;
+  public: VisualPtr boxVis = nullptr;
 };
 
 using namespace ignition;
@@ -147,6 +147,7 @@ void OgreInertiaVisual::SetMaterialImpl(OgreMaterialPtr _material)
   std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
 
+// OGRE 1.10.7
 #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
   this->dataPtr->crossLines->setMaterial(materialName);
 #else

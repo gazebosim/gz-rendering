@@ -59,7 +59,7 @@ namespace ignition
 
       /// \brief Load the Inertia visual from its pose and scale
       /// \param[in] _pose Pose of the Inertia visual
-      /// \param[in] _scale scale factor of the box visual
+      /// \param[in] _scale Scale factor of the box visual
       public: void Load(const ignition::math::Pose3d &_pose,
           const ignition::math::Vector3d &_scale) override;
 
@@ -74,7 +74,7 @@ namespace ignition
       public: virtual void SetMaterial(
         MaterialPtr _material, bool _unique) override;
 
-      /// \brief Set material to grid geometry.
+      /// \brief Set material to line geometry.
       /// \param[in] _material Ogre material.
       protected: virtual void SetMaterialImpl(OgreMaterialPtr _material);
 

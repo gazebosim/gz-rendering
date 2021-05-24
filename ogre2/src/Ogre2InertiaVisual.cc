@@ -38,7 +38,7 @@ class ignition::rendering::Ogre2InertiaVisualPrivate
   public: std::shared_ptr<Ogre2DynamicRenderable> crossLines = nullptr;
 
   /// \brief Box visual
-  VisualPtr boxVis = nullptr;
+  public: VisualPtr boxVis = nullptr;
 };
 
 //////////////////////////////////////////////////
@@ -65,7 +65,7 @@ void Ogre2InertiaVisual::Init()
 
 //////////////////////////////////////////////////
 void Ogre2InertiaVisual::Load(const ignition::math::Pose3d &_pose,
-                             const ignition::math::Vector3d &_scale)
+                              const ignition::math::Vector3d &_scale)
 {
   if(!this->dataPtr->crossLines)
   {

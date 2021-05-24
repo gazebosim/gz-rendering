@@ -1215,7 +1215,10 @@ void Ogre2DepthCamera::SetShadowsNodeDefDirty()
   ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorWorkspace);
   this->dataPtr->ogreCompositorWorkspace = nullptr;
   if (this->dataPtr->particleNoiseListener)
-    this->ogreCamera->removeListener(this->dataPtr->particleNoiseListener.get());
+  {
+    this->ogreCamera->removeListener(
+        this->dataPtr->particleNoiseListener.get());
+  }
 }
 
 //////////////////////////////////////////////////

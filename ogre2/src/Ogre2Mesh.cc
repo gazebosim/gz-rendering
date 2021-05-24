@@ -311,7 +311,8 @@ void Ogre2SubMesh::Destroy()
     {
       if (res->getName() == this->dataPtr->subMeshName)
       {
-        Ogre::v1::MeshManager::getSingleton().remove(this->dataPtr->subMeshName);
+        Ogre::v1::MeshManager::getSingleton().remove(
+          this->dataPtr->subMeshName);
         Ogre::MeshManager::getSingleton().remove(this->dataPtr->subMeshName);
         break;
       }

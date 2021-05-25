@@ -37,13 +37,11 @@ class MoveToHelperTest : public testing::Test,
 
   public: void OnMoveToComplete();
 
-  public: void checkIsCompleted();
+  public: void checkIsCompleted(double timeout);
 
   public: MoveToHelper moveToHelper;
 
   public: bool isMoveCompleted = false;
-
-  public: const double kTimeout = 0.5;
 };
 
 void MoveToHelperTest::OnMoveToComplete()
@@ -51,7 +49,7 @@ void MoveToHelperTest::OnMoveToComplete()
   this->isMoveCompleted = true;
 }
 
-void MoveToHelperTest::checkIsCompleted()
+void MoveToHelperTest::checkIsCompleted(double timeout)
 {
   isMoveCompleted = false;
 
@@ -68,7 +66,7 @@ void MoveToHelperTest::checkIsCompleted()
     auto seconds =
       std::chrono::duration_cast<std::chrono::milliseconds>(
         endTime - startTime).count() / 1000.0;
-    if (seconds > kTimeout)
+    if (seconds > timeout)
       break;
   }
 }
@@ -116,14 +114,14 @@ void MoveToHelperTest::MoveTo(const std::string &_renderEngine)
   moveToHelper.MoveTo(camera, target, 0.5,
     std::bind(&MoveToHelperTest::OnMoveToComplete, this));
   EXPECT_FALSE(moveToHelper.Idle());
-  checkIsCompleted();
+  checkIsCompleted(0.5);
   EXPECT_TRUE(moveToHelper.Idle());
   EXPECT_EQ(math::Vector3d(28.5, 0.0, 0.0), camera->LocalPosition());
 
   moveToHelper.MoveTo(camera, math::Pose3d(0.0, 0.0, 0.0, 0, 0, 0), 0.5,
     std::bind(&MoveToHelperTest::OnMoveToComplete, this));
   EXPECT_FALSE(moveToHelper.Idle());
-  checkIsCompleted();
+  checkIsCompleted(0.5);
   EXPECT_EQ(math::Vector3d(0.0, 0.0, 0.0), camera->LocalPosition());
   EXPECT_TRUE(moveToHelper.Idle());
 
@@ -133,7 +131,7 @@ void MoveToHelperTest::MoveTo(const std::string &_renderEngine)
       viewAngleDirection, lookAt,
       0.5, std::bind(&MoveToHelperTest::OnMoveToComplete, this));
   EXPECT_FALSE(moveToHelper.Idle());
-  checkIsCompleted();
+  checkIsCompleted(0.5);
   EXPECT_TRUE(moveToHelper.Idle());
   EXPECT_EQ(math::Vector3d(0.0, -1, 0.0), camera->LocalPosition());
   EXPECT_EQ(math::Quaterniond(0.0, -0.785398, 1.5708), camera->LocalRotation());

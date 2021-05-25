@@ -42,11 +42,13 @@ class MoveToHelperTest : public testing::Test,
   public: MoveToHelper moveToHelper;
 
   public: bool isMoveCompleted = false;
+
+  public: const double kTimeout = 0.5;
 };
 
 void MoveToHelperTest::OnMoveToComplete()
 {
-  isMoveCompleted = true;
+  this->isMoveCompleted = true;
 }
 
 void MoveToHelperTest::checkIsCompleted()
@@ -66,7 +68,7 @@ void MoveToHelperTest::checkIsCompleted()
     auto seconds =
       std::chrono::duration_cast<std::chrono::milliseconds>(
         endTime - startTime).count() / 1000.0;
-    if (seconds > 0.5)
+    if (seconds > kTimeout)
       break;
   }
 }

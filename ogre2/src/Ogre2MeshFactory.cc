@@ -58,6 +58,8 @@
 /// \brief Private data for the Ogre2MeshFactory class
 class ignition::rendering::Ogre2MeshFactoryPrivate
 {
+  /// \brief Vector with the template materials, we keep the pointer to be
+  /// able to remove it when nobody is using it.
   public: std::vector<MaterialPtr> materialCache;
 };
 
@@ -89,6 +91,7 @@ void Ogre2MeshFactory::Clear()
   this->ogreMeshes.clear();
 }
 
+//////////////////////////////////////////////////
 void Ogre2MeshFactory::ClearMaterialsCache(const std::string &_name)
 {
   auto it = this->dataPtr->materialCache.begin();

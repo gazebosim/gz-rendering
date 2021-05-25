@@ -122,7 +122,8 @@ namespace ignition
       // Documentation inherited
       public: virtual void Destroy() override;
 
-      // Documentation inherited
+      /// \brief Set the name of the mesh stored in Ogre2
+      /// \param[in] _name Name of the mesh
       public: void SetMeshName(const std::string &_name);
 
       /// \brief Get internal ogre subitem created from this submesh

@@ -45,6 +45,8 @@
 /// \brief Private data for the Ogre2Material class
 class ignition::rendering::Ogre2MaterialPrivate
 {
+  /// \brief Ogre stores the name using hashes. This variable will
+  /// store the material hash name
   public: std::string hashName;
 };
 
@@ -101,7 +103,8 @@ void Ogre2Material::Destroy()
     if (i->second.useCount() == 5)
     {
       if (this->dataPtr->hashName == res->getName() &&
-          res->getName().find("scene::RenderTexture") == std::string::npos)
+          res->getName().find(
+            scene->Name() + "::RenderTexture") == std::string::npos)
       {
         Ogre2ScenePtr s = std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
         s->ClearMaterialsCache(this->textureName);
@@ -715,7 +718,6 @@ void Ogre2Material::FillUnlitDatablock(Ogre::HlmsUnlitDatablock *_datablock)
         this->ogreDatablock->suggestMapTypeBasedOnTextureType(
         Ogre::PBSM_DIFFUSE));
     _datablock->setTexture(0, texLocation.xIdx, texLocation.texture);
-    std::cerr << "NAME LAEX " << texLocation.texture->getName() << '\n';
   }
 
   auto samplerblock = this->ogreDatablock->getSamplerblock(Ogre::PBSM_DIFFUSE);

@@ -121,7 +121,8 @@ void OgreMeshFactory::ClearMaterialsCache(const std::string &_name)
     }
     ++it;
   }
-  this->materialCache.erase(it);
+  if (it != this->materialCache.end())
+    this->materialCache.erase(it);
 }
 
 //////////////////////////////////////////////////

@@ -19,6 +19,8 @@
 
 #include "test_config.h"  // NOLINT(build/include)
 
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
@@ -46,7 +48,10 @@ unsigned int defaultEnginesForTest()
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, GetEngine)
 {
+  common::Console::SetVerbosity(4);
+
   unsigned int count = defaultEnginesForTest();
+  EXPECT_GT(count, 0u);
 
   EXPECT_EQ(count, engineCount());
 
@@ -55,6 +60,7 @@ TEST(RenderingIfaceTest, GetEngine)
   EXPECT_FALSE(isEngineLoaded("ogre2"));
   EXPECT_FALSE(isEngineLoaded("optix"));
   EXPECT_FALSE(isEngineLoaded("no_such_engine"));
+  EXPECT_EQ(nullptr, sceneFromFirstRenderEngine());
 
   // check get engine
   for (unsigned int i = 0; i < count; ++i)
@@ -73,6 +79,16 @@ TEST(RenderingIfaceTest, GetEngine)
       ++i;
 #endif
 
+#ifndef _WIN32
+    // Windows CI fails with
+    // Ogre::RenderingAPIException::RenderingAPIException: OpenGL 1.5 is not
+    // supported in GLRenderSystem::initialiseContext
+    auto scene = eng->CreateScene("scene");
+    EXPECT_NE(nullptr, scene);
+
+    EXPECT_EQ(scene, sceneFromFirstRenderEngine());
+#endif
+
     ASSERT_EQ(1u, loadedEngines().size());
     EXPECT_EQ(eng->Name(), loadedEngines()[0]);
 
@@ -81,6 +97,7 @@ TEST(RenderingIfaceTest, GetEngine)
   }
 
   EXPECT_TRUE(loadedEngines().empty());
+  EXPECT_EQ(nullptr, sceneFromFirstRenderEngine());
 
   // non-existent engine
   EXPECT_EQ(nullptr, engine("no_such_engine"));
@@ -90,6 +107,8 @@ TEST(RenderingIfaceTest, GetEngine)
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, RegisterEngine)
 {
+  common::Console::SetVerbosity(4);
+
   unsigned int count = defaultEnginesForTest();
 
   if (count == 0)

@@ -307,7 +307,7 @@ void Ogre2SubMesh::Destroy()
     auto iend = meshManager->getResourceIterator().end();
     for (auto i = meshManager->getResourceIterator().begin(); i != iend;)
     {
-      // A use count of 43 means that only RGM and RM have
+      // A use count of 3 means that only RGM and RM have
       // references RGM has one (this one) and RM has 2 (by name and by handle)
       Ogre::Resource* res = i->second.get();
       if (i->second.useCount() == 3)

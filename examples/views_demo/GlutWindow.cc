@@ -80,7 +80,6 @@ bool g_initContext = false;
 double g_offset = 0.0;
 
 //////////////////////////////////////////////////
-//! [update camera]
 void updateCameras()
 
 {
@@ -94,7 +93,6 @@ void updateCameras()
 
   g_offset += 0.0005;
 }
-//! [update camera]
 
 //////////////////////////////////////////////////
 void displayCB()

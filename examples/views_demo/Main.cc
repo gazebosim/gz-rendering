@@ -18,7 +18,13 @@
 #if defined(__APPLE__)
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
-#elif not defined(_WIN32)
+#elif _WIN32
+  #define NOMINMAX
+  #include <windows.h>			      /* must include this before GL/gl.h */
+  #include <GL/glew.h>
+  #include <GL/glu.h>			        /* OpenGL utilities header file */
+  #include <GL/glut.h>            /* OpenGL utilities header file */
+#else
   #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glut.h>
@@ -79,7 +85,6 @@ void buildScene(ScenePtr _scene)
   center->SetMaterial(green);
   root->AddChild(center);
 
-//! [red material]
   // create red material
   MaterialPtr red = _scene->CreateMaterial();
   red->SetAmbient(0.5, 0.0, 0.0);
@@ -88,7 +93,6 @@ void buildScene(ScenePtr _scene)
   red->SetShininess(50);
   red->SetReflectivity(0);
   red->SetRenderOrder(3);
-//! [red material]
 
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual();
@@ -101,7 +105,6 @@ void buildScene(ScenePtr _scene)
   sphere->SetWireframe(true);
   root->AddChild(sphere);
 
-//! [white material]
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
   white->SetAmbient(0.5, 0.5, 0.5);
@@ -109,7 +112,6 @@ void buildScene(ScenePtr _scene)
   white->SetReceiveShadows(true);
   white->SetReflectivity(0);
   white->SetRenderOrder(0);
-//! [white material]
 
   // create plane visual
   VisualPtr plane = _scene->CreateVisual();
@@ -193,7 +195,6 @@ int main(int _argc, char** _argv)
     }
     catch (...)
     {
-      // std::cout << ex.what() << std::endl;
       std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }

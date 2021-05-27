@@ -298,6 +298,10 @@ namespace ignition
       /// \brief Create the vaiours storage objects
       private: void CreateStores();
 
+      /// \brief Remove internal material cache for a specific material
+      /// \param[in] _name Name of the template material to remove.
+      public: void ClearMaterialsCache(const std::string &_name);
+
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();
 

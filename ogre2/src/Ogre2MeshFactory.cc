@@ -58,6 +58,9 @@
 /// \brief Private data for the Ogre2MeshFactory class
 class ignition::rendering::Ogre2MeshFactoryPrivate
 {
+  /// \brief Vector with the template materials, we keep the pointer to be
+  /// able to remove it when nobody is using it.
+  public: std::vector<MaterialPtr> materialCache;
 };
 
 /// \brief Private data for the Ogre2SubMeshStoreFactory class
@@ -89,6 +92,25 @@ void Ogre2MeshFactory::Clear()
 }
 
 //////////////////////////////////////////////////
+void Ogre2MeshFactory::ClearMaterialsCache(const std::string &_name)
+{
+  auto it = this->dataPtr->materialCache.begin();
+  for (auto &mat : this->dataPtr->materialCache)
+  {
+    std::string matName = mat->Name();
+    std::string textureName = mat->Texture();
+    if (textureName == _name)
+    {
+      this->scene->UnregisterMaterial(matName);
+      break;
+    }
+    ++it;
+  }
+  if (it != this->dataPtr->materialCache.end())
+    this->dataPtr->materialCache.erase(it);
+}
+
+//////////////////////////////////////////////////
 Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
 {
   // create ogre entity
@@ -108,6 +130,12 @@ Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
   // create sub-mesh store
   Ogre2SubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreItem);
   mesh->subMeshes = subMeshFactory.Create();
+  for (unsigned int i = 0; i < mesh->subMeshes->Size(); i++)
+  {
+    Ogre2SubMeshPtr submesh =
+        std::dynamic_pointer_cast<Ogre2SubMesh>(mesh->subMeshes->GetById(i));
+    submesh->SetMeshName(this->MeshName(_desc));
+  }
   return mesh;
 }
 
@@ -447,6 +475,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       if (material)
       {
         mat->CopyFrom(*material);
+        this->dataPtr->materialCache.push_back(mat);
       }
       else
       {

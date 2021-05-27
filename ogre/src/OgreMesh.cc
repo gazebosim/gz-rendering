@@ -58,8 +58,28 @@ void OgreMesh::Destroy()
 
   auto ogreScene = std::dynamic_pointer_cast<OgreScene>(this->Scene());
 
+  std::string ogreMeshName = this->ogreEntity->getMesh()->getName();
+
   ogreScene->OgreSceneManager()->destroyEntity(this->ogreEntity);
   this->ogreEntity = nullptr;
+
+  auto &meshManager = Ogre::MeshManager::getSingleton();
+  auto iend = meshManager.getResourceIterator().end();
+  for (auto i = meshManager.getResourceIterator().begin(); i != iend;)
+  {
+    // A use count of 3 means that only RGM and RM have references
+    // RGM has one (this one) and RM has 2 (by name and by handle)
+    Ogre::Resource* res = i->second.get();
+    if (i->second.useCount() == 3)
+    {
+      if (res->getName() == ogreMeshName)
+      {
+        Ogre::MeshManager::getSingleton().remove(ogreMeshName);
+        break;
+      }
+    }
+    i++;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -284,6 +304,8 @@ Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
 //////////////////////////////////////////////////
 void OgreSubMesh::Destroy()
 {
+  Ogre::MaterialManager::getSingleton().remove(
+        this->ogreSubEntity->getMaterialName());
   OgreRTShaderSystem::Instance()->DetachEntity(this);
 
   BaseSubMesh::Destroy();

@@ -549,7 +549,7 @@ unsigned int Ogre2RenderTarget::GLIdImpl() const
 }
 
 //////////////////////////////////////////////////
-Ogre::RenderTarget *Ogre2RenderTarget::RenderTarget() const
+Ogre::RenderTarget *Ogre2RenderTarget::RenderTargetImpl() const
 {
   return this->dataPtr->ogreTexture[1]->getBuffer()->getRenderTarget();
 }
@@ -911,7 +911,7 @@ void Ogre2RenderTexture::PostRender()
 //////////////////////////////////////////////////
 Ogre::RenderTarget *Ogre2RenderTexture::RenderTarget() const
 {
-  return Ogre2RenderTarget::RenderTarget();
+  return Ogre2RenderTarget::RenderTargetImpl();
 }
 
 //////////////////////////////////////////////////

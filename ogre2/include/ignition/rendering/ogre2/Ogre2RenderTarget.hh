@@ -116,8 +116,13 @@ namespace ignition
       public: void SetShadowsNodeDefDirty();
 
       /// \brief Get a pointer to the ogre render target containing
+      /// the results of the render (implemented separately
+      /// to avoid breaking ABI of the pure virtual function)
+      protected: Ogre::RenderTarget *RenderTargetImpl() const;
+
+      /// \brief Get a pointer to the ogre render target containing
       /// the results of the render
-      public: virtual Ogre::RenderTarget *RenderTarget() const;
+      public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
 
       /// \brief Returns true if this is a render window
       /// TODO(anyone): this function should be virtual.

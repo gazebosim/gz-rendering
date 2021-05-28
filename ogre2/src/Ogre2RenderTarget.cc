@@ -647,10 +647,11 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
 
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::UpdateRenderPassChain(
-    Ogre::CompositorWorkspace *_workspace, const std::string &_workspaceDefName,
-    const std::string &_baseNode, const std::string &_finalNode,
-    const std::vector<RenderPassPtr> &_renderPasses,
-    bool _recreateNodes)
+    Ogre::CompositorWorkspace * /*_workspace*/,
+    const std::string & /*_workspaceDefName*/,
+    const std::string & /*_baseNode*/, const std::string & /*_finalNode*/,
+    const std::vector<RenderPassPtr> & /*_renderPasses*/,
+    bool /*_recreateNodes*/)
 {
   ignwarn << "Warning: This Ogre2RenderTarget::UpdateRenderPassChain "
           << "overload is deprecated" << std::endl;
@@ -856,9 +857,12 @@ void Ogre2RenderTarget::SyncOgreTextureVars()
 //////////////////////////////////////////////////
 // Ogre2RenderTexture
 //////////////////////////////////////////////////
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 Ogre2RenderTexture::Ogre2RenderTexture()
 {
 }
+#pragma GCC diagnostic pop
 
 //////////////////////////////////////////////////
 Ogre2RenderTexture::~Ogre2RenderTexture()
@@ -917,7 +921,10 @@ Ogre::RenderTarget *Ogre2RenderTexture::RenderTarget() const
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::SetOgreTexture(Ogre::Texture *_ogreTexture)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   this->ogreTexture = _ogreTexture;
+#pragma GCC diagnostic pop
 }
 
 //////////////////////////////////////////////////

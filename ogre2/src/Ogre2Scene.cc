@@ -76,6 +76,10 @@ class ignition::rendering::Ogre2ScenePrivate
   /// \brief Flag to indicate if sky is enabled or not
   public: bool skyEnabled = false;
 
+  /// \brief Flag to alert the user its usage of PreRender/PostRender
+  /// is incorrect
+  public: bool frameUpdateStarted = false;
+
   /// \brief Flag to indicate if we should flush GPU very often (per camera)
   public: uint32_t currNumCameraPasses = 0u;
 
@@ -152,6 +156,11 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
 //////////////////////////////////////////////////
 void Ogre2Scene::PreRender()
 {
+  IGN_ASSERT((this->GetLegacyAutoGpuFlush() ||
+              this->dataPtr->frameUpdateStarted == false),
+             "Scene::PreRender called again before calling Scene::PostRender");
+  this->dataPtr->frameUpdateStarted = true;
+
   if (this->ShadowsDirty())
   {
     // notify all render targets
@@ -192,6 +201,11 @@ void Ogre2Scene::PreRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::PostRender()
 {
+  IGN_ASSERT((this->GetLegacyAutoGpuFlush() ||
+              this->dataPtr->frameUpdateStarted == true),
+             "Scene::PostRender called again before calling Scene::PreRender");
+  this->dataPtr->frameUpdateStarted = false;
+
   if (dataPtr->numCameraPassesPerGpuFlush == 0u)
   {
     ignwarn << "Calling Scene::PostRender but"

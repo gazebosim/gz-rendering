@@ -208,7 +208,7 @@ void Ogre2Scene::PostRender()
 
   if (dataPtr->numCameraPassesPerGpuFlush == 0u)
   {
-    ignwarn << "Calling Scene::PostRender but"
+    ignwarn << "Calling Scene::PostRender but "
                "SetNumCameraPassesPerGpuFlush is 0 (legacy mode for clients"
                " not calling PostRender)."
                "Read the documentation on SetNumCameraPassesPerGpuFlush, "

@@ -110,6 +110,11 @@ namespace ignition
 
       /// \cond PRIVATE
       /// \internal
+      /// \brief When GetLegacyAutoGpuFlush(), render targets will
+      /// call this function at start to mimic legacy behavior
+      public: void LegacyStartFrame();
+
+      /// \internal
       /// \brief Every Render() function calls this function with
       /// the number of pass_scene passes it just performed, so
       /// that we decide if we should flush or not (based on

@@ -195,7 +195,12 @@ void Ogre2Scene::PreRender()
   BaseScene::PreRender();
 
   if (!GetLegacyAutoGpuFlush())
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    engine->OgreRoot()->_fireFrameStarted();
+
     this->ogreSceneManager->updateSceneGraph();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -228,6 +233,19 @@ void Ogre2Scene::PostRender()
       EndFrame();
     }
   }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::LegacyStartFrame()
+{
+  IGN_ASSERT(this->GetLegacyAutoGpuFlush(),
+             "Ogre2Scene::LegacyStartFrame must "
+             "only be called in legacy mode");
+
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->OgreRoot()->_fireFrameStarted();
+
+  this->ogreSceneManager->updateSceneGraph();
 }
 
 //////////////////////////////////////////////////
@@ -275,12 +293,17 @@ void Ogre2Scene::EndFrame()
 {
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
+
+  ogreRoot->_fireFrameRenderingQueued();
+
   auto itor = ogreRoot->getSceneManagerIterator();
   while (itor.hasMoreElements())
   {
       Ogre::SceneManager *sceneManager = itor.getNext();
       sceneManager->clearFrameData();
   }
+
+  ogreRoot->_fireFrameEnded();
 }
 
 //////////////////////////////////////////////////

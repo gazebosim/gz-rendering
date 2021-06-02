@@ -107,6 +107,25 @@ bool OgreMeshFactory::IsLoaded(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
+void OgreMeshFactory::ClearMaterialsCache(const std::string &_name)
+{
+  auto it = this->materialCache.begin();
+  for (auto &mat : this->materialCache)
+  {
+    std::string matName = mat->Name();
+    std::string textureName = mat->Texture();
+    if (textureName == _name)
+    {
+      this->scene->UnregisterMaterial(matName);
+      break;
+    }
+    ++it;
+  }
+  if (it != this->materialCache.end())
+    this->materialCache.erase(it);
+}
+
+//////////////////////////////////////////////////
 bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 {
   Ogre::MeshPtr ogreMesh;
@@ -396,6 +415,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       if (material)
       {
         mat->CopyFrom(*material);
+        materialCache.push_back(mat);
       }
       else
       {

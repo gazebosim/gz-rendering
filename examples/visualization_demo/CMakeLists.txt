@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-views-demo)
+project(ignition-rendering-visualization-demo)
 
 find_package(ignition-rendering6)
 
@@ -32,9 +32,9 @@ if (WIN32)
 	set(TARGET_THIRD_PARTY_DEPENDS ${TARGET_THIRD_PARTY_DEPENDS} FreeGLUT::freeglut)
 endif()
 
-add_executable(views_demo Main.cc GlutWindow.cc)
+add_executable(visualization_demo Main.cc GlutWindow.cc)
 
-target_link_libraries(views_demo
+target_link_libraries(visualization_demo
   ${IGNITION-RENDERING_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )

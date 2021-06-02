@@ -20,10 +20,13 @@
   #include <GLUT/glut.h>
 #elif _WIN32
   #define NOMINMAX
-  #include <windows.h>			      /* must include this before GL/gl.h */
+  // Must include this before GL/gl.h
+  #include <windows.h>
   #include <GL/glew.h>
-  #include <GL/glu.h>			        /* OpenGL utilities header file */
-  #include <GL/glut.h>            /* OpenGL utilities header file */
+  // OpenGL utilities header file
+  #include <GL/glu.h>
+  // OpenGL utilities header file
+  #include <GL/glut.h>
 #else
   #include <GL/glew.h>
   #include <GL/gl.h>

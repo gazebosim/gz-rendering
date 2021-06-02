@@ -21,10 +21,13 @@
   #include <GLUT/glut.h>
 #elif _WIN32
   #define NOMINMAX
-  #include <windows.h>			/* must include this before GL/gl.h */
-  #include <GL/glew.h>
-  #include <GL/glu.h>			/* OpenGL utilities header file */
-  #include <GL/glut.h>			/* OpenGL utilities header file */
+  // Must include this before GL/gl.h
+  #include <windows.h>
+  #include <GL/glew.h
+  // OpenGL utilities header file
+  #include <GL/glu.h>
+  // OpenGL utilities header file
+  #include <GL/glut.h>
   #include "Wingdi.h"
 #else
   #include <GL/glew.h>
@@ -81,7 +84,6 @@ double g_offset = 0.0;
 
 //////////////////////////////////////////////////
 void updateCameras()
-
 {
   double angle = g_offset / 2 * M_PI;
   double x = sin(angle) * 3.0 + 3.0;

@@ -57,6 +57,11 @@ namespace ignition
       // Documentation inherited.
       public: Ogre::MovableObject *OgreObject() const;
 
+      /// \brief Set the inertial component of the visual
+      /// \param[in] _inertial Inertial component of the visual
+      public: void SetInertial(
+              const ignition::math::Inertiald &_inertial) override;
+
       /// \brief Load the Inertia visual from its pose and scale
       /// \param[in] _pose Pose of the Inertia visual
       /// \param[in] _scale Scale factor of the box visual

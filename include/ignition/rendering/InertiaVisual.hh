@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_INERTIAVISUAL_HH_
 #define IGNITION_RENDERING_INERTIAVISUAL_HH_
 
+#include <ignition/math/Inertial.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/RenderTypes.hh"
@@ -36,6 +37,11 @@ namespace ignition
     {
       /// \brief Destructor
       public: virtual ~InertiaVisual() {}
+
+      /// \brief Set the inertial component of the visual
+      /// \param[in] _inertial Inertial component of the visual
+      public: virtual void SetInertial(
+                  const ignition::math::Inertiald &_inertial) = 0;
 
       /// \brief Load the Inertia visual from its pose and scale
       /// \param[in] _pose Pose of the Inertia visual

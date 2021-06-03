@@ -17,8 +17,6 @@
 #ifndef IGNITION_RENDERING_BASE_BASEINERTIAVISUAL_HH_
 #define IGNITION_RENDERING_BASE_BASEINERTIAVISUAL_HH_
 
-#include <vector>
-
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/InertiaVisual.hh"
@@ -47,6 +45,10 @@ namespace ignition
 
       // Documentation inherited.
       protected: virtual void PreRender() override;
+
+      // Documentation inherited.
+      public: virtual void SetInertial(
+                  const ignition::math::Inertiald &) override;
 
       // Documentation inherited.
       public: virtual void Load(const ignition::math::Pose3d &,
@@ -80,6 +82,13 @@ namespace ignition
     void BaseInertiaVisual<T>::Init()
     {
       T::Init();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseInertiaVisual<T>::SetInertial(const ignition::math::Inertiald &)
+    {
+      // no op
     }
 
     //////////////////////////////////////////////////

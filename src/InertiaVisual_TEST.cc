@@ -57,10 +57,17 @@ void InertiaVisualTest::InertiaVisual(const std::string &_renderEngine)
   // check initial values
   EXPECT_EQ(nullptr, inertiaVisual->BoxVisual());
 
+  ignition::math::MassMatrix3d massMatrix(
+      2.0, {2.0, 1.5, 1.0}, {0.0, 0.0, 0.0});
   ignition::math::Pose3d p(0.0, 1.0, 2.5, 1.0, 0.4, 0.4);
-  ignition::math::Vector3d s(0.5, 0.5, 0.5);
-  inertiaVisual->Load(p, s);
+  ignition::math::Inertiald inertial;
 
+  inertiaVisual->SetInertial(inertial);
+  EXPECT_EQ(nullptr, inertiaVisual->BoxVisual());
+
+  inertial.SetMassMatrix(massMatrix);
+  inertial.SetPose(p);
+  inertiaVisual->SetInertial(inertial);
   EXPECT_NE(nullptr, inertiaVisual->BoxVisual());
 
   // Clean up

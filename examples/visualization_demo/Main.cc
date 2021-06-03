@@ -126,10 +126,11 @@ void buildScene(ScenePtr _scene)
 
   // create inertia visual
   InertiaVisualPtr inertiaVisual = _scene->CreateInertiaVisual();
+  ignition::math::MassMatrix3d massMatrix(1.0, {0.1, 0.1, 0.1}, {0.0, 0.0, 0.0});
   ignition::math::Pose3d p(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-  ignition::math::Vector3d s(0.4, 0.4, 0.4);
-  inertiaVisual->Load(p, s);
-  inertiaVisual->SetLocalPosition(3.2, 0.5, 0);
+  ignition::math::Inertiald inertial{massMatrix, p};
+  inertiaVisual->SetInertial(inertial);
+  inertiaVisual->SetLocalPosition(3.2, 1.5, 0);
   root->AddChild(inertiaVisual);
 
   // create camera

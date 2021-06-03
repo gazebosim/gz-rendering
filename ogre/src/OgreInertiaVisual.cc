@@ -66,6 +66,31 @@ Ogre::MovableObject *OgreInertiaVisual::OgreObject() const
 }
 
 //////////////////////////////////////////////////
+void OgreInertiaVisual::SetInertial(
+    const ignition::math::Inertiald &_inertial)
+{
+  auto xyz = _inertial.Pose().Pos();
+  auto q = _inertial.Pose().Rot();
+
+  // Use ignition::math::MassMatrix3 to compute
+  // equivalent box size and rotation
+  auto m = _inertial.MassMatrix();
+  ignition::math::Vector3d boxScale;
+  ignition::math::Quaterniond boxRot;
+  if (!m.EquivalentBox(boxScale, boxRot))
+  {
+    // Invalid inertia, load with default scale
+    ignlog << "The link is static or has unrealistic "
+        << "inertia, so the equivalent inertia box will not be shown.\n";
+  }
+  else
+  {
+    // Apply additional rotation by boxRot
+    this->Load(ignition::math::Pose3d(xyz, q * boxRot), boxScale);
+  }
+}
+
+//////////////////////////////////////////////////
 void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
                              const ignition::math::Vector3d &_scale)
 {

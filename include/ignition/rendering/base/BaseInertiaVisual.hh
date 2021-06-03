@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_BASE_BASEINERTIAVISUAL_HH_
 #define IGNITION_RENDERING_BASE_BASEINERTIAVISUAL_HH_
 
+#include "ignition/common/Console.hh"
+
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/InertiaVisual.hh"
@@ -48,7 +50,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetInertial(
-                  const ignition::math::Inertiald &) override;
+                  const ignition::math::Inertiald &_inertial) override;
 
       // Documentation inherited.
       public: virtual void Load(const ignition::math::Pose3d &,
@@ -86,9 +88,28 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseInertiaVisual<T>::SetInertial(const ignition::math::Inertiald &)
+    void BaseInertiaVisual<T>::SetInertial(
+          const ignition::math::Inertiald &_inertial)
     {
-      // no op
+      auto xyz = _inertial.Pose().Pos();
+      auto q = _inertial.Pose().Rot();
+
+      // Use ignition::math::MassMatrix3 to compute
+      // equivalent box size and rotation
+      auto m = _inertial.MassMatrix();
+      ignition::math::Vector3d boxScale;
+      ignition::math::Quaterniond boxRot;
+      if (!m.EquivalentBox(boxScale, boxRot))
+      {
+        // Invalid inertia, load with default scale
+        ignlog << "The link is static or has unrealistic "
+            << "inertia, so the equivalent inertia box will not be shown.\n";
+      }
+      else
+      {
+        // Apply additional rotation by boxRot
+        this->Load(ignition::math::Pose3d(xyz, q * boxRot), boxScale);
+      }
     }
 
     //////////////////////////////////////////////////

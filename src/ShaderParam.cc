@@ -31,6 +31,13 @@ class ignition::rendering::ShaderParamPrivate
       float vFloat;
       int vInt;
     } paramValue;
+
+  /// \brief buffer of parameter held
+  //   Currently only 32-bit elements will be supported for buffers
+  public: std::shared_ptr<void> buffer;
+
+  /// \brief Count of elements in buffer of parameter held
+  public: uint32_t count;
 };
 
 
@@ -38,6 +45,8 @@ class ignition::rendering::ShaderParamPrivate
 ShaderParam::ShaderParam() :
   dataPtr(new ShaderParamPrivate)
 {
+  this->dataPtr->count = 0u;
+  this->dataPtr->buffer.reset();
 }
 
 //////////////////////////////////////////////////
@@ -52,12 +61,19 @@ ShaderParam::ShaderParam(const ShaderParam &_other)
 //////////////////////////////////////////////////
 ShaderParam::~ShaderParam()
 {
+  this->dataPtr->buffer.reset();
 }
 
 //////////////////////////////////////////////////
 ShaderParam::ParamType ShaderParam::Type() const
 {
   return this->dataPtr->type;
+}
+
+//////////////////////////////////////////////////
+uint32_t ShaderParam::Count() const
+{
+  return this->dataPtr->count;
 }
 
 //////////////////////////////////////////////////
@@ -82,6 +98,30 @@ void ShaderParam::operator=(const int _value)
 }
 
 //////////////////////////////////////////////////
+void ShaderParam::InitializeBuffer(uint32_t _count)
+{
+  this->dataPtr->count = _count;
+  this->dataPtr->buffer.reset(new float[_count],
+      std::default_delete<float[]>());
+}
+
+//////////////////////////////////////////////////
+void ShaderParam::UpdateBuffer(float *_floatBuffer)
+{
+  this->dataPtr->type = PARAM_FLOAT_BUFFER;
+  memcpy(this->dataPtr->buffer.get(), _floatBuffer,
+      4 * this->dataPtr->count);
+}
+
+//////////////////////////////////////////////////
+void ShaderParam::UpdateBuffer(int *_intBuffer)
+{
+  this->dataPtr->type = PARAM_INT_BUFFER;
+  memcpy(this->dataPtr->buffer.get(), _intBuffer,
+      4 * this->dataPtr->count);
+}
+
+//////////////////////////////////////////////////
 bool ShaderParam::Value(float *_value) const
 {
   if (PARAM_FLOAT == this->dataPtr->type)
@@ -98,6 +138,18 @@ bool ShaderParam::Value(int *_value) const
   if (PARAM_INT == this->dataPtr->type)
   {
     *_value = this->dataPtr->paramValue.vInt;
+    return true;
+  }
+  return false;
+}
+
+//////////////////////////////////////////////////
+bool ShaderParam::Buffer(std::shared_ptr<void> &_buffer) const
+{
+  if (PARAM_FLOAT_BUFFER == this->dataPtr->type ||
+      PARAM_INT_BUFFER == this->dataPtr->type)
+  {
+    _buffer = this->dataPtr->buffer;
     return true;
   }
   return false;

@@ -241,7 +241,31 @@
 
 ### Ignition Rendering 3.X.X (2021-XX-XX)
 
+### Ignition Rendering 3.5.0 (2021-05-25)
 
+1. Include MoveTo Helper class to ign-rendering
+    * [Pull request 311](https://github.com/ignitionrobotics/ign-rendering/pull/311)
+
+1. Remove tools/code_check and update codecov
+    * [Pull request 321](https://github.com/ignitionrobotics/ign-rendering/pull/321)
+
+1. Helper function to get a scene (#320)
+    * [Pull request 320](https://github.com/ignitionrobotics/ign-rendering/pull/320)
+
+1. Fix DepthGaussianNoise test (#271)
+    * [Pull request 271](https://github.com/ignitionrobotics/ign-rendering/pull/271)
+
+1. Master branch updates (#268)
+    * [Pull request 268](https://github.com/ignitionrobotics/ign-rendering/pull/268)
+
+1. 👩🌾 Make GitHub actions tests that are flaky due to display more verbose information (#255)
+    * [Pull request 255](https://github.com/ignitionrobotics/ign-rendering/pull/255)
+
+1. Fixed OBJ textures with the same name (#239)
+    * [Pull request 239](https://github.com/ignitionrobotics/ign-rendering/pull/239)
+
+1. More verbose messages when failing to load render engine (#236)
+    * [Pull request 236](https://github.com/ignitionrobotics/ign-rendering/pull/236)
 
 ### Ignition Rendering 3.4.0 (2021-02-09)
 

@@ -19,6 +19,8 @@
 #define IGNITION_RENDERING_SHADERPARAM_HH_
 
 #include <cstdint>
+#include <cstring>
+
 #include <memory>
 
 #include <ignition/common/SuppressWarning.hh>
@@ -43,11 +45,17 @@ namespace ignition
         /// \brief Type none
         PARAM_NONE = 0,
 
-        /// \brief  Float type param
+        /// \brief Float type parameter
         PARAM_FLOAT = 1,
 
-        /// \brief Integer type param
+        /// \brief Integer type parameter
         PARAM_INT = 2,
+
+        /// \brief Float Buffer type parameter
+        PARAM_FLOAT_BUFFER = 3,
+
+        /// \brief Int Buffer type parameter
+        PARAM_INT_BUFFER = 4,
       };
 
       /// \brief constructor
@@ -64,28 +72,49 @@ namespace ignition
       /// \return Type of this parameter
       public: ParamType Type() const;
 
-      /// \brief Set from another ShaderParam.
-      /// \param[in] _other Another ShaderParam.
-      /// \return Reference to this ShaderParam.
+      /// \brief Get the element count of this parameter's buffer
+      /// \return Count of elements in this parameter's buffer
+      public: uint32_t Count() const;
+
+      /// \brief Set from another ShaderParam
+      /// \param[in] _other Another ShaderParam
+      /// \return Reference to this ShaderParam
       public: ShaderParam &operator=(const ShaderParam &_other);
 
-      /// \brief Set this to be a float param
-      /// \param[in] _value Value to set this param to.
+      /// \brief Set this to be a float parameter
+      /// \param[in] _value Value to set this parameter to
       public: void operator=(const float _value);
 
-      /// \brief Set this to be an integer param;
-      /// \param[in] _value Value to set this param to.
+      /// \brief Set this to be an integer parameter
+      /// \param[in] _value Value to set this parameter to
       public: void operator=(const int _value);
+
+      /// \brief Set this to be a buffer parameter
+      /// \param[in] _count Number of 32-bit elements in the buffer
+      public: void InitializeBuffer(uint32_t _count);
+
+      /// \brief Copy a buffer to this parameter
+      /// \param[in] _floatBuffer Source buffer to copy from
+      public: void UpdateBuffer(float *_floatBuffer);
+
+      /// \brief Copy a buffer to this parameter
+      /// \param[in] _intBuffer Source buffer to copy from
+      public: void UpdateBuffer(int *_intBuffer);
 
       /// \brief Get the value of this parameter if it is a float
       /// \param[out] _value variable the value will be copied to
-      /// \return true if the param is the expected type
+      /// \return true if the parameter is the expected type
       public: bool Value(float *_value) const;
 
       /// \brief Get the value of this parameter if it is an int
       /// \param[out] _value variable the value will be copied to
-      /// \return true if the param is the expected type
+      /// \return true if the parameter is the expected type
       public: bool Value(int *_value) const;
+
+      /// \brief Get the value of this parameter if it is a buffer
+      /// \param[out] _buffer variable the value will be copied to
+      /// \return true if the parameter is the expected type
+      public: bool Buffer(std::shared_ptr<void> &_buffer) const;
 
       /// \brief private implementation
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

@@ -185,10 +185,10 @@ int main(int _argc, char** _argv)
 
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
-  std::string ogreEngine("ogre");
+  std::string ogreEngineName("ogre");
   if (_argc > 1)
   {
-    ogreEngine = _argv[1];
+    ogreEngineName = _argv[1];
   }
 
   common::Console::SetVerbosity(4);
@@ -208,7 +208,7 @@ int main(int _argc, char** _argv)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(4)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
 //! [add scenes]
-  sceneDemo->AddCamera(ogreEngine);
+  sceneDemo->AddCamera(ogreEngineName);
   sceneDemo->AddCamera("optix");
   sceneDemo->Run();
   return 0;

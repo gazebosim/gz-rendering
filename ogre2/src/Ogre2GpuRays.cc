@@ -473,7 +473,8 @@ void Ogre2GpuRays::CreateCamera()
 void Ogre2GpuRays::ConfigureCamera()
 {
   // horizontal gpu rays setup
-  this->SetHFOV(this->AngleMax() - this->AngleMin());
+  auto hfovAngle = this->AngleMax() - this->AngleMin();
+  this->SetHFOV(hfovAngle);
 
   // vertical laser setup
   double vfovAngle;
@@ -496,7 +497,31 @@ void Ogre2GpuRays::ConfigureCamera()
   this->SetVFOV(vfovAngle);
 
   // Configure first pass texture size
-  this->Set1stTextureSize(1024, 1024);
+  // Each cubemap texture covers 90 deg FOV so determine number of samples
+  // within the view for both horizontal and vertical FOV
+  unsigned int hs = static_cast<unsigned int>(
+      IGN_PI * 0.5 / hfovAngle.Radian() * this->RangeCount());
+  unsigned int vs = static_cast<unsigned int>(
+      IGN_PI * 0.5 / vfovAngle * this->VerticalRangeCount());
+
+  // get the max number from the two
+  unsigned int v = std::max(hs, vs);
+  // round to next highest power of 2
+  // https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+  v--;
+  v |= v >> 1;
+  v |= v >> 2;
+  v |= v >> 4;
+  v |= v >> 8;
+  v |= v >> 16;
+  v++;
+  // limit max texture size to 1024
+  unsigned int min1stPassSamples = 2u;
+  unsigned int max1stPassSamples = 1024u;
+  unsigned int samples1stPass =
+      std::clamp(v, min1stPassSamples, max1stPassSamples);
+
+  this->Set1stTextureSize(samples1stPass, samples1stPass);
 
   // Configure second pass texture size
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());

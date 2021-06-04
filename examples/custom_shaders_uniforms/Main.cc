@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,16 @@
 #if defined(__APPLE__)
   #include <OpenGL/gl.h>
   #include <GLUT/glut.h>
-#elif not defined(_WIN32)
+#else
   #include <GL/glew.h>
-  #include <GL/gl.h>
   #include <GL/glut.h>
+  #if _WIN32
+    #define NOMINMAX
+    #include <windows.h>
+    #include <GL/glu.h>
+  #else
+    #include <GL/gl.h>
+  #endif
 #endif
 
 #include <iostream>
@@ -30,10 +36,19 @@
 #include <ignition/common/Console.hh>
 #include <ignition/rendering.hh>
 
+#include "example_config.hh"
+
 #include "GlutWindow.hh"
 
 using namespace ignition;
 using namespace rendering;
+
+const std::string vertexShaderFile = "vertex_shader.glsl";
+const std::string fragmentShaderFile = "fragment_shader.glsl";
+//! [init shaders variables]
+
+const std::string RESOURCE_PATH =
+    ignition::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
@@ -49,47 +64,27 @@ void buildScene(ScenePtr _scene)
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
-  // create point light
-  PointLightPtr light2 = _scene->CreatePointLight();
-  light2->SetDiffuseColor(0.5, 0.5, 0.5);
-  light2->SetSpecularColor(0.5, 0.5, 0.5);
-  light2->SetLocalPosition(3, 5, 5);
-  root->AddChild(light2);
+  // create shader materials
+  // path to look for vertex and fragment shader parameters
+  std::string vertexShaderPath = ignition::common::joinPaths(
+      RESOURCE_PATH, vertexShaderFile);
 
-  // create red material
-  MaterialPtr red = _scene->CreateMaterial();
-  red->SetAmbient(0.5, 0.0, 0.0);
-  red->SetDiffuse(1.0, 0.0, 0.0);
-  red->SetSpecular(0.5, 0.5, 0.5);
-  red->SetShininess(50);
-  red->SetReflectivity(0);
+  std::string fragmentShaderPath = ignition::common::joinPaths(
+      RESOURCE_PATH, fragmentShaderFile);
 
-  // create sphere visual
-  VisualPtr sphere = _scene->CreateVisual("sphere");
-  sphere->AddGeometry(_scene->CreateSphere());
-  sphere->SetOrigin(0.0, -0.5, 0.0);
-  sphere->SetLocalPosition(3, 0, 0);
-  sphere->SetLocalRotation(0, 0, 0);
-  sphere->SetLocalScale(1, 2.5, 1);
-  sphere->SetMaterial(red);
-  root->AddChild(sphere);
-
-  // create blue material
-  MaterialPtr blue = _scene->CreateMaterial();
-  blue->SetAmbient(0.0, 0.0, 0.3);
-  blue->SetDiffuse(0.0, 0.0, 0.8);
-  blue->SetSpecular(0.5, 0.5, 0.5);
-  blue->SetShininess(50);
-  blue->SetReflectivity(0);
+  //! [add shader to visual]
+  // create shader material
+  ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
+  shader->SetVertexShader(vertexShaderPath);
+  shader->SetFragmentShader(fragmentShaderPath);
 
   // create box visual
   VisualPtr box = _scene->CreateVisual("box");
   box->AddGeometry(_scene->CreateBox());
-  box->SetOrigin(0.0, 0.5, 0.0);
-  box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
-  box->SetLocalScale(1, 2.5, 1);
-  box->SetMaterial(blue);
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(0, 1, 0);
+  box->SetLocalScale(2, 2, 2);
+  box->SetMaterial(shader);
   root->AddChild(box);
 
   // create camera
@@ -102,8 +97,12 @@ void buildScene(ScenePtr _scene)
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
+
+  // track target
+  camera->SetTrackTarget(box);
 }
 
+//////////////////////////////////////////////////
 CameraPtr createCamera(const std::string &_engineName)
 {
   // create and populate scene
@@ -122,43 +121,29 @@ CameraPtr createCamera(const std::string &_engineName)
   return std::dynamic_pointer_cast<Camera>(sensor);
 }
 
+//////////////////////////////////////////////////
 int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
 
-  // Expose engine name to command line because we can't instantiate both
-  // ogre and ogre2 at the same time
-  std::string ogreEngineName("ogre");
-  if (_argc > 1)
-  {
-    ogreEngineName = _argv[1];
-  }
-
   common::Console::SetVerbosity(4);
-  std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back(ogreEngineName);
-  engineNames.push_back("optix");
+  std::string engine("ogre");
 
-  for (auto engineName : engineNames)
+  try
   {
-    try
+    CameraPtr camera = createCamera(engine);
+    if (camera)
     {
-      CameraPtr camera = createCamera(engineName);
-      if (camera)
-      {
-        cameras.push_back(camera);
-      }
+      cameras.push_back(camera);
     }
-    catch (...)
-    {
-      // std::cout << ex.what() << std::endl;
-      std::cerr << "Error starting up: " << engineName << std::endl;
-    }
+  }
+  catch (...)
+  {
+    std::cerr << "Error starting up: " << engine << std::endl;
   }
 
   run(cameras);
-
   return 0;
 }

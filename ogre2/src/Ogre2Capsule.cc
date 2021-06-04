@@ -92,9 +92,9 @@ void Ogre2Capsule::Destroy()
 void Ogre2Capsule::Update()
 {
   common::MeshManager *meshMgr = common::MeshManager::Instance();
-  std::string capsuleMeshName = this->Name() + "_capsule_mesh"
-    + "_" + std::to_string(this->radius)
-    + "_" + std::to_string(this->length);
+  std::string capsuleMeshName = "capsule_mesh";
+  capsuleMeshName += "_" + std::to_string(this->radius)
+      + "_" + std::to_string(this->length);
 
   // Create new mesh if needed
   if (!meshMgr->HasMesh(capsuleMeshName))

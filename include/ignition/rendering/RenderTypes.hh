@@ -48,6 +48,7 @@ namespace ignition
 
     class ArrowVisual;
     class AxisVisual;
+    class BoundingBoxCamera;
     class Camera;
     class Capsule;
     class DepthCamera;
@@ -108,6 +109,10 @@ namespace ignition
     /// \def ThermalCameraPtr
     /// \brief Shared pointer to ThermalCamera
     typedef shared_ptr<ThermalCamera> ThermalCameraPtr;
+
+    /// \def BoundingBoxCameraPtr
+    /// \brief Shared pointer to BoundingBoxCamera
+    typedef shared_ptr<BoundingBoxCamera> BoundingBoxCameraPtr;
 
     /// \def GpuRaysPtr
     /// \brief Shared pointer to GpuRays
@@ -266,6 +271,10 @@ namespace ignition
     /// \def const ThermalCameraPtr
     /// \brief Shared pointer to const ThermalCamera
     typedef shared_ptr<const ThermalCamera> ConstThermalCameraPtr;
+
+    /// \def const BoundingBoxCameraPtr
+    /// \brief Shared pointer to const BoundingBox Camera
+    typedef shared_ptr<const BoundingBoxCamera> ConstBoundingBoxCameraPtr;
 
     /// \def const GpuRaysPtr
     /// \brief Shared pointer to const GpuRays

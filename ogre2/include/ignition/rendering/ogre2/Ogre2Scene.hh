@@ -148,6 +148,10 @@ namespace ignition
                      unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
+                     unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual GpuRaysPtr CreateGpuRaysImpl(unsigned int _id,
                      const std::string &_name) override;
 

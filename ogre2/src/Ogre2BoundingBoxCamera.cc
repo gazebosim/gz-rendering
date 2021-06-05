@@ -70,11 +70,6 @@ namespace ignition
       public: virtual void postRenderTargetUpdate(
                   const Ogre::RenderTargetEvent &_evt);
 
-      /// \brief Convert label of the item to a unique color for visualization
-      /// \param[in] _label id of the object
-      /// \return _color unique color for that label
-      private: math::Color BoxColor(uint _label);
-
       /// \brief A map of ogre sub item pointer to their original hlms material
       private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
 
@@ -89,9 +84,6 @@ namespace ignition
 
       /// \brief User Data Key to set the label
       private: std::string labelKey = "label";
-
-      /// \brief Pseudo num generator to generate bbox colors from label id
-      private: std::default_random_engine generator;
 
       /// \brief Label for background pixels in the ogre Ids map
       private: uint backgroundLabel {0};
@@ -139,21 +131,6 @@ BoundingBoxMaterialSwitcher::BoundingBoxMaterialSwitcher(Ogre2ScenePtr _scene)
 /////////////////////////////////////////////////
 BoundingBoxMaterialSwitcher::~BoundingBoxMaterialSwitcher()
 {
-}
-
-/////////////////////////////////////////////////
-math::Color BoundingBoxMaterialSwitcher::BoxColor(uint _label)
-{
-  // use label as seed to generate the same color for the label
-  this->generator.seed(_label);
-  std::uniform_int_distribution<int> distribution(0, 255);
-
-  // random color
-  int r = distribution(this->generator);
-  int g = distribution(this->generator);
-  int b = distribution(this->generator);
-
-  return math::Color(r, g, b);
 }
 
 ////////////////////////////////////////////////

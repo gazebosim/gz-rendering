@@ -28,11 +28,15 @@ namespace ignition
   namespace rendering
   {
     /// \brief BoundingBox types for Visible / Full BoundingBox
+    /// FullBox: Shows the full box of occluded objects
+    /// VisibleBox: Shows the visible part of the occluded object
     enum BoundingBoxType {
       FullBox,
       VisibleBox
     };
 
+    /// \brief Bounding box structure to store its boundaries
+    /// min & max of x & y, and the label
     struct BoundingBox
     {
       uint minX;
@@ -69,7 +73,7 @@ namespace ignition
       /// \param[in] _type BoundingBox Type (Visible / Full)
       public: virtual void SetBoundingBoxType(BoundingBoxType _type) = 0;
 
-      /// \brief Draw bounding box on the givin image
+      /// \brief Draw a bounding box on the givin image in green color
       /// \param[in] data buffer contains the image data
       /// \param[in] box bounding box to draw
       public: virtual void DrawBoundingBox(unsigned char *_data,

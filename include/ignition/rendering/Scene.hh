@@ -1131,6 +1131,17 @@ namespace ignition
       /// force one flush per cubemap face, flushing a total of 3 times
       /// (one per cubemap).
       ///
+      /// ## Upper bound
+      ///
+      /// Once Scene::PostFrame is called, a flush is always forced.
+      ///
+      /// If you set a value of e.g. 6, but you have a single camera and call
+      /// PostRender, having a value of 1 or 6 won't matter as the result will
+      /// be exactly the same (in every term: performance, memory consumption)
+      ///
+      /// A value of 6 is like an upper bound.
+      /// We may queue _up to_ 6 render passes or less; but never more.
+      ///
       /// \remarks Not all rendering engines care about this.
       /// ogre2 plugin does.
       ///

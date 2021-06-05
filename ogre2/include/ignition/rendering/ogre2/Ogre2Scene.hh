@@ -95,11 +95,11 @@ namespace ignition
       public: virtual bool SkyEnabled() const override;
 
       // Documentation inherited.
-      public: virtual void SetNumCameraPassesPerGpuFlush(
+      public: virtual void SetCameraPassCountPerGpuFlush(
             uint8_t _numPass) override;
 
       // Documentation inherited.
-      public: virtual bool GetLegacyAutoGpuFlush() const override;
+      public: virtual bool LegacyAutoGpuFlush() const override;
 
       /// \brief Get a pointer to the ogre scene manager
       /// \return Pointer to the ogre scene manager
@@ -110,7 +110,7 @@ namespace ignition
 
       /// \cond PRIVATE
       /// \internal
-      /// \brief When GetLegacyAutoGpuFlush(), render targets will
+      /// \brief When LegacyAutoGpuFlush(), render targets will
       /// call this function at start to mimic legacy behavior
       public: void LegacyStartFrame();
 
@@ -118,12 +118,12 @@ namespace ignition
       /// \brief Every Render() function calls this function with
       /// the number of pass_scene passes it just performed, so
       /// that we decide if we should flush or not (based on
-      /// SetNumCameraPassesPerGpuFlush)
+      /// SetCameraPassCountPerGpuFlush)
       ///
       /// \param[in] _numPasses Number of pass_scene passes just performed
       /// (excluding shadow nodes', otherwise it becomes too unpredictable)
       /// \param[in] _startNewFrame whether we ignore
-      /// SetNumCameraPassesPerGpuFlush.
+      /// SetCameraPassCountPerGpuFlush.
       /// Only PostFrame should set this to true.
       public: void FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
                                                     bool _startNewFrame);
@@ -143,7 +143,7 @@ namespace ignition
       /// rendering anything (i.e. done inside PreRender)
       ///
       /// This is why every PreRender should be paired with a PostRender
-      /// call when in GetLegacyAutoGpuFlush == false
+      /// call when in LegacyAutoGpuFlush == false
       protected: void EndFrame();
 
       /// \internal

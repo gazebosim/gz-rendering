@@ -1118,7 +1118,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
-  if (this->scene->GetLegacyAutoGpuFlush())
+  if (this->scene->LegacyAutoGpuFlush())
     this->scene->LegacyStartFrame();
 
   this->UpdateRenderTarget1stPass();

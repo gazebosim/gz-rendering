@@ -526,14 +526,14 @@ namespace ignition
       public: virtual void PostRender() override;
 
       // Documentation inherited.
-      public: virtual void SetNumCameraPassesPerGpuFlush(
+      public: virtual void SetCameraPassCountPerGpuFlush(
             uint8_t _numPass) override;
 
       // Documentation inherited.
-      public: virtual uint8_t GetNumCameraPassesPerGpuFlush() const override;
+      public: virtual uint8_t GetCameraPassCountPerGpuFlush() const override;
 
       // Documentation inherited.
-      public: virtual bool GetLegacyAutoGpuFlush() const override;
+      public: virtual bool LegacyAutoGpuFlush() const override;
 
       protected: virtual unsigned int CreateObjectId();
 

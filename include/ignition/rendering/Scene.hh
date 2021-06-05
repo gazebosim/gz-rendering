@@ -1080,7 +1080,7 @@ namespace ignition
       /// \brief Call this function after you're done updating ALL cameras
       /// \remark Each PreRender must have a correspondent PostRender
       ///
-      /// \see Scene::SetNumCameraPassesPerGpuFlush
+      /// \see Scene::SetCameraPassCountPerGpuFlush
       public: virtual void PostRender() = 0;
 
       /// \brief
@@ -1138,19 +1138,19 @@ namespace ignition
       /// when to call PostRender and prefer to penalize rendering
       /// performance
       /// Value in range [1; 255] for
-      public: virtual void SetNumCameraPassesPerGpuFlush(uint8_t _numPass) = 0;
+      public: virtual void SetCameraPassCountPerGpuFlush(uint8_t _numPass) = 0;
 
-      /// \brief Returns the value set in SetNumCameraPassesPerGpuFlush
+      /// \brief Returns the value set in SetCameraPassCountPerGpuFlush
       /// \return Value in range [0; 255].
       /// ALWAYS returns 0 for plugins that ignore
-      /// SetNumCameraPassesPerGpuFlush
-      public: virtual uint8_t GetNumCameraPassesPerGpuFlush() const = 0;
+      /// SetCameraPassCountPerGpuFlush
+      public: virtual uint8_t GetCameraPassCountPerGpuFlush() const = 0;
 
-      /// \brief Checks if SetNumCameraPassesPerGpuFlush is 0
+      /// \brief Checks if SetCameraPassCountPerGpuFlush is 0
       /// \return True if Gazebo is using the old method (i.e. 0).
       /// ALWAYS returns true for plugins that ignore
-      /// SetNumCameraPassesPerGpuFlush
-      public: virtual bool GetLegacyAutoGpuFlush() const = 0;
+      /// SetCameraPassCountPerGpuFlush
+      public: virtual bool LegacyAutoGpuFlush() const = 0;
 
       /// \brief Remove and destroy all objects from the scene graph. This does
       /// not completely destroy scene resources, so new objects can be created

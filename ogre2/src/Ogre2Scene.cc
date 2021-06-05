@@ -84,7 +84,7 @@ class ignition::rendering::Ogre2ScenePrivate
   public: uint32_t currNumCameraPasses = 0u;
 
   /// \brief Flag to indicate if we should flush GPU very often (per camera)
-  public: uint8_t numCameraPassesPerGpuFlush = 1u;
+  public: uint8_t cameraPassCountPerGpuFlush = 0u;
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
@@ -156,7 +156,7 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
 //////////////////////////////////////////////////
 void Ogre2Scene::PreRender()
 {
-  IGN_ASSERT((this->GetLegacyAutoGpuFlush() ||
+  IGN_ASSERT((this->LegacyAutoGpuFlush() ||
               this->dataPtr->frameUpdateStarted == false),
              "Scene::PreRender called again before calling Scene::PostRender");
   this->dataPtr->frameUpdateStarted = true;
@@ -194,7 +194,7 @@ void Ogre2Scene::PreRender()
 
   BaseScene::PreRender();
 
-  if (!GetLegacyAutoGpuFlush())
+  if (!LegacyAutoGpuFlush())
   {
     auto engine = Ogre2RenderEngine::Instance();
     engine->OgreRoot()->_fireFrameStarted();
@@ -206,17 +206,17 @@ void Ogre2Scene::PreRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::PostRender()
 {
-  IGN_ASSERT((this->GetLegacyAutoGpuFlush() ||
+  IGN_ASSERT((this->LegacyAutoGpuFlush() ||
               this->dataPtr->frameUpdateStarted == true),
              "Scene::PostRender called again before calling Scene::PreRender");
   this->dataPtr->frameUpdateStarted = false;
 
-  if (dataPtr->numCameraPassesPerGpuFlush == 0u)
+  if (dataPtr->cameraPassCountPerGpuFlush == 0u)
   {
     ignwarn << "Calling Scene::PostRender but "
-               "SetNumCameraPassesPerGpuFlush is 0 (legacy mode for clients"
+               "SetCameraPassCountPerGpuFlush is 0 (legacy mode for clients"
                " not calling PostRender)."
-               "Read the documentation on SetNumCameraPassesPerGpuFlush, "
+               "Read the documentation on SetCameraPassCountPerGpuFlush, "
                "you very likely want to increase this number" << std::endl;
   }
   else
@@ -238,7 +238,7 @@ void Ogre2Scene::PostRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::LegacyStartFrame()
 {
-  IGN_ASSERT(this->GetLegacyAutoGpuFlush(),
+  IGN_ASSERT(this->LegacyAutoGpuFlush(),
              "Ogre2Scene::LegacyStartFrame must "
              "only be called in legacy mode");
 
@@ -254,14 +254,14 @@ void Ogre2Scene::FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
 {
   dataPtr->currNumCameraPasses += _numPasses;
 
-  if (dataPtr->currNumCameraPasses >= dataPtr->numCameraPassesPerGpuFlush ||
+  if (dataPtr->currNumCameraPasses >= dataPtr->cameraPassCountPerGpuFlush ||
       _startNewFrame)
   {
     dataPtr->currNumCameraPasses = 0;
     FlushGpuCommandsOnly();
 
     // Legacy mode requires to do EndFrame here every time
-    if (dataPtr->numCameraPassesPerGpuFlush == 0u)
+    if (dataPtr->cameraPassCountPerGpuFlush == 0u)
       EndFrame();
   }
 }
@@ -307,15 +307,15 @@ void Ogre2Scene::EndFrame()
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::SetNumCameraPassesPerGpuFlush(uint8_t _numPass)
+void Ogre2Scene::SetCameraPassCountPerGpuFlush(uint8_t _numPass)
 {
-  this->dataPtr->numCameraPassesPerGpuFlush = _numPass;
+  this->dataPtr->cameraPassCountPerGpuFlush = _numPass;
 }
 
 //////////////////////////////////////////////////
-bool Ogre2Scene::GetLegacyAutoGpuFlush() const
+bool Ogre2Scene::LegacyAutoGpuFlush() const
 {
-  return this->dataPtr->numCameraPassesPerGpuFlush == 0u;
+  return this->dataPtr->cameraPassCountPerGpuFlush == 0u;
 }
 
 //////////////////////////////////////////////////

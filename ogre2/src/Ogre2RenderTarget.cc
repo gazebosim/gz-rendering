@@ -425,7 +425,7 @@ void Ogre2RenderTarget::PostRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
-  if (this->scene->GetLegacyAutoGpuFlush())
+  if (this->scene->LegacyAutoGpuFlush())
     this->scene->LegacyStartFrame();
 
   this->ogreCompositorWorkspace->_validateFinalTarget();

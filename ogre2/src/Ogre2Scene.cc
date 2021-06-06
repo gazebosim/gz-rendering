@@ -236,6 +236,35 @@ void Ogre2Scene::PostRender()
 }
 
 //////////////////////////////////////////////////
+void Ogre2Scene::StartForcedRender()
+{
+  if (this->LegacyAutoGpuFlush() || !this->dataPtr->frameUpdateStarted)
+  {
+    this->ogreSceneManager->updateSceneGraph();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::EndForcedRender()
+{
+  dataPtr->currNumCameraPasses = 0;
+  FlushGpuCommandsOnly();
+
+  if (this->LegacyAutoGpuFlush() || !this->dataPtr->frameUpdateStarted)
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    auto ogreRoot = engine->OgreRoot();
+
+    auto itor = ogreRoot->getSceneManagerIterator();
+    while (itor.hasMoreElements())
+    {
+      Ogre::SceneManager *sceneManager = itor.getNext();
+      sceneManager->clearFrameData();
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2Scene::StartRendering()
 {
   if (this->LegacyAutoGpuFlush())

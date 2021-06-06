@@ -109,6 +109,25 @@ namespace ignition
       public: virtual void PostRender() override;
 
       /// \cond PRIVATE
+      /// \brief Certain functions like Ogre2Camera::VisualAt would
+      /// need to call PreRender and PostFrame, which is very unintuitive
+      /// and use hostile.
+      ///
+      /// More over, it's likely that we don't want to advance the frame
+      /// in those cases (e.g. particle FXs should not advance), but we
+      /// still have to initialize and cleanup Ogre once we're done.
+      ///
+      /// This function performs some PreRender steps but only if we're
+      /// not already inside PreRender/PostRender, necessary for rendering
+      /// Ogre2Camera::VisualAt (via Ogre2SelectionBuffer)
+      public: void StartForcedRender();
+
+      /// \brief Opposite of StartForcedRender
+      ///
+      /// This function performs some PostRender steps but only if we're
+      /// not already inside PreRender/PostRender pairs
+      public: void EndForcedRender();
+
       /// \internal
       /// \brief When LegacyAutoGpuFlush(), this function mimics
       /// legacy behavior.

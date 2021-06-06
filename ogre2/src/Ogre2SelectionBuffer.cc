@@ -127,7 +127,7 @@ void Ogre2SelectionBuffer::Update()
 
   this->dataPtr->materialSwitcher->Reset();
 
-  this->dataPtr->scene->StartRendering();
+  this->dataPtr->scene->StartForcedRender();
 
   // manual update
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
@@ -141,6 +141,8 @@ void Ogre2SelectionBuffer::Update()
   this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget( swappedTargets );
 
   this->dataPtr->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
+
+  this->dataPtr->scene->EndForcedRender();
 
   this->dataPtr->renderTexture->copyContentsToMemory(*this->dataPtr->pixelBox,
       Ogre::RenderTarget::FB_FRONT);

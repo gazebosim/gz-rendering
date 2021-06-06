@@ -84,7 +84,7 @@ class ignition::rendering::Ogre2ScenePrivate
   public: uint32_t currNumCameraPasses = 0u;
 
   /// \brief Flag to indicate if we should flush GPU very often (per camera)
-  public: uint8_t cameraPassCountPerGpuFlush = 0u;
+  public: uint8_t cameraPassCountPerGpuFlush = 6u;
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
@@ -294,7 +294,7 @@ void Ogre2Scene::FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
     FlushGpuCommandsOnly();
 
     // Legacy mode requires to do EndFrame here every time
-    if (dataPtr->cameraPassCountPerGpuFlush == 0u)
+    if (dataPtr->cameraPassCountPerGpuFlush == 0u || _startNewFrame)
       EndFrame();
   }
 }

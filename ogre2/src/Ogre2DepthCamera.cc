@@ -940,8 +940,7 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Render()
 {
-  if (this->scene->LegacyAutoGpuFlush())
-    this->scene->LegacyStartFrame();
+  this->scene->StartRendering();
 
   // update the compositors
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();

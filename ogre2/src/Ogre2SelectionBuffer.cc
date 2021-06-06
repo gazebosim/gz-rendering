@@ -127,8 +127,7 @@ void Ogre2SelectionBuffer::Update()
 
   this->dataPtr->materialSwitcher->Reset();
 
-  if (this->dataPtr->scene->LegacyAutoGpuFlush())
-    this->dataPtr->scene->LegacyStartFrame();
+  this->dataPtr->scene->StartRendering();
 
   // manual update
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();

@@ -236,16 +236,20 @@ void Ogre2Scene::PostRender()
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::LegacyStartFrame()
+void Ogre2Scene::StartRendering()
 {
-  IGN_ASSERT(this->LegacyAutoGpuFlush(),
-             "Ogre2Scene::LegacyStartFrame must "
-             "only be called in legacy mode");
+  if (this->LegacyAutoGpuFlush())
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    engine->OgreRoot()->_fireFrameStarted();
 
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->_fireFrameStarted();
-
-  this->ogreSceneManager->updateSceneGraph();
+    this->ogreSceneManager->updateSceneGraph();
+  }
+  else
+  {
+    IGN_ASSERT( this->dataPtr->frameUpdateStarted == true,
+                "Started rendering without first calling Scene::PreRender");
+  }
 }
 
 //////////////////////////////////////////////////

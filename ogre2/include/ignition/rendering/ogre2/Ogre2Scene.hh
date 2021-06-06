@@ -110,9 +110,10 @@ namespace ignition
 
       /// \cond PRIVATE
       /// \internal
-      /// \brief When LegacyAutoGpuFlush(), render targets will
-      /// call this function at start to mimic legacy behavior
-      public: void LegacyStartFrame();
+      /// \brief When LegacyAutoGpuFlush(), this function mimics
+      /// legacy behavior.
+      /// When not, it verifies PreRender has been called
+      public: void StartRendering();
 
       /// \internal
       /// \brief Every Render() function calls this function with
@@ -124,7 +125,7 @@ namespace ignition
       /// (excluding shadow nodes', otherwise it becomes too unpredictable)
       /// \param[in] _startNewFrame whether we ignore
       /// SetCameraPassCountPerGpuFlush.
-      /// Only PostFrame should set this to true.
+      /// Only PostRender should set this to true.
       public: void FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
                                                     bool _startNewFrame);
 
@@ -133,7 +134,7 @@ namespace ignition
       protected: void FlushGpuCommandsOnly();
 
       /// \internal
-      /// \brief Ends the frame, i.e. PostFrame wants to do this.
+      /// \brief Ends the frame, i.e. PostRender wants to do this.
       ///
       /// Ogre::SceneManager::updateSceneGraph can't be called again until
       /// this function is called

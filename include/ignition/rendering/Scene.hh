@@ -1133,7 +1133,7 @@ namespace ignition
       ///
       /// ## Upper bound
       ///
-      /// Once Scene::PostFrame is called, a flush is always forced.
+      /// Once Scene::PostRender is called, a flush is always forced.
       ///
       /// If you set a value of e.g. 6, but you have a single camera and call
       /// PostRender, having a value of 1 or 6 won't matter as the result will

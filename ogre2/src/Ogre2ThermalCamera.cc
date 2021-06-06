@@ -827,8 +827,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
 void Ogre2ThermalCamera::Render()
 {
   // update the compositors
-  if (this->scene->LegacyAutoGpuFlush())
-    this->scene->LegacyStartFrame();
+  this->scene->StartRendering();
 
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
   // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();

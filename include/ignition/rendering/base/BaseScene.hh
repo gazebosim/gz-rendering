@@ -538,8 +538,8 @@ namespace ignition
       /// \param[in] _name Name of segmentation camera
       /// \return Pointer to segmentation camera
       protected: virtual SegmentationCameraPtr CreateSegmentationCameraImpl(
-                     unsigned int _id,
-                     const std::string &_name)
+                     unsigned int /*_id*/,
+                     const std::string &/*_name*/)
                   {
                     ignerr << "Segmentation camera not supported by: "
                             << this->Engine()->Name() << std::endl;

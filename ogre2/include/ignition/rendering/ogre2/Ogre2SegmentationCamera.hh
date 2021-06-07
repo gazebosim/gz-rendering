@@ -77,7 +77,7 @@ namespace ignition
 
       /// \brief Get the segmentation image buffer
       /// \return buffer that holds segmentation data
-      public: virtual uint8_t *SegmentationData() const;
+      public: virtual uint8_t *SegmentationData() const override;
 
       // Documentation inherited
       public: virtual void PreRender() override;
@@ -93,7 +93,7 @@ namespace ignition
       public: virtual ignition::common::ConnectionPtr
         ConnectNewSegmentationFrame(
         std::function<void(const uint8_t *, unsigned int, unsigned int,
-        unsigned int, const std::string &)>  _subscriber);
+        unsigned int, const std::string &)>  _subscriber) override;
 
       /// \brief Create dummy render texture. Needed to satisfy inheritance
       /// and to set image's dims
@@ -101,28 +101,28 @@ namespace ignition
 
       /// \brief Set Segmentation Type (Semantic / Panoptic)
       /// \param[in] _type Segmentation Type (Semantic / Panoptic)
-      public: void SetSegmentationType(SegmentationType _type);
+      public: void SetSegmentationType(SegmentationType _type) override;
 
       /// \brief Enable Color map mode to generated colored semantics
       /// \param[in] _enable True to generate colored map, False to generate
       /// label id map
-      public: void EnableColoredMap(bool _enable);
+      public: void EnableColoredMap(bool _enable) override;
 
       /// \brief Set color for background & unlabeled items in the colored map
       /// \param[in] _color Color of background & unlabeled items
-      public: void SetBackgroundColor(math::Color _color);
+      public: void SetBackgroundColor(math::Color _color) override;
 
       /// \brief Set label for background & unlabeled items in the semantic map
       /// \param[in] _label label of background & unlabeled items
-      public: void SetBackgroundLabel(int _label);
+      public: void SetBackgroundLabel(int _label) override;
 
       /// \brief Get color for background & unlabeled items in the colored map
       /// \return Color of background & unlabeled items
-      public: math::Color BackgroundColor();
+      public: math::Color BackgroundColor() override;
 
       /// \brief Get label for background & unlabeled items in the semantic map
       /// \return label of background & unlabeled items
-      public: int BackgroundLabel();
+      public: int BackgroundLabel() override;
 
       /// \brief Get a pointer to the render target.
       /// \return Pointer to the render target

@@ -538,8 +538,8 @@ namespace ignition
       /// \param[in] _name Name of BoundingBox camera
       /// \return Pointer to BoundingBox camera
       protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
-                     unsigned int _id,
-                     const std::string &_name)
+                     unsigned int,
+                     const std::string &)
                   {
                     ignerr << "BoundingBox camera not supported by: "
                             << this->Engine()->Name() << std::endl;

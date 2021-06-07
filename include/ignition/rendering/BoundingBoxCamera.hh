@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BoundingBoxCAMERA_HH_
 
 #include <string>
+#include <vector>
 
 #include <ignition/common/Event.hh>
 #include "ignition/rendering/Camera.hh"
@@ -65,9 +66,8 @@ namespace ignition
       /// \brief Connect to the new BoundingBox info
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr
-        ConnectNewBoundingBoxes(
-          std::function<void(const std::vector<BoundingBox> &)>  _subscriber) = 0;
+      public: virtual ignition::common::ConnectionPtr ConnectNewBoundingBoxes(
+        std::function<void(const std::vector<BoundingBox> &)>  _subscriber) = 0;
 
       /// \brief Set BoundingBox Type (Visible / Full)
       /// \param[in] _type BoundingBox Type (Visible / Full)

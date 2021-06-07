@@ -26,6 +26,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ignition/rendering/base/BaseBoundingBoxCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"

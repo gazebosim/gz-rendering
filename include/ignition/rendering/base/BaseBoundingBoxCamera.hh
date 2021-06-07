@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BASE_BASEBOUNDINGBOXCAMERA_HH_
 
 #include <string>
+#include <vector>
 
 #include <ignition/common/Event.hh>
 
@@ -79,7 +80,7 @@ namespace ignition
     template <class T>
     ignition::common::ConnectionPtr BaseBoundingBoxCamera<T>::
       ConnectNewBoundingBoxes(
-        std::function<void(const std::vector<BoundingBox> &)>  _subscriber)
+        std::function<void(const std::vector<BoundingBox> &)>)
     {
       return nullptr;
     }

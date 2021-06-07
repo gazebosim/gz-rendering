@@ -264,10 +264,10 @@ int main(int _argc, char** _argv)
 
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
-  std::string engine("ogre");
+  std::string ogreEngineName("ogre");
   if (_argc > 1)
   {
-    engine = _argv[1];
+    ogreEngineName = _argv[1];
   }
 
   common::Console::SetVerbosity(4);
@@ -276,7 +276,7 @@ int main(int _argc, char** _argv)
   std::vector<LidarVisualPtr> nodes;
   std::vector<GpuRaysPtr> sensors;
 
-  engineNames.push_back(engine);
+  engineNames.push_back(ogreEngineName);
 
   for (auto engineName : engineNames)
   {

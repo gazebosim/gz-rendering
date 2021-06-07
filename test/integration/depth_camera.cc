@@ -766,20 +766,12 @@ void DepthCameraTest::DepthCameraParticles(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
-#ifdef __APPLE__
-TEST_P(DepthCameraTest, DISABLED_DepthCameraBoxes)
-#else
 TEST_P(DepthCameraTest, DepthCameraBoxes)
-#endif
 {
   DepthCameraBoxes(GetParam());
 }
 
-#ifdef __APPLE__
-TEST_P(DepthCameraTest, DISABLED_DepthCameraParticles)
-#else
 TEST_P(DepthCameraTest, DepthCameraParticles)
-#endif
 {
   DepthCameraParticles(GetParam());
 }

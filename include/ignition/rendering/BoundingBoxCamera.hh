@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <cstdint>
 
 #include <ignition/common/Event.hh>
 #include "ignition/rendering/Camera.hh"
@@ -40,11 +41,11 @@ namespace ignition
     /// min & max of x & y, and the label
     struct BoundingBox
     {
-      uint minX;
-      uint minY;
-      uint maxX;
-      uint maxY;
-      uint label;
+      uint32_t minX;
+      uint32_t minY;
+      uint32_t maxX;
+      uint32_t maxY;
+      uint32_t label;
     };
 
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {

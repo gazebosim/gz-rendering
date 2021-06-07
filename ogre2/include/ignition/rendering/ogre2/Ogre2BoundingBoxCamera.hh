@@ -83,17 +83,17 @@ namespace ignition
 
       /// \brief Get the BoundingBox image buffer
       /// \return buffer that holds BoundingBox data
-      public: virtual std::vector<BoundingBox> BoundingBoxData() const;
+      public: virtual std::vector<BoundingBox> BoundingBoxData() const override;
 
       /// \brief Subscribe to new BoundingBox frame event
       /// \param[in] _subscriber callback listener, called on each new frame
       public: virtual ignition::common::ConnectionPtr
         ConnectNewBoundingBoxes(
-          std::function<void(const std::vector<BoundingBox> &)>  _subscriber);
+          std::function<void(const std::vector<BoundingBox> &)>) override;
 
       /// \brief Set BoundingBox Type (Semantic / Panoptic)
       /// \param[in] _type BoundingBox Type (Semantic / Panoptic)
-      public: virtual void SetBoundingBoxType(BoundingBoxType _type);
+      public: virtual void SetBoundingBoxType(BoundingBoxType _type) override;
 
       /// \brief Create texture to hold ogre Ids to calculate the boundaries
       /// of each ogre id mask
@@ -143,7 +143,7 @@ namespace ignition
       /// \param[in] data buffer contains the image data
       /// \param[in] box bounding box to draw
       public: virtual void DrawBoundingBox(unsigned char *_data,
-        BoundingBox &_box);
+        BoundingBox &_box) override;
 
       /// \brief Convert from clip coord (after projection) to screen coord.
       /// \param[inout] minVertex min vertex in clip coord to screen coord

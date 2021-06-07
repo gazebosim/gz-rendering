@@ -86,7 +86,7 @@ namespace ignition
       private: std::string labelKey = "label";
 
       /// \brief Label for background pixels in the ogre Ids map
-      private: uint backgroundLabel {255};
+      private: uint32_t backgroundLabel {255};
 
       /// \brief Ogre2 Scene
       private: Ogre2ScenePtr scene;
@@ -186,7 +186,7 @@ void BoundingBoxMaterialSwitcher::preRenderTargetUpdate(
 
         // for full bbox, each pixel contains 1 channel for label
         // and 2 channels stores ogreId
-        uint ogreId = item->getId();
+        uint32_t ogreId = item->getId();
 
         float labelColor = label / 255.0;
         float ogreId1 = (ogreId / 256) / 255.0;
@@ -268,11 +268,11 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
 
   /// \brief map ogreId id to bounding box
   /// key: ogreId, value: bounding box contains max & min boundaries
-  public: std::map<uint, BoundingBox *> boundingboxes;
+  public: std::map<uint32_t, BoundingBox *> boundingboxes;
 
   /// \brief keep track of visible bounding boxes (used in filtering)
   /// key: ogreId, value: label id
-  public: std::map<uint, uint> visibleBoxesLabel;
+  public: std::map<uint32_t, uint32_t> visibleBoxesLabel;
 
   /// \brief output bounding boxes to nofity listeners
   public: std::vector<BoundingBox> output_boxes;
@@ -397,7 +397,7 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
   this->dataPtr->workspaceDefinition = "BoundingBoxCameraWorkspace_" +
     this->Name();
 
-  uint background = this->dataPtr->materialSwitcher->backgroundLabel;
+  uint32_t background = this->dataPtr->materialSwitcher->backgroundLabel;
   auto backgroundColor = Ogre::ColourValue(background, background, background);
 
   // basic workspace consist of clear pass with the givin color &
@@ -474,25 +474,25 @@ void Ogre2BoundingBoxCamera::PostRender()
 
 void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
 {
-  uint width = this->ImageWidth();
-  uint height = this->ImageHeight();
-  uint channelCount = 3;
+  uint32_t width = this->ImageWidth();
+  uint32_t height = this->ImageHeight();
+  uint32_t channelCount = 3;
 
   // find item's boundaries from panoptic BoundingBox
-  for (uint y = 0; y < height; y++)
+  for (uint32_t y = 0; y < height; y++)
   {
-    for (uint x = 0; x < width; x++)
+    for (uint32_t x = 0; x < width; x++)
     {
       auto index = (y * width + x) * channelCount;
 
-      uint label = this->dataPtr->buffer[index + 2];
-      uint ogreId1 = this->dataPtr->buffer[index + 1];
-      uint ogreId2 = this->dataPtr->buffer[index + 0];
+      uint32_t label = this->dataPtr->buffer[index + 2];
+      uint32_t ogreId1 = this->dataPtr->buffer[index + 1];
+      uint32_t ogreId2 = this->dataPtr->buffer[index + 0];
 
       if (label != this->dataPtr->materialSwitcher->backgroundLabel)
       {
         // get the OGRE id of 16 bit value
-        uint ogreId = ogreId1 * 256 + ogreId2;
+        uint32_t ogreId = ogreId1 * 256 + ogreId2;
 
         BoundingBox *box;
 
@@ -510,10 +510,10 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
         else
           box = this->dataPtr->boundingboxes[ogreId];
 
-        box->minX = std::min<uint>(box->minX, x);
-        box->minY = std::min<uint>(box->minY, y);
-        box->maxX = std::max<uint>(box->maxX, x);
-        box->maxY = std::max<uint>(box->maxY, y);
+        box->minX = std::min<uint32_t>(box->minX, x);
+        box->minY = std::min<uint32_t>(box->minY, y);
+        box->maxX = std::max<uint32_t>(box->maxX, x);
+        box->maxY = std::max<uint32_t>(box->maxY, y);
       }
     }
   }
@@ -524,25 +524,25 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
 
 void Ogre2BoundingBoxCamera::FullBoundingBoxes()
 {
-  uint width = this->ImageWidth();
-  uint height = this->ImageHeight();
-  uint channelCount = 3;
+  uint32_t width = this->ImageWidth();
+  uint32_t height = this->ImageHeight();
+  uint32_t channelCount = 3;
 
   // Filter bounding boxes
-  for (uint y = 0; y < height; y++)
+  for (uint32_t y = 0; y < height; y++)
   {
-    for (uint x = 0; x < width; x++)
+    for (uint32_t x = 0; x < width; x++)
     {
       auto index = (y * width + x) * channelCount;
 
-      uint label = this->dataPtr->buffer[index + 2];
+      uint32_t label = this->dataPtr->buffer[index + 2];
 
       if (label != this->dataPtr->materialSwitcher->backgroundLabel)
       {
         // get the ogre id encoded in 16 bit value
-        uint ogreId1 = this->dataPtr->buffer[index + 1];
-        uint ogreId2 = this->dataPtr->buffer[index + 0];
-        uint ogreId = ogreId1 * 256 + ogreId2;
+        uint32_t ogreId1 = this->dataPtr->buffer[index + 1];
+        uint32_t ogreId2 = this->dataPtr->buffer[index + 0];
+        uint32_t ogreId = ogreId1 * 256 + ogreId2;
 
         // mark the ogreId as visible not to filter its bbox
         if (!this->dataPtr->visibleBoxesLabel.count(ogreId))
@@ -562,7 +562,7 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
     Ogre::MeshPtr mesh = item->getMesh();
 
-    uint ogreId = item->getId();
+    uint32_t ogreId = item->getId();
 
     // Skip the items which is hidden in the ogreId map
     if (!this->dataPtr->visibleBoxesLabel.count(ogreId))
@@ -626,8 +626,8 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
 
   for (auto box : this->dataPtr->boundingboxes)
   {
-    uint ogreId = box.first;
-    uint label = this->dataPtr->visibleBoxesLabel[ogreId];
+    uint32_t ogreId = box.first;
+    uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
 
     box.second->label = label;
     this->dataPtr->output_boxes.push_back(*box.second);
@@ -726,12 +726,14 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
   math::Vector2 minVertex(_box.minX, _box.minY);
   math::Vector2 maxVertex(_box.maxX, _box.maxY);
 
-  uint width = this->ImageWidth();
+  uint32_t width = this->ImageWidth();
 
-  std::vector<uint> x_values = {uint(minVertex.X()), uint(maxVertex.X())};
-  std::vector<uint> y_values = {uint(minVertex.Y()), uint(maxVertex.Y())};
+  std::vector<uint32_t> x_values =
+    {uint(minVertex.X()), uint32_t(maxVertex.X())};
+  std::vector<uint32_t> y_values =
+    {uint(minVertex.Y()), uint32_t(maxVertex.Y())};
 
-  for (uint i = minVertex.Y(); i < maxVertex.Y(); i++)
+  for (uint32_t i = minVertex.Y(); i < maxVertex.Y(); i++)
   {
     for (auto j : x_values)
     {
@@ -743,7 +745,7 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
   }
   for (auto i : y_values)
   {
-    for (uint j = minVertex.X(); j < maxVertex.X(); j++)
+    for (uint32_t j = minVertex.X(); j < maxVertex.X(); j++)
     {
       auto index = (i * width + j) * 3;
       _data[index] = 0;
@@ -757,8 +759,8 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
 void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
   Ogre::Vector3 &minVertex, Ogre::Vector3 &maxVertex)
 {
-  uint width = this->ImageWidth();
-  uint height = this->ImageHeight();
+  uint32_t width = this->ImageWidth();
+  uint32_t height = this->ImageHeight();
 
   // clip the values outside the frustum range
   minVertex.x = std::clamp<double>(minVertex.x, -1.0, 1.0);
@@ -767,16 +769,16 @@ void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
   maxVertex.y = std::clamp<double>(maxVertex.y, -1.0, 1.0);
 
   // convert from [-1, 1] range to [0, 1] range & multiply by screen dims
-  minVertex.x = uint((minVertex.x + 1.0) / 2 * width );
-  minVertex.y = uint((1.0 - minVertex.y) / 2 * height);
-  maxVertex.x = uint((maxVertex.x + 1.0) / 2 * width );
-  maxVertex.y = uint((1.0 - maxVertex.y) / 2 * height);
+  minVertex.x = uint32_t((minVertex.x + 1.0) / 2 * width );
+  minVertex.y = uint32_t((1.0 - minVertex.y) / 2 * height);
+  maxVertex.x = uint32_t((maxVertex.x + 1.0) / 2 * width );
+  maxVertex.y = uint32_t((1.0 - maxVertex.y) / 2 * height);
 
   // clip outside screen boundries
-  minVertex.x = std::max<uint>(0, minVertex.x);
-  minVertex.y = std::max<uint>(0, minVertex.y);
-  maxVertex.x = std::min<uint>(maxVertex.x, width - 1);
-  maxVertex.y = std::min<uint>(maxVertex.y, height - 1);
+  minVertex.x = std::max<uint32_t>(0, minVertex.x);
+  minVertex.y = std::max<uint32_t>(0, minVertex.y);
+  maxVertex.x = std::min<uint32_t>(maxVertex.x, width - 1);
+  maxVertex.y = std::min<uint32_t>(maxVertex.y, height - 1);
 }
 
 /////////////////////////////////////////////////

@@ -118,6 +118,10 @@ namespace ignition
       /// \return True if wireframe is enabled for this visual.
       public: virtual bool Wireframe() const = 0;
 
+      /// \brief Set the transparency of this visual
+      /// \param[in] _transp Value of the transparency
+      public: virtual void SetTransparency(double _transp) = 0;
+
       /// \brief Specify if this visual is visible
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;

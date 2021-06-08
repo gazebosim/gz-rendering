@@ -100,6 +100,68 @@ bool OgreVisual::Wireframe() const
 }
 
 //////////////////////////////////////////////////
+void OgreVisual::SetTransparency(double _transp)
+{
+  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
+      i++)
+  {
+    Ogre::Entity *entity = nullptr;
+    Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+
+    entity = dynamic_cast<Ogre::Entity*>(obj);
+
+    if (!entity)
+      continue;
+
+    // For each ogre::entity
+    for (unsigned int j = 0; j < entity->getNumSubEntities(); j++)
+    {
+      Ogre::SubEntity *subEntity = entity->getSubEntity(j);
+      Ogre::MaterialPtr entityMaterial = subEntity->getMaterial();
+      if (entityMaterial.isNull())
+        continue;
+
+      unsigned int techniqueCount, passCount;
+      Ogre::Technique *technique;
+      Ogre::Pass *pass;
+      Ogre::ColourValue dc;
+
+      for (techniqueCount = 0;
+           techniqueCount < entityMaterial->getNumTechniques();
+           ++techniqueCount)
+      {
+        technique = entityMaterial->getTechnique(techniqueCount);
+
+        for (passCount = 0; passCount < technique->getNumPasses(); passCount++)
+        {
+          pass = technique->getPass(passCount);
+          pass->setDepthWriteEnabled(false);
+          pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+
+          dc = pass->getDiffuse();
+          dc.a = (1.0f - _transp);
+          pass->setDiffuse(dc);
+
+          for (unsigned int unitStateCount = 0; unitStateCount <
+              pass->getNumTextureUnitStates(); ++unitStateCount)
+          {
+            auto textureUnitState = pass->getTextureUnitState(unitStateCount);
+
+            if (textureUnitState->getColourBlendMode().operation ==
+                Ogre::LBX_SOURCE1)
+            {
+              textureUnitState->setAlphaOperation(
+                  Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT,
+                  1.0 - _transp);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 void OgreVisual::SetVisible(bool _visible)
 {
   this->ogreNode->setVisible(_visible);

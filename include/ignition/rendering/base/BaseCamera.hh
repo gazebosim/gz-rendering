@@ -257,7 +257,7 @@ namespace ignition
       protected: math::Matrix4d projectionMatrix;
 
       /// \brief Camera projection type
-      protected: CameraProjectionType projectionType;
+      protected: CameraProjectionType projectionType = CPT_PERSPECTIVE;
 
       friend class BaseDepthCamera<T>;
     };

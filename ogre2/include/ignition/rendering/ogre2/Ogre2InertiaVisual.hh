@@ -52,6 +52,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void PreRender() override;
 
+      // Documentation inherited.
+      protected: virtual void Destroy() override;
+
       /// \brief Load the Inertia visual from its pose and scale
       /// \param[in] _pose Pose of the Inertia visual
       /// \param[in] _scale Scale factor of the box visual

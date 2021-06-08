@@ -64,6 +64,16 @@ void Ogre2InertiaVisual::Init()
 }
 
 //////////////////////////////////////////////////
+void Ogre2InertiaVisual::Destroy()
+{
+  if (this->dataPtr->boxVis != nullptr)
+  {
+    this->dataPtr->boxVis->Destroy();
+  }
+  BaseInertiaVisual::Destroy();
+}
+
+//////////////////////////////////////////////////
 void Ogre2InertiaVisual::Load(const ignition::math::Pose3d &_pose,
                               const ignition::math::Vector3d &_scale)
 {

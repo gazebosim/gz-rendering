@@ -74,6 +74,8 @@ fragment_program DepthCameraFinalFS glsl
   default_params
   {
     param_named inputTexture int 0
+
+    param_named_auto texResolution texture_size 0
   }
 }
 

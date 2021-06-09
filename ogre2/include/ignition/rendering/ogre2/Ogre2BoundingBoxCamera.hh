@@ -91,9 +91,13 @@ namespace ignition
         ConnectNewBoundingBoxes(
           std::function<void(const std::vector<BoundingBox> &)>) override;
 
-      /// \brief Set BoundingBox Type (Semantic / Panoptic)
-      /// \param[in] _type BoundingBox Type (Semantic / Panoptic)
+      /// \brief Set BoundingBox Type (Full / Visible)
+      /// \param[in] _type BoundingBox Type (Full / Visible)
       public: virtual void SetBoundingBoxType(BoundingBoxType _type) override;
+
+      /// \brief Get the BoundingBox Type (Full / Visible)
+      /// \return BoundingBox Type (Full / Visible)
+      public: virtual BoundingBoxType Type() override;
 
       /// \brief Create texture to hold ogre Ids to calculate the boundaries
       /// of each ogre id mask

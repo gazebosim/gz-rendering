@@ -729,9 +729,9 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
   uint32_t width = this->ImageWidth();
 
   std::vector<uint32_t> x_values =
-    {uint(minVertex.X()), uint32_t(maxVertex.X())};
+    {uint32_t(minVertex.X()), uint32_t(maxVertex.X())};
   std::vector<uint32_t> y_values =
-    {uint(minVertex.Y()), uint32_t(maxVertex.Y())};
+    {uint32_t(minVertex.Y()), uint32_t(maxVertex.Y())};
 
   for (uint32_t i = minVertex.Y(); i < maxVertex.Y(); i++)
   {
@@ -817,3 +817,8 @@ void Ogre2BoundingBoxCamera::SetBoundingBoxType(BoundingBoxType _type)
   this->dataPtr->type = _type;
 }
 
+/////////////////////////////////////////////////
+BoundingBoxType Ogre2BoundingBoxCamera::Type()
+{
+  return this->dataPtr->type;
+}

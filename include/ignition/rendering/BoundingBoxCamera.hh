@@ -74,6 +74,10 @@ namespace ignition
       /// \param[in] _type BoundingBox Type (Visible / Full)
       public: virtual void SetBoundingBoxType(BoundingBoxType _type) = 0;
 
+      /// \brief Get the BoundingBox Type (Visible / Full)
+      /// \return BoundingBox Type (Visible / Full)
+      public: virtual BoundingBoxType Type() = 0;
+
       /// \brief Draw a bounding box on the givin image in green color
       /// \param[in] data buffer contains the image data
       /// \param[in] box bounding box to draw

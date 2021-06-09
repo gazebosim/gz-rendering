@@ -53,6 +53,9 @@ namespace ignition
       public: virtual void SetBoundingBoxType(BoundingBoxType _type);
 
       // Documentation inherited
+      public: virtual BoundingBoxType Type();
+
+      // Documentation inherited
       public: virtual void DrawBoundingBox(unsigned char *_data,
         BoundingBox &_box);
     };
@@ -89,6 +92,13 @@ namespace ignition
     template <class T>
     void BaseBoundingBoxCamera<T>::SetBoundingBoxType(BoundingBoxType)
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BoundingBoxType BaseBoundingBoxCamera<T>::Type()
+    {
+      return BoundingBoxType::VisibleBox;
     }
 
     //////////////////////////////////////////////////

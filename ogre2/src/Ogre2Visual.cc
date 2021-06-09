@@ -29,7 +29,9 @@
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
+#include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <OgreItem.h>
+#include <OgreTechnique.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -94,6 +96,32 @@ void Ogre2Visual::SetWireframe(bool _show)
 bool Ogre2Visual::Wireframe() const
 {
   return this->dataPtr->wireframe;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Visual::SetTransparency(double _transp)
+{
+  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
+      i++)
+  {
+    Ogre::Item *item = nullptr;
+    Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+
+    item = dynamic_cast<Ogre::Item*>(obj);
+
+    if (!item)
+      continue;
+
+    for (unsigned int j = 0; j < item->getNumSubItems(); j++)
+    {
+      Ogre::SubItem *subItem = item->getSubItem(j);
+
+      auto datablock = subItem->getDatablock();
+      auto pbsblock = dynamic_cast<Ogre::HlmsPbsDatablock *>(datablock);
+      if (pbsblock)
+        pbsblock->setTransparency(1.0 - _transp);
+    }
+  }
 }
 
 //////////////////////////////////////////////////

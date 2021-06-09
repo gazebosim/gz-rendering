@@ -249,6 +249,8 @@ void DepthCameraTest::DepthCameraBoxes(
       unsigned int ma = *mrgba >> 0 & 0xFF;
       EXPECT_EQ(0u, mr);
       EXPECT_EQ(0u, mg);
+      // Note: If it fails here, it may be this problem again:
+      // https://github.com/ignitionrobotics/ign-rendering/issues/332
       EXPECT_GT(mb, 0u);
       EXPECT_EQ(255u, ma);
 
@@ -441,6 +443,8 @@ void DepthCameraTest::DepthCameraBoxes(
           unsigned int a = *rgba >> 0 & 0xFF;
           EXPECT_EQ(0u, r);
           EXPECT_EQ(0u, g);
+          // Note: If it fails here, it may be this problem again:
+          // https://github.com/ignitionrobotics/ign-rendering/issues/332
           EXPECT_GT(b, 0u);
           EXPECT_EQ(255u, a);
         }

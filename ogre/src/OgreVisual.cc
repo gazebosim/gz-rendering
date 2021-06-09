@@ -17,6 +17,7 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 #include "ignition/rendering/ogre/OgreWireBox.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
@@ -31,6 +32,9 @@ class ignition::rendering::OgreVisualPrivate
 {
   /// \brief True if wireframe mode is enabled
   public: bool wireframe;
+
+  /// \brief Value of the transparency for this visual
+  public: double transparency;
 };
 
 //////////////////////////////////////////////////
@@ -100,13 +104,13 @@ bool OgreVisual::Wireframe() const
 }
 
 //////////////////////////////////////////////////
-void OgreVisual::SetTransparency(double _transp)
+void OgreVisual::SetTransparencyInnerLoop(Ogre::SceneNode *_sceneNode)
 {
-  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
+  for (unsigned int i = 0; i < _sceneNode->numAttachedObjects();
       i++)
   {
     Ogre::Entity *entity = nullptr;
-    Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+    Ogre::MovableObject *obj = _sceneNode->getAttachedObject(i);
 
     entity = dynamic_cast<Ogre::Entity*>(obj);
 
@@ -139,7 +143,7 @@ void OgreVisual::SetTransparency(double _transp)
           pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
 
           dc = pass->getDiffuse();
-          dc.a = (1.0f - _transp);
+          dc.a = (1.0 - this->dataPtr->transparency);
           pass->setDiffuse(dc);
 
           for (unsigned int unitStateCount = 0; unitStateCount <
@@ -152,13 +156,52 @@ void OgreVisual::SetTransparency(double _transp)
             {
               textureUnitState->setAlphaOperation(
                   Ogre::LBX_SOURCE1, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT,
-                  1.0 - _transp);
+                  1.0 - this->dataPtr->transparency);
             }
           }
         }
       }
     }
   }
+}
+
+//////////////////////////////////////////////////
+void OgreVisual::UpdateTransparency(const bool _cascade)
+{
+  this->SetTransparencyInnerLoop(this->ogreNode);
+
+  auto childNodes = std::dynamic_pointer_cast<OgreNodeStore>(this->Children());
+  if (!childNodes)
+    return;
+
+  for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+  {
+    NodePtr child = it->second;
+    OgreVisualPtr visual = std::dynamic_pointer_cast<OgreVisual>(child);
+    if (visual)
+      visual->SetTransparency(_cascade);
+  }
+
+  if (this->Scene()->IsInitialized())
+    OgreRTShaderSystem::Instance()->UpdateShaders();
+}
+
+//////////////////////////////////////////////////
+void OgreVisual::SetTransparency(double _trans)
+{
+  if (ignition::math::equal(this->dataPtr->transparency, _trans))
+    return;
+
+  this->dataPtr->transparency = std::min(
+      std::max(_trans, 0.0), 1.0);
+
+  this->UpdateTransparency(true);
+}
+
+//////////////////////////////////////////////////
+double OgreVisual::Transparency() const
+{
+  return this->dataPtr->transparency;
 }
 
 //////////////////////////////////////////////////

@@ -58,6 +58,9 @@ class VisualTest : public testing::Test,
 
   /// \brief Test changing to wireframe
   public: void Wireframe(const std::string &_renderEngine);
+
+  /// \brief Test changing transparency
+  public: void Transparency(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -578,6 +581,35 @@ void VisualTest::Wireframe(const std::string &_renderEngine)
 TEST_P(VisualTest, Wireframe)
 {
   Wireframe(GetParam());
+}
+
+/////////////////////////////////////////////////
+void VisualTest::Transparency(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene8");
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+  EXPECT_DOUBLE_EQ(0.0, visual->Transparency());
+
+  // set transparency
+  visual->SetTransparency(0.5);
+  EXPECT_DOUBLE_EQ(0.5, visual->Transparency());
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, Transparency)
+{
+  Transparency(GetParam());
 }
 
 

@@ -44,6 +44,9 @@ class ignition::rendering::Ogre2VisualPrivate
 {
   /// \brief True if wireframe mode is enabled
   public: bool wireframe;
+
+  /// \brief Value of the transparency for this visual
+  public: double transparency;
 };
 
 //////////////////////////////////////////////////
@@ -99,13 +102,13 @@ bool Ogre2Visual::Wireframe() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Visual::SetTransparency(double _transp)
+void Ogre2Visual::SetTransparencyInnerLoop(Ogre::SceneNode *_sceneNode)
 {
-  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
+  for (unsigned int i = 0; i < _sceneNode->numAttachedObjects();
       i++)
   {
     Ogre::Item *item = nullptr;
-    Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+    Ogre::MovableObject *obj = _sceneNode->getAttachedObject(i);
 
     item = dynamic_cast<Ogre::Item*>(obj);
 
@@ -119,9 +122,45 @@ void Ogre2Visual::SetTransparency(double _transp)
       auto datablock = subItem->getDatablock();
       auto pbsblock = dynamic_cast<Ogre::HlmsPbsDatablock *>(datablock);
       if (pbsblock)
-        pbsblock->setTransparency(1.0 - _transp);
+        pbsblock->setTransparency(1.0 - this->dataPtr->transparency);
     }
   }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Visual::UpdateTransparency(const bool _cascade)
+{
+  this->SetTransparencyInnerLoop(this->ogreNode);
+
+  auto childNodes = std::dynamic_pointer_cast<Ogre2NodeStore>(this->Children());
+  if (!childNodes)
+    return;
+
+  for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
+  {
+    NodePtr child = it->second;
+    Ogre2VisualPtr visual = std::dynamic_pointer_cast<Ogre2Visual>(child);
+    if (visual)
+      visual->SetTransparency(_cascade);
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Visual::SetTransparency(double _trans)
+{
+  if (ignition::math::equal(this->dataPtr->transparency, _trans))
+    return;
+
+  this->dataPtr->transparency = std::min(
+      std::max(_trans, 0.0), 1.0);
+
+  this->UpdateTransparency(true);
+}
+
+//////////////////////////////////////////////////
+double Ogre2Visual::Transparency() const
+{
+  return this->dataPtr->transparency;
 }
 
 //////////////////////////////////////////////////

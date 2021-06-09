@@ -50,7 +50,10 @@ namespace ignition
       public: virtual bool Wireframe() const override;
 
       // Documentation inherited
-      public: virtual void SetTransparency(double _transp) override;
+      public: virtual void SetTransparency(double _trans) override;
+
+      // Documentation inherited.
+      public: virtual double Transparency() const override;
 
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
@@ -65,6 +68,14 @@ namespace ignition
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
                   const override;
+
+      /// \brief Helper function to update the transparency of the visual
+      /// \param[in] _cascade True to update the children's transparency too.
+      private: void UpdateTransparency(const bool _cascade = true);
+
+      /// \brief Set the transparency of a single visual
+      /// \param[in] _sceneNode The target scene node.
+      private: void SetTransparencyInnerLoop(Ogre::SceneNode *_sceneNode);
 
       /// \brief Recursively loop through this visual's children
       /// to obtain the bounding box.

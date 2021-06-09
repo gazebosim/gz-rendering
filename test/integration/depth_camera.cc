@@ -469,11 +469,7 @@ void DepthCameraTest::DepthCameraBoxes(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
-#ifdef __APPLE__
-TEST_P(DepthCameraTest, DISABLED_DepthCameraBoxes)
-#else
 TEST_P(DepthCameraTest, DepthCameraBoxes)
-#endif
 {
   DepthCameraBoxes(GetParam());
 }

@@ -111,11 +111,12 @@ void Ogre2Material::Destroy()
 
   Ogre::TextureGpu* textureToRemove = nullptr;
   bool textureIsUse = false;
-  // Check each material from each Hlms (except low level) to see if their material is
-  // currently in use. If it's not, then its textures may be not either
+  // Check each material from each Hlms (except low level) to see if their
+  // material is currently in use. If it's not, then its textures may be
+  // not either
   for (size_t i = Ogre::HLMS_PBS; i < Ogre::HLMS_MAX; ++i)
   {
-    Ogre::Hlms *hlms = hlmsManager->getHlms( static_cast<Ogre::HlmsTypes>( i ) );
+    Ogre::Hlms *hlms = hlmsManager->getHlms(static_cast<Ogre::HlmsTypes>(i));
 
     if(hlms)
     {
@@ -133,7 +134,7 @@ void Ogre2Material::Destroy()
           for (size_t texUnit = 0; texUnit < Ogre::NUM_PBSM_TEXTURE_TYPES;
             ++texUnit)
           {
-            //Check each texture from the material
+            // Check each texture from the material
             Ogre::TextureGpu *tex = derivedDatablock->getTexture(texUnit);
             if (tex)
             {

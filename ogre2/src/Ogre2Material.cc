@@ -98,9 +98,12 @@ void Ogre2Material::Destroy()
   Ogre::TextureGpuManager *textureManager =
     root->getRenderSystem()->getTextureGpuManager();
 
-  textureManager->setStagingTextureMaxBudgetBytes( 8u * 1024u * 1024u );
-  textureManager->setWorkerThreadMaxPreloadBytes( 8u * 1024u * 1024u );
-  textureManager->setWorkerThreadMaxPerStagingTextureRequestBytes( 4u * 1024u * 1024u );
+  textureManager->setStagingTextureMaxBudgetBytes(
+    8u * 1024u * 1024u);
+  textureManager->setWorkerThreadMaxPreloadBytes(
+    8u * 1024u * 1024u);
+  textureManager->setWorkerThreadMaxPerStagingTextureRequestBytes(
+    4u * 1024u * 1024u);
 
   Ogre::TextureGpuManager::BudgetEntryVec budget;
   textureManager->setWorkerThreadMinimumBudget( budget );
@@ -110,7 +113,7 @@ void Ogre2Material::Destroy()
   bool textureIsUse = false;
   // Check each material from each Hlms (except low level) to see if their material is
   // currently in use. If it's not, then its textures may be not either
-  for (size_t i=Ogre::HLMS_PBS; i<Ogre::HLMS_MAX; ++i)
+  for (size_t i = Ogre::HLMS_PBS; i < Ogre::HLMS_MAX; ++i)
   {
     Ogre::Hlms *hlms = hlmsManager->getHlms( static_cast<Ogre::HlmsTypes>( i ) );
 
@@ -134,8 +137,8 @@ void Ogre2Material::Destroy()
             Ogre::TextureGpu *tex = derivedDatablock->getTexture(texUnit);
             if (tex)
             {
-              // If getLinkedRenderables is empty, then the material is not in use,
-              // and thus so is potentially the texture
+              // If getLinkedRenderables is empty, then the material is
+              // not in use, and thus so is potentially the texture
               if (!itor->second.datablock->getLinkedRenderables().empty())
               {
                 if (tex->getNameStr() == this->textureName)
@@ -639,7 +642,8 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
   this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
 
-  this->dataPtr->hashName = this->ogreDatablock->getTexture(0)->getName().getFriendlyText();
+  this->dataPtr->hashName =
+    this->ogreDatablock->getTexture(0)->getName().getFriendlyText();
 
   // disable alpha from texture if texture does not have an alpha channel
   // otherwise this becomes a transparent material

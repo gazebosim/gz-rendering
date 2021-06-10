@@ -354,7 +354,6 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
       EXPECT_NEAR(0u, mr, colorNoiseTol);
       EXPECT_NEAR(0u, mg, colorNoiseTol);
       EXPECT_GT(mb, 0u);
-      EXPECT_EQ(255u, ma);
 
       // Far left and right points should be red (background color)
       float lc = pointCloudData[pcLeft + 3];
@@ -367,7 +366,6 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
       EXPECT_NEAR(255u, lr, colorNoiseTol);
       EXPECT_NEAR(0u, lg, colorNoiseTol);
       EXPECT_NEAR(0u, lb, colorNoiseTol);
-      EXPECT_EQ(255u, la);
 
       float rc = pointCloudData[pcRight + 3];
       uint32_t *rrgba = reinterpret_cast<uint32_t *>(&rc);
@@ -379,7 +377,16 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
       EXPECT_NEAR(255u, rr, colorNoiseTol);
       EXPECT_NEAR(0u, rg, colorNoiseTol);
       EXPECT_NEAR(0u, rb, colorNoiseTol);
-      EXPECT_EQ(255u, ra);
+
+      // Note: internal texture format used is RGB with no alpha channel
+      // We observed the values can be either 255 or 0 but graphics card
+      // drivers are free to fill it with any value they want.
+      // This should be fixed in ogre 2.2 in ign-rendering6 which forbids
+      // the use of RGB format.
+      // see https://github.com/ignitionrobotics/ign-rendering/issues/315
+      EXPECT_TRUE(255u == ma || 0u == ma);
+      EXPECT_TRUE(255u == la || 0u == la);
+      EXPECT_TRUE(255u == ra || 0u == ra);
     }
 
     // Clean up
@@ -399,11 +406,7 @@ TEST_P(RenderPassTest, GaussianNoise)
 }
 
 /////////////////////////////////////////////////
-#ifdef __APPLE__
-TEST_P(RenderPassTest, DISABLED_DepthGaussianNoise)
-#else
 TEST_P(RenderPassTest, DepthGaussianNoise)
-#endif
 {
   DepthGaussianNoise(GetParam());
 }

@@ -107,6 +107,25 @@ bool OgreMeshFactory::IsLoaded(const MeshDescriptor &_desc)
 }
 
 //////////////////////////////////////////////////
+void OgreMeshFactory::ClearMaterialsCache(const std::string &_name)
+{
+  auto it = this->materialCache.begin();
+  for (auto &mat : this->materialCache)
+  {
+    std::string matName = mat->Name();
+    std::string textureName = mat->Texture();
+    if (textureName == _name)
+    {
+      this->scene->UnregisterMaterial(matName);
+      break;
+    }
+    ++it;
+  }
+  if (it != this->materialCache.end())
+    this->materialCache.erase(it);
+}
+
+//////////////////////////////////////////////////
 bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 {
   Ogre::MeshPtr ogreMesh;
@@ -281,7 +300,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       // see `https://ogrecave.github.io/ogre/api/1.11/_animation.html` under,
       // `Vertex buffer arrangements`.
       currOffset = 0;
-      if (subMesh.TexCoordCount() > 0)
+      if (subMesh.TexCoordCountBySet(0) > 0)
       {
         vertexDecl->addElement(1, currOffset, Ogre::VET_FLOAT2,
             Ogre::VES_TEXTURE_COORDINATES, 0);
@@ -297,7 +316,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
                  Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
                  false);
 
-      if (subMesh.TexCoordCount() > 0)
+      if (subMesh.TexCoordCountBySet(0) > 0)
       {
         texBuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
             vertexDecl->getVertexSize(1),
@@ -310,7 +329,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       vertices = static_cast<float *>(vBuf->lock(
                       Ogre::HardwareBuffer::HBL_DISCARD));
 
-      if (subMesh.TexCoordCount() > 0)
+      if (subMesh.TexCoordCountBySet(0) > 0)
       {
         vertexData->vertexBufferBinding->setBinding(1, texBuf);
         texMappings = static_cast<float *>(texBuf->lock(
@@ -378,10 +397,10 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
           *vertices++ = subMesh.Normal(j).Z();
         }
 
-        if (subMesh.TexCoordCount() > 0)
+        if (subMesh.TexCoordCountBySet(0) > 0)
         {
-          *texMappings++ = subMesh.TexCoord(j).X();
-          *texMappings++ = subMesh.TexCoord(j).Y();
+          *texMappings++ = subMesh.TexCoordBySet(j, 0).X();
+          *texMappings++ = subMesh.TexCoordBySet(j, 0).Y();
         }
       }
 
@@ -396,6 +415,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       if (material)
       {
         mat->CopyFrom(*material);
+        materialCache.push_back(mat);
       }
       else
       {

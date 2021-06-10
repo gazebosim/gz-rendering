@@ -200,6 +200,10 @@ namespace ignition
 
       protected: virtual MaterialMapPtr Materials() const override;
 
+      /// \brief Remove internal material cache for a specific material
+      /// \param[in] _name Name of the template material to remove.
+      public: void ClearMaterialsCache(const std::string &_name);
+
       private: void CreateContext();
 
       private: void CreateRootVisual();

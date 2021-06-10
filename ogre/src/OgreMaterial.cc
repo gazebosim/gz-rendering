@@ -44,11 +44,18 @@ void OgreMaterial::Destroy()
 {
   if (!this->Scene()->IsInitialized())
     return;
-
+  std::string materialName;
   Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
 #if OGRE_VERSION_LT_1_10_1
   if (!this->ogreMaterial.isNull())
   {
+    materialName = this->ogreMaterial->getName();
+
+    this->ogreTexState->setBlank();
+    auto indexUnitStateToRemove =
+      this->ogrePass->getTextureUnitStateIndex(this->ogreTexState);
+    this->ogrePass->removeTextureUnitState(indexUnitStateToRemove);
+
     matManager.remove(this->ogreMaterial->getName());
     this->ogreMaterial.setNull();
   }
@@ -59,6 +66,32 @@ void OgreMaterial::Destroy()
     this->ogreMaterial.reset();
   }
 #endif
+  auto &textureManager = Ogre::TextureManager::getSingleton();
+  auto iend = textureManager.getResourceIterator().end();
+  for (auto i = textureManager.getResourceIterator().begin(); i != iend;)
+  {
+    // A use count of 4 means that only RGM, RM and MeshManager have
+    // references RGM has one (this one) and RM has 2 (by name and by handle)
+    // and MeshManager keep another one int the template
+    Ogre::Resource* res = i->second.get();
+    if (i->second.useCount() == 4)
+    {
+      if (this->textureName == res->getName() &&
+        res->getName().find(
+          scene->Name() + "::RenderTexture") == std::string::npos)
+      {
+        OgreScenePtr s = std::dynamic_pointer_cast<OgreScene>(this->Scene());
+        s->ClearMaterialsCache(this->textureName);
+        this->Scene()->UnregisterMaterial(materialName);
+        if (i->second.useCount() == 3)
+        {
+          textureManager.remove(res->getHandle());
+        }
+        break;
+      }
+    }
+    ++i;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -363,6 +396,28 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
       int value;
       name_param.second.Value(&value);
       _ogreParams->setNamedConstant(name_param.first, value);
+    }
+    else if (ShaderParam::PARAM_FLOAT_BUFFER == name_param.second.Type())
+    {
+      std::shared_ptr<void> buffer;
+      name_param.second.Buffer(buffer);
+      uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
+      _ogreParams->setNamedConstant(name_param.first,
+          reinterpret_cast<float*>(buffer.get()), count, multiple);
+    }
+    else if (ShaderParam::PARAM_INT_BUFFER == name_param.second.Type())
+    {
+      std::shared_ptr<void> buffer;
+      name_param.second.Buffer(buffer);
+      uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
+      _ogreParams->setNamedConstant(name_param.first,
+        reinterpret_cast<int*>(buffer.get()), count, multiple);
     }
   }
 }

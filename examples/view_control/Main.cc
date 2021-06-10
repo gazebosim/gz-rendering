@@ -158,17 +158,19 @@ int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
 
-  std::string engine("ogre");
+  // Expose engine name to command line because we can't instantiate both
+  // ogre and ogre2 at the same time
+  std::string ogreEngineName("ogre");
   if (_argc > 1)
   {
-    engine = _argv[1];
+    ogreEngineName = _argv[1];
   }
 
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back(engine);
+  engineNames.push_back(ogreEngineName);
   engineNames.push_back("optix");
   for (auto engineName : engineNames)
   {

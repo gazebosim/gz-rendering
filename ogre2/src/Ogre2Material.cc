@@ -28,6 +28,7 @@
 #include <OgreMaterialManager.h>
 #include <OgrePixelFormatGpuUtils.h>
 #include <OgreTextureGpuManager.h>
+#include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -46,6 +47,9 @@
 /// \brief Private data for the Ogre2Material class
 class ignition::rendering::Ogre2MaterialPrivate
 {
+  /// \brief Ogre stores the name using hashes. This variable will
+  /// store the material hash name
+  public: std::string hashName;
 };
 
 using namespace ignition;
@@ -89,6 +93,86 @@ void Ogre2Material::Destroy()
     matManager.remove(this->ogreMaterial);
     this->ogreMaterial.reset();
   }
+
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureManager =
+    root->getRenderSystem()->getTextureGpuManager();
+
+  textureManager->setStagingTextureMaxBudgetBytes( 8u * 1024u * 1024u );
+  textureManager->setWorkerThreadMaxPreloadBytes( 8u * 1024u * 1024u );
+  textureManager->setWorkerThreadMaxPerStagingTextureRequestBytes( 4u * 1024u * 1024u );
+
+  Ogre::TextureGpuManager::BudgetEntryVec budget;
+  textureManager->setWorkerThreadMinimumBudget( budget );
+  Ogre::HlmsManager *hlmsManager = root->getHlmsManager();
+
+  Ogre::TextureGpu* textureToRemove = nullptr;
+  bool textureIsUse = false;
+  // Check each material from each Hlms (except low level) to see if their material is
+  // currently in use. If it's not, then its textures may be not either
+  for (size_t i=Ogre::HLMS_PBS; i<Ogre::HLMS_MAX; ++i)
+  {
+    Ogre::Hlms *hlms = hlmsManager->getHlms( static_cast<Ogre::HlmsTypes>( i ) );
+
+    if(hlms)
+    {
+      const Ogre::Hlms::HlmsDatablockMap &datablocks = hlms->getDatablockMap();
+
+      Ogre::Hlms::HlmsDatablockMap::const_iterator itor = datablocks.begin();
+      Ogre::Hlms::HlmsDatablockMap::const_iterator end  = datablocks.end();
+
+      while (itor != end)
+      {
+        if (i == Ogre::HLMS_PBS)
+        {
+          Ogre::HlmsPbsDatablock *derivedDatablock =
+            static_cast<Ogre::HlmsPbsDatablock*>(itor->second.datablock);
+          for (size_t texUnit = 0; texUnit < Ogre::NUM_PBSM_TEXTURE_TYPES;
+            ++texUnit)
+          {
+            //Check each texture from the material
+            Ogre::TextureGpu *tex = derivedDatablock->getTexture(texUnit);
+            if (tex)
+            {
+              // If getLinkedRenderables is empty, then the material is not in use,
+              // and thus so is potentially the texture
+              if (!itor->second.datablock->getLinkedRenderables().empty())
+              {
+                if (tex->getNameStr() == this->textureName)
+                {
+                  textureIsUse = true;
+                }
+              }
+              else
+              {
+                if (tex->getNameStr() == this->textureName)
+                {
+                  textureToRemove = tex;
+                }
+              }
+            }
+          }
+        }
+        ++itor;
+      }
+    }
+  }
+
+  if (textureToRemove && !textureIsUse)
+  {
+    Ogre2ScenePtr s = std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+    s->ClearMaterialsCache(this->textureName);
+    this->Scene()->UnregisterMaterial(this->name);
+    textureManager->destroyTexture(textureToRemove);
+  }
+
+  Ogre2ScenePtr s = std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+  Ogre::SceneManager *sceneManager = s->OgreSceneManager();
+  sceneManager->shrinkToFitMemoryPools();
+
+  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+  Ogre::VaoManager *vaoManager = textureManager->getVaoManager();
+  vaoManager->cleanupEmptyPools();
 }
 
 //////////////////////////////////////////////////
@@ -554,6 +638,8 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   samplerBlockRef.mW = Ogre::TAM_WRAP;
 
   this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
+
+  this->dataPtr->hashName = this->ogreDatablock->getTexture(0)->getName().getFriendlyText();
 
   // disable alpha from texture if texture does not have an alpha channel
   // otherwise this becomes a transparent material

@@ -20,11 +20,16 @@ if (APPLE OR UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 endif()
 
-if (NOT APPLE)
-  find_package(GLEW REQUIRED)
+if (WIN32)
   set(TARGET_THIRD_PARTY_DEPENDS
     ${TARGET_THIRD_PARTY_DEPENDS}
-    GLEW::glew)
+    GLEW::glew
+  )
+else ()
+  set(TARGET_THIRD_PARTY_DEPENDS
+    ${TARGET_THIRD_PARTY_DEPENDS}
+    GLEW
+  )
 endif()
 
 if (WIN32)

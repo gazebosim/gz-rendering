@@ -69,19 +69,39 @@ void Ogre2InertiaVisual::Destroy()
   if (this->dataPtr->boxVis != nullptr)
   {
     this->dataPtr->boxVis->Destroy();
+    this->dataPtr->boxVis.reset();
   }
-  BaseInertiaVisual::Destroy();
+
+  if (this->dataPtr->crossLines)
+  {
+    this->dataPtr->crossLines->Destroy();
+    this->dataPtr->crossLines.reset();
+  }
+
+  if (this->dataPtr->material && this->Scene())
+  {
+    this->Scene()->DestroyMaterial(this->dataPtr->material);
+    this->dataPtr->material.reset();
+  }
 }
 
 //////////////////////////////////////////////////
 void Ogre2InertiaVisual::Load(const ignition::math::Pose3d &_pose,
                               const ignition::math::Vector3d &_scale)
 {
-  if(!this->dataPtr->crossLines)
+  if (!this->dataPtr->crossLines)
   {
     this->dataPtr->crossLines.reset(
       new Ogre2DynamicRenderable(this->Scene()));
     this->ogreNode->attachObject(this->dataPtr->crossLines->OgreObject());
+  }
+
+  if (!this->dataPtr->boxVis)
+  {
+    this->dataPtr->boxVis = this->Scene()->CreateVisual();
+    this->dataPtr->boxVis->AddGeometry(this->Scene()->CreateBox());
+    this->dataPtr->boxVis->SetMaterial("Default/TransPurple");
+    this->AddChild(this->dataPtr->boxVis);
   }
 
   // Clear any previous data from the grid and update
@@ -91,7 +111,8 @@ void Ogre2InertiaVisual::Load(const ignition::math::Pose3d &_pose,
   this->dataPtr->crossLines->SetOperationType(MarkerType::MT_LINE_LIST);
   if (this->dataPtr->material == nullptr)
   {
-    MaterialPtr defaultMat = this->Scene()->Material("Default/TransGreen");
+    MaterialPtr defaultMat =
+        this->Scene()->Material("Default/TransGreen")->Clone();
     this->SetMaterial(defaultMat, false);
   }
 
@@ -124,11 +145,9 @@ void Ogre2InertiaVisual::Load(const ignition::math::Pose3d &_pose,
 
   this->dataPtr->crossLines->Update();
 
-  this->dataPtr->boxVis = this->Scene()->CreateVisual();
-  this->dataPtr->boxVis->AddGeometry(this->Scene()->CreateBox());
   this->dataPtr->boxVis->SetLocalScale(_scale);
-  this->dataPtr->boxVis->SetMaterial("Default/TransPurple");
-  this->AddChild(this->dataPtr->boxVis);
+  this->dataPtr->boxVis->SetLocalPosition(_pose.Pos());
+  this->dataPtr->boxVis->SetLocalRotation(_pose.Rot());
 }
 
 //////////////////////////////////////////////////

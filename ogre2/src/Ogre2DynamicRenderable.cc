@@ -130,6 +130,16 @@ void Ogre2DynamicRenderable::Destroy()
   this->dataPtr->sceneManager->destroyItem(this->dataPtr->ogreItem);
   this->dataPtr->ogreItem = nullptr;
 
+  // remove mesh from mesh manager
+  if (this->dataPtr->subMesh &&
+      Ogre::MeshManager::getSingleton().resourceExists(
+      this->dataPtr->subMesh->mParent->getName()))
+  {
+    Ogre::MeshManager::getSingleton().remove(
+        this->dataPtr->subMesh->mParent->getName());
+    this->dataPtr->subMesh = nullptr;
+  }
+
   if (this->dataPtr->material && this->dataPtr->ownsMaterial)
   {
     this->dataPtr->scene->DestroyMaterial(this->dataPtr->material);
@@ -150,11 +160,16 @@ void Ogre2DynamicRenderable::DestroyBuffer()
   if (!vaoManager)
     return;
 
-  if (this->dataPtr->vertexBuffer)
-    vaoManager->destroyVertexBuffer(this->dataPtr->vertexBuffer);
-
-  if (this->dataPtr->vao)
-    vaoManager->destroyVertexArrayObject(this->dataPtr->vao);
+  if (this->dataPtr->subMesh)
+  {
+    if (!this->dataPtr->subMesh->mVao[Ogre::VpNormal].empty())
+    {
+      this->dataPtr->subMesh->destroyVaos(
+          this->dataPtr->subMesh->mVao[Ogre::VpNormal], vaoManager);
+    }
+    if (!this->dataPtr->subMesh->mVao[Ogre::VpShadow].empty())
+      this->dataPtr->subMesh->mVao[Ogre::VpShadow].clear();
+  }
 
   this->dataPtr->vertexBuffer = nullptr;
   this->dataPtr->vao = nullptr;

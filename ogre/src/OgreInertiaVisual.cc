@@ -69,7 +69,7 @@ Ogre::MovableObject *OgreInertiaVisual::OgreObject() const
 void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
                              const ignition::math::Vector3d &_scale)
 {
-  if(!this->dataPtr->crossLines)
+  if (!this->dataPtr->crossLines)
   {
     this->dataPtr->crossLines = std::shared_ptr<OgreDynamicLines>(
       new OgreDynamicLines(MT_LINE_LIST));
@@ -77,6 +77,14 @@ void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
     MaterialPtr inertiaVisualMaterial =
       this->Scene()->Material("Default/TransGreen");
     this->SetMaterial(inertiaVisualMaterial, false);
+  }
+
+  if (!this->dataPtr->boxVis)
+  {
+    this->dataPtr->boxVis = this->Scene()->CreateVisual();
+    this->dataPtr->boxVis->AddGeometry(this->Scene()->CreateBox());
+    this->dataPtr->boxVis->SetMaterial("Default/TransPurple");
+    this->AddChild(this->dataPtr->boxVis);
   }
 
   // Inertia position indicator
@@ -109,11 +117,9 @@ void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
   this->dataPtr->crossLines->Update();
   this->ogreNode->setVisible(true);
 
-  this->dataPtr->boxVis = this->Scene()->CreateVisual();
-  this->dataPtr->boxVis->AddGeometry(this->Scene()->CreateBox());
   this->dataPtr->boxVis->SetLocalScale(_scale);
-  this->dataPtr->boxVis->SetMaterial("Default/TransPurple");
-  this->AddChild(this->dataPtr->boxVis);
+  this->dataPtr->boxVis->SetLocalPosition(_pose.Pos());
+  this->dataPtr->boxVis->SetLocalRotation(_pose.Rot());
 }
 
 //////////////////////////////////////////////////

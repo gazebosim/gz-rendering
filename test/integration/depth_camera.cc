@@ -254,8 +254,9 @@ void DepthCameraTest::DepthCameraBoxes(
       unsigned int ma = *mrgba >> 0 & 0xFF;
       EXPECT_EQ(0u, mr);
       EXPECT_EQ(0u, mg);
+      // Note: If it fails here, it may be this problem again:
+      // https://github.com/ignitionrobotics/ign-rendering/issues/332
       EXPECT_GT(mb, 0u);
-      EXPECT_EQ(255u, ma);
 
       // Far left and right points should be red (background color)
       float lc = pointCloudData[pcLeft + 3];
@@ -268,7 +269,6 @@ void DepthCameraTest::DepthCameraBoxes(
       EXPECT_EQ(255u, lr);
       EXPECT_EQ(0u, lg);
       EXPECT_EQ(0u, lb);
-      EXPECT_EQ(255u, la);
 
       float rc = pointCloudData[pcRight + 3];
       uint32_t *rrgba = reinterpret_cast<uint32_t *>(&rc);
@@ -280,7 +280,16 @@ void DepthCameraTest::DepthCameraBoxes(
       EXPECT_EQ(255u, rr);
       EXPECT_EQ(0u, rg);
       EXPECT_EQ(0u, rb);
-      EXPECT_EQ(255u, ra);
+
+      // Note: internal texture format used is RGB with no alpha channel
+      // We observed the values can be either 255 or 0 but graphics card
+      // drivers are free to fill it with any value they want.
+      // This should be fixed in ogre 2.2 in ign-rendering6 which forbids
+      // the use of RGB format.
+      // see https://github.com/ignitionrobotics/ign-rendering/issues/315
+      EXPECT_TRUE(255u == ma || 0u == ma);
+      EXPECT_TRUE(255u == la || 0u == la);
+      EXPECT_TRUE(255u == ra || 0u == ra);
     }
 
     // Check that for a box really close it returns it is not seen
@@ -446,6 +455,8 @@ void DepthCameraTest::DepthCameraBoxes(
           unsigned int a = *rgba >> 0 & 0xFF;
           EXPECT_EQ(0u, r);
           EXPECT_EQ(0u, g);
+          // Note: If it fails here, it may be this problem again:
+          // https://github.com/ignitionrobotics/ign-rendering/issues/332
           EXPECT_GT(b, 0u);
           EXPECT_EQ(255u, a);
         }
@@ -755,20 +766,12 @@ void DepthCameraTest::DepthCameraParticles(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
-#ifdef __APPLE__
-TEST_P(DepthCameraTest, DISABLED_DepthCameraBoxes)
-#else
 TEST_P(DepthCameraTest, DepthCameraBoxes)
-#endif
 {
   DepthCameraBoxes(GetParam());
 }
 
-#ifdef __APPLE__
-TEST_P(DepthCameraTest, DISABLED_DepthCameraParticles)
-#else
 TEST_P(DepthCameraTest, DepthCameraParticles)
-#endif
 {
   DepthCameraParticles(GetParam());
 }

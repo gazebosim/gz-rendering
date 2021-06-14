@@ -285,9 +285,6 @@ void OnNewBoundingBoxes(const std::vector<ir::BoundingBox> &boxes)
   unsigned char *data = g_image->Data<unsigned char>();
   for (auto box : boxes)
     g_camera_bbox->DrawBoundingBox(data, box);
-  for (auto box : boxes)
-    std::cout << box.minX << ","<< box.minY << ","<< box.maxX << ","<< box.maxY << std::endl;
-  std::cout << std::endl;
 }
 
 //////////////////////////////////////////////////

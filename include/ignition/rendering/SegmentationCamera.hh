@@ -17,34 +17,38 @@
 #ifndef IGNITION_RENDERING_SEGMENTATIONCAMERA_HH_
 #define IGNITION_RENDERING_SEGMENTATIONCAMERA_HH_
 
+#include <functional>
 #include <string>
 
 #include <ignition/common/Event.hh>
+#include <ignition/math/Color.hh>
 #include "ignition/rendering/Camera.hh"
-#include "ignition/math/Color.hh"
 
-/// \brief Segmentation types for Semantic / Panpoptic segmentation
-/// Semantic: Pixels of same label from different items
-/// have the same color & id.
-/// Panoptic: Pixels of same label from different items,have different
-/// color & id. 1 channel for label id & 2 channels for instance id
-enum SegmentationType {
-  Semantic,
-  Panoptic
-};
 
 namespace ignition
 {
   namespace rendering
   {
+    /// \brief Segmentation types for Semantic / Panpoptic segmentation
+    enum class SegmentationType {
+
+      /// \brief Semantic: Pixels of same label from different items
+      /// have the same color & id.
+      Semantic = 0,
+
+      /// \brief Panoptic: Pixels of same label from different items,have different
+      /// color & id. 1 channel for label id & 2 channels for instance id
+      Panoptic = 1
+    };
+
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \class Camera Camera.hh ignition/rendering/Camera.hh
+    /// \class SegmentationCamera SegmentationCamera.hh
+    /// ignition/rendering/SegmentationCamera.hh
     /// \brief Poseable Segmentation camera used for rendering the scene graph.
-    /// This camera is designed to produced Segmentation data, instead of a 2D
+    /// This camera is designed to produced segmentation data, instead of a 2D
     /// image.
     class IGNITION_RENDERING_VISIBLE SegmentationCamera :
-      public virtual Camera,
-      public virtual Sensor
+      public virtual Camera
     {
       /// \brief Destructor
       public: virtual ~SegmentationCamera() { }
@@ -52,30 +56,32 @@ namespace ignition
       /// \brief Create a texture which will hold the segmentation data
       public: virtual void CreateSegmentationTexture() = 0;
 
-      /// \brief All things needed to get back z buffer for Segmentation data
+      /// \brief Get the segmentation image data
       /// \return The labels-buffer as a float array
       public: virtual uint8_t *SegmentationData() const = 0;
 
-      /// \brief Connect to the new Segmentation image signal
+      /// \brief Connect to the new Segmentation image event
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
+      /// The callback function arguments are:
+      /// <segmentation data, width, height, channels, format>
       public: virtual ignition::common::ConnectionPtr
         ConnectNewSegmentationFrame(
           std::function<void(const uint8_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;
 
-      /// \brief Set Segmentation Type (Semantic / Instance)
-      /// \param[in] _type Segmentation Type (Semantic / Instance)
+      /// \brief Set Segmentation Type
+      /// \param[in] _type Segmentation Type
       public: virtual void SetSegmentationType(SegmentationType _type) = 0;
 
-      /// \brief Enable Color map mode to generated colored semantics
+      /// \brief Enable Color map mode to generate colored semantics
       /// \param[in] _enable True to generate colored map, False to generate
       /// label id map
       public: virtual void EnableColoredMap(bool _enable) = 0;
 
       /// \brief Set color for background & unlabeled items in the colored map
       /// \param[in] _color Color of background & unlabeled items
-      public: virtual void SetBackgroundColor(math::Color _color) = 0;
+      public: virtual void SetBackgroundColor(const math::Color &_color) = 0;
 
       /// \brief Set label for background & unlabeled items in the semantic map
       /// \param[in] _label label of background & unlabeled items
@@ -83,11 +89,11 @@ namespace ignition
 
       /// \brief Get color for background & unlabeled items in the colored map
       /// \return Color of background & unlabeled items
-      public: virtual math::Color BackgroundColor() = 0;
+      public: virtual const math::Color &BackgroundColor() const = 0;
 
       /// \brief Get label for background & unlabeled items in the semantic map
       /// \return label of background & unlabeled items
-      public: virtual int BackgroundLabel() = 0;
+      public: virtual int BackgroundLabel() const = 0;
     };
   }
   }

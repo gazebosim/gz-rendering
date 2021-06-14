@@ -24,23 +24,13 @@
   #include <Winsock2.h>
 #endif
 
+#include "ignition/rendering/base/BaseSegmentationCamera.hh"
 #include <memory>
 #include <string>
-
-#include "ignition/rendering/base/BaseSegmentationCamera.hh"
+#include <ignition/common/Console.hh>
+#include <ignition/common/Event.hh>
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
-
-#include "ignition/common/Event.hh"
-#include "ignition/common/Console.hh"
-
-namespace Ogre
-{
-  class Material;
-  class RenderTarget;
-  class Texture;
-  class Viewport;
-}
 
 namespace ignition
 {
@@ -62,21 +52,19 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Ogre2SegmentationCamera();
 
-      /// \brief Initialize the camera
+      // Documentation inherited
       public: virtual void Init() override;
 
-      /// \brief Destroy the camera
+      // Documentation inherited
       public: virtual void Destroy() override;
 
-      /// \brief Create a texture which will hold the Segmentation data
-      /// \brief Set up render texture and compositor
+      // Documentation inherited
       public: virtual void CreateSegmentationTexture() override;
 
       /// \brief Create the camera.
       protected: void CreateCamera();
 
-      /// \brief Get the segmentation image buffer
-      /// \return buffer that holds segmentation data
+      // Documentation inherited
       public: virtual uint8_t *SegmentationData() const override;
 
       // Documentation inherited
@@ -88,8 +76,10 @@ namespace ignition
       // Documentation inherited
       public: virtual void PostRender() override;
 
-      /// \brief Subscribe to new segmentation frame event
-      /// \param[in] _subscriber callback listener, called on each new frame
+      // Documentation inherited
+      public: virtual void Capture(Image &_image) override;
+
+      // Documentation inherited
       public: virtual ignition::common::ConnectionPtr
         ConnectNewSegmentationFrame(
         std::function<void(const uint8_t *, unsigned int, unsigned int,
@@ -99,33 +89,25 @@ namespace ignition
       /// and to set image's dims
       public: virtual void CreateRenderTexture();
 
-      /// \brief Set Segmentation Type (Semantic / Panoptic)
-      /// \param[in] _type Segmentation Type (Semantic / Panoptic)
+      // Documentation inherited
       public: void SetSegmentationType(SegmentationType _type) override;
 
-      /// \brief Enable Color map mode to generated colored semantics
-      /// \param[in] _enable True to generate colored map, False to generate
-      /// label id map
+      // Documentation inherited
       public: void EnableColoredMap(bool _enable) override;
 
-      /// \brief Set color for background & unlabeled items in the colored map
-      /// \param[in] _color Color of background & unlabeled items
-      public: void SetBackgroundColor(math::Color _color) override;
+      // Documentation inherited
+      public: void SetBackgroundColor(const math::Color &_color) override;
 
-      /// \brief Set label for background & unlabeled items in the semantic map
-      /// \param[in] _label label of background & unlabeled items
+      // Documentation inherited
       public: void SetBackgroundLabel(int _label) override;
 
-      /// \brief Get color for background & unlabeled items in the colored map
-      /// \return Color of background & unlabeled items
-      public: math::Color BackgroundColor() override;
+      // Documentation inherited
+      public: const math::Color &BackgroundColor() const override;
 
-      /// \brief Get label for background & unlabeled items in the semantic map
-      /// \return label of background & unlabeled items
-      public: int BackgroundLabel() override;
+      // Documentation inherited
+      public: int BackgroundLabel() const override;
 
-      /// \brief Get a pointer to the render target.
-      /// \return Pointer to the render target
+      // Documentation inherited
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       /// \brief Pointer to the ogre camera

@@ -29,16 +29,19 @@
   #include <GL/glx.h>
 #endif
 
+#include <memory>
 #include <mutex>
+#include <string>
+#include <vector>
 
 #include <ignition/common/Console.hh>
+#include <ignition/math/Vector2.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/RayQuery.hh>
 #include <ignition/rendering/Scene.hh>
 #include <ignition/rendering/OrbitViewController.hh>
 #include <ignition/rendering/SegmentationCamera.hh>
-
 #include "GlutWindow.hh"
 
 #define KEY_ESC 27
@@ -49,9 +52,7 @@
 unsigned int imgw = 0;
 unsigned int imgh = 0;
 
-std::vector<ir::CameraPtr> g_cameras;
 ir::CameraPtr g_camera;
-unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
 ignition::common::ConnectionPtr g_connection;
 
@@ -136,7 +137,7 @@ void handleMouse()
   std::lock_guard<std::mutex> lock(g_mouseMutex);
   // only ogre supports ray query for now so use
   // ogre camera located at camera index = 0.
-  ir::CameraPtr rayCamera = g_cameras[0];
+  ir::CameraPtr rayCamera = g_camera;
   if (!g_rayQuery)
   {
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
@@ -173,12 +174,10 @@ void handleMouse()
           g_target.point);
       int factor = 1;
       double amount = -(scroll * factor) * (distance / 5.0);
-      for (ir::CameraPtr camera : g_cameras)
-      {
-        g_viewControl.SetCamera(camera);
-        g_viewControl.SetTarget(g_target.point);
-        g_viewControl.Zoom(amount);
-      }
+
+      g_viewControl.SetCamera(g_camera);
+      g_viewControl.SetTarget(g_target.point);
+      g_viewControl.Zoom(amount);
     }
   }
 
@@ -190,21 +189,15 @@ void handleMouse()
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
     {
-      for (auto & camera : g_cameras)
-      {
-        g_viewControl.SetCamera(camera);
-        g_viewControl.SetTarget(g_target.point);
-        g_viewControl.Pan(drag);
-      }
+      g_viewControl.SetCamera(g_camera);
+      g_viewControl.SetTarget(g_target.point);
+      g_viewControl.Pan(drag);
     }
     else if (g_mouse.button == GLUT_MIDDLE_BUTTON && g_mouse.state == GLUT_DOWN)
     {
-      for (auto & camera : g_cameras)
-      {
-        g_viewControl.SetCamera(camera);
-        g_viewControl.SetTarget(g_target.point);
-        g_viewControl.Orbit(drag);
-      }
+      g_viewControl.SetCamera(g_camera);
+      g_viewControl.SetTarget(g_target.point);
+      g_viewControl.Orbit(drag);
     }
     // right mouse button zoom
     else if (g_mouse.button == GLUT_RIGHT_BUTTON && g_mouse.state == GLUT_DOWN)
@@ -217,15 +210,12 @@ void handleMouse()
       double amount = ((-g_mouse.dragY /
           static_cast<double>(rayCamera->ImageHeight()))
           * distance * tan(vfov/2.0) * 6.0);
-      for (ir::CameraPtr camera : g_cameras)
-      {
-        g_viewControl.SetCamera(camera);
-        g_viewControl.SetTarget(g_target.point);
-        g_viewControl.Zoom(amount);
-      }
+
+      g_viewControl.SetCamera(g_camera);
+      g_viewControl.SetTarget(g_target.point);
+      g_viewControl.Zoom(amount);
     }
   }
-
 }
 
 //////////////////////////////////////////////////
@@ -241,7 +231,8 @@ void displayCB()
   }
 #endif
 
-  g_cameras[g_cameraIndex]->Update();
+  g_camera->Update();
+
   handleMouse();
 
 #if __APPLE__
@@ -275,11 +266,8 @@ void keyboardCB(unsigned char _key, int, int)
   {
     exit(0);
   }
-  else if (_key == KEY_TAB)
-  {
-    g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
-  }
 }
+
 //////////////////////////////////////////////////
 void OnNewSegmentationFrame(const uint8_t *_scan,
                     unsigned int _width, unsigned int _height,
@@ -331,17 +319,16 @@ void initContext()
 void printUsage()
 {
   std::cout << "===============================" << std::endl;
-  std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr> _cameras)
+void run(ir::CameraPtr _camera)
 {
-  if (_cameras.empty())
+  if (!_camera)
   {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    ignerr << "No camera found. Scene will not be rendered" << std::endl;
     return;
   }
 
@@ -354,8 +341,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
   g_drawable = glXGetCurrentDrawable();
 #endif
 
-  g_cameras = _cameras;
-  initCamera(_cameras[0]);
+  initCamera(_camera);
   initContext();
   printUsage();
 
@@ -370,5 +356,3 @@ void run(std::vector<ir::CameraPtr> _cameras)
 
   glutMainLoop();
 }
-
-

@@ -692,9 +692,9 @@ namespace ignition
       public: virtual SegmentationCameraPtr CreateSegmentationCamera(
                   unsigned int _id) = 0;
 
-      /// \brief Create new segmentation camera with the given ID.
-      /// A unique name will automatically be assigned to the camera.
-      /// If the given ID is already in use, NULL will be returned.
+      /// \brief Create new segmentation camera with the given name.
+      /// A unique ID will automatically be assigned to the camera.
+      /// If the given name is already in use, NULL will be returned.
       /// \param[in] _name Name of the new camera
       /// \return The created camera
       public: virtual SegmentationCameraPtr CreateSegmentationCamera(

@@ -15,117 +15,167 @@
  *
  */
 
+
+#include <random>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+
 #include "ignition/common/Console.hh"
+#include "ignition/math/Color.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
-#include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/Utils.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
+#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
-#include "ignition/math/Color.hh"
-#include <random>
+#include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/Utils.hh"
+
+namespace ignition
+{
+namespace rendering
+{
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+/// \brief Helper class to assign unique colors to renderables
+class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
+{
+  /// \brief Constructor
+  /// \param[in] _scene Ogre scene to be rendered
+  public: explicit Ogre2SegmentationMaterialSwitcher(Ogre2ScenePtr _scene);
+
+  /// \brief Destructor
+  public: ~Ogre2SegmentationMaterialSwitcher() = default;
+
+  /// \brief Ogre's pre render update callback
+  /// \param[in] _evt Ogre render target event containing information about
+  /// the source render target.
+  public: virtual void preRenderTargetUpdate(
+              const Ogre::RenderTargetEvent &_evt) override;
+
+  /// \brief Ogre's post render update callback
+  /// \param[in] _evt Ogre render target event containing information about
+  /// the source render target.
+  public: virtual void postRenderTargetUpdate(
+              const Ogre::RenderTargetEvent &_evt) override;
+
+  /// \brief Convert label of semantic map to a unique color for colored map
+  /// \param[in] _label id of the semantic map or encoded id of panoptic map
+  /// \return _color unique color in the colored map for that label
+  private: math::Color LabelToColor(int64_t _label);
+
+  /// \brief Check if the color is taken previously
+  /// \param[in] _color Color to be checked
+  /// \return True if taken, False elsewhere
+  private: bool IsTakenColor(const math::Color &_color);
+
+  /// \brief A map of ogre sub item pointer to its original hlms material
+  private: std::unordered_map<Ogre::SubItem *,
+    Ogre::HlmsDatablock *> datablockMap;
+
+  /// \brief Ogre v1 material consisting of a shader that changes the
+  /// appearance of item to use a unique color for mouse picking
+  private: Ogre::MaterialPtr plainMaterial;
+
+  /// \brief Ogre v1 material consisting of a shader that changes the
+  /// appearance of item to use a unique color for mouse picking. In
+  /// addition, the depth check and depth write properties disabled.
+  private: Ogre::MaterialPtr plainOverlayMaterial;
+
+  /// \brief User Data Key to set the label
+  private: const std::string labelKey{"label"};
+
+  /// \brief Background & unlabeled objects label id in semantic map
+  private: int backgroundLabel = 0;
+
+  /// \brief Background & unlabeled objects color in the colored map
+  private: math::Color backgroundColor {0, 0, 0};
+
+  /// \brief Segmentation Type
+  private: SegmentationType type {SegmentationType::Semantic};
+
+  /// \brief True to generate colored map
+  /// False to generate labels ids map
+  private: bool isColoredMap {false};
+
+  /// \brief Keep track of num of instances of the same label
+  /// Key: label id, value: num of instances
+  private: std::unordered_map<unsigned int, unsigned int> instancesCount;
+
+  /// \brief keep track of the random colors, stores encoded id of r,g,b
+  private: std::unordered_set<int64_t> takenColors;
+
+  /// \brief keep track of the labels which is already colored
+  /// usful for coloring items in semantic mode in LabelToColor()
+  private: std::unordered_set<int64_t> coloredLabel;
+
+  /// \brief Pseudo num generator to generate colors from label id
+  private: std::default_random_engine generator;
+
+  /// \brief Ogre2 Scene
+  private: Ogre2ScenePtr scene = nullptr;
+
+  friend class Ogre2SegmentationCamera;
+};
+}
+}
+}
+
+/// \brief Private data for the Ogre2SegmentationCamera class
+class ignition::rendering::Ogre2SegmentationCameraPrivate
+{
+  /// \brief Material Switcher to switch item's material
+  /// with colored version for segmentation
+  public: Ogre2SegmentationMaterialSwitcher *materialSwitcher {nullptr};
+
+  /// \brief Compositor Manager to create workspace
+  public: Ogre::CompositorManager2 *ogreCompositorManager {nullptr};
+
+  /// \brief Workspace to interface with render texture
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace {nullptr};
+
+  /// \brief Workspace Definition
+  public: std::string workspaceDefinition;
+
+  /// \brief Render Texture to store the final segmentation data
+  public: Ogre::RenderTexture *ogreRenderTexture {nullptr};
+
+  /// \brief Texture to create the render texture from.
+  public: Ogre::TexturePtr ogreTexture;
+
+  /// \brief Pixel Box to copy render texture data to a buffer
+  public: Ogre::PixelBox *pixelBox {nullptr};
+
+  /// \brief buffer to store render texture data & to be sent to listeners
+  public: uint8_t *buffer = nullptr;
+
+  /// \brief dummy render texture to set image dims
+  public: Ogre2RenderTexturePtr dummyTexture {nullptr};
+
+  /// \brief New Segmentation Frame Event to notify listeners with new data
+  /// \param[in] _data Segmentation buffer data
+  /// \param[in] _width Width of the image
+  /// \param[in] _height Height of the image
+  /// \param[in] _channels Number of channels
+  /// \param[in] _format Image Format
+  public: ignition::common::EventT<void(const uint8_t *_data,
+    unsigned int _width, unsigned int _height, unsigned int _channels,
+    const std::string &_format)> newSegmentationFrame;
+
+  /// \brief Image / Render Texture Format
+  public: const Ogre::PixelFormat format = Ogre::PF_R8G8B8;
+};
 
 using namespace ignition;
 using namespace rendering;
 
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \brief Helper class to assign unique colors to renderables
-    class SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
-    {
-      /// \brief Constructor
-      public: explicit SegmentationMaterialSwitcher(Ogre2ScenePtr _scene);
-
-      /// \brief Destructor
-      public: ~SegmentationMaterialSwitcher();
-
-      /// \brief Ogre's pre render update callback
-      /// \param[in] _evt Ogre render target event containing information about
-      /// the source render target.
-      public: virtual void preRenderTargetUpdate(
-                  const Ogre::RenderTargetEvent &_evt);
-
-      /// \brief Ogre's post render update callback
-      /// \param[in] _evt Ogre render target event containing information about
-      /// the source render target.
-      public: virtual void postRenderTargetUpdate(
-                  const Ogre::RenderTargetEvent &_evt);
-
-      /// \brief Convert label of semantic map to a unique color for colored map
-      /// \param[in] _label id of the semantic map or encoded id of panoptic map
-      /// \return _color unique color in the colored map for that label
-      private: math::Color LabelToColor(int64_t _label);
-
-      /// \brief Check if the color is taken previously & store it if not taken
-      /// \param[in] _color Color to be checked
-      /// \return True if taken, False elsewhere
-      private: bool IsTakenColor(math::Color _color);
-
-      /// \brief A map of ogre sub item pointer to their original hlms material
-      private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
-
-      /// \brief Ogre v1 material consisting of a shader that changes the
-      /// appearance of item to use a unique color for mouse picking
-      private: Ogre::MaterialPtr plainMaterial;
-
-      /// \brief Ogre v1 material consisting of a shader that changes the
-      /// appearance of item to use a unique color for mouse picking. In
-      /// addition, the depth check and depth write properties disabled.
-      private: Ogre::MaterialPtr plainOverlayMaterial;
-
-      /// \brief User Data Key to set the label
-      private: std::string labelKey = "label";
-
-      /// \brief Background & unlabeled objects label id in semantic map
-      private: int backgroundLabel = 0;
-
-      /// \brief Background & unlabeled objects color in the colored map
-      private: math::Color backgroundColor;
-
-      /// \brief Segmentation Type (Semantic / Instance)
-      private: SegmentationType type {SegmentationType::Semantic};
-
-      /// \brief True to generate colored map
-      /// False to generate labels ids map
-      private: bool isColoredMap;
-
-      /// \brief Keep track of num of instances of the same label
-      /// Key: label id, value: num of instances
-      private: std::map<int, int> instancesCount;
-
-      /// \brief keep track of the random colors
-      /// key: encoded key of r,g,b values. value: always True
-      private: std::map<int64_t, bool> takenColors;
-
-      /// \brief keep track of the labels which is already colored
-      /// usful for coloring items in semantic mode in LabelToColor()
-      /// key: label id. value: always True
-      private: std::map<int64_t, bool> coloredLabel;
-
-      /// \brief Pseudo num generator to generate colors from label id
-      private: std::default_random_engine generator;
-
-      /// \brief Ogre2 Scene
-      private: Ogre2ScenePtr scene;
-
-      friend class Ogre2SegmentationCamera;
-    };
-    }
-  }
-}
-
 /////////////////////////////////////////////////
-SegmentationMaterialSwitcher::SegmentationMaterialSwitcher(Ogre2ScenePtr _scene)
+Ogre2SegmentationMaterialSwitcher::Ogre2SegmentationMaterialSwitcher(
+  Ogre2ScenePtr _scene)
 {
   this->scene = _scene;
   this->backgroundColor.Set(0, 0, 0);
@@ -157,15 +207,10 @@ SegmentationMaterialSwitcher::SegmentationMaterialSwitcher(Ogre2ScenePtr _scene)
 }
 
 /////////////////////////////////////////////////
-SegmentationMaterialSwitcher::~SegmentationMaterialSwitcher()
-{
-}
-
-/////////////////////////////////////////////////
-bool SegmentationMaterialSwitcher::IsTakenColor(math::Color _color)
+bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
 {
   // get the int value of the 24 bit color
-  int64_t colorId = _color.R() * 255 * 255 + _color.G() * 255 + _color.B();
+  int64_t colorId = _color.R() * 256 * 256 + _color.G() * 256 + _color.B();
 
   if (this->takenColors.count(colorId))
   {
@@ -173,13 +218,13 @@ bool SegmentationMaterialSwitcher::IsTakenColor(math::Color _color)
   }
   else
   {
-    this->takenColors[colorId] = true;
+    this->takenColors.insert(colorId);
     return false;
   }
 }
 
 /////////////////////////////////////////////////
-math::Color SegmentationMaterialSwitcher::LabelToColor(int64_t _label)
+math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label)
 {
   if (_label == this->backgroundLabel)
     return this->backgroundColor;
@@ -195,25 +240,23 @@ math::Color SegmentationMaterialSwitcher::LabelToColor(int64_t _label)
 
   math::Color color(r, g, b);
 
-  if (this->type == SegmentationType::Semantic)
-  {
-    // if the label is colored before return the color
-    // don't check fo taken colors in that case, all items
-    // with the same label will have the same color
-    if (this->coloredLabel.count(_label))
-      return color;
-  }
+  // if the label is colored before return the color
+  // don't check for taken colors in that case, all items
+  // with the same label will have the same color
+  if (this->type == SegmentationType::Semantic &&
+    this->coloredLabel.count(_label))
+    return color;
 
   // loop recursivly till finding a unique color
   if (this->IsTakenColor(color))
       return this->LabelToColor(_label);
 
-  this->coloredLabel[_label] = true;
+  this->coloredLabel.insert(_label);
   return color;
 }
 
 ////////////////////////////////////////////////
-void SegmentationMaterialSwitcher::preRenderTargetUpdate(
+void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent &/*_evt*/)
 {
   this->datablockMap.clear();
@@ -244,7 +287,6 @@ void SegmentationMaterialSwitcher::preRenderTargetUpdate(
 
       // get class user data
       Variant labelAny = ogreVisual->UserData(this->labelKey);
-
       int label;
       try
       {
@@ -334,66 +376,16 @@ void SegmentationMaterialSwitcher::preRenderTargetUpdate(
 }
 
 /////////////////////////////////////////////////
-void SegmentationMaterialSwitcher::postRenderTargetUpdate(
+void Ogre2SegmentationMaterialSwitcher::postRenderTargetUpdate(
     const Ogre::RenderTargetEvent &/*_evt*/)
 {
-  // restore item to use hlms material
-  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
-      Ogre::ItemFactory::FACTORY_TYPE_NAME);
-  while (itor.hasMoreElements())
+  // restore item to use pbs hlms material
+  for (auto it : this->datablockMap)
   {
-    Ogre::MovableObject *object = itor.peekNext();
-    Ogre::Item *item = static_cast<Ogre::Item *>(object);
-    for (unsigned int i = 0; i < item->getNumSubItems(); i++)
-    {
-      Ogre::SubItem *subItem = item->getSubItem(i);
-      auto it = this->datablockMap.find(subItem);
-      if (it != this->datablockMap.end())
-        subItem->setDatablock(it->second);
-    }
-    itor.moveNext();
+    Ogre::SubItem *subItem = it.first;
+    subItem->setDatablock(it.second);
   }
 }
-
-/////////////////////////////////////////////////
-class ignition::rendering::Ogre2SegmentationCameraPrivate
-{
-  /// \brief Material Switcher to switch item's material
-  /// with colored version for segmentation
-  public: SegmentationMaterialSwitcher *materialSwitcher {nullptr};
-
-  /// \brief Compositor Manager to create workspace
-  public: Ogre::CompositorManager2 *ogreCompositorManager {nullptr};
-
-  /// \brief Workspace to interface with render texture
-  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace {nullptr};
-
-  /// \brief Workspace Definition
-  public: std::string workspaceDefinition;
-
-  /// \brief Render Texture to store the final segmentation data
-  public: Ogre::RenderTexture *ogreRenderTexture {nullptr};
-
-  /// \brief Texture to create the render texture from.
-  public: Ogre::TexturePtr ogreTexture;
-
-  /// \brief Pixel Box to copy render texture data to a buffer
-  public: Ogre::PixelBox *pixelBox {nullptr};
-
-  /// \brief buffer to store render texture data & to be sent to listeners
-  public: uint8_t *buffer = nullptr;
-
-  /// \brief dummy render texture to set image dims
-  public: Ogre2RenderTexturePtr dummyTexture {nullptr};
-
-  /// \brief New Segmentation Frame Event to notify listeners with new data
-  public: ignition::common::EventT<void(const uint8_t *, unsigned int,
-        unsigned int, unsigned int, const std::string &)>
-        newSegmentationFrame;
-
-  /// \brief Image / Render Texture Format
-  public: Ogre::PixelFormat format = Ogre::PF_R8G8B8;
-};
 
 /////////////////////////////////////////////////
 Ogre2SegmentationCamera::Ogre2SegmentationCamera() :
@@ -415,7 +407,7 @@ void Ogre2SegmentationCamera::Init()
   this->CreateRenderTexture();
 
   this->dataPtr->materialSwitcher =
-    new SegmentationMaterialSwitcher(this->scene);
+    new Ogre2SegmentationMaterialSwitcher(this->scene);
 }
 
 /////////////////////////////////////////////////
@@ -457,6 +449,9 @@ void Ogre2SegmentationCamera::Destroy()
 
   delete this->dataPtr->ogreCompositorWorkspace;
   delete this->dataPtr->ogreCompositorManager;
+  delete this->dataPtr->buffer;
+  delete this->dataPtr->pixelBox;
+  delete this->dataPtr->ogreRenderTexture;
 
   auto &manager = Ogre::TextureManager::getSingleton();
   manager.unload(this->dataPtr->ogreTexture->getName());
@@ -578,6 +573,27 @@ void Ogre2SegmentationCamera::PostRender()
 }
 
 /////////////////////////////////////////////////
+void Ogre2SegmentationCamera::Capture(Image &_image)
+{
+  unsigned int width = this->ImageWidth();
+  unsigned int height = this->ImageHeight();
+
+  if (_image.Width() != width || _image.Height() != height)
+  {
+    ignerr << "Invalid image dimensions" << std::endl;
+    return;
+  }
+
+  // image buffer
+  void *data = _image.Data();
+
+  // pixel box to copy data from the render texture to the image buffer
+  Ogre::PixelBox ogrePixelBox(width, height, 1, this->dataPtr->format, data);
+  this->dataPtr->ogreRenderTexture->copyContentsToMemory(
+    ogrePixelBox, Ogre::RenderTarget::FB_FRONT);
+}
+
+/////////////////////////////////////////////////
 uint8_t *Ogre2SegmentationCamera::SegmentationData() const
 {
   return this->dataPtr->buffer;
@@ -609,7 +625,8 @@ RenderTargetPtr Ogre2SegmentationCamera::RenderTarget() const
 }
 
 /////////////////////////////////////////////////
-void Ogre2SegmentationCamera::SetBackgroundColor(math::Color _color)
+void Ogre2SegmentationCamera::SetBackgroundColor(
+  const math::Color &_color)
 {
   this->dataPtr->materialSwitcher->backgroundColor.Set(
     _color.R(), _color.G(), _color.B()
@@ -620,16 +637,18 @@ void Ogre2SegmentationCamera::SetBackgroundColor(math::Color _color)
 void Ogre2SegmentationCamera::SetBackgroundLabel(int _label)
 {
   this->dataPtr->materialSwitcher->backgroundLabel = _label;
+  this->SetBackgroundColor(
+    math::Color(_label / 255.0, _label / 255.0, _label / 255.0));
 }
 
 /////////////////////////////////////////////////
-math::Color Ogre2SegmentationCamera::BackgroundColor()
+const math::Color &Ogre2SegmentationCamera::BackgroundColor() const
 {
   return this->dataPtr->materialSwitcher->backgroundColor;
 }
 
 /////////////////////////////////////////////////
-int Ogre2SegmentationCamera::BackgroundLabel()
+int Ogre2SegmentationCamera::BackgroundLabel() const
 {
   return this->dataPtr->materialSwitcher->backgroundLabel;
 }

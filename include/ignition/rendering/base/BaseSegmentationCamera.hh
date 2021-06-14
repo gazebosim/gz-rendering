@@ -36,8 +36,10 @@ namespace ignition
       public virtual BaseCamera<T>,
       public virtual T
     {
+      /// \brief Constructor
       protected: BaseSegmentationCamera();
 
+      /// \brief Destructor
       public: virtual ~BaseSegmentationCamera();
 
       // Documentation inherited

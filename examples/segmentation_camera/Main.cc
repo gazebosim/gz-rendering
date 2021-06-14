@@ -25,6 +25,7 @@
 #endif
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <ignition/common/Console.hh>
@@ -40,49 +41,12 @@ using namespace rendering;
 const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
-//////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
   _scene->SetBackgroundColor(0.3, 0.3, 0.3);
   VisualPtr root = _scene->RootVisual();
-
-  ////////////////////// Lights ///////////////////////
-  // create directional light
-  DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
-  light0->SetDirection(-0.5, 0.5, -1);
-  light0->SetDiffuseColor(0.5, 0.5, 0.5);
-  light0->SetSpecularColor(0.5, 0.5, 0.5);
-  root->AddChild(light0);
-  // create point light
-  PointLightPtr light2 = _scene->CreatePointLight();
-  light2->SetDiffuseColor(0.5, 0.5, 0.5);
-  light2->SetSpecularColor(0.5, 0.5, 0.5);
-  light2->SetLocalPosition(3, 5, 5);
-  root->AddChild(light2);
-
-  ////////////////////// Materials ///////////////////////
-  // create green material
-  MaterialPtr green = _scene->CreateMaterial();
-  green->SetAmbient(0.0, 0.5, 0.0);
-  green->SetDiffuse(0.0, 1.0, 0.0);
-  green->SetSpecular(0.5, 0.5, 0.5);
-  green->SetShininess(50);
-  green->SetReflectivity(0);
-  // create red material
-  MaterialPtr red = _scene->CreateMaterial();
-  red->SetAmbient(0.0, 0.0, 0.5);
-  red->SetDiffuse(0.0, 0.0, 1.0);
-  red->SetSpecular(0.5, 0.5, 0.5);
-  red->SetShininess(50);
-  red->SetReflectivity(0);
-  // create yellow material
-  MaterialPtr yellow = _scene->CreateMaterial();
-  yellow->SetAmbient(0.0, 0.5, 0.5);
-  yellow->SetDiffuse(0.0, 1.0, 1.0);
-  yellow->SetShininess(50);
-  yellow->SetReflectivity(0);
 
   ////////////////////// Visuals ///////////////////////
   // create plane visual
@@ -102,7 +66,6 @@ void buildScene(ScenePtr _scene)
   descriptor.mesh = meshManager->Load(descriptor.meshName);
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   mesh->AddGeometry(meshGeom);
-  mesh->SetMaterial(yellow);
   mesh->SetUserData("label", 5);
   root->AddChild(mesh);
 
@@ -112,7 +75,6 @@ void buildScene(ScenePtr _scene)
   box->SetLocalRotation(0, 0, 0.7);
   GeometryPtr boxGeom = _scene->CreateBox();
   box->AddGeometry(boxGeom);
-  box->SetMaterial(green);
   box->SetUserData("label", 2);
   root->AddChild(box);
 
@@ -122,7 +84,6 @@ void buildScene(ScenePtr _scene)
   box2->SetLocalRotation(0, 0.3, 0.7);
   GeometryPtr boxGeom2 = _scene->CreateBox();
   box2->AddGeometry(boxGeom2);
-  box2->SetMaterial(green);
   box2->SetUserData("label", 2);
   root->AddChild(box2);
 
@@ -131,7 +92,6 @@ void buildScene(ScenePtr _scene)
   sphere->SetLocalPosition(3, -1.5, 0);
   GeometryPtr sphereGeom = _scene->CreateSphere();
   sphere->AddGeometry(sphereGeom);
-  sphere->SetMaterial(red);
   sphere->SetUserData("label", 3);
   root->AddChild(sphere);
 
@@ -140,7 +100,6 @@ void buildScene(ScenePtr _scene)
   sphere2->SetLocalPosition(5, 4, 2);
   GeometryPtr sphereGeom2 = _scene->CreateSphere();
   sphere2->AddGeometry(sphereGeom2);
-  sphere2->SetMaterial(red);
   sphere2->SetUserData("label", 3);
   root->AddChild(sphere2);
 
@@ -184,33 +143,25 @@ int main(int _argc, char** _argv)
 
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
-  std::string ogreEngineName("ogre2");
+  std::string engineName("ogre2");
   if (_argc > 1)
   {
-    ogreEngineName = _argv[1];
+    engineName = _argv[1];
   }
 
   common::Console::SetVerbosity(4);
-  std::vector<std::string> engineNames;
-  std::vector<CameraPtr> cameras;
-
-  engineNames.push_back(ogreEngineName);
-
-  for (auto engineName : engineNames)
+  try
   {
-    try
+    CameraPtr camera = createCamera(engineName);
+    if (camera)
     {
-      CameraPtr camera = createCamera(engineName);
-      if (camera)
-      {
-        cameras.push_back(camera);
-      }
-    }
-    catch (...)
-    {
-      std::cerr << "Error starting up: " << engineName << std::endl;
+      run(camera);
     }
   }
-  run(cameras);
+  catch (...)
+  {
+    std::cerr << "Error starting up: " << engineName << std::endl;
+  }
+
   return 0;
 }

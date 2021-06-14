@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_BASE_BASECOMVISUAL_HH_
 #define IGNITION_RENDERING_BASE_BASECOMVISUAL_HH_
 
+#include <string>
+
 #include "ignition/common/Console.hh"
 
 #include "ignition/rendering/base/BaseObject.hh"
@@ -53,18 +55,37 @@ namespace ignition
                   const ignition::math::Inertiald &_inertial) override;
 
       // Documentation inherited.
-      public: virtual void Load(const ignition::math::Pose3d &,
-          const ignition::math::Vector3d &) override;
+      public: virtual void SetMass(
+                  const double &_mass) override;
+
+      // Documentation inherited.
+      public: virtual void SetParentLink(
+                  const std::string &_parentLink) override;
 
       // Documentation inherited
-      public: ignition::math::Pose3d InertiaPose() const;
+      public: virtual std::string ParentLink() const override;
+
+      // Documentation inherited
+      public: virtual double Mass() const override;
+
+      // Documentation inherited
+      public: virtual ignition::math::Pose3d InertiaPose() const override;
 
       // Documentation inherited
       public: virtual VisualPtr SphereVisual() const override;
 
+      /// \brief Parent link name.
+      protected: std::string linkName = "";
+
+      /// \brief Link mass.
+      protected: double mass = 1.0;
+
       /// \brief Inertia pose in link frame.
-      private: ignition::math::Pose3d inertiaPose =
+      protected: ignition::math::Pose3d inertiaPose =
           ignition::math::Pose3d::Zero;
+
+      /// \brief Flag to indicate link properties have changed
+      protected: bool dirtyCOMVisual = false;
     };
 
     //////////////////////////////////////////////////
@@ -98,45 +119,50 @@ namespace ignition
     void BaseCOMVisual<T>::SetInertial(
           const ignition::math::Inertiald &_inertial)
     {
-      auto xyz = _inertial.Pose().Pos();
-      auto q = _inertial.Pose().Rot();
-
-      // Use ignition::math::MassMatrix3 to compute
-      // equivalent box size and rotation
-      auto m = _inertial.MassMatrix();
-      ignition::math::Vector3d boxScale;
-      ignition::math::Quaterniond boxRot;
-      if (!m.EquivalentBox(boxScale, boxRot))
-      {
-        // Invalid inertia, load with default scale
-        ignlog << "The link is static or has unrealistic "
-            << "inertia, so the equivalent inertia box will not be shown.\n";
-      }
-      else
-      {
-        // Apply additional rotation by boxRot
-        this->Load(ignition::math::Pose3d(xyz, q * boxRot), boxScale);
-      }
+      this->inertiaPose = _inertial.Pose();
+      this->dirtyCOMVisual = true;
     }
 
-    //////////////////////////////////////////////////
     template <class T>
-    void BaseCOMVisual<T>::Load(const ignition::math::Pose3d &,
-        const ignition::math::Vector3d &)
+    void BaseCOMVisual<T>::SetMass(
+          const double &_mass)
     {
-      // no op
+      this->mass = _mass;
+      this->dirtyCOMVisual = true;
+    }
+
+    template <class T>
+    void BaseCOMVisual<T>::SetParentLink(
+          const std::string &_parentLink)
+    {
+      this->linkName = _parentLink;
+      this->dirtyCOMVisual = true;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    VisualPtr BaseCOMVisual<T>::InertiaPose() const
+    std::string BaseCOMVisual<T>::ParentLink() const
+    {
+      return this->linkName;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseCOMVisual<T>::Mass() const
+    {
+      return this->mass;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Pose3d BaseCOMVisual<T>::InertiaPose() const
     {
       return this->inertiaPose;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    VisualPtr BaseCOMVisual<T>::BoxVisual() const
+    VisualPtr BaseCOMVisual<T>::SphereVisual() const
     {
       return nullptr;
     }

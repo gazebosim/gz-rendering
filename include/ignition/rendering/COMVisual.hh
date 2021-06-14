@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_COMVISUAL_HH_
 #define IGNITION_RENDERING_COMVISUAL_HH_
 
+#include <string>
 #include <ignition/math/Inertial.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Object.hh"
@@ -43,15 +44,27 @@ namespace ignition
       public: virtual void SetInertial(
                   const ignition::math::Inertiald &_inertial) = 0;
 
-      /// \brief Load the Inertia visual from its pose and scale
-      /// \param[in] _pose Pose of the Inertia visual
-      /// \param[in] _scale Scale factor of the box visual
-      public: virtual void Load(const ignition::math::Pose3d &_pose,
-          const ignition::math::Vector3d &_scale) = 0;
+      /// \brief Set the mass of the parent link
+      /// \param[in] _mass Parent link mass
+      public: virtual void SetMass(
+                  const double &_mass) = 0;
+
+      /// \brief Set the parent link of the visual
+      /// \param[in] _parentLink Parent link of the visual
+      public: virtual void SetParentLink(
+                  const std::string &_parentLink) = 0;
+
+      /// \brief Get the parent link name of the visual
+      /// \return Link name of the visual
+      public: virtual std::string ParentLink() const = 0;
+
+      /// \brief Get the mass of the link
+      /// \return Link mass
+      public: virtual double Mass() const = 0;
 
       /// \brief Get inertia pose.
       /// \return Inertia pose in link frame.
-      public: ignition::math::Pose3d InertiaPose() const;
+      public: virtual ignition::math::Pose3d InertiaPose() const = 0;
 
       /// \brief Get the sphere visual
       /// \return Pointer to the sphere visual

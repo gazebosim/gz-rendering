@@ -79,6 +79,10 @@ namespace ignition
                      unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
                      const std::string &_name) override;
 

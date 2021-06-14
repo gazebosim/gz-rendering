@@ -98,6 +98,58 @@ namespace ignition
 }
 
 /////////////////////////////////////////////////
+class ignition::rendering::Ogre2BoundingBoxCameraPrivate
+{
+  /// \brief Material Switcher to switch item's material with ogre Ids
+  /// For bounding boxes visibility checking & finding boundaires
+  public: BoundingBoxMaterialSwitcher *materialSwitcher {nullptr};
+
+  /// \brief Compositor Manager to create workspace
+  public: Ogre::CompositorManager2 *ogreCompositorManager {nullptr};
+
+  /// \brief Workspace to interface with render texture
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace {nullptr};
+
+  /// \brief Workspace Definition
+  public: std::string workspaceDefinition;
+
+  /// \brief Render Texture to store the ogreIds map
+  public: Ogre::RenderTexture *ogreRenderTexture {nullptr};
+
+  /// \brief Texture to create the render texture from.
+  public: Ogre::TexturePtr ogreTexture;
+
+  /// \brief Pixel Box to copy render texture data to a buffer
+  public: Ogre::PixelBox *pixelBox {nullptr};
+
+  /// \brief buffer to store render texture data & to be sent to listeners
+  public: uint8_t *buffer = nullptr;
+
+  /// \brief dummy render texture to set image dims
+  public: Ogre2RenderTexturePtr dummyTexture {nullptr};
+
+  /// \brief New BoundingBox Frame Event to notify listeners with new data
+  public: ignition::common::EventT<void(const std::vector<BoundingBox> &)>
+        newBoundingBoxes;
+
+  /// \brief Image / Render Texture Format
+  public: Ogre::PixelFormat format = Ogre::PF_R8G8B8;
+
+  /// \brief map ogreId id to bounding box
+  /// key: ogreId, value: bounding box contains max & min boundaries
+  public: std::map<uint32_t, BoundingBox *> boundingboxes;
+
+  /// \brief keep track of visible bounding boxes (used in filtering)
+  /// key: ogreId, value: label id
+  public: std::map<uint32_t, uint32_t> visibleBoxesLabel;
+
+  /// \brief output bounding boxes to nofity listeners
+  public: std::vector<BoundingBox> output_boxes;
+
+  public: BoundingBoxType type {BoundingBoxType::VisibleBox};
+};
+
+/////////////////////////////////////////////////
 BoundingBoxMaterialSwitcher::BoundingBoxMaterialSwitcher(Ogre2ScenePtr _scene)
 {
   this->scene = _scene;
@@ -210,75 +262,13 @@ void BoundingBoxMaterialSwitcher::preRenderTargetUpdate(
 void BoundingBoxMaterialSwitcher::postRenderTargetUpdate(
     const Ogre::RenderTargetEvent &/*_evt*/)
 {
-  // restore item to use hlms material
-  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
-      Ogre::ItemFactory::FACTORY_TYPE_NAME);
-  while (itor.hasMoreElements())
+  // restore the original material
+  for (auto it : this->datablockMap)
   {
-    Ogre::MovableObject *object = itor.peekNext();
-    Ogre::Item *item = static_cast<Ogre::Item *>(object);
-    for (unsigned int i = 0; i < item->getNumSubItems(); i++)
-    {
-      Ogre::SubItem *subItem = item->getSubItem(i);
-      auto it = this->datablockMap.find(subItem);
-      if (it != this->datablockMap.end())
-        subItem->setDatablock(it->second);
-    }
-    itor.moveNext();
+    Ogre::SubItem *subItem = it.first;
+    subItem->setDatablock(it.second);
   }
 }
-
-/////////////////////////////////////////////////
-class ignition::rendering::Ogre2BoundingBoxCameraPrivate
-{
-  /// \brief Material Switcher to switch item's material with ogre Ids
-  /// For bounding boxes visibility checking & finding boundaires
-  public: BoundingBoxMaterialSwitcher *materialSwitcher {nullptr};
-
-  /// \brief Compositor Manager to create workspace
-  public: Ogre::CompositorManager2 *ogreCompositorManager {nullptr};
-
-  /// \brief Workspace to interface with render texture
-  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace {nullptr};
-
-  /// \brief Workspace Definition
-  public: std::string workspaceDefinition;
-
-  /// \brief Render Texture to store the ogreIds map
-  public: Ogre::RenderTexture *ogreRenderTexture {nullptr};
-
-  /// \brief Texture to create the render texture from.
-  public: Ogre::TexturePtr ogreTexture;
-
-  /// \brief Pixel Box to copy render texture data to a buffer
-  public: Ogre::PixelBox *pixelBox {nullptr};
-
-  /// \brief buffer to store render texture data & to be sent to listeners
-  public: uint8_t *buffer = nullptr;
-
-  /// \brief dummy render texture to set image dims
-  public: Ogre2RenderTexturePtr dummyTexture {nullptr};
-
-  /// \brief New BoundingBox Frame Event to notify listeners with new data
-  public: ignition::common::EventT<void(const std::vector<BoundingBox> &)>
-        newBoundingBoxes;
-
-  /// \brief Image / Render Texture Format
-  public: Ogre::PixelFormat format = Ogre::PF_R8G8B8;
-
-  /// \brief map ogreId id to bounding box
-  /// key: ogreId, value: bounding box contains max & min boundaries
-  public: std::map<uint32_t, BoundingBox *> boundingboxes;
-
-  /// \brief keep track of visible bounding boxes (used in filtering)
-  /// key: ogreId, value: label id
-  public: std::map<uint32_t, uint32_t> visibleBoxesLabel;
-
-  /// \brief output bounding boxes to nofity listeners
-  public: std::vector<BoundingBox> output_boxes;
-
-  public: BoundingBoxType type {BoundingBoxType::VisibleBox};
-};
 
 /////////////////////////////////////////////////
 Ogre2BoundingBoxCamera::Ogre2BoundingBoxCamera() :

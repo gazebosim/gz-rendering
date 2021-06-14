@@ -36,8 +36,8 @@ if (NOT APPLE)
 endif()
 
 if (WIN32)
-	find_package(FreeGLUT REQUIRED)
-	set(TARGET_THIRD_PARTY_DEPENDS ${TARGET_THIRD_PARTY_DEPENDS} FreeGLUT::freeglut)
+  find_package(FreeGLUT REQUIRED)
+  set(TARGET_THIRD_PARTY_DEPENDS ${TARGET_THIRD_PARTY_DEPENDS} FreeGLUT::freeglut)
 endif()
 
 add_executable(visualization_demo Main.cc GlutWindow.cc)

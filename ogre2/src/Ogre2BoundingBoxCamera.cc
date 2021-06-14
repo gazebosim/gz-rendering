@@ -337,15 +337,52 @@ void Ogre2BoundingBoxCamera::CreateCamera()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::Destroy()
 {
-  BaseCamera::Destroy();
-  Camera::Destroy();
+  if (this->dataPtr->buffer)
+  {
+    delete [] this->dataPtr->buffer;
+    this->dataPtr->buffer = nullptr;
+  }
 
-  delete this->dataPtr->ogreCompositorWorkspace;
-  delete this->dataPtr->ogreCompositorManager;
+  if (!this->ogreCamera)
+    return;
 
-  auto &manager = Ogre::TextureManager::getSingleton();
-  manager.unload(this->dataPtr->ogreTexture->getName());
-  manager.remove(this->dataPtr->ogreTexture->getName());
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr =
+    ogreRoot->getCompositorManager2();
+
+  // remove thermal texture, material, compositor
+  if (this->dataPtr->ogreRenderTexture)
+  {
+    Ogre::TextureManager::getSingleton().remove(
+        this->dataPtr->ogreRenderTexture->getName());
+  }
+  if (this->dataPtr->ogreCompositorWorkspace)
+  {
+    ogreCompMgr->removeWorkspace(
+        this->dataPtr->ogreCompositorWorkspace);
+  }
+
+  if (!this->dataPtr->workspaceDefinition.empty())
+  {
+    ogreCompMgr->removeWorkspaceDefinition(
+        this->dataPtr->workspaceDefinition);
+  }
+
+  Ogre::SceneManager *ogreSceneManager;
+  ogreSceneManager = this->scene->OgreSceneManager();
+  if (ogreSceneManager == nullptr)
+  {
+    ignerr << "Scene manager cannot be obtained" << std::endl;
+  }
+  else
+  {
+    if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
+    {
+      ogreSceneManager->destroyCamera(this->ogreCamera);
+      this->ogreCamera = nullptr;
+    }
+  }
 }
 
 /////////////////////////////////////////////////

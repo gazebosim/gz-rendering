@@ -107,8 +107,66 @@ VisualPtr createSphere(ScenePtr _scene,
   return sphere;
 }
 
+
+
+
+/// \brief Build the scene with 3 boxes besides each other
+/// the 2 aside boxes have the same label & the middle is different
+void buildScene(rendering::ScenePtr scene)
+{
+  rendering::VisualPtr root = scene->RootVisual();
+
+  math::Vector3d leftPosition(3, 1.5, 0);
+  math::Vector3d rightPosition(3, -1.5, 0);
+
+  rendering::VisualPtr leftBox = scene->CreateVisual();
+  leftBox->AddGeometry(scene->CreateBox());
+  leftBox->SetOrigin(0.0, 0.0, 0.0);
+  leftBox->SetLocalPosition(leftPosition);
+  leftBox->SetLocalRotation(0, 0, 0);
+  leftBox->SetUserData("label", 1);
+  root->AddChild(leftBox);
+
+  rendering::VisualPtr rightBox = scene->CreateVisual();
+  rightBox->AddGeometry(scene->CreateBox());
+  rightBox->SetOrigin(0.0, 0.0, 0.0);
+  rightBox->SetLocalPosition(rightPosition);
+  rightBox->SetLocalRotation(0, 0, 0);
+  rightBox->SetUserData("label", 2);
+  root->AddChild(rightBox);
+
+  // create camera
+  CameraPtr camera = scene->CreateCamera("camera");
+  camera->SetLocalPosition(0.0, 0.0, 0.0);
+  camera->SetLocalRotation(0.0, 0.0, 0.0);
+  camera->SetImageWidth(320);
+  camera->SetImageHeight(240);
+  camera->SetImageFormat(PixelFormat::PF_R8G8B8);
+  camera->SetAspectRatio(1.333);
+  camera->SetHFOV(IGN_PI / 2);
+  root->AddChild(camera);
+
+  BoundingBoxCameraPtr boundingboxCamera =
+    scene->CreateBoundingBoxCamera("boundingbox_camera");
+  boundingboxCamera->SetLocalPose(camera->LocalPose());
+  boundingboxCamera->SetTrackTarget(camera);
+  boundingboxCamera->SetFollowTarget(camera);
+  boundingboxCamera->SetImageWidth(camera->ImageWidth());
+  boundingboxCamera->SetImageHeight(camera->ImageHeight());
+  boundingboxCamera->SetImageFormat(camera->ImageFormat());
+  boundingboxCamera->SetAspectRatio(camera->AspectRatio());
+  boundingboxCamera->SetHFOV(camera->HFOV());
+
+  // Bounding box type (VisibleBox or FullBox)
+  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::VisibleBox);
+  root->AddChild(boundingboxCamera);
+}
+
+
+
+
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene)
+void buildScene2(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);

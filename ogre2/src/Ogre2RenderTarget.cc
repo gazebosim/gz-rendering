@@ -764,7 +764,7 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     for( size_t i = 0u; i < 2u; ++i )
     {
       const size_t srcIdx = bMustSwapRts ? (2u - i - 1u) : i;
-      *_ogreTextures[srcIdx] = externalTargets[i].textures.front().get();
+      (*_ogreTextures)[srcIdx] = externalTargets[i].textures.front().get();
     }
   }
   else

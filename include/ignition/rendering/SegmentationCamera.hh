@@ -32,11 +32,11 @@ namespace ignition
     /// \brief Segmentation types for Semantic / Panpoptic segmentation
     enum class SegmentationType {
 
-      /// \brief Semantic: Pixels of same label from different items
+      /// \brief Pixels of same label from different items
       /// have the same color & id.
       Semantic = 0,
 
-      /// \brief Panoptic: Pixels of same label from different items,have different
+      /// \brief Pixels of same label from different items, have different
       /// color & id. 1 channel for label id & 2 channels for instance id
       Panoptic = 1
     };
@@ -74,10 +74,18 @@ namespace ignition
       /// \param[in] _type Segmentation Type
       public: virtual void SetSegmentationType(SegmentationType _type) = 0;
 
+      /// \brief Get Segmentation Type
+      /// \return Segmentation Type
+      public: virtual SegmentationType GetSegmentationType() = 0;
+
       /// \brief Enable Color map mode to generate colored semantics
       /// \param[in] _enable True to generate colored map, False to generate
       /// label id map
       public: virtual void EnableColoredMap(bool _enable) = 0;
+
+      /// \brief Enable Color map mode to generate colored semantics
+      /// \return True if colored map, False if label id map
+      public: virtual bool IsColoredMap() = 0;
 
       /// \brief Set color for background & unlabeled items in the colored map
       /// \param[in] _color Color of background & unlabeled items

@@ -96,6 +96,12 @@ namespace ignition
       public: void EnableColoredMap(bool _enable) override;
 
       // Documentation inherited
+      public: virtual SegmentationType GetSegmentationType();
+
+      // Documentation inherited
+      public: virtual bool IsColoredMap();
+
+      // Documentation inherited
       public: void SetBackgroundColor(const math::Color &_color) override;
 
       // Documentation inherited

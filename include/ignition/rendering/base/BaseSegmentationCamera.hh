@@ -58,7 +58,13 @@ namespace ignition
       public: virtual void SetSegmentationType(SegmentationType _type);
 
       // Documentation inherited
+      public: virtual SegmentationType GetSegmentationType();
+
+      // Documentation inherited
       public: virtual void EnableColoredMap(bool _enable);
+
+      // Documentation inherited
+      public: virtual bool IsColoredMap();
 
       // Documentation inherited
       public: virtual void SetBackgroundColor(math::Color _color);
@@ -118,6 +124,20 @@ namespace ignition
     template <class T>
     void BaseSegmentationCamera<T>::EnableColoredMap(bool)
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    SegmentationType BaseSegmentationCamera<T>::GetSegmentationType()
+    {
+      return SegmentationType::Semantic;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseSegmentationCamera<T>::IsColoredMap()
+    {
+      return false;
     }
 
     //////////////////////////////////////////////////

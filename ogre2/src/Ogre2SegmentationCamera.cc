@@ -664,3 +664,15 @@ void Ogre2SegmentationCamera::EnableColoredMap(bool _enable)
 {
   this->dataPtr->materialSwitcher->isColoredMap = _enable;
 }
+
+/////////////////////////////////////////////////
+SegmentationType Ogre2SegmentationCamera::GetSegmentationType()
+{
+  return this->dataPtr->materialSwitcher->type;
+}
+
+/////////////////////////////////////////////////
+bool Ogre2SegmentationCamera::IsColoredMap()
+{
+  return this->dataPtr->materialSwitcher->isColoredMap;
+}

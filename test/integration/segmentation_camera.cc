@@ -242,8 +242,8 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   g_mutex.unlock();
 
   // Clean up
-  // engine->DestroyScene(scene);
-  // ignition::rendering::unloadEngine(engine->Name());
+  engine->DestroyScene(scene);
+  ignition::rendering::unloadEngine(engine->Name());
 }
 
 TEST_P(SegmentationCameraTest, SegmentationCameraBoxes)

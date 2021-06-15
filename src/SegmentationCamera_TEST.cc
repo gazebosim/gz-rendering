@@ -69,8 +69,8 @@ void SegmentationCameraTest::SegmentationCamera(
   EXPECT_TRUE(camera->IsColoredMap());
 
   // Clean up
-  // engine->DestroyScene(scene);
-  // rendering::unloadEngine(engine->Name());
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

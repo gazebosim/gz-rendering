@@ -744,10 +744,9 @@ AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int _id,
 COMVisualPtr Ogre2Scene::CreateCOMVisualImpl(unsigned int _id,
     const std::string &_name)
 {
-  // Ogre2COMVisualPtr visual(new Ogre2COMVisual);
-  // bool result = this->InitObject(visual, _id, _name);
-  // (result) ? visual : nullptr;
-  return nullptr;
+  Ogre2COMVisualPtr visual(new Ogre2COMVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

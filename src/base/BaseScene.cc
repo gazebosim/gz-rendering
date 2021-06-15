@@ -1389,6 +1389,7 @@ void BaseScene::CreateMaterials()
   material->SetCastShadows(false);
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
+  material->SetDepthWriteEnabled(false);
 
   material = this->CreateMaterial("Default/White");
   material->SetAmbient(1.0, 1.0, 1.0);

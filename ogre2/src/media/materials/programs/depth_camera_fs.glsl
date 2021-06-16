@@ -139,8 +139,7 @@ void main()
   }
 
   // clamp xyz and set rgb to background color
-  if (point.x * point.x + point.y * point.y >
-      (far - tolerance) * (far - tolerance))
+  if (length(point) > far - tolerance)
   {
     if (isinf(max))
     {
@@ -159,8 +158,7 @@ void main()
       color = vec4(backgroundColor, 1.0);
     }
   }
-  else if (point.x * point.x + point.y * point.y <
-           (near + tolerance) * (near + tolerance))
+  else if (length(point) < near + tolerance)
   {
     if (isinf(min))
     {

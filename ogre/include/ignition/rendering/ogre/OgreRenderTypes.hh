@@ -37,6 +37,7 @@ namespace ignition
     class OgreGpuRays;
     class OgreGrid;
     class OgreHeightmap;
+    class OgreInertiaVisual;
     class OgreJointVisual;
     class OgreLight;
     class OgreLightVisual;
@@ -86,6 +87,7 @@ namespace ignition
     typedef shared_ptr<OgreGpuRays>              OgreGpuRaysPtr;
     typedef shared_ptr<OgreGrid>                 OgreGridPtr;
     typedef shared_ptr<OgreHeightmap>            OgreHeightmapPtr;
+    typedef shared_ptr<OgreInertiaVisual>        OgreInertiaVisualPtr;
     typedef shared_ptr<OgreJointVisual>          OgreJointVisualPtr;
     typedef shared_ptr<OgreLight>                OgreLightPtr;
     typedef shared_ptr<OgreLightVisual>          OgreLightVisualPtr;

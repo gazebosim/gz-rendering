@@ -12,7 +12,6 @@ Why are light maps useful?
 
   * Light maps allow you to add global illumination, shadows, and ambient lighting at a relatively low computational cost.
 
-
 ## Baking Light maps in Blender
 
 In Blender you can bake light map information fast and efficiently with its built in renderers. For this workflow we will be using cycles renderer.

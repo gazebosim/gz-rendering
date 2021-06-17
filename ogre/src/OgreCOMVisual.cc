@@ -60,7 +60,6 @@ void OgreCOMVisual::PreRender()
 void OgreCOMVisual::Init()
 {
   BaseCOMVisual::Init();
-  this->CreateVisual();
 }
 
 //////////////////////////////////////////////////
@@ -104,7 +103,8 @@ void OgreCOMVisual::CreateVisual()
   this->dataPtr->sphereVis->SetLocalRotation(this->InertiaPose().Rot());
 
   // Get the link's bounding box
-  if (this->linkName.empty() || !this->Scene()->HasVisualName(this->linkName))
+  if (this->ParentLink().empty() ||
+      !this->Scene()->HasVisualName(this->ParentLink()))
     return;
 
   VisualPtr vis = this->Scene()->VisualByName(this->ParentLink());

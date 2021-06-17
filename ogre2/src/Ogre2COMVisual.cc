@@ -70,9 +70,25 @@ void Ogre2COMVisual::Init()
 }
 
 //////////////////////////////////////////////////
-Ogre::MovableObject *Ogre2COMVisual::OgreObject() const
+void Ogre2COMVisual::Destroy()
 {
-  return this->dataPtr->crossLines->OgreObject();
+  if (this->dataPtr->sphereVis != nullptr)
+  {
+    this->dataPtr->sphereVis->Destroy();
+    this->dataPtr->sphereVis.reset();
+  }
+
+  if (this->dataPtr->crossLines)
+  {
+    this->dataPtr->crossLines->Destroy();
+    this->dataPtr->crossLines.reset();
+  }
+
+  if (this->dataPtr->material && this->Scene())
+  {
+    this->Scene()->DestroyMaterial(this->dataPtr->material);
+    this->dataPtr->material.reset();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -82,7 +98,7 @@ void Ogre2COMVisual::CreateVisual()
   {
     this->dataPtr->crossLines.reset(
         new Ogre2DynamicRenderable(this->Scene()));
-    this->ogreNode->attachObject(this->OgreObject());
+    this->ogreNode->attachObject(this->dataPtr->crossLines->OgreObject());
   }
 
   if (!this->dataPtr->sphereVis)
@@ -123,7 +139,7 @@ void Ogre2COMVisual::CreateVisual()
   if (!this->dataPtr->material)
   {
     MaterialPtr COMVisualMaterial =
-        this->Scene()->Material("Default/TransGreen");
+        this->Scene()->Material("Default/TransGreen")->Clone();
     this->SetMaterial(COMVisualMaterial, false);
   }
 

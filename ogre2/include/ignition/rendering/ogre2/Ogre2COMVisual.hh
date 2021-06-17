@@ -53,7 +53,7 @@ namespace ignition
       public: virtual void PreRender() override;
 
       // Documentation inherited.
-      public: Ogre::MovableObject *OgreObject() const;
+      protected: virtual void Destroy() override;
 
       /// \brief Create the Light Visual in Ogre
       public: void CreateVisual();

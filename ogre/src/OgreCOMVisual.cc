@@ -107,7 +107,7 @@ void OgreCOMVisual::CreateVisual()
   if (this->linkName.empty() || !this->Scene()->HasVisualName(this->linkName))
     return;
 
-  VisualPtr vis = this->Scene()->VisualByName(this->linkName);
+  VisualPtr vis = this->Scene()->VisualByName(this->ParentLink());
 
   ignition::math::AxisAlignedBox box;
   if (vis)

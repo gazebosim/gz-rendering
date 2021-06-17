@@ -331,10 +331,10 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
           ogre2RenderPass->OgreCompositorNodeDefinitionName());
 
       // check if we need to create all nodes or just update the connections.
-      // if node does not exist then it means it has not been added to the
-      // chain yet, in which case, we need to recreate the nodes and
-      // connections
-      if (!node)
+      // if node does not exist then it means it either has not been added to
+      // the chain yet or it was removed because it was disabled.
+      // In both cases, we need to recreate the nodes and connections
+      if (!node && ogre2RenderPass->IsEnabled())
       {
         _recreateNodes = true;
       }

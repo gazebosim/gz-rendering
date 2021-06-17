@@ -31,10 +31,18 @@ uniform float far;
 uniform float min;
 uniform float max;
 
+uniform vec4 texResolution;
+
 void main()
 {
   float tolerance = 1e-6;
-  vec4 p = texture(inputTexture, inPs.uv0);
+
+  // Note: We use texelFetch because p.a contains an uint32 and sampling
+  // (even w/ point filtering) causes p.a to loss information (e.g.
+  // values close to 0 get rounded to 0)
+  //
+  // See https://github.com/ignitionrobotics/ign-rendering/issues/332
+  vec4 p = texelFetch(inputTexture, ivec2(inPs.uv0 *texResolution.xy), 0);
 
   vec3 point = p.xyz;
 

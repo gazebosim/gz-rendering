@@ -121,26 +121,7 @@ namespace ignition
     {
       this->inertiaPose = _inertial.Pose();
 
-      if (_inertial.MassMatrix().Mass() <= 0)
-      {
-        // Unrealistic mass, load with default mass
-        if (_inertial.MassMatrix().Mass() < 0)
-        {
-          ignlog << "The link " << this->ParentLink()
-              << " has unrealistic mass, "
-              << "unable to visualize sphere of equivalent mass.\n";
-        }
-        else
-        {
-          ignlog << "The link " << this->ParentLink()
-              << " is static or has mass of 0, "
-              << "so a sphere of equivalent mass will not be shown.\n";
-        }
-        return;
-      }
-
-      this->mass = _inertial.MassMatrix().Mass();
-      this->dirtyCOMVisual = true;
+      this->SetMass(_inertial.MassMatrix().Mass());
     }
 
     template <class T>

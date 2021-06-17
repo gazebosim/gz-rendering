@@ -23,7 +23,6 @@
 #include "ignition/rendering/base/BaseLidarVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 
 namespace ignition
 {

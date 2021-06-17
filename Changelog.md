@@ -1,5 +1,59 @@
 ## Ignition Rendering
 
+### Ignition Rendering 6.X
+
+### Ignition Rendering 6.0.0 (20XX-XX-XX)
+
+### Ignition Rendering 5.X
+
+### Ignition Rendering 5.X.X (20XX-XX-XX)
+
+### Ignition Rendering 5.0.0 (2021-03-30)
+
+1. Add ogre2 skybox support
+    * [Pull request #168](https://github.com/ignitionrobotics/ign-rendering/pull/168)
+
+1. Add light visual support
+    * [Pull request #202](https://github.com/ignitionrobotics/ign-rendering/pull/202)
+    * [Pull request #228](https://github.com/ignitionrobotics/ign-rendering/pull/228)
+
+1. Add API for particle emitter scatter ratio
+    * [Pull request #275](https://github.com/ignitionrobotics/ign-rendering/pull/275)
+
+1. Added capsule geometry
+    * [Pull request #200](https://github.com/ignitionrobotics/ign-rendering/pull/200)
+    * [Pull request #278](https://github.com/ignitionrobotics/ign-rendering/pull/278)
+
+1. Added ellipsoid Geometry
+    * [Pull request #203](https://github.com/ignitionrobotics/ign-rendering/pull/203)
+
+1. ogre2: explicitly request OpenGL 3.3 core profile context.
+    * [Pull request #244](https://github.com/ignitionrobotics/ign-rendering/pull/244)
+
+1. Bump in edifice: ign-common4
+    * [Pull request #209](https://github.com/ignitionrobotics/ign-rendering/pull/209)
+
+1. Support setting horizontal and vertical resolution for GpuRays
+    * [Pull request #229](https://github.com/ignitionrobotics/ign-rendering/pull/229)
+
+1. Added Light Intensity
+    * [Pull request #233](https://github.com/ignitionrobotics/ign-rendering/pull/233)
+    * [Pull request #284](https://github.com/ignitionrobotics/ign-rendering/pull/284)
+
+1. Heightmap for Ogre 1
+    * [Pull request #180](https://github.com/ignitionrobotics/ign-rendering/pull/180)
+
+1. Added render order to material
+    * [Pull request #188](https://github.com/ignitionrobotics/ign-rendering/pull/188)
+
+1. Add support for lightmaps in ogre2
+    * [Pull request #182](https://github.com/ignitionrobotics/ign-rendering/pull/182)
+
+1. Documentation updates
+    * [Pull request #288](https://github.com/ignitionrobotics/ign-rendering/pull/288)
+    * [Pull request #287](https://github.com/ignitionrobotics/ign-rendering/pull/287)
+    * [Pull request #286](https://github.com/ignitionrobotics/ign-rendering/pull/286)
+
 ### Ignition Rendering 4.X
 
 ### Ignition Rendering 4.7.0 (2021-03-17)
@@ -191,7 +245,31 @@
 
 ### Ignition Rendering 3.X.X (2021-XX-XX)
 
+### Ignition Rendering 3.5.0 (2021-05-25)
 
+1. Include MoveTo Helper class to ign-rendering
+    * [Pull request 311](https://github.com/ignitionrobotics/ign-rendering/pull/311)
+
+1. Remove tools/code_check and update codecov
+    * [Pull request 321](https://github.com/ignitionrobotics/ign-rendering/pull/321)
+
+1. Helper function to get a scene (#320)
+    * [Pull request 320](https://github.com/ignitionrobotics/ign-rendering/pull/320)
+
+1. Fix DepthGaussianNoise test (#271)
+    * [Pull request 271](https://github.com/ignitionrobotics/ign-rendering/pull/271)
+
+1. Master branch updates (#268)
+    * [Pull request 268](https://github.com/ignitionrobotics/ign-rendering/pull/268)
+
+1. 👩🌾 Make GitHub actions tests that are flaky due to display more verbose information (#255)
+    * [Pull request 255](https://github.com/ignitionrobotics/ign-rendering/pull/255)
+
+1. Fixed OBJ textures with the same name (#239)
+    * [Pull request 239](https://github.com/ignitionrobotics/ign-rendering/pull/239)
+
+1. More verbose messages when failing to load render engine (#236)
+    * [Pull request 236](https://github.com/ignitionrobotics/ign-rendering/pull/236)
 
 ### Ignition Rendering 3.4.0 (2021-02-09)
 

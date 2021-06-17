@@ -9,10 +9,10 @@
 
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/ign-rendering4/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
-Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering4-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering4-bionic-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering4-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering4-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/job/ign_rendering-ign-4-win/badge/icon)](https://build.osrfoundation.org/job/ign_rendering-ign-4-win/)
+Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/main/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
+Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-bionic-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/job/ign_rendering-ci-win/badge/icon)](https://build.osrfoundation.org/job/ign_rendering-ci-win/)
 
 Ignition Rendering is a C++ library designed to provide an abstraction
 for different rendering engines. It offers unified APIs for creating
@@ -47,12 +47,12 @@ of libraries designed to rapidly develop robot applications.
 
 # Install
 
-See the [installation tutorial](https://ignitionrobotics.org/api/rendering/4.0/installation.html).
+See the [installation tutorial](https://ignitionrobotics.org/api/rendering/5.0/installation.html).
 
 # Usage
 
 The Ign Rendering API can be found in the documentation. See the
-[installation tutorial](https://ignitionrobotics.org/api/rendering/4.0/installation.html)
+[installation tutorial](https://ignitionrobotics.org/api/rendering/5.0/installation.html)
 on how to build the documentation files using Doxygen.
 
 You can also take a look at the sample applications in the `examples` folder.

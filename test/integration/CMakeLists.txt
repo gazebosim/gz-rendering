@@ -7,6 +7,7 @@ set(tests
   render_pass.cc
   shadows.cc
   scene.cc
+  sky.cc
   thermal_camera.cc
   lidar_visual.cc
 )

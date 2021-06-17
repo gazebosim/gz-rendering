@@ -19,9 +19,16 @@
 
 #include "ignition/rendering/ogre2/Ogre2Node.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreSceneManager.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 using namespace ignition;
 using namespace rendering;
@@ -57,6 +64,9 @@ Ogre::SceneNode *Ogre2Node::Node() const
 //////////////////////////////////////////////////
 void Ogre2Node::Destroy()
 {
+  if (!ogreNode)
+    return;
+
   BaseNode::Destroy();
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   ogreSceneManager->destroySceneNode(this->ogreNode);
@@ -164,6 +174,9 @@ bool Ogre2Node::AttachChild(NodePtr _child)
 //////////////////////////////////////////////////
 bool Ogre2Node::DetachChild(NodePtr _child)
 {
+  if (nullptr == this->ogreNode)
+    return false;
+
   Ogre2NodePtr derived = std::dynamic_pointer_cast<Ogre2Node>(_child);
 
   if (!derived)

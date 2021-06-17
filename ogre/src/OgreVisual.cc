@@ -26,14 +26,77 @@
 using namespace ignition;
 using namespace rendering;
 
+/// \brief Private data for the Ogre2Visual class
+class ignition::rendering::OgreVisualPrivate
+{
+  /// \brief True if wireframe mode is enabled
+  public: bool wireframe;
+};
+
 //////////////////////////////////////////////////
 OgreVisual::OgreVisual()
+  : dataPtr(new OgreVisualPrivate)
 {
+  this->dataPtr->wireframe = false;
 }
 
 //////////////////////////////////////////////////
 OgreVisual::~OgreVisual()
 {
+}
+
+//////////////////////////////////////////////////
+void OgreVisual::SetWireframe(bool _show)
+{
+  if (this->dataPtr->wireframe == _show)
+    return;
+
+  this->dataPtr->wireframe = _show;
+  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
+      i++)
+  {
+    Ogre::Entity *entity = nullptr;
+    Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+
+    entity = dynamic_cast<Ogre::Entity *>(obj);
+
+    if (!entity)
+      continue;
+
+    for (unsigned int j = 0; j < entity->getNumSubEntities(); j++)
+    {
+      Ogre::SubEntity *subEntity = entity->getSubEntity(j);
+      Ogre::MaterialPtr entityMaterial = subEntity->getMaterial();
+      if (entityMaterial.isNull())
+        continue;
+
+      unsigned int techniqueCount, passCount;
+      Ogre::Technique *technique;
+      Ogre::Pass *pass;
+
+      for (techniqueCount = 0;
+           techniqueCount < entityMaterial->getNumTechniques();
+           ++techniqueCount)
+      {
+        technique = entityMaterial->getTechnique(techniqueCount);
+
+        for (passCount = 0; passCount < technique->getNumPasses(); passCount++)
+        {
+          pass = technique->getPass(passCount);
+          if (_show)
+            pass->setPolygonMode(Ogre::PM_WIREFRAME);
+          else
+            pass->setPolygonMode(Ogre::PM_SOLID);
+        }
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+bool OgreVisual::Wireframe() const
+{
+  return this->dataPtr->wireframe;
 }
 
 //////////////////////////////////////////////////
@@ -74,20 +137,18 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
     return false;
   }
 
+  // Some geometries, like heightmaps, may not have an OgreObject
   Ogre::MovableObject *ogreObj = derived->OgreObject();
-  if (!ogreObj)
+  if (ogreObj)
   {
-    ignerr << "Cannot attach a null geometry object" << std::endl;
-    return false;
+    // set user data for mouse queries
+    ogreObj->getUserObjectBindings().setUserAny(
+        Ogre::Any(this->Id()));
+    ogreObj->setVisibilityFlags(this->visibilityFlags);
+    this->ogreNode->attachObject(ogreObj);
   }
 
-  // set user data for mouse queries
-  ogreObj->getUserObjectBindings().setUserAny(
-      Ogre::Any(this->Id()));
-  ogreObj->setVisibilityFlags(this->visibilityFlags);
-
   derived->SetParent(this->SharedThis());
-  this->ogreNode->attachObject(ogreObj);
   return true;
 }
 
@@ -108,7 +169,8 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  this->ogreNode->detachObject(derived->OgreObject());
+  if (nullptr != derived->OgreObject())
+    this->ogreNode->detachObject(derived->OgreObject());
   derived->SetParent(nullptr);
   return true;
 }

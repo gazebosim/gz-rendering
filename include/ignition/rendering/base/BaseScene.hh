@@ -97,6 +97,13 @@ namespace ignition
       // Documentation inherited.
       public: virtual void RemoveGradientBackgroundColor() override;
 
+      // Documentation inherited.
+      public: virtual MaterialPtr BackgroundMaterial() const override;
+
+      // Documentation inherited.
+      public: virtual void SetBackgroundMaterial(MaterialPtr _material)
+          override;
+
       public: virtual unsigned int NodeCount() const override;
 
       public: virtual bool HasNode(ConstNodePtr _node) const override;
@@ -258,6 +265,18 @@ namespace ignition
       public: virtual PointLightPtr CreatePointLight(unsigned int _id,
                   const std::string &_name) override;
 
+      /// \brief Implementation for creating Inertia visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of inertia visual
+      protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
+                     unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Implementation for creating Light visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of light visual
+      protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       public: virtual SpotLightPtr CreateSpotLight() override;
 
       public: virtual SpotLightPtr CreateSpotLight(unsigned int _id) override;
@@ -347,6 +366,35 @@ namespace ignition
       public: virtual AxisVisualPtr CreateAxisVisual(unsigned int _id,
                   const std::string &_name) override;
 
+      // Documentation inherited
+      public: virtual InertiaVisualPtr CreateInertiaVisual() override;
+
+      // Documentation inherited
+      public: virtual InertiaVisualPtr CreateInertiaVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual InertiaVisualPtr CreateInertiaVisual(
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual InertiaVisualPtr CreateInertiaVisual(unsigned int _id,
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual() override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual(const std::string &_name)
+                      override;
+
+      // Documentation inherited
+      public: virtual LightVisualPtr CreateLightVisual(unsigned int _id,
+                  const std::string &_name) override;
 
       // Documentation inherited
       public: virtual GizmoVisualPtr CreateGizmoVisual() override;
@@ -381,6 +429,9 @@ namespace ignition
       public: virtual MeshPtr CreateMesh(const MeshDescriptor &_desc) override;
 
       // Documentation inherited.
+      public: virtual CapsulePtr CreateCapsule() override;
+
+      // Documentation inherited.
       public: virtual GridPtr CreateGrid() override;
 
       // Documentation inherited.
@@ -400,6 +451,10 @@ namespace ignition
       // Documentation inherited.
       public: virtual LidarVisualPtr CreateLidarVisual(unsigned int _id,
                                             const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual HeightmapPtr CreateHeightmap(
+          const HeightmapDescriptor &_desc) override;
 
       // Documentation inherited.
       public: virtual WireBoxPtr CreateWireBox() override;
@@ -434,6 +489,12 @@ namespace ignition
       // Documentation inherited.
       public: virtual ParticleEmitterPtr CreateParticleEmitter(
                   unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual void SetSkyEnabled(bool _enabled) override;
+
+      // Documentation inherited.
+      public: virtual bool SkyEnabled() const override;
 
       public: virtual void PreRender() override;
 
@@ -528,6 +589,13 @@ namespace ignition
                      const std::string &_name,
                      const MeshDescriptor &_desc) = 0;
 
+      /// \brief Implementation for creating a capsule geometry object
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a capsule geometry object
+      protected: virtual CapsulePtr CreateCapsuleImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       /// \brief Implementation for creating a grid geometry object
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.
@@ -548,6 +616,15 @@ namespace ignition
       /// \return Pointer to a lidar visual
       protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a heightmap geometry
+      /// \param[in] _id Unique object id.
+      /// \param[in] _name Unique object name.
+      /// \param[in] _desc Heightmap descriptor.
+      /// \return Pointer to a heightmap geometry.
+      protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
+                     const std::string &_name,
+                     const HeightmapDescriptor &_desc) = 0;
 
       /// \brief Implementation for creating a wire box geometry
       /// \param[in] _id unique object id.
@@ -645,6 +722,9 @@ namespace ignition
 
       /// \brief Whether the scene has a gradient background.
       protected: bool isGradientBackgroundColor = false;
+
+      /// \brief Scene background material.
+      protected: MaterialPtr backgroundMaterial;
 
       private: unsigned int nextObjectId;
 

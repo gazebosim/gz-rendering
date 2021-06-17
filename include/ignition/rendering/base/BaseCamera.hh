@@ -115,6 +115,21 @@ namespace ignition
       public: virtual math::Matrix4d ViewMatrix() const override;
 
       // Documentation inherited.
+      public: virtual void SetProjectionMatrix(const math::Matrix4d &_matrix)
+          override;
+
+      // Documentation inherited.
+      public: virtual CameraProjectionType ProjectionType() const override;
+
+      // Documentation inherited.
+      public: virtual void SetProjectionType(
+          CameraProjectionType _projectionType) override;
+
+      // Documentation inherited.
+      public: virtual math::Vector2i Project(const math::Vector3d &_pt) const
+                  override;
+
+      // Documentation inherited.
       // \sa Camera::SetMaterial(const MaterialPtr &) override;
       public: virtual void SetMaterial(const MaterialPtr &_material)
                   override;
@@ -234,6 +249,12 @@ namespace ignition
 
       /// \brief Offset distance between camera and target node being followed
       protected: math::Vector3d followOffset;
+
+      /// \brief Custom projection matrix
+      protected: math::Matrix4d projectionMatrix;
+
+      /// \brief Camera projection type
+      protected: CameraProjectionType projectionType;
 
       friend class BaseDepthCamera<T>;
     };
@@ -466,41 +487,76 @@ namespace ignition
     template <class T>
     math::Matrix4d BaseCamera<T>::ProjectionMatrix() const
     {
-      // perspective projection
-      double ratio = this->AspectRatio();
-      double fov = this->HFOV().Radian();
-      double vfov =  2.0 * std::atan(std::tan(fov / 2.0) / ratio);
-      double f = 1.0;
-      double _near = this->NearClipPlane();
-      double _far = this->FarClipPlane();
-      double top = _near * std::tan(0.5*vfov) / f;
-      double height = 2 * top;
-      double width = ratio * height;
-      double left = -0.5 * width;
-      double right = left + width;
-      double bottom = top - height;
+      math::Matrix4d result = this->projectionMatrix;
+      if (this->projectionType == CPT_PERSPECTIVE)
+      {
+        double ratio = this->AspectRatio();
+        double fov = this->HFOV().Radian();
+        double vfov =  2.0 * std::atan(std::tan(fov / 2.0) / ratio);
+        double f = 1.0;
+        double _near = this->NearClipPlane();
+        double _far = this->FarClipPlane();
+        double top = _near * std::tan(0.5*vfov) / f;
+        double height = 2 * top;
+        double width = ratio * height;
+        double left = -0.5 * width;
+        double right = left + width;
+        double bottom = top - height;
 
-      double invw = 1.0 / (right - left);
-      double invh = 1.0 / (top - bottom);
-      double invd = 1.0 / (_far - _near);
-      double x = 2 * _near * invw;
-      double y = 2 * _near * invh;
-      double a = (right + left) * invw;
-      double b = (top + bottom) * invh;
-      double c = -(_far + _near) * invd;
-      double d = -2 * _far * _near * invd;
-      math::Matrix4d result;
-      result(0, 0) = x;
-      result(0, 2) = a;
-      result(1, 1) = y;
-      result(1, 2) = b;
-      result(2, 2) = c;
-      result(2, 3) = d;
-      result(3, 2) = -1;
+        double invw = 1.0 / (right - left);
+        double invh = 1.0 / (top - bottom);
+        double invd = 1.0 / (_far - _near);
+        double x = 2 * _near * invw;
+        double y = 2 * _near * invh;
+        double a = (right + left) * invw;
+        double b = (top + bottom) * invh;
+        double c = -(_far + _near) * invd;
+        double d = -2 * _far * _near * invd;
+        result(0, 0) = x;
+        result(0, 2) = a;
+        result(1, 1) = y;
+        result(1, 2) = b;
+        result(2, 2) = c;
+        result(2, 3) = d;
+        result(3, 2) = -1;
+      }
+      else if (this->projectionType == CPT_ORTHOGRAPHIC)
+      {
+        double width = this->ImageWidth();
+        double height = this->ImageHeight();
+        double left = -width * 0.5;
+        double right = -left;
+        double top = height * 0.5;
+        double bottom = -top;
+        double _near = this->NearClipPlane();
+        double _far = this->FarClipPlane();
 
-      // TODO(anyone): compute projection matrix for orthographic camera
+        double invw = 1.0 / (right - left);
+        double invh = 1.0 / (top - bottom);
+        double invd = 1.0 / (_far - _near);
+
+        result(0, 0) = 2.0 * invw;
+        result(0, 3) = -(right + left) * invw;
+        result(1, 1) = 2.0 * invh;
+        result(1, 3) = -(top + bottom) * invh;
+        result(2, 2) = -2.0 * invd;
+        result(2, 3) = -(_far + _near) * invd;
+        result(3, 3) = 1.0;
+      }
+      else
+      {
+        ignerr << "Unknown camera projection type: " << this->projectionType
+               << std::endl;
+      }
 
       return result;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetProjectionMatrix(const math::Matrix4d &_matrix)
+    {
+      this->projectionMatrix = _matrix;
     }
 
     //////////////////////////////////////////////////
@@ -520,6 +576,39 @@ namespace ignition
       result.SetTranslation(t);
       result(3, 3) = 1.0;
       return result;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetProjectionType(CameraProjectionType _type)
+    {
+      this->projectionType = _type;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    CameraProjectionType BaseCamera<T>::ProjectionType() const
+    {
+      return this->projectionType;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Vector2i BaseCamera<T>::Project(const math::Vector3d &_pt) const
+    {
+      math::Vector2i screenPos;
+      math::Matrix4d m = this->ProjectionMatrix() *  this->ViewMatrix();
+      math::Vector3d pos =  m * _pt;
+      double w = m(3, 0) * _pt.X() + m(3, 1) * _pt.Y() + m(3, 2) * _pt.Z()
+          + m(3, 3);
+      pos.X() = pos.X() / w;
+      pos.Y() = pos.Y() / w;
+
+      screenPos.X() = static_cast<int>(
+          ((pos.X() / 2.0) + 0.5) * this->ImageWidth());
+      screenPos.Y() = static_cast<int>(
+          (1 - ((pos.Y() / 2.0) + 0.5)) * this->ImageHeight());
+      return screenPos;
     }
 
     //////////////////////////////////////////////////

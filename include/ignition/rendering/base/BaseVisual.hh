@@ -80,6 +80,12 @@ namespace ignition
       public: virtual MaterialPtr Material() override;
 
       // Documentation inherited.
+      public: virtual void SetWireframe(bool _show) override;
+
+      // Documentation inherited.
+      public: virtual bool Wireframe() const override;
+
+      // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
@@ -136,6 +142,9 @@ namespace ignition
 
       /// \brief The bounding box of the visual
       protected: ignition::math::AxisAlignedBox boundingBox;
+
+      /// \brief True if wireframe mode is enabled else false
+      protected: bool wireframe = false;
     };
 
     //////////////////////////////////////////////////
@@ -347,6 +356,22 @@ namespace ignition
         GeometryPtr geometry = this->GeometryByIndex(i);
         geometry->PreRender();
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseVisual<T>::Wireframe() const
+    {
+      return this->wireframe;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetWireframe(bool _show)
+    {
+      ignerr << "SetWireframe(" << _show << ") not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
     }
 
     //////////////////////////////////////////////////

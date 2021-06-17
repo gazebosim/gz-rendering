@@ -39,6 +39,12 @@ OgreCamera::~OgreCamera()
 }
 
 //////////////////////////////////////////////////
+Ogre::Camera *OgreCamera::Camera() const
+{
+  return this->ogreCamera;
+}
+
+//////////////////////////////////////////////////
 void OgreCamera::Destroy()
 {
   if (!this->ogreCamera)
@@ -271,6 +277,32 @@ math::Matrix4d OgreCamera::ProjectionMatrix() const
 math::Matrix4d OgreCamera::ViewMatrix() const
 {
   return OgreConversions::Convert(this->ogreCamera->getViewMatrix(true));
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
+{
+  BaseCamera::SetProjectionMatrix(_matrix);
+  this->ogreCamera->setCustomProjectionMatrix(true,
+      OgreConversions::Convert(this->projectionMatrix));
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetProjectionType(CameraProjectionType _type)
+{
+  BaseCamera::SetProjectionType(_type);
+  switch (this->projectionType)
+  {
+    default:
+    case CPT_PERSPECTIVE:
+      this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
+      break;
+    case CPT_ORTHOGRAPHIC:
+      this->ogreCamera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+      break;
+  }
+  // reset projection matrix when projection type changes
+  this->ogreCamera->setCustomProjectionMatrix(false);
 }
 
 //////////////////////////////////////////////////

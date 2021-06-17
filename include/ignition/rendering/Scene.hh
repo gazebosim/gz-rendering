@@ -28,6 +28,7 @@
 #include <ignition/math/Color.hh>
 
 #include "ignition/rendering/config.hh"
+#include "ignition/rendering/HeightmapDescriptor.hh"
 #include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Storage.hh"
@@ -170,6 +171,16 @@ namespace ignition
       /// \sa void SetGradientBackgroundColor(
       ///            const std::array<math::Color, 4> &_colors)
       public: virtual void RemoveGradientBackgroundColor() = 0;
+
+      /// \brief Get the scene background material
+      /// e.g. a material with skybox cubemap texture
+      /// \return  Material of the background
+      public: virtual MaterialPtr BackgroundMaterial() const = 0;
+
+      /// \brief Set the scene background material
+      /// e.g. a material with skybox cubemap texture
+      /// \param[in] _material Material to set the background to
+      public: virtual void SetBackgroundMaterial(MaterialPtr _material) = 0;
 
       /// \brief Get the number of nodes managed by this scene. Note these
       /// nodes may not be directly or indirectly attached to the root node.
@@ -812,9 +823,71 @@ namespace ignition
       public: virtual GizmoVisualPtr CreateGizmoVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new inertia visual. A unique ID and name will
+      /// automatically be assigned to the inertia visual.
+      /// \return The created inertia visual
+      public: virtual InertiaVisualPtr CreateInertiaVisual() = 0;
+
+      /// \brief Create new inertia visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new inertia visual
+      /// \return The created light visual
+      public: virtual InertiaVisualPtr CreateInertiaVisual(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new inertia visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new inertia visual
+      /// \return The created light visual
+      public: virtual InertiaVisualPtr CreateInertiaVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new inertia visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new inertia visual
+      /// \param[in] _name Name of the new inertia visual
+      /// \return The created inertia visual
+      public: virtual InertiaVisualPtr CreateInertiaVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new light visual. A unique ID and name will
+      /// automatically be assigned to the light visual.
+      /// \return The created light visual
+      public: virtual LightVisualPtr CreateLightVisual() = 0;
+
+      /// \brief Create new light visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light visual
+      /// \return The created light visual
+      public: virtual LightVisualPtr CreateLightVisual(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new light visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new light visual
+      /// \return The created light visual
+      public: virtual LightVisualPtr CreateLightVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new light visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new light visual
+      /// \param[in] _name Name of the new light visual
+      /// \return The created light visual
+      public: virtual LightVisualPtr CreateLightVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new box geometry
       /// \return The created box
       public: virtual GeometryPtr CreateBox() = 0;
+
+      /// \brief Create new capsule geometry
+      /// \return The created capsule
+      public: virtual CapsulePtr CreateCapsule() = 0;
 
       /// \brief Create new cone geometry
       /// \return The created cone
@@ -828,7 +901,9 @@ namespace ignition
       /// \return The created plane
       public: virtual GeometryPtr CreatePlane() = 0;
 
-      /// \brief Create new sphere geometry
+      /// \brief Create new sphere or ellipsoid geometry
+      /// This method allow to create ellipsoid too, because it can be scaled
+      /// in 3 dimensions.
       /// \return The created sphere
       public: virtual GeometryPtr CreateSphere() = 0;
 
@@ -894,6 +969,13 @@ namespace ignition
       public: virtual LidarVisualPtr CreateLidarVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new heightmap geomerty. The rendering::Heightmap will be
+      /// created from the given HeightmapDescriptor.
+      /// \param[in] _desc Data about the heightmap
+      /// \return The created heightmap
+      public: virtual HeightmapPtr CreateHeightmap(
+          const HeightmapDescriptor &_desc) = 0;
+
       /// \brief Create new text geometry.
       /// \return The created text
       public: virtual TextPtr CreateText() = 0;
@@ -953,6 +1035,14 @@ namespace ignition
       /// \return The created particle emitter
       public: virtual ParticleEmitterPtr CreateParticleEmitter(
                   unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Enable sky in the scene.
+      /// \param[in] _enabled True to enable sky
+      public: virtual void SetSkyEnabled(bool _enabled) = 0;
+
+      /// \brief Get whether the sky is enabled in the scene.
+      /// \return true to sky is enabled, false otherwise
+      public: virtual bool SkyEnabled() const = 0;
 
       /// \brief Prepare scene for rendering. The scene will flushing any scene
       /// changes by traversing scene-graph, calling PreRender on all objects

@@ -26,6 +26,17 @@
 
 #include "ignition/rendering/ogre2/Export.hh"
 
+// This disables warning messages for OGRE
+#ifndef _MSC_VER
+  #pragma GCC system_header
+#else
+  #pragma warning(push, 0)
+#endif
+#include <Compositor/OgreCompositorShadowNode.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 namespace Ogre
 {
   class Root;
@@ -77,6 +88,12 @@ namespace ignition
       // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
+      public: virtual void SetSkyEnabled(bool _enabled) override;
+
+      // Documentation inherited
+      public: virtual bool SkyEnabled() const override;
+
       /// \brief Get a pointer to the ogre scene manager
       /// \return Pointer to the ogre scene manager
       public: virtual Ogre::SceneManager *OgreSceneManager() const;
@@ -101,6 +118,14 @@ namespace ignition
 
       // Documentation inherited
       protected: virtual bool InitImpl() override;
+
+      // Documentation inherited
+      protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
+                     unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
+      protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
 
       // Documentation inherited
       protected: virtual DirectionalLightPtr CreateDirectionalLightImpl(
@@ -179,6 +204,14 @@ namespace ignition
                      override;
 
       // Documentation inherited
+      protected: virtual CapsulePtr CreateCapsuleImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
+                   const std::string &_name, const HeightmapDescriptor &_desc)
+                   override;
+
+      // Documentation inherited
       protected: virtual GridPtr CreateGridImpl(unsigned int _id,
                      const std::string &_name) override;
 
@@ -223,6 +256,28 @@ namespace ignition
       protected: virtual bool InitObject(Ogre2ObjectPtr _object,
                      unsigned int _id, const std::string &_name);
 
+      /// \brief Create a compositor shadow node with the same number of shadow
+      /// textures as the number of shadow casting lights
+      protected: void UpdateShadowNode();
+
+      /// \brief Create ogre compositor shadow node definition. The function
+      /// takes a vector of parameters that describe the type, number, and
+      /// resolution of textures create. Note that it is not necessary to
+      /// create separate textures for each shadow map. It is more efficient to
+      /// define a large texture atlas which is composed of multiple shadow
+      /// maps each occupying a subspace within the texture. This function is
+      /// similar to Ogre::ShadowNodeHelper::createShadowNodeWithSettings but
+      /// fixes a problem with the shadow map index when directional and spot
+      /// light shadow textures are defined on two different texture atlases.
+      /// \param[in] _compositorManager ogre compositor manager
+      /// \param[in] _shadowNodeName Name of the shadow node definition
+      /// \param[in] _shadowParams Parameters containing the shadow type,
+      /// texure resolution and position on the texture atlas.
+      private: void CreateShadowNodeWithSettings(
+          Ogre::CompositorManager2 *_compositorManager,
+          const std::string &_shadowNodeName,
+          const Ogre::ShadowNodeHelper::ShadowParamVec &_shadowParams);
+
       // Documentation inherited
       protected: virtual LightStorePtr Lights() const override;
 
@@ -246,6 +301,10 @@ namespace ignition
 
       /// \brief Create the vaiours storage objects
       private: void CreateStores();
+
+      /// \brief Remove internal material cache for a specific material
+      /// \param[in] _name Name of the template material to remove.
+      public: void ClearMaterialsCache(const std::string &_name);
 
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();

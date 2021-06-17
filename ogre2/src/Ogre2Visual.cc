@@ -26,23 +26,74 @@
 #include "ignition/rendering/ogre2/Ogre2WireBox.hh"
 #include "ignition/rendering/Utils.hh"
 
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreItem.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 using namespace ignition;
 using namespace rendering;
 
 /// \brief Private data for the Ogre2Visual class
 class ignition::rendering::Ogre2VisualPrivate
 {
+  /// \brief True if wireframe mode is enabled
+  public: bool wireframe;
 };
 
 //////////////////////////////////////////////////
 Ogre2Visual::Ogre2Visual()
   : dataPtr(new Ogre2VisualPrivate)
 {
+  this->dataPtr->wireframe = false;
 }
 
 //////////////////////////////////////////////////
 Ogre2Visual::~Ogre2Visual()
 {
+}
+
+//////////////////////////////////////////////////
+void Ogre2Visual::SetWireframe(bool _show)
+{
+  if (this->dataPtr->wireframe == _show)
+    return;
+
+  this->dataPtr->wireframe = _show;
+  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
+      i++)
+  {
+    Ogre::Item *item = nullptr;
+    Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+
+    item = dynamic_cast<Ogre::Item *>(obj);
+
+    if (!item)
+      continue;
+
+    for (unsigned int j = 0; j < item->getNumSubItems(); j++)
+    {
+      Ogre::SubItem *subItem = item->getSubItem(j);
+      auto datablock = subItem->getDatablock();
+      auto macroblock = *(datablock->getMacroblock());
+
+      if (_show)
+        macroblock.mPolygonMode = Ogre::PM_WIREFRAME;
+      else
+        macroblock.mPolygonMode = Ogre::PM_SOLID;
+
+      datablock->setMacroblock(macroblock);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Visual::Wireframe() const
+{
+  return this->dataPtr->wireframe;
 }
 
 //////////////////////////////////////////////////

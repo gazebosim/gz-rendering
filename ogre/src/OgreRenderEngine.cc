@@ -652,9 +652,6 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
   // Hide window if dimensions are less than or equal to one.
   params["border"] = "none";
 
-  std::ostringstream stream;
-  stream << "OgreWindow(0)" << "_" << _handle;
-
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
 
@@ -664,9 +661,12 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     params["currentGLContext"] = "true";
   }
 
+  std::ostringstream stream;
   int attempts = 0;
-  while (window == nullptr && (attempts++) < 10)
+  while (window == nullptr && attempts < 10)
   {
+    stream.str("");
+    stream << "OgreWindow(" << attempts << ")" << "_" << _handle;
     try
     {
       window = this->ogreRoot->createRenderWindow(
@@ -678,6 +678,7 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
              << "]. Exception [" << _e.what() << "]" << std::endl;
       window = nullptr;
     }
+    attempts++;
   }
 
   if (attempts >= 10)

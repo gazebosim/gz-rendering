@@ -101,7 +101,7 @@ void buildScene(ScenePtr _scene)
   VisualPtr sphere = _scene->CreateVisual();
   sphere->AddGeometry(_scene->CreateSphere());
   sphere->SetOrigin(0.0, -0.5, 0.0);
-  sphere->SetLocalPosition(3.0, -1.0, 0);
+  sphere->SetLocalPosition(3, -1, 0);
   sphere->SetLocalRotation(0, 0, 0);
   sphere->SetLocalScale(1, 1, 1);
   sphere->SetMaterial(red);
@@ -139,7 +139,7 @@ void buildScene(ScenePtr _scene)
   VisualPtr plane = _scene->CreateVisual();
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(5, 8, 1);
-  plane->SetLocalPosition(3, 0.0, -0.5);
+  plane->SetLocalPosition(3, 0, -0.5);
   plane->SetMaterial(white);
   root->AddChild(plane);
 
@@ -149,7 +149,7 @@ void buildScene(ScenePtr _scene)
   ignition::math::Pose3d p(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   ignition::math::Inertiald inertial{massMatrix, p};
   inertiaVisual->SetInertial(inertial);
-  inertiaVisual->SetLocalPosition(1.0, 0.0, 0.0);
+  inertiaVisual->SetLocalPosition(1, 0, 0);
   root->AddChild(inertiaVisual);
 
   // create CoM visual

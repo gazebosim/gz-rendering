@@ -1436,8 +1436,7 @@ void BaseScene::CreateMaterials()
 
   // path to look for CoM material texture
   std::string com_material_texture_path = common::joinPaths(
-      resourcePath, "ogre", "media", "materials", "textures",
-      "com.png");
+      resourcePath, "media", "materials", "textures", "com.png");
   material = this->CreateMaterial("Default/CoM");
   material->SetTexture(com_material_texture_path);
   material->SetTransparency(0);

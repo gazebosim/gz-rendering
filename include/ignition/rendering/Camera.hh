@@ -166,8 +166,8 @@ namespace ignition
       /// \brief Renders a new frame and writes the results to the given image.
       /// This is a convenience function for single-camera scenes. It wraps the
       /// pre-render, render, post-render, and get-image calls into a single
-      /// function. This should be used in applications with multiple cameras
-      /// or multiple consumers of a single camera's images.
+      /// function. This should NOT be used in applications with multiple
+      /// cameras or multiple consumers of a single camera's images.
       /// \param[out] _image Output image buffer
       public: virtual void Capture(Image &_image) = 0;
 

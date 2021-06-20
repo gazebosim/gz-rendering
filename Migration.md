@@ -21,7 +21,10 @@ release will remove the deprecated code.
       ```
       scene->PreRender();
       for( auto& camera in cameras )
+      {
+          camera->PreRender();
           camera->Render();
+      }
       for( auto& camera in cameras )
           camera->PostRender();
       scene->PostRender();

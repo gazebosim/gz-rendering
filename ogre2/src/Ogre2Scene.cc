@@ -277,7 +277,8 @@ void Ogre2Scene::StartRendering()
   else
   {
     IGN_ASSERT( this->dataPtr->frameUpdateStarted == true,
-                "Started rendering without first calling Scene::PreRender");
+                "Started rendering without first calling Scene::PreRender. "
+                "See Scene::SetCameraPassCountPerGpuFlush for details");
   }
 }
 

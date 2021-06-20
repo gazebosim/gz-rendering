@@ -643,8 +643,16 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
   this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
 
-  this->dataPtr->hashName =
-    this->ogreDatablock->getTexture(0)->getName().getFriendlyText();
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+      root->getRenderSystem()->getTextureGpuManager();
+  auto tex = textureMgr->findTextureNoThrow(baseName);
+
+  if (tex)
+  {
+    tex->waitForMetadata();
+    this->dataPtr->hashName = tex->getName().getFriendlyText();
+  }
 
   // disable alpha from texture if texture does not have an alpha channel
   // otherwise this becomes a transparent material
@@ -652,10 +660,6 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   {
     if (this->TextureAlphaEnabled())
     {
-      Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-      Ogre::TextureGpuManager *textureMgr =
-          root->getRenderSystem()->getTextureGpuManager();
-      auto tex = textureMgr->findTextureNoThrow(baseName);
       if (tex)
       {
         tex->scheduleTransitionTo(Ogre::GpuResidency::Resident);

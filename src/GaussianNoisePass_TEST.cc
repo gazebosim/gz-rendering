@@ -85,8 +85,9 @@ void GaussianNoisePassTest::GaussianNoise(const std::string &_renderEngine)
   double biasStdDev = 0.007;
   noisePass->SetBiasStdDev(biasStdDev);
   // expect bias to be within 3-sigma
-  EXPECT_LE(std::fabs(noisePass->Bias()), biasMean + biasStdDev*3);
-  EXPECT_GE(std::fabs(noisePass->Bias()), biasMean - biasStdDev*3);
+  // Note, tol relaxed to 4-sigma to fix flaky test
+  EXPECT_LE(std::fabs(noisePass->Bias()), biasMean + biasStdDev*4);
+  EXPECT_GE(std::fabs(noisePass->Bias()), biasMean - biasStdDev*4);
 }
 
 /////////////////////////////////////////////////

@@ -52,6 +52,48 @@
 
 ### Ignition Rendering 4.X
 
+### Ignition Rendering 4.8.0 (2021-06-18)
+
+1. relax gaussian test tolerance
+    * [Pull request #344](https://github.com/ignitionrobotics/ign-rendering/pull/344)
+
+1. recreate node only when needed
+    * [Pull request #342](https://github.com/ignitionrobotics/ign-rendering/pull/342)
+
+1. Backport memory fixes found by ASAN
+    * [Pull request #340](https://github.com/ignitionrobotics/ign-rendering/pull/340)
+
+1. Re-enable part of depth camera test on macOS
+    * [Pull request #335](https://github.com/ignitionrobotics/ign-rendering/pull/335)
+    * [Pull request #347](https://github.com/ignitionrobotics/ign-rendering/pull/347)
+
+1. Fix depth alpha
+    * [Pull request #316](https://github.com/ignitionrobotics/ign-rendering/pull/316)
+
+1. Fix floating point precision bug handling alpha channel (#332)
+    * [Pull request #333](https://github.com/ignitionrobotics/ign-rendering/pull/333)
+
+1. Include MoveTo Helper class to ign-rendering
+    * [Pull request #311](https://github.com/ignitionrobotics/ign-rendering/pull/311)
+
+1. Remove `tools/code_check` and update codecov
+    * [Pull request #321](https://github.com/ignitionrobotics/ign-rendering/pull/321)
+
+1. [OGRE 1.x] Uniform buffer shader support
+    * [Pull request #294](https://github.com/ignitionrobotics/ign-rendering/pull/294)
+
+1. Helper function to get a scene
+    * [Pull request #320](https://github.com/ignitionrobotics/ign-rendering/pull/320)
+
+1. Reduce lidar data discretization
+    * [Pull request #296](https://github.com/ignitionrobotics/ign-rendering/pull/296)
+
+1. Prevent console warnings when multiple texture coordinates are present
+    * [Pull request #301](https://github.com/ignitionrobotics/ign-rendering/pull/301)
+
+1. Added command line argument to pick version of Ogre
+    * [Pull request #277](https://github.com/ignitionrobotics/ign-rendering/pull/277)
+
 ### Ignition Rendering 4.7.0 (2021-03-17)
 
 1. Enable depth write in particles example

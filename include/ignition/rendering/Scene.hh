@@ -1079,33 +1079,63 @@ namespace ignition
 
       /// \brief Call this function after you're done updating ALL cameras
       /// \remark Each PreRender must have a correspondent PostRender
+      /// \remark Particle FX simulation is moved forward after this call
       ///
       /// \see Scene::SetCameraPassCountPerGpuFlush
       public: virtual void PostRender() = 0;
 
       /// \brief
+      /// The ideal render loop is as follows:
+      ///
+      /// \code
+      ///   scene->PreRender();
+      ///   for( auto& camera in cameras )
+      ///   {
+      ///     camera->PreRender();
+      ///     camera->Render();
+      ///   }
+      ///   for( auto& camera in cameras )
+      ///     camera->PostRender();
+      ///   scene->PostRender();
+      /// \endcode
+      ///
+      /// Now... Camera Render calls MUST happen between Scene::PreRender and
+      /// Scene::PostRender.
+      ///
+      /// The scene must not be modified (e.g. add/remove objects, lights, etc)
+      /// while inside Scene PreRender/PostRender
+      ///
       /// # Legacy mode: Set this value to 0.
       ///
-      /// Old projects migrating to newer ign versions may
-      /// leak memory if they don't call PostRender or
-      /// see strange behavior or even crash.
+      /// Old projects migrating to newer ign versions may break
+      /// these rules (e.g. not calling Render between Scene's
+      /// Pre/PostRender).
       ///
       /// Setting this value to 0 forces Gazebo to flush commands for
-      /// every camera.
+      /// every camera; thus avoiding the need to call PostRender at all
       ///
       /// This is much slower but will ease porting, specially
       /// if it's not easy to adapt your code to call PostRender for some
       /// reason (in non-legacy mode each call *must* correspond to a
       /// previous PreRender call)
       ///
+      /// Legacy mode forces Particle FX simulations to move forward
+      /// after each camera render, which can cause inconsistencies
+      /// when Cameras are supposed to be rendering the same frame from
+      /// different angles
+      ///
       /// # New mode i.e. values greater than 0:
       ///
-      /// The CPUs queue up a bunch of rendering commands and then waits
-      /// for the GPU to finish up. If we flush too often, the CPU will often
-      /// have to wait for the GPU doing nothing.
+      /// The CPU normally queues up of rendering commands from each Camera and
+      /// then waits for the GPU to finish up.
       ///
-      /// If we flush too infrequently, RAM consumption will rise due to
-      /// queueing up unsubmitted work.
+      ///   1. If we flush too often, the CPU will often have to wait for
+      ///      the GPU to finish.
+      ///   2. If we flush infrequently, RAM consumption will rise due to
+      ///      queueing up too much unsubmitted work.
+      ///
+      /// Larger values values queue up more work; lower values flush more
+      /// frequently.
       ///
       /// Note that work may be submitted earlier if required by a specific
       /// operation (e.g. reading GPU -> CPU)
@@ -1135,9 +1165,10 @@ namespace ignition
       ///
       /// Once Scene::PostRender is called, a flush is always forced.
       ///
-      /// If you set a value of e.g. 6, but you have a single camera and call
-      /// PostRender, having a value of 1 or 6 won't matter as the result will
-      /// be exactly the same (in every term: performance, memory consumption)
+      /// If you set a value of e.g. 6, but you have a single camera, it
+      /// will be flushed after Scene::PostRender, thus having a value of 1 or
+      /// 6 won't matter as the result will be exactly the same (in every term:
+      /// performance, memory consumption)
       ///
       /// A value of 6 is like an upper bound.
       /// We may queue _up to_ 6 render passes or less; but never more.
@@ -1148,7 +1179,7 @@ namespace ignition
       /// \param[in] _numPass 0 for old projects who can't or don't know
       /// when to call PostRender and prefer to penalize rendering
       /// performance
-      /// Value in range [1; 255] for
+      /// Value in range [1; 255]
       public: virtual void SetCameraPassCountPerGpuFlush(uint8_t _numPass) = 0;
 
       /// \brief Returns the value set in SetCameraPassCountPerGpuFlush

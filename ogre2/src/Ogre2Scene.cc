@@ -158,7 +158,8 @@ void Ogre2Scene::PreRender()
 {
   IGN_ASSERT((this->LegacyAutoGpuFlush() ||
               this->dataPtr->frameUpdateStarted == false),
-             "Scene::PreRender called again before calling Scene::PostRender");
+             "Scene::PreRender called again before calling Scene::PostRender. "
+             "See Scene::SetCameraPassCountPerGpuFlush for details");
   this->dataPtr->frameUpdateStarted = true;
 
   if (this->ShadowsDirty())
@@ -208,7 +209,8 @@ void Ogre2Scene::PostRender()
 {
   IGN_ASSERT((this->LegacyAutoGpuFlush() ||
               this->dataPtr->frameUpdateStarted == true),
-             "Scene::PostRender called again before calling Scene::PreRender");
+             "Scene::PostRender called again before calling Scene::PreRender. "
+             "See Scene::SetCameraPassCountPerGpuFlush for details");
   this->dataPtr->frameUpdateStarted = false;
 
   if (dataPtr->cameraPassCountPerGpuFlush == 0u)

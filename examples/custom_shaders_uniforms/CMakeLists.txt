@@ -5,7 +5,7 @@ include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
 )
 
-find_package(ignition-rendering4)
+find_package(ignition-rendering5)
 
 set(TARGET_THIRD_PARTY_DEPENDS "")
 

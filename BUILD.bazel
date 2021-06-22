@@ -169,3 +169,11 @@ cc_binary(
         IGNITION_ROOT + "ign_rendering/ogre2:libignition-rendering-ogre2.so",
     ]
 )
+
+cc_library(
+    name = "ign_rendering_plugins",
+    data = [
+        IGNITION_ROOT + "ign_rendering/ogre2:libignition-rendering-ogre2.so",
+    ],
+)
+

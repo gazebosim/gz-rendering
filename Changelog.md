@@ -4,6 +4,89 @@
 
 ### Ignition Rendering 5.X.X (20XX-XX-XX)
 
+### Ignition Rendering 5.1.0 (2021-06-22)
+
+1. add ifdef for apple in integration test
+    * [Pull request #349](https://github.com/ignitionrobotics/ign-rendering/pull/349)
+
+1. Update light map tutorial
+    * [Pull request #346](https://github.com/ignitionrobotics/ign-rendering/pull/346)
+
+1. relax gaussian test tolerance
+    * [Pull request #344](https://github.com/ignitionrobotics/ign-rendering/pull/344)
+
+1. Fix custom shaders uniforms ign version number
+    * [Pull request #343](https://github.com/ignitionrobotics/ign-rendering/pull/343)
+
+1. recreate node only when needed
+    * [Pull request #342](https://github.com/ignitionrobotics/ign-rendering/pull/342)
+
+1. Backport memory fixes found by ASAN
+    * [Pull request #340](https://github.com/ignitionrobotics/ign-rendering/pull/340)
+
+1. Fix FSAA in UI and lower VRAM consumption
+    * [Pull request #313](https://github.com/ignitionrobotics/ign-rendering/pull/313)
+
+1. Fix depth alpha
+    * [Pull request #316](https://github.com/ignitionrobotics/ign-rendering/pull/316)
+
+1. Fix floating point precision bug handling alpha channel (#332)
+    * [Pull request #333](https://github.com/ignitionrobotics/ign-rendering/pull/333)
+
+1. Fix heap overflow when reading
+    * [Pull request #337](https://github.com/ignitionrobotics/ign-rendering/pull/337)
+
+1. Fix new [] / delete mismatch
+    * [Pull request #338](https://github.com/ignitionrobotics/ign-rendering/pull/338)
+
+1. Test re-enabling depth camera integration test on mac
+    * [Pull request #335](https://github.com/ignitionrobotics/ign-rendering/pull/335)
+
+1. Include MoveTo Helper class to ign-rendering
+    * [Pull request #311](https://github.com/ignitionrobotics/ign-rendering/pull/311)
+
+1. Remove `tools/code_check` and update codecov
+    * [Pull request #321](https://github.com/ignitionrobotics/ign-rendering/pull/321)
+
+1. [OGRE 1.x] Uniform buffer shader support
+    * [Pull request #294](https://github.com/ignitionrobotics/ign-rendering/pull/294)
+
+1. Helper function to get a scene
+    * [Pull request #320](https://github.com/ignitionrobotics/ign-rendering/pull/320)
+
+1. fix capsule mouse picking
+    * [Pull request #319](https://github.com/ignitionrobotics/ign-rendering/pull/319)
+
+1. Fix depth alpha
+    * [Pull request #316](https://github.com/ignitionrobotics/ign-rendering/pull/316)
+
+1. Add shadows to Ogre2DepthCamera without crashing
+    * [Pull request #303](https://github.com/ignitionrobotics/ign-rendering/pull/303)
+
+1. Reduce lidar data discretization
+    * [Pull request #296](https://github.com/ignitionrobotics/ign-rendering/pull/296)
+
+1. update light visual size
+    * [Pull request #306](https://github.com/ignitionrobotics/ign-rendering/pull/306)
+
+1. Improve build times by reducing included headers
+    * [Pull request #299](https://github.com/ignitionrobotics/ign-rendering/pull/299)
+
+1. Add light map tutorial
+    * [Pull request #302](https://github.com/ignitionrobotics/ign-rendering/pull/302)
+
+1. Prevent console warnings when multiple texture coordinates are present
+    * [Pull request #301](https://github.com/ignitionrobotics/ign-rendering/pull/301)
+
+1. Fix gazebo scene viewer build
+    * [Pull request #289](https://github.com/ignitionrobotics/ign-rendering/pull/289)
+
+1. Silence noisy sky error
+    * [Pull request #282](https://github.com/ignitionrobotics/ign-rendering/pull/282)
+
+1. Added command line argument to pick version of Ogre
+    * [Pull request #277](https://github.com/ignitionrobotics/ign-rendering/pull/277)
+
 ### Ignition Rendering 5.0.0 (2021-03-30)
 
 1. Add ogre2 skybox support

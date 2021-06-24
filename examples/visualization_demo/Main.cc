@@ -160,7 +160,6 @@ void buildScene(ScenePtr _scene)
       0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   ignition::math::Inertiald comVisualInertial{comMassMatrix, comPose};
   comVisual->SetInertial(comVisualInertial);
-  comVisual->SetParentLink("parent_box");
   box->AddChild(comVisual);
 
   // create camera

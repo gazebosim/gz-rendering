@@ -56,8 +56,13 @@ Ogre2COMVisual::~Ogre2COMVisual()
 //////////////////////////////////////////////////
 void Ogre2COMVisual::PreRender()
 {
-  if (this->dirtyCOMVisual)
+  if (this->HasParent() && this->ParentName().empty())
+    this->parentName = this->Parent()->Name();
+
+  if (this->dirtyCOMVisual &&
+      !this->ParentName().empty())
   {
+    this->parentName = this->Parent()->Name();
     this->CreateVisual();
     this->dirtyCOMVisual = false;
   }
@@ -120,13 +125,8 @@ void Ogre2COMVisual::CreateVisual()
   this->dataPtr->sphereVis->SetLocalPosition(this->InertiaPose().Pos());
   this->dataPtr->sphereVis->SetLocalRotation(this->InertiaPose().Rot());
 
-  // Get the link's bounding box
-  if (this->ParentLink().empty() ||
-      !this->Scene()->HasVisualName(this->ParentLink()))
-    return;
-
-  VisualPtr vis = this->Scene()->VisualByName(this->linkName);
-
+  // Get the bounding box of the parent visual
+  VisualPtr vis = this->Scene()->VisualByName(this->ParentName());
   ignition::math::AxisAlignedBox box;
   if (vis)
     box = vis->LocalBoundingBox();

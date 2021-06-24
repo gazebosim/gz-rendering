@@ -44,25 +44,20 @@ namespace ignition
       public: virtual void SetInertial(
                   const ignition::math::Inertiald &_inertial) = 0;
 
-      /// \brief Set the mass of the parent link
-      /// \param[in] _mass Parent link mass
+      /// \brief Set the mass of the parent
+      /// \param[in] _mass Parent mass
       public: virtual void SetMass(double _mass) = 0;
 
-      /// \brief Set the parent link of the visual
-      /// \param[in] _parentLink Parent link of the visual
-      public: virtual void SetParentLink(
-                  const std::string &_parentLink) = 0;
+      /// \brief Get the parent name of the visual
+      /// \return Name of the parent visual
+      public: virtual std::string ParentName() const = 0;
 
-      /// \brief Get the parent link name of the visual
-      /// \return Link name of the visual
-      public: virtual std::string ParentLink() const = 0;
-
-      /// \brief Get the mass of the link
-      /// \return Link mass
+      /// \brief Get the mass of the parent
+      /// \return Parent mass
       public: virtual double Mass() const = 0;
 
-      /// \brief Get inertia pose.
-      /// \return Inertia pose in link frame.
+      /// \brief Get the inertia pose
+      /// \return Inertia pose in parent frame.
       public: virtual ignition::math::Pose3d InertiaPose() const = 0;
 
       /// \brief Get the sphere visual

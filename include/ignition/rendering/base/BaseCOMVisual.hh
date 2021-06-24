@@ -57,12 +57,8 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetMass(double _mass) override;
 
-      // Documentation inherited.
-      public: virtual void SetParentLink(
-                  const std::string &_parentLink) override;
-
       // Documentation inherited
-      public: virtual std::string ParentLink() const override;
+      public: virtual std::string ParentName() const override;
 
       // Documentation inherited
       public: virtual double Mass() const override;
@@ -73,17 +69,17 @@ namespace ignition
       // Documentation inherited
       public: virtual VisualPtr SphereVisual() const override;
 
-      /// \brief Parent link name.
-      protected: std::string linkName = "";
+      /// \brief Parent visual name.
+      protected: std::string parentName = "";
 
-      /// \brief Link mass.
+      /// \brief Parent mass.
       protected: double mass = 1.0;
 
-      /// \brief Inertia pose in link frame.
+      /// \brief Inertia pose in parent frame.
       protected: ignition::math::Pose3d inertiaPose =
           ignition::math::Pose3d::Zero;
 
-      /// \brief Flag to indicate link properties have changed
+      /// \brief Flag to indicate parent properties have changed.
       protected: bool dirtyCOMVisual = false;
     };
 
@@ -131,13 +127,13 @@ namespace ignition
         // Unrealistic mass, load with default mass
         if (_mass < 0)
         {
-          ignlog << "The link " << this->ParentLink()
+          ignlog << "The parent " << this->ParentName()
               << " has unrealistic mass, "
               << "unable to visualize sphere of equivalent mass.\n";
         }
         else
         {
-          ignlog << "The link " << this->ParentLink()
+          ignlog << "The parent " << this->ParentName()
               << " is static or has mass of 0, "
               << "so a sphere of equivalent mass will not be shown.\n";
         }
@@ -148,19 +144,11 @@ namespace ignition
       this->dirtyCOMVisual = true;
     }
 
-    template <class T>
-    void BaseCOMVisual<T>::SetParentLink(
-          const std::string &_parentLink)
-    {
-      this->linkName = _parentLink;
-      this->dirtyCOMVisual = true;
-    }
-
     //////////////////////////////////////////////////
     template <class T>
-    std::string BaseCOMVisual<T>::ParentLink() const
+    std::string BaseCOMVisual<T>::ParentName() const
     {
-      return this->linkName;
+      return this->parentName;
     }
 
     //////////////////////////////////////////////////

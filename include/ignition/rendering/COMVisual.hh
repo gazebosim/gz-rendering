@@ -46,8 +46,7 @@ namespace ignition
 
       /// \brief Set the mass of the parent link
       /// \param[in] _mass Parent link mass
-      public: virtual void SetMass(
-                  const double &_mass) = 0;
+      public: virtual void SetMass(double _mass) = 0;
 
       /// \brief Set the parent link of the visual
       /// \param[in] _parentLink Parent link of the visual

@@ -55,8 +55,7 @@ namespace ignition
                   const ignition::math::Inertiald &_inertial) override;
 
       // Documentation inherited.
-      public: virtual void SetMass(
-                  const double &_mass) override;
+      public: virtual void SetMass(double _mass) override;
 
       // Documentation inherited.
       public: virtual void SetParentLink(
@@ -125,8 +124,7 @@ namespace ignition
     }
 
     template <class T>
-    void BaseCOMVisual<T>::SetMass(
-          const double &_mass)
+    void BaseCOMVisual<T>::SetMass(double _mass)
     {
       if (_mass <= 0)
       {

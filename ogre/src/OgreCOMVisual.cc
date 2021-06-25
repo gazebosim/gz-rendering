@@ -49,11 +49,11 @@ OgreCOMVisual::~OgreCOMVisual()
 //////////////////////////////////////////////////
 void OgreCOMVisual::PreRender()
 {
-  if (this->HasParent() && this->ParentName().empty())
+  if (this->HasParent() && this->parentName.empty())
     this->parentName = this->Parent()->Name();
 
   if (this->dirtyCOMVisual &&
-      !this->ParentName().empty())
+      !this->parentName.empty())
   {
     this->parentName = this->Parent()->Name();
     this->CreateVisual();
@@ -108,7 +108,7 @@ void OgreCOMVisual::CreateVisual()
   this->dataPtr->sphereVis->SetLocalRotation(this->InertiaPose().Rot());
 
   // Get the bounding box of the parent visual
-  VisualPtr vis = this->Scene()->VisualByName(this->ParentName());
+  VisualPtr vis = this->Scene()->VisualByName(this->parentName);
   ignition::math::AxisAlignedBox box;
   if (vis)
     box = vis->LocalBoundingBox();

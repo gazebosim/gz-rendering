@@ -58,9 +58,6 @@ namespace ignition
       public: virtual void SetMass(double _mass) override;
 
       // Documentation inherited
-      public: virtual std::string ParentName() const override;
-
-      // Documentation inherited
       public: virtual double Mass() const override;
 
       // Documentation inherited
@@ -127,13 +124,13 @@ namespace ignition
         // Unrealistic mass, load with default mass
         if (_mass < 0)
         {
-          ignlog << "The parent " << this->ParentName()
+          ignlog << "The parent " << this->parentName
               << " has unrealistic mass, "
               << "unable to visualize sphere of equivalent mass.\n";
         }
         else
         {
-          ignlog << "The parent " << this->ParentName()
+          ignlog << "The parent " << this->parentName
               << " is static or has mass of 0, "
               << "so a sphere of equivalent mass will not be shown.\n";
         }
@@ -142,13 +139,6 @@ namespace ignition
 
       this->mass = _mass;
       this->dirtyCOMVisual = true;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    std::string BaseCOMVisual<T>::ParentName() const
-    {
-      return this->parentName;
     }
 
     //////////////////////////////////////////////////

@@ -48,10 +48,6 @@ namespace ignition
       /// \param[in] _mass Parent mass
       public: virtual void SetMass(double _mass) = 0;
 
-      /// \brief Get the parent name of the visual
-      /// \return Name of the parent visual
-      public: virtual std::string ParentName() const = 0;
-
       /// \brief Get the mass of the parent
       /// \return Parent mass
       public: virtual double Mass() const = 0;

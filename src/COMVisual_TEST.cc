@@ -61,13 +61,10 @@ void COMVisualTest::COMVisual(const std::string &_renderEngine)
   inertial.SetMassMatrix(massMatrix);
   inertial.SetPose(p);
 
-  std::string parentName = "";
-
   // check initial values
   EXPECT_EQ(nullptr, comVisual->SphereVisual());
   EXPECT_EQ(ignition::math::Pose3d::Zero, comVisual->InertiaPose());
   EXPECT_DOUBLE_EQ(1.0, comVisual->Mass());
-  EXPECT_EQ(parentName, comVisual->ParentName());
 
   // set invalid mass
   comVisual->SetMass(-1.0);
@@ -89,11 +86,9 @@ void COMVisualTest::COMVisual(const std::string &_renderEngine)
   EXPECT_DOUBLE_EQ(2.0, comVisual->Mass());
 
   // set parent
-  parentName = "parent_visual";
-  VisualPtr parentVisual = scene->CreateVisual(parentName);
+  VisualPtr parentVisual = scene->CreateVisual("parent_visual");
   parentVisual->AddChild(comVisual);
   comVisual->PreRender();
-  EXPECT_EQ(parentName, comVisual->ParentName());
   EXPECT_NE(nullptr, comVisual->SphereVisual());
 
   // Clean up

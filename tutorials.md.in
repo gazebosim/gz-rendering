@@ -9,6 +9,7 @@ Ignition @IGN_DESIGNATION_CAP@ library and how to use the library effectively.
 1. \subpage introduction "Introduction"
 2. \subpage installation "Installation"
 3. \subpage renderingplugin "Understanding the Rendering Plugin"
+4. \subpage model_and_optimize_meshes  "Model and optimize meshes in blender for simulations"
 
 ## License
 

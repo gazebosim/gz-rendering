@@ -115,11 +115,7 @@ void Ogre2COMVisual::CreateVisual()
     this->AddChild(this->dataPtr->sphereVis);
   }
 
-  // Compute radius of sphere with density of lead and equivalent mass.
-  double sphereRadius;
-  double dLead = 11340;
-  sphereRadius = cbrt((0.75 * this->Mass()) / (IGN_PI * dLead));
-
+  double sphereRadius = this->SphereRadius();
   this->dataPtr->sphereVis->SetLocalScale(ignition::math::Vector3d(
       sphereRadius*2, sphereRadius*2, sphereRadius*2));
   this->dataPtr->sphereVis->SetLocalPosition(this->InertiaPose().Pos());

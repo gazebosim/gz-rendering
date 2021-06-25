@@ -66,6 +66,9 @@ namespace ignition
       // Documentation inherited
       public: virtual VisualPtr SphereVisual() const override;
 
+      // Get the radius of the CoM sphere
+      protected: double SphereRadius() const;
+
       /// \brief Parent visual name.
       protected: std::string parentName = "";
 
@@ -160,6 +163,18 @@ namespace ignition
     VisualPtr BaseCOMVisual<T>::SphereVisual() const
     {
       return nullptr;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseCOMVisual<T>::SphereRadius() const
+    {
+      // Compute radius of sphere with density of lead and equivalent mass.
+      double sphereRadius;
+      double dLead = 11340;
+      sphereRadius = cbrt((0.75 * this->Mass()) / (IGN_PI * dLead));
+
+      return sphereRadius;
     }
     }
   }

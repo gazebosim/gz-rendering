@@ -66,7 +66,8 @@ namespace ignition
       // Documentation inherited
       public: virtual VisualPtr SphereVisual() const override;
 
-      // Get the radius of the CoM sphere
+      /// \brief Get the radius of the CoM sphere
+      /// \return Radius of the CoM sphere
       protected: double SphereRadius() const;
 
       /// \brief Parent visual name.

@@ -118,19 +118,19 @@ void Ogre2RenderEngine::Destroy()
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
 
-  // Clean up any textures that may still be in flight.
-  Ogre::TextureGpuManager *mgr =
-    this->ogreRoot->getRenderSystem()->getTextureGpuManager();
-
-  auto entries = mgr->getEntries();
-  for (auto& [name, entry] : entries)
-  {
-    if (entry.resourceGroup == "General")
-      mgr->destroyTexture(entry.texture);
-  }
-
   if (this->ogreRoot)
   {
+    // Clean up any textures that may still be in flight.
+    Ogre::TextureGpuManager *mgr =
+    this->ogreRoot->getRenderSystem()->getTextureGpuManager();
+
+    auto entries = mgr->getEntries();
+    for (auto& [name, entry] : entries)
+    {
+      if (entry.resourceGroup == "General" && !entry.destroyRequested)
+        mgr->destroyTexture(entry.texture);
+    }
+
     try
     {
       // TODO(anyone): do we need to catch segfault on delete?

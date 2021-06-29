@@ -186,8 +186,8 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// emitter region
   public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
 
-  /// \brief Actual near clip plane
-  public: float nearClipCube= 0.0;
+  /// \brief Near clip plane for cube camera
+  public: float nearClipCube = 0.0;
 };
 
 using namespace ignition;

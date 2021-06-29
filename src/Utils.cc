@@ -31,61 +31,20 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 /////////////////////////////////////////////////
 float screenScalingFactor()
 {
-  // todo(anyone) set device pixel ratio for high dpi displays on Windows
-  float ratio = 1.0;
-#ifdef __linux__
-  Display *disp = XOpenDisplay(nullptr);
-  char *resourceString = XResourceManagerString(disp);
-
-  if (resourceString)
-  {
-    char *type = nullptr;
-    float dpiDesktop = 0.0;
-
-    // Need to initialize the DB before calling Xrm* functions
-    XrmInitialize();
-
-    XrmValue value;
-    XrmDatabase db = XrmGetStringDatabase(resourceString);
-
-    // Debug:
-    // printf("Entire DB:\n%s\n", resourceString);
-
-    if (XrmGetResource(db, "Xft.dpi", "String", &type, &value) == True)
-    {
-      if (value.addr)
-        dpiDesktop = atof(value.addr);
-    }
-
-    // To get the ratio we need the DPI as reported by the Xrmdatabase,
-    // which takes into account desktop scaling, and the DPI computed by the
-    // actual display resolution.
-    //
-    // dpiRes = N pixels / (M millimeters / (25.4 millimeters / 1 inch))
-    //        = N pixels / (M inch / 25.4)
-    //        = (N * 25.4 pixels) / M inch
-    //
-    // We can use either the width or height in the following line. The zero
-    // values in DisplayHeight and DisplayHeightMM is the screen number. A
-    // value of zero uses the default screen.
-    float yDpiRes = (DisplayHeight(disp, 0) * 25.4) /
-      DisplayHeightMM(disp, 0);
-
-    if (!math::equal(dpiDesktop, 0.0f) && !math::equal(yDpiRes, 0.0f))
-      ratio = dpiDesktop / yDpiRes;
-
-    // Debug:
-    // printf("DPI Desktop: %f, DPI XY: [%f, %f], Ratio XY: [%f, %f]\n",
-    // dpiDesktop, xDpiRes, yDpiRes, xRatio, yRatio);
-  }
-#endif
-  return ratio;
+  float x{1.0f};
+  float y{1.0f};
+  screenScalingFactor(x, y);
+  return y;
 }
 
 /////////////////////////////////////////////////
 void screenScalingFactor(float &_xScale, float &_yScale)
 {
-  // todo(anyone) set device pixel ratio for high dpi displays on Windows
+  _xScale = 1.0f;
+  _yScale = 1.0f;
+
+  // todo(anyone) set device pixel ratio for high dpi displays on other
+  // platforms
 #ifdef __linux__
   auto closeDisplay = [](Display * display)
   {
@@ -125,21 +84,28 @@ void screenScalingFactor(float &_xScale, float &_yScale)
     //        = N pixels / (M inch / 25.4)
     //        = (N * 25.4 pixels) / M inch
     //
-    // We can use either the width or height in the following line. The zero
-    // values in DisplayHeight and DisplayHeightMM is the screen number. A
-    // value of zero uses the default screen.
-    float xDpiRes = (DisplayWidth(display.get(), 0) * 25.4) /
-      DisplayWidthMM(display.get(), 0);
-    float yDpiRes = (DisplayHeight(display.get(), 0) * 25.4) /
-      DisplayHeightMM(display.get(), 0);
+    // The zero values in DisplayHeight and DisplayHeightMM is the screen
+    // number. A value of zero uses the default screen.
+    auto xPixels = DisplayWidth(display.get(), 0);
+    auto yPixels = DisplayHeight(display.get(), 0);
 
-    if (!math::equal(dpiDesktop, 0.0f) && !math::equal(yDpiRes, 0.0f))
-      _yScale = yDpiRes / dpiDesktop;
-    if (_yScale < 1) _yScale = 1;
+    auto xMM = DisplayWidthMM(display.get(), 0);
+    auto yMM = DisplayHeightMM(display.get(), 0);
+
+    auto xIn = xMM / 25.4;
+    auto yIn = yMM / 25.4;
+
+    float xDpiRes = xPixels / xIn;
+    float yDpiRes = yPixels / yIn;
 
     if (!math::equal(dpiDesktop, 0.0f) && !math::equal(xDpiRes, 0.0f))
       _xScale = xDpiRes / dpiDesktop;
+
+    if (!math::equal(dpiDesktop, 0.0f) && !math::equal(yDpiRes, 0.0f))
+      _yScale = yDpiRes / dpiDesktop;
+
     if (_xScale < 1) _xScale = 1;
+    if (_yScale < 1) _yScale = 1;
 
     // Debug:
     // printf("DPI Desktop: %f, DPI XY: [%f, %f], Scale XY: [%f, %f]\n",

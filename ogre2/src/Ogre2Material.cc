@@ -174,7 +174,6 @@ void Ogre2Material::Destroy()
   Ogre::SceneManager *sceneManager = s->OgreSceneManager();
   sceneManager->shrinkToFitMemoryPools();
 
-  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
   Ogre::VaoManager *vaoManager = textureManager->getVaoManager();
   vaoManager->cleanupEmptyPools();
 }

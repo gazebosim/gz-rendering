@@ -724,11 +724,13 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
 
         vec = (oreintation * (vec * scale)) + position;
 
-        vec = projMatrix * viewMatrix * vec;
+        Ogre::Vector4 vec4(vec.x, vec.y, vec.z, 1);
+        vec4 =  projMatrix * viewMatrix * vec4;
 
         // homogenous
-        vec.x /= vec.z;
-        vec.y /= vec.z;
+        vec.x = vec4.x / vec4.w;
+        vec.y = vec4.y / vec4.w;
+        vec.z = vec4.z;
 
         minVertex.x = std::min(minVertex.x, vec.x);
         minVertex.y = std::min(minVertex.y, vec.y);

@@ -14,3 +14,5 @@ set (sources ${sources}
   PARENT_SCOPE
 )
 
+add_subdirectory(media)
+

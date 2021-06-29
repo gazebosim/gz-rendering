@@ -185,6 +185,9 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Listener for setting particle noise value based on particle
   /// emitter region
   public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
+
+  /// \brief Actual near clip plane
+  public: float nearClipCube= 0.0;
 };
 
 using namespace ignition;
@@ -240,61 +243,60 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
       // get laser_retro
       Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
 
-      float retroValue = -1.0;
-      try
-      {
-        retroValue = std::get<float>(tempLaserRetro);
-      }
-      catch(...)
-      {
+        float retroValue = -1.0;
         try
         {
-          retroValue = std::get<double>(tempLaserRetro);
+          retroValue = std::get<float>(tempLaserRetro);
         }
         catch(...)
         {
           try
           {
-            retroValue = std::get<int>(tempLaserRetro);
+            retroValue = std::get<double>(tempLaserRetro);
           }
-          catch(std::bad_variant_access &e)
+          catch(...)
           {
-            ignerr << "Error casting user data: " << e.what() << "\n";
-            retroValue = -1.0;
-          }
-        }
-      }
-
-      // only accept positive laser retro value
-      if (retroValue >= 0)
-      {
-        // set visibility flag so the camera can see it
-        item->addVisibilityFlags(0x01000000);
-        for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
-        {
-          Ogre::SubItem *subItem = item->getSubItem(i);
-          if (!subItem->hasCustomParameter(this->customParamIdx))
-          {
-            // limit laser retro value to 2000 (as in gazebo)
-            if (retroValue > 2000.0)
+            try
             {
-              retroValue = 2000.0;
+              retroValue = std::get<int>(tempLaserRetro);
             }
-            float color = retroValue / 2000.0;
-
-            subItem->setCustomParameter(this->customParamIdx,
-                Ogre::Vector4(color, color, color, 1.0));
+            catch(std::bad_variant_access &e)
+            {
+              ignerr << "Error casting user data: " << e.what() << "\n";
+              retroValue = -1.0;
+            }
           }
-          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          this->datablockMap[subItem] = datablock;
+        }
 
-          subItem->setMaterial(this->laserRetroSourceMaterial);
+        // only accept positive laser retro value
+        if (retroValue >= 0)
+        {
+          // set visibility flag so the camera can see it
+          item->addVisibilityFlags(0x01000000);
+          for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+          {
+            Ogre::SubItem *subItem = item->getSubItem(i);
+            if (!subItem->hasCustomParameter(this->customParamIdx))
+            {
+              // limit laser retro value to 2000 (as in gazebo)
+              if (retroValue > 2000.0)
+              {
+                retroValue = 2000.0;
+              }
+              float color = retroValue / 2000.0;
+              subItem->setCustomParameter(this->customParamIdx,
+                  Ogre::Vector4(color, color, color, 1.0));
+            }
+            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+            this->datablockMap[subItem] = datablock;
+
+            subItem->setMaterial(this->laserRetroSourceMaterial);
+          }
         }
       }
+      itor.moveNext();
     }
-    itor.moveNext();
   }
-}
 
 //////////////////////////////////////////////////
 void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
@@ -522,7 +524,7 @@ void Ogre2GpuRays::ConfigureCamera()
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());
 
   // Set ogre cam properties
-  this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
+  this->dataPtr->ogreCamera->setNearClipDistance(this->dataPtr->nearClipCube);
   this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
 }
 
@@ -969,7 +971,7 @@ void Ogre2GpuRays::Setup1stPass()
     this->ogreNode->attachObject(this->dataPtr->cubeCam[i]);
     this->dataPtr->cubeCam[i]->setFOVy(Ogre::Degree(90));
     this->dataPtr->cubeCam[i]->setAspectRatio(1);
-    this->dataPtr->cubeCam[i]->setNearClipDistance(this->NearClipPlane());
+    this->dataPtr->cubeCam[i]->setNearClipDistance(this->dataPtr->nearClipCube);
     this->dataPtr->cubeCam[i]->setFarClipDistance(this->FarClipPlane());
     this->dataPtr->cubeCam[i]->setFixedYawAxis(false);
     this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
@@ -1178,6 +1180,12 @@ void Ogre2GpuRays::Setup2ndPass()
 /////////////////////////////////////////////////////////
 void Ogre2GpuRays::CreateGpuRaysTextures()
 {
+  // make cube cam near clip smaller than specified and manually clip range
+  // values in 1st pass shader (gpu_rays_1st_pass_fs.glsl).
+  // This is so that we don't incorrectly clip the range values near the
+  // corners of the cube cam viewport.
+  this->dataPtr->nearClipCube = this->NearClipPlane() * 0.6f;
+
   this->ConfigureCamera();
   this->CreateSampleTexture();
   this->Setup1stPass();

@@ -172,6 +172,9 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Listener for setting particle noise value based on particle
   /// emitter region
   public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
+
+  /// \brief Actual near clip plane
+  public: float nearClipCube= 0.0;
 };
 
 using namespace ignition;
@@ -508,7 +511,7 @@ void Ogre2GpuRays::ConfigureCamera()
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());
 
   // Set ogre cam properties
-  this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
+  this->dataPtr->ogreCamera->setNearClipDistance(this->dataPtr->nearClipCube);
   this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
 }
 
@@ -628,9 +631,9 @@ void Ogre2GpuRays::Setup1stPass()
   // The projectParams is used to linearize depth buffer data
   // The other params are used to clamp the range output
   double projectionA = this->FarClipPlane() /
-      (this->FarClipPlane() - this->NearClipPlane());
-  double projectionB = (-this->FarClipPlane() * this->NearClipPlane()) /
-      (this->FarClipPlane() - this->NearClipPlane());
+      (this->FarClipPlane() - this->dataPtr->nearClipCube);
+  double projectionB = (-this->FarClipPlane() * this->dataPtr->nearClipCube) /
+      (this->FarClipPlane() - this->dataPtr->nearClipCube);
   projectionB /= this->FarClipPlane();
   psParams->setNamedConstant("projectionParams",
       Ogre::Vector2(projectionA, projectionB));
@@ -867,7 +870,7 @@ void Ogre2GpuRays::Setup1stPass()
     this->ogreNode->attachObject(this->dataPtr->cubeCam[i]);
     this->dataPtr->cubeCam[i]->setFOVy(Ogre::Degree(90));
     this->dataPtr->cubeCam[i]->setAspectRatio(1);
-    this->dataPtr->cubeCam[i]->setNearClipDistance(this->NearClipPlane());
+    this->dataPtr->cubeCam[i]->setNearClipDistance(this->dataPtr->nearClipCube);
     this->dataPtr->cubeCam[i]->setFarClipDistance(this->FarClipPlane());
     this->dataPtr->cubeCam[i]->setFixedYawAxis(false);
     this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
@@ -1051,6 +1054,12 @@ void Ogre2GpuRays::Setup2ndPass()
 /////////////////////////////////////////////////////////
 void Ogre2GpuRays::CreateGpuRaysTextures()
 {
+  // make cube cam near clip smaller than specified and manually clip range
+  // values in 1st pass shader (gpu_rays_1st_pass_fs.glsl).
+  // This is so that we don't incorrectly clip the range values near the
+  // corners of the cube cam viewport.
+  this->dataPtr->nearClipCube = this->NearClipPlane() * 0.6f;
+
   this->ConfigureCamera();
   this->CreateSampleTexture();
   this->Setup1stPass();

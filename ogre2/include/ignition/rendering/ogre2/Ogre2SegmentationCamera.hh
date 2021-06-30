@@ -114,6 +114,9 @@ namespace ignition
       public: int BackgroundLabel() const override;
 
       // Documentation inherited
+      public: void LabelMapFromColoredBuffer(uint8_t * _labelBuffer) const;
+
+      // Documentation inherited
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       /// \brief Pointer to the ogre camera

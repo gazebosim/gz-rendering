@@ -77,6 +77,9 @@ namespace ignition
 
       // Documentation inherited
       public: virtual int BackgroundLabel();
+
+      // Documentation inherited
+      public: void LabelMapFromColoredBuffer(uint8_t *) const;
     };
 
     //////////////////////////////////////////////////
@@ -102,6 +105,13 @@ namespace ignition
     uint8_t *BaseSegmentationCamera<T>::SegmentationData() const
     {
       return nullptr;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseSegmentationCamera<T>::LabelMapFromColoredBuffer(
+      uint8_t *) const
+    {
     }
 
     //////////////////////////////////////////////////

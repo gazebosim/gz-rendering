@@ -113,6 +113,12 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   /// usful for coloring items in semantic mode in LabelToColor()
   private: std::unordered_set<int64_t> coloredLabel;
 
+  /// \brief Mapping from the colorId to the label id, used in converting
+  /// the colored map to label ids map
+  /// Key: colorId label id, value: label in case of semantic segmentation
+  /// or composite id(8 bit label + 16 bit instances) in instance type
+  private: std::unordered_map<int64_t, int64_t> colorToLabel;
+
   /// \brief Pseudo num generator to generate colors from label id
   private: std::default_random_engine generator;
 
@@ -209,8 +215,10 @@ Ogre2SegmentationMaterialSwitcher::Ogre2SegmentationMaterialSwitcher(
 /////////////////////////////////////////////////
 bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
 {
-  // get the int value of the 24 bit color
-  int64_t colorId = _color.R() * 256 * 256 + _color.G() * 256 + _color.B();
+  // Get the int value of the 24 bit color
+  // Multiply by 255 as color values are normalized
+  int64_t colorId = (_color.R() * 255) * 256 * 256 +
+    (_color.G() * 255) * 256 + (_color.B() * 255);
 
   if (this->takenColors.count(colorId))
   {
@@ -252,6 +260,11 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label)
       return this->LabelToColor(_label);
 
   this->coloredLabel.insert(_label);
+
+  // We don't multiply by 255 here as (r,g,b) are in [0-255] range
+  int64_t colorId = r * 256 * 256 + g * 256 + b;
+  this->colorToLabel[colorId] = _label;
+
   return color;
 }
 
@@ -259,6 +272,7 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label)
 void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent &/*_evt*/)
 {
+  this->colorToLabel.clear();
   this->datablockMap.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
@@ -712,4 +726,75 @@ SegmentationType Ogre2SegmentationCamera::GetSegmentationType()
 bool Ogre2SegmentationCamera::IsColoredMap()
 {
   return this->dataPtr->materialSwitcher->isColoredMap;
+}
+
+/////////////////////////////////////////////////
+void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
+  uint8_t * _labelBuffer) const
+{
+  if (!this->dataPtr->materialSwitcher->isColoredMap)
+    return;
+
+  if (!this->dataPtr->buffer)
+    return;
+
+  auto colorToLabel = this->dataPtr->materialSwitcher->colorToLabel;
+
+  auto width = this->ImageWidth();
+  auto height = this->ImageHeight();
+
+  for (uint32_t i = 0; i < height; i++)
+  {
+    for (uint32_t j = 0; j < width; j++)
+    {
+      auto index = (i * width + j) * 3;
+      auto r = this->dataPtr->buffer[index + 2];
+      auto g = this->dataPtr->buffer[index + 1];
+      auto b = this->dataPtr->buffer[index];
+
+      // get color 24 bit unique id, we don't multiply it by 255 like before
+      // as they are not normalized we read it from the buffer in
+      // range [0-255] already
+      int64_t colorId = r * 256 * 256 + g * 256 + b;
+
+      // initialize the pixel with the background label value
+      {
+        uint8_t label8bit = this->dataPtr->materialSwitcher->backgroundLabel;
+
+        _labelBuffer[index] =     label8bit;
+        _labelBuffer[index + 1] = label8bit;
+        _labelBuffer[index + 2] = label8bit;
+      }
+
+      // skip if not exist
+      if (!colorToLabel.count(colorId))
+        continue;
+
+      int64_t label = colorToLabel[colorId];
+
+      if (this->dataPtr->materialSwitcher->type == SegmentationType::Semantic)
+      {
+        uint8_t label8bit = label % 256;
+
+        _labelBuffer[index] =     label8bit;
+        _labelBuffer[index + 1] = label8bit;
+        _labelBuffer[index + 2] = label8bit;
+      }
+      else if (this->dataPtr->materialSwitcher->type ==
+        SegmentationType::Panoptic)
+      {
+        // get the label and instance counts from the composite label id
+        uint8_t label8bit = label / (256 * 256);
+        // get the rest 16 bit
+        uint16_t instanceCount = label % (256 * 256);
+        // composite that 16 bit count to two 8 bit channels
+        uint8_t instanceCount1 = instanceCount / 256;
+        uint8_t instanceCount2 = instanceCount % 256;
+
+        _labelBuffer[index + 2] = label8bit;
+        _labelBuffer[index + 1] = instanceCount1;
+        _labelBuffer[index] = instanceCount2;
+      }
+    }
+  }
 }

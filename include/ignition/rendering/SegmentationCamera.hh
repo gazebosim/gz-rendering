@@ -102,6 +102,15 @@ namespace ignition
       /// \brief Get label for background & unlabeled items in the semantic map
       /// \return label of background & unlabeled items
       public: virtual int BackgroundLabel() const = 0;
+
+      /// \brief Convert the colored map stored in the internal buffer to label
+      /// ids map, so users get both colored map and the corresponding ids map
+      /// This function must be called before the next render loop and
+      /// the colored map mode must be enabeled
+      /// \param[out] _labelBuffer A buffer contains the label ids map data
+      /// That output buffer must be allocated with the same size before calling
+      public: virtual void LabelMapFromColoredBuffer(
+        uint8_t * _labelBuffer) const = 0;
     };
   }
   }

@@ -108,6 +108,25 @@ void buildScene(ScenePtr _scene)
   sphere->SetWireframe(true);
   root->AddChild(sphere);
 
+  // create blue material
+  MaterialPtr blue = _scene->CreateMaterial();
+  blue->SetAmbient(0.0, 0.0, 0.5);
+  blue->SetDiffuse(0.0, 0.0, 1.0);
+  blue->SetSpecular(0.5, 0.5, 0.5);
+  blue->SetShininess(50);
+  blue->SetReflectivity(0);
+  blue->SetTransparency(0.5);
+  blue->SetDepthWriteEnabled(false);
+
+  // create box visual
+  VisualPtr box = _scene->CreateVisual("parent_box");
+  box->AddGeometry(_scene->CreateBox());
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(4.5, 0.0, 0.0);
+  box->SetLocalRotation(0, 0, 0);
+  box->SetMaterial(blue);
+  root->AddChild(box);
+
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
   white->SetAmbient(0.5, 0.5, 0.5);
@@ -130,8 +149,18 @@ void buildScene(ScenePtr _scene)
   ignition::math::Pose3d p(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   ignition::math::Inertiald inertial{massMatrix, p};
   inertiaVisual->SetInertial(inertial);
-  inertiaVisual->SetLocalPosition(3.2, 1.5, 0);
+  inertiaVisual->SetLocalPosition(1, 0, 0);
   root->AddChild(inertiaVisual);
+
+  // create CoM visual
+  COMVisualPtr comVisual = _scene->CreateCOMVisual();
+  ignition::math::MassMatrix3d comMassMatrix(
+      5.0, {0.1, 0.1, 0.1}, {0.0, 0.0, 0.0});
+  ignition::math::Pose3d comPose(
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  ignition::math::Inertiald comVisualInertial{comMassMatrix, comPose};
+  comVisual->SetInertial(comVisualInertial);
+  box->AddChild(comVisual);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

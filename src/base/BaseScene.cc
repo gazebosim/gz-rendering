@@ -27,6 +27,7 @@
 
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
+#include "ignition/rendering/COMVisual.hh"
 #include "ignition/rendering/InertiaVisual.hh"
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/LightVisual.hh"
@@ -920,6 +921,35 @@ AxisVisualPtr BaseScene::CreateAxisVisual(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateCOMVisual(objId);
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "COMVisual");
+  return this->CreateCOMVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateCOMVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual(unsigned int _id,
+    const std::string &_name)
+{
+  COMVisualPtr visual = this->CreateCOMVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
+}
+
 InertiaVisualPtr BaseScene::CreateInertiaVisual()
 {
   unsigned int objId = this->CreateObjectId();
@@ -1397,6 +1427,20 @@ void BaseScene::CreateMaterials()
   material->SetEmissive(1.0, 1.0, 1.0);
   material->SetTransparency(0);
   material->SetCastShadows(true);
+  material->SetReceiveShadows(true);
+  material->SetLightingEnabled(true);
+
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+
+  // path to look for CoM material texture
+  std::string com_material_texture_path = common::joinPaths(
+      resourcePath, "media", "materials", "textures", "com.png");
+  material = this->CreateMaterial("Default/CoM");
+  material->SetTexture(com_material_texture_path);
+  material->SetTransparency(0);
+  material->SetCastShadows(false);
   material->SetReceiveShadows(true);
   material->SetLightingEnabled(true);
 }

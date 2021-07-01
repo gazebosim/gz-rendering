@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre/OgreAxisVisual.hh"
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreCapsule.hh"
+#include "ignition/rendering/ogre/OgreCOMVisual.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
@@ -377,6 +378,14 @@ PointLightPtr OgreScene::CreatePointLightImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+COMVisualPtr OgreScene::CreateCOMVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreCOMVisualPtr visual(new OgreCOMVisual);
+    bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
 InertiaVisualPtr OgreScene::CreateInertiaVisualImpl(unsigned int _id,
     const std::string &_name)
 {

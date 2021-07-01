@@ -50,6 +50,7 @@ namespace ignition
     class AxisVisual;
     class Camera;
     class Capsule;
+    class COMVisual;
     class DepthCamera;
     class DirectionalLight;
     class GaussianNoisePass;
@@ -157,6 +158,10 @@ namespace ignition
     /// \def LightPtr
     /// \brief Shared pointer to Light
     typedef shared_ptr<Light> LightPtr;
+
+    /// \def COMVisualPtr
+    /// \brief Shared pointer to COMVisual
+    typedef shared_ptr<COMVisual> COMVisualPtr;
 
     /// \def LightVisualPtr
     /// \brief Shared pointer to Light

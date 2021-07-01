@@ -823,6 +823,35 @@ namespace ignition
       public: virtual GizmoVisualPtr CreateGizmoVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new CoM visual. A unique ID and name will
+      /// automatically be assigned to the CoM visual.
+      /// \return The created CoM visual
+      public: virtual COMVisualPtr CreateCOMVisual() = 0;
+
+      /// \brief Create new CoM visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new CoM visual
+      /// \return The created CoM visual
+      public: virtual COMVisualPtr CreateCOMVisual(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new CoM visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new CoM visual
+      /// \return The created CoM visual
+      public: virtual COMVisualPtr CreateCOMVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new CoM visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new CoM visual
+      /// \param[in] _name Name of the new CoM visual
+      /// \return The created CoM visual
+      public: virtual COMVisualPtr CreateCOMVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new inertia visual. A unique ID and name will
       /// automatically be assigned to the inertia visual.
       /// \return The created inertia visual

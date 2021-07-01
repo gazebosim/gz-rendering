@@ -120,6 +120,9 @@ namespace ignition
       protected: virtual bool InitImpl() override;
 
       // Documentation inherited
+      protected: virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
+
       protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
                      unsigned int _id, const std::string &_name) override;
 

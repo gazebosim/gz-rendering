@@ -31,6 +31,7 @@
 #include "ignition/rendering/ogre/OgreHeightmap.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreInertiaVisual.hh"
+#include "ignition/rendering/ogre/OgreJointVisual.hh"
 #include "ignition/rendering/ogre/OgreLidarVisual.hh"
 #include "ignition/rendering/ogre/OgreLightVisual.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
@@ -391,6 +392,15 @@ InertiaVisualPtr OgreScene::CreateInertiaVisualImpl(unsigned int _id,
 {
   OgreInertiaVisualPtr visual(new OgreInertiaVisual);
   bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr OgreScene::CreateJointVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreJointVisualPtr visual(new OgreJointVisual);
+    bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }
 

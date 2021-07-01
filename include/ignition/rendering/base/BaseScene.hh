@@ -277,6 +277,12 @@ namespace ignition
       protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
                      unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Implementation for creating Joint visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of Joint visual
+      protected: virtual JointVisualPtr CreateJointVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       /// \brief Implementation for creating Light visual.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of light visual
@@ -399,6 +405,21 @@ namespace ignition
 
       // Documentation inherited
       public: virtual InertiaVisualPtr CreateInertiaVisual(unsigned int _id,
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual() override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual(
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual(unsigned int _id,
                   const std::string &_name) override;
 
       // Documentation inherited

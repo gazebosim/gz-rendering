@@ -29,6 +29,7 @@
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/COMVisual.hh"
 #include "ignition/rendering/InertiaVisual.hh"
+#include "ignition/rendering/JointVisual.hh"
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/LightVisual.hh"
 #include "ignition/rendering/Camera.hh"
@@ -975,6 +976,36 @@ InertiaVisualPtr BaseScene::CreateInertiaVisual(unsigned int _id,
     const std::string &_name)
 {
   InertiaVisualPtr visual = this->CreateInertiaVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr BaseScene::CreateJointVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateJointVisual(objId);
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr BaseScene::CreateJointVisual(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "JointVisual");
+  return this->CreateJointVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr BaseScene::CreateJointVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateJointVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr BaseScene::CreateJointVisual(unsigned int _id,
+    const std::string &_name)
+{
+  JointVisualPtr visual = this->CreateJointVisualImpl(_id, _name);
   bool result = this->RegisterVisual(visual);
   return (result) ? visual : nullptr;
 }

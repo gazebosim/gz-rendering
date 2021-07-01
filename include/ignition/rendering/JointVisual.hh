@@ -17,7 +17,8 @@
 #ifndef IGNITION_RENDERING_JOINTVISUAL_HH_
 #define IGNITION_RENDERING_JOINTVISUAL_HH_
 
-#include <ignition/math/Inertial.hh>
+#include <string>
+#include <ignition/math/Vector3.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/RenderTypes.hh"
@@ -73,30 +74,46 @@ namespace ignition
       /// \param[in] _axis Axis vector
       /// \param[in] _xyzExpressedIn Frame in which the axis vector is
       /// expressed.
-      /// \param[in] _type Type of axis.
-      /// \returns Newly created arrow visual.
-      public: ArrowVisualPtr CreateAxis(const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn, const JointVisualType _type);
+      public: virtual void CreateAxis(const ignition::math::Vector3d &_axis,
+          const std::string &_xyzExpressedIn) = 0;
+
+      /// \brief Create a parent axis for hinge2 and universal joint types
+      /// and attach it to the joint visual.
+      /// \param[in] _axis Axis vector
+      /// \param[in] _xyzExpressedIn Frame in which the axis vector is
+      /// expressed.
+      public: virtual void CreateParentAxis(
+          const ignition::math::Vector3d &_axis,
+          const std::string &_xyzExpressedIn) = 0;
 
       /// \brief Update an axis' arrow visual.
+      /// \param[in] _axis Axis vector.
+      /// \param[in] _xyzExpressedIn Frame in which the axis vector is
+      /// expressed.
+      public: virtual void UpdateAxis(const ignition::math::Vector3d &_axis,
+          const std::string &_xyzExpressedIn) = 0;
+
+      /// \brief Update the parent axis' arrow visual if it exists.
       /// \param[in] _arrowVisual Arrow visual to be updated.
       /// \param[in] _axis Axis vector.
       /// \param[in] _xyzExpressedIn Frame in which the axis vector is
       /// expressed.
-      /// \param[in] _type Type of axis.
-      public: void UpdateAxis(ArrowVisualPtr _arrowVisual,
-                              const ignition::math::Vector3d &_axis,
-                              const std::string &_xyzExpressedIn,
-                              const JointVisualType _type);
+      public: virtual void UpdateParentAxis(
+          const ignition::math::Vector3d &_axis,
+          const std::string &_xyzExpressedIn) = 0;
 
-      /// \brief Get the JointVisual which is attached to the parent link.
+      /// \brief Set type for joint visual
+      /// \param[in] _type The type of visualisation for joint
+      public: virtual void SetType(const JointVisualType _type) = 0;
+
+      /// \brief Get the JointVisual which is attached to the parent.
       /// \return Parent axis visual.
-      public: virtual VisualPtr ParentAxisVisual() const = 0;
+      public: virtual JointVisualPtr ParentAxisVisual() const = 0;
 
       /// \brief Get the arrow visual which represents the axis attached to the
       /// child.
       /// \return Arrow visual.
-      public: ArrowVisualPtr GetArrowVisual() const;
+      public: virtual ArrowVisualPtr ArrowVisual() const = 0;
     };
     }
   }

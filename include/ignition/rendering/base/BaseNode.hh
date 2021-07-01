@@ -46,6 +46,8 @@ namespace ignition
 
       public: virtual math::Pose3d LocalPose() const override;
 
+      public: virtual math::Pose3d InitialLocalPose() const override;
+
       public: virtual void SetLocalPose(const math::Pose3d &_pose) override;
 
       public: virtual void SetLocalPosition(double _x, double _y, double _z)
@@ -186,6 +188,11 @@ namespace ignition
                      const math::Vector3d &_scale) = 0;
 
       protected: math::Vector3d origin;
+
+      protected: bool initialLocalPoseSet = false;
+
+      protected: ignition::math::Pose3d initialLocalPose =
+          ignition::math::Pose3d::Zero;
     };
 
     //////////////////////////////////////////////////
@@ -320,7 +327,20 @@ namespace ignition
         return;
       }
 
+      if (!initialLocalPoseSet)
+      {
+        this->initialLocalPose = pose;
+        this->initialLocalPoseSet = true;
+      }
+
       this->SetRawLocalPose(pose);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Pose3d BaseNode<T>::InitialLocalPose() const
+    {
+      return this->initialLocalPose;
     }
 
     //////////////////////////////////////////////////

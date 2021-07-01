@@ -47,6 +47,9 @@ namespace ignition
 
       // Documentation inherited.
       public: void ShowAxisHead(bool _b) override;
+
+      // Documentation inherited.
+      public: void ShowAxisHead(unsigned int _axis, bool _b) override;
     };
 
     //////////////////////////////////////////////////
@@ -91,6 +94,15 @@ namespace ignition
               this->ChildByIndex(i));
         arrow->ShowArrowHead(_b);
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseAxisVisual<T>::ShowAxisHead(unsigned int _axis, bool _b)
+    {
+      auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
+            this->ChildByIndex(_axis));
+      arrow->ShowArrowHead(_b);
     }
 
     //////////////////////////////////////////////////

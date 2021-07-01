@@ -204,7 +204,7 @@ void buildScene(ScenePtr _scene)
   boundingboxCamera->SetHFOV(camera->HFOV());
 
   // Bounding box type (VisibleBox or FullBox)
-  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::FullBox);
+  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::FullBox2D);
   root->AddChild(boundingboxCamera);
 }
 

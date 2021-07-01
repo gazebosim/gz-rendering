@@ -30,22 +30,44 @@ namespace ignition
   namespace rendering
   {
     /// \brief BoundingBox types for Visible / Full BoundingBox
-    /// FullBox: Shows the full box of occluded objects
-    /// VisibleBox: Shows the visible part of the occluded object
-    enum BoundingBoxType {
-      FullBox,
-      VisibleBox
+    enum class BoundingBoxType {
+
+      /// FullBox2D: 2D box that shows the full box of occluded objects
+      FullBox2D = 0,
+
+      /// VisibleBox2D: 2D box that shows the visible part of the
+      /// occluded object
+      VisibleBox2D = 1,
+
+      /// 3D oreinted box
+      Box3D = 2
     };
 
-    /// \brief Bounding box structure to store its boundaries
-    /// min & max of x & y, and the label
+    /// \brief Bounding box for both 2d & 3d boxes, it stores the
+    /// position / oreintation / size info of the box and its label
     struct BoundingBox
     {
-      uint32_t minX;
-      uint32_t minY;
-      uint32_t maxX;
-      uint32_t maxY;
+      /// \brief Box type
+      ignition::rendering::BoundingBoxType type;
+
+      /// \brief Center of the box in pixel coord in 2D, and world coord in 3D
+      ignition::math::Vector3d center;
+
+      /// \brief Size of the box (width, height, depth), depth = 0 in 2D boxes
+      ignition::math::Vector3d size;
+
+      /// \brief Oreintation of the 3D box.
+      /// The 2D boxes are axis aligned (oreintation = 0)
+      ignition::math::Quaterniond oreintation;
+
+      /// \brief Label of the annotated object inside the box
       uint32_t label;
+
+      /// \brief Constructor
+      BoundingBox(ignition::rendering::BoundingBoxType _type)
+      {
+        this->type = _type;
+      }
     };
 
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {

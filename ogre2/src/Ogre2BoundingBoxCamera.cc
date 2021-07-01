@@ -15,6 +15,9 @@
  *
  */
 
+#include <random>
+#include <limits>
+
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
@@ -24,13 +27,11 @@
 #include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/Utils.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2BoundingBoxCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "ignition/rendering/Utils.hh"
 #include "ignition/math/Color.hh"
-#include <random>
-#include <limits>
 
 #include <OgreGL3PlusAsyncTicket.h>
 #include <OgreBitwise.h>
@@ -146,7 +147,7 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
   /// \brief output bounding boxes to nofity listeners
   public: std::vector<BoundingBox> output_boxes;
 
-  public: BoundingBoxType type {BoundingBoxType::VisibleBox};
+  public: BoundingBoxType type {BoundingBoxType::VisibleBox2D};
 };
 
 /////////////////////////////////////////////////
@@ -485,9 +486,9 @@ void Ogre2BoundingBoxCamera::PostRender()
 
   std::vector<BoundingBox> boxes;
 
-  if (this->dataPtr->type == BoundingBoxType::VisibleBox)
+  if (this->dataPtr->type == BoundingBoxType::VisibleBox2D)
     this->VisibleBoundingBoxes();
-  else if (this->dataPtr->type == BoundingBoxType::FullBox)
+  else if (this->dataPtr->type == BoundingBoxType::FullBox2D)
     this->FullBoundingBoxes();
 
   for (auto box : this->dataPtr->boundingboxes)
@@ -504,6 +505,16 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
   uint32_t width = this->ImageWidth();
   uint32_t height = this->ImageHeight();
   uint32_t channelCount = 3;
+
+  struct BoxBoundary
+  {
+    uint32_t minX;
+    uint32_t minY;
+    uint32_t maxX;
+    uint32_t maxY;
+  };
+
+  std::unordered_map<uint32_t, BoxBoundary*> boxesBoundary;
 
   // find item's boundaries from panoptic BoundingBox
   for (uint32_t y = 0; y < height; y++)
@@ -522,31 +533,55 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
         uint32_t ogreId = ogreId1 * 256 + ogreId2;
 
         BoundingBox *box;
+        BoxBoundary *boundary;
 
         // create new boxes when its first pixel appears
         if (!this->dataPtr->boundingboxes.count(ogreId))
         {
-          box = new BoundingBox();
+          box = new BoundingBox(BoundingBoxType::VisibleBox2D);
           box->label = label;
-          box->minX = width;
-          box->minY = height;
-          box->maxX = 0;
-          box->maxY = 0;
+
+          boundary = new BoxBoundary();
+          boundary->minX = width;
+          boundary->minY = height;
+          boundary->maxX = 0;
+          boundary->maxY = 0;
+
+          boxesBoundary[ogreId] = boundary;
           this->dataPtr->boundingboxes[ogreId] = box;
         }
         else
-          box = this->dataPtr->boundingboxes[ogreId];
+        {
+          boundary = boxesBoundary[ogreId];
+        }
 
-        box->minX = std::min<uint32_t>(box->minX, x);
-        box->minY = std::min<uint32_t>(box->minY, y);
-        box->maxX = std::max<uint32_t>(box->maxX, x);
-        box->maxY = std::max<uint32_t>(box->maxY, y);
+        boundary->minX = std::min<uint32_t>(boundary->minX, x);
+        boundary->minY = std::min<uint32_t>(boundary->minY, y);
+        boundary->maxX = std::max<uint32_t>(boundary->maxX, x);
+        boundary->maxY = std::max<uint32_t>(boundary->maxY, y);
       }
     }
   }
 
   for (auto box : this->dataPtr->boundingboxes)
+  {
+    // Get the box's boundary
+    auto ogreId = box.first;
+    auto boundary = boxesBoundary[ogreId];
+    auto boxWidth = boundary->maxX - boundary->minX;
+    auto boxHeight = boundary->maxY - boundary->minY;
+
+    box.second->center.X() = boundary->minX + boxWidth / 2;
+    box.second->center.Y() = boundary->minY + boxHeight / 2;
+    box.second->center.Z() = 0;
+
+    box.second->size.X() = boxWidth;
+    box.second->size.Y() = boxHeight;
+    box.second->size.Z() = 0;
+
+    // Store boxes in the output vector
     this->dataPtr->output_boxes.push_back(*box.second);
+  }
 }
 
 void Ogre2BoundingBoxCamera::FullBoundingBoxes()
@@ -639,12 +674,15 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
 
     this->ConvertToScreenCoord(minVertex, maxVertex);
 
-    BoundingBox *box = new BoundingBox();
-    box->minX = minVertex.x;
-    box->maxX = maxVertex.x;
-    // swap min & max of y as image coord is inverted in y
-    box->minY = maxVertex.y;
-    box->maxY = minVertex.y;
+    BoundingBox *box = new BoundingBox(BoundingBoxType::FullBox2D);
+    auto boxWidth = maxVertex.x - minVertex.x;
+    auto boxHeight = minVertex.y - maxVertex.y;
+    box->center.X() = minVertex.x + boxWidth / 2;
+    box->center.Y() = maxVertex.y + boxHeight / 2;
+    box->center.Z() = 0;
+    box->size.X() = boxWidth;
+    box->size.Y() = boxHeight;
+    box->size.Z() = 0;
 
     this->dataPtr->boundingboxes[ogreId] = box;
 
@@ -752,8 +790,19 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
 void Ogre2BoundingBoxCamera::DrawBoundingBox(
   unsigned char *_data, BoundingBox &_box)
 {
-  math::Vector2 minVertex(_box.minX, _box.minY);
-  math::Vector2 maxVertex(_box.maxX, _box.maxY);
+  // 3D box
+  if (_box.type == BoundingBoxType::Box3D)
+  {
+
+    return;
+  }
+
+  // 2D box
+  math::Vector2 minVertex(_box.center.X() - _box.size.X() / 2,
+    _box.center.Y() - _box.size.Y() / 2);
+
+  math::Vector2 maxVertex(_box.center.X() + _box.size.X() / 2,
+    _box.center.Y() + _box.size.Y() / 2);
 
   uint32_t width = this->ImageWidth();
 

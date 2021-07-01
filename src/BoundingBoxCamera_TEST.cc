@@ -60,32 +60,36 @@ void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
 
   unsigned char *data = new unsigned char[width * height * channels];
 
-  BoundingBox box;
-  box.minX = 100;
-  box.minY = 100;
-  box.maxX = 150;
-  box.maxY = 150;
+  BoundingBox box(BoundingBoxType::VisibleBox2D);
+  box.center.X() = 125;
+  box.center.Y() = 125;
+  box.size.X() = 50;
+  box.size.Y() = 50;
 
   camera->SetImageWidth(width);
   camera->SetImageHeight(height);
   camera->DrawBoundingBox(data, box);
 
   // test the boundaries (min & max box's points) color
-  int minIndex = (box.minY * width + box.minX) * channels;
-  int maxIndex = (box.maxY * width + (box.maxX-1)) * channels;
+  uint32_t minX = box.center.X() - box.size.X() / 2;
+  uint32_t minY = box.center.Y() - box.size.Y() / 2;
+  uint32_t maxX = box.center.X() + box.size.X() / 2;
+  uint32_t maxY = box.center.Y() + box.size.Y() / 2;
+  int minIndex = (minY * width + minX) * channels;
+  int maxIndex = (maxY * width + (maxX-1)) * channels;
 
   // color is green (middle value = 255)
   EXPECT_EQ(data[minIndex + 1], 255);
   EXPECT_EQ(data[maxIndex + 1], 255);
 
   // Test Bounding Box Type
-  EXPECT_EQ(camera->Type(), BoundingBoxType::VisibleBox);
-  camera->SetBoundingBoxType(BoundingBoxType::FullBox);
-  EXPECT_EQ(camera->Type(), BoundingBoxType::FullBox);
+  EXPECT_EQ(camera->Type(), BoundingBoxType::VisibleBox2D);
+  camera->SetBoundingBoxType(BoundingBoxType::FullBox2D);
+  EXPECT_EQ(camera->Type(), BoundingBoxType::FullBox2D);
 
   // Clean up
-  // engine->DestroyScene(scene);
-  // rendering::unloadEngine(engine->Name());
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////

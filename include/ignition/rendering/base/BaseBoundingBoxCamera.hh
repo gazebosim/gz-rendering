@@ -98,7 +98,7 @@ namespace ignition
     template <class T>
     BoundingBoxType BaseBoundingBoxCamera<T>::Type()
     {
-      return BoundingBoxType::VisibleBox;
+      return BoundingBoxType::VisibleBox2D;
     }
 
     //////////////////////////////////////////////////

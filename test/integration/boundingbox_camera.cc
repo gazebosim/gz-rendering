@@ -168,7 +168,7 @@ void BoundingBoxCameraTest::SimpleBoxes(
   camera->SetImageHeight(height);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
-  camera->SetBoundingBoxType(BoundingBoxType::VisibleBox);
+  camera->SetBoundingBoxType(BoundingBoxType::VisibleBox2D);
 
   EXPECT_EQ(camera->ImageWidth(), width);
   EXPECT_EQ(camera->ImageHeight(), height);
@@ -196,13 +196,13 @@ void BoundingBoxCameraTest::SimpleBoxes(
   unsigned int rightLabel = 2;
 
   // check if the left box has x positions < middle screen
-  EXPECT_LT(leftBox.minX, middleScreen);
-  EXPECT_LT(leftBox.maxX, middleScreen);
+  EXPECT_LT(leftBox.center.X() - leftBox.size.X() / 2, middleScreen);
+  EXPECT_LT(leftBox.center.X() + leftBox.size.X() / 2, middleScreen);
   EXPECT_EQ(leftBox.label, leftLabel);
 
   // check if the right box has x positions > middle screen
-  EXPECT_GT(rightBox.minX, middleScreen);
-  EXPECT_GT(rightBox.maxX, middleScreen);
+  EXPECT_GT(rightBox.center.X() - leftBox.size.X() / 2, middleScreen);
+  EXPECT_GT(rightBox.center.X() + leftBox.size.X() / 2, middleScreen);
   EXPECT_EQ(rightBox.label, rightLabel);
 
   g_mutex.unlock();
@@ -246,8 +246,8 @@ void BoundingBoxCameraTest::OccludedBoxes(
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
 
-  camera->SetBoundingBoxType(BoundingBoxType::VisibleBox);
-  EXPECT_EQ(camera->Type(), BoundingBoxType::VisibleBox);
+  camera->SetBoundingBoxType(BoundingBoxType::VisibleBox2D);
+  EXPECT_EQ(camera->Type(), BoundingBoxType::VisibleBox2D);
 
   unsigned int width = 320;
   unsigned int height = 240;
@@ -285,22 +285,22 @@ void BoundingBoxCameraTest::OccludedBoxes(
   unsigned int frontLabel = 2;
 
   // hard-coded comparasion with acceptable error
-  EXPECT_NEAR(occludedBox.minX, 91, margin_error);
-  EXPECT_NEAR(occludedBox.minY, 97, margin_error);
-  EXPECT_NEAR(occludedBox.maxX, 106, margin_error);
-  EXPECT_NEAR(occludedBox.maxY, 142, margin_error);
+  EXPECT_NEAR(occludedBox.center.X(), 98, margin_error);
+  EXPECT_NEAR(occludedBox.center.Y(), 119, margin_error);
+  EXPECT_NEAR(occludedBox.size.X(), 15, margin_error);
+  EXPECT_NEAR(occludedBox.size.Y(), 45, margin_error);
   EXPECT_EQ(occludedBox.label, occludedLabel);
 
-  EXPECT_NEAR(frontBox.minX, 107, margin_error);
-  EXPECT_NEAR(frontBox.minY, 67, margin_error);
-  EXPECT_NEAR(frontBox.maxX, 212, margin_error);
-  EXPECT_NEAR(frontBox.maxY, 172, margin_error);
+  EXPECT_NEAR(frontBox.center.X(), 159, margin_error);
+  EXPECT_NEAR(frontBox.center.Y(), 119, margin_error);
+  EXPECT_NEAR(frontBox.size.X(), 105, margin_error);
+  EXPECT_NEAR(frontBox.size.Y(), 105, margin_error);
   EXPECT_EQ(frontBox.label, frontLabel);
 
   g_mutex.unlock();
 
   // Full Boxes Type Test
-  camera->SetBoundingBoxType(BoundingBoxType::FullBox);
+  camera->SetBoundingBoxType(BoundingBoxType::FullBox2D);
   // Update once to create image
   camera->Update();
 
@@ -314,16 +314,17 @@ void BoundingBoxCameraTest::OccludedBoxes(
   BoundingBox frontFullBox = g_boxes[1];
 
   // coordinates of partially occluded object is bigger
-  EXPECT_NEAR(occludedFullBox.minX, 91, margin_error);
-  EXPECT_NEAR(occludedFullBox.minY, 97, margin_error);
-  EXPECT_NEAR(occludedFullBox.maxX, 142, margin_error);
-  EXPECT_NEAR(occludedFullBox.maxY, 142, margin_error);
+  EXPECT_NEAR(occludedFullBox.center.X(), 116, margin_error);
+  EXPECT_NEAR(occludedFullBox.center.Y(), 119, margin_error);
+  EXPECT_NEAR(occludedFullBox.size.X(), 51, margin_error);
+  EXPECT_NEAR(occludedFullBox.size.Y(), 45, margin_error);
   EXPECT_EQ(occludedFullBox.label, occludedLabel);
 
-  EXPECT_NEAR(frontFullBox.minX, 105, margin_error);
-  EXPECT_NEAR(frontFullBox.minY, 65, margin_error);
-  EXPECT_NEAR(frontFullBox.maxX, 214, margin_error);
-  EXPECT_NEAR(frontFullBox.maxY, 174, margin_error);
+  EXPECT_NEAR(frontFullBox.center.X(), 159, margin_error);
+  EXPECT_NEAR(frontFullBox.center.Y(), 119, margin_error);
+  EXPECT_NEAR(frontFullBox.size.X(), 108, margin_error);
+  EXPECT_NEAR(frontFullBox.size.Y(), 108, margin_error);
+
   EXPECT_EQ(frontFullBox.label, frontLabel);
 
   g_mutex.unlock();

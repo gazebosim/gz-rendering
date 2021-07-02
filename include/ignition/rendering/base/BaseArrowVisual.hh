@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_BASE_BASEARROWVISUAL_HH_
 #define IGNITION_RENDERING_BASE_BASEARROWVISUAL_HH_
 
+#include <string>
+
 #include <ignition/common/MeshManager.hh>
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/Scene.hh"

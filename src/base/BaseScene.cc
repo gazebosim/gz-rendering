@@ -755,6 +755,7 @@ CameraPtr BaseScene::CreateCamera(const std::string &_name)
 CameraPtr BaseScene::CreateCamera(unsigned int _id, const std::string &_name)
 {
   CameraPtr camera = this->CreateCameraImpl(_id, _name);
+  camera->SetUserData("user-camera", false);
   bool result = this->RegisterSensor(camera);
   return (result) ? camera : nullptr;
 }

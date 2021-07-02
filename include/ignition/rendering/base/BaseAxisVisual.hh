@@ -101,8 +101,9 @@ namespace ignition
     void BaseAxisVisual<T>::ShowAxisHead(unsigned int _axis, bool _b)
     {
       auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
-            this->ChildByIndex(_axis));
-      arrow->ShowArrowHead(_b);
+            this->ChildByIndex(2u - _axis));
+      if (arrow)
+        arrow->ShowArrowHead(_b);
     }
 
     //////////////////////////////////////////////////

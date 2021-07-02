@@ -17,8 +17,10 @@
 #ifndef IGNITION_RENDERING_BASE_BASEJOINTVISUAL_HH_
 #define IGNITION_RENDERING_BASE_BASEJOINTVISUAL_HH_
 
+#include <algorithm>
 #include <string>
-#include <sstream>
+
+#include "ignition/common/Console.hh"
 
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -73,6 +75,9 @@ namespace ignition
       public: virtual void SetType(const JointVisualType _type) override;
 
       // Documentation inherited
+      public: virtual JointVisualType Type() const override;
+
+      // Documentation inherited
       public: virtual JointVisualPtr ParentAxisVisual() const override;
 
       // Documentation inherited
@@ -86,6 +91,9 @@ namespace ignition
       protected: void UpdateAxisImpl(ArrowVisualPtr _arrowVisual,
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn);
+
+      /// \brief Scale the joint visual according to the joint's child
+      protected: void ScaleToChild();
 
       /// \brief Type of joint visualization
       protected: JointVisualType jointVisualType =
@@ -143,6 +151,14 @@ namespace ignition
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn)
     {
+      if (!this->HasParent())
+      {
+        ignlog << "Joint visual with name " << this->Name() <<
+            " isn't attached to a parent visual" <<
+            " so the current axis won't be shown.\n";
+        return;
+      }
+
       if (this->arrowVisual)
       {
         this->arrowVisual->Destroy();
@@ -151,8 +167,12 @@ namespace ignition
 
       this->arrowVisual = this->Scene()->CreateArrowVisual();
       this->arrowVisual->SetMaterial("Default/TransYellow");
-      this->UpdateAxis(_axis, _xyzExpressedIn);
+      this->arrowVisual->SetLocalPosition(0, 0, 0);
+      this->arrowVisual->SetLocalRotation(0, 0, 0);
       this->AddChild(this->arrowVisual);
+      this->UpdateAxis(_axis, _xyzExpressedIn);
+
+      this->ScaleToChild();
     }
 
     /////////////////////////////////////////////////
@@ -161,6 +181,14 @@ namespace ignition
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn)
     {
+      if (!this->HasParent())
+      {
+        ignlog << "Joint visual with name " << this->Name() <<
+            " isn't attached to a parent visual" <<
+            " so the parent axis won't be shown.\n";
+        return;
+      }
+
       if (this->parentAxisVis)
       {
         this->parentAxisVis->Destroy();
@@ -168,8 +196,13 @@ namespace ignition
       }
 
       this->parentAxisVis = this->Scene()->CreateJointVisual();
+      this->AddChild(this->parentAxisVis);
       this->parentAxisVis->SetType(this->jointVisualType);
       this->parentAxisVis->CreateAxis(_axis, _xyzExpressedIn);
+      this->parentAxisVis->SetLocalScale(this->scaleToChild);
+      this->UpdateParentAxis(_axis, _xyzExpressedIn);
+
+      this->ScaleToChild();
     }
 
     //////////////////////////////////////////////////
@@ -177,6 +210,8 @@ namespace ignition
     void BaseJointVisual<T>::UpdateAxis(const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn)
     {
+      if (this->ArrowVisual())
+        this->UpdateAxisImpl(this->ArrowVisual(), _axis, _xyzExpressedIn);
     }
 
     //////////////////////////////////////////////////
@@ -185,6 +220,9 @@ namespace ignition
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn)
     {
+      if (this->ParentAxisVisual())
+        this->UpdateAxisImpl(this->ParentAxisVisual()->ArrowVisual(),
+            _axis, _xyzExpressedIn);
     }
 
     //////////////////////////////////////////////////
@@ -209,12 +247,12 @@ namespace ignition
 
       if (_xyzExpressedIn == "__model__")
       {
-        VisualPtr parentVis = this->Parent();
-        ignition::math::Pose3d parentInitPose = parentVis->InitialLocalPose();
+        ignition::math::Pose3d parentInitPose =
+            this->Parent()->InitialLocalPose();
 
         // get rotation of joint visual in model frame
         ignition::math::Quaterniond quatFromModel =
-            (this->Pose() + parentInitPose).Rot();
+            (this->LocalPose() + parentInitPose).Rot();
 
         // rotate arrow visual so that the axis vector applies to the model
         // frame.
@@ -222,10 +260,11 @@ namespace ignition
             _arrowVisual->LocalRotation());
       }
 
-      // _arrowVisual->ShowRotation(_type == msgs::Joint::REVOLUTE ||
-      //                        _type == msgs::Joint::REVOLUTE2 ||
-      //                        _type == msgs::Joint::UNIVERSAL ||
-      //                        _type == msgs::Joint::GEARBOX);
+      _arrowVisual->ShowArrowRotation(
+          this->Type() == JointVisualType::JVT_REVOLUTE ||
+          this->Type() == JointVisualType::JVT_REVOLUTE2 ||
+          this->Type() == JointVisualType::JVT_UNIVERSAL ||
+          this->Type() == JointVisualType::JVT_GEARBOX);
 
       if (this->axisVisual)
         _arrowVisual->SetVisible(true);
@@ -261,9 +300,39 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseJointVisual<T>::ScaleToChild()
+    {
+      if (!this->HasParent())
+        return;
+
+      // Joint visual is attached to the child's visual
+      VisualPtr parentVisual =
+          std::dynamic_pointer_cast<Visual>(this->Parent());
+
+      if (parentVisual)
+      {
+        double childSize =
+            std::max(0.1, parentVisual->BoundingBox().Size().Length());
+        this->scaleToChild = ignition::math::Vector3d(childSize * 0.7,
+            childSize * 0.7, childSize * 0.7);
+        this->SetLocalScale(this->scaleToChild);
+        if (this->ParentAxisVisual())
+          this->ParentAxisVisual()->SetLocalScale(this->scaleToChild);
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseJointVisual<T>::SetType(const JointVisualType _type)
     {
       this->jointVisualType = _type;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    JointVisualType BaseJointVisual<T>::Type() const
+    {
+      return this->jointVisualType;
     }
 
     //////////////////////////////////////////////////

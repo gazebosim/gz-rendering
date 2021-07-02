@@ -162,6 +162,22 @@ void buildScene(ScenePtr _scene)
   comVisual->SetInertial(comVisualInertial);
   box->AddChild(comVisual);
 
+  // create joint child visual
+  VisualPtr jointBox = _scene->CreateVisual("joint_child");
+  jointBox->AddGeometry(_scene->CreateBox());
+  jointBox->SetOrigin(0.0, 0.0, 0.0);
+  jointBox->SetLocalPosition(3.0, 1.0, 0.0);
+  jointBox->SetLocalRotation(0, 0, 0);
+  jointBox->SetMaterial(blue);
+  root->AddChild(jointBox);
+
+  // create joint visual
+  JointVisualPtr jointVisual = _scene->CreateJointVisual();
+  jointBox->AddChild(jointVisual);
+  ignition::math::Vector3d axis(0.0, 1.0, 0.0);
+  jointVisual->SetType(JointVisualType::JVT_REVOLUTE);
+  jointVisual->CreateAxis(axis, "__model__");
+
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.0);

@@ -106,6 +106,10 @@ namespace ignition
       /// \param[in] _type The type of visualisation for joint
       public: virtual void SetType(const JointVisualType _type) = 0;
 
+      /// \brief Get joint visual type
+      /// \return The joint visual type
+      public: virtual JointVisualType Type() const = 0;
+
       /// \brief Get the JointVisual which is attached to the parent.
       /// \return Parent axis visual.
       public: virtual JointVisualPtr ParentAxisVisual() const = 0;

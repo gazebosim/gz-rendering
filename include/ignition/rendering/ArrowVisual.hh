@@ -49,6 +49,10 @@ namespace ignition
       /// \brief set true to show the arrow shaft, false otherwise
       /// \param[in] _b true to show the arrow shaft, false otherwise
       public: virtual void ShowArrowShaft(bool _b) = 0;
+
+      /// \brief Set true to show the rotation of the arrow, false otherwise
+      /// \param[in] _b True to show the arrow rotation.
+      public: virtual void ShowArrowRotation(bool _b) = 0;
     };
     }
   }

@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_NODE_HH_
 #define IGNITION_RENDERING_NODE_HH_
 
+#include <map>
 #include <string>
 #include <variant>
 
@@ -34,7 +35,8 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    using Variant = std::variant<int, float, double, std::string, bool, unsigned int>;
+    using Variant =
+      std::variant<int, float, double, std::string, bool, unsigned int>;
 
     /// \class Node Node.hh ignition/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph

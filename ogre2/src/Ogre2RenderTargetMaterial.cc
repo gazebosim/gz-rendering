@@ -77,3 +77,4 @@ Ogre::Technique *Ogre2RenderTargetMaterial::handleSchemeNotFound(
   }
   return nullptr;
 }
+

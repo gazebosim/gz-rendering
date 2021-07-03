@@ -104,7 +104,7 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
 
   /// \brief Output texture with depth and color data
-  public: Ogre::TextureGpu *ogreDepthTexture = nullptr;
+  public: Ogre::TextureGpu *ogreDepthTexture[2];
 
   /// \brief Dummy render texture for the depth data
   public: RenderTexturePtr depthTexture;
@@ -297,11 +297,14 @@ void Ogre2DepthCamera::Destroy()
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
   // remove depth texture, material, compositor
-  if (this->dataPtr->ogreDepthTexture)
+  for( size_t i = 0u; i < 2u; ++i )
   {
-    ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
-      this->dataPtr->ogreDepthTexture);
-    this->dataPtr->ogreDepthTexture = nullptr;
+    if (this->dataPtr->ogreDepthTexture[i])
+    {
+      ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
+            this->dataPtr->ogreDepthTexture[i]);
+      this->dataPtr->ogreDepthTexture[i] = nullptr;
+    }
   }
   if (this->dataPtr->ogreCompositorWorkspace)
   {
@@ -587,41 +590,11 @@ void Ogre2DepthCamera::CreateDepthTexture()
     this->dataPtr->ogreCompositorBaseNodeDef = baseNodeDefName;
     Ogre::CompositorNodeDef *baseNodeDef =
         ogreCompMgr->addNodeDefinition(baseNodeDefName);
-    Ogre::TextureDefinitionBase::TextureDefinition *rt0TexDef =
-        baseNodeDef->addTextureDefinition("rt0");
-    rt0TexDef->textureType = Ogre::TextureTypes::Type2D;
-    rt0TexDef->width = 0;
-    rt0TexDef->height = 0;
-    rt0TexDef->depthOrSlices = 1;
-    rt0TexDef->numMipmaps = 0;
-    rt0TexDef->widthFactor = 1;
-    rt0TexDef->heightFactor = 1;
-    rt0TexDef->format = Ogre::PFG_RGBA32_FLOAT;
-    rt0TexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
-    rt0TexDef->depthBufferId = Ogre::DepthBuffer::POOL_INVALID;
-    rt0TexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
-    rt0TexDef->fsaa = "0";
 
-    Ogre::RenderTargetViewDef *rtv0 = baseNodeDef->addRenderTextureView("rt0");
-    rtv0->setForTextureDefinition("rt0", rt0TexDef);
-
-    Ogre::TextureDefinitionBase::TextureDefinition *rt1TexDef =
-        baseNodeDef->addTextureDefinition("rt1");
-    rt1TexDef->textureType = Ogre::TextureTypes::Type2D;
-    rt1TexDef->width = 0;
-    rt1TexDef->height = 0;
-    rt1TexDef->depthOrSlices = 1;
-    rt1TexDef->numMipmaps = 0;
-    rt1TexDef->widthFactor = 1;
-    rt1TexDef->heightFactor = 1;
-    rt1TexDef->format = Ogre::PFG_RGBA32_FLOAT;
-    rt1TexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
-    rt1TexDef->depthBufferId = Ogre::DepthBuffer::POOL_INVALID;
-    rt1TexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
-    rt1TexDef->fsaa = "0";
-
-    Ogre::RenderTargetViewDef *rtv1 = baseNodeDef->addRenderTextureView("rt1");
-    rtv1->setForTextureDefinition("rt1", rt1TexDef);
+    baseNodeDef->addTextureSourceName(
+          "rt0", 0u, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+    baseNodeDef->addTextureSourceName(
+          "rt1", 1u, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
     Ogre::TextureDefinitionBase::TextureDefinition *depthTexDef =
         baseNodeDef->addTextureDefinition("depthTexture");
@@ -860,10 +833,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
     Ogre::CompositorNodeDef *finalNodeDef =
         ogreCompMgr->addNodeDefinition(finalNodeDefName);
 
-    // output texture
-    finalNodeDef->addTextureSourceName("rt_output", 0,
+    finalNodeDef->addTextureSourceName("rt_input", 0,
         Ogre::TextureDefinitionBase::TEXTURE_INPUT);
-    finalNodeDef->addTextureSourceName("rt_input", 1,
+    // output texture
+    finalNodeDef->addTextureSourceName("rt_output", 1,
         Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
     finalNodeDef->setNumTargetPass(1);
@@ -902,8 +875,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
     Ogre::CompositorWorkspaceDef *workDef =
         ogreCompMgr->addWorkspaceDefinition(wsDefName);
 
-    workDef->connect(baseNodeDefName, 0,  finalNodeDefName, 1);
-    workDef->connectExternal(0, finalNodeDefName, 0);
+    workDef->connectExternal(0, baseNodeDefName, 0);
+    workDef->connectExternal(1, baseNodeDefName, 1);
+    workDef->connect(baseNodeDefName, finalNodeDefName);
   }
   Ogre::CompositorWorkspaceDef *wsDef =
       ogreCompMgr->getWorkspaceDefinition(wsDefName);
@@ -917,23 +891,26 @@ void Ogre2DepthCamera::CreateDepthTexture()
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
   // create render texture - these textures pack the range data
-  this->dataPtr->ogreDepthTexture =
-    textureMgr->createOrRetrieveTexture(
-      this->Name() + "_depth",
-      Ogre::GpuPageOutStrategy::SaveToSystemRam,
-      Ogre::TextureFlags::RenderToTexture,
-      Ogre::TextureTypes::Type2D);
+  for( size_t i = 0u; i < 2u; ++i )
+  {
+    this->dataPtr->ogreDepthTexture[i] =
+        textureMgr->createTexture(
+          this->Name() + "_depth" + std::to_string(i),
+          Ogre::GpuPageOutStrategy::SaveToSystemRam,
+          Ogre::TextureFlags::RenderToTexture,
+          Ogre::TextureTypes::Type2D);
 
-  this->dataPtr->ogreDepthTexture->setResolution(
-    this->ImageWidth(), this->ImageHeight());
-  this->dataPtr->ogreDepthTexture->setNumMipmaps(1u);
-  this->dataPtr->ogreDepthTexture->setPixelFormat(
-    Ogre::PFG_RGBA32_FLOAT);
+      this->dataPtr->ogreDepthTexture[i]->setResolution(
+        this->ImageWidth(), this->ImageHeight());
+      this->dataPtr->ogreDepthTexture[i]->setNumMipmaps(1u);
+      this->dataPtr->ogreDepthTexture[i]->setPixelFormat(
+        Ogre::PFG_RGBA32_FLOAT);
 
-  this->dataPtr->ogreDepthTexture->scheduleTransitionTo(
-    Ogre::GpuResidency::Resident);
+      this->dataPtr->ogreDepthTexture[i]->scheduleTransitionTo(
+        Ogre::GpuResidency::Resident);
+  }
 
-  this->CreateWorkspaceInstance();
+  CreateWorkspaceInstance();
 }
 
 //////////////////////////////////////////////////
@@ -943,11 +920,16 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
+  Ogre::CompositorChannelVec externalTargets(2u);
+
+  externalTargets[0] = this->dataPtr->ogreDepthTexture[0];
+  externalTargets[1] = this->dataPtr->ogreDepthTexture[1];
+
   // create compositor worksspace
   this->dataPtr->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(
           this->scene->OgreSceneManager(),
-          this->dataPtr->ogreDepthTexture,
+          externalTargets,
           this->ogreCamera,
           this->dataPtr->ogreCompositorWorkspaceDef,
           false);
@@ -966,7 +948,8 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
       this->dataPtr->particleNoiseListener.reset(
           new Ogre2ParticleNoiseListener(this->scene,
           this->dataPtr->depthMaterial));
-      this->ogreCamera->addListener(this->dataPtr->particleNoiseListener.get());
+      this->ogreCamera->addListener(
+            this->dataPtr->particleNoiseListener.get());
       break;
     }
   }
@@ -985,7 +968,7 @@ void Ogre2DepthCamera::Render()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::PreRender()
 {
-  if (!this->dataPtr->ogreDepthTexture)
+  if (!this->dataPtr->ogreDepthTexture[0])
     this->CreateDepthTexture();
 
   if (!this->dataPtr->ogreCompositorWorkspace)
@@ -998,7 +981,10 @@ void Ogre2DepthCamera::PreRender()
       this->dataPtr->ogreCompositorBaseNodeDef,
       this->dataPtr->ogreCompositorFinalNodeDef,
       this->dataPtr->renderPasses,
-      this->dataPtr->renderPassDirty);
+      this->dataPtr->renderPassDirty,
+      &this->dataPtr->ogreDepthTexture,
+      false);
+
   for (auto &pass : this->dataPtr->renderPasses)
     pass->PreRender();
 
@@ -1043,7 +1029,7 @@ void Ogre2DepthCamera::PostRender()
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
   Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreDepthTexture, 0u, 0u);
+  image.convertFromTexture(this->dataPtr->ogreDepthTexture[1], 0u, 0u);
   Ogre::TextureBox box = image.getData(0);
   float *depthBufferTmp = static_cast<float *>(box.data);
   if (!this->dataPtr->depthBuffer)

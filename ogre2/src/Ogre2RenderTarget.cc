@@ -185,16 +185,10 @@ void Ogre2RenderTarget::BuildCompositor()
         nodeDef->addTargetPass("rtv");
 
     if (validBackground)
-      rt0TargetDef->setNumPasses(3);
-    else
       rt0TargetDef->setNumPasses(2);
+    else
+      rt0TargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          rt0TargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(this->ogreBackgroundColor);
-
       if (validBackground)
       {
         // quad pass
@@ -205,6 +199,9 @@ void Ogre2RenderTarget::BuildCompositor()
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
+
+        passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+        passQuad->setAllClearColours(this->ogreBackgroundColor);
       }
 
       // scene pass
@@ -213,6 +210,12 @@ void Ogre2RenderTarget::BuildCompositor()
           rt0TargetDef->addPass(Ogre::PASS_SCENE));
       passScene->mShadowNode = this->dataPtr->kShadowNodeName;
       passScene->mIncludeOverlays = true;
+
+      if (!validBackground)
+      {
+        passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+        passScene->setAllClearColours(this->ogreBackgroundColor);
+      }
     }
 
     nodeDef->mapOutputChannel(0, "rt0");
@@ -606,12 +609,15 @@ void Ogre2RenderTarget::UpdateBackgroundColor()
 {
   if (this->colorDirty)
   {
-    // set background color in compositor clear pass def
+    // set background color in the first pass that clears
+    // the RT (both node and its definition).
     auto nodeSeq = this->ogreCompositorWorkspace->getNodeSequence();
-    auto pass = nodeSeq[0]->_getPasses()[0]->getDefinition();
-    auto clearPass = dynamic_cast<const Ogre::CompositorPassClearDef *>(pass);
-    const_cast<Ogre::CompositorPassClearDef *>(clearPass)->setAllClearColours(
-        this->ogreBackgroundColor);
+    auto pass = nodeSeq[0]->_getPasses()[0];
+    pass->getRenderPassDesc()->setClearColour(this->ogreBackgroundColor);
+
+    auto passDef = pass->getDefinition();
+    const_cast<Ogre::CompositorPassDef*>(passDef)->setAllClearColours(
+          this->ogreBackgroundColor);
 
     this->colorDirty = false;
   }

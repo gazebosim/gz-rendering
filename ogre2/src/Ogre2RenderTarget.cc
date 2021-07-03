@@ -98,7 +98,7 @@ class ignition::rendering::Ogre2RenderTargetPrivate
   /// RenderWindows may have a 3rd texture which is the
   /// actual window
   ///
-  Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
+  public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
 };
 
 using namespace ignition;

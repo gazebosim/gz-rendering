@@ -225,15 +225,14 @@ void Ogre2DepthGaussianNoisePass::CreateRenderPass()
   nodeDef->setNumTargetPass(1);
   Ogre::CompositorTargetDef *inputTargetDef =
       nodeDef->addTargetPass("rt_output");
-  inputTargetDef->setNumPasses(2);
+  inputTargetDef->setNumPasses(1);
   {
-    // clear pass
-    inputTargetDef->addPass(Ogre::PASS_CLEAR);
-
     // quad pass
     Ogre::CompositorPassQuadDef *passQuad =
         static_cast<Ogre::CompositorPassQuadDef *>(
         inputTargetDef->addPass(Ogre::PASS_QUAD));
+    passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+
     passQuad->mMaterialName = materialName;
     passQuad->addQuadTextureSource(0, "rt_input");
   }
@@ -683,17 +682,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
         baseNodeDef->addTargetPass("colorTexture");
 
     if (validBackground)
-      colorTargetDef->setNumPasses(3);
-    else
       colorTargetDef->setNumPasses(2);
+    else
+      colorTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          colorTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(
-          Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
-
       if (validBackground)
       {
         // quad pass
@@ -704,6 +696,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
+
+        passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+        passQuad->setAllClearColours(Ogre::ColourValue(
+            Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
       }
 
       // scene pass
@@ -715,25 +711,28 @@ void Ogre2DepthCamera::CreateDepthTexture()
       // todo(anyone) PbsMaterialsShadowNode is hardcoded.
       // Although this may be just fine
       passScene->mShadowNode = "PbsMaterialsShadowNode";
+
+      if (!validBackground)
+      {
+        passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+        passScene->setAllClearColours(Ogre::ColourValue(
+            Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
+      }
     }
 
     Ogre::CompositorTargetDef *depthTargetDef =
         baseNodeDef->addTargetPass("depthTexture");
-    depthTargetDef->setNumPasses(2);
+    depthTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          depthTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(
-        this->FarClipPlane(),
-        this->FarClipPlane(),
-        this->FarClipPlane()));
-
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           depthTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue(
+        this->FarClipPlane(),
+        this->FarClipPlane(),
+        this->FarClipPlane()));
       // depth texute does not contain particles
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL
           & ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
@@ -741,39 +740,31 @@ void Ogre2DepthCamera::CreateDepthTexture()
 
     Ogre::CompositorTargetDef *particleTargetDef =
         baseNodeDef->addTargetPass("particleTexture");
-    particleTargetDef->setNumPasses(2);
+    particleTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          particleTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue::Black);
-
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           particleTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue::Black);
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 
     Ogre::CompositorTargetDef *particleDepthTargetDef =
         baseNodeDef->addTargetPass("particleDepthTexture");
-    particleDepthTargetDef->setNumPasses(2);
+    particleDepthTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          particleDepthTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(
-        this->FarClipPlane(),
-        this->FarClipPlane(),
-        this->FarClipPlane()));
-
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           particleDepthTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue(
+        this->FarClipPlane(),
+        this->FarClipPlane(),
+        this->FarClipPlane()));
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
@@ -781,19 +772,18 @@ void Ogre2DepthCamera::CreateDepthTexture()
     // rt0 target - converts depth to xyz
     Ogre::CompositorTargetDef *inTargetDef =
         baseNodeDef->addTargetPass("rt0");
-    inTargetDef->setNumPasses(2);
+    inTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          inTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(this->FarClipPlane(),
-          this->FarClipPlane(), this->FarClipPlane()));
-
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
           inTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+      passQuad->setAllClearColours(Ogre::ColourValue(
+        this->FarClipPlane(),
+        this->FarClipPlane(),
+        this->FarClipPlane()));
+
       passQuad->mMaterialName = this->dataPtr->depthMaterial->getName();
       passQuad->addQuadTextureSource(0, "depthTexture");
       passQuad->addQuadTextureSource(1, "colorTexture");
@@ -843,22 +833,18 @@ void Ogre2DepthCamera::CreateDepthTexture()
     // rt_output target - converts depth to xyz
     Ogre::CompositorTargetDef *outputTargetDef =
         finalNodeDef->addTargetPass("rt_output");
-    outputTargetDef->setNumPasses(2);
+    outputTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          outputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(
-        Ogre::ColourValue(
-          this->FarClipPlane(),
-          this->FarClipPlane(),
-          this->FarClipPlane()));
-
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
           outputTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+      passQuad->setAllClearColours(Ogre::ColourValue(
+        this->FarClipPlane(),
+        this->FarClipPlane(),
+        this->FarClipPlane()));
+
       passQuad->mMaterialName = this->dataPtr->depthFinalMaterial->getName();
       passQuad->addQuadTextureSource(0, "rt_input");
     }

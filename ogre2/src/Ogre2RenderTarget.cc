@@ -157,9 +157,32 @@ void Ogre2RenderTarget::BuildCompositor()
     nodeDef->addTextureSourceName(
           "rt1", 1u, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
+    {
+      // Add a manually-defined RTV (based on an automatically generated one)
+      // so that we can perform an explicit MSAA resolve.
+      const Ogre::RenderTargetViewDef *rt0Def =
+          nodeDef->getRenderTargetViewDef( "rt0" );
+      Ogre::RenderTargetViewDef *rtvDef =
+          nodeDef->addRenderTextureView( "rtv" );
+
+      *rtvDef = *rt0Def;
+
+      const uint8_t fsaa = GetTargetFSAA();
+      if (fsaa > 1u)
+      {
+        Ogre::TextureDefinitionBase::TextureDefinition *msaaDef =
+            nodeDef->addTextureDefinition("rt_fsaa");
+
+        msaaDef->fsaa = std::to_string(fsaa);
+
+        rtvDef->colourAttachments[0].textureName = "rt_fsaa";
+        rtvDef->colourAttachments[0].resolveTextureName = "rt0";
+      }
+    }
+
     nodeDef->setNumTargetPass(2);
     Ogre::CompositorTargetDef *rt0TargetDef =
-        nodeDef->addTargetPass("rt0");
+        nodeDef->addTargetPass("rtv");
 
     if (validBackground)
       rt0TargetDef->setNumPasses(3);
@@ -495,24 +518,6 @@ void Ogre2RenderTarget::DestroyTargetImpl()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::BuildTargetImpl()
 {
-  // check if target fsaa is supported
-  std::vector<unsigned int> fsaaLevels =
-      Ogre2RenderEngine::Instance()->FSAALevels();
-  unsigned int targetFSAA = this->antiAliasing;
-  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
-
-  if (it == fsaaLevels.end())
-  {
-    // output warning but only do it once
-    static bool ogre2FSAAWarn = false;
-    if (ogre2FSAAWarn)
-    {
-      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
-              << "is not supported. Setting to 0" << std::endl;
-      ogre2FSAAWarn = true;
-    }
-  }
-
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::TextureGpuManager *textureMgr =
@@ -549,6 +554,33 @@ unsigned int Ogre2RenderTarget::GLIdImpl() const
                                                     &texId);
 
   return static_cast<unsigned int>(texId);
+}
+
+//////////////////////////////////////////////////
+uint8_t Ogre2RenderTarget::GetTargetFSAA() const
+{
+  // check if target fsaa is supported
+  std::vector<unsigned int> fsaaLevels =
+      Ogre2RenderEngine::Instance()->FSAALevels();
+  unsigned int targetFSAA = this->antiAliasing;
+  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
+
+  if (it == fsaaLevels.end())
+  {
+    // output warning but only do it once
+    static bool ogre2FSAAWarn = false;
+    if (ogre2FSAAWarn)
+    {
+      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+              << "is not supported. Setting to 0" << std::endl;
+      ogre2FSAAWarn = true;
+    }
+  }
+
+  if (targetFSAA == 0u)
+    targetFSAA = 1u;
+
+  return static_cast<uint8_t>(targetFSAA);
 }
 
 //////////////////////////////////////////////////

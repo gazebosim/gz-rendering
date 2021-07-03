@@ -115,6 +115,11 @@ namespace ignition
       /// \see Camera::SetShadowsNodeDefDirty
       public: void SetShadowsNodeDefDirty();
 
+      /// \brief Returns the FSAA to use based on supported specs by HW
+      /// and value specified in Ogre2RenderTarget::AntiAliasing
+      /// \return Value in range [1; 256). 1 means no antialiasing.
+      protected: uint8_t GetTargetFSAA() const;
+
       /// \brief Get a pointer to the ogre render target containing
       /// the results of the render (implemented separately
       /// to avoid breaking ABI of the pure virtual function)

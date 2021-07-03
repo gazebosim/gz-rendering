@@ -99,6 +99,12 @@ class ignition::rendering::Ogre2RenderTargetPrivate
   /// actual window
   ///
   public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
+
+  /// \brief True when we're using FSAA and HW is compatible with it
+  /// If this value is true AND if we're not using postprocessing,
+  /// we can unload ogreTexture[0] from memory since it's not used,
+  /// thus saving VRAM
+  public: bool usingFsaa = false;
 };
 
 using namespace ignition;
@@ -170,6 +176,7 @@ void Ogre2RenderTarget::BuildCompositor()
       const uint8_t fsaa = GetTargetFSAA();
       if (fsaa > 1u)
       {
+        this->dataPtr->usingFsaa = true;
         Ogre::TextureDefinitionBase::TextureDefinition *msaaDef =
             nodeDef->addTextureDefinition("rt_fsaa");
 
@@ -177,6 +184,10 @@ void Ogre2RenderTarget::BuildCompositor()
 
         rtvDef->colourAttachments[0].textureName = "rt_fsaa";
         rtvDef->colourAttachments[0].resolveTextureName = "rt0";
+      }
+      else
+      {
+        this->dataPtr->usingFsaa = false;
       }
     }
 
@@ -531,7 +542,7 @@ void Ogre2RenderTarget::BuildTargetImpl()
     this->dataPtr->ogreTexture[i] =
         textureMgr->createTexture(
           this->name + std::to_string(i),
-          Ogre::GpuPageOutStrategy::SaveToSystemRam,
+          Ogre::GpuPageOutStrategy::Discard,
           Ogre::TextureFlags::RenderToTexture,
           Ogre::TextureTypes::Type2D);
 
@@ -670,7 +681,8 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
       this->renderPasses,
       this->renderPassDirty,
       &this->dataPtr->ogreTexture,
-      this->IsRenderWindow());
+      this->IsRenderWindow(),
+      this->dataPtr->usingFsaa);
 
   this->SyncOgreTextureVars();
 
@@ -696,6 +708,18 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     const std::vector<RenderPassPtr> &_renderPasses,
     bool _recreateNodes, Ogre::TextureGpu *(*_ogreTextures)[2],
     bool _isRenderWindow)
+{
+  ignwarn << "Warning: This Ogre2RenderTarget::UpdateRenderPassChain "
+          << "overload is deprecated" << std::endl;
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::UpdateRenderPassChain(
+    Ogre::CompositorWorkspace *_workspace, const std::string &_workspaceDefName,
+    const std::string &_baseNode, const std::string &_finalNode,
+    const std::vector<RenderPassPtr> &_renderPasses,
+    bool _recreateNodes, Ogre::TextureGpu *(*_ogreTextures)[2],
+    bool _isRenderWindow, bool _unloadTex0IfNoPost)
 {
   if (!_workspace || _workspaceDefName.empty() ||
       _baseNode.empty() || _finalNode.empty() || _renderPasses.empty())
@@ -778,6 +802,34 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
       outNodeDefName = inNodeDefName;
       ++numActiveNodes;
     }
+  }
+
+  if (_unloadTex0IfNoPost)
+  {
+    if (numActiveNodes > 0)
+    {
+      // Temporary texture is needed because postprocessing effects
+      // are in action and we need it for ping-pong
+      (*_ogreTextures)[0]->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+    }
+    else
+    {
+      // Temporary texture isn't needed because we're rendering to MSAA
+      // surface and resolving directly into _ogreTextures[1]
+      (*_ogreTextures)[0]->scheduleTransitionTo(Ogre::GpuResidency::OnStorage);
+    }
+  }
+  else
+  {
+    // Temporary texture is needed because we're rendering directly to it
+    // (there's no MSAA surface). Texture can't be in OnStorage because
+    // if we unloaded it; then it must've been created as FSAA so we
+    // we couldn't be here (_unloadTex0IfNoPost = true). If FSAA settings
+    // changed, then the compositor must've been rebuilt by now.
+    IGN_ASSERT(
+          (*_ogreTextures)[0]->getResidencyStatus() ==
+        Ogre::GpuResidency::Resident,
+        "Antialiasing settings changed but compositor wasn't rebuilt?" );
   }
 
   workspaceDef->connectExternal(0, _baseNode, 0);

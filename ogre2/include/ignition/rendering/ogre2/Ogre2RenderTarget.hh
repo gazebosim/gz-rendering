@@ -163,6 +163,16 @@ namespace ignition
           const std::vector<RenderPassPtr> &_renderPasses,
           bool _recreateNodes);
 
+      /// \brief Deprecated. Use other overloads.
+      public: static IGN_DEPRECATED(6) void UpdateRenderPassChain(
+          Ogre::CompositorWorkspace *_workspace,
+          const std::string &_workspaceDefName,
+          const std::string &_baseNode, const std::string &_finalNode,
+          const std::vector<RenderPassPtr> &_renderPasses,
+          bool _recreateNodes,
+          Ogre::TextureGpu *(*_ogreTextures)[2],
+          bool _isRenderWindow);
+
       /// \brief Update the render pass chain
       public: static void UpdateRenderPassChain(
           Ogre::CompositorWorkspace *_workspace,
@@ -171,7 +181,8 @@ namespace ignition
           const std::vector<RenderPassPtr> &_renderPasses,
           bool _recreateNodes,
           Ogre::TextureGpu *(*_ogreTextures)[2],
-          bool _isRenderWindow);
+          bool _isRenderWindow,
+          bool _unloadTex0IfNoPost);
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();

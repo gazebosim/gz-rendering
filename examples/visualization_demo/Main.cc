@@ -122,7 +122,7 @@ void buildScene(ScenePtr _scene)
   VisualPtr box = _scene->CreateVisual("parent_box");
   box->AddGeometry(_scene->CreateBox());
   box->SetOrigin(0.0, 0.0, 0.0);
-  box->SetLocalPosition(4.5, 0.0, 0.0);
+  box->SetLocalPosition(4.5, -0.5, 0.0);
   box->SetLocalRotation(0, 0, 0);
   box->SetMaterial(blue);
   root->AddChild(box);
@@ -149,7 +149,7 @@ void buildScene(ScenePtr _scene)
   ignition::math::Pose3d p(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
   ignition::math::Inertiald inertial{massMatrix, p};
   inertiaVisual->SetInertial(inertial);
-  inertiaVisual->SetLocalPosition(1, 0, 0);
+  inertiaVisual->SetLocalPosition(1.5, -0.5, 0);
   root->AddChild(inertiaVisual);
 
   // create CoM visual
@@ -163,20 +163,34 @@ void buildScene(ScenePtr _scene)
   box->AddChild(comVisual);
 
   // create joint child visual
-  VisualPtr jointBox = _scene->CreateVisual("joint_child");
-  jointBox->AddGeometry(_scene->CreateBox());
-  jointBox->SetOrigin(0.0, 0.0, 0.0);
-  jointBox->SetLocalPosition(3.0, 1.0, 0.0);
-  jointBox->SetLocalRotation(0, 0, 0);
-  jointBox->SetMaterial(blue);
-  root->AddChild(jointBox);
+  VisualPtr jointChildBox = _scene->CreateVisual("joint_child");
+  jointChildBox->AddGeometry(_scene->CreateBox());
+  jointChildBox->SetOrigin(0.0, 0.0, 0.0);
+  jointChildBox->SetLocalPosition(3.5, 0.5, 0.0);
+  jointChildBox->SetLocalRotation(0, 0, 0);
+  jointChildBox->SetMaterial(blue);
+  root->AddChild(jointChildBox);
+
+  // create joint parent visual
+  VisualPtr jointParentBox = _scene->CreateVisual("joint_parent");
+  jointParentBox->AddGeometry(_scene->CreateBox());
+  jointParentBox->SetOrigin(0.0, 0.0, 0.0);
+  jointParentBox->SetLocalPosition(2.0, 0.5, 0.0);
+  jointParentBox->SetLocalRotation(0, 0, 0);
+  jointParentBox->SetMaterial(blue);
+  jointParentBox->Material()->SetTransparency(0.5);
+  jointParentBox->Material()->SetDepthWriteEnabled(false);
+  root->AddChild(jointParentBox);
 
   // create joint visual
   JointVisualPtr jointVisual = _scene->CreateJointVisual();
-  jointBox->AddChild(jointVisual);
-  ignition::math::Vector3d axis(0.0, 1.0, 0.0);
+  jointChildBox->AddChild(jointVisual);
   jointVisual->SetType(JointVisualType::JVT_REVOLUTE);
-  jointVisual->CreateAxis(axis, "__model__");
+  ignition::math::Vector3d axis2(0.0, 0.0, 1.0);
+  jointVisual->CreateAxis(axis2, "");
+
+  ignition::math::Vector3d axis1(0.0, 1.0, 0.0);
+  jointVisual->CreateParentAxis(axis1, "__model__", jointParentBox->Name());
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

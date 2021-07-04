@@ -84,7 +84,8 @@ namespace ignition
       /// expressed.
       public: virtual void CreateParentAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn) = 0;
+          const std::string &_xyzExpressedIn,
+          const std::string &_parentName) = 0;
 
       /// \brief Update an axis' arrow visual.
       /// \param[in] _axis Axis vector.
@@ -98,6 +99,7 @@ namespace ignition
       /// \param[in] _axis Axis vector.
       /// \param[in] _xyzExpressedIn Frame in which the axis vector is
       /// expressed.
+      /// \param[in] _parentName Name of the joint parent
       public: virtual void UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) = 0;

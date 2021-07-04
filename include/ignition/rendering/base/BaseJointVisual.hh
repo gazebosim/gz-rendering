@@ -60,7 +60,8 @@ namespace ignition
       // Documentation inherited
       public: virtual void CreateParentAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn) override;
+          const std::string &_xyzExpressedIn,
+          const std::string &_parentName) override;
 
       // Documentation inherited
       public: virtual void UpdateAxis(const ignition::math::Vector3d &_axis,
@@ -179,12 +180,13 @@ namespace ignition
     template <class T>
     void BaseJointVisual<T>::CreateParentAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn)
+          const std::string &_xyzExpressedIn,
+          const std::string &_parentName)
     {
-      if (!this->HasParent())
+      if (!this->Scene()->HasNodeName(_parentName))
       {
-        ignlog << "Joint visual with name " << this->Name() <<
-            " isn't attached to a parent visual" <<
+        ignlog << "Joint parent with name " << _parentName <<
+            " does not exist" <<
             " so the parent axis won't be shown.\n";
         return;
       }
@@ -196,8 +198,8 @@ namespace ignition
       }
 
       this->parentAxisVis = this->Scene()->CreateJointVisual();
-      this->AddChild(this->parentAxisVis);
-      this->parentAxisVis->SetType(this->jointVisualType);
+      this->Scene()->NodeByName(_parentName)->AddChild(this->parentAxisVis);
+      this->parentAxisVis->SetType(this->Type());
       this->parentAxisVis->CreateAxis(_axis, _xyzExpressedIn);
       this->parentAxisVis->SetLocalScale(this->scaleToChild);
       this->UpdateParentAxis(_axis, _xyzExpressedIn);
@@ -313,8 +315,8 @@ namespace ignition
       {
         double childSize =
             std::max(0.1, parentVisual->BoundingBox().Size().Length());
-        this->scaleToChild = ignition::math::Vector3d(childSize * 0.7,
-            childSize * 0.7, childSize * 0.7);
+        this->scaleToChild = ignition::math::Vector3d(childSize * 0.4,
+            childSize * 0.4, childSize * 0.4);
         this->SetLocalScale(this->scaleToChild);
         if (this->ParentAxisVisual())
           this->ParentAxisVisual()->SetLocalScale(this->scaleToChild);
@@ -339,14 +341,14 @@ namespace ignition
     template <class T>
     JointVisualPtr BaseJointVisual<T>::ParentAxisVisual() const
     {
-      return nullptr;
+      return this->parentAxisVis;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     ArrowVisualPtr BaseJointVisual<T>::ArrowVisual() const
     {
-      return nullptr;
+      return this->arrowVisual;
     }
     }
   }

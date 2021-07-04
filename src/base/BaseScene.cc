@@ -1302,7 +1302,7 @@ void BaseScene::PostRender()
 }
 
 //////////////////////////////////////////////////
-void BaseScene::SetCameraPassCountPerGpuFlush(uint8_t _numPass)
+void BaseScene::SetCameraPassCountPerGpuFlush(uint8_t /*_numPass*/)
 {
 }
 

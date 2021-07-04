@@ -1080,7 +1080,7 @@ void Ogre2GpuRays::CreateGpuRaysTextures()
 void Ogre2GpuRays::UpdateRenderTarget1stPass()
 {
   Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
-  swappedTargets.reserve( 2u );
+  swappedTargets.reserve(2u);
 
   // update the compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
@@ -1088,7 +1088,6 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(true);
 
     this->dataPtr->ogreCompositorWorkspace1st[i]->_validateFinalTarget();
-    // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
     this->dataPtr->ogreCompositorWorkspace1st[i]->_beginUpdate(false);
     this->dataPtr->ogreCompositorWorkspace1st[i]->_update();
     this->dataPtr->ogreCompositorWorkspace1st[i]->_endUpdate(false);
@@ -1105,14 +1104,13 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
 void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 {
   this->dataPtr->ogreCompositorWorkspace2nd->_validateFinalTarget();
-  // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
   this->dataPtr->ogreCompositorWorkspace2nd->_beginUpdate(false);
   this->dataPtr->ogreCompositorWorkspace2nd->_update();
   this->dataPtr->ogreCompositorWorkspace2nd->_endUpdate(false);
 
   Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
-  swappedTargets.reserve( 2u );
-  this->dataPtr->ogreCompositorWorkspace2nd->_swapFinalTarget( swappedTargets );
+  swappedTargets.reserve(2u);
+  this->dataPtr->ogreCompositorWorkspace2nd->_swapFinalTarget(swappedTargets);
 }
 
 //////////////////////////////////////////////////

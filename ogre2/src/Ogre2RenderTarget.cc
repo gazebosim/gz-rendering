@@ -428,14 +428,13 @@ void Ogre2RenderTarget::Render()
   this->scene->StartRendering();
 
   this->ogreCompositorWorkspace->_validateFinalTarget();
-  // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
   this->ogreCompositorWorkspace->_beginUpdate(false);
   this->ogreCompositorWorkspace->_update();
   this->ogreCompositorWorkspace->_endUpdate(false);
 
   Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
-  swappedTargets.reserve( 2u );
-  this->ogreCompositorWorkspace->_swapFinalTarget( swappedTargets );
+  swappedTargets.reserve(2u);
+  this->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
 
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 }

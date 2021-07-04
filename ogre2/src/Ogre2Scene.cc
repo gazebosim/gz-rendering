@@ -310,13 +310,18 @@ void Ogre2Scene::FlushGpuCommandsOnly()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  // engine->OgreRoot()->renderOneFrame();
+  // The following code is equivalent to calling:
+  //  engine->OgreRoot()->renderOneFrame();
+  //
+  // however without updating SceneManager::updateSceneGraph
+  // because that has already been done; and most (all?) workspaces
+  // are updated manually (since they're created as disabled)
 
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
   auto hlmsManager = ogreRoot->getHlmsManager();
   // Updating the compositor with all workspaces disables achieves our goal
-  ogreCompMgr->_update( Ogre::SceneManagerEnumerator::getSingleton(),
-                        hlmsManager );
+  ogreCompMgr->_update(Ogre::SceneManagerEnumerator::getSingleton(),
+                       hlmsManager);
 #else
   // Updating the compositor with all workspaces disables achieves our goal
   ogreCompMgr->_update();

@@ -156,14 +156,6 @@ namespace ignition
       public: virtual void SetVisibilityMask(uint32_t _mask);
 
       /// \brief Deprecated. Use other overloads.
-      public: static IGN_DEPRECATED(5) void UpdateRenderPassChain(
-          Ogre::CompositorWorkspace *_workspace,
-          const std::string &_workspaceDefName,
-          const std::string &_baseNode, const std::string &_finalNode,
-          const std::vector<RenderPassPtr> &_renderPasses,
-          bool _recreateNodes);
-
-      /// \brief Deprecated. Use other overloads.
       public: static IGN_DEPRECATED(6) void UpdateRenderPassChain(
           Ogre::CompositorWorkspace *_workspace,
           const std::string &_workspaceDefName,
@@ -216,10 +208,6 @@ namespace ignition
       /// \sa Ogre2RenderTarget::RebuildImpl()
       /// \sa BaseRenderTarget::Rebuild()
       protected: void RebuildMaterial();
-
-      /// Calls Ogre2RenderTexture::SetOgreTexture if appropiate to ensure
-      /// Ogre2RenderTexture::ogreTexture always has our outputs
-      protected: void SyncOgreTextureVars();
 
       /// \brief Pointer to the internal ogre camera
       protected: Ogre::Camera *ogreCamera = nullptr;
@@ -295,21 +283,6 @@ namespace ignition
 
       /// \brief Build the render texture
       protected: virtual void BuildTarget();
-
-      /// \brief Do not call this function directly.
-      ///
-      /// It's used to keep ABI compatibility to sync ogreTexture
-      /// with the internal pointer from our base class.
-      /// \param[in] _ogreTexture texture from
-      /// Ogre2RenderTargetPrivate::ogreTexture[1]
-      public: void SetOgreTexture(Ogre::TextureGpu *_ogreTexture);
-
-      /// \brief Unused. Kept for ABI reasons.
-      ///
-      /// Just in case we set this value to
-      /// Ogre2RenderTargetPrivate::ogreTexture[1] which is what most client
-      /// applications may want.
-      protected: IGN_DEPRECATED(5) Ogre::TextureGpu * ogreTexture = nullptr;
 
       /// \brief Make scene our friend so it can create a ogre2 render texture
       private: friend class Ogre2Scene;

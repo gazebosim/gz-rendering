@@ -296,7 +296,7 @@ void Ogre2DepthCamera::Destroy()
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
   // remove depth texture, material, compositor
-  for( size_t i = 0u; i < 2u; ++i )
+  for (size_t i = 0u; i < 2u; ++i)
   {
     if (this->dataPtr->ogreDepthTexture[i])
     {
@@ -877,7 +877,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
   // create render texture - these textures pack the range data
-  for( size_t i = 0u; i < 2u; ++i )
+  for (size_t i = 0u; i < 2u; ++i)
   {
     this->dataPtr->ogreDepthTexture[i] =
         textureMgr->createTexture(

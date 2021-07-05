@@ -284,14 +284,12 @@ void Ogre2RenderTarget::BuildCompositor()
   }
 
   Ogre::CompositorChannelVec externalTargets(2u);
-  for( size_t i = 0u; i < 2u; ++i )
+  for (size_t i = 0u; i < 2u; ++i)
   {
     // Connect them in reverse order
     const size_t srcIdx = 2u - i - 1u;
     externalTargets[i] = this->dataPtr->ogreTexture[srcIdx];
   }
-
-  this->SyncOgreTextureVars();
 
   this->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(
@@ -315,12 +313,11 @@ void Ogre2RenderTarget::DestroyCompositor()
   // FSAA (which we need for BuildCompositor to connect correctly)
   const Ogre::CompositorChannelVec &externalTargets =
       this->ogreCompositorWorkspace->getExternalRenderTargets();
-  for( size_t i = 0u; i < 2u; ++i )
+  for (size_t i = 0u; i < 2u; ++i)
   {
     const size_t srcIdx = (2u - i - 1u);
     this->dataPtr->ogreTexture[srcIdx] = externalTargets[i];
   }
-  this->SyncOgreTextureVars();
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -516,7 +513,7 @@ void Ogre2RenderTarget::DestroyTargetImpl()
 
   Ogre::TextureGpuManager *textureManager =
     root->getRenderSystem()->getTextureGpuManager();
-  for( size_t i = 0u; i < 2u; ++i )
+  for (size_t i = 0u; i < 2u; ++i)
   {
     textureManager->destroyTexture(this->dataPtr->ogreTexture[i]);
     this->dataPtr->ogreTexture[i] = nullptr;
@@ -525,8 +522,6 @@ void Ogre2RenderTarget::DestroyTargetImpl()
   // TODO(anyone) there is memory leak when a render texture is destroyed.
   // The RenderSystem::_cleanupDepthBuffers method used in ogre1 does not
   // seem to work in ogre2
-
-  this->SyncOgreTextureVars();
 }
 
 //////////////////////////////////////////////////
@@ -537,7 +532,7 @@ void Ogre2RenderTarget::BuildTargetImpl()
   Ogre::TextureGpuManager *textureMgr =
       ogreRoot->getRenderSystem()->getTextureGpuManager();
 
-  for( size_t i = 0u; i < 2u; ++i )
+  for (size_t i = 0u; i < 2u; ++i)
   {
     this->dataPtr->ogreTexture[i] =
         textureMgr->createTexture(
@@ -553,8 +548,6 @@ void Ogre2RenderTarget::BuildTargetImpl()
     this->dataPtr->ogreTexture[i]->scheduleTransitionTo(
           Ogre::GpuResidency::Resident);
   }
-
-  this->SyncOgreTextureVars();
 }
 
 //////////////////////////////////////////////////
@@ -684,21 +677,7 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
       this->IsRenderWindow(),
       this->dataPtr->usingFsaa);
 
-  this->SyncOgreTextureVars();
-
   this->renderPassDirty = false;
-}
-
-//////////////////////////////////////////////////
-void Ogre2RenderTarget::UpdateRenderPassChain(
-    Ogre::CompositorWorkspace * /*_workspace*/,
-    const std::string & /*_workspaceDefName*/,
-    const std::string & /*_baseNode*/, const std::string & /*_finalNode*/,
-    const std::vector<RenderPassPtr> & /*_renderPasses*/,
-    bool /*_recreateNodes*/)
-{
-  ignwarn << "Warning: This Ogre2RenderTarget::UpdateRenderPassChain "
-          << "overload is deprecated" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -845,7 +824,7 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
 
     const Ogre::CompositorChannelVec &externalTargets =
         _workspace->getExternalRenderTargets();
-    for( size_t i = 0u; i < 2u; ++i )
+    for (size_t i = 0u; i < 2u; ++i)
     {
       const size_t srcIdx = bMustSwapRts ? (2u - i - 1u) : i;
       (*_ogreTextures)[srcIdx] = externalTargets[i];
@@ -924,15 +903,6 @@ void Ogre2RenderTarget::RebuildMaterial()
 }
 
 //////////////////////////////////////////////////
-void Ogre2RenderTarget::SyncOgreTextureVars()
-{
-  Ogre2RenderTexture *asRenderTexture =
-      dynamic_cast<Ogre2RenderTexture*>(this);
-  if (asRenderTexture)
-   asRenderTexture->SetOgreTexture(this->dataPtr->ogreTexture[1]);
-}
-
-//////////////////////////////////////////////////
 // Ogre2RenderTexture
 //////////////////////////////////////////////////
 #pragma GCC diagnostic push
@@ -994,15 +964,6 @@ void Ogre2RenderTexture::PostRender()
 Ogre::TextureGpu *Ogre2RenderTexture::RenderTarget() const
 {
   return Ogre2RenderTarget::RenderTargetImpl();
-}
-
-//////////////////////////////////////////////////
-void Ogre2RenderTexture::SetOgreTexture(Ogre::TextureGpu *_ogreTexture)
-{
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  this->ogreTexture = _ogreTexture;
-#pragma GCC diagnostic pop
 }
 
 //////////////////////////////////////////////////

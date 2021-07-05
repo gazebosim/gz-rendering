@@ -201,7 +201,6 @@ namespace ignition
       this->Scene()->NodeByName(_parentName)->AddChild(this->parentAxisVis);
       this->parentAxisVis->SetType(this->Type());
       this->parentAxisVis->CreateAxis(_axis, _xyzExpressedIn);
-      this->parentAxisVis->SetLocalScale(this->scaleToChild);
       this->UpdateParentAxis(_axis, _xyzExpressedIn);
 
       this->ScaleToChild();

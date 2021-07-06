@@ -140,15 +140,15 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseArrowVisual<T>::SetVisible(bool _b)
+    void BaseArrowVisual<T>::SetVisible(bool _visible)
     {
-      T::SetVisible(_b);
+      T::SetVisible(_visible);
 
       NodePtr child = this->ChildByIndex(0);
       VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
       if (visual)
       {
-        visual->SetVisible(this->rotationVisible && _b);
+        visual->SetVisible(this->rotationVisible && _visible);
       }
     }
 

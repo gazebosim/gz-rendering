@@ -64,15 +64,21 @@ void ArrowVisualTest::ArrowVisual(const std::string &_renderEngine)
   EXPECT_EQ(math::Vector3d(0.2, 0.3, 0.4), visual->LocalScale());
 
   // check children and geometry
-  EXPECT_EQ(2u, visual->ChildCount());
+  EXPECT_EQ(3u, visual->ChildCount());
 
   NodePtr node = visual->ChildByIndex(0u);
   VisualPtr child = std::dynamic_pointer_cast<Visual>(node);
   ASSERT_NE(nullptr, child);
   EXPECT_EQ(1u, child->GeometryCount());
-  EXPECT_EQ(node, visual->Shaft());
+  EXPECT_EQ(node, visual->Rotation());
 
   node = visual->ChildByIndex(1u);
+  child = std::dynamic_pointer_cast<Visual>(node);
+  ASSERT_NE(nullptr, child);
+  EXPECT_EQ(1u, child->GeometryCount());
+  EXPECT_EQ(node, visual->Shaft());
+
+  node = visual->ChildByIndex(2u);
   child = std::dynamic_pointer_cast<Visual>(node);
   ASSERT_NE(nullptr, child);
   EXPECT_EQ(1u, child->GeometryCount());

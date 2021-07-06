@@ -46,6 +46,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual VisualPtr Shaft() const override;
 
+      // Documentation inherited.
+      public: virtual VisualPtr Rotation() const override;
+
       // Documentation inherited
       public: virtual void ShowArrowHead(bool _b) override;
 
@@ -81,12 +84,19 @@ namespace ignition
     template <class T>
     VisualPtr BaseArrowVisual<T>::Head() const
     {
-      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(1));
+      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(2));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     VisualPtr BaseArrowVisual<T>::Shaft() const
+    {
+      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(1));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    VisualPtr BaseArrowVisual<T>::Rotation() const
     {
       return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(0));
     }

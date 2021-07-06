@@ -132,7 +132,7 @@ namespace ignition
       protected: bool dirtyAxis = false;
 
       /// \brief Flag to indicate parent axis data has changed.
-      protected: bool parentDirtyAxis = false;
+      protected: bool dirtyParentAxis = false;
 
       /// \brief Joint visual axis vector.
       protected: ignition::math::Vector3d axis =
@@ -195,10 +195,10 @@ namespace ignition
         this->dirtyAxis = false;
       }
 
-      if (this->parentDirtyAxis)
+      if (this->dirtyParentAxis)
       {
         this->CreateParentAxis();
-        this->parentDirtyAxis = false;
+        this->dirtyParentAxis = false;
       }
 
       if (this->updateAxis)
@@ -289,7 +289,7 @@ namespace ignition
       this->parentAxis = _axis;
       this->parentXyzExpressedIn = _xyzExpressedIn;
       this->jointParentName = _parentName;
-      this->parentDirtyAxis = true;
+      this->dirtyParentAxis = true;
     }
 
     /////////////////////////////////////////////////

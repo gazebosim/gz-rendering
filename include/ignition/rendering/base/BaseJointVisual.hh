@@ -53,6 +53,9 @@ namespace ignition
       // Documentation inherited.
       protected: virtual void PreRender() override;
 
+      // Documentation inherited.
+      protected: virtual void Destroy() override;
+
       // Documentation inherited
       public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) override;
@@ -220,6 +223,29 @@ namespace ignition
 
       this->axisVisual = this->Scene()->CreateAxisVisual();
       this->AddChild(this->axisVisual);
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseJointVisual<T>::Destroy()
+    {
+      if (this->arrowVisual)
+      {
+        this->arrowVisual->Destroy();
+        this->arrowVisual.reset();
+      }
+
+      if (this->axisVisual)
+      {
+        this->axisVisual->Destroy();
+        this->axisVisual.reset();
+      }
+
+      if (this->parentAxisVis)
+      {
+        this->parentAxisVis->Destroy();
+        this->parentAxisVis.reset();
+      }
     }
 
     /////////////////////////////////////////////////

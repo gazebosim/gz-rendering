@@ -54,21 +54,21 @@ namespace ignition
       protected: virtual void PreRender() override;
 
       // Documentation inherited
-      public: virtual void CreateAxis(const ignition::math::Vector3d &_axis,
+      public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) override;
 
       // Documentation inherited
-      public: virtual void CreateParentAxis(
+      public: virtual void SetParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn,
           const std::string &_parentName) override;
 
       // Documentation inherited
-      public: virtual void UpdateAxis(const ignition::math::Vector3d &_axis,
+      public: virtual bool UpdateAxis(const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) override;
 
       // Documentation inherited
-      public: virtual void UpdateParentAxis(
+      public: virtual bool UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) override;
 
@@ -93,10 +93,16 @@ namespace ignition
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn);
 
-      /// \brief Scale the joint visual according to the joint's child
+      /// \brief Helper function to create axis visual
+      protected: void CreateAxis();
+
+      /// \brief Helper function to create parent axis visual
+      protected: void CreateParentAxis();
+
+      /// \brief Scale the joint visual according to the joint's child.
       protected: void ScaleToChild();
 
-      /// \brief Type of joint visualization
+      /// \brief Type of joint visualization.
       protected: JointVisualType jointVisualType =
           JointVisualType::JVT_NONE;
 
@@ -115,6 +121,39 @@ namespace ignition
       /// \brief Scale based on the size of the joint's child.
       protected: ignition::math::Vector3d scaleToChild =
           ignition::math::Vector3d::One;
+
+      /// \brief Flag to indicate joint visual type has changed.
+      protected: bool dirtyJointType = false;
+
+      /// \brief Flag to indicate axis data has changed.
+      protected: bool dirtyAxis = false;
+
+      /// \brief Flag to indicate parent axis data has changed.
+      protected: bool parentDirtyAxis = false;
+
+      /// \brief Joint visual axis vector.
+      protected: ignition::math::Vector3d axis =
+          ignition::math::Vector3d::Zero;
+
+      /// \brief Frame in which axis vector is expressed.
+      protected: std::string xyzExpressedIn = "";
+
+      /// \brief Flag to indicate whether to update the axis visual
+      protected: bool updateAxis = false;
+
+      /// \brief Parent axis vector.
+      protected: ignition::math::Vector3d parentAxis =
+          ignition::math::Vector3d::Zero;
+
+      /// \brief Frame in which parent axis vector is expressed.
+      protected: std::string parentXyzExpressedIn = "";
+
+      /// \brief Joint parent name
+      protected: std::string jointParentName = "";
+
+      /// \brief Flag to indicate whether to update the parent axis visual
+      protected: bool updateParentAxis = false;
+
     };
 
     //////////////////////////////////////////////////
@@ -134,6 +173,43 @@ namespace ignition
     void BaseJointVisual<T>::PreRender()
     {
       T::PreRender();
+
+      if (this->ParentAxisVisual())
+        this->ParentAxisVisual()->PreRender();
+
+      if (this->dirtyJointType)
+      {
+        this->UpdateAxis(this->axis, this->xyzExpressedIn);
+        this->UpdateParentAxis(this->parentAxis,
+            this->parentXyzExpressedIn);
+
+        this->dirtyJointType = false;
+      }
+
+      if (this->dirtyAxis)
+      {
+        this->CreateAxis();
+        this->dirtyAxis = false;
+      }
+
+      if (this->parentDirtyAxis)
+      {
+        this->CreateParentAxis();
+        this->parentDirtyAxis = false;
+      }
+
+      if (this->updateAxis)
+      {
+        this->updateAxis =
+            !this->UpdateAxis(this->axis, this->xyzExpressedIn);
+      }
+
+      if (this->updateParentAxis)
+      {
+        this->updateParentAxis =
+            !this->UpdateParentAxis(this->parentAxis,
+                this->parentXyzExpressedIn);
+      }
     }
 
     //////////////////////////////////////////////////
@@ -148,18 +224,19 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseJointVisual<T>::CreateAxis(
+    void BaseJointVisual<T>::SetAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn)
     {
-      if (!this->HasParent())
-      {
-        ignlog << "Joint visual with name " << this->Name() <<
-            " isn't attached to a parent visual" <<
-            " so the current axis won't be shown.\n";
-        return;
-      }
+      this->axis = _axis;
+      this->xyzExpressedIn = _xyzExpressedIn;
+      this->dirtyAxis = true;
+    }
 
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseJointVisual<T>::CreateAxis()
+    {
       if (this->arrowVisual)
       {
         this->arrowVisual->Destroy();
@@ -171,23 +248,34 @@ namespace ignition
       this->arrowVisual->SetLocalPosition(0, 0, 0);
       this->arrowVisual->SetLocalRotation(0, 0, 0);
       this->AddChild(this->arrowVisual);
-      this->UpdateAxis(_axis, _xyzExpressedIn);
 
+      this->updateAxis = true;
       this->ScaleToChild();
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseJointVisual<T>::CreateParentAxis(
+    void BaseJointVisual<T>::SetParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn,
           const std::string &_parentName)
     {
-      if (!this->Scene()->HasNodeName(_parentName))
+      this->parentAxis = _axis;
+      this->parentXyzExpressedIn = _xyzExpressedIn;
+      this->jointParentName = _parentName;
+      this->parentDirtyAxis = true;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseJointVisual<T>::CreateParentAxis()
+    {
+      auto jointParentVis = this->Scene()->NodeByName(this->jointParentName);
+      if (jointParentVis == nullptr)
       {
-        ignlog << "Joint parent with name " << _parentName <<
-            " does not exist" <<
-            " so the parent axis won't be shown.\n";
+        ignlog << "Joint parent with name " << this->jointParentName
+               << " does not exist"
+               << " so the parent axis will not be shown\n";
         return;
       }
 
@@ -198,32 +286,45 @@ namespace ignition
       }
 
       this->parentAxisVis = this->Scene()->CreateJointVisual();
-      this->Scene()->NodeByName(_parentName)->AddChild(this->parentAxisVis);
+      jointParentVis->AddChild(this->parentAxisVis);
       this->parentAxisVis->SetType(this->Type());
-      this->parentAxisVis->CreateAxis(_axis, _xyzExpressedIn);
-      this->UpdateParentAxis(_axis, _xyzExpressedIn);
+      this->parentAxisVis->SetAxis(this->parentAxis,
+          this->parentXyzExpressedIn);
 
+      this->updateParentAxis = true;
       this->ScaleToChild();
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseJointVisual<T>::UpdateAxis(const ignition::math::Vector3d &_axis,
+    bool BaseJointVisual<T>::UpdateAxis(const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn)
     {
-      if (this->ArrowVisual())
+      if (this->ArrowVisual() && this->HasParent())
+      {
         this->UpdateAxisImpl(this->ArrowVisual(), _axis, _xyzExpressedIn);
+        return true;
+      }
+
+      return false;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseJointVisual<T>::UpdateParentAxis(
+    bool BaseJointVisual<T>::UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn)
     {
-      if (this->ParentAxisVisual())
+      if (this->ParentAxisVisual() &&
+          this->ParentAxisVisual()->ArrowVisual() &&
+          this->ParentAxisVisual()->HasParent())
+      {
         this->UpdateAxisImpl(this->ParentAxisVisual()->ArrowVisual(),
             _axis, _xyzExpressedIn);
+        return true;
+      }
+
+      return false;
     }
 
     //////////////////////////////////////////////////
@@ -327,6 +428,7 @@ namespace ignition
     void BaseJointVisual<T>::SetType(const JointVisualType _type)
     {
       this->jointVisualType = _type;
+      this->dirtyJointType = true;
     }
 
     //////////////////////////////////////////////////

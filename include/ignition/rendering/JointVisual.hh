@@ -74,7 +74,7 @@ namespace ignition
       /// \param[in] _axis Axis vector
       /// \param[in] _xyzExpressedIn Frame in which the axis vector is
       /// expressed.
-      public: virtual void CreateAxis(const ignition::math::Vector3d &_axis,
+      public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) = 0;
 
       /// \brief Create a parent axis for hinge2 and universal joint types
@@ -82,7 +82,8 @@ namespace ignition
       /// \param[in] _axis Axis vector
       /// \param[in] _xyzExpressedIn Frame in which the axis vector is
       /// expressed.
-      public: virtual void CreateParentAxis(
+      /// \param[in] _parentName Joint parent name
+      public: virtual void SetParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn,
           const std::string &_parentName) = 0;
@@ -91,7 +92,8 @@ namespace ignition
       /// \param[in] _axis Axis vector.
       /// \param[in] _xyzExpressedIn Frame in which the axis vector is
       /// expressed.
-      public: virtual void UpdateAxis(const ignition::math::Vector3d &_axis,
+      /// \return True if axis was updated else false
+      public: virtual bool UpdateAxis(const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) = 0;
 
       /// \brief Update the parent axis' arrow visual if it exists.
@@ -100,7 +102,8 @@ namespace ignition
       /// \param[in] _xyzExpressedIn Frame in which the axis vector is
       /// expressed.
       /// \param[in] _parentName Name of the joint parent
-      public: virtual void UpdateParentAxis(
+      /// \return True if parent axis was updated else false
+      public: virtual bool UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) = 0;
 

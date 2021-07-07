@@ -158,7 +158,7 @@ void main()
       color = vec4(backgroundColor, 1.0);
     }
   }
-  else if (length(point) < near + tolerance)
+  else if (point.x < near + tolerance)
   {
     if (isinf(min))
     {

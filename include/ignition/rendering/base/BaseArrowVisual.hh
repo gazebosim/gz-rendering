@@ -41,6 +41,9 @@ namespace ignition
       public: virtual ~BaseArrowVisual();
 
       // Documentation inherited.
+      protected: virtual void Destroy() override;
+
+      // Documentation inherited.
       public: virtual VisualPtr Head() const override;
 
       // Documentation inherited.
@@ -78,6 +81,20 @@ namespace ignition
     template <class T>
     BaseArrowVisual<T>::~BaseArrowVisual()
     {
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseArrowVisual<T>::Destroy()
+    {
+      if (this->Head())
+        this->Head()->Destroy();
+
+      if (this->Shaft())
+        this->Shaft()->Destroy();
+
+      if (this->Rotation())
+        this->Rotation()->Destroy();
     }
 
     //////////////////////////////////////////////////

@@ -87,6 +87,9 @@ namespace ignition
       // Documentation inherited
       public: virtual ArrowVisualPtr ArrowVisual() const override;
 
+      // Documentation inherited
+      public: virtual void SetVisible(bool _visible) override;
+
       /// \brief Implementation for updating an axis' arrow visual.
       /// \param[in] _arrowVisual Arrow visual to be updated.
       /// \param[in] _axis Axis vector.
@@ -229,19 +232,19 @@ namespace ignition
     template <class T>
     void BaseJointVisual<T>::Destroy()
     {
-      if (this->arrowVisual)
+      if (this->arrowVisual != nullptr)
       {
         this->arrowVisual->Destroy();
         this->arrowVisual.reset();
       }
 
-      if (this->axisVisual)
+      if (this->axisVisual != nullptr)
       {
         this->axisVisual->Destroy();
         this->axisVisual.reset();
       }
 
-      if (this->parentAxisVis)
+      if (this->parentAxisVis != nullptr)
       {
         this->parentAxisVis->Destroy();
         this->parentAxisVis.reset();
@@ -441,8 +444,8 @@ namespace ignition
       {
         double childSize =
             std::max(0.1, parentVisual->BoundingBox().Size().Length());
-        this->scaleToChild = ignition::math::Vector3d(childSize * 0.4,
-            childSize * 0.4, childSize * 0.4);
+        this->scaleToChild = ignition::math::Vector3d(childSize * 0.2,
+            childSize * 0.2, childSize * 0.2);
         this->SetLocalScale(this->scaleToChild);
         if (this->ParentAxisVisual())
           this->ParentAxisVisual()->SetLocalScale(this->scaleToChild);
@@ -476,6 +479,22 @@ namespace ignition
     ArrowVisualPtr BaseJointVisual<T>::ArrowVisual() const
     {
       return this->arrowVisual;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseJointVisual<T>::SetVisible(bool _visible)
+    {
+      T::SetVisible(_visible);
+
+      if (this->ArrowVisual())
+        this->ArrowVisual()->SetVisible(_visible);
+
+      if (this->ParentAxisVisual())
+        this->ParentAxisVisual()->SetVisible(_visible);
+
+      if (this->axisVisual)
+        this->axisVisual->SetVisible(_visible);
     }
     }
   }

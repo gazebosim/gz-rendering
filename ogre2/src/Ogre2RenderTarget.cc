@@ -173,7 +173,7 @@ void Ogre2RenderTarget::BuildCompositor()
 
       *rtvDef = *rt0Def;
 
-      const uint8_t fsaa = GetTargetFSAA();
+      const uint8_t fsaa = TargetFSAA();
       if (fsaa > 1u)
       {
         this->dataPtr->usingFsaa = true;
@@ -564,7 +564,7 @@ unsigned int Ogre2RenderTarget::GLIdImpl() const
 }
 
 //////////////////////////////////////////////////
-uint8_t Ogre2RenderTarget::GetTargetFSAA() const
+uint8_t Ogre2RenderTarget::TargetFSAA() const
 {
   // check if target fsaa is supported
   std::vector<unsigned int> fsaaLevels =
@@ -682,11 +682,11 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
 
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::UpdateRenderPassChain(
-    Ogre::CompositorWorkspace *_workspace, const std::string &_workspaceDefName,
-    const std::string &_baseNode, const std::string &_finalNode,
-    const std::vector<RenderPassPtr> &_renderPasses,
-    bool _recreateNodes, Ogre::TextureGpu *(*_ogreTextures)[2],
-    bool _isRenderWindow)
+    Ogre::CompositorWorkspace */*_workspace*/, const std::string &/*_workspaceDefName*/,
+    const std::string &/*_baseNode*/, const std::string &/*_finalNode*/,
+    const std::vector<RenderPassPtr> &/*_renderPasses*/,
+    bool /*_recreateNodes*/, Ogre::TextureGpu *(*/*_ogreTextures*/)[2],
+    bool /*_isRenderWindow*/)
 {
   ignwarn << "Warning: This Ogre2RenderTarget::UpdateRenderPassChain "
           << "overload is deprecated" << std::endl;

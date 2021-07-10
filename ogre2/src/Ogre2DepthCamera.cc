@@ -969,7 +969,6 @@ void Ogre2DepthCamera::PreRender()
       this->dataPtr->renderPasses,
       this->dataPtr->renderPassDirty,
       &this->dataPtr->ogreDepthTexture,
-      false,
       false);
 
   for (auto &pass : this->dataPtr->renderPasses)

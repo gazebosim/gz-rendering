@@ -1307,7 +1307,7 @@ void BaseScene::SetCameraPassCountPerGpuFlush(uint8_t /*_numPass*/)
 }
 
 //////////////////////////////////////////////////
-uint8_t BaseScene::GetCameraPassCountPerGpuFlush() const
+uint8_t BaseScene::CameraPassCountPerGpuFlush() const
 {
   return 0u;
 }

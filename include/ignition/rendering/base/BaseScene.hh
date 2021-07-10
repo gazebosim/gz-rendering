@@ -530,7 +530,7 @@ namespace ignition
             uint8_t _numPass) override;
 
       // Documentation inherited.
-      public: virtual uint8_t GetCameraPassCountPerGpuFlush() const override;
+      public: virtual uint8_t CameraPassCountPerGpuFlush() const override;
 
       // Documentation inherited.
       public: virtual bool LegacyAutoGpuFlush() const override;

@@ -1090,10 +1090,7 @@ namespace ignition
       /// \code
       ///   scene->PreRender();
       ///   for( auto& camera in cameras )
-      ///   {
-      ///     camera->PreRender();
       ///     camera->Render();
-      ///   }
       ///   for( auto& camera in cameras )
       ///     camera->PostRender();
       ///   scene->PostRender();
@@ -1186,7 +1183,7 @@ namespace ignition
       /// \return Value in range [0; 255].
       /// ALWAYS returns 0 for plugins that ignore
       /// SetCameraPassCountPerGpuFlush
-      public: virtual uint8_t GetCameraPassCountPerGpuFlush() const = 0;
+      public: virtual uint8_t CameraPassCountPerGpuFlush() const = 0;
 
       /// \brief Checks if SetCameraPassCountPerGpuFlush is 0
       /// \return True if Gazebo is using the old method (i.e. 0).

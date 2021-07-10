@@ -99,6 +99,9 @@ namespace ignition
             uint8_t _numPass) override;
 
       // Documentation inherited.
+      public: virtual uint8_t CameraPassCountPerGpuFlush() const override;
+
+      // Documentation inherited.
       public: virtual bool LegacyAutoGpuFlush() const override;
 
       /// \brief Get a pointer to the ogre scene manager
@@ -111,7 +114,7 @@ namespace ignition
       /// \cond PRIVATE
       /// \brief Certain functions like Ogre2Camera::VisualAt would
       /// need to call PreRender and PostFrame, which is very unintuitive
-      /// and use hostile.
+      /// and user-hostile.
       ///
       /// More over, it's likely that we don't want to advance the frame
       /// in those cases (e.g. particle FXs should not advance), but we

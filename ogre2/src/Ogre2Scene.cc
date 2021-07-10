@@ -319,11 +319,11 @@ void Ogre2Scene::FlushGpuCommandsOnly()
 
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
   auto hlmsManager = ogreRoot->getHlmsManager();
-  // Updating the compositor with all workspaces disables achieves our goal
+  // Updating the compositor with all workspaces disabled achieves our goal
   ogreCompMgr->_update(Ogre::SceneManagerEnumerator::getSingleton(),
                        hlmsManager);
 #else
-  // Updating the compositor with all workspaces disables achieves our goal
+  // Updating the compositor with all workspaces disabled achieves our goal
   ogreCompMgr->_update();
 #endif
 
@@ -352,6 +352,12 @@ void Ogre2Scene::EndFrame()
 void Ogre2Scene::SetCameraPassCountPerGpuFlush(uint8_t _numPass)
 {
   this->dataPtr->cameraPassCountPerGpuFlush = _numPass;
+}
+
+//////////////////////////////////////////////////
+uint8_t Ogre2Scene::CameraPassCountPerGpuFlush() const
+{
+  return this->dataPtr->cameraPassCountPerGpuFlush;
 }
 
 //////////////////////////////////////////////////

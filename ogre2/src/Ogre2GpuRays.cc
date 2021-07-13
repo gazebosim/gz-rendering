@@ -40,7 +40,6 @@
 #endif
 #include <Compositor/OgreCompositorManager2.h>
 #include <Compositor/OgreCompositorWorkspace.h>
-#include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
 #include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 #include <OgreDepthBuffer.h>
@@ -861,17 +860,14 @@ void Ogre2GpuRays::Setup1stPass()
 
     Ogre::CompositorTargetDef *colorTargetDef =
         nodeDef->addTargetPass("colorTexture");
-    colorTargetDef->setNumPasses(2);
+    colorTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          colorTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           colorTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // set camera custom visibility mask when rendering laser retro
       passScene->mVisibilityMask = 0x01000000 &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
@@ -879,21 +875,17 @@ void Ogre2GpuRays::Setup1stPass()
 
     Ogre::CompositorTargetDef *depthTargetDef =
         nodeDef->addTargetPass("depthTexture");
-    depthTargetDef->setNumPasses(2);
+    depthTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          depthTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(
-        this->FarClipPlane(),
-        this->FarClipPlane(),
-        this->FarClipPlane()));
-
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           depthTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue(
+                                      this->FarClipPlane(),
+                                      this->FarClipPlane(),
+                                      this->FarClipPlane()));
       // depth texture does not contain particles
       passScene->mVisibilityMask = 0x01000000 &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
@@ -901,20 +893,17 @@ void Ogre2GpuRays::Setup1stPass()
 
     Ogre::CompositorTargetDef *particleDepthTargetDef =
         nodeDef->addTargetPass("particleDepthTexture");
-    particleDepthTargetDef->setNumPasses(2);
+    particleDepthTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          particleDepthTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(
-        this->FarClipPlane(),
-        this->FarClipPlane(),
-        this->FarClipPlane()));
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           particleDepthTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue(
+                                      this->FarClipPlane(),
+                                      this->FarClipPlane(),
+                                      this->FarClipPlane()));
       // set camera custom visibility mask when rendering laser retro
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
@@ -922,17 +911,14 @@ void Ogre2GpuRays::Setup1stPass()
 
     Ogre::CompositorTargetDef *particleTargetDef =
         nodeDef->addTargetPass("particleTexture");
-    particleTargetDef->setNumPasses(2);
+    particleTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          particleTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue::Black);
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           particleTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue::Black);
       // set camera custom visibility mask when rendering laser retro
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
@@ -941,18 +927,16 @@ void Ogre2GpuRays::Setup1stPass()
     // rt_input target - converts depth to range
     Ogre::CompositorTargetDef *inputTargetDef =
         nodeDef->addTargetPass("rt_input");
-    inputTargetDef->setNumPasses(2);
+    inputTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          inputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(
-        this->dataMaxVal, 0, 1.0));
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
           inputTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+      passQuad->setAllClearColours(Ogre::ColourValue(
+                                     this->dataMaxVal, 0, 1.0));
+
       passQuad->mMaterialName = this->dataPtr->matFirstPass->getName();
       passQuad->addQuadTextureSource(0, "depthTexture");
       passQuad->addQuadTextureSource(1, "colorTexture");
@@ -1156,17 +1140,15 @@ void Ogre2GpuRays::Setup2ndPass()
     {
       Ogre::CompositorTargetDef *inputTargetDef =
           nodeDef->addTargetPass("rt_input");
-      inputTargetDef->setNumPasses(2);
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          inputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(
-        this->dataMaxVal, 0, 1.0));
+      inputTargetDef->setNumPasses(1);
+
       // quad pass - sample from cubemap textures
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
           inputTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+      passQuad->setAllClearColours(Ogre::ColourValue(
+                                     this->dataMaxVal, 0, 1.0));
       passQuad->mMaterialName = this->dataPtr->matSecondPass->getName();
     }
     nodeDef->mapOutputChannel(0, "rt_input");

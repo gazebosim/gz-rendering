@@ -92,7 +92,6 @@
 #include <Compositor/OgreCompositorShadowNode.h>
 #include <Compositor/OgreCompositorWorkspace.h>
 #include <Compositor/OgreCompositorWorkspaceListener.h>
-#include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
 #include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassScene.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>

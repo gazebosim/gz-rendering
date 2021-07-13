@@ -115,8 +115,35 @@ namespace ignition
       /// \see Camera::SetShadowsNodeDefDirty
       public: void SetShadowsNodeDefDirty();
 
-      /// \brief Get a pointer to the ogre render target
+      /// \brief Returns the FSAA to use based on supported specs by HW
+      /// and value specified in Ogre2RenderTarget::AntiAliasing
+      /// \return Value in range [1; 256). 1 means no antialiasing.
+      protected: uint8_t TargetFSAA() const;
+
+      /// \brief Get a pointer to the ogre render target containing
+      /// the results of the render (implemented separately
+      /// to avoid breaking ABI of the pure virtual function)
+      protected: Ogre::TextureGpu *RenderTargetImpl() const;
+
+      /// \brief Get a pointer to the ogre render target containing
+      /// the results of the render
       public: virtual Ogre::TextureGpu *RenderTarget() const = 0;
+
+      /// \brief Returns true if this is a render window
+      /// TODO(anyone): this function should be virtual.
+      /// We didn't do it to preserve ABI.
+      /// Look in commit history for '#Ogre2IsRenderWindowABI' to
+      /// see changes made and revert
+      public: bool IsRenderWindow() const;
+
+      // Documentation inherited
+      public: unsigned int GLIdImpl() const;
+
+      /// \brief Destroy the render texture
+      protected: void DestroyTargetImpl();
+
+      /// \brief Build the render texture
+      protected: void BuildTargetImpl();
 
       /// \brief Get visibility mask for the viewport associated with this
       /// render target
@@ -133,7 +160,10 @@ namespace ignition
           Ogre::CompositorWorkspace *_workspace,
           const std::string &_workspaceDefName,
           const std::string &_baseNode, const std::string &_finalNode,
-          const std::vector<RenderPassPtr> &_renderPasses, bool _recreateNodes);
+          const std::vector<RenderPassPtr> &_renderPasses,
+          bool _recreateNodes,
+          Ogre::TextureGpu *(*_ogreTextures)[2],
+          bool _isRenderWindow);
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
@@ -143,9 +173,6 @@ namespace ignition
 
       /// \brief Update the render pass chain
       protected: virtual void UpdateRenderPassChain();
-
-      /// \brief Deprecated. Use Ogre2Scene:UpdateShadowNode instead
-      protected: void IGN_DEPRECATED(5) UpdateShadowNode();
 
       /// \brief Implementation of the Rebuild function
       protected: virtual void RebuildImpl() override;
@@ -229,7 +256,9 @@ namespace ignition
       // Documentation inherited
       public: virtual unsigned int GLId() const override;
 
-      // Documentation inherited.
+      // Documentation inherited
+      // TODO(anyone): this function should be removed.
+      // We didn't do it to preserve ABI.
       public: virtual Ogre::TextureGpu *RenderTarget() const override;
 
       // Documentation inherited.
@@ -240,9 +269,6 @@ namespace ignition
 
       /// \brief Build the render texture
       protected: virtual void BuildTarget();
-
-      /// \brief Pointer to the internal ogre render texture object
-      protected: Ogre::TextureGpu *ogreTexture = nullptr;
 
       /// \brief Make scene our friend so it can create a ogre2 render texture
       private: friend class Ogre2Scene;
@@ -260,6 +286,12 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void Destroy() override;
+
+      // TODO(anyone): this function should be virtual.
+      // We didn't do it to preserve ABI.
+      // Looks in commit history for '#Ogre2IsRenderWindowABI' to
+      // see changes made and revert
+      public: bool IsRenderWindow() const;
 
       // Documentation inherited.
       public: virtual Ogre::TextureGpu *RenderTarget() const override;

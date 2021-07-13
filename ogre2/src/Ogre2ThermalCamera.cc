@@ -730,17 +730,14 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     nodeDef->setNumTargetPass(2);
     Ogre::CompositorTargetDef *colorTargetDef =
         nodeDef->addTargetPass("colorTexture");
-    colorTargetDef->setNumPasses(2);
+    colorTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          colorTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           colorTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // thermal camera should not see particles
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
@@ -749,17 +746,15 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     // rt_input target - converts to thermal
     Ogre::CompositorTargetDef *inputTargetDef =
         nodeDef->addTargetPass("rt_input");
-    inputTargetDef->setNumPasses(2);
+    inputTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          inputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->setAllClearColours(Ogre::ColourValue(this->ambient, 0, 1.0));
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
           inputTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+      passQuad->setAllClearColours(Ogre::ColourValue(this->ambient, 0, 1.0));
+
       passQuad->mMaterialName = this->dataPtr->thermalMaterial->getName();
       passQuad->addQuadTextureSource(0, "depthTexture");
       passQuad->addQuadTextureSource(1, "colorTexture");

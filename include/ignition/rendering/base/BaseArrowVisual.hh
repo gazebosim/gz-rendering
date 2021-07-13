@@ -87,13 +87,13 @@ namespace ignition
     template <class T>
     void BaseArrowVisual<T>::Destroy()
     {
-      for (unsigned int i = 0; i < this->ChildCount(); ++i)
-      {
-        auto visual = std::dynamic_pointer_cast<rendering::Visual>(
-              this->ChildByIndex(i));
-        if (visual)
-          arrow->Destroy();
-      }
+      auto shaft = this->Shaft();
+      auto head = this->Head();
+      auto rotation = this->Rotation();
+
+      shaft->Destroy();
+      head->Destroy();
+      rotation->Destroy();
     }
 
     //////////////////////////////////////////////////

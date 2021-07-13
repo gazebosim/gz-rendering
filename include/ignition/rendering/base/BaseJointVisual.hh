@@ -226,6 +226,7 @@ namespace ignition
 
       this->axisVisual = this->Scene()->CreateAxisVisual();
       this->AddChild(this->axisVisual);
+      this->SetInheritScale(false);
     }
 
     /////////////////////////////////////////////////
@@ -249,6 +250,10 @@ namespace ignition
         this->parentAxisVis->Destroy();
         this->parentAxisVis.reset();
       }
+
+      this->dirtyJointType = false;
+      this->dirtyAxis = false;
+      this->dirtyParentAxis = false;
     }
 
     /////////////////////////////////////////////////

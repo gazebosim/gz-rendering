@@ -171,10 +171,11 @@ namespace ignition
       public: virtual void PreRender() override;
 
       // Documentation inherited
-      public: virtual void SetUserData(const std::string &_key, Variant _value);
+      public: virtual void SetUserData(const std::string &_key, Variant _value)
+        override;
 
       // Documentation inherited
-      public: virtual Variant UserData(const std::string &_key) const;
+      public: virtual Variant UserData(const std::string &_key) const override;
 
       protected: virtual void PreRenderChildren();
 

@@ -123,10 +123,10 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
   /// \brief Pixel Box to copy render texture data to a buffer
   public: Ogre::PixelBox *pixelBox {nullptr};
 
-  /// \brief buffer to store render texture data & to be sent to listeners
+  /// \brief Buffer to store render texture data & to be sent to listeners
   public: uint8_t *buffer = nullptr;
 
-  /// \brief dummy render texture to set image dims
+  /// \brief Dummy render texture to set image dims
   public: Ogre2RenderTexturePtr dummyTexture {nullptr};
 
   /// \brief New BoundingBox Frame Event to notify listeners with new data
@@ -137,16 +137,17 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
   public: Ogre::PixelFormat format = Ogre::PF_R8G8B8;
 
   /// \brief map ogreId id to bounding box
-  /// key: ogreId, value: bounding box contains max & min boundaries
+  /// Key: ogreId, value: bounding box contains max & min boundaries
   public: std::map<uint32_t, BoundingBox *> boundingboxes;
 
-  /// \brief keep track of visible bounding boxes (used in filtering)
-  /// key: ogreId, value: label id
+  /// \brief Keep track of the visible bounding boxes (used in filtering)
+  /// Key: ogreId, value: label id
   public: std::map<uint32_t, uint32_t> visibleBoxesLabel;
 
-  /// \brief output bounding boxes to nofity listeners
+  /// \brief Output bounding boxes to nofity listeners
   public: std::vector<BoundingBox> output_boxes;
 
+  /// \brief Bounding Box type
   public: BoundingBoxType type {BoundingBoxType::VisibleBox2D};
 };
 
@@ -484,12 +485,12 @@ void Ogre2BoundingBoxCamera::PostRender()
   if (this->dataPtr->newBoundingBoxes.ConnectionCount() == 0)
     return;
 
-  std::vector<BoundingBox> boxes;
-
   if (this->dataPtr->type == BoundingBoxType::VisibleBox2D)
     this->VisibleBoundingBoxes();
   else if (this->dataPtr->type == BoundingBoxType::FullBox2D)
     this->FullBoundingBoxes();
+  else if (this->dataPtr->type == BoundingBoxType::Box3D)
+    this->BoundingBoxes3D();
 
   for (auto box : this->dataPtr->boundingboxes)
     delete box.second;
@@ -500,6 +501,120 @@ void Ogre2BoundingBoxCamera::PostRender()
   this->dataPtr->newBoundingBoxes(this->dataPtr->output_boxes);
 }
 
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCamera::MarkVisibleBoxes()
+{
+  uint32_t width = this->ImageWidth();
+  uint32_t height = this->ImageHeight();
+  uint32_t channelCount = 3;
+
+  // Filter bounding boxes by looping over all pixels in ogre ids map
+  for (uint32_t y = 0; y < height; y++)
+  {
+    for (uint32_t x = 0; x < width; x++)
+    {
+      auto index = (y * width + x) * channelCount;
+
+      uint32_t label = this->dataPtr->buffer[index + 2];
+
+      if (label != this->dataPtr->materialSwitcher->backgroundLabel)
+      {
+        // get the ogre id encoded in 16 bit value
+        uint32_t ogreId1 = this->dataPtr->buffer[index + 1];
+        uint32_t ogreId2 = this->dataPtr->buffer[index + 0];
+        uint32_t ogreId = ogreId1 * 256 + ogreId2;
+
+        // mark the ogreId as visible not to filter its bbox
+        if (!this->dataPtr->visibleBoxesLabel.count(ogreId))
+          this->dataPtr->visibleBoxesLabel[ogreId] = label;
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCamera::BoundingBoxes3D()
+{
+  auto viewMatrix = this->ogreCamera->getViewMatrix();
+
+  // used to filter the hidden boxes
+  this->MarkVisibleBoxes();
+
+  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
+      Ogre::ItemFactory::FACTORY_TYPE_NAME);
+  while (itor.hasMoreElements())
+  {
+    Ogre::MovableObject *object = itor.peekNext();
+    Ogre::Item *item = static_cast<Ogre::Item *>(object);
+    Ogre::MeshPtr mesh = item->getMesh();
+
+    uint32_t ogreId = item->getId();
+
+    // Skip the items which is hidden from the ogreId map
+    if (!this->dataPtr->visibleBoxesLabel.count(ogreId))
+    {
+      itor.moveNext();
+      continue;
+    }
+
+    // get attached node
+    Ogre::Node *node = item->getParentNode();
+
+    // World rotation
+    Ogre::Quaternion oreintation = node->getOrientation();
+
+    // Box size (width, height, length)
+    Ogre::Vector3 scale = node->getScale();
+    Ogre::Vector3 size = item->getLocalAabb().getSize();
+    size *= scale;
+
+    Ogre::Aabb aabb = item->getWorldAabb();
+
+    // filter the boxes outside the camera frustum
+    Ogre::AxisAlignedBox worldAabb;
+    worldAabb.setExtents(aabb.getMinimum(), aabb.getMaximum());
+    if (!this->ogreCamera->isVisible(worldAabb))
+    {
+      itor.moveNext();
+      continue;
+    }
+
+    BoundingBox *box = new BoundingBox(BoundingBoxType::Box3D);
+
+    // Position in world coord
+    Ogre::Vector3 position = worldAabb.getCenter();
+    // Position in camera coord
+    Ogre::Vector3 viewPosition = viewMatrix * position;
+
+    // Convert to ignition::math
+    box->center = Ogre2Conversions::Convert(viewPosition);
+    box->size = Ogre2Conversions::Convert(size);
+
+    // Compute the rotation of the box from its world rotation & view matrix
+    auto worldCameraRotation = Ogre2Conversions::Convert(
+      viewMatrix.extractQuaternion());
+    auto bodyWorldRotation = Ogre2Conversions::Convert(oreintation);
+
+    // Body to camera rotation = body_world * world_camera
+    auto bodyCameraRotation = worldCameraRotation * bodyWorldRotation;
+    box->oreintation = bodyCameraRotation;
+
+    this->dataPtr->boundingboxes[ogreId] = box;
+    itor.moveNext();
+  }
+
+  // Set boxes labels
+  for (auto box : this->dataPtr->boundingboxes)
+  {
+    uint32_t ogreId = box.first;
+    uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
+
+    box.second->label = label;
+    this->dataPtr->output_boxes.push_back(*box.second);
+  }
+}
+
+/////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
 {
   uint32_t width = this->ImageWidth();
@@ -584,34 +699,11 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
   }
 }
 
+/////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::FullBoundingBoxes()
 {
-  uint32_t width = this->ImageWidth();
-  uint32_t height = this->ImageHeight();
-  uint32_t channelCount = 3;
-
-  // Filter bounding boxes
-  for (uint32_t y = 0; y < height; y++)
-  {
-    for (uint32_t x = 0; x < width; x++)
-    {
-      auto index = (y * width + x) * channelCount;
-
-      uint32_t label = this->dataPtr->buffer[index + 2];
-
-      if (label != this->dataPtr->materialSwitcher->backgroundLabel)
-      {
-        // get the ogre id encoded in 16 bit value
-        uint32_t ogreId1 = this->dataPtr->buffer[index + 1];
-        uint32_t ogreId2 = this->dataPtr->buffer[index + 0];
-        uint32_t ogreId = ogreId1 * 256 + ogreId2;
-
-        // mark the ogreId as visible not to filter its bbox
-        if (!this->dataPtr->visibleBoxesLabel.count(ogreId))
-          this->dataPtr->visibleBoxesLabel[ogreId] = label;
-      }
-    }
-  }
+  // used to filter the hidden boxes
+  this->MarkVisibleBoxes();
 
   Ogre::Matrix4 viewMatrix = this->ogreCamera->getViewMatrix();
   Ogre::Matrix4 projMatrix = this->ogreCamera->getProjectionMatrix();
@@ -644,13 +736,13 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     Ogre::AxisAlignedBox worldAabb;
     worldAabb.setExtents(aabb.getMinimum(), aabb.getMaximum());
 
+    // filter the boxes outside the camera frustum
     if (!this->ogreCamera->isVisible(worldAabb))
     {
       itor.moveNext();
       continue;
     }
 
-    // this->ogreCamera.in
     Ogre::Vector3 minVertex;
     Ogre::Vector3 maxVertex;
 
@@ -793,7 +885,7 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
   // 3D box
   if (_box.type == BoundingBoxType::Box3D)
   {
-
+    // TODO(Amr) draw 3D box on the image
     return;
   }
 

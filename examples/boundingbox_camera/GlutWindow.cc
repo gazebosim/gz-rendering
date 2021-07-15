@@ -30,8 +30,10 @@
 #endif
 
 #include <mutex>
+#include <fstream>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Image.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/RayQuery.hh>
@@ -56,6 +58,8 @@ ir::CameraPtr g_camera;
 ir::BoundingBoxCameraPtr g_camera_bbox;
 ir::ImagePtr g_image;
 ignition::common::ConnectionPtr g_connection;
+std::vector<ir::BoundingBox> g_boxes;
+int g_counter = 0;
 
 bool g_initContext = false;
 
@@ -272,19 +276,94 @@ void idleCB()
 }
 
 //////////////////////////////////////////////////
+bool SaveImage(const uint8_t *_data)
+{
+  std::string savePath = "save";
+  uint width = g_camera->ImageWidth();
+  uint height = g_camera->ImageHeight();
+
+  // Attempt to create the directory if it doesn't exist
+  if (!ignition::common::isDirectory(savePath))
+  {
+    if (!ignition::common::createDirectories(savePath))
+      return false;
+  }
+
+  std::string filename = "image" + std::to_string(g_counter) + ".png";
+
+  ignition::common::Image localImage;
+  localImage.SetFromData(_data, width, height, ignition::common::Image::RGB_INT8);
+
+  localImage.SavePNG(ignition::common::joinPaths(savePath, filename));
+  return true;
+}
+
+void SaveBoxes(std::vector<ir::BoundingBox> &boxes)
+{
+  std::string savePath = "boxes";
+
+  // Attempt to create the directory if it doesn't exist
+  if (!ignition::common::isDirectory(savePath))
+  {
+    if (!ignition::common::createDirectories(savePath))
+      return;
+  }
+
+  std::string filename = savePath + "/boxes" + std::to_string(g_counter) + ".txt";
+  std::ofstream file(filename);
+
+  for (auto box : boxes)
+  {
+    // box.oreintation.Euler)
+    auto x = std::to_string(box.center.X());
+    auto y = std::to_string(box.center.Y());
+    auto z = std::to_string(box.center.Z());
+
+    auto w = std::to_string(box.size.X());
+    auto h = std::to_string(box.size.Y());
+    auto l = std::to_string(box.size.Z());
+
+    auto roll = std::to_string(box.oreintation.Roll());
+    auto pitch = std::to_string(box.oreintation.Pitch());
+    auto yaw = std::to_string(box.oreintation.Yaw());
+
+    std::string sep = " ";
+    std::string boxString = x + sep + y + sep + z + sep + w + sep + h + sep + l + sep +
+                            roll + sep + pitch + sep + yaw;
+
+    file << boxString + sep + '\n';
+  }
+  file.close();
+}
+
+//////////////////////////////////////////////////
 void keyboardCB(unsigned char _key, int, int)
 {
   if (_key == KEY_ESC || _key == 'q' || _key == 'Q')
   {
     exit(0);
   }
+  else if (_key == 's' || _key == 'S')
+  {
+    // Save
+    unsigned char *data = g_image->Data<unsigned char>();
+
+    SaveImage(data);
+    SaveBoxes(g_boxes);
+    ++g_counter;
+
+    std::cout << " Saved sample " << g_counter << std::endl;
+  }
 }
+
 //////////////////////////////////////////////////
 void OnNewBoundingBoxes(const std::vector<ir::BoundingBox> &boxes)
 {
   unsigned char *data = g_image->Data<unsigned char>();
   for (auto box : boxes)
     g_camera_bbox->DrawBoundingBox(data, box);
+
+  g_boxes = boxes;
 }
 
 //////////////////////////////////////////////////

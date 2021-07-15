@@ -102,7 +102,7 @@ namespace ignition
 
       /// \brief Draw a bounding box on the givin image in green color
       /// \param[in] data buffer contains the image data
-      /// \param[in] box bounding box to draw
+      /// \param[in] box bounding box to be drawn
       public: virtual void DrawBoundingBox(unsigned char *_data,
         BoundingBox &_box) = 0;
     };

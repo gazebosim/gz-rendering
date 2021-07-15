@@ -81,22 +81,18 @@ namespace ignition
       // Documentation inherited
       public: virtual void PostRender() override;
 
-      /// \brief Get the BoundingBox image buffer
-      /// \return buffer that holds BoundingBox data
+      // Documentation inherited
       public: virtual std::vector<BoundingBox> BoundingBoxData() const override;
 
-      /// \brief Subscribe to new BoundingBox frame event
-      /// \param[in] _subscriber callback listener, called on each new frame
+      // Documentation inherited
       public: virtual ignition::common::ConnectionPtr
         ConnectNewBoundingBoxes(
           std::function<void(const std::vector<BoundingBox> &)>) override;
 
-      /// \brief Set BoundingBox Type (Full / Visible)
-      /// \param[in] _type BoundingBox Type (Full / Visible)
+      // Documentation inherited
       public: virtual void SetBoundingBoxType(BoundingBoxType _type) override;
 
-      /// \brief Get the BoundingBox Type (Full / Visible)
-      /// \return BoundingBox Type (Full / Visible)
+      // Documentation inherited
       public: virtual BoundingBoxType Type() override;
 
       /// \brief Create texture to hold ogre Ids to calculate the boundaries
@@ -114,13 +110,14 @@ namespace ignition
       /// \brief Get the full bounding boxes by projecting all mesh vertices
       /// of each object then get the min & max of x & y to get the full bbox
       /// check the visibility by looping over pixels of the ogre Ids map
-      /// \param[inout] boxes bounding boxes output vector
       public: virtual void FullBoundingBoxes();
 
       /// \brief Get the visible bounding boxes by looping over pixels of
       /// the ogre Ids map, to get the boundaries of each unique ogre Id mask
-      /// \param[inout] boxes bounding boxes output vector
       public: virtual void VisibleBoundingBoxes();
+
+      /// \brief Get the 3D bounding boxes after checking their visiblity
+      public: virtual void BoundingBoxes3D();
 
       /// \brief Get minimal bounding box of the mesh by projecting the 3d
       /// vertices of the vertex buffer to 2d then get the min & max of x & y
@@ -154,6 +151,10 @@ namespace ignition
       /// \param[inout] maxVertex max vertex in clip coord to screen coord
       public: virtual void ConvertToScreenCoord(Ogre::Vector3 &minVertex,
           Ogre::Vector3 &maxVertex);
+
+      /// \brief Mark the visible boxes by checking the ogre ids map and mark
+      /// the ogre id which appears in the map.
+      public: virtual void MarkVisibleBoxes();
 
       /// \brief Pointer to the ogre camera
       protected: Ogre::Camera *ogreCamera;

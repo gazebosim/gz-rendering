@@ -157,11 +157,11 @@ void buildScene(ScenePtr _scene)
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(5, 8, 1);
   plane->SetLocalPosition(3, 0, -0.5);
-  // plane->SetUserData("label", 255);
+  plane->SetUserData("label", 255);
   root->AddChild(plane);
 
   // create a mesh
-  auto duck = createDuck(_scene, Vector3d(3, 0, 0), skyBlue);
+  auto duck = createDuck(_scene, Vector3d(5, 0, 0), skyBlue);
   root->AddChild(duck);
 
   // create a sphere1
@@ -172,14 +172,17 @@ void buildScene(ScenePtr _scene)
   auto sphere2 = createSphere(_scene, Vector3d(5, 4, 2), green);
   root->AddChild(sphere2);
 
-  // create box
-  auto box1 = createBox(_scene, Vector3d(3, 1.5, 0), blue,
+  // create boxes
+  auto box1 = createBox(_scene, Vector3d(3, 2, 0), blue,
     Quaterniond(0, 0, 0.7));
   root->AddChild(box1);
 
-  auto box2 = createBox(_scene, Vector3d(2, -1, 1), blue,
-    Quaterniond(0, 0.3, 0.7));
+  auto box2 = createBox(_scene, Vector3d(2, -1, 1), blue);
+  box2->SetLocalScale(1.2);
   root->AddChild(box2);
+
+  auto box3 = createBox(_scene, Vector3d(6, -3, 1), blue);
+  root->AddChild(box3);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
@@ -202,9 +205,7 @@ void buildScene(ScenePtr _scene)
   boundingboxCamera->SetImageFormat(camera->ImageFormat());
   boundingboxCamera->SetAspectRatio(camera->AspectRatio());
   boundingboxCamera->SetHFOV(camera->HFOV());
-
-  // Bounding box type (VisibleBox or FullBox)
-  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::FullBox2D);
+  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::Box3D);
   root->AddChild(boundingboxCamera);
 }
 

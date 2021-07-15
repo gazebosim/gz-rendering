@@ -71,10 +71,10 @@ void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
   camera->DrawBoundingBox(data, box);
 
   // test the boundaries (min & max box's points) color
-  uint32_t minX = box.center.X() - box.size.X() / 2;
-  uint32_t minY = box.center.Y() - box.size.Y() / 2;
-  uint32_t maxX = box.center.X() + box.size.X() / 2;
-  uint32_t maxY = box.center.Y() + box.size.Y() / 2;
+  uint32_t minX = uint32_t(box.center.X() - box.size.X() / 2);
+  uint32_t minY = uint32_t(box.center.Y() - box.size.Y() / 2);
+  uint32_t maxX = uint32_t(box.center.X() + box.size.X() / 2);
+  uint32_t maxY = uint32_t(box.center.Y() + box.size.Y() / 2);
   int minIndex = (minY * width + minX) * channels;
   int maxIndex = (maxY * width + (maxX-1)) * channels;
 

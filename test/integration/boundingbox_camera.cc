@@ -41,6 +41,8 @@ class BoundingBoxCameraTest: public testing::Test,
 
   public: void SimpleBoxes(const std::string &_renderEngine);
 
+  public: void Oreinted3dBoxes(const std::string &_renderEngine);
+
   // Documentation inherited
   protected: void SetUp() override
   {
@@ -128,6 +130,24 @@ void BuildScene(rendering::ScenePtr scene)
   invisibleBox->SetLocalRotation(0, 0, 0);
   invisibleBox->SetUserData("label", 2);
   root->AddChild(invisibleBox);
+}
+
+/// \brief Build a scene with a single oreinted box for 3D test
+void Build3dBoxScene(rendering::ScenePtr scene)
+{
+  math::Vector3d leftPosition(3, 1.5, 0);
+  math::Vector3d rightPosition(3, -1.5, 0);
+
+  rendering::VisualPtr root = scene->RootVisual();
+
+  // create front box visual (the smaller box)
+  rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(math::Vector3d(3,0,0));
+  box->SetLocalRotation(0.1, 0, 0.7);
+  box->SetUserData("label", 1);
+  root->AddChild(box);
 }
 
 //////////////////////////////////////////////////
@@ -334,6 +354,85 @@ void BoundingBoxCameraTest::OccludedBoxes(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
+//////////////////////////////////////////////////
+void BoundingBoxCameraTest::Oreinted3dBoxes(
+  const std::string &_renderEngine)
+{
+  // Optix is not supported
+  if (_renderEngine.compare("optix") == 0)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' doesn't support depth cameras" << std::endl;
+    return;
+  }
+
+  // Setup ign-rendering with an empty scene
+  auto *engine = ignition::rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  Build3dBoxScene(scene);
+
+  // Create BoundingBox camera
+  auto camera = scene->CreateBoundingBoxCamera("BoundingBoxCamera");
+  ASSERT_NE(camera, nullptr);
+
+  camera->SetLocalPosition(0.0, 0.0, 0.0);
+  camera->SetLocalRotation(0.0, 0.0, 0.0);
+
+  unsigned int width = 320;
+  unsigned int height = 240;
+
+  camera->SetImageWidth(width);
+  camera->SetImageHeight(height);
+  camera->SetAspectRatio(1.333);
+  camera->SetHFOV(IGN_PI / 2);
+  camera->SetBoundingBoxType(BoundingBoxType::Box3D);
+
+  EXPECT_EQ(camera->ImageWidth(), width);
+  EXPECT_EQ(camera->ImageHeight(), height);
+
+  // add camera to the scene
+  scene->RootVisual()->AddChild(camera);
+
+  // Set a callback on the  camera sensor to get a BoundingBox camera frame
+  ignition::common::ConnectionPtr connection =
+    camera->ConnectNewBoundingBoxes(
+      std::bind(OnNewBoundingBoxes, std::placeholders::_1));
+  EXPECT_NE(nullptr, connection);
+
+  // Update once to create image
+  camera->Update();
+
+  g_mutex.lock();
+  EXPECT_EQ(g_boxes.size(), std::size_t(1));
+
+  BoundingBox box = g_boxes[0];
+
+  // accepted error with +/- in pixels in comparing the box coordinates
+  double margin_error = 0.1;
+
+  EXPECT_NEAR(box.center.X(), 0, margin_error);
+  EXPECT_NEAR(box.center.Y(), 0, margin_error);
+  EXPECT_NEAR(box.center.Z(), -3, margin_error);
+
+  EXPECT_NEAR(box.oreintation.Roll(), 1.6708, margin_error);
+  EXPECT_NEAR(box.oreintation.Pitch(), 0.870796, margin_error);
+  EXPECT_NEAR(box.oreintation.Yaw(), -3.14159, margin_error);
+
+  EXPECT_EQ(box.label, 1);
+  g_mutex.unlock();
+
+  // Clean up
+  engine->DestroyScene(scene);
+  ignition::rendering::unloadEngine(engine->Name());
+}
+
 TEST_P(BoundingBoxCameraTest, SimpleBoxes)
 {
   SimpleBoxes(GetParam());
@@ -342,6 +441,11 @@ TEST_P(BoundingBoxCameraTest, SimpleBoxes)
 TEST_P(BoundingBoxCameraTest, OccludedBoxes)
 {
   OccludedBoxes(GetParam());
+}
+
+TEST_P(BoundingBoxCameraTest, Oreinted3dBoxes)
+{
+  Oreinted3dBoxes(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(BoundingBoxCamera, BoundingBoxCameraTest,

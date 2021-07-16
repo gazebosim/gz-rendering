@@ -728,7 +728,8 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     // get attached node
     Ogre::Node *node = item->getParentNode();
 
-    Ogre::Vector3 position = node->getPosition();
+    // get the derived position
+    Ogre::Vector3 position = node->_getDerivedPositionUpdated();
     Ogre::Quaternion oreintation = node->getOrientation();
     Ogre::Vector3 scale = node->getScale();
 

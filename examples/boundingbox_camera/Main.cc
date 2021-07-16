@@ -186,13 +186,15 @@ void buildScene(ScenePtr _scene)
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.5);
+  camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
   camera->SetImageFormat(PixelFormat::PF_R8G8B8);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
+  camera->SetNearClipPlane(0.001);
+  camera->SetFarClipPlane(1000);
   root->AddChild(camera);
 
   BoundingBoxCameraPtr boundingboxCamera =
@@ -205,7 +207,9 @@ void buildScene(ScenePtr _scene)
   boundingboxCamera->SetImageFormat(camera->ImageFormat());
   boundingboxCamera->SetAspectRatio(camera->AspectRatio());
   boundingboxCamera->SetHFOV(camera->HFOV());
-  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::Box3D);
+  boundingboxCamera->SetNearClipPlane(camera->NearClipPlane());
+  boundingboxCamera->SetFarClipPlane(camera->FarClipPlane());
+  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::FullBox2D);
   root->AddChild(boundingboxCamera);
 }
 

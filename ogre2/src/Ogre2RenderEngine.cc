@@ -327,7 +327,7 @@ void Ogre2RenderEngine::CreateLogger()
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
-  this->ogreLogManager->createLog(logPath, true, false, false);
+  this->ogreLogManager->createLog(logPath, true, true, false);
 }
 
 //////////////////////////////////////////////////

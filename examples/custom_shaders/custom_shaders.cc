@@ -48,7 +48,7 @@ const std::string RESOURCE_PATH =
 int main()
 {
   // Initialize ignition::rendering
-  auto *engine = ignition::rendering::engine("ogre");
+  auto *engine = ignition::rendering::engine("ogre2");
   if (!engine)
   {
     std::cerr << "Failed to load ogre\n";

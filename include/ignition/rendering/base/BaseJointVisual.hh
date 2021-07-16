@@ -56,38 +56,50 @@ namespace ignition
       // Documentation inherited.
       protected: virtual void Destroy() override;
 
-      // Documentation inherited
+      // Documentation inherited.
       public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) override;
 
-      // Documentation inherited
+      // Documentation inherited.
+      public: virtual ignition::math::Vector3d Axis() const override;
+
+      // Documentation inherited.
+      public: virtual std::string AxisFrame() const override;
+
+      // Documentation inherited.
       public: virtual void SetParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn,
           const std::string &_parentName) override;
 
-      // Documentation inherited
+      // Documentation inherited.
+      public: virtual ignition::math::Vector3d ParentAxis() const override;
+
+      // Documentation inherited.
+      public: virtual std::string ParentAxisFrame() const override;
+
+      // Documentation inherited.
       public: virtual bool UpdateAxis(const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) override;
 
-      // Documentation inherited
+      // Documentation inherited.
       public: virtual bool UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn) override;
 
-      // Documentation inherited
+      // Documentation inherited.
       public: virtual void SetType(const JointVisualType _type) override;
 
-      // Documentation inherited
+      // Documentation inherited.
       public: virtual JointVisualType Type() const override;
 
-      // Documentation inherited
+      // Documentation inherited.
       public: virtual JointVisualPtr ParentAxisVisual() const override;
 
-      // Documentation inherited
+      // Documentation inherited.
       public: virtual ArrowVisualPtr ArrowVisual() const override;
 
-      // Documentation inherited
+      // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
       /// \brief Implementation for updating an axis' arrow visual.
@@ -99,10 +111,10 @@ namespace ignition
           const ignition::math::Vector3d &_axis,
           const std::string &_xyzExpressedIn);
 
-      /// \brief Helper function to create axis visual
+      /// \brief Helper function to create axis visual.
       protected: void CreateAxis();
 
-      /// \brief Helper function to create parent axis visual
+      /// \brief Helper function to create parent axis visual.
       protected: void CreateParentAxis();
 
       /// \brief Scale the joint visual according to the joint's child.
@@ -144,7 +156,7 @@ namespace ignition
       /// \brief Frame in which axis vector is expressed.
       protected: std::string xyzExpressedIn = "";
 
-      /// \brief Flag to indicate whether to update the axis visual
+      /// \brief Flag to update the axis visual.
       protected: bool updateAxis = false;
 
       /// \brief Parent axis vector.
@@ -154,10 +166,10 @@ namespace ignition
       /// \brief Frame in which parent axis vector is expressed.
       protected: std::string parentXyzExpressedIn = "";
 
-      /// \brief Joint parent name
+      /// \brief Joint parent name.
       protected: std::string jointParentName = "";
 
-      /// \brief Flag to indicate whether to update the parent axis visual
+      /// \brief Flag to update the parent axis visual.
       protected: bool updateParentAxis = false;
 
     };
@@ -463,6 +475,34 @@ namespace ignition
     {
       this->jointVisualType = _type;
       this->dirtyJointType = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Vector3d BaseJointVisual<T>::Axis() const
+    {
+      return this->axis;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseJointVisual<T>::AxisFrame() const
+    {
+      return this->xyzExpressedIn;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ignition::math::Vector3d BaseJointVisual<T>::ParentAxis() const
+    {
+      return this->parentAxis;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseJointVisual<T>::ParentAxisFrame() const
+    {
+      return this->parentXyzExpressedIn;
     }
 
     //////////////////////////////////////////////////

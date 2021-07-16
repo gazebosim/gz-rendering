@@ -186,10 +186,10 @@ void buildScene(ScenePtr _scene)
   JointVisualPtr jointVisual = _scene->CreateJointVisual();
   jointChildBox->AddChild(jointVisual);
   jointVisual->SetType(JointVisualType::JVT_REVOLUTE);
-  ignition::math::Vector3d axis2(0.0, 1.0, 0.0);
+  ignition::math::Vector3d axis2(1.0, 0.0, 0.0);
   jointVisual->SetAxis(axis2, "");
 
-  ignition::math::Vector3d axis1(0.0, 1.0, 0.0);
+  ignition::math::Vector3d axis1(1.0, 0.0, 0.0);
   jointVisual->SetParentAxis(axis1, "__model__", jointParentBox->Name());
 
   // create camera

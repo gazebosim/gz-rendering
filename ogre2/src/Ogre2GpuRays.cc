@@ -34,6 +34,7 @@
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
+#include "Ogre2IgnHlmsCustomizations.hh"
 #include "Ogre2ParticleNoiseListener.hh"
 
 namespace ignition
@@ -1090,8 +1091,15 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre2IgnHlmsCustomizations &hlmsCustomizations =
+      engine->HlmsCustomizations();
+
+  hlmsCustomizations.minDistanceClip =
+      static_cast<float>(this->NearClipPlane());
   this->UpdateRenderTarget1stPass();
   this->UpdateRenderTarget2ndPass();
+  hlmsCustomizations.minDistanceClip = -1;
 }
 
 //////////////////////////////////////////////////

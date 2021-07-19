@@ -31,14 +31,13 @@ namespace ignition
   {
     /// \brief Segmentation types for Semantic / Panpoptic segmentation
     enum class SegmentationType {
-
       /// \brief Pixels of same label from different items
       /// have the same color & id.
-      Semantic = 0,
+      SEMANTIC = 0,
 
       /// \brief Pixels of same label from different items, have different
       /// color & id. 1 channel for label id & 2 channels for instance id
-      Panoptic = 1
+      PANOPTIC = 1
     };
 
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {

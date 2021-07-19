@@ -140,7 +140,7 @@ namespace ignition
     template <class T>
     SegmentationType BaseSegmentationCamera<T>::GetSegmentationType()
     {
-      return SegmentationType::Semantic;
+      return SegmentationType::SEMANTIC;
     }
 
     //////////////////////////////////////////////////

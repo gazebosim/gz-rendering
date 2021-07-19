@@ -96,7 +96,7 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   private: math::Color backgroundColor {0, 0, 0};
 
   /// \brief Segmentation Type
-  private: SegmentationType type {SegmentationType::Semantic};
+  private: SegmentationType type {SegmentationType::SEMANTIC};
 
   /// \brief True to generate colored map
   /// False to generate labels ids map
@@ -251,7 +251,7 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label)
   // if the label is colored before return the color
   // don't check for taken colors in that case, all items
   // with the same label will have the same color
-  if (this->type == SegmentationType::Semantic &&
+  if (this->type == SegmentationType::SEMANTIC &&
     this->coloredLabel.count(_label))
     return color;
 
@@ -320,7 +320,7 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
         this->datablockMap[subItem] = datablock;
 
         // Material Switching
-        if (this->type == SegmentationType::Semantic)
+        if (this->type == SegmentationType::SEMANTIC)
         {
           if (this->isColoredMap)
           {
@@ -337,7 +337,7 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
               labelColor, labelColor, labelColor, 1.0));
           }
         }
-        else if (this->type == SegmentationType::Panoptic)
+        else if (this->type == SegmentationType::PANOPTIC)
         {
           if (!this->instancesCount.count(label))
             this->instancesCount[label] = 0;
@@ -772,7 +772,7 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
 
       int64_t label = colorToLabel[colorId];
 
-      if (this->dataPtr->materialSwitcher->type == SegmentationType::Semantic)
+      if (this->dataPtr->materialSwitcher->type == SegmentationType::SEMANTIC)
       {
         uint8_t label8bit = label % 256;
 
@@ -781,7 +781,7 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
         _labelBuffer[index + 2] = label8bit;
       }
       else if (this->dataPtr->materialSwitcher->type ==
-        SegmentationType::Panoptic)
+        SegmentationType::PANOPTIC)
       {
         // get the label and instance counts from the composite label id
         uint8_t label8bit = label / (256 * 256);

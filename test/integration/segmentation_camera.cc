@@ -147,9 +147,9 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   camera->SetBackgroundLabel(backgroundLabel);
   EXPECT_EQ(camera->BackgroundLabel(), backgroundLabel);
 
-  camera->SetSegmentationType(SegmentationType::Semantic);
+  camera->SetSegmentationType(SegmentationType::SEMANTIC);
 
-  EXPECT_EQ(camera->GetSegmentationType(), SegmentationType::Semantic);
+  EXPECT_EQ(camera->GetSegmentationType(), SegmentationType::SEMANTIC);
 
   camera->EnableColoredMap(false);
   EXPECT_FALSE(camera->IsColoredMap());
@@ -210,7 +210,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   g_mutex.unlock();
 
   // Instance/Panoptic  Test
-  camera->SetSegmentationType(SegmentationType::Panoptic);
+  camera->SetSegmentationType(SegmentationType::PANOPTIC);
 
   // Update once to create image
   camera->Update();

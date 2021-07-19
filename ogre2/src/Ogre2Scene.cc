@@ -59,6 +59,10 @@
 #include <OgreSceneManager.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
+#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
+#include <OgreHlms.h>
+#include <OgreHlmsManager.h>
+#endif
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -71,6 +75,17 @@ class ignition::rendering::Ogre2ScenePrivate
 
   /// \brief Flag to indicate if sky is enabled or not
   public: bool skyEnabled = false;
+
+  /// \brief Flag to alert the user its usage of PreRender/PostRender
+  /// is incorrect
+  public: bool frameUpdateStarted = false;
+
+  /// \brief Keeps track how many passes we've done so far and
+  /// compares it to cameraPassCountPerGpuFlush
+  public: uint32_t currNumCameraPasses = 0u;
+
+  /// \brief Flag to indicate if we should flush GPU very often (per camera)
+  public: uint8_t cameraPassCountPerGpuFlush = 6u;
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
@@ -142,6 +157,12 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
 //////////////////////////////////////////////////
 void Ogre2Scene::PreRender()
 {
+  IGN_ASSERT((this->LegacyAutoGpuFlush() ||
+              this->dataPtr->frameUpdateStarted == false),
+             "Scene::PreRender called again before calling Scene::PostRender. "
+             "See Scene::SetCameraPassCountPerGpuFlush for details");
+  this->dataPtr->frameUpdateStarted = true;
+
   if (this->ShadowsDirty())
   {
     // notify all render targets
@@ -174,6 +195,175 @@ void Ogre2Scene::PreRender()
   }
 
   BaseScene::PreRender();
+
+  if (!LegacyAutoGpuFlush())
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    engine->OgreRoot()->_fireFrameStarted();
+
+    this->ogreSceneManager->updateSceneGraph();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::PostRender()
+{
+  IGN_ASSERT((this->LegacyAutoGpuFlush() ||
+              this->dataPtr->frameUpdateStarted == true),
+             "Scene::PostRender called again before calling Scene::PreRender. "
+             "See Scene::SetCameraPassCountPerGpuFlush for details");
+  this->dataPtr->frameUpdateStarted = false;
+
+  if (dataPtr->cameraPassCountPerGpuFlush == 0u)
+  {
+    ignwarn << "Calling Scene::PostRender but "
+               "SetCameraPassCountPerGpuFlush is 0 (legacy mode for clients"
+               " not calling PostRender)."
+               "Read the documentation on SetCameraPassCountPerGpuFlush, "
+               "you very likely want to increase this number" << std::endl;
+  }
+  else
+  {
+    if (dataPtr->currNumCameraPasses > 0u)
+      FlushGpuCommandsAndStartNewFrame(0u, true);
+    else
+    {
+      // Every camera already calls FlushGpuCommandsAndStartNewFrame(false)
+      // right after rendering. So likely commands are already flushed.
+      //
+      // If we're here then we are only missing to perform the last step of
+      // FlushGpuCommandsAndStartNewFrame in order to start a new frame
+      EndFrame();
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::StartForcedRender()
+{
+  if (this->LegacyAutoGpuFlush() || !this->dataPtr->frameUpdateStarted)
+  {
+    this->ogreSceneManager->updateSceneGraph();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::EndForcedRender()
+{
+  dataPtr->currNumCameraPasses = 0;
+  FlushGpuCommandsOnly();
+
+  if (this->LegacyAutoGpuFlush() || !this->dataPtr->frameUpdateStarted)
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    auto ogreRoot = engine->OgreRoot();
+
+    auto itor = ogreRoot->getSceneManagerIterator();
+    while (itor.hasMoreElements())
+    {
+      Ogre::SceneManager *sceneManager = itor.getNext();
+      sceneManager->clearFrameData();
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::StartRendering()
+{
+  if (this->LegacyAutoGpuFlush())
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    engine->OgreRoot()->_fireFrameStarted();
+
+    this->ogreSceneManager->updateSceneGraph();
+  }
+  else
+  {
+    IGN_ASSERT( this->dataPtr->frameUpdateStarted == true,
+                "Started rendering without first calling Scene::PreRender. "
+                "See Scene::SetCameraPassCountPerGpuFlush for details");
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
+                                                  bool _startNewFrame)
+{
+  dataPtr->currNumCameraPasses += _numPasses;
+
+  if (dataPtr->currNumCameraPasses >= dataPtr->cameraPassCountPerGpuFlush ||
+      _startNewFrame)
+  {
+    dataPtr->currNumCameraPasses = 0;
+    FlushGpuCommandsOnly();
+
+    // Legacy mode requires to do EndFrame here every time
+    if (dataPtr->cameraPassCountPerGpuFlush == 0u || _startNewFrame)
+      EndFrame();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::FlushGpuCommandsOnly()
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  // The following code is equivalent to calling:
+  //  engine->OgreRoot()->renderOneFrame();
+  //
+  // however without updating SceneManager::updateSceneGraph
+  // because that has already been done; and most (all?) workspaces
+  // are updated manually (since they're created as disabled)
+
+#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
+  auto hlmsManager = ogreRoot->getHlmsManager();
+  // Updating the compositor with all workspaces disabled achieves our goal
+  ogreCompMgr->_update(Ogre::SceneManagerEnumerator::getSingleton(),
+                       hlmsManager);
+#else
+  // Updating the compositor with all workspaces disabled achieves our goal
+  ogreCompMgr->_update();
+#endif
+
+  ogreCompMgr->_swapAllFinalTargets();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::EndFrame()
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+
+  ogreRoot->_fireFrameRenderingQueued();
+
+  auto itor = ogreRoot->getSceneManagerIterator();
+  while (itor.hasMoreElements())
+  {
+      Ogre::SceneManager *sceneManager = itor.getNext();
+      sceneManager->clearFrameData();
+  }
+
+  ogreRoot->_fireFrameEnded();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::SetCameraPassCountPerGpuFlush(uint8_t _numPass)
+{
+  this->dataPtr->cameraPassCountPerGpuFlush = _numPass;
+}
+
+//////////////////////////////////////////////////
+uint8_t Ogre2Scene::CameraPassCountPerGpuFlush() const
+{
+  return this->dataPtr->cameraPassCountPerGpuFlush;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Scene::LegacyAutoGpuFlush() const
+{
+  return this->dataPtr->cameraPassCountPerGpuFlush == 0u;
 }
 
 //////////////////////////////////////////////////

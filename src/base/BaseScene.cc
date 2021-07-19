@@ -1297,6 +1297,28 @@ void BaseScene::PreRender()
 }
 
 //////////////////////////////////////////////////
+void BaseScene::PostRender()
+{
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetCameraPassCountPerGpuFlush(uint8_t /*_numPass*/)
+{
+}
+
+//////////////////////////////////////////////////
+uint8_t BaseScene::CameraPassCountPerGpuFlush() const
+{
+  return 0u;
+}
+
+//////////////////////////////////////////////////
+bool BaseScene::LegacyAutoGpuFlush() const
+{
+  return true;
+}
+
+//////////////////////////////////////////////////
 void BaseScene::Clear()
 {
   this->nodes->DestroyAll();

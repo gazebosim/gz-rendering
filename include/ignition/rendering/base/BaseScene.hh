@@ -522,6 +522,19 @@ namespace ignition
 
       public: virtual void Destroy() override;
 
+      // Documentation inherited.
+      public: virtual void PostRender() override;
+
+      // Documentation inherited.
+      public: virtual void SetCameraPassCountPerGpuFlush(
+            uint8_t _numPass) override;
+
+      // Documentation inherited.
+      public: virtual uint8_t CameraPassCountPerGpuFlush() const override;
+
+      // Documentation inherited.
+      public: virtual bool LegacyAutoGpuFlush() const override;
+
       protected: virtual unsigned int CreateObjectId();
 
       protected: virtual std::string CreateObjectName(unsigned int _id,

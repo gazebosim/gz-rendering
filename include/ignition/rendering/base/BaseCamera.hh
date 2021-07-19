@@ -409,6 +409,10 @@ namespace ignition
       this->Scene()->PreRender();
       this->Render();
       this->PostRender();
+      if (!this->Scene()->LegacyAutoGpuFlush())
+      {
+        this->Scene()->PostRender();
+      }
     }
 
     //////////////////////////////////////////////////

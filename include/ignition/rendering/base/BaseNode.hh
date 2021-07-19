@@ -17,7 +17,9 @@
 #ifndef IGNITION_RENDERING_BASE_BASENODE_HH_
 #define IGNITION_RENDERING_BASE_BASENODE_HH_
 
+#include <map>
 #include <string>
+
 #include "ignition/rendering/Node.hh"
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
@@ -170,6 +172,13 @@ namespace ignition
 
       public: virtual void PreRender() override;
 
+      // Documentation inherited
+      public: virtual void SetUserData(const std::string &_key, Variant _value)
+        override;
+
+      // Documentation inherited
+      public: virtual Variant UserData(const std::string &_key) const override;
+
       protected: virtual void PreRenderChildren();
 
       protected: virtual math::Pose3d RawLocalPose() const = 0;
@@ -193,6 +202,9 @@ namespace ignition
 
       protected: ignition::math::Pose3d initialLocalPose =
           ignition::math::Pose3d::Zero;
+
+      /// \brief A map of custom key value data
+      protected: std::map<std::string, Variant> userData;
     };
 
     //////////////////////////////////////////////////
@@ -592,8 +604,6 @@ namespace ignition
       this->SetLocalScale(_scale * this->LocalScale());
     }
 
-
-
     //////////////////////////////////////////////////
     template <class T>
     void BaseNode<T>::Destroy()
@@ -650,6 +660,22 @@ namespace ignition
     {
       return this->Children()->GetByIndex(_index);
     }
+    }
+
+    template <class T>
+    void BaseNode<T>::SetUserData(const std::string &_key, Variant _value)
+    {
+     this->userData[_key] = _value;
+    }
+
+    template <class T>
+    Variant BaseNode<T>::UserData(const std::string &_key) const
+    {
+     Variant value;
+     auto it = this->userData.find(_key);
+     if (it != this->userData.end())
+       value = it->second;
+     return value;
     }
   }
 }

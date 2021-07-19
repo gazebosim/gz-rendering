@@ -17,7 +17,10 @@
 #ifndef IGNITION_RENDERING_NODE_HH_
 #define IGNITION_RENDERING_NODE_HH_
 
+#include <map>
 #include <string>
+#include <variant>
+
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Quaternion.hh>
 
@@ -32,6 +35,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    using Variant =
+      std::variant<int, float, double, std::string, bool, unsigned int>;
+
     /// \class Node Node.hh ignition/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
     class IGNITION_RENDERING_VISIBLE Node :
@@ -306,6 +312,17 @@ namespace ignition
       /// \brief Remove all child nodes from this node
       /// This detaches all the child nodes but does not destroy them
       public: virtual void RemoveChildren() = 0;
+
+      /// \brief Store any custom data associated with this visual
+      /// \param[in] _key Unique key
+      /// \param[in] _value Value in any type
+      public: virtual void SetUserData(
+        const std::string &_key, Variant _value) = 0;
+
+      /// \brief Get custom data stored in this visual
+      /// \param[in] _key Unique key
+      /// \return Value in any type
+      public: virtual Variant UserData(const std::string &_key) const = 0;
     };
     }
   }

@@ -50,6 +50,7 @@ namespace ignition
     class AxisVisual;
     class Camera;
     class Capsule;
+    class COMVisual;
     class DepthCamera;
     class DirectionalLight;
     class GaussianNoisePass;
@@ -59,6 +60,7 @@ namespace ignition
     class Grid;
     class Heightmap;
     class Image;
+    class InertiaVisual;
     class Light;
     class LightVisual;
     class JointVisual;
@@ -154,9 +156,17 @@ namespace ignition
     /// \brief Shared pointer to Image
     typedef shared_ptr<Image> ImagePtr;
 
+    /// \def InertiaVisualPtr
+    /// \def Shared pointer to InertiaVisual
+    typedef shared_ptr<InertiaVisual> InertiaVisualPtr;
+
     /// \def LightPtr
     /// \brief Shared pointer to Light
     typedef shared_ptr<Light> LightPtr;
+
+    /// \def COMVisualPtr
+    /// \brief Shared pointer to COMVisual
+    typedef shared_ptr<COMVisual> COMVisualPtr;
 
     /// \def LightVisualPtr
     /// \brief Shared pointer to Light

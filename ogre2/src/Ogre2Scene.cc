@@ -22,11 +22,13 @@
 #include "ignition/rendering/ogre2/Ogre2AxisVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Capsule.hh"
+#include "ignition/rendering/ogre2/Ogre2COMVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
+#include "ignition/rendering/ogre2/Ogre2InertiaVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
@@ -745,6 +747,23 @@ AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int _id,
     const std::string &_name)
 {
   Ogre2AxisVisualPtr visual(new Ogre2AxisVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr Ogre2Scene::CreateCOMVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2COMVisualPtr visual(new Ogre2COMVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+InertiaVisualPtr Ogre2Scene::CreateInertiaVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2InertiaVisualPtr visual(new Ogre2InertiaVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }

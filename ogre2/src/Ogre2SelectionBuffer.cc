@@ -192,9 +192,12 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   const_cast<Ogre::CompositorPassSceneDef *>(scenePass)->mVisibilityMask =
       IGN_VISIBILITY_SELECTABLE;
 
-  // buffer to store render texture data
-  size_t bufferSize = Ogre::PixelUtil::getMemorySize(width, height, 1, format);
+  // buffer to store render texture data. Ensure it's at least 4 bytes
+  size_t bufferSize = std::max<size_t>(
+      Ogre::PixelUtil::getMemorySize(width, height, 1, format),
+      4u);
   this->dataPtr->buffer = new uint8_t[bufferSize];
+  memset(this->dataPtr->buffer, 0, 4u);
   this->dataPtr->pixelBox = new Ogre::PixelBox(width,
       height, 1, format, this->dataPtr->buffer);
 }

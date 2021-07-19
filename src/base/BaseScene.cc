@@ -27,6 +27,8 @@
 
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
+#include "ignition/rendering/COMVisual.hh"
+#include "ignition/rendering/InertiaVisual.hh"
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/LightVisual.hh"
 #include "ignition/rendering/Camera.hh"
@@ -950,6 +952,65 @@ AxisVisualPtr BaseScene::CreateAxisVisual(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateCOMVisual(objId);
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "COMVisual");
+  return this->CreateCOMVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateCOMVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual(unsigned int _id,
+    const std::string &_name)
+{
+  COMVisualPtr visual = this->CreateCOMVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
+}
+
+InertiaVisualPtr BaseScene::CreateInertiaVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateInertiaVisual(objId);
+}
+
+//////////////////////////////////////////////////
+InertiaVisualPtr BaseScene::CreateInertiaVisual(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "InertiaVisual");
+  return this->CreateInertiaVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+InertiaVisualPtr BaseScene::CreateInertiaVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateInertiaVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+InertiaVisualPtr BaseScene::CreateInertiaVisual(unsigned int _id,
+    const std::string &_name)
+{
+  InertiaVisualPtr visual = this->CreateInertiaVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
 LightVisualPtr BaseScene::CreateLightVisual()
 {
   unsigned int objId = this->CreateObjectId();
@@ -1381,12 +1442,36 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
 
+  material = this->CreateMaterial("Default/TransPurple");
+  material->SetAmbient(1.0, 0.0, 1.0);
+  material->SetDiffuse(1.0, 0.0, 1.0);
+  material->SetEmissive(1.0, 0.0, 1.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
+  material->SetDepthWriteEnabled(false);
+
   material = this->CreateMaterial("Default/White");
   material->SetAmbient(1.0, 1.0, 1.0);
   material->SetDiffuse(1.0, 1.0, 1.0);
   material->SetEmissive(1.0, 1.0, 1.0);
   material->SetTransparency(0);
   material->SetCastShadows(true);
+  material->SetReceiveShadows(true);
+  material->SetLightingEnabled(true);
+
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+
+  // path to look for CoM material texture
+  std::string com_material_texture_path = common::joinPaths(
+      resourcePath, "media", "materials", "textures", "com.png");
+  material = this->CreateMaterial("Default/CoM");
+  material->SetTexture(com_material_texture_path);
+  material->SetTransparency(0);
+  material->SetCastShadows(false);
   material->SetReceiveShadows(true);
   material->SetLightingEnabled(true);
 }

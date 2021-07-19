@@ -66,7 +66,8 @@ math::Vector3d ScreenToScene(
 math::Vector3d ScreenToPlane(
     const math::Vector2i &_screenPos,
     const CameraPtr &_camera,
-    const RayQueryPtr &_rayQuery)
+    const RayQueryPtr &_rayQuery,
+    const float offset)
 {
   // Normalize point on the image
   double width = _camera->ImageWidth();
@@ -79,7 +80,7 @@ math::Vector3d ScreenToPlane(
   _rayQuery->SetFromCamera(
       _camera, math::Vector2d(nx, ny));
 
-  ignition::math::Planed plane(ignition::math::Vector3d(0, 0, 1), 0);
+  ignition::math::Planed plane(ignition::math::Vector3d(0, 0, 1), offset);
 
   math::Vector3d origin = _rayQuery->Origin();
   math::Vector3d direction = _rayQuery->Direction();

@@ -56,12 +56,14 @@ namespace ignition
     /// \param[in] _screenPod 2D coordinates on the screen, in pixels.
     /// \param[in] _camera User camera
     /// \param[in] _rayQuery Ray query for mouse clicks
+    /// \param[in] _offset Offset along the plane normal
     /// \return 3D coordinates of a point in the 3D scene.
     IGNITION_RENDERING_VISIBLE
     math::Vector3d ScreenToPlane(
       const math::Vector2i &_screenPos,
       const CameraPtr &_camera,
-      const RayQueryPtr &_rayQuery);
+      const RayQueryPtr &_rayQuery,
+      const float offset = 0.0);
 
     /// \brief Get the screen scaling factor.
     /// \return The screen scaling factor.

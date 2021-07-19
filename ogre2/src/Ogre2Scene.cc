@@ -85,7 +85,7 @@ class ignition::rendering::Ogre2ScenePrivate
   public: uint32_t currNumCameraPasses = 0u;
 
   /// \brief Flag to indicate if we should flush GPU very often (per camera)
-  public: uint8_t cameraPassCountPerGpuFlush = 6u;
+  public: uint8_t cameraPassCountPerGpuFlush = 0u;
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
@@ -191,12 +191,12 @@ void Ogre2Scene::PreRender()
       }
     }
 
-    UpdateShadowNode();
+    this->UpdateShadowNode();
   }
 
   BaseScene::PreRender();
 
-  if (!LegacyAutoGpuFlush())
+  if (!this->LegacyAutoGpuFlush())
   {
     auto engine = Ogre2RenderEngine::Instance();
     engine->OgreRoot()->_fireFrameStarted();
@@ -224,8 +224,10 @@ void Ogre2Scene::PostRender()
   }
   else
   {
-    if (dataPtr->currNumCameraPasses > 0u)
-      FlushGpuCommandsAndStartNewFrame(0u, true);
+    if (this->dataPtr->currNumCameraPasses > 0u)
+    {
+      this->FlushGpuCommandsAndStartNewFrame(0u, true);
+    }
     else
     {
       // Every camera already calls FlushGpuCommandsAndStartNewFrame(false)
@@ -233,7 +235,7 @@ void Ogre2Scene::PostRender()
       //
       // If we're here then we are only missing to perform the last step of
       // FlushGpuCommandsAndStartNewFrame in order to start a new frame
-      EndFrame();
+      this->EndFrame();
     }
   }
 }
@@ -250,8 +252,8 @@ void Ogre2Scene::StartForcedRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::EndForcedRender()
 {
-  dataPtr->currNumCameraPasses = 0;
-  FlushGpuCommandsOnly();
+  this->dataPtr->currNumCameraPasses = 0u;
+  this->FlushGpuCommandsOnly();
 
   if (this->LegacyAutoGpuFlush() || !this->dataPtr->frameUpdateStarted)
   {
@@ -279,9 +281,9 @@ void Ogre2Scene::StartRendering()
   }
   else
   {
-    IGN_ASSERT( this->dataPtr->frameUpdateStarted == true,
-                "Started rendering without first calling Scene::PreRender. "
-                "See Scene::SetCameraPassCountPerGpuFlush for details");
+    IGN_ASSERT(this->dataPtr->frameUpdateStarted == true,
+               "Started rendering without first calling Scene::PreRender. "
+               "See Scene::SetCameraPassCountPerGpuFlush for details");
   }
 }
 
@@ -289,17 +291,17 @@ void Ogre2Scene::StartRendering()
 void Ogre2Scene::FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
                                                   bool _startNewFrame)
 {
-  dataPtr->currNumCameraPasses += _numPasses;
+  this->dataPtr->currNumCameraPasses += _numPasses;
 
-  if (dataPtr->currNumCameraPasses >= dataPtr->cameraPassCountPerGpuFlush ||
-      _startNewFrame)
+  if (this->dataPtr->currNumCameraPasses >= dataPtr->cameraPassCountPerGpuFlush
+      || _startNewFrame)
   {
-    dataPtr->currNumCameraPasses = 0;
-    FlushGpuCommandsOnly();
+    this->dataPtr->currNumCameraPasses = 0u;
+    this->FlushGpuCommandsOnly();
 
     // Legacy mode requires to do EndFrame here every time
     if (dataPtr->cameraPassCountPerGpuFlush == 0u || _startNewFrame)
-      EndFrame();
+      this->EndFrame();
   }
 }
 
@@ -341,8 +343,8 @@ void Ogre2Scene::EndFrame()
   auto itor = ogreRoot->getSceneManagerIterator();
   while (itor.hasMoreElements())
   {
-      Ogre::SceneManager *sceneManager = itor.getNext();
-      sceneManager->clearFrameData();
+    Ogre::SceneManager *sceneManager = itor.getNext();
+    sceneManager->clearFrameData();
   }
 
   ogreRoot->_fireFrameEnded();
@@ -1158,7 +1160,7 @@ void Ogre2Scene::CreateContext()
 
   // See ogre doxygen documentation regarding culling methods.
   // In some cases you may still want to use single thread.
-  // if( numThreads > 1 )
+  // if (numThreads > 1)
   //   threadedCullingMethod = Ogre::INSTANCING_CULLING_THREADED;
   // Create the SceneManager, in this case a generic one
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC,

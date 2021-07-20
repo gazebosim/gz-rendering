@@ -57,30 +57,47 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   EXPECT_TRUE(camera != nullptr);
 
   camera->SetLocalPosition(0.0, 0.0, 15);
-  camera->SetLocalRotation(0.0, 1.57, 0.0);
+  camera->SetLocalRotation(0.0, IGN_PI / 2, 0.0);
 
   unsigned int width = 640u;
   unsigned int height = 480u;
   camera->SetImageWidth(width);
   camera->SetImageHeight(height);
 
+  const int halfWidth  = static_cast<int>(width / 2);
+  const int halfHeight = static_cast<int>(height / 2);
+  const ignition::math::Vector2i centerClick(halfWidth, halfHeight);
+
   RayQueryPtr rayQuery = scene->CreateRayQuery();
   EXPECT_TRUE(rayQuery != nullptr);
 
   // ScreenToPlane
-  math::Vector3d result = ScreenToPlane(
-    math::Vector2i(static_cast<int>(width / 2), static_cast<int>(height / 2)),
-    camera, rayQuery);
+  math::Vector3d result = ScreenToPlane(centerClick, camera, rayQuery);
 
-  EXPECT_NEAR(0.0, result.Z(), 0.01);
-  EXPECT_NEAR(0.0, result.X(), 0.1);
-  EXPECT_NEAR(0.0, result.Y(), 0.01);
+  EXPECT_NEAR(0.0, result.Z(), 1e-10);
+  EXPECT_NEAR(0.0, result.X(), 2e-6);
+  EXPECT_NEAR(0.0, result.Y(), 2e-6);
 
   // ScreenToScene
+  // API without RayQueryResult and default max distance
+  result = ScreenToScene(centerClick, camera, rayQuery);
+
+  // No objects currently in the scene, so return a point max distance in
+  // front of camera
+  // The default max distance is 10 meters away
+  EXPECT_NEAR(5.0 - camera->NearClipPlane(), result.Z(), 4e-6);
+  EXPECT_NEAR(0.0, result.X(), 2e-6);
+  EXPECT_NEAR(0.0, result.Y(), 2e-6);
+
+  // Try with different max distance
   RayQueryResult rayResult;
-  result = ScreenToScene(
-    math::Vector2i(static_cast<int>(width / 2), static_cast<int>(height / 2)),
-    camera, rayQuery, rayResult);
+  result = ScreenToScene(centerClick, camera, rayQuery, rayResult, 20.0);
+
+  EXPECT_NEAR(-5.0 - camera->NearClipPlane(), result.Z(), 4e-6);
+  EXPECT_NEAR(0.0, result.X(), 4e-6);
+  EXPECT_NEAR(0.0, result.Y(), 4e-6);
+  EXPECT_FALSE(rayResult);
+  EXPECT_EQ(0u, rayResult.objectId);
 
   VisualPtr root = scene->RootVisual();
 
@@ -93,30 +110,37 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   box->SetLocalScale(1.0, 1.0, 1.0);
   root->AddChild(box);
 
-  // The default limit of the function is 10 meters away
-  EXPECT_NEAR(5.0, result.Z(), 0.01);
-  EXPECT_NEAR(0.0, result.X(), 0.1);
-  EXPECT_NEAR(0.0, result.Y(), 0.01);
+  // API without RayQueryResult and default max distance
+  result = ScreenToScene(centerClick, camera, rayQuery, rayResult);
 
-  result = ScreenToScene(
-    math::Vector2i(static_cast<int>(width / 2), static_cast<int>(height / 2)),
-    camera, rayQuery, rayResult, 20.0);
+  EXPECT_NEAR(0.5, result.Z(), 1e-10);
+  EXPECT_NEAR(0.0, result.X(), 2e-6);
+  EXPECT_NEAR(0.0, result.Y(), 2e-6);
+  EXPECT_TRUE(rayResult);
+  EXPECT_NEAR(14.5 - camera->NearClipPlane(), rayResult.distance, 4e-6);
+  EXPECT_EQ(box->Id(), rayResult.objectId);
 
-  EXPECT_NEAR(0.5, result.Z(), 0.01);
-  EXPECT_NEAR(0.0, result.X(), 0.1);
-  EXPECT_NEAR(0.0, result.Y(), 0.01);
+  result = ScreenToScene(centerClick, camera, rayQuery, rayResult, 20.0);
 
+  EXPECT_NEAR(0.5, result.Z(), 1e-10);
+  EXPECT_NEAR(0.0, result.X(), 2e-6);
+  EXPECT_NEAR(0.0, result.Y(), 2e-6);
+  EXPECT_TRUE(rayResult);
+  EXPECT_NEAR(14.5 - camera->NearClipPlane(), rayResult.distance, 4e-6);
+  EXPECT_EQ(box->Id(), rayResult.objectId);
+
+  // Move camera closer to box
   camera->SetLocalPosition(0.0, 0.0, 7.0);
-  camera->SetLocalRotation(0.0, 1.57, 0.0);
+  camera->SetLocalRotation(0.0, IGN_PI / 2, 0.0);
 
-  // The default limit of the function is 10 meters away
-  result = ScreenToScene(
-    math::Vector2i(static_cast<int>(width / 2), static_cast<int>(height / 2)),
-    camera, rayQuery, rayResult);
+  result = ScreenToScene(centerClick, camera, rayQuery, rayResult);
 
-  EXPECT_NEAR(0.5, result.Z(), 0.01);
-  EXPECT_NEAR(0.0, result.X(), 0.1);
-  EXPECT_NEAR(0.0, result.Y(), 0.01);
+  EXPECT_NEAR(0.5, result.Z(), 1e-10);
+  EXPECT_NEAR(0.0, result.X(), 2e-6);
+  EXPECT_NEAR(0.0, result.Y(), 2e-6);
+  EXPECT_TRUE(rayResult);
+  EXPECT_NEAR(6.5 - camera->NearClipPlane(), rayResult.distance, 4e-6);
+  EXPECT_EQ(box->Id(), rayResult.objectId);
 }
 
 /////////////////////////////////////////////////

@@ -1089,9 +1089,9 @@ namespace ignition
       ///
       /// \code
       ///   scene->PreRender();
-      ///   for( auto& camera in cameras )
+      ///   for (auto &camera in cameras)
       ///     camera->Render();
-      ///   for( auto& camera in cameras )
+      ///   for (auto &camera in cameras)
       ///     camera->PostRender();
       ///   scene->PostRender();
       /// \endcode

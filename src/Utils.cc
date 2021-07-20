@@ -63,6 +63,17 @@ math::Vector3d ScreenToScene(
 }
 
 /////////////////////////////////////////////////
+math::Vector3d ScreenToScene(
+    const math::Vector2i &_screenPos,
+    const CameraPtr &_camera,
+    const RayQueryPtr &_rayQuery,
+    float _maxDistance)
+{
+  RayQueryResult rayResult;
+  return ScreenToScene(_screenPos, _camera, _rayQuery, rayResult, _maxDistance);
+}
+
+/////////////////////////////////////////////////
 math::Vector3d ScreenToPlane(
     const math::Vector2i &_screenPos,
     const CameraPtr &_camera,

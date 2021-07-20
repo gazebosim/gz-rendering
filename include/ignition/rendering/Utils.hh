@@ -40,6 +40,20 @@ namespace ignition
     /// \param[in] _screenPos 2D coordinates on the screen, in pixels.
     /// \param[in] _camera User camera
     /// \param[in] _rayQuery Ray query for mouse clicks
+    /// \param[inout] _maxDistance maximum distance to check the collision
+    /// \return 3D coordinates of a point in the 3D scene.
+    IGNITION_RENDERING_VISIBLE
+    math::Vector3d ScreenToScene(
+        const math::Vector2i &_screenPos,
+        const CameraPtr &_camera,
+        const RayQueryPtr &_rayQuery,
+        float maxDistance = 10.0);
+
+    /// \brief Retrieve the first point on a surface in the 3D scene hit by a
+    /// ray cast from the given 2D screen coordinates.
+    /// \param[in] _screenPos 2D coordinates on the screen, in pixels.
+    /// \param[in] _camera User camera
+    /// \param[in] _rayQuery Ray query for mouse clicks
     /// \param[inout] _rayResult Ray query result
     /// \param[inout] _maxDistance maximum distance to check the collision
     /// \return 3D coordinates of a point in the 3D scene.

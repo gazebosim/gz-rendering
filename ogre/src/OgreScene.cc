@@ -400,7 +400,7 @@ JointVisualPtr OgreScene::CreateJointVisualImpl(unsigned int _id,
     const std::string &_name)
 {
   OgreJointVisualPtr visual(new OgreJointVisual);
-    bool result = this->InitObject(visual, _id, _name);
+  bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }
 

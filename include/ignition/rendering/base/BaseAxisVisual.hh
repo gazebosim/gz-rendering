@@ -112,7 +112,9 @@ namespace ignition
         auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
               this->ChildByIndex(i));
         if (arrow)
+        {
           arrow->ShowArrowHead(_b);
+        }
       }
     }
 
@@ -123,7 +125,9 @@ namespace ignition
       auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
             this->ChildByIndex(2u - _axis));
       if (arrow)
+      {
         arrow->ShowArrowHead(_b);
+      }
     }
 
     //////////////////////////////////////////////////

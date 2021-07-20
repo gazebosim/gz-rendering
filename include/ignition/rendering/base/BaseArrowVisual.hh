@@ -20,6 +20,7 @@
 #include <string>
 
 #include <ignition/common/MeshManager.hh>
+
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -90,7 +91,10 @@ namespace ignition
       while (this->ChildCount() > 0u)
       {
         auto visual = std::dynamic_pointer_cast<Visual>(this->ChildByIndex(0));
-        visual->Destroy();
+        if (visual)
+        {
+          visual->Destroy();
+        }
       }
     }
 

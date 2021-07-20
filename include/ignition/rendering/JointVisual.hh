@@ -18,7 +18,9 @@
 #define IGNITION_RENDERING_JOINTVISUAL_HH_
 
 #include <string>
+
 #include <ignition/math/Vector3.hh>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/RenderTypes.hh"
@@ -113,11 +115,9 @@ namespace ignition
           const std::string &_xyzExpressedIn) = 0;
 
       /// \brief Update the parent axis' arrow visual if it exists.
-      /// \param[in] _arrowVisual Arrow visual to be updated.
       /// \param[in] _axis Axis vector.
       /// \param[in] _xyzExpressedIn Frame in which the axis vector is
       /// expressed.
-      /// \param[in] _parentName Name of the joint parent.
       /// \return True if parent axis was updated else false.
       public: virtual bool UpdateParentAxis(
           const ignition::math::Vector3d &_axis,

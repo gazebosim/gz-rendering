@@ -22,12 +22,12 @@
 
 #include "ignition/common/Console.hh"
 
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/JointVisual.hh"
 #include "ignition/rendering/Scene.hh"
+#include "ignition/rendering/base/BaseObject.hh"
+#include "ignition/rendering/base/BaseRenderTypes.hh"
 
 namespace ignition
 {
@@ -171,7 +171,6 @@ namespace ignition
 
       /// \brief Flag to update the parent axis visual.
       protected: bool updateParentAxis = false;
-
     };
 
     //////////////////////////////////////////////////
@@ -193,7 +192,9 @@ namespace ignition
       T::PreRender();
 
       if (this->ParentAxisVisual())
+      {
         this->ParentAxisVisual()->PreRender();
+      }
 
       if (this->dirtyJointType)
       {

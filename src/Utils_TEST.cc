@@ -78,6 +78,13 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   EXPECT_NEAR(0.0, result.X(), 2e-6);
   EXPECT_NEAR(0.0, result.Y(), 2e-6);
 
+  // call with non-zero plane offset
+  result = ScreenToPlane(centerClick, camera, rayQuery, 5.0);
+
+  EXPECT_NEAR(5.0, result.Z(), 1e-10);
+  EXPECT_NEAR(0.0, result.X(), 2e-6);
+  EXPECT_NEAR(0.0, result.Y(), 2e-6);
+
   // ScreenToScene
   // API without RayQueryResult and default max distance
   result = ScreenToScene(centerClick, camera, rayQuery);

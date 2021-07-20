@@ -79,7 +79,9 @@ namespace ignition
         auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
               this->ChildByIndex(i));
         if (arrow)
+        {
           arrow->Destroy();
+        }
       }
     }
 

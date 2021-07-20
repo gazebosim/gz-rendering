@@ -43,7 +43,7 @@ namespace ignition
     /// \param[in] _maxDistance maximum distance to check the collision
     /// \return 3D coordinates of a point in the 3D scene.
     IGNITION_RENDERING_VISIBLE
-    math::Vector3d ScreenToScene(
+    math::Vector3d screenToScene(
         const math::Vector2i &_screenPos,
         const CameraPtr &_camera,
         const RayQueryPtr &_rayQuery,
@@ -58,7 +58,7 @@ namespace ignition
     /// \param[in] _maxDistance maximum distance to check the collision
     /// \return 3D coordinates of a point in the 3D scene.
     IGNITION_RENDERING_VISIBLE
-    math::Vector3d ScreenToScene(
+    math::Vector3d screenToScene(
         const math::Vector2i &_screenPos,
         const CameraPtr &_camera,
         const RayQueryPtr &_rayQuery,
@@ -73,7 +73,7 @@ namespace ignition
     /// \param[in] _offset Offset along the plane normal
     /// \return 3D coordinates of a point in the 3D scene.
     IGNITION_RENDERING_VISIBLE
-    math::Vector3d ScreenToPlane(
+    math::Vector3d screenToPlane(
       const math::Vector2i &_screenPos,
       const CameraPtr &_camera,
       const RayQueryPtr &_rayQuery,

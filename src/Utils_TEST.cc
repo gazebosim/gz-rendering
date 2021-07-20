@@ -71,23 +71,23 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   RayQueryPtr rayQuery = scene->CreateRayQuery();
   EXPECT_TRUE(rayQuery != nullptr);
 
-  // ScreenToPlane
-  math::Vector3d result = ScreenToPlane(centerClick, camera, rayQuery);
+  // screenToPlane
+  math::Vector3d result = screenToPlane(centerClick, camera, rayQuery);
 
   EXPECT_NEAR(0.0, result.Z(), 1e-10);
   EXPECT_NEAR(0.0, result.X(), 2e-6);
   EXPECT_NEAR(0.0, result.Y(), 2e-6);
 
   // call with non-zero plane offset
-  result = ScreenToPlane(centerClick, camera, rayQuery, 5.0);
+  result = screenToPlane(centerClick, camera, rayQuery, 5.0);
 
   EXPECT_NEAR(5.0, result.Z(), 1e-10);
   EXPECT_NEAR(0.0, result.X(), 2e-6);
   EXPECT_NEAR(0.0, result.Y(), 2e-6);
 
-  // ScreenToScene
+  // screenToScene
   // API without RayQueryResult and default max distance
-  result = ScreenToScene(centerClick, camera, rayQuery);
+  result = screenToScene(centerClick, camera, rayQuery);
 
   // No objects currently in the scene, so return a point max distance in
   // front of camera
@@ -98,7 +98,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
 
   // Try with different max distance
   RayQueryResult rayResult;
-  result = ScreenToScene(centerClick, camera, rayQuery, rayResult, 20.0);
+  result = screenToScene(centerClick, camera, rayQuery, rayResult, 20.0);
 
   EXPECT_NEAR(-5.0 - camera->NearClipPlane(), result.Z(), 4e-6);
   EXPECT_NEAR(0.0, result.X(), 4e-6);
@@ -118,7 +118,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   root->AddChild(box);
 
   // API without RayQueryResult and default max distance
-  result = ScreenToScene(centerClick, camera, rayQuery, rayResult);
+  result = screenToScene(centerClick, camera, rayQuery, rayResult);
 
   EXPECT_NEAR(0.5, result.Z(), 1e-10);
   EXPECT_NEAR(0.0, result.X(), 2e-6);
@@ -127,7 +127,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   EXPECT_NEAR(14.5 - camera->NearClipPlane(), rayResult.distance, 4e-6);
   EXPECT_EQ(box->Id(), rayResult.objectId);
 
-  result = ScreenToScene(centerClick, camera, rayQuery, rayResult, 20.0);
+  result = screenToScene(centerClick, camera, rayQuery, rayResult, 20.0);
 
   EXPECT_NEAR(0.5, result.Z(), 1e-10);
   EXPECT_NEAR(0.0, result.X(), 2e-6);
@@ -140,7 +140,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   camera->SetLocalPosition(0.0, 0.0, 7.0);
   camera->SetLocalRotation(0.0, IGN_PI / 2, 0.0);
 
-  result = ScreenToScene(centerClick, camera, rayQuery, rayResult);
+  result = screenToScene(centerClick, camera, rayQuery, rayResult);
 
   EXPECT_NEAR(0.5, result.Z(), 1e-10);
   EXPECT_NEAR(0.0, result.X(), 2e-6);

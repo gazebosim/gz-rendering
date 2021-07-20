@@ -40,7 +40,7 @@ namespace ignition
     /// \param[in] _screenPos 2D coordinates on the screen, in pixels.
     /// \param[in] _camera User camera
     /// \param[in] _rayQuery Ray query for mouse clicks
-    /// \param[inout] _maxDistance maximum distance to check the collision
+    /// \param[in] _maxDistance maximum distance to check the collision
     /// \return 3D coordinates of a point in the 3D scene.
     IGNITION_RENDERING_VISIBLE
     math::Vector3d ScreenToScene(
@@ -55,7 +55,7 @@ namespace ignition
     /// \param[in] _camera User camera
     /// \param[in] _rayQuery Ray query for mouse clicks
     /// \param[inout] _rayResult Ray query result
-    /// \param[inout] _maxDistance maximum distance to check the collision
+    /// \param[in] _maxDistance maximum distance to check the collision
     /// \return 3D coordinates of a point in the 3D scene.
     IGNITION_RENDERING_VISIBLE
     math::Vector3d ScreenToScene(
@@ -67,7 +67,7 @@ namespace ignition
 
     /// \brief Retrieve the point on a plane at z = 0 in the 3D scene hit by a
     /// ray cast from the given 2D screen coordinates.
-    /// \param[in] _screenPod 2D coordinates on the screen, in pixels.
+    /// \param[in] _screenPos 2D coordinates on the screen, in pixels.
     /// \param[in] _camera User camera
     /// \param[in] _rayQuery Ray query for mouse clicks
     /// \param[in] _offset Offset along the plane normal

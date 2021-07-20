@@ -35,7 +35,7 @@ namespace rendering
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 //
 /////////////////////////////////////////////////
-math::Vector3d ScreenToScene(
+math::Vector3d screenToScene(
     const math::Vector2i &_screenPos,
     const CameraPtr &_camera,
     const RayQueryPtr &_rayQuery,
@@ -63,18 +63,18 @@ math::Vector3d ScreenToScene(
 }
 
 /////////////////////////////////////////////////
-math::Vector3d ScreenToScene(
+math::Vector3d screenToScene(
     const math::Vector2i &_screenPos,
     const CameraPtr &_camera,
     const RayQueryPtr &_rayQuery,
     float _maxDistance)
 {
   RayQueryResult rayResult;
-  return ScreenToScene(_screenPos, _camera, _rayQuery, rayResult, _maxDistance);
+  return screenToScene(_screenPos, _camera, _rayQuery, rayResult, _maxDistance);
 }
 
 /////////////////////////////////////////////////
-math::Vector3d ScreenToPlane(
+math::Vector3d screenToPlane(
     const math::Vector2i &_screenPos,
     const CameraPtr &_camera,
     const RayQueryPtr &_rayQuery,

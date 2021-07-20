@@ -1,0 +1,412 @@
+/*
+ * Copyright (C) 2021 Rhys Mainwaring
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Elements of this example are derived from the textureinthread example from the Qt Toolkit
+// https://code.qt.io/cgit/qt/qtdeclarative.git/tree/examples/quick/scenegraph/textureinthread?h=5.15
+
+/****************************************************************************
+**
+** Copyright (C) 2017 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the examples of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:BSD$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** BSD License Usage
+** Alternatively, you may use this file under the terms of the BSD license
+** as follows:
+**
+** "Redistribution and use in source and binary forms, with or without
+** modification, are permitted provided that the following conditions are
+** met:
+**   * Redistributions of source code must retain the above copyright
+**     notice, this list of conditions and the following disclaimer.
+**   * Redistributions in binary form must reproduce the above copyright
+**     notice, this list of conditions and the following disclaimer in
+**     the documentation and/or other materials provided with the
+**     distribution.
+**   * Neither the name of The Qt Company Ltd nor the names of its
+**     contributors may be used to endorse or promote products derived
+**     from this software without specific prior written permission.
+**
+**
+** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+#include "ThreadRenderer.h"
+#include "IgnitionRenderer.h"
+
+#include <QGuiApplication>
+#include <QMutex>
+#include <QOffscreenSurface>
+#include <QOpenGLContext>
+#include <QQuickWindow>
+#include <QThread>
+
+QList<QThread *> ThreadRenderer::threads;
+
+//-----------------------------------------------------------------------
+RenderThread::RenderThread(const QSize &size, QQuickItem *renderWindowItem)
+    : m_size(size)
+    , m_renderWindowItem(renderWindowItem)
+{
+    ThreadRenderer::threads << this;
+}
+
+//-----------------------------------------------------------------------
+void RenderThread::print(const QSurfaceFormat &format)
+{
+    auto formatOptionsToString = [] (QSurfaceFormat::FormatOptions value) -> std::string {
+        std::string options;
+
+        if (value & QSurfaceFormat::StereoBuffers) {
+            options.append("StereoBuffers");
+        }
+        if (value & QSurfaceFormat::DebugContext) {
+            options.empty() ? options.append("") : options.append(", ");
+            options.append("DebugContext");
+        }
+        if (value & QSurfaceFormat::DeprecatedFunctions) {
+            options.empty() ? options.append("") : options.append(", ");
+            options.append("DeprecatedFunctions");
+        }
+        if (value & QSurfaceFormat::ResetNotification) {
+            options.empty() ? options.append("") : options.append(", ");
+            options.append("ResetNotification");
+        }
+
+        return options;
+    };
+
+    auto openGLContextProfileToString = [] (QSurfaceFormat::OpenGLContextProfile value) -> std::string {
+        switch (value)
+        {
+        case QSurfaceFormat::NoProfile:
+            return "NoProfile";
+        case QSurfaceFormat::CoreProfile:
+            return "CoreProfile";
+        case QSurfaceFormat::CompatibilityProfile:
+            return "CompatibilityProfile";
+        default:
+            return "Invalid OpenGLContextProfile";
+        } 
+    };
+
+    auto renderableTypeToString = [] (QSurfaceFormat::RenderableType value) -> std::string {
+        switch (value)
+        {
+        case QSurfaceFormat::DefaultRenderableType:
+            return "DefaultRenderableType";
+        case QSurfaceFormat::OpenGL:
+            return "OpenGL";
+        case QSurfaceFormat::OpenGLES:
+            return "OpenGLES";
+        case QSurfaceFormat::OpenVG:
+            return "OpenVG";
+        default:
+            return "Invalid RenderableType";
+        } 
+    };
+
+    auto swapBehaviorToString = [] (QSurfaceFormat::SwapBehavior value) -> std::string {
+        switch (value)
+        {
+        case QSurfaceFormat::DefaultSwapBehavior:
+            return "DefaultSwapBehavior";
+        case QSurfaceFormat::SingleBuffer:
+            return "SingleBuffer";
+        case QSurfaceFormat::DoubleBuffer:
+            return "DoubleBuffer";
+        default:
+            return "Invalid SwapBehavior";
+        } 
+    };
+
+    // surface format info
+    std::cout << "version: "
+        << format.version().first << "."
+        << format.version().second << "\n";
+    std::cout << "profile: " << openGLContextProfileToString(format.profile()) << "\n";
+    std::cout << "options: " << formatOptionsToString(format.options()) << "\n";
+    std::cout << "renderableType: " << renderableTypeToString(format.renderableType()) << "\n";
+    std::cout << "hasAlpha: " << format.hasAlpha() << "\n";
+    std::cout << "redBufferSize: " << format.redBufferSize() << "\n";
+    std::cout << "greenBufferSize: " << format.greenBufferSize() << "\n";
+    std::cout << "blueBufferSize: " << format.blueBufferSize() << "\n";
+    std::cout << "alphaBufferSize: " << format.alphaBufferSize() << "\n";
+    std::cout << "depthBufferSize: " << format.depthBufferSize() << "\n";
+    std::cout << "stencilBufferSize: " << format.stencilBufferSize() << "\n";
+    std::cout << "samples: " << format.samples() << "\n";
+    std::cout << "swapBehavior: " << swapBehaviorToString(format.swapBehavior()) << "\n";
+    std::cout << "swapInterval: " << format.swapInterval() << "\n";
+    std::cout << "\n";
+}
+
+//-----------------------------------------------------------------------
+QSurfaceFormat RenderThread::createSurfaceFormat()
+{
+    // QSurfaceFormat format;
+    QSurfaceFormat format(QSurfaceFormat::DeprecatedFunctions);
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+    format.setMajorVersion(4);
+    format.setMinorVersion(1);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    // format.setProfile(QSurfaceFormat::CompatibilityProfile);
+    format.setRenderableType(QSurfaceFormat::OpenGL);
+
+    return format;    
+}
+
+//--------------------------------------------------------------------------
+// called when the render node emits textureInUse
+void RenderThread::initialiseOnMainThread()
+{
+    context->makeCurrent(surface);
+    print(context->format());
+
+    // create renderer
+    m_ignRenderer = new IgnitionRenderer();
+    m_ignRenderer->initialiseOnMainThread();
+
+    context->doneCurrent();
+}
+
+//--------------------------------------------------------------------------
+// called when the render node emits textureInUse
+void RenderThread::renderNext()
+{
+    context->makeCurrent(surface);
+
+    if (!m_ignRenderer->initialised())
+    {
+        m_ignRenderer->initialise();
+    }
+
+    // check if engine has been successfully initialized
+    if (!m_ignRenderer->initialised())
+    {
+        ignerr << "Unable to initialize renderer" << std::endl;
+        return;
+    }
+
+    m_ignRenderer->render();
+
+    emit textureReady(m_ignRenderer->textureId(), m_ignRenderer->textureSize());
+
+    context->doneCurrent();
+}
+
+//--------------------------------------------------------------------------
+void RenderThread::shutDown()
+{
+    context->makeCurrent(surface);
+
+    delete m_ignRenderer;
+    m_ignRenderer = nullptr;
+
+    context->doneCurrent();
+
+    delete context;
+    context = nullptr;
+
+    // schedule this to be deleted only after we're done cleaning up
+    surface->deleteLater();
+
+    // Stop event processing, move the thread to GUI and make sure it is deleted.
+    exit();
+    moveToThread(QGuiApplication::instance()->thread());
+}
+
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+TextureNode::TextureNode(QQuickWindow *window)
+    : m_id(0)
+    , m_size(0, 0)
+    , m_texture(nullptr)
+    , m_window(window)
+{
+    // Our texture node must have a texture, so use the default 0 texture.
+    // createTextureFromNativeObject()
+    m_texture = m_window->createTextureFromId(0, QSize(1, 1));
+    setTexture(m_texture);
+    setFiltering(QSGTexture::Linear);
+}
+
+//--------------------------------------------------------------------------
+TextureNode::~TextureNode()
+{
+    delete m_texture;
+    m_texture = nullptr;
+}
+
+//--------------------------------------------------------------------------
+// called when RenderThread emits signal textureReady
+void TextureNode::newTexture(int id, const QSize &size)
+{
+    m_mutex.lock();
+    m_id = id;
+    m_size = size;
+    m_mutex.unlock();
+
+    // We cannot call QQuickWindow::update directly here, as this is only allowed
+    // from the rendering thread or GUI thread.
+    emit pendingNewTexture();
+}
+
+//--------------------------------------------------------------------------
+// called when the window emits beforeRendering
+void TextureNode::prepareNode()
+{
+    m_mutex.lock();
+    int newId = m_id;
+    QSize size = m_size;
+    m_id = 0;
+    m_mutex.unlock();
+    if (newId)
+    {
+        delete m_texture;
+        m_texture = nullptr;
+        // note: include QQuickWindow::TextureHasAlphaChannel if the rendered content
+        // has alpha.
+        // createTextureFromNativeObject
+        m_texture = m_window->createTextureFromId(newId, size);
+        setTexture(m_texture);
+
+        markDirty(DirtyMaterial);
+
+        // This will notify the rendering thread that the texture is now being rendered
+        // and it can start rendering to the other one.
+        emit textureInUse();
+    }
+}
+
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+ThreadRenderer::ThreadRenderer()
+    : m_renderThread(nullptr)
+{
+    setFlag(ItemHasContents, true);
+    m_renderThread = new RenderThread(QSize(512, 512), this);
+}
+
+//--------------------------------------------------------------------------
+void ThreadRenderer::ready()
+{
+    // Run on the Main (GUI = QML) thread
+    m_renderThread->surface = new QOffscreenSurface();
+    m_renderThread->surface->setFormat(m_renderThread->context->format());
+    m_renderThread->surface->create();
+
+    // carry out any initialisation before moving to thread 
+    m_renderThread->initialiseOnMainThread();
+
+    // Move to Render thread
+    m_renderThread->context->moveToThread(m_renderThread);
+    m_renderThread->moveToThread(m_renderThread);
+
+    connect(window(), &QQuickWindow::sceneGraphInvalidated, m_renderThread, &RenderThread::shutDown, Qt::QueuedConnection);
+
+    // Running on Render thread
+    m_renderThread->start();
+    update();
+}
+
+//-----------------------------------------------------------------------
+QSGNode *ThreadRenderer::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
+{
+    TextureNode *node = static_cast<TextureNode *>(oldNode);
+
+    if (!m_renderThread->context)
+    {
+        QOpenGLContext *current = window()->openglContext();
+        // Some GL implementations requres that the currently bound context is
+        // made non-current before we set up sharing, so we doneCurrent here
+        // and makeCurrent down below while setting up our own context.
+        current->doneCurrent();
+
+        m_renderThread->context = new QOpenGLContext();
+
+        // set the surface format (this is managed globally in Main.cpp)
+        // auto surfaceFormat = RenderThread::createSurfaceFormat();
+        // m_renderThread->context->setFormat(surfaceFormat);
+        m_renderThread->context->setFormat(current->format());
+
+        m_renderThread->context->setShareContext(current);
+        m_renderThread->context->create();
+
+        QMetaObject::invokeMethod(this, "ready");
+
+        current->makeCurrent(window());
+
+        return nullptr;
+    }
+
+    if (!node)
+    {
+        node = new TextureNode(window());
+
+        /* Set up connections to get the production of FBO textures in sync with vsync on the
+         * rendering thread.
+         *
+         * When a new texture is ready on the rendering thread, we use a direct connection to
+         * the texture node to let it know a new texture can be used. The node will then
+         * emit pendingNewTexture which we bind to QQuickWindow::update to schedule a redraw.
+         *
+         * When the scene graph starts rendering the next frame, the prepareNode() function
+         * is used to update the node with the new texture. Once it completes, it emits
+         * textureInUse() which we connect to the FBO rendering thread's renderNext() to have
+         * it start producing content into its current "back buffer".
+         *
+         * This FBO rendering pipeline is throttled by vsync on the scene graph rendering thread.
+         */
+        connect(m_renderThread, &RenderThread::textureReady, node, &TextureNode::newTexture, Qt::DirectConnection);
+        connect(node, &TextureNode::pendingNewTexture, window(), &QQuickWindow::update, Qt::QueuedConnection);
+        connect(window(), &QQuickWindow::beforeRendering, node, &TextureNode::prepareNode, Qt::DirectConnection);
+        connect(node, &TextureNode::textureInUse, m_renderThread, &RenderThread::renderNext, Qt::QueuedConnection);
+
+        // Get the production of FBO textures started..
+        QMetaObject::invokeMethod(m_renderThread, "renderNext", Qt::QueuedConnection);
+    }
+
+    node->setRect(boundingRect());
+
+    return node;
+}
+
+//--------------------------------------------------------------------------

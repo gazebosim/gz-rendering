@@ -1184,7 +1184,10 @@ void Ogre2GpuRays::CreateGpuRaysTextures()
   // values in 1st pass shader (gpu_rays_1st_pass_fs.glsl).
   // This is so that we don't incorrectly clip the range values near the
   // corners of the cube cam viewport.
-  this->dataPtr->nearClipCube = this->NearClipPlane() * 0.6f;
+
+  // compute smallest box to fit in sphere with radius = this->NearClipPlane
+  double boxSize = this->NearClipPlane() * 2 / std::sqrt(3.0);
+  this->dataPtr->nearClipCube = boxSize * 0.5;
 
   this->ConfigureCamera();
   this->CreateSampleTexture();

@@ -64,6 +64,9 @@ Ogre::SceneNode *Ogre2Node::Node() const
 //////////////////////////////////////////////////
 void Ogre2Node::Destroy()
 {
+  if (!ogreNode)
+    return;
+
   BaseNode::Destroy();
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   ogreSceneManager->destroySceneNode(this->ogreNode);

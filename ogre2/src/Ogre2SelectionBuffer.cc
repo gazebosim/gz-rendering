@@ -127,11 +127,21 @@ void Ogre2SelectionBuffer::Update()
 
   this->dataPtr->materialSwitcher->Reset();
 
+  this->dataPtr->scene->StartForcedRender();
+
   // manual update
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
+  this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
+  this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
+  this->dataPtr->ogreCompositorWorkspace->_update();
+  this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
+
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve(2u);
+  this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
+
+  this->dataPtr->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
+
+  this->dataPtr->scene->EndForcedRender();
 
   this->dataPtr->renderTexture->copyContentsToMemory(*this->dataPtr->pixelBox,
       Ogre::RenderTarget::FB_FRONT);
@@ -192,9 +202,12 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   const_cast<Ogre::CompositorPassSceneDef *>(scenePass)->mVisibilityMask =
       IGN_VISIBILITY_SELECTABLE;
 
-  // buffer to store render texture data
-  size_t bufferSize = Ogre::PixelUtil::getMemorySize(width, height, 1, format);
+  // buffer to store render texture data. Ensure it's at least 4 bytes
+  size_t bufferSize = std::max<size_t>(
+      Ogre::PixelUtil::getMemorySize(width, height, 1, format),
+      4u);
   this->dataPtr->buffer = new uint8_t[bufferSize];
+  memset(this->dataPtr->buffer, 0, 4u);
   this->dataPtr->pixelBox = new Ogre::PixelBox(width,
       height, 1, format, this->dataPtr->buffer);
 }

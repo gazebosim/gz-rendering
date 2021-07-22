@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BoundingBoxCAMERA_HH_
-#define IGNITION_RENDERING_BoundingBoxCAMERA_HH_
+#ifndef IGNITION_RENDERING_BoundingBOXCAMERA_HH_
+#define IGNITION_RENDERING_BoundingBOXCAMERA_HH_
 
 #include <string>
 #include <vector>
@@ -24,12 +24,11 @@
 #include <ignition/common/Event.hh>
 #include "ignition/rendering/Camera.hh"
 
-
 namespace ignition
 {
   namespace rendering
   {
-    /// \brief BoundingBox types for Visible / Full BoundingBox
+    /// \brief BoundingBox types for Visible / Full 2D Boxes / 3D Boxes
     enum class BoundingBoxType {
 
       /// FullBox2D: 2D box that shows the full box of occluded objects
@@ -50,13 +49,13 @@ namespace ignition
       /// \brief Box type
       ignition::rendering::BoundingBoxType type;
 
-      /// \brief Center of the box in pixel coord in 2D, and world coord in 3D
+      /// \brief Center of the box in pixel coord in 2D, and camera coord in 3D
       ignition::math::Vector3d center;
 
       /// \brief Size of the box (width, height, depth), depth = 0 in 2D boxes
       ignition::math::Vector3d size;
 
-      /// \brief Oreintation of the 3D box.
+      /// \brief Oreintation of the 3D box in camera coord.
       /// The 2D boxes are axis aligned (oreintation = 0)
       ignition::math::Quaterniond oreintation;
 
@@ -71,7 +70,8 @@ namespace ignition
     };
 
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \class Camera Camera.hh ignition/rendering/Camera.hh
+    /// \class BoundingBoxCamera BoundingBoxCamera.hh
+    /// ignition/rendering/BoundingBoxCamera.hh
     /// \brief Poseable BoundingBox camera used for rendering the scene graph.
     /// This camera is designed to produced BoundingBox data, instead of a 2D
     /// image.
@@ -79,9 +79,6 @@ namespace ignition
       public virtual Camera,
       public virtual Sensor
     {
-      /// \brief Destructor
-      public: virtual ~BoundingBoxCamera() { }
-
       /// \brief Get the BoundingBox data
       /// \return Buffer of bounding boxes info (label, minX, minY, maxX, maxY)
       public: virtual std::vector<BoundingBox> BoundingBoxData() const = 0;
@@ -98,13 +95,13 @@ namespace ignition
 
       /// \brief Get the BoundingBox Type (Visible / Full)
       /// \return BoundingBox Type (Visible / Full)
-      public: virtual BoundingBoxType Type() = 0;
+      public: virtual BoundingBoxType Type() const = 0;
 
       /// \brief Draw a bounding box on the givin image in green color
       /// \param[in] data buffer contains the image data
       /// \param[in] box bounding box to be drawn
       public: virtual void DrawBoundingBox(unsigned char *_data,
-        BoundingBox &_box) = 0;
+        const BoundingBox &_box) = 0;
     };
   }
   }

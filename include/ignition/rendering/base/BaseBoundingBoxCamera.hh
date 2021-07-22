@@ -53,11 +53,11 @@ namespace ignition
       public: virtual void SetBoundingBoxType(BoundingBoxType _type);
 
       // Documentation inherited
-      public: virtual BoundingBoxType Type();
+      public: virtual BoundingBoxType Type() const;
 
       // Documentation inherited
       public: virtual void DrawBoundingBox(unsigned char *_data,
-        BoundingBox &_box);
+        const BoundingBox &_box);
     };
 
     //////////////////////////////////////////////////
@@ -96,7 +96,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    BoundingBoxType BaseBoundingBoxCamera<T>::Type()
+    BoundingBoxType BaseBoundingBoxCamera<T>::Type() const
     {
       return BoundingBoxType::VisibleBox2D;
     }
@@ -104,7 +104,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseBoundingBoxCamera<T>::DrawBoundingBox(unsigned char *,
-      BoundingBox &)
+      const BoundingBox &)
     {
     }
   }

@@ -18,7 +18,7 @@
 #include <random>
 #include <limits>
 
-#include "ignition/common/Console.hh"
+#include <ignition/common/Console.hh>
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
@@ -31,7 +31,7 @@
 #include "ignition/rendering/ogre2/Ogre2BoundingBoxCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/Utils.hh"
-#include "ignition/math/Color.hh"
+#include <ignition/math/Color.hh>
 
 #include <OgreGL3PlusAsyncTicket.h>
 #include <OgreBitwise.h>
@@ -40,7 +40,6 @@
 
 using namespace ignition;
 using namespace rendering;
-
 
 namespace ignition
 {
@@ -84,7 +83,7 @@ namespace ignition
       private: Ogre::MaterialPtr plainOverlayMaterial;
 
       /// \brief User Data Key to set the label
-      private: std::string labelKey = "label";
+      private: const std::string labelKey = "label";
 
       /// \brief Label for background pixels in the ogre Ids map
       private: uint32_t backgroundLabel {255};
@@ -964,7 +963,7 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
 
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::DrawBoundingBox(
-  unsigned char *_data, BoundingBox &_box)
+  unsigned char *_data, const BoundingBox &_box)
 {
   // 3D box
   if (_box.type == BoundingBoxType::Box3D)
@@ -1072,7 +1071,7 @@ void Ogre2BoundingBoxCamera::SetBoundingBoxType(BoundingBoxType _type)
 }
 
 /////////////////////////////////////////////////
-BoundingBoxType Ogre2BoundingBoxCamera::Type()
+BoundingBoxType Ogre2BoundingBoxCamera::Type() const
 {
   return this->dataPtr->type;
 }

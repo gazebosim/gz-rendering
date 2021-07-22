@@ -600,7 +600,6 @@ namespace ignition
                     return BoundingBoxCameraPtr();
                   }
 
-
       /// \brief Implementation for creating GpuRays sensor.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of GpuRays sensor

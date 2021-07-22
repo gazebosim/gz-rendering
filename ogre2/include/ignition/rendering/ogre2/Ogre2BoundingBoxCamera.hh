@@ -93,7 +93,7 @@ namespace ignition
       public: virtual void SetBoundingBoxType(BoundingBoxType _type) override;
 
       // Documentation inherited
-      public: virtual BoundingBoxType Type() override;
+      public: virtual BoundingBoxType Type() const override;
 
       /// \brief Create texture to hold ogre Ids to calculate the boundaries
       /// of each ogre id mask
@@ -144,7 +144,7 @@ namespace ignition
       /// \param[in] data buffer contains the image data
       /// \param[in] box bounding box to draw
       public: virtual void DrawBoundingBox(unsigned char *_data,
-        BoundingBox &_box) override;
+        const BoundingBox &_box) override;
 
       /// \brief Convert from clip coord (after projection) to screen coord.
       /// \param[inout] minVertex min vertex in clip coord to screen coord

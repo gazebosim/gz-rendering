@@ -425,7 +425,7 @@ void BoundingBoxCameraTest::Oreinted3dBoxes(
   EXPECT_NEAR(box.oreintation.Pitch(), 0.870796, margin_error);
   EXPECT_NEAR(box.oreintation.Yaw(), -3.14159, margin_error);
 
-  EXPECT_EQ(box.label, 1);
+  EXPECT_EQ(box.label, 1u);
   g_mutex.unlock();
 
   // Clean up

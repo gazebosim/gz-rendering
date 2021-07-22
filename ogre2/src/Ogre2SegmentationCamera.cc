@@ -65,8 +65,11 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
 
   /// \brief Convert label of semantic map to a unique color for colored map
   /// \param[in] _label id of the semantic map or encoded id of panoptic map
+  /// \param[in] _isMultiLink bool used to skip the taken color check if the
+  /// label is for a multi link model, as all links should have the same color
   /// \return _color unique color in the colored map for that label
-  private: math::Color LabelToColor(int64_t _label);
+  private: math::Color LabelToColor(int64_t _label,
+    bool _isMultiLink = false);
 
   /// \brief Check if the color is taken previously
   /// \param[in] _color Color to be checked
@@ -232,7 +235,8 @@ bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
 }
 
 /////////////////////////////////////////////////
-math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label)
+math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
+  bool _isMultiLink)
 {
   if (_label == this->backgroundLabel)
     return this->backgroundColor;
@@ -253,6 +257,9 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label)
   // with the same label will have the same color
   if (this->type == SegmentationType::SEMANTIC &&
     this->coloredLabel.count(_label))
+    return color;
+
+  if (_isMultiLink)
     return color;
 
   // loop recursivly till finding a unique color
@@ -277,9 +284,29 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
 
+  // Used for multi-link models, where each model has many ogre items but
+  // belongs to the same object, and all of them has the same parent name
+  std::string prevParentName = "";
+
+  // Store the ogre objects in a vecotr
+  std::vector<Ogre::MovableObject *> ogreObjects;
   while (itor.hasMoreElements())
   {
     Ogre::MovableObject *object = itor.peekNext();
+    ogreObjects.push_back(object);
+    itor.moveNext();
+  }
+
+  // Sort the ogre objects by name
+  // The algorithm of handeling multi-link models depends on a sorted objects
+  // by name, so all links that belongs to the same object come in order
+  std::sort(ogreObjects.begin(), ogreObjects.end(),
+    [] (Ogre::MovableObject * object1, Ogre::MovableObject * object2) {
+      return object1->getName() > object2->getName();
+  });
+
+  for (auto object : ogreObjects)
+  {
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
     // get visual from ogre item
@@ -302,8 +329,6 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
       Ogre2VisualPtr ogreVisual = std::dynamic_pointer_cast<Ogre2Visual>(
         visual);
 
-      // std::cout << "visual " << visual->Name() << " ,id" <<  visual->Id() <<  " ogreID " << item->getId() << std::endl;
-
       // get class user data
       Variant labelAny = ogreVisual->UserData(this->labelKey);
       int label;
@@ -317,7 +342,7 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
         label = this->backgroundLabel;
       }
 
-      // sub item custom parameter to set the material
+      // sub item custom parameter to set the pixel color material
       Ogre::Vector4 customParameter;
 
       // Material Switching
@@ -340,10 +365,33 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
       }
       else if (this->type == SegmentationType::PANOPTIC)
       {
+        auto itemName = visual->Name();
+        std::string parentName;
+
+        // Visuals that are added without a name (through rendering API)
+        // will have the name "scene::Visual(VISUAL_ID)", use it as a name
+        auto unNamedVisualIndex = itemName.find("scene::Visual");
+        if (unNamedVisualIndex != std::string::npos)
+          parentName = itemName.substr(0, itemName.find_first_of(")") + 1);
+        else
+          parentName = itemName.substr(0, itemName.find("::"));
+
         if (!this->instancesCount.count(label))
           this->instancesCount[label] = 0;
 
-        this->instancesCount[label]++;
+        // Multi link model has many links with the same first name and should
+        // have the same pixels color
+        bool isMultiLink = false;
+        if (parentName == prevParentName)
+        {
+          isMultiLink = true;
+        }
+        else
+        {
+          this->instancesCount[label]++;
+          prevParentName = parentName;
+        }
+
         int instanceCount = this->instancesCount[label];
 
         if (this->isColoredMap)
@@ -353,9 +401,9 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
 
           math::Color color;
           if (label == this->backgroundLabel)
-            color = this->LabelToColor(label);
+            color = this->LabelToColor(label, isMultiLink);
           else
-            color = this->LabelToColor(compositeId);
+            color = this->LabelToColor(compositeId, isMultiLink);
 
           customParameter = Ogre::Vector4(
             color.R(), color.G(), color.B(), 1.0);
@@ -391,7 +439,6 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
           subItem->setMaterial(this->plainMaterial);
       }
     }
-    itor.moveNext();
   }
 
   // reset the count & colors tracking

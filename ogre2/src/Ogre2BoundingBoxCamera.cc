@@ -89,6 +89,10 @@ namespace ignition
       /// \brief Label for background pixels in the ogre Ids map
       private: uint32_t backgroundLabel {255};
 
+      /// \brief Map ogre ID to the top parent name of the item.
+      /// used in multi-link models, key: ogreId, value: parent name
+      private: std::map<uint32_t, std::string> ogreIdName;
+
       /// \brief Ogre2 Scene
       private: Ogre2ScenePtr scene;
 
@@ -143,6 +147,11 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
   /// \brief Keep track of the visible bounding boxes (used in filtering)
   /// Key: ogreId, value: label id
   public: std::map<uint32_t, uint32_t> visibleBoxesLabel;
+
+  /// \brief Map parent name of the visual to the boxes in it to merge them.
+  /// Used in multi-link models, as each parent contains many boxes in it.
+  /// Key: parent name, value: vector of boxes that belongs to that model.
+  public: std::map<std::string, std::vector<BoundingBox *>> parentNameToBoxes;
 
   /// \brief Output bounding boxes to nofity listeners
   public: std::vector<BoundingBox> output_boxes;
@@ -231,6 +240,32 @@ void BoundingBoxMaterialSwitcher::preRenderTargetUpdate(
         label = this->backgroundLabel;
       }
 
+      // for full bbox, each pixel contains 1 channel for label
+      // and 2 channels stores ogreId
+      uint32_t ogreId = item->getId();
+
+      float labelColor = label / 255.0;
+      float ogreId1 = (ogreId / 256) / 255.0;
+      float ogreId2 = (ogreId % 256) / 255.0;
+
+      // Material color
+      auto customParameter = Ogre::Vector4(labelColor, ogreId1, ogreId2, 1.0);
+
+      // Multi-links models handeling
+      auto itemName = visual->Name();
+      std::string parentName;
+
+      // Visuals that are added without a name (through rendering API)
+      // will have the name "scene::Visual(VISUAL_ID)", use it as a name
+      auto unNamedVisualIndex = itemName.find("scene::Visual");
+      if (unNamedVisualIndex != std::string::npos)
+        parentName = itemName.substr(0, itemName.find_first_of(")") + 1);
+      else
+        parentName = itemName.substr(0, itemName.find("::"));
+
+      this->ogreIdName[ogreId] = parentName;
+
+      // Switch material for all sub items
       for (unsigned int i = 0; i < item->getNumSubItems(); i++)
       {
         // save subitems material
@@ -238,16 +273,7 @@ void BoundingBoxMaterialSwitcher::preRenderTargetUpdate(
         Ogre::HlmsDatablock *datablock = subItem->getDatablock();
         this->datablockMap[subItem] = datablock;
 
-        // for full bbox, each pixel contains 1 channel for label
-        // and 2 channels stores ogreId
-        uint32_t ogreId = item->getId();
-
-        float labelColor = label / 255.0;
-        float ogreId1 = (ogreId / 256) / 255.0;
-        float ogreId2 = (ogreId % 256) / 255.0;
-
-        subItem->setCustomParameter(1, Ogre::Vector4(
-        labelColor, ogreId1, ogreId2, 1.0));
+        subItem->setCustomParameter(1, customParameter);
 
         if (!datablock->getMacroblock()->mDepthWrite &&
             !datablock->getMacroblock()->mDepthCheck)
@@ -497,6 +523,8 @@ void Ogre2BoundingBoxCamera::PostRender()
 
   this->dataPtr->boundingboxes.clear();
   this->dataPtr->visibleBoxesLabel.clear();
+  this->dataPtr->parentNameToBoxes.clear();
+  this->dataPtr->materialSwitcher->ogreIdName.clear();
 
   this->dataPtr->newBoundingBoxes(this->dataPtr->output_boxes);
 }
@@ -530,6 +558,58 @@ void Ogre2BoundingBoxCamera::MarkVisibleBoxes()
       }
     }
   }
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCamera::MergeMultiLinksModels()
+{
+  // Combine the boxes with the same parent name together to merge them
+  for (auto box : this->dataPtr->boundingboxes)
+  {
+    auto ogreId = box.first;
+    auto parentName = this->dataPtr->materialSwitcher->ogreIdName[ogreId];
+    this->dataPtr->parentNameToBoxes[parentName].push_back(box.second);
+  }
+
+  // Merge the boxes that is related to the same parent
+  for (auto nameToBoxes : this->dataPtr->parentNameToBoxes)
+  {
+    auto mergedBox = this->MergeBoxes2D(nameToBoxes.second);
+
+    // Store boxes in the output vector
+    this->dataPtr->output_boxes.push_back(mergedBox);
+  }
+}
+
+/////////////////////////////////////////////////
+BoundingBox Ogre2BoundingBoxCamera::MergeBoxes2D(
+        std::vector<BoundingBox *> _boxes)
+{
+  BoundingBox mergedBox(this->dataPtr->type);
+  uint32_t minX = UINT32_MAX;
+  uint32_t maxX = 0;
+  uint32_t minY = UINT32_MAX;
+  uint32_t maxY = 0;
+
+  for (auto box : _boxes)
+  {
+    uint32_t boxMinX = box->center.X() - box->size.X() / 2;
+    uint32_t boxMaxX = box->center.X() + box->size.X() / 2;
+    uint32_t boxMinY = box->center.Y() - box->size.Y() / 2;
+    uint32_t boxMaxY = box->center.Y() + box->size.Y() / 2;
+
+    minX = std::min<uint32_t>(minX, boxMinX);
+    maxX = std::max<uint32_t>(maxX, boxMaxX);
+    minY = std::min<uint32_t>(minY, boxMinY);
+    maxY = std::max<uint32_t>(maxY, boxMaxY);
+  }
+
+  uint32_t width = maxX - minX;
+  uint32_t height = maxY - minY;
+  mergedBox.size.Set(width, height);
+  mergedBox.center.Set(minX + width / 2, minY + height / 2);
+
+  return mergedBox;
 }
 
 /////////////////////////////////////////////////
@@ -693,10 +773,10 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
     box.second->size.X() = boxWidth;
     box.second->size.Y() = boxHeight;
     box.second->size.Z() = 0;
-
-    // Store boxes in the output vector
-    this->dataPtr->output_boxes.push_back(*box.second);
   }
+
+  // Combine boxes of multi-links model if exists
+  this->MergeMultiLinksModels();
 }
 
 /////////////////////////////////////////////////
@@ -730,8 +810,8 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
 
     // get the derived position
     Ogre::Vector3 position = node->_getDerivedPositionUpdated();
-    Ogre::Quaternion oreintation = node->getOrientation();
-    Ogre::Vector3 scale = node->getScale();
+    Ogre::Quaternion oreintation = node->_getDerivedOrientationUpdated();
+    Ogre::Vector3 scale = node->_getDerivedScaleUpdated();
 
     Ogre::Aabb aabb = item->getWorldAabb();
     Ogre::AxisAlignedBox worldAabb;
@@ -782,14 +862,17 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     itor.moveNext();
   }
 
+  // Set boxes label
   for (auto box : this->dataPtr->boundingboxes)
   {
     uint32_t ogreId = box.first;
     uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
 
     box.second->label = label;
-    this->dataPtr->output_boxes.push_back(*box.second);
   }
+
+  // Combine boxes of multi-links model if exists
+  this->MergeMultiLinksModels();
 }
 
 /////////////////////////////////////////////////

@@ -156,6 +156,15 @@ namespace ignition
       /// the ogre id which appears in the map.
       public: virtual void MarkVisibleBoxes();
 
+      /// \brief Merge a vector of 2D boxes, used in multi-links model.
+      /// \param[in] _boxes Vector of 2D boxes
+      /// \return Merged bounding box
+      public: virtual BoundingBox MergeBoxes2D(
+        std::vector<BoundingBox *> _boxes);
+
+      /// \brief Merge a links's boxes of multi links models
+      public: virtual void MergeMultiLinksModels();
+
       /// \brief Pointer to the ogre camera
       protected: Ogre::Camera *ogreCamera;
 

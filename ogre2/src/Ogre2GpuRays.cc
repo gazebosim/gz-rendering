@@ -200,6 +200,16 @@ Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
 void Ogre2LaserRetroMaterialSwitcher::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent & /*_evt*/)
 {
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    Ogre2IgnHlmsCustomizations &hlmsCustomizations =
+        engine->HlmsCustomizations();
+    Ogre::Pass *pass =
+        this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
+    pass->getVertexProgramParameters()->setNamedConstant(
+          "ignMinClipDistance", hlmsCustomizations.minDistanceClip );
+  }
+
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
@@ -296,6 +306,11 @@ void Ogre2LaserRetroMaterialSwitcher::postRenderTargetUpdate(
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);
   }
+
+  Ogre::Pass *pass =
+      this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
+  pass->getVertexProgramParameters()->setNamedConstant(
+        "ignMinClipDistance", 0.0f );
 }
 
 

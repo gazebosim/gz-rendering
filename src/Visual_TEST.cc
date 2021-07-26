@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
+#include <variant>
 
 #include <ignition/common/Console.hh>
 
@@ -346,6 +347,15 @@ void VisualTest::UserData(const std::string &_renderEngine)
     auto res = std::get<int>(value);
     igndbg << res << std::endl;
   }, std::bad_variant_access);
+
+  // Check the contents of a userData key that does not exist.
+  // This should give us a default-constructed variant, which should hold no
+  // types in it (i.e., is an "empty variant").
+  Variant valueEmpty = visual->UserData("randomKey");
+  EXPECT_FALSE(std::holds_alternative<int>(valueEmpty));
+  EXPECT_FALSE(std::holds_alternative<float>(valueEmpty));
+  EXPECT_FALSE(std::holds_alternative<double>(valueEmpty));
+  EXPECT_FALSE(std::holds_alternative<std::string>(valueEmpty));
 
   // Clean up
   engine->DestroyScene(scene);

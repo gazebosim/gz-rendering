@@ -28,7 +28,15 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    using Variant = std::variant<int, float, double, std::string>;
+    /// \brief Alias for a variant that can holds various types of data.
+    /// The first type of the variant is std::monostate in order to prevent
+    /// default-constructed variants from holding a type (a default-constructed
+    /// variant is returned when a user calls Visual::UserData with a key that
+    /// doesn't exist for the visual. In this case, since the key doesn't
+    /// exist, the variant that is returned shouldn't hold any types - an
+    /// "empty variant" should be returned for keys that don't exist)
+    using Variant = std::variant<std::monostate, int, float, double,
+          std::string>;
 
     /// \class Visual Visual.hh ignition/rendering/Visual.hh
     /// \brief Represents a visual node in a scene graph. A Visual is the only

@@ -137,6 +137,12 @@ namespace ignition
       public: virtual void SetColorRangeImage(
                   const std::string &_image) override;
 
+      // Documentation inherited.
+      public: virtual float ParticleScatterRatio() const override;
+
+      // Documentation inherited.
+      public: virtual void SetParticleScatterRatio(float _ratio) override;
+
       /// \brief Emitter type.
       protected: EmitterType type = EM_POINT;
 
@@ -181,6 +187,15 @@ namespace ignition
 
       /// \brief The color image.
       protected: std::string colorRangeImage = "";
+
+      /// \brief The particle scatter ratio. This is used to determine the ratio
+      /// of particles that will be detected by sensors. Increasing the ratio
+      /// increases the scatter of the particles, which means there is a higher
+      /// chance of particles reflecting and interfering with depth sensing,
+      /// making the emitter appear more dense. Decreasing the ratio decreases
+      /// the scatter of the particles, making it appear less dense. This value
+      /// should be > 0.
+      protected: float particleScatterRatio = 0.65f;
 
       /// \brief Only the scene can create a particle emitter
       private: friend class BaseScene;
@@ -404,6 +419,21 @@ namespace ignition
     void BaseParticleEmitter<T>::SetColorRangeImage(const std::string &_image)
     {
       this->colorRangeImage = _image;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    float BaseParticleEmitter<T>::ParticleScatterRatio() const
+    {
+      return this->particleScatterRatio;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseParticleEmitter<T>::SetParticleScatterRatio(float _ratio)
+    {
+      if (_ratio > 0.0f)
+        this->particleScatterRatio = _ratio;
     }
     }
   }

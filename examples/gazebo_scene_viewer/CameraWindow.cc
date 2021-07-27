@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-#include "CameraWindow.hh"
 
 #if __APPLE__
   #include <OpenGL/gl.h>
@@ -28,6 +27,7 @@
 
 #if !defined(__APPLE__) && !defined(_WIN32)
   #include <GL/glx.h>
+  #undef Status
 #endif
 
 #include <gazebo/common/Console.hh>
@@ -37,6 +37,7 @@
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/Scene.hh>
 
+#include "CameraWindow.hh"
 #include "SceneManager.hh"
 
 #define KEY_ESC 27
@@ -166,7 +167,7 @@ void GlutKeyboard(unsigned char _key, int, int)
   {
     // stop transport
     gazebo::transport::stop();
-    gazebo::transport::fini();  
+    gazebo::transport::fini();
     exit(0);
   }
   else if (_key == KEY_TAB)

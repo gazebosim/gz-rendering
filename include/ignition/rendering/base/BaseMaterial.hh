@@ -233,6 +233,28 @@ namespace ignition
       public: virtual void ClearEmissiveMap() override;
 
       // Documentation inherited
+      public: virtual bool HasLightMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string LightMap() const override;
+
+      // Documentation inherited
+      public: virtual unsigned int LightMapTexCoordSet() const override;
+
+      // Documentation inherited
+      public: virtual void SetLightMap(const std::string &_lightMap,
+          unsigned int uvSet = 0u) override;
+
+      // Documentation inherited
+      public: virtual void ClearLightMap() override;
+
+      // Documentation inherited
+      public: virtual void SetRenderOrder(const float _renderOrder) override;
+
+      // Documentation inherited
+      public: virtual float RenderOrder() const override;
+
+      // Documentation inherited
       public: virtual void SetRoughness(const float _roughness) override;
 
       // Documentation inherited
@@ -321,6 +343,9 @@ namespace ignition
 
       /// \brief Enable two sided rendering
       protected: bool twoSidedEnabled = false;
+
+      /// \brief Material render order
+      protected: double renderOrder = 0.0;
 
       /// \brief Shininess factor
       protected: double shininess = 0.0;
@@ -515,6 +540,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMaterial<T>::SetRenderOrder(const float _renderorder)
+    {
+      this->renderOrder = _renderorder;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     math::Color BaseMaterial<T>::Ambient() const
     {
       return this->ambient;
@@ -553,6 +585,13 @@ namespace ignition
     double BaseMaterial<T>::Transparency() const
     {
       return this->transparency;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    float BaseMaterial<T>::RenderOrder() const
+    {
+      return this->renderOrder;
     }
 
     //////////////////////////////////////////////////
@@ -823,6 +862,41 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    bool BaseMaterial<T>::HasLightMap() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::string BaseMaterial<T>::LightMap() const
+    {
+      return std::string();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseMaterial<T>::LightMapTexCoordSet() const
+    {
+      return 0u;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetLightMap(const std::string &, unsigned int)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::ClearLightMap()
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMaterial<T>::SetRoughness(const float)
     {
       // no op
@@ -872,6 +946,7 @@ namespace ignition
       this->SetDiffuse(_material->Diffuse());
       this->SetSpecular(_material->Specular());
       this->SetEmissive(_material->Emissive());
+      this->SetRenderOrder(_material->RenderOrder());
       this->SetShininess(_material->Shininess());
       this->SetAlphaFromTexture(_material->TextureAlphaEnabled(),
           _material->AlphaThreshold(), _material->TwoSidedEnabled());
@@ -892,6 +967,8 @@ namespace ignition
       this->SetMetalness(_material->Metalness());
       this->SetEnvironmentMap(_material->EnvironmentMap());
       this->SetEmissiveMap(_material->EmissiveMap());
+      this->SetLightMap(_material->LightMap(),
+          _material->LightMapTexCoordSet());
       this->SetShaderType(_material->ShaderType());
       this->SetVertexShader(_material->VertexShader());
       this->SetFragmentShader(_material->FragmentShader());
@@ -910,6 +987,7 @@ namespace ignition
       this->SetTransparency(_material.Transparency());
       this->SetAlphaFromTexture(_material.TextureAlphaEnabled(),
           _material.AlphaThreshold(), _material.TwoSidedEnabled());
+      this->SetRenderOrder(_material.RenderOrder());
       // TODO(anyone): update common::Material
       this->SetReflectivity(0);
       this->SetTexture(_material.TextureImage());
@@ -934,6 +1012,7 @@ namespace ignition
       this->SetMetalness(pbrMat->Metalness());
       this->SetEnvironmentMap(pbrMat->EnvironmentMap());
       this->SetEmissiveMap(pbrMat->EmissiveMap());
+      this->SetLightMap(pbrMat->LightMap(), pbrMat->LightMapTexCoordSet());
     }
 
     //////////////////////////////////////////////////
@@ -962,6 +1041,7 @@ namespace ignition
       this->SetDiffuse(1.0, 1.0, 1.0);
       this->SetSpecular(0.2, 0.2, 0.2);
       this->SetEmissive(0, 0, 0);
+      this->SetRenderOrder(0);
       this->SetShininess(1.5);
       this->SetTransparency(0);
       this->SetReflectivity(0);
@@ -973,6 +1053,7 @@ namespace ignition
       this->ClearRoughnessMap();
       this->ClearMetalnessMap();
       this->ClearEmissiveMap();
+      this->ClearLightMap();
       this->SetRoughness(kDefaultPbr.Roughness());
       this->SetMetalness(kDefaultPbr.Metalness());
       this->SetShaderType(ST_PIXEL);

@@ -17,6 +17,15 @@
 
 #include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
 
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreRenderTarget.h>
+#include <OgreViewport.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 using namespace ignition::rendering;
 
 
@@ -65,4 +74,11 @@ Ogre::Technique *Ogre2RenderTargetMaterial::handleSchemeNotFound(
     return this->material->getSupportedTechnique(0);
   }
   return nullptr;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2RenderTargetMaterial::IsSameRenderTarget(
+    Ogre::RenderTarget *_renderTarget)
+{
+  return this->renderTarget == _renderTarget;
 }

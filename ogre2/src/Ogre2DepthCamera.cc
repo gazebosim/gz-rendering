@@ -104,7 +104,7 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
 
   /// \brief Output texture with depth and color data
-  public: Ogre::TexturePtr ogreDepthTexture;
+  public: Ogre::TexturePtr ogreDepthTexture[2];
 
   /// \brief Dummy render texture for the depth data
   public: RenderTexturePtr depthTexture;
@@ -137,6 +137,13 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   /// \brief Listener for setting particle noise value based on particle
   /// emitter region
   public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener;
+
+  /// \brief Particle scatter ratio. This is used to determine the ratio of
+  /// particles that will detected by the depth camera
+  public: double particleScatterRatio = 0.1;
+
+  /// \brief Name of sky box material
+  public: const std::string kSkyboxMaterialName = "SkyBox";
 };
 
 using namespace ignition;
@@ -290,13 +297,17 @@ void Ogre2DepthCamera::Destroy()
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
   // remove depth texture, material, compositor
-  if (this->dataPtr->ogreDepthTexture)
+  for( size_t i = 0u; i < 2u; ++i )
   {
-    Ogre::TextureManager::getSingleton().remove(
-        this->dataPtr->ogreDepthTexture->getName());
+    if (this->dataPtr->ogreDepthTexture[i])
+    {
+      Ogre::TextureManager::getSingleton().remove(
+            this->dataPtr->ogreDepthTexture[i]->getName());
+    }
   }
   if (this->dataPtr->ogreCompositorWorkspace)
   {
+    this->RemoveWorkspaceCrashWorkaround();
     ogreCompMgr->removeWorkspace(
         this->dataPtr->ogreCompositorWorkspace);
   }
@@ -451,6 +462,34 @@ void Ogre2DepthCamera::CreateDepthTexture()
       static_cast<float>(this->dataPtr->dataMaxVal));
   psParamsFinal->setNamedConstant("min",
       static_cast<float>(this->dataPtr->dataMinVal));
+
+  // create background material is specified
+  MaterialPtr backgroundMaterial = this->Scene()->BackgroundMaterial();
+  bool validBackground = backgroundMaterial &&
+      !backgroundMaterial->EnvironmentMap().empty();
+
+  if (validBackground)
+  {
+    Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
+    std::string skyMatName = this->dataPtr->kSkyboxMaterialName + "_"
+        + this->Name();
+    auto mat = matManager.getByName(skyMatName);
+    if (!mat)
+    {
+      auto skyboxMat = matManager.getByName(this->dataPtr->kSkyboxMaterialName);
+      if (!skyboxMat)
+      {
+        ignerr << "Unable to find skybox material" << std::endl;
+        return;
+      }
+      mat = skyboxMat->clone(skyMatName);
+    }
+    Ogre::TextureUnitState *texUnit =
+        mat->getTechnique(0u)->getPass(0u)->getTextureUnitState(0u);
+    texUnit->setTextureName(backgroundMaterial->EnvironmentMap(),
+        Ogre::TEX_TYPE_CUBE_MAP);
+  }
+
   // Create depth camera compositor
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -552,41 +591,11 @@ void Ogre2DepthCamera::CreateDepthTexture()
     this->dataPtr->ogreCompositorBaseNodeDef = baseNodeDefName;
     Ogre::CompositorNodeDef *baseNodeDef =
         ogreCompMgr->addNodeDefinition(baseNodeDefName);
-    Ogre::TextureDefinitionBase::TextureDefinition *rt0TexDef =
-        baseNodeDef->addTextureDefinition("rt0");
-    rt0TexDef->textureType = Ogre::TEX_TYPE_2D;
-    rt0TexDef->width = 0;
-    rt0TexDef->height = 0;
-    rt0TexDef->depth = 1;
-    rt0TexDef->numMipmaps = 0;
-    rt0TexDef->widthFactor = 1;
-    rt0TexDef->heightFactor = 1;
-    rt0TexDef->formatList = {Ogre::PF_FLOAT32_RGBA};
-    rt0TexDef->fsaa = 0;
-    rt0TexDef->uav = false;
-    rt0TexDef->automipmaps = false;
-    rt0TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
-    rt0TexDef->depthBufferId = Ogre::DepthBuffer::POOL_INVALID;
-    rt0TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
-    rt0TexDef->fsaaExplicitResolve = false;
 
-    Ogre::TextureDefinitionBase::TextureDefinition *rt1TexDef =
-        baseNodeDef->addTextureDefinition("rt1");
-    rt1TexDef->textureType = Ogre::TEX_TYPE_2D;
-    rt1TexDef->width = 0;
-    rt1TexDef->height = 0;
-    rt1TexDef->depth = 1;
-    rt1TexDef->numMipmaps = 0;
-    rt1TexDef->widthFactor = 1;
-    rt1TexDef->heightFactor = 1;
-    rt1TexDef->formatList = {Ogre::PF_FLOAT32_RGBA};
-    rt1TexDef->fsaa = 0;
-    rt1TexDef->uav = false;
-    rt1TexDef->automipmaps = false;
-    rt1TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
-    rt1TexDef->depthBufferId = Ogre::DepthBuffer::POOL_INVALID;
-    rt1TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
-    rt1TexDef->fsaaExplicitResolve = false;
+    baseNodeDef->addTextureSourceName(
+          "rt0", 0u, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+    baseNodeDef->addTextureSourceName(
+          "rt1", 1u, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
     Ogre::TextureDefinitionBase::TextureDefinition *depthTexDef =
         baseNodeDef->addTextureDefinition("depthTexture");
@@ -669,7 +678,11 @@ void Ogre2DepthCamera::CreateDepthTexture()
 
     Ogre::CompositorTargetDef *colorTargetDef =
         baseNodeDef->addTargetPass("colorTexture");
-    colorTargetDef->setNumPasses(2);
+
+    if (validBackground)
+      colorTargetDef->setNumPasses(3);
+    else
+      colorTargetDef->setNumPasses(2);
     {
       // clear pass
       Ogre::CompositorPassClearDef *passClear =
@@ -677,18 +690,28 @@ void Ogre2DepthCamera::CreateDepthTexture()
           colorTargetDef->addPass(Ogre::PASS_CLEAR));
       passClear->mColourValue = Ogre::ColourValue(
           Ogre2Conversions::Convert(this->Scene()->BackgroundColor()));
+
+      if (validBackground)
+      {
+        // quad pass
+        Ogre::CompositorPassQuadDef *passQuad =
+            static_cast<Ogre::CompositorPassQuadDef *>(
+            colorTargetDef->addPass(Ogre::PASS_QUAD));
+        passQuad->mMaterialName = this->dataPtr->kSkyboxMaterialName + "_"
+            + this->Name();
+        passQuad->mFrustumCorners =
+            Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
+      }
+
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           colorTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
 
-      // todo(anyone) Fix shadows. The shadow compositor node gets rebuilt
-      // when the number of shadow-casting light changes so we end up with
-      // invalid shadow node here. See Ogre2Scene::PreRender function on how
-      // it destroys and triggers a compositor rebuild in OgreCamera when
-      // the number of shadow-casting light changes
-      // passScene->mShadowNode = "PbsMaterialsShadowNode";
+      // todo(anyone) PbsMaterialsShadowNode is hardcoded.
+      // Although this may be just fine
+      passScene->mShadowNode = "PbsMaterialsShadowNode";
     }
 
     Ogre::CompositorTargetDef *depthTargetDef =
@@ -803,10 +826,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
     Ogre::CompositorNodeDef *finalNodeDef =
         ogreCompMgr->addNodeDefinition(finalNodeDefName);
 
-    // output texture
-    finalNodeDef->addTextureSourceName("rt_output", 0,
+    finalNodeDef->addTextureSourceName("rt_input", 0,
         Ogre::TextureDefinitionBase::TEXTURE_INPUT);
-    finalNodeDef->addTextureSourceName("rt_input", 1,
+    // output texture
+    finalNodeDef->addTextureSourceName("rt_output", 1,
         Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
     finalNodeDef->setNumTargetPass(1);
@@ -842,8 +865,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
     Ogre::CompositorWorkspaceDef *workDef =
         ogreCompMgr->addWorkspaceDefinition(wsDefName);
 
-    workDef->connect(baseNodeDefName, 0,  finalNodeDefName, 1);
-    workDef->connectExternal(0, finalNodeDefName, 0);
+    workDef->connectExternal(0, baseNodeDefName, 0);
+    workDef->connectExternal(1, baseNodeDefName, 1);
+    workDef->connect(baseNodeDefName, finalNodeDefName);
   }
   Ogre::CompositorWorkspaceDef *wsDef =
       ogreCompMgr->getWorkspaceDefinition(wsDefName);
@@ -855,20 +879,43 @@ void Ogre2DepthCamera::CreateDepthTexture()
   }
 
   // create render texture - these textures pack the range data
-  this->dataPtr->ogreDepthTexture =
-    Ogre::TextureManager::getSingleton().createManual(
-    this->Name() + "_depth", "General", Ogre::TEX_TYPE_2D,
-    this->ImageWidth(), this->ImageHeight(), 1, 0,
-    Ogre::PF_FLOAT32_RGBA, Ogre::TU_RENDERTARGET,
-    0, false, 0, Ogre::BLANKSTRING, false, true);
+  for( size_t i = 0u; i < 2u; ++i )
+  {
+    this->dataPtr->ogreDepthTexture[i] =
+      Ogre::TextureManager::getSingleton().createManual(
+      this->Name() + "_depth" + std::to_string(i), "General",
+      Ogre::TEX_TYPE_2D, this->ImageWidth(), this->ImageHeight(), 1, 0,
+      Ogre::PF_FLOAT32_RGBA, Ogre::TU_RENDERTARGET,
+      0, false, 0, Ogre::BLANKSTRING, false, true);
 
-  Ogre::RenderTarget *rt =
-    this->dataPtr->ogreDepthTexture->getBuffer()->getRenderTarget();
+    Ogre::RenderTarget *rt =
+        this->dataPtr->ogreDepthTexture[i]->getBuffer()->getRenderTarget();
+    rt->setDepthBufferPool(Ogre::DepthBuffer::POOL_INVALID);
+  }
+
+  CreateWorkspaceInstance();
+}
+
+//////////////////////////////////////////////////
+void Ogre2DepthCamera::CreateWorkspaceInstance()
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  Ogre::CompositorChannelVec externalTargets(2u);
+  for( size_t i = 0u; i < 2u; ++i )
+  {
+    externalTargets[i].target =
+        this->dataPtr->ogreDepthTexture[i]->getBuffer()->getRenderTarget();
+    externalTargets[i].textures.push_back(this->dataPtr->ogreDepthTexture[i]);
+  }
 
   // create compositor worksspace
   this->dataPtr->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      rt, this->ogreCamera, wsDefName, false);
+      externalTargets, this->ogreCamera,
+      this->dataPtr->ogreCompositorWorkspaceDef, false);
 
   // add the listener
   Ogre::CompositorNode *node =
@@ -893,18 +940,35 @@ void Ogre2DepthCamera::CreateDepthTexture()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Render()
 {
+  this->scene->StartRendering();
+
   // update the compositors
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
+  this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
+  this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
+  this->dataPtr->ogreCompositorWorkspace->_update();
+  this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
+
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve(2u);
+  this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
+
+  this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 }
 
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::PreRender()
 {
-  if (!this->dataPtr->ogreDepthTexture)
+  if (!this->dataPtr->ogreDepthTexture[0])
     this->CreateDepthTexture();
+
+  if (!this->dataPtr->ogreCompositorWorkspace)
+    this->CreateWorkspaceInstance();
+
+  Ogre::Texture *rawDepthTextures[2] =
+  {
+    this->dataPtr->ogreDepthTexture[0].get(),
+    this->dataPtr->ogreDepthTexture[1].get()
+  };
 
   // update depth camera render passes
   Ogre2RenderTarget::UpdateRenderPassChain(
@@ -913,7 +977,16 @@ void Ogre2DepthCamera::PreRender()
       this->dataPtr->ogreCompositorBaseNodeDef,
       this->dataPtr->ogreCompositorFinalNodeDef,
       this->dataPtr->renderPasses,
-      this->dataPtr->renderPassDirty);
+      this->dataPtr->renderPassDirty,
+      &rawDepthTextures,
+      false);
+
+  if (rawDepthTextures[0] != this->dataPtr->ogreDepthTexture[0].get())
+  {
+    std::swap( this->dataPtr->ogreDepthTexture[0],
+               this->dataPtr->ogreDepthTexture[1] );
+  }
+
   for (auto &pass : this->dataPtr->renderPasses)
     pass->PreRender();
 
@@ -965,7 +1038,7 @@ void Ogre2DepthCamera::PostRender()
         1, imageFormat, this->dataPtr->depthBuffer);
 
   // blit data from gpu to cpu
-  auto rt = this->dataPtr->ogreDepthTexture->getBuffer()->getRenderTarget();
+  auto rt = this->dataPtr->ogreDepthTexture[1]->getBuffer()->getRenderTarget();
   rt->copyContentsToMemory(dstBox, Ogre::RenderTarget::FB_AUTO);
 
   if (!this->dataPtr->depthImage)
@@ -1100,6 +1173,38 @@ double Ogre2DepthCamera::NearClipPlane() const
 double Ogre2DepthCamera::FarClipPlane() const
 {
   return BaseDepthCamera::FarClipPlane();
+}
+
+//////////////////////////////////////////////////
+void Ogre2DepthCamera::SetShadowsNodeDefDirty()
+{
+  if (!this->dataPtr->ogreCompositorWorkspace)
+    return;
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  this->RemoveWorkspaceCrashWorkaround();
+  ogreCompMgr->removeWorkspace( this->dataPtr->ogreCompositorWorkspace );
+  this->dataPtr->ogreCompositorWorkspace = nullptr;
+}
+
+//////////////////////////////////////////////////
+void Ogre2DepthCamera::RemoveWorkspaceCrashWorkaround()
+{
+  Ogre::MaterialPtr material =
+      Ogre::MaterialManager::getSingleton().
+      getByName (this->dataPtr->depthMaterial->getName());
+
+  if (!material.isNull())
+  {
+    for (size_t i = 0; i < 4; ++i)
+    {
+      material->getBestTechnique()->getPass(0)->
+          getTextureUnitState(i)->setBlank();
+    }
+  }
 }
 
 //////////////////////////////////////////////////

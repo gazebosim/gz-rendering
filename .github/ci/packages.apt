@@ -2,7 +2,7 @@ freeglut3-dev
 libfreeimage-dev
 libglew-dev
 libignition-cmake2-dev
-libignition-common3-dev
+libignition-common4-dev
 libignition-math6-dev
 libignition-plugin-dev
 libogre-1.9-dev

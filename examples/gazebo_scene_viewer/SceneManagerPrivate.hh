@@ -325,6 +325,9 @@ namespace ignition
       protected: virtual void ProcessCone(
           const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
+      protected: virtual void ProcessCapsule(
+          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+
       protected: virtual void ProcessCylinder(
           const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 

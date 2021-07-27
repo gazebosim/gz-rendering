@@ -79,7 +79,7 @@ void buildScene(ScenePtr _scene)
   center->SetMaterial(green);
   root->AddChild(center);
 
-
+//! [red material]
   // create red material
   MaterialPtr red = _scene->CreateMaterial();
   red->SetAmbient(0.5, 0.0, 0.0);
@@ -87,6 +87,8 @@ void buildScene(ScenePtr _scene)
   red->SetSpecular(0.5, 0.5, 0.5);
   red->SetShininess(50);
   red->SetReflectivity(0);
+  red->SetRenderOrder(3);
+//! [red material]
 
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual();
@@ -94,7 +96,7 @@ void buildScene(ScenePtr _scene)
   sphere->SetOrigin(0.0, -0.5, 0.0);
   sphere->SetLocalPosition(3, 0, 0);
   sphere->SetLocalRotation(0, 0, 0);
-  sphere->SetLocalScale(1, 2.5, 1);
+  sphere->SetLocalScale(1, 1, 1);
   sphere->SetMaterial(red);
   root->AddChild(sphere);
 
@@ -116,12 +118,35 @@ void buildScene(ScenePtr _scene)
   box->SetMaterial(blue);
   root->AddChild(box);
 
+  // create ellipsoid visual
+  VisualPtr ellipsoidVisual = _scene->CreateVisual();
+  auto ellipsoid = _scene->CreateSphere();
+  ellipsoidVisual->SetLocalScale(1.2, 0.7, 0.5);
+  ellipsoidVisual->AddGeometry(ellipsoid);
+  ellipsoidVisual->SetLocalPosition(3, -1, 0);
+  ellipsoidVisual->SetMaterial(green);
+  root->AddChild(ellipsoidVisual);
+
+//! [white material]
   // create white material
   MaterialPtr white = _scene->CreateMaterial();
   white->SetAmbient(0.5, 0.5, 0.5);
   white->SetDiffuse(0.8, 0.8, 0.8);
   white->SetReceiveShadows(true);
   white->SetReflectivity(0);
+  white->SetRenderOrder(0);
+//! [white material]
+
+  VisualPtr capsuleVisual = _scene->CreateVisual();
+  CapsulePtr capsule = _scene->CreateCapsule();
+  capsule->SetLength(0.2);
+  capsule->SetRadius(0.2);
+  capsuleVisual->AddGeometry(capsule);
+  capsuleVisual->SetOrigin(0.0, 0.0, 0.0);
+  capsuleVisual->SetLocalPosition(4, 2, 0);
+  capsuleVisual->SetLocalScale(1, 1, 1);
+  capsuleVisual->SetMaterial(red);
+  root->AddChild(capsuleVisual);
 
   // create plane visual
   VisualPtr plane = _scene->CreateVisual();
@@ -130,6 +155,15 @@ void buildScene(ScenePtr _scene)
   plane->SetLocalPosition(3, 0, -0.5);
   plane->SetMaterial(white);
   root->AddChild(plane);
+
+  // create plane visual
+  VisualPtr plane2 = _scene->CreateVisual();
+  plane2->AddGeometry(_scene->CreatePlane());
+  plane2->SetLocalScale(5, 8, 1);
+  plane2->SetLocalPosition(4, 0.5, -0.5);
+  plane2->Scale(0.1, 0.1, 1);
+  plane2->SetMaterial(red);
+  root->AddChild(plane2);
 
   // create axis visual
   VisualPtr axis = _scene->CreateAxisVisual();

@@ -26,7 +26,6 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -35,6 +34,26 @@
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
 #include "Ogre2ParticleNoiseListener.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <Compositor/OgreCompositorManager2.h>
+#include <Compositor/OgreCompositorWorkspace.h>
+#include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
+#include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
+#include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
+#include <OgreDepthBuffer.h>
+#include <OgreHardwarePixelBuffer.h>
+#include <OgreItem.h>
+#include <OgreRenderTexture.h>
+#include <OgreRoot.h>
+#include <OgreSceneManager.h>
+#include <OgreTechnique.h>
+#include <OgreTextureManager.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 namespace ignition
 {
@@ -1072,29 +1091,49 @@ void Ogre2GpuRays::CreateGpuRaysTextures()
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget1stPass()
 {
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve(2u);
+
   // update the compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
+  {
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  for (auto i : this->dataPtr->cubeFaceIdx)
+
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_validateFinalTarget();
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_beginUpdate(false);
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_update();
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_endUpdate(false);
+
+    swappedTargets.clear();
+    this->dataPtr->ogreCompositorWorkspace1st[i]->_swapFinalTarget(
+          swappedTargets );
+
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(false);
+  }
 }
 
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 {
-  this->dataPtr->ogreCompositorWorkspace2nd->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  this->dataPtr->ogreCompositorWorkspace2nd->setEnabled(false);
+  this->dataPtr->ogreCompositorWorkspace2nd->_validateFinalTarget();
+  this->dataPtr->ogreCompositorWorkspace2nd->_beginUpdate(false);
+  this->dataPtr->ogreCompositorWorkspace2nd->_update();
+  this->dataPtr->ogreCompositorWorkspace2nd->_endUpdate(false);
+
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve(2u);
+  this->dataPtr->ogreCompositorWorkspace2nd->_swapFinalTarget(swappedTargets);
 }
 
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
+  this->scene->StartRendering();
+
   this->UpdateRenderTarget1stPass();
   this->UpdateRenderTarget2ndPass();
+
+  this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
 }
 
 //////////////////////////////////////////////////

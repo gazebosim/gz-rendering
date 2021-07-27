@@ -20,7 +20,6 @@
 #include <memory>
 
 #include "ignition/rendering/base/BaseRayQuery.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 

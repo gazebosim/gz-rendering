@@ -32,6 +32,18 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreItem.h>
+#include <OgreMesh2.h>
+#include <OgreMeshManager2.h>
+#include <OgreSceneManager.h>
+#include <OgreSubMesh2.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 /// \brief Private implementation
 class ignition::rendering::Ogre2DynamicRenderablePrivate
 {
@@ -118,6 +130,16 @@ void Ogre2DynamicRenderable::Destroy()
   this->dataPtr->sceneManager->destroyItem(this->dataPtr->ogreItem);
   this->dataPtr->ogreItem = nullptr;
 
+  // remove mesh from mesh manager
+  if (this->dataPtr->subMesh &&
+      Ogre::MeshManager::getSingleton().resourceExists(
+      this->dataPtr->subMesh->mParent->getName()))
+  {
+    Ogre::MeshManager::getSingleton().remove(
+        this->dataPtr->subMesh->mParent->getName());
+    this->dataPtr->subMesh = nullptr;
+  }
+
   if (this->dataPtr->material && this->dataPtr->ownsMaterial)
   {
     this->dataPtr->scene->DestroyMaterial(this->dataPtr->material);
@@ -131,18 +153,23 @@ void Ogre2DynamicRenderable::DestroyBuffer()
   if (this->dataPtr->vbuffer)
     delete [] this->dataPtr->vbuffer;
 
-  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+  Ogre::RenderSystem *renderSystem =
+      this->dataPtr->sceneManager->getDestinationRenderSystem();
   Ogre::VaoManager *vaoManager = renderSystem->getVaoManager();
 
   if (!vaoManager)
     return;
 
-  if (this->dataPtr->vertexBuffer)
-    vaoManager->destroyVertexBuffer(this->dataPtr->vertexBuffer);
-
-  if (this->dataPtr->vao)
-    vaoManager->destroyVertexArrayObject(this->dataPtr->vao);
+  if (this->dataPtr->subMesh)
+  {
+    if (!this->dataPtr->subMesh->mVao[Ogre::VpNormal].empty())
+    {
+      this->dataPtr->subMesh->destroyVaos(
+          this->dataPtr->subMesh->mVao[Ogre::VpNormal], vaoManager);
+    }
+    if (!this->dataPtr->subMesh->mVao[Ogre::VpShadow].empty())
+      this->dataPtr->subMesh->mVao[Ogre::VpShadow].clear();
+  }
 
   this->dataPtr->vertexBuffer = nullptr;
   this->dataPtr->vao = nullptr;
@@ -187,8 +214,8 @@ void Ogre2DynamicRenderable::UpdateBuffer()
   if (!this->dataPtr->dirty)
     return;
 
-  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+  Ogre::RenderSystem *renderSystem =
+      this->dataPtr->sceneManager->getDestinationRenderSystem();
 
   Ogre::VaoManager *vaoManager = renderSystem->getVaoManager();
   if (!vaoManager)

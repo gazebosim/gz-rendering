@@ -17,6 +17,10 @@
 
 #include <ignition/common/Console.hh>
 
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/MeshManager.hh>
+
+#include "ignition/rendering/ogre2/Ogre2Capsule.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -33,8 +37,8 @@ class ignition::rendering::Ogre2MarkerPrivate
   /// responsible for destroying the material
   public: bool ownsMaterial = false;
 
-  /// \brief Mesh Object for primitive shapes
-  public: Ogre2MeshPtr mesh = nullptr;
+  /// \brief Geometry Object for primitive shapes
+  public: Ogre2GeometryPtr geom{nullptr};
 
   /// \brief DynamicLines Object to display
   public: std::shared_ptr<Ogre2DynamicRenderable> dynamicRenderable;
@@ -64,13 +68,10 @@ void Ogre2Marker::PreRender()
 //////////////////////////////////////////////////
 void Ogre2Marker::Destroy()
 {
-  if (!this->Scene())
-    return;
-
-  if (this->dataPtr->mesh)
+  if (this->dataPtr->geom)
   {
-    this->dataPtr->mesh->Destroy();
-    this->dataPtr->mesh.reset();
+    this->dataPtr->geom->Destroy();
+    this->dataPtr->geom.reset();
   }
 
   if (this->dataPtr->dynamicRenderable)
@@ -79,7 +80,7 @@ void Ogre2Marker::Destroy()
     this->dataPtr->dynamicRenderable.reset();
   }
 
-  if (this->dataPtr->material && this->dataPtr->ownsMaterial)
+  if (this->dataPtr->material && this->dataPtr->ownsMaterial && this->Scene())
   {
     this->Scene()->DestroyMaterial(this->dataPtr->material);
     this->dataPtr->material.reset();
@@ -94,9 +95,17 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
     case MT_NONE:
       return nullptr;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
-      return this->dataPtr->mesh->OgreObject();
+    {
+      if (nullptr != this->dataPtr->geom)
+      {
+        return this->dataPtr->geom->OgreObject();
+      }
+      return nullptr;
+      break;
+    }
     case MT_LINE_STRIP:
     case MT_LINE_LIST:
     case MT_POINTS:
@@ -104,7 +113,12 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
     case MT_TRIANGLE_LIST:
     case MT_TRIANGLE_STRIP:
     {
-      return this->dataPtr->dynamicRenderable->OgreObject();
+      if (nullptr != this->dataPtr->dynamicRenderable)
+      {
+        return this->dataPtr->dynamicRenderable->OgreObject();
+      }
+      return nullptr;
+      break;
     }
     default:
       ignerr << "Invalid Marker type " << this->markerType << "\n";
@@ -124,16 +138,22 @@ void Ogre2Marker::Create()
   this->markerType = MT_NONE;
   this->dataPtr->dynamicRenderable.reset(new Ogre2DynamicRenderable(
       this->scene));
-  if (!this->dataPtr->mesh)
+  if (!this->dataPtr->geom)
   {
-    this->dataPtr->mesh =
-      std::dynamic_pointer_cast<Ogre2Mesh>(this->scene->CreateBox());
+    this->dataPtr->geom =
+      std::dynamic_pointer_cast<Ogre2Geometry>(this->scene->CreateBox());
   }
 }
 
 //////////////////////////////////////////////////
 void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
 {
+  if (nullptr == _material)
+  {
+    ignerr << "Cannot assign null material" << std::endl;
+    return;
+  }
+
   _material = (_unique) ? _material->Clone() : _material;
 
   Ogre2MaterialPtr derived =
@@ -158,18 +178,37 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
     case MT_NONE:
       break;
     case MT_BOX:
+    case MT_CAPSULE:
     case MT_CYLINDER:
     case MT_SPHERE:
-      this->dataPtr->mesh->SetMaterial(derived, false);
+    {
+      if (nullptr != this->dataPtr->geom)
+      {
+        this->dataPtr->geom->SetMaterial(derived, false);
+      }
+      else
+      {
+        ignerr << "Failed to set material, null geometry." << std::endl;
+      }
       break;
+    }
     case MT_LINE_STRIP:
     case MT_LINE_LIST:
     case MT_POINTS:
     case MT_TRIANGLE_FAN:
     case MT_TRIANGLE_LIST:
     case MT_TRIANGLE_STRIP:
-      this->dataPtr->dynamicRenderable->SetMaterial(derived, false);
+    {
+      if (nullptr != this->dataPtr->dynamicRenderable)
+      {
+        this->dataPtr->dynamicRenderable->SetMaterial(derived, false);
+      }
+      else
+      {
+        ignerr << "Failed to set material, null renderable." << std::endl;
+      }
       break;
+    }
     default:
       ignerr << "Invalid Marker type " << this->markerType << "\n";
       break;
@@ -219,30 +258,37 @@ void Ogre2Marker::SetType(MarkerType _markerType)
   auto visual = std::dynamic_pointer_cast<Ogre2Visual>(this->Parent());
 
   // clear geom if needed
-  if (this->dataPtr->mesh)
+  if (this->dataPtr->geom)
   {
     if (visual)
     {
       visual->RemoveGeometry(
           std::dynamic_pointer_cast<Geometry>(shared_from_this()));
     }
-    this->dataPtr->mesh->Destroy();
+    this->dataPtr->geom->Destroy();
   }
 
-
-  GeometryPtr newMesh;
+  bool isGeom{false};
+  GeometryPtr newGeom;
   switch (_markerType)
   {
     case MT_NONE:
       break;
     case MT_BOX:
-      newMesh = this->scene->CreateBox();
+      isGeom = true;
+      newGeom = this->scene->CreateBox();
+      break;
+    case MT_CAPSULE:
+      isGeom = true;
+      newGeom = this->scene->CreateCapsule();
       break;
     case MT_CYLINDER:
-      newMesh = this->scene->CreateCylinder();
+      isGeom = true;
+      newGeom = this->scene->CreateCylinder();
       break;
     case MT_SPHERE:
-      newMesh = this->scene->CreateSphere();
+      isGeom = true;
+      newGeom = this->scene->CreateSphere();
       break;
     case MT_LINE_STRIP:
     case MT_LINE_LIST:
@@ -253,18 +299,28 @@ void Ogre2Marker::SetType(MarkerType _markerType)
       this->dataPtr->dynamicRenderable->SetOperationType(_markerType);
       break;
     default:
-      ignerr << "Invalid Marker type\n";
+      ignerr << "Invalid Marker type [" << _markerType << "]" << std::endl;
       break;
   }
 
-  if (newMesh)
+  if (nullptr != newGeom)
   {
-    this->dataPtr->mesh = std::dynamic_pointer_cast<Ogre2Mesh>(newMesh);
-    if (visual)
+    this->dataPtr->geom = std::dynamic_pointer_cast<Ogre2Geometry>(newGeom);
+    if (nullptr == this->dataPtr->geom)
+    {
+      ignerr << "Failed to cast to [Ogre2Geom], type [" << _markerType << "]"
+             << std::endl;
+    }
+    else if (visual)
     {
       visual->AddGeometry(
           std::dynamic_pointer_cast<Geometry>(shared_from_this()));
     }
+  }
+  else if (isGeom)
+  {
+    ignerr << "Failed to create geometry for marker type [" << _markerType
+           << "]" << std::endl;
   }
 }
 

@@ -24,9 +24,16 @@
 
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/base/BaseRenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <Compositor/OgreCompositorShadowNode.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 namespace Ogre
 {
@@ -80,6 +87,14 @@ namespace ignition
       /// \param[in] _color Color to set the background to
       public: virtual void SetBackgroundColor(math::Color _color);
 
+      /// \brief Set the background material of this camera
+      /// \param[in] _material Material to set the background to
+      public: virtual void SetBackgroundMaterial(MaterialPtr _material);
+
+      /// \brief Get the background material of this camera
+      /// \return background material
+      public: virtual MaterialPtr BackgroundMaterial() const;
+
       // Documentation inherited
       public: virtual void PreRender() override;
 
@@ -97,8 +112,33 @@ namespace ignition
       /// \param[in] _material The material to render
       public: void SetMaterial(MaterialPtr _material);
 
-      /// \brief Get a pointer to the ogre render target
+      /// \see Camera::SetShadowsNodeDefDirty
+      public: void SetShadowsNodeDefDirty();
+
+      /// \brief Get a pointer to the ogre render target containing
+      /// the results of the render (implemented separately
+      /// to avoid breaking ABI of the pure virtual function)
+      protected: Ogre::RenderTarget *RenderTargetImpl() const;
+
+      /// \brief Get a pointer to the ogre render target containing
+      /// the results of the render
       public: virtual Ogre::RenderTarget *RenderTarget() const = 0;
+
+      /// \brief Returns true if this is a render window
+      /// TODO(anyone): this function should be virtual.
+      /// We didn't do it to preserve ABI.
+      /// Look in commit history for '#Ogre2IsRenderWindowABI' to
+      /// see changes made and revert
+      public: bool IsRenderWindow() const;
+
+      // Documentation inherited
+      public: unsigned int GLIdImpl() const;
+
+      /// \brief Destroy the render texture
+      protected: void DestroyTargetImpl();
+
+      /// \brief Build the render texture
+      protected: void BuildTargetImpl();
 
       /// \brief Get visibility mask for the viewport associated with this
       /// render target
@@ -110,22 +150,35 @@ namespace ignition
       /// \param[in] _mask Visibility mask
       public: virtual void SetVisibilityMask(uint32_t _mask);
 
+      /// \brief Deprecated. Use other overloads.
+      public: static IGN_DEPRECATED(5) void UpdateRenderPassChain(
+          Ogre::CompositorWorkspace *_workspace,
+          const std::string &_workspaceDefName,
+          const std::string &_baseNode, const std::string &_finalNode,
+          const std::vector<RenderPassPtr> &_renderPasses,
+          bool _recreateNodes);
+
       /// \brief Update the render pass chain
       public: static void UpdateRenderPassChain(
           Ogre::CompositorWorkspace *_workspace,
           const std::string &_workspaceDefName,
           const std::string &_baseNode, const std::string &_finalNode,
-          const std::vector<RenderPassPtr> &_renderPasses, bool _recreateNodes);
+          const std::vector<RenderPassPtr> &_renderPasses,
+          bool _recreateNodes,
+          Ogre::Texture *(*_ogreTextures)[2],
+          bool _isRenderWindow);
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();
 
+      /// \brief Update the background material
+      protected: virtual void UpdateBackgroundMaterial();
+
       /// \brief Update the render pass chain
       protected: virtual void UpdateRenderPassChain();
 
-      /// \brief Create a compositor shadow node with the same number of shadow
-      /// textures as the number of shadow casting lights
-      protected: void UpdateShadowNode();
+      /// \brief Deprecated. Use Ogre2Scene:UpdateShadowNode instead
+      protected: void IGN_DEPRECATED(5) UpdateShadowNode();
 
       /// \brief Implementation of the Rebuild function
       protected: virtual void RebuildImpl() override;
@@ -148,23 +201,9 @@ namespace ignition
       /// \sa BaseRenderTarget::Rebuild()
       protected: void RebuildMaterial();
 
-      /// \brief Create ogre compositor shadow node definition. The function
-      /// takes a vector of parameters that describe the type, number, and
-      /// resolution of textures create. Note that it is not necessary to
-      /// create separate textures for each shadow map. It is more efficient to
-      /// define a large texture atlas which is composed of multiple shadow
-      /// maps each occupying a subspace within the texture. This function is
-      /// similar to Ogre::ShadowNodeHelper::createShadowNodeWithSettings but
-      /// fixes a problem with the shadow map index when directional and spot
-      /// light shadow textures are defined on two different texture atlases.
-      /// \param[in] _compositorManager ogre compositor manager
-      /// \param[in] _shadowNodeName Name of the shadow node definition
-      /// \param[in] _shadowParams Parameters containing the shadow type,
-      /// texure resolution and position on the texture atlas.
-      private: void CreateShadowNodeWithSettings(
-          Ogre::CompositorManager2 *_compositorManager,
-          const std::string &_shadowNodeName,
-          const Ogre::ShadowNodeHelper::ShadowParamVec &_shadowParams);
+      /// Calls Ogre2RenderTexture::SetOgreTexture if appropiate to ensure
+      /// Ogre2RenderTexture::ogreTexture always has our outputs
+      protected: void SyncOgreTextureVars();
 
       /// \brief Pointer to the internal ogre camera
       protected: Ogre::Camera *ogreCamera = nullptr;
@@ -179,14 +218,25 @@ namespace ignition
       /// \brief Stores the background color of the render target
       protected: Ogre::ColourValue ogreBackgroundColor;
 
+      /// \brief Background material of the render target
+      protected: MaterialPtr backgroundMaterial;
+
       /// \brief a material used by for the render target
       protected: MaterialPtr material;
 
-      /// \brief Helper class that applies the material to the render target
+      /// \brief Unused. Kept for ABI reasons.
+      ///
+      /// Just in case we set this value to
+      /// Ogre2RenderTargetPrivate::materialApplicator[0] which is what
+      /// most client applications may want.
       protected: Ogre2RenderTargetMaterialPtr materialApplicator;
 
       /// \brief Flag to indicate if the render target color has changed
       protected: bool colorDirty = true;
+
+      /// \brief Flag to indicate if the render target background material has
+      /// changed
+      protected: bool backgroundMaterialDirty = false;
 
       /// \brief Anti-aliasing level
       protected: unsigned int antiAliasing = 4;
@@ -220,7 +270,9 @@ namespace ignition
       // Documentation inherited
       public: virtual unsigned int GLId() const override;
 
-      // Documentation inherited.
+      // Documentation inherited
+      // TODO(anyone): this function should be removed.
+      // We didn't do it to preserve ABI.
       public: virtual Ogre::RenderTarget *RenderTarget() const override;
 
       // Documentation inherited.
@@ -232,8 +284,20 @@ namespace ignition
       /// \brief Build the render texture
       protected: virtual void BuildTarget();
 
-      /// \brief Pointer to the internal ogre render texture object
-      protected: Ogre::Texture *ogreTexture = nullptr;
+      /// \brief Do not call this function directly.
+      ///
+      /// It's used to keep ABI compatibility to sync ogreTexture
+      /// with the internal pointer from our base class.
+      /// \param[in] _ogreTexture texture from
+      /// Ogre2RenderTargetPrivate::ogreTexture[1]
+      public: void SetOgreTexture(Ogre::Texture *_ogreTexture);
+
+      /// \brief Unused. Kept for ABI reasons.
+      ///
+      /// Just in case we set this value to
+      /// Ogre2RenderTargetPrivate::ogreTexture[1] which is what most client
+      /// applications may want.
+      protected: IGN_DEPRECATED(5) Ogre::Texture * ogreTexture = nullptr;
 
       /// \brief Make scene our friend so it can create a ogre2 render texture
       private: friend class Ogre2Scene;
@@ -251,6 +315,12 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void Destroy() override;
+
+      // TODO(anyone): this function should be virtual.
+      // We didn't do it to preserve ABI.
+      // Looks in commit history for '#Ogre2IsRenderWindowABI' to
+      // see changes made and revert
+      public: bool IsRenderWindow() const;
 
       // Documentation inherited.
       public: virtual Ogre::RenderTarget *RenderTarget() const override;

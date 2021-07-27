@@ -80,6 +80,12 @@ namespace ignition
       public: virtual MaterialPtr Material() override;
 
       // Documentation inherited.
+      public: virtual void SetWireframe(bool _show) override;
+
+      // Documentation inherited.
+      public: virtual bool Wireframe() const override;
+
+      // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
@@ -99,13 +105,6 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void Destroy() override;
-
-      // Documentation inherited.
-      public: virtual void SetUserData(const std::string &_key,
-          Variant _value) override;
-
-      // Documentation inherited.
-      public: virtual Variant UserData(const std::string &_key) const override;
 
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox()
@@ -128,14 +127,14 @@ namespace ignition
       /// \brief Pointer to material assigned to this visual
       protected: MaterialPtr material;
 
-      /// \brief A map of custom key value data
-      protected: std::map<std::string, Variant> userData;
-
       /// \brief Visual's visibility flags
       protected: uint32_t visibilityFlags = IGN_VISIBILITY_ALL;
 
       /// \brief The bounding box of the visual
       protected: ignition::math::AxisAlignedBox boundingBox;
+
+      /// \brief True if wireframe mode is enabled else false
+      protected: bool wireframe = false;
     };
 
     //////////////////////////////////////////////////
@@ -351,6 +350,22 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    bool BaseVisual<T>::Wireframe() const
+    {
+      return this->wireframe;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetWireframe(bool _show)
+    {
+      ignerr << "SetWireframe(" << _show << ") not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseVisual<T>::SetVisible(bool _visible)
     {
       ignerr << "SetVisible(" << _visible << ") not supported for "
@@ -455,24 +470,6 @@ namespace ignition
     uint32_t BaseVisual<T>::VisibilityFlags() const
     {
       return this->visibilityFlags;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseVisual<T>::SetUserData(const std::string &_key, Variant _value)
-    {
-      this->userData[_key] = _value;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    Variant BaseVisual<T>::UserData(const std::string &_key) const
-    {
-      Variant value;
-      auto it = this->userData.find(_key);
-      if (it != this->userData.end())
-        value = it->second;
-      return value;
     }
     }
   }

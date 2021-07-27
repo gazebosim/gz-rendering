@@ -5,6 +5,32 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
+## Ignition Rendering 5.x to 6.x
+
+### Modifications
+
+1. **Scene.hh**
+    + Added `Scene::PostRender`. The function `Camera::Render` must be executed
+      between calls to `Scene::PreRender` and `Scene::PostRender`. Failure to do
+      so will result in asserts triggering informing users to correct their code.
+      Alternatively calling `Scene::SetCameraPassCountPerGpuFlush( 0 )` avoids
+      this strict requirement.
+      Users handling only one Camera can call `Camera::Update` or `Camera::Capture`
+      and thus do not need to worry.
+      However for more than one camera (of any type) the optimum way to handle them is to update them in the following pattern:
+      ```
+      scene->PreRender();
+      for( auto& camera in cameras )
+          camera->Render();
+      for( auto& camera in cameras )
+          camera->PostRender();
+      scene->PostRender();
+      ```
+      This pattern maximizes the chances of improving performance.
+      *Note*: Calling instead `Camera::Update` for each camera is a waste of CPU resources.
+    + It is invalid to modify the scene between `Scene::PreRender` and `Scene::PostRender` (e.g. add/remove objects, lights, etc)
+    + Added `Scene::SetCameraPassCountPerGpuFlush`. Setting this value to 0 forces legacy behavior which eases porting.
+    + Systems that rely on Graphics components like particle FXs and postprocessing are explicitly affected by Scene's Pre/PostRender. Once `Scene::PostRender` is called, the particle FXs' simulation is moved forward, as well as time values sent to postprocessing shaders. In previous ign-rendering versions each `Camera::Render` call would move the particle simulation forward, which could cause subtle bugs or inconsistencies when Cameras were rendering the same frame from different angles. Setting SetCameraPassCountPerGpuFlush to 0 will also cause these subtle bugs to reappear.
 
 ## Ignition Rendering 4.0 to 4.1
 

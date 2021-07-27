@@ -20,12 +20,29 @@
 
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2MaterialSwitcher.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <Compositor/OgreCompositorManager2.h>
+#include <Compositor/OgreCompositorWorkspace.h>
+#include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
+#include <OgreCamera.h>
+#include <OgreHardwarePixelBuffer.h>
+#include <OgreItem.h>
+#include <OgreRenderTexture.h>
+#include <OgreRoot.h>
+#include <OgreSceneManager.h>
+#include <OgreTextureManager.h>
+#include <OgreViewport.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 using namespace ignition;
 using namespace rendering;
@@ -110,11 +127,21 @@ void Ogre2SelectionBuffer::Update()
 
   this->dataPtr->materialSwitcher->Reset();
 
+  this->dataPtr->scene->StartForcedRender();
+
   // manual update
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
+  this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
+  this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
+  this->dataPtr->ogreCompositorWorkspace->_update();
+  this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
+
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve(2u);
+  this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
+
+  this->dataPtr->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
+
+  this->dataPtr->scene->EndForcedRender();
 
   this->dataPtr->renderTexture->copyContentsToMemory(*this->dataPtr->pixelBox,
       Ogre::RenderTarget::FB_FRONT);

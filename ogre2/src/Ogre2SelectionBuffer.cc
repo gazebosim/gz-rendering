@@ -127,11 +127,21 @@ void Ogre2SelectionBuffer::Update()
 
   this->dataPtr->materialSwitcher->Reset();
 
+  this->dataPtr->scene->StartForcedRender();
+
   // manual update
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
+  this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
+  this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
+  this->dataPtr->ogreCompositorWorkspace->_update();
+  this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
+
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve(2u);
+  this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
+
+  this->dataPtr->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
+
+  this->dataPtr->scene->EndForcedRender();
 
   this->dataPtr->renderTexture->copyContentsToMemory(*this->dataPtr->pixelBox,
       Ogre::RenderTarget::FB_FRONT);

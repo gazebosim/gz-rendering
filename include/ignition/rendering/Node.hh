@@ -35,8 +35,16 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Alias for a variant that can hold various types of data.
+    /// The first type of the variant is std::monostate in order to prevent
+    /// default-constructed variants from holding a type (a default-constructed
+    /// variant is returned when a user calls Node::UserData with a key that
+    /// doesn't exist for the node. In this case, since the key doesn't
+    /// exist, the variant that is returned shouldn't hold any types - an
+    /// "empty variant" should be returned for keys that don't exist)
     using Variant =
-      std::variant<int, float, double, std::string, bool, unsigned int>;
+      std::variant<std::monostate, int, float, double, std::string, bool,
+        unsigned int>;
 
     /// \class Node Node.hh ignition/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
@@ -228,12 +236,12 @@ namespace ignition
       /// \param[in] _scale Scalars to alter the current scale
       public: virtual void Scale(const math::Vector3d &_scale) = 0;
 
-      /// \brief Determine if this visual inherits scale from this parent
-      /// \return True if this visual inherits scale from this parent
+      /// \brief Determine if this node inherits scale from this parent
+      /// \return True if this node inherits scale from this parent
       public: virtual bool InheritScale() const = 0;
 
-      /// \brief Specify if this visual inherits scale from its parent
-      /// \param[in] _inherit True if this visual inherits scale from its parent
+      /// \brief Specify if this node inherits scale from its parent
+      /// \param[in] _inherit True if this node inherits scale from its parent
       public: virtual void SetInheritScale(bool _inherit) = 0;
 
       /// \brief Get number of child nodes
@@ -309,15 +317,16 @@ namespace ignition
       /// This detaches all the child nodes but does not destroy them
       public: virtual void RemoveChildren() = 0;
 
-      /// \brief Store any custom data associated with this visual
+      /// \brief Store any custom data associated with this node
       /// \param[in] _key Unique key
       /// \param[in] _value Value in any type
       public: virtual void SetUserData(
         const std::string &_key, Variant _value) = 0;
 
-      /// \brief Get custom data stored in this visual
+      /// \brief Get custom data stored in this node
       /// \param[in] _key Unique key
-      /// \return Value in any type
+      /// \return Value in any type. If _key does not exist for the node, an
+      /// empty variant is returned (i.e., no data).
       public: virtual Variant UserData(const std::string &_key) const = 0;
     };
     }

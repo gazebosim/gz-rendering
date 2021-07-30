@@ -578,12 +578,19 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels()
     // Store boxes in the output vector
     this->dataPtr->output_boxes.push_back(mergedBox);
   }
+
+  // reverse the order of the boxes (usful in testing)
+  std::reverse(this->dataPtr->output_boxes.begin(),
+    this->dataPtr->output_boxes.end());
 }
 
 /////////////////////////////////////////////////
 BoundingBox Ogre2BoundingBoxCamera::MergeBoxes2D(
         std::vector<BoundingBox *> _boxes)
 {
+  if (_boxes.size() == 1)
+    return *_boxes[0];
+
   BoundingBox mergedBox(this->dataPtr->type);
   uint32_t minX = UINT32_MAX;
   uint32_t maxX = 0;
@@ -607,6 +614,7 @@ BoundingBox Ogre2BoundingBoxCamera::MergeBoxes2D(
   uint32_t height = maxY - minY;
   mergedBox.size.Set(width, height);
   mergedBox.center.Set(minX + width / 2, minY + height / 2);
+  mergedBox.label = _boxes[0]->label;
 
   return mergedBox;
 }

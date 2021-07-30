@@ -144,7 +144,7 @@ void Build3dBoxScene(rendering::ScenePtr scene)
   rendering::VisualPtr box = scene->CreateVisual();
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.0, 0.0);
-  box->SetLocalPosition(math::Vector3d(3,0,0));
+  box->SetLocalPosition(math::Vector3d(3, 0, 0));
   box->SetLocalRotation(0.1, 0, 0.7);
   box->SetUserData("label", 1);
   root->AddChild(box);

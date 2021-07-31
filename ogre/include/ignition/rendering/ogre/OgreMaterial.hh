@@ -105,6 +105,15 @@ namespace ignition
       public: virtual void SetReceiveShadows(const bool _receiveShadows)
                   override;
 
+      // Documentation inherited
+      public: virtual float RenderOrder() const override;
+
+      // Documentation inherited
+      // Review the official documentation to get more details about this
+      // parameter, in particular Ogre::Pass::setDepthBias()
+      // https://www.ogre3d.org/docs/api/1.8/class_ogre_1_1_pass.html
+      public: virtual void SetRenderOrder(const float _renderOrder) override;
+
       public: virtual bool ReflectionEnabled() const override;
 
       public: virtual void SetReflectionEnabled(const bool _enabled) override;

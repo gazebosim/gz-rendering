@@ -28,7 +28,6 @@
 #include <string>
 
 #include "ignition/rendering/base/BaseDepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 #include "ignition/common/Event.hh"
@@ -74,6 +73,10 @@ namespace ignition
       /// \brief Set up 1st pass material, texture, and compositor
       public: virtual void CreateDepthTexture() override;
 
+      /// \brief Creates an Ogre Workspace instance. Assumes the definition
+      /// already and the depth texture have already been created
+      private: void CreateWorkspaceInstance();
+
       // Documentation inherited
       public: virtual void PreRender() override;
 
@@ -118,6 +121,28 @@ namespace ignition
       /// \return Far clip distance. A value of zero is returned if the
       /// ogre camera has not been created.
       public: double FarClipPlane() const override;
+
+      // Documentation inherited.
+      // TODO(anyone): this function should be virtual, declared in 'Camera'
+      // and 'BaseCamera'. We didn't do it to preserve ABI.
+      // Looks in commit history for '#SetShadowsNodeDefDirtyABI' to
+      // see changes made and revert
+      public: void SetShadowsNodeDefDirty();
+
+      // TODO(anyone): This fixes the pass quad material leaving dangling
+      // pointers when we remove the workspace, so we have to cleanup the
+      // material first.
+      // This bug was fixed in Ogre 2.2 thus the workaround should not be
+      // necessary there
+      //
+      // See https://github.com/ignitionrobotics/ign-rendering/
+      // pull/303#pullrequestreview-635228897
+      // Repro:
+      //  1.run the sensors_demo.sdf world: ign gazebo -v 4 -r sensors_demo.sdf
+      //  2.open Lights plugin, top right menu (3 dots) and select Lights
+      //  3.insert a spot light into the scene (needs to be spot light)
+      //  4.ign gazebo crashes
+      private: void RemoveWorkspaceCrashWorkaround();
 
       // Documentation inherited.
       public: void AddRenderPass(const RenderPassPtr &_pass) override;

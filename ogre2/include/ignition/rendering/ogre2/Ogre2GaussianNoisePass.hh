@@ -20,7 +20,6 @@
 #include <memory>
 
 #include "ignition/rendering/base/BaseGaussianNoisePass.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 

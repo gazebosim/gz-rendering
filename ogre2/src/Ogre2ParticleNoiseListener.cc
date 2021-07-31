@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 
 #include "Ogre2ParticleNoiseListener.hh"
 
@@ -88,6 +89,7 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
 
       // get particle scatter ratio value from particle emitter user data
       // and pass that to the shaders
+      float scatterRatio = 0.65f;
       Ogre::Any userAny = ps->getUserObjectBindings().getUserAny();
       if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
       {
@@ -101,48 +103,12 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
         {
           ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
         }
-        Ogre2VisualPtr ogreVisual =
-            std::dynamic_pointer_cast<Ogre2Visual>(result);
-        if (ogreVisual)
-        {
-          const std::string particleScatterRatioKey = "particle_scatter_ratio";
-          Variant particleScatterRatioAny =
-              ogreVisual->UserData(particleScatterRatioKey);
-          if (particleScatterRatioAny.index() != std::variant_npos)
-          {
-            float ratio = -1.0;
-            try
-            {
-              ratio = std::get<float>(particleScatterRatioAny);
-            }
-            catch(...)
-            {
-              try
-              {
-                ratio = std::get<double>(particleScatterRatioAny);
-              }
-              catch(...)
-              {
-                try
-                {
-                  ratio = std::get<int>(particleScatterRatioAny);
-                }
-                catch(std::bad_variant_access &e)
-                {
-                  ignerr << "Error casting user data: " << e.what() << "\n";
-                  ratio = -1.0;
-                }
-              }
-            }
-            if (ratio > 0)
-            {
-              this->particleScatterRatio = ratio;
-            }
-          }
-        }
+        Ogre2ParticleEmitterPtr emitterPtr =
+          std::dynamic_pointer_cast<Ogre2ParticleEmitter>(result);
+        if (emitterPtr)
+          scatterRatio = emitterPtr->ParticleScatterRatio();
       }
-      psParams->setNamedConstant("particleScatterRatio",
-          static_cast<float>(this->particleScatterRatio));
+      psParams->setNamedConstant("particleScatterRatio", scatterRatio);
 
       return;
     }

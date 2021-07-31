@@ -148,6 +148,7 @@ namespace ignition
       this->SetAttenuationQuadratic(0);
       this->SetAttenuationRange(100);
       this->SetCastShadows(true);
+      this->SetIntensity(1.0);
     }
 
     //////////////////////////////////////////////////

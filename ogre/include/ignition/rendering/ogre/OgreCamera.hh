@@ -69,7 +69,15 @@ namespace ignition
 
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
+      // Documentation inherited.
+      public: virtual void SetProjectionMatrix(
+          const math::Matrix4d &_matrix) override;
+
       public: virtual math::Matrix4d ViewMatrix() const override;
+
+      // Documentation inherited.
+      public: virtual void SetProjectionType(CameraProjectionType _type)
+          override;
 
       public: void SetVFOV(double cameraVFOV) const;
 
@@ -98,6 +106,9 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetVisibilityMask(uint32_t _mask) override;
+
+      /// \brief Get underlying Ogre camera
+      public: Ogre::Camera *Camera() const;
 
       // Documentation inherited.
       // public: virtual uint32_t VisibilityMask() const override;

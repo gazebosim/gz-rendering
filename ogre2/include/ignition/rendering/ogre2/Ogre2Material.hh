@@ -22,7 +22,21 @@
 
 #include "ignition/rendering/base/BaseMaterial.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <Hlms/Pbs/OgreHlmsPbsPrerequisites.h>
+#include <OgreMaterial.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
+namespace Ogre
+{
+  class HlmsPbsDatablock;
+  class HlmsUnlitDatablock;
+}  // namespace Ogre
 
 namespace ignition
 {
@@ -70,6 +84,14 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetAlphaFromTexture(bool _enabled,
           double _alpha = 0.5, bool _twoSided = true) override;
+
+      // Documentation inherited
+      public: virtual float RenderOrder() const override;
+
+      // Documentation inherited
+      // Review the official documentation to get more details about this
+      // parameter, in particular mDepthBiasConstant
+      public: virtual void SetRenderOrder(const float _renderOrder) override;
 
       // Documentation inherited
       public: virtual bool ReceiveShadows() const override;
@@ -152,6 +174,22 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void ClearEmissiveMap() override;
+
+      // Documentation inherited
+      public: virtual bool HasLightMap() const override;
+
+      // Documentation inherited
+      public: virtual std::string LightMap() const override;
+
+      // Documentation inherited
+      public: virtual unsigned int LightMapTexCoordSet() const override;
+
+      // Documentation inherited
+      public: virtual void SetLightMap(const std::string &_name,
+          unsigned int _uvSet = 0u) override;
+
+      // Documentation inherited
+      public: virtual void ClearLightMap() override;
 
       // Documentation inherited
       public: virtual float Roughness() const override;
@@ -246,6 +284,12 @@ namespace ignition
 
       /// \brief Name of the emissive map
       protected: std::string emissiveMapName;
+
+      /// \brief Name of the light map
+      protected: std::string lightMapName;
+
+      /// \brief Texture coorindate set used by the light map
+      protected: unsigned int lightMapUvSet = 0u;
 
       /// \brief Unique id assigned to ogre hlms datablock
       protected: std::string ogreDatablockId;

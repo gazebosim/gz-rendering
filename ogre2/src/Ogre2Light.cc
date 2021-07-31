@@ -20,8 +20,15 @@
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreSceneManager.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 /// \brief Private data for the Ogre2Light class
 class ignition::rendering::Ogre2LightPrivate
@@ -121,6 +128,18 @@ void Ogre2Light::SetAttenuationRange(double _range)
 {
   this->attenRange = _range;
   this->UpdateAttenuation();
+}
+
+//////////////////////////////////////////////////
+double Ogre2Light::Intensity() const
+{
+  return this->ogreLight->getPowerScale() / IGN_PI;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Light::SetIntensity(double _intensity)
+{
+  this->ogreLight->setPowerScale(_intensity * IGN_PI);
 }
 
 //////////////////////////////////////////////////

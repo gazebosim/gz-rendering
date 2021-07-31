@@ -65,7 +65,10 @@ namespace ignition
       MT_TRIANGLE_LIST  = 9,
 
       /// \brief Triangle strip primitive
-      MT_TRIANGLE_STRIP = 10
+      MT_TRIANGLE_STRIP = 10,
+
+      /// \brief Capsule geometry
+      MT_CAPSULE        = 11,
     };
 
     /// \class Marker Marker.hh ignition/rendering/Marker

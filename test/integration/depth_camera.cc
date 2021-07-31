@@ -256,9 +256,7 @@ void DepthCameraTest::DepthCameraBoxes(
       EXPECT_EQ(0u, mg);
       // Note: If it fails here, it may be this problem again:
       // https://github.com/ignitionrobotics/ign-rendering/issues/332
-#ifndef __APPLE__
       EXPECT_GT(mb, 0u);
-#endif
 
       // Far left and right points should be red (background color)
       float lc = pointCloudData[pcLeft + 3];
@@ -459,9 +457,7 @@ void DepthCameraTest::DepthCameraBoxes(
           EXPECT_EQ(0u, g);
           // Note: If it fails here, it may be this problem again:
           // https://github.com/ignitionrobotics/ign-rendering/issues/332
-#ifndef __APPLE__
           EXPECT_GT(b, 0u);
-#endif
           EXPECT_EQ(255u, a);
         }
       }
@@ -700,7 +696,7 @@ void DepthCameraTest::DepthCameraParticles(
     // reduce particle scatter ratio - this creates a "less dense" particle
     // emitter so we should have larger depth values on avg since fewers
     // depth readings are occluded by particles
-    emitter->SetUserData("particle_scatter_ratio", 0.1);
+    emitter->SetParticleScatterRatio(0.1f);
 
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;

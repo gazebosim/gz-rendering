@@ -41,6 +41,7 @@ namespace ignition
     //
     // forward declaration
     class Ogre2MeshPrivate;
+    class Ogre2SubMeshPrivate;
 
     /// \brief Ogre2.x implementation of the mesh class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Mesh :
@@ -118,15 +119,22 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Ogre2SubMesh();
 
+      // Documentation inherited
+      public: virtual void Destroy() override;
+
+      /// \brief Set the name of the mesh stored in Ogre2
+      /// \param[in] _name Name of the mesh
+      public: void SetMeshName(const std::string &_name);
+
       /// \brief Get internal ogre subitem created from this submesh
       public: virtual Ogre::SubItem *Ogre2SubItem() const;
 
       /// \brief Helper function for setting the material to use
       /// \param[in] _material Material to be assigned to the submesh
-      protected: virtual void SetMaterialImpl(MaterialPtr _material);
+      protected: virtual void SetMaterialImpl(MaterialPtr _material) override;
 
       /// \brief Initialize the submesh
-      protected: virtual void Init();
+      protected: virtual void Init() override;
 
       /// \brief Ogre subitem representing the submesh
       protected: Ogre::SubItem *ogreSubItem = nullptr;
@@ -137,6 +145,9 @@ namespace ignition
       /// \brief Make submesh factory our friend so it can create an
       /// ogre2 submesh
       private: friend class Ogre2SubMeshStoreFactory;
+
+      /// \brief Pointer to private data
+      private: std::unique_ptr<Ogre2SubMeshPrivate> dataPtr;
     };
     }
   }

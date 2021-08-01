@@ -41,6 +41,7 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+#include "Terra/Hlms/OgreHlmsTerra.h"
 
 class ignition::rendering::Ogre2RenderEnginePrivate
 {
@@ -716,12 +717,45 @@ void Ogre2RenderEngine::RegisterHlms()
       ++libraryFolderPathIt;
     }
 
+    // TODO(dark_sylinc): register Terra's listener so objects have
+    // terrain shadows.
+
     // Create and register
     hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
     // disable writting debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
+  }
+
+  {
+    Ogre::HlmsTerra *hlmsTerra = 0;
+    // Create & Register HlmsPbs
+    // Do the same for HlmsPbs:
+    Ogre::HlmsTerra::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Archive *archiveTerra = archiveManager.load(
+        rootHlmsFolder + mainFolderPath, "FileSystem", true);
+
+    // Get the library archive(s)
+    Ogre::ArchiveVec archiveTerraLibraryFolders;
+    libraryFolderPathIt = libraryFoldersPaths.begin();
+    libraryFolderPathEn = libraryFoldersPaths.end();
+    while (libraryFolderPathIt != libraryFolderPathEn)
+    {
+      Ogre::Archive *archiveLibrary =
+          archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
+          "FileSystem", true);
+      archiveTerraLibraryFolders.push_back(archiveLibrary);
+      ++libraryFolderPathIt;
+    }
+
+    // Create and register
+    hlmsTerra = OGRE_NEW Ogre::HlmsTerra(archiveTerra,
+                                         &archiveTerraLibraryFolders);
+    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsTerra);
+
+    // disable writting debug output to disk
+    hlmsTerra->setDebugOutputPath(false, false);
   }
 }
 

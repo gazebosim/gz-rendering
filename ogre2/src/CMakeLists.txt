@@ -13,6 +13,20 @@ endif()
 
 set(engine_name "ogre2")
 
+# TODO(dark_sylinc): Temporary until we decide what to do w/ Terra files
+include_directories("${CMAKE_CURRENT_LIST_DIR}/")
+include_directories(/home/matias/Projects/ign/install/include/OGRE/Hlms/Pbs)
+set( sources
+	${sources}
+	${CMAKE_CURRENT_LIST_DIR}/Terra/TerraShadowMapper.cpp
+	${CMAKE_CURRENT_LIST_DIR}/Terra/Terra.cpp
+	${CMAKE_CURRENT_LIST_DIR}/Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.cpp
+	${CMAKE_CURRENT_LIST_DIR}/Terra/Hlms/OgreHlmsTerra.cpp
+	${CMAKE_CURRENT_LIST_DIR}/Terra/Hlms/OgreHlmsTerraDatablock.cpp
+	${CMAKE_CURRENT_LIST_DIR}/Terra/Hlms/OgreHlmsJsonTerra.cpp
+	${CMAKE_CURRENT_LIST_DIR}/Terra/TerrainCell.cpp
+)
+
 ign_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
 
 find_package(OpenGL)

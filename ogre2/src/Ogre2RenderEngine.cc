@@ -641,6 +641,14 @@ void Ogre2RenderEngine::RegisterHlms()
       rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSLES");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       commonGLSLESMaterialFolder, "FileSystem", "General");
+  Ogre::String terraMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Terra");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      terraMaterialFolder, "FileSystem", "General");
+  Ogre::String terraGLSLMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Terra", "GLSL");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      terraGLSLMaterialFolder, "FileSystem", "General");
 
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework

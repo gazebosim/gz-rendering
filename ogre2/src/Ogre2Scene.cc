@@ -27,6 +27,7 @@
 #include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
+#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
 #include "ignition/rendering/ogre2/Ogre2InertiaVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
@@ -816,13 +817,12 @@ CapsulePtr Ogre2Scene::CreateCapsuleImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int,
-    const std::string &, const HeightmapDescriptor &)
+HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int _id,
+  const std::string &_name, const HeightmapDescriptor &_desc)
 {
-  ignerr << "Ogre 2 doesn't support heightmaps yet, see " <<
-      "https://github.com/ignitionrobotics/ign-rendering/issues/187"
-      << std::endl;
-  return nullptr;
+  Ogre2HeightmapPtr heightmap(new Ogre2Heightmap(_desc));
+  bool result = this->InitObject(heightmap, _id, _name);
+  return (result) ? heightmap : nullptr;
 }
 
 //////////////////////////////////////////////////

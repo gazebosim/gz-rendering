@@ -103,7 +103,7 @@ void buildScene(ScenePtr _scene)
 //! [create a heightmap]
 
 //! [create another heightmap]
-  auto data2 = std::make_shared<common::ImageHeightmap>();
+  /*auto data2 = std::make_shared<common::ImageHeightmap>();
   data2->Load(common::joinPaths(RESOURCE_PATH, "city_terrain.jpg"));
 
   HeightmapDescriptor desc2;
@@ -145,7 +145,7 @@ void buildScene(ScenePtr _scene)
 
   auto vis2 = _scene->CreateVisual();
   vis2->AddGeometry(heightmapGeom2);
-  root->AddChild(vis2);
+  root->AddChild(vis2);*/
 //! [create another heightmap]
 
   // create gray material
@@ -170,8 +170,8 @@ void buildScene(ScenePtr _scene)
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(1.441, 25.787, 17.801);
   camera->SetLocalRotation(0.0, 0.588, -1.125);
-  camera->SetImageWidth(800);
-  camera->SetImageHeight(600);
+  camera->SetImageWidth(1600);
+  camera->SetImageHeight(900);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
@@ -207,7 +207,7 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back("ogre");
+  engineNames.push_back("ogre2");
 
   for (auto engineName : engineNames)
   {

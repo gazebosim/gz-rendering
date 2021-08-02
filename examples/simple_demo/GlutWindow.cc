@@ -66,7 +66,7 @@ bool g_initContext = false;
   GLXDrawable g_glutDrawable;
 #endif
 
-double g_offset = 0.0;
+double g_offset = 1;
 
 //////////////////////////////////////////////////
 //! [update camera]
@@ -116,7 +116,7 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-  updateCameras();
+  // updateCameras();
 }
 
 //////////////////////////////////////////////////
@@ -146,6 +146,7 @@ void initCamera(ir::CameraPtr _camera)
   imgh = g_camera->ImageHeight();
   ir::Image image = g_camera->CreateImage();
   g_image = std::make_shared<ir::Image>(image);
+  // Line 149 is segfaulting, and I cant find why
   g_camera->Capture(*g_image);
 }
 

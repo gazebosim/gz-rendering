@@ -157,7 +157,6 @@ void buildScene(ScenePtr _scene)
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(5, 8, 1);
   plane->SetLocalPosition(3, 0, -0.5);
-  plane->SetUserData("label", 255);
   root->AddChild(plane);
 
   // create a mesh
@@ -209,7 +208,7 @@ void buildScene(ScenePtr _scene)
   boundingboxCamera->SetHFOV(camera->HFOV());
   boundingboxCamera->SetNearClipPlane(camera->NearClipPlane());
   boundingboxCamera->SetFarClipPlane(camera->FarClipPlane());
-  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::FullBox2D);
+  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::VisibleBox2D);
   root->AddChild(boundingboxCamera);
 }
 

@@ -40,149 +40,111 @@ void buildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
-  VisualPtr root = _scene->RootVisual();
+  // VisualPtr root = _scene->RootVisual(); No idea how to do this abstraction in luxcore
 
   // create directional light
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
-  light0->SetDirection(-0.5, 0.5, -1);
-  light0->SetDiffuseColor(0.5, 0.5, 0.5);
-  light0->SetSpecularColor(0.5, 0.5, 0.5);
-  root->AddChild(light0);
-
-  // // create point light
-  // PointLightPtr light1 = _scene->CreatePointLight();
-  // light1->SetDiffuseColor(0.5, 0.5, 0.5);
-  // light1->SetSpecularColor(0.5, 0.5, 0.5);
-  // light1->SetLocalPosition(5, -5, 10);
-  // root->AddChild(light1);
+  // light0->SetDirection(-0.5, 0.5, -1);
+  // light0->SetDiffuseColor(0.5, 0.5, 0.5);
+  // light0->SetSpecularColor(0.5, 0.5, 0.5);
+  // root->AddChild(light0);
 
   // create point light
   PointLightPtr light2 = _scene->CreatePointLight();
-  light2->SetDiffuseColor(0.5, 0.5, 0.5);
-  light2->SetSpecularColor(0.5, 0.5, 0.5);
-  light2->SetLocalPosition(3, 5, 5);
-  root->AddChild(light2);
+  // light2->SetDiffuseColor(0.5, 0.5, 0.5);
+  // light2->SetSpecularColor(0.5, 0.5, 0.5);
+  // light2->SetLocalPosition(3, 5, 5);
+  // root->AddChild(light2);
 
   // create green material
-  MaterialPtr green = _scene->CreateMaterial();
-  green->SetAmbient(0.0, 0.5, 0.0);
-  green->SetDiffuse(0.0, 0.7, 0.0);
-  green->SetSpecular(0.5, 0.5, 0.5);
-  green->SetShininess(50);
-  green->SetReflectivity(0);
+  // MaterialPtr green = _scene->CreateMaterial();
+  // green->SetAmbient(0.0, 0.5, 0.0);
+  // green->SetDiffuse(0.0, 0.7, 0.0);
+  // green->SetSpecular(0.5, 0.5, 0.5);
+  // green->SetShininess(50);
+  // green->SetReflectivity(0);
+
 
   // create center visual
-  VisualPtr center = _scene->CreateVisual();
-  center->AddGeometry(_scene->CreateSphere());
-  center->SetLocalPosition(3, 0, 0);
-  center->SetLocalScale(0.1, 0.1, 0.1);
-  center->SetMaterial(green);
-  root->AddChild(center);
+  // VisualPtr cylinder = _scene->CreateVisual();
+  // cylinder->AddGeometry(_scene->CreateCylinder());
+  // cylinder->SetOrigin(0.0, -1.5, 0);
+  // cylinder->SetLocalPosition(3, 0, 0);
+  // cylinder->SetLocalScale(1, 1, 1);
+  // cylinder->SetMaterial(green);
+  // root->AddChild(cylinder);
 
 //! [red material]
   // create red material
-  MaterialPtr red = _scene->CreateMaterial();
-  red->SetAmbient(0.5, 0.0, 0.0);
-  red->SetDiffuse(1.0, 0.0, 0.0);
-  red->SetSpecular(0.5, 0.5, 0.5);
-  red->SetShininess(50);
-  red->SetReflectivity(0);
-  red->SetRenderOrder(3);
+  // MaterialPtr red = _scene->CreateMaterial();
+  // red->SetAmbient(0.5, 0.0, 0.0);
+  // red->SetDiffuse(1.0, 0.0, 0.0);
+  // red->SetSpecular(0.5, 0.5, 0.5);
+  // red->SetShininess(50);
+  // red->SetReflectivity(0);
+  // red->SetRenderOrder(3);
 //! [red material]
 
-  // create sphere visual
-  VisualPtr sphere = _scene->CreateVisual();
-  sphere->AddGeometry(_scene->CreateSphere());
-  sphere->SetOrigin(0.0, -0.5, 0.0);
-  sphere->SetLocalPosition(3, 0, 0);
-  sphere->SetLocalRotation(0, 0, 0);
-  sphere->SetLocalScale(1, 1, 1);
-  sphere->SetMaterial(red);
-  root->AddChild(sphere);
+// create blue material
+  // MaterialPtr blue = _scene->CreateMaterial();
+  // blue->SetAmbient(0.0, 0.0, 0.3);
+  // blue->SetDiffuse(0.0, 0.0, 0.8);
+  // blue->SetSpecular(0.5, 0.5, 0.5);
+  // blue->SetShininess(50);
+  // blue->SetReflectivity(0);
 
-  // create blue material
-  MaterialPtr blue = _scene->CreateMaterial();
-  blue->SetAmbient(0.0, 0.0, 0.3);
-  blue->SetDiffuse(0.0, 0.0, 0.8);
-  blue->SetSpecular(0.5, 0.5, 0.5);
-  blue->SetShininess(50);
-  blue->SetReflectivity(0);
+  // create sphere visual
+  // VisualPtr sphere = _scene->CreateVisual();
+  // sphere->AddGeometry(_scene->CreateSphere());
+  // sphere->SetOrigin(0.0, 1.5, 0);
+  // sphere->SetLocalPosition(3, 0, 0);
+  // sphere->SetLocalRotation(0, 0, 0);
+  // sphere->SetLocalScale(1, 1, 1);
+  // sphere->SetMaterial(blue);
+  // root->AddChild(sphere);
+
+  
 
   // create box visual
-  VisualPtr box = _scene->CreateVisual();
-  box->AddGeometry(_scene->CreateBox());
-  box->SetOrigin(0.0, 0.5, 0.0);
-  box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
-  box->SetLocalScale(1, 2.5, 1);
-  box->SetMaterial(blue);
-  root->AddChild(box);
-
-  // create ellipsoid visual
-  VisualPtr ellipsoidVisual = _scene->CreateVisual();
-  auto ellipsoid = _scene->CreateSphere();
-  ellipsoidVisual->SetLocalScale(1.2, 0.7, 0.5);
-  ellipsoidVisual->AddGeometry(ellipsoid);
-  ellipsoidVisual->SetLocalPosition(3, -1, 0);
-  ellipsoidVisual->SetMaterial(green);
-  root->AddChild(ellipsoidVisual);
+  // VisualPtr box = _scene->CreateVisual();
+  // box->AddGeometry(_scene->CreateBox());
+  // box->SetOrigin(0.0, 0, 0);
+  // box->SetLocalPosition(3, 0, 0);
+  // box->SetLocalScale(1, 1, 1);
+  // box->SetMaterial(red);
+  // root->AddChild(box);
 
 //! [white material]
   // create white material
-  MaterialPtr white = _scene->CreateMaterial();
-  white->SetAmbient(0.5, 0.5, 0.5);
-  white->SetDiffuse(0.8, 0.8, 0.8);
-  white->SetReceiveShadows(true);
-  white->SetReflectivity(0);
-  white->SetRenderOrder(0);
+  // MaterialPtr white = _scene->CreateMaterial();
+  // white->SetAmbient(0.5, 0.5, 0.5);
+  // white->SetDiffuse(0.8, 0.8, 0.8);
+  // white->SetReceiveShadows(true);
+  // white->SetReflectivity(0);
+  // white->SetRenderOrder(0);
 //! [white material]
 
-  VisualPtr capsuleVisual = _scene->CreateVisual();
-  CapsulePtr capsule = _scene->CreateCapsule();
-  capsule->SetLength(0.2);
-  capsule->SetRadius(0.2);
-  capsuleVisual->AddGeometry(capsule);
-  capsuleVisual->SetOrigin(0.0, 0.0, 0.0);
-  capsuleVisual->SetLocalPosition(4, 2, 0);
-  capsuleVisual->SetLocalScale(1, 1, 1);
-  capsuleVisual->SetMaterial(red);
-  root->AddChild(capsuleVisual);
-
   // create plane visual
-  VisualPtr plane = _scene->CreateVisual();
-  plane->AddGeometry(_scene->CreatePlane());
-  plane->SetLocalScale(5, 8, 1);
-  plane->SetLocalPosition(3, 0, -0.5);
-  plane->SetMaterial(white);
-  root->AddChild(plane);
-
-  // create plane visual
-  VisualPtr plane2 = _scene->CreateVisual();
-  plane2->AddGeometry(_scene->CreatePlane());
-  plane2->SetLocalScale(5, 8, 1);
-  plane2->SetLocalPosition(4, 0.5, -0.5);
-  plane2->Scale(0.1, 0.1, 1);
-  plane2->SetMaterial(red);
-  root->AddChild(plane2);
-
-  // create axis visual
-  VisualPtr axis = _scene->CreateAxisVisual();
-  axis->SetLocalPosition(4.0, 0.5, -0.4);
-  root->AddChild(axis);
+  // VisualPtr plane = _scene->CreateVisual();
+  // plane->AddGeometry(_scene->CreatePlane());
+  // plane->SetLocalScale(5, 8, 1);
+  // plane->SetLocalPosition(3, 0, -0.5);
+  // plane->SetMaterial(white);
+  // root->AddChild(plane);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.0);
-  camera->SetLocalRotation(0.0, 0.0, 0.0);
-  camera->SetImageWidth(800);
-  camera->SetImageHeight(600);
-  camera->SetAntiAliasing(2);
-  camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
-  root->AddChild(camera);
+  // camera->SetLocalPosition(0.0, 0.0, 0.0);
+  // camera->SetLocalRotation(0.0, 0.0, 0.0);
+  // camera->SetImageWidth(800);
+  // camera->SetImageHeight(600);
+  // camera->SetAntiAliasing(2);
+  // camera->SetAspectRatio(1.333);
+  // camera->SetHFOV(IGN_PI / 2);
+  // root->AddChild(camera);
 
   // track target
-  camera->SetTrackTarget(box);
+  // camera->SetTrackTarget(box);
 }
 
 //////////////////////////////////////////////////
@@ -221,8 +183,8 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back(ogreEngineName);
-  engineNames.push_back("optix");
+  // engineNames.push_back(ogreEngineName);
+  engineNames.push_back("LuxCore");
 
   for (auto engineName : engineNames)
   {
@@ -234,10 +196,10 @@ int main(int _argc, char** _argv)
         cameras.push_back(camera);
       }
     }
-    catch (...)
+    catch (std::exception & ex)
     {
-      // std::cout << ex.what() << std::endl;
-      std::cerr << "Error starting up: " << engineName << std::endl;
+      std::cout << ex.what() << std::endl;
+      // std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }
   run(cameras);

@@ -38,8 +38,7 @@ release will remove the deprecated code.
     `Visual::UserData` was called with a key that doesn't exist, an `int` was returned by default).
 
 1. **depth_camera_fs.glsl** and **depth_camera_final_fs.glsl**
-    + `Far clipping` changed from using just depth to clip to using length
-    to focal point to clip.
+    + Far clipping changed from clipping by depth to clipping by range, i.e. distance to point, so that the data generated will never exceed the specified max range of the camera.
 
 ## Ignition Rendering 4.0 to 4.1
 

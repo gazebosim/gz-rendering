@@ -37,6 +37,10 @@ release will remove the deprecated code.
     `Node::UserData` now returns no data for keys that don't exist (prior to Rendering 6.x, if
     `Visual::UserData` was called with a key that doesn't exist, an `int` was returned by default).
 
+1. **depth_camera_fs.glsl** and **depth_camera_final_fs.glsl**
+    + `Far clipping` changed from using just depth to clip to using length
+    to focal point to clip.
+
 ## Ignition Rendering 4.0 to 4.1
 
 ## ABI break

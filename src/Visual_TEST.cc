@@ -350,6 +350,29 @@ void VisualTest::UserData(const std::string &_renderEngine)
   value = visual->UserData(stringKey);
   EXPECT_EQ(stringValue, std::get<std::string>(value));
 
+  // bool
+  std::string boolKey = "bool";
+  bool boolValue = true;
+  visual->SetUserData(boolKey, boolValue);
+  value = visual->UserData(boolKey);
+  EXPECT_EQ(boolValue, std::get<bool>(value));
+
+  // unsigned int
+  std::string unsignedIntKey = "unsignedInt";
+  unsigned int unsignedIntValue = 5u;
+  visual->SetUserData(unsignedIntKey, unsignedIntValue);
+  value = visual->UserData(unsignedIntKey);
+  EXPECT_EQ(unsignedIntValue, std::get<unsigned int>(value));
+
+  // test a key that does not exist (should return no data)
+  value = visual->UserData("invalidKey");
+  EXPECT_FALSE(std::holds_alternative<int>(value));
+  EXPECT_FALSE(std::holds_alternative<float>(value));
+  EXPECT_FALSE(std::holds_alternative<double>(value));
+  EXPECT_FALSE(std::holds_alternative<std::string>(value));
+  EXPECT_FALSE(std::holds_alternative<bool>(value));
+  EXPECT_FALSE(std::holds_alternative<unsigned int>(value));
+
   // test invalid access
   EXPECT_THROW(
   {

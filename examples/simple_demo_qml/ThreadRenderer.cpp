@@ -82,14 +82,14 @@ QList<QThread *> ThreadRenderer::threads;
 
 //-----------------------------------------------------------------------
 RenderThread::RenderThread(const QSize &size, QQuickItem *renderWindowItem)
-    : m_size(size)
-    , m_renderWindowItem(renderWindowItem)
+    : size(size)
+    , renderWindowItem(renderWindowItem)
 {
     ThreadRenderer::threads << this;
 }
 
 //-----------------------------------------------------------------------
-void RenderThread::print(const QSurfaceFormat &format)
+void RenderThread::Print(const QSurfaceFormat &format)
 {
     auto formatOptionsToString = [] (QSurfaceFormat::FormatOptions value) -> std::string {
         std::string options;
@@ -178,7 +178,7 @@ void RenderThread::print(const QSurfaceFormat &format)
 }
 
 //-----------------------------------------------------------------------
-QSurfaceFormat RenderThread::createSurfaceFormat()
+QSurfaceFormat RenderThread::CreateSurfaceFormat()
 {
     // QSurfaceFormat format;
     QSurfaceFormat format(QSurfaceFormat::DeprecatedFunctions);
@@ -195,58 +195,58 @@ QSurfaceFormat RenderThread::createSurfaceFormat()
 
 //--------------------------------------------------------------------------
 // called when the render node emits textureInUse
-void RenderThread::initialiseOnMainThread()
+void RenderThread::InitialiseOnMainThread()
 {
-    context->makeCurrent(surface);
-    print(context->format());
+    this->context->makeCurrent(this->surface);
+    Print(this->context->format());
 
     // create renderer
-    m_ignRenderer = new IgnitionRenderer();
-    m_ignRenderer->initialiseOnMainThread();
+    this->renderer = new IgnitionRenderer();
+    this->renderer->InitialiseOnMainThread();
 
-    context->doneCurrent();
+    this->context->doneCurrent();
 }
 
 //--------------------------------------------------------------------------
 // called when the render node emits textureInUse
-void RenderThread::renderNext()
+void RenderThread::RenderNext()
 {
-    context->makeCurrent(surface);
+    this->context->makeCurrent(this->surface);
 
-    if (!m_ignRenderer->initialised())
+    if (!this->renderer->Initialised())
     {
-        m_ignRenderer->initialise();
+        this->renderer->Initialise();
     }
 
     // check if engine has been successfully initialized
-    if (!m_ignRenderer->initialised())
+    if (!this->renderer->Initialised())
     {
         ignerr << "Unable to initialize renderer" << std::endl;
         return;
     }
 
-    m_ignRenderer->render();
+    this->renderer->Render();
 
-    emit textureReady(m_ignRenderer->textureId(), m_ignRenderer->textureSize());
+    emit this->TextureReady(this->renderer->TextureId(), this->renderer->TextureSize());
 
-    context->doneCurrent();
+    this->context->doneCurrent();
 }
 
 //--------------------------------------------------------------------------
-void RenderThread::shutDown()
+void RenderThread::ShutDown()
 {
-    context->makeCurrent(surface);
+    this->context->makeCurrent(this->surface);
 
-    delete m_ignRenderer;
-    m_ignRenderer = nullptr;
+    delete this->renderer;
+    this->renderer = nullptr;
 
-    context->doneCurrent();
+    this->context->doneCurrent();
 
-    delete context;
-    context = nullptr;
+    delete this->context;
+    this->context = nullptr;
 
     // schedule this to be deleted only after we're done cleaning up
-    surface->deleteLater();
+    this->surface->deleteLater();
 
     // Stop event processing, move the thread to GUI and make sure it is deleted.
     exit();
@@ -256,94 +256,94 @@ void RenderThread::shutDown()
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 TextureNode::TextureNode(QQuickWindow *window)
-    : m_id(0)
-    , m_size(0, 0)
-    , m_texture(nullptr)
-    , m_window(window)
+    : id(0)
+    , size(0, 0)
+    , texture(nullptr)
+    , window(window)
 {
     // Our texture node must have a texture, so use the default 0 texture.
     // createTextureFromNativeObject()
-    m_texture = m_window->createTextureFromId(0, QSize(1, 1));
-    setTexture(m_texture);
-    setFiltering(QSGTexture::Linear);
+    this->texture = this->window->createTextureFromId(0, QSize(1, 1));
+    this->setTexture(this->texture);
+    this->setFiltering(QSGTexture::Linear);
 }
 
 //--------------------------------------------------------------------------
 TextureNode::~TextureNode()
 {
-    delete m_texture;
-    m_texture = nullptr;
+    delete this->texture;
+    this->texture = nullptr;
 }
 
 //--------------------------------------------------------------------------
 // called when RenderThread emits signal textureReady
-void TextureNode::newTexture(int id, const QSize &size)
+void TextureNode::NewTexture(int id, const QSize &size)
 {
-    m_mutex.lock();
-    m_id = id;
-    m_size = size;
-    m_mutex.unlock();
+    this->mutex.lock();
+    this->id = id;
+    this->size = size;
+    this->mutex.unlock();
 
     // We cannot call QQuickWindow::update directly here, as this is only allowed
     // from the rendering thread or GUI thread.
-    emit pendingNewTexture();
+    emit this->PendingNewTexture();
 }
 
 //--------------------------------------------------------------------------
 // called when the window emits beforeRendering
-void TextureNode::prepareNode()
+void TextureNode::PrepareNode()
 {
-    m_mutex.lock();
-    int newId = m_id;
-    QSize size = m_size;
-    m_id = 0;
-    m_mutex.unlock();
+    this->mutex.lock();
+    int newId = this->id;
+    QSize size = this->size;
+    this->id = 0;
+    this->mutex.unlock();
     if (newId)
     {
-        delete m_texture;
-        m_texture = nullptr;
+        delete this->texture;
+        this->texture = nullptr;
         // note: include QQuickWindow::TextureHasAlphaChannel if the rendered content
         // has alpha.
         // createTextureFromNativeObject
-        m_texture = m_window->createTextureFromId(newId, size);
-        setTexture(m_texture);
+        this->texture = this->window->createTextureFromId(newId, size);
+        this->setTexture(this->texture);
 
-        markDirty(DirtyMaterial);
+        this->markDirty(DirtyMaterial);
 
         // This will notify the rendering thread that the texture is now being rendered
         // and it can start rendering to the other one.
-        emit textureInUse();
+        emit this->TextureInUse();
     }
 }
 
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 ThreadRenderer::ThreadRenderer()
-    : m_renderThread(nullptr)
+    : renderThread(nullptr)
 {
     setFlag(ItemHasContents, true);
-    m_renderThread = new RenderThread(QSize(512, 512), this);
+    this->renderThread = new RenderThread(QSize(512, 512), this);
 }
 
 //--------------------------------------------------------------------------
-void ThreadRenderer::ready()
+void ThreadRenderer::Ready()
 {
     // Run on the Main (GUI = QML) thread
-    m_renderThread->surface = new QOffscreenSurface();
-    m_renderThread->surface->setFormat(m_renderThread->context->format());
-    m_renderThread->surface->create();
+    this->renderThread->surface = new QOffscreenSurface();
+    this->renderThread->surface->setFormat(this->renderThread->context->format());
+    this->renderThread->surface->create();
 
     // carry out any initialisation before moving to thread 
-    m_renderThread->initialiseOnMainThread();
+    this->renderThread->InitialiseOnMainThread();
 
     // Move to Render thread
-    m_renderThread->context->moveToThread(m_renderThread);
-    m_renderThread->moveToThread(m_renderThread);
+    this->renderThread->context->moveToThread(this->renderThread);
+    this->renderThread->moveToThread(this->renderThread);
 
-    connect(window(), &QQuickWindow::sceneGraphInvalidated, m_renderThread, &RenderThread::shutDown, Qt::QueuedConnection);
+    connect(window(), &QQuickWindow::sceneGraphInvalidated, this->renderThread, &RenderThread::ShutDown, Qt::QueuedConnection);
 
     // Running on Render thread
-    m_renderThread->start();
+    this->renderThread->start();
     update();
 }
 
@@ -352,7 +352,7 @@ QSGNode *ThreadRenderer::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *
 {
     TextureNode *node = static_cast<TextureNode *>(oldNode);
 
-    if (!m_renderThread->context)
+    if (!this->renderThread->context)
     {
         QOpenGLContext *current = window()->openglContext();
         // Some GL implementations requres that the currently bound context is
@@ -360,17 +360,17 @@ QSGNode *ThreadRenderer::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *
         // and makeCurrent down below while setting up our own context.
         current->doneCurrent();
 
-        m_renderThread->context = new QOpenGLContext();
+        this->renderThread->context = new QOpenGLContext();
 
         // set the surface format (this is managed globally in Main.cpp)
         // auto surfaceFormat = RenderThread::createSurfaceFormat();
         // m_renderThread->context->setFormat(surfaceFormat);
-        m_renderThread->context->setFormat(current->format());
+        this->renderThread->context->setFormat(current->format());
 
-        m_renderThread->context->setShareContext(current);
-        m_renderThread->context->create();
+        this->renderThread->context->setShareContext(current);
+        this->renderThread->context->create();
 
-        QMetaObject::invokeMethod(this, "ready");
+        QMetaObject::invokeMethod(this, "Ready");
 
         current->makeCurrent(window());
 
@@ -395,13 +395,13 @@ QSGNode *ThreadRenderer::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *
          *
          * This FBO rendering pipeline is throttled by vsync on the scene graph rendering thread.
          */
-        connect(m_renderThread, &RenderThread::textureReady, node, &TextureNode::newTexture, Qt::DirectConnection);
-        connect(node, &TextureNode::pendingNewTexture, window(), &QQuickWindow::update, Qt::QueuedConnection);
-        connect(window(), &QQuickWindow::beforeRendering, node, &TextureNode::prepareNode, Qt::DirectConnection);
-        connect(node, &TextureNode::textureInUse, m_renderThread, &RenderThread::renderNext, Qt::QueuedConnection);
+        connect(this->renderThread, &RenderThread::TextureReady, node, &TextureNode::NewTexture, Qt::DirectConnection);
+        connect(node, &TextureNode::PendingNewTexture, window(), &QQuickWindow::update, Qt::QueuedConnection);
+        connect(this->window(), &QQuickWindow::beforeRendering, node, &TextureNode::PrepareNode, Qt::DirectConnection);
+        connect(node, &TextureNode::TextureInUse, this->renderThread, &RenderThread::RenderNext, Qt::QueuedConnection);
 
         // Get the production of FBO textures started..
-        QMetaObject::invokeMethod(m_renderThread, "renderNext", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(this->renderThread, "RenderNext", Qt::QueuedConnection);
     }
 
     node->setRect(boundingRect());

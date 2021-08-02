@@ -29,9 +29,9 @@ int main(int argc, char** argv)
     try
     {
         // requested surface format
-        QSurfaceFormat format = RenderThread::createSurfaceFormat();
+        QSurfaceFormat format = RenderThread::CreateSurfaceFormat();
         QSurfaceFormat::setDefaultFormat(format);
-        RenderThread::print(format);
+        RenderThread::Print(format);
 
         qmlRegisterType<ThreadRenderer>("IgnitionRendering", 1, 0, "Renderer");
 

@@ -96,24 +96,24 @@ public:
     QOffscreenSurface *surface = nullptr;
     QOpenGLContext *context = nullptr;
 
-    static void print(const QSurfaceFormat &format);
-    static QSurfaceFormat createSurfaceFormat();
+    static void Print(const QSurfaceFormat &format);
+    static QSurfaceFormat CreateSurfaceFormat();
 
-    void initialiseOnMainThread();
+    void InitialiseOnMainThread();
 
 public slots:
-    void renderNext();
-    void shutDown();
+    void RenderNext();
+    void ShutDown();
 
 signals:
-    void textureReady(int id, const QSize &size);
+    void TextureReady(int id, const QSize &size);
 
 private:
-    IgnitionRenderer *m_ignRenderer = nullptr;
-    QSize m_size;
+    IgnitionRenderer *renderer = nullptr;
+    QSize size;
 
     /// \brief reference to the render window item
-    QQuickItem *m_renderWindowItem = nullptr;
+    QQuickItem *renderWindowItem = nullptr;
 };
 
 //--------------------------------------------------------------------------
@@ -126,27 +126,27 @@ public:
     ~TextureNode() override;
 
 signals:
-    void textureInUse();
-    void pendingNewTexture();
+    void TextureInUse();
+    void PendingNewTexture();
 
 public slots:
 
     // This function gets called on the FBO rendering thread and will store the
     // texture id and size and schedule an update on the window.
-    void newTexture(int id, const QSize &size);
+    void NewTexture(int id, const QSize &size);
 
     // Before the scene graph starts to render, we update to the pending texture
-    void prepareNode();
+    void PrepareNode();
 
 private:
 
-    int m_id;
-    QSize m_size;
+    int id;
+    QSize size;
 
-    QMutex m_mutex;
+    QMutex mutex;
 
-    QSGTexture *m_texture = nullptr;
-    QQuickWindow *m_window = nullptr;
+    QSGTexture *texture = nullptr;
+    QQuickWindow *window = nullptr;
 };
 
 //--------------------------------------------------------------------------
@@ -161,13 +161,13 @@ public:
     static QList<QThread *> threads;
 
 public slots:
-    void ready();
+    void Ready();
 
 protected:
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *);
 
 private:
-    RenderThread *m_renderThread = nullptr;
+    RenderThread *renderThread = nullptr;
 };
 
 #endif

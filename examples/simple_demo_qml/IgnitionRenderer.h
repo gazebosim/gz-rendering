@@ -28,23 +28,23 @@ public:
     virtual ~IgnitionRenderer();
     IgnitionRenderer();
 
-    void render();
-    void initialise();
-    void initialiseOnMainThread();
+    void Render();
+    void Initialise();
+    void InitialiseOnMainThread();
 
-    bool initialised() const;
-    unsigned int textureId() const;
-    QSize textureSize() const;
+    bool Initialised() const;
+    unsigned int TextureId() const;
+    QSize TextureSize() const;
 
 private:
-    void initEngine();
-    void updateCamera();
+    void InitEngine();
+    void UpdateCamera();
 
-    unsigned int m_textureId = 0;
-    QSize m_textureSize = QSize(800, 600);
-    bool m_initialised = false;
-    double m_cameraOffset = 0.0;
-    ignition::rendering::CameraPtr m_camera;
+    unsigned int textureId = 0;
+    QSize textureSize = QSize(800, 600);
+    bool initialised = false;
+    double cameraOffset = 0.0;
+    ignition::rendering::CameraPtr camera;
 };
 
 #endif // IGNITIONRENDERER_H

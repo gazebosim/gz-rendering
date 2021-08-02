@@ -27,7 +27,7 @@
 #include <iostream>
 
 //-----------------------------------------------------------------------
-void buildScene(ignition::rendering::ScenePtr _scene)
+void BuildScene(ignition::rendering::ScenePtr _scene)
 {
     using namespace ignition;
     using namespace rendering;
@@ -42,13 +42,6 @@ void buildScene(ignition::rendering::ScenePtr _scene)
     light0->SetDiffuseColor(0.5, 0.5, 0.5);
     light0->SetSpecularColor(0.5, 0.5, 0.5);
     root->AddChild(light0);
-
-    // create point light
-    // PointLightPtr light1 = _scene->CreatePointLight();
-    // light1->SetDiffuseColor(0.5, 0.5, 0.5);
-    // light1->SetSpecularColor(0.5, 0.5, 0.5);
-    // light1->SetLocalPosition(5, -5, 10);
-    // root->AddChild(light1);
 
     // create point light
     PointLightPtr light2 = _scene->CreatePointLight();
@@ -180,7 +173,7 @@ void buildScene(ignition::rendering::ScenePtr _scene)
 }
 
 //-----------------------------------------------------------------------
-ignition::rendering::CameraPtr createCamera(const std::string &_engineName)
+ignition::rendering::CameraPtr CreateCamera(const std::string &_engineName)
 {
     using namespace ignition;
     using namespace rendering;
@@ -199,7 +192,7 @@ ignition::rendering::CameraPtr createCamera(const std::string &_engineName)
         return CameraPtr();
     }
     ScenePtr scene = engine->CreateScene("scene");
-    buildScene(scene);
+    BuildScene(scene);
 
     // return camera sensor
     SensorPtr sensor = scene->SensorByName("camera");
@@ -217,61 +210,61 @@ IgnitionRenderer::IgnitionRenderer()
 }
 
 //-----------------------------------------------------------------------
-void IgnitionRenderer::initialise()
+void IgnitionRenderer::Initialise()
 {
     // no-op - all initialised on the main thread
 }
 
 //-----------------------------------------------------------------------
-void IgnitionRenderer::initialiseOnMainThread()
+void IgnitionRenderer::InitialiseOnMainThread()
 {
-    if (!m_initialised)
+    if (!this->initialised)
     {
         // Ogre2 will manage it's own OpenGL context 
-        initEngine();
+        this->InitEngine();
 
-        m_initialised = true;
+        this->initialised = true;
     }
 }
 
 //-----------------------------------------------------------------------
 // See: ignition-gui, Scene3D.cc, IgnRenderer::Render(RenderSync *_renderSync)
-void IgnitionRenderer::render()
+void IgnitionRenderer::Render()
 {
     using namespace ignition;
     using namespace rendering;
 
     // pre-render may regenerate textureId if the size changes
-    m_camera->PreRender();
-    m_textureId = m_camera->RenderTextureGLId();
+    this->camera->PreRender();
+    this->textureId = this->camera->RenderTextureGLId();
 
     // render to texture
-    m_camera->Update();
+    this->camera->Update();
 
     // Move camera
-    updateCamera();
+    this->UpdateCamera();
 }
 
 //-----------------------------------------------------------------------
-bool IgnitionRenderer::initialised() const
+bool IgnitionRenderer::Initialised() const
 {
-    return m_initialised;
+    return this->initialised;
 }
 
 //-----------------------------------------------------------------------
-unsigned int IgnitionRenderer::textureId() const
+unsigned int IgnitionRenderer::TextureId() const
 {
-    return m_textureId;
+    return this->textureId;
 }
 
 //-----------------------------------------------------------------------
-QSize IgnitionRenderer::textureSize() const
+QSize IgnitionRenderer::TextureSize() const
 {
-    return m_textureSize;
+    return this->textureSize;
 }
 
 //-----------------------------------------------------------------------
-void IgnitionRenderer::initEngine()
+void IgnitionRenderer::InitEngine()
 {
     using namespace ignition;
     using namespace rendering;
@@ -282,40 +275,40 @@ void IgnitionRenderer::initEngine()
 
     try
     {
-        m_camera = createCamera(engineName);
+        this->camera = CreateCamera(engineName);
     }
     catch (...)
     {
         std::cerr << "Error starting up: " << engineName << std::endl;
     }
 
-    if (!m_camera)
+    if (!this->camera)
     {
         ignerr << "No cameras found. Scene will not be rendered" << std::endl;
         return;
     }
 
     // quick check on sizing...
-    std::cout << "imageW: " << m_camera->ImageWidth() << "\n";
-    std::cout << "imageH: " << m_camera->ImageHeight() << "\n";
+    ignmsg << "imageW: " << this->camera->ImageWidth() << "\n";
+    ignmsg << "imageH: " << this->camera->ImageHeight() << "\n";
 
     // pre-render will force texture creation and may update texture id
-    m_camera->PreRender();
-    m_textureId = m_camera->RenderTextureGLId();
+    this->camera->PreRender();
+    this->textureId = this->camera->RenderTextureGLId();
 }
 
 //-----------------------------------------------------------------------
-void IgnitionRenderer::updateCamera()
+void IgnitionRenderer::UpdateCamera()
 {
     using namespace ignition;
     using namespace rendering;
 
-    double angle = m_cameraOffset / 2 * M_PI;
+    double angle = this->cameraOffset / 2 * M_PI;
     double x = sin(angle) * 3.0 + 3.0;
     double y = cos(angle) * 3.0;
-    m_camera->SetLocalPosition(x, y, 0.0);
+    this->camera->SetLocalPosition(x, y, 0.0);
 
-    m_cameraOffset += 0.0005;
+    this->cameraOffset += 0.0005;
 }
 
 //-----------------------------------------------------------------------

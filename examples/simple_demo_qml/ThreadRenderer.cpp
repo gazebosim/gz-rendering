@@ -81,31 +81,31 @@
 QList<QThread *> ThreadRenderer::threads;
 
 //-----------------------------------------------------------------------
-RenderThread::RenderThread(const QSize &size, QQuickItem *renderWindowItem)
-    : size(size)
-    , renderWindowItem(renderWindowItem)
+RenderThread::RenderThread(const QSize &_size, QQuickItem *_renderWindowItem)
+    : size(_size)
+    , renderWindowItem(_renderWindowItem)
 {
     ThreadRenderer::threads << this;
 }
 
 //-----------------------------------------------------------------------
-void RenderThread::Print(const QSurfaceFormat &format)
+void RenderThread::Print(const QSurfaceFormat &_format)
 {
-    auto formatOptionsToString = [] (QSurfaceFormat::FormatOptions value) -> std::string {
+    auto formatOptionsToString = [] (QSurfaceFormat::FormatOptions _value) -> std::string {
         std::string options;
 
-        if (value & QSurfaceFormat::StereoBuffers) {
+        if (_value & QSurfaceFormat::StereoBuffers) {
             options.append("StereoBuffers");
         }
-        if (value & QSurfaceFormat::DebugContext) {
+        if (_value & QSurfaceFormat::DebugContext) {
             options.empty() ? options.append("") : options.append(", ");
             options.append("DebugContext");
         }
-        if (value & QSurfaceFormat::DeprecatedFunctions) {
+        if (_value & QSurfaceFormat::DeprecatedFunctions) {
             options.empty() ? options.append("") : options.append(", ");
             options.append("DeprecatedFunctions");
         }
-        if (value & QSurfaceFormat::ResetNotification) {
+        if (_value & QSurfaceFormat::ResetNotification) {
             options.empty() ? options.append("") : options.append(", ");
             options.append("ResetNotification");
         }
@@ -113,8 +113,8 @@ void RenderThread::Print(const QSurfaceFormat &format)
         return options;
     };
 
-    auto openGLContextProfileToString = [] (QSurfaceFormat::OpenGLContextProfile value) -> std::string {
-        switch (value)
+    auto openGLContextProfileToString = [] (QSurfaceFormat::OpenGLContextProfile _value) -> std::string {
+        switch (_value)
         {
         case QSurfaceFormat::NoProfile:
             return "NoProfile";
@@ -127,8 +127,8 @@ void RenderThread::Print(const QSurfaceFormat &format)
         } 
     };
 
-    auto renderableTypeToString = [] (QSurfaceFormat::RenderableType value) -> std::string {
-        switch (value)
+    auto renderableTypeToString = [] (QSurfaceFormat::RenderableType _value) -> std::string {
+        switch (_value)
         {
         case QSurfaceFormat::DefaultRenderableType:
             return "DefaultRenderableType";
@@ -143,8 +143,8 @@ void RenderThread::Print(const QSurfaceFormat &format)
         } 
     };
 
-    auto swapBehaviorToString = [] (QSurfaceFormat::SwapBehavior value) -> std::string {
-        switch (value)
+    auto swapBehaviorToString = [] (QSurfaceFormat::SwapBehavior _value) -> std::string {
+        switch (_value)
         {
         case QSurfaceFormat::DefaultSwapBehavior:
             return "DefaultSwapBehavior";
@@ -159,21 +159,21 @@ void RenderThread::Print(const QSurfaceFormat &format)
 
     // surface format info
     std::cout << "version: "
-        << format.version().first << "."
-        << format.version().second << "\n";
-    std::cout << "profile: " << openGLContextProfileToString(format.profile()) << "\n";
-    std::cout << "options: " << formatOptionsToString(format.options()) << "\n";
-    std::cout << "renderableType: " << renderableTypeToString(format.renderableType()) << "\n";
-    std::cout << "hasAlpha: " << format.hasAlpha() << "\n";
-    std::cout << "redBufferSize: " << format.redBufferSize() << "\n";
-    std::cout << "greenBufferSize: " << format.greenBufferSize() << "\n";
-    std::cout << "blueBufferSize: " << format.blueBufferSize() << "\n";
-    std::cout << "alphaBufferSize: " << format.alphaBufferSize() << "\n";
-    std::cout << "depthBufferSize: " << format.depthBufferSize() << "\n";
-    std::cout << "stencilBufferSize: " << format.stencilBufferSize() << "\n";
-    std::cout << "samples: " << format.samples() << "\n";
-    std::cout << "swapBehavior: " << swapBehaviorToString(format.swapBehavior()) << "\n";
-    std::cout << "swapInterval: " << format.swapInterval() << "\n";
+        << _format.version().first << "."
+        << _format.version().second << "\n";
+    std::cout << "profile: " << openGLContextProfileToString(_format.profile()) << "\n";
+    std::cout << "options: " << formatOptionsToString(_format.options()) << "\n";
+    std::cout << "renderableType: " << renderableTypeToString(_format.renderableType()) << "\n";
+    std::cout << "hasAlpha: " << _format.hasAlpha() << "\n";
+    std::cout << "redBufferSize: " << _format.redBufferSize() << "\n";
+    std::cout << "greenBufferSize: " << _format.greenBufferSize() << "\n";
+    std::cout << "blueBufferSize: " << _format.blueBufferSize() << "\n";
+    std::cout << "alphaBufferSize: " << _format.alphaBufferSize() << "\n";
+    std::cout << "depthBufferSize: " << _format.depthBufferSize() << "\n";
+    std::cout << "stencilBufferSize: " << _format.stencilBufferSize() << "\n";
+    std::cout << "samples: " << _format.samples() << "\n";
+    std::cout << "swapBehavior: " << swapBehaviorToString(_format.swapBehavior()) << "\n";
+    std::cout << "swapInterval: " << _format.swapInterval() << "\n";
     std::cout << "\n";
 }
 
@@ -255,11 +255,11 @@ void RenderThread::ShutDown()
 
 //--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
-TextureNode::TextureNode(QQuickWindow *window)
+TextureNode::TextureNode(QQuickWindow *_window)
     : id(0)
     , size(0, 0)
     , texture(nullptr)
-    , window(window)
+    , window(_window)
 {
     // Our texture node must have a texture, so use the default 0 texture.
     // createTextureFromNativeObject()
@@ -277,11 +277,11 @@ TextureNode::~TextureNode()
 
 //--------------------------------------------------------------------------
 // called when RenderThread emits signal textureReady
-void TextureNode::NewTexture(int id, const QSize &size)
+void TextureNode::NewTexture(int _id, const QSize &_size)
 {
     this->mutex.lock();
-    this->id = id;
-    this->size = size;
+    this->id = _id;
+    this->size = _size;
     this->mutex.unlock();
 
     // We cannot call QQuickWindow::update directly here, as this is only allowed
@@ -348,9 +348,9 @@ void ThreadRenderer::Ready()
 }
 
 //-----------------------------------------------------------------------
-QSGNode *ThreadRenderer::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
+QSGNode *ThreadRenderer::updatePaintNode(QSGNode *_oldNode, UpdatePaintNodeData *)
 {
-    TextureNode *node = static_cast<TextureNode *>(oldNode);
+    TextureNode *node = static_cast<TextureNode *>(_oldNode);
 
     if (!this->renderThread->context)
     {

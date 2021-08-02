@@ -24,7 +24,7 @@
 #include <exception>
 #include <iostream>
 
-int main(int argc, char** argv)
+int main(int _argc, char** _argv)
 {
     try
     {
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 
         qmlRegisterType<ThreadRenderer>("IgnitionRendering", 1, 0, "Renderer");
 
-        QGuiApplication app(argc, argv);
+        QGuiApplication app(_argc, _argv);
 
         // QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGLRhi);
 

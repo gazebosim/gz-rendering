@@ -91,12 +91,12 @@ class RenderThread : public QThread
 {
     Q_OBJECT
 public:
-    RenderThread(const QSize &size, QQuickItem *renderWindowItem);
+    RenderThread(const QSize &_size, QQuickItem *_renderWindowItem);
 
     QOffscreenSurface *surface = nullptr;
     QOpenGLContext *context = nullptr;
 
-    static void Print(const QSurfaceFormat &format);
+    static void Print(const QSurfaceFormat &_format);
     static QSurfaceFormat CreateSurfaceFormat();
 
     void InitialiseOnMainThread();
@@ -106,7 +106,7 @@ public slots:
     void ShutDown();
 
 signals:
-    void TextureReady(int id, const QSize &size);
+    void TextureReady(int _id, const QSize &_size);
 
 private:
     IgnitionRenderer *renderer = nullptr;
@@ -122,7 +122,7 @@ class TextureNode : public QObject, public QSGSimpleTextureNode
     Q_OBJECT
 
 public:
-    TextureNode(QQuickWindow *window);
+    TextureNode(QQuickWindow *_window);
     ~TextureNode() override;
 
 signals:
@@ -133,7 +133,7 @@ public slots:
 
     // This function gets called on the FBO rendering thread and will store the
     // texture id and size and schedule an update on the window.
-    void NewTexture(int id, const QSize &size);
+    void NewTexture(int _id, const QSize &_size);
 
     // Before the scene graph starts to render, we update to the pending texture
     void PrepareNode();

@@ -65,3 +65,5 @@ works, but I was not able to test that.
 
 Luxcore works representing the scene as a Properties object, so my idea was to share that object amoung the luxcore 
 pluggin and letting the ign-rendering classes modify that whenever needed.
+
+One thing to think about looking forward is, how is ign going to deal with the image taking more than one cycle rendering? luxcore allows to give you noisy render while its being generated, so you could have a parameter to the amount of noise to wait for before the next ign-rendering cycle.

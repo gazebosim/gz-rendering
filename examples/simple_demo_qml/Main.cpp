@@ -37,8 +37,6 @@ int main(int _argc, char** _argv)
 
         QGuiApplication app(_argc, _argv);
 
-        // QQuickWindow::setSceneGraphBackend(QSGRendererInterface::OpenGLRhi);
-
         int execReturn = 0;
         {
             QQuickView view;

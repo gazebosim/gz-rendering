@@ -68,8 +68,8 @@
 **
 ****************************************************************************/
 
-#ifndef THREADRENDERER_H
-#define THREADRENDERER_H
+#ifndef IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_THREAD_RENDERER_HH_
+#define IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_THREAD_RENDERER_HH_
 
 #include "IgnitionRenderer.h"
 
@@ -170,4 +170,4 @@ private:
     RenderThread *renderThread = nullptr;
 };
 
-#endif
+#endif // IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_THREAD_RENDERER_HH_

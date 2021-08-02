@@ -187,7 +187,6 @@ QSurfaceFormat RenderThread::CreateSurfaceFormat()
     format.setMajorVersion(4);
     format.setMinorVersion(1);
     format.setProfile(QSurfaceFormat::CoreProfile);
-    // format.setProfile(QSurfaceFormat::CompatibilityProfile);
     format.setRenderableType(QSurfaceFormat::OpenGL);
 
     return format;    

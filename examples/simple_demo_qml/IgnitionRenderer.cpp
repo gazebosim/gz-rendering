@@ -66,7 +66,6 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
     center->SetMaterial(green);
     root->AddChild(center);
 
-    //! [red material]
     // create red material
     MaterialPtr red = _scene->CreateMaterial();
     red->SetAmbient(0.5, 0.0, 0.0);
@@ -75,7 +74,6 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
     red->SetShininess(50);
     red->SetReflectivity(0);
     red->SetRenderOrder(3);
-    //! [red material]
 
     // create sphere visual
     VisualPtr sphere = _scene->CreateVisual();
@@ -114,7 +112,6 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
     ellipsoidVisual->SetMaterial(green);
     root->AddChild(ellipsoidVisual);
 
-    //! [white material]
     // create white material
     MaterialPtr white = _scene->CreateMaterial();
     white->SetAmbient(0.5, 0.5, 0.5);
@@ -122,7 +119,6 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
     white->SetReceiveShadows(true);
     white->SetReflectivity(0);
     white->SetRenderOrder(0);
-    //! [white material]
 
     VisualPtr capsuleVisual = _scene->CreateVisual();
     CapsulePtr capsule = _scene->CreateCapsule();
@@ -181,8 +177,7 @@ ignition::rendering::CameraPtr CreateCamera(const std::string &_engineName)
     // create and populate scene
     std::map<std::string, std::string> params;
 
-    // ignition-gui Scene3D sets this param, but it only applies to Linux.
-    // It is not set in the ignition-rendering simple_demo example.
+    // ensure that the QML application and Ignition / Ogre2 share an OpenGL context
     params["useCurrentGLContext"] = "1";
     RenderEngine *engine = rendering::engine(_engineName, params);
     if (!engine)
@@ -220,15 +215,12 @@ void IgnitionRenderer::InitialiseOnMainThread()
 {
     if (!this->initialised)
     {
-        // Ogre2 will manage it's own OpenGL context 
         this->InitEngine();
-
         this->initialised = true;
     }
 }
 
 //-----------------------------------------------------------------------
-// See: ignition-gui, Scene3D.cc, IgnRenderer::Render(RenderSync *_renderSync)
 void IgnitionRenderer::Render()
 {
     using namespace ignition;

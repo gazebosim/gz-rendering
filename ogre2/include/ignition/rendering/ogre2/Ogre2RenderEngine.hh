@@ -49,6 +49,7 @@ namespace ignition
     //
     // forward declaration
     class Ogre2RenderEnginePrivate;
+    class Ogre2IgnHlmsCustomizations;
 
     /// \brief Plugin for loading ogre render engine
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderEnginePlugin :
@@ -169,6 +170,9 @@ namespace ignition
       /// \brief Get a list of all supported FSAA levels for this render system
       /// \return a list of FSAA levels
       public: std::vector<unsigned int> FSAALevels() const;
+
+      /// \brief Retrieves Hlms customizations for tweaking them
+      public: Ogre2IgnHlmsCustomizations& HlmsCustomizations();
 
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.

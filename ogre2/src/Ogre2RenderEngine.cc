@@ -664,8 +664,8 @@ void Ogre2RenderEngine::RegisterHlms()
   Ogre::ArchiveManager &archiveManager = Ogre::ArchiveManager::getSingleton();
 
   Ogre::Archive *customizationsArchiveLibrary =
-      archiveManager.load( rootHlmsFolder + "Hlms/Ignition", "FileSystem",
-                           true );
+      archiveManager.load(common::joinPaths(rootHlmsFolder, "Hlms", "Ignition"),
+      "FileSystem", true);
 
   {
     Ogre::HlmsUnlit *hlmsUnlit = 0;
@@ -686,7 +686,7 @@ void Ogre2RenderEngine::RegisterHlms()
       ++libraryFolderPathIt;
     }
 
-    archiveUnlitLibraryFolders.push_back( customizationsArchiveLibrary );
+    archiveUnlitLibraryFolders.push_back(customizationsArchiveLibrary);
 
     // Create and register the unlit Hlms
     hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit,
@@ -719,7 +719,7 @@ void Ogre2RenderEngine::RegisterHlms()
       ++libraryFolderPathIt;
     }
 
-    archivePbsLibraryFolders.push_back( customizationsArchiveLibrary );
+    archivePbsLibraryFolders.push_back(customizationsArchiveLibrary);
 
     // Create and register
     hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);

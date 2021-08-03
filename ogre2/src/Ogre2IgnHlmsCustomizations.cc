@@ -44,16 +44,16 @@ void Ogre2IgnHlmsCustomizations::preparePassHash(
   {
     const Ogre::int32 numClipPlanes =
       _hlms->_getProperty("hlms_pso_clip_distances");
-    _hlms->_setProperty( "ign_spherical_clip_min_distance", 1 );
-    _hlms->_setProperty( "ign_spherical_clip_idx", numClipPlanes );
-    _hlms->_setProperty( "hlms_pso_clip_distances", numClipPlanes + 1 );
+    _hlms->_setProperty("ign_spherical_clip_min_distance", 1);
+    _hlms->_setProperty("ign_spherical_clip_idx", numClipPlanes);
+    _hlms->_setProperty("hlms_pso_clip_distances", numClipPlanes + 1);
 
     if (_hlms->getType() == Ogre::HLMS_UNLIT)
     {
       if (_hlms->_getProperty("hlms_global_clip_planes") == 0)
       {
         this->needsWorldPos = true;
-        _hlms->_setProperty( "ign_spherical_clip_needs_worldPos", 1 );
+        _hlms->_setProperty("ign_spherical_clip_needs_worldPos", 1);
       }
     }
   }
@@ -114,7 +114,9 @@ float* Ogre2IgnHlmsCustomizations::preparePassBuffer(
       Ogre::Matrix4 invViewProj = (projectionMatrix *
                                    camera->getViewMatrix(true)).inverse();
       for (size_t i = 0; i < 16u; ++i)
+      {
         *_passBufferPtr++ = static_cast<float>(invViewProj[0][i]);
+      }
     }
   }
   return _passBufferPtr;

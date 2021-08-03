@@ -172,7 +172,8 @@ namespace ignition
       public: std::vector<unsigned int> FSAALevels() const;
 
       /// \brief Retrieves Hlms customizations for tweaking them
-      public: Ogre2IgnHlmsCustomizations& HlmsCustomizations();
+      /// \return Ogre HLMS customizations
+      public: Ogre2IgnHlmsCustomizations &HlmsCustomizations();
 
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.

@@ -67,10 +67,11 @@ void buildScene(ScenePtr _scene)
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual("sphere");
   sphere->AddGeometry(_scene->CreateSphere());
-  sphere->SetOrigin(0.0, -0.5, 0.0);
-  sphere->SetLocalPosition(3, 0, 0);
+//  sphere->SetOrigin(0.0, -0.5, 0.0);
+  sphere->SetLocalPosition(3, 2, 0);
   sphere->SetLocalRotation(0, 0, 0);
-  sphere->SetLocalScale(1, 2.5, 1);
+  //sphere->SetLocalScale(1, 2.5, 1);
+  sphere->SetLocalScale(0.1, 0.1, 0.1);
   sphere->SetMaterial(red);
   root->AddChild(sphere);
 
@@ -97,9 +98,9 @@ void buildScene(ScenePtr _scene)
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
-  camera->SetImageHeight(600);
+  camera->SetImageHeight(800);
   camera->SetAntiAliasing(2);
-  camera->SetAspectRatio(1.333);
+//  camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 }

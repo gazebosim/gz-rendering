@@ -25,12 +25,19 @@
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 
 /// \brief Private data class for Ogre2RayQuery
 class ignition::rendering::Ogre2RayQueryPrivate
 {
   /// \brief Ogre ray scene query object for computing intersection.
   public: Ogre::RaySceneQuery *rayQuery = nullptr;
+
+  /// \brief Image pos to cast the ray from
+  public: math::Vector2i imgPos;
+
+  /// \brief Pointer to camera used for ray query
+  public: Ogre2CameraPtr camera;
 };
 
 using namespace ignition;
@@ -59,10 +66,70 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
 
   this->origin = Ogre2Conversions::Convert(ray.getOrigin());
   this->direction = Ogre2Conversions::Convert(ray.getDirection());
+
+  this->dataPtr->camera = camera;
+  this->dataPtr->imgPos.X() = static_cast<int>(
+      screenPos.X() * this->dataPtr->camera->ImageWidth());
+  this->dataPtr->imgPos.Y() = static_cast<int>(
+      screenPos.Y() * this->dataPtr->camera->ImageHeight());
+  std::cerr << "img pos " << this->dataPtr->imgPos << std::endl;
 }
 
 //////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPoint()
+{
+  RayQueryResult result;
+
+//    return this->ClosestPointByIntersection();
+
+  if (!this->dataPtr->camera)
+  {
+    return this->ClosestPointByIntersection();
+  }
+  else
+  {
+    // the VisualAt function is a hack to force creation of the selection
+    // buffer object
+    // todo(anyone) Make Camera::SetSelectionBuffer function public?
+    if (!this->dataPtr->camera->SelectionBuffer())
+      this->dataPtr->camera->VisualAt(math::Vector2i(0, 0));
+
+   this->ClosestPointByIntersection();
+    return this->ClosestPointBySelectionBuffer();
+  }
+}
+
+//////////////////////////////////////////////////
+RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
+{
+  RayQueryResult result;
+  Ogre::Item *ogreItem = nullptr;
+  math::Vector3d point;
+  bool success = this->dataPtr->camera->SelectionBuffer()->ExecuteQuery(
+      this->dataPtr->imgPos.X(), this->dataPtr->imgPos.Y(), ogreItem, point);
+  result.distance = -1;
+
+  if (success && ogreItem)
+  {
+    if (!ogreItem->getUserObjectBindings().getUserAny().isEmpty() &&
+        ogreItem->getUserObjectBindings().getUserAny().getType() ==
+        typeid(unsigned int))
+    {
+      auto userAny = ogreItem->getUserObjectBindings().getUserAny();
+      double pointLength = point.Length();
+      if (!std::isinf(pointLength))
+      {
+        result.distance = pointLength;
+        result.point = point;
+        result.objectId = Ogre::any_cast<unsigned int>(userAny);
+      }
+    }
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+RayQueryResult Ogre2RayQuery::ClosestPointByIntersection()
 {
   RayQueryResult result;
   Ogre2ScenePtr ogreScene =
@@ -159,6 +226,7 @@ RayQueryResult Ogre2RayQuery::ClosestPoint()
             result.point =
                 Ogre2Conversions::Convert(mouseRay.getPoint(distance));
             result.objectId = Ogre::any_cast<unsigned int>(userAny);
+            std::cerr << "closest nter point " << result.point << std::endl;
           }
         }
       }

@@ -27,6 +27,8 @@ THE SOFTWARE.
 */
 
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
+
+#include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Terra.h"
 
 #include "CommandBuffer/OgreCommandBuffer.h"
@@ -112,6 +114,7 @@ namespace Ogre
             }
 
             hlms->_setProperty( PbsTerraProperty::TerraEnabled, mTerra != 0 );
+            hlms->_setProperty( TerraProperty::ZUp, mTerra->isZUp() );
         }
     }
     //-----------------------------------------------------------------------------------
@@ -130,7 +133,7 @@ namespace Ogre
         if( !casterPass && mTerra )
         {
             const float invHeight = 1.0f / mTerra->getHeight();
-            const Vector3 &terrainOrigin = mTerra->getTerrainOrigin();
+            const Vector3 &terrainOrigin = mTerra->getTerrainOriginRaw();
             const Vector2 &terrainXZInvDim = mTerra->getXZInvDimensions();
             *passBufferPtr++ = -terrainOrigin.x * terrainXZInvDim.x;
             *passBufferPtr++ = -terrainOrigin.y * invHeight;

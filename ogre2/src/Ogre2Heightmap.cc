@@ -31,6 +31,9 @@
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
+#include <OgreCamera.h>
+#include <OgreHlms.h>
+#include <OgreHlmsManager.h>
 #include <OgreImage2.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
@@ -178,11 +181,17 @@ void Ogre2Heightmap::Init()
         &ogreSceneManager->_getEntityMemoryManager(
           Ogre::/*SCENE_STATIC*/SCENE_DYNAMIC),
         ogreSceneManager, 11u, ogreCompMgr, nullptr );
+  // Does not cast shadows because it uses a raymarching implementation
+  // instead of shadow maps. It does receive shadows from shadow maps though
+  this->dataPtr->terra->setCastShadows(false);
   this->dataPtr->terra->load(
         image,
         Ogre2Conversions::Convert(origin),
         Ogre2Conversions::Convert(this->descriptor.Size()),
         this->descriptor.Name());
+  this->dataPtr->terra->setDatablock(
+        ogreRoot->getHlmsManager()->
+        getHlms(Ogre::HLMS_USER3)->getDefaultDatablock());
 
 #if 0
   // textures. The default material generator takes two materials per layer.

@@ -213,6 +213,31 @@ bool Ogre2Scene::InitImpl()
 }
 
 //////////////////////////////////////////////////
+void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
+{
+  auto itor = this->heightmaps.begin();
+  auto endt = this->heightmaps.end();
+
+  while (itor != endt)
+  {
+    Ogre2HeightmapPtr heightmap = itor->lock();
+    if (!heightmap)
+    {
+      // Heightmap has been destroyed. Remove it from our list.
+      // Swap and pop trick
+      itor = Ogre::efficientVectorRemove(this->heightmaps, itor);
+      endt = this->heightmaps.end();
+    }
+    else
+    {
+      heightmap->UpdateForRender(_camera);
+    }
+
+    ++itor;
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2Scene::UpdateShadowNode()
 {
   if (!this->ShadowsDirty())
@@ -821,6 +846,7 @@ HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int _id,
   const std::string &_name, const HeightmapDescriptor &_desc)
 {
   Ogre2HeightmapPtr heightmap(new Ogre2Heightmap(_desc));
+  heightmaps.push_back(heightmap);
   bool result = this->InitObject(heightmap, _id, _name);
   return (result) ? heightmap : nullptr;
 }

@@ -450,6 +450,8 @@ void Ogre2RenderTarget::PostRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
+  this->scene->UpdateAllHeightmaps(this->ogreCamera);
+
   // TODO(anyone)
   // There is current not an easy solution to manually updating
   // render textures:

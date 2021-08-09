@@ -231,9 +231,8 @@ void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
     else
     {
       heightmap->UpdateForRender(_camera);
+      ++itor;
     }
-
-    ++itor;
   }
 }
 

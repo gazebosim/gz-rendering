@@ -44,6 +44,14 @@
 //////////////////////////////////////////////////
 class ignition::rendering::Ogre2HeightmapPrivate
 {
+  /// \brief Skirt min height. Leave it at -1 for automatic.
+  /// Leave it at 0 for maximum skirt size (high performance hit)
+  public: float skirtMinHeight{-1};
+
+  /// \brief Cached value of skirtMinHeight auto-calculated by Terra
+  /// so we can use it if skirtMinHeight becomes -1 again
+  public: float autoSkirtValue;
+
   /// \brief The raw height values.
   public: std::vector<float> heights;
 
@@ -95,6 +103,7 @@ void Ogre2Heightmap::Init()
   // So we move the heightmap so that its min elevation = 0 before feeding to
   // ogre. It is later translated back by the setOrigin call.
   float minElevation = 0.0;
+  float maxElevation = 0.0;
 
   // TODO(chapulina) add a virtual HeightmapData::MinElevation function to
   // avoid the ifdef check. i.e. heightmapSizeZ = MaxElevation - MinElevation
@@ -110,11 +119,11 @@ void Ogre2Heightmap::Init()
   math::Vector3d scale;
   scale.X(this->descriptor.Size().X() / newWidth);
   scale.Y(this->descriptor.Size().Y() / newWidth);
-
-  if (math::equal(heightmapSizeZ, 0.0))
+  scale.Z(1.0);
+  /*if (math::equal(heightmapSizeZ, 0.0))
     scale.Z(1.0);
   else
-    scale.Z(fabs(this->descriptor.Size().Z()) / heightmapSizeZ);
+    scale.Z(fabs(this->descriptor.Size().Z()) / heightmapSizeZ);*/
 
   // Construct the heightmap lookup table
   std::vector<float> lookup;
@@ -126,9 +135,24 @@ void Ogre2Heightmap::Init()
   {
     for (unsigned int x = 0; x < newWidth; ++x)
     {
-      const size_t index = (newWidth - y - 1u) * newWidth + x;
-      this->dataPtr->heights.push_back(lookup[index] - minElevation);
+      const size_t index = y * newWidth + x;
+      const float heightVal = lookup[index];
+      minElevation = std::min(minElevation,heightVal);
+      maxElevation = std::max(maxElevation,heightVal);
+      this->dataPtr->heights.push_back(heightVal);
     }
+  }
+
+  const float heightDiff = maxElevation - minElevation;
+  const float invHeightDiff = 1.0f / heightDiff;
+  for (float &heightVal : this->dataPtr->heights)
+  {
+    heightVal = (heightVal - minElevation) * invHeightDiff;
+  }
+
+  for (float &heightVal : this->dataPtr->heights)
+  {
+    assert( heightVal >= 0 );
   }
 
   this->dataPtr->dataSize = newWidth;
@@ -165,10 +189,13 @@ void Ogre2Heightmap::Init()
                          1u, Ogre::TextureTypes::Type2D,
                          Ogre::PFG_R32_FLOAT, false);
 
-  math::Vector3d origin(
-      this->descriptor.Position().X() + this->descriptor.Size().X() * 0.5,
-      this->descriptor.Position().Y() + this->descriptor.Size().Y() * 0.5,
-      this->descriptor.Position().Z() + this->descriptor.Size().Z() * 0.5);
+  const math::Vector3d newSize = this->descriptor.Size() *
+                                 math::Vector3d(1.0, 1.0, heightDiff);
+
+  math::Vector3d center(
+      this->descriptor.Position().X() + newSize.X() * 0.5,
+      this->descriptor.Position().Y() + newSize.Y() * 0.5,
+      this->descriptor.Position().Z() + newSize.Z() * 0.5 + minElevation);
 
   Ogre::Root *ogreRoot = Ogre2RenderEngine::Instance()->OgreRoot();
   Ogre::SceneManager *ogreSceneManager = ogreScene->OgreSceneManager();
@@ -186,9 +213,11 @@ void Ogre2Heightmap::Init()
   this->dataPtr->terra->setCastShadows(false);
   this->dataPtr->terra->load(
         image,
-        Ogre2Conversions::Convert(origin),
-        Ogre2Conversions::Convert(this->descriptor.Size()),
+        Ogre2Conversions::Convert(center),
+        Ogre2Conversions::Convert(newSize),
         this->descriptor.Name());
+  this->dataPtr->autoSkirtValue =
+      this->dataPtr->terra->getCustomSkirtMinHeight();
   this->dataPtr->terra->setDatablock(
         ogreRoot->getHlmsManager()->
         getHlms(Ogre::HLMS_USER3)->getDefaultDatablock());
@@ -244,6 +273,17 @@ void Ogre2Heightmap::PreRender()
 ///////////////////////////////////////////////////
 void Ogre2Heightmap::UpdateForRender(Ogre::Camera *_activeCamera)
 {
+  if (this->dataPtr->skirtMinHeight >= 0)
+  {
+    this->dataPtr->terra->setCustomSkirtMinHeight(
+          this->dataPtr->skirtMinHeight);
+  }
+  else
+  {
+    this->dataPtr->terra->setCustomSkirtMinHeight(
+          this->dataPtr->autoSkirtValue);
+  }
+
   // Get the first directional light
   Ogre2DirectionalLightPtr directionalLight;
   for (unsigned int i = 0; i < this->Scene()->LightCount(); ++i)

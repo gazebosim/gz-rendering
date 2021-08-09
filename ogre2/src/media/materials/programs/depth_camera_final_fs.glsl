@@ -50,7 +50,7 @@ void main()
   // to be outside of min/max range
 
   // clamp xyz
-  if (point.x > far - tolerance)
+  if (!isinf(point.x) && length(point) > far - tolerance)
   {
     if (isinf(max))
     {

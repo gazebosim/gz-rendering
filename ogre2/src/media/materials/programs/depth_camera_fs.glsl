@@ -139,7 +139,7 @@ void main()
   }
 
   // clamp xyz and set rgb to background color
-  if (point.x > far - tolerance)
+  if (length(point) > far - tolerance)
   {
     if (isinf(max))
     {

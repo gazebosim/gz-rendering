@@ -56,19 +56,19 @@ void ThermalCameraTest::ThermalCamera(const std::string &_renderEngine)
   camera->SetAmbientTemperature(ambient);
   EXPECT_FLOAT_EQ(ambient, camera->AmbientTemperature());
 
-  float range = 3.35;
+  float range = 3.35f;
   camera->SetAmbientTemperatureRange(range);
   EXPECT_FLOAT_EQ(range, camera->AmbientTemperatureRange());
 
-  float minTemp = 250.05;
+  float minTemp = 250.05f;
   camera->SetMinTemperature(minTemp);
   EXPECT_FLOAT_EQ(minTemp, camera->MinTemperature());
 
-  float maxTemp = 380.06;
+  float maxTemp = 380.06f;
   camera->SetMaxTemperature(maxTemp);
   EXPECT_FLOAT_EQ(maxTemp, camera->MaxTemperature());
 
-  float resolution = 0.04;
+  float resolution = 0.04f;
   camera->SetLinearResolution(resolution);
   EXPECT_FLOAT_EQ(resolution, camera->LinearResolution());
 

@@ -16,7 +16,7 @@
  */
 
 // Not Apple or Windows
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 # include <GL/glx.h>
@@ -46,7 +46,7 @@
 
 class ignition::rendering::OgreRenderEnginePrivate
 {
-#if not defined(__APPLE__) && not defined(_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
 #endif
 
@@ -119,7 +119,7 @@ void OgreRenderEngine::Destroy()
   delete this->ogreLogManager;
   this->ogreLogManager = nullptr;
 
-#if not (__APPLE__ || _WIN32)
+#if (!defined(__APPLE__) && !defined(_WIN32))
   if (this->dummyDisplay)
   {
     Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -337,7 +337,7 @@ void OgreRenderEngine::CreateLogger()
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateContext()
 {
-#if not (__APPLE__ || _WIN32)
+#if (!defined(__APPLE__) && !defined(_WIN32))
   // create X11 display
   this->dummyDisplay = XOpenDisplay(0);
   Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -493,8 +493,11 @@ void OgreRenderEngine::CreateRenderSystem()
     renderSys = rsList->at(c);
     c++;
   }
-  while (renderSys &&
-         renderSys->getName().compare("OpenGL Rendering Subsystem") != 0);
+  // cpplint has a false positive when extending a while call to multiple lines
+  // (it thinks the while loop is empty), so we must put the whole while
+  // statement on one line and add NOLINT at the end so that cpplint doesn't
+  // complain about the line being too long
+  while (renderSys && renderSys->getName().compare("OpenGL Rendering Subsystem") != 0); // NOLINT
 
   if (renderSys == nullptr)
   {
@@ -606,7 +609,12 @@ void OgreRenderEngine::CreateResources()
 void OgreRenderEngine::CreateRenderWindow()
 {
   // create dummy window
-  this->CreateRenderWindow(std::to_string(this->dummyWindowId), 1, 1, 1, 0);
+  auto res = this->CreateRenderWindow(std::to_string(this->dummyWindowId), 1, 1,
+      1, 0);
+  if (res.empty())
+  {
+    ignerr << "Failed to create dummy render window." << std::endl;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -640,9 +648,6 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
   // Hide window if dimensions are less than or equal to one.
   params["border"] = "none";
 
-  std::ostringstream stream;
-  stream << "OgreWindow(0)" << "_" << _handle;
-
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
 
@@ -652,28 +657,34 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     params["currentGLContext"] = "true";
   }
 
+  std::ostringstream stream;
   int attempts = 0;
-  while (window == nullptr && (attempts++) < 10)
+  while (window == nullptr && attempts < 10)
   {
+    stream.str("");
+    stream << "OgreWindow(" << attempts << ")" << "_" << _handle;
     try
     {
       window = this->ogreRoot->createRenderWindow(
           stream.str(), _width, _height, false, &params);
     }
-    catch(...)
+    catch(Ogre::Exception &_e)
     {
-      ignerr << " Unable to create the rendering window\n";
+      ignerr << "Unable to create the rendering window. Attempt [" << attempts
+             << "]. Exception [" << _e.what() << "]" << std::endl;
       window = nullptr;
     }
+    attempts++;
   }
 
   if (attempts >= 10)
   {
-    ignerr << "Unable to create the rendering window\n" << std::endl;
+    ignerr << "Unable to create the rendering window after [" << attempts
+           << "] attempts." << std::endl;
     return std::string();
   }
 
-  if (window)
+  if (nullptr != window)
   {
     window->setActive(true);
     window->setVisible(true);
@@ -688,11 +699,23 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
 //////////////////////////////////////////////////
 void OgreRenderEngine::CheckCapabilities()
 {
+  if (nullptr == this->ogreRoot ||nullptr == this->ogreRoot->getRenderSystem())
+  {
+    ignerr << "No ogreRoot or render system" << std::endl;
+    return;
+  }
+
   const Ogre::RenderSystemCapabilities *capabilities;
   Ogre::RenderSystemCapabilities::ShaderProfiles profiles;
   Ogre::RenderSystemCapabilities::ShaderProfiles::const_iterator iter;
 
   capabilities = this->ogreRoot->getRenderSystem()->getCapabilities();
+  if (nullptr == capabilities)
+  {
+    ignerr << "Failed to get capabilities" << std::endl;
+    return;
+  }
+
   profiles = capabilities->getSupportedShaderProfiles();
 
   bool hasFragmentPrograms =
@@ -714,17 +737,23 @@ void OgreRenderEngine::CheckCapabilities()
     std::find(profiles.begin(), profiles.end(), "glsl") != profiles.end();
 
   if (!hasFragmentPrograms || !hasVertexPrograms)
+  {
     ignwarn << "Vertex and fragment shaders are missing. "
            << "Fixed function rendering will be used.\n";
+  }
 
   if (!hasGLSL)
+  {
     ignwarn << "GLSL is missing."
            << "Fixed function rendering will be used.\n";
+  }
 
   // cppcheck-suppress knownConditionTrueFalse
   if (!hasFBO)
+  {
     ignwarn << "Frame Buffer Objects (FBO) is missing. "
            << "Rendering will be disabled.\n";
+  }
 
   this->renderPathType = OgreRenderEngine::NONE;
 

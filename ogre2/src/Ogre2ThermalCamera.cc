@@ -17,7 +17,9 @@
 
 #if (_WIN32)
   /* Needed for std::min */
-  #define NOMINMAX
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
   #include <windows.h>
 #endif
 

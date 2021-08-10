@@ -20,6 +20,16 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
+template <class T>
+struct ArrayDeleter
+{
+  void operator () (T const * p)
+  {
+    delete [] p;
+  }
+};
+
+//////////////////////////////////////////////////
 Image::Image(unsigned int _width, unsigned int _height,
   PixelFormat _format) :
   width(_width),
@@ -27,7 +37,7 @@ Image::Image(unsigned int _width, unsigned int _height,
 {
   this->format = PixelUtil::Sanitize(_format);
   unsigned int size = this->MemorySize();
-  this->data = DataPtr(new unsigned char[size]);
+  this->data = DataPtr(new unsigned char[size], ArrayDeleter<unsigned char>());
 }
 
 //////////////////////////////////////////////////

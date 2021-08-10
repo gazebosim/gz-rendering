@@ -1,10 +1,63 @@
 ## Ignition Rendering
 
-### Ignition Rendering 3.x.x (upcoming)
+### Ignition Rendering 3.x.x (2021-XX-XX)
 
 1. CMake warning on Ogre versions that are not officially supported.
    To disable the new warning is enough to enable the cmake option USE_UNOFFICAL_OGRE_VERSIONS
     * [Pull request 376](https://github.com/ignitionrobotics/ign-rendering/pull/376)
+
+### Ignition Rendering 3.5.0 (2021-05-25)
+
+1. Include MoveTo Helper class to ign-rendering
+    * [Pull request 311](https://github.com/ignitionrobotics/ign-rendering/pull/311)
+
+1. Remove tools/code_check and update codecov
+    * [Pull request 321](https://github.com/ignitionrobotics/ign-rendering/pull/321)
+
+1. Helper function to get a scene (#320)
+    * [Pull request 320](https://github.com/ignitionrobotics/ign-rendering/pull/320)
+
+1. Fix DepthGaussianNoise test (#271)
+    * [Pull request 271](https://github.com/ignitionrobotics/ign-rendering/pull/271)
+
+1. Master branch updates (#268)
+    * [Pull request 268](https://github.com/ignitionrobotics/ign-rendering/pull/268)
+
+1. 👩🌾 Make GitHub actions tests that are flaky due to display more verbose information (#255)
+    * [Pull request 255](https://github.com/ignitionrobotics/ign-rendering/pull/255)
+
+1. Fixed OBJ textures with the same name (#239)
+    * [Pull request 239](https://github.com/ignitionrobotics/ign-rendering/pull/239)
+
+1. More verbose messages when failing to load render engine (#236)
+    * [Pull request 236](https://github.com/ignitionrobotics/ign-rendering/pull/236)
+
+### Ignition Rendering 3.4.0 (2021-02-09)
+
+1. Clear all Windows warnings
+    * [Pull request 206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
+    * [Pull request 215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
+    * [Pull request 225](https://github.com/ignitionrobotics/ign-rendering/pull/225)
+
+1. Add laser_retro support
+    * [Pull request 194](https://github.com/ignitionrobotics/ign-rendering/pull/194)
+
+### Ignition Rendering 3.3.0 (2021-01-22)
+
+1. Add Windows installation.
+    * [Pull request 196](https://github.com/ignitionrobotics/ign-rendering/pull/196)
+
+1. Make flaky VisualAt test more verbose.
+    * [Pull request 174](https://github.com/ignitionrobotics/ign-rendering/pull/174)
+
+1. Resolve updated codecheck issues.
+    * [Pull request 173](https://github.com/ignitionrobotics/ign-rendering/pull/173)
+
+1. Fix crash due to NaN pose values.
+    * [Pull request 169](https://github.com/ignitionrobotics/ign-rendering/pull/169)
+
+1. Improve fork experience.
+    * [Pull request 165](https://github.com/ignitionrobotics/ign-rendering/pull/165)
 
 ### Ignition Rendering 3.2.0 (2020-10-13)
 

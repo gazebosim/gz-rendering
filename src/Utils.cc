@@ -20,6 +20,12 @@
 #include <X11/Xresource.h>
 #endif
 
+#include "ignition/math/Plane.hh"
+#include "ignition/math/Vector2.hh"
+#include "ignition/math/Vector3.hh"
+
+#include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/Utils.hh"
 
 namespace ignition
@@ -28,6 +34,71 @@ namespace rendering
 {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 //
+/////////////////////////////////////////////////
+math::Vector3d screenToScene(
+    const math::Vector2i &_screenPos,
+    const CameraPtr &_camera,
+    const RayQueryPtr &_rayQuery,
+    RayQueryResult &_rayResult,
+    float _maxDistance)
+{
+  // Normalize point on the image
+  double width = _camera->ImageWidth();
+  double height = _camera->ImageHeight();
+
+  double nx = 2.0 * _screenPos.X() / width - 1.0;
+  double ny = 1.0 - 2.0 * _screenPos.Y() / height;
+
+  // Make a ray query
+  _rayQuery->SetFromCamera(
+      _camera, math::Vector2d(nx, ny));
+
+  _rayResult = _rayQuery->ClosestPoint();
+  if (_rayResult)
+    return _rayResult.point;
+
+  // Set point to be maxDistance m away if no intersection found
+  return _rayQuery->Origin() +
+      _rayQuery->Direction() * _maxDistance;
+}
+
+/////////////////////////////////////////////////
+math::Vector3d screenToScene(
+    const math::Vector2i &_screenPos,
+    const CameraPtr &_camera,
+    const RayQueryPtr &_rayQuery,
+    float _maxDistance)
+{
+  RayQueryResult rayResult;
+  return screenToScene(_screenPos, _camera, _rayQuery, rayResult, _maxDistance);
+}
+
+/////////////////////////////////////////////////
+math::Vector3d screenToPlane(
+    const math::Vector2i &_screenPos,
+    const CameraPtr &_camera,
+    const RayQueryPtr &_rayQuery,
+    const float offset)
+{
+  // Normalize point on the image
+  double width = _camera->ImageWidth();
+  double height = _camera->ImageHeight();
+
+  double nx = 2.0 * _screenPos.X() / width - 1.0;
+  double ny = 1.0 - 2.0 * _screenPos.Y() / height;
+
+  // Make a ray query
+  _rayQuery->SetFromCamera(
+      _camera, math::Vector2d(nx, ny));
+
+  ignition::math::Planed plane(ignition::math::Vector3d(0, 0, 1), offset);
+
+  math::Vector3d origin = _rayQuery->Origin();
+  math::Vector3d direction = _rayQuery->Direction();
+  double distance = plane.Distance(origin, direction);
+  return origin + direction * distance;
+}
+
 /////////////////////////////////////////////////
 float screenScalingFactor()
 {

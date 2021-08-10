@@ -158,23 +158,27 @@ void RenderThread::Print(const QSurfaceFormat &_format)
     };
 
     // surface format info
-    std::cout << "version: "
+    ignmsg << "version: "
         << _format.version().first << "."
         << _format.version().second << "\n";
-    std::cout << "profile: " << openGLContextProfileToString(_format.profile()) << "\n";
-    std::cout << "options: " << formatOptionsToString(_format.options()) << "\n";
-    std::cout << "renderableType: " << renderableTypeToString(_format.renderableType()) << "\n";
-    std::cout << "hasAlpha: " << _format.hasAlpha() << "\n";
-    std::cout << "redBufferSize: " << _format.redBufferSize() << "\n";
-    std::cout << "greenBufferSize: " << _format.greenBufferSize() << "\n";
-    std::cout << "blueBufferSize: " << _format.blueBufferSize() << "\n";
-    std::cout << "alphaBufferSize: " << _format.alphaBufferSize() << "\n";
-    std::cout << "depthBufferSize: " << _format.depthBufferSize() << "\n";
-    std::cout << "stencilBufferSize: " << _format.stencilBufferSize() << "\n";
-    std::cout << "samples: " << _format.samples() << "\n";
-    std::cout << "swapBehavior: " << swapBehaviorToString(_format.swapBehavior()) << "\n";
-    std::cout << "swapInterval: " << _format.swapInterval() << "\n";
-    std::cout << "\n";
+    ignmsg << "profile: " << openGLContextProfileToString(
+        _format.profile()) << "\n";
+    ignmsg << "options: " << formatOptionsToString(
+        _format.options()) << "\n";
+    ignmsg << "renderableType: " << renderableTypeToString(
+        _format.renderableType()) << "\n";
+    ignmsg << "hasAlpha: " << _format.hasAlpha() << "\n";
+    ignmsg << "redBufferSize: " << _format.redBufferSize() << "\n";
+    ignmsg << "greenBufferSize: " << _format.greenBufferSize() << "\n";
+    ignmsg << "blueBufferSize: " << _format.blueBufferSize() << "\n";
+    ignmsg << "alphaBufferSize: " << _format.alphaBufferSize() << "\n";
+    ignmsg << "depthBufferSize: " << _format.depthBufferSize() << "\n";
+    ignmsg << "stencilBufferSize: " << _format.stencilBufferSize() << "\n";
+    ignmsg << "samples: " << _format.samples() << "\n";
+    ignmsg << "swapBehavior: " << swapBehaviorToString(
+        _format.swapBehavior()) << "\n";
+    ignmsg << "swapInterval: " << _format.swapInterval() << "\n";
+    ignmsg << "\n";
 }
 
 //-----------------------------------------------------------------------
@@ -339,7 +343,8 @@ void ThreadRenderer::Ready()
     this->renderThread->context->moveToThread(this->renderThread);
     this->renderThread->moveToThread(this->renderThread);
 
-    connect(window(), &QQuickWindow::sceneGraphInvalidated, this->renderThread, &RenderThread::ShutDown, Qt::QueuedConnection);
+    connect(window(), &QQuickWindow::sceneGraphInvalidated,
+        this->renderThread, &RenderThread::ShutDown, Qt::QueuedConnection);
 
     // Running on Render thread
     this->renderThread->start();
@@ -394,10 +399,14 @@ QSGNode *ThreadRenderer::updatePaintNode(QSGNode *_oldNode, UpdatePaintNodeData 
          *
          * This FBO rendering pipeline is throttled by vsync on the scene graph rendering thread.
          */
-        connect(this->renderThread, &RenderThread::TextureReady, node, &TextureNode::NewTexture, Qt::DirectConnection);
-        connect(node, &TextureNode::PendingNewTexture, window(), &QQuickWindow::update, Qt::QueuedConnection);
-        connect(this->window(), &QQuickWindow::beforeRendering, node, &TextureNode::PrepareNode, Qt::DirectConnection);
-        connect(node, &TextureNode::TextureInUse, this->renderThread, &RenderThread::RenderNext, Qt::QueuedConnection);
+        connect(this->renderThread, &RenderThread::TextureReady,
+            node, &TextureNode::NewTexture, Qt::DirectConnection);
+        connect(node, &TextureNode::PendingNewTexture,
+            window(), &QQuickWindow::update, Qt::QueuedConnection);
+        connect(this->window(), &QQuickWindow::beforeRendering,
+            node, &TextureNode::PrepareNode, Qt::DirectConnection);
+        connect(node, &TextureNode::TextureInUse,
+            this->renderThread, &RenderThread::RenderNext, Qt::QueuedConnection);
 
         // Get the production of FBO textures started..
         QMetaObject::invokeMethod(this->renderThread, "RenderNext", Qt::QueuedConnection);

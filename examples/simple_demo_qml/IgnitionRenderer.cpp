@@ -26,11 +26,12 @@
 
 #include <iostream>
 
+using namespace ignition;
+using namespace rendering;
+
 //-----------------------------------------------------------------------
 void BuildScene(ignition::rendering::ScenePtr _scene)
 {
-    using namespace ignition;
-    using namespace rendering;
 
     // initialize _scene
     _scene->SetAmbientLight(0.3, 0.3, 0.3);
@@ -171,9 +172,6 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
 //-----------------------------------------------------------------------
 ignition::rendering::CameraPtr CreateCamera(const std::string &_engineName)
 {
-    using namespace ignition;
-    using namespace rendering;
-
     // create and populate scene
     std::map<std::string, std::string> params;
 
@@ -191,9 +189,9 @@ ignition::rendering::CameraPtr CreateCamera(const std::string &_engineName)
 
     // return camera sensor
     SensorPtr sensor = scene->SensorByName("camera");
-    return std::dynamic_pointer_cast<Camera>(sensor);}
+    return std::dynamic_pointer_cast<Camera>(sensor);
+}
 
-//-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 IgnitionRenderer::~IgnitionRenderer()
 {
@@ -223,9 +221,6 @@ void IgnitionRenderer::InitialiseOnMainThread()
 //-----------------------------------------------------------------------
 void IgnitionRenderer::Render()
 {
-    using namespace ignition;
-    using namespace rendering;
-
     // pre-render may regenerate textureId if the size changes
     this->camera->PreRender();
     this->textureId = this->camera->RenderTextureGLId();
@@ -258,9 +253,6 @@ QSize IgnitionRenderer::TextureSize() const
 //-----------------------------------------------------------------------
 void IgnitionRenderer::InitEngine()
 {
-    using namespace ignition;
-    using namespace rendering;
-
     std::string engineName("ogre2");
 
     common::Console::SetVerbosity(4);
@@ -292,9 +284,6 @@ void IgnitionRenderer::InitEngine()
 //-----------------------------------------------------------------------
 void IgnitionRenderer::UpdateCamera()
 {
-    using namespace ignition;
-    using namespace rendering;
-
     double angle = this->cameraOffset / 2 * M_PI;
     double x = sin(angle) * 3.0 + 3.0;
     double y = cos(angle) * 3.0;

@@ -66,11 +66,11 @@ int main(int _argc, char** _argv)
 
         return execReturn;
     }
-    catch(const std::exception& e)
+    catch (const std::exception& e)
     {
         std::cerr << e.what() << '\n';
     }
-    catch(...)
+    catch (...)
     {
         std::cerr << "Unknown exception"  << '\n';
     }

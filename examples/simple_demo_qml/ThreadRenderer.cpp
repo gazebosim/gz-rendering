@@ -82,8 +82,7 @@ QList<QThread *> ThreadRenderer::threads;
 
 //-----------------------------------------------------------------------
 RenderThread::RenderThread(const QSize &_size, QQuickItem *_renderWindowItem)
-    : size(_size)
-    , renderWindowItem(_renderWindowItem)
+    : size(_size), renderWindowItem(_renderWindowItem)
 {
     ThreadRenderer::threads << this;
 }
@@ -91,7 +90,8 @@ RenderThread::RenderThread(const QSize &_size, QQuickItem *_renderWindowItem)
 //-----------------------------------------------------------------------
 void RenderThread::Print(const QSurfaceFormat &_format)
 {
-    auto formatOptionsToString = [] (QSurfaceFormat::FormatOptions _value) -> std::string {
+    auto formatOptionsToString = [] (QSurfaceFormat::FormatOptions _value) -> std::string
+    {
         std::string options;
 
         if (_value & QSurfaceFormat::StereoBuffers) {
@@ -113,7 +113,8 @@ void RenderThread::Print(const QSurfaceFormat &_format)
         return options;
     };
 
-    auto openGLContextProfileToString = [] (QSurfaceFormat::OpenGLContextProfile _value) -> std::string {
+    auto openGLContextProfileToString = [] (QSurfaceFormat::OpenGLContextProfile _value) -> std::string
+    {
         switch (_value)
         {
         case QSurfaceFormat::NoProfile:
@@ -127,7 +128,8 @@ void RenderThread::Print(const QSurfaceFormat &_format)
         } 
     };
 
-    auto renderableTypeToString = [] (QSurfaceFormat::RenderableType _value) -> std::string {
+    auto renderableTypeToString = [] (QSurfaceFormat::RenderableType _value) -> std::string
+    {
         switch (_value)
         {
         case QSurfaceFormat::DefaultRenderableType:
@@ -143,7 +145,8 @@ void RenderThread::Print(const QSurfaceFormat &_format)
         } 
     };
 
-    auto swapBehaviorToString = [] (QSurfaceFormat::SwapBehavior _value) -> std::string {
+    auto swapBehaviorToString = [] (QSurfaceFormat::SwapBehavior _value) -> std::string
+    {
         switch (_value)
         {
         case QSurfaceFormat::DefaultSwapBehavior:

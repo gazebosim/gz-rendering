@@ -94,18 +94,22 @@ void RenderThread::Print(const QSurfaceFormat &_format)
     {
         std::string options;
 
-        if (_value & QSurfaceFormat::StereoBuffers) {
+        if (_value & QSurfaceFormat::StereoBuffers)
+        {
             options.append("StereoBuffers");
         }
-        if (_value & QSurfaceFormat::DebugContext) {
+        if (_value & QSurfaceFormat::DebugContext)
+        {
             options.empty() ? options.append("") : options.append(", ");
             options.append("DebugContext");
         }
-        if (_value & QSurfaceFormat::DeprecatedFunctions) {
+        if (_value & QSurfaceFormat::DeprecatedFunctions)
+        {
             options.empty() ? options.append("") : options.append(", ");
             options.append("DeprecatedFunctions");
         }
-        if (_value & QSurfaceFormat::ResetNotification) {
+        if (_value & QSurfaceFormat::ResetNotification)
+        {
             options.empty() ? options.append("") : options.append(", ");
             options.append("ResetNotification");
         }
@@ -164,12 +168,12 @@ void RenderThread::Print(const QSurfaceFormat &_format)
     ignmsg << "version: "
         << _format.version().first << "."
         << _format.version().second << "\n";
-    ignmsg << "profile: " << openGLContextProfileToString(
-        _format.profile()) << "\n";
-    ignmsg << "options: " << formatOptionsToString(
-        _format.options()) << "\n";
-    ignmsg << "renderableType: " << renderableTypeToString(
-        _format.renderableType()) << "\n";
+    ignmsg << "profile: "
+        << openGLContextProfileToString(_format.profile()) << "\n";
+    ignmsg << "options: "
+        << formatOptionsToString(_format.options()) << "\n";
+    ignmsg << "renderableType: "
+        << renderableTypeToString(_format.renderableType()) << "\n";
     ignmsg << "hasAlpha: " << _format.hasAlpha() << "\n";
     ignmsg << "redBufferSize: " << _format.redBufferSize() << "\n";
     ignmsg << "greenBufferSize: " << _format.greenBufferSize() << "\n";
@@ -178,8 +182,8 @@ void RenderThread::Print(const QSurfaceFormat &_format)
     ignmsg << "depthBufferSize: " << _format.depthBufferSize() << "\n";
     ignmsg << "stencilBufferSize: " << _format.stencilBufferSize() << "\n";
     ignmsg << "samples: " << _format.samples() << "\n";
-    ignmsg << "swapBehavior: " << swapBehaviorToString(
-        _format.swapBehavior()) << "\n";
+    ignmsg << "swapBehavior: "
+        << swapBehaviorToString(_format.swapBehavior()) << "\n";
     ignmsg << "swapInterval: " << _format.swapInterval() << "\n";
     ignmsg << "\n";
 }
@@ -322,7 +326,6 @@ void TextureNode::PrepareNode()
     }
 }
 
-//--------------------------------------------------------------------------
 //--------------------------------------------------------------------------
 ThreadRenderer::ThreadRenderer()
     : renderThread(nullptr)

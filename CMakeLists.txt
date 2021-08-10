@@ -20,7 +20,7 @@ ign_configure_project(VERSION_SUFFIX)
 # Set project-specific options
 #============================================================================
 
-# ignition-rendering currently has no options that are unique to it
+option(USE_UNOFFICAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
 
 #============================================================================
 # Search for project-specific dependencies
@@ -61,7 +61,21 @@ endif()
 # Find OGRE
 list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
 
-ign_find_package(IgnOGRE VERSION 1.8.0
+# Ogre versions greater than 1.9 are not officialy supported.
+# Display a warning for the users on this setup unless they provide
+# USE_UNOFFICAL_OGRE_VERSIONS flag
+if (NOT USE_UNOFFICAL_OGRE_VERSIONS)
+  ign_find_package(IgnOGRE VERSION 1.10
+    COMPONENTS ${ign_ogre_components})
+
+  if (OGRE_FOUND)
+    IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
+                      "The software might compile and event work but support from upstream"
+                      "could be reduced to accept patches for newer versions")
+  endif()
+endif()
+
+ign_find_package(IgnOGRE VERSION 1.9.0
   COMPONENTS ${ign_ogre_components}
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)

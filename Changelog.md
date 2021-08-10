@@ -4,7 +4,7 @@
 
 1. CMake warning on Ogre versions that are not officially supported.
    To disable the new warning is enough to enable the cmake option USE_UNOFFICAL_OGRE_VERSIONS
-    * [Pull request TODO](https://github.com/ignitionrobotics/ign-rendering/pull/TODO)
+    * [Pull request 376](https://github.com/ignitionrobotics/ign-rendering/pull/376)
 
 ### Ignition Rendering 3.2.0 (2020-10-13)
 

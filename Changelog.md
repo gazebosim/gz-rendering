@@ -1,5 +1,11 @@
 ## Ignition Rendering
 
+### Ignition Rendering 3.x.x (upcoming)
+
+1. CMake warning on Ogre versions that are not officially supported.
+   To disable the new warning is enough to enable the cmake option USE_UNOFFICAL_OGRE_VERSIONS
+    * [Pull request TODO](https://github.com/ignitionrobotics/ign-rendering/pull/TODO)
+
 ### Ignition Rendering 3.2.0 (2020-10-13)
 
 1. Add Custom Render Engine support

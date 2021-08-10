@@ -30,6 +30,6 @@ Item {
         anchors.right: renderer.right
         anchors.margins: 20
         wrapMode: Text.WordWrap
-        text: "QML09 Ignition : `simple_demo` example using ignition-rendering and QML."
+        text: "simple_demo_qml : the `simple_demo` example using ignition-rendering and QML."
     }
 }

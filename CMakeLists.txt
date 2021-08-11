@@ -70,8 +70,8 @@ if (NOT USE_UNOFFICAL_OGRE_VERSIONS)
 
   if (OGRE_FOUND)
     IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
-                      "The software might compile and event work but support from upstream"
-                      "could be reduced to accept patches for newer versions")
+                      "The software might compile and even work but support from upstream"
+                      "could be reduced to accepting patches for newer versions")
   endif()
 endif()
 

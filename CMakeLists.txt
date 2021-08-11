@@ -72,13 +72,15 @@ if (NOT USE_UNOFFICAL_OGRE_VERSIONS)
     IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
                       "The software might compile and even work but support from upstream"
                       "could be reduced to accepting patches for newer versions")
+  else()
+    # If ogre 1.10 or greater was not found, then proceed to look for 1.9.x
+    # versions which are offically supported
+    ign_find_package(IgnOGRE VERSION 1.9.0
+      COMPONENTS ${ign_ogre_components}
+      REQUIRED_BY ogre
+      PRIVATE_FOR ogre)
   endif()
 endif()
-
-ign_find_package(IgnOGRE VERSION 1.9.0
-  COMPONENTS ${ign_ogre_components}
-  REQUIRED_BY ogre
-  PRIVATE_FOR ogre)
 
 if (OGRE_FOUND)
   # find boost - mainly needed on macOS and also by the terrain component

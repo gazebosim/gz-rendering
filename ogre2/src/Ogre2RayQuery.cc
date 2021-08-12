@@ -69,7 +69,8 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
 
   this->dataPtr->camera = camera;
 
-  this->dataPtr->imgPos.X() = screenPos.X() * this->dataPtr->camera->ImageWidth();
+  this->dataPtr->imgPos.X() =
+      screenPos.X() * this->dataPtr->camera->ImageWidth();
   this->dataPtr->imgPos.Y() =
       screenPos.Y() * this->dataPtr->camera->ImageHeight();
 }

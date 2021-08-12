@@ -823,6 +823,35 @@ namespace ignition
       public: virtual GizmoVisualPtr CreateGizmoVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new CoM visual. A unique ID and name will
+      /// automatically be assigned to the CoM visual.
+      /// \return The created CoM visual
+      public: virtual COMVisualPtr CreateCOMVisual() = 0;
+
+      /// \brief Create new CoM visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new CoM visual
+      /// \return The created CoM visual
+      public: virtual COMVisualPtr CreateCOMVisual(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new CoM visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new CoM visual
+      /// \return The created CoM visual
+      public: virtual COMVisualPtr CreateCOMVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new CoM visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new CoM visual
+      /// \param[in] _name Name of the new CoM visual
+      /// \return The created CoM visual
+      public: virtual COMVisualPtr CreateCOMVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new inertia visual. A unique ID and name will
       /// automatically be assigned to the inertia visual.
       /// \return The created inertia visual
@@ -1047,6 +1076,120 @@ namespace ignition
       /// \brief Prepare scene for rendering. The scene will flushing any scene
       /// changes by traversing scene-graph, calling PreRender on all objects
       public: virtual void PreRender() = 0;
+
+      /// \brief Call this function after you're done updating ALL cameras
+      /// \remark Each PreRender must have a correspondent PostRender
+      /// \remark Particle FX simulation is moved forward after this call
+      ///
+      /// \see Scene::SetCameraPassCountPerGpuFlush
+      public: virtual void PostRender() = 0;
+
+      /// \brief
+      /// The ideal render loop is as follows:
+      ///
+      /// \code
+      ///   scene->PreRender();
+      ///   for (auto &camera in cameras)
+      ///     camera->Render();
+      ///   for (auto &camera in cameras)
+      ///     camera->PostRender();
+      ///   scene->PostRender();
+      /// \endcode
+      ///
+      /// Now... Camera Render calls MUST happen between Scene::PreRender and
+      /// Scene::PostRender.
+      ///
+      /// The scene must not be modified (e.g. add/remove objects, lights, etc)
+      /// while inside Scene PreRender/PostRender
+      ///
+      /// # Legacy mode: Set this value to 0.
+      ///
+      /// Old projects migrating to newer ign versions may break
+      /// these rules (e.g. not calling Render between Scene's
+      /// Pre/PostRender).
+      ///
+      /// Setting this value to 0 forces Gazebo to flush commands for
+      /// every camera; thus avoiding the need to call PostRender at all
+      ///
+      /// This is much slower but will ease porting, specially
+      /// if it's not easy to adapt your code to call PostRender for some
+      /// reason (in non-legacy mode each call *must* correspond to a
+      /// previous PreRender call)
+      ///
+      /// Legacy mode forces Particle FX simulations to move forward
+      /// after each camera render, which can cause inconsistencies
+      /// when Cameras are supposed to be rendering the same frame from
+      /// different angles
+      ///
+      /// # New mode i.e. values greater than 0:
+      ///
+      /// The CPU normally queues up of rendering commands from each Camera and
+      /// then waits for the GPU to finish up.
+      ///
+      ///   1. If we flush too often, the CPU will often have to wait for
+      ///      the GPU to finish.
+      ///   2. If we flush infrequently, RAM consumption will rise due to
+      ///      queueing up too much unsubmitted work.
+      ///
+      /// Larger values values queue up more work; lower values flush more
+      /// frequently.
+      ///
+      /// Note that work may be submitted earlier if required by a specific
+      /// operation (e.g. reading GPU -> CPU)
+      ///
+      /// A sensible value in the range of [2; 6] is probably the best
+      /// ratio between parallel performance / RAM cost.
+      ///
+      /// Actual value depends on scene complexity and number of shadow
+      /// casting lights
+      ///
+      /// If you're too tight on RAM consumption, try setting this value to 1.
+      ///
+      /// ## Example:
+      ///
+      /// Cubemap rendering w/ 3 probes and 5 shadowmaps can cause
+      /// a blow up of passes:
+      ///
+      /// (5 shadow maps per face + 1 regular render) x 6 faces x 3 probes =
+      /// 108 render_scene passes.
+      /// 108 is way too much, causing out of memory situations;
+      ///
+      /// so setting the value to 6 (1 cubemap face = 1 pass) will
+      /// force one flush per cubemap face, flushing a total of 3 times
+      /// (one per cubemap).
+      ///
+      /// ## Upper bound
+      ///
+      /// Once Scene::PostRender is called, a flush is always forced.
+      ///
+      /// If you set a value of e.g. 6, but you have a single camera, it
+      /// will be flushed after Scene::PostRender, thus having a value of 1 or
+      /// 6 won't matter as the result will be exactly the same (in every term:
+      /// performance, memory consumption)
+      ///
+      /// A value of 6 is like an upper bound.
+      /// We may queue _up to_ 6 render passes or less; but never more.
+      ///
+      /// \remarks Not all rendering engines care about this.
+      /// ogre2 plugin does.
+      ///
+      /// \param[in] _numPass 0 for old projects who can't or don't know
+      /// when to call PostRender and prefer to penalize rendering
+      /// performance
+      /// Value in range [1; 255]
+      public: virtual void SetCameraPassCountPerGpuFlush(uint8_t _numPass) = 0;
+
+      /// \brief Returns the value set in SetCameraPassCountPerGpuFlush
+      /// \return Value in range [0; 255].
+      /// ALWAYS returns 0 for plugins that ignore
+      /// SetCameraPassCountPerGpuFlush
+      public: virtual uint8_t CameraPassCountPerGpuFlush() const = 0;
+
+      /// \brief Checks if SetCameraPassCountPerGpuFlush is 0
+      /// \return True if Gazebo is using the old method (i.e. 0).
+      /// ALWAYS returns true for plugins that ignore
+      /// SetCameraPassCountPerGpuFlush
+      public: virtual bool LegacyAutoGpuFlush() const = 0;
 
       /// \brief Remove and destroy all objects from the scene graph. This does
       /// not completely destroy scene resources, so new objects can be created

@@ -265,6 +265,12 @@ namespace ignition
       public: virtual PointLightPtr CreatePointLight(unsigned int _id,
                   const std::string &_name) override;
 
+      /// \brief Implementation for creating CoM visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of CoM visual
+      protected: virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       /// \brief Implementation for creating Inertia visual.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of inertia visual
@@ -367,6 +373,20 @@ namespace ignition
                   const std::string &_name) override;
 
       // Documentation inherited
+      public: virtual COMVisualPtr CreateCOMVisual() override;
+
+      // Documentation inherited
+      public: virtual COMVisualPtr CreateCOMVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual COMVisualPtr CreateCOMVisual(const std::string &_name)
+                      override;
+
+      // Documentation inherited
+      public: virtual COMVisualPtr CreateCOMVisual(unsigned int _id,
+                  const std::string &_name) override;
+
       public: virtual InertiaVisualPtr CreateInertiaVisual() override;
 
       // Documentation inherited
@@ -501,6 +521,19 @@ namespace ignition
       public: virtual void Clear() override;
 
       public: virtual void Destroy() override;
+
+      // Documentation inherited.
+      public: virtual void PostRender() override;
+
+      // Documentation inherited.
+      public: virtual void SetCameraPassCountPerGpuFlush(
+            uint8_t _numPass) override;
+
+      // Documentation inherited.
+      public: virtual uint8_t CameraPassCountPerGpuFlush() const override;
+
+      // Documentation inherited.
+      public: virtual bool LegacyAutoGpuFlush() const override;
 
       protected: virtual unsigned int CreateObjectId();
 

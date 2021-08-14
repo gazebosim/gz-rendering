@@ -582,8 +582,8 @@ namespace Ogre
 
             if( itor == end )
             {
-                assert( "Hazard Detected! You should expose this Terra's shadow map texture"
-                        " to the compositor pass so Ogre can place the proper Barriers" && false );
+                /*assert( "Hazard Detected! You should expose this Terra's shadow map texture"
+                        " to the compositor pass so Ogre can place the proper Barriers" && false );*/
             }
 #endif
 

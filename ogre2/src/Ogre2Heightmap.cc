@@ -133,8 +133,8 @@ void Ogre2Heightmap::Init()
     {
       const size_t index = y * newWidth + x;
       const float heightVal = lookup[index];
-      minElevation = std::min(minElevation,heightVal);
-      maxElevation = std::max(maxElevation,heightVal);
+      minElevation = std::min(minElevation, heightVal);
+      maxElevation = std::max(maxElevation, heightVal);
       this->dataPtr->heights.push_back(heightVal);
     }
   }

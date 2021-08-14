@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreHlmsBufferManager.h"
 #include "OgreConstBufferPool.h"
 #include "OgreMatrix4.h"
-#include "OgreHlmsPbs.h"
+#include "Hlms/Pbs/OgreHlmsPbs.h"
 #include "OgreHeaderPrefix.h"
 
 namespace Ogre

@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseScene.hh"

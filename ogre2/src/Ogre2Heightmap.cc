@@ -97,18 +97,6 @@ void Ogre2Heightmap::Init()
     Ogre2RenderEngine::Instance()->AddResourcePath(texture->Normal());
   }
 
-
-  // Terra is optimized to work with UNORM heightmaps, therefore it assumes
-  // lowest height is 0.
-  // So we move the heightmap so that its min elevation = 0 before feeding to
-  // ogre. It is later translated back by the setOrigin call.
-  float minElevation = 0.0;
-  float maxElevation = 0.0;
-
-  // TODO(chapulina) add a virtual HeightmapData::MinElevation function to
-  // avoid the ifdef check. i.e. heightmapSizeZ = MaxElevation - MinElevation
-  double heightmapSizeZ = this->descriptor.Data()->MaxElevation();
-
   // \todo These parameters shouldn't be hardcoded, and instead parametrized so
   // that they can be made consistent across different libraries (like
   // ign-physics)
@@ -120,16 +108,24 @@ void Ogre2Heightmap::Init()
   scale.X(this->descriptor.Size().X() / newWidth);
   scale.Y(this->descriptor.Size().Y() / newWidth);
   scale.Z(1.0);
-  /*if (math::equal(heightmapSizeZ, 0.0))
-    scale.Z(1.0);
-  else
-    scale.Z(fabs(this->descriptor.Size().Z()) / heightmapSizeZ);*/
 
   // Construct the heightmap lookup table
   std::vector<float> lookup;
   this->descriptor.Data()->FillHeightMap(this->descriptor.Sampling(),
       newWidth, this->descriptor.Size(), scale, flipY, lookup);
   this->dataPtr->heights.reserve(newWidth * newWidth);
+
+
+  // Terra is optimized to work with UNORM heightmaps, therefore it assumes
+  // lowest height is 0.
+  // So we move the heightmap so that its min elevation = 0 before feeding to
+  // ogre. It is later translated back by the setOrigin call.
+  //
+  // Obtain min and max elevation and bring everything to range [0; 1]
+  // Terra should support non-normalized ranges but there are a couple
+  // bugs preventing that, so it's just easier to normalize the data
+  float minElevation = 0.0;
+  float maxElevation = 0.0;
 
   for (unsigned int y = 0; y < newWidth; ++y)
   {
@@ -143,15 +139,13 @@ void Ogre2Heightmap::Init()
     }
   }
 
+  // min and max elevations collected. Now normalize
   const float heightDiff = maxElevation - minElevation;
-  const float invHeightDiff = 1.0f / heightDiff;
+  const float invHeightDiff =
+      fabsf( heightDiff ) < 1e-6f ? 1.0f : (1.0f / heightDiff);
   for (float &heightVal : this->dataPtr->heights)
   {
     heightVal = (heightVal - minElevation) * invHeightDiff;
-  }
-
-  for (float &heightVal : this->dataPtr->heights)
-  {
     assert( heightVal >= 0 );
   }
 
@@ -193,8 +187,8 @@ void Ogre2Heightmap::Init()
                                  math::Vector3d(1.0, 1.0, heightDiff);
 
   math::Vector3d center(
-      this->descriptor.Position().X() + newSize.X() * 0.5,
-      this->descriptor.Position().Y() + newSize.Y() * 0.5,
+      this->descriptor.Position().X(),
+      this->descriptor.Position().Y(),
       this->descriptor.Position().Z() + newSize.Z() * 0.5 + minElevation);
 
   Ogre::Root *ogreRoot = Ogre2RenderEngine::Instance()->OgreRoot();

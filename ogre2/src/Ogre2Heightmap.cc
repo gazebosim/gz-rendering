@@ -117,7 +117,6 @@ void Ogre2Heightmap::Init()
       newWidth, this->descriptor.Size(), scale, flipY, lookup);
   this->dataPtr->heights.reserve(newWidth * newWidth);
 
-
   // Terra is optimized to work with UNORM heightmaps, therefore it assumes
   // lowest height is 0.
   // So we move the heightmap so that its min elevation = 0 before feeding to
@@ -244,148 +243,113 @@ void Ogre2Heightmap::Init()
 
   size_t numTextures = static_cast<size_t>(this->descriptor.TextureCount());
 
-  bool bCanUseFirstAsBase = false;
-
   if (numTextures >= 1u)
   {
-      using namespace Ogre;
-      const HeightmapTexture *texture0 = this->descriptor.TextureByIndex(0);
-      if (texture0->Normal().empty() &&
-          abs(newSize.X() - texture0->Size()) < 1e-6 &&
-          abs(newSize.Y() - texture0->Size()) < 1e-6 )
+    bool bCanUseFirstAsBase = false;
+
+    using namespace Ogre;
+    const HeightmapTexture *texture0 = this->descriptor.TextureByIndex(0);
+    if (texture0->Normal().empty() &&
+        abs(newSize.X() - texture0->Size()) < 1e-6 &&
+        abs(newSize.Y() - texture0->Size()) < 1e-6 )
+    {
+      bCanUseFirstAsBase = true;
+    }
+
+    if ((numTextures > 4u && !bCanUseFirstAsBase) ||
+        (numTextures > 5u && bCanUseFirstAsBase))
+    {
+      ignwarn << "Ogre2Heightmap currently supports up to 4 textures, "
+                 "5 textures if the first one is diffuse-only & "
+                 "texture size = terrain size. "
+                 "The rest are ignored. Supplied: "
+              << numTextures << std::endl;
+      numTextures = bCanUseFirstAsBase ? 5u : 4u;
+    }
+
+    if (bCanUseFirstAsBase)
+    {
+      datablock->setTexture(static_cast<TerraTextureTypes>(TERRA_DIFFUSE),
+                            texture0->Diffuse(), &samplerblock);
+    }
+    else
+    {
+      datablock->setTexture(static_cast<TerraTextureTypes>(TERRA_DETAIL0),
+                            texture0->Diffuse(), &samplerblock);
+
+      datablock->setTexture(static_cast<TerraTextureTypes>(TERRA_DETAIL0_NM),
+                            texture0->Normal(), &samplerblock);
+
+      const float sizeX =
+              static_cast<float>(newSize.X() / texture0->Size());
+      const float sizeY =
+              static_cast<float>(newSize.Y() / texture0->Size());
+      if (!texture0->Diffuse().empty() || !texture0->Normal().empty())
+        datablock->setDetailMapOffsetScale(0, Vector4(0, 0, sizeX, sizeY));
+    }
+
+    for (size_t i = 1u; i < numTextures; ++i)
+    {
+      const size_t idxOffset = bCanUseFirstAsBase ? 1 : 0;
+      const HeightmapTexture *texture = this->descriptor.TextureByIndex(i);
+
+      datablock->setTexture(static_cast<TerraTextureTypes>(
+                            TERRA_DETAIL0 + i - idxOffset),
+                            texture->Diffuse(), &samplerblock);
+
+      datablock->setTexture(static_cast<TerraTextureTypes>(
+                            TERRA_DETAIL0_NM + i - idxOffset),
+                            texture->Normal(), &samplerblock);
+
+      const float sizeX =
+              static_cast<float>(newSize.X() / texture->Size());
+      const float sizeY =
+              static_cast<float>(newSize.Y() / texture->Size());
+      if (!texture->Diffuse().empty() || !texture->Normal().empty())
       {
-          bCanUseFirstAsBase = true;
+          datablock->setDetailMapOffsetScale(
+                      static_cast<uint8_t>(i - idxOffset),
+                      Vector4(0, 0, sizeX, sizeY));
       }
-
-      if ((numTextures > 4u && !bCanUseFirstAsBase) ||
-          (numTextures > 5u && bCanUseFirstAsBase))
-      {
-          ignwarn << "Ogre2Heightmap currently supports up to 4 textures, "
-                     "5 textures if the first one is diffuse-only & "
-                     "texture size = terrain size. "
-                     "The rest are ignored. Supplied: "
-                  << numTextures << std::endl;
-          numTextures = bCanUseFirstAsBase ? 5u : 4u;
-      }
-
-      if (bCanUseFirstAsBase)
-      {
-          datablock->setTexture(static_cast<TerraTextureTypes>(TERRA_DIFFUSE),
-                                texture0->Diffuse(), &samplerblock);
-      }
-      else
-      {
-          datablock->setTexture(static_cast<TerraTextureTypes>(
-                                    TERRA_DETAIL0),
-                                texture0->Diffuse(), &samplerblock);
-
-          datablock->setTexture(static_cast<TerraTextureTypes>(
-                                    TERRA_DETAIL0_NM),
-                                texture0->Normal(), &samplerblock);
-
-          const float sizeX =
-                  static_cast<float>(newSize.X() / texture0->Size());
-          const float sizeY =
-                  static_cast<float>(newSize.Y() / texture0->Size());
-          if (!texture0->Diffuse().empty() || !texture0->Normal().empty())
-            datablock->setDetailMapOffsetScale(0, Vector4(0, 0, sizeX, sizeY));
-      }
-
-      for (size_t i = 1u; i < numTextures; ++i)
-      {
-          const size_t idxOffset = bCanUseFirstAsBase ? 1 : 0;
-          const HeightmapTexture *texture = this->descriptor.TextureByIndex(i);
-
-          datablock->setTexture(static_cast<TerraTextureTypes>(
-                                TERRA_DETAIL0 + i - idxOffset),
-                                texture->Diffuse(), &samplerblock);
-
-          datablock->setTexture(static_cast<TerraTextureTypes>(
-                                TERRA_DETAIL0_NM + i - idxOffset),
-                                texture->Normal(), &samplerblock);
-
-          const float sizeX =
-                  static_cast<float>(newSize.X() / texture->Size());
-          const float sizeY =
-                  static_cast<float>(newSize.Y() / texture->Size());
-          if (!texture->Diffuse().empty() || !texture->Normal().empty())
-          {
-              datablock->setDetailMapOffsetScale(
-                          static_cast<uint8_t>(i - idxOffset),
-                          Vector4(0, 0, sizeX, sizeY));
-          }
-      }
+    }
 
 
-      size_t numBlends = static_cast<size_t>(this->descriptor.BlendCount());
-      if ((numBlends > 3u && !bCanUseFirstAsBase) ||
-          (numBlends > 4u && bCanUseFirstAsBase))
-      {
-          ignwarn << "Ogre2Heightmap currently supports up to 3 blends, "
-                     "4 blends if the first one is diffuse-only & "
-                     "texture size = terrain size. "
-                     "The rest are ignored. Supplied: "
-                     << numBlends << std::endl;
-          numBlends = bCanUseFirstAsBase ? 4u : 3u;
-      }
+    size_t numBlends = static_cast<size_t>(this->descriptor.BlendCount());
+    if ((numBlends > 3u && !bCanUseFirstAsBase) ||
+        (numBlends > 4u && bCanUseFirstAsBase))
+    {
+      ignwarn << "Ogre2Heightmap currently supports up to 3 blends, "
+                 "4 blends if the first one is diffuse-only & "
+                 "texture size = terrain size. "
+                 "The rest are ignored. Supplied: "
+                 << numBlends << std::endl;
+      numBlends = bCanUseFirstAsBase ? 4u : 3u;
+    }
 
-      Ogre::Vector4 minBlendHeights(0.0f);
-      Ogre::Vector4 maxBlendHeights(0.0f);
-      for (size_t i = 0; i < numBlends; ++i)
-      {
-          const size_t idxOffset = bCanUseFirstAsBase ? 0u : 1u;
-          const HeightmapBlend *blend = this->descriptor.BlendByIndex(i);
-          minBlendHeights[i + idxOffset] =
-                  static_cast<Ogre::Real>(blend->MinHeight());
-          maxBlendHeights[i + idxOffset] =
-                  static_cast<Ogre::Real>(blend->MinHeight()+
-                                          blend->FadeDistance());
-      }
-      datablock->setIgnWeightsHeights(minBlendHeights, maxBlendHeights);
+    Ogre::Vector4 minBlendHeights(0.0f);
+    Ogre::Vector4 maxBlendHeights(0.0f);
+    for (size_t i = 0; i < numBlends; ++i)
+    {
+      const size_t idxOffset = bCanUseFirstAsBase ? 0u : 1u;
+      const HeightmapBlend *blend = this->descriptor.BlendByIndex(i);
+      minBlendHeights[i + idxOffset] =
+              static_cast<Ogre::Real>(blend->MinHeight());
+      maxBlendHeights[i + idxOffset] =
+              static_cast<Ogre::Real>(blend->MinHeight()+
+                                      blend->FadeDistance());
+    }
+    datablock->setIgnWeightsHeights(minBlendHeights, maxBlendHeights);
   }
 
   this->dataPtr->terra->setDatablock(datablock);
-#if 0
-  // textures. The default material generator takes two materials per layer.
-  //    1. diffuse_specular - diffuse texture with a specular map in the
-  //    alpha channel
-  //    2. normal_height - normal map with a height map in the alpha channel
-  {
-    // number of texture layers
-    defaultimp.layerList.resize(this->descriptor.TextureCount());
-
-    // The worldSize decides how big each splat of textures will be.
-    // A smaller value will increase the resolution
-    for (unsigned int i = 0; i < this->descriptor.TextureCount(); ++i)
-    {
-      auto texture = this->descriptor.TextureByIndex(i);
-
-      defaultimp.layerList[i].worldSize = texture->Size();
-      defaultimp.layerList[i].textureNames.push_back(texture->Diffuse());
-      defaultimp.layerList[i].textureNames.push_back(texture->Normal());
-    }
-  }
-#endif
 
   ignmsg << "Loading heightmap: " << this->descriptor.Name() << std::endl;
   auto time = std::chrono::steady_clock::now();
-
-  // use ignition shaders
-  this->CreateMaterial();
 
   ignmsg << "Heightmap loaded. Process took "
         <<  std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::steady_clock::now() - time).count()
         << " ms." << std::endl;
-
-#if 0
-  // Calculate blend maps
-  auto ti = this->dataPtr->terrainGroup->getTerrainIterator();
-  while (ti.hasMoreElements())
-  {
-    this->InitBlendMaps(ti.getNext()->instance);
-  }
-#endif
 }
 
 //////////////////////////////////////////////////
@@ -431,93 +395,6 @@ void Ogre2Heightmap::UpdateForRender(Ogre::Camera *_activeCamera)
     this->dataPtr->terra->update(Ogre::Vector3::NEGATIVE_UNIT_Y);
   }
 }
-
-/////////////////////////////////////////////////
-void Ogre2Heightmap::CreateMaterial()
-{
-#if 0
-  if (!this->dataPtr->materialName.empty())
-  {
-    // init custom material generator
-    Ogre::TerrainMaterialGeneratorPtr terrainMaterialGenerator;
-    TerrainMaterial *terrainMaterial = OGRE_NEW TerrainMaterial(
-        this->dataPtr->materialName);
-    if (this->dataPtr->splitTerrain)
-      terrainMaterial->setGridSize(this->dataPtr->numTerrainSubdivisions);
-    terrainMaterialGenerator.bind(terrainMaterial);
-    this->dataPtr->terrainGlobals->setDefaultMaterialGenerator(
-        terrainMaterialGenerator);
-  }
-#endif
-}
-
-/////////////////////////////////////////////////
-#if 0
-bool Ogre2Heightmap::InitBlendMaps(Ogre::Terrain *_terrain)
-{
-  if (nullptr == _terrain)
-  {
-    ignerr << "Invalid terrain\n";
-    return false;
-  }
-
-  // no blending to be done if there's only one texture or no textures at all.
-  if (this->descriptor.BlendCount() <= 1u ||
-      this->descriptor.TextureCount() <= 1u)
-    return false;
-
-  // Bounds check for following loop
-  if (_terrain->getLayerCount() < this->descriptor.BlendCount() + 1)
-  {
-    ignerr << "Invalid terrain, too few layers ["
-           << unsigned(_terrain->getLayerCount())
-           << "] for the number of blends ["
-           << this->descriptor.BlendCount() << "] to initialize blend map"
-           << std::endl;
-    return false;
-  }
-
-  // Create the blend maps
-  std::vector<Ogre::TerrainLayerBlendMap *> blendMaps;
-  std::vector<float*> pBlend;
-  unsigned int i{0u};
-
-  for (i = 0; i < this->descriptor.BlendCount(); ++i)
-  {
-    blendMaps.push_back(_terrain->getLayerBlendMap(i+1));
-    pBlend.push_back(blendMaps[i]->getBlendPointer());
-  }
-
-  // Set the blend values based on the height of the terrain
-  Ogre::Real val, height;
-  for (Ogre::uint16 y = 0; y < _terrain->getLayerBlendMapSize(); ++y)
-  {
-    for (Ogre::uint16 x = 0; x < _terrain->getLayerBlendMapSize(); ++x)
-    {
-      Ogre::Real tx, ty;
-
-      blendMaps[0]->convertImageToTerrainSpace(x, y, &tx, &ty);
-      height = _terrain->getHeightAtTerrainPosition(tx, ty);
-
-      for (i = 0; i < this->descriptor.BlendCount(); ++i)
-      {
-        auto blend = this->descriptor.BlendByIndex(i);
-        val = (height - blend->MinHeight()) / blend->FadeDistance();
-        val = Ogre::Math::Clamp(val, (Ogre::Real)0, (Ogre::Real)1);
-        *pBlend[i]++ = val;
-      }
-    }
-  }
-
-  // Make sure the blend maps are properly updated
-  for (auto map : blendMaps)
-  {
-    map->dirty();
-    map->update();
-  }
-  return true;
-}
-#endif
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *Ogre2Heightmap::OgreObject() const

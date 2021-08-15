@@ -571,6 +571,10 @@ namespace Ogre
 //            mRenderSystem->_resourceTransitionCreated( &resourceTransition );
 //            mRenderSystem->_executeResourceTransition( &resourceTransition );
 //            mRenderSystem->_resourceTransitionDestroyed( &resourceTransition );
+
+            // IGN CUSTOMIZE BEGIN
+            // Barriers dealt with in Ogre2Scene::UpdateAllHeightmaps
+    #ifdef IGN_DISABLED
             TextureGpu *terraShadowText = terraObj->_getShadowMapTex();
             const CompositorTextureVec &compositorTextures = queuedRenderable.movableObject->
                     _getManager()->getCompositorTextures();
@@ -585,6 +589,8 @@ namespace Ogre
                 assert( "Hazard Detected! You should expose this Terra's shadow map texture"
                         " to the compositor pass so Ogre can place the proper Barriers" && false );
             }
+    #endif
+            // IGN CUSTOMIZE END
 #endif
 
             mLastMovableObject = queuedRenderable.movableObject;

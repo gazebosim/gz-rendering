@@ -50,7 +50,9 @@ THE SOFTWARE.
 
 namespace Ogre
 {
-    const size_t HlmsTerraDatablock::MaterialSizeInGpu          = 4 * 10 * 4;
+    // IGN CUSTOMIZE BEGIN
+    const size_t HlmsTerraDatablock::MaterialSizeInGpu          = 4 * 12 * 4;
+    // IGN CUSTOMIZE END
     const size_t HlmsTerraDatablock::MaterialSizeInGpuAligned   = alignToNextMultiple(
                                                                     HlmsTerraDatablock::MaterialSizeInGpu,
                                                                     4 * 4 );
@@ -63,6 +65,17 @@ namespace Ogre
         HlmsTerraBaseTextureDatablock( name, creator, macroblock, blendblock, params ),
         mkDr( 0.318309886f ), mkDg( 0.318309886f ), mkDb( 0.318309886f ), //Max Diffuse = 1 / PI
         _padding0( 1 ),
+        // IGN CUSTOMIZE BEGIN
+        // Use really large values so that weight is 0 at any reasonable height
+        mIgnWeightsMinHeight{ std::numeric_limits<float>::max() * 0.75f,
+                              std::numeric_limits<float>::max() * 0.75f,
+                              std::numeric_limits<float>::max() * 0.75f,
+                              std::numeric_limits<float>::max() * 0.75f },
+        mIgnWeightsMaxHeight{ std::numeric_limits<float>::max(),
+                              std::numeric_limits<float>::max(),
+                              std::numeric_limits<float>::max(),
+                              std::numeric_limits<float>::max() },
+        // IGN CUSTOMIZE END
         mBrdf( TerraBrdf::Default )
     {
         mRoughness[0] = mRoughness[1] = 1.0f;
@@ -252,6 +265,19 @@ namespace Ogre
     {
         return mBrdf;
     }
+    //-----------------------------------------------------------------------------------
+    // IGN CUSTOMIZE BEGIN
+    void HlmsTerraDatablock::setIgnWeightsHeights( const Vector4 &ignWeightsMinHeight,
+                                                   const Vector4 &ignWeightsMaxHeight )
+    {
+        for( size_t i = 0u; i < 4u; ++i )
+        {
+            mIgnWeightsMinHeight[i] = ignWeightsMinHeight[i];
+            mIgnWeightsMaxHeight[i] = ignWeightsMaxHeight[i];
+        }
+        scheduleConstBufferUpdate();
+    }
+    // IGN CUSTOMIZE END
     //-----------------------------------------------------------------------------------
     bool HlmsTerraDatablock::suggestUsingSRGB( TerraTextureTypes type ) const
     {

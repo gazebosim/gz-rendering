@@ -736,6 +736,9 @@ void Ogre2RenderEngine::RegisterHlms()
     Ogre::Archive *archiveTerra = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
 
+    // Add ignition's customizations
+    libraryFoldersPaths.push_back("Hlms/Terra/ign");
+
     // Get the library archive(s)
     Ogre::ArchiveVec archiveTerraLibraryFolders;
     libraryFolderPathIt = libraryFoldersPaths.begin();

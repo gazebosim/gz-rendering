@@ -129,10 +129,18 @@
 	@end
 
 	pixelData.specular.xyz = float3( 1.0f, 1.0f, 1.0f );
-	float metalness =	(metalness0 * detailWeights.x * material.metalness.x +
-						 metalness1 * detailWeights.y * material.metalness.y) +
-						(metalness2 * detailWeights.z * material.metalness.z +
-						 metalness3 * detailWeights.w * material.metalness.w);
+
+	// IGN CUSTOMIZE BEGIN
+	//	float metalness =	(metalness0 * detailWeights.x * material.metalness.x +
+	//						 metalness1 * detailWeights.y * material.metalness.y) +
+	//						(metalness2 * detailWeights.z * material.metalness.z +
+	//						 metalness3 * detailWeights.w * material.metalness.w);
+	float metalness = 0.0f;
+	metalness = lerp( metalness, metalness0, detailWeights.x );
+	metalness = lerp( metalness, metalness1, detailWeights.y );
+	metalness = lerp( metalness, metalness2, detailWeights.z );
+	metalness = lerp( metalness, metalness3, detailWeights.w );
+	// IGN CUSTOMIZE END
 
 	pixelData.F0 = lerp( float3( 0.03f, 0.03f, 0.03f ), pixelData.diffuse.xyz * 3.14159f, metalness );
 	pixelData.diffuse.xyz = pixelData.diffuse.xyz - pixelData.diffuse.xyz * metalness;
@@ -153,10 +161,17 @@
 		@end
 	@end
 
-	pixelData.roughness =	(roughness0 * detailWeights.x * material.roughness.x +
-							 roughness1 * detailWeights.y * material.roughness.y) +
-							(roughness2 * detailWeights.z * material.roughness.z +
-							 roughness3 * detailWeights.w * material.roughness.w);
+	// IGN CUSTOMIZE BEGIN
+	//	pixelData.roughness =	(roughness0 * detailWeights.x * material.roughness.x +
+	//							 roughness1 * detailWeights.y * material.roughness.y) +
+	//							(roughness2 * detailWeights.z * material.roughness.z +
+	//							 roughness3 * detailWeights.w * material.roughness.w);
+	float roughness = 1.0f;
+	roughness = lerp( roughness, roughness0, detailWeights.x );
+	roughness = lerp( roughness, roughness1, detailWeights.y );
+	roughness = lerp( roughness, roughness2, detailWeights.z );
+	roughness = lerp( roughness, roughness3, detailWeights.w );
+	// IGN CUSTOMIZE END
 	pixelData.roughness = max( pixelData.roughness, 0.001f );
 @end
 

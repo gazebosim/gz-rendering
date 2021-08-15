@@ -19,23 +19,23 @@
 		detailWeights.w = smoothstep( material.ignWeightsMinHeight.w, material.ignWeightsMaxHeight.w, inPs.localHeight );
 	@end
 
-	@property( detail_maps_diffuse || detail_maps_normal )
-		// Normalize weights if they're > 1
-		float sumWeights = detailWeights.x + detailWeights.y + detailWeights.z + detailWeights.w;
-		sumWeights =  sumWeights <= 1.0f ? 1.0f : sumWeights;
-		detailWeights *= 1.0f / sumWeights;
-	@end
-
 	@property( diffuse_map )
 		@property( detail_map0 )
 			detailWeights.x *= detailCol0.w;
 			pixelData.diffuse.xyz = lerp( pixelData.diffuse.xyz, detailCol0.xyz, detailWeights.x );
+		@else
+			// When there's no diffuse map; then first detail map couldn't be diffuse map
+			// because it contained a normal map; hence we must force it to be the
+			// base layer
+			detailWeights.x = 1.0f;
+			pixelData.diffuse.xyz = detailCol0.xyz;
 		@end
 	@else
 		// When there's no diffuse map; then first detail map couldn't be diffuse map
 		// because it contained a normal map; hence we must force it to be the
 		// base layer
 		detailWeights.x = 1.0f;
+		pixelData.diffuse.xyz = detailCol0.xyz;
 	@end
 	@property( detail_map1 )
 		detailWeights.y *= detailCol1.w;

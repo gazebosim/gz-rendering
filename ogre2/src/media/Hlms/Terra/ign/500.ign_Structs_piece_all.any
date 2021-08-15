@@ -7,5 +7,5 @@
 @end
 
 @piece( custom_VStoPS )
-	INTERPOLANT( float worldHeight, @counter(texcoord) );
+	INTERPOLANT( float localHeight, @counter(texcoord) );
 @end

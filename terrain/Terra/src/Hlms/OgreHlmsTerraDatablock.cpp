@@ -66,15 +66,8 @@ namespace Ogre
         mkDr( 0.318309886f ), mkDg( 0.318309886f ), mkDb( 0.318309886f ), //Max Diffuse = 1 / PI
         _padding0( 1 ),
         // IGN CUSTOMIZE BEGIN
-        // Use really large values so that weight is 0 at any reasonable height
-        mIgnWeightsMinHeight{ std::numeric_limits<float>::max() * 0.75f,
-                              std::numeric_limits<float>::max() * 0.75f,
-                              std::numeric_limits<float>::max() * 0.75f,
-                              std::numeric_limits<float>::max() * 0.75f },
-        mIgnWeightsMaxHeight{ std::numeric_limits<float>::max(),
-                              std::numeric_limits<float>::max(),
-                              std::numeric_limits<float>::max(),
-                              std::numeric_limits<float>::max() },
+        mIgnWeightsMinHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
+        mIgnWeightsMaxHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
         // IGN CUSTOMIZE END
         mBrdf( TerraBrdf::Default )
     {
@@ -168,15 +161,26 @@ namespace Ogre
         for( size_t i = 0u; i < numOffsetScale; ++i )
             detailsOffsetScale[i] = mDetailsOffsetScale[i];
 
+        // IGN CUSTOMIZE BEGIN
+        const size_t sizeOfIgnData = sizeof( mIgnWeightsMinHeight ) + sizeof( mIgnWeightsMinHeight );
+
         memcpy( dstPtr, &mkDr,
-                MaterialSizeInGpu - numOffsetScale * sizeof( float4 ) - sizeof( mTexIndices ) );
-        dstPtr += MaterialSizeInGpu - numOffsetScale * sizeof( float4 ) - sizeof( mTexIndices );
+                MaterialSizeInGpu - numOffsetScale * sizeof( float4 ) - sizeof( mTexIndices ) -
+                    sizeOfIgnData );
+        dstPtr += MaterialSizeInGpu - numOffsetScale * sizeof( float4 ) - sizeof( mTexIndices ) -
+                  sizeOfIgnData;
+        // IGN CUSTOMIZE END
 
         memcpy( dstPtr, &detailsOffsetScale, numOffsetScale * sizeof( float4 ) );
         dstPtr += numOffsetScale * sizeof( float4 );
 
         memcpy( dstPtr, texIndices, sizeof( texIndices ) );
         dstPtr += sizeof( texIndices );
+
+        // IGN CUSTOMIZE BEGIN
+        memcpy( dstPtr, mIgnWeightsMinHeight, sizeOfIgnData );
+        dstPtr += sizeOfIgnData;
+        // IGN CUSTOMIZE END
     }
     //-----------------------------------------------------------------------------------
     void HlmsTerraDatablock::setDiffuse( const Vector3 &diffuseColour )
@@ -270,12 +274,50 @@ namespace Ogre
     void HlmsTerraDatablock::setIgnWeightsHeights( const Vector4 &ignWeightsMinHeight,
                                                    const Vector4 &ignWeightsMaxHeight )
     {
+        bool bNeedsFlushing = false;
         for( size_t i = 0u; i < 4u; ++i )
         {
+            const bool bWasDisabled =
+                fabsf( mIgnWeightsMinHeight[i] - mIgnWeightsMaxHeight[i] ) >= 1e-6f;
             mIgnWeightsMinHeight[i] = ignWeightsMinHeight[i];
             mIgnWeightsMaxHeight[i] = ignWeightsMaxHeight[i];
+            const bool bIsDisabled =
+                fabsf( mIgnWeightsMinHeight[i] - mIgnWeightsMaxHeight[i] ) >= 1e-6f;
+            bNeedsFlushing |= bWasDisabled != bIsDisabled;
         }
+        if( bNeedsFlushing )
+            flushRenderables();
         scheduleConstBufferUpdate();
+    }
+    //-----------------------------------------------------------------------------------
+    void HlmsTerraDatablock::setTexture( TerraTextureTypes texUnit, const String &name,
+                                         const HlmsSamplerblock *refParams )
+    {
+        uint32 textureFlags = 0;
+        uint32 filters = TextureFilter::TypeGenerateDefaultMipmaps;
+
+        filters |= suggestFiltersForType( texUnit );
+
+        if( texUnit != TERRA_REFLECTION )
+            textureFlags |= TextureFlags::AutomaticBatching;
+        if( suggestUsingSRGB( texUnit ) )
+            textureFlags |= TextureFlags::PrefersLoadingFromFileAsSRGB;
+
+        TextureTypes::TextureTypes textureType = TextureTypes::Type2D;
+        if( texUnit == TERRA_REFLECTION )
+            textureType = TextureTypes::TypeCube;
+
+        TextureGpuManager *textureManager = mCreator->getRenderSystem()->getTextureGpuManager();
+        TextureGpu *texture = 0;
+        if( !name.empty() )
+        {
+            texture = textureManager->createOrRetrieveTexture( name, GpuPageOutStrategy::Discard,
+                                                               textureFlags, textureType,
+                                                               ResourceGroupManager::
+                                                               AUTODETECT_RESOURCE_GROUP_NAME,
+                                                               filters );
+        }
+        setTexture( texUnit, texture, refParams );
     }
     // IGN CUSTOMIZE END
     //-----------------------------------------------------------------------------------

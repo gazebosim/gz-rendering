@@ -37,6 +37,8 @@
 #include <OgreImage2.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
+#include "Terra/Hlms/OgreHlmsTerra.h"
+#include "Terra/Hlms/OgreHlmsTerraDatablock.h"
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -216,6 +218,121 @@ void Ogre2Heightmap::Init()
         ogreRoot->getHlmsManager()->
         getHlms(Ogre::HLMS_USER3)->getDefaultDatablock());
 
+  Ogre::Hlms *hlmsTerra =
+          ogreRoot->getHlmsManager()->getHlms(Ogre::HLMS_USER3);
+
+  IGN_ASSERT(dynamic_cast<Ogre::HlmsTerra*>(hlmsTerra),
+             "HlmsTerra incorrectly setup, memory corrupted, or "
+             "HlmsTerra::getType changed while this code is out of sync");
+
+  Ogre::String datablockName = "IGN Terra " + this->name;
+
+  Ogre::HlmsDatablock *datablockBase = hlmsTerra->createDatablock(
+              datablockName, datablockName, Ogre::HlmsMacroblock(),
+              Ogre::HlmsBlendblock(), Ogre::HlmsParamVec(), false);
+
+  IGN_ASSERT(dynamic_cast<Ogre::HlmsTerraDatablock *>(datablockBase) != nullptr,
+             "Corruption detected. This is impossible.");
+
+  Ogre::HlmsTerraDatablock *datablock =
+          static_cast<Ogre::HlmsTerraDatablock *>(datablockBase);
+
+  Ogre::HlmsSamplerblock samplerblock;
+  samplerblock.setAddressingMode(Ogre::TAM_WRAP);
+  samplerblock.setFiltering(Ogre::TFO_ANISOTROPIC);
+  samplerblock.mMaxAnisotropy = 8u;
+
+  size_t numTextures = static_cast<size_t>(this->descriptor.TextureCount());
+
+  bool bCanUseFirstAsBase = false;
+
+  if (numTextures >= 1u)
+  {
+      using namespace Ogre;
+      const HeightmapTexture *texture0 = this->descriptor.TextureByIndex(0);
+      if (texture0->Normal().empty() && abs(1.0 - texture0->Size()) < 1e-6)
+          bCanUseFirstAsBase = true;
+
+      if ((numTextures > 4u && !bCanUseFirstAsBase) ||
+          (numTextures > 5u && bCanUseFirstAsBase))
+      {
+          ignwarn << "Ogre2Heightmap currently supports up to 4 textures, "
+                     "5 textures if the first one is diffuse-only & size = 1."
+                     "The rest are ignored. Supplied: "
+                  << numTextures << std::endl;
+          numTextures = bCanUseFirstAsBase ? 5u : 4u;
+      }
+
+      if (bCanUseFirstAsBase)
+      {
+          datablock->setTexture(static_cast<TerraTextureTypes>(TERRA_DIFFUSE),
+                                texture0->Diffuse(), &samplerblock);
+      }
+      else
+      {
+          datablock->setTexture(static_cast<TerraTextureTypes>(
+                                    TERRA_DETAIL0),
+                                texture0->Diffuse(), &samplerblock);
+
+          datablock->setTexture(static_cast<TerraTextureTypes>(
+                                    TERRA_DETAIL0_NM),
+                                texture0->Normal(), &samplerblock);
+
+          const float fSize = static_cast<float>(texture0->Size());
+          if (!texture0->Diffuse().empty() || !texture0->Normal().empty())
+            datablock->setDetailMapOffsetScale(0,Vector4(0, 0, fSize,fSize));
+      }
+
+      for (size_t i = 1u; i < numTextures; ++i)
+      {
+          const size_t idxOffset = bCanUseFirstAsBase ? 1 : 0;
+          const HeightmapTexture *texture = this->descriptor.TextureByIndex(i);
+
+          datablock->setTexture(static_cast<TerraTextureTypes>(
+                                TERRA_DETAIL0 + i - idxOffset),
+                                texture->Diffuse(), &samplerblock);
+
+          datablock->setTexture(static_cast<TerraTextureTypes>(
+                                TERRA_DETAIL0_NM + i - idxOffset),
+                                texture->Normal(), &samplerblock);
+
+          const float fSize = static_cast<float>(texture->Size());
+          if (!texture->Diffuse().empty() || !texture->Normal().empty())
+          {
+              datablock->setDetailMapOffsetScale(
+                          static_cast<uint8_t>(i - idxOffset),
+                          Vector4(0, 0, fSize,fSize));
+          }
+      }
+
+
+      size_t numBlends = static_cast<size_t>(this->descriptor.BlendCount());
+      if ((numBlends > 3u && !bCanUseFirstAsBase) ||
+          (numBlends > 4u && bCanUseFirstAsBase))
+      {
+          ignwarn << "Ogre2Heightmap currently supports up to 3 blends, "
+                     "4 blends if the first one is diffuse-only & size = 1."
+                     "The rest are ignored. Supplied: "
+                     << numBlends << std::endl;
+          numBlends = bCanUseFirstAsBase ? 4u : 3u;
+      }
+
+      Ogre::Vector4 minBlendHeights(0.0f);
+      Ogre::Vector4 maxBlendHeights(0.0f);
+      for (size_t i = 0; i < numBlends; ++i)
+      {
+          const size_t idxOffset = bCanUseFirstAsBase ? 0u : 1u;
+          const HeightmapBlend *blend = this->descriptor.BlendByIndex(i);
+          minBlendHeights[i + idxOffset] =
+                  static_cast<Ogre::Real>(blend->MinHeight());
+          maxBlendHeights[i + idxOffset] =
+                  static_cast<Ogre::Real>(blend->MinHeight()+
+                                          blend->FadeDistance());
+      }
+      datablock->setIgnWeightsHeights(minBlendHeights, maxBlendHeights);
+  }
+
+  this->dataPtr->terra->setDatablock(datablock);
 #if 0
   // textures. The default material generator takes two materials per layer.
   //    1. diffuse_specular - diffuse texture with a specular map in the

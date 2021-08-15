@@ -347,6 +347,21 @@ namespace Ogre
 //            }
         }
 
+        // IGN CUSTOMIZE BEGIN
+        for( size_t i = 0u; i < 4u; ++i )
+        {
+            const IdString c_ignWeightProperties[4] = {
+                "ign_weight0",
+                "ign_weight1",
+                "ign_weight2",
+                "ign_weight3",
+            };
+            setProperty( c_ignWeightProperties[i],
+                         fabsf( datablock->mIgnWeightsMinHeight[i] -
+                                datablock->mIgnWeightsMaxHeight[i] ) >= 1e-6f );
+        }
+        // IGN CUSTOMIZE END
+
 #ifdef OGRE_BUILD_COMPONENT_PLANAR_REFLECTIONS
         if( mPlanarReflections && mPlanarReflections->hasPlanarReflections( renderable ) )
         {

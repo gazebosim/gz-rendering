@@ -242,6 +242,9 @@ namespace Ogre
         // IGN CUSTOMIZE BEGIN
         void setIgnWeightsHeights( const Vector4 &ignWeightsMinHeight,
                                    const Vector4 &ignWeightsMaxHeight );
+        using HlmsTerraBaseTextureDatablock::setTexture;
+        void setTexture( TerraTextureTypes texUnit, const String &name,
+                         const HlmsSamplerblock *refParams );
         // IGN CUSTOMIZE END
 
         /** Suggests the TextureMapType (aka texture category) for each type of texture

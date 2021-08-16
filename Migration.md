@@ -32,6 +32,14 @@ release will remove the deprecated code.
     + Added `Scene::SetCameraPassCountPerGpuFlush`. Setting this value to 0 forces legacy behavior which eases porting.
     + Systems that rely on Graphics components like particle FXs and postprocessing are explicitly affected by Scene's Pre/PostRender. Once `Scene::PostRender` is called, the particle FXs' simulation is moved forward, as well as time values sent to postprocessing shaders. In previous ign-rendering versions each `Camera::Render` call would move the particle simulation forward, which could cause subtle bugs or inconsistencies when Cameras were rendering the same frame from different angles. Setting SetCameraPassCountPerGpuFlush to 0 will also cause these subtle bugs to reappear.
 
+1. **Visual.hh** and **Node.hh**
+    + `*UserData` methods and the `Variant` type alias have been moved from the `Visual` class to the `Node` class.
+    `Node::UserData` now returns no data for keys that don't exist (prior to Rendering 6.x, if
+    `Visual::UserData` was called with a key that doesn't exist, an `int` was returned by default).
+
+1. **depth_camera_fs.glsl** and **depth_camera_final_fs.glsl**
+    + Far clipping changed from clipping by depth to clipping by range, i.e. distance to point, so that the data generated will never exceed the specified max range of the camera.
+
 ## Ignition Rendering 4.0 to 4.1
 
 ## ABI break

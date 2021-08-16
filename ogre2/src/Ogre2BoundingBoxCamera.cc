@@ -32,6 +32,8 @@
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/Utils.hh"
 #include <ignition/math/Color.hh>
+#include <ignition/math/OrientedBox.hh>
+// #include <ignition/math/eigen3/Conversions.hh>
 
 #include <OgreGL3PlusAsyncTicket.h>
 #include <OgreBitwise.h>
@@ -151,6 +153,18 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
   /// Used in multi-link models, as each parent contains many boxes in it.
   /// Key: parent name, value: vector of boxes that belongs to that model.
   public: std::map<std::string, std::vector<BoundingBox *>> parentNameToBoxes;
+
+  /// \brief Keep track of the visible bounding boxes (used in filtering)
+  /// Key: parent name, value: vector of ogre ids of it's childern
+  public: std::map<std::string, std::vector<uint32_t>> parentNameToOgreIds;
+
+  /// \brief The ogre item's 3d vertices from the vao(used in multi-link models)
+  /// Key: ogre id, value: vector of it's 3d vertices(pointcloud or mesh points)
+  public: std::map<uint32_t, std::vector<math::Vector3d>> itemVertices;
+
+  /// \brief Map ogre id to Ogre::Item (used in multi-link models)
+  /// Key: ogre id, value: ogre item pointer
+  public: std::map<uint32_t, Ogre::Item*> ogreIdToItem;
 
   /// \brief Output bounding boxes to nofity listeners
   public: std::vector<BoundingBox> output_boxes;
@@ -523,6 +537,9 @@ void Ogre2BoundingBoxCamera::PostRender()
   this->dataPtr->boundingboxes.clear();
   this->dataPtr->visibleBoxesLabel.clear();
   this->dataPtr->parentNameToBoxes.clear();
+  this->dataPtr->parentNameToOgreIds.clear();
+  this->dataPtr->itemVertices.clear();
+  this->dataPtr->ogreIdToItem.clear();
   this->dataPtr->materialSwitcher->ogreIdName.clear();
 
   this->dataPtr->newBoundingBoxes(this->dataPtr->output_boxes);
@@ -560,7 +577,125 @@ void Ogre2BoundingBoxCamera::MarkVisibleBoxes()
 }
 
 /////////////////////////////////////////////////
-void Ogre2BoundingBoxCamera::MergeMultiLinksModels()
+void Ogre2BoundingBoxCamera::GetMeshVertices(
+  std::vector<uint32_t> _ogreIds, std::vector<math::Vector3d> &_vertices)
+{
+  auto viewMatrix = this->ogreCamera->getViewMatrix();
+
+  for (auto ogreId : _ogreIds)
+  {
+    Ogre::Item *item = this->dataPtr->ogreIdToItem[ogreId];
+    Ogre::MeshPtr mesh = item->getMesh();
+    Ogre::Node *node = item->getParentNode();
+
+    Ogre::Vector3 position = node->_getDerivedPosition();
+    Ogre::Quaternion oreintation = node->_getDerivedOrientation();
+    Ogre::Vector3 scale = node->_getDerivedScale();
+
+    auto subMeshes = mesh->getSubMeshes();
+
+    for (auto subMesh : subMeshes)
+    {
+      Ogre::VertexArrayObjectArray vaos = subMesh->mVao[0];
+
+      if (!vaos.empty())
+      {
+        // Get the first LOD level
+        Ogre::VertexArrayObject *vao = vaos[0];
+
+        // request async read from buffer
+        Ogre::VertexArrayObject::ReadRequestsArray requests;
+        requests.push_back(Ogre::VertexArrayObject::ReadRequests(
+          Ogre::VES_POSITION));
+        vao->readRequests(requests);
+        vao->mapAsyncTickets(requests);
+
+        unsigned int subMeshVerticiesNum =
+          requests[0].vertexBuffer->getNumElements();
+        for (size_t i = 0; i < subMeshVerticiesNum; ++i)
+        {
+          Ogre::Vector3 vec;
+          if (requests[0].type == Ogre::VET_HALF4)
+          {
+            const Ogre::uint16* vertex = reinterpret_cast<const Ogre::uint16*>
+              (requests[0].data);
+            vec.x = Ogre::Bitwise::halfToFloat(vertex[0]);
+            vec.y = Ogre::Bitwise::halfToFloat(vertex[1]);
+            vec.z = Ogre::Bitwise::halfToFloat(vertex[2]);
+          }
+          else if (requests[0].type == Ogre::VET_FLOAT3)
+          {
+            const float* vertex =
+              reinterpret_cast<const float*>(requests[0].data);
+            vec.x = *vertex++;
+            vec.y = *vertex++;
+            vec.z = *vertex++;
+          }
+          else
+            ignerr << "Vertex Buffer type error" << std::endl;
+
+          // Convert to world coordinates
+          vec = (oreintation * (vec * scale)) + position;
+
+          // Convert to camera view coordiantes
+          Ogre::Vector4 vec4(vec.x, vec.y, vec.z, 1);
+          vec4 = viewMatrix * vec4;
+
+          vec.x = vec4.x;
+          vec.y = vec4.y;
+          vec.z = vec4.z;
+
+          // Add the vertex to the vertices of all items that
+          // belongs to the same parent
+          _vertices.push_back(Ogre2Conversions::Convert(vec));
+
+          // get the next element
+          requests[0].data += requests[0].vertexBuffer->getBytesPerElement();
+        }
+        vao->unmapAsyncTickets(requests);
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
+{
+  // Combine the boxes with the same parent name together to merge them
+  for (auto box : this->dataPtr->boundingboxes)
+  {
+    auto ogreId = box.first;
+    auto parentName = this->dataPtr->materialSwitcher->ogreIdName[ogreId];
+    this->dataPtr->parentNameToOgreIds[parentName].push_back(ogreId);
+  }
+
+  // Merge the boxes that is related to the same parent
+  for (auto nameToOgreIds : this->dataPtr->parentNameToOgreIds)
+  {
+    auto ogreIds = nameToOgreIds.second;
+
+    // If not a multi-link model, add the 3d box from the OGRE API
+    if (ogreIds.size() == 1)
+    {
+      auto box = this->dataPtr->boundingboxes[ogreIds[0]];
+      this->dataPtr->output_boxes.push_back(*box);
+
+      std::vector<math::Vector3d> vertices;
+      this->GetMeshVertices(ogreIds, vertices);
+      std::cout << ogreIds[0] << " .. " << vertices.size() << std::endl;
+    }
+    else
+    {
+      std::vector<math::Vector3d> vertices;
+      this->GetMeshVertices(ogreIds, vertices);
+      std::cout << vertices.size() << std::endl;
+    // this->dataPtr->output_boxes.push_back(mergedBox);
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCamera::MergeMultiLinksModels2D()
 {
   // Combine the boxes with the same parent name together to merge them
   for (auto box : this->dataPtr->boundingboxes)
@@ -647,11 +782,8 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     // get attached node
     Ogre::Node *node = item->getParentNode();
 
-    // World rotation
-    Ogre::Quaternion oreintation = node->getOrientation();
-
-    // Box size (width, height, length)
-    Ogre::Vector3 scale = node->getScale();
+    Ogre::Quaternion orientation = node->_getDerivedOrientation();
+    Ogre::Vector3 scale = node->_getDerivedScale();
     Ogre::Vector3 size = item->getLocalAabb().getSize();
     size *= scale;
 
@@ -665,6 +797,9 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
       itor.moveNext();
       continue;
     }
+
+    // Keep track of mesh, useful in multi-links models
+    this->dataPtr->ogreIdToItem[ogreId] = item;
 
     BoundingBox *box = new BoundingBox(BoundingBoxType::Box3D);
 
@@ -680,11 +815,11 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     // Compute the rotation of the box from its world rotation & view matrix
     auto worldCameraRotation = Ogre2Conversions::Convert(
       viewMatrix.extractQuaternion());
-    auto bodyWorldRotation = Ogre2Conversions::Convert(oreintation);
+    auto bodyWorldRotation = Ogre2Conversions::Convert(orientation);
 
     // Body to camera rotation = body_world * world_camera
     auto bodyCameraRotation = worldCameraRotation * bodyWorldRotation;
-    box->oreintation = bodyCameraRotation;
+    box->orientation = bodyCameraRotation;
 
     this->dataPtr->boundingboxes[ogreId] = box;
     itor.moveNext();
@@ -697,8 +832,10 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
 
     box.second->label = label;
-    this->dataPtr->output_boxes.push_back(*box.second);
   }
+
+  // Combine boxes of multi-links model if exists
+  this->MergeMultiLinksModels3D();
 }
 
 /////////////////////////////////////////////////
@@ -783,7 +920,7 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
   }
 
   // Combine boxes of multi-links model if exists
-  this->MergeMultiLinksModels();
+  this->MergeMultiLinksModels2D();
 }
 
 /////////////////////////////////////////////////
@@ -816,9 +953,9 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     Ogre::Node *node = item->getParentNode();
 
     // get the derived position
-    Ogre::Vector3 position = node->_getDerivedPositionUpdated();
-    Ogre::Quaternion oreintation = node->_getDerivedOrientationUpdated();
-    Ogre::Vector3 scale = node->_getDerivedScaleUpdated();
+    Ogre::Vector3 position = node->_getDerivedPosition();
+    Ogre::Quaternion oreintation = node->_getDerivedOrientation();
+    Ogre::Vector3 scale = node->_getDerivedScale();
 
     Ogre::Aabb aabb = item->getWorldAabb();
     Ogre::AxisAlignedBox worldAabb;
@@ -879,7 +1016,7 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
   }
 
   // Combine boxes of multi-links model if exists
-  this->MergeMultiLinksModels();
+  this->MergeMultiLinksModels2D();
 }
 
 /////////////////////////////////////////////////

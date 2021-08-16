@@ -71,13 +71,19 @@ VisualPtr createDuck(ScenePtr _scene,
 
 VisualPtr createBox(ScenePtr _scene,
   math::Vector3d _position, MaterialPtr _material,
+  std::string _name="",
   math::Quaterniond _rotation = math::Quaterniond(0,0,0))
 {
   n_boxes++;
 
+  std::string name;
+  if (_name == "")
+    name = "box" + std::to_string(n_boxes);
+  else
+    name = _name;
+
   // create a box
-  VisualPtr box = _scene->CreateVisual(
-    "box" + std::to_string(n_boxes));
+  VisualPtr box = _scene->CreateVisual(name);
   box->SetLocalPosition(_position);
   box->SetLocalRotation(_rotation);
   GeometryPtr boxGeom = _scene->CreateBox();
@@ -172,15 +178,15 @@ void buildScene(ScenePtr _scene)
   root->AddChild(sphere2);
 
   // create boxes
-  auto box1 = createBox(_scene, Vector3d(3, 2, 0), blue,
+  auto box1 = createBox(_scene, Vector3d(3, 2, 0), blue, "",
     Quaterniond(0, 0, 0.7));
   root->AddChild(box1);
 
-  auto box2 = createBox(_scene, Vector3d(2, -1, 1), blue);
+  auto box2 = createBox(_scene, Vector3d(2, -1, 1), blue, "subbox::1");
   box2->SetLocalScale(1.2);
   root->AddChild(box2);
 
-  auto box3 = createBox(_scene, Vector3d(6, -3, 1), blue);
+  auto box3 = createBox(_scene, Vector3d(2, -2, 1), blue, "subbox::2");
   root->AddChild(box3);
 
   // create camera
@@ -208,7 +214,7 @@ void buildScene(ScenePtr _scene)
   boundingboxCamera->SetHFOV(camera->HFOV());
   boundingboxCamera->SetNearClipPlane(camera->NearClipPlane());
   boundingboxCamera->SetFarClipPlane(camera->FarClipPlane());
-  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::VisibleBox2D);
+  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::Box3D);
   root->AddChild(boundingboxCamera);
 }
 

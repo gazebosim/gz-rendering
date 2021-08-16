@@ -162,8 +162,18 @@ namespace ignition
       public: virtual BoundingBox MergeBoxes2D(
         std::vector<BoundingBox *> _boxes);
 
-      /// \brief Merge a links's boxes of multi links models
-      public: virtual void MergeMultiLinksModels();
+      /// \brief Get the 3d vertices(in world coord.) of the item's that belongs
+      /// to the same parent (only used in multi-links models)
+      /// \param[in] _ogreIds vector of ogre ids that belongs to the same model
+      /// \param[out] _vertices vector of 3d vertices of the item
+      public: virtual void GetMeshVertices(
+        std::vector<uint32_t> ogreIds, std::vector<math::Vector3d> &_vertices);
+
+      /// \brief Merge a links's 2d boxes of multi links models
+      public: virtual void MergeMultiLinksModels2D();
+
+      /// \brief Merge a links's 3d boxes of multi links models
+      public: virtual void MergeMultiLinksModels3D();
 
       /// \brief Pointer to the ogre camera
       protected: Ogre::Camera *ogreCamera;

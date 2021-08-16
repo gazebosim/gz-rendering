@@ -323,9 +323,9 @@ void SaveBoxes(std::vector<ir::BoundingBox> &boxes)
     auto h = std::to_string(box.size.Y());
     auto l = std::to_string(box.size.Z());
 
-    auto roll = std::to_string(box.oreintation.Roll());
-    auto pitch = std::to_string(box.oreintation.Pitch());
-    auto yaw = std::to_string(box.oreintation.Yaw());
+    auto roll = std::to_string(box.orientation.Roll());
+    auto pitch = std::to_string(box.orientation.Pitch());
+    auto yaw = std::to_string(box.orientation.Yaw());
 
     std::string sep = " ";
     std::string boxString = x + sep + y + sep + z + sep + w + sep + h + sep + l + sep +

@@ -43,7 +43,7 @@ namespace ignition
     };
 
     /// \brief Bounding box for both 2d & 3d boxes, it stores the
-    /// position / oreintation / size info of the box and its label
+    /// position / orientation / size info of the box and its label
     struct BoundingBox
     {
       /// \brief Box type
@@ -55,9 +55,9 @@ namespace ignition
       /// \brief Size of the box (width, height, depth), depth = 0 in 2D boxes
       ignition::math::Vector3d size;
 
-      /// \brief Oreintation of the 3D box in camera coord.
-      /// The 2D boxes are axis aligned (oreintation = 0)
-      ignition::math::Quaterniond oreintation;
+      /// \brief Orientation of the 3D box in camera coord.
+      /// The 2D boxes are axis aligned (orientation = 0)
+      ignition::math::Quaterniond orientation;
 
       /// \brief Label of the annotated object inside the box
       uint32_t label;

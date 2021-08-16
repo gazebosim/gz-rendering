@@ -84,12 +84,6 @@ namespace ignition
       /// \param[in] _camera Camera about to be used for rendering
       public: void UpdateForRender(Ogre::Camera *_activeCamera);
 
-      /// \brief Create terrain material generator. There are two types:
-      /// custom material generator that support user material scripts,
-      /// and a default material generator that uses our own glsl shader
-      /// and supports PSSM shadows.
-      private: void CreateMaterial();
-
       /// \brief Heightmap should only be created by scene.
       private: friend class OgreScene;
 

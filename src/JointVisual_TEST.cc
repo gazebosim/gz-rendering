@@ -44,7 +44,7 @@ void JointVisualTest::JointVisual(const std::string &_renderEngine)
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+           << "' is not supported" << std::endl;
     return;
   }
 

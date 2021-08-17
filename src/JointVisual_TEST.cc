@@ -65,9 +65,7 @@ void JointVisualTest::JointVisual(const std::string &_renderEngine)
   EXPECT_EQ(nullptr, jointVisual->ArrowVisual());
   EXPECT_EQ(nullptr, jointVisual->ParentAxisVisual());
   EXPECT_EQ(math::Vector3d::Zero, jointVisual->Axis());
-  EXPECT_EQ("", jointVisual->AxisFrame());
   EXPECT_EQ(math::Vector3d::Zero, jointVisual->ParentAxis());
-  EXPECT_EQ("", jointVisual->ParentAxisFrame());
 
   // set joint type
   jointVisual->SetType(JointVisualType::JVT_REVOLUTE);
@@ -75,27 +73,23 @@ void JointVisualTest::JointVisual(const std::string &_renderEngine)
 
   // set child axis
   math::Vector3d axis2(0.0, 1.0, 0.0);
-  std::string xyzExpressedIn = "child_axis";
+  bool useParentFrame = false;
   jointChildVisual->AddChild(jointVisual);
-  jointVisual->SetAxis(axis2, xyzExpressedIn);
+  jointVisual->SetAxis(axis2, useParentFrame);
   jointVisual->PreRender();
   EXPECT_NE(nullptr, jointVisual->ArrowVisual());
   EXPECT_EQ(axis2, jointVisual->Axis());
-  EXPECT_EQ("child_axis", jointVisual->AxisFrame());
   EXPECT_EQ(math::Vector3d::Zero, jointVisual->ParentAxis());
-  EXPECT_EQ("", jointVisual->ParentAxisFrame());
   EXPECT_EQ(nullptr, jointVisual->ParentAxisVisual());
 
   // set parent axis
   math::Vector3d axis1(0.0, 1.0, 0.0);
-  std::string parentXyzExpressedIn = "__model__";
-  jointVisual->SetParentAxis(axis1, parentXyzExpressedIn, "joint_parent");
+  useParentFrame = true;
+  jointVisual->SetParentAxis(axis1, "joint_parent", true);
   jointVisual->PreRender();
   EXPECT_NE(nullptr, jointVisual->ArrowVisual());
   EXPECT_EQ(axis2, jointVisual->Axis());
-  EXPECT_EQ("child_axis", jointVisual->AxisFrame());
   EXPECT_EQ(axis1, jointVisual->ParentAxis());
-  EXPECT_EQ("__model__", jointVisual->ParentAxisFrame());
   EXPECT_NE(nullptr, jointVisual->ParentAxisVisual());
 
   // set visibility

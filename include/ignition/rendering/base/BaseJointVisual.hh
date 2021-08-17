@@ -58,34 +58,28 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn) override;
+          const bool _useParentFrame) override;
 
       // Documentation inherited.
       public: virtual ignition::math::Vector3d Axis() const override;
 
       // Documentation inherited.
-      public: virtual std::string AxisFrame() const override;
-
-      // Documentation inherited.
       public: virtual void SetParentAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn,
-          const std::string &_parentName) override;
+          const std::string &_parentName,
+          const bool _useParentFrame) override;
 
       // Documentation inherited.
       public: virtual ignition::math::Vector3d ParentAxis() const override;
 
       // Documentation inherited.
-      public: virtual std::string ParentAxisFrame() const override;
-
-      // Documentation inherited.
       public: virtual bool UpdateAxis(const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn) override;
+          const bool _useParentFrame) override;
 
       // Documentation inherited.
       public: virtual bool UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn) override;
+          const bool _useParentFrame) override;
 
       // Documentation inherited.
       public: virtual void SetType(const JointVisualType _type) override;
@@ -105,11 +99,11 @@ namespace ignition
       /// \brief Implementation for updating an axis' arrow visual.
       /// \param[in] _arrowVisual Arrow visual to be updated.
       /// \param[in] _axis Axis vector.
-      /// \param[in] _xyzExpressedIn Frame in which the axis vector is
-      /// expressed.
+      /// \param[in] _useParentFrame True if the axis vector is
+      /// expressed in the joint parent frame.
       protected: void UpdateAxisImpl(ArrowVisualPtr _arrowVisual,
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn);
+          const bool _useParentFrame);
 
       /// \brief Helper function to create axis visual.
       protected: void CreateAxis();
@@ -153,8 +147,9 @@ namespace ignition
       protected: ignition::math::Vector3d axis =
           ignition::math::Vector3d::Zero;
 
-      /// \brief Frame in which axis vector is expressed.
-      protected: std::string xyzExpressedIn = "";
+      /// \brief Flag to indicate whether axis vector is
+      /// expressed in joint parent frame.
+      protected: bool useParentFrame = false;
 
       /// \brief Flag to update the axis visual.
       protected: bool updateAxis = false;
@@ -163,11 +158,12 @@ namespace ignition
       protected: ignition::math::Vector3d parentAxis =
           ignition::math::Vector3d::Zero;
 
-      /// \brief Frame in which parent axis vector is expressed.
-      protected: std::string parentXyzExpressedIn = "";
-
       /// \brief Joint parent name.
       protected: std::string jointParentName = "";
+
+      /// \brief Flag to indicate whether parent axis vector is
+      /// expressed in joint parent frame.
+      protected: bool parentAxisUseParentFrame = false;
 
       /// \brief Flag to update the parent axis visual.
       protected: bool updateParentAxis = false;
@@ -198,9 +194,9 @@ namespace ignition
 
       if (this->dirtyJointType)
       {
-        this->UpdateAxis(this->axis, this->xyzExpressedIn);
+        this->UpdateAxis(this->axis, this->useParentFrame);
         this->UpdateParentAxis(this->parentAxis,
-            this->parentXyzExpressedIn);
+            this->parentAxisUseParentFrame);
 
         this->dirtyJointType = false;
       }
@@ -220,14 +216,14 @@ namespace ignition
       if (this->updateAxis)
       {
         this->updateAxis =
-            !this->UpdateAxis(this->axis, this->xyzExpressedIn);
+            !this->UpdateAxis(this->axis, this->useParentFrame);
       }
 
       if (this->updateParentAxis)
       {
         this->updateParentAxis =
             !this->UpdateParentAxis(this->parentAxis,
-                this->parentXyzExpressedIn);
+                this->parentAxisUseParentFrame);
       }
     }
 
@@ -273,10 +269,10 @@ namespace ignition
     template <class T>
     void BaseJointVisual<T>::SetAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn)
+          const bool _useParentFrame)
     {
       this->axis = _axis;
-      this->xyzExpressedIn = _xyzExpressedIn;
+      this->useParentFrame = _useParentFrame;
       this->dirtyAxis = true;
     }
 
@@ -304,11 +300,11 @@ namespace ignition
     template <class T>
     void BaseJointVisual<T>::SetParentAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn,
-          const std::string &_parentName)
+          const std::string &_parentName,
+          const bool _useParentFrame)
     {
       this->parentAxis = _axis;
-      this->parentXyzExpressedIn = _xyzExpressedIn;
+      this->parentAxisUseParentFrame = _useParentFrame;
       this->jointParentName = _parentName;
       this->dirtyParentAxis = true;
     }
@@ -336,7 +332,7 @@ namespace ignition
       jointParentVis->AddChild(this->parentAxisVis);
       this->parentAxisVis->SetType(this->Type());
       this->parentAxisVis->SetAxis(this->parentAxis,
-          this->parentXyzExpressedIn);
+          this->parentAxisUseParentFrame);
 
       this->updateParentAxis = true;
       this->ScaleToChild();
@@ -345,11 +341,11 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     bool BaseJointVisual<T>::UpdateAxis(const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn)
+          const bool _useParentFrame)
     {
       if (this->ArrowVisual() && this->HasParent())
       {
-        this->UpdateAxisImpl(this->ArrowVisual(), _axis, _xyzExpressedIn);
+        this->UpdateAxisImpl(this->ArrowVisual(), _axis, _useParentFrame);
         return true;
       }
 
@@ -360,14 +356,14 @@ namespace ignition
     template <class T>
     bool BaseJointVisual<T>::UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn)
+          const bool _useParentFrame)
     {
       if (this->ParentAxisVisual() &&
           this->ParentAxisVisual()->ArrowVisual() &&
           this->ParentAxisVisual()->HasParent())
       {
         this->UpdateAxisImpl(this->ParentAxisVisual()->ArrowVisual(),
-            _axis, _xyzExpressedIn);
+            _axis, _useParentFrame);
         return true;
       }
 
@@ -378,7 +374,7 @@ namespace ignition
     template <class T>
     void BaseJointVisual<T>::UpdateAxisImpl(ArrowVisualPtr _arrowVisual,
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn)
+          const bool _useParentFrame)
     {
       // Get rotation to axis vector
       ignition::math::Vector3d axisDir = _axis;
@@ -394,7 +390,7 @@ namespace ignition
         quat.Axis((v.Cross(u)).Normalize(), angle);
       _arrowVisual->SetLocalRotation(quat);
 
-      if (_xyzExpressedIn == "__model__")
+      if (_useParentFrame)
       {
         ignition::math::Pose3d parentInitPose =
             this->Parent()->InitialLocalPose();
@@ -487,23 +483,9 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    std::string BaseJointVisual<T>::AxisFrame() const
-    {
-      return this->xyzExpressedIn;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
     ignition::math::Vector3d BaseJointVisual<T>::ParentAxis() const
     {
       return this->parentAxis;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    std::string BaseJointVisual<T>::ParentAxisFrame() const
-    {
-      return this->parentXyzExpressedIn;
     }
 
     //////////////////////////////////////////////////

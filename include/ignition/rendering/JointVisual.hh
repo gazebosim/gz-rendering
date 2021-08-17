@@ -74,54 +74,46 @@ namespace ignition
 
       /// \brief Create an axis and attach it to the joint visual.
       /// \param[in] _axis Axis vector.
-      /// \param[in] _xyzExpressedIn Frame in which the axis vector is
-      /// expressed.
+      /// \param[in] _useParentFrame True if axis vector is expressed in
+      /// parent frame.
       public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn) = 0;
+          const bool _useParentFrame = false) = 0;
 
       /// \brief Get axis vector.
       /// \return The axis vector.
       public: virtual ignition::math::Vector3d Axis() const = 0;
 
-      /// \brief Get axis frame.
-      /// \return The axis frame.
-      public: virtual std::string AxisFrame() const = 0;
-
       /// \brief Create a parent axis for hinge2 and universal joint types
       /// and attach it to the joint visual.
       /// \param[in] _axis Axis vector.
-      /// \param[in] _xyzExpressedIn Frame in which the axis vector is
-      /// expressed.
       /// \param[in] _parentName Joint parent name.
+      /// \param[in] _useParentFrame True if axis vector is expressed in
+      /// parent frame.
       public: virtual void SetParentAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn,
-          const std::string &_parentName) = 0;
+          const std::string &_parentName,
+          const bool _useParentFrame = false) = 0;
 
       /// \brief Get parent axis vector.
       /// \return The parent axis vector.
       public: virtual ignition::math::Vector3d ParentAxis() const = 0;
 
-      /// \brief Get parent axis frame.
-      /// \return The parent axis frame.
-      public: virtual std::string ParentAxisFrame() const = 0;
-
       /// \brief Update an axis' arrow visual.
       /// \param[in] _axis Axis vector.
-      /// \param[in] _xyzExpressedIn Frame in which the axis vector is
-      /// expressed.
+      /// \param[in] _useParentFrame True if axis vector is expressed in
+      /// parent frame.
       /// \return True if axis was updated else false.
       public: virtual bool UpdateAxis(const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn) = 0;
+          const bool _useParentFrame = false) = 0;
 
       /// \brief Update the parent axis' arrow visual if it exists.
       /// \param[in] _axis Axis vector.
-      /// \param[in] _xyzExpressedIn Frame in which the axis vector is
-      /// expressed.
+      /// \param[in] _useParentFrame True if axis vector is expressed in
+      /// parent frame.
       /// \return True if parent axis was updated else false.
       public: virtual bool UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
-          const std::string &_xyzExpressedIn) = 0;
+          const bool _useParentFrame = false) = 0;
 
       /// \brief Set type for joint visual.
       /// \param[in] _type The type of visualisation for joint.

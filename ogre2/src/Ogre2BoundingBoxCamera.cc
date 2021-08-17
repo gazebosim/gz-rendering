@@ -504,11 +504,19 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::Render()
 {
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
-  ogreRoot->renderOneFrame();
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
+  // update the compositors
+  this->scene->StartRendering();
+
+  this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
+  this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
+  this->dataPtr->ogreCompositorWorkspace->_update();
+  this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
+
+  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  swappedTargets.reserve(2u);
+  this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
+
+  this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 }
 
 /////////////////////////////////////////////////

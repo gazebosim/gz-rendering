@@ -178,16 +178,12 @@ void buildScene(ScenePtr _scene)
   root->AddChild(sphere2);
 
   // create boxes
-  auto box1 = createBox(_scene, Vector3d(3, 2, 0), blue, "",
-    Quaterniond(0, 0, 0.7));
+  auto box1 = createBox(_scene, Vector3d(3, 2, 0), blue);
   root->AddChild(box1);
 
-  auto box2 = createBox(_scene, Vector3d(2, -1, 1), blue, "subbox::1");
+  auto box2 = createBox(_scene, Vector3d(2, -1, 1), blue);
   box2->SetLocalScale(1.2);
   root->AddChild(box2);
-
-  auto box3 = createBox(_scene, Vector3d(2, -2, 1), blue, "subbox::2");
-  root->AddChild(box3);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
@@ -214,7 +210,7 @@ void buildScene(ScenePtr _scene)
   boundingboxCamera->SetHFOV(camera->HFOV());
   boundingboxCamera->SetNearClipPlane(camera->NearClipPlane());
   boundingboxCamera->SetFarClipPlane(camera->FarClipPlane());
-  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::Box3D);
+  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::VisibleBox2D);
   root->AddChild(boundingboxCamera);
 }
 

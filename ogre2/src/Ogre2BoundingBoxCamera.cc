@@ -31,9 +31,10 @@
 #include "ignition/rendering/ogre2/Ogre2BoundingBoxCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/Utils.hh"
+
 #include <ignition/math/Color.hh>
+#include <ignition/math/eigen3/Util.hh>
 #include <ignition/math/OrientedBox.hh>
-// #include <ignition/math/eigen3/Conversions.hh>
 
 #include <OgreGL3PlusAsyncTicket.h>
 #include <OgreBitwise.h>
@@ -687,19 +688,32 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
     {
       auto box = this->dataPtr->boundingboxes[ogreIds[0]];
       this->dataPtr->output_boxes.push_back(*box);
-
-      std::vector<math::Vector3d> vertices;
-      this->GetMeshVertices(ogreIds, vertices);
-      std::cout << ogreIds[0] << " .. " << vertices.size() << std::endl;
     }
     else
     {
       std::vector<math::Vector3d> vertices;
+
+      // Get all the 3D vertices of the sub-items(total mesh)
       this->GetMeshVertices(ogreIds, vertices);
-      std::cout << vertices.size() << std::endl;
-    // this->dataPtr->output_boxes.push_back(mergedBox);
+
+      // Get the oriented bounding box from the mesh using PCA
+      math::OrientedBoxd mergedBox = math::eigen3::MeshToOrientedBox(vertices);
+
+      // convert to rendering::BoundingBox format
+      BoundingBox box(BoundingBoxType::Box3D);
+      auto pose = mergedBox.Pose();
+      box.center = pose.Pos();
+      box.orientation = pose.Rot();
+      box.size = mergedBox.Size();
+      box.label = this->dataPtr->visibleBoxesLabel[ogreIds[0]];
+
+      this->dataPtr->output_boxes.push_back(box);
     }
   }
+
+  // reverse the order of the boxes (usful in testing)
+  std::reverse(this->dataPtr->output_boxes.begin(),
+    this->dataPtr->output_boxes.end());
 }
 
 /////////////////////////////////////////////////

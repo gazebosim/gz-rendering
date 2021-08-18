@@ -29,7 +29,8 @@ ign_configure_project(VERSION_SUFFIX pre1)
 
 #--------------------------------------
 # Find ignition-math
-ign_find_package(ignition-math6 REQUIRED VERSION 6.6)
+# ign_find_package(ignition-math6 REQUIRED VERSION 6.6)
+ign_find_package(ignition-math6 REQUIRED COMPONENTS eigen3 VERSION 6.8)
 set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
 #--------------------------------------

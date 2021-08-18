@@ -693,7 +693,7 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
       this->MeshVertices(ogreIds, vertices);
 
       // Get the oriented bounding box from the mesh using PCA
-      math::OrientedBoxd mergedBox = math::eigen3::MeshToOrientedBox(vertices);
+      math::OrientedBoxd mergedBox = math::eigen3::meshToOrientedBox(vertices);
 
       // convert to rendering::BoundingBox format
       BoundingBox box(BoundingBoxType::BBT_BOX3D);

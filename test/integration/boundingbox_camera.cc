@@ -37,11 +37,15 @@ using namespace rendering;
 class BoundingBoxCameraTest: public testing::Test,
   public testing::WithParamInterface<const char *>
 {
+  /// \brief Test 2d boxes (full boxes and visible boxes modes)
+  /// with a scene that contains overlaped / occluded boxes
   public: void OccludedBoxes(const std::string &_renderEngine);
 
+  /// \brief Test 2d boxes with a scene with 2 boxes besides
   public: void SimpleBoxes(const std::string &_renderEngine);
 
-  public: void Oreinted3dBoxes(const std::string &_renderEngine);
+  /// \brief Test 3d oriented boxes with a scene with single box
+  public: void Oriented3dBoxes(const std::string &_renderEngine);
 
   // Documentation inherited
   protected: void SetUp() override
@@ -132,7 +136,7 @@ void BuildScene(rendering::ScenePtr scene)
   root->AddChild(invisibleBox);
 }
 
-/// \brief Build a scene with a single oreinted box for 3D test
+/// \brief Build a scene with a single oriented box for 3D test
 void Build3dBoxScene(rendering::ScenePtr scene)
 {
   math::Vector3d leftPosition(3, 1.5, 0);
@@ -188,7 +192,7 @@ void BoundingBoxCameraTest::SimpleBoxes(
   camera->SetImageHeight(height);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
-  camera->SetBoundingBoxType(BoundingBoxType::VisibleBox2D);
+  camera->SetBoundingBoxType(BoundingBoxType::BBT_VISIBLEBOX2D);
 
   EXPECT_EQ(camera->ImageWidth(), width);
   EXPECT_EQ(camera->ImageHeight(), height);
@@ -266,8 +270,8 @@ void BoundingBoxCameraTest::OccludedBoxes(
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
 
-  camera->SetBoundingBoxType(BoundingBoxType::VisibleBox2D);
-  EXPECT_EQ(camera->Type(), BoundingBoxType::VisibleBox2D);
+  camera->SetBoundingBoxType(BoundingBoxType::BBT_VISIBLEBOX2D);
+  EXPECT_EQ(camera->Type(), BoundingBoxType::BBT_VISIBLEBOX2D);
 
   unsigned int width = 320;
   unsigned int height = 240;
@@ -320,7 +324,7 @@ void BoundingBoxCameraTest::OccludedBoxes(
   g_mutex.unlock();
 
   // Full Boxes Type Test
-  camera->SetBoundingBoxType(BoundingBoxType::FullBox2D);
+  camera->SetBoundingBoxType(BoundingBoxType::BBT_FULLBOX2D);
   // Update once to create image
   camera->Update();
 
@@ -355,7 +359,7 @@ void BoundingBoxCameraTest::OccludedBoxes(
 }
 
 //////////////////////////////////////////////////
-void BoundingBoxCameraTest::Oreinted3dBoxes(
+void BoundingBoxCameraTest::Oriented3dBoxes(
   const std::string &_renderEngine)
 {
   // Optix is not supported
@@ -392,7 +396,7 @@ void BoundingBoxCameraTest::Oreinted3dBoxes(
   camera->SetImageHeight(height);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
-  camera->SetBoundingBoxType(BoundingBoxType::Box3D);
+  camera->SetBoundingBoxType(BoundingBoxType::BBT_BOX3D);
 
   EXPECT_EQ(camera->ImageWidth(), width);
   EXPECT_EQ(camera->ImageHeight(), height);
@@ -443,9 +447,9 @@ TEST_P(BoundingBoxCameraTest, OccludedBoxes)
   OccludedBoxes(GetParam());
 }
 
-TEST_P(BoundingBoxCameraTest, Oreinted3dBoxes)
+TEST_P(BoundingBoxCameraTest, Oriented3dBoxes)
 {
-  Oreinted3dBoxes(GetParam());
+  Oriented3dBoxes(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(BoundingBoxCamera, BoundingBoxCameraTest,

@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2BoundingBoxCAMERA_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2BoundingBoxCAMERA_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2BOUNDINGBOXCAMERA_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2BOUNDINGBOXCAMERA_HH_
 
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
@@ -52,8 +52,8 @@ namespace ignition
     // Forward declaration
     class Ogre2BoundingBoxCameraPrivate;
 
-    /// \brief BoundingBox camera used to label each pixel with a label id
-    /// supports Semantic / Panoptic BoundingBox
+    /// \brief BoundingBox camera used to detect 2d / 3d bounding boxes
+    /// of labeled objects in the scene
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2BoundingBoxCamera :
       public BaseBoundingBoxCamera<Ogre2Sensor>
     {
@@ -140,7 +140,7 @@ namespace ignition
           const Ogre::Vector3 &scale
           );
 
-      /// \brief Draw bounding box on the givin image
+      /// \brief Draw bounding box on the given image
       /// \param[in] data buffer contains the image data
       /// \param[in] box bounding box to draw
       public: virtual void DrawBoundingBox(unsigned char *_data,
@@ -166,17 +166,17 @@ namespace ignition
       /// to the same parent (only used in multi-links models)
       /// \param[in] _ogreIds vector of ogre ids that belongs to the same model
       /// \param[out] _vertices vector of 3d vertices of the item
-      public: virtual void GetMeshVertices(
+      public: virtual void MeshVertices(
         std::vector<uint32_t> ogreIds, std::vector<math::Vector3d> &_vertices);
 
       /// \brief Merge a links's 2d boxes of multi links models
-      public: virtual void MergeMultiLinksModels2D();
+      private: virtual void MergeMultiLinksModels2D();
 
       /// \brief Merge a links's 3d boxes of multi links models
-      public: virtual void MergeMultiLinksModels3D();
+      private: virtual void MergeMultiLinksModels3D();
 
       /// \brief Pointer to the ogre camera
-      protected: Ogre::Camera *ogreCamera;
+      protected: Ogre::Camera *ogreCamera{nullptr};
 
       /// \internal
       /// \brief Pointer to private data.

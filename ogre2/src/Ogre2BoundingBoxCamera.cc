@@ -24,7 +24,6 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -36,10 +35,7 @@
 #include <ignition/math/eigen3/Util.hh>
 #include <ignition/math/OrientedBox.hh>
 
-#include <OgreGL3PlusAsyncTicket.h>
 #include <OgreBitwise.h>
-#include <OgreWireAabb.h>
-#include <OgreWireBoundingBox.h>
 
 using namespace ignition;
 using namespace rendering;
@@ -171,7 +167,7 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
   public: std::vector<BoundingBox> output_boxes;
 
   /// \brief Bounding Box type
-  public: BoundingBoxType type {BoundingBoxType::VisibleBox2D};
+  public: BoundingBoxType type {BoundingBoxType::BBT_VISIBLEBOX2D};
 };
 
 /////////////////////////////////////////////////
@@ -193,7 +189,7 @@ BoundingBoxMaterialSwitcher::BoundingBoxMaterialSwitcher(Ogre2ScenePtr _scene)
   if (!this->plainOverlayMaterial->getTechnique(0) ||
       !this->plainOverlayMaterial->getTechnique(0)->getPass(0))
   {
-    ignerr << "Problem creating selection buffer overlay material"
+    ignerr << "Problem creating bounding box camera overlay material"
         << std::endl;
     return;
   }
@@ -533,11 +529,11 @@ void Ogre2BoundingBoxCamera::PostRender()
   if (this->dataPtr->newBoundingBoxes.ConnectionCount() == 0)
     return;
 
-  if (this->dataPtr->type == BoundingBoxType::VisibleBox2D)
+  if (this->dataPtr->type == BoundingBoxType::BBT_VISIBLEBOX2D)
     this->VisibleBoundingBoxes();
-  else if (this->dataPtr->type == BoundingBoxType::FullBox2D)
+  else if (this->dataPtr->type == BoundingBoxType::BBT_FULLBOX2D)
     this->FullBoundingBoxes();
-  else if (this->dataPtr->type == BoundingBoxType::Box3D)
+  else if (this->dataPtr->type == BoundingBoxType::BBT_BOX3D)
     this->BoundingBoxes3D();
 
   for (auto box : this->dataPtr->boundingboxes)
@@ -586,7 +582,7 @@ void Ogre2BoundingBoxCamera::MarkVisibleBoxes()
 }
 
 /////////////////////////////////////////////////
-void Ogre2BoundingBoxCamera::GetMeshVertices(
+void Ogre2BoundingBoxCamera::MeshVertices(
   std::vector<uint32_t> _ogreIds, std::vector<math::Vector3d> &_vertices)
 {
   auto viewMatrix = this->ogreCamera->getViewMatrix();
@@ -694,13 +690,13 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
       std::vector<math::Vector3d> vertices;
 
       // Get all the 3D vertices of the sub-items(total mesh)
-      this->GetMeshVertices(ogreIds, vertices);
+      this->MeshVertices(ogreIds, vertices);
 
       // Get the oriented bounding box from the mesh using PCA
       math::OrientedBoxd mergedBox = math::eigen3::MeshToOrientedBox(vertices);
 
       // convert to rendering::BoundingBox format
-      BoundingBox box(BoundingBoxType::Box3D);
+      BoundingBox box(BoundingBoxType::BBT_BOX3D);
       auto pose = mergedBox.Pose();
       box.center = pose.Pos();
       box.orientation = pose.Rot();
@@ -823,7 +819,7 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     // Keep track of mesh, useful in multi-links models
     this->dataPtr->ogreIdToItem[ogreId] = item;
 
-    BoundingBox *box = new BoundingBox(BoundingBoxType::Box3D);
+    BoundingBox *box = new BoundingBox(BoundingBoxType::BBT_BOX3D);
 
     // Position in world coord
     Ogre::Vector3 position = worldAabb.getCenter();
@@ -899,7 +895,7 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
         // create new boxes when its first pixel appears
         if (!this->dataPtr->boundingboxes.count(ogreId))
         {
-          box = new BoundingBox(BoundingBoxType::VisibleBox2D);
+          box = new BoundingBox(BoundingBoxType::BBT_VISIBLEBOX2D);
           box->label = label;
 
           boundary = new BoxBoundary();
@@ -1013,7 +1009,7 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
 
     this->ConvertToScreenCoord(minVertex, maxVertex);
 
-    BoundingBox *box = new BoundingBox(BoundingBoxType::FullBox2D);
+    BoundingBox *box = new BoundingBox(BoundingBoxType::BBT_FULLBOX2D);
     auto boxWidth = maxVertex.x - minVertex.x;
     auto boxHeight = minVertex.y - maxVertex.y;
     box->center.X() = minVertex.x + boxWidth / 2;
@@ -1133,7 +1129,7 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
   unsigned char *_data, const BoundingBox &_box)
 {
   // 3D box
-  if (_box.type == BoundingBoxType::Box3D)
+  if (_box.type == BoundingBoxType::BBT_BOX3D)
   {
     // TODO(Amr) draw 3D box on the image
     return;

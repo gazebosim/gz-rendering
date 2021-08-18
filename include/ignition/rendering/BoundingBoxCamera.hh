@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BoundingBOXCAMERA_HH_
-#define IGNITION_RENDERING_BoundingBOXCAMERA_HH_
+#ifndef IGNITION_RENDERING_BOUNDINGBOXCAMERA_HH_
+#define IGNITION_RENDERING_BOUNDINGBOXCAMERA_HH_
 
 #include <string>
 #include <vector>
@@ -31,15 +31,15 @@ namespace ignition
     /// \brief BoundingBox types for Visible / Full 2D Boxes / 3D Boxes
     enum class BoundingBoxType {
 
-      /// FullBox2D: 2D box that shows the full box of occluded objects
-      FullBox2D = 0,
+      /// 2D box that shows the full box of occluded objects
+      BBT_FULLBOX2D = 0,
 
-      /// VisibleBox2D: 2D box that shows the visible part of the
+      /// 2D box that shows the visible part of the
       /// occluded object
-      VisibleBox2D = 1,
+      BBT_VISIBLEBOX2D = 1,
 
       /// 3D oreinted box
-      Box3D = 2
+      BBT_BOX3D = 2
     };
 
     /// \brief Bounding box for both 2d & 3d boxes, it stores the
@@ -97,7 +97,7 @@ namespace ignition
       /// \return BoundingBox Type (Visible / Full)
       public: virtual BoundingBoxType Type() const = 0;
 
-      /// \brief Draw a bounding box on the givin image in green color
+      /// \brief Draw a bounding box on the given image in green color
       /// \param[in] data buffer contains the image data
       /// \param[in] box bounding box to be drawn
       public: virtual void DrawBoundingBox(unsigned char *_data,

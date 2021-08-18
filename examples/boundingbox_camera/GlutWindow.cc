@@ -298,6 +298,7 @@ bool SaveImage(const uint8_t *_data)
   return true;
 }
 
+//////////////////////////////////////////////////
 void SaveBoxes(std::vector<ir::BoundingBox> &boxes)
 {
   std::string savePath = "boxes";
@@ -314,24 +315,7 @@ void SaveBoxes(std::vector<ir::BoundingBox> &boxes)
 
   for (auto box : boxes)
   {
-    // box.oreintation.Euler)
-    auto x = std::to_string(box.center.X());
-    auto y = std::to_string(box.center.Y());
-    auto z = std::to_string(box.center.Z());
-
-    auto w = std::to_string(box.size.X());
-    auto h = std::to_string(box.size.Y());
-    auto l = std::to_string(box.size.Z());
-
-    auto roll = std::to_string(box.orientation.Roll());
-    auto pitch = std::to_string(box.orientation.Pitch());
-    auto yaw = std::to_string(box.orientation.Yaw());
-
-    std::string sep = " ";
-    std::string boxString = x + sep + y + sep + z + sep + w + sep + h + sep + l + sep +
-                            roll + sep + pitch + sep + yaw;
-
-    file << boxString + sep + '\n';
+    file << box.center << " " << box.size << " " << box.orientation << '\n';
   }
   file.close();
 }
@@ -377,6 +361,7 @@ void initCamera(ir::CameraPtr _camera)
   g_camera->Capture(*g_image);
 }
 
+//////////////////////////////////////////////////
 void initBoundingBoxCamera(ir::CameraPtr _camera)
 {
   g_camera_bbox = std::dynamic_pointer_cast<ir::BoundingBoxCamera>(
@@ -409,6 +394,7 @@ void printUsage()
 {
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
+  std::cout << "   S  - Save image & its boxes " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
   std::cout << "===============================" << std::endl;
 }

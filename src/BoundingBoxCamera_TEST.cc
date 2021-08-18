@@ -60,7 +60,7 @@ void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
 
   unsigned char *data = new unsigned char[width * height * channels];
 
-  BoundingBox box(BoundingBoxType::VisibleBox2D);
+  BoundingBox box(BoundingBoxType::BBT_VISIBLEBOX2D);
   box.center.X() = 125;
   box.center.Y() = 125;
   box.size.X() = 50;
@@ -83,9 +83,9 @@ void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
   EXPECT_EQ(data[maxIndex + 1], 255);
 
   // Test Bounding Box Type
-  EXPECT_EQ(camera->Type(), BoundingBoxType::VisibleBox2D);
-  camera->SetBoundingBoxType(BoundingBoxType::FullBox2D);
-  EXPECT_EQ(camera->Type(), BoundingBoxType::FullBox2D);
+  EXPECT_EQ(camera->Type(), BoundingBoxType::BBT_VISIBLEBOX2D);
+  camera->SetBoundingBoxType(BoundingBoxType::BBT_FULLBOX2D);
+  EXPECT_EQ(camera->Type(), BoundingBoxType::BBT_FULLBOX2D);
 
   // Clean up
   engine->DestroyScene(scene);

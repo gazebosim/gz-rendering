@@ -166,6 +166,10 @@ namespace ignition
       VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
       if (visual)
       {
+        // Force rotation visual visibility to false
+        // if the arrow visual is not visible.
+        // Else, rotation visual's visibility overrides
+        // its parent's visibility.
         visual->SetVisible(this->rotationVisible && _visible);
       }
     }

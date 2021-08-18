@@ -198,8 +198,11 @@ namespace ignition
 
       protected: math::Vector3d origin;
 
+      /// \brief Flag to indicate whether initial local pose
+      /// is set for this node.
       protected: bool initialLocalPoseSet = false;
 
+      /// \brief Initial local pose for this node.
       protected: ignition::math::Pose3d initialLocalPose =
           ignition::math::Pose3d::Zero;
 

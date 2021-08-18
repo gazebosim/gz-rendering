@@ -58,7 +58,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame) override;
+          bool _useParentFrame) override;
 
       // Documentation inherited.
       public: virtual ignition::math::Vector3d Axis() const override;
@@ -67,19 +67,19 @@ namespace ignition
       public: virtual void SetParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_parentName,
-          const bool _useParentFrame) override;
+          bool _useParentFrame) override;
 
       // Documentation inherited.
       public: virtual ignition::math::Vector3d ParentAxis() const override;
 
       // Documentation inherited.
       public: virtual bool UpdateAxis(const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame) override;
+          bool _useParentFrame) override;
 
       // Documentation inherited.
       public: virtual bool UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame) override;
+          bool _useParentFrame) override;
 
       // Documentation inherited.
       public: virtual void SetType(const JointVisualType _type) override;
@@ -103,7 +103,7 @@ namespace ignition
       /// expressed in the joint parent frame.
       protected: void UpdateAxisImpl(ArrowVisualPtr _arrowVisual,
           const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame);
+          bool _useParentFrame);
 
       /// \brief Helper function to create axis visual.
       protected: void CreateAxis();
@@ -269,7 +269,7 @@ namespace ignition
     template <class T>
     void BaseJointVisual<T>::SetAxis(
           const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame)
+          bool _useParentFrame)
     {
       this->axis = _axis;
       this->useParentFrame = _useParentFrame;
@@ -301,7 +301,7 @@ namespace ignition
     void BaseJointVisual<T>::SetParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_parentName,
-          const bool _useParentFrame)
+          bool _useParentFrame)
     {
       this->parentAxis = _axis;
       this->parentAxisUseParentFrame = _useParentFrame;
@@ -341,7 +341,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     bool BaseJointVisual<T>::UpdateAxis(const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame)
+          bool _useParentFrame)
     {
       if (this->ArrowVisual() && this->HasParent())
       {
@@ -356,7 +356,7 @@ namespace ignition
     template <class T>
     bool BaseJointVisual<T>::UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame)
+          bool _useParentFrame)
     {
       if (this->ParentAxisVisual() &&
           this->ParentAxisVisual()->ArrowVisual() &&
@@ -374,7 +374,7 @@ namespace ignition
     template <class T>
     void BaseJointVisual<T>::UpdateAxisImpl(ArrowVisualPtr _arrowVisual,
           const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame)
+          bool _useParentFrame)
     {
       // Get rotation to axis vector
       ignition::math::Vector3d axisDir = _axis;

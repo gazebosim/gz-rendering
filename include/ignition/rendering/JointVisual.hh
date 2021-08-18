@@ -77,7 +77,7 @@ namespace ignition
       /// \param[in] _useParentFrame True if axis vector is expressed in
       /// parent frame.
       public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame = false) = 0;
+          bool _useParentFrame = false) = 0;
 
       /// \brief Get axis vector.
       /// \return The axis vector.
@@ -92,7 +92,7 @@ namespace ignition
       public: virtual void SetParentAxis(
           const ignition::math::Vector3d &_axis,
           const std::string &_parentName,
-          const bool _useParentFrame = false) = 0;
+          bool _useParentFrame = false) = 0;
 
       /// \brief Get parent axis vector.
       /// \return The parent axis vector.
@@ -104,7 +104,7 @@ namespace ignition
       /// parent frame.
       /// \return True if axis was updated else false.
       public: virtual bool UpdateAxis(const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame = false) = 0;
+          bool _useParentFrame = false) = 0;
 
       /// \brief Update the parent axis' arrow visual if it exists.
       /// \param[in] _axis Axis vector.
@@ -113,7 +113,7 @@ namespace ignition
       /// \return True if parent axis was updated else false.
       public: virtual bool UpdateParentAxis(
           const ignition::math::Vector3d &_axis,
-          const bool _useParentFrame = false) = 0;
+          bool _useParentFrame = false) = 0;
 
       /// \brief Set type for joint visual.
       /// \param[in] _type The type of visualisation for joint.

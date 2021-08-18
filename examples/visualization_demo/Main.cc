@@ -118,6 +118,16 @@ void buildScene(ScenePtr _scene)
   blue->SetTransparency(0.5);
   blue->SetDepthWriteEnabled(false);
 
+  // create gray material
+  MaterialPtr gray = _scene->CreateMaterial();
+  gray->SetAmbient(0.7, 0.7, 0.7);
+  gray->SetDiffuse(0.7, 0.7, 0.7);
+  gray->SetSpecular(0.7, 0.7, 0.7);
+  gray->SetShininess(50);
+  gray->SetReflectivity(0);
+  gray->SetTransparency(0.75);
+  gray->SetDepthWriteEnabled(false);
+
   // create box visual
   VisualPtr box = _scene->CreateVisual("parent_box");
   box->AddGeometry(_scene->CreateBox());
@@ -177,9 +187,7 @@ void buildScene(ScenePtr _scene)
   jointParentBox->SetOrigin(0.0, 0.0, 0.0);
   jointParentBox->SetLocalPosition(2.0, 0.5, 0.0);
   jointParentBox->SetLocalRotation(0, 0, 0);
-  jointParentBox->SetMaterial(blue);
-  jointParentBox->Material()->SetTransparency(0.5);
-  jointParentBox->Material()->SetDepthWriteEnabled(false);
+  jointParentBox->SetMaterial(gray);
   root->AddChild(jointParentBox);
 
   // create joint visual

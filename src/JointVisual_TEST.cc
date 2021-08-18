@@ -68,8 +68,8 @@ void JointVisualTest::JointVisual(const std::string &_renderEngine)
   EXPECT_EQ(math::Vector3d::Zero, jointVisual->ParentAxis());
 
   // set joint type
-  jointVisual->SetType(JointVisualType::JVT_REVOLUTE);
-  EXPECT_EQ(JointVisualType::JVT_REVOLUTE, jointVisual->Type());
+  jointVisual->SetType(JointVisualType::JVT_REVOLUTE2);
+  EXPECT_EQ(JointVisualType::JVT_REVOLUTE2, jointVisual->Type());
 
   // set child axis
   math::Vector3d axis2(0.0, 1.0, 0.0);

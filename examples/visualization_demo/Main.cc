@@ -193,7 +193,7 @@ void buildScene(ScenePtr _scene)
   // create joint visual
   JointVisualPtr jointVisual = _scene->CreateJointVisual();
   jointChildBox->AddChild(jointVisual);
-  jointVisual->SetType(JointVisualType::JVT_REVOLUTE);
+  jointVisual->SetType(JointVisualType::JVT_REVOLUTE2);
   ignition::math::Vector3d axis2(1.0, 1.0, 1.0);
   jointVisual->SetAxis(axis2);
 

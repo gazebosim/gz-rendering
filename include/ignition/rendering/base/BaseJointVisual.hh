@@ -303,6 +303,15 @@ namespace ignition
           const std::string &_parentName,
           bool _useParentFrame)
     {
+      if (this->Type() != JointVisualType::JVT_REVOLUTE2 &&
+          this->Type() != JointVisualType::JVT_UNIVERSAL)
+      {
+        ignlog << "Joint visual is not of type Revolute2 or "
+               << " Universal "
+               << " so the parent axis will not be shown\n";
+        return;
+      }
+
       this->parentAxis = _axis;
       this->parentAxisUseParentFrame = _useParentFrame;
       this->jointParentName = _parentName;
@@ -518,8 +527,12 @@ namespace ignition
       if (this->ArrowVisual())
         this->ArrowVisual()->SetVisible(_visible);
 
-      if (this->ParentAxisVisual())
-        this->ParentAxisVisual()->SetVisible(_visible);
+      if (this->Type() == JointVisualType::JVT_REVOLUTE2 ||
+          this->Type() == JointVisualType::JVT_UNIVERSAL)
+      {
+        if (this->ParentAxisVisual())
+          this->ParentAxisVisual()->SetVisible(_visible);
+      }
 
       if (this->axisVisual)
         this->axisVisual->SetVisible(_visible);

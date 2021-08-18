@@ -186,7 +186,7 @@ void buildScene(ScenePtr _scene)
   jointParentBox->AddGeometry(_scene->CreateBox());
   jointParentBox->SetOrigin(0.0, 0.0, 0.0);
   jointParentBox->SetLocalPosition(2.0, 0.5, 0.0);
-  jointParentBox->SetLocalRotation(0, 0, 0);
+  jointParentBox->SetLocalRotation(1.5, -1.0, 0);
   jointParentBox->SetMaterial(gray);
   root->AddChild(jointParentBox);
 
@@ -194,7 +194,7 @@ void buildScene(ScenePtr _scene)
   JointVisualPtr jointVisual = _scene->CreateJointVisual();
   jointChildBox->AddChild(jointVisual);
   jointVisual->SetType(JointVisualType::JVT_REVOLUTE);
-  ignition::math::Vector3d axis2(1.0, 0.0, 0.0);
+  ignition::math::Vector3d axis2(1.0, 1.0, 1.0);
   jointVisual->SetAxis(axis2);
 
   ignition::math::Vector3d axis1(1.0, 0.0, 0.0);

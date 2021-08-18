@@ -48,6 +48,7 @@ namespace ignition
 
       public: virtual math::Pose3d LocalPose() const override;
 
+      // Documentation inherited
       public: virtual math::Pose3d InitialLocalPose() const override;
 
       public: virtual void SetLocalPose(const math::Pose3d &_pose) override;

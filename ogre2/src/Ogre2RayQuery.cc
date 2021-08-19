@@ -88,9 +88,11 @@ RayQueryResult Ogre2RayQuery::ClosestPoint()
   return this->ClosestPointByIntersection();
 #else
   if (!this->dataPtr->camera ||
+      !this->dataPtr->camera->Parent() ||
       std::this_thread::get_id() != this->dataPtr->threadId)
   {
     // use legacy method for backward compatibility if no camera is set or
+    // camera is not attached in the scene tree or
     // this function is called from non-rendering thread
     return this->ClosestPointByIntersection();
   }

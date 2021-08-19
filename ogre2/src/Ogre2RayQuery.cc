@@ -79,6 +79,9 @@ RayQueryResult Ogre2RayQuery::ClosestPoint()
 {
   RayQueryResult result;
 
+#ifdef __APPLE__
+  return this->ClosestPointByIntersection();
+#else
   if (!this->dataPtr->camera)
   {
     return this->ClosestPointByIntersection();
@@ -93,6 +96,7 @@ RayQueryResult Ogre2RayQuery::ClosestPoint()
 
     return this->ClosestPointBySelectionBuffer();
   }
+#endif
 }
 
 //////////////////////////////////////////////////

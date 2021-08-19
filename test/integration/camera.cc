@@ -550,7 +550,11 @@ TEST_P(CameraTest, Visibility)
 }
 
 /////////////////////////////////////////////////
-TEST_P(CameraTest, VisualAt)
+#ifdef __APPLE__
+TEST_P(CameraTest, DISABLED_VisualAt)
+#else
+ TEST_P(CameraTest, VisualAt)
+#endif
 {
   VisualAt(GetParam());
 }

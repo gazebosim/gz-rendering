@@ -37,7 +37,7 @@ class ignition::rendering::Ogre2RayQueryPrivate
   public: math::Vector2i imgPos;
 
   /// \brief Pointer to camera used for ray query
-  public: Ogre2CameraPtr camera;
+  public: Ogre2CameraPtr camera{nullptr};
 };
 
 using namespace ignition;

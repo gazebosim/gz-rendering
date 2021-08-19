@@ -306,7 +306,7 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
       this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
   auto channelsTex = node->getLocalTextures();
 
-  for (auto c : channelsTex)
+  for (auto &c : channelsTex)
   {
     if (c.textures[0]->getSrcFormat() == Ogre::PF_FLOAT32_RGBA)
     {
@@ -436,9 +436,9 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
 
   ignition::math::Color cv;
   cv.A(1.0);
-  cv.R(r/255.0);
-  cv.G(g/255.0);
-  cv.B(b/255.0);
+  cv.R(r / 255.0);
+  cv.G(g / 255.0);
+  cv.B(b / 255.0);
 
   const std::string &entName =
     this->dataPtr->materialSwitcher->EntityName(cv);

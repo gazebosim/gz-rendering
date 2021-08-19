@@ -39,6 +39,9 @@ namespace ignition
       public: virtual void Init() override;
 
       // Documentation inherited.
+      protected: virtual void Destroy() override;
+
+      // Documentation inherited.
       public: virtual void SetLocalScale(
           const math::Vector3d &_scale) override;
 
@@ -47,6 +50,12 @@ namespace ignition
 
       // Documentation inherited.
       public: void ShowAxisHead(bool _b) override;
+
+      // Documentation inherited.
+      public: void ShowAxisHead(unsigned int _axis, bool _b) override;
+
+      // Documentation inherited.
+      public: virtual void SetVisible(bool _visible) override;
     };
 
     //////////////////////////////////////////////////
@@ -59,6 +68,21 @@ namespace ignition
     template <class T>
     BaseAxisVisual<T>::~BaseAxisVisual()
     {
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseAxisVisual<T>::Destroy()
+    {
+      for (unsigned int i = 0; i < this->ChildCount(); ++i)
+      {
+        auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
+              this->ChildByIndex(i));
+        if (arrow)
+        {
+          arrow->Destroy();
+        }
+      }
     }
 
     //////////////////////////////////////////////////
@@ -89,6 +113,21 @@ namespace ignition
       {
         auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
               this->ChildByIndex(i));
+        if (arrow)
+        {
+          arrow->ShowArrowHead(_b);
+        }
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseAxisVisual<T>::ShowAxisHead(unsigned int _axis, bool _b)
+    {
+      auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
+            this->ChildByIndex(2u - _axis));
+      if (arrow)
+      {
         arrow->ShowArrowHead(_b);
       }
     }
@@ -116,6 +155,20 @@ namespace ignition
       zArrow->SetLocalRotation(0, 0, 0);
       zArrow->SetMaterial("Default/TransBlue");
       this->AddChild(zArrow);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseAxisVisual<T>::SetVisible(bool _visible)
+    {
+      T::SetVisible(_visible);
+
+      for (unsigned int i = 0; i < this->ChildCount(); ++i)
+      {
+        auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
+              this->ChildByIndex(i));
+        arrow->SetVisible(_visible);
+      }
     }
     }
   }

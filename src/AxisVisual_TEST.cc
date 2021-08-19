@@ -73,12 +73,16 @@ void AxisVisualTest::AxisVisual(const std::string &_renderEngine)
     ArrowVisualPtr arrow = std::dynamic_pointer_cast<ArrowVisual>(node);
     ASSERT_NE(nullptr, arrow);
 
-    EXPECT_EQ(2u, arrow->ChildCount());
+    EXPECT_EQ(3u, arrow->ChildCount());
     NodePtr childNode = arrow->ChildByIndex(0u);
     VisualPtr child = std::dynamic_pointer_cast<Visual>(childNode);
     EXPECT_EQ(1u, child->GeometryCount());
 
     childNode = arrow->ChildByIndex(1u);
+    child = std::dynamic_pointer_cast<Visual>(childNode);
+    EXPECT_EQ(1u, child->GeometryCount());
+
+    childNode = arrow->ChildByIndex(2u);
     child = std::dynamic_pointer_cast<Visual>(childNode);
     EXPECT_EQ(1u, child->GeometryCount());
   }

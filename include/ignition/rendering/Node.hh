@@ -70,6 +70,10 @@ namespace ignition
       /// \return The local pose
       public: virtual math::Pose3d LocalPose() const = 0;
 
+      /// \brief Get the initial local pose
+      /// \return The initial local pose
+      public: virtual math::Pose3d InitialLocalPose() const = 0;
+
       /// \brief Set the local pose
       /// \param[in] _pose New local pose
       public: virtual void SetLocalPose(const math::Pose3d &_pose) = 0;

@@ -550,7 +550,7 @@ TEST_P(CameraTest, Visibility)
 }
 
 /////////////////////////////////////////////////
- TEST_P(CameraTest, VisualAt)
+TEST_P(CameraTest, VisualAt)
 {
   VisualAt(GetParam());
 }

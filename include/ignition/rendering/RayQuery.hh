@@ -46,6 +46,12 @@ namespace ignition
       public: unsigned int objectId = 0;
 
       /// \brief Returns false if result is not valid
+      public: operator bool() const
+              {
+                return distance > 0;
+              }
+
+      /// \brief Returns false if result is not valid
       public: operator bool()
               {
                 return distance > 0;

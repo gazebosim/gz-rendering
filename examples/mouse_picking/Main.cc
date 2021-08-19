@@ -95,12 +95,12 @@ void buildScene(ScenePtr _scene)
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.0);
-  camera->SetLocalRotation(0.0, 0.0, 0.0);
+  camera->SetLocalPosition(0.0, 0.0, 2.0);
+  camera->SetLocalRotation(0.0, 0.2, 0.0);
   camera->SetImageWidth(800);
-  camera->SetImageHeight(800);
+  camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);
-//  camera->SetAspectRatio(1.333);
+  camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 }

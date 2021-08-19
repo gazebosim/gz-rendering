@@ -72,15 +72,12 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
       screenPos.X() * this->dataPtr->camera->ImageWidth());
   this->dataPtr->imgPos.Y() = static_cast<int>(
       screenPos.Y() * this->dataPtr->camera->ImageHeight());
-  std::cerr << "img pos " << this->dataPtr->imgPos << std::endl;
 }
 
 //////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPoint()
 {
   RayQueryResult result;
-
-//    return this->ClosestPointByIntersection();
 
   if (!this->dataPtr->camera)
   {
@@ -94,7 +91,6 @@ RayQueryResult Ogre2RayQuery::ClosestPoint()
     if (!this->dataPtr->camera->SelectionBuffer())
       this->dataPtr->camera->VisualAt(math::Vector2i(0, 0));
 
-   this->ClosestPointByIntersection();
     return this->ClosestPointBySelectionBuffer();
   }
 }
@@ -226,7 +222,6 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection()
             result.point =
                 Ogre2Conversions::Convert(mouseRay.getPoint(distance));
             result.objectId = Ogre::any_cast<unsigned int>(userAny);
-            std::cerr << "closest nter point " << result.point << std::endl;
           }
         }
       }

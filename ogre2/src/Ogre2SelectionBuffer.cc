@@ -181,8 +181,6 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   double nearPlane = this->dataPtr->camera->getNearClipDistance();
   double farPlane = this->dataPtr->camera->getFarClipDistance();
 
-  std::cerr << "setting near and far " << nearPlane << " " << farPlane << std::endl;
-
   this->dataPtr->selectionCamera->setNearClipDistance(nearPlane);
   this->dataPtr->selectionCamera->setFarClipDistance(farPlane);
   double projectionA = farPlane /
@@ -403,8 +401,26 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   transMatrix[1][3] += y1+y2;
   Ogre::Matrix4 customProjectionMatrix =
       scaleMatrix * transMatrix * this->dataPtr->camera->getProjectionMatrix();
-  this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
-      customProjectionMatrix);
+
+  // There is a bug in ogre 2.1 that produces incorrect frustum
+  // extents when a custom projection matrix is set.
+  // So we manually compute the frusm extents ourselves
+  // \todo(anyone) The bug should be fixed in ogre 2.2 so we should be
+  // able to uncomment the setCustomProjectionMatrix call below
+  // and remove the extents set by setFrustumExtents
+  // this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
+  //      customProjectionMatrix);
+  Ogre::Matrix4 invProj = customProjectionMatrix.inverse();
+  Ogre::Vector4 topLeft(-1.0f, 1.0f, -1.0f, 1.0f);
+  Ogre::Vector4 bottomRight(1.0f, -1.0f, -1.0f, 1.0f);
+  topLeft = invProj * topLeft;
+  bottomRight = invProj * bottomRight;
+  float left = topLeft.x / topLeft.w;
+  float top = topLeft.y / topLeft.w;
+  float right = bottomRight.x / bottomRight.w;
+  float bottom = bottomRight.y / bottomRight.w;
+  this->dataPtr->selectionCamera->setFrustumExtents(left, right, top, bottom);
+
   this->dataPtr->selectionCamera->setPosition(
       this->dataPtr->camera->getDerivedPosition());
   this->dataPtr->selectionCamera->setOrientation(
@@ -412,10 +428,6 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   Ogre::Viewport* renderViewport =
       this->dataPtr->renderTexture->getViewport(0);
   renderViewport->setDimensions(0, 0, width, height);
-
-//  double nearClip = customProjectionMatrix[2][3] / (customProjectionMatrix[2][2] - 1.0);
-//  double farClip = customProjectionMatrix[2][3] / (customProjectionMatrix[2][2] + 1.0);
-//  std::cerr << " near and far " << nearClip << " " << farClip << std::endl;
 
   // update render texture
   this->Update();
@@ -439,22 +451,13 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   auto pos = Ogre2Conversions::Convert(
       this->dataPtr->camera->getParentSceneNode()->_getDerivedPosition());
   math::Pose3d p(pos, rot);
-  point = rot.Inverse() * point + pos;
-  std::cerr << "rot and pos " << rot << ", " << pos << std::endl;
+  point = rot * point + pos;
 
   ignition::math::Color cv;
   cv.A(1.0);
   cv.R(r/255.0);
   cv.G(g/255.0);
   cv.B(b/255.0);
-
-//  std::cerr << " xy" << _x << "  " << _y << std::endl;
-//  std::cerr << " rgba  " << cv.R() << " " << cv.G() << " " << cv.B() << " " << cv.A() << std::endl;
-//  std::cerr << " rgba buffer  " << (this->dataPtr->buffer[0])
-//         << " " << (this->dataPtr->buffer[1])
-//         << " " << (this->dataPtr->buffer[2])
-//         << " " << (this->dataPtr->buffer[3]) << std::endl;
-  std::cerr << " point " << point << std::endl;
 
   const std::string &entName =
     this->dataPtr->materialSwitcher->EntityName(cv);

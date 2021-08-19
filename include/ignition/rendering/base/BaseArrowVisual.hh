@@ -17,6 +17,10 @@
 #ifndef IGNITION_RENDERING_BASE_BASEARROWVISUAL_HH_
 #define IGNITION_RENDERING_BASE_BASEARROWVISUAL_HH_
 
+#include <string>
+
+#include <ignition/common/MeshManager.hh>
+
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -38,16 +42,34 @@ namespace ignition
       public: virtual ~BaseArrowVisual();
 
       // Documentation inherited.
+      protected: virtual void Destroy() override;
+
+      // Documentation inherited.
       public: virtual VisualPtr Head() const override;
 
       // Documentation inherited.
       public: virtual VisualPtr Shaft() const override;
 
+      // Documentation inherited.
+      public: virtual VisualPtr Rotation() const override;
+
       // Documentation inherited
       public: virtual void ShowArrowHead(bool _b) override;
 
+      // Documentation inherited
+      public: virtual void ShowArrowShaft(bool _b) override;
+
+      // Documentation inherited
+      public: virtual void ShowArrowRotation(bool _b) override;
+
+      // Documentation inherited
+      public: virtual void SetVisible(bool _visible) override;
+
       // Documentation inherited.
       protected: virtual void Init() override;
+
+      /// \brief Flag to indicate whether arrow rotation is visible
+      protected: bool rotationVisible = false;
     };
 
     //////////////////////////////////////////////////
@@ -62,16 +84,37 @@ namespace ignition
     {
     }
 
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseArrowVisual<T>::Destroy()
+    {
+      while (this->ChildCount() > 0u)
+      {
+        auto visual = std::dynamic_pointer_cast<Visual>(this->ChildByIndex(0));
+        if (visual)
+        {
+          visual->Destroy();
+        }
+      }
+    }
+
     //////////////////////////////////////////////////
     template <class T>
     VisualPtr BaseArrowVisual<T>::Head() const
+    {
+      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(2));
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    VisualPtr BaseArrowVisual<T>::Shaft() const
     {
       return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(1));
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    VisualPtr BaseArrowVisual<T>::Shaft() const
+    VisualPtr BaseArrowVisual<T>::Rotation() const
     {
       return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(0));
     }
@@ -80,11 +123,54 @@ namespace ignition
     template <class T>
     void BaseArrowVisual<T>::ShowArrowHead(bool _b)
     {
+      NodePtr child = this->ChildByIndex(2);
+      VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+      if (visual)
+      {
+        visual->SetVisible(_b);
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseArrowVisual<T>::ShowArrowShaft(bool _b)
+    {
       NodePtr child = this->ChildByIndex(1);
       VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
       if (visual)
       {
         visual->SetVisible(_b);
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseArrowVisual<T>::ShowArrowRotation(bool _b)
+    {
+      NodePtr child = this->ChildByIndex(0);
+      VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+      if (visual)
+      {
+        visual->SetVisible(_b);
+        this->rotationVisible = _b;
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseArrowVisual<T>::SetVisible(bool _visible)
+    {
+      T::SetVisible(_visible);
+
+      NodePtr child = this->ChildByIndex(0);
+      VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+      if (visual)
+      {
+        // Force rotation visual visibility to false
+        // if the arrow visual is not visible.
+        // Else, rotation visual's visibility overrides
+        // its parent's visibility.
+        visual->SetVisible(this->rotationVisible && _visible);
       }
     }
 
@@ -107,6 +193,18 @@ namespace ignition
       cylinder->SetLocalPosition(0, 0, 0);
       cylinder->SetLocalScale(0.05, 0.05, 0.5);
       this->AddChild(cylinder);
+
+      common::MeshManager *meshMgr = common::MeshManager::Instance();
+      std::string rotMeshName = "arrow_rotation";
+      if (!meshMgr->HasMesh(rotMeshName))
+        meshMgr->CreateTube(rotMeshName, 0.070f, 0.075f, 0.01f, 1, 32);
+
+      VisualPtr rotationVis = this->Scene()->CreateVisual();
+      rotationVis->AddGeometry(this->Scene()->CreateMesh(rotMeshName));
+      rotationVis->SetOrigin(0, 0, -0.125);
+      rotationVis->SetLocalPosition(0, 0, 0);
+      rotationVis->SetVisible(this->rotationVisible);
+      this->AddChild(rotationVis);
 
       this->SetOrigin(0, 0, -0.5);
     }

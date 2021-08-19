@@ -84,6 +84,12 @@ void ArrowVisualTest::ArrowVisual(const std::string &_renderEngine)
   EXPECT_EQ(1u, child->GeometryCount());
   EXPECT_EQ(node, visual->Head());
 
+  // test destroy
+  ArrowVisualPtr visual2 = scene->CreateArrowVisual();
+  ASSERT_NE(nullptr, visual2);
+  visual2->Destroy();
+  EXPECT_EQ(0u, visual2->ChildCount());
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

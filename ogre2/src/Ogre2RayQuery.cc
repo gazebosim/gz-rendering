@@ -34,10 +34,10 @@ class ignition::rendering::Ogre2RayQueryPrivate
   public: Ogre::RaySceneQuery *rayQuery = nullptr;
 
   //// \brief Pointer to camera
-  public: Ogre2CameraPtr camera;
+  public: Ogre2CameraPtr camera{nullptr};
 
   /// Image pos to cast the ray from
-  public: math::Vector2i imgPos;
+  public: math::Vector2i imgPos = math::Vector2i::Zero;
 };
 
 using namespace ignition;

@@ -64,7 +64,6 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
 
   /// \brief Render texture data buffer
-  // public: uint8_t *buffer = nullptr;
   public: float *buffer = nullptr;
 
   /// \brief Ogre pixel box that contains description of the data buffer
@@ -183,6 +182,14 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
 
   this->dataPtr->selectionCamera->setNearClipDistance(nearPlane);
   this->dataPtr->selectionCamera->setFarClipDistance(farPlane);
+
+  // \todo(anyone) change the code below when merging forward to fortress that
+  // uses ogre 2.2 otherwise the depth values will be incorrect due to
+  // reverse-z depth buffer
+  // Ogre::Vector2 projectionAB =
+  //   this->dataPtr->camera->getProjectionParamsAB();
+  // double projectionA = projectionAB.x
+  // double projectionB = projectionAB.y
   double projectionA = farPlane /
       (farPlane - nearPlane);
   double projectionB = (-farPlane * nearPlane) /
@@ -202,9 +209,6 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
 
   const Ogre::String workspaceName = "SelectionBufferWorkspace" +
       this->dataPtr->camera->getName();
-
-//  ogreCompMgr->createBasicWorkspaceDef(workspaceName,
-//      Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f));
 
   Ogre::CompositorNodeDef *nodeDef =
       ogreCompMgr->addNodeDefinition("AutoGen " + Ogre::IdString(workspaceName +
@@ -248,25 +252,6 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
 
   // Input texture
   nodeDef->addTextureSourceName("rt", 0, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
-
-///////////////
-//  nodeDef->setNumTargetPass(1);
-//  Ogre::CompositorTargetDef *colorTargetDef =
-//      nodeDef->addTargetPass("rt");
-//  colorTargetDef->setNumPasses(2);
-//  {
-//    // clear pass
-//    Ogre::CompositorPassClearDef *passClear =
-//        static_cast<Ogre::CompositorPassClearDef *>(
-//        colorTargetDef->addPass(Ogre::PASS_CLEAR));
-//    passClear->mColourValue = Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f);
-//    // scene pass
-//    Ogre::CompositorPassSceneDef *passScene =
-//        static_cast<Ogre::CompositorPassSceneDef *>(
-//        colorTargetDef->addPass(Ogre::PASS_SCENE));
-//    passScene->mVisibilityMask = IGN_VISIBILITY_SELECTABLE;
-//  }
-///////////////
 
   nodeDef->setNumTargetPass(2);
   Ogre::CompositorTargetDef *colorTargetDef =
@@ -313,13 +298,6 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
       this->dataPtr->renderTexture,
       this->dataPtr->selectionCamera, workspaceName, false);
 
-//  // set visibility mask to see only items that are selectable
-//  auto nodeSeq = this->dataPtr->ogreCompositorWorkspace->getNodeSequence();
-//  auto pass = nodeSeq[0]->_getPasses()[1]->getDefinition();
-//  auto scenePass = dynamic_cast<const Ogre::CompositorPassSceneDef *>(pass);
-//  const_cast<Ogre::CompositorPassSceneDef *>(scenePass)->mVisibilityMask =
-//      IGN_VISIBILITY_SELECTABLE;
-
   // add the listener
   Ogre::CompositorNode *node =
       this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
@@ -339,7 +317,7 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   size_t bufferSize = std::max<size_t>(
       Ogre::PixelUtil::getMemorySize(width, height, 1, format),
       4u);
-  this->dataPtr->buffer = new float[width*height*4u];
+  this->dataPtr->buffer = new float[width * height * 4u];
   memset(this->dataPtr->buffer, 0, bufferSize);
   this->dataPtr->pixelBox = new Ogre::PixelBox(width,
       height, 1, format, this->dataPtr->buffer);

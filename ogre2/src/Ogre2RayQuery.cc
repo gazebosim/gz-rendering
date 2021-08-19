@@ -36,8 +36,11 @@ class ignition::rendering::Ogre2RayQueryPrivate
   //// \brief Pointer to camera
   public: Ogre2CameraPtr camera{nullptr};
 
-  /// Image pos to cast the ray from
+  /// \brief Image pos to cast the ray from
   public: math::Vector2i imgPos = math::Vector2i::Zero;
+
+  /// \brief thread that ray query is created in
+  public: std::thread::id threadId;
 };
 
 using namespace ignition;
@@ -47,6 +50,7 @@ using namespace rendering;
 Ogre2RayQuery::Ogre2RayQuery()
     : dataPtr(new Ogre2RayQueryPrivate)
 {
+  this->dataPtr->threadId = std::this_thread::get_id();
 }
 
 //////////////////////////////////////////////////
@@ -83,8 +87,11 @@ RayQueryResult Ogre2RayQuery::ClosestPoint()
 #ifdef __APPLE__
   return this->ClosestPointByIntersection();
 #else
-  if (!this->dataPtr->camera)
+  if (!this->dataPtr->camera ||
+      std::this_thread::get_id() != this->dataPtr->threadId)
   {
+    // use legacy method for backward compatibility if no camera is set or
+    // this function is called from non-rendering thread
     return this->ClosestPointByIntersection();
   }
   else
@@ -92,7 +99,6 @@ RayQueryResult Ogre2RayQuery::ClosestPoint()
     // the VisualAt function is a hack to force creation of the selection
     // buffer object
     // todo(anyone) Make Camera::SetSelectionBuffer function public?
-
     if (!this->dataPtr->camera->SelectionBuffer())
       this->dataPtr->camera->VisualAt(math::Vector2i(0, 0));
 

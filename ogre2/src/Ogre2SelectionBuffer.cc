@@ -164,7 +164,8 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
       this->dataPtr->texture->getBuffer()->getRenderTarget();
 
   // Load selection material
-  // The SelectionBuffer material is defined in script (selection_buffer.material).
+  // The SelectionBuffer material is defined in script
+  // (selection_buffer.material).
   std::string matSelectionName = "SelectionBuffer";
   Ogre::MaterialPtr matSelection =
       Ogre::MaterialManager::getSingleton().getByName(matSelectionName);
@@ -251,7 +252,8 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   depthTexDef->fsaaExplicitResolve = false;
 
   // Input texture
-  nodeDef->addTextureSourceName("rt", 0, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+  nodeDef->addTextureSourceName("rt", 0,
+      Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
   nodeDef->setNumTargetPass(2);
   Ogre::CompositorTargetDef *colorTargetDef =
@@ -290,7 +292,8 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
         Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
   }
 
-  Ogre::CompositorWorkspaceDef *workDef = ogreCompMgr->addWorkspaceDefinition(workspaceName);
+  Ogre::CompositorWorkspaceDef *workDef =
+      ogreCompMgr->addWorkspaceDefinition(workspaceName);
   workDef->connectExternal(0, nodeDef->getName(), 0);
 
   this->dataPtr->ogreCompositorWorkspace =

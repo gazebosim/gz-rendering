@@ -21,7 +21,7 @@
 
 	@property( diffuse_map )
 		@property( detail_map0 )
-			detailWeights.x *= detailCol0.w;
+			// detailWeights.x *= detailCol0.w;
 			pixelData.diffuse.xyz = lerp( pixelData.diffuse.xyz, detailCol0.xyz, detailWeights.x );
 		@else
 			// When there's no diffuse map; then first detail map couldn't be diffuse map
@@ -38,15 +38,15 @@
 		pixelData.diffuse.xyz = detailCol0.xyz;
 	@end
 	@property( detail_map1 )
-		detailWeights.y *= detailCol1.w;
+		//detailWeights.y *= detailCol1.w;
 		pixelData.diffuse.xyz = lerp( pixelData.diffuse.xyz, detailCol1.xyz, detailWeights.y );
 	@end
 	@property( detail_map2 )
-		detailWeights.z *= detailCol2.w;
+		//detailWeights.z *= detailCol2.w;
 		pixelData.diffuse.xyz = lerp( pixelData.diffuse.xyz, detailCol2.xyz, detailWeights.z );
 	@end
 	@property( detail_map3 )
-		detailWeights.w *= detailCol3.w;
+		//detailWeights.w *= detailCol3.w;
 		pixelData.diffuse.xyz = lerp( pixelData.diffuse.xyz, detailCol3.xyz, detailWeights.w );
 	@end
 @end

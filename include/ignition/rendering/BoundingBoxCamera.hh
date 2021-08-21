@@ -38,7 +38,7 @@ namespace ignition
       /// occluded object
       BBT_VISIBLEBOX2D = 1,
 
-      /// 3D oreinted box
+      /// 3D oriented box
       BBT_BOX3D = 2
     };
 

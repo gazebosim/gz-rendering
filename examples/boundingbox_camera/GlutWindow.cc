@@ -46,8 +46,6 @@
 #define KEY_ESC 27
 #define KEY_TAB  9
 #define UNSUPPORTED_BUTTONS 5
-#define NORMALCAMERA_INDEX 0
-#define BOUNDINGBOX_INDEX 1
 
 //////////////////////////////////////////////////
 unsigned int imgw = 0;

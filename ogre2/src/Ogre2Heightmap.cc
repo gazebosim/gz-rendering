@@ -413,3 +413,9 @@ MaterialPtr Ogre2Heightmap::Material() const
 {
   return nullptr;
 }
+
+//////////////////////////////////////////////////
+Ogre::Terra* Ogre2Heightmap::Terra()
+{
+  return this->dataPtr->terra.get();
+}

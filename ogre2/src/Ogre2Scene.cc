@@ -59,6 +59,9 @@
 #include <OgreSceneManager.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
+
+#include "Terra/Terra.h"
+#include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -215,6 +218,15 @@ bool Ogre2Scene::InitImpl()
 //////////////////////////////////////////////////
 void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
 {
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsPbsTerraShadows *pbsTerraShadows = engine->HlmsPbsTerraShadows();
+
+  Ogre::Real closestTerraSqDist = std::numeric_limits<Ogre::Real>::max();
+  Ogre::Terra *closestTerra = 0;
+  Ogre::Terra *insideTerra = 0;
+
+  const Ogre::Vector2 cameraPos2d(_camera->getDerivedPosition().xy());
+
   auto itor = this->heightmaps.begin();
   auto endt = this->heightmaps.end();
 
@@ -231,9 +243,39 @@ void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
     else
     {
       heightmap->UpdateForRender(_camera);
+      Ogre::Terra *terra = heightmap->Terra();
+
+      const Ogre::Vector2 origin2d = terra->getTerrainOrigin().xy() +
+                                     terra->getXZDimensions() * 0.5f;
+      const Ogre::Vector2 end2d = origin2d + terra->getXZDimensions();
+
+      if (!(cameraPos2d.x < origin2d.x || cameraPos2d.x > end2d.x ||
+            cameraPos2d.y < origin2d.y || cameraPos2d.x > end2d.y) )
+      {
+        // Give preference to the Terra we're currently inside of
+        insideTerra = terra;
+      }
+      else
+      {
+        auto sqDist = cameraPos2d.squaredDistance((origin2d + end2d) * 0.5f);
+        if( sqDist < closestTerraSqDist )
+        {
+          closestTerraSqDist = sqDist;
+          closestTerra = terra;
+        }
+      }
+
       ++itor;
     }
   }
+
+  // If we're not inside any Terra, then prefer the one that is
+  // "closest" to camera. Both may be nullptrs though.
+  if (insideTerra)
+    pbsTerraShadows->setTerra(insideTerra);
+  else
+    pbsTerraShadows->setTerra(closestTerra);
+
 
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 2
   if (!this->heightmaps.empty())

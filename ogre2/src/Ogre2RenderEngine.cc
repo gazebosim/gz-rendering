@@ -42,6 +42,7 @@
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "Terra/Hlms/OgreHlmsTerra.h"
+#include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 
 class ignition::rendering::Ogre2RenderEnginePrivate
 {
@@ -51,6 +52,9 @@ class ignition::rendering::Ogre2RenderEnginePrivate
 
   /// \brief A list of supported fsaa levels
   public: std::vector<unsigned int> fsaaLevels;
+
+  /// \brief Pbs listener that adds terra shadows
+  public: Ogre::HlmsPbsTerraShadows *hlmsPbsTerraShadows;
 };
 
 using namespace ignition;
@@ -717,11 +721,16 @@ void Ogre2RenderEngine::RegisterHlms()
       ++libraryFolderPathIt;
     }
 
-    // TODO(dark_sylinc): register Terra's listener so objects have
-    // terrain shadows.
+    {
+      archivePbsLibraryFolders.push_back( archiveManager.load(
+        rootHlmsFolder + "Hlms/Terra/" + "GLSL" + "/PbsTerraShadows",
+        "FileSystem", true ) );
+      this->dataPtr->hlmsPbsTerraShadows = new Ogre::HlmsPbsTerraShadows();
+    }
 
     // Create and register
     hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
+    hlmsPbs->setListener(this->dataPtr->hlmsPbsTerraShadows);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
     // disable writting debug output to disk
@@ -922,6 +931,12 @@ std::vector<unsigned int> Ogre2RenderEngine::FSAALevels() const
 Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 {
   return this->ogreOverlaySystem;
+}
+
+/////////////////////////////////////////////////
+Ogre::HlmsPbsTerraShadows *Ogre2RenderEngine::HlmsPbsTerraShadows() const
+{
+  return this->dataPtr->hlmsPbsTerraShadows;
 }
 
 // Register this plugin

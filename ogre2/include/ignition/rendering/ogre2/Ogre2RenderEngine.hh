@@ -39,6 +39,8 @@ namespace Ogre
   {
     class OverlaySystem;
   }
+
+  class HlmsPbsTerraShadows;
 }
 
 namespace ignition
@@ -174,6 +176,14 @@ namespace ignition
       /// \brief Get a pointer to the Ogre overlay system.
       /// \return Pointer to the ogre overlay system.
       public: Ogre::v1::OverlaySystem *OverlaySystem() const;
+
+      /// \internal
+      /// \brief Get a pointer to the Pbs listener that adds terra shadows.
+      /// Do NOT assume HlmsPbs::getListener() == HlmsPbsTerraShadows()
+      /// as there may be more than one listener in the future with
+      /// a master listener coordinating them
+      /// \return Pointer to the Pbs listener that adds terra shadows.
+      public: Ogre::HlmsPbsTerraShadows *HlmsPbsTerraShadows() const;
 
       /// \brief Pointer to the ogre's overlay system
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;

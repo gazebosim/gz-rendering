@@ -79,7 +79,8 @@ namespace Ogre
     {
         if( shaderProfile != "hlsl" &&
             shaderProfile != "metal" &&
-            Hlms::getProperty( passCache.setProperties, HlmsBaseProp::ShadowCaster ) == 0 )
+            Hlms::getProperty( passCache.setProperties, HlmsBaseProp::ShadowCaster ) == 0 &&
+            Hlms::getProperty( passCache.setProperties, PbsTerraProperty::TerraEnabled ) != 0 )
         {
             if( !hlmsCacheEntry->pso.vertexShader.isNull() )
             {
@@ -114,7 +115,7 @@ namespace Ogre
             }
 
             hlms->_setProperty( PbsTerraProperty::TerraEnabled, mTerra != 0 );
-            hlms->_setProperty( TerraProperty::ZUp, mTerra->isZUp() );
+            hlms->_setProperty( TerraProperty::ZUp, mTerra && mTerra->isZUp() );
         }
     }
     //-----------------------------------------------------------------------------------
@@ -162,6 +163,9 @@ namespace Ogre
                                                                  mTerraSamplerblock );
 
 #if OGRE_DEBUG_MODE
+            // IGN CUSTOMIZE BEGIN
+            // Barriers dealt with in Ogre2Scene::UpdateAllHeightmaps
+    #ifdef IGN_DISABLED
             const CompositorTextureVec &compositorTextures = mSceneManager->getCompositorTextures();
             CompositorTextureVec::const_iterator itor = compositorTextures.begin();
             CompositorTextureVec::const_iterator end  = compositorTextures.end();
@@ -174,6 +178,8 @@ namespace Ogre
                 assert( "Hazard Detected! You should expose this Terra's shadow map texture"
                         " to the compositor pass so Ogre can place the proper Barriers" && false );
             }
+    #endif
+            // IGN CUSTOMIZE END
 #endif
         }
     }

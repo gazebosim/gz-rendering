@@ -34,6 +34,7 @@
 namespace Ogre
 {
   class Camera;
+  class Terra;
 }
 
 namespace ignition
@@ -77,6 +78,11 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material, bool _unique)
           override;
 
+      /// \internal
+      /// \brief Retrieves the internal Terra pointer
+      public: Ogre::Terra* Terra();
+
+      /// \internal
       /// \brief Must be called before rendering with the camera
       /// that will perform rendering.
       ///

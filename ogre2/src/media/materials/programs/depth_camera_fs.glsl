@@ -101,13 +101,13 @@ void main()
   vec4 particle = texture(particleTexture, inPs.uv0);
   float particleDepth = texture(particleDepthTexture, inPs.uv0).x;
 
-  // time is used to add randomness. Limit value to [0-1]
-  float t = fract(time);
-
   // return particle depth if it can be seen by the camera and not obstructed
   // by other objects in the camera view
   if (particle.x > 0 && particleDepth < fDepth)
   {
+    // time is used to add randomness. Limit value to [0-1]
+    float t = fract(time);
+
     // apply scatter effect so that only some of the smoke pixels are visible
     float r = rand(inPs.uv0 + vec2(t, t));
     if (r < particleScatterRatio)

@@ -101,12 +101,15 @@ void main()
   vec4 particle = texture(particleTexture, inPs.uv0);
   float particleDepth = texture(particleDepthTexture, inPs.uv0).x;
 
+  // time is used to add randomness. Limit value to [0-1]
+  float t = fract(time);
+
   // return particle depth if it can be seen by the camera and not obstructed
   // by other objects in the camera view
   if (particle.x > 0 && particleDepth < fDepth)
   {
     // apply scatter effect so that only some of the smoke pixels are visible
-    float r = rand(inPs.uv0 + vec2(time, time));
+    float r = rand(inPs.uv0 + vec2(t, t));
     if (r < particleScatterRatio)
     {
       // set point to 3d pos of particle pixel
@@ -115,14 +118,14 @@ void main()
       vec3 particlePoint = vec3(-particleViewSpacePos.z, -particleViewSpacePos.x,
           particleViewSpacePos.y);
 
-      float rr = rand(inPs.uv0 + vec2(1.0/time, time)) - 0.5;
+      float rr = rand(inPs.uv0 + vec2(t, t)) - 0.5;
 
       // apply gaussian noise to particle point cloud data
       // With large particles, the range returned are all from the first large
       // particle. So add noise with some mean values so that all the points are
       // shifted further out. This gives depth readings beyond the first few
       // particles and avoid too many early returns
-      vec3 noise = gaussrand(inPs.uv0, vec3(time, time, time),
+      vec3 noise = gaussrand(inPs.uv0, vec3(t, t, t),
           particleStddev, rr*rr*particleStddev*0.5).xyz;
       float noiseLength = length(noise);
       float particlePointLength = length(particlePoint);

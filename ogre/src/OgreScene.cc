@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre/OgreAxisVisual.hh"
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreCapsule.hh"
+#include "ignition/rendering/ogre/OgreCOMVisual.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
@@ -30,6 +31,7 @@
 #include "ignition/rendering/ogre/OgreHeightmap.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreInertiaVisual.hh"
+#include "ignition/rendering/ogre/OgreJointVisual.hh"
 #include "ignition/rendering/ogre/OgreLidarVisual.hh"
 #include "ignition/rendering/ogre/OgreLightVisual.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
@@ -377,10 +379,27 @@ PointLightPtr OgreScene::CreatePointLightImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+COMVisualPtr OgreScene::CreateCOMVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreCOMVisualPtr visual(new OgreCOMVisual);
+    bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
 InertiaVisualPtr OgreScene::CreateInertiaVisualImpl(unsigned int _id,
     const std::string &_name)
 {
   OgreInertiaVisualPtr visual(new OgreInertiaVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr OgreScene::CreateJointVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreJointVisualPtr visual(new OgreJointVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }

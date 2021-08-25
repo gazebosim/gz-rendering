@@ -95,11 +95,86 @@ namespace ignition
       // Documentation inherited
       public: virtual bool SkyEnabled() const override;
 
+      // Documentation inherited.
+      public: virtual void SetCameraPassCountPerGpuFlush(
+            uint8_t _numPass) override;
+
+      // Documentation inherited.
+      public: virtual uint8_t CameraPassCountPerGpuFlush() const override;
+
+      // Documentation inherited.
+      public: virtual bool LegacyAutoGpuFlush() const override;
+
       /// \brief Get a pointer to the ogre scene manager
       /// \return Pointer to the ogre scene manager
       public: virtual Ogre::SceneManager *OgreSceneManager() const;
 
+      // Documentation inherited
+      public: virtual void PostRender() override;
+
       /// \cond PRIVATE
+      /// \brief Certain functions like Ogre2Camera::VisualAt would
+      /// need to call PreRender and PostFrame, which is very unintuitive
+      /// and user-hostile.
+      ///
+      /// More over, it's likely that we don't want to advance the frame
+      /// in those cases (e.g. particle FXs should not advance), but we
+      /// still have to initialize and cleanup Ogre once we're done.
+      ///
+      /// This function performs some PreRender steps but only if we're
+      /// not already inside PreRender/PostRender, necessary for rendering
+      /// Ogre2Camera::VisualAt (via Ogre2SelectionBuffer)
+      public: void StartForcedRender();
+
+      /// \brief Opposite of StartForcedRender
+      ///
+      /// This function performs some PostRender steps but only if we're
+      /// not already inside PreRender/PostRender pairs
+      public: void EndForcedRender();
+
+      /// \internal
+      /// \brief When LegacyAutoGpuFlush(), this function mimics
+      /// legacy behavior.
+      /// When not, it verifies PreRender has been called
+      /// It also performs necessary updates for all heightmaps
+      ///
+      /// \param _camera camera that is about to render, used
+      /// by heightmaps (Terra). See Ogre2Scene::UpdateAllHeightmaps
+      /// Can be null
+      public: void StartRendering(Ogre::Camera *_camera);
+
+      /// \internal
+      /// \brief Every Render() function calls this function with
+      /// the number of pass_scene passes it just performed, so
+      /// that we decide if we should flush or not (based on
+      /// SetCameraPassCountPerGpuFlush)
+      ///
+      /// \param[in] _numPasses Number of pass_scene passes just performed
+      /// (excluding shadow nodes', otherwise it becomes too unpredictable)
+      /// \param[in] _startNewFrame whether we ignore
+      /// SetCameraPassCountPerGpuFlush.
+      /// Only PostRender should set this to true.
+      public: void FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
+                                                    bool _startNewFrame);
+
+      /// \internal
+      /// \brief Performs actual flushing to GPU
+      protected: void FlushGpuCommandsOnly();
+
+      /// \internal
+      /// \brief Ends the frame, i.e. PostRender wants to do this.
+      ///
+      /// Ogre::SceneManager::updateSceneGraph can't be called again until
+      /// this function is called
+      ///
+      /// After calling this function again,
+      /// Ogre::SceneManager::updateSceneGraph must be called before
+      /// rendering anything (i.e. done inside PreRender)
+      ///
+      /// This is why every PreRender should be paired with a PostRender
+      /// call when in LegacyAutoGpuFlush == false
+      protected: void EndFrame();
+
       /// \internal
       /// \brief Mark shadows dirty to rebuild compostior shadow node
       /// This is set when the number of shadow casting lighst changes
@@ -121,8 +196,16 @@ namespace ignition
       protected: virtual bool InitImpl() override;
 
       // Documentation inherited
+      protected: virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
                      unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
+      protected: virtual JointVisualPtr CreateJointVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
 
       // Documentation inherited
       protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,

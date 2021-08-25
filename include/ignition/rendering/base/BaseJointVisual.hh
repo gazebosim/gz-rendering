@@ -425,6 +425,10 @@ namespace ignition
       else
         return;
 
+      // Don't change the visibility of joint child axis
+      if (this->ArrowVisual() != _arrowVisual)
+        return;
+
        // Hide existing arrow head if it overlaps with the axis
       auto axisWorldRotation = _arrowVisual->WorldPose().Rot();
       auto jointWorldRotation = this->WorldPose().Rot();

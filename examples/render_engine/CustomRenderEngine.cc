@@ -82,9 +82,22 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     public: virtual void Copy(Image &_image) const
     {
-      // ignerr << "reached copy image" << std::endl;
-      // This call should be enough to get a render
-      // this->session->GetFilm()->GetOutput(OUTPUT_RGBA, hostData, 0);
+      if (_image.Width() != this->width || _image.Height() != this->height)
+      {
+        ignerr << "Invalid image dimensions" << std::endl;
+        return;
+      }
+
+      unsigned char *imageData = _image.Data<unsigned char>();
+      unsigned int count = this->width * this->height;
+      unsigned int index = 0;
+
+      for (unsigned int i = 0; i < count; ++i)
+      {
+        imageData[index++] = 255;
+        imageData[index++] = 0;
+        imageData[index++] = 0;
+      }
     }
 
     protected: unsigned int MemorySize() const;
@@ -195,8 +208,10 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
   {
     protected: CustomRenderEngineCamera()
     {
-      this->renderTarget =  CustomRenderEngineRenderTargetPtr(new CustomRenderEngineRenderTarget);
-
+      this->renderTarget = CustomRenderEngineRenderTargetPtr(new CustomRenderEngineRenderTarget);
+      this->renderTarget->SetFormat(PF_R8G8B8);
+      this->renderTarget->SetWidth(250);
+      this->renderTarget->SetHeight(250);
     };
 
     public: virtual ~CustomRenderEngineCamera() {};

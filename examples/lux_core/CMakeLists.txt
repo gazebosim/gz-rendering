@@ -11,8 +11,8 @@ FIND_PACKAGE(Boost REQUIRED COMPONENTS serialization system thread)
 Message(${Boost_INCLUDE_DIR} ${Boost_LIBRARIES})
 
 # Find LuxCore
-include_directories("~/luxcore/LuxCore-sdk/include")
-link_directories("~/luxcore/LuxCore-sdk/lib")
+include_directories("/ignition-ws/shared/LuxCore-sdk/include")
+link_directories("/ignition-ws/shared/LuxCore-sdk/lib")
 
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 

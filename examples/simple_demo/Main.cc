@@ -184,7 +184,7 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
 
   // engineNames.push_back(ogreEngineName);
-  engineNames.push_back("LuxCore");
+  engineNames.push_back("CustomRenderEngine");
 
   for (auto engineName : engineNames)
   {

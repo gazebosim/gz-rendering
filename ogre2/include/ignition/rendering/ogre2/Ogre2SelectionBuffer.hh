@@ -62,10 +62,6 @@ namespace ignition
       /// \return Returns the Ogre item at the coordinate.
       public: Ogre::Item *OnSelectionClick(const int _x, const int _y);
 
-      /// \brief Debug show overlay
-      /// \param[in] _show True to show the selection buffer in an overlay.
-      // public: void ShowOverlay(const bool _show);
-
       /// \brief Call this to update the selection buffer contents
       public: void Update();
 

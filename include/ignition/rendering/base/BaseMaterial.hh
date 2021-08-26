@@ -451,7 +451,7 @@ namespace ignition
     template <class T>
     void BaseMaterial<T>::SetCastShadows(const bool _castShadows)
     {
-      this->castShadows = _cast;
+      this->castShadows = _castShadows;
     }
 
     //////////////////////////////////////////////////

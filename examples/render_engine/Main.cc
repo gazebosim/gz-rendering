@@ -148,11 +148,10 @@ void buildScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName,
-    const std::map<std::string, std::string>& _params)
+CameraPtr createCamera(const std::string &_engineName)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::engine(_engineName, _params);
+  RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -180,30 +179,18 @@ int main(int _argc, char** _argv)
     ogreEngineName = _argv[1];
   }
 
-  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
-  if (_argc > 2)
-  {
-    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
-  }
-
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back(ogreEngineName);
+  // engineNames.push_back(ogreEngineName);
+  engineNames.push_back("CustomRenderEngine");
 
   for (auto engineName : engineNames)
   {
     try
     {
-      std::map<std::string, std::string> params;
-      if (engineName.compare("ogre2") == 0
-          && graphicsApi == GraphicsAPI::METAL)
-      {
-        params["metal"] = "1";
-      }
-
-      CameraPtr camera = createCamera(engineName, params);
+      CameraPtr camera = createCamera(engineName);
       if (camera)
       {
         cameras.push_back(camera);

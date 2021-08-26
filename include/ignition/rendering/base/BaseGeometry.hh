@@ -39,7 +39,7 @@ namespace ignition
       public: virtual VisualPtr Parent() const override = 0;
 
       public: virtual void RemoveParent() override;
-    
+
       // Documentation inherited
       public: virtual void SetMaterial(const std::string &_material,
                   bool _unique = true) override;

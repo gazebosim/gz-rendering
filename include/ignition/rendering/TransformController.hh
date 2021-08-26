@@ -64,7 +64,6 @@ namespace ignition
       public: virtual CameraPtr Camera() const;
 
       /// \brief Get the attached node
-      /// \param[in] _node Node the transform controller is attached to
       public: virtual NodePtr Node() const;
 
       /// \brief Attach the transform controller to the specified node

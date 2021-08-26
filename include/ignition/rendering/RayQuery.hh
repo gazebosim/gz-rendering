@@ -89,8 +89,7 @@ namespace ignition
                 const math::Vector2d &_coord) = 0;
 
       /// \brief Compute intersections
-      /// \param[out] A vector of intersection results
-      /// \return True if results are not empty
+      /// \return A vector of intersection results
       public: virtual RayQueryResult ClosestPoint() = 0;
     };
     }

@@ -75,7 +75,7 @@ namespace ignition
       public: virtual math::Vector3d Origin() const = 0;
 
       /// \brief Set ray direction
-      /// \param[in] _origin Ray origin
+      /// \param[in] _dir Ray origin
       public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
 
       /// \brief Get ray direction

@@ -47,7 +47,7 @@ namespace ignition
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SelectionBuffer
     {
       /// \brief Constructor
-      /// \param[in] _camera Name of the camera to generate a selection
+      /// \param[in] _cameraName Name of the camera to generate a selection
       /// buffer for.
       /// \param[in] _scene Pointer to the scene
       public: Ogre2SelectionBuffer(const std::string &_cameraName,

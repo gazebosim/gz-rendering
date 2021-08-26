@@ -89,14 +89,13 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       }
 
       unsigned char *imageData = _image.Data<unsigned char>();
-      unsigned int count = this->width * this->height;
-      unsigned int index = 0;
 
-      for (unsigned int i = 0; i < count; ++i)
-      {
-        imageData[index++] = 255;
-        imageData[index++] = 0;
-        imageData[index++] = 0;
+      for (unsigned int y = 0; y < this->height; y++) {
+        for (unsigned int x = 0; x < this->width; x++) {
+          imageData[(3 * (y * width + x)) + 0] = 255;
+          imageData[(3 * (y * width + x)) + 1] = 155;
+          imageData[(3 * (y * width + x)) + 2] = 55;
+        }
       }
     }
 
@@ -210,8 +209,6 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     {
       this->renderTarget = CustomRenderEngineRenderTargetPtr(new CustomRenderEngineRenderTarget);
       this->renderTarget->SetFormat(PF_R8G8B8);
-      this->renderTarget->SetWidth(250);
-      this->renderTarget->SetHeight(250);
     };
 
     public: virtual ~CustomRenderEngineCamera() {};

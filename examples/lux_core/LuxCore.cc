@@ -460,7 +460,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       ignerr << "InitImpl" << std::endl;
       this->props = LuxCorePropsPtr(new luxrays::Properties);
       this->props->Set(luxrays::Property("renderengine.type")("PATHCPU"));
-      this->props->Set(luxrays::Property("scene.file")("~/luxcore/LuxCore-sdk/scenes/cornell/cornell.scn"));
+      this->props->Set(luxrays::Property("scene.file")("/ignition-ws/shared/LuxCore-sdk/scenes/cornell/cornell.scn"));
       config = luxcore::RenderConfig::Create(*props);
       session = luxcore::RenderSession::Create(config);
       this->CreateStores();

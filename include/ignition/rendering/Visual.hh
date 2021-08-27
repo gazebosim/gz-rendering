@@ -121,6 +121,7 @@ namespace ignition
 
       /// \brief Get custom data stored in this visual
       /// \param[in] _key Unique key
+      /// \return Data associated with the key.
       public: virtual Variant UserData(const std::string &_key) const = 0;
     };
     }

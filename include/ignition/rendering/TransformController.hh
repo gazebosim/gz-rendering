@@ -64,6 +64,8 @@ namespace ignition
       public: virtual CameraPtr Camera() const;
 
       /// \brief Get the attached node
+      /// \return The node which is being transformed, nullptr if there is no
+      /// node attached.
       public: virtual NodePtr Node() const;
 
       /// \brief Attach the transform controller to the specified node

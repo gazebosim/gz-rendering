@@ -103,7 +103,7 @@ void buildScene(ScenePtr _scene)
 //! [create a heightmap]
 
 //! [create another heightmap]
-  /*auto data2 = std::make_shared<common::ImageHeightmap>();
+  auto data2 = std::make_shared<common::ImageHeightmap>();
   data2->Load(common::joinPaths(RESOURCE_PATH, "city_terrain.jpg"));
 
   HeightmapDescriptor desc2;
@@ -145,7 +145,7 @@ void buildScene(ScenePtr _scene)
 
   auto vis2 = _scene->CreateVisual();
   vis2->AddGeometry(heightmapGeom2);
-  root->AddChild(vis2);*/
+  root->AddChild(vis2);
 //! [create another heightmap]
 
   // create gray material

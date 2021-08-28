@@ -920,6 +920,9 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
           this->dataPtr->ogreCompositorWorkspaceDef,
           false);
 
+  this->dataPtr->ogreCompositorWorkspace->addListener(
+    engine->TerraWorkspaceListener());
+
   // add the listener
   Ogre::CompositorNode *node =
       this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];

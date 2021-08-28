@@ -43,6 +43,7 @@
 
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
+#include "Terra/TerraWorkspaceListener.h"
 
 class ignition::rendering::Ogre2RenderEnginePrivate
 {
@@ -54,7 +55,11 @@ class ignition::rendering::Ogre2RenderEnginePrivate
   public: std::vector<unsigned int> fsaaLevels;
 
   /// \brief Pbs listener that adds terra shadows
-  public: Ogre::HlmsPbsTerraShadows *hlmsPbsTerraShadows;
+  public: std::unique_ptr<Ogre::HlmsPbsTerraShadows> hlmsPbsTerraShadows;
+
+  /// \brief Listener that needs to be in every workspace
+  /// that wants terrain to cast shadows from spot and point lights
+  public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
 };
 
 using namespace ignition;
@@ -725,12 +730,12 @@ void Ogre2RenderEngine::RegisterHlms()
       archivePbsLibraryFolders.push_back( archiveManager.load(
         rootHlmsFolder + "Hlms/Terra/" + "GLSL" + "/PbsTerraShadows",
         "FileSystem", true ) );
-      this->dataPtr->hlmsPbsTerraShadows = new Ogre::HlmsPbsTerraShadows();
+      this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
     }
 
     // Create and register
     hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
-    hlmsPbs->setListener(this->dataPtr->hlmsPbsTerraShadows);
+    hlmsPbs->setListener(this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
     // disable writting debug output to disk
@@ -768,6 +773,9 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // disable writting debug output to disk
     hlmsTerra->setDebugOutputPath(false, false);
+
+    this->dataPtr->terraWorkspaceListener.reset(
+      new Ogre::TerraWorkspaceListener(hlmsTerra));
   }
 }
 
@@ -936,7 +944,14 @@ Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 /////////////////////////////////////////////////
 Ogre::HlmsPbsTerraShadows *Ogre2RenderEngine::HlmsPbsTerraShadows() const
 {
-  return this->dataPtr->hlmsPbsTerraShadows;
+  return this->dataPtr->hlmsPbsTerraShadows.get();
+}
+
+/////////////////////////////////////////////////
+Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
+  const
+{
+  return this->dataPtr->terraWorkspaceListener.get();
 }
 
 // Register this plugin

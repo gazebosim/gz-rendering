@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreHlmsListener.h"
 #include "OgreLwString.h"
 
-#if !OGRE_NO_JSON
+#if !OGRE_NO_JSON && defined( IGN_TERRA_JSON_ENABLED )
     #include "Terra/Hlms/OgreHlmsJsonTerra.h"
 #endif
 
@@ -710,7 +710,7 @@ namespace Ogre
         //Fill the data folder path
         outDataFolderPath = "Hlms/Terra/" + shaderSyntax;
     }
-#if !OGRE_NO_JSON
+#if !OGRE_NO_JSON && defined( IGN_TERRA_JSON_ENABLED )
     //-----------------------------------------------------------------------------------
     void HlmsTerra::_loadJson( const rapidjson::Value &jsonValue, const HlmsJson::NamedBlocks &blocks,
                                HlmsDatablock *datablock, const String &resourceGroup,

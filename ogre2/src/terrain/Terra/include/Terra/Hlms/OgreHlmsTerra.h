@@ -100,7 +100,7 @@ namespace Ogre
 
         static void getDefaultPaths( String& outDataFolderPath, StringVector& outLibraryFoldersPaths );
 
-#if !OGRE_NO_JSON
+#if !OGRE_NO_JSON && defined( IGN_TERRA_JSON_ENABLED )
         /// @copydoc Hlms::_loadJson
         virtual void _loadJson( const rapidjson::Value &jsonValue, const HlmsJson::NamedBlocks &blocks,
                                 HlmsDatablock *datablock, const String &resourceGroup,

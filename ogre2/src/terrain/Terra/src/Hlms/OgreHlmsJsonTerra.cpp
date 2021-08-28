@@ -28,10 +28,7 @@ THE SOFTWARE.
 
 #include "OgreBuildSettings.h"
 
-#undef OGRE_NO_JSON
-#define OGRE_NO_JSON 1
-
-#if !OGRE_NO_JSON
+#if !OGRE_NO_JSON && defined( IGN_TERRA_JSON_ENABLED )
 
 #include "Terra/Hlms/OgreHlmsJsonTerra.h"
 #include "OgreHlmsManager.h"

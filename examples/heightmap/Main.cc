@@ -207,7 +207,15 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back("ogre2");
+  // Expose engine name to command line because we can't instantiate both
+  // ogre and ogre2 at the same time
+  std::string ogreEngineName("ogre2");
+  if (_argc > 1)
+  {
+    ogreEngineName = _argv[1];
+  }
+
+  engineNames.push_back(ogreEngineName);
 
   for (auto engineName : engineNames)
   {

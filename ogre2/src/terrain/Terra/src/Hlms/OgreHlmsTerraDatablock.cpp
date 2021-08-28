@@ -64,13 +64,15 @@ namespace Ogre
                                         const HlmsParamVec &params ) :
         HlmsTerraBaseTextureDatablock( name, creator, macroblock, blendblock, params ),
         mkDr( 0.318309886f ), mkDg( 0.318309886f ), mkDb( 0.318309886f ), //Max Diffuse = 1 / PI
-        _padding0( 1 ),
+        mShadowConstantBiasGpu( 0.0f ),
         // IGN CUSTOMIZE BEGIN
         mIgnWeightsMinHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
         mIgnWeightsMaxHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
         // IGN CUSTOMIZE END
         mBrdf( TerraBrdf::Default )
     {
+        mShadowConstantBiasGpu = mShadowConstantBias = 0.0f;
+
         mRoughness[0] = mRoughness[1] = 1.0f;
         mRoughness[2] = mRoughness[3] = 1.0f;
         mMetalness[0] = mMetalness[1] = 1.0f;
@@ -253,6 +255,12 @@ namespace Ogre
                      "HlmsTerraDatablock::setAlphaTestThreshold" );
 
         HlmsDatablock::setAlphaTestThreshold( threshold );
+        scheduleConstBufferUpdate();
+    }
+    //-----------------------------------------------------------------------------------
+    void HlmsTerraDatablock::setShadowConstantBias( float shadowConstantBias )
+    {
+        mShadowConstantBiasGpu = mShadowConstantBias = shadowConstantBias;
         scheduleConstBufferUpdate();
     }
     //-----------------------------------------------------------------------------------

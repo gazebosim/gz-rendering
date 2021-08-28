@@ -104,8 +104,40 @@ void Ogre2Heightmap::Init()
   // ign-physics)
   bool flipY = false;
   // sampling size along image width and height
-  unsigned int newWidth = (this->descriptor.Data()->Width() *
-                           this->descriptor.Sampling());
+  const bool needsOgre1Compat =
+      math::isPowerOfTwo(this->descriptor.Data()->Width() - 1u);
+  const unsigned int srcWidth =
+    needsOgre1Compat
+      ? ((this->descriptor.Data()->Width() * this->descriptor.Sampling()) -
+         this->descriptor.Sampling() + 1)
+      : (this->descriptor.Data()->Width() * this->descriptor.Sampling());
+
+  if (needsOgre1Compat)
+  {
+    ignwarn << "Heightmap final sampling should be 2^n"
+           << std::endl << " which differs from ogre1's 2^n+1"
+           << std::endl << "The last row and column will be cropped"
+           << std::endl << "size = (width * sampling) - sampling + 1"
+           << std::endl << "[" << srcWidth << "] = (["
+           << this->descriptor.Data()->Width() << "] * ["
+           << this->descriptor.Sampling() << "]) - ["
+           << this->descriptor.Sampling() << "] + 1"
+        << std::endl;
+  }
+  else if (!math::isPowerOfTwo(srcWidth))
+  {
+    ignerr << "Heightmap final sampling must satisfy 2^n."
+           << std::endl << "size = width * sampling"
+           << std::endl << "[" << srcWidth << "] = ["
+           << this->descriptor.Data()->Width() << "] * ["
+           << this->descriptor.Sampling() << "]"
+        << std::endl;
+    return;
+  }
+
+  const unsigned int newWidth =
+    math::isPowerOfTwo(srcWidth) ? srcWidth : (srcWidth - 1u);
+
   math::Vector3d scale;
   scale.X(this->descriptor.Size().X() / newWidth);
   scale.Y(this->descriptor.Size().Y() / newWidth);
@@ -114,7 +146,7 @@ void Ogre2Heightmap::Init()
   // Construct the heightmap lookup table
   std::vector<float> lookup;
   this->descriptor.Data()->FillHeightMap(this->descriptor.Sampling(),
-      newWidth, this->descriptor.Size(), scale, flipY, lookup);
+      srcWidth, this->descriptor.Size(), scale, flipY, lookup);
   this->dataPtr->heights.reserve(newWidth * newWidth);
 
   // Terra is optimized to work with UNORM heightmaps, therefore it assumes
@@ -132,7 +164,7 @@ void Ogre2Heightmap::Init()
   {
     for (unsigned int x = 0; x < newWidth; ++x)
     {
-      const size_t index = y * newWidth + x;
+      const size_t index = y * srcWidth + x;
       const float heightVal = lookup[index];
       minElevation = std::min(minElevation, heightVal);
       maxElevation = std::max(maxElevation, heightVal);
@@ -155,18 +187,6 @@ void Ogre2Heightmap::Init()
   if (this->dataPtr->heights.empty())
   {
     ignerr << "Failed to load terrain. Heightmap data is empty" << std::endl;
-    return;
-  }
-
-  if (!math::isPowerOfTwo(this->dataPtr->dataSize))
-  {
-    ignerr << "Heightmap final sampling must satisfy 2^n."
-           << std::endl << "size = (width * sampling) = sampling + 1"
-           << std::endl << "[" << this->dataPtr->dataSize << "] = (["
-           << this->descriptor.Data()->Width() << "] * ["
-           << this->descriptor.Sampling() << "]) = ["
-           << this->descriptor.Sampling() << "] + 1: "
-        << std::endl;
     return;
   }
 

@@ -143,7 +143,7 @@ ign_configure_build(QUIT_IF_BUILD_ERRORS
 if (HAVE_OGRE2)
   # Must be done after ign_configure_build or else Terra
   # won't see IGN_ADD_fPIC_TO_LIBRARIES
-  add_subdirectory(terrain/Terra)
+  add_subdirectory(ogre2/src/terrain/Terra)
 endif()
 
 #============================================================================

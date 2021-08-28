@@ -1,5 +1,5 @@
 
-project( terra )
+project(terra)
 
 file( GLOB_RECURSE TERRA_SOURCES
   ${CMAKE_CURRENT_LIST_DIR}/include/*.h

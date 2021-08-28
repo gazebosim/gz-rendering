@@ -51,6 +51,7 @@ namespace ignition
       : public BaseHeightmap<Ogre2Geometry>
     {
       /// \brief Constructor
+      /// \param[in]
       public: explicit Ogre2Heightmap(const HeightmapDescriptor &_desc);
 
       /// \brief Destructor
@@ -80,6 +81,7 @@ namespace ignition
 
       /// \internal
       /// \brief Retrieves the internal Terra pointer
+      /// \return internal Terra pointer
       public: Ogre::Terra* Terra();
 
       /// \internal

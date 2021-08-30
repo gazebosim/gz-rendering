@@ -34,26 +34,36 @@ namespace ignition
 
       public: virtual ~BaseLight();
 
+      // Documentation inherited
       public: virtual void SetDiffuseColor(double _r, double _g, double _b,
                   double _a = 1.0);
 
+      // Documentation inherited.
       public: virtual void SetDiffuseColor(const math::Color &_color) = 0;
 
+      // Documentation inherited.
       public: virtual void SetSpecularColor(double _r, double _g, double _b,
                   double _a = 1.0);
 
+      // Documentation inherited.
       public: virtual void SetSpecularColor(const math::Color &_color) = 0;
 
+      // Documentation inherited.
       public: virtual void SetAttenuationConstant(double _value) = 0;
 
+      // Documentation inherited.
       public: virtual void SetAttenuationLinear(double _value) = 0;
 
+      // Documentation inherited.
       public: virtual void SetAttenuationQuadratic(double _value) = 0;
 
+      // Documentation inherited.
       public: virtual void SetAttenuationRange(double _range) = 0;
 
+      // Documentation inherited.
       public: virtual void SetCastShadows(bool _castShadows) = 0;
 
+      // Documentation inherited.
       protected: virtual void Reset();
     };
 

@@ -137,6 +137,9 @@ if (HAVE_OGRE2)
   list(APPEND RENDERING_COMPONENTS ogre2)
 endif()
 
+configure_file("${PROJECT_SOURCE_DIR}/cppcheck.suppress.in"
+               ${PROJECT_BINARY_DIR}/cppcheck.suppress)
+
 ign_configure_build(QUIT_IF_BUILD_ERRORS
     COMPONENTS ${RENDERING_COMPONENTS})
 

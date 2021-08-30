@@ -38,7 +38,8 @@ uniform float max;
 
 uniform float particleStddev;
 uniform float particleScatterRatio;
-uniform float time;
+// rnd is a random number in the range of [0-1]
+uniform float rnd;
 
 // see gaussian_noise_fs.glsl for documentation on the rand and gaussrand
 // functions
@@ -91,24 +92,21 @@ void main()
   // check if need to apply scatter effect
   if (particle.x > 0.0 && particleDepth < fDepth)
   {
-    // time is used to add randomness. Limit value to [0-1]
-    float t = fract(time);
-
     // apply scatter effect so that only some of the smoke pixels are visible
-    float r = rand(inPs.uv0 + vec2(t, t));
+    float r = rand(inPs.uv0 + vec2(rnd, rnd));
     if (r < particleScatterRatio)
     {
       float pd = projectionParams.y / (particleDepth - projectionParams.x);
       vec3 point = inPs.cameraDir * pd;
 
-      float rr = rand(inPs.uv0 + vec2(t, t)) - 0.5;
+      float rr = rand(inPs.uv0 + vec2(rnd, rnd)) - 0.5;
 
       // apply gaussian noise to particle range data
       // With large particles, the range returned are all from the first large
       // particle. So add noise with some mean values so that all the points are
       // shifted further out. This gives depth readings beyond the first few
       // particles and avoid too many early returns
-      vec3 noise = gaussrand(inPs.uv0, vec3(t, t, t),
+      vec3 noise = gaussrand(inPs.uv0, vec3(rnd, rnd, rnd),
            particleStddev, rr*rr*particleStddev*0.5).xyz;
       float noiseLength = length(noise);
 

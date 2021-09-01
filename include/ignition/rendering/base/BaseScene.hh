@@ -268,18 +268,28 @@ namespace ignition
       /// \brief Implementation for creating CoM visual.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of CoM visual
+      /// \return Pointer to a CoM visual object
       protected: virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
       /// \brief Implementation for creating Inertia visual.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of inertia visual
+      /// \return Pointer to a inertia visual object
       protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
                      unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Implementation for creating Joint visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of Joint visual
+      /// \return Pointer to a joint visual object
+      protected: virtual JointVisualPtr CreateJointVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
 
       /// \brief Implementation for creating Light visual.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of light visual
+      /// \return Pointer to a light visual object
       protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
@@ -414,6 +424,21 @@ namespace ignition
 
       // Documentation inherited
       public: virtual InertiaVisualPtr CreateInertiaVisual(unsigned int _id,
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual() override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual(
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual(unsigned int _id,
                   const std::string &_name) override;
 
       // Documentation inherited

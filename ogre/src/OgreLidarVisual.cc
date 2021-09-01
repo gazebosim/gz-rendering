@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 #include <ignition/common/Console.hh>
@@ -484,6 +484,16 @@ void OgreLidarVisual::Update()
       this->dataPtr->points[j]->Update();
     }
     verticalAngle += this->verticalAngleStep;
+  }
+
+  if (this->dataPtr->lidarVisType == LidarVisualType::LVT_POINTS &&
+      !this->dataPtr->points.empty())
+  {
+    // get the PointCloudPoint material
+    Ogre::MaterialPtr mat = this->dataPtr->points[0]->getMaterial();
+    auto pass = mat->getTechnique(0)->getPass(0);
+    auto params = pass->getVertexProgramParameters();
+    params->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
   }
 
   // The newly created dynamic lines are having default visibility as true.

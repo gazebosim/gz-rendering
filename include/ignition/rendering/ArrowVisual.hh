@@ -42,9 +42,21 @@ namespace ignition
       /// \return The arrow-shaft visual
       public: virtual VisualPtr Shaft() const = 0;
 
+      /// \brief Get arrow-rotation visual
+      /// \return The arrow-rotation visual
+      public: virtual VisualPtr Rotation() const = 0;
+
       /// \brief set true to show the arrow head, false otherwise
       /// \param[in] _b true to show the arrow head, false otherwise
       public: virtual void ShowArrowHead(bool _b) = 0;
+
+      /// \brief set true to show the arrow shaft, false otherwise
+      /// \param[in] _b true to show the arrow shaft, false otherwise
+      public: virtual void ShowArrowShaft(bool _b) = 0;
+
+      /// \brief Set true to show the rotation of the arrow, false otherwise
+      /// \param[in] _b True to show the arrow rotation.
+      public: virtual void ShowArrowRotation(bool _b) = 0;
     };
     }
   }

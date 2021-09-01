@@ -29,6 +29,7 @@
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
 #include "ignition/rendering/ogre2/Ogre2InertiaVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2JointVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
@@ -956,6 +957,15 @@ InertiaVisualPtr Ogre2Scene::CreateInertiaVisualImpl(unsigned int _id,
     const std::string &_name)
 {
   Ogre2InertiaVisualPtr visual(new Ogre2InertiaVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr Ogre2Scene::CreateJointVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2JointVisualPtr visual(new Ogre2JointVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }

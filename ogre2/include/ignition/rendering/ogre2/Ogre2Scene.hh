@@ -193,8 +193,13 @@ namespace ignition
       protected: virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
                      const std::string &_name) override;
 
+      // Documentation inherited
       protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
                      unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
+      protected: virtual JointVisualPtr CreateJointVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
 
       // Documentation inherited
       protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,

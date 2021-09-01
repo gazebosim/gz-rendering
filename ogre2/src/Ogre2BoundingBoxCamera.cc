@@ -1133,6 +1133,41 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
   if (_box.type == BoundingBoxType::BBT_BOX3D)
   {
     // TODO(Amr) draw 3D box on the image
+
+    // Get the 3D vertices from the BoundingBox(size, center, orientation)
+    auto vertices = _box.Vertices();
+
+    // Project the 3D vertices to 2D vertices in clip coord[-1,1]
+    auto projMatrix = this->ogreCamera->getProjectionMatrix();
+    for (auto vertex : vertices)
+    {
+      // Convert to homogeneous coord.
+      auto homoVertex = Ogre::Vector4(Ogre2Conversions::Convert(vertex));
+      homoVertex.w = 1;
+
+      auto projVertex = projMatrix * homoVertex;
+      projVertex.x /= projVertex.w;
+      projVertex.y = projVertex.y / projVertex.w;
+
+      vertex = math::Vector3d(projVertex.x, projVertex.y, projVertex.z);
+    }
+
+    // Convert To screen Coordinates
+    uint32_t width = this->ImageWidth();
+    uint32_t height = this->ImageHeight();
+    for (auto vertex : vertices)
+    {
+      // clip the values outside the frustum range [-1, 1]
+      vertex.X() = std::clamp<double>(vertex.X(), -1.0, 1.0);
+      vertex.Y() = std::clamp<double>(vertex.Y(), -1.0, 1.0);
+
+      // convert from [-1, 1] range to [0, 1] range & to the screen range
+      vertex.X() = uint32_t((vertex.X() + 1.0) / 2 * width );
+      vertex.Y() = uint32_t((1.0 - vertex.Y()) / 2 * height);
+    }
+
+    // for each projected vertex
+    //    get its index in the data buffer and draw a point
     return;
   }
 

@@ -22,6 +22,7 @@
 #include <cstdint>
 
 #include <ignition/common/Event.hh>
+#include <ignition/math/Vector3.hh>
 #include "ignition/rendering/Camera.hh"
 
 namespace ignition
@@ -63,9 +64,36 @@ namespace ignition
       uint32_t label;
 
       /// \brief Constructor
+      /// \param[in] _type Bounding Box Type
       explicit BoundingBox(ignition::rendering::BoundingBoxType _type)
       {
         this->type = _type;
+      }
+
+      std::vector<math::Vector3d> Vertices() const
+      {
+        std::vector<math::Vector3d> vertices;
+        auto w = size.X();
+        auto h = size.Y();
+        auto l = size.Z();
+
+        // 8 vertices | box corners
+        vertices.push_back(math::Vector3d(w/2, h/2, l/2));
+        vertices.push_back(math::Vector3d(-w/2, h/2, l/2));
+        vertices.push_back(math::Vector3d(-w/2, h/2, -l/2));
+        vertices.push_back(math::Vector3d(w/2, h/2, -l/2));
+        vertices.push_back(math::Vector3d(w/2, -h/2, l/2));
+        vertices.push_back(math::Vector3d(-w/2, -h/2, l/2));
+        vertices.push_back(math::Vector3d(-w/2, -h/2, -l/2));
+        vertices.push_back(math::Vector3d(w/2, -h/2, -l/2));
+
+        // Transform
+        for (auto vertex : vertices)
+        {
+          vertex = this->orientation * vertex + this->center;
+        }
+
+        return vertices;
       }
     };
 

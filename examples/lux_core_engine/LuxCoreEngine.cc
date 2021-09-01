@@ -27,7 +27,9 @@
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseMaterial.hh"
-#include "LensTraceEngineRenderTypes.hh"
+#include "LuxCoreEngineRenderTypes.hh"
+
+#include "luxcore/luxcore.h"
 
 using namespace ignition;
 using namespace rendering;
@@ -40,45 +42,45 @@ namespace rendering
 
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-  class LensTraceEngineObject:
+  class LuxCoreEngineObject:
     public BaseObject
   {
-    protected: LensTraceEngineObject() {}
+    protected: LuxCoreEngineObject() {}
 
-    public: virtual ~LensTraceEngineObject() {}
+    public: virtual ~LuxCoreEngineObject() {}
     
     // This functions seems to be the issue, but for some reason i cant return this->scene
     public: virtual ScenePtr Scene() const
     {
       // line 59 triggers this, for some reason upclass casting does not work
-      // error: could not convert ‘((const ignition::rendering::v5::LensTraceEngineObject*)this)->
-      // ignition::rendering::v5::LensTraceEngineObject::scene’ 
-      // from ‘shared_ptr<ignition::rendering::v5::LensTraceEngineScene>’ to ‘shared_ptr<ignition::rendering::v5::Scene>’
+      // error: could not convert ‘((const ignition::rendering::v5::LuxCoreEngineObject*)this)->
+      // ignition::rendering::v5::LuxCoreEngineObject::scene’ 
+      // from ‘shared_ptr<ignition::rendering::v5::LuxCoreEngineScene>’ to ‘shared_ptr<ignition::rendering::v5::Scene>’
       // return this->scene;
       return nullptr;
     }
 
-    protected: LensTraceEngineScenePtr scene;
+    protected: LuxCoreEngineScenePtr scene;
 
-    private: friend class LensTraceEngineScene;
+    private: friend class LuxCoreEngineScene;
   };
 
-  class LensTraceEngineMaterial :
-    public BaseMaterial<LensTraceEngineObject>
+  class LuxCoreEngineMaterial :
+    public BaseMaterial<LuxCoreEngineObject>
   {
-    protected: LensTraceEngineMaterial() {}
+    protected: LuxCoreEngineMaterial() {}
 
-    public: virtual ~LensTraceEngineMaterial() {}
+    public: virtual ~LuxCoreEngineMaterial() {}
 
-    private: friend class LensTraceEngineScene;
+    private: friend class LuxCoreEngineScene;
   };
 
-  class LensTraceEngineRenderTarget :
-      public virtual BaseRenderTarget<LensTraceEngineObject>
+  class LuxCoreEngineRenderTarget :
+      public virtual BaseRenderTarget<LuxCoreEngineObject>
   {
-    protected: LensTraceEngineRenderTarget() : hostData(0) {}
+    protected: LuxCoreEngineRenderTarget() : hostDataBuffer(0) {}
 
-    public: virtual ~LensTraceEngineRenderTarget() {}
+    public: virtual ~LuxCoreEngineRenderTarget() {}
 
     public: virtual void Copy(Image &_image) const
     {
@@ -88,37 +90,41 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
         return;
       }
 
-      unsigned char *imageData = _image.Data<unsigned char>();
-
-      for (unsigned int y = 0; y < this->height; y++) {
-        for (unsigned int x = 0; x < this->width; x++) {
-          imageData[(3 * (y * width + x)) + 0] = 255;
-          imageData[(3 * (y * width + x)) + 1] = 155;
-          imageData[(3 * (y * width + x)) + 2] = 55;
-        }
+      if (this->hostDataBuffer == NULL)
+      {
+        ignerr << "Host buffer is NULL" << std::endl;
+        return;
       }
+
+      void *imageData = _image.Data<void>();
+      memcpy(imageData, this->hostDataBuffer, this->width * this->height * 3);
+    }
+
+    public: void *HostDataBuffer()
+    {
+      return this->hostDataBuffer;
+    }
+
+    public: void ResizeHostDataBuffer(unsigned int size)
+    {
+      this->hostDataBuffer = malloc(size);
     }
 
     protected: unsigned int MemorySize() const;
 
-    protected: virtual void RebuildImpl() 
-    {
-      delete this->hostData;
-      unsigned int count = this->width * this->height * 3;
-      this->hostData = new float[count];
-    }
+    protected: virtual void RebuildImpl() {}
 
-    protected: float *hostData;
+    protected: void *hostDataBuffer;
 
-    private: friend class LensTraceEngineCamera;
+    private: friend class LuxCoreEngineCamera;
   };
 
-  class LensTraceEngineNode :
-    public BaseNode<LensTraceEngineObject>
+  class LuxCoreEngineNode :
+    public BaseNode<LuxCoreEngineObject>
   {
-    protected: LensTraceEngineNode() {}
+    protected: LuxCoreEngineNode() {}
 
-    public: virtual ~LensTraceEngineNode() {}
+    public: virtual ~LuxCoreEngineNode() {}
 
     public: virtual bool HasParent() const override
     {
@@ -162,7 +168,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     protected: virtual void WritePoseToDeviceImpl() {}
 
-    protected: virtual void SetParent(LensTraceEngineNodePtr _parent) {}
+    protected: virtual void SetParent(LuxCoreEngineNodePtr _parent) {}
 
     protected: virtual void Init() {}
 
@@ -181,7 +187,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       return true;
     }
 
-    protected: LensTraceEngineNodePtr parent;
+    protected: LuxCoreEngineNodePtr parent;
 
     protected: math::Pose3d pose;
 
@@ -194,56 +200,94 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: bool inheritScale = true;
   };
 
-  class LensTraceEngineSensor :
-    public BaseSensor<LensTraceEngineNode>
+  class LuxCoreEngineSensor :
+    public BaseSensor<LuxCoreEngineNode>
   {
-    protected: LensTraceEngineSensor() {}
+    protected: LuxCoreEngineSensor() {}
 
-    public: virtual ~LensTraceEngineSensor() {}
+    public: virtual ~LuxCoreEngineSensor() {}
   };
 
-  class LensTraceEngineCamera :
-    public BaseCamera<LensTraceEngineSensor>
+  class LuxCoreEngineCamera :
+    public BaseCamera<LuxCoreEngineSensor>
   {
-    protected: LensTraceEngineCamera()
+    protected: LuxCoreEngineCamera()
     {
-      this->renderTarget = LensTraceEngineRenderTargetPtr(new LensTraceEngineRenderTarget);
+      this->renderTarget = LuxCoreEngineRenderTargetPtr(new LuxCoreEngineRenderTarget);
       this->renderTarget->SetFormat(PF_R8G8B8);
     };
 
-    public: virtual ~LensTraceEngineCamera() {};
+    public: virtual ~LuxCoreEngineCamera() {};
 
-    public: virtual void Render() {};
+    public: virtual void Render() 
+    {
+      this->renderSessionPtr->Start();
+      sleep(1);
+      this->renderSessionPtr->Stop();
+      luxcore::Film& film = this->renderSessionPtr->GetFilm();     
+      
+      float *luxcoreBuffer = (float*)malloc(film.GetWidth() * film.GetHeight() * 3 * sizeof(float));
+      film.GetOutput(luxcore::Film::OUTPUT_RGB_IMAGEPIPELINE, luxcoreBuffer); 
+ 
+      if (this->renderTarget->HostDataBuffer() == NULL) 
+      {
+        this->renderTarget->ResizeHostDataBuffer(this->ImageWidth() * this->ImageHeight() * 3);
+      }
 
-    public: virtual void Update() {};
+      unsigned char* buffer = (unsigned char*)this->renderTarget->HostDataBuffer();
+      for (unsigned int x = 0; x < this->ImageHeight() * this->ImageWidth() * 3; x++) {
+        buffer[x] = luxcoreBuffer[x] * 255;
+      }
+
+      free(luxcoreBuffer);
+    };
+
+    public: virtual void Update() 
+    {
+      this->Render();
+    };
 
     protected: virtual RenderTargetPtr RenderTarget() const 
     {
       return this->renderTarget;
     };
 
-    protected: LensTraceEngineRenderTargetPtr renderTarget;
+    protected: void SetRenderSession(luxcore::RenderSession *renderSessionPtr)
+    {
+      this->renderSessionPtr = renderSessionPtr;
+    };
 
-    private: friend class LensTraceEngineScene;
+    protected: LuxCoreEngineRenderTargetPtr renderTarget;
+
+    private: luxcore::RenderSession *renderSessionPtr;
+
+    private: friend class LuxCoreEngineScene;
   };
 
-  class LensTraceEngineScene :
+  class LuxCoreEngineScene :
     public BaseScene
   {
-    protected: LensTraceEngineScene(unsigned int _id, const std::string &_name) : BaseScene(_id, _name) 
+    protected: LuxCoreEngineScene(unsigned int _id, const std::string &_name) : BaseScene(_id, _name) 
     {
       this->id_ = _id;
       this->name_ = _name;
+
+      luxcore::Init();
+      luxrays::Properties props("scenes/luxball/luxball-hdr.cfg");
+      props.Set(luxrays::Property("renderengine.type")("PATHCPU"));
+
+      luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props);
+			this->renderSessionPtr = luxcore::RenderSession::Create(config);
     }
 
-    public: virtual ~LensTraceEngineScene() {}
+    public: virtual ~LuxCoreEngineScene() {}
 
     public: virtual void Fini() {}
 
     public: virtual RenderEngine *Engine() const 
     {
       ignerr << "engine() was called 246" << std::endl;
-      // return LensTraceEngineRenderEngine::Instance();
+      // return LuxCoreEngineRenderEngine::Instance();
       return nullptr;
     }
 
@@ -283,7 +327,8 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: virtual CameraPtr CreateCameraImpl(unsigned int _id,
                      const std::string &_name)
     {
-      LensTraceEngineCameraPtr camera(new LensTraceEngineCamera);
+      LuxCoreEngineCameraPtr camera(new LuxCoreEngineCamera);
+      camera->SetRenderSession(this->renderSessionPtr);
       bool result = this->InitObject(camera, _id, _name);
       return (result) ? camera : nullptr;
     }
@@ -394,7 +439,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name)
     {
-      LensTraceEngineMaterialPtr material(new LensTraceEngineMaterial);
+      LuxCoreEngineMaterialPtr material(new LuxCoreEngineMaterial);
       bool result = this->InitObject(material, _id, _name);
       return (result) ? material : nullptr;
     }
@@ -474,12 +519,12 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: void CreateStores()
     {
       // this->lights = OptixLightStorePtr(new OptixLightStore);
-      this->sensors = LensTraceEngineSensorStorePtr(new LensTraceEngineSensorStore);
+      this->sensors = LuxCoreEngineSensorStorePtr(new LuxCoreEngineSensorStore);
       // this->visuals = OptixVisualStorePtr(new OptixVisualStore);
-      this->materials = LensTraceEngineMaterialMapPtr(new LensTraceEngineMaterialMap);
+      this->materials = LuxCoreEngineMaterialMapPtr(new LuxCoreEngineMaterialMap);
     }
 
-    protected: bool InitObject(LensTraceEngineObjectPtr _object, unsigned int _id,
+    protected: bool InitObject(LuxCoreEngineObjectPtr _object, unsigned int _id,
     const std::string &_name)
     {
       // assign needed varibles
@@ -494,27 +539,29 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       return true;
     }
 
-    private: LensTraceEngineScenePtr SharedThis()
+    private: LuxCoreEngineScenePtr SharedThis()
     {
       ScenePtr sharedBase = this->shared_from_this();
-      return std::dynamic_pointer_cast<LensTraceEngineScene>(sharedBase);
+      return std::dynamic_pointer_cast<LuxCoreEngineScene>(sharedBase);
     }
+
+    protected: luxcore::RenderSession *renderSessionPtr;
 
     protected: unsigned int id_;
     protected: std::string name_;
 
-    protected: LensTraceEngineMaterialMapPtr materials;
-    protected: LensTraceEngineSensorStorePtr sensors;
+    protected: LuxCoreEngineMaterialMapPtr materials;
+    protected: LuxCoreEngineSensorStorePtr sensors;
 
-    private: friend class LensTraceEngineRenderEngine;
+    private: friend class LuxCoreEngineRenderEngine;
 
   };
 
 
   /// \brief The render engine class which implements a render engine.
-  class LensTraceEngineRenderEngine :
+  class LuxCoreEngineRenderEngine :
     public virtual BaseRenderEngine,
-    public common::SingletonT<LensTraceEngineRenderEngine>
+    public common::SingletonT<LuxCoreEngineRenderEngine>
   {
     // Documentation Inherited.
     public: virtual bool IsEnabled() const override
@@ -525,7 +572,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     // Documentation Inherited.
     public: virtual std::string Name() const override
     {
-      return "LensTraceEngineRenderEngine";
+      return "LuxCoreEngineRenderEngine";
     }
 
     // Documentation Inherited.
@@ -539,7 +586,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \return True if the operation is successful
     protected: virtual bool InitImpl() override
     {
-      this->scenes = LensTraceEngineSceneStorePtr(new LensTraceEngineSceneStore);
+      this->scenes = LuxCoreEngineSceneStorePtr(new LuxCoreEngineSceneStore);
       return true;
     }
 
@@ -559,32 +606,32 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
                    CreateSceneImpl(unsigned int _id,
                    const std::string &_name) override
     {
-      auto scene = LensTraceEngineScenePtr(new LensTraceEngineScene(_id, _name));
+      auto scene = LuxCoreEngineScenePtr(new LuxCoreEngineScene(_id, _name));
       this->scenes->Add(scene);
       return scene;
     }
 
     /// \brief Singelton setup.
-    private: friend class common::SingletonT<LensTraceEngineRenderEngine>;
-    private: LensTraceEngineSceneStorePtr scenes;
+    private: friend class common::SingletonT<LuxCoreEngineRenderEngine>;
+    private: LuxCoreEngineSceneStorePtr scenes;
   };
 
   /// \brief Plugin for loading the HelloWorld render engine.
-  class LensTraceEnginePlugin :
+  class LuxCoreEnginePlugin :
     public RenderEnginePlugin
   {
     /// \brief Get the name of the render engine loaded by this plugin.
     /// \return Name of render engine
     public: std::string Name() const override
     {
-      return LensTraceEngineRenderEngine::Instance()->Name();
+      return LuxCoreEngineRenderEngine::Instance()->Name();
     }
 
     /// \brief Get a pointer to the render engine loaded by this plugin.
     /// \return Render engine instance
     public: RenderEngine *Engine() const override
     {
-      return LensTraceEngineRenderEngine::Instance();
+      return LuxCoreEngineRenderEngine::Instance();
     }
   };
 
@@ -595,5 +642,5 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::LensTraceEnginePlugin,
+IGNITION_ADD_PLUGIN(ignition::rendering::LuxCoreEnginePlugin,
                     ignition::rendering::RenderEnginePlugin)

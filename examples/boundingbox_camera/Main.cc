@@ -210,7 +210,7 @@ void buildScene(ScenePtr _scene)
   boundingboxCamera->SetHFOV(camera->HFOV());
   boundingboxCamera->SetNearClipPlane(camera->NearClipPlane());
   boundingboxCamera->SetFarClipPlane(camera->FarClipPlane());
-  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::BBT_BOX3D);
+  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::BBT_VISIBLEBOX2D);
   root->AddChild(boundingboxCamera);
 }
 

@@ -27,7 +27,9 @@
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseMaterial.hh"
-#include "CustomRenderEngineRenderTypes.hh"
+#include "ProRenderEngineRenderTypes.hh"
+
+#include "RadeonProRender.h"
 
 using namespace ignition;
 using namespace rendering;
@@ -40,45 +42,45 @@ namespace rendering
 
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-  class CustomRenderEngineObject:
+  class ProRenderEngineObject:
     public BaseObject
   {
-    protected: CustomRenderEngineObject() {}
+    protected: ProRenderEngineObject() {}
 
-    public: virtual ~CustomRenderEngineObject() {}
+    public: virtual ~ProRenderEngineObject() {}
     
     // This functions seems to be the issue, but for some reason i cant return this->scene
     public: virtual ScenePtr Scene() const
     {
       // line 59 triggers this, for some reason upclass casting does not work
-      // error: could not convert ‘((const ignition::rendering::v5::CustomRenderEngineObject*)this)->
-      // ignition::rendering::v5::CustomRenderEngineObject::scene’ 
-      // from ‘shared_ptr<ignition::rendering::v5::CustomRenderEngineScene>’ to ‘shared_ptr<ignition::rendering::v5::Scene>’
+      // error: could not convert ‘((const ignition::rendering::v5::ProRenderEngineObject*)this)->
+      // ignition::rendering::v5::ProRenderEngineObject::scene’ 
+      // from ‘shared_ptr<ignition::rendering::v5::ProRenderEngineScene>’ to ‘shared_ptr<ignition::rendering::v5::Scene>’
       // return this->scene;
       return nullptr;
     }
 
-    protected: CustomRenderEngineScenePtr scene;
+    protected: ProRenderEngineScenePtr scene;
 
-    private: friend class CustomRenderEngineScene;
+    private: friend class ProRenderEngineScene;
   };
 
-  class CustomRenderEngineMaterial :
-    public BaseMaterial<CustomRenderEngineObject>
+  class ProRenderEngineMaterial :
+    public BaseMaterial<ProRenderEngineObject>
   {
-    protected: CustomRenderEngineMaterial() {}
+    protected: ProRenderEngineMaterial() {}
 
-    public: virtual ~CustomRenderEngineMaterial() {}
+    public: virtual ~ProRenderEngineMaterial() {}
 
-    private: friend class CustomRenderEngineScene;
+    private: friend class ProRenderEngineScene;
   };
 
-  class CustomRenderEngineRenderTarget :
-      public virtual BaseRenderTarget<CustomRenderEngineObject>
+  class ProRenderEngineRenderTarget :
+      public virtual BaseRenderTarget<ProRenderEngineObject>
   {
-    protected: CustomRenderEngineRenderTarget() : hostData(0) {}
+    protected: ProRenderEngineRenderTarget() : hostData(0) {}
 
-    public: virtual ~CustomRenderEngineRenderTarget() {}
+    public: virtual ~ProRenderEngineRenderTarget() {}
 
     public: virtual void Copy(Image &_image) const
     {
@@ -110,15 +112,15 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     protected: float *hostData;
 
-    private: friend class CustomRenderEngineCamera;
+    private: friend class ProRenderEngineCamera;
   };
 
-  class CustomRenderEngineNode :
-    public BaseNode<CustomRenderEngineObject>
+  class ProRenderEngineNode :
+    public BaseNode<ProRenderEngineObject>
   {
-    protected: CustomRenderEngineNode() {}
+    protected: ProRenderEngineNode() {}
 
-    public: virtual ~CustomRenderEngineNode() {}
+    public: virtual ~ProRenderEngineNode() {}
 
     public: virtual bool HasParent() const override
     {
@@ -162,7 +164,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     protected: virtual void WritePoseToDeviceImpl() {}
 
-    protected: virtual void SetParent(CustomRenderEngineNodePtr _parent) {}
+    protected: virtual void SetParent(ProRenderEngineNodePtr _parent) {}
 
     protected: virtual void Init() {}
 
@@ -181,7 +183,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       return true;
     }
 
-    protected: CustomRenderEngineNodePtr parent;
+    protected: ProRenderEngineNodePtr parent;
 
     protected: math::Pose3d pose;
 
@@ -194,24 +196,24 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: bool inheritScale = true;
   };
 
-  class CustomRenderEngineSensor :
-    public BaseSensor<CustomRenderEngineNode>
+  class ProRenderEngineSensor :
+    public BaseSensor<ProRenderEngineNode>
   {
-    protected: CustomRenderEngineSensor() {}
+    protected: ProRenderEngineSensor() {}
 
-    public: virtual ~CustomRenderEngineSensor() {}
+    public: virtual ~ProRenderEngineSensor() {}
   };
 
-  class CustomRenderEngineCamera :
-    public BaseCamera<CustomRenderEngineSensor>
+  class ProRenderEngineCamera :
+    public BaseCamera<ProRenderEngineSensor>
   {
-    protected: CustomRenderEngineCamera()
+    protected: ProRenderEngineCamera()
     {
-      this->renderTarget = CustomRenderEngineRenderTargetPtr(new CustomRenderEngineRenderTarget);
+      this->renderTarget = ProRenderEngineRenderTargetPtr(new ProRenderEngineRenderTarget);
       this->renderTarget->SetFormat(PF_R8G8B8);
     };
 
-    public: virtual ~CustomRenderEngineCamera() {};
+    public: virtual ~ProRenderEngineCamera() {};
 
     public: virtual void Render() {};
 
@@ -222,28 +224,28 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       return this->renderTarget;
     };
 
-    protected: CustomRenderEngineRenderTargetPtr renderTarget;
+    protected: ProRenderEngineRenderTargetPtr renderTarget;
 
-    private: friend class CustomRenderEngineScene;
+    private: friend class ProRenderEngineScene;
   };
 
-  class CustomRenderEngineScene :
+  class ProRenderEngineScene :
     public BaseScene
   {
-    protected: CustomRenderEngineScene(unsigned int _id, const std::string &_name) : BaseScene(_id, _name) 
+    protected: ProRenderEngineScene(unsigned int _id, const std::string &_name) : BaseScene(_id, _name) 
     {
       this->id_ = _id;
       this->name_ = _name;
     }
 
-    public: virtual ~CustomRenderEngineScene() {}
+    public: virtual ~ProRenderEngineScene() {}
 
     public: virtual void Fini() {}
 
     public: virtual RenderEngine *Engine() const 
     {
       ignerr << "engine() was called 246" << std::endl;
-      // return CustomRenderEngineRenderEngine::Instance();
+      // return ProRenderEngineRenderEngine::Instance();
       return nullptr;
     }
 
@@ -283,7 +285,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: virtual CameraPtr CreateCameraImpl(unsigned int _id,
                      const std::string &_name)
     {
-      CustomRenderEngineCameraPtr camera(new CustomRenderEngineCamera);
+      ProRenderEngineCameraPtr camera(new ProRenderEngineCamera);
       bool result = this->InitObject(camera, _id, _name);
       return (result) ? camera : nullptr;
     }
@@ -394,7 +396,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
                      const std::string &_name)
     {
-      CustomRenderEngineMaterialPtr material(new CustomRenderEngineMaterial);
+      ProRenderEngineMaterialPtr material(new ProRenderEngineMaterial);
       bool result = this->InitObject(material, _id, _name);
       return (result) ? material : nullptr;
     }
@@ -474,12 +476,12 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: void CreateStores()
     {
       // this->lights = OptixLightStorePtr(new OptixLightStore);
-      this->sensors = CustomRenderEngineSensorStorePtr(new CustomRenderEngineSensorStore);
+      this->sensors = ProRenderEngineSensorStorePtr(new ProRenderEngineSensorStore);
       // this->visuals = OptixVisualStorePtr(new OptixVisualStore);
-      this->materials = CustomRenderEngineMaterialMapPtr(new CustomRenderEngineMaterialMap);
+      this->materials = ProRenderEngineMaterialMapPtr(new ProRenderEngineMaterialMap);
     }
 
-    protected: bool InitObject(CustomRenderEngineObjectPtr _object, unsigned int _id,
+    protected: bool InitObject(ProRenderEngineObjectPtr _object, unsigned int _id,
     const std::string &_name)
     {
       // assign needed varibles
@@ -494,27 +496,27 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       return true;
     }
 
-    private: CustomRenderEngineScenePtr SharedThis()
+    private: ProRenderEngineScenePtr SharedThis()
     {
       ScenePtr sharedBase = this->shared_from_this();
-      return std::dynamic_pointer_cast<CustomRenderEngineScene>(sharedBase);
+      return std::dynamic_pointer_cast<ProRenderEngineScene>(sharedBase);
     }
 
     protected: unsigned int id_;
     protected: std::string name_;
 
-    protected: CustomRenderEngineMaterialMapPtr materials;
-    protected: CustomRenderEngineSensorStorePtr sensors;
+    protected: ProRenderEngineMaterialMapPtr materials;
+    protected: ProRenderEngineSensorStorePtr sensors;
 
-    private: friend class CustomRenderEngineRenderEngine;
+    private: friend class ProRenderEngineRenderEngine;
 
   };
 
 
   /// \brief The render engine class which implements a render engine.
-  class CustomRenderEngineRenderEngine :
+  class ProRenderEngineRenderEngine :
     public virtual BaseRenderEngine,
-    public common::SingletonT<CustomRenderEngineRenderEngine>
+    public common::SingletonT<ProRenderEngineRenderEngine>
   {
     // Documentation Inherited.
     public: virtual bool IsEnabled() const override
@@ -525,7 +527,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     // Documentation Inherited.
     public: virtual std::string Name() const override
     {
-      return "CustomRenderEngineRenderEngine";
+      return "ProRenderEngineRenderEngine";
     }
 
     // Documentation Inherited.
@@ -539,7 +541,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \return True if the operation is successful
     protected: virtual bool InitImpl() override
     {
-      this->scenes = CustomRenderEngineSceneStorePtr(new CustomRenderEngineSceneStore);
+      this->scenes = ProRenderEngineSceneStorePtr(new ProRenderEngineSceneStore);
       return true;
     }
 
@@ -559,32 +561,43 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
                    CreateSceneImpl(unsigned int _id,
                    const std::string &_name) override
     {
-      auto scene = CustomRenderEngineScenePtr(new CustomRenderEngineScene(_id, _name));
+      rpr_int tahoePluginID = rprRegisterPlugin("./libTahoe64.so"); 
+      assert(tahoePluginID != -1);
+      
+      rpr_int plugins[] = { tahoePluginID };
+	    size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
+
+      rpr_context context = NULL;
+	    rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0, NULL, NULL, &context);
+
+	    rprContextSetActivePlugin(context, plugins[0]);
+
+      auto scene = ProRenderEngineScenePtr(new ProRenderEngineScene(_id, _name));
       this->scenes->Add(scene);
       return scene;
     }
 
     /// \brief Singelton setup.
-    private: friend class common::SingletonT<CustomRenderEngineRenderEngine>;
-    private: CustomRenderEngineSceneStorePtr scenes;
+    private: friend class common::SingletonT<ProRenderEngineRenderEngine>;
+    private: ProRenderEngineSceneStorePtr scenes;
   };
 
   /// \brief Plugin for loading the HelloWorld render engine.
-  class CustomRenderEnginePlugin :
+  class ProRenderEnginePlugin :
     public RenderEnginePlugin
   {
     /// \brief Get the name of the render engine loaded by this plugin.
     /// \return Name of render engine
     public: std::string Name() const override
     {
-      return CustomRenderEngineRenderEngine::Instance()->Name();
+      return ProRenderEngineRenderEngine::Instance()->Name();
     }
 
     /// \brief Get a pointer to the render engine loaded by this plugin.
     /// \return Render engine instance
     public: RenderEngine *Engine() const override
     {
-      return CustomRenderEngineRenderEngine::Instance();
+      return ProRenderEngineRenderEngine::Instance();
     }
   };
 
@@ -595,5 +608,5 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::CustomRenderEnginePlugin,
+IGNITION_ADD_PLUGIN(ignition::rendering::ProRenderEnginePlugin,
                     ignition::rendering::RenderEnginePlugin)

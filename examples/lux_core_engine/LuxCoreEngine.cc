@@ -222,7 +222,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     public: virtual void Render() 
     {
       this->renderSessionPtr->Start();
-      sleep(1);
+      usleep(500000);
       this->renderSessionPtr->Stop();
       luxcore::Film& film = this->renderSessionPtr->GetFilm();     
       
@@ -235,9 +235,16 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       }
 
       unsigned char* buffer = (unsigned char*)this->renderTarget->HostDataBuffer();
-      for (unsigned int x = 0; x < this->ImageHeight() * this->ImageWidth() * 3; x++) {
-        buffer[x] = luxcoreBuffer[x] * 255;
-      }
+      // for (unsigned int y = 0; y < this->ImageHeight(); y++) {
+      //   for (unsigned int x = 0; x < this->ImageWidth(); x++) {
+      //     buffer[(3 * (y * this->ImageWidth() + x)) + 0] = luxcoreBuffer[(3 * (y * this->ImageWidth() + x)) + 0] * 255.0;
+      //     buffer[(3 * (y * this->ImageWidth() + x)) + 1] = luxcoreBuffer[(3 * (y * this->ImageWidth() + x)) + 1] * 255.0;
+      //     buffer[(3 * (y * this->ImageWidth() + x)) + 2] = luxcoreBuffer[(3 * (y * this->ImageWidth() + x)) + 2] * 255.0;
+      //   }
+      // }
+      // for (unsigned int x = 0; x < this->ImageHeight() * this->ImageWidth() * 3; x++) {
+      //   buffer[x] = luxcoreBuffer[x] * 255;
+      // }
 
       free(luxcoreBuffer);
     };

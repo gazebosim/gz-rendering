@@ -23,6 +23,12 @@
   #include <windows.h>
 #endif
 
+#if defined(__APPLE__)
+  #include <OpenGL/gl.h>
+#elif not defined(_WIN32)
+  #include <GL/gl.h>
+#endif
+
 #include <math.h>
 #include <ignition/math/Helpers.hh>
 
@@ -944,6 +950,10 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Render()
 {
+  // GL_DEPTH_CLAMP was disabled in later version of ogre2.2
+  // however our shaders rely on clamped values so enable it for this sensor
+  glEnable(GL_DEPTH_CLAMP);
+
   this->scene->StartRendering();
 
   // update the compositors
@@ -957,6 +967,8 @@ void Ogre2DepthCamera::Render()
   this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
 
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
+
+  glDisable(GL_DEPTH_CLAMP);
 }
 
 //////////////////////////////////////////////////

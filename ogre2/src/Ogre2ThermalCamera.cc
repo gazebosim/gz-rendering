@@ -23,6 +23,12 @@
   #include <windows.h>
 #endif
 
+#if defined(__APPLE__)
+  #include <OpenGL/gl.h>
+#elif not defined(_WIN32)
+  #include <GL/gl.h>
+#endif
+
 #include <math.h>
 
 #include <algorithm>
@@ -826,6 +832,10 @@ void Ogre2ThermalCamera::CreateThermalTexture()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::Render()
 {
+  // GL_DEPTH_CLAMP is disabled in later version of ogre2.2
+  // however our shaders rely on clamped values so enable it for this sensor
+  glEnable(GL_DEPTH_CLAMP);
+
   // update the compositors
   this->scene->StartRendering();
 
@@ -839,6 +849,8 @@ void Ogre2ThermalCamera::Render()
   this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
 
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
+
+  glEnable(GL_DEPTH_CLAMP);
 }
 
 //////////////////////////////////////////////////

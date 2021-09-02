@@ -139,10 +139,10 @@ namespace ignition
       public: virtual LidarVisualType Type() const override;
 
       // Documentation inherited
-      public: virtual void SetSize(double _size);
+      public: virtual void SetSize(double _size) override;
 
       // Documentation inherited
-      public: virtual double Size() const;
+      public: virtual double Size() const override;
 
       /// \brief Create predefined materials for lidar visual
       public: virtual void CreateMaterials();

@@ -72,6 +72,16 @@ namespace ignition
 
       std::vector<math::Vector3d> Vertices() const
       {
+        /*
+            1 -------- 0
+           /|         /|
+          2 -------- 3 .
+          | |        | |
+          . 5 -------- 4
+          |/         |/
+          6 -------- 7
+        */
+
         std::vector<math::Vector3d> vertices;
         auto w = size.X();
         auto h = size.Y();
@@ -88,7 +98,7 @@ namespace ignition
         vertices.push_back(math::Vector3d(w/2, -h/2, -l/2));
 
         // Transform
-        for (auto vertex : vertices)
+        for (auto &vertex : vertices)
         {
           vertex = this->orientation * vertex + this->center;
         }

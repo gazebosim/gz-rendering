@@ -824,6 +824,7 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
 
     // Position in world coord
     Ogre::Vector3 position = worldAabb.getCenter();
+
     // Position in camera coord
     Ogre::Vector3 viewPosition = viewMatrix * position;
 
@@ -1126,36 +1127,139 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
 }
 
 /////////////////////////////////////////////////
+void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
+  const math::Vector2i _point1, const math::Vector2i _point2)
+{
+  int x0, y0, x1, y1;
+
+  // Check if the line is close to a vertical or horizontal line
+  if (std::abs(_point2.Y() - _point1.Y())
+    < std::abs(_point2.X() - _point1.X()))
+  {
+    if (_point1.X() < _point2.X())
+    {
+      x0 = _point1.X();
+      y0 = _point1.Y();
+      x1 = _point2.X();
+      y1 = _point2.Y();
+    }
+    else
+    {
+      x0 = _point2.X();
+      y0 = _point2.Y();
+      x1 = _point1.X();
+      y1 = _point1.Y();
+    }
+    auto dx = x1 - x0;
+    auto dy = y1 - y0;
+    auto yi = 1;
+    if (dy < 0)
+    {
+      yi = -1;
+      dy = -dy;
+    }
+    auto D = 2 * dy - dx;
+    auto y = y0;
+
+    for (int x = x0; x < x1; x++)
+    {
+      // Plot the point
+      auto index = (y * this->ImageWidth() + x) * 3;
+      _data[index] = 0;
+      _data[index + 1] = 255;
+      _data[index + 2] = 0;
+
+      if (D > 0)
+      {
+        y += yi;
+        D += (2 * (dy - dx));
+      }
+      else
+      {
+        D += (2 * dy);
+      }
+    }
+  }
+  else
+  {
+    if (_point1.Y() < _point2.Y())
+    {
+      x0 = _point1.X();
+      y0 = _point1.Y();
+      x1 = _point2.X();
+      y1 = _point2.Y();
+    }
+    else
+    {
+      x0 = _point2.X();
+      y0 = _point2.Y();
+      x1 = _point1.X();
+      y1 = _point1.Y();
+    }
+    auto dx = x1 - x0;
+    auto dy = y1 - y0;
+    auto xi = 1;
+    if (dx < 0)
+    {
+      xi = -1;
+      dx = -dx;
+    }
+    auto D = 2 * dx - dy;
+    auto x = x0;
+
+    for (int y = y0; y < y1; y++)
+    {
+      // Plot the point
+      auto index = (y * this->ImageWidth() + x) * 3;
+      _data[index] = 0;
+      _data[index + 1] = 255;
+      _data[index + 2] = 0;
+
+      if (D > 0)
+      {
+        x += xi;
+        D += (2 * (dx - dy));
+      }
+      else
+      {
+        D += (2 * dx);
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::DrawBoundingBox(
   unsigned char *_data, const BoundingBox &_box)
 {
   // 3D box
   if (_box.type == BoundingBoxType::BBT_BOX3D)
   {
-    // TODO(Amr) draw 3D box on the image
-
-    // Get the 3D vertices from the BoundingBox(size, center, orientation)
+    // Get the 3D vertices of the box in 3D camera coord.
     auto vertices = _box.Vertices();
 
-    // Project the 3D vertices to 2D vertices in clip coord[-1,1]
+    // Project the 3D vertices in 3D camera coord
+    // to 2D vertices in clip coord[-1,1]
     auto projMatrix = this->ogreCamera->getProjectionMatrix();
-    for (auto vertex : vertices)
+    for (auto &vertex : vertices)
     {
       // Convert to homogeneous coord.
-      auto homoVertex = Ogre::Vector4(Ogre2Conversions::Convert(vertex));
-      homoVertex.w = 1;
+      auto homoVertex =
+        Ogre::Vector4(vertex.X(), vertex.Y(), vertex.Z(), 1);
 
       auto projVertex = projMatrix * homoVertex;
       projVertex.x /= projVertex.w;
-      projVertex.y = projVertex.y / projVertex.w;
+      projVertex.y /= projVertex.w;
 
       vertex = math::Vector3d(projVertex.x, projVertex.y, projVertex.z);
     }
 
-    // Convert To screen Coordinates
+    std::vector<math::Vector2i> projVertices;
+
+    // Convert To screen coord.
     uint32_t width = this->ImageWidth();
     uint32_t height = this->ImageHeight();
-    for (auto vertex : vertices)
+    for (auto &vertex : vertices)
     {
       // clip the values outside the frustum range [-1, 1]
       vertex.X() = std::clamp<double>(vertex.X(), -1.0, 1.0);
@@ -1164,10 +1268,55 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
       // convert from [-1, 1] range to [0, 1] range & to the screen range
       vertex.X() = uint32_t((vertex.X() + 1.0) / 2 * width );
       vertex.Y() = uint32_t((1.0 - vertex.Y()) / 2 * height);
+
+      vertex.X() = std::max<uint32_t>(0, vertex.X());
+      vertex.Y() = std::max<uint32_t>(0, vertex.Y());
+      vertex.X() = std::min<uint32_t>(vertex.X(), width - 1);
+      vertex.Y() = std::min<uint32_t>(vertex.Y(), height - 1);
+
+      projVertices.push_back(math::Vector2i(vertex.X(), vertex.Y()));
     }
 
-    // for each projected vertex
-    //    get its index in the data buffer and draw a point
+    // // Uncomment to debug the projected 2D points of the 3D box
+    // for (auto &vertex : vertices)
+    // {
+    //   auto index = static_cast<uint32_t>(
+    //     (vertex.Y() * width + vertex.X()) * 3);
+    //   _data[index] = 0;
+    //   _data[index + 1] = 255;
+    //   _data[index + 2] = 0;
+    // }
+    // return;
+
+    /* Draw every line in the 3D box according to that structure
+
+        1 -------- 0
+        /|         /|
+      2 -------- 3 .
+      | |        | |
+      . 5 -------- 4
+      |/         |/
+      6 -------- 7
+    */
+
+    // Upper rectangle
+    this->DrawLine(_data, projVertices[0], projVertices[1]);
+    this->DrawLine(_data, projVertices[1], projVertices[2]);
+    this->DrawLine(_data, projVertices[2], projVertices[3]);
+    this->DrawLine(_data, projVertices[3], projVertices[0]);
+
+    // Lower rectangle
+    this->DrawLine(_data, projVertices[4], projVertices[5]);
+    this->DrawLine(_data, projVertices[5], projVertices[6]);
+    this->DrawLine(_data, projVertices[6], projVertices[7]);
+    this->DrawLine(_data, projVertices[7], projVertices[4]);
+
+    // Pillars
+    this->DrawLine(_data, projVertices[0], projVertices[4]);
+    this->DrawLine(_data, projVertices[1], projVertices[5]);
+    this->DrawLine(_data, projVertices[2], projVertices[6]);
+    this->DrawLine(_data, projVertices[3], projVertices[7]);
+
     return;
   }
 

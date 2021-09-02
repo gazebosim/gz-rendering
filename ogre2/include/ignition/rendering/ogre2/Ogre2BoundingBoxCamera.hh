@@ -146,6 +146,14 @@ namespace ignition
       public: virtual void DrawBoundingBox(unsigned char *_data,
         const BoundingBox &_box) override;
 
+      /// \brief Draw line between any 2 points in the image data buffer
+      /// Algorithm: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+      /// \param[in] _data buffer contains the image data
+      /// \param[in] _point1 The 1st 2D point in screen coordinates
+      /// \param[in] _point1 The 2nd 2D point in screen coordinates
+      public: virtual void DrawLine(unsigned char *_data,
+        const math::Vector2i _point1, const math::Vector2i _point2);
+
       /// \brief Convert from clip coord (after projection) to screen coord.
       /// \param[inout] minVertex min vertex in clip coord to screen coord
       /// \param[inout] maxVertex max vertex in clip coord to screen coord

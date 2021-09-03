@@ -17,6 +17,7 @@
 
 #if defined(__APPLE__)
   #include <OpenGL/gl.h>
+  #include <OpenGL/glext.h>
 #elif not defined(_WIN32)
   #include <GL/gl.h>
 #endif

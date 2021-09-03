@@ -29,6 +29,7 @@
 #ifndef _WIN32
   #include <GL/gl.h>
 #endif
+#endif
 
 #include <math.h>
 

@@ -15,12 +15,14 @@
  *
  */
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
   #define GL_SILENCE_DEPRECATION
   #include <OpenGL/gl.h>
   #include <OpenGL/glext.h>
-#elif not defined(_WIN32)
+#else
+#ifndef _WIN32
   #include <GL/gl.h>
+#endif
 #endif
 
 #include <ignition/common/Console.hh>
@@ -149,10 +151,12 @@ void Ogre2LidarVisual::Init()
 void Ogre2LidarVisual::Create()
 {
   // enable GL_PROGRAM_POINT_SIZE so we can set gl_PointSize in vertex shader
-#if defined(__APPLE__)
+#ifdef __APPLE__
   glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-#elif not defined(_WIN32)
+#else
+#ifndef _WIN32
   glEnable(GL_PROGRAM_POINT_SIZE);
+#endif
 #endif
   this->dataPtr->pointsMat =
       Ogre::MaterialManager::getSingleton().getByName(

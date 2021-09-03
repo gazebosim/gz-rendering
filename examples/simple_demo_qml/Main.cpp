@@ -33,7 +33,7 @@ int main(int _argc, char** _argv)
         QSurfaceFormat::setDefaultFormat(format);
         RenderThread::Print(format);
 
-        qmlRegisterType<ThreadRenderer>("IgnitionRendering", 1, 0, "Renderer");
+        qmlRegisterType<ThreadRenderer>("IgnitionRendering", 1, 0, "ThreadRenderer");
 
         QGuiApplication app(_argc, _argv);
 

@@ -5,7 +5,7 @@ Item {
     width: 800
     height: 600
 
-    Renderer {
+    ThreadRenderer {
         id: renderer
         anchors.fill: parent
         anchors.margins: 10

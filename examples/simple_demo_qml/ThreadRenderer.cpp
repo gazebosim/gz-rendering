@@ -380,7 +380,8 @@ QSGNode *ThreadRenderer::updatePaintNode(QSGNode *_oldNode, UpdatePaintNodeData 
         this->renderThread->context->setShareContext(current);
         this->renderThread->context->create();
 
-        QMetaObject::invokeMethod(this, "Ready");
+        // QMetaObject::invokeMethod(this, "Ready");
+        this->Ready();
 
         current->makeCurrent(window());
 

@@ -149,7 +149,8 @@ void Ogre2LidarVisual::Create()
 {
   // enable GL_PROGRAM_POINT_SIZE so we can set gl_PointSize in vertex shader
 #if defined(__APPLE__)
-  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE_ARB);
+  #define GL_SILENCE_DEPRECATION
+  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 #else
   glEnable(GL_PROGRAM_POINT_SIZE);
 #endif

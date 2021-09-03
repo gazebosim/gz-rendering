@@ -33,11 +33,11 @@ namespace ignition
     enum class SegmentationType {
       /// \brief Pixels of same label from different items
       /// have the same color & id.
-      SEMANTIC = 0,
+      ST_SEMANTIC = 0,
 
       /// \brief Pixels of same label from different items, have different
       /// color & id. 1 channel for label id & 2 channels for instance id
-      PANOPTIC = 1
+      ST_PANOPTIC = 1
     };
 
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
@@ -75,7 +75,7 @@ namespace ignition
 
       /// \brief Get Segmentation Type
       /// \return Segmentation Type
-      public: virtual SegmentationType GetSegmentationType() = 0;
+      public: virtual SegmentationType Type() const = 0;
 
       /// \brief Enable Color map mode to generate colored semantics
       /// \param[in] _enable True to generate colored map, False to generate
@@ -84,7 +84,7 @@ namespace ignition
 
       /// \brief Enable Color map mode to generate colored semantics
       /// \return True if colored map, False if label id map
-      public: virtual bool IsColoredMap() = 0;
+      public: virtual bool IsColoredMap() const = 0;
 
       /// \brief Set color for background & unlabeled items in the colored map
       /// \param[in] _color Color of background & unlabeled items
@@ -96,7 +96,7 @@ namespace ignition
 
       /// \brief Get color for background & unlabeled items in the colored map
       /// \return Color of background & unlabeled items
-      public: virtual const math::Color &BackgroundColor() const = 0;
+      public: virtual math::Color BackgroundColor() const = 0;
 
       /// \brief Get label for background & unlabeled items in the semantic map
       /// \return label of background & unlabeled items

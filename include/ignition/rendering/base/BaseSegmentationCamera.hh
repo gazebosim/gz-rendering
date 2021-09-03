@@ -43,43 +43,45 @@ namespace ignition
       public: virtual ~BaseSegmentationCamera();
 
       // Documentation inherited
-      public: virtual void CreateSegmentationTexture();
+      public: virtual void CreateSegmentationTexture() override;
 
       // Documentation inherited
-      public: virtual uint8_t *SegmentationData() const;
+      public: virtual uint8_t *SegmentationData() const override;
 
       // Documentation inherited
       public: virtual ignition::common::ConnectionPtr
         ConnectNewSegmentationFrame(
           std::function<void(const uint8_t *, unsigned int, unsigned int,
-          unsigned int, const std::string &)>  _subscriber);
+          unsigned int, const std::string &)>  _subscriber) override;
 
       // Documentation inherited
-      public: virtual void SetSegmentationType(SegmentationType _type);
+      public: virtual void SetSegmentationType(
+        SegmentationType _type) override;
 
       // Documentation inherited
-      public: virtual SegmentationType GetSegmentationType();
+      public: virtual SegmentationType Type() const override;
 
       // Documentation inherited
-      public: virtual void EnableColoredMap(bool _enable);
+      public: virtual void EnableColoredMap(bool _enable) override;
 
       // Documentation inherited
-      public: virtual bool IsColoredMap();
+      public: virtual bool IsColoredMap() const override;
 
       // Documentation inherited
-      public: virtual void SetBackgroundColor(math::Color _color);
+      public: virtual void SetBackgroundColor(
+        const math::Color &_color) override;
 
       // Documentation inherited
-      public: virtual void SetBackgroundLabel(int _label);
+      public: virtual void SetBackgroundLabel(int _label) override;
 
       // Documentation inherited
-      public: virtual math::Color BackgroundColor();
+      public: virtual math::Color BackgroundColor() const override;
 
       // Documentation inherited
-      public: virtual int BackgroundLabel();
+      public: virtual int BackgroundLabel() const override;
 
       // Documentation inherited
-      public: void LabelMapFromColoredBuffer(uint8_t *) const;
+      public: void LabelMapFromColoredBuffer(uint8_t *) const override;
     };
 
     //////////////////////////////////////////////////
@@ -138,21 +140,21 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    SegmentationType BaseSegmentationCamera<T>::GetSegmentationType()
+    SegmentationType BaseSegmentationCamera<T>::Type() const
     {
-      return SegmentationType::SEMANTIC;
+      return SegmentationType::ST_SEMANTIC;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    bool BaseSegmentationCamera<T>::IsColoredMap()
+    bool BaseSegmentationCamera<T>::IsColoredMap() const
     {
       return false;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseSegmentationCamera<T>::SetBackgroundColor(math::Color)
+    void BaseSegmentationCamera<T>::SetBackgroundColor(const math::Color&)
     {
     }
 
@@ -164,14 +166,14 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    math::Color BaseSegmentationCamera<T>::BackgroundColor()
+    math::Color BaseSegmentationCamera<T>::BackgroundColor() const
     {
       return math::Color();
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    int BaseSegmentationCamera<T>::BackgroundLabel()
+    int BaseSegmentationCamera<T>::BackgroundLabel() const
     {
       return 0;
     }

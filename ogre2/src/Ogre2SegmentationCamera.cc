@@ -63,7 +63,8 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   public: virtual void postRenderTargetUpdate(
               const Ogre::RenderTargetEvent &_evt) override;
 
-  /// \brief Convert label of semantic map to a unique color for colored map
+  /// \brief Convert label of semantic map to a unique color for colored map,
+  /// Add the color of the label to the taken colors if it dosne't exist
   /// \param[in] _label id of the semantic map or encoded id of panoptic map
   /// \param[in] _isMultiLink bool used to skip the taken color check if the
   /// label is for a multi link model, as all links should have the same color
@@ -71,7 +72,8 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   private: math::Color LabelToColor(int64_t _label,
     bool _isMultiLink = false);
 
-  /// \brief Check if the color is taken previously
+  /// \brief Check if the color is taken previously and add it to taken colors
+  /// if not exist
   /// \param[in] _color Color to be checked
   /// \return True if taken, False elsewhere
   private: bool IsTakenColor(const math::Color &_color);
@@ -99,7 +101,7 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   private: math::Color backgroundColor {0, 0, 0};
 
   /// \brief Segmentation Type
-  private: SegmentationType type {SegmentationType::SEMANTIC};
+  private: SegmentationType type {SegmentationType::ST_SEMANTIC};
 
   /// \brief True to generate colored map
   /// False to generate labels ids map
@@ -255,7 +257,7 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
   // if the label is colored before return the color
   // don't check for taken colors in that case, all items
   // with the same label will have the same color
-  if (this->type == SegmentationType::SEMANTIC &&
+  if (this->type == SegmentationType::ST_SEMANTIC &&
     this->coloredLabel.count(_label))
     return color;
 
@@ -288,7 +290,7 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
   // belongs to the same object, and all of them has the same parent name
   std::string prevParentName = "";
 
-  // Store the ogre objects in a vecotr
+  // Store the ogre objects in a vector
   std::vector<Ogre::MovableObject *> ogreObjects;
   while (itor.hasMoreElements())
   {
@@ -346,7 +348,7 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
       Ogre::Vector4 customParameter;
 
       // Material Switching
-      if (this->type == SegmentationType::SEMANTIC)
+      if (this->type == SegmentationType::ST_SEMANTIC)
       {
         if (this->isColoredMap)
         {
@@ -363,7 +365,7 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
             labelColor, labelColor, labelColor, 1.0);
         }
       }
-      else if (this->type == SegmentationType::PANOPTIC)
+      else if (this->type == SegmentationType::ST_PANOPTIC)
       {
         auto itemName = visual->Name();
         std::string parentName;
@@ -565,6 +567,11 @@ void Ogre2SegmentationCamera::Destroy()
 
   if (this->dataPtr->pixelBox)
     delete this->dataPtr->pixelBox;
+  this->dataPtr->pixelBox = nullptr;
+
+  if (this->dataPtr->materialSwitcher)
+    delete this->dataPtr->materialSwitcher;
+  this->dataPtr->materialSwitcher = nullptr;
 }
 
 /////////////////////////////////////////////////
@@ -616,7 +623,7 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
   auto backgroundColor = Ogre2Conversions::Convert(
     this->dataPtr->materialSwitcher->backgroundColor);
 
-  // basic workspace consist of clear pass with the givin color &
+  // basic workspace consist of clear pass with the given color &
   // a render scene pass to the givin render texture
   this->dataPtr->ogreCompositorManager->createBasicWorkspaceDef(
     this->dataPtr->workspaceDefinition, backgroundColor);
@@ -751,7 +758,7 @@ void Ogre2SegmentationCamera::SetBackgroundLabel(int _label)
 }
 
 /////////////////////////////////////////////////
-const math::Color &Ogre2SegmentationCamera::BackgroundColor() const
+math::Color Ogre2SegmentationCamera::BackgroundColor() const
 {
   return this->dataPtr->materialSwitcher->backgroundColor;
 }
@@ -775,13 +782,13 @@ void Ogre2SegmentationCamera::EnableColoredMap(bool _enable)
 }
 
 /////////////////////////////////////////////////
-SegmentationType Ogre2SegmentationCamera::GetSegmentationType()
+SegmentationType Ogre2SegmentationCamera::Type() const
 {
   return this->dataPtr->materialSwitcher->type;
 }
 
 /////////////////////////////////////////////////
-bool Ogre2SegmentationCamera::IsColoredMap()
+bool Ogre2SegmentationCamera::IsColoredMap() const
 {
   return this->dataPtr->materialSwitcher->isColoredMap;
 }
@@ -830,7 +837,7 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
 
       int64_t label = colorToLabel[colorId];
 
-      if (this->dataPtr->materialSwitcher->type == SegmentationType::SEMANTIC)
+      if (this->dataPtr->materialSwitcher->type == SegmentationType::ST_SEMANTIC)
       {
         uint8_t label8bit = label % 256;
 
@@ -839,7 +846,7 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
         _labelBuffer[index + 2] = label8bit;
       }
       else if (this->dataPtr->materialSwitcher->type ==
-        SegmentationType::PANOPTIC)
+        SegmentationType::ST_PANOPTIC)
       {
         // get the label and instance counts from the composite label id
         uint8_t label8bit = label / (256 * 256);

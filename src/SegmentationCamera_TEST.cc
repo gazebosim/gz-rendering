@@ -62,8 +62,8 @@ void SegmentationCameraTest::SegmentationCamera(
   camera->SetBackgroundLabel(backgroundLabel);
   EXPECT_EQ(camera->BackgroundLabel(), backgroundLabel);
 
-  camera->SetSegmentationType(SegmentationType::SEMANTIC);
-  EXPECT_EQ(camera->GetSegmentationType(), SegmentationType::SEMANTIC);
+  camera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
+  EXPECT_EQ(camera->Type(), SegmentationType::ST_SEMANTIC);
 
   camera->EnableColoredMap(true);
   EXPECT_TRUE(camera->IsColoredMap());

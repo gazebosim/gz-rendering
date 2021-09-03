@@ -113,7 +113,7 @@ void buildScene(ScenePtr _scene)
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   camera->EnableColoredMap(true);
-  camera->SetSegmentationType(SegmentationType::SEMANTIC);
+  camera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
   root->AddChild(camera);
 }
 

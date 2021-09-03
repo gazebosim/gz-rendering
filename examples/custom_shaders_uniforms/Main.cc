@@ -129,7 +129,7 @@ int main(int _argc, char** _argv)
   common::Console::SetVerbosity(4);
   std::vector<CameraPtr> cameras;
 
-  std::string engine("ogre2");
+  std::string engine("ogre");
 
   try
   {

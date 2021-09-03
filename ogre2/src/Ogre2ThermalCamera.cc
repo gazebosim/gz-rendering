@@ -834,7 +834,9 @@ void Ogre2ThermalCamera::Render()
 {
   // GL_DEPTH_CLAMP is disabled in later version of ogre2.2
   // however our shaders rely on clamped values so enable it for this sensor
+#if not defined(_WIN32)
   glEnable(GL_DEPTH_CLAMP);
+#endif
 
   // update the compositors
   this->scene->StartRendering();
@@ -850,7 +852,9 @@ void Ogre2ThermalCamera::Render()
 
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
+#if not defined(_WIN32)
   glEnable(GL_DEPTH_CLAMP);
+#endif
 }
 
 //////////////////////////////////////////////////

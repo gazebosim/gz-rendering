@@ -86,12 +86,6 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   const char *env = std::getenv("OGRE2_RESOURCE_PATH");
   if (env)
     this->ogrePaths.push_back(std::string(env));
-
-#ifdef __APPLE__
-  // on OSX the plugins may be placed in the parent lib directory
-//   if (ogrePath.rfind("OGRE") == ogrePath.size()-4u)
-//     this->ogrePaths.push_back(ogrePath.substr(0, ogrePath.size()-5));
-#endif
 }
 
 //////////////////////////////////////////////////

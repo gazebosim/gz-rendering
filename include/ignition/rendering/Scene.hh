@@ -910,6 +910,35 @@ namespace ignition
       public: virtual InertiaVisualPtr CreateInertiaVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new joint visual. A unique ID and name will
+      /// automatically be assigned to the Joint visual.
+      /// \return The created Joint visual
+      public: virtual JointVisualPtr CreateJointVisual() = 0;
+
+      /// \brief Create new joint visual with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new Joint visual
+      /// \return The created Joint visual
+      public: virtual JointVisualPtr CreateJointVisual(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new joint visual with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new Joint visual
+      /// \return The created Joint visual
+      public: virtual JointVisualPtr CreateJointVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new joint visual with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new Joint visual
+      /// \param[in] _name Name of the new Joint visual
+      /// \return The created Joint visual
+      public: virtual JointVisualPtr CreateJointVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new light visual. A unique ID and name will
       /// automatically be assigned to the light visual.
       /// \return The created light visual

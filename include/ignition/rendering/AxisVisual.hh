@@ -37,6 +37,11 @@ namespace ignition
       /// \brief set true to show the axis heads, false otherwise
       /// \param[in] _b true to show the axis heads, false otherwise
       public: virtual void ShowAxisHead(bool _b) = 0;
+
+      /// \brief set true to show the specified axis head, false otherwise
+      /// \param[in] _axis Axis index. 0: x, 1: y, 2: z
+      /// \param[in] _b true to show the specified axis head, false otherwise
+      public: virtual void ShowAxisHead(unsigned int _axis, bool _b) = 0;
     };
     }
   }

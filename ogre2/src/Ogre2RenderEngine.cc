@@ -128,6 +128,8 @@ void Ogre2RenderEngine::Destroy()
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
 
+  this->dataPtr->hlmsPbsTerraShadows.reset();
+
   if (this->ogreRoot)
   {
     // Clean up any textures that may still be in flight.

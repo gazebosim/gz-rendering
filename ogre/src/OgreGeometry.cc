@@ -49,3 +49,39 @@ void OgreGeometry::SetParent(OgreVisualPtr _parent)
 {
   this->parent = _parent;
 }
+
+//////////////////////////////////////////////////
+GeometryPtr OgreGeometry::Clone(const std::string &_name,
+    VisualPtr _newParent) const
+{
+  if (nullptr == _newParent)
+  {
+    ignerr << "Cloning a geometry failed because the parent of the clone is "
+      << "null" << std::endl;
+    return nullptr;
+  }
+
+  GeometryPtr result;
+
+  if (this->descriptorName == "unit_box")
+    result = this->Scene()->CreateBox();
+  else if (this->descriptorName == "unit_cone")
+    result = this->Scene()->CreateCone();
+  else if (this->descriptorName == "unit_cylinder")
+    result = this->Scene()->CreateCylinder();
+  else if (this->descriptorName == "unit_plane")
+    result = this->Scene()->CreatePlane();
+  else if (this->descriptorName == "unit_sphere")
+    result = this->Scene()->CreateSphere();
+  else
+  {
+    ignerr << "Attempted to clone a geometry with a descriptor name of ["
+      << this->descriptorName << "], which is invalid." << std::endl;
+    return nullptr;
+  }
+
+  // TODO(adlarkin) need to also set the name of the cloned geometry, the
+  // parent, and check if anything else needs to be set
+
+  return result;
+}

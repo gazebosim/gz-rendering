@@ -77,7 +77,7 @@ namespace ignition
                   bool _unique = true) override;
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() override;
+      public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
       public: virtual void SetWireframe(bool _show) override;
@@ -113,6 +113,10 @@ namespace ignition
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
               const override;
+
+      // Documentation inherited.
+      public: virtual VisualPtr Clone(const std::string &_name,
+                  NodePtr _newParent) const override;
 
       protected: virtual void PreRenderChildren() override;
 
@@ -293,7 +297,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    MaterialPtr BaseVisual<T>::Material()
+    MaterialPtr BaseVisual<T>::Material() const
     {
       return this->material;
     }
@@ -470,6 +474,83 @@ namespace ignition
     uint32_t BaseVisual<T>::VisibilityFlags() const
     {
       return this->visibilityFlags;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    VisualPtr BaseVisual<T>::Clone(const std::string &_name,
+        NodePtr _newParent) const
+    {
+      ScenePtr scene_ = this->Scene();
+      if (nullptr == scene_)
+      {
+        ignerr << "Cloning a visual failed because the visual to be cloned is "
+          << "not attached to a scene." << std::endl;
+        return nullptr;
+      }
+      VisualPtr result;
+      if (_name.empty())
+        result = scene_->CreateVisual();
+      else
+        result = scene_->CreateVisual(_name);
+
+      if (nullptr != _newParent)
+      {
+        auto parentScene = _newParent->Scene();
+        if (nullptr != parentScene && parentScene->Id() != scene_->Id())
+        {
+          ignerr << "Cloning a visual failed because the desired parent of the "
+            << "cloned visual belongs to a different scene." << std::endl;
+          scene_->DestroyVisual(result);
+          return nullptr;
+        }
+        _newParent->AddChild(result);
+      }
+
+      result->SetOrigin(this->Origin());
+      result->SetInheritScale(this->InheritScale());
+      result->SetLocalScale(this->LocalScale());
+      result->SetLocalPose(this->LocalPose());
+      result->SetVisibilityFlags(this->VisibilityFlags());
+      result->SetWireframe(this->Wireframe());
+
+      // if the visual that was cloned has child visuals, clone those as well
+      auto children_ =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!children_)
+      {
+        ignerr << "Cast failed in BaseVisual::Clone" << std::endl;
+        scene_->DestroyVisual(result);
+        return nullptr;
+      }
+      for (auto it = children_->Begin(); it != children_->End(); ++it)
+      {
+        NodePtr child = it->second;
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        if (nullptr != visual)
+          visual->Clone("", result);
+      }
+
+      for (unsigned int i = 0; i < this->GeometryCount(); ++i)
+      {
+        // TODO(adlarkin) clone the geometry. I will need to add this
+        // functionality. Once it's added, the code may look something like:
+        /*
+         *auto geometry = this->GeometryByIndex(i);
+         *auto clonedGeometry = geometry->Clone();
+         *result->AddGeometry(clonedGeometry);
+         */
+      }
+
+      result->SetMaterial(this->Material());
+
+      // should userData be cloned, or should that be left out since (I believe)
+      // userData is intended to be custom/unique for each visual
+      for (const auto &[key, val] : this->userData)
+        result->SetUserData(key, val);
+
+      return result;
     }
     }
   }

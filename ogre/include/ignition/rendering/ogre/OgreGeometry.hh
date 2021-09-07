@@ -46,6 +46,11 @@ namespace ignition
 
       public: virtual Ogre::MovableObject *OgreObject() const = 0;
 
+      public: virtual GeometryPtr Clone(const std::string &_name,
+                  VisualPtr _newParent) const override;
+
+      protected: std::string descriptorName;
+
       protected: virtual void SetParent(OgreVisualPtr _parent);
 
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

@@ -46,6 +46,9 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true) override = 0;
 
+      public: virtual GeometryPtr Clone(const std::string &_name,
+                  VisualPtr _newParent) const override = 0;
+
       // Documentation inherited
       public: virtual void Destroy() override;
     };

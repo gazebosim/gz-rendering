@@ -66,6 +66,12 @@ namespace ignition
       /// \brief Get the material of this geometry
       /// \return Material used by this geometry
       public: virtual MaterialPtr Material() const = 0;
+
+      /// \brief Clone the geometry with a new name.
+      /// \param[in] _name The name of the cloned geometry.
+      /// \param[in] _newParent The parent of the cloned geometry.
+      public: virtual GeometryPtr Clone(const std::string &_name,
+                  VisualPtr _newParent) const = 0;
     };
     }
   }

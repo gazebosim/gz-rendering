@@ -153,7 +153,7 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 {
 #ifdef __APPLE__
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  ignerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
 
@@ -338,7 +338,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 {
 #ifdef __APPLE__
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  ignerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
 
@@ -471,7 +471,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
 {
 #ifdef __APPLE__
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  ignerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
 
@@ -686,7 +686,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
 void GpuRaysTest::SingleRay(const std::string &_renderEngine)
 {
 #ifdef __APPLE__
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  ignerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
 

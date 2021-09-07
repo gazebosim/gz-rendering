@@ -233,7 +233,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   root->AddChild(gpuRays2);
 
   // Laser retro test values
-  double laserRetro1 = 2000;
+  double laserRetro1 = 1500;
   double laserRetro2 = 1000;
   std::string userDataKey = "laser_retro";
 
@@ -247,8 +247,6 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   visualBox1->SetWorldRotation(box01Pose.Rot());
   visualBox1->SetUserData(userDataKey, laserRetro1);
   root->AddChild(visualBox1);
-
-
 
   // box on the right of the first gpu rays caster
   ignition::math::Pose3d box02Pose(ignition::math::Vector3d(0, -5, 0.5),

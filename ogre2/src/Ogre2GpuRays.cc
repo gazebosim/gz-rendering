@@ -237,58 +237,58 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
       Ogre2VisualPtr ogreVisual =
           std::dynamic_pointer_cast<Ogre2Visual>(result);
 
-      // get laser_retro
-      Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
+      if (ogreVisual->HasUserData(laserRetroKey))
+      {
+        // get laser_retro
+        Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
 
-      float retroValue = -1.0;
-      try
-      {
-        retroValue = std::get<float>(tempLaserRetro);
-      }
-      catch(...)
-      {
+        float retroValue = -1.0;
         try
         {
-          retroValue = std::get<double>(tempLaserRetro);
+          retroValue = std::get<float>(tempLaserRetro);
         }
         catch(...)
         {
           try
           {
-            retroValue = std::get<int>(tempLaserRetro);
+            retroValue = std::get<double>(tempLaserRetro);
           }
-          catch(std::bad_variant_access &e)
+          catch(...)
           {
-            ignerr << "Error casting user data: " << e.what() << "\n";
-            retroValue = -1.0;
+            try
+            {
+              retroValue = std::get<int>(tempLaserRetro);
+            }
+            catch(std::bad_variant_access &e)
+            {
+              ignerr << "Error casting user data: " << e.what() << "\n";
+              retroValue = -1.0;
+            }
           }
         }
-      }
 
-      // only accept positive laser retro value
-      if (retroValue >= 0)
-      {
-        // set visibility flag so the camera can see it
-        item->addVisibilityFlags(0x01000000);
-        for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+        // only accept positive laser retro value
+        if (retroValue >= 0)
         {
-          Ogre::SubItem *subItem = item->getSubItem(i);
-          if (!subItem->hasCustomParameter(this->customParamIdx))
+          for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
           {
-            // limit laser retro value to 2000 (as in gazebo)
-            if (retroValue > 2000.0)
+            Ogre::SubItem *subItem = item->getSubItem(i);
+            if (!subItem->hasCustomParameter(this->customParamIdx))
             {
-              retroValue = 2000.0;
+              // limit laser retro value to 2000 (as in gazebo)
+              if (retroValue > 2000.0)
+              {
+                retroValue = 2000.0;
+              }
+              float color = retroValue / 2000.0;
+              subItem->setCustomParameter(this->customParamIdx,
+                  Ogre::Vector4(color, color, color, 1.0));
             }
-            float color = retroValue / 2000.0;
+            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+            this->datablockMap[subItem] = datablock;
 
-            subItem->setCustomParameter(this->customParamIdx,
-                Ogre::Vector4(color, color, color, 1.0));
+            subItem->setMaterial(this->laserRetroSourceMaterial);
           }
-          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          this->datablockMap[subItem] = datablock;
-
-          subItem->setMaterial(this->laserRetroSourceMaterial);
         }
       }
     }
@@ -869,7 +869,17 @@ void Ogre2GpuRays::Setup1stPass()
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // set camera custom visibility mask when rendering laser retro
-      passScene->mVisibilityMask = 0x01000000 &
+      // todo(anyone) currently in this color + depth pass, lidar sees all
+      // objects, including ones without laser_retro set. So the lidar outputs
+      // data containing depth data + some non-zero retro value for all
+      // objects. If we want to output a retro value of zero for objects
+      // without laser_retro, one possible approach could be to separate out
+      // the color and depth pass:
+      // 1: color pass that see only objects with laser_retro by using custom
+      //    visibility mask
+      // 2: depth pass that see all objects
+      // Then assemble these data in the final quad pass.
+      passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 
@@ -919,7 +929,7 @@ void Ogre2GpuRays::Setup1stPass()
           particleTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue::Black);
-      // set camera custom visibility mask when rendering laser retro
+      // set camera custom visibility mask when rendering particles
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
@@ -1187,7 +1197,7 @@ void Ogre2GpuRays::CreateGpuRaysTextures()
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget1stPass()
 {
-  Ogre::vector<Ogre::TextureGpu*>::type swappedTargets;
+  Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
   swappedTargets.reserve(2u);
 
   // update the compositors
@@ -1216,7 +1226,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
   this->dataPtr->ogreCompositorWorkspace2nd->_update();
   this->dataPtr->ogreCompositorWorkspace2nd->_endUpdate(false);
 
-  Ogre::vector<Ogre::TextureGpu*>::type swappedTargets;
+  Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
   swappedTargets.reserve(2u);
   this->dataPtr->ogreCompositorWorkspace2nd->_swapFinalTarget(swappedTargets);
 }

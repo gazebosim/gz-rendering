@@ -50,8 +50,11 @@ namespace ignition
       /// \param[in] _camera Name of the camera to generate a selection
       /// buffer for.
       /// \param[in] _scene Pointer to the scene
+      /// \param[in] _width width of the camera
+      /// \param[in] _height height of the camera
       public: Ogre2SelectionBuffer(const std::string &_cameraName,
-                  Ogre2ScenePtr _scene);
+                  Ogre2ScenePtr _scene, unsigned int _width,
+                  unsigned int _height);
 
       /// \brief Destructor
       public: ~Ogre2SelectionBuffer();
@@ -61,6 +64,11 @@ namespace ignition
       /// \param[in] _y Y coordinate in pixels.
       /// \return Returns the Ogre item at the coordinate.
       public: Ogre::Item *OnSelectionClick(const int _x, const int _y);
+
+      /// \brief Set dimension of the selection buffer
+      /// \param[in] _x X coordinate in pixels.
+      /// \param[in] _y Y coordinate in pixels.
+      public: void SetDimensions(unsigned int _width, unsigned int _height);
 
       /// \brief Debug show overlay
       /// \param[in] _show True to show the selection buffer in an overlay.

@@ -333,6 +333,10 @@ namespace ignition
       /// \return Render pass at the specified index
       public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
           const = 0;
+
+      /// \internal
+      /// \brief Notify that shadows are dirty and need to be regenerated
+      public: virtual void SetShadowsDirty() = 0;
     };
     }
   }

@@ -6,7 +6,7 @@ libignition-common4-dev
 libignition-math6-dev
 libignition-plugin-dev
 libogre-1.9-dev
-libogre-2.1-dev
+libogre-2.2-dev
 libxi-dev
 libxmu-dev
 uuid-dev

@@ -592,8 +592,10 @@ namespace ignition
       /// \param[in] _name Name of ParticleEmitter.
       /// \return Pointer to the created particle emitter.
       protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
-                     unsigned int, const std::string &)
+                     unsigned int _id, const std::string &_name)
                  {
+                   (void)_id;
+                   (void)_name;
                    ignerr << "ParticleEmitter not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return ParticleEmitterPtr();

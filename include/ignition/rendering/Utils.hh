@@ -91,7 +91,7 @@ namespace ignition
     /// \brief Transform a bounding box.
     /// \param[in] _box The bounding box.
     /// \param[in] _pose Pose used to transform the bounding box.
-    /// \param[out] _vertices Vertices of the transformed bounding box in
+    /// \return Vertices of the transformed bounding box in
     /// world coordinates.
     IGNITION_RENDERING_VISIBLE
     ignition::math::AxisAlignedBox transformAxisAlignedBox(

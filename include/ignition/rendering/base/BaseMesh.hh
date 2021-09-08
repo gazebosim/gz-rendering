@@ -59,7 +59,8 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetSkeletonWeights(
-                      const std::unordered_map<std::string, float> &) override;
+                      const std::unordered_map<std::string, float> &_weights)
+                      override;
 
       // Documentation inherited.
       public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,

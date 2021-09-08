@@ -45,8 +45,8 @@ namespace ignition
     class IGNITION_RENDERING_OGRE_VISIBLE OgreRTShaderSystem :
       public common::SingletonT<OgreRTShaderSystem>
     {
-      /// \enum LightingModel.
-      /// \brief The type of lighting.
+      /// \enum LightingModel
+      /// \brief The type of lighting
       public: enum LightingModel
               {
                 /// \brief Per-Vertex lighting: best performance.
@@ -83,11 +83,11 @@ namespace ignition
       public: void AddScene(OgreScenePtr _scene);
 
       /// \brief Remove a scene
-      /// \param[in] The scene to remove
+      /// \param[in] _scene The scene to remove
       public: void RemoveScene(OgreScenePtr _scene);
 
       /// \brief Remove a scene
-      /// \param[in] Name of the scene to remove.
+      /// \param[in] _scene Name of the scene to remove.
       public: void RemoveScene(const std::string &_scene);
 
       /// \brief Update the shaders. This should not be called frequently.
@@ -95,7 +95,7 @@ namespace ignition
 
       /// \brief Set an Ogre::Entity to use RT shaders.
       /// \param[in] _vis OgreSubMesh that will use the OgreRTShaderSystem.
-      public: void AttachEntity(OgreSubMesh *vis);
+      public: void AttachEntity(OgreSubMesh *_vis);
 
       /// \brief Remove and entity.
       /// \param[in] _vis Remove this visual.

@@ -50,7 +50,8 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetSkeletonLocalTransforms(
-                      const std::map<std::string, math::Matrix4d> &) override;
+                      const std::map<std::string, math::Matrix4d> &_tfs)
+                      override;
 
       // Documentation inherited.
       public: virtual std::unordered_map<std::string, float> SkeletonWeights()
@@ -88,9 +89,11 @@ namespace ignition
       // Documentation inherited.
       public: virtual MaterialPtr Material() const override;
 
+      // Documentation inherited.
       public: virtual void SetMaterial(const std::string &_name,
                   bool _unique = true) override;
 
+      // Documentation inherited.
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true) override;
 

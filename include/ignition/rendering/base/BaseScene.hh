@@ -471,8 +471,11 @@ namespace ignition
       /// \param[in] _id Unique id
       /// \param[in] _name Name of thermal camera
       protected: virtual ThermalCameraPtr CreateThermalCameraImpl(
-                     unsigned int /*_id*/, const std::string &/*_name*/)
+                     unsigned int _id, const std::string &_name)
                  {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
                    ignerr << "Thermal camera not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return ThermalCameraPtr();
@@ -481,9 +484,11 @@ namespace ignition
       /// \brief Implementation for creating GpuRays sensor.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of GpuRays sensor
-      protected: virtual GpuRaysPtr CreateGpuRaysImpl(unsigned int /*_id*/,
-                     const std::string & /*_name*/)
+      protected: virtual GpuRaysPtr CreateGpuRaysImpl(unsigned int _id,
+                     const std::string & _name)
                  {
+                   (void)_id;
+                   (void)_name;
                    ignerr << "GpuRays not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return GpuRaysPtr();
@@ -501,9 +506,11 @@ namespace ignition
       /// \brief Implementation for creating a GizmoVisual.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of GizmoVisual
-      protected: virtual GizmoVisualPtr CreateGizmoVisualImpl(unsigned int,
-                     const std::string &)
+      protected: virtual GizmoVisualPtr CreateGizmoVisualImpl(unsigned int _id,
+                     const std::string &_name)
                  {
+                   (void)_id;
+                   (void)_name;
                    ignerr << "GizmoVisual not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return GizmoVisualPtr();

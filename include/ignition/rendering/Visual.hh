@@ -84,25 +84,25 @@ namespace ignition
       /// \param[in] _name Name of the material to be assigned
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Set the material for all attached visuals and geometries
-      /// \param[in] _name Name of the material to be assigned
+      /// \param[in] _material Name of the material to be assigned
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Set the material for all attached visuals only
-      /// \param[in] _name Name of the material to be assigned
+      /// \param[in] _material Name of the material to be assigned
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetChildMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Set the material for all attached geometries only
-      /// \param[in] _name Name of the material to be assigned
+      /// \param[in] _material Name of the material to be assigned
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Get the material assigned to attached visuals and geometries.
       /// \return the Pointer to the material assigned to this visual. If the
@@ -138,7 +138,7 @@ namespace ignition
 
       /// \brief Get custom data stored in this visual
       /// \param[in] _key Unique key
-      /// \param[in] _value Value in any type
+      /// \return Data associated with the key.
       public: virtual Variant UserData(const std::string &_key) const = 0;
 
       /// \brief Get the bounding box in world frame coordinates.

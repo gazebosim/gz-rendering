@@ -48,11 +48,11 @@ namespace ignition
     template <class T>
     class IGNITION_RENDERING_VISIBLE Map
     {
-      /// \def TPtr
+      /// \typedef TPtr
       /// \brief Shared pointer to T
       typedef std::shared_ptr<T> TPtr;
 
-      /// \def const TPtr
+      /// \typedef const TPtr
       /// \brief Shared pointer to const T
       typedef std::shared_ptr<const T> ConstTPtr;
 
@@ -97,7 +97,7 @@ namespace ignition
 
       /// \brief Remove the given element. If the given element does not exist
       /// no work will be done.
-      /// \param[in] _key Key of the element in question
+      /// \param[in] _value Key of the element in question
       public: virtual void Remove(TPtr _value) = 0;
 
       /// \brief Remove all elements from this map
@@ -113,11 +113,11 @@ namespace ignition
     template <class T>
     class IGNITION_RENDERING_VISIBLE Store
     {
-      /// \def TPtr
+      /// \typedef TPtr
       /// \brief Shared pointer to T
       typedef std::shared_ptr<T> TPtr;
 
-      /// \def const TPtr
+      /// \typedef const TPtr
       /// \brief Shared pointer to const T
       typedef std::shared_ptr<const T> ConstTPtr;
 
@@ -218,7 +218,7 @@ namespace ignition
       public: virtual void DestroyAll() = 0;
     };
 
-    /// \class CompositeStore CompositeStore.hh
+    /// \class CompositeStore Storage.hh ignition/rendering/Storage.hh
     /// ignition/rendering/CompositeStore.hh
     /// \brief Represents a collection of Store objects, collectively working as
     /// a single composite store.
@@ -227,19 +227,19 @@ namespace ignition
     class IGNITION_RENDERING_VISIBLE CompositeStore :
       public Store<T>
     {
-      /// \def TPtr
+      /// \typedef TPtr
       /// \brief Shared pointer to T
       typedef std::shared_ptr<T> TPtr;
 
-      /// \def TPtr
+      /// \typedef TPtr
       /// \brief Store of T
       typedef Store<T> TStore;
 
-      /// \def TStorePtr
+      /// \typedef TStorePtr
       /// \brief Shared pointer to TStore
       typedef std::shared_ptr<TStore> TStorePtr;
 
-      /// \def const TStorePtr
+      /// \typedef const TStorePtr
       /// \brief Shared pointer to const TStore
       typedef std::shared_ptr<const TStore> ConstTStorePtr;
 
@@ -280,7 +280,7 @@ namespace ignition
       public: virtual TStorePtr RemoveStore(unsigned int _index) = 0;
     };
 
-    /// \class StoreWrapper StoreWrapper.hh ignition/rendering/StoreWrapper.hh
+    /// \class StoreWrapper Storage.hh ignition/rendering/StoreWrapper.hh
     /// \brief Simple wrapper class that allows a Store of type Derived to be
     /// treated as a Store of type Base, where Derived is some class derived
     /// from Base. This is useful in storing Stores of different derived types

@@ -534,21 +534,24 @@ namespace ignition
 
       for (unsigned int i = 0; i < this->GeometryCount(); ++i)
       {
-        // TODO(adlarkin) clone the geometry. I will need to add this
-        // functionality. Once it's added, the code may look something like:
-        /*
-         *auto geometry = this->GeometryByIndex(i);
-         *auto clonedGeometry = geometry->Clone();
-         *result->AddGeometry(clonedGeometry);
-         */
+        auto geometry = this->GeometryByIndex(i);
+        // TODO(adlarkin) fix the Clone call below once geometry cloning
+        // approach is cleaned up
+        auto clonedGeometry = geometry->Clone("", nullptr);
+        result->AddGeometry(clonedGeometry);
       }
 
-      result->SetMaterial(this->Material());
+      if (this->Material())
+        result->SetMaterial(this->Material());
 
       // should userData be cloned, or should that be left out since (I believe)
       // userData is intended to be custom/unique for each visual
-      for (const auto &[key, val] : this->userData)
-        result->SetUserData(key, val);
+      //
+      // copying userData seems to segfault, so this is commented out for now
+      /*
+       *for (const auto &[key, val] : this->userData)
+       *  result->SetUserData(key, val);
+       */
 
       return result;
     }

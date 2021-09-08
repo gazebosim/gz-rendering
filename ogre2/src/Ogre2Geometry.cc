@@ -56,9 +56,7 @@ GeometryPtr Ogre2Geometry::Clone(const std::string &_name,
 {
   if (nullptr == _newParent)
   {
-    ignerr << "Cloning a geometry failed because the parent of the clone is "
-      << "null" << std::endl;
-    return nullptr;
+    // TODO(adlarkin) handle this case?
   }
 
   GeometryPtr result;

@@ -384,6 +384,7 @@ void VisualTest::UserData(const std::string &_renderEngine)
   EXPECT_FALSE(std::holds_alternative<std::string>(value));
   EXPECT_FALSE(std::holds_alternative<bool>(value));
   EXPECT_FALSE(std::holds_alternative<unsigned int>(value));
+  EXPECT_EQ(0u, value.index());
 
   // test invalid access
   EXPECT_THROW(

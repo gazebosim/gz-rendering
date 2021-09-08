@@ -291,13 +291,13 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   // rays caster 1 should see box01 and box02
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);
   EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
-  EXPECT_DOUBLE_EQ(scan[last], ignition::math::INF_D);
+  EXPECT_FLOAT_EQ(scan[last], ignition::math::INF_F);
 
   // rays cater should see box01 with laser retro value set to laserRetro1
   // and box02 with laser retro value set to laserRetro2
   EXPECT_NEAR(scan[mid+1], laserRetro1, 5.0);
   EXPECT_NEAR(scan[0+1], laserRetro2, 5.0);
-  EXPECT_DOUBLE_EQ(scan[last+1], 0.0);
+  EXPECT_FLOAT_EQ(scan[last+1], 0.0);
 
   // Verify rays caster 2 range readings
   // listen to new gpu rays frames
@@ -308,9 +308,9 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->Copy(scan2);
 
   // Only box01 should be visible to rays caster 2
-  EXPECT_DOUBLE_EQ(scan2[0], maxRange);
+  EXPECT_FLOAT_EQ(scan2[0], maxRange);
   EXPECT_NEAR(scan2[mid], expectedRangeAtMidPointBox1, LASER_TOL);
-  EXPECT_DOUBLE_EQ(scan2[last], maxRange);
+  EXPECT_FLOAT_EQ(scan2[last], maxRange);
 
   // Move all boxes out of range
   visualBox1->SetWorldPosition(
@@ -325,10 +325,10 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->Copy(scan2);
 
   for (int i = 0; i < gpuRays->RayCount(); ++i)
-    EXPECT_DOUBLE_EQ(scan[i * 3], ignition::math::INF_D);
+    EXPECT_FLOAT_EQ(scan[i * 3], ignition::math::INF_F);
 
   for (int i = 0; i < gpuRays2->RayCount(); ++i)
-    EXPECT_DOUBLE_EQ(scan2[i * 3], maxRange);
+    EXPECT_FLOAT_EQ(scan2[i * 3], maxRange);
 
   c.reset();
 
@@ -442,10 +442,10 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
     angleStep += vAngleStep;
 
     // check that the values in the extremes are infinity
-    EXPECT_DOUBLE_EQ(scan[i * hRayCount * channels],
-        ignition::math::INF_D);
-    EXPECT_DOUBLE_EQ(scan[(i * hRayCount + (hRayCount - 1)) * channels],
-        ignition::math::INF_D);
+    EXPECT_FLOAT_EQ(scan[i * hRayCount * channels],
+        ignition::math::INF_F);
+    EXPECT_FLOAT_EQ(scan[(i * hRayCount + (hRayCount - 1)) * channels],
+        ignition::math::INF_F);
   }
 
   // Move box out of range
@@ -461,8 +461,8 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   {
     for (int i = 0; i < gpuRays->RayCount(); ++i)
     {
-      EXPECT_DOUBLE_EQ(scan[j * gpuRays->RayCount() * channels+ i * channels],
-          ignition::math::INF_D);
+      EXPECT_FLOAT_EQ(scan[j * gpuRays->RayCount() * channels+ i * channels],
+          ignition::math::INF_F);
     }
   }
 
@@ -629,7 +629,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
     EXPECT_NEAR(expectedRangeAtMidPointBox2, scan[0], LASER_TOL);
 
     // sensor should not see box03 as it is out of range
-    EXPECT_DOUBLE_EQ(ignition::math::INF_D, scan[last]);
+    EXPECT_DOUBLE_EQ(ignition::math::INF_F, scan[last]);
   }
 
   // there should be at least one hit
@@ -667,7 +667,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
     EXPECT_NEAR(expectedRangeAtMidPointBox2, scan[0], LASER_TOL);
 
     // sensor should not see box03 as it is out of range
-    EXPECT_DOUBLE_EQ(ignition::math::INF_D, scan[last]);
+    EXPECT_DOUBLE_EQ(ignition::math::INF_F, scan[last]);
   }
 
   // there should be at least one hit

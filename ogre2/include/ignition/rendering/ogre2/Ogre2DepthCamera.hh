@@ -123,26 +123,7 @@ namespace ignition
       public: double FarClipPlane() const override;
 
       // Documentation inherited.
-      // TODO(anyone): this function should be virtual, declared in 'Camera'
-      // and 'BaseCamera'. We didn't do it to preserve ABI.
-      // Looks in commit history for '#SetShadowsNodeDefDirtyABI' to
-      // see changes made and revert
-      public: void SetShadowsNodeDefDirty();
-
-      // TODO(anyone): This fixes the pass quad material leaving dangling
-      // pointers when we remove the workspace, so we have to cleanup the
-      // material first.
-      // This bug was fixed in Ogre 2.2 thus the workaround should not be
-      // necessary there
-      //
-      // See https://github.com/ignitionrobotics/ign-rendering/
-      // pull/303#pullrequestreview-635228897
-      // Repro:
-      //  1.run the sensors_demo.sdf world: ign gazebo -v 4 -r sensors_demo.sdf
-      //  2.open Lights plugin, top right menu (3 dots) and select Lights
-      //  3.insert a spot light into the scene (needs to be spot light)
-      //  4.ign gazebo crashes
-      private: void RemoveWorkspaceCrashWorkaround();
+      public: void SetShadowsDirty() override;
 
       // Documentation inherited.
       public: void AddRenderPass(const RenderPassPtr &_pass) override;
@@ -159,6 +140,13 @@ namespace ignition
 
       /// \brief Create the camera.
       protected: void CreateCamera();
+
+      /// \brief Notifies us that the shadow node definition is about to be
+      /// updated. This means our compositor workspace must be destroyed
+      /// because the shadow node definition it's using will become a
+      /// dangling pointer otherwise
+      /// \sa SetShadowsDirty
+      private: void SetShadowsNodeDefDirty();
 
       /// \brief Pointer to the ogre camera
       protected: Ogre::Camera *ogreCamera;

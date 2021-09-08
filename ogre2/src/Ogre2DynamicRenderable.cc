@@ -40,6 +40,7 @@
 #include <OgreMeshManager2.h>
 #include <OgreSceneManager.h>
 #include <OgreSubMesh2.h>
+#include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif

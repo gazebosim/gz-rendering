@@ -89,6 +89,12 @@ namespace ignition
       public: virtual void AddResourcePath(const std::string &_path) override;
 
       // Documentation Inherited
+      public: virtual void SetHeadless(bool _headless) override;
+
+      // Documentation Inherited
+      public: virtual bool Headless() const override;
+
+      // Documentation Inherited
       public: virtual RenderPassSystemPtr RenderPassSystem() const override;
 
       protected: virtual void PrepareScene(ScenePtr _scene);
@@ -110,6 +116,8 @@ namespace ignition
       protected: bool loaded = false;
 
       protected: bool initialized = false;
+
+      protected: bool isHeadless = false;
 
       protected: unsigned int nextSceneId;
 

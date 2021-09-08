@@ -100,22 +100,22 @@ void LidarVisualTest::Configure(const std::string &_renderEngine)
   // The following tests all the getters and setters
   {
     lidarVis->SetMinVerticalAngle(0.1);
-    EXPECT_NEAR(lidarVis->MinVerticalAngle(), 0.1, 1e-6);
+    EXPECT_DOUBLE_EQ(lidarVis->MinVerticalAngle(), 0.1);
 
     lidarVis->SetMaxVerticalAngle(251.20);
-    EXPECT_NEAR(lidarVis->MaxVerticalAngle(), 251.20, 1e-6);
+    EXPECT_DOUBLE_EQ(lidarVis->MaxVerticalAngle(), 251.20);
 
     lidarVis->SetMinRange(0.05);
-    EXPECT_NEAR(lidarVis->MinRange(), 0.05, 1e-6);
+    EXPECT_DOUBLE_EQ(lidarVis->MinRange(), 0.05);
 
     lidarVis->SetMaxRange(105.20);
-    EXPECT_NEAR(lidarVis->MaxRange(), 105.20, 1e-6);
+    EXPECT_DOUBLE_EQ(lidarVis->MaxRange(), 105.20);
 
-    lidarVis->SetMinHorizontalAngle(-1.513);
-    EXPECT_NEAR(lidarVis->MinHorizontalAngle(), -1.513, 1e-6);
+    lidarVis->SetMinHorizontalAngle(-1.5136);
+    EXPECT_DOUBLE_EQ(lidarVis->MinHorizontalAngle(), -1.5136);
 
     lidarVis->SetMaxHorizontalAngle(2.513);
-    EXPECT_NEAR(lidarVis->MaxHorizontalAngle(), 2.513, 1e-6);
+    EXPECT_DOUBLE_EQ(lidarVis->MaxHorizontalAngle(), 2.513);
 
     lidarVis->SetHorizontalRayCount(360);
     EXPECT_EQ(lidarVis->HorizontalRayCount(), 360u);
@@ -319,7 +319,7 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   // rays caster values received from lidar should see box01 and box02
   EXPECT_NEAR(pts_back[mid], expectedRangeAtMidPointBox1, LASER_TOL);
   EXPECT_NEAR(pts_back[0], expectedRangeAtMidPointBox2, LASER_TOL);
-  EXPECT_DOUBLE_EQ(pts_back[last], ignition::math::INF_D);
+  EXPECT_FLOAT_EQ(pts_back[last], ignition::math::INF_F);
 
   // Verify rays caster 2 range readings
   // listen to new gpu rays frames
@@ -343,9 +343,9 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   std::vector<double> pts_back2 = lidarVis2->Points();
 
   // Only box01 should be visible to rays caster 2
-  EXPECT_DOUBLE_EQ(pts_back2[0], maxRange);
+  EXPECT_FLOAT_EQ(pts_back2[0], maxRange);
   EXPECT_NEAR(pts_back2[mid], expectedRangeAtMidPointBox1, LASER_TOL);
-  EXPECT_DOUBLE_EQ(pts_back2[last], maxRange);
+  EXPECT_FLOAT_EQ(pts_back2[last], maxRange);
 
   // Move all boxes out of range
   visualBox1->SetWorldPosition(
@@ -378,10 +378,10 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   }
 
   for (unsigned int i = 0; i < lidarVis->HorizontalRayCount(); ++i)
-    EXPECT_DOUBLE_EQ(pts[i], ignition::math::INF_D);
+    EXPECT_FLOAT_EQ(pts[i], ignition::math::INF_F);
 
   for (unsigned int i = 0; i < lidarVis->HorizontalRayCount(); ++i)
-    EXPECT_DOUBLE_EQ(pts2[i], maxRange);
+    EXPECT_FLOAT_EQ(pts2[i], maxRange);
 
   c.reset();
 
@@ -518,10 +518,10 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
     angleStep += vAngleStep;
 
     // check that the values in the extremes are infinity
-    EXPECT_DOUBLE_EQ(pts[i * hRayCount ],
-        ignition::math::INF_D);
-    EXPECT_DOUBLE_EQ(pts[(i * hRayCount + (hRayCount - 1))],
-        ignition::math::INF_D);
+    EXPECT_FLOAT_EQ(pts[i * hRayCount ],
+        ignition::math::INF_F);
+    EXPECT_FLOAT_EQ(pts[(i * hRayCount + (hRayCount - 1))],
+        ignition::math::INF_F);
   }
 
   // Move box out of range
@@ -548,8 +548,8 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
   {
     for (unsigned int i = 0; i < lidarVis->HorizontalRayCount(); ++i)
     {
-      EXPECT_DOUBLE_EQ(pts[j * lidarVis->HorizontalRayCount()+ i],
-          ignition::math::INF_D);
+      EXPECT_FLOAT_EQ(pts[j * lidarVis->HorizontalRayCount()+ i],
+          ignition::math::INF_F);
     }
   }
 

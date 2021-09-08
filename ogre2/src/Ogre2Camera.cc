@@ -208,6 +208,12 @@ unsigned int Ogre2Camera::RenderTextureGLId() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2Camera::SetShadowsDirty()
+{
+  this->SetShadowsNodeDefDirty();
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::SetShadowsNodeDefDirty()
 {
   if (!this->renderTexture)
@@ -223,7 +229,8 @@ void Ogre2Camera::SetShadowsNodeDefDirty()
 //////////////////////////////////////////////////
 void Ogre2Camera::SetSelectionBuffer()
 {
-  this->selectionBuffer = new Ogre2SelectionBuffer(this->name, this->scene);
+  this->selectionBuffer = new Ogre2SelectionBuffer(this->name, this->scene,
+    this->ImageWidth(), this->ImageHeight());
 }
 
 //////////////////////////////////////////////////
@@ -239,6 +246,11 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
     {
       return result;
     }
+  }
+  else
+  {
+    this->selectionBuffer->SetDimensions(
+      this->ImageWidth(), this->ImageHeight());
   }
 
   float ratio = screenScalingFactor();

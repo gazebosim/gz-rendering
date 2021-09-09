@@ -107,7 +107,7 @@ namespace ignition
       /// If set, the temperature reading of heat sources will vary within
       /// a temperature of +/- range/2 instead of returning a fixed uniform
       /// temperature for the entire heat source
-      /// \param[in] _rnage Temperature variation range
+      /// \param[in] _range Temperature variation range
       /// \sa HeatSourceTemperatureRange
       public: virtual void SetHeatSourceTemperatureRange(float _range) = 0;
 

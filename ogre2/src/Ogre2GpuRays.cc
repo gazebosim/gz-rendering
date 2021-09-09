@@ -191,6 +191,9 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \brief Listener for setting particle noise value based on particle
   /// emitter region
   public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
+
+  /// \brief Min allowed angle in radians;
+  public: const math::Angle kMinAllowedAngle = 1e-4;
 };
 
 using namespace ignition;
@@ -474,6 +477,7 @@ void Ogre2GpuRays::ConfigureCamera()
 {
   // horizontal gpu rays setup
   auto hfovAngle = this->AngleMax() - this->AngleMin();
+  hfovAngle = std::max(this->dataPtr->kMinAllowedAngle, hfovAngle);
   this->SetHFOV(hfovAngle);
 
   // vertical laser setup
@@ -481,7 +485,8 @@ void Ogre2GpuRays::ConfigureCamera()
 
   if (this->VerticalRangeCount() > 1)
   {
-    vfovAngle = (this->VerticalAngleMax() - this->VerticalAngleMin()).Radian();
+    vfovAngle = std::max(this->dataPtr->kMinAllowedAngle.Radian(),
+        (this->VerticalAngleMax() - this->VerticalAngleMin()).Radian());
   }
   else
   {
@@ -566,11 +571,16 @@ void Ogre2GpuRays::CreateSampleTexture()
   double max = this->AngleMax().Radian();
   double vmin = this->VerticalAngleMin().Radian();
   double vmax = this->VerticalAngleMax().Radian();
-  double hStep = (max-min) / static_cast<double>(this->dataPtr->w2nd-1);
+
+  double hAngle = std::max(this->dataPtr->kMinAllowedAngle.Radian(), max - min);
+  double vAngle = std::max(this->dataPtr->kMinAllowedAngle.Radian(),
+      vmax - vmin);
+
+  double hStep = hAngle / static_cast<double>(this->dataPtr->w2nd-1);
   double vStep = 1.0;
   // non-planar case
   if (this->dataPtr->h2nd > 1)
-    vStep = (vmax-vmin) / static_cast<double>(this->dataPtr->h2nd-1);
+    vStep = vAngle / static_cast<double>(this->dataPtr->h2nd-1);
 
   // create an RGB texture (cubeUVTex) to pack info that tells the shaders how
   // to sample from the cubemap textures.

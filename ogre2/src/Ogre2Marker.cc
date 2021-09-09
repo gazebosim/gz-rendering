@@ -104,7 +104,6 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
         return this->dataPtr->geom->OgreObject();
       }
       return nullptr;
-      break;
     }
     case MT_LINE_STRIP:
     case MT_LINE_LIST:
@@ -118,7 +117,6 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
         return this->dataPtr->dynamicRenderable->OgreObject();
       }
       return nullptr;
-      break;
     }
     default:
       ignerr << "Invalid Marker type " << this->markerType << "\n";

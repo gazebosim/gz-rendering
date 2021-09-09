@@ -17,12 +17,14 @@
 
 #include "Ogre2IgnHlmsCustomizations.hh"
 
+#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
 #include <OgreCamera.h>
 #include <OgreHlms.h>
-#include <OgreRenderTarget.h>
+#include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreViewport.h>
 #ifdef _MSC_VER
@@ -84,7 +86,8 @@ float* Ogre2IgnHlmsCustomizations::preparePassBuffer(
 {
   if (!_casterPass && this->MinDistanceClipEnabled())
   {
-    Ogre::Camera *camera = _sceneManager->getCameraInProgress();
+    const Ogre::Camera *camera =
+        _sceneManager->getCamerasInProgress().renderingCamera;
     const Ogre::Vector3 &camPos = camera->getDerivedPosition();
 
     // float4 ignMinClipDistance_ignCameraPos
@@ -99,11 +102,13 @@ float* Ogre2IgnHlmsCustomizations::preparePassBuffer(
       // so we get the view matrix that's going to be used instead of
       // recalculating everything again (which can get complex if VR is
       // being used)
-      const Ogre::RenderTarget *renderTarget =
-          _sceneManager->getCurrentViewport()->getTarget();
+      auto engine = Ogre2RenderEngine::Instance();
+      auto ogreRoot = engine->OgreRoot();
+      Ogre::RenderPassDescriptor *renderPassDesc =
+          ogreRoot->getRenderSystem()->getCurrentPassDescriptor();
       Ogre::Matrix4 projectionMatrix =
           camera->getProjectionMatrixWithRSDepth();
-      if( renderTarget->requiresTextureFlipping() )
+      if (renderPassDesc->requiresTextureFlipping())
       {
           projectionMatrix[1][0]  = -projectionMatrix[1][0];
           projectionMatrix[1][1]  = -projectionMatrix[1][1];

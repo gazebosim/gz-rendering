@@ -18,6 +18,9 @@
 #define IGNITION_RENDERING_BASE_BASEGEOMETRY_HH_
 
 #include <string>
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -46,11 +49,13 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool unique = true) override = 0;
 
-      public: virtual GeometryPtr Clone(const std::string &_name,
-                  VisualPtr _newParent) const override = 0;
+      public: virtual GeometryPtr Clone() const override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
+
+      /// \brief Name of the mesh for this geometry
+      protected: std::string meshName;
     };
 
     //////////////////////////////////////////////////
@@ -92,10 +97,35 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    GeometryPtr BaseGeometry<T>::Clone() const
+    {
+      if (!this->Scene())
+      {
+        ignerr << "Cloning a geometry failed because the geometry to be "
+          << "cloned does not belong to a scene." << std::endl;
+        return nullptr;
+      }
+      else if (this->meshName.empty())
+      {
+        ignerr << "Cloning a geometry failed because the name of the mesh is "
+          << "missing." << std::endl;
+        return nullptr;
+      }
+
+      auto result = this->Scene()->CreateMesh(this->meshName);
+      if (result && this->Material())
+        result->SetMaterial(this->Material());
+
+      return result;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseGeometry<T>::Destroy()
     {
       T::Destroy();
       this->RemoveParent();
+      this->meshName = "";
     }
     }
   }

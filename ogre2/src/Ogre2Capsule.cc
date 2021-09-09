@@ -102,9 +102,9 @@ void Ogre2Capsule::Update()
     meshMgr->CreateCapsule(capsuleMeshName, this->radius, this->length, 32, 32);
   }
 
-  MeshDescriptor meshDescriptor;
-  meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
-  if (meshDescriptor.mesh == nullptr)
+  MeshDescriptor descriptor;
+  descriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
+  if (descriptor.mesh == nullptr)
   {
     ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
     return;
@@ -123,7 +123,7 @@ void Ogre2Capsule::Update()
     this->dataPtr->ogreMesh->Destroy();
   }
   this->dataPtr->ogreMesh = std::dynamic_pointer_cast<Ogre2Mesh>(
-      this->Scene()->CreateMesh(meshDescriptor));
+      this->Scene()->CreateMesh(descriptor));
   if (this->dataPtr->material != nullptr)
   {
     this->dataPtr->ogreMesh->SetMaterial(this->dataPtr->material, false);

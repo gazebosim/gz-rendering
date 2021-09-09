@@ -47,10 +47,6 @@ namespace ignition
       // Documentation inherited.
       public: virtual VisualPtr Parent() const override;
 
-      // Documentation inherited.
-      public: virtual GeometryPtr Clone(const std::string &_name,
-                  VisualPtr _newParent) const override;
-
       /// \brief Get the ogre object representing this geometry
       /// \return Pointer to an ogre movable object
       public: virtual Ogre::MovableObject *OgreObject() const = 0;
@@ -61,11 +57,6 @@ namespace ignition
 
       /// \brief Parent visual
       protected: Ogre2VisualPtr parent;
-
-      /// \brief The name from the descriptor object that was used
-      /// to help create this geometry (for something like meshes, this would be
-      /// the mesh name from the MeshDescriptor
-      protected: std::string descriptorName;
 
       /// \brief Make ogre2 visual our friend so it can it can access function
       /// for setting the parent of this geometry

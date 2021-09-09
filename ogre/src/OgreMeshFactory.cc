@@ -64,7 +64,7 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
     return nullptr;
   }
 
-  mesh->descriptorName = _desc.meshName;
+  mesh->meshName = _desc.meshName;
 
   // create sub-mesh store
   OgreSubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreEntity);

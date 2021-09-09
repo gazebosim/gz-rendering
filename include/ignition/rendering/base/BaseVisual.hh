@@ -533,18 +533,12 @@ namespace ignition
       }
 
       for (unsigned int i = 0; i < this->GeometryCount(); ++i)
-      {
-        auto geometry = this->GeometryByIndex(i);
-        // TODO(adlarkin) fix the Clone call below once geometry cloning
-        // approach is cleaned up
-        auto clonedGeometry = geometry->Clone("", nullptr);
-        result->AddGeometry(clonedGeometry);
-      }
+        result->AddGeometry(this->GeometryByIndex(i)->Clone());
 
       if (this->Material())
         result->SetMaterial(this->Material());
 
-      // should userData be cloned, or should that be left out since (I believe)
+      // should userData be cloned? Or should that be left out since (I believe)
       // userData is intended to be custom/unique for each visual
       //
       // copying userData seems to segfault, so this is commented out for now

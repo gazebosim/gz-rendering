@@ -855,7 +855,7 @@ void Ogre2ThermalCamera::Render()
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
 #ifndef _WIN32
-  glEnable(GL_DEPTH_CLAMP);
+  glDisable(GL_DEPTH_CLAMP);
 #endif
 }
 

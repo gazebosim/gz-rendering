@@ -35,7 +35,7 @@ namespace ignition
 
       public: virtual ~OptixCamera();
 
-      public: virtual void SetHFOV(const math::Angle &_angle);
+      public: virtual void SetHFOV(const math::Angle &_hfov);
 
       public: virtual void SetAspectRatio(const double _ratio);
 

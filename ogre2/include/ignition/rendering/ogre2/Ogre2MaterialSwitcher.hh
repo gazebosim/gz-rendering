@@ -63,16 +63,15 @@ namespace ignition
       public: void Reset();
 
       /// \brief Ogre's pre render update callback
-      /// \param[in] _evt Ogre render target event containing information about
+      /// \param[in] _cam Ogre render target event containing information about
       /// the source render target.
       public: virtual void cameraPreRenderScene(
                   Ogre::Camera *_cam) override;
 
       /// \brief Ogre's post render update callback
-      /// \param[in] _evt Ogre render target event containing information about
+      /// \param[in] _cam Ogre render target event containing information about
       /// the source render target.
-      public: virtual void cameraPostRenderScene (
-                  Ogre::Camera * _cam) override;
+      public: virtual void cameraPostRenderScene(Ogre::Camera *_cam) override;
 
       /// \brief Current unique color value
       private: ignition::math::Color currentColor;

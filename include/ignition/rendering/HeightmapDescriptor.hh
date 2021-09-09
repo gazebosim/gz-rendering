@@ -123,7 +123,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     public: double MinHeight() const;
 
     /// \brief Set the minimum height of the blend in meters.
-    /// \param[in] _uri The minimum height of the blend in meters.
+    /// \param[in] _minHeight The minimum height of the blend in meters.
     public: void SetMinHeight(double _minHeight);
 
     /// \brief Get the heightmap blend's fade distance.
@@ -131,7 +131,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     public: double FadeDistance() const;
 
     /// \brief Set the distance over which the blend occurs.
-    /// \param[in] _uri The distance in meters.
+    /// \param[in] _fadeDistance The distance in meters.
     public: void SetFadeDistance(double _fadeDistance);
 
     /// \brief Private data pointer.
@@ -149,7 +149,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     public: HeightmapDescriptor();
 
     /// \brief Copy constructor
-    /// \param[in] _heightmap HeightmapDescriptor to copy.
+    /// \param[in] _desc HeightmapDescriptor to copy.
     public: HeightmapDescriptor(const HeightmapDescriptor &_desc);
 
     /// \brief Move constructor

@@ -54,7 +54,7 @@ namespace ignition
       /// \brief Configure behaviour for data values outside of camera range
       /// \param[in] _clamp True to clamp data to camera clip distances,
       // false to leave data values as +/-inf when out of camera range
-      public: virtual void SetClamp(const bool _value) = 0;
+      public: virtual void SetClamp(const bool _clamp) = 0;
 
       /// \brief Get behaviour for data values outside of camera range
       /// \return True if data values are clampped to camera clip distances,

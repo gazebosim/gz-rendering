@@ -45,30 +45,41 @@ namespace ignition
 
       public: virtual ~OgreCamera();
 
-      public: virtual void SetHFOV(const math::Angle &_angle) override;
+      // Documentation inherited.
+      public: virtual void SetHFOV(const math::Angle &_hfov) override;
 
+      // Documentation inherited.
       public: virtual double AspectRatio() const override;
 
+      // Documentation inherited.
       public: virtual void SetAspectRatio(const double _ratio) override;
 
+      // Documentation inherited.
       public: virtual unsigned int AntiAliasing() const override;
 
+      // Documentation inherited.
       public: virtual void SetAntiAliasing(const unsigned int _aa) override;
 
+      // Documentation inherited.
       public: virtual void SetFarClipPlane(const double _far) override;
 
+      // Documentation inherited.
       public: virtual void SetNearClipPlane(const double _near) override;
 
       public: virtual math::Color BackgroundColor() const;
 
       public: virtual void SetBackgroundColor(const math::Color &_color);
 
+      // Documentation inherited.
       public: virtual void Render() override;
 
+      // Documentation inherited.
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
+      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
+      // Documentation inherited.
       public: virtual math::Matrix4d ViewMatrix() const override;
 
       public: void SetVFOV(double cameraVFOV) const;

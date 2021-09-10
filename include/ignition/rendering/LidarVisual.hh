@@ -171,7 +171,8 @@ namespace ignition
       /// \return The type for lidar visual
       public: virtual LidarVisualType Type() const = 0;
 
-      /// \brief Set size of the lidar visualization, e.g. size of lidar points
+      /// \brief Set size of the lidar visualization,
+      /// e.g. size of rasterized lidar points in pixels
       /// \param[in] _size Size of the lidar visualization.
       public: virtual void SetSize(double _size) = 0;
 

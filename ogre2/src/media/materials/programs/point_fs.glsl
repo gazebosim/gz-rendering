@@ -22,7 +22,7 @@ out vec4 fragColor;
 void main()
 {
   // hardcode to blue color for now
-  // todo(anyone) undate Ogre2DynamicRenderable to support vertex coloring
+  // todo(anyone) update Ogre2DynamicRenderable to support vertex coloring
   // so we can set color using the line below
   // fragColor = gl_Color;
   fragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);

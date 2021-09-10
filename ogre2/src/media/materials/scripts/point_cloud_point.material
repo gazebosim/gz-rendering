@@ -22,7 +22,7 @@ vertex_program PointCloudVS glsl
   default_params
   {
     param_named_auto worldViewProj worldviewproj_matrix
-    param_named size 1.0
+    param_named size float 1.0
   }
 }
 

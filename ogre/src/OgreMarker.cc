@@ -34,10 +34,6 @@ class ignition::rendering::OgreMarkerPrivate
 
   /// \brief Geometry Object for primitive shapes
   public: OgreGeometryPtr geom{nullptr};
-
-  /// \brief Pointer to point cloud material.
-  /// Used when MarkerType = MT_POINTS.
-  public: Ogre::MaterialPtr pointsMat;
 };
 
 using namespace ignition;
@@ -62,14 +58,15 @@ void OgreMarker::PreRender()
       this->dataPtr->dynamicRenderable &&
       this->dataPtr->dynamicRenderable->PointCount() > 0u)
   {
-    if (this->dataPtr->dynamicRenderable->getMaterial() !=
-        this->dataPtr->pointsMat)
+    if (this->dataPtr->dynamicRenderable->getMaterial().isNull() ||
+        this->dataPtr->dynamicRenderable->getMaterial()->getName()
+        != "PointCloudPoint")
     {
-      this->dataPtr->dynamicRenderable->setMaterial(
-          this->dataPtr->pointsMat->getName());
+      this->dataPtr->dynamicRenderable->setMaterial("PointCloudPoint");
     }
 
-    auto pass = this->dataPtr->pointsMat->getTechnique(0)->getPass(0);
+    auto pass = this->dataPtr->dynamicRenderable->getMaterial()->getTechnique(
+        0)->getPass(0);
     auto vertParams = pass->getVertexProgramParameters();
     vertParams->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
   }
@@ -136,10 +133,6 @@ void OgreMarker::Init()
 //////////////////////////////////////////////////
 void OgreMarker::Create()
 {
-  this->dataPtr->pointsMat =
-      Ogre::MaterialManager::getSingleton().getByName(
-      "PointCloudPoint");
-
   this->markerType = MT_NONE;
   this->dataPtr->dynamicRenderable.reset(new OgreDynamicLines(MT_LINE_STRIP));
 

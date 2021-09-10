@@ -63,10 +63,6 @@ class ignition::rendering::Ogre2MarkerPrivate
 
   /// \brief DynamicLines Object to display
   public: std::shared_ptr<Ogre2DynamicRenderable> dynamicRenderable;
-
-  /// \brief Pointer to point cloud material.
-  /// Used when MarkerType = MT_POINTS.
-  public: Ogre::MaterialPtr pointsMat;
 };
 
 using namespace ignition;
@@ -93,12 +89,27 @@ void Ogre2Marker::PreRender()
   {
     Ogre::Item *item = dynamic_cast<Ogre::Item *>(
         this->dataPtr->dynamicRenderable->OgreObject());
-    if (item->getSubItem(0)->getMaterial() != this->dataPtr->pointsMat)
-      item->getSubItem(0)->setMaterial(this->dataPtr->pointsMat);
+    if (!item->getSubItem(0)->getMaterial() ||
+        item->getSubItem(0)->getMaterial()->getName() != "PointCloudPoint")
+    {
+      // enable GL_PROGRAM_POINT_SIZE so we can set gl_PointSize in vertex
+      // shader
+      #ifdef __APPLE__
+        glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+      #else
+      #ifndef _WIN32
+        glEnable(GL_PROGRAM_POINT_SIZE);
+      #endif
+      #endif
+      Ogre::MaterialPtr pointsMat =
+          Ogre::MaterialManager::getSingleton().getByName(
+          "PointCloudPoint");
+      item->getSubItem(0)->setMaterial(pointsMat);
+    }
 
     // point renderables use low level materials
     // get the material and set size uniform variable
-    auto pass = this->dataPtr->pointsMat->getTechnique(0)->getPass(0);
+    auto pass = item->getSubItem(0)->getMaterial()->getTechnique(0)->getPass(0);
     auto vertParams = pass->getVertexProgramParameters();
     vertParams->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
 
@@ -134,8 +145,6 @@ void Ogre2Marker::Destroy()
     this->Scene()->DestroyMaterial(this->dataPtr->material);
     this->dataPtr->material.reset();
   }
-
-  this->dataPtr->pointsMat.setNull();
 }
 
 //////////////////////////////////////////////////
@@ -186,18 +195,6 @@ void Ogre2Marker::Init()
 //////////////////////////////////////////////////
 void Ogre2Marker::Create()
 {
-  // enable GL_PROGRAM_POINT_SIZE so we can set gl_PointSize in vertex shader
-#ifdef __APPLE__
-  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
-#else
-#ifndef _WIN32
-  glEnable(GL_PROGRAM_POINT_SIZE);
-#endif
-#endif
-  this->dataPtr->pointsMat =
-      Ogre::MaterialManager::getSingleton().getByName(
-      "PointCloudPoint");
-
   this->markerType = MT_NONE;
   this->dataPtr->dynamicRenderable.reset(new Ogre2DynamicRenderable(
       this->scene));

@@ -15,18 +15,39 @@
  *
  */
 
+#ifdef __APPLE__
+  #define GL_SILENCE_DEPRECATION
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glext.h>
+#else
+#ifndef _WIN32
+  #include <GL/gl.h>
+#endif
+#endif
+
 #include <ignition/common/Console.hh>
 
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
 
 #include "ignition/rendering/ogre2/Ogre2Capsule.hh"
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreItem.h>
+#include <OgreMaterialManager.h>
+#include <OgreTechnique.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 class ignition::rendering::Ogre2MarkerPrivate
 {
@@ -42,6 +63,10 @@ class ignition::rendering::Ogre2MarkerPrivate
 
   /// \brief DynamicLines Object to display
   public: std::shared_ptr<Ogre2DynamicRenderable> dynamicRenderable;
+
+  /// \brief Pointer to point cloud material.
+  /// Used when MarkerType = MT_POINTS.
+  public: Ogre::MaterialPtr pointsMat;
 };
 
 using namespace ignition;
@@ -62,6 +87,30 @@ Ogre2Marker::~Ogre2Marker()
 //////////////////////////////////////////////////
 void Ogre2Marker::PreRender()
 {
+  if (this->markerType == MarkerType::MT_POINTS &&
+      this->dataPtr->dynamicRenderable &&
+      this->dataPtr->dynamicRenderable->PointCount() > 0u)
+  {
+    Ogre::Item *item = dynamic_cast<Ogre::Item *>(
+        this->dataPtr->dynamicRenderable->OgreObject());
+    if (item->getSubItem(0)->getMaterial() != this->dataPtr->pointsMat)
+      item->getSubItem(0)->setMaterial(this->dataPtr->pointsMat);
+
+    // point renderables use low level materials
+    // get the material and set size uniform variable
+    auto pass = this->dataPtr->pointsMat->getTechnique(0)->getPass(0);
+    auto vertParams = pass->getVertexProgramParameters();
+    vertParams->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
+
+    // support setting color only from diffuse for now
+    if (this->dataPtr->material)
+    {
+      auto fragParams = pass->getFragmentProgramParameters();
+      fragParams->setNamedConstant("color",
+          Ogre2Conversions::Convert(this->dataPtr->material->Diffuse()));
+    }
+  }
+
   this->dataPtr->dynamicRenderable->Update();
 }
 
@@ -85,6 +134,8 @@ void Ogre2Marker::Destroy()
     this->Scene()->DestroyMaterial(this->dataPtr->material);
     this->dataPtr->material.reset();
   }
+
+  this->dataPtr->pointsMat.setNull();
 }
 
 //////////////////////////////////////////////////
@@ -135,6 +186,18 @@ void Ogre2Marker::Init()
 //////////////////////////////////////////////////
 void Ogre2Marker::Create()
 {
+  // enable GL_PROGRAM_POINT_SIZE so we can set gl_PointSize in vertex shader
+#ifdef __APPLE__
+  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+#else
+#ifndef _WIN32
+  glEnable(GL_PROGRAM_POINT_SIZE);
+#endif
+#endif
+  this->dataPtr->pointsMat =
+      Ogre::MaterialManager::getSingleton().getByName(
+      "PointCloudPoint");
+
   this->markerType = MT_NONE;
   this->dataPtr->dynamicRenderable.reset(new Ogre2DynamicRenderable(
       this->scene));

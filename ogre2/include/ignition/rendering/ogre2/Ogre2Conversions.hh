@@ -105,7 +105,7 @@ namespace ignition
       public: static Ogre::Matrix4 Convert(const math::Matrix4d &_m);
 
       /// \brief Ign-rendering PixelFormat to Ogre PixelFormat
-      /// \param[in] _v Ign-rendering PixelFormat
+      /// \param[in] _format Ign-rendering PixelFormat
       /// return Ogre PixelFormat
       public: static Ogre::PixelFormatGpu Convert(PixelFormat _format);
 

@@ -40,11 +40,13 @@ namespace ignition
 
       public: virtual void RemoveParent() override;
 
-      public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true) override;
+      // Documentation inherited
+      public: virtual void SetMaterial(const std::string &_material,
+                  bool _unique = true) override;
 
+      // Documentation inherited
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true) override = 0;
+                  bool _unique = true) override = 0;
 
       // Documentation inherited
       public: virtual void Destroy() override;

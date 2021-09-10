@@ -32,7 +32,7 @@ namespace ignition
     // Forward declare private data pointer.
     class OrthoViewControllerPrivate;
 
-    /// \class OrthoViewController OrbitVeiwController.hh
+    /// \class OrthoViewController OrthoViewController.hh
     /// \brief Orthographic view controller
     class IGNITION_RENDERING_VISIBLE OrthoViewController
         : public virtual ViewController

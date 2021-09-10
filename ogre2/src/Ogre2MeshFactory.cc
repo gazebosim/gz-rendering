@@ -526,6 +526,15 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
     return false;
   }
 
+  if (ogreMesh->getNumSubMeshes() == 0u)
+  {
+    std::string msg = "Unable to load mesh: '" + _desc.meshName + "'";
+    if (!_desc.subMeshName.empty())
+      msg += ", submesh: '" + _desc.subMeshName + "'";
+    msg += ". Mesh will be empty.";
+    ignwarn << msg << std::endl;
+  }
+
   return true;
 }
 

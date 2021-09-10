@@ -100,7 +100,7 @@ namespace ignition
       public: virtual int32_t Layer() const = 0;
 
       /// \brief Set the render type of this Marker
-      /// \param[in] The desired render type
+      /// \param[in] _markerType The desired render type
       public: virtual void SetType(
                   const ignition::rendering::MarkerType _markerType) = 0;
 

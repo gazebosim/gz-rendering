@@ -64,7 +64,7 @@ namespace ignition
       /// \param[in] _renderTarget the RenderTarget this should apply to
       /// \param[in] _material the material to apply to all renderables
       public: Ogre2RenderTargetMaterial(Ogre::SceneManager *_scene,
-        Ogre::Camera *renderTexture, Ogre::Material *_material);
+        Ogre::Camera *_renderTarget, Ogre::Material *_material);
 
       /// \brief destructor
       public: ~Ogre2RenderTargetMaterial();

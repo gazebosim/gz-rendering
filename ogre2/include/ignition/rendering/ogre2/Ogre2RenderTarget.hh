@@ -127,7 +127,7 @@ namespace ignition
       /// \brief Returns true if this is a render window
       /// TODO(anyone): this function should be virtual.
       /// We didn't do it to preserve ABI.
-      /// Look in commit history for '#Ogre2IsRenderWindowABI' to
+      /// Look in commit history for 'Ogre2IsRenderWindowABI' to
       /// see changes made and revert
       public: bool IsRenderWindow() const;
 

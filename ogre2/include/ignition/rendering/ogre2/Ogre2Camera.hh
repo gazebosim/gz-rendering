@@ -46,7 +46,7 @@ namespace ignition
       public: virtual ~Ogre2Camera();
 
       // Documenation inherited.
-      public: virtual void SetHFOV(const math::Angle &_angle) override;
+      public: virtual void SetHFOV(const math::Angle &_hfov) override;
 
       // Documenation inherited.
       public: virtual double AspectRatio() const override;

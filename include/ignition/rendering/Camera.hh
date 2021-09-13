@@ -81,8 +81,8 @@ namespace ignition
       public: virtual math::Angle HFOV() const = 0;
 
       /// \brief Set the camera's horizontal field-of-view
-      /// \param[in] _angle Desired horizontal field-of-view
-      public: virtual void SetHFOV(const math::Angle &_angle) = 0;
+      /// \param[in] _hfov Desired horizontal field-of-view
+      public: virtual void SetHFOV(const math::Angle &_hfov) = 0;
 
       /// \brief Get the camera's aspect ratio
       /// \return The camera's aspect ratio

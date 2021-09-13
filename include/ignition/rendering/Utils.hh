@@ -47,7 +47,7 @@ namespace ignition
         const math::Vector2i &_screenPos,
         const CameraPtr &_camera,
         const RayQueryPtr &_rayQuery,
-        float maxDistance = 10.0);
+        float _maxDistance = 10.0);
 
     /// \brief Retrieve the first point on a surface in the 3D scene hit by a
     /// ray cast from the given 2D screen coordinates.
@@ -63,7 +63,7 @@ namespace ignition
         const CameraPtr &_camera,
         const RayQueryPtr &_rayQuery,
         RayQueryResult &_rayResult,
-        float maxDistance = 10.0);
+        float _maxDistance = 10.0);
 
     /// \brief Retrieve the point on a plane at z = 0 in the 3D scene hit by a
     /// ray cast from the given 2D screen coordinates.
@@ -77,7 +77,7 @@ namespace ignition
       const math::Vector2i &_screenPos,
       const CameraPtr &_camera,
       const RayQueryPtr &_rayQuery,
-      const float offset = 0.0);
+      const float _offset = 0.0);
 
     /// \brief Get the screen scaling factor.
     /// \return The screen scaling factor.

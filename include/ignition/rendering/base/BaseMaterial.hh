@@ -98,7 +98,7 @@ namespace ignition
       public: virtual void SetReflectivity(const double _reflectivity) override;
 
       // Documentation inherited
-      public: virtual void SetCastShadows(const bool _cast) override;
+      public: virtual void SetCastShadows(const bool _castShadows) override;
 
       // Documentation inherited
       public: virtual void SetReceiveShadows(const bool _receiveShadows)
@@ -247,8 +247,9 @@ namespace ignition
       // Documentation inherited
       public: virtual MaterialType Type() const override;
 
-      public: virtual void SetShaderType(enum ShaderType /*_type*/) override
+      public: virtual void SetShaderType(enum ShaderType _type) override
              {
+               (void)_type;
                // no op
              }
 
@@ -501,9 +502,9 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetCastShadows(const bool _cast)
+    void BaseMaterial<T>::SetCastShadows(const bool _castShadows)
     {
-      this->castShadows = _cast;
+      this->castShadows = _castShadows;
     }
 
     //////////////////////////////////////////////////

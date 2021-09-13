@@ -85,7 +85,7 @@ namespace ignition
       public: virtual std::string Texture() const override;
 
       // Documentation inherited
-      public: virtual void SetTexture(const std::string &_name) override;
+      public: virtual void SetTexture(const std::string &_texture) override;
 
       // Documentation inherited
       public: virtual void ClearTexture() override;
@@ -97,7 +97,7 @@ namespace ignition
       public: virtual std::string NormalMap() const override;
 
       // Documentation inherited
-      public: virtual void SetNormalMap(const std::string &_name) override;
+      public: virtual void SetNormalMap(const std::string &_normalMap) override;
 
       // Documentation inherited
       public: virtual void ClearNormalMap() override;
@@ -109,7 +109,8 @@ namespace ignition
       public: virtual std::string RoughnessMap() const override;
 
       // Documentation inherited
-      public: virtual void SetRoughnessMap(const std::string &_name) override;
+      public: virtual void SetRoughnessMap(
+        const std::string &_roughnessMap) override;
 
       // Documentation inherited
       public: virtual void ClearRoughnessMap() override;
@@ -121,7 +122,8 @@ namespace ignition
       public: virtual std::string MetalnessMap() const override;
 
       // Documentation inherited
-      public: virtual void SetMetalnessMap(const std::string &_name) override;
+      public: virtual void SetMetalnessMap(
+        const std::string &_metalnessMap) override;
 
       // Documentation inherited
       public: virtual void ClearMetalnessMap() override;
@@ -133,7 +135,8 @@ namespace ignition
       public: virtual std::string EnvironmentMap() const override;
 
       // Documentation inherited
-      public: virtual void SetEnvironmentMap(const std::string &_name) override;
+      public: virtual void SetEnvironmentMap(
+        const std::string &_metalnessMap) override;
 
       // Documentation inherited
       public: virtual void ClearEnvironmentMap() override;
@@ -148,7 +151,8 @@ namespace ignition
       public: virtual std::string EmissiveMap() const override;
 
       // Documentation inherited
-      public: virtual void SetEmissiveMap(const std::string &_name) override;
+      public: virtual void SetEmissiveMap(
+        const std::string &_emissiveMap) override;
 
       // Documentation inherited
       public: virtual void ClearEmissiveMap() override;

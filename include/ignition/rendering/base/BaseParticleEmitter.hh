@@ -110,8 +110,8 @@ namespace ignition
       public: virtual double MaxVelocity() const override;
 
       // Documentation inherited.
-      public: virtual void SetVelocityRange(double _minVel,
-                                            double _maxVel) override;
+      public: virtual void SetVelocityRange(double _minVelocity,
+                                            double _maxVelocity) override;
 
       // Documentation inherited.
       public: virtual ignition::math::Color ColorStart() const override;

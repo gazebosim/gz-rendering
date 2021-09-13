@@ -8,13 +8,11 @@ find_package(ignition-plugin1 REQUIRED COMPONENTS all)
 
 include_directories(/ignition-ws/shared/RadeonProRenderSDK/RadeonProRender/inc)
 find_library(RADEON_PRO_RENDER RadeonProRender64 HINTS /ignition-ws/shared/RadeonProRenderSDK/RadeonProRender/binUbuntu18/)
-find_library(RPR_LOAD_STORE RprLoadStore64 HINTS /ignition-ws/shared/RadeonProRenderSDK/RadeonProRender/binUbuntu18/)
 
 add_library(ProRenderEngine SHARED ProRenderEngine.cc)
 target_link_libraries(ProRenderEngine
   PUBLIC
     ${RADEON_PRO_RENDER}
-    ${RPR_LOAD_STORE}
     ${IGNITION-RENDERING_LIBRARIES}
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
   PRIVATE

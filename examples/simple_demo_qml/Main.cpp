@@ -26,53 +26,57 @@
 
 int main(int _argc, char** _argv)
 {
-    try
+  try
+  {
+    // use single-threaded scene graph rendering
+    qputenv("QSG_RENDER_LOOP", "basic");
+
+    // requested surface format
+    QSurfaceFormat format = RenderThread::CreateSurfaceFormat();
+    QSurfaceFormat::setDefaultFormat(format);
+    RenderThread::Print(format);
+
+    qmlRegisterType<ThreadRenderer>("IgnitionRendering", 1, 0,
+        "ThreadRenderer");
+
+    QGuiApplication app(_argc, _argv);
+
+    int execReturn = 0;
     {
-        // requested surface format
-        QSurfaceFormat format = RenderThread::CreateSurfaceFormat();
-        QSurfaceFormat::setDefaultFormat(format);
-        RenderThread::Print(format);
+      QQuickView view;
 
-        qmlRegisterType<ThreadRenderer>("IgnitionRendering", 1, 0, "ThreadRenderer");
+      // Rendering in a thread introduces a slightly more complicated cleanup
+      // so we ensure that no cleanup of graphics resources happen until the
+      // application is shutting down.
+      view.setPersistentOpenGLContext(true);
+      view.setPersistentSceneGraph(true);
 
-        QGuiApplication app(_argc, _argv);
+      view.setResizeMode(QQuickView::SizeRootObjectToView);
+      view.setSource(QUrl("qrc:/Main.qml"));
+      view.show();
 
-        int execReturn = 0;
-        {
-            QQuickView view;
-
-            // Rendering in a thread introduces a slightly more complicated cleanup
-            // so we ensure that no cleanup of graphics resources happen until the
-            // application is shutting down.
-            view.setPersistentOpenGLContext(true);
-            view.setPersistentSceneGraph(true);
-
-            view.setResizeMode(QQuickView::SizeRootObjectToView);
-            view.setSource(QUrl("qrc:/Main.qml"));
-            view.show();
-
-            execReturn = app.exec();
-        }
-
-        // As the render threads make use of our QGuiApplication object
-        // to clean up gracefully, wait for them to finish before
-        // QGuiApp is taken off the heap.
-        for (QThread *t : qAsConst(ThreadRenderer::threads))
-        {
-            t->wait();
-            delete t;
-            t = nullptr;
-        }
-
-        return execReturn;
+      execReturn = app.exec();
     }
-    catch (const std::exception& e)
+
+    // As the render threads make use of our QGuiApplication object
+    // to clean up gracefully, wait for them to finish before
+    // QGuiApp is taken off the heap.
+    for (QThread *t : qAsConst(ThreadRenderer::threads))
     {
-        std::cerr << e.what() << '\n';
+      t->wait();
+      delete t;
+      t = nullptr;
     }
-    catch (...)
-    {
-        std::cerr << "Unknown exception"  << '\n';
-    }
-    return -1; 
+
+    return execReturn;
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << e.what() << '\n';
+  }
+  catch (...)
+  {
+    std::cerr << "Unknown exception"  << '\n';
+  }
+  return -1;
 }

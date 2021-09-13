@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_IGNITION_RENDERER_HH_
-#define IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_IGNITION_RENDERER_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_IGNITION_RENDERER_HH_
+#define IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_IGNITION_RENDERER_HH_
 
 #include <QSize>
 
@@ -28,52 +28,52 @@
 /// to apply to a render surface.
 class IgnitionRenderer
 {
-public:
-    /// \brief Destructor
-    virtual ~IgnitionRenderer();
+  /// \brief Destructor
+  public: virtual ~IgnitionRenderer();
 
-    /// \brief Constructor
-    IgnitionRenderer();
+  /// \brief Constructor
+  public: IgnitionRenderer();
 
-    /// \brief Render the next frame. May be called on a render thread.
-    void Render();
+  /// \brief Render the next frame. May be called on a render thread.
+  public: void Render();
 
-    /// \brief Initialise the render engine and scene. May be called on a render thread.
-    void Initialise();
+  /// \brief Initialise the render engine and scene. May be called on a render
+  /// thread.
+  public: void Initialise();
 
-    /// \brief Initialise the render engine and scene. Must be called on the main thread.
-    void InitialiseOnMainThread();
+  /// \brief Initialise the render engine and scene. Must be called on the main
+  /// thread.
+  public: void InitialiseOnMainThread();
 
-    /// \brief Return a boolean: true if the renderer is initialised. 
-    bool Initialised() const;
+  /// \brief Return a boolean: true if the renderer is initialised.
+  public: bool Initialised() const;
 
-    /// \brief Return the ID of the OpenGL texture.
-    unsigned int TextureId() const;
+  /// \brief Return the ID of the OpenGL texture.
+  public: unsigned int TextureId() const;
 
-    /// \brief Return the size of the texture
-    QSize TextureSize() const;
+  /// \brief Return the size of the texture
+  public: QSize TextureSize() const;
 
-private:
-    /// \brief Initialise the render engine. Must be called on the main thread. 
-    void InitEngine();
+  /// \brief Initialise the render engine. Must be called on the main thread.
+  private: void InitEngine();
 
-    /// \brief Move the camera position one step in its orbit.
-    void UpdateCamera();
+  /// \brief Move the camera position one step in its orbit.
+  private: void UpdateCamera();
 
-    /// \brief The OpenGL texture ID
-    unsigned int textureId = 0;
+  /// \brief The OpenGL texture ID
+  private: unsigned int textureId = 0;
 
-    /// \brief The sise of the texture being rendered
-    QSize textureSize = QSize(800, 600);
+  /// \brief The sise of the texture being rendered
+  private: QSize textureSize = QSize(800, 600);
 
-    /// \brief A flag to mark if the renderer has been initialised
-    bool initialised = false;
+  /// \brief A flag to mark if the renderer has been initialised
+  private: bool initialised = false;
 
-    /// \brief The current camera offset in its orbit
-    double cameraOffset = 0.0;
+  /// \brief The current camera offset in its orbit
+  private: double cameraOffset = 0.0;
 
-    /// \brief The camera for the example scene
-    ignition::rendering::CameraPtr camera;
+  /// \brief The camera for the example scene
+  private: ignition::rendering::CameraPtr camera;
 };
 
-#endif // IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_IGNITION_RENDERER_HH_
+#endif // IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_IGNITION_RENDERER_HH_

@@ -222,7 +222,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     public: virtual void Render() 
     {
       this->renderSessionPtr->Start();
-      usleep(500000);
+      usleep(120000);
       this->renderSessionPtr->Stop();
       luxcore::Film& film = this->renderSessionPtr->GetFilm();     
       
@@ -235,16 +235,9 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       }
 
       unsigned char* buffer = (unsigned char*)this->renderTarget->HostDataBuffer();
-      // for (unsigned int y = 0; y < this->ImageHeight(); y++) {
-      //   for (unsigned int x = 0; x < this->ImageWidth(); x++) {
-      //     buffer[(3 * (y * this->ImageWidth() + x)) + 0] = luxcoreBuffer[(3 * (y * this->ImageWidth() + x)) + 0] * 255.0;
-      //     buffer[(3 * (y * this->ImageWidth() + x)) + 1] = luxcoreBuffer[(3 * (y * this->ImageWidth() + x)) + 1] * 255.0;
-      //     buffer[(3 * (y * this->ImageWidth() + x)) + 2] = luxcoreBuffer[(3 * (y * this->ImageWidth() + x)) + 2] * 255.0;
-      //   }
-      // }
-      // for (unsigned int x = 0; x < this->ImageHeight() * this->ImageWidth() * 3; x++) {
-      //   buffer[x] = luxcoreBuffer[x] * 255;
-      // }
+      for (unsigned int x = 0; x < this->ImageHeight() * this->ImageWidth() * 3; x++) {
+        buffer[x] = luxcoreBuffer[x] * 255;
+      }
 
       free(luxcoreBuffer);
     };
@@ -271,6 +264,114 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     private: friend class LuxCoreEngineScene;
   };
 
+  class LuxCoreSceneImpl : public luxcore::Scene {
+    public: void GetBBox(float min[3], float max[3]) const {}
+
+    public: const luxcore::Camera &GetCamera() const {}
+
+    public: bool IsImageMapDefined(const std::string &imgMapName) const {}
+
+    public: void SetDeleteMeshData(const bool v) {}
+
+    public: void SetMeshAppliedTransformation(const std::string &meshName,
+			  const float *appliedTransMat) {}
+
+    public: void DefineMesh(const std::string &meshName,
+		    const long plyNbVerts, const long plyNbTris,
+		    float *p, unsigned int *vi, float *n,
+		    float *uvs,	float *cols, float *alphas) {}
+
+    public: void DefineMeshExt(const std::string &meshName,
+		    const long plyNbVerts, const long plyNbTris,
+		    float *p, unsigned int *vi, float *n,
+		    std::array<float *, LC_MESH_MAX_DATA_COUNT> *uvs,
+		    std::array<float *, LC_MESH_MAX_DATA_COUNT> *cols,
+		    std::array<float *, LC_MESH_MAX_DATA_COUNT> *alphas) {}
+
+    public: void SetMeshVertexAOV(const std::string &meshName,
+			  const unsigned int index, float *data) {}
+
+    public: void SetMeshTriangleAOV(const std::string &meshName,
+			  const unsigned int index, float *data) {}
+
+    public: void SaveMesh(const std::string &meshName, 
+        const std::string &fileName) {}
+
+    public: void DefineStrands(const std::string &shapeName, 
+        const luxrays::cyHairFile &strandsFile,
+		    const StrandsTessellationType tesselType,
+		    const unsigned int adaptiveMaxDepth, const float adaptiveError,
+		    const unsigned int solidSideCount, const bool solidCapBottom, 
+        const bool solidCapTop, const bool useCameraPosition) {}
+
+    public: bool IsMeshDefined(const std::string &meshName) const {}
+
+    public: bool IsTextureDefined(const std::string &texName) const {}
+
+    public: bool IsMaterialDefined(const std::string &matName) const {}
+
+    public: const unsigned int GetLightCount() const {}
+
+    public: const unsigned int GetObjectCount() const {}
+
+    public: void Parse(const luxrays::Properties &props) {}
+
+    public: void DuplicateObject(const std::string &srcObjName, 
+        const std::string &dstObjName, const float *transMat, 
+        const unsigned int objectID = 0xffffffff) {}
+
+    public: void DuplicateObject(const std::string &srcObjName, 
+        const std::string &dstObjNamePrefix, const unsigned int count, 
+        const float *transMat, const unsigned int *objectIDs = NULL) {}
+
+    public: void DuplicateObject(const std::string &srcObjName, 
+        const std::string &dstObjName, const unsigned int steps, 
+        const float *times, const float *transMat,
+			  const unsigned int objectID = 0xffffffff) {}
+
+    public: void DuplicateObject(const std::string &srcObjName, 
+        const std::string &dstObjNamePrefix, const unsigned int count, 
+        const unsigned int steps, const float *times,
+			  const float *transMat, const unsigned int *objectIDs = NULL) {}
+
+    public: void UpdateObjectTransformation(const std::string &objName, 
+        const float *transMat) {}
+
+    public: void UpdateObjectMaterial(const std::string &objName, 
+        const std::string &matName) {}
+
+    public: void DeleteObject(const std::string &objName) {}
+
+    public: void DeleteLight(const std::string &lightName) {}
+
+    public: void RemoveUnusedImageMaps() {}
+
+    public: void RemoveUnusedTextures() {}
+
+    public: void RemoveUnusedMaterials() {}
+
+    public: void RemoveUnusedMeshes() {}
+
+    public: const luxrays::Properties &ToProperties() const {}
+
+    public: void Save(const std::string &fileName) const {}
+
+    protected: void DefineImageMapUChar(const std::string &imgMapName,
+			  unsigned char *pixels, const float gamma, const unsigned int channels,
+			  const unsigned int width, const unsigned int height,
+			  ChannelSelectionType selectionType, WrapType wrapType) {}
+
+    protected: void DefineImageMapHalf(const std::string &imgMapName,
+			  unsigned short *pixels, const float gamma, const unsigned int channels,
+			  const unsigned int width, const unsigned int height,
+			  ChannelSelectionType selectionType, WrapType wrapType) {}
+
+    protected: void DefineImageMapFloat(const std::string &imgMapName,
+			  float *pixels, const float gamma, const unsigned int channels,
+			  const unsigned int width, const unsigned int height,
+			  ChannelSelectionType selectionType, WrapType wrapType) {}
+  };
+
   class LuxCoreEngineScene :
     public BaseScene
   {
@@ -280,11 +381,19 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       this->name_ = _name;
 
       luxcore::Init();
-      luxrays::Properties props("scenes/luxball/luxball-hdr.cfg");
-      props.Set(luxrays::Property("renderengine.type")("PATHCPU"));
+      
+      luxrays::Properties sceneProperties;
+      LuxCoreSceneImpl sceneLux;
 
-      luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props);
-			this->renderSessionPtr = luxcore::RenderSession::Create(config);
+      luxrays::Properties props("scenes/empty/simple.cfg");
+      props.Set(luxrays::Property("renderengine.type")("PATHCPU")); 
+      props.Set(luxrays::Property("scene.camera.lookat.orig")("10.951 -20.663 8.017"));
+      props.Set(luxrays::Property("scene.camera.lookat.target")("0.0 0.0 1.0"));
+
+      luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props, &sceneLux);
+			props = config->ToProperties();
+
+      this->renderSessionPtr = luxcore::RenderSession::Create(config);
     }
 
     public: virtual ~LuxCoreEngineScene() {}

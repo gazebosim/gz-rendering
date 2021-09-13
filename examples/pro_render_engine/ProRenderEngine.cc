@@ -30,6 +30,7 @@
 #include "ProRenderEngineRenderTypes.hh"
 
 #include "RadeonProRender.h"
+#include "Math/mathutils.h"
 
 using namespace ignition;
 using namespace rendering;
@@ -561,16 +562,126 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
                    CreateSceneImpl(unsigned int _id,
                    const std::string &_name) override
     {
-      rpr_int tahoePluginID = rprRegisterPlugin("./libTahoe64.so"); 
+      rpr_int tahoePluginID = rprRegisterPlugin("./libNorthstar64.so"); 
       assert(tahoePluginID != -1);
       
       rpr_int plugins[] = { tahoePluginID };
 	    size_t pluginCount = sizeof(plugins) / sizeof(plugins[0]);
 
       rpr_context context = NULL;
-	    rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0, NULL, NULL, &context);
+      int result = rprCreateContext(RPR_API_VERSION, plugins, pluginCount, RPR_CREATION_FLAGS_ENABLE_GPU0, NULL, NULL, &context);
+	    if (result != RPR_SUCCESS) {
+        printf("%d\n", result);
+      }
 
 	    rprContextSetActivePlugin(context, plugins[0]);
+	    rpr_material_system matsys;
+	    rprContextCreateMaterialSystem(context, 0, &matsys);
+
+      rpr_scene scenePR = nullptr;
+	    rprContextCreateScene(context, &scenePR);
+
+      rpr_camera cameraPR = nullptr;
+      rprContextCreateCamera(context, &cameraPR);
+      rprCameraLookAt(cameraPR, 0, 5, 20, 0, 1, 0, 0, 1, 0);
+      rprCameraSetFocalLength(cameraPR, 75.f);
+      rprSceneSetCamera(scenePR, cameraPR);
+      rprContextSetScene(context, scenePR);
+
+      rpr_framebuffer_desc desc = { 800 , 600 };
+      rpr_framebuffer_format fmt = {4, RPR_COMPONENT_TYPE_FLOAT32};
+      rpr_framebuffer frame_buffer = nullptr;
+      rpr_framebuffer frame_buffer_resolved = nullptr;
+      rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer);
+      rprContextCreateFrameBuffer(context, fmt, &desc, &frame_buffer_resolved);
+      rprFrameBufferClear(frame_buffer);
+      rprContextSetAOV(context, RPR_AOV_COLOR, frame_buffer);
+      rprContextSetParameterByKey1u(context, RPR_CONTEXT_RENDER_MODE, RPR_RENDER_MODE_NORMAL);
+
+      struct vertex
+      {
+      	rpr_float pos[3];
+      	rpr_float norm[3];
+      	rpr_float tex[2];
+      };
+      
+      vertex cube_data[] = 
+      {
+      	{ -1.0f, 1.0f, -1.0f, 0.f, 1.f, 0.f, 0.f, 0.f },
+      	{  1.0f, 1.0f, -1.0f, 0.f, 1.f, 0.f, 0.f, 0.f },
+      	{  1.0f, 1.0f, 1.0f , 0.f, 1.f, 0.f, 0.f, 0.f },
+      	{  -1.0f, 1.0f, 1.0f , 0.f, 1.f, 0.f, 0.f, 0.f},
+      
+      	{  -1.0f, -1.0f, -1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
+      	{  1.0f, -1.0f, -1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
+      	{  1.0f, -1.0f, 1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
+      	{  -1.0f, -1.0f, 1.0f , 0.f, -1.f, 0.f, 0.f, 0.f },
+      
+      	{  -1.0f, -1.0f, 1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
+      	{  -1.0f, -1.0f, -1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
+      	{  -1.0f, 1.0f, -1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
+      	{  -1.0f, 1.0f, 1.0f , -1.f, 0.f, 0.f, 0.f, 0.f },
+      
+      	{  1.0f, -1.0f, 1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
+      	{  1.0f, -1.0f, -1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
+      	{  1.0f, 1.0f, -1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
+      	{  1.0f, 1.0f, 1.0f ,  1.f, 0.f, 0.f, 0.f, 0.f },
+      
+      	{  -1.0f, -1.0f, -1.0f ,  0.f, 0.f, -1.f , 0.f, 0.f },
+      	{  1.0f, -1.0f, -1.0f ,  0.f, 0.f, -1.f , 0.f, 0.f },
+      	{  1.0f, 1.0f, -1.0f ,  0.f, 0.f, -1.f, 0.f, 0.f },
+      	{  -1.0f, 1.0f, -1.0f ,  0.f, 0.f, -1.f, 0.f, 0.f },
+      
+      	{  -1.0f, -1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
+      	{  1.0f, -1.0f, 1.0f , 0.f, 0.f,  1.f, 0.f, 0.f },
+      	{  1.0f, 1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
+      	{  -1.0f, 1.0f, 1.0f , 0.f, 0.f, 1.f, 0.f, 0.f },
+      };
+      
+      rpr_int indices[] = 
+      {
+      	3,1,0,
+      	2,1,3,
+      
+      	6,4,5,
+      	7,4,6,
+      
+      	11,9,8,
+      	10,9,11,
+      
+      	14,12,13,
+      	15,12,14,
+      
+      	19,17,16,
+      	18,17,19,
+      
+      	22,20,21,
+      	23,20,22
+      };
+      
+      rpr_int num_face_vertices[] = 
+      {
+      	3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+      };
+
+      rpr_shape cube = nullptr;
+      rprContextCreateMesh(context,
+      			(rpr_float const*)&cube_data[0], 24, sizeof(vertex),
+      			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 3), 24, sizeof(vertex),
+      			(rpr_float const*)((char*)&cube_data[0] + sizeof(rpr_float) * 6), 24, sizeof(vertex),
+      			(rpr_int const*)indices, sizeof(rpr_int),
+      			(rpr_int const*)indices, sizeof(rpr_int),
+      			(rpr_int const*)indices, sizeof(rpr_int),
+      			num_face_vertices, 12, &cube);
+      rprSceneAttachShape(scenePR, cube);
+      RadeonProRender::matrix m = RadeonProRender::translation(RadeonProRender::float3(-2, 1, 0));
+      rprShapeSetTransform(cube, RPR_TRUE, &m.m00);
+
+      rprContextSetParameterByKey1u(context,RPR_CONTEXT_ITERATIONS,1);
+      rprContextRender(context);
+      rprContextResolveFrameBuffer(context,frame_buffer,frame_buffer_resolved,true);
+
+      rprFrameBufferSaveToFile(frame_buffer_resolved, "image.png");
 
       auto scene = ProRenderEngineScenePtr(new ProRenderEngineScene(_id, _name));
       this->scenes->Add(scene);

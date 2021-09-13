@@ -96,7 +96,7 @@ namespace ignition
       public: virtual double AttenuationRange() const = 0;
 
       /// \brief Set the attenuation range
-      /// \param[in] _value New attenuation range
+      /// \param[in] _range New attenuation range
       public: virtual void SetAttenuationRange(double _range) = 0;
 
       /// \brief Determine if this light cast shadows
@@ -179,7 +179,7 @@ namespace ignition
       public: virtual void SetInnerAngle(double _radians) = 0;
 
       /// \brief Set the inner angle of the spotlight
-      /// \param[in] _radians New inner angle of the spotlight
+      /// \param[in] _angle New inner angle of the spotlight
       public: virtual void SetInnerAngle(const math::Angle &_angle) = 0;
 
       /// \brief Get the outer angle of the spotlight
@@ -191,7 +191,7 @@ namespace ignition
       public: virtual void SetOuterAngle(double _radians) = 0;
 
       /// \brief Set the outer angle of the spotlight
-      /// \param[in] _radians New outer angle of the spotlight
+      /// \param[in] _angle New outer angle of the spotlight
       public: virtual void SetOuterAngle(const math::Angle &_angle) = 0;
 
       /// \brief Get the falloff of the spotlight

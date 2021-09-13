@@ -130,11 +130,8 @@ namespace ignition
       public: virtual Ogre::TextureGpu *RenderTarget() const = 0;
 
       /// \brief Returns true if this is a render window
-      /// TODO(anyone): this function should be virtual.
-      /// We didn't do it to preserve ABI.
-      /// Look in commit history for '#Ogre2IsRenderWindowABI' to
-      /// see changes made and revert
-      public: bool IsRenderWindow() const;
+      /// \return True if this render target is a render window
+      public: virtual bool IsRenderWindow() const;
 
       // Documentation inherited
       public: unsigned int GLIdImpl() const;
@@ -287,11 +284,8 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
-      // TODO(anyone): this function should be virtual.
-      // We didn't do it to preserve ABI.
-      // Looks in commit history for '#Ogre2IsRenderWindowABI' to
-      // see changes made and revert
-      public: bool IsRenderWindow() const;
+      // Documentation inherited.
+      public: virtual bool IsRenderWindow() const;
 
       // Documentation inherited.
       public: virtual Ogre::TextureGpu *RenderTarget() const override;

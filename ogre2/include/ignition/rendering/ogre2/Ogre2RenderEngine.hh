@@ -116,7 +116,7 @@ namespace ignition
 
       /// \brief Create a scene
       /// \param[in] _id Unique scene Id
-      /// \parampin] _name Name of scene
+      /// \param[in] _name Name of scene
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name) override;
 
@@ -215,4 +215,3 @@ namespace ignition
   }
 }
 #endif
-

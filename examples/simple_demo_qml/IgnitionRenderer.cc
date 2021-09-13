@@ -18,7 +18,7 @@
 // The functions BuildScene and createCamera are copied from the simple_demo
 // example.
 
-#include "IgnitionRenderer.h"
+#include "IgnitionRenderer.hh"
 
 #include <QOpenGLContext>
 #include <QQuickWindow>

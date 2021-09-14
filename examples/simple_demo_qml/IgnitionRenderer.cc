@@ -181,9 +181,9 @@ ignition::rendering::CameraPtr CreateCamera(const std::string &_engineName)
   RenderEngine *engine = rendering::engine(_engineName, params);
   if (!engine)
   {
-      std::cout << "Engine '" << _engineName
-                  << "' is not supported" << std::endl;
-      return CameraPtr();
+    std::cout << "Engine '" << _engineName
+                << "' is not supported" << std::endl;
+    return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
   BuildScene(scene);

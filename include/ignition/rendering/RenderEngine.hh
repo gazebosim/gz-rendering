@@ -173,7 +173,7 @@ namespace ignition
       public: virtual bool Headless() const = 0;
 
       /// \brief Add path to media resource location
-      /// \param[in] _paths Absolute path to resource location
+      /// \param[in] _path Absolute path to resource location
       public: virtual void AddResourcePath(const std::string &_path) = 0;
 
       /// \brief Get the render pass system for this engine.

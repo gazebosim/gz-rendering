@@ -91,7 +91,6 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
         return this->dataPtr->geom->OgreObject();
       }
       return nullptr;
-      break;
     }
     case MT_LINE_STRIP:
     case MT_LINE_LIST:

@@ -87,7 +87,6 @@ namespace ignition
       protected: void CreateRotationVisual();
 
       /// \brief Create gizmo visual for scale
-      /// \return Rotation visual
       protected: void CreateScaleVisual();
 
       /// \brief Current gizmo mode

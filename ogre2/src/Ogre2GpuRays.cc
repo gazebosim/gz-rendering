@@ -15,6 +15,14 @@
  *
 */
 
+#ifdef __APPLE__
+  #include <OpenGL/gl.h>
+#else
+#ifndef _WIN32
+  #include <GL/gl.h>
+#endif
+#endif
+
 #include <ignition/math/Vector2.hh>
 #include <ignition/math/Vector3.hh>
 
@@ -1246,7 +1254,16 @@ void Ogre2GpuRays::Render()
 {
   this->scene->StartRendering();
 
+  // GL_DEPTH_CLAMP was disabled in later version of ogre2.2
+  // however our shaders rely on clamped values so enable it for this sensor
+#ifndef _WIN32
+  glEnable(GL_DEPTH_CLAMP);
+#endif
   this->UpdateRenderTarget1stPass();
+#ifndef _WIN32
+  glDisable(GL_DEPTH_CLAMP);
+#endif
+
   this->UpdateRenderTarget2ndPass();
 
   this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);

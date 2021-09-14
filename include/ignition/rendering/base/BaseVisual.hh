@@ -538,14 +538,8 @@ namespace ignition
       if (this->Material())
         result->SetMaterial(this->Material());
 
-      // should userData be cloned? Or should that be left out since (I believe)
-      // userData is intended to be custom/unique for each visual
-      //
-      // copying userData seems to segfault, so this is commented out for now
-      /*
-       *for (const auto &[key, val] : this->userData)
-       *  result->SetUserData(key, val);
-       */
+      for (const auto &[key, val] : this->userData)
+        result->SetUserData(key, val);
 
       return result;
     }

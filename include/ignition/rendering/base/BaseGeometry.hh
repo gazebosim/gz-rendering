@@ -102,13 +102,13 @@ namespace ignition
       if (!this->Scene())
       {
         ignerr << "Cloning a geometry failed because the geometry to be "
-          << "cloned does not belong to a scene." << std::endl;
+          << "cloned does not belong to a scene.\n";
         return nullptr;
       }
       else if (this->meshName.empty())
       {
         ignerr << "Cloning a geometry failed because the name of the mesh is "
-          << "missing." << std::endl;
+          << "missing.\n";
         return nullptr;
       }
 

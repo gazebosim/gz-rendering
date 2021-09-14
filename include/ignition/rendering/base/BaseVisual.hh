@@ -485,7 +485,7 @@ namespace ignition
       if (nullptr == scene_)
       {
         ignerr << "Cloning a visual failed because the visual to be cloned is "
-          << "not attached to a scene." << std::endl;
+          << "not attached to a scene.\n";
         return nullptr;
       }
       VisualPtr result;
@@ -500,7 +500,7 @@ namespace ignition
         if (nullptr != parentScene && parentScene->Id() != scene_->Id())
         {
           ignerr << "Cloning a visual failed because the desired parent of the "
-            << "cloned visual belongs to a different scene." << std::endl;
+            << "cloned visual belongs to a different scene.\n";
           scene_->DestroyVisual(result);
           return nullptr;
         }
@@ -520,7 +520,7 @@ namespace ignition
           this->Children());
       if (!children_)
       {
-        ignerr << "Cast failed in BaseVisual::Clone" << std::endl;
+        ignerr << "Cast failed in BaseVisual::Clone\n";
         scene_->DestroyVisual(result);
         return nullptr;
       }

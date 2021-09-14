@@ -572,7 +572,7 @@ void VisualTest::BoundingBox(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, Boundingbox)
+TEST_P(VisualTest, BoundingBox)
 {
   BoundingBox(GetParam());
 }
@@ -584,7 +584,7 @@ void VisualTest::Wireframe(const std::string &_renderEngine)
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+              << "' is not supported\n";
     return;
   }
 

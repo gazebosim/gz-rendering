@@ -58,9 +58,9 @@ set(CMAKE_AUTOUIC ON)
 # Build
 
 add_executable(simple_demo_qml
-    Main.cpp
-    IgnitionRenderer.h
-    IgnitionRenderer.cpp
+    Main.cc
+    IgnitionRenderer.hh
+    IgnitionRenderer.cc
     ThreadRenderer.h
     ThreadRenderer.cpp
     ${QT_RESOURCES}

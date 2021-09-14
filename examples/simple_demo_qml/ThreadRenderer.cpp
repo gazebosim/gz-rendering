@@ -69,7 +69,7 @@
 ****************************************************************************/
 
 #include "ThreadRenderer.h"
-#include "IgnitionRenderer.h"
+#include "IgnitionRenderer.hh"
 
 #include <QGuiApplication>
 #include <QMutex>

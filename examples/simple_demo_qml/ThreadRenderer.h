@@ -68,10 +68,10 @@
 **
 ****************************************************************************/
 
-#ifndef IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_THREAD_RENDERER_HH_
-#define IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_THREAD_RENDERER_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_THREAD_RENDERER_HH_
+#define IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_THREAD_RENDERER_HH_
 
-#include "IgnitionRenderer.h"
+#include "IgnitionRenderer.hh"
 
 #include <QQuickItem>
 #include <QMutex>

@@ -617,7 +617,7 @@ void VisualTest::Clone(const std::string &_renderEngine)
     return;
   }
 
-  ScenePtr scene = engine->CreateScene("scene7");
+  ScenePtr scene = engine->CreateScene("scene8");
   ASSERT_NE(nullptr, scene);
 
   VisualPtr parent = scene->CreateVisual();

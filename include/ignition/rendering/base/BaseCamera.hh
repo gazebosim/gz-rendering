@@ -123,7 +123,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetProjectionType(
-          CameraProjectionType _projectionType) override;
+          CameraProjectionType _type) override;
 
       // Documentation inherited.
       public: virtual math::Vector2i Project(const math::Vector3d &_pt) const
@@ -192,6 +192,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
           const override;
+
+      // Documentation inherited.
+      public: virtual void SetShadowsDirty() override;
 
       protected: virtual void *CreateImageBuffer() const;
 
@@ -827,6 +830,13 @@ namespace ignition
     RenderPassPtr BaseCamera<T>::RenderPassByIndex(unsigned int _index) const
     {
       return this->RenderTarget()->RenderPassByIndex(_index);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetShadowsDirty()
+    {
+      // no op
     }
     }
   }

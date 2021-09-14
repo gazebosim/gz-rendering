@@ -69,7 +69,7 @@ namespace ignition
       public virtual BaseRenderEngine,
       public common::SingletonT<OgreRenderEngine>
     {
-      /// \enum RenderPathType
+      /// \enum OgreRenderPathType
       /// \brief The type of rendering path used by the rendering engine.
       public: enum OgreRenderPathType
               {
@@ -186,4 +186,3 @@ namespace ignition
   }
 }
 #endif
-

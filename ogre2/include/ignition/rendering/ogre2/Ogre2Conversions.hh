@@ -32,7 +32,7 @@
 
 #include <OgreColourValue.h>
 #include <OgreVector3.h>
-#include <OgrePixelFormat.h>
+#include <OgrePixelFormatGpu.h>
 
 #ifdef _MSC_VER
   #pragma warning(pop)
@@ -105,12 +105,12 @@ namespace ignition
       public: static Ogre::Matrix4 Convert(const math::Matrix4d &_m);
 
       /// \brief Ign-rendering PixelFormat to Ogre PixelFormat
-      /// \param[in] _v Ign-rendering PixelFormat
+      /// \param[in] _format Ign-rendering PixelFormat
       /// return Ogre PixelFormat
-      public: static Ogre::PixelFormat Convert(PixelFormat _format);
+      public: static Ogre::PixelFormatGpu Convert(PixelFormat _format);
 
       /// \brief A list of ogre pixel formats
-      private: static const Ogre::PixelFormat ogrePixelFormats[PF_COUNT];
+      private: static const Ogre::PixelFormatGpu ogrePixelFormats[PF_COUNT];
     };
     /// \}
     }

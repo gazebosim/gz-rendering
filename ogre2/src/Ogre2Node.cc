@@ -68,8 +68,13 @@ void Ogre2Node::Destroy()
     return;
 
   BaseNode::Destroy();
-  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
-  ogreSceneManager->destroySceneNode(this->ogreNode);
+
+  if (nullptr != this->scene)
+  {
+    Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+    if (nullptr != ogreSceneManager)
+      ogreSceneManager->destroySceneNode(this->ogreNode);
+  }
   this->ogreNode = nullptr;
 }
 
@@ -92,24 +97,36 @@ void Ogre2Node::SetRawLocalPose(const math::Pose3d &_Pose3d)
 //////////////////////////////////////////////////
 math::Vector3d Ogre2Node::RawLocalPosition() const
 {
+  if (nullptr == this->ogreNode)
+    return math::Vector3d();
+
   return Ogre2Conversions::Convert(this->ogreNode->getPosition());
 }
 
 //////////////////////////////////////////////////
 void Ogre2Node::SetRawLocalPosition(const math::Vector3d &_position)
 {
+  if (nullptr == this->ogreNode)
+    return;
+
   this->ogreNode->setPosition(Ogre2Conversions::Convert(_position));
 }
 
 //////////////////////////////////////////////////
 math::Quaterniond Ogre2Node::RawLocalRotation() const
 {
+  if (nullptr == this->ogreNode)
+    return math::Quaterniond();
+
   return Ogre2Conversions::Convert(this->ogreNode->getOrientation());
 }
 
 //////////////////////////////////////////////////
 void Ogre2Node::SetRawLocalRotation(const math::Quaterniond &_rotation)
 {
+  if (nullptr == this->ogreNode)
+    return;
+
   this->ogreNode->setOrientation(Ogre2Conversions::Convert(_rotation));
 }
 
@@ -127,9 +144,25 @@ void Ogre2Node::Load()
 //////////////////////////////////////////////////
 void Ogre2Node::Init()
 {
-  Ogre::SceneManager *sceneManager;
-  sceneManager = this->scene->OgreSceneManager();
+  if (nullptr == this->scene)
+  {
+    ignerr << "Failed to initialize node: scene is NULL" << std::endl;
+    return;
+  }
+
+  auto sceneManager = this->scene->OgreSceneManager();
+  if (nullptr == sceneManager)
+  {
+    ignerr << "Failed to initialize node: scene manager is NULL" << std::endl;
+    return;
+  }
+
   this->ogreNode = sceneManager->createSceneNode();
+  if (nullptr == this->ogreNode)
+  {
+    ignerr << "Failed to create Ogre node" << std::endl;
+    return;
+  }
   this->ogreNode->setInheritScale(true);
   this->children = Ogre2NodeStorePtr(new Ogre2NodeStore);
 }
@@ -143,6 +176,9 @@ NodeStorePtr Ogre2Node::Children() const
 //////////////////////////////////////////////////
 bool Ogre2Node::AttachChild(NodePtr _child)
 {
+  if (nullptr == this->ogreNode)
+    return false;
+
   Ogre2NodePtr derived = std::dynamic_pointer_cast<Ogre2Node>(_child);
 
   if (!derived)
@@ -187,6 +223,7 @@ bool Ogre2Node::DetachChild(NodePtr _child)
   }
 
   this->ogreNode->removeChild(derived->Node());
+
   return true;
 }
 
@@ -200,24 +237,36 @@ Ogre2NodePtr Ogre2Node::SharedThis()
 //////////////////////////////////////////////////
 math::Vector3d Ogre2Node::LocalScale() const
 {
+  if (nullptr == this->ogreNode)
+    return math::Vector3d();
+
   return Ogre2Conversions::Convert(this->ogreNode->getScale());
 }
 
 //////////////////////////////////////////////////
 bool Ogre2Node::InheritScale() const
 {
+  if (nullptr == this->ogreNode)
+    return false;
+
   return this->ogreNode->getInheritScale();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Node::SetInheritScale(bool _inherit)
 {
+  if (nullptr == this->ogreNode)
+    return;
+
   this->ogreNode->setInheritScale(_inherit);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Node::SetLocalScaleImpl(const math::Vector3d &_scale)
 {
+  if (nullptr == this->ogreNode)
+    return;
+
   this->ogreNode->setScale(Ogre2Conversions::Convert(_scale));
 }
 

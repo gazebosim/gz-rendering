@@ -100,17 +100,17 @@ void main()
   // particle mask - color and depth
   vec4 particle = texture(particleTexture, inPs.uv0);
   float particleDepth = texture(particleDepthTexture, inPs.uv0).x;
+  float pd = projectionParams.y / (particleDepth - projectionParams.x);
 
   // return particle depth if it can be seen by the camera and not obstructed
   // by other objects in the camera view
-  if (particle.x > 0 && particleDepth < fDepth)
+  if (particle.x > 0 && pd < d)
   {
     // apply scatter effect so that only some of the smoke pixels are visible
     float r = rand(inPs.uv0 + vec2(time, time));
     if (r < particleScatterRatio)
     {
       // set point to 3d pos of particle pixel
-      float pd = projectionParams.y / (particleDepth - projectionParams.x);
       vec3 particleViewSpacePos = inPs.cameraDir * pd;
       vec3 particlePoint = vec3(-particleViewSpacePos.z, -particleViewSpacePos.x,
           particleViewSpacePos.y);

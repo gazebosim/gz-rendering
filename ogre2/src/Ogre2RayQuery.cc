@@ -36,8 +36,11 @@ class ignition::rendering::Ogre2RayQueryPrivate
   //// \brief Pointer to camera
   public: Ogre2CameraPtr camera{nullptr};
 
-  /// Image pos to cast the ray from
+  /// \brief Image pos to cast the ray from
   public: math::Vector2i imgPos = math::Vector2i::Zero;
+
+  /// \brief thread that ray query is created in
+  public: std::thread::id threadId;
 };
 
 using namespace ignition;
@@ -47,6 +50,7 @@ using namespace rendering;
 Ogre2RayQuery::Ogre2RayQuery()
     : dataPtr(new Ogre2RayQueryPrivate)
 {
+  this->dataPtr->threadId = std::this_thread::get_id();
 }
 
 //////////////////////////////////////////////////
@@ -69,97 +73,171 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
 
   this->dataPtr->camera = camera;
 
-  this->dataPtr->imgPos.X() =
-      screenPos.X() * this->dataPtr->camera->ImageWidth();
-  this->dataPtr->imgPos.Y() =
-      screenPos.Y() * this->dataPtr->camera->ImageHeight();
+  this->dataPtr->imgPos.X() = static_cast<int>(
+      screenPos.X() * this->dataPtr->camera->ImageWidth());
+  this->dataPtr->imgPos.Y() = static_cast<int>(
+      screenPos.Y() * this->dataPtr->camera->ImageHeight());
 }
 
 //////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPoint()
 {
   RayQueryResult result;
+
+#ifdef __APPLE__
+  return this->ClosestPointByIntersection();
+#else
+  if (!this->dataPtr->camera ||
+      !this->dataPtr->camera->Parent() ||
+      std::this_thread::get_id() != this->dataPtr->threadId)
+  {
+    // use legacy method for backward compatibility if no camera is set or
+    // camera is not attached in the scene tree or
+    // this function is called from non-rendering thread
+    return this->ClosestPointByIntersection();
+  }
+  else
+  {
+    // the VisualAt function is a hack to force creation of the selection
+    // buffer object
+    // todo(anyone) Make Camera::SetSelectionBuffer function public?
+    if (!this->dataPtr->camera->SelectionBuffer())
+      this->dataPtr->camera->VisualAt(math::Vector2i(0, 0));
+
+    return this->ClosestPointBySelectionBuffer();
+  }
+#endif
+}
+
+//////////////////////////////////////////////////
+RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
+{
+  RayQueryResult result;
+  Ogre::Item *ogreItem = nullptr;
+  math::Vector3d point;
+  bool success = this->dataPtr->camera->SelectionBuffer()->ExecuteQuery(
+      this->dataPtr->imgPos.X(), this->dataPtr->imgPos.Y(), ogreItem, point);
   result.distance = -1;
 
-  // hack to create selection buffer if it does not exist yet
-  if (!this->dataPtr->camera->SelectionBuffer())
-    this->dataPtr->camera->VisualAt(this->dataPtr->imgPos);
+  if (success && ogreItem)
+  {
+    if (!ogreItem->getUserObjectBindings().getUserAny().isEmpty() &&
+        ogreItem->getUserObjectBindings().getUserAny().getType() ==
+        typeid(unsigned int))
+    {
+      auto userAny = ogreItem->getUserObjectBindings().getUserAny();
+      double pointLength = point.Length();
+      if (!std::isinf(pointLength))
+      {
+        result.distance = pointLength;
+        result.point = point;
+        result.objectId = Ogre::any_cast<unsigned int>(userAny);
+      }
+    }
+  }
+  return result;
+}
 
-  Ogre::Item *ogreItem =
-      this->dataPtr->camera->SelectionBuffer()->OnSelectionClick(
-      this->dataPtr->imgPos.X(), this->dataPtr->imgPos.Y());
-
-  if (!ogreItem)
+//////////////////////////////////////////////////
+RayQueryResult Ogre2RayQuery::ClosestPointByIntersection()
+{
+  RayQueryResult result;
+  Ogre2ScenePtr ogreScene =
+      std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+  if (!ogreScene)
     return result;
-
-  Ogre::Any userAny = ogreItem->getUserObjectBindings().getUserAny();
-
-  if (userAny.isEmpty() || userAny.getType() != typeid(unsigned int))
-    return result;
-
-  double distance = -1.0;
 
   Ogre::Ray mouseRay(Ogre2Conversions::Convert(this->origin),
       Ogre2Conversions::Convert(this->direction));
 
-  // mesh factory creates name with ::CENTER or ::ORIGINAL depending on
-  // the params passed in the MeshDescriptor when loading the mesh
-  // so strip off the suffix
-  std::string meshName = ogreItem->getMesh()->getName();
-  size_t idx = meshName.find("::");
-  if (idx != std::string::npos)
-    meshName = meshName.substr(0, idx);
-
-  const common::Mesh *mesh =
-       common::MeshManager::Instance()->MeshByName(meshName);
-
-  if (!mesh)
-    return result;
-
-  Ogre::Matrix4 transform = ogreItem->_getParentNodeFullTransform();
-
-  // test for hitting individual triangles on the mesh
-  for (unsigned int j = 0; j < mesh->SubMeshCount(); ++j)
+  if (!this->dataPtr->rayQuery)
   {
-    auto s = mesh->SubMeshByIndex(j);
-    auto submesh = s.lock();
-    if (!submesh || submesh->VertexCount() < 3u)
+    this->dataPtr->rayQuery =
+        ogreScene->OgreSceneManager()->createRayQuery(mouseRay);
+  }
+  this->dataPtr->rayQuery->setSortByDistance(true);
+  this->dataPtr->rayQuery->setRay(mouseRay);
+
+  // Perform the scene query
+  Ogre::RaySceneQueryResult &ogreResult = this->dataPtr->rayQuery->execute();
+
+  double distance = -1.0;
+
+  // Iterate over all the results.
+  for (auto iter = ogreResult.begin(); iter != ogreResult.end(); ++iter)
+  {
+    if (iter->distance <= 0.0)
       continue;
-    unsigned int indexCount = submesh->IndexCount();
-    for (unsigned int k = 0; k < indexCount; k += 3)
+
+    if (!iter->movable || !iter->movable->getVisible())
+      continue;
+
+    auto userAny = iter->movable->getUserObjectBindings().getUserAny();
+    if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int) &&
+        iter->movable->getMovableType() == "Item")
     {
-      if (indexCount <= k+2)
+      Ogre::Item *ogreItem = static_cast<Ogre::Item *>(iter->movable);
+
+      // mesh factory creates name with ::CENTER or ::ORIGINAL depending on
+      // the params passed in the MeshDescriptor when loading the mesh
+      // so strip off the suffix
+      std::string meshName = ogreItem->getMesh()->getName();
+      size_t idx = meshName.find("::");
+      if (idx != std::string::npos)
+        meshName = meshName.substr(0, idx);
+
+      const common::Mesh *mesh =
+           common::MeshManager::Instance()->MeshByName(meshName);
+
+      if (!mesh)
         continue;
 
-      ignition::math::Vector3d vertexA =
-        submesh->Vertex(submesh->Index(k));
-      ignition::math::Vector3d vertexB =
-        submesh->Vertex(submesh->Index(k+1));
-      ignition::math::Vector3d vertexC =
-        submesh->Vertex(submesh->Index(k+2));
+      Ogre::Matrix4 transform = ogreItem->_getParentNodeFullTransform();
 
-      Ogre::Vector3 worldVertexA =
-          transform * Ogre2Conversions::Convert(vertexA);
-      Ogre::Vector3 worldVertexB =
-          transform * Ogre2Conversions::Convert(vertexB);
-      Ogre::Vector3 worldVertexC =
-          transform * Ogre2Conversions::Convert(vertexC);
-
-      // check for a hit against this triangle
-      std::pair<bool, Ogre::Real> hit = Ogre::Math::intersects(mouseRay,
-          worldVertexA, worldVertexB, worldVertexC,
-          true, false);
-
-      // if it was a hit check if its the closest
-      if (hit.first &&
-          (distance < 0.0f || hit.second < distance))
+      // test for hitting individual triangles on the mesh
+      for (unsigned int j = 0; j < mesh->SubMeshCount(); ++j)
       {
-        // this is the closest so far, save it off
-        distance = hit.second;
-        result.distance = distance;
-        result.point =
-            Ogre2Conversions::Convert(mouseRay.getPoint(distance));
-        result.objectId = Ogre::any_cast<unsigned int>(userAny);
+        auto s = mesh->SubMeshByIndex(j);
+        auto submesh = s.lock();
+        if (!submesh || submesh->VertexCount() < 3u)
+          continue;
+        unsigned int indexCount = submesh->IndexCount();
+        for (unsigned int k = 0; k < indexCount; k += 3)
+        {
+          if (indexCount <= k+2)
+            continue;
+
+          ignition::math::Vector3d vertexA =
+            submesh->Vertex(submesh->Index(k));
+          ignition::math::Vector3d vertexB =
+            submesh->Vertex(submesh->Index(k+1));
+          ignition::math::Vector3d vertexC =
+            submesh->Vertex(submesh->Index(k+2));
+
+          Ogre::Vector3 worldVertexA =
+              transform * Ogre2Conversions::Convert(vertexA);
+          Ogre::Vector3 worldVertexB =
+              transform * Ogre2Conversions::Convert(vertexB);
+          Ogre::Vector3 worldVertexC =
+              transform * Ogre2Conversions::Convert(vertexC);
+
+          // check for a hit against this triangle
+          std::pair<bool, Ogre::Real> hit = Ogre::Math::intersects(mouseRay,
+              worldVertexA, worldVertexB, worldVertexC,
+              true, false);
+
+          // if it was a hit check if its the closest
+          if (hit.first &&
+              (distance < 0.0f || hit.second < distance))
+          {
+            // this is the closest so far, save it off
+            distance = hit.second;
+            result.distance = distance;
+            result.point =
+                Ogre2Conversions::Convert(mouseRay.getPoint(distance));
+            result.objectId = Ogre::any_cast<unsigned int>(userAny);
+          }
+        }
       }
     }
   }

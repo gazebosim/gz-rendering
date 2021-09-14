@@ -29,7 +29,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \enum Transform axis
+    /// \enum TransformAxis
     /// \brief Unique identifiers for transformation axes.
     enum IGNITION_RENDERING_VISIBLE TransformAxis
     {
@@ -55,7 +55,7 @@ namespace ignition
       TA_SCALE_Z = 0x00000400
     };
 
-    /// \enum Transform mode
+    /// \enum TransformMode
     /// \brief Unique identifiers for transformation modes.
     enum IGNITION_RENDERING_VISIBLE TransformMode
     {
@@ -69,7 +69,7 @@ namespace ignition
       TM_SCALE = TA_SCALE_X | TA_SCALE_Y, TA_SCALEZ,
     };
 
-    /// \enum Transform space
+    /// \enum TransformSpace
     /// \brief Unique identifiers for transformation spaces.
     enum IGNITION_RENDERING_VISIBLE TransformSpace
     {

@@ -47,7 +47,7 @@ namespace ignition
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SelectionBuffer
     {
       /// \brief Constructor
-      /// \param[in] _camera Name of the camera to generate a selection
+      /// \param[in] _cameraName Name of the camera to generate a selection
       /// buffer for.
       /// \param[in] _scene Pointer to the scene
       public: Ogre2SelectionBuffer(const std::string &_cameraName,
@@ -71,10 +71,6 @@ namespace ignition
       /// \return True if an ogre item is found, false otherwise
       public: bool ExecuteQuery(const int _x, const int _y, Ogre::Item *&_item,
           math::Vector3d &_point);
-
-      /// \brief Debug show overlay
-      /// \param[in] _show True to show the selection buffer in an overlay.
-      // public: void ShowOverlay(const bool _show);
 
       /// \brief Call this to update the selection buffer contents
       public: void Update();

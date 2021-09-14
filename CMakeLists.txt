@@ -66,7 +66,7 @@ list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
 # USE_UNOFFICAL_OGRE_VERSIONS flag
 if (NOT USE_UNOFFICAL_OGRE_VERSIONS)
   # Only for checking the ogre version
-  ign_find_package(IgnOGRE VERSION 1.10)
+  ign_find_package(IgnOGRE VERSION 1.10 QUIET)
 
   if (OGRE_FOUND)
     IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."

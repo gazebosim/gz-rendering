@@ -76,13 +76,13 @@ void buildScene(ScenePtr _scene)
 
 //! [red material]
   // create red material
-  // MaterialPtr red = _scene->CreateMaterial();
-  // red->SetAmbient(0.5, 0.0, 0.0);
-  // red->SetDiffuse(1.0, 0.0, 0.0);
-  // red->SetSpecular(0.5, 0.5, 0.5);
-  // red->SetShininess(50);
-  // red->SetReflectivity(0);
-  // red->SetRenderOrder(3);
+  MaterialPtr red = _scene->CreateMaterial();
+  red->SetAmbient(0.5, 0.0, 0.0);
+  red->SetDiffuse(1.0, 0.0, 0.0);
+  red->SetSpecular(0.5, 0.5, 0.5);
+  red->SetShininess(50);
+  red->SetReflectivity(0);
+  red->SetRenderOrder(3);
 //! [red material]
 
 // create blue material
@@ -106,7 +106,7 @@ void buildScene(ScenePtr _scene)
   
 
   // create box visual
-  // VisualPtr box = _scene->CreateVisual();
+  VisualPtr box = _scene->CreateVisual();
   // box->AddGeometry(_scene->CreateBox());
   // box->SetOrigin(0.0, 0, 0);
   // box->SetLocalPosition(3, 0, 0);

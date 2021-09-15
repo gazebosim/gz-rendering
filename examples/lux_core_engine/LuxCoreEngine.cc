@@ -27,6 +27,9 @@
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseMaterial.hh"
+#include "ignition/rendering/base/BaseVisual.hh"
+#include "ignition/rendering/base/BaseGeometry.hh"
+#include "ignition/rendering/base/BaseMesh.hh"
 #include "LuxCoreEngineRenderTypes.hh"
 
 #include "luxcore/luxcore.h"
@@ -264,134 +267,187 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     private: friend class LuxCoreEngineScene;
   };
 
-  class LuxCoreSceneImpl : public luxcore::Scene {
-    public: void GetBBox(float min[3], float max[3]) const {}
+  class LuxCoreEngineVisual :
+    public BaseVisual<LuxCoreEngineNode>
+  {
+    protected: GeometryStorePtr Geometries() const {}
 
-    public: const luxcore::Camera &GetCamera() const {}
+    protected: bool AttachGeometry(GeometryPtr _geometry) {}
 
-    public: bool IsImageMapDefined(const std::string &imgMapName) const {}
+    protected: bool DetachGeometry(GeometryPtr _geometry) {}
 
-    public: void SetDeleteMeshData(const bool v) {}
+    protected: void Init()
+    {
+      BaseVisual::Init();
+      this->CreateStorage();
+    }
 
-    public: void SetMeshAppliedTransformation(const std::string &meshName,
-			  const float *appliedTransMat) {}
+    private: void CreateStorage()
+    {
+      this->geometries = LuxCoreEngineGeometryStorePtr(new LuxCoreEngineGeometryStore);
+    }
 
-    public: void DefineMesh(const std::string &meshName,
-		    const long plyNbVerts, const long plyNbTris,
-		    float *p, unsigned int *vi, float *n,
-		    float *uvs,	float *cols, float *alphas) {}
+    private: LuxCoreEngineVisualPtr SharedThis()
+    {
+      return std::dynamic_pointer_cast<LuxCoreEngineVisual>(shared_from_this());
+    }
 
-    public: void DefineMeshExt(const std::string &meshName,
-		    const long plyNbVerts, const long plyNbTris,
-		    float *p, unsigned int *vi, float *n,
-		    std::array<float *, LC_MESH_MAX_DATA_COUNT> *uvs,
-		    std::array<float *, LC_MESH_MAX_DATA_COUNT> *cols,
-		    std::array<float *, LC_MESH_MAX_DATA_COUNT> *alphas) {}
+    protected: LuxCoreEngineGeometryStorePtr geometries;
 
-    public: void SetMeshVertexAOV(const std::string &meshName,
-			  const unsigned int index, float *data) {}
+    private: friend class LuxCoreEngineScene;
+  };
 
-    public: void SetMeshTriangleAOV(const std::string &meshName,
-			  const unsigned int index, float *data) {}
+  class LuxCoreEngineGeometry :
+    public BaseGeometry<LuxCoreEngineObject>
+  {
+  
+  };
 
-    public: void SaveMesh(const std::string &meshName, 
-        const std::string &fileName) {}
+  class LuxCoreEngineMesh :
+    public BaseMesh<LuxCoreEngineGeometry>
+  {
 
-    public: void DefineStrands(const std::string &shapeName, 
-        const luxrays::cyHairFile &strandsFile,
-		    const StrandsTessellationType tesselType,
-		    const unsigned int adaptiveMaxDepth, const float adaptiveError,
-		    const unsigned int solidSideCount, const bool solidCapBottom, 
-        const bool solidCapTop, const bool useCameraPosition) {}
+  };
 
-    public: bool IsMeshDefined(const std::string &meshName) const {}
+  class LuxCoreEngineMeshFactory
+  {
+    public: LuxCoreEngineMeshFactory(LuxCoreEngineScenePtr _scene) {}
 
-    public: bool IsTextureDefined(const std::string &texName) const {}
-
-    public: bool IsMaterialDefined(const std::string &matName) const {}
-
-    public: const unsigned int GetLightCount() const {}
-
-    public: const unsigned int GetObjectCount() const {}
-
-    public: void Parse(const luxrays::Properties &props) {}
-
-    public: void DuplicateObject(const std::string &srcObjName, 
-        const std::string &dstObjName, const float *transMat, 
-        const unsigned int objectID = 0xffffffff) {}
-
-    public: void DuplicateObject(const std::string &srcObjName, 
-        const std::string &dstObjNamePrefix, const unsigned int count, 
-        const float *transMat, const unsigned int *objectIDs = NULL) {}
-
-    public: void DuplicateObject(const std::string &srcObjName, 
-        const std::string &dstObjName, const unsigned int steps, 
-        const float *times, const float *transMat,
-			  const unsigned int objectID = 0xffffffff) {}
-
-    public: void DuplicateObject(const std::string &srcObjName, 
-        const std::string &dstObjNamePrefix, const unsigned int count, 
-        const unsigned int steps, const float *times,
-			  const float *transMat, const unsigned int *objectIDs = NULL) {}
-
-    public: void UpdateObjectTransformation(const std::string &objName, 
-        const float *transMat) {}
-
-    public: void UpdateObjectMaterial(const std::string &objName, 
-        const std::string &matName) {}
-
-    public: void DeleteObject(const std::string &objName) {}
-
-    public: void DeleteLight(const std::string &lightName) {}
-
-    public: void RemoveUnusedImageMaps() {}
-
-    public: void RemoveUnusedTextures() {}
-
-    public: void RemoveUnusedMaterials() {}
-
-    public: void RemoveUnusedMeshes() {}
-
-    public: const luxrays::Properties &ToProperties() const {}
-
-    public: void Save(const std::string &fileName) const {}
-
-    protected: void DefineImageMapUChar(const std::string &imgMapName,
-			  unsigned char *pixels, const float gamma, const unsigned int channels,
-			  const unsigned int width, const unsigned int height,
-			  ChannelSelectionType selectionType, WrapType wrapType) {}
-
-    protected: void DefineImageMapHalf(const std::string &imgMapName,
-			  unsigned short *pixels, const float gamma, const unsigned int channels,
-			  const unsigned int width, const unsigned int height,
-			  ChannelSelectionType selectionType, WrapType wrapType) {}
-
-    protected: void DefineImageMapFloat(const std::string &imgMapName,
-			  float *pixels, const float gamma, const unsigned int channels,
-			  const unsigned int width, const unsigned int height,
-			  ChannelSelectionType selectionType, WrapType wrapType) {}
+    public: LuxCoreEngineMeshPtr Create(const MeshDescriptor &_desc) {}
   };
 
   class LuxCoreEngineScene :
     public BaseScene
   {
+    public: static void LogHandler(const char *msg)
+    {
+      
+    }
+
+    public: static void CreateBox(luxcore::Scene *scene)
+    {
+      std::string objName = "test-cube";
+      std::string meshName = "test-cube-mesh";
+      std::string matName = "mat_white"; 
+
+      struct Vertex {
+        float x, y, z;
+
+        Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
+      };
+
+    	Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(24);
+  
+      float minX = -3.0f, minY = -3.0f, minZ = -0.1f;
+      float maxX = 3.0f, maxY = 3.0f, maxZ = 0.0f;
+      
+    	// Bottom face
+    	p[0] = Vertex(minX, minY, minZ);
+    	p[1] = Vertex(minX, maxY, minZ);
+    	p[2] = Vertex(maxX, maxY, minZ);
+    	p[3] = Vertex(maxX, minY, minZ);
+    	// Top face
+    	p[4] = Vertex(minX, minY, maxZ);
+    	p[5] = Vertex(maxX, minY, maxZ);
+    	p[6] = Vertex(maxX, maxY, maxZ);
+    	p[7] = Vertex(minX, maxY, maxZ);
+    	// Side left
+    	p[8] = Vertex(minX, minY, minZ);
+    	p[9] = Vertex(minX, minY, maxZ);
+    	p[10] = Vertex(minX, maxY, maxZ);
+    	p[11] = Vertex(minX, maxY, minZ);
+    	// Side right
+    	p[12] = Vertex(maxX, minY, minZ);
+    	p[13] = Vertex(maxX, maxY, minZ);
+    	p[14] = Vertex(maxX, maxY, maxZ);
+    	p[15] = Vertex(maxX, minY, maxZ);
+    	// Side back
+    	p[16] = Vertex(minX, minY, minZ);
+    	p[17] = Vertex(maxX, minY, minZ);
+    	p[18] = Vertex(maxX, minY, maxZ);
+    	p[19] = Vertex(minX, minY, maxZ);
+    	// Side front
+    	p[20] = Vertex(minX, maxY, minZ);
+    	p[21] = Vertex(minX, maxY, maxZ);
+    	p[22] = Vertex(maxX, maxY, maxZ);
+    	p[23] = Vertex(maxX, maxY, minZ);
+
+      struct VertexTriangle {
+        unsigned int v1, v2, v3;
+
+        VertexTriangle(unsigned int v1, unsigned int v2, unsigned int v3) : v1(v1), v2(v2), v3(v3) {}
+      };
+
+    	VertexTriangle *vi = (VertexTriangle *)luxcore::Scene::AllocTrianglesBuffer(12);
+    	
+      vi[0] = VertexTriangle(0, 1, 2);
+    	vi[1] = VertexTriangle(2, 3, 0);
+    	// Top face
+    	vi[2] = VertexTriangle(4, 5, 6);
+    	vi[3] = VertexTriangle(6, 7, 4);
+    	// Side left
+    	vi[4] = VertexTriangle(8, 9, 10);
+    	vi[5] = VertexTriangle(10, 11, 8);
+    	// Side right
+    	vi[6] = VertexTriangle(12, 13, 14);
+    	vi[7] = VertexTriangle(14, 15, 12);
+    	// Side back
+    	vi[8] = VertexTriangle(16, 17, 18);
+    	vi[9] = VertexTriangle(18, 19, 16);
+    	// Side back
+    	vi[10] = VertexTriangle(20, 21, 22);
+    	vi[11] = VertexTriangle(22, 23, 20);
+
+      scene->DefineMesh(meshName, 24, 12, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
+      luxrays::Properties props;
+    	props.SetFromString(
+    		"scene.objects." + objName + ".shape = " + meshName + "\n"
+    		"scene.objects." + objName + ".material = " + matName + "\n");
+    	scene->Parse(props);
+    }
+
     protected: LuxCoreEngineScene(unsigned int _id, const std::string &_name) : BaseScene(_id, _name) 
     {
       this->id_ = _id;
       this->name_ = _name;
 
-      luxcore::Init();
-      
-      luxrays::Properties sceneProperties;
-      LuxCoreSceneImpl sceneLux;
+      luxcore::Init(
+        LogHandler
+      );
 
-      luxrays::Properties props("scenes/empty/simple.cfg");
+      luxrays::Properties props;
       props.Set(luxrays::Property("renderengine.type")("PATHCPU")); 
-      props.Set(luxrays::Property("scene.camera.lookat.orig")("10.951 -20.663 8.017"));
-      props.Set(luxrays::Property("scene.camera.lookat.target")("0.0 0.0 1.0"));
+      props.Set(luxrays::Property("film.width")("640")); 
+      props.Set(luxrays::Property("film.height")("480")); 
+      props.Set(luxrays::Property("film.imagepipeline.0.type")("TONEMAP_LINEAR")); 
+      props.Set(luxrays::Property("film.imagepipeline.1.type")("GAMMA_CORRECTION")); 
+      props.Set(luxrays::Property("film.imagepipeline.1.value")("2.2")); 
 
-      luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props, &sceneLux);
-			props = config->ToProperties();
+      luxcore::Scene* sceneLux = luxcore::Scene::Create();
+      sceneLux->Parse(
+          luxrays::Property("scene.camera.lookat.orig")(1.f , 6.f , 3.f) <<
+				  luxrays::Property("scene.camera.lookat.target")(0.f , 0.f , .5f) <<
+				  luxrays::Property("scene.camera.fieldofview")(60.f));
+
+      sceneLux->Parse(
+			    luxrays::Property("scene.materials.mat_white.type")("matte") <<
+			    luxrays::Property("scene.materials.mat_white.kd")(0.75, 0, 0));
+
+      sceneLux->Parse(
+				  luxrays::Property("scene.lights.skyl.type")("sky2") <<
+				  luxrays::Property("scene.lights.skyl.dir")(0.166974f, 0.59908f, 0.783085f) <<
+				  luxrays::Property("scene.lights.skyl.turbidity")(2.2f) <<
+				  luxrays::Property("scene.lights.skyl.gain")(0.8f, 0.8f, 0.8f) <<
+				  luxrays::Property("scene.lights.sunl.type")("sun") <<
+				  luxrays::Property("scene.lights.sunl.dir")(0.166974f, 0.59908f, 0.783085f) <<
+				  luxrays::Property("scene.lights.sunl.turbidity")(2.2f) <<
+				  luxrays::Property("scene.lights.sunl.gain")(0.8f, 0.8f, 0.8f));
+
+      // CreateBox(sceneLux, "ground", "mesh-ground", "mat_white", true, false, BBox(Point(-3.f, -3.f, -.1f), Point(3.f, 3.f, 0.f)));
+
+      CreateBox(sceneLux);
+
+      luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props, sceneLux);
 
       this->renderSessionPtr = luxcore::RenderSession::Create(config);
     }
@@ -458,7 +514,9 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: virtual VisualPtr CreateVisualImpl(unsigned int _id,
                      const std::string &_name)
     {
-      return nullptr;
+      LuxCoreEngineVisualPtr visual(new LuxCoreEngineVisual);
+      bool result = this->InitObject(visual, _id, _name);
+      return (result) ? visual : nullptr;
     }
 
     protected: virtual ArrowVisualPtr CreateArrowVisualImpl(unsigned int _id,
@@ -476,7 +534,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: virtual GeometryPtr CreateBoxImpl(unsigned int _id,
                      const std::string &_name)
     {
-      return nullptr;
+      return this->CreateMeshImpl(_id, _name, "unit_box");
     }
 
     protected: virtual GeometryPtr CreateConeImpl(unsigned int _id,
@@ -506,13 +564,19 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: virtual MeshPtr CreateMeshImpl(unsigned int _id,
                      const std::string &_name, const std::string &_meshName)
     {
-      return nullptr;
+      MeshDescriptor descriptor(_meshName);
+      return this->CreateMeshImpl(_id, _name, descriptor);
     }
 
     protected: virtual MeshPtr CreateMeshImpl(unsigned int _id,
                      const std::string &_name, const MeshDescriptor &_desc)
     {
-      return nullptr;
+      LuxCoreEngineMeshPtr mesh = this->meshFactory->Create(_desc);
+      if (nullptr == mesh)
+        return nullptr;
+
+      bool result = this->InitObject(mesh, _id, _name);
+      return (result) ? mesh : nullptr;
     }
 
     protected: virtual CapsulePtr CreateCapsuleImpl(unsigned int _id,
@@ -590,7 +654,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     protected: virtual VisualStorePtr Visuals() const
     {
-      return nullptr;
+      return this->visuals;
     }
 
     protected: virtual MaterialMapPtr Materials() const
@@ -608,6 +672,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     {
       ignerr << "InitImpl" << std::endl;
       this->CreateStores();
+      this->CreateMeshFactory();
       return true;
     }
 
@@ -632,11 +697,17 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
       return nullptr;
     }
 
+    protected: void CreateMeshFactory()
+    {
+      LuxCoreEngineScenePtr sharedThis = this->SharedThis();
+      this->meshFactory = LuxCoreEngineMeshFactoryPtr(new LuxCoreEngineMeshFactory(sharedThis));
+    }
+
     protected: void CreateStores()
     {
       // this->lights = OptixLightStorePtr(new OptixLightStore);
       this->sensors = LuxCoreEngineSensorStorePtr(new LuxCoreEngineSensorStore);
-      // this->visuals = OptixVisualStorePtr(new OptixVisualStore);
+      this->visuals = LuxCoreEngineVisualStorePtr(new LuxCoreEngineVisualStore);
       this->materials = LuxCoreEngineMaterialMapPtr(new LuxCoreEngineMaterialMap);
     }
 
@@ -666,11 +737,12 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     protected: unsigned int id_;
     protected: std::string name_;
 
+    protected: LuxCoreEngineMeshFactoryPtr meshFactory;
     protected: LuxCoreEngineMaterialMapPtr materials;
     protected: LuxCoreEngineSensorStorePtr sensors;
+    protected: LuxCoreEngineVisualStorePtr visuals;
 
     private: friend class LuxCoreEngineRenderEngine;
-
   };
 
 

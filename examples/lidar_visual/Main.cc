@@ -213,6 +213,7 @@ LidarVisualPtr createLidar(ScenePtr _scene)
   lidar->SetMaxVerticalAngle(vMaxAngle);
   lidar->SetMaxRange(maxRange);
   lidar->SetMinRange(minRange);
+  lidar->SetSize(5.0);
 
   // the types can be set as follows:-
   // LVT_POINTS -> Lidar Points at the range value

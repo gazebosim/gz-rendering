@@ -26,6 +26,8 @@
 #endif
 
 #include <ignition/common/Console.hh>
+
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
@@ -479,8 +481,14 @@ void Ogre2LidarVisual::Update()
     // point renderables use low level materials
     // get the material and set size uniform variable
     auto pass = this->dataPtr->pointsMat->getTechnique(0)->getPass(0);
-    auto params = pass->getVertexProgramParameters();
-    params->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
+    auto vertParams = pass->getVertexProgramParameters();
+    vertParams->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
+
+    // support setting color only from diffuse for now
+    MaterialPtr mat = this->Scene()->Material("Lidar/BlueRay");
+    auto fragParams = pass->getFragmentProgramParameters();
+    fragParams->setNamedConstant("color",
+        Ogre2Conversions::Convert(mat->Diffuse()));
   }
 
   // The newly created dynamic lines are having default visibility as true.

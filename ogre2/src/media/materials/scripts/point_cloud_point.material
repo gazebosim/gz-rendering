@@ -29,6 +29,10 @@ vertex_program PointCloudVS glsl
 fragment_program PointCloudFS glsl
 {
   source point_fs.glsl
+  default_params
+  {
+    param_named color vec4 1.0 1.0 1.0 1.0
+  }
 }
 
 material PointCloudPoint

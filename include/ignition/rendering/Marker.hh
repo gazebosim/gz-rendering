@@ -108,6 +108,16 @@ namespace ignition
       /// \return The render type of the marker
       public: virtual ignition::rendering::MarkerType Type() const = 0;
 
+      /// \brief Set size of the marker. Only affects MT_POINTS.
+      /// e.g. size of rasterized points in pixels
+      /// \param[in] _size Size of the marker
+      public: virtual void SetSize(double _size) = 0;
+
+      /// \brief Get the size of the marker.
+      /// \return The size of the marker
+      /// \sa SetSize
+      public: virtual double Size() const = 0;
+
       /// \brief Clear the points of the marker, if applicable
       public: virtual void ClearPoints() = 0;
 

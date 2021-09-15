@@ -107,6 +107,9 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   lidar->SetType(LVT_TRIANGLE_STRIPS);
   EXPECT_EQ(lidar->Type(), LVT_TRIANGLE_STRIPS);
 
+  EXPECT_DOUBLE_EQ(1.0, lidar->Size());
+  lidar->SetSize(12.0);
+  EXPECT_DOUBLE_EQ(12.0, lidar->Size());
 
   ignition::math::Pose3d p(0.5, 2.56, 3.67, 1.4, 2, 4.5);
   lidar->SetOffset(p);

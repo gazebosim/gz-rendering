@@ -361,6 +361,8 @@ void Ogre2DynamicRenderable::UpdateBuffer()
     }
     else if (lowLevelMat)
     {
+      // the _initialise call above resets the ogre item properties so set
+      // them again
       this->dataPtr->ogreItem->getSubItem(0)->setMaterial(lowLevelMat);
       this->dataPtr->ogreItem->setCastShadows(castShadows);
     }

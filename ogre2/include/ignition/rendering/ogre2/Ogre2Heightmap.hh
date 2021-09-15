@@ -51,7 +51,8 @@ namespace ignition
       : public BaseHeightmap<Ogre2Geometry>
     {
       /// \brief Constructor
-      /// \param[in]
+      /// \param[in] _desc Parameters describing how a
+      /// heightmap should be loaded
       public: explicit Ogre2Heightmap(const HeightmapDescriptor &_desc);
 
       /// \brief Destructor
@@ -63,8 +64,10 @@ namespace ignition
       // Documentation inherited.
       public: virtual void PreRender() override;
 
-      /// \brief Returns NULL, heightmaps don't have movable objects.
-      /// \return Null pointer.
+      /// \brief Returns the Terra pointer as it is a movable object that
+      /// must be attached to a regular SceneNode
+      /// \remarks This behavior is different from ogre1
+      /// \return Terra pointer
       public: virtual Ogre::MovableObject *OgreObject() const override;
 
       /// \brief Returns NULL, heightmap materials don't inherit from

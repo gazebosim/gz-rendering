@@ -12,6 +12,13 @@ if(IGN_ADD_fPIC_TO_LIBRARIES AND NOT _ign_add_library_INTERFACE)
   target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
 endif()
 
+target_compile_options(${PROJECT_NAME} PRIVATE
+    -Wno-unused-parameter
+    -Wno-float-equal
+    -Wno-sign-compare
+    -Wno-strict-aliasing)
+add_definitions(-DOGRE_IGNORE_UNKNOWN_DEBUG)
+
 #target_compile_definitions(${PROJECT_NAME} PUBLIC
 #  $<$<CONFIG:Debug>:DEBUG=1 _DEBUG=1>)
 

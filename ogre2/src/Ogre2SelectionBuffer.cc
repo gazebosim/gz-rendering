@@ -20,6 +20,7 @@
 
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2MaterialSwitcher.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -63,10 +64,13 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
 
   /// \brief Render texture data buffer
-  public: uint8_t *buffer = nullptr;
+  public: float *buffer = nullptr;
 
   /// \brief Ogre pixel box that contains description of the data buffer
   public: Ogre::PixelBox *pixelBox = nullptr;
+
+  /// \brief The selection buffer material
+  public: Ogre::MaterialPtr selectionMaterial;
 };
 
 /////////////////////////////////////////////////
@@ -85,8 +89,9 @@ Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
     return;
   }
 
+  std::string selectionCameraName = _cameraName + "_selection_buffer";
   this->dataPtr->selectionCamera =
-      this->dataPtr->sceneMgr->createCamera(_cameraName + "_selection_buffer");
+      this->dataPtr->sceneMgr->createCamera(selectionCameraName);
 
   this->dataPtr->materialSwitcher.reset(
       new Ogre2MaterialSwitcher(this->dataPtr->scene));
@@ -123,6 +128,12 @@ void Ogre2SelectionBuffer::Update()
 /////////////////////////////////////////////////
 void Ogre2SelectionBuffer::DeleteRTTBuffer()
 {
+  if (this->dataPtr->selectionMaterial)
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        this->dataPtr->selectionMaterial->getName());
+  }
+
   auto &manager = Ogre::TextureManager::getSingleton();
   manager.unload(this->dataPtr->texture->getName());
   manager.remove(this->dataPtr->texture->getName());
@@ -142,17 +153,55 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   // create a 1x1 pixel buffer
   unsigned int width = 1;
   unsigned int height = 1;
-  Ogre::PixelFormat format = Ogre::PF_R8G8B8;
+  Ogre::PixelFormat format = Ogre::PF_FLOAT32_RGBA;
   this->dataPtr->texture = Ogre::TextureManager::getSingleton().createManual(
         "SelectionPassTex",
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        Ogre::TEX_TYPE_2D, width, height, 0, Ogre::PF_R8G8B8,
+        Ogre::TEX_TYPE_2D, width, height, 0, Ogre::PF_FLOAT32_RGBA,
         Ogre::TU_RENDERTARGET);
 
   this->dataPtr->renderTexture =
       this->dataPtr->texture->getBuffer()->getRenderTarget();
-  this->dataPtr->renderTexture->addListener(
-      this->dataPtr->materialSwitcher.get());
+
+  // Load selection material
+  // The SelectionBuffer material is defined in script
+  // (selection_buffer.material).
+  std::string matSelectionName = "SelectionBuffer";
+  Ogre::MaterialPtr matSelection =
+      Ogre::MaterialManager::getSingleton().getByName(matSelectionName);
+  this->dataPtr->selectionMaterial = matSelection->clone(
+      this->dataPtr->camera->getName() + "_" + matSelectionName);
+  this->dataPtr->selectionMaterial->load();
+  Ogre::Pass *p = this->dataPtr->selectionMaterial->getTechnique(0)->getPass(0);
+  Ogre::GpuProgramParametersSharedPtr psParams =
+      p->getFragmentProgramParameters();
+
+  // Set the uniform variables (selection_buffer_fs.glsl).
+  // The projectParams is used to linearize depth buffer data
+  double nearPlane = this->dataPtr->camera->getNearClipDistance();
+  double farPlane = this->dataPtr->camera->getFarClipDistance();
+
+  this->dataPtr->selectionCamera->setNearClipDistance(nearPlane);
+  this->dataPtr->selectionCamera->setFarClipDistance(farPlane);
+
+  // \todo(anyone) change the code below when merging forward to fortress that
+  // uses ogre 2.2 otherwise the depth values will be incorrect due to
+  // reverse-z depth buffer
+  // Ogre::Vector2 projectionAB =
+  //   this->dataPtr->camera->getProjectionParamsAB();
+  // double projectionA = projectionAB.x
+  // double projectionB = projectionAB.y
+  double projectionA = farPlane /
+      (farPlane - nearPlane);
+  double projectionB = (-farPlane * nearPlane) /
+      (farPlane - nearPlane);
+  projectionB /= farPlane;
+  psParams->setNamedConstant("projectionParams",
+      Ogre::Vector2(projectionA, projectionB));
+  psParams->setNamedConstant("far",
+      static_cast<float>(farPlane));
+  psParams->setNamedConstant("inf",
+      static_cast<float>(math::INF_F));
 
   // create compositor workspace for rendering
   auto engine = Ogre2RenderEngine::Instance();
@@ -161,26 +210,118 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
 
   const Ogre::String workspaceName = "SelectionBufferWorkspace" +
       this->dataPtr->camera->getName();
-  ogreCompMgr->createBasicWorkspaceDef(workspaceName,
-      Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f));
+
+  Ogre::CompositorNodeDef *nodeDef =
+      ogreCompMgr->addNodeDefinition("AutoGen " + Ogre::IdString(workspaceName +
+      "/Node").getReleaseText());
+
+  Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
+      nodeDef->addTextureDefinition("colorTexture");
+  colorTexDef->textureType = Ogre::TEX_TYPE_2D;
+  colorTexDef->width = 0;
+  colorTexDef->height = 0;
+  colorTexDef->depth = 1;
+  colorTexDef->numMipmaps = 0;
+  colorTexDef->widthFactor = 1;
+  colorTexDef->heightFactor = 1;
+  colorTexDef->formatList = {Ogre::PF_FLOAT32_RGBA};
+  colorTexDef->fsaa = 0;
+  colorTexDef->uav = false;
+  colorTexDef->automipmaps = false;
+  colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+  colorTexDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+  colorTexDef->preferDepthTexture = true;
+  colorTexDef->fsaaExplicitResolve = false;
+
+  Ogre::TextureDefinitionBase::TextureDefinition *depthTexDef =
+      nodeDef->addTextureDefinition("depthTexture");
+  depthTexDef->textureType = Ogre::TEX_TYPE_2D;
+  depthTexDef->width = 0;
+  depthTexDef->height = 0;
+  depthTexDef->depth = 1;
+  depthTexDef->numMipmaps = 0;
+  depthTexDef->widthFactor = 1;
+  depthTexDef->heightFactor = 1;
+  depthTexDef->formatList = {Ogre::PF_D32_FLOAT};
+  depthTexDef->fsaa = 0;
+  depthTexDef->uav = false;
+  depthTexDef->automipmaps = false;
+  depthTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+  depthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+  depthTexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
+  depthTexDef->fsaaExplicitResolve = false;
+
+  // Input texture
+  nodeDef->addTextureSourceName("rt", 0,
+      Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+
+  nodeDef->setNumTargetPass(2);
+  Ogre::CompositorTargetDef *colorTargetDef =
+      nodeDef->addTargetPass("colorTexture");
+  colorTargetDef->setNumPasses(2);
+  {
+    // clear pass
+    Ogre::CompositorPassClearDef *passClear =
+        static_cast<Ogre::CompositorPassClearDef *>(
+        colorTargetDef->addPass(Ogre::PASS_CLEAR));
+    passClear->mColourValue = Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f);
+    // scene pass
+    Ogre::CompositorPassSceneDef *passScene =
+        static_cast<Ogre::CompositorPassSceneDef *>(
+        colorTargetDef->addPass(Ogre::PASS_SCENE));
+    passScene->mVisibilityMask = IGN_VISIBILITY_SELECTABLE;
+  }
+
+  Ogre::CompositorTargetDef *targetDef = nodeDef->addTargetPass("rt");
+  targetDef->setNumPasses(2);
+  {
+    {
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          targetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mColourValue = Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+    // quad pass
+    Ogre::CompositorPassQuadDef *passQuad =
+        static_cast<Ogre::CompositorPassQuadDef *>(
+        targetDef->addPass(Ogre::PASS_QUAD));
+    passQuad->mMaterialName = this->dataPtr->selectionMaterial->getName();
+    passQuad->addQuadTextureSource(0, "colorTexture", 0);
+    passQuad->addQuadTextureSource(1, "depthTexture", 0);
+    passQuad->mFrustumCorners =
+        Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
+  }
+
+  Ogre::CompositorWorkspaceDef *workDef =
+      ogreCompMgr->addWorkspaceDefinition(workspaceName);
+  workDef->connectExternal(0, nodeDef->getName(), 0);
+
   this->dataPtr->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(this->dataPtr->scene->OgreSceneManager(),
       this->dataPtr->renderTexture,
       this->dataPtr->selectionCamera, workspaceName, false);
 
-  // set visibility mask to see only items that are selectable
-  auto nodeSeq = this->dataPtr->ogreCompositorWorkspace->getNodeSequence();
-  auto pass = nodeSeq[0]->_getPasses()[1]->getDefinition();
-  auto scenePass = dynamic_cast<const Ogre::CompositorPassSceneDef *>(pass);
-  const_cast<Ogre::CompositorPassSceneDef *>(scenePass)->mVisibilityMask =
-      IGN_VISIBILITY_SELECTABLE;
+  // add the listener
+  Ogre::CompositorNode *node =
+      this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
+  auto channelsTex = node->getLocalTextures();
 
-  // buffer to store render texture data. Ensure it's at least 4 bytes
+  for (auto &c : channelsTex)
+  {
+    if (c.textures[0]->getSrcFormat() == Ogre::PF_FLOAT32_RGBA)
+    {
+      c.target->addListener(
+          this->dataPtr->materialSwitcher.get());
+      break;
+    }
+  }
+
+  // buffer to store render texture data. Ensure it's at least 4 channels
   size_t bufferSize = std::max<size_t>(
       Ogre::PixelUtil::getMemorySize(width, height, 1, format),
       4u);
-  this->dataPtr->buffer = new uint8_t[bufferSize];
-  memset(this->dataPtr->buffer, 0, 4u);
+  this->dataPtr->buffer = new float[width * height * 4u];
+  memset(this->dataPtr->buffer, 0, bufferSize);
   this->dataPtr->pixelBox = new Ogre::PixelBox(width,
       height, 1, format, this->dataPtr->buffer);
 }
@@ -188,28 +329,38 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
 /////////////////////////////////////////////////
 Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
 {
+  Ogre::Item *item = nullptr;
+  math::Vector3d point;
+  this->ExecuteQuery(_x, _y, item, point);
+  return item;
+}
+
+/////////////////////////////////////////////////
+bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
+    Ogre::Item *&_item, math::Vector3d &_point)
+{
   if (!this->dataPtr->renderTexture)
-    return nullptr;
+    return false;
 
   if (!this->dataPtr->camera)
-    return nullptr;
+    return false;
 
   Ogre::Viewport *vp = this->dataPtr->camera->getLastViewport();
 
   if (!vp)
-    return nullptr;
+    return false;
 
   Ogre::RenderTarget *rt = vp->getTarget();
 
   if (!rt)
-    return nullptr;
+    return false;
 
   const unsigned int targetWidth = rt->getWidth();
   const unsigned int targetHeight = rt->getHeight();
 
   if (_x < 0 || _y < 0 || _x >= static_cast<int>(targetWidth)
       || _y >= static_cast<int>(targetHeight))
-    return nullptr;
+    return false;
 
   // 1x1 selection buffer, adapted from rviz
   // http://docs.ros.org/indigo/api/rviz/html/c++/selection__manager_8cpp.html
@@ -229,8 +380,28 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
   scaleMatrix[1][1] = 1.0 / (y2-y1);
   transMatrix[0][3] -= x1+x2;
   transMatrix[1][3] += y1+y2;
-  this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
-      scaleMatrix * transMatrix * this->dataPtr->camera->getProjectionMatrix());
+  Ogre::Matrix4 customProjectionMatrix =
+      scaleMatrix * transMatrix * this->dataPtr->camera->getProjectionMatrix();
+
+  // There is a bug in ogre 2.1 that produces incorrect frustum
+  // extents when a custom projection matrix is set.
+  // So we manually compute the frusm extents ourselves
+  // \todo(anyone) The bug should be fixed in ogre 2.2 so we should be
+  // able to uncomment the setCustomProjectionMatrix call below
+  // and remove the extents set by setFrustumExtents
+  // this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
+  //      customProjectionMatrix);
+  Ogre::Matrix4 invProj = customProjectionMatrix.inverse();
+  Ogre::Vector4 topLeft(-1.0f, 1.0f, -1.0f, 1.0f);
+  Ogre::Vector4 bottomRight(1.0f, -1.0f, -1.0f, 1.0f);
+  topLeft = invProj * topLeft;
+  bottomRight = invProj * bottomRight;
+  float left = topLeft.x / topLeft.w;
+  float top = topLeft.y / topLeft.w;
+  float right = bottomRight.x / bottomRight.w;
+  float bottom = bottomRight.y / bottomRight.w;
+  this->dataPtr->selectionCamera->setFrustumExtents(left, right, top, bottom);
+
   this->dataPtr->selectionCamera->setPosition(
       this->dataPtr->camera->getDerivedPosition());
   this->dataPtr->selectionCamera->setOrientation(
@@ -242,31 +413,51 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
   // update render texture
   this->Update();
 
-  size_t posInStream = 0;
-  ignition::math::Color::BGRA color(0);
   if (!this->dataPtr->buffer)
   {
     ignerr << "Selection buffer is null." << std::endl;
-    return nullptr;
+    return false;
   }
-  memcpy(static_cast<void *>(&color), this->dataPtr->buffer + posInStream, 4);
+
+  float color = this->dataPtr->buffer[3];
+  uint32_t *rgba = reinterpret_cast<uint32_t *>(&color);
+  unsigned int r = *rgba >> 24 & 0xFF;
+  unsigned int g = *rgba >> 16 & 0xFF;
+  unsigned int b = *rgba >> 8 & 0xFF;
+
+  math::Vector3d point(this->dataPtr->buffer[0], this->dataPtr->buffer[1],
+      this->dataPtr->buffer[2]);
+  auto rot = Ogre2Conversions::Convert(
+      this->dataPtr->camera->getParentSceneNode()->_getDerivedOrientation());
+  auto pos = Ogre2Conversions::Convert(
+      this->dataPtr->camera->getParentSceneNode()->_getDerivedPosition());
+  math::Pose3d p(pos, rot);
+  point = rot * point + pos;
+
   ignition::math::Color cv;
-  cv.SetFromARGB(color);
   cv.A(1.0);
+  cv.R(r / 255.0);
+  cv.G(g / 255.0);
+  cv.B(b / 255.0);
+
   const std::string &entName =
     this->dataPtr->materialSwitcher->EntityName(cv);
 
   if (entName.empty())
   {
-    return 0;
+    return false;
   }
   else
   {
     auto collection = this->dataPtr->sceneMgr->findMovableObjects(
         Ogre::ItemFactory::FACTORY_TYPE_NAME, entName);
     if (collection.empty())
-      return nullptr;
+      return false;
     else
-      return dynamic_cast<Ogre::Item *>(collection[0]);
+    {
+      _item = dynamic_cast<Ogre::Item *>(collection[0]);
+      _point = point;
+      return true;
+    }
   }
 }

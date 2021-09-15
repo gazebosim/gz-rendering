@@ -66,8 +66,8 @@ namespace ignition
       /// point of intersection.
       /// \param[in] _x X coordinate in pixels.
       /// \param[in] _y Y coordinate in pixels.
-      /// \param[out] Ogre item at the coordinate.
-      /// \param[out] 3D point of intersection with the ogre item's mesh.
+      /// \param[out] _item Ogre item at the coordinate.
+      /// \param[out] _point 3D point of intersection with the ogre item's mesh.
       /// \return True if an ogre item is found, false otherwise
       public: bool ExecuteQuery(const int _x, const int _y, Ogre::Item *&_item,
           math::Vector3d &_point);

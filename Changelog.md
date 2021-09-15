@@ -17,6 +17,10 @@
     * [Pull request #378](https://github.com/ignitionrobotics/ign-rendering/pull/378)
     * [Pull request #383](https://github.com/ignitionrobotics/ign-rendering/pull/383)
 
+1. All changes merged forward from ign-rendering3
+    * [Pull request #382](https://github.com/ignitionrobotics/ign-rendering/pull/382)
+    * [Pull request #398](https://github.com/ignitionrobotics/ign-rendering/pull/398)
+
 ### Ignition Rendering 4.8.0 (2021-06-18)
 
 1. relax gaussian test tolerance

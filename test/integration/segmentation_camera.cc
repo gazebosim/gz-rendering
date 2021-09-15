@@ -75,7 +75,7 @@ void OnNewSegmentationFrame(const uint8_t *_data,
 }
 
 /// \brief Build the scene with 3 boxes besides each other
-/// the 2 aside boxes have the same label & the middle is different
+/// the 2 outer boxes have the same label & the middle is different
 void BuildScene(rendering::ScenePtr scene)
 {
   math::Vector3d leftPosition(3, -1.5, 0);
@@ -116,11 +116,11 @@ void BuildScene(rendering::ScenePtr scene)
 void SegmentationCameraTest::SegmentationCameraBoxes(
   const std::string &_renderEngine)
 {
-  // Optix is not supported
-  if (_renderEngine.compare("optix") == 0)
+  // Currently, only ogre2 supports segmentation cameras
+  if (_renderEngine.compare("ogre2") != 0)
   {
-    igndbg << "Engine '" << _renderEngine
-              << "' doesn't support depth cameras" << std::endl;
+    ignerr << "Engine '" << _renderEngine
+              << "' doesn't support segmentation cameras" << std::endl;
     return;
   }
 
@@ -128,12 +128,13 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   auto *engine = ignition::rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+    ignerr << "Engine '" << _renderEngine
+              << "' failed to create a scene" << std::endl;
     return;
   }
 
   ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
   BuildScene(scene);
 
   // Create Segmentation camera
@@ -147,8 +148,8 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   camera->SetBackgroundLabel(backgroundLabel);
   EXPECT_EQ(camera->BackgroundLabel(), backgroundLabel);
 
+  // We will test semantic segmentation first
   camera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
-
   EXPECT_EQ(camera->Type(), SegmentationType::ST_SEMANTIC);
 
   camera->EnableColoredMap(false);
@@ -156,7 +157,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
 
   int width = 320;
   int height = 240;
-  double aspectRatio = width/height;
+  double aspectRatio = static_cast<double>(width) / static_cast<double>(height);
 
   camera->SetAspectRatio(aspectRatio);
   camera->SetImageWidth(width);
@@ -176,8 +177,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
 
   // Update once to create image
   camera->Update();
-
-  // Semantic Test
+  EXPECT_EQ(1, g_counter);
 
   // get the center of each box, the percentages locates the center
   math::Vector2d leftProj(width * 0.25, height * 0.5);
@@ -188,10 +188,6 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   uint32_t leftIndex = (leftProj.Y() * width + leftProj.X()) * 3;
   uint32_t rightIndex = (rightProj.Y() * width + rightProj.X()) * 3;
   uint32_t middleIndex = (middleProj.Y() * width + middleProj.X()) * 3;
-
-  // test
-  g_mutex.lock();
-  g_counter = 0;
 
   // cast the unsigned char to unsigned int to read it
   uint8_t leftLabel =   g_buffer[leftIndex];
@@ -207,15 +203,15 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   int background = g_buffer[0];
   EXPECT_EQ(background, backgroundLabel);
 
-  g_mutex.unlock();
-
-  // Instance/Panoptic  Test
+  // Instance/Panoptic test
   camera->SetSegmentationType(SegmentationType::ST_PANOPTIC);
 
   // Update once to create image
+  g_counter = 0;
   camera->Update();
+  EXPECT_EQ(1, g_counter);
 
-  // the label in the last channel
+  // the label is in the last channel
   leftLabel =   g_buffer[leftIndex   + 2];
   rightLabel =  g_buffer[rightIndex  + 2];
   middleLabel = g_buffer[middleIndex + 2];
@@ -224,10 +220,6 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   uint8_t leftCount =   g_buffer[leftIndex];
   uint8_t rightCount =  g_buffer[rightIndex];
   uint8_t middleCount = g_buffer[middleIndex];
-
-  // test
-  g_mutex.lock();
-  g_counter = 0;
 
   // check the label
   EXPECT_EQ(leftLabel  , 1);
@@ -238,8 +230,6 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   EXPECT_EQ(middleCount, 1);
   EXPECT_EQ(rightCount, 1);
   EXPECT_EQ(leftCount, 2);
-
-  g_mutex.unlock();
 
   // Clean up
   engine->DestroyScene(scene);

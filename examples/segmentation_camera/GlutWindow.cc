@@ -45,7 +45,6 @@
 #include "GlutWindow.hh"
 
 #define KEY_ESC 27
-#define KEY_TAB  9
 #define UNSUPPORTED_BUTTONS 5
 
 //////////////////////////////////////////////////

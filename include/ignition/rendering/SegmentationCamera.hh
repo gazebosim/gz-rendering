@@ -44,7 +44,7 @@ namespace ignition
     /// \class SegmentationCamera SegmentationCamera.hh
     /// ignition/rendering/SegmentationCamera.hh
     /// \brief Poseable Segmentation camera used for rendering the scene graph.
-    /// This camera is designed to produced segmentation data, instead of a 2D
+    /// This camera is designed to produce segmentation data, instead of a 2D
     /// image.
     class IGNITION_RENDERING_VISIBLE SegmentationCamera :
       public virtual Camera
@@ -56,14 +56,14 @@ namespace ignition
       public: virtual void CreateSegmentationTexture() = 0;
 
       /// \brief Get the segmentation image data
-      /// \return The labels-buffer as a float array
+      /// \return The labels-buffer as an array of unsigned ints
       public: virtual uint8_t *SegmentationData() const = 0;
 
       /// \brief Connect to the new Segmentation image event
-      /// \param[in] _subscriber Subscriber callback function
-      /// \return Pointer to the new Connection. This must be kept in scope
+      /// \param[in] _subscriber Subscriber callback function.
       /// The callback function arguments are:
       /// <segmentation data, width, height, channels, format>
+      /// \return Pointer to the new Connection. This must be kept in scope
       public: virtual ignition::common::ConnectionPtr
         ConnectNewSegmentationFrame(
           std::function<void(const uint8_t *, unsigned int, unsigned int,
@@ -82,7 +82,7 @@ namespace ignition
       /// label id map
       public: virtual void EnableColoredMap(bool _enable) = 0;
 
-      /// \brief Enable Color map mode to generate colored semantics
+      /// \brief Check if color map mode is enabled
       /// \return True if colored map, False if label id map
       public: virtual bool IsColoredMap() const = 0;
 
@@ -103,11 +103,12 @@ namespace ignition
       public: virtual int BackgroundLabel() const = 0;
 
       /// \brief Convert the colored map stored in the internal buffer to label
-      /// ids map, so users get both colored map and the corresponding ids map
-      /// This function must be called before the next render loop and
+      /// IDs map, so users get both the colored map and the corresponding IDs
+      /// map. This function must be called before the next render loop and
       /// the colored map mode must be enabeled
-      /// \param[out] _labelBuffer A buffer contains the label ids map data
-      /// That output buffer must be allocated with the same size before calling
+      /// \param[out] _labelBuffer A buffer that contains the label IDs map
+      /// data. This output buffer must be allocated with the same size before
+      /// calling
       public: virtual void LabelMapFromColoredBuffer(
         uint8_t * _labelBuffer) const = 0;
     };

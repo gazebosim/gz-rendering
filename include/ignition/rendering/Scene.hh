@@ -700,7 +700,7 @@ namespace ignition
       public: virtual SegmentationCameraPtr CreateSegmentationCamera(
                   const std::string &_name) = 0;
 
-      /// \brief Create new segmentation camera with the given name. If
+      /// \brief Create new segmentation camera with the given name and ID. If
       /// either the given ID or name is already in use, will return NULL.
       /// \param[in] _id ID of the new camera
       /// \param[in] _name Name of the new camera

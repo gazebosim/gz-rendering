@@ -41,8 +41,8 @@ namespace ignition
     // Forward declaration
     class Ogre2SegmentationCameraPrivate;
 
-    /// \brief Segmentation camera used to label each pixel with a label id
-    /// supports Semantic / Panoptic Segmentation
+    /// \brief Segmentation camera used to label each pixel with a label id.
+    /// Supports Semantic / Panoptic Segmentation
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationCamera :
       public BaseSegmentationCamera<Ogre2Sensor>
     {
@@ -126,6 +126,7 @@ namespace ignition
       /// \brief Pointer to private data.
       private: std::unique_ptr<Ogre2SegmentationCameraPrivate> dataPtr;
 
+      /// \brief Make scene our friend so it can create a camera
       private: friend class Ogre2Scene;
     };
     }

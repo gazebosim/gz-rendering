@@ -63,8 +63,8 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   public: virtual void postRenderTargetUpdate(
               const Ogre::RenderTargetEvent &_evt) override;
 
-  /// \brief Convert label of semantic map to a unique color for colored map,
-  /// Add the color of the label to the taken colors if it dosne't exist
+  /// \brief Convert label of semantic map to a unique color for colored map and
+  /// add the color of the label to the taken colors if it doesn't exist
   /// \param[in] _label id of the semantic map or encoded id of panoptic map
   /// \param[in] _isMultiLink bool used to skip the taken color check if the
   /// label is for a multi link model, as all links should have the same color
@@ -72,10 +72,10 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   private: math::Color LabelToColor(int64_t _label,
     bool _isMultiLink = false);
 
-  /// \brief Check if the color is taken previously and add it to taken colors
-  /// if not exist
+  /// \brief Check if the color is already taken and add it to taken colors
+  /// if it does not exist
   /// \param[in] _color Color to be checked
-  /// \return True if taken, False elsewhere
+  /// \return True if taken, False otherwise
   private: bool IsTakenColor(const math::Color &_color);
 
   /// \brief A map of ogre sub item pointer to its original hlms material
@@ -90,9 +90,6 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   /// appearance of item to use a unique color for mouse picking. In
   /// addition, the depth check and depth write properties disabled.
   private: Ogre::MaterialPtr plainOverlayMaterial;
-
-  /// \brief User Data Key to set the label
-  private: const std::string labelKey{"label"};
 
   /// \brief Background & unlabeled objects label id in semantic map
   private: int backgroundLabel = 0;
@@ -114,14 +111,14 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   /// \brief keep track of the random colors, stores encoded id of r,g,b
   private: std::unordered_set<int64_t> takenColors;
 
-  /// \brief keep track of the labels which is already colored
-  /// usful for coloring items in semantic mode in LabelToColor()
+  /// \brief keep track of the labels that are already colored.
+  /// Usful for coloring items in semantic mode in LabelToColor()
   private: std::unordered_set<int64_t> coloredLabel;
 
   /// \brief Mapping from the colorId to the label id, used in converting
   /// the colored map to label ids map
   /// Key: colorId label id, value: label in case of semantic segmentation
-  /// or composite id(8 bit label + 16 bit instances) in instance type
+  /// or composite id (8 bit label + 16 bit instances) in instance type
   private: std::unordered_map<int64_t, int64_t> colorToLabel;
 
   /// \brief Pseudo num generator to generate colors from label id
@@ -332,7 +329,7 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
         visual);
 
       // get class user data
-      Variant labelAny = ogreVisual->UserData(this->labelKey);
+      Variant labelAny = ogreVisual->UserData("label");
       int label;
       try
       {
@@ -352,14 +349,14 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
       {
         if (this->isColoredMap)
         {
-          // semantic material(each pixel has item's color)
+          // semantic material (each pixel has item's color)
           math::Color color = this->LabelToColor(label);
           customParameter = Ogre::Vector4(
             color.R(), color.G(), color.B(), 1.0);
         }
         else
         {
-          // labels ids material(each pixel has item's label)
+          // labels ids material (each pixel has item's label)
           float labelColor = label / 255.0;
           customParameter = Ogre::Vector4(
             labelColor, labelColor, labelColor, 1.0);
@@ -454,11 +451,8 @@ void Ogre2SegmentationMaterialSwitcher::postRenderTargetUpdate(
     const Ogre::RenderTargetEvent &/*_evt*/)
 {
   // restore item to use pbs hlms material
-  for (auto it : this->datablockMap)
-  {
-    Ogre::SubItem *subItem = it.first;
-    subItem->setDatablock(it.second);
-  }
+  for (const auto &[subItem, dataBlock] : this->datablockMap)
+    subItem->setDatablock(dataBlock);
 }
 
 /////////////////////////////////////////////////
@@ -649,7 +643,11 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
   // buffer to store render texture data
   auto bufferSize = Ogre::PixelUtil::getMemorySize(
     width, height, 1, this->dataPtr->format);
+  if (this->dataPtr->buffer)
+    delete [] this->dataPtr->buffer;
   this->dataPtr->buffer = new uint8_t[bufferSize];
+  if (this->dataPtr->pixelBox)
+    delete this->dataPtr->pixelBox;
   this->dataPtr->pixelBox = new Ogre::PixelBox(width, height, 1,
     this->dataPtr->format, this->dataPtr->buffer);
 }
@@ -803,7 +801,7 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
   if (!this->dataPtr->buffer)
     return;
 
-  auto colorToLabel = this->dataPtr->materialSwitcher->colorToLabel;
+  const auto &colorToLabel = this->dataPtr->materialSwitcher->colorToLabel;
 
   auto width = this->ImageWidth();
   auto height = this->ImageHeight();
@@ -832,12 +830,14 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
       }
 
       // skip if not exist
-      if (!colorToLabel.count(colorId))
+      auto it = colorToLabel.find(colorId);
+      if (it == colorToLabel.end())
         continue;
 
-      int64_t label = colorToLabel[colorId];
+      int64_t label = it->second;
 
-      if (this->dataPtr->materialSwitcher->type == SegmentationType::ST_SEMANTIC)
+      if (this->dataPtr->materialSwitcher->type ==
+          SegmentationType::ST_SEMANTIC)
       {
         uint8_t label8bit = label % 256;
 

@@ -39,12 +39,20 @@ class SegmentationCameraTest : public testing::Test,
 void SegmentationCameraTest::SegmentationCamera(
   const std::string &_renderEngine)
 {
+  // Currently, only ogre2 supports segmentation cameras
+  if (_renderEngine.compare("ogre2") != 0)
+  {
+    ignerr << "Engine '" << _renderEngine
+              << "' doesn't support segmentation cameras" << std::endl;
+    return;
+  }
+
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+    ignerr << "Engine '" << _renderEngine
+              << "' failed to create a scene" << std::endl;
     return;
   }
 
@@ -52,7 +60,7 @@ void SegmentationCameraTest::SegmentationCamera(
   ASSERT_NE(nullptr, scene);
 
   SegmentationCameraPtr camera(scene->CreateSegmentationCamera());
-  EXPECT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
 
   math::Color backgroundColor(0.5, 0.5, 0.5);
   camera->SetBackgroundColor(backgroundColor);

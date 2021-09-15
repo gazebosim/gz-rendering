@@ -24,6 +24,6 @@ namespace ir = ignition::rendering;
 
 /// \brief Run the demo and render the scene from the cameras
 /// \param[in] _camera Segmentation Camera
-void run(ir::CameraPtr _cameras);
+void run(ir::CameraPtr _camera);
 
 #endif

@@ -107,11 +107,11 @@ void buildScene(ScenePtr _scene)
 
   // create box visual
   VisualPtr box = _scene->CreateVisual();
-  // box->AddGeometry(_scene->CreateBox());
+  box->AddGeometry(_scene->CreateBox());
   // box->SetOrigin(0.0, 0, 0);
   // box->SetLocalPosition(3, 0, 0);
   // box->SetLocalScale(1, 1, 1);
-  // box->SetMaterial(red);
+  box->SetMaterial(red);
   // root->AddChild(box);
 
 //! [white material]

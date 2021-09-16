@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINERENDERTYPES_HH_
-#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINERENDERTYPES_HH_
+#ifndef ignition_rendering_luxcoreengine_luxcoreenginerendertypes_hh_
+#define ignition_rendering_luxcoreengine_luxcoreenginerendertypes_hh_
 
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
@@ -23,7 +23,6 @@ namespace ignition
 {
   namespace rendering
   {
-
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     class LuxCoreEngineCamera;
     class LuxCoreEngineScene;
@@ -56,10 +55,10 @@ namespace ignition
     typedef shared_ptr<LuxCoreEngineMesh>                 LuxCoreEngineMeshPtr;
     typedef shared_ptr<LuxCoreEngineGeometry>             LuxCoreEngineGeometryPtr;
     typedef shared_ptr<LuxCoreEngineMeshFactory>          LuxCoreEngineMeshFactoryPtr;
-    typedef BaseGeometryStore<LuxCoreEngineGeometry>      LuxCoreEngineGeometryStore;
-    typedef shared_ptr<LuxCoreEngineGeometryStore>        LuxCoreEngineGeometryStorePtr;
     typedef BaseVisualStore<LuxCoreEngineVisual>          LuxCoreEngineVisualStore;
     typedef shared_ptr<LuxCoreEngineVisualStore>          LuxCoreEngineVisualStorePtr;
+    typedef BaseGeometryStore<LuxCoreEngineGeometry>      LuxCoreEngineGeometryStore;
+    typedef shared_ptr<LuxCoreEngineGeometryStore>        LuxCoreEngineGeometryStorePtr;
     }
   }
 }

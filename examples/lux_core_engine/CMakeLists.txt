@@ -9,12 +9,25 @@ find_package(ignition-plugin1 REQUIRED COMPONENTS all)
 include_directories(/ignition-ws/shared/LuxCore-sdk/include)
 find_library(LUXCORE_LIBRARY luxcore HINTS /ignition-ws/shared/LuxCore-sdk/lib/)
 
-add_library(LuxCoreEngine SHARED LuxCoreEngine.cc)
+add_library(LuxCoreEngine SHARED 
+  LuxCoreEngineObject.cc 
+  LuxCoreEngineMaterial.cc
+  LuxCoreEngineRenderTarget.cc
+  LuxCoreEngineNode.cc
+  LuxCoreEngineSensor.cc
+  LuxCoreEngineCamera.cc
+  LuxCoreEngineGeometry.cc
+  LuxCoreEngineVisual.cc
+  LuxCoreEngineMesh.cc
+  LuxCoreEngineMeshFactory.cc
+  LuxCoreEngineScene.cc
+  LuxCoreEngine.cc)
+
 target_link_libraries(LuxCoreEngine
   PUBLIC
-    ${LUXCORE_LIBRARY}
-    ${IGNITION-RENDERING_LIBRARIES}
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
+    ${IGNITION-RENDERING_LIBRARIES}
+    ${LUXCORE_LIBRARY}
   PRIVATE
     ignition-plugin${IGN_PLUGIN_VER}::register
 )

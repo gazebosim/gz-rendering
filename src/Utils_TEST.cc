@@ -117,6 +117,10 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   box->SetLocalScale(1.0, 1.0, 1.0);
   root->AddChild(box);
 
+  // add camera and render one frame
+  root->AddChild(camera);
+  camera->Update();
+
   // API without RayQueryResult and default max distance
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
 

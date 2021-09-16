@@ -20,7 +20,7 @@ ign_configure_project(VERSION_SUFFIX)
 # Set project-specific options
 #============================================================================
 
-option(USE_UNOFFICAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
+option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
 
 #============================================================================
 # Search for project-specific dependencies
@@ -63,8 +63,8 @@ list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
 
 # Ogre versions greater than 1.9 are not officialy supported.
 # Display a warning for the users on this setup unless they provide
-# USE_UNOFFICAL_OGRE_VERSIONS flag
-if (NOT USE_UNOFFICAL_OGRE_VERSIONS)
+# USE_UNOFFICIAL_OGRE_VERSIONS flag
+if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
   ign_find_package(IgnOGRE VERSION 1.10
     COMPONENTS ${ign_ogre_components})
 

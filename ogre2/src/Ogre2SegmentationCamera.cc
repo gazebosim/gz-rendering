@@ -219,9 +219,11 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
   this->SetImageFormat(PixelFormat::PF_R8G8B8);
   Ogre::PixelFormatGpu ogrePF = Ogre::PFG_RGBA8_UNORM;
 
+  auto backgroundColor = Ogre2Conversions::Convert(
+      this->dataPtr->materialSwitcher->backgroundColor);
+
   std::string wsDefName = "SegmentationCameraWorkspace_" + this->Name();
-  ogreCompMgr->createBasicWorkspaceDef(wsDefName,
-      Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f));
+  ogreCompMgr->createBasicWorkspaceDef(wsDefName, backgroundColor);
 
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();

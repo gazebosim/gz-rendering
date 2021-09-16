@@ -62,6 +62,7 @@ void OnNewSegmentationFrame(const uint8_t *_data,
                     unsigned int /*_channels*/,
                     const std::string &/*_format*/)
 {
+  std::cerr << "OnNewSegmentationFrame" << std::endl;
   g_mutex.lock();
   auto bufferSize = _width * _height * 3;
 

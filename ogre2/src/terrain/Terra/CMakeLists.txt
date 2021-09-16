@@ -20,7 +20,7 @@ if (UNIX)
       -Wno-sign-compare
       -Wno-strict-aliasing)
 elseif (MSVC)
-  set_source_files_properties(${sources} ${gtest_sources} COMPILE_FLAGS "/wd4244")
+  set_source_files_properties(${TERRA_SOURCES} COMPILE_FLAGS "/wd4244")
 endif()
 
 add_definitions(-DOGRE_IGNORE_UNKNOWN_DEBUG)

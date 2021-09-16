@@ -217,106 +217,11 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
   this->SetImageFormat(PixelFormat::PF_R8G8B8);
-  Ogre::PixelFormatGpu ogrePF = Ogre::PFG_RGB8_UNORM;
+  Ogre::PixelFormatGpu ogrePF = Ogre::PFG_RGBA8_UNORM;
 
   std::string wsDefName = "SegmentationCameraWorkspace_" + this->Name();
-  this->dataPtr->ogreCompositorWorkspaceDef = wsDefName;
-  if(!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
-  {
-    std::string nodeDefName = wsDefName + "/Node";
-    this->dataPtr->ogreCompositorNodeDef = nodeDefName;
-    Ogre::CompositorNodeDef *nodeDef =
-        ogreCompMgr->addNodeDefinition(nodeDefName);
-    // Input texture
-    nodeDef->addTextureSourceName("rt_input", 0,
-        Ogre::TextureDefinitionBase::TEXTURE_INPUT);
-    Ogre::TextureDefinitionBase::TextureDefinition *segmentationTexDef =
-        nodeDef->addTextureDefinition("depthTexture");
-    segmentationTexDef->textureType = Ogre::TextureTypes::Type2D;
-    segmentationTexDef->width = 0;
-    segmentationTexDef->height = 0;
-    segmentationTexDef->depthOrSlices = 1;
-    segmentationTexDef->numMipmaps = 0;
-    segmentationTexDef->widthFactor = 1;
-    segmentationTexDef->heightFactor = 1;
-    segmentationTexDef->format = Ogre::PFG_D32_FLOAT;
-    segmentationTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
-    // set to default pool so that when the colorTexture pass is rendered, its
-    // depth data get populated to depthTexture
-    segmentationTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
-    segmentationTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
-
-    Ogre::RenderTargetViewDef *rtv =
-      nodeDef->addRenderTextureView("depthTexture");
-    rtv->setForTextureDefinition("depthTexture", segmentationTexDef);
-
-    Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
-        nodeDef->addTextureDefinition("colorTexture");
-    colorTexDef->textureType = Ogre::TextureTypes::Type2D;
-    colorTexDef->width = 0;
-    colorTexDef->height = 0;
-    colorTexDef->depthOrSlices = 1;
-    colorTexDef->numMipmaps = 0;
-    colorTexDef->widthFactor = 1;
-    colorTexDef->heightFactor = 1;
-    colorTexDef->format = Ogre::PFG_RGBA8_UNORM;
-    colorTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
-    colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
-    colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
-    colorTexDef->preferDepthTexture = true;
-
-    Ogre::RenderTargetViewDef *rtv2 =
-      nodeDef->addRenderTextureView("colorTexture");
-    rtv2->setForTextureDefinition("colorTexture", colorTexDef);
-
-    nodeDef->setNumTargetPass(2);
-    Ogre::CompositorTargetDef *colorTargetDef =
-        nodeDef->addTargetPass("colorTexture");
-    colorTargetDef->setNumPasses(1);
-    {
-      // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          colorTargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-      passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
-      // segmentation camera should not see particles
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
-          ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
-    }
-
-    // rt_input target - converts to thermal
-    Ogre::CompositorTargetDef *inputTargetDef =
-        nodeDef->addTargetPass("rt_input");
-    inputTargetDef->setNumPasses(1);
-    {
-      // quad pass
-      Ogre::CompositorPassQuadDef *passQuad =
-          static_cast<Ogre::CompositorPassQuadDef *>(
-          inputTargetDef->addPass(Ogre::PASS_QUAD));
-      passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
-      passQuad->setAllClearColours(Ogre::ColourValue(0, 0, 0));
-
-      passQuad->mMaterialName = this->dataPtr->segmentationMaterial->getName();
-      passQuad->addQuadTextureSource(0, "depthTexture");
-      passQuad->addQuadTextureSource(1, "colorTexture");
-      passQuad->mFrustumCorners =
-          Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
-    }
-    nodeDef->mapOutputChannel(0, "rt_input");
-    Ogre::CompositorWorkspaceDef *workDef =
-        ogreCompMgr->addWorkspaceDefinition(wsDefName);
-    workDef->connectExternal(0, nodeDef->getName(), 0);
-  }
-
-  Ogre::CompositorWorkspaceDef *wsDef =
-      ogreCompMgr->getWorkspaceDefinition(wsDefName);
-
-  if (!wsDef)
-  {
-    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
-           << " for " << this->Name();
-  }
+  ogreCompMgr->createBasicWorkspaceDef(wsDefName,
+      Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f));
 
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();

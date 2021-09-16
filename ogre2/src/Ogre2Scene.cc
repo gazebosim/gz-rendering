@@ -174,22 +174,7 @@ void Ogre2Scene::PreRender()
           this->SensorByIndex(i));
       if (camera)
       {
-        // TODO(anyone): this function should rely on virtual functions instead
-        // of dynamic casts
-        // Looks in commit history for '#SetShadowsNodeDefDirtyABI' to
-        // see changes made and revert
-        {
-          auto cameraDerived = std::dynamic_pointer_cast<Ogre2DepthCamera>(
-                                 this->SensorByIndex(i));
-          if (cameraDerived)
-            cameraDerived->SetShadowsNodeDefDirty();
-        }
-        {
-          auto cameraDerived = std::dynamic_pointer_cast<Ogre2Camera>(
-                                 this->SensorByIndex(i));
-          if (cameraDerived)
-            cameraDerived->SetShadowsNodeDefDirty();
-        }
+         camera->SetShadowsDirty();
       }
     }
 
@@ -417,7 +402,7 @@ bool Ogre2Scene::InitImpl()
   this->CreateRootVisual();
   this->CreateStores();
   this->CreateMeshFactory();
-
+  UpdateShadowNode();
   return true;
 }
 
@@ -626,17 +611,20 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
     for (size_t i = 0; i < numTextures; ++i)
     {
       const Ogre::ShadowNodeHelper::Resolution &atlasRes = atlasResolutions[i];
+      Ogre::String texName = "atlas" + Ogre::StringConverter::toString(i);
       Ogre::TextureDefinitionBase::TextureDefinition *texDef =
-          shadowNodeDef->addTextureDefinition(
-          "atlas" + Ogre::StringConverter::toString(i));
+          shadowNodeDef->addTextureDefinition(texName);
 
       texDef->width = std::max(atlasRes.x, 1u);
       texDef->height = std::max(atlasRes.y, 1u);
-      texDef->formatList.push_back(Ogre::PF_D32_FLOAT);
+      texDef->format = Ogre::PFG_D32_FLOAT;
       texDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
-      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+      texDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
       texDef->preferDepthTexture = false;
-      texDef->fsaa = false;
+      texDef->fsaa = "0";
+      Ogre::RenderTargetViewDef *rtv =
+        shadowNodeDef->addRenderTextureView(texName);
+      rtv->setForTextureDefinition(texName, texDef);
     }
 
     // Define the cubemap needed by point lights
@@ -645,15 +633,18 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
       Ogre::TextureDefinitionBase::TextureDefinition *texDef =
           shadowNodeDef->addTextureDefinition("tmpCubemap");
 
-      texDef->width   = pointLightCubemapResolution;
-      texDef->height  = pointLightCubemapResolution;
-      texDef->depth   = 6u;
-      texDef->textureType = Ogre::TEX_TYPE_CUBE_MAP;
-      texDef->formatList.push_back(Ogre::PF_FLOAT32_R);
+      texDef->width = pointLightCubemapResolution;
+      texDef->height = pointLightCubemapResolution;
+      texDef->depthOrSlices = 6u;
+      texDef->textureType = Ogre::TextureTypes::TypeCube;
+      texDef->format = Ogre::PFG_R16_UNORM;
       texDef->depthBufferId = 1u;
-      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+      texDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
       texDef->preferDepthTexture = false;
-      texDef->fsaa = false;
+      texDef->fsaa = "0";
+      Ogre::RenderTargetViewDef *rtv =
+        shadowNodeDef->addRenderTextureView( "tmpCubemap" );
+      rtv->setForTextureDefinition( "tmpCubemap", texDef );
     }
   }
 
@@ -691,7 +682,7 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
 
       Ogre::ShadowTextureDefinition *shadowTexDef =
           shadowNodeDef->addShadowTextureDefinition(lightIdx, j, texName,
-          0, uvOffset, uvLength, 0);
+          uvOffset, uvLength, 0);
       shadowTexDef->shadowMapTechnique = shadowParam.technique;
       shadowTexDef->pssmLambda = pssmLambda;
       shadowTexDef->splitPadding = splitPadding;
@@ -718,8 +709,8 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
       Ogre::CompositorPassDef *passDef = targetDef->addPass(Ogre::PASS_CLEAR);
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(passDef);
-      passClear->mColourValue = Ogre::ColourValue::White;
-      passClear->mDepthValue = 1.0f;
+      passClear->setAllClearColours(Ogre::ColourValue::White);
+      passClear->mClearDepth = 1.0f;
     }
 
     // Pass scene for directional and spot lights first
@@ -773,25 +764,18 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
           targetDef->setShadowMapSupportedLightTypes(
               shadowParam.supportedLightTypes & pointMask);
           {
-            // Clear pass
-            Ogre::CompositorPassDef *passDef =
-                targetDef->addPass(Ogre::PASS_CLEAR);
-            Ogre::CompositorPassClearDef *passClear =
-                static_cast<Ogre::CompositorPassClearDef *>(passDef);
-            passClear->mColourValue = Ogre::ColourValue::White;
-            passClear->mDepthValue = 1.0f;
-            passClear->mShadowMapIdx = shadowMapIdx;
-          }
-
-          {
-            // Scene pass
-            Ogre::CompositorPassDef *passDef =
+              // Scene pass
+              Ogre::CompositorPassDef *passDef =
                 targetDef->addPass(Ogre::PASS_SCENE);
-            Ogre::CompositorPassSceneDef *passScene =
-                static_cast<Ogre::CompositorPassSceneDef *>(passDef);
-            passScene->mCameraCubemapReorient = true;
-            passScene->mShadowMapIdx = shadowMapIdx;
-            passScene->mIncludeOverlays = false;
+              Ogre::CompositorPassSceneDef *passScene =
+                      static_cast<Ogre::CompositorPassSceneDef*>(passDef);
+              passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+              passScene->setAllClearColours(
+                  Ogre::ColourValue(0.0f, 0.0f, 0.0f, 0.0f));
+              passScene->mClearDepth = 1.0f;
+              passScene->mCameraCubemapReorient = true;
+              passScene->mShadowMapIdx = shadowMapIdx;
+              passScene->mIncludeOverlays = false;
           }
         }
 
@@ -807,7 +791,7 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
             static_cast<Ogre::CompositorPassQuadDef *>(passDef);
         passQuad->mMaterialIsHlms = false;
         passQuad->mMaterialName = "Ogre/DPSM/CubeToDpsm";
-        passQuad->addQuadTextureSource(0, "tmpCubemap", 0);
+        passQuad->addQuadTextureSource(0, "tmpCubemap");
         passQuad->mShadowMapIdx = shadowMapIdx;
       }
       const size_t numSplits = shadowParam.technique ==
@@ -1172,8 +1156,6 @@ void Ogre2Scene::CreateContext()
 {
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
 
-  Ogre::InstancingThreadedCullingMethod threadedCullingMethod =
-      Ogre::INSTANCING_CULLING_SINGLETHREAD;
   // getNumLogicalCores() may return 0 if couldn't detect
   const size_t numThreads = std::max<size_t>(
       1, Ogre::PlatformInformation::getNumLogicalCores());
@@ -1184,8 +1166,7 @@ void Ogre2Scene::CreateContext()
   //   threadedCullingMethod = Ogre::INSTANCING_CULLING_THREADED;
   // Create the SceneManager, in this case a generic one
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC,
-                                                    numThreads,
-                                                    threadedCullingMethod);
+                                                    numThreads);
 
   this->ogreSceneManager->addRenderQueueListener(
       Ogre2RenderEngine::Instance()->OverlaySystem());
@@ -1201,7 +1182,8 @@ void Ogre2Scene::CreateContext()
   // enable forward plus to support multiple lights
   // this is required for non-shadow-casting point lights and
   // spot lights to work
-  this->ogreSceneManager->setForwardClustered(true, 16, 8, 24, 96, 1, 500);
+  this->ogreSceneManager->setForwardClustered(
+    true, 16, 8, 24, 96, 0, 0, 1, 500);
 }
 
 //////////////////////////////////////////////////

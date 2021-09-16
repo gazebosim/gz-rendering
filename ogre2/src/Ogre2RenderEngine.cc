@@ -86,12 +86,12 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   const char *env = std::getenv("OGRE2_RESOURCE_PATH");
   if (env)
     this->ogrePaths.push_back(std::string(env));
+}
 
-#ifdef __APPLE__
-  // on OSX the plugins may be placed in the parent lib directory
-  if (ogrePath.rfind("OGRE") == ogrePath.size()-4u)
-    this->ogrePaths.push_back(ogrePath.substr(0, ogrePath.size()-5));
-#endif
+//////////////////////////////////////////////////
+Ogre::Window * Ogre2RenderEngine::OgreWindow() const
+{
+  return this->window;
 }
 
 //////////////////////////////////////////////////
@@ -112,8 +112,19 @@ void Ogre2RenderEngine::Destroy()
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
 
-  if (ogreRoot)
+  if (this->ogreRoot)
   {
+    // Clean up any textures that may still be in flight.
+    Ogre::TextureGpuManager *mgr =
+    this->ogreRoot->getRenderSystem()->getTextureGpuManager();
+
+    auto entries = mgr->getEntries();
+    for (auto& [name, entry] : entries)
+    {
+      if (entry.resourceGroup == "General" && !entry.destroyRequested)
+        mgr->destroyTexture(entry.texture);
+    }
+
     try
     {
       // TODO(anyone): do we need to catch segfault on delete?
@@ -267,6 +278,10 @@ bool Ogre2RenderEngine::LoadImpl(
   if (it != _params.end())
     std::istringstream(it->second) >> this->useCurrentGLContext;
 
+  it = _params.find("headless");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->isHeadless;
+
   try
   {
     this->LoadAttempt();
@@ -340,6 +355,8 @@ void Ogre2RenderEngine::CreateContext()
 
   if (!this->dummyDisplay)
   {
+    // Not able to create a Xwindow, try to run in headless mode
+    this->SetHeadless(true);
     ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
     return;
   }
@@ -524,15 +541,32 @@ void Ogre2RenderEngine::CreateRenderSystem()
             "and make sure OpenGL is enabled." << std::endl;
   }
 
-  // We operate in windowed mode
-  renderSys->setConfigOption("Full Screen", "No");
+  if (!this->Headless())
+  {
 
-  /// We used to allow the user to set the RTT mode to PBuffer, FBO, or Copy.
-  ///   Copy is slow, and there doesn't seem to be a good reason to use it
-  ///   PBuffer limits the size of the renderable area of the RTT to the
-  ///           size of the first window created.
-  ///   FBO seem to be the only good option
-  renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+    // We operate in windowed mode
+    renderSys->setConfigOption("Full Screen", "No");
+
+    /// We used to allow the user to set the RTT mode to PBuffer, FBO, or Copy.
+    ///   Copy is slow, and there doesn't seem to be a good reason to use it
+    ///   PBuffer limits the size of the renderable area of the RTT to the
+    ///           size of the first window created.
+    ///   FBO seem to be the only good option
+    renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+  }
+  else
+  {
+    try
+    {
+        // This may fail if Ogre was *only* build with EGL support, but in that
+        // case we can ignore the error
+        renderSys->setConfigOption( "Interface", "Headless EGL / PBuffer" );
+    }
+    catch( Ogre::Exception & )
+    {
+      std::cerr << "Unable to setup EGL (headless mode)" << '\n';
+    }
+  }
 
   // get all supported fsaa values
   Ogre::ConfigOptionMap configMap = renderSys->getConfigOptions();
@@ -570,8 +604,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
   this->ogreRoot->setRenderSystem(renderSys);
 }
 
-//////////////////////////////////////////////////
-void Ogre2RenderEngine::CreateResources()
+void Ogre2RenderEngine::RegisterHlms()
 {
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
@@ -582,35 +615,6 @@ void Ogre2RenderEngine::CreateResources()
   {
     // src path
     mediaPath = common::joinPaths(resourcePath, "ogre2", "src", "media");
-  }
-
-  // register low level materials (ogre v1 materials)
-  std::vector< std::pair<std::string, std::string> > archNames;
-  std::string p = mediaPath;
-  if (common::isDirectory(p))
-  {
-    archNames.push_back(
-        std::make_pair(p, "General"));
-    archNames.push_back(
-        std::make_pair(p + "/materials/programs", "General"));
-    archNames.push_back(
-        std::make_pair(p + "/materials/scripts", "General"));
-    archNames.push_back(
-        std::make_pair(p + "/materials/textures", "General"));
-
-    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
-    {
-      try
-      {
-        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-            aiter->first, "FileSystem", aiter->second);
-      }
-      catch(Ogre::Exception &/*_e*/)
-      {
-        ignerr << "Unable to load Ogre Resources. Make sure the resources "
-            "path in the world file is set correctly." << std::endl;
-      }
-    }
   }
 
   // register PbsMaterial resources
@@ -627,6 +631,10 @@ void Ogre2RenderEngine::CreateResources()
       rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSL");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       commonGLSLMaterialFolder, "FileSystem", "General");
+  Ogre::String commonGLSLESMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSLES");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonGLSLESMaterialFolder, "FileSystem", "General");
 
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework
@@ -704,6 +712,50 @@ void Ogre2RenderEngine::CreateResources()
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderEngine::CreateResources()
+{
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+  // install path
+  std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
+  if (!common::exists(mediaPath))
+  {
+    // src path
+    mediaPath = common::joinPaths(resourcePath, "ogre2", "src", "media");
+  }
+
+  // register low level materials (ogre v1 materials)
+  std::vector< std::pair<std::string, std::string> > archNames;
+  std::string p = mediaPath;
+  if (common::isDirectory(p))
+  {
+    archNames.push_back(
+        std::make_pair(p, "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/programs", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/scripts", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/textures", "General"));
+
+    for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
+    {
+      try
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            aiter->first, "FileSystem", aiter->second);
+      }
+      catch(Ogre::Exception &/*_e*/)
+      {
+        ignerr << "Unable to load Ogre Resources. Make sure the resources "
+            "path in the world file is set correctly." << std::endl;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateRenderWindow()
 {
   // create dummy window
@@ -722,7 +774,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 {
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
-  Ogre::RenderWindow *window = nullptr;
+  window = nullptr;
 
   // if use current gl then don't include window handle params
   if (!this->useCurrentGLContext)
@@ -756,7 +808,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   params["contentScalingFactor"] = std::to_string(_ratio);
 
   // Ogre 2 PBS expects gamma correction
-  params["gamma"] = "true";
+  params["gamma"] = "Yes";
 
   if (this->useCurrentGLContext)
   {
@@ -769,8 +821,9 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   {
     try
     {
-      window = this->ogreRoot->createRenderWindow(
+      window = Ogre::Root::getSingleton().createRenderWindow(
           stream.str(), _width, _height, false, &params);
+      this->RegisterHlms();
     }
     catch(const std::exception &_e)
     {
@@ -789,8 +842,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   if (window)
   {
-    window->setActive(true);
-    window->setVisible(true);
+    window->_setVisible(true);
 
     // Windows needs to reposition the render window to 0,0.
     window->reposition(0, 0);

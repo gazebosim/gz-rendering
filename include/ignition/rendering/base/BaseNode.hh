@@ -180,6 +180,9 @@ namespace ignition
       // Documentation inherited
       public: virtual Variant UserData(const std::string &_key) const override;
 
+      // Documentation inherited
+      public: virtual bool HasUserData(const std::string &_key) const override;
+
       protected: virtual void PreRenderChildren();
 
       protected: virtual math::Pose3d RawLocalPose() const = 0;
@@ -666,12 +669,14 @@ namespace ignition
     }
     }
 
+    //////////////////////////////////////////////////
     template <class T>
     void BaseNode<T>::SetUserData(const std::string &_key, Variant _value)
     {
      this->userData[_key] = _value;
     }
 
+    //////////////////////////////////////////////////
     template <class T>
     Variant BaseNode<T>::UserData(const std::string &_key) const
     {
@@ -680,6 +685,13 @@ namespace ignition
      if (it != this->userData.end())
        value = it->second;
      return value;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseNode<T>::HasUserData(const std::string &_key) const
+    {
+      return this->userData.find(_key) != this->userData.end();
     }
   }
 }

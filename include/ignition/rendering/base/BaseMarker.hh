@@ -61,6 +61,12 @@ namespace ignition
       public: virtual MarkerType Type() const override;
 
       // Documentation inherited
+      public: virtual void SetSize(double _size) override;
+
+      // Documentation inherited
+      public: virtual double Size() const override;
+
+      // Documentation inherited
       public: virtual void SetLayer(int32_t _layer) override;
 
       // Documentation inherited
@@ -97,6 +103,9 @@ namespace ignition
       /// \brief Marker type
       protected: MarkerType markerType =
           ignition::rendering::MarkerType::MT_NONE;
+
+      /// \brief Marker size
+      protected: double size = 1.0;
     };
 
     /////////////////////////////////////////////////
@@ -157,6 +166,21 @@ namespace ignition
     MarkerType BaseMarker<T>::Type() const
     {
       return this->markerType;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseMarker<T>::SetSize(double _size)
+    {
+      this->size = _size;
+      this->markerDirty = true;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    double BaseMarker<T>::Size() const
+    {
+      return this->size;
     }
 
     /////////////////////////////////////////////////

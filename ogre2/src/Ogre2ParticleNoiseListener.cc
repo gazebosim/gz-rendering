@@ -30,17 +30,15 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2ParticleNoiseListener::Ogre2ParticleNoiseListener(
-    Ogre2ScenePtr _scene, Ogre::Camera *_ogreCamera,
-    Ogre::MaterialPtr _ogreMaterial)
+    Ogre2ScenePtr _scene, Ogre::MaterialPtr _ogreMaterial)
 {
   this->scene = _scene;
-  this->ogreCamera = _ogreCamera;
   this->ogreMaterial = _ogreMaterial;
 }
 
 //////////////////////////////////////////////////
-void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
-    const Ogre::RenderTargetEvent & /*_evt*/)
+void Ogre2ParticleNoiseListener::cameraPreRenderScene(
+    Ogre::Camera * _cam)
 {
   // the code here is responsible for setting the depth variation of readings
   // returned by sensor in areas where particles are. It does so by adding
@@ -75,7 +73,7 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
         aabb.getMaximum());
 
 
-    if (this->ogreCamera->isVisible(box))
+    if (_cam->isVisible(box))
     {
       // set stddev to half of size of particle emitter aabb
       auto hs = box.getHalfSize() * 0.5;

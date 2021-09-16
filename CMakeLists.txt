@@ -21,7 +21,7 @@ ign_configure_project(VERSION_SUFFIX pre1)
 # Set project-specific options
 #============================================================================
 
-# ignition-rendering currently has no options that are unique to it
+option(USE_UNOFFICAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
 
 #============================================================================
 # Search for project-specific dependencies
@@ -63,10 +63,26 @@ endif()
 # Find OGRE
 list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
 
-ign_find_package(IgnOGRE VERSION 1.8.0
-  COMPONENTS ${ign_ogre_components}
-  REQUIRED_BY ogre
-  PRIVATE_FOR ogre)
+# Ogre versions greater than 1.9 are not officialy supported.
+# Display a warning for the users on this setup unless they provide
+# USE_UNOFFICAL_OGRE_VERSIONS flag
+if (NOT USE_UNOFFICAL_OGRE_VERSIONS)
+  ign_find_package(IgnOGRE VERSION 1.10
+    COMPONENTS ${ign_ogre_components})
+
+  if (OGRE_FOUND)
+    IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
+                      "The software might compile and even work but support from upstream"
+                      "could be reduced to accepting patches for newer versions")
+  else()
+    # If ogre 1.10 or greater was not found, then proceed to look for 1.9.x
+    # versions which are offically supported
+    ign_find_package(IgnOGRE VERSION 1.9.0
+      COMPONENTS ${ign_ogre_components}
+      REQUIRED_BY ogre
+      PRIVATE_FOR ogre)
+  endif()
+endif()
 
 if (OGRE_FOUND)
   # find boost - mainly needed on macOS and also by the terrain component
@@ -80,7 +96,7 @@ endif()
 
 #--------------------------------------
 # Find OGRE2
-ign_find_package(IgnOGRE2 VERSION 2.1.0
+ign_find_package(IgnOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
@@ -154,6 +170,7 @@ configure_file(${CMAKE_SOURCE_DIR}/tutorials.md.in ${CMAKE_BINARY_DIR}/tutorials
 ign_create_docs(
   API_MAINPAGE_MD "${CMAKE_BINARY_DIR}/api.md"
   TUTORIALS_MAINPAGE_MD "${CMAKE_BINARY_DIR}/tutorials.md"
+  IMAGE_PATH_DIRS "${CMAKE_SOURCE_DIR}/tutorials/img"
   TAGFILES
     "${IGNITION-COMMON_DOXYGEN_TAGFILE} = ${IGNITION-COMMON_API_URL}"
     "${IGNITION-MATH_DOXYGEN_TAGFILE} = ${IGNITION-MATH_API_URL}"

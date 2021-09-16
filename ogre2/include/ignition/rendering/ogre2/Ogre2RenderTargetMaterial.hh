@@ -25,7 +25,7 @@
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
-#include <OgreRenderTargetListener.h>
+#include <OgreCamera.h>
 #include <OgreMaterialManager.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
@@ -56,7 +56,7 @@ namespace ignition
     /// handleSchemeNotFound which returns the first supported technique on the
     /// material provided to this class's constructor.
     class IGNITION_RENDERING_OGRE2_VISIBLE  Ogre2RenderTargetMaterial :
-      public Ogre::RenderTargetListener,
+      public Ogre::Camera::Listener,
       public Ogre::MaterialManager::Listener
     {
       /// \brief constructor
@@ -64,22 +64,20 @@ namespace ignition
       /// \param[in] _renderTarget the RenderTarget this should apply to
       /// \param[in] _material the material to apply to all renderables
       public: Ogre2RenderTargetMaterial(Ogre::SceneManager *_scene,
-          Ogre::RenderTarget *_renderTarget, Ogre::Material *_material);
+        Ogre::Camera *_renderTarget, Ogre::Material *_material);
 
       /// \brief destructor
       public: ~Ogre2RenderTargetMaterial();
 
-      /// \brief Callback when a render target is about to be rendered
-      /// \param[in] _evt Ogre render target event containing information about
-      /// the source render target.
-      private: virtual void preRenderTargetUpdate(
-          const Ogre::RenderTargetEvent &_evt) override;
+      /// \brief Callback when a camera is about to be rendered
+      /// \param[in] _cam Ogre camera.
+      private: virtual void cameraPreRenderScene(
+          Ogre::Camera *_cam) override;
 
-      /// \brief Callback when a render target is finisned being rendered
-      /// \param[in] _evt Ogre render target event containing information about
-      /// the source render target.
-      private: virtual void postRenderTargetUpdate(
-          const Ogre::RenderTargetEvent &_evt) override;
+      /// \brief Callback when a camera is finisned being rendered
+      /// \param[in] _evt Ogre camera
+      private: virtual void cameraPostRenderScene(
+          Ogre::Camera *_evt) override;
 
       /// \brief Ogre callback that assigned same material to all renderables
       /// when the requested scheme is not found
@@ -96,14 +94,11 @@ namespace ignition
                   Ogre::Material *_originalMaterial, uint16_t _lodIndex,
                   const Ogre::Renderable *_rend) override;
 
-      /// \brief Returns this->renderTarget == _renderTarget
-      public: bool IsSameRenderTarget(Ogre::RenderTarget *_renderTarget);
-
       /// \brief scene manager responsible for rendering
       private: Ogre::SceneManager *scene = nullptr;
 
       /// \brief render target that should see a uniform material
-      private: Ogre::RenderTarget *renderTarget = nullptr;
+      private: Ogre::Camera *renderCamera = nullptr;
 
       /// \brief material that should be applied to all objects
       private: Ogre::Material *material = nullptr;

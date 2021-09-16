@@ -138,6 +138,12 @@ namespace ignition
       // Documentation inherited
       public: virtual LidarVisualType Type() const override;
 
+      // Documentation inherited
+      public: virtual void SetSize(double _size) override;
+
+      // Documentation inherited
+      public: virtual double Size() const override;
+
       /// \brief Create predefined materials for lidar visual
       public: virtual void CreateMaterials();
 
@@ -186,6 +192,9 @@ namespace ignition
       /// \brief Type of lidar visualisation
       protected: LidarVisualType lidarVisualType =
                       LidarVisualType::LVT_TRIANGLE_STRIPS;
+
+      /// \brief Size of lidar visualisation
+      protected: double size = 1.0;
     };
 
     /////////////////////////////////////////////////
@@ -430,6 +439,20 @@ namespace ignition
     LidarVisualType BaseLidarVisual<T>::Type() const
     {
       return this->lidarVisualType;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseLidarVisual<T>::SetSize(double _size)
+    {
+      this->size = _size;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    double BaseLidarVisual<T>::Size() const
+    {
+      return this->size;
     }
 
     /////////////////////////////////////////////////

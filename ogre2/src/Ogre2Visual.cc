@@ -23,7 +23,6 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
-#include "ignition/rendering/ogre2/Ogre2WireBox.hh"
 #include "ignition/rendering/Utils.hh"
 
 #ifdef _MSC_VER

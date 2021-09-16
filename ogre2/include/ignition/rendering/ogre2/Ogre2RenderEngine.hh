@@ -34,6 +34,7 @@ namespace Ogre
 {
   class LogManager;
   class Root;
+  class Window;
   namespace v1
   {
     class OverlaySystem;
@@ -94,6 +95,9 @@ namespace ignition
       /// \param[in] _uri Resource path in the form of an uri
       public: void AddResourcePath(const std::string &_uri) override;
 
+      /// \brief return the ogre window
+      public: Ogre::Window * OgreWindow() const;
+
       /// \brief Get the ogre2 root object
       /// \return ogre2 root object
       public: virtual Ogre::Root *OgreRoot() const;
@@ -112,7 +116,7 @@ namespace ignition
 
       /// \brief Create a scene
       /// \param[in] _id Unique scene Id
-      /// \parampin] _name Name of scene
+      /// \param[in] _name Name of scene
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name) override;
 
@@ -137,6 +141,9 @@ namespace ignition
 
       /// \brief Create GL context
       private: void CreateContext();
+
+      /// \brief Register Hlms
+      private: void RegisterHlms();
 
       /// \brief Create ogre root
       private: void CreateRoot();
@@ -192,6 +199,9 @@ namespace ignition
       /// \brief Dummy window Id needed for linux platform
       private: uint64_t dummyWindowId = 0u;
 
+      /// \brief Ogre Window
+      private: Ogre::Window *window = nullptr;
+
       /// \brief True to use the current opengl context
       private: bool useCurrentGLContext = false;
 
@@ -205,4 +215,3 @@ namespace ignition
   }
 }
 #endif
-

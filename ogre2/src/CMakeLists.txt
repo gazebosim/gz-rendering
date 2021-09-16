@@ -17,6 +17,8 @@ ign_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target
 
 find_package(OpenGL)
 
+add_definitions(-DOGRE_IGNORE_UNKNOWN_DEBUG)
+
 set_property(
   SOURCE Ogre2RenderEngine.cc
   PROPERTY COMPILE_DEFINITIONS

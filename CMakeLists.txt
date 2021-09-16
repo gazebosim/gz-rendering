@@ -21,6 +21,7 @@ ign_configure_project(VERSION_SUFFIX pre1)
 # Set project-specific options
 #============================================================================
 
+set(CMAKE_CXX_STANDARD 14)
 option(USE_UNOFFICAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
 
 #============================================================================

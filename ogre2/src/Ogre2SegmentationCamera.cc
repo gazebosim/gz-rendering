@@ -119,8 +119,6 @@ void Ogre2SegmentationCamera::Destroy()
   auto ogreRoot = engine->OgreRoot();
   auto ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  this->dataPtr->materialSwitcher.reset();
-
   if (this->dataPtr->ogreSegmentationTexture)
   {
     ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(

@@ -23,6 +23,7 @@
 #include <ignition/math/Matrix4.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
+#include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/Object.hh"
 
 namespace ignition
@@ -119,6 +120,12 @@ namespace ignition
       /// \return The sub-mesh at the given index
       public: virtual SubMeshPtr SubMeshByIndex(
                   unsigned int _index) const = 0;
+
+      /// \brief Copy an existing MeshDescriptor. Once copying is complete,
+      /// MeshDescriptor::Load needs to be called on the mesh's MeshDescriptor
+      /// before using it
+      /// \param[in] _copy The MeshDescriptor to copy
+      public: virtual void CopyMeshDescriptor(const MeshDescriptor &_copy) = 0;
     };
 
     /// \class SubMesh Mesh.hh ignition/rendering/Mesh.hh

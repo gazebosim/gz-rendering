@@ -55,9 +55,6 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void Destroy() override;
-
-      /// \brief Name of the mesh for this geometry
-      protected: std::string meshName;
     };
 
     //////////////////////////////////////////////////
@@ -101,24 +98,7 @@ namespace ignition
     template <class T>
     GeometryPtr BaseGeometry<T>::Clone() const
     {
-      if (!this->Scene())
-      {
-        ignerr << "Cloning a geometry failed because the geometry to be "
-          << "cloned does not belong to a scene.\n";
-        return nullptr;
-      }
-      else if (this->meshName.empty())
-      {
-        ignerr << "Cloning a geometry failed because the name of the mesh is "
-          << "missing.\n";
-        return nullptr;
-      }
-
-      auto result = this->Scene()->CreateMesh(this->meshName);
-      if (result && this->Material())
-        result->SetMaterial(this->Material());
-
-      return result;
+      return nullptr;
     }
 
     //////////////////////////////////////////////////
@@ -127,7 +107,6 @@ namespace ignition
     {
       T::Destroy();
       this->RemoveParent();
-      this->meshName = "";
     }
     }
   }

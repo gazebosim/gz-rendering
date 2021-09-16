@@ -332,6 +332,11 @@ namespace ignition
       /// \return Value in any type. If _key does not exist for the node, an
       /// empty variant is returned (i.e., no data).
       public: virtual Variant UserData(const std::string &_key) const = 0;
+
+      /// \brief Check if node has custom data
+      /// \param[in] _key Unique key
+      /// \return True if node has custom data with the specified key
+      public: virtual bool HasUserData(const std::string &_key) const = 0;
     };
     }
   }

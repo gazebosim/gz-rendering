@@ -15,10 +15,9 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2MATERIALSWITCHER_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2MATERIALSWITCHER_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 
-#include <map>
 #include <string>
 #include <random>
 #include <unordered_map>
@@ -27,30 +26,19 @@
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
+#include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
-
-#ifdef _MSC_VER
-  #pragma warning(push, 0)
-#endif
-#include <OgreMaterial.h>
-#include <OgreRenderTargetListener.h>
-#ifdef _MSC_VER
-  #pragma warning(pop)
-#endif
 
 namespace ignition
 {
 namespace rendering
 {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-//
-// forward declarations
-class Ogre2SelectionBuffer;
 
 /// \brief Helper class to assign unique colors to renderables
 class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
-  public Ogre::RenderTargetListener
+  public Ogre::Camera::Listener
 {
   /// \brief Constructor
   public: explicit Ogre2SegmentationMaterialSwitcher(Ogre2ScenePtr _scene);
@@ -59,16 +47,12 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   public: ~Ogre2SegmentationMaterialSwitcher() = default;
 
   /// \brief Ogre's pre render update callback
-  /// \param[in] _evt Ogre render target event containing information about
-  /// the source render target.
-  public: virtual void preRenderTargetUpdate(
-              const Ogre::RenderTargetEvent &_evt);
+  /// \param[in] _cam Ogre camera
+  public: virtual void cameraPreRenderScene(Ogre::Camera *_cam) override;
 
-  /// \brief Ogre's post render update callback
-  /// \param[in] _evt Ogre render target event containing information about
-  /// the source render target.
-  public: virtual void postRenderTargetUpdate(
-              const Ogre::RenderTargetEvent &_evt);
+  /// \brief Ogre's postrender update callback
+  /// \param[in] _cam Ogre camera
+  public: virtual void cameraPostRenderScene(Ogre::Camera *_cam) override;
 
   /// \brief Convert label of semantic map to a unique color for colored map and
   /// add the color of the label to the taken colors if it doesn't exist
@@ -91,7 +75,10 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// \return True if taken, False otherwise
   private: bool IsTakenColor(const math::Color &_color);
 
-  /// \brief A map of ogre sub item pointer to its original hlms material
+  /// \brief A map of ogre sub item pointer to its original hlms maults to 10mK
+  private: double resolution = 0.01;
+
+  /// \brief A map of ogre sub item pointer to their original hlms material
   private: std::unordered_map<Ogre::SubItem *,
     Ogre::HlmsDatablock *> datablockMap;
 
@@ -142,7 +129,8 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
 
   friend class Ogre2SegmentationCamera;
 };
-} 
+}
 }  // namespace rendering
 }  // namespace ignition
-#endif
+
+#endif  // IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_

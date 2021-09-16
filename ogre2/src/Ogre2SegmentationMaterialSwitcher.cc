@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 */
 
 #include "Ogre2SegmentationMaterialSwitcher.hh"
+
+#include <algorithm>
+#include <utility>
+#include <vector>
 
 #include "ignition/common/Console.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
@@ -143,8 +147,8 @@ VisualPtr Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual(
 }
 
 ////////////////////////////////////////////////
-void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
-    const Ogre::RenderTargetEvent &/*_evt*/)
+void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
+    Ogre::Camera * /*_cam*/)
 {
   this->colorToLabel.clear();
   this->datablockMap.clear();
@@ -307,13 +311,11 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
   this->coloredLabel.clear();
 }
 
-/////////////////////////////////////////////////
-void Ogre2SegmentationMaterialSwitcher::postRenderTargetUpdate(
-    const Ogre::RenderTargetEvent &/*_evt*/)
+////////////////////////////////////////////////
+void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
+    Ogre::Camera * /*_cam*/)
 {
   // restore item to use pbs hlms material
   for (const auto &[subItem, dataBlock] : this->datablockMap)
     subItem->setDatablock(dataBlock);
 }
-
-

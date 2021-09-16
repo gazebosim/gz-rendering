@@ -282,15 +282,11 @@ namespace ignition
     /// \brief Shared pointer to const ThermalCamera
     typedef shared_ptr<const ThermalCamera> ConstThermalCameraPtr;
 
-<<<<<<< HEAD
-    /// \def const SegmentationCameraPtr
+    /// \typedef const SegmentationCameraPtr
     /// \brief Shared pointer to const Segmentation Camera
     typedef shared_ptr<const SegmentationCamera> ConstSegmentationCameraPtr;
 
-    /// \def const GpuRaysPtr
-=======
     /// \typedef const GpuRaysPtr
->>>>>>> main
     /// \brief Shared pointer to const GpuRays
     typedef shared_ptr<const GpuRays> ConstGpuRaysPtr;
 

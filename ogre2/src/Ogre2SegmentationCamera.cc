@@ -23,6 +23,7 @@
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -33,37 +34,29 @@
 
 #include "Ogre2SegmentationMaterialSwitcher.hh"
 
-
 /// \brief Private data for the Ogre2SegmentationCamera class
 class ignition::rendering::Ogre2SegmentationCameraPrivate
 {
-  /// \brief Material Switcher to switch item's material
-  /// with colored version for segmentation
-  public: Ogre2SegmentationMaterialSwitcher *materialSwitcher {nullptr};
-
-  /// \brief Compositor Manager to create workspace
-  public: Ogre::CompositorManager2 *ogreCompositorManager {nullptr};
-
-  /// \brief Workspace to interface with render texture
-  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace {nullptr};
+  /// \brief buffer to store render texture data & to be sent to listeners
+  public: uint8_t *buffer {nullptr};
 
   /// \brief Workspace Definition
-  public: std::string workspaceDefinition;
+  public: std::string ogreCompositorWorkspaceDef;
 
-  /// \brief Render Texture to store the final segmentation data
-  public: Ogre::RenderTexture *ogreRenderTexture {nullptr};
+  /// \brief Final pass compositor node definition
+  public: std::string ogreCompositorNodeDef;
 
-  /// \brief Texture to create the render texture from.
-  public: Ogre::TexturePtr ogreTexture;
+  /// \brief 1st pass compositor workspace
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace {nullptr};
 
-  /// \brief Pixel Box to copy render texture data to a buffer
-  public: Ogre::PixelBox *pixelBox {nullptr};
+  /// \brief Output texture
+  public: Ogre::TextureGpu *ogreSegmentationTexture {nullptr};
 
-  /// \brief buffer to store render texture data & to be sent to listeners
-  public: uint8_t *buffer = nullptr;
+  /// \brief Dummy render texture for the depth data
+  public: RenderTexturePtr segmentationTexture {nullptr};
 
-  /// \brief dummy render texture to set image dims
-  public: Ogre2RenderTexturePtr dummyTexture {nullptr};
+  /// \brief The segmentation material
+  public: Ogre::MaterialPtr segmentationMaterial;
 
   /// \brief New Segmentation Frame Event to notify listeners with new data
   /// \param[in] _data Segmentation buffer data
@@ -75,8 +68,11 @@ class ignition::rendering::Ogre2SegmentationCameraPrivate
     unsigned int _width, unsigned int _height, unsigned int _channels,
     const std::string &_format)> newSegmentationFrame;
 
-  /// \brief Image / Render Texture Format
-  public: const Ogre::PixelFormat format = Ogre::PF_R8G8B8;
+  /// \brief Material Switcher to switch item's material
+  /// with colored version for segmentation
+  public: std::unique_ptr<Ogre2SegmentationMaterialSwitcher>
+          materialSwitcher {nullptr};
+
 };
 
 using namespace ignition;
@@ -98,24 +94,93 @@ Ogre2SegmentationCamera::~Ogre2SegmentationCamera()
 void Ogre2SegmentationCamera::Init()
 {
   BaseCamera::Init();
+
   this->CreateCamera();
+
   this->CreateRenderTexture();
 
-  this->dataPtr->materialSwitcher =
-    new Ogre2SegmentationMaterialSwitcher(this->scene);
+  this->dataPtr->materialSwitcher.reset(
+      new Ogre2SegmentationMaterialSwitcher(this->scene));
+}
+
+/////////////////////////////////////////////////
+void Ogre2SegmentationCamera::Destroy()
+{
+  if (this->dataPtr->buffer)
+  {
+    delete [] this->dataPtr->buffer;
+    this->dataPtr->buffer = nullptr;
+  }
+
+  if (!this->ogreCamera)
+    return;
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  auto ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  this->dataPtr->materialSwitcher.reset();
+
+  if (this->dataPtr->ogreSegmentationTexture)
+  {
+    ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
+      this->dataPtr->ogreSegmentationTexture);
+    this->dataPtr->ogreSegmentationTexture = nullptr;
+
+  }
+  if (this->dataPtr->ogreCompositorWorkspace)
+  {
+    ogreCompMgr->removeWorkspace(
+        this->dataPtr->ogreCompositorWorkspace);
+  }
+  if (this->dataPtr->segmentationMaterial)
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        this->dataPtr->segmentationMaterial->getName());
+  }
+
+  if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
+  {
+    ogreCompMgr->removeWorkspaceDefinition(
+        this->dataPtr->ogreCompositorWorkspaceDef);
+    ogreCompMgr->removeNodeDefinition(
+        this->dataPtr->ogreCompositorNodeDef);
+  }
+
+  Ogre::SceneManager *ogreSceneManager;
+  ogreSceneManager = this->scene->OgreSceneManager();
+  if (ogreSceneManager == nullptr)
+  {
+    ignerr << "Scene manager cannot be obtained" << std::endl;
+  }
+  else
+  {
+    if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
+    {
+      ogreSceneManager->destroyCamera(this->ogreCamera);
+      this->ogreCamera = nullptr;
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+void Ogre2SegmentationCamera::PreRender()
+{
+  if (!this->dataPtr->ogreSegmentationTexture)
+    this->CreateSegmentationTexture();
 }
 
 /////////////////////////////////////////////////
 void Ogre2SegmentationCamera::CreateCamera()
 {
-  auto ogreScene = this->scene->OgreSceneManager();
-  if (ogreScene == nullptr)
+  auto ogreSceneManager = this->scene->OgreSceneManager();
+  if (ogreSceneManager == nullptr)
   {
     ignerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
-  this->ogreCamera = ogreScene->createCamera(this->Name());
+  this->ogreCamera = ogreSceneManager->createCamera(this->Name());
   if (this->ogreCamera == nullptr)
   {
     ignerr << "Ogre camera cannot be created" << std::endl;
@@ -137,72 +202,6 @@ void Ogre2SegmentationCamera::CreateCamera()
 }
 
 /////////////////////////////////////////////////
-void Ogre2SegmentationCamera::Destroy()
-{
-  if (this->dataPtr->buffer)
-  {
-    delete [] this->dataPtr->buffer;
-    this->dataPtr->buffer = nullptr;
-  }
-
-  if (!this->ogreCamera)
-    return;
-
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
-  Ogre::CompositorManager2 *ogreCompMgr =
-    ogreRoot->getCompositorManager2();
-
-  // remove thermal texture, material, compositor
-  if (this->dataPtr->ogreRenderTexture)
-  {
-    Ogre::TextureManager::getSingleton().remove(
-        this->dataPtr->ogreRenderTexture->getName());
-  }
-  if (this->dataPtr->ogreCompositorWorkspace)
-  {
-    ogreCompMgr->removeWorkspace(
-        this->dataPtr->ogreCompositorWorkspace);
-  }
-
-  if (!this->dataPtr->workspaceDefinition.empty())
-  {
-    ogreCompMgr->removeWorkspaceDefinition(
-        this->dataPtr->workspaceDefinition);
-  }
-
-  Ogre::SceneManager *ogreSceneManager;
-  ogreSceneManager = this->scene->OgreSceneManager();
-  if (ogreSceneManager == nullptr)
-  {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
-  }
-  else
-  {
-    if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
-    {
-      ogreSceneManager->destroyCamera(this->ogreCamera);
-      this->ogreCamera = nullptr;
-    }
-  }
-
-  if (this->dataPtr->pixelBox)
-    delete this->dataPtr->pixelBox;
-  this->dataPtr->pixelBox = nullptr;
-
-  if (this->dataPtr->materialSwitcher)
-    delete this->dataPtr->materialSwitcher;
-  this->dataPtr->materialSwitcher = nullptr;
-}
-
-/////////////////////////////////////////////////
-void Ogre2SegmentationCamera::PreRender()
-{
-  if (!this->dataPtr->ogreRenderTexture)
-    this->CreateSegmentationTexture();
-}
-
-/////////////////////////////////////////////////
 void Ogre2SegmentationCamera::CreateSegmentationTexture()
 {
   // Camera Parameters
@@ -213,131 +212,184 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
     this->AspectRatio());
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
 
-  auto width = this->ImageWidth();
-  auto height = this->ImageHeight();
-
-  // texture
-  this->dataPtr->ogreTexture =
-    Ogre::TextureManager::getSingleton().createManual(
-    "SegmentationCameraTexture",
-    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-    Ogre::TEX_TYPE_2D, width, height, 0, this->dataPtr->format,
-    Ogre::TU_RENDERTARGET
-  );
-
-  // render texture
-  auto hardwareBuffer = this->dataPtr->ogreTexture->getBuffer();
-  this->dataPtr->ogreRenderTexture = hardwareBuffer->getRenderTarget();
-
-  // switch the material to a unique color for each object
-  // in the pre render & get the original material again in the post render
-  this->dataPtr->ogreRenderTexture->addListener(
-    this->dataPtr->materialSwitcher);
-
-  // workspace
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
-  this->dataPtr->ogreCompositorManager = ogreRoot->getCompositorManager2();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  this->dataPtr->workspaceDefinition = "SegmentationCameraWorkspace_" +
-    this->Name();
-  auto backgroundColor = Ogre2Conversions::Convert(
-    this->dataPtr->materialSwitcher->backgroundColor);
+  this->SetImageFormat(PixelFormat::PF_R8G8B8);
+  Ogre::PixelFormatGpu ogrePF = Ogre::PFG_RGB8_UNORM;
 
-  // basic workspace consist of clear pass with the given color &
-  // a render scene pass to the givin render texture
-  this->dataPtr->ogreCompositorManager->createBasicWorkspaceDef(
-    this->dataPtr->workspaceDefinition, backgroundColor);
+  std::string wsDefName = "SegmentationCameraWorkspace_" + this->Name();
+  this->dataPtr->ogreCompositorWorkspaceDef = wsDefName;
+  if(!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
+  {
+    std::string nodeDefName = wsDefName + "/Node";
+    this->dataPtr->ogreCompositorNodeDef = nodeDefName;
+    Ogre::CompositorNodeDef *nodeDef =
+        ogreCompMgr->addNodeDefinition(nodeDefName);
+    // Input texture
+    nodeDef->addTextureSourceName("rt_input", 0,
+        Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+    Ogre::TextureDefinitionBase::TextureDefinition *segmentationTexDef =
+        nodeDef->addTextureDefinition("depthTexture");
+    segmentationTexDef->textureType = Ogre::TextureTypes::Type2D;
+    segmentationTexDef->width = 0;
+    segmentationTexDef->height = 0;
+    segmentationTexDef->depthOrSlices = 1;
+    segmentationTexDef->numMipmaps = 0;
+    segmentationTexDef->widthFactor = 1;
+    segmentationTexDef->heightFactor = 1;
+    segmentationTexDef->format = Ogre::PFG_D32_FLOAT;
+    segmentationTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
+    // set to default pool so that when the colorTexture pass is rendered, its
+    // depth data get populated to depthTexture
+    segmentationTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    segmentationTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
 
-  // connect the compositor with the render texture to render the final output
+    Ogre::RenderTargetViewDef *rtv =
+      nodeDef->addRenderTextureView("depthTexture");
+    rtv->setForTextureDefinition("depthTexture", segmentationTexDef);
+
+    Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
+        nodeDef->addTextureDefinition("colorTexture");
+    colorTexDef->textureType = Ogre::TextureTypes::Type2D;
+    colorTexDef->width = 0;
+    colorTexDef->height = 0;
+    colorTexDef->depthOrSlices = 1;
+    colorTexDef->numMipmaps = 0;
+    colorTexDef->widthFactor = 1;
+    colorTexDef->heightFactor = 1;
+    colorTexDef->format = Ogre::PFG_RGBA8_UNORM;
+    colorTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
+    colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
+    colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
+    colorTexDef->preferDepthTexture = true;
+
+    Ogre::RenderTargetViewDef *rtv2 =
+      nodeDef->addRenderTextureView("colorTexture");
+    rtv2->setForTextureDefinition("colorTexture", colorTexDef);
+
+    nodeDef->setNumTargetPass(2);
+    Ogre::CompositorTargetDef *colorTargetDef =
+        nodeDef->addTargetPass("colorTexture");
+    colorTargetDef->setNumPasses(1);
+    {
+      // scene pass
+      Ogre::CompositorPassSceneDef *passScene =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          colorTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
+      // segmentation camera should not see particles
+      passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
+          ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
+    }
+
+    // rt_input target - converts to thermal
+    Ogre::CompositorTargetDef *inputTargetDef =
+        nodeDef->addTargetPass("rt_input");
+    inputTargetDef->setNumPasses(1);
+    {
+      // quad pass
+      Ogre::CompositorPassQuadDef *passQuad =
+          static_cast<Ogre::CompositorPassQuadDef *>(
+          inputTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+      passQuad->setAllClearColours(Ogre::ColourValue(0, 0, 0));
+
+      passQuad->mMaterialName = this->dataPtr->segmentationMaterial->getName();
+      passQuad->addQuadTextureSource(0, "depthTexture");
+      passQuad->addQuadTextureSource(1, "colorTexture");
+      passQuad->mFrustumCorners =
+          Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
+    }
+    nodeDef->mapOutputChannel(0, "rt_input");
+    Ogre::CompositorWorkspaceDef *workDef =
+        ogreCompMgr->addWorkspaceDefinition(wsDefName);
+    workDef->connectExternal(0, nodeDef->getName(), 0);
+  }
+
+  Ogre::CompositorWorkspaceDef *wsDef =
+      ogreCompMgr->getWorkspaceDefinition(wsDefName);
+
+  if (!wsDef)
+  {
+    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
+           << " for " << this->Name();
+  }
+
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
+  // create render texture - these textures pack the thermal data
+  this->dataPtr->ogreSegmentationTexture =
+    textureMgr->createOrRetrieveTexture(this->Name() + "_segmentation",
+      Ogre::GpuPageOutStrategy::SaveToSystemRam,
+      Ogre::TextureFlags::RenderToTexture,
+      Ogre::TextureTypes::Type2D);
+
+  this->dataPtr->ogreSegmentationTexture->setResolution(
+      this->ImageWidth(), this->ImageHeight());
+  this->dataPtr->ogreSegmentationTexture->setNumMipmaps(1u);
+  this->dataPtr->ogreSegmentationTexture->setPixelFormat(ogrePF);
+  this->dataPtr->ogreSegmentationTexture->scheduleTransitionTo(
+    Ogre::GpuResidency::Resident);
+
+  // create compositor worksspace
   this->dataPtr->ogreCompositorWorkspace =
-    this->dataPtr->ogreCompositorManager->addWorkspace(
-      this->scene->OgreSceneManager(),
-      this->dataPtr->ogreRenderTexture,
-      this->ogreCamera,
-      this->dataPtr->workspaceDefinition,
-      false
-    );
+      ogreCompMgr->addWorkspace(
+        this->scene->OgreSceneManager(),
+        this->dataPtr->ogreSegmentationTexture,
+        this->ogreCamera,
+        wsDefName,
+        false);
 
-  // set visibility mask
-  auto node = this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
-  auto pass = node->_getPasses()[1]->getDefinition();
-  auto renderScenePass =
-    dynamic_cast<const Ogre::CompositorPassSceneDef *>(pass);
-  const_cast<Ogre::CompositorPassSceneDef *>(
-    renderScenePass)->setVisibilityMask(IGN_VISIBILITY_ALL);
-
-  // buffer to store render texture data
-  auto bufferSize = Ogre::PixelUtil::getMemorySize(
-    width, height, 1, this->dataPtr->format);
-  if (this->dataPtr->buffer)
-    delete [] this->dataPtr->buffer;
-  this->dataPtr->buffer = new uint8_t[bufferSize];
-  if (this->dataPtr->pixelBox)
-    delete this->dataPtr->pixelBox;
-  this->dataPtr->pixelBox = new Ogre::PixelBox(width, height, 1,
-    this->dataPtr->format, this->dataPtr->buffer);
-}
-
-/////////////////////////////////////////////////
-void Ogre2SegmentationCamera::Render()
-{
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
-  ogreRoot->renderOneFrame();
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
+  // add segmentaiton material switcher to render target listener
+  Ogre::CompositorNode *node =
+      this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
+  auto channels = node->getLocalTextures();
+  for (auto c : channels)
+  {
+    if (c->getPixelFormat() == Ogre::PFG_RGBA8_UNORM)
+    {
+      this->ogreCamera->addListener(
+        this->dataPtr->materialSwitcher.get());
+      break;
+    }
+  }
 }
 
 /////////////////////////////////////////////////
 void Ogre2SegmentationCamera::PostRender()
 {
-  // copy render texture data to the pixel box & its buffer
-  this->dataPtr->ogreRenderTexture->copyContentsToMemory(
-    *this->dataPtr->pixelBox,
-    Ogre::RenderTarget::FB_FRONT
-  );
-
   // return if no one is listening to the new frame
   if (this->dataPtr->newSegmentationFrame.ConnectionCount() == 0)
     return;
 
-  uint width = this->ImageWidth();
-  uint height = this->ImageHeight();
-  uint channelCount = 3;
+  const auto width = this->ImageWidth();
+  const auto height = this->ImageHeight();
+  PixelFormat format = this->ImageFormat();
+
+  const auto len = width * height;
+  const auto channelCount = PixelUtil::ChannelCount(format);
+  const auto bytesPerChannel = PixelUtil::BytesPerChannel(format);
+  const auto bufferSize = len * channelCount * bytesPerChannel;
+
+  Ogre::Image2 image;
+  image.convertFromTexture(this->dataPtr->ogreSegmentationTexture, 0u, 0u);
+  Ogre::TextureBox box = image.getData(0);
+
+  if (!this->dataPtr->buffer)
+  {
+    this->dataPtr->buffer = new uint8_t[bufferSize];
+  }
+
+  uint8_t *segmentationBufferTmp = static_cast<uint8_t*>(box.data);
+  memcpy(&this->dataPtr->buffer, segmentationBufferTmp, bufferSize);
 
   this->dataPtr->newSegmentationFrame(
     this->dataPtr->buffer,
     width, height, channelCount,
-    Ogre::PixelUtil::getFormatName(this->dataPtr->format)
-  );
-}
-
-/////////////////////////////////////////////////
-void Ogre2SegmentationCamera::Capture(Image &_image)
-{
-  unsigned int width = this->ImageWidth();
-  unsigned int height = this->ImageHeight();
-
-  if (_image.Width() != width || _image.Height() != height)
-  {
-    ignerr << "Invalid image dimensions" << std::endl;
-    return;
-  }
-
-  // image buffer
-  void *data = _image.Data();
-
-  // pixel box to copy data from the render texture to the image buffer
-  Ogre::PixelBox ogrePixelBox(width, height, 1, this->dataPtr->format, data);
-  this->dataPtr->ogreRenderTexture->copyContentsToMemory(
-    ogrePixelBox, Ogre::RenderTarget::FB_FRONT);
-}
-
-/////////////////////////////////////////////////
-uint8_t *Ogre2SegmentationCamera::SegmentationData() const
-{
-  return this->dataPtr->buffer;
+    PixelUtil::Name(format));
 }
 
 /////////////////////////////////////////////////
@@ -350,19 +402,37 @@ ignition::common::ConnectionPtr
 }
 
 /////////////////////////////////////////////////
-void Ogre2SegmentationCamera::CreateRenderTexture()
+void Ogre2SegmentationCamera::Render()
 {
-  RenderTexturePtr base = this->scene->CreateRenderTexture();
-  this->dataPtr->dummyTexture =
-    std::dynamic_pointer_cast<Ogre2RenderTexture>(base);
-  this->dataPtr->dummyTexture->SetWidth(1);
-  this->dataPtr->dummyTexture->SetHeight(1);
+  // update the compositors
+  this->scene->StartRendering();
+
+  this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
+  this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
+  this->dataPtr->ogreCompositorWorkspace->_update();
+  this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
+
+  Ogre::vector<Ogre::TextureGpu*>::type swappedTargets;
+  swappedTargets.reserve(2u);
+  this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
+
+  this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 }
 
 /////////////////////////////////////////////////
 RenderTargetPtr Ogre2SegmentationCamera::RenderTarget() const
 {
-  return this->dataPtr->dummyTexture;
+  return this->dataPtr->segmentationTexture;
+}
+
+/////////////////////////////////////////////////
+void Ogre2SegmentationCamera::CreateRenderTexture()
+{
+  RenderTexturePtr base = this->scene->CreateRenderTexture();
+  this->dataPtr->segmentationTexture =
+    std::dynamic_pointer_cast<Ogre2RenderTexture>(base);
+  this->dataPtr->segmentationTexture->SetWidth(1);
+  this->dataPtr->segmentationTexture->SetHeight(1);
 }
 
 /////////////////////////////////////////////////

@@ -134,7 +134,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseSegmentationCamera<T>::EnableColoredMap(bool)
+    void BaseSegmentationCamera<T>::EnableColoredMap(bool)  // NOLINT
     {
     }
 
@@ -160,7 +160,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseSegmentationCamera<T>::SetBackgroundLabel(int)
+    void BaseSegmentationCamera<T>::SetBackgroundLabel(int)  // NOLINT
     {
     }
 

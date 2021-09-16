@@ -59,25 +59,10 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited
-      public: virtual void CreateSegmentationTexture() override;
-
-      /// \brief Create the camera.
-      protected: void CreateCamera();
-
-      // Documentation inherited
-      public: virtual uint8_t *SegmentationData() const override;
-
-      // Documentation inherited
       public: virtual void PreRender() override;
 
       // Documentation inherited
-      public: virtual void Render() override;
-
-      // Documentation inherited
       public: virtual void PostRender() override;
-
-      // Documentation inherited
-      public: virtual void Capture(Image &_image) override;
 
       // Documentation inherited
       public: virtual ignition::common::ConnectionPtr
@@ -85,9 +70,12 @@ namespace ignition
         std::function<void(const uint8_t *, unsigned int, unsigned int,
         unsigned int, const std::string &)>  _subscriber) override;
 
-      /// \brief Create dummy render texture. Needed to satisfy inheritance
-      /// and to set image's dims
-      public: virtual void CreateRenderTexture();
+      // Documentation inherited
+      public: virtual void Render() override;
+
+      /// \brief Get a pointer to the render target.
+      /// \return Pointer to the render target
+      protected: virtual RenderTargetPtr RenderTarget() const override;
 
       // Documentation inherited
       public: void SetSegmentationType(SegmentationType _type) override;
@@ -116,11 +104,18 @@ namespace ignition
       // Documentation inherited
       public: void LabelMapFromColoredBuffer(uint8_t * _labelBuffer) const;
 
+      /// \brief Create the camera.
+      protected: void CreateCamera();
+
+      /// \brief Create dummy render texture. Needed to satisfy inheritance
+      /// and to set image's dims
+      protected: virtual void CreateRenderTexture();
+
       // Documentation inherited
-      protected: virtual RenderTargetPtr RenderTarget() const override;
+      protected: virtual void CreateSegmentationTexture() override;
 
       /// \brief Pointer to the ogre camera
-      protected: Ogre::Camera *ogreCamera;
+      protected: Ogre::Camera *ogreCamera = nullptr;
 
       /// \internal
       /// \brief Pointer to private data.

@@ -248,19 +248,8 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
         wsDefName,
         false);
 
-  // add segmentaiton material switcher to render target listener
-  Ogre::CompositorNode *node =
-      this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
-  auto channels = node->getLocalTextures();
-  for (auto c : channels)
-  {
-    if (c->getPixelFormat() == Ogre::PFG_RGBA8_UNORM)
-    {
-      this->ogreCamera->addListener(
-        this->dataPtr->materialSwitcher.get());
-      break;
-    }
-  }
+  this->ogreCamera->addListener(
+    this->dataPtr->materialSwitcher.get());
 }
 
 /////////////////////////////////////////////////
@@ -288,8 +277,25 @@ void Ogre2SegmentationCamera::PostRender()
     this->dataPtr->buffer = new uint8_t[bufferSize];
   }
 
-  uint8_t *segmentationBufferTmp = static_cast<uint8_t*>(box.data);
-  memcpy(&this->dataPtr->buffer, segmentationBufferTmp, bufferSize);
+  uint8_t *bufferTmp = static_cast<uint8_t*>(box.data);
+
+  auto rawChannelCount = 4u;
+
+  for (unsigned int row = 0; row < height; ++row)
+  {
+    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
+    for (unsigned int column = 0; column < width; ++column)
+    {
+      unsigned int idx = (row * width * channelCount) +
+          column * channelCount;
+      unsigned int rawIdx = rawDataRowIdx +
+          column * rawChannelCount;
+
+      this->dataPtr->buffer[idx] = bufferTmp[rawIdx];
+      this->dataPtr->buffer[idx + 1] = bufferTmp[rawIdx + 1];
+      this->dataPtr->buffer[idx + 2] = bufferTmp[rawIdx + 2];
+    }
+  }
 
   this->dataPtr->newSegmentationFrame(
     this->dataPtr->buffer,

@@ -72,6 +72,12 @@ class Ogre2SegmentationMaterialSwitcher : public Ogre::RenderTargetListener
   private: math::Color LabelToColor(int64_t _label,
     bool _isMultiLink = false);
 
+  /// \brief Get the top level model visual of a particular visual
+  /// \param[in] _visual The visual who's top level model visual we are
+  /// interested in
+  /// \return The top level model visual of _visual
+  private: VisualPtr TopLevelModelVisual(VisualPtr _visual) const;
+
   /// \brief Check if the color is already taken and add it to taken colors
   /// if it does not exist
   /// \param[in] _color Color to be checked
@@ -275,6 +281,18 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
 }
 
 ////////////////////////////////////////////////
+VisualPtr Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual(
+    VisualPtr _visual) const
+{
+  if (!_visual)
+    return _visual;
+  VisualPtr p = _visual;
+  while (p->Parent() && p->Parent() != _visual->Scene()->RootVisual())
+    p = std::dynamic_pointer_cast<Visual>(p->Parent());
+  return p;
+}
+
+////////////////////////////////////////////////
 void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent &/*_evt*/)
 {
@@ -365,15 +383,7 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
       else if (this->type == SegmentationType::ST_PANOPTIC)
       {
         auto itemName = visual->Name();
-        std::string parentName;
-
-        // Visuals that are added without a name (through rendering API)
-        // will have the name "scene::Visual(VISUAL_ID)", use it as a name
-        auto unNamedVisualIndex = itemName.find("scene::Visual");
-        if (unNamedVisualIndex != std::string::npos)
-          parentName = itemName.substr(0, itemName.find_first_of(")") + 1);
-        else
-          parentName = itemName.substr(0, itemName.find("::"));
+        std::string parentName = this->TopLevelModelVisual(visual)->Name();
 
         if (!this->instancesCount.count(label))
           this->instancesCount[label] = 0;

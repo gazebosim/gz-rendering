@@ -1,5 +1,7 @@
 #include "LuxCoreEngineMeshFactory.hh"
 
+#include "LuxCoreEngineScene.hh"
+
 using namespace ignition;
 using namespace rendering;
 
@@ -82,7 +84,7 @@ LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_des
 	  vi[10] = VertexTriangle(20, 21, 22);
 	  vi[11] = VertexTriangle(22, 23, 20);
 
-    // scene->SceneLux()->DefineMesh(meshName, 24, 12, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
+    scene->SceneLux()->DefineMesh(meshName, 24, 12, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
   }
 
   return mesh;

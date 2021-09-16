@@ -1,5 +1,7 @@
 #include "LuxCoreEngineMesh.hh"
 
+#include "LuxCoreEngineScene.hh"
+
 using namespace ignition;
 using namespace rendering;
 
@@ -18,7 +20,7 @@ void LuxCoreEngineMesh::SetMaterial(MaterialPtr _material, bool _unique)
 	props.SetFromString(
 		"scene.objects." + objName + ".shape = " + meshName + "\n"
 		"scene.objects." + objName + ".material = " + matName + "\n");
-	// scene->Parse(props);
+	scene->SceneLux()->Parse(props);
 }
 
 SubMeshStorePtr LuxCoreEngineMesh::SubMeshes() const {}

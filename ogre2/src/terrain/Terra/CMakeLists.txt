@@ -13,11 +13,11 @@ if(IGN_ADD_fPIC_TO_LIBRARIES AND NOT _ign_add_library_INTERFACE)
 endif()
 
 if (UNIX)
-target_compile_options(${PROJECT_NAME} PRIVATE
-    -Wno-unused-parameter
-    -Wno-float-equal
-    -Wno-sign-compare
-    -Wno-strict-aliasing)
+  target_compile_options(${PROJECT_NAME} PRIVATE
+      -Wno-unused-parameter
+      -Wno-float-equal
+      -Wno-sign-compare
+      -Wno-strict-aliasing)
 endif()
 
 add_definitions(-DOGRE_IGNORE_UNKNOWN_DEBUG)
@@ -30,6 +30,7 @@ target_include_directories(${PROJECT_NAME}
     # Hlms files inside Hlms/Pbs do not have #include <Hlms/Pbs/...> thus
     # we must add this one manually for this to build correctly
     ${OGRE2_INCLUDE}/Hlms/Pbs
+    ${OGRE2_INCLUDE}/Hlms/Common
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/include
 )

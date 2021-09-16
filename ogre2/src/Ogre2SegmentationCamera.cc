@@ -385,8 +385,9 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
         auto itemName = visual->Name();
         std::string parentName = this->TopLevelModelVisual(visual)->Name();
 
-        if (!this->instancesCount.count(label))
-          this->instancesCount[label] = 0;
+        auto it = this->instancesCount.find(label);
+        if (it == this->instancesCount.end())
+          it = this->instancesCount.insert(std::make_pair(label, 0)).first;
 
         // Multi link model has many links with the same first name and should
         // have the same pixels color
@@ -397,11 +398,11 @@ void Ogre2SegmentationMaterialSwitcher::preRenderTargetUpdate(
         }
         else
         {
-          this->instancesCount[label]++;
+          it->second++;
           prevParentName = parentName;
         }
 
-        int instanceCount = this->instancesCount[label];
+        int instanceCount = it->second;
 
         if (this->isColoredMap)
         {

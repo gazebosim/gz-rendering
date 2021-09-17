@@ -9,6 +9,7 @@
 #include "LuxCoreEngineCamera.hh"
 #include "LuxCoreEngineVisual.hh"
 #include "LuxCoreEngineMeshFactory.hh"
+#include "LuxCoreEngineLight.hh"
 
 #include "luxcore/luxcore.h"
 

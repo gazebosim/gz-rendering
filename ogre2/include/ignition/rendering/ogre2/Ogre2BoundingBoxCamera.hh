@@ -168,7 +168,7 @@ namespace ignition
       /// \param[in] _boxes Vector of 2D boxes
       /// \return Merged bounding box
       public: virtual BoundingBox MergeBoxes2D(
-        std::vector<BoundingBox *> _boxes);
+        const std::vector<BoundingBox *> &_boxes);
 
       /// \brief Get the 3d vertices(in world coord.) of the item's that belongs
       /// to the same parent (only used in multi-links models)

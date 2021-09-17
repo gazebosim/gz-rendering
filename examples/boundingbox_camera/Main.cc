@@ -46,6 +46,7 @@ uint n_ducks = 0;
 uint n_boxes = 0;
 uint n_spheres = 0;
 
+//////////////////////////////////////////////////
 VisualPtr createDuck(ScenePtr _scene,
   math::Vector3d _position, MaterialPtr _material,
   math::Quaterniond _rotation = Quaterniond(1.5708, 0, 2.0))
@@ -69,6 +70,7 @@ VisualPtr createDuck(ScenePtr _scene,
   return mesh;
 }
 
+//////////////////////////////////////////////////
 VisualPtr createBox(ScenePtr _scene,
   math::Vector3d _position, MaterialPtr _material,
   std::string _name="",

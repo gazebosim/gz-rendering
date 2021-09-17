@@ -55,8 +55,10 @@ namespace ignition
       PF_FLOAT32_RGB  = 10,
       // 16 bit single channel
       PF_L16          = 11,
+      /// < RGBA, 1-byte per channel
+      PF_R8G8B8A8       = 12,
       /// < Number of pixel format types
-      PF_COUNT        = 12
+      PF_COUNT        = 13
     };
 
     /// \class PixelUtil PixelFormat.hh ignition/rendering/PixelFormat.hh

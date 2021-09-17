@@ -64,9 +64,16 @@ namespace ignition
       uint32_t label;
 
       /// \brief Constructor
+      BoundingBox()
+      {
+        this->label = 0u;
+      };
+
+      /// \brief Constructor
       /// \param[in] _type Bounding Box Type
       explicit BoundingBox(ignition::rendering::BoundingBoxType _type)
       {
+        this->label = 0u;
         this->type = _type;
       }
 

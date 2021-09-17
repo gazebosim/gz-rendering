@@ -19,6 +19,11 @@
 #include <limits>
 
 #include <ignition/common/Console.hh>
+
+#include <ignition/math/Color.hh>
+#include <ignition/math/eigen3/Util.hh>
+#include <ignition/math/OrientedBox.hh>
+
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
@@ -30,10 +35,6 @@
 #include "ignition/rendering/ogre2/Ogre2BoundingBoxCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/Utils.hh"
-
-#include <ignition/math/Color.hh>
-#include <ignition/math/eigen3/Util.hh>
-#include <ignition/math/OrientedBox.hh>
 
 #include <OgreBitwise.h>
 
@@ -49,25 +50,30 @@ namespace ignition
     /// \brief Helper class to assign ogre Id & label to each pixels
     /// used in checking bounding boxes visibility in case of full mode
     /// and to get bounding boxes boundaries in case of visible mode
-    class BoundingBoxMaterialSwitcher : public Ogre::RenderTargetListener
+    // class BoundingBoxMaterialSwitcher : public Ogre::RenderTargetListener
+    class Ogre2BoundingBoxMaterialSwitcher : public Ogre::Camera::Listener
     {
       /// \brief Constructor
-      public: explicit BoundingBoxMaterialSwitcher(Ogre2ScenePtr _scene);
+      public: explicit Ogre2BoundingBoxMaterialSwitcher(Ogre2ScenePtr _scene);
 
       /// \brief Destructor
-      public: ~BoundingBoxMaterialSwitcher();
+      public: ~Ogre2BoundingBoxMaterialSwitcher();
 
-      /// \brief Ogre's pre render update callback
-      /// \param[in] _evt Ogre render target event containing information about
-      /// the source render target.
-      public: virtual void preRenderTargetUpdate(
-                  const Ogre::RenderTargetEvent &_evt);
+      /// \brief Get the top level model visual of a particular visual
+      /// \param[in] _visual The visual who's top level model visual we are
+      /// interested in
+      /// \return The top level model visual of _visual
+      private: VisualPtr TopLevelModelVisual(VisualPtr _visual) const;
 
-      /// \brief Ogre's post render update callback
-      /// \param[in] _evt Ogre render target event containing information about
-      /// the source render target.
-      public: virtual void postRenderTargetUpdate(
-                  const Ogre::RenderTargetEvent &_evt);
+      /// \brief Callback when a camara is about to be rendered
+      /// \param[in] _cam Ogre camera pointer which is about to render
+      private: virtual void cameraPreRenderScene(
+        Ogre::Camera * _cam) override;
+
+      /// \brief Callback when a camera is finisned being rendered
+      /// \param[in] _cam Ogre camera pointer which has already render
+      private: virtual void cameraPostRenderScene(
+        Ogre::Camera * _cam) override;
 
       /// \brief A map of ogre sub item pointer to their original hlms material
       private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
@@ -105,7 +111,7 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
 {
   /// \brief Material Switcher to switch item's material with ogre Ids
   /// For bounding boxes visibility checking & finding boundaires
-  public: BoundingBoxMaterialSwitcher *materialSwitcher {nullptr};
+  public: std::unique_ptr<Ogre2BoundingBoxMaterialSwitcher> materialSwitcher;
 
   /// \brief Compositor Manager to create workspace
   public: Ogre::CompositorManager2 *ogreCompositorManager {nullptr};
@@ -116,14 +122,8 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
   /// \brief Workspace Definition
   public: std::string workspaceDefinition;
 
-  /// \brief Render Texture to store the ogreIds map
-  public: Ogre::RenderTexture *ogreRenderTexture {nullptr};
-
   /// \brief Texture to create the render texture from.
-  public: Ogre::TexturePtr ogreTexture;
-
-  /// \brief Pixel Box to copy render texture data to a buffer
-  public: Ogre::PixelBox *pixelBox {nullptr};
+  public: Ogre::TextureGpu *ogreRenderTexture {nullptr};
 
   /// \brief Buffer to store render texture data & to be sent to listeners
   public: uint8_t *buffer = nullptr;
@@ -136,7 +136,7 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
         newBoundingBoxes;
 
   /// \brief Image / Render Texture Format
-  public: Ogre::PixelFormat format = Ogre::PF_R8G8B8;
+  public: Ogre::PixelFormatGpu format = Ogre::PFG_RGBA8_UNORM;
 
   /// \brief map ogreId id to bounding box
   /// Key: ogreId, value: bounding box contains max & min boundaries
@@ -161,17 +161,18 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
 
   /// \brief Map ogre id to Ogre::Item (used in multi-link models)
   /// Key: ogre id, value: ogre item pointer
-  public: std::map<uint32_t, Ogre::Item*> ogreIdToItem;
+  public: std::map<uint32_t, Ogre::Item *> ogreIdToItem;
 
   /// \brief Output bounding boxes to nofity listeners
-  public: std::vector<BoundingBox> output_boxes;
+  public: std::vector<BoundingBox> outputBoxes;
 
   /// \brief Bounding Box type
   public: BoundingBoxType type {BoundingBoxType::BBT_VISIBLEBOX2D};
 };
 
 /////////////////////////////////////////////////
-BoundingBoxMaterialSwitcher::BoundingBoxMaterialSwitcher(Ogre2ScenePtr _scene)
+Ogre2BoundingBoxMaterialSwitcher::Ogre2BoundingBoxMaterialSwitcher(
+    Ogre2ScenePtr _scene)
 {
   this->scene = _scene;
 
@@ -202,13 +203,25 @@ BoundingBoxMaterialSwitcher::BoundingBoxMaterialSwitcher(Ogre2ScenePtr _scene)
 }
 
 /////////////////////////////////////////////////
-BoundingBoxMaterialSwitcher::~BoundingBoxMaterialSwitcher()
+Ogre2BoundingBoxMaterialSwitcher::~Ogre2BoundingBoxMaterialSwitcher()
 {
 }
 
 ////////////////////////////////////////////////
-void BoundingBoxMaterialSwitcher::preRenderTargetUpdate(
-    const Ogre::RenderTargetEvent &/*_evt*/)
+VisualPtr Ogre2BoundingBoxMaterialSwitcher::TopLevelModelVisual(
+    VisualPtr _visual) const
+{
+  if (!_visual)
+    return _visual;
+  VisualPtr p = _visual;
+  while (p->Parent() && p->Parent() != _visual->Scene()->RootVisual())
+    p = std::dynamic_pointer_cast<Visual>(p->Parent());
+  return p;
+}
+
+////////////////////////////////////////////////
+void Ogre2BoundingBoxMaterialSwitcher::cameraPreRenderScene(
+    Ogre::Camera * /*_cam*/)
 {
   this->datablockMap.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
@@ -259,19 +272,11 @@ void BoundingBoxMaterialSwitcher::preRenderTargetUpdate(
       float ogreId2 = (ogreId % 256) / 255.0;
 
       // Material color
-      auto customParameter = Ogre::Vector4(labelColor, ogreId1, ogreId2, 1.0);
+      auto customParameter = Ogre::Vector4(ogreId2, ogreId1, labelColor, 1.0);
 
       // Multi-links models handeling
       auto itemName = visual->Name();
-      std::string parentName;
-
-      // Visuals that are added without a name (through rendering API)
-      // will have the name "scene::Visual(VISUAL_ID)", use it as a name
-      auto unNamedVisualIndex = itemName.find("scene::Visual");
-      if (unNamedVisualIndex != std::string::npos)
-        parentName = itemName.substr(0, itemName.find_first_of(")") + 1);
-      else
-        parentName = itemName.substr(0, itemName.find("::"));
+      std::string parentName = this->TopLevelModelVisual(visual)->Name();
 
       this->ogreIdName[ogreId] = parentName;
 
@@ -297,8 +302,8 @@ void BoundingBoxMaterialSwitcher::preRenderTargetUpdate(
 }
 
 /////////////////////////////////////////////////
-void BoundingBoxMaterialSwitcher::postRenderTargetUpdate(
-    const Ogre::RenderTargetEvent &/*_evt*/)
+void Ogre2BoundingBoxMaterialSwitcher::cameraPostRenderScene(
+    Ogre::Camera * /*_cam*/)
 {
   // restore the original material
   for (auto it : this->datablockMap)
@@ -327,8 +332,8 @@ void Ogre2BoundingBoxCamera::Init()
   this->CreateCamera();
   this->CreateRenderTexture();
 
-  this->dataPtr->materialSwitcher =
-    new BoundingBoxMaterialSwitcher(this->scene);
+  this->dataPtr->materialSwitcher = std::make_unique<
+    Ogre2BoundingBoxMaterialSwitcher>(this->scene);
 }
 
 /////////////////////////////////////////////////
@@ -377,14 +382,16 @@ void Ogre2BoundingBoxCamera::Destroy()
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr =
-    ogreRoot->getCompositorManager2();
+      ogreRoot->getCompositorManager2();
 
-  // remove thermal texture, material, compositor
+  // remove render texture, material, compositor
   if (this->dataPtr->ogreRenderTexture)
   {
-    Ogre::TextureManager::getSingleton().remove(
-        this->dataPtr->ogreRenderTexture->getName());
+    ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
+          this->dataPtr->ogreRenderTexture);
+    this->dataPtr->ogreRenderTexture = nullptr;
   }
+
   if (this->dataPtr->ogreCompositorWorkspace)
   {
     ogreCompMgr->removeWorkspace(
@@ -411,6 +418,9 @@ void Ogre2BoundingBoxCamera::Destroy()
       this->ogreCamera = nullptr;
     }
   }
+
+  if (this->dataPtr->materialSwitcher)
+    this->dataPtr->materialSwitcher.reset();
 }
 
 /////////////////////////////////////////////////
@@ -419,7 +429,7 @@ void Ogre2BoundingBoxCamera::PreRender()
   if (!this->dataPtr->ogreRenderTexture)
     this->CreateBoundingBoxTexture();
 
-  this->dataPtr->output_boxes.clear();
+  this->dataPtr->outputBoxes.clear();
 }
 
 /////////////////////////////////////////////////
@@ -433,30 +443,30 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
     this->AspectRatio());
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
 
-  auto width = this->ImageWidth();
-  auto height = this->ImageHeight();
-
-  // texture
-  this->dataPtr->ogreTexture =
-    Ogre::TextureManager::getSingleton().createManual(
-    "BoundingBoxCameraTexture",
-    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-    Ogre::TEX_TYPE_2D, width, height, 0, this->dataPtr->format,
-    Ogre::TU_RENDERTARGET
-  );
-
   // render texture
-  auto hardwareBuffer = this->dataPtr->ogreTexture->getBuffer();
-  this->dataPtr->ogreRenderTexture = hardwareBuffer->getRenderTarget();
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+      ogreRoot->getRenderSystem()->getTextureGpuManager();
+  this->dataPtr->ogreRenderTexture =
+      textureMgr->createOrRetrieveTexture(this->Name() + "_boundingbox_cam",
+      Ogre::GpuPageOutStrategy::SaveToSystemRam,
+      Ogre::TextureFlags::RenderToTexture,
+      Ogre::TextureTypes::Type2D);
+
+  this->dataPtr->ogreRenderTexture->setResolution(
+      this->ImageWidth(), this->ImageHeight());
+  this->dataPtr->ogreRenderTexture->setNumMipmaps(1u);
+  this->dataPtr->ogreRenderTexture->setPixelFormat(this->dataPtr->format);
+
+  this->dataPtr->ogreRenderTexture->scheduleTransitionTo(
+      Ogre::GpuResidency::Resident);
 
   // Switch material to OGRE Ids map to use it to get the visible bboxes
   // or to check visiblity in full bboxes
-  this->dataPtr->ogreRenderTexture->addListener(
-    this->dataPtr->materialSwitcher);
+  this->ogreCamera->addListener(this->dataPtr->materialSwitcher.get());
 
   // workspace
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
   this->dataPtr->ogreCompositorManager = ogreRoot->getCompositorManager2();
 
   this->dataPtr->workspaceDefinition = "BoundingBoxCameraWorkspace_" +
@@ -481,21 +491,6 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
       this->dataPtr->workspaceDefinition,
       false
     );
-
-  // set visibility mask
-  auto node = this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
-  auto pass = node->_getPasses()[1]->getDefinition();
-  auto renderScenePass =
-    dynamic_cast<const Ogre::CompositorPassSceneDef *>(pass);
-  const_cast<Ogre::CompositorPassSceneDef *>(
-    renderScenePass)->setVisibilityMask(IGN_VISIBILITY_ALL);
-
-  // buffer to store render texture data
-  auto bufferSize = Ogre::PixelUtil::getMemorySize(
-    width, height, 1, this->dataPtr->format);
-  this->dataPtr->buffer = new uint8_t[bufferSize];
-  this->dataPtr->pixelBox = new Ogre::PixelBox(width, height, 1,
-    this->dataPtr->format, this->dataPtr->buffer);
 }
 
 /////////////////////////////////////////////////
@@ -509,7 +504,7 @@ void Ogre2BoundingBoxCamera::Render()
   this->dataPtr->ogreCompositorWorkspace->_update();
   this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
 
-  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
   swappedTargets.reserve(2u);
   this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
 
@@ -519,15 +514,46 @@ void Ogre2BoundingBoxCamera::Render()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::PostRender()
 {
-  // copy render texture data to the pixel box & its buffer
-  this->dataPtr->ogreRenderTexture->copyContentsToMemory(
-    *this->dataPtr->pixelBox,
-    Ogre::RenderTarget::FB_FRONT
-  );
-
   // return if no one is listening to the new frame
   if (this->dataPtr->newBoundingBoxes.ConnectionCount() == 0)
     return;
+
+  unsigned int width = this->ImageWidth();
+  unsigned int height = this->ImageHeight();
+
+  PixelFormat format = PF_R8G8B8;
+  unsigned int channelCount = PixelUtil::ChannelCount(format);
+  unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
+  // raw gpu texture format is RGBA8
+  unsigned int rawChannelCount = 4u;
+
+  Ogre::Image2 image;
+  image.convertFromTexture(this->dataPtr->ogreRenderTexture, 0u, 0u);
+  Ogre::TextureBox box = image.getData(0);
+  uint8_t *imgBufferTmp = static_cast<uint8_t *>(box.data);
+  if (!this->dataPtr->buffer)
+  {
+    auto bufferSize = PixelUtil::MemorySize(format, width, height);
+    this->dataPtr->buffer = new uint8_t[bufferSize];
+  }
+
+  for (unsigned int row = 0; row < height; ++row)
+  {
+    // the texture box step size could be larger than our image buffer step
+    // size
+    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
+    for (unsigned int column = 0; column < width; ++column)
+    {
+      unsigned int idx = (row * width * channelCount) +
+          column * channelCount;
+      unsigned int rawIdx = rawDataRowIdx +
+          column * rawChannelCount;
+
+      this->dataPtr->buffer[idx] = imgBufferTmp[rawIdx];
+      this->dataPtr->buffer[idx + 1] = imgBufferTmp[rawIdx + 1];
+      this->dataPtr->buffer[idx + 2] = imgBufferTmp[rawIdx + 2];
+    }
+  }
 
   if (this->dataPtr->type == BoundingBoxType::BBT_VISIBLEBOX2D)
     this->VisibleBoundingBoxes();
@@ -536,8 +562,8 @@ void Ogre2BoundingBoxCamera::PostRender()
   else if (this->dataPtr->type == BoundingBoxType::BBT_BOX3D)
     this->BoundingBoxes3D();
 
-  for (auto box : this->dataPtr->boundingboxes)
-    delete box.second;
+  for (auto bbox : this->dataPtr->boundingboxes)
+    delete bbox.second;
 
   this->dataPtr->boundingboxes.clear();
   this->dataPtr->visibleBoxesLabel.clear();
@@ -547,7 +573,7 @@ void Ogre2BoundingBoxCamera::PostRender()
   this->dataPtr->ogreIdToItem.clear();
   this->dataPtr->materialSwitcher->ogreIdName.clear();
 
-  this->dataPtr->newBoundingBoxes(this->dataPtr->output_boxes);
+  this->dataPtr->newBoundingBoxes(this->dataPtr->outputBoxes);
 }
 
 /////////////////////////////////////////////////
@@ -683,7 +709,7 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
     if (ogreIds.size() == 1)
     {
       auto box = this->dataPtr->boundingboxes[ogreIds[0]];
-      this->dataPtr->output_boxes.push_back(*box);
+      this->dataPtr->outputBoxes.push_back(*box);
     }
     else
     {
@@ -704,13 +730,13 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
       box.size = mergedBox.Size();
       box.label = this->dataPtr->visibleBoxesLabel[ogreIds[0]];
 
-      this->dataPtr->output_boxes.push_back(box);
+      this->dataPtr->outputBoxes.push_back(box);
     }
   }
 
-  // reverse the order of the boxes (usful in testing)
-  std::reverse(this->dataPtr->output_boxes.begin(),
-    this->dataPtr->output_boxes.end());
+  // reverse the order of the boxes (useful in testing)
+  std::reverse(this->dataPtr->outputBoxes.begin(),
+    this->dataPtr->outputBoxes.end());
 }
 
 /////////////////////////////////////////////////
@@ -730,17 +756,17 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels2D()
     auto mergedBox = this->MergeBoxes2D(nameToBoxes.second);
 
     // Store boxes in the output vector
-    this->dataPtr->output_boxes.push_back(mergedBox);
+    this->dataPtr->outputBoxes.push_back(mergedBox);
   }
 
   // reverse the order of the boxes (usful in testing)
-  std::reverse(this->dataPtr->output_boxes.begin(),
-    this->dataPtr->output_boxes.end());
+  std::reverse(this->dataPtr->outputBoxes.begin(),
+    this->dataPtr->outputBoxes.end());
 }
 
 /////////////////////////////////////////////////
 BoundingBox Ogre2BoundingBoxCamera::MergeBoxes2D(
-        std::vector<BoundingBox *> _boxes)
+        const std::vector<BoundingBox *> &_boxes)
 {
   if (_boxes.size() == 1)
     return *_boxes[0];
@@ -938,6 +964,9 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
     box.second->size.Y() = boxHeight;
     box.second->size.Z() = 0;
   }
+
+  for (auto bb : boxesBoundary)
+    delete bb.second;
 
   // Combine boxes of multi-links model if exists
   this->MergeMultiLinksModels2D();
@@ -1385,7 +1414,7 @@ void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
 /////////////////////////////////////////////////
 std::vector<BoundingBox> Ogre2BoundingBoxCamera::BoundingBoxData() const
 {
-    return this->dataPtr->output_boxes;
+    return this->dataPtr->outputBoxes;
 }
 
 /////////////////////////////////////////////////

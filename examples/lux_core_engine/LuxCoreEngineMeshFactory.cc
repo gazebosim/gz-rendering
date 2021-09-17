@@ -87,5 +87,39 @@ LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_des
     scene->SceneLux()->DefineMesh(meshName, 24, 12, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
   }
 
+  if (_desc.meshName == "unit_plane")
+  {
+    std::string meshName = _name + "-mesh";
+
+    struct Vertex {
+      float x, y, z;
+
+      Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
+    };
+
+	  Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(4);
+
+    float minX = -0.5f, minY = -0.5f, z = 0.0f;
+	  float maxX = 0.5f, maxY = 0.5f;
+
+	  p[0] = Vertex(minX, minY, z);
+	  p[1] = Vertex(minX, maxY, z);
+	  p[2] = Vertex(maxX, maxY, z);
+	  p[3] = Vertex(maxX, minY, z);
+
+    struct VertexTriangle {
+      unsigned int v1, v2, v3;
+
+      VertexTriangle(unsigned int v1, unsigned int v2, unsigned int v3) : v1(v1), v2(v2), v3(v3) {}
+    };
+
+	  VertexTriangle *vi = (VertexTriangle *)luxcore::Scene::AllocTrianglesBuffer(2);
+	  
+    vi[0] = VertexTriangle(0, 1, 2);
+	  vi[1] = VertexTriangle(2, 3, 0);
+
+    scene->SceneLux()->DefineMesh(meshName, 4, 2, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
+  }
+
   return mesh;
 }

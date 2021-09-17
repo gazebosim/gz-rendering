@@ -109,27 +109,27 @@ void buildScene(ScenePtr _scene)
   VisualPtr box = _scene->CreateVisual();
   box->AddGeometry(_scene->CreateBox());
   // box->SetOrigin(0.0, 0, 0);
-  // box->SetLocalPosition(3, 0, 0);
-  // box->SetLocalScale(1, 1, 1);
+  box->SetLocalPosition(0, 0, 0);
+  box->SetLocalScale(2, 0.5, 1);
   box->SetMaterial(red);
   // root->AddChild(box);
 
 //! [white material]
   // create white material
-  // MaterialPtr white = _scene->CreateMaterial();
-  // white->SetAmbient(0.5, 0.5, 0.5);
-  // white->SetDiffuse(0.8, 0.8, 0.8);
-  // white->SetReceiveShadows(true);
-  // white->SetReflectivity(0);
-  // white->SetRenderOrder(0);
+  MaterialPtr white = _scene->CreateMaterial();
+  white->SetAmbient(0.5, 0.5, 0.5);
+  white->SetDiffuse(0, 1, 0);
+  white->SetReceiveShadows(true);
+  white->SetReflectivity(0);
+  white->SetRenderOrder(0);
 //! [white material]
 
   // create plane visual
-  // VisualPtr plane = _scene->CreateVisual();
-  // plane->AddGeometry(_scene->CreatePlane());
-  // plane->SetLocalScale(5, 8, 1);
-  // plane->SetLocalPosition(3, 0, -0.5);
-  // plane->SetMaterial(white);
+  VisualPtr plane = _scene->CreateVisual();
+  plane->AddGeometry(_scene->CreatePlane());
+  plane->SetLocalScale(1, 1, 1);
+  plane->SetLocalPosition(0, 0, -2);
+  plane->SetMaterial(white);
   // root->AddChild(plane);
 
   // create camera

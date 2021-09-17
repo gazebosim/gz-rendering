@@ -13,14 +13,9 @@ VisualPtr LuxCoreEngineMesh::Parent() const {}
 
 void LuxCoreEngineMesh::SetMaterial(MaterialPtr _material, bool _unique)
 {
-  std::string objName = Name();
-  std::string meshName = Name() + "-mesh";
-  std::string matName = "mat_white"; 
-  luxrays::Properties props;
-	props.SetFromString(
-		"scene.objects." + objName + ".shape = " + meshName + "\n"
-		"scene.objects." + objName + ".material = " + matName + "\n");
-	scene->SceneLux()->Parse(props);
+  scene->SceneLux()->Parse(
+	    luxrays::Property("scene.objects." + Name() + ".shape")(Name() + "-mesh") <<
+	    luxrays::Property("scene.objects." + Name()  + ".material")(_material->Name()));
 }
 
 SubMeshStorePtr LuxCoreEngineMesh::SubMeshes() const {}

@@ -21,10 +21,6 @@ LuxCoreEngineScene::LuxCoreEngineScene(unsigned int _id, const std::string &_nam
 		  luxrays::Property("scene.camera.fieldofview")(60.f));
 
   sceneLux->Parse(
-	    luxrays::Property("scene.materials.mat_white.type")("matte") <<
-	    luxrays::Property("scene.materials.mat_white.kd")(0.75, 0, 0));
-
-  sceneLux->Parse(
 		  luxrays::Property("scene.lights.skyl.type")("sky2") <<
 		  luxrays::Property("scene.lights.skyl.dir")(0.166974f, 0.59908f, 0.783085f) <<
 		  luxrays::Property("scene.lights.skyl.turbidity")(2.2f) <<
@@ -42,7 +38,7 @@ LuxCoreEngineScene::LuxCoreEngineScene(unsigned int _id, const std::string &_nam
   props.Set(luxrays::Property("film.imagepipeline.1.type")("GAMMA_CORRECTION")); 
   props.Set(luxrays::Property("film.imagepipeline.1.value")("2.2")); 
   luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props, sceneLux);
-  this->renderSessionPtr = luxcore::RenderSession::Create(config);
+  this->renderSessionLux = luxcore::RenderSession::Create(config);
 }
 
 LuxCoreEngineScene::~LuxCoreEngineScene() {}
@@ -93,7 +89,7 @@ CameraPtr LuxCoreEngineScene::CreateCameraImpl(unsigned int _id,
                  const std::string &_name)
 {
   LuxCoreEngineCameraPtr camera(new LuxCoreEngineCamera);
-  camera->SetRenderSession(this->renderSessionPtr);
+  camera->SetRenderSession(this->renderSessionLux);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }
@@ -145,7 +141,7 @@ GeometryPtr LuxCoreEngineScene::CreateCylinderImpl(unsigned int _id,
 GeometryPtr LuxCoreEngineScene::CreatePlaneImpl(unsigned int _id,
                  const std::string &_name)
 {
-  return nullptr;
+  return this->CreateMeshImpl(_id, _name, "unit_plane");
 }
 
 GeometryPtr LuxCoreEngineScene::CreateSphereImpl(unsigned int _id,
@@ -167,6 +163,10 @@ MeshPtr LuxCoreEngineScene::CreateMeshImpl(unsigned int _id,
   LuxCoreEngineMeshPtr mesh = this->meshFactory->Create(_desc, _name);
   if (nullptr == mesh)
     return nullptr;
+
+  sceneLux->Parse(
+	    luxrays::Property("scene.objects." + _name + ".shape")(_name + "-mesh") <<
+	    luxrays::Property("scene.objects." + _name  + ".material")("Default/White"));
 
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
@@ -213,6 +213,11 @@ MaterialPtr LuxCoreEngineScene::CreateMaterialImpl(unsigned int _id,
                  const std::string &_name)
 {
   LuxCoreEngineMaterialPtr material(new LuxCoreEngineMaterial);
+
+  sceneLux->Parse(
+	    luxrays::Property() <<
+	    luxrays::Property("scene.materials." + Name() + ".id")(_id));
+
   bool result = this->InitObject(material, _id, _name);
   return (result) ? material : nullptr;
 }
@@ -323,6 +328,11 @@ LuxCoreEngineScenePtr LuxCoreEngineScene::SharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<LuxCoreEngineScene>(sharedBase);
+}
+
+luxcore::RenderSession *LuxCoreEngineScene::RenderSessionLux()
+{
+  return this->renderSessionLux;
 }
 
 luxcore::Scene *LuxCoreEngineScene::SceneLux()

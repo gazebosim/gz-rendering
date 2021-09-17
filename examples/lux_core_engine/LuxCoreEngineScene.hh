@@ -142,9 +142,11 @@ namespace ignition
 
       private: LuxCoreEngineScenePtr SharedThis();
 
+      public: luxcore::RenderSession *RenderSessionLux();
+
       public: luxcore::Scene *SceneLux();
 
-      protected: luxcore::RenderSession *renderSessionPtr;
+      protected: luxcore::RenderSession *renderSessionLux;
       protected: luxcore::Scene *sceneLux;
 
       protected: unsigned int id_;

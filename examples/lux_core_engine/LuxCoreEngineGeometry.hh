@@ -14,6 +14,13 @@ namespace ignition
     class LuxCoreEngineGeometry :
       public BaseGeometry<LuxCoreEngineObject>
     {
+      public: LuxCoreEngineGeometry();
+
+      public: void SetLocalPosition(double _x, double _y, double _z);
+
+      public: void SetLocalScale(double _x, double _y, double _z);
+
+      private: float transformationMatrix[16];
     };
     }
   }

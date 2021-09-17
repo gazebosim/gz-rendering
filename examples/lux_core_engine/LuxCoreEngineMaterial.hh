@@ -18,6 +18,9 @@ namespace ignition
 
       public: virtual ~LuxCoreEngineMaterial();
 
+      public: void SetDiffuse(const double _r, const double _g,
+                  const double _b, const double _a = 1.0);
+
       private: friend class LuxCoreEngineScene;
     };
     }

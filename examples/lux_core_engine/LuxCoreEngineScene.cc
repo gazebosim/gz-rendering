@@ -240,7 +240,7 @@ bool LuxCoreEngineScene::LoadImpl()
 bool LuxCoreEngineScene::InitImpl()
 {  
   luxcore::Init(
-    LogHandler
+//    LogHandler
   );
 
   sceneLux = luxcore::Scene::Create();

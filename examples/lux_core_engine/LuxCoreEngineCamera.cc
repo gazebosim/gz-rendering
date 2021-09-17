@@ -18,9 +18,10 @@ void LuxCoreEngineCamera::Render()
   if (!this->renderSessionLux)
   { 
     luxrays::Properties props;
-    props.Set(luxrays::Property("renderengine.type")("PATHCPU")); 
-    props.Set(luxrays::Property("film.width")("640")); 
-    props.Set(luxrays::Property("film.height")("480")); 
+    props.Set(luxrays::Property("renderengine.type")("RTPATHOCL"));
+    props.Set(luxrays::Property("sampler.type")("TILEPATHSAMPLER"));
+    props.Set(luxrays::Property("film.width")(this->ImageWidth())); 
+    props.Set(luxrays::Property("film.height")(this->ImageHeight())); 
     props.Set(luxrays::Property("film.imagepipeline.0.type")("TONEMAP_LINEAR")); 
     props.Set(luxrays::Property("film.imagepipeline.1.type")("GAMMA_CORRECTION")); 
     props.Set(luxrays::Property("film.imagepipeline.1.value")("2.2")); 

@@ -142,11 +142,8 @@ namespace ignition
 
       private: LuxCoreEngineScenePtr SharedThis();
 
-      public: luxcore::RenderSession *RenderSessionLux();
-
       public: luxcore::Scene *SceneLux();
 
-      protected: luxcore::RenderSession *renderSessionLux;
       protected: luxcore::Scene *sceneLux;
 
       protected: unsigned int id_;
@@ -156,6 +153,7 @@ namespace ignition
       protected: LuxCoreEngineMaterialMapPtr materials;
       protected: LuxCoreEngineSensorStorePtr sensors;
       protected: LuxCoreEngineVisualStorePtr visuals;
+      protected: LuxCoreEngineLightStorePtr lights;
 
       private: friend class LuxCoreEngineRenderEngine;
     };

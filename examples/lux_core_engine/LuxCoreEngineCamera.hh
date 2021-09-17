@@ -17,7 +17,7 @@ namespace ignition
     class LuxCoreEngineCamera :
       public BaseCamera<LuxCoreEngineSensor>
     {
-      protected: LuxCoreEngineCamera();
+      public: LuxCoreEngineCamera();
 
       public: virtual ~LuxCoreEngineCamera();
 
@@ -27,13 +27,9 @@ namespace ignition
 
       protected: virtual RenderTargetPtr RenderTarget() const;
 
-      protected: void SetRenderSession(luxcore::RenderSession *renderSessionPtr);
-
       protected: LuxCoreEngineRenderTargetPtr renderTarget;
 
-      private: luxcore::RenderSession *renderSessionPtr;
-
-      private: friend class LuxCoreEngineScene;
+      protected: luxcore::RenderSession *renderSessionLux;
     };
     }
   }

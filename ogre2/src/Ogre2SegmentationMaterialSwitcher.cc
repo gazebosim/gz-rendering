@@ -280,7 +280,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
           float instanceColor2 = (instanceCount % 256) / 255.0;
 
           customParameter = Ogre::Vector4(
-            labelColor, instanceColor1, instanceColor2, 1.0);
+            instanceColor2, instanceColor1, labelColor, 1.0);
         }
       }
 

@@ -18,8 +18,9 @@
 
 #include <string>
 
-#include "ignition/common/Console.hh"
-#include "ignition/math/Color.hh"
+#include <ignition/common/Console.hh>
+#include <ignition/math/Color.hh>
+
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
@@ -159,6 +160,8 @@ void Ogre2SegmentationCamera::Destroy()
       this->ogreCamera = nullptr;
     }
   }
+
+  this->dataPtr->materialSwitcher.reset();
 }
 
 /////////////////////////////////////////////////

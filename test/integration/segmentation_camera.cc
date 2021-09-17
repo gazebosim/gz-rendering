@@ -55,14 +55,13 @@ uint8_t *g_buffer = nullptr;
 /// \brief counter of received segmentation msgs
 int g_counter = 0;
 
-/// \brief callback to get the segmentation buffer
 //////////////////////////////////////////////////
+/// \brief callback to get the segmentation buffer
 void OnNewSegmentationFrame(const uint8_t *_data,
                     unsigned int _width, unsigned int _height,
                     unsigned int /*_channels*/,
                     const std::string &/*_format*/)
 {
-  std::cerr << "OnNewSegmentationFrame" << std::endl;
   g_mutex.lock();
   auto bufferSize = _width * _height * 3;
 
@@ -75,18 +74,19 @@ void OnNewSegmentationFrame(const uint8_t *_data,
   g_mutex.unlock();
 }
 
+//////////////////////////////////////////////////
 /// \brief Build the scene with 3 boxes besides each other
 /// the 2 outer boxes have the same label & the middle is different
 void BuildScene(rendering::ScenePtr scene)
 {
-  math::Vector3d leftPosition(3, -1.5, 0);
-  math::Vector3d rightPosition(3, 1.5, 0);
+  math::Vector3d leftPosition(3, 1.5, 0);
+  math::Vector3d rightPosition(3, -1.5, 0);
   math::Vector3d middlePosition(3, 0, 0);
 
   rendering::VisualPtr root = scene->RootVisual();
 
   // create box visual
-  rendering::VisualPtr box = scene->CreateVisual();
+  rendering::VisualPtr box = scene->CreateVisual("box_left");
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.0, 0.0);
   box->SetLocalPosition(leftPosition);
@@ -95,7 +95,7 @@ void BuildScene(rendering::ScenePtr scene)
   root->AddChild(box);
 
   // create box visual of same label
-  rendering::VisualPtr box1 = scene->CreateVisual();
+  rendering::VisualPtr box1 = scene->CreateVisual("box_right");
   box1->AddGeometry(scene->CreateBox());
   box1->SetOrigin(0.0, 0.0, 0.0);
   box1->SetLocalPosition(rightPosition);
@@ -104,7 +104,7 @@ void BuildScene(rendering::ScenePtr scene)
   root->AddChild(box1);
 
   // create box visual of different label
-  ignition::rendering::VisualPtr box2 = scene->CreateVisual();
+  ignition::rendering::VisualPtr box2 = scene->CreateVisual("box_mid");
   box2->AddGeometry(scene->CreateBox());
   box2->SetOrigin(0.0, 0.0, 0.0);
   box2->SetLocalPosition(middlePosition);
@@ -223,14 +223,14 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   uint8_t middleCount = g_buffer[middleIndex];
 
   // check the label
-  EXPECT_EQ(leftLabel  , 1);
-  EXPECT_EQ(middleLabel, 2);
-  EXPECT_EQ(rightLabel , 1);
+  EXPECT_EQ(1, leftLabel);
+  EXPECT_EQ(2, middleLabel);
+  EXPECT_EQ(1, rightLabel);
 
   // instance count
-  EXPECT_EQ(middleCount, 1);
-  EXPECT_EQ(rightCount, 1);
-  EXPECT_EQ(leftCount, 2);
+  EXPECT_EQ(1, middleCount);
+  EXPECT_EQ(1, rightCount);
+  EXPECT_EQ(2, leftCount);
 
   // Clean up
   engine->DestroyScene(scene);

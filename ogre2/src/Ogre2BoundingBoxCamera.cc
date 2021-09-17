@@ -386,8 +386,7 @@ void Ogre2BoundingBoxCameraPrivate::AddToViewportLines(
     const math::Vector2d &_p1, std::vector<math::Vector2d> &_lines) const
 {
   auto endpoints = this->ClipToViewPort(_bounds, _p0, _p1);
-  if (endpoints.first != math::Vector2d::NaN &&
-      endpoints.second != math::Vector2d::NaN)
+  if (endpoints.first.IsFinite() && endpoints.second.IsFinite())
   {
     _lines.push_back(endpoints.first);
     _lines.push_back(endpoints.second);

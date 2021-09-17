@@ -1,5 +1,7 @@
 #include "LuxCoreEngineCamera.hh"
 
+#include "LuxCoreEngineScene.hh"
+
 using namespace ignition;
 using namespace rendering;
 
@@ -13,10 +15,23 @@ LuxCoreEngineCamera::~LuxCoreEngineCamera() {};
 
 void LuxCoreEngineCamera::Render() 
 {
-  this->renderSessionPtr->Start();
+  if (!this->renderSessionLux)
+  { 
+    luxrays::Properties props;
+    props.Set(luxrays::Property("renderengine.type")("PATHCPU")); 
+    props.Set(luxrays::Property("film.width")("640")); 
+    props.Set(luxrays::Property("film.height")("480")); 
+    props.Set(luxrays::Property("film.imagepipeline.0.type")("TONEMAP_LINEAR")); 
+    props.Set(luxrays::Property("film.imagepipeline.1.type")("GAMMA_CORRECTION")); 
+    props.Set(luxrays::Property("film.imagepipeline.1.value")("2.2")); 
+    luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props, scene->SceneLux());
+    this->renderSessionLux = luxcore::RenderSession::Create(config);
+  }
+
+  this->renderSessionLux->Start();
   usleep(120000);
-  this->renderSessionPtr->Stop();
-  luxcore::Film& film = this->renderSessionPtr->GetFilm();     
+  this->renderSessionLux->Stop();
+  luxcore::Film& film = this->renderSessionLux->GetFilm();     
   
   float *luxcoreBuffer = (float*)malloc(film.GetWidth() * film.GetHeight() * 3 * sizeof(float));
   film.GetOutput(luxcore::Film::OUTPUT_RGB_IMAGEPIPELINE, luxcoreBuffer); 
@@ -42,9 +57,4 @@ void LuxCoreEngineCamera::Update()
 RenderTargetPtr LuxCoreEngineCamera::RenderTarget() const 
 {
   return this->renderTarget;
-};
-
-void LuxCoreEngineCamera::SetRenderSession(luxcore::RenderSession *renderSessionPtr)
-{
-  this->renderSessionPtr = renderSessionPtr;
 };

@@ -11,7 +11,7 @@ LuxCoreEngineScene::LuxCoreEngineScene(unsigned int _id, const std::string &_nam
   this->name_ = _name;
 
   luxcore::Init(
-    LogHandler
+    // LogHandler
   );
 
   sceneLux = luxcore::Scene::Create();
@@ -29,16 +29,6 @@ LuxCoreEngineScene::LuxCoreEngineScene(unsigned int _id, const std::string &_nam
 		  luxrays::Property("scene.lights.sunl.dir")(0.166974f, 0.59908f, 0.783085f) <<
 		  luxrays::Property("scene.lights.sunl.turbidity")(2.2f) <<
 		  luxrays::Property("scene.lights.sunl.gain")(0.8f, 0.8f, 0.8f));
-
-  luxrays::Properties props;
-  props.Set(luxrays::Property("renderengine.type")("PATHCPU")); 
-  props.Set(luxrays::Property("film.width")("640")); 
-  props.Set(luxrays::Property("film.height")("480")); 
-  props.Set(luxrays::Property("film.imagepipeline.0.type")("TONEMAP_LINEAR")); 
-  props.Set(luxrays::Property("film.imagepipeline.1.type")("GAMMA_CORRECTION")); 
-  props.Set(luxrays::Property("film.imagepipeline.1.value")("2.2")); 
-  luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props, sceneLux);
-  this->renderSessionLux = luxcore::RenderSession::Create(config);
 }
 
 LuxCoreEngineScene::~LuxCoreEngineScene() {}
@@ -89,7 +79,6 @@ CameraPtr LuxCoreEngineScene::CreateCameraImpl(unsigned int _id,
                  const std::string &_name)
 {
   LuxCoreEngineCameraPtr camera(new LuxCoreEngineCamera);
-  camera->SetRenderSession(this->renderSessionLux);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }
@@ -242,7 +231,7 @@ RayQueryPtr LuxCoreEngineScene::CreateRayQueryImpl(
 
 LightStorePtr LuxCoreEngineScene::Lights() const
 {
-  return nullptr;
+  return this->lights;
 }
 
 SensorStorePtr LuxCoreEngineScene::Sensors() const
@@ -303,7 +292,7 @@ void LuxCoreEngineScene::CreateMeshFactory()
 
 void LuxCoreEngineScene::CreateStores()
 {
-  // this->lights = OptixLightStorePtr(new OptixLightStore);
+  // this->lights = LuxCoreEngineLightStorePtr(new LuxCoreEngineLightStore);
   this->sensors = LuxCoreEngineSensorStorePtr(new LuxCoreEngineSensorStore);
   this->visuals = LuxCoreEngineVisualStorePtr(new LuxCoreEngineVisualStore);
   this->materials = LuxCoreEngineMaterialMapPtr(new LuxCoreEngineMaterialMap);
@@ -328,11 +317,6 @@ LuxCoreEngineScenePtr LuxCoreEngineScene::SharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<LuxCoreEngineScene>(sharedBase);
-}
-
-luxcore::RenderSession *LuxCoreEngineScene::RenderSessionLux()
-{
-  return this->renderSessionLux;
 }
 
 luxcore::Scene *LuxCoreEngineScene::SceneLux()

@@ -39,18 +39,18 @@ using namespace rendering;
 void buildScene(ScenePtr _scene)
 {
   // initialize _scene
-  _scene->SetAmbientLight(0.3, 0.3, 0.3);
+  // _scene->SetAmbientLight(0.3, 0.3, 0.3);
   // VisualPtr root = _scene->RootVisual(); No idea how to do this abstraction in luxcore
 
   // create directional light
-  DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
+  // DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
   // light0->SetDirection(-0.5, 0.5, -1);
   // light0->SetDiffuseColor(0.5, 0.5, 0.5);
   // light0->SetSpecularColor(0.5, 0.5, 0.5);
   // root->AddChild(light0);
 
   // create point light
-  PointLightPtr light2 = _scene->CreatePointLight();
+  // PointLightPtr light2 = _scene->CreatePointLight();
   // light2->SetDiffuseColor(0.5, 0.5, 0.5);
   // light2->SetSpecularColor(0.5, 0.5, 0.5);
   // light2->SetLocalPosition(3, 5, 5);
@@ -127,7 +127,7 @@ void buildScene(ScenePtr _scene)
   // create plane visual
   VisualPtr plane = _scene->CreateVisual();
   plane->AddGeometry(_scene->CreatePlane());
-  plane->SetLocalScale(1, 1, 1);
+  plane->SetLocalScale(2, 2, 1);
   plane->SetLocalPosition(0, 0, -2);
   plane->SetMaterial(white);
   // root->AddChild(plane);

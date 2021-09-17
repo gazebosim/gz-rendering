@@ -43,7 +43,7 @@ void buildScene(ScenePtr _scene)
   // VisualPtr root = _scene->RootVisual(); No idea how to do this abstraction in luxcore
 
   // create directional light
-  // DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
+  DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
   // light0->SetDirection(-0.5, 0.5, -1);
   // light0->SetDiffuseColor(0.5, 0.5, 0.5);
   // light0->SetSpecularColor(0.5, 0.5, 0.5);

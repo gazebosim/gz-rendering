@@ -29,8 +29,10 @@ void LuxCoreEngineCamera::Render()
   }
 
   this->renderSessionLux->Start();
-  usleep(250000);
+  usleep(120000);
   this->renderSessionLux->Stop();
+  this->renderSessionLux->WaitForDone();
+
   luxcore::Film& film = this->renderSessionLux->GetFilm();     
   
   float *luxcoreBuffer = (float*)malloc(film.GetWidth() * film.GetHeight() * 3 * sizeof(float));

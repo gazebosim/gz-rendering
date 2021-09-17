@@ -26,14 +26,10 @@ void LuxCoreEngineCamera::Render()
     props.Set(luxrays::Property("film.imagepipeline.1.value")("2.2")); 
     luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props, scene->SceneLux());
     this->renderSessionLux = luxcore::RenderSession::Create(config);
+    this->renderSessionLux->Start();
   }
 
-  if (this->renderSessionLux->IsStarted() && !this->renderSessionLux->HasDone())
-    this->renderSessionLux->WaitForDone();
-
-  this->renderSessionLux->Start();
-  usleep(120000);
-  this->renderSessionLux->Stop();
+  this->renderSessionLux->WaitNewFrame();
 
   luxcore::Film& film = this->renderSessionLux->GetFilm();     
   

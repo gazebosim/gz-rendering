@@ -28,10 +28,12 @@ void LuxCoreEngineCamera::Render()
     this->renderSessionLux = luxcore::RenderSession::Create(config);
   }
 
+  if (this->renderSessionLux->IsStarted() && !this->renderSessionLux->HasDone())
+    this->renderSessionLux->WaitForDone();
+
   this->renderSessionLux->Start();
   usleep(120000);
   this->renderSessionLux->Stop();
-  this->renderSessionLux->WaitForDone();
 
   luxcore::Film& film = this->renderSessionLux->GetFilm();     
   

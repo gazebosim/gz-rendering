@@ -21,19 +21,19 @@
 #include <ignition/rendering/config.hh>
 
 
-/// \def IGN_VISIBILITY_ALL
+/// \typedef IGN_VISIBILITY_ALL
 /// \brief Render everything visibility mask.
 #define IGN_VISIBILITY_ALL             0x0FFFFFFF
 
-/// \def IGN_VISIBILITY_SELECTION
+/// \typedef IGN_VISIBILITY_SELECTION
 /// \brief Renders only objects that can be selected.
 #define IGN_VISIBILITY_SELECTION       0x10000000
 
-/// \def IGN_VISIBILITY_GUI
+/// \typedef IGN_VISIBILITY_GUI
 /// \brief Render GUI visuals mask.
 #define IGN_VISIBILITY_GUI             0x00000001
 
-/// \def IGN_VISIBILITY_SELECTABLE
+/// \typedef IGN_VISIBILITY_SELECTABLE
 /// \brief Render visuals that are selectable mask.
 #define IGN_VISIBILITY_SELECTABLE      0x00000002
 
@@ -92,316 +92,316 @@ namespace ignition
     class Visual;
     class WireBox;
 
-    /// \def ArrowVisualPtr
+    /// \typedef ArrowVisualPtr
     /// \brief Shared pointer to ArrowVisual
     typedef shared_ptr<ArrowVisual> ArrowVisualPtr;
 
-    /// \def AxisVisualPtr
+    /// \typedef AxisVisualPtr
     /// \brief Shared pointer to AxisVisual
     typedef shared_ptr<AxisVisual> AxisVisualPtr;
 
-    /// \def CameraPtr
+    /// \typedef CameraPtr
     /// \brief Shared pointer to Camera
     typedef shared_ptr<Camera> CameraPtr;
 
-    /// \def DepthCameraPtr
+    /// \typedef DepthCameraPtr
     /// \brief Shared pointer to DepthCamera
     typedef shared_ptr<DepthCamera> DepthCameraPtr;
 
-    /// \def ThermalCameraPtr
+    /// \typedef ThermalCameraPtr
     /// \brief Shared pointer to ThermalCamera
     typedef shared_ptr<ThermalCamera> ThermalCameraPtr;
 
-    /// \def BoundingBoxCameraPtr
+    /// \typedef BoundingBoxCameraPtr
     /// \brief Shared pointer to BoundingBoxCamera
     typedef shared_ptr<BoundingBoxCamera> BoundingBoxCameraPtr;
 
-    /// \def GpuRaysPtr
+    /// \typedef GpuRaysPtr
     /// \brief Shared pointer to GpuRays
     typedef shared_ptr<GpuRays> GpuRaysPtr;
 
-    /// \def DirectionalLightPtr
+    /// \typedef DirectionalLightPtr
     /// \brief Shared pointer to DirectionalLight
     typedef shared_ptr<DirectionalLight> DirectionalLightPtr;
 
-    /// \def GaussianNoisePass
+    /// \typedef GaussianNoisePassPtr
     /// \brief Shared pointer to GaussianNoisePass
     typedef shared_ptr<GaussianNoisePass> GaussianNoisePassPtr;
 
-    /// \def GeometryPtr
+    /// \typedef GeometryPtr
     /// \brief Shared pointer to Geometry
     typedef shared_ptr<Geometry> GeometryPtr;
 
-    /// \def GizmoVisualPtr
+    /// \typedef GizmoVisualPtr
     /// \brief Shared pointer to GizmoVisual
     typedef shared_ptr<GizmoVisual> GizmoVisualPtr;
 
-    /// \def CapsulePtr
+    /// \typedef CapsulePtr
     /// \brief Shared pointer to Capsule
     typedef shared_ptr<Capsule> CapsulePtr;
 
-    /// \def GridPtr
+    /// \typedef GridPtr
     /// \brief Shared pointer to Grid
     typedef shared_ptr<Grid> GridPtr;
 
-    /// \def JointVisualPtr
+    /// \typedef JointVisualPtr
     /// \brief Shared pointer to JointVisual
     typedef shared_ptr<JointVisual> JointVisualPtr;
 
-    /// \def HeightmapPtr
+    /// \typedef HeightmapPtr
     /// \brief Shared pointer to Heightmap
     typedef shared_ptr<Heightmap> HeightmapPtr;
 
-    /// \def ImagePtr
+    /// \typedef ImagePtr
     /// \brief Shared pointer to Image
     typedef shared_ptr<Image> ImagePtr;
 
-    /// \def InertiaVisualPtr
+    /// \typedef InertiaVisualPtr
     /// \def Shared pointer to InertiaVisual
     typedef shared_ptr<InertiaVisual> InertiaVisualPtr;
 
-    /// \def LightPtr
+    /// \typedef LightPtr
     /// \brief Shared pointer to Light
     typedef shared_ptr<Light> LightPtr;
 
-    /// \def COMVisualPtr
+    /// \typedef COMVisualPtr
     /// \brief Shared pointer to COMVisual
     typedef shared_ptr<COMVisual> COMVisualPtr;
 
-    /// \def LightVisualPtr
+    /// \typedef LightVisualPtr
     /// \brief Shared pointer to Light
     typedef shared_ptr<LightVisual> LightVisualPtr;
 
-    /// \def LidarVisualPtr
+    /// \typedef LidarVisualPtr
     /// \brief Shared pointer to LidarVisual
     typedef shared_ptr<LidarVisual> LidarVisualPtr;
 
-    /// \def MaterialPtr
+    /// \typedef MaterialPtr
     /// \brief Shared pointer to Material
     typedef shared_ptr<Material> MaterialPtr;
 
-    /// \def MarkerPtr
+    /// \typedef MarkerPtr
     /// \brief Shared pointer to Marker
     typedef shared_ptr<Marker> MarkerPtr;
 
-    /// \def MeshPtr
+    /// \typedef MeshPtr
     /// \brief Shared pointer to Mesh
     typedef shared_ptr<Mesh> MeshPtr;
 
-    /// \def NodePtr
+    /// \typedef NodePtr
     /// \brief Shared pointer to Node
     typedef shared_ptr<Node> NodePtr;
 
-    /// \def ObjectPtr
+    /// \typedef ObjectPtr
     /// \brief Shared pointer to Object
     typedef shared_ptr<Object> ObjectPtr;
 
-    /// \def ObjectFactoryPtr
+    /// \typedef ObjectFactoryPtr
     /// \brief Shared pointer to ObjectFactory
     typedef shared_ptr<ObjectFactory> ObjectFactoryPtr;
 
-    /// \def ParticleEmitterPtr
+    /// \typedef ParticleEmitterPtr
     /// \brief Shared pointer to ParticleEmitter
     typedef shared_ptr<ParticleEmitter> ParticleEmitterPtr;
 
-    /// \def PointLightPtr
+    /// \typedef PointLightPtr
     /// \brief Shared pointer to PointLight
     typedef shared_ptr<PointLight> PointLightPtr;
 
-    /// \def RayQueryPtr
+    /// \typedef RayQueryPtr
     /// \brief Shared pointer to RayQuery
     typedef shared_ptr<RayQuery> RayQueryPtr;
 
-    /// \def RenderPassPtr
+    /// \typedef RenderPassPtr
     /// \brief Shared pointer to RenderPass
     typedef shared_ptr<RenderPass> RenderPassPtr;
 
-    /// \def RenderPassSystemPtr
+    /// \typedef RenderPassSystemPtr
     /// \brief Shared pointer to RenderPassSystem
     typedef shared_ptr<RenderPassSystem> RenderPassSystemPtr;
 
-    /// \def RenderTargetPtr
+    /// \typedef RenderTargetPtr
     /// \brief Shared pointer to RenderTarget
     typedef shared_ptr<RenderTarget> RenderTargetPtr;
 
-    /// \def RenderTexturePtr
+    /// \typedef RenderTexturePtr
     /// \brief Shared pointer to RenderTexture
     typedef shared_ptr<RenderTexture> RenderTexturePtr;
 
-    /// \def RenderWindowPtr
+    /// \typedef RenderWindowPtr
     /// \brief Shared pointer to RenderWindow
     typedef shared_ptr<RenderWindow> RenderWindowPtr;
-    /// \def ScenePtr
+    /// \typedef ScenePtr
     /// \brief Shared pointer to Scene
     typedef shared_ptr<Scene> ScenePtr;
 
-    /// \def SensorPtr
+    /// \typedef SensorPtr
     /// \brief Shared pointer to Sensor
     typedef shared_ptr<Sensor> SensorPtr;
 
     /// \brief Shared pointer to ShaderParams
     typedef shared_ptr<ShaderParams> ShaderParamsPtr;
 
-    /// \def SpotLightPtr
+    /// \typedef SpotLightPtr
     /// \brief Shared pointer to SpotLight
     typedef shared_ptr<SpotLight> SpotLightPtr;
 
-    /// \def SubMeshPtr
+    /// \typedef SubMeshPtr
     /// \brief Shared pointer to SubMesh
     typedef shared_ptr<SubMesh> SubMeshPtr;
 
-    /// \def TextPtr
+    /// \typedef TextPtr
     /// \brief Shared pointer to Text
     typedef shared_ptr<Text> TextPtr;
 
-    /// \def VisualPtr
+    /// \typedef VisualPtr
     /// \brief Shared pointer to Visual
     typedef shared_ptr<Visual> VisualPtr;
 
-    /// \def WireBoxPtr
+    /// \typedef WireBoxPtr
     /// \brief Shared pointer to WireBox
     typedef shared_ptr<WireBox> WireBoxPtr;
 
-    /// \def const ArrowVisualPtr
+    /// \typedef const ArrowVisualPtr
     /// \brief Shared pointer to const ArrowVisual
     typedef shared_ptr<const ArrowVisual> ConstArrowVisualPtr;
 
-    /// \def const AxisVisualPtr
+    /// \typedef const AxisVisualPtr
     /// \brief Shared pointer to const AxisVisual
     typedef shared_ptr<const AxisVisual> ConstAxisVisualPtr;
 
-    /// \def const CameraPtr
+    /// \typedef const CameraPtr
     /// \brief Shared pointer to const Camera
     typedef shared_ptr<const Camera> ConstCameraPtr;
 
-    /// \def const DepthCameraPtr
+    /// \typedef const DepthCameraPtr
     /// \brief Shared pointer to const DepthCamera
     typedef shared_ptr<const DepthCamera> ConstDepthCameraPtr;
 
-    /// \def const ThermalCameraPtr
+    /// \typedef const ThermalCameraPtr
     /// \brief Shared pointer to const ThermalCamera
     typedef shared_ptr<const ThermalCamera> ConstThermalCameraPtr;
 
-    /// \def const BoundingBoxCameraPtr
+    /// \typedef const BoundingBoxCameraPtr
     /// \brief Shared pointer to const BoundingBox Camera
     typedef shared_ptr<const BoundingBoxCamera> ConstBoundingBoxCameraPtr;
 
-    /// \def const GpuRaysPtr
+    /// \typedef const GpuRaysPtr
     /// \brief Shared pointer to const GpuRays
     typedef shared_ptr<const GpuRays> ConstGpuRaysPtr;
 
-    /// \def const DirectionalLightPtr
+    /// \typedef const DirectionalLightPtr
     /// \brief Shared pointer to const DirectionalLight
     typedef shared_ptr<const DirectionalLight> ConstDirectionalLightPtr;
 
-    /// \def const GaussianNoisePass
+    /// \typedef const ConstGaussianNoisePass
     /// \brief Shared pointer to const GaussianNoisePass
     typedef shared_ptr<const GaussianNoisePass> ConstGaussianNoisePass;
 
-    /// \def const GeometryPtr
+    /// \typedef const GeometryPtr
     /// \brief Shared pointer to const Geometry
     typedef shared_ptr<const Geometry> ConstGeometryPtr;
 
-    /// \def const GizmoVisualPtr
+    /// \typedef const GizmoVisualPtr
     /// \brief Shared pointer to const GizmoVisual
     typedef shared_ptr<const GizmoVisual> ConstGizmoVisualPtr;
 
-    /// \def const JointVisualPtr
+    /// \typedef const JointVisualPtr
     /// \brief Shared pointer to const JointVisual
     typedef shared_ptr<const JointVisual> ConstJointVisualPtr;
 
-    /// \def const HeightmapPtr
+    /// \typedef const HeightmapPtr
     /// \brief Shared pointer to const Heightmap
     typedef shared_ptr<const Heightmap> ConstHeightmapPtr;
 
-    /// \def const ImagePtr
+    /// \typedef const ImagePtr
     /// \brief Shared pointer to const Image
     typedef shared_ptr<const Image> ConstImagePtr;
 
-    /// \def const LightPtr
+    /// \typedef const LightPtr
     /// \brief Shared pointer to const Light
     typedef shared_ptr<const Light> ConstLightPtr;
 
-    /// \def const LidarVisualPtr
+    /// \typedef const LidarVisualPtr
     /// \brief Shared pointer to const LidarVisual
     typedef shared_ptr<const LidarVisual> ConstLidarVisualPtr;
 
-    /// \def const MaterialPtr
+    /// \typedef const MaterialPtr
     /// \brief Shared pointer to const Material
     typedef shared_ptr<const Material> ConstMaterialPtr;
 
-    /// \def const MeshPtr
+    /// \typedef const MeshPtr
     /// \brief Shared pointer to const Mesh
     typedef shared_ptr<const Mesh> ConstMeshPtr;
 
-    /// \def const NodePtr
+    /// \typedef const NodePtr
     /// \brief Shared pointer to const Node
     typedef shared_ptr<const Node> ConstNodePtr;
 
-    /// \def const ObjectPtr
+    /// \typedef const ObjectPtr
     /// \brief Shared pointer to const Object
     typedef shared_ptr<const Object> ConstObjectPtr;
 
-    /// \def const ObjectFactoryPtr
+    /// \typedef const ObjectFactoryPtr
     /// \brief Shared pointer to const ObjectFactory
     typedef shared_ptr<const ObjectFactory> ConstObjectFactoryPtr;
 
-    /// \def const ParticleEmitterPtr
+    /// \typedef const ParticleEmitterPtr
     /// \brief Shared pointer to const ParticleEmitter
     typedef shared_ptr<const ParticleEmitter> ConstParticleEmitterPtr;
 
-    /// \def const PointLightPtr
+    /// \typedef const PointLightPtr
     /// \brief Shared pointer to const PointLight
     typedef shared_ptr<const PointLight> ConstPointLightPtr;
 
-    /// \def RayQueryPtr
+    /// \typedef RayQueryPtr
     /// \brief Shared pointer to RayQuery
     typedef shared_ptr<const RayQuery> ConstRayQueryPtr;
 
-    /// \def const RenderPassPtr
+    /// \typedef const RenderPassPtr
     /// \brief Shared pointer to const RenderPass
     typedef shared_ptr<const RenderPass> ConstRenderPassPtr;
 
-    /// \def const RenderPassSystemPtr
+    /// \typedef const RenderPassSystemPtr
     /// \brief Shared pointer to const RenderPassSystem
     typedef shared_ptr<const RenderPassSystem> ConstRenderPassSystemPtr;
 
-    /// \def const RenderTargetPtr
+    /// \typedef const RenderTargetPtr
     /// \brief Shared pointer to const RenderTarget
     typedef shared_ptr<const RenderTarget> ConstRenderTargetPtr;
 
-    /// \def const RenderTexturePtr
+    /// \typedef const RenderTexturePtr
     /// \brief Shared pointer to const RenderTexture
     typedef shared_ptr<const RenderTexture> ConstRenderTexturePtr;
 
-    /// \def const RenderWindowPtr
+    /// \typedef const RenderWindowPtr
     /// \brief Shared pointer to const RenderWindow
     typedef shared_ptr<const RenderWindow> ConstRenderWindowPtr;
 
-    /// \def const ScenePtr
+    /// \typedef const ScenePtr
     /// \brief Shared pointer to const Scene
     typedef shared_ptr<const Scene> ConstScenePtr;
 
-    /// \def const SensorPtr
+    /// \typedef const SensorPtr
     /// \brief Shared pointer to const Sensor
     typedef shared_ptr<const Sensor> ConstSensorPtr;
 
     /// \brief Shared pointer to const ShaderParams
     typedef shared_ptr<const ShaderParams> ConstShaderParamsPtr;
 
-    /// \def const SpotLightPtr
+    /// \typedef const SpotLightPtr
     /// \brief Shared pointer to const SpotLight
     typedef shared_ptr<const SpotLight> ConstSpotLightPtr;
 
-    /// \def const SubMeshPtr
+    /// \typedef const SubMeshPtr
     /// \brief Shared pointer to const SubMesh
     typedef shared_ptr<const SubMesh> ConstSubMeshPtr;
 
-    /// \def const SubMeshPtr
+    /// \typedef const SubMeshPtr
     /// \brief Shared pointer to const SubMesh
     typedef shared_ptr<const Text> ConstTextPtr;
 
-    /// \def const VisualPtr
+    /// \typedef const VisualPtr
     /// \brief Shared pointer to const Visual
     typedef shared_ptr<const Visual> ConstVisualPtr;
     }

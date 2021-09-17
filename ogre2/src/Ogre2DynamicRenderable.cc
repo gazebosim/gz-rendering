@@ -40,6 +40,7 @@
 #include <OgreMeshManager2.h>
 #include <OgreSceneManager.h>
 #include <OgreSubMesh2.h>
+#include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -341,6 +342,9 @@ void Ogre2DynamicRenderable::UpdateBuffer()
   // update item aabb
   if (this->dataPtr->ogreItem)
   {
+    bool castShadows = this->dataPtr->ogreItem->getCastShadows();
+    auto lowLevelMat = this->dataPtr->ogreItem->getSubItem(0)->getMaterial();
+
     // need to rebuild ogre [sub]item because the vao was destroyed
     // this updates the item's bounding box and fixes occasional crashes
     // from invalid access to old vao
@@ -354,6 +358,13 @@ void Ogre2DynamicRenderable::UpdateBuffer()
           this->dataPtr->material->Datablock()));
       this->dataPtr->ogreItem->setCastShadows(
           this->dataPtr->material->CastShadows());
+    }
+    else if (lowLevelMat)
+    {
+      // the _initialise call above resets the ogre item properties so set
+      // them again
+      this->dataPtr->ogreItem->getSubItem(0)->setMaterial(lowLevelMat);
+      this->dataPtr->ogreItem->setCastShadows(castShadows);
     }
   }
 

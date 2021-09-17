@@ -58,7 +58,7 @@ namespace ignition
       public: virtual void SetMean(double _mean) = 0;
 
       /// \brief Set stddev.
-      /// \param[in] _stddev Standard deviation of Gaussian noise.
+      /// \param[in] _stdDev Standard deviation of Gaussian noise.
       public: virtual void SetStdDev(double _stdDev) = 0;
 
       /// \brief Set the mean of the bias value. Bias is computed based on

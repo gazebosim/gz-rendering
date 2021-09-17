@@ -90,8 +90,8 @@ namespace ignition
       public: virtual math::Angle HFOV() const = 0;
 
       /// \brief Set the camera's horizontal field-of-view
-      /// \param[in] _angle Desired horizontal field-of-view
-      public: virtual void SetHFOV(const math::Angle &_angle) = 0;
+      /// \param[in] _hfov Desired horizontal field-of-view
+      public: virtual void SetHFOV(const math::Angle &_hfov) = 0;
 
       /// \brief Get the camera's aspect ratio
       /// \return The camera's aspect ratio
@@ -218,7 +218,7 @@ namespace ignition
       /// `SetProjectionMatrix` to override the provided one. To disable the
       /// custom projection matrix, just call this function again with the
       /// desired projection type.
-      /// \param[in] _matrix Camera projection type
+      /// \param[in] _type Camera projection type
       /// \sa SetProjectionMatrix
       public: virtual void SetProjectionType(CameraProjectionType _type) = 0;
 
@@ -333,6 +333,10 @@ namespace ignition
       /// \return Render pass at the specified index
       public: virtual RenderPassPtr RenderPassByIndex(unsigned int _index)
           const = 0;
+
+      /// \internal
+      /// \brief Notify that shadows are dirty and need to be regenerated
+      public: virtual void SetShadowsDirty() = 0;
     };
     }
   }

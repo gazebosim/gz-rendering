@@ -33,12 +33,10 @@
 #include <Compositor/OgreCompositorWorkspace.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 #include <OgreCamera.h>
-#include <OgreHardwarePixelBuffer.h>
 #include <OgreItem.h>
-#include <OgreRenderTexture.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
-#include <OgreTextureManager.h>
+#include <OgreTextureGpuManager.h>
 #include <OgreViewport.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
@@ -68,30 +66,37 @@ class ignition::rendering::Ogre2SelectionBufferPrivate
   /// \brief Selection buffer's render to texture camera
   public: Ogre::Camera *selectionCamera  = nullptr;
 
-  /// \brief Ogre texture
-  public: Ogre::TexturePtr texture;
-
   /// \brief Ogre render texture
-  // public: Ogre2RenderTexturePtr renderTexture;
-  public: Ogre::RenderTexture *renderTexture = nullptr;
+  public: Ogre::TextureGpu *renderTexture = nullptr;
+
+  /// \brief Ogre compositor manager
+  public: Ogre::CompositorManager2 *ogreCompMgr = nullptr;
+
+  /// \brief selection buffer width
+  public: unsigned int width = 0;
+
+  /// \brief selection buffer height
+  public: unsigned int height = 0;
 
   /// \brief Ogre's compositor workspace - the main interface to render
   /// into a render target or render texture.
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
-
-  /// \brief Render texture data buffer
-  public: uint8_t *buffer = nullptr;
-
-  /// \brief Ogre pixel box that contains description of the data buffer
-  public: Ogre::PixelBox *pixelBox = nullptr;
 };
 
 /////////////////////////////////////////////////
 Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
-    Ogre2ScenePtr _scene): dataPtr(new Ogre2SelectionBufferPrivate)
+    Ogre2ScenePtr _scene, unsigned int _width, unsigned int _height):
+    dataPtr(new Ogre2SelectionBufferPrivate)
 {
   this->dataPtr->scene = _scene;
   this->dataPtr->sceneMgr = _scene->OgreSceneManager();
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  this->dataPtr->ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  this->dataPtr->width = _width;
+  this->dataPtr->height = _height;
 
   this->dataPtr->camera = this->dataPtr->sceneMgr->findCameraNoThrow(
       _cameraName);
@@ -104,6 +109,18 @@ Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
 
   this->dataPtr->selectionCamera =
       this->dataPtr->sceneMgr->createCamera(_cameraName + "_selection_buffer");
+
+  this->dataPtr->selectionCamera->detachFromParent();
+  this->dataPtr->sceneMgr->getRootSceneNode()->attachObject(
+    this->dataPtr->selectionCamera);
+
+  this->dataPtr->selectionCamera->setFOVy(this->dataPtr->camera->getFOVy());
+  this->dataPtr->selectionCamera->setNearClipDistance(
+    this->dataPtr->camera->getNearClipDistance());
+  this->dataPtr->selectionCamera->setFarClipDistance(
+    this->dataPtr->camera->getFarClipDistance());
+  this->dataPtr->selectionCamera->setAspectRatio(
+    this->dataPtr->camera->getAspectRatio());
 
   this->dataPtr->materialSwitcher.reset(
       new Ogre2MaterialSwitcher(this->dataPtr->scene));
@@ -130,12 +147,16 @@ void Ogre2SelectionBuffer::Update()
   this->dataPtr->scene->StartForcedRender();
 
   // manual update
+  // this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
+  // auto engine = Ogre2RenderEngine::Instance();
+  // engine->OgreRoot()->renderOneFrame();
+  // this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
   this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
   this->dataPtr->ogreCompositorWorkspace->_update();
   this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
 
-  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  Ogre::vector<Ogre::TextureGpu*>::type swappedTargets;
   swappedTargets.reserve(2u);
   this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
 
@@ -143,73 +164,86 @@ void Ogre2SelectionBuffer::Update()
 
   this->dataPtr->scene->EndForcedRender();
 
-  this->dataPtr->renderTexture->copyContentsToMemory(*this->dataPtr->pixelBox,
-      Ogre::RenderTarget::FB_FRONT);
+  // this->dataPtr->renderTexture->copyContentsToMemory(*this->dataPtr->pixelBox,
+  //     Ogre::RenderTarget::FB_FRONT);
 }
 
 /////////////////////////////////////////////////
 void Ogre2SelectionBuffer::DeleteRTTBuffer()
 {
-  auto &manager = Ogre::TextureManager::getSingleton();
-  manager.unload(this->dataPtr->texture->getName());
-  manager.remove(this->dataPtr->texture->getName());
-
-  if (this->dataPtr->buffer)
-  {
-    delete [] this->dataPtr->buffer;
-    this->dataPtr->buffer = nullptr;
-  }
-  if (this->dataPtr->pixelBox)
-    delete this->dataPtr->pixelBox;
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
+    this->dataPtr->renderTexture);
+  this->dataPtr->renderTexture = nullptr;
 }
 
 /////////////////////////////////////////////////
 void Ogre2SelectionBuffer::CreateRTTBuffer()
 {
-  // create a 1x1 pixel buffer
-  unsigned int width = 1;
-  unsigned int height = 1;
-  Ogre::PixelFormat format = Ogre::PF_R8G8B8;
-  this->dataPtr->texture = Ogre::TextureManager::getSingleton().createManual(
-        "SelectionPassTex",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        Ogre::TEX_TYPE_2D, width, height, 0, Ogre::PF_R8G8B8,
-        Ogre::TU_RENDERTARGET);
-
-  this->dataPtr->renderTexture =
-      this->dataPtr->texture->getBuffer()->getRenderTarget();
-  this->dataPtr->renderTexture->addListener(
-      this->dataPtr->materialSwitcher.get());
-
-  // create compositor workspace for rendering
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
-  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
+  this->dataPtr->renderTexture =
+      textureMgr->createOrRetrieveTexture(
+        "SelectionPassTex",
+        Ogre::GpuPageOutStrategy::SaveToSystemRam,
+        Ogre::TextureFlags::RenderToTexture,
+        Ogre::TextureTypes::Type2D);
+  this->dataPtr->renderTexture->setResolution(
+    this->dataPtr->width, this->dataPtr->height);
+  this->dataPtr->renderTexture->setNumMipmaps(1u);
+  this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
+
+  this->dataPtr->renderTexture->scheduleTransitionTo(
+    Ogre::GpuResidency::Resident);
+
+  this->dataPtr->selectionCamera->addListener(
+      this->dataPtr->materialSwitcher.get());
+
+  // Setup the selection buffer compositor.
   const Ogre::String workspaceName = "SelectionBufferWorkspace" +
-      this->dataPtr->camera->getName();
-  ogreCompMgr->createBasicWorkspaceDef(workspaceName,
+    this->dataPtr->camera->getName();
+  this->dataPtr->ogreCompMgr->createBasicWorkspaceDef(workspaceName,
       Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f));
   this->dataPtr->ogreCompositorWorkspace =
-      ogreCompMgr->addWorkspace(this->dataPtr->scene->OgreSceneManager(),
-      this->dataPtr->renderTexture,
-      this->dataPtr->selectionCamera, workspaceName, false);
+      this->dataPtr->ogreCompMgr->addWorkspace(
+        this->dataPtr->scene->OgreSceneManager(),
+        this->dataPtr->renderTexture,
+        this->dataPtr->selectionCamera,
+        workspaceName,
+        false);
 
   // set visibility mask to see only items that are selectable
   auto nodeSeq = this->dataPtr->ogreCompositorWorkspace->getNodeSequence();
-  auto pass = nodeSeq[0]->_getPasses()[1]->getDefinition();
+  auto pass = nodeSeq[0]->_getPasses()[0]->getDefinition();
   auto scenePass = dynamic_cast<const Ogre::CompositorPassSceneDef *>(pass);
   const_cast<Ogre::CompositorPassSceneDef *>(scenePass)->mVisibilityMask =
       IGN_VISIBILITY_SELECTABLE;
+}
 
-  // buffer to store render texture data. Ensure it's at least 4 bytes
-  size_t bufferSize = std::max<size_t>(
-      Ogre::PixelUtil::getMemorySize(width, height, 1, format),
-      4u);
-  this->dataPtr->buffer = new uint8_t[bufferSize];
-  memset(this->dataPtr->buffer, 0, 4u);
-  this->dataPtr->pixelBox = new Ogre::PixelBox(width,
-      height, 1, format, this->dataPtr->buffer);
+/////////////////////////////////////////////////
+void Ogre2SelectionBuffer::SetDimensions(
+  unsigned int _width, unsigned int _height)
+{
+  if (this->dataPtr->width == _width && this->dataPtr->height == _height)
+    return;
+
+  this->dataPtr->width = _width;
+  this->dataPtr->height = _height;
+
+  DeleteRTTBuffer();
+
+  if (this->dataPtr->ogreCompositorWorkspace)
+  {
+    // TODO(ahcorde): Remove the workspace. Potential leak here
+    this->dataPtr->ogreCompMgr->removeWorkspace(
+        this->dataPtr->ogreCompositorWorkspace);
+  }
+
+  CreateRTTBuffer();
 }
 
 /////////////////////////////////////////////////
@@ -221,68 +255,25 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
   if (!this->dataPtr->camera)
     return nullptr;
 
-  Ogre::Viewport *vp = this->dataPtr->camera->getLastViewport();
-
-  if (!vp)
-    return nullptr;
-
-  Ogre::RenderTarget *rt = vp->getTarget();
-
-  if (!rt)
-    return nullptr;
-
-  const unsigned int targetWidth = rt->getWidth();
-  const unsigned int targetHeight = rt->getHeight();
-
-  if (_x < 0 || _y < 0 || _x >= static_cast<int>(targetWidth)
-      || _y >= static_cast<int>(targetHeight))
-    return nullptr;
-
-  // 1x1 selection buffer, adapted from rviz
-  // http://docs.ros.org/indigo/api/rviz/html/c++/selection__manager_8cpp.html
-  unsigned int width = 1;
-  unsigned int height = 1;
-  float x1 = static_cast<float>(_x) /
-      static_cast<float>(targetWidth - 1) - 0.5f;
-  float y1 = static_cast<float>(_y) /
-      static_cast<float>(targetHeight - 1) - 0.5f;
-  float x2 = static_cast<float>(_x+width) /
-      static_cast<float>(targetWidth - 1) - 0.5f;
-  float y2 = static_cast<float>(_y+height) /
-      static_cast<float>(targetHeight - 1) - 0.5f;
-  Ogre::Matrix4 scaleMatrix = Ogre::Matrix4::IDENTITY;
-  Ogre::Matrix4 transMatrix = Ogre::Matrix4::IDENTITY;
-  scaleMatrix[0][0] = 1.0 / (x2-x1);
-  scaleMatrix[1][1] = 1.0 / (y2-y1);
-  transMatrix[0][3] -= x1+x2;
-  transMatrix[1][3] += y1+y2;
-  this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
-      scaleMatrix * transMatrix * this->dataPtr->camera->getProjectionMatrix());
   this->dataPtr->selectionCamera->setPosition(
       this->dataPtr->camera->getDerivedPosition());
   this->dataPtr->selectionCamera->setOrientation(
       this->dataPtr->camera->getDerivedOrientation());
-  Ogre::Viewport* renderViewport =
-      this->dataPtr->renderTexture->getViewport(0);
-  renderViewport->setDimensions(0, 0, width, height);
 
   // update render texture
   this->Update();
 
-  size_t posInStream = 0;
-  ignition::math::Color::BGRA color(0);
-  if (!this->dataPtr->buffer)
-  {
-    ignerr << "Selection buffer is null." << std::endl;
-    return nullptr;
-  }
-  memcpy(static_cast<void *>(&color), this->dataPtr->buffer + posInStream, 4);
-  ignition::math::Color cv;
-  cv.SetFromARGB(color);
-  cv.A(1.0);
-  const std::string &entName =
-    this->dataPtr->materialSwitcher->EntityName(cv);
+  Ogre::Image2 image;
+  image.convertFromTexture(this->dataPtr->renderTexture, 0, 0);
 
+  Ogre::ColourValue colorValue = image.getColourAt(_x, _y, 0, 0);
+  ignition::math::Color cv(
+    colorValue.r,
+    colorValue.g,
+    colorValue.b);
+
+  cv.A(1.0);
+  const std::string &entName = this->dataPtr->materialSwitcher->EntityName(cv);
   if (entName.empty())
   {
     return 0;

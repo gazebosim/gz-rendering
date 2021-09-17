@@ -83,7 +83,7 @@ namespace ignition
 
       public: virtual std::string Texture() const;
 
-      public: virtual void SetTexture(const std::string &_name);
+      public: virtual void SetTexture(const std::string &_texture);
 
       public: virtual void ClearTexture();
 
@@ -91,7 +91,7 @@ namespace ignition
 
       public: virtual std::string NormalMap() const;
 
-      public: virtual void SetNormalMap(const std::string &_name);
+      public: virtual void SetNormalMap(const std::string &_normalMap);
 
       public: virtual void ClearNormalMap();
 

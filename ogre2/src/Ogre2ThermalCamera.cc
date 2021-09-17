@@ -23,6 +23,15 @@
   #include <windows.h>
 #endif
 
+#ifdef __APPLE__
+  #define GL_SILENCE_DEPRECATION
+  #include <OpenGL/gl.h>
+#else
+#ifndef _WIN32
+  #include <GL/gl.h>
+#endif
+#endif
+
 #include <math.h>
 
 #include <algorithm>
@@ -57,6 +66,8 @@
 #include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
+#include <ignition/common/Image.hh>
+
 namespace ignition
 {
 namespace rendering
@@ -65,7 +76,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 //
 /// \brief Helper class for switching the ogre item's material to heat source
 /// material when a thermal camera is being rendered.
-class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
+class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
 {
   /// \brief constructor
   /// \param[in] _scene the scene manager responsible for rendering
@@ -84,17 +95,15 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
   /// \param[in] _resolution Temperature linear resolution
   public: void SetLinearResolution(double _resolution);
 
-  /// \brief Callback when a render target is about to be rendered
-  /// \param[in] _evt Ogre render target event containing information about
-  /// the source render target.
-  private: virtual void preRenderTargetUpdate(
-      const Ogre::RenderTargetEvent &_evt) override;
+  /// \brief Callback when a camara is about to be rendered
+  /// \param[in] _cam Ogre camera pointer which is about to render
+  private: virtual void cameraPreRenderScene(
+    Ogre::Camera * _cam) override;
 
-  /// \brief Callback when a render target is finisned being rendered
-  /// \param[in] _evt Ogre render target event containing information about
-  /// the source render target.
-  private: virtual void postRenderTargetUpdate(
-      const Ogre::RenderTargetEvent &_evt) override;
+  /// \brief Callback when a camera is finisned being rendered
+  /// \param[in] _cam Ogre camera pointer which has already render
+  private: virtual void cameraPostRenderScene(
+    Ogre::Camera * _cam) override;
 
   /// \brief Scene manager
   private: Ogre2ScenePtr scene = nullptr;
@@ -147,9 +156,6 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener
 /// \brief Private data for the Ogre2ThermalCamera class
 class ignition::rendering::Ogre2ThermalCameraPrivate
 {
-  /// \brief The thermal buffer
-  public: unsigned char *thermalBuffer = nullptr;
-
   /// \brief Outgoing thermal data, used by newThermalFrame event.
   public: uint16_t *thermalImage = nullptr;
 
@@ -169,7 +175,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace;
 
   /// \brief Thermal textures.
-  public: Ogre::TexturePtr ogreThermalTexture;
+  public: Ogre::TextureGpu *ogreThermalTexture;
 
   /// \brief Dummy render texture for the thermal data
   public: RenderTexturePtr thermalTexture = nullptr;
@@ -230,8 +236,8 @@ void Ogre2ThermalCameraMaterialSwitcher::SetLinearResolution(double _resolution)
   this->resolution = _resolution;
 }
 //////////////////////////////////////////////////
-void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
-    const Ogre::RenderTargetEvent & /*_evt*/)
+void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
+    Ogre::Camera * /*_cam*/)
 {
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
@@ -421,8 +427,8 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
 }
 
 //////////////////////////////////////////////////
-void Ogre2ThermalCameraMaterialSwitcher::postRenderTargetUpdate(
-    const Ogre::RenderTargetEvent & /*_evt*/)
+void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
+    Ogre::Camera * /*_cam*/)
 {
   // restore item to use pbs hlms material
   for (auto it : this->datablockMap)
@@ -462,12 +468,9 @@ void Ogre2ThermalCamera::Init()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::Destroy()
 {
-  if (this->dataPtr->thermalBuffer)
-  {
-    delete [] this->dataPtr->thermalBuffer;
-    this->dataPtr->thermalBuffer = nullptr;
-  }
 
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
   if (this->dataPtr->thermalImage)
   {
     delete [] this->dataPtr->thermalImage;
@@ -477,15 +480,14 @@ void Ogre2ThermalCamera::Destroy()
   if (!this->ogreCamera)
     return;
 
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
   // remove thermal texture, material, compositor
   if (this->dataPtr->ogreThermalTexture)
   {
-    Ogre::TextureManager::getSingleton().remove(
-        this->dataPtr->ogreThermalTexture->getName());
+    ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
+      this->dataPtr->ogreThermalTexture);
+    this->dataPtr->ogreThermalTexture = nullptr;
   }
   if (this->dataPtr->ogreCompositorWorkspace)
   {
@@ -597,15 +599,15 @@ void Ogre2ThermalCamera::CreateThermalTexture()
 
   // only support 8 bit and 16 bit formats for now.
   // default to 16 bit
-  Ogre::PixelFormat ogrePF;
+  Ogre::PixelFormatGpu ogrePF;
   if (this->ImageFormat() == PF_L8)
   {
-    ogrePF = Ogre::PF_L8;
+    ogrePF = Ogre::PFG_R8_UNORM;
   }
   else
   {
     this->SetImageFormat(PF_L16);
-    ogrePF = Ogre::PF_L16;
+    ogrePF = Ogre::PFG_R16_UNORM;
   }
 
   PixelFormat format = this->ImageFormat();
@@ -656,8 +658,8 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   // compositor_node ThermalCamera
   // {
   //   in 0 rt_input
-  //   texture depthTexture target_width target_height PF_D32_FLOAT
-  //   texture colorTexture target_width target_height PF_R8G8B8A8
+  //   texture depthTexture target_width target_height PFG_D32_FLOAT
+  //   texture colorTexture target_width target_height PFG_RGBA8_UNORM
   //   target colorTexture
   //   {
   //     pass clear
@@ -697,57 +699,54 @@ void Ogre2ThermalCamera::CreateThermalTexture()
         Ogre::TextureDefinitionBase::TEXTURE_INPUT);
     Ogre::TextureDefinitionBase::TextureDefinition *thermalTexDef =
         nodeDef->addTextureDefinition("depthTexture");
-    thermalTexDef->textureType = Ogre::TEX_TYPE_2D;
+    thermalTexDef->textureType = Ogre::TextureTypes::Type2D;
     thermalTexDef->width = 0;
     thermalTexDef->height = 0;
-    thermalTexDef->depth = 1;
+    thermalTexDef->depthOrSlices = 1;
     thermalTexDef->numMipmaps = 0;
     thermalTexDef->widthFactor = 1;
     thermalTexDef->heightFactor = 1;
-    thermalTexDef->formatList = {Ogre::PF_D32_FLOAT};
-    thermalTexDef->fsaa = 0;
-    thermalTexDef->uav = false;
-    thermalTexDef->automipmaps = false;
-    thermalTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    thermalTexDef->format = Ogre::PFG_D32_FLOAT;
+    thermalTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     // set to default pool so that when the colorTexture pass is rendered, its
     // depth data get populated to depthTexture
     thermalTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
-    thermalTexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
-    thermalTexDef->fsaaExplicitResolve = false;
+    thermalTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
+
+    Ogre::RenderTargetViewDef *rtv =
+      nodeDef->addRenderTextureView("depthTexture");
+    rtv->setForTextureDefinition("depthTexture", thermalTexDef);
 
     Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
         nodeDef->addTextureDefinition("colorTexture");
-    colorTexDef->textureType = Ogre::TEX_TYPE_2D;
+    colorTexDef->textureType = Ogre::TextureTypes::Type2D;
     colorTexDef->width = 0;
     colorTexDef->height = 0;
-    colorTexDef->depth = 1;
+    colorTexDef->depthOrSlices = 1;
     colorTexDef->numMipmaps = 0;
     colorTexDef->widthFactor = 1;
     colorTexDef->heightFactor = 1;
-    colorTexDef->formatList = {Ogre::PF_R8G8B8A8};
-    colorTexDef->fsaa = 0;
-    colorTexDef->uav = false;
-    colorTexDef->automipmaps = false;
-    colorTexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolFalse;
+    colorTexDef->format = Ogre::PFG_RGBA8_UNORM;
+    colorTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
     colorTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
-    colorTexDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+    colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
     colorTexDef->preferDepthTexture = true;
-    colorTexDef->fsaaExplicitResolve = false;
+
+    Ogre::RenderTargetViewDef *rtv2 =
+      nodeDef->addRenderTextureView("colorTexture");
+    rtv2->setForTextureDefinition("colorTexture", colorTexDef);
 
     nodeDef->setNumTargetPass(2);
     Ogre::CompositorTargetDef *colorTargetDef =
         nodeDef->addTargetPass("colorTexture");
-    colorTargetDef->setNumPasses(2);
+    colorTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          colorTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(0, 0, 0);
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
           colorTargetDef->addPass(Ogre::PASS_SCENE));
+      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+      passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // thermal camera should not see particles
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
@@ -756,20 +755,18 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     // rt_input target - converts to thermal
     Ogre::CompositorTargetDef *inputTargetDef =
         nodeDef->addTargetPass("rt_input");
-    inputTargetDef->setNumPasses(2);
+    inputTargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          inputTargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = Ogre::ColourValue(this->ambient, 0, 1.0);
       // quad pass
       Ogre::CompositorPassQuadDef *passQuad =
           static_cast<Ogre::CompositorPassQuadDef *>(
           inputTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+      passQuad->setAllClearColours(Ogre::ColourValue(this->ambient, 0, 1.0));
+
       passQuad->mMaterialName = this->dataPtr->thermalMaterial->getName();
-      passQuad->addQuadTextureSource(0, "depthTexture", 0);
-      passQuad->addQuadTextureSource(1, "colorTexture", 0);
+      passQuad->addQuadTextureSource(0, "depthTexture");
+      passQuad->addQuadTextureSource(1, "colorTexture");
       passQuad->mFrustumCorners =
           Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
     }
@@ -787,37 +784,49 @@ void Ogre2ThermalCamera::CreateThermalTexture()
            << " for " << this->Name();
   }
 
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
   // create render texture - these textures pack the thermal data
   this->dataPtr->ogreThermalTexture =
-    Ogre::TextureManager::getSingleton().createManual(
-    this->Name() + "_thermal", "General", Ogre::TEX_TYPE_2D,
-    this->ImageWidth(), this->ImageHeight(), 1, 0,
-    ogrePF, Ogre::TU_RENDERTARGET,
-    0, false, 0, Ogre::BLANKSTRING, false, true);
+    textureMgr->createOrRetrieveTexture(this->Name() + "_thermal",
+      Ogre::GpuPageOutStrategy::SaveToSystemRam,
+      Ogre::TextureFlags::RenderToTexture,
+      Ogre::TextureTypes::Type2D);
 
-  Ogre::RenderTarget *rt =
-    this->dataPtr->ogreThermalTexture->getBuffer()->getRenderTarget();
+  this->dataPtr->ogreThermalTexture->setResolution(
+    this->ImageWidth(), this->ImageHeight());
+  this->dataPtr->ogreThermalTexture->setNumMipmaps(1u);
+  this->dataPtr->ogreThermalTexture->setPixelFormat(
+    ogrePF);
+
+  this->dataPtr->ogreThermalTexture->scheduleTransitionTo(
+    Ogre::GpuResidency::Resident);
 
   // create compositor worksspace
   this->dataPtr->ogreCompositorWorkspace =
-      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      rt, this->ogreCamera, wsDefName, false);
+      ogreCompMgr->addWorkspace(
+        this->scene->OgreSceneManager(),
+        this->dataPtr->ogreThermalTexture,
+        this->ogreCamera,
+        wsDefName,
+        false);
 
-  // add thermal material swticher to render target listener
+  // add thermal material switcher to render target listener
   // so we can switch to use heat material when the camera is being udpated
   Ogre::CompositorNode *node =
       this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
   auto channels = node->getLocalTextures();
   for (auto c : channels)
   {
-    if (c.textures[0]->getSrcFormat() == Ogre::PF_R8G8B8A8)
+    if (c->getPixelFormat() == Ogre::PFG_RGBA8_UNORM)
     {
       this->dataPtr->thermalMaterialSwitcher.reset(
           new Ogre2ThermalCameraMaterialSwitcher(this->scene, this->Name()));
       this->dataPtr->thermalMaterialSwitcher->SetFormat(this->ImageFormat());
       this->dataPtr->thermalMaterialSwitcher->SetLinearResolution(
           this->resolution);
-      c.target->addListener(this->dataPtr->thermalMaterialSwitcher.get());
+      this->ogreCamera->addListener(
+        this->dataPtr->thermalMaterialSwitcher.get());
       break;
     }
   }
@@ -826,6 +835,12 @@ void Ogre2ThermalCamera::CreateThermalTexture()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::Render()
 {
+  // GL_DEPTH_CLAMP is disabled in later version of ogre2.2
+  // however our shaders rely on clamped values so enable it for this sensor
+#ifndef _WIN32
+  glEnable(GL_DEPTH_CLAMP);
+#endif
+
   // update the compositors
   this->scene->StartRendering();
 
@@ -834,11 +849,15 @@ void Ogre2ThermalCamera::Render()
   this->dataPtr->ogreCompositorWorkspace->_update();
   this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
 
-  Ogre::vector<Ogre::RenderTarget*>::type swappedTargets;
+  Ogre::vector<Ogre::TextureGpu*>::type swappedTargets;
   swappedTargets.reserve(2u);
   this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
 
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
+
+#ifndef _WIN32
+  glDisable(GL_DEPTH_CLAMP);
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -857,50 +876,49 @@ void Ogre2ThermalCamera::PostRender()
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();
   PixelFormat format = this->ImageFormat();
-  Ogre::PixelFormat imageFormat = Ogre2Conversions::Convert(format);
 
   int len = width * height;
   unsigned int channelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
-  if (!this->dataPtr->thermalBuffer)
-  {
-    this->dataPtr->thermalBuffer =
-        new unsigned char[len * channelCount * bytesPerChannel];
-  }
-  Ogre::PixelBox dstBox(width, height,
-        1, imageFormat, this->dataPtr->thermalBuffer);
-
-  // blit data from gpu to cpu
-  auto rt = this->dataPtr->ogreThermalTexture->getBuffer()->getRenderTarget();
-  rt->copyContentsToMemory(dstBox, Ogre::RenderTarget::FB_FRONT);
+  Ogre::Image2 image;
+  image.convertFromTexture(this->dataPtr->ogreThermalTexture, 0u, 0u);
 
   if (!this->dataPtr->thermalImage)
   {
     this->dataPtr->thermalImage = new uint16_t[len];
   }
 
+  Ogre::TextureBox box = image.getData(0u);
   if (format == PF_L8)
   {
-    // workaround for populating a 16bit image buffer with 8bit data
-    // \todo(anyone) add a new ConnectNewThermalFrame function that accepts
-    // a generic unsigned char array instead of uint16_t so we can do a direct
-    // memcpy of the data
+    uint8_t *thermalBuffer = static_cast<uint8_t*>(box.data);
     for (unsigned int i = 0u; i < height; ++i)
     {
+      // the texture box step size could be larger than our image buffer step
+      // size
+      unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
       for (unsigned int j = 0u; j < width; ++j)
       {
         unsigned int idx = (i * width) + j;
-        this->dataPtr->thermalImage[idx] = static_cast<uint16_t>(
-            this->dataPtr->thermalBuffer[idx]);
+        this->dataPtr->thermalImage[idx] = thermalBuffer[rawDataRowIdx + j];
       }
     }
   }
   else
   {
     // fill thermal data
-    memcpy(this->dataPtr->thermalImage, this->dataPtr->thermalBuffer,
-        height * width * channelCount * bytesPerChannel);
+    // copy data row by row. The texture box may not be a contiguous region of
+    // a texture
+    uint16_t * thermalBuffer = static_cast<uint16_t *>(box.data);
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
+      unsigned int rowIdx = i * width * channelCount;
+      memcpy(&this->dataPtr->thermalImage[rowIdx],
+          &thermalBuffer[rawDataRowIdx],
+          width * channelCount * bytesPerChannel);
+    }
   }
 
   this->dataPtr->newThermalFrame(

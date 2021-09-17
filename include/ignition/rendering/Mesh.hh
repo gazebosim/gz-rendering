@@ -139,13 +139,13 @@ namespace ignition
       /// \param[in] _name Name of registered Material
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Set the materials of this SubMesh
       /// \param[in] _material New Material to be assigned
       /// \param[in] _unique True if the given material should be cloned
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
     };
     }
   }

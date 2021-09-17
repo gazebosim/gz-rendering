@@ -10,25 +10,6 @@ LuxCoreEngineScene::LuxCoreEngineScene(unsigned int _id, const std::string &_nam
   this->id_ = _id;
   this->name_ = _name;
 
-  luxcore::Init(
-    // LogHandler
-  );
-
-  sceneLux = luxcore::Scene::Create();
-  sceneLux->Parse(
-      luxrays::Property("scene.camera.lookat.orig")(1.f , 6.f , 3.f) <<
-		  luxrays::Property("scene.camera.lookat.target")(0.f , 0.f , .5f) <<
-		  luxrays::Property("scene.camera.fieldofview")(60.f));
-
-  sceneLux->Parse(
-		  luxrays::Property("scene.lights.skyl.type")("sky2") <<
-		  luxrays::Property("scene.lights.skyl.dir")(0.166974f, 0.59908f, 0.783085f) <<
-		  luxrays::Property("scene.lights.skyl.turbidity")(2.2f) <<
-		  luxrays::Property("scene.lights.skyl.gain")(0.8f, 0.8f, 0.8f) <<
-		  luxrays::Property("scene.lights.sunl.type")("sun") <<
-		  luxrays::Property("scene.lights.sunl.dir")(0.166974f, 0.59908f, 0.783085f) <<
-		  luxrays::Property("scene.lights.sunl.turbidity")(2.2f) <<
-		  luxrays::Property("scene.lights.sunl.gain")(0.8f, 0.8f, 0.8f));
 }
 
 LuxCoreEngineScene::~LuxCoreEngineScene() {}
@@ -60,7 +41,9 @@ void LuxCoreEngineScene::SetAmbientLight(const math::Color &_color)
 DirectionalLightPtr LuxCoreEngineScene::CreateDirectionalLightImpl(
                  unsigned int _id, const std::string &_name) 
 {
-  return nullptr;
+  LuxCoreEngineDirectionalLightPtr light(new LuxCoreEngineDirectionalLight);
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
 }
 
 PointLightPtr LuxCoreEngineScene::CreatePointLightImpl(unsigned int _id,
@@ -251,13 +234,31 @@ MaterialMapPtr LuxCoreEngineScene::Materials() const
 
 bool LuxCoreEngineScene::LoadImpl()
 {
-  ignerr << "LoadImpl" << std::endl;
   return true;
 }
 
 bool LuxCoreEngineScene::InitImpl()
-{
-  ignerr << "InitImpl" << std::endl;
+{  
+  luxcore::Init(
+    LogHandler
+  );
+
+  sceneLux = luxcore::Scene::Create();
+  sceneLux->Parse(
+      luxrays::Property("scene.camera.lookat.orig")(1.f , 6.f , 3.f) <<
+		  luxrays::Property("scene.camera.lookat.target")(0.f , 0.f , .5f) <<
+		  luxrays::Property("scene.camera.fieldofview")(60.f));
+
+  sceneLux->Parse(
+		  luxrays::Property("scene.lights.skyl.type")("sky2") <<
+		  luxrays::Property("scene.lights.skyl.dir")(0.166974f, 0.59908f, 0.783085f) <<
+		  luxrays::Property("scene.lights.skyl.turbidity")(2.2f) <<
+		  luxrays::Property("scene.lights.skyl.gain")(0.8f, 0.8f, 0.8f) <<
+		  luxrays::Property("scene.lights.sunl.type")("sun") <<
+		  luxrays::Property("scene.lights.sunl.dir")(0.166974f, 0.59908f, 0.783085f) <<
+		  luxrays::Property("scene.lights.sunl.turbidity")(2.2f) <<
+		  luxrays::Property("scene.lights.sunl.gain")(0.8f, 0.8f, 0.8f));
+  
   this->CreateStores();
   this->CreateMeshFactory();
   return true;
@@ -292,7 +293,7 @@ void LuxCoreEngineScene::CreateMeshFactory()
 
 void LuxCoreEngineScene::CreateStores()
 {
-  // this->lights = LuxCoreEngineLightStorePtr(new LuxCoreEngineLightStore);
+  this->lights = LuxCoreEngineLightStorePtr(new LuxCoreEngineLightStore);
   this->sensors = LuxCoreEngineSensorStorePtr(new LuxCoreEngineSensorStore);
   this->visuals = LuxCoreEngineVisualStorePtr(new LuxCoreEngineVisualStore);
   this->materials = LuxCoreEngineMaterialMapPtr(new LuxCoreEngineMaterialMap);

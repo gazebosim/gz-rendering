@@ -21,6 +21,7 @@ add_library(LuxCoreEngine SHARED
   LuxCoreEngineMesh.cc
   LuxCoreEngineMeshFactory.cc
   LuxCoreEngineScene.cc
+  LuxCoreEngineLight.cc
   LuxCoreEngine.cc)
 
 target_link_libraries(LuxCoreEngine

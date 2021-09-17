@@ -21,6 +21,7 @@
 #include <ignition/common/Console.hh>
 
 #include <ignition/math/Color.hh>
+#include <ignition/math/Vector4.hh>
 #include <ignition/math/eigen3/Util.hh>
 #include <ignition/math/OrientedBox.hh>
 
@@ -168,6 +169,72 @@ class ignition::rendering::Ogre2BoundingBoxCameraPrivate
 
   /// \brief Bounding Box type
   public: BoundingBoxType type {BoundingBoxType::BBT_VISIBLEBOX2D};
+
+  /// \brief Alias variable that's used in the ClipToViewPort and
+  /// LocationRelativeToViewPort methods.
+  /// Binary representation of 0000
+  private: const int kInside = 0;
+
+  /// \brief Alias variable that's used in the ClipToViewPort and
+  /// LocationRelativeToViewPort methods.
+  /// Binary representation of 0001
+  private: const int kLeft = 1;
+
+  /// \brief Alias variable that's used in the ClipToViewPort and
+  /// LocationRelativeToViewPort methods.
+  /// Binary representation of 0010
+  private: const int kRight = 2;
+
+  /// \brief Alias variable that's used in the ClipToViewPort and
+  /// LocationRelativeToViewPort methods.
+  /// Binary representation of 0100
+  private: const int kBottom = 4;
+
+  /// \brief Alias variable that's used in the ClipToViewPort and
+  /// LocationRelativeToViewPort methods.
+  /// Binary representation of 1000
+  private: const int kTop = 8;
+
+  /// \brief Add a line to the viewport. If the line's endpoints are not inside
+  /// the viewport, the added line will be a clipped line that fits in the
+  /// viewport. If the line to be added doesn't intersect the viewport at all,
+  /// the line won't be saved to _lines
+  /// \param[in] _bounds The bounds of the viewport. Order of the vector should
+  /// be: xmin, ymin, xmax, ymax
+  /// \param[in] _p0 The line's first endpoint
+  /// \param[in] _p1 The line's second endpoint
+  /// \param[out] _lines The list of lines in the viewport. The line
+  /// computed from _p0 and _p1 will be added to this list
+  public: void AddToViewportLines(const math::Vector4d &_bounds,
+              const math::Vector2d &_p0, const math::Vector2d &_p1,
+              std::vector<math::Vector2d> &_lines) const;
+
+  /// \brief Clip a line to be within the bounds of a viewport. Using:
+  /// https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm
+  /// \param[in] _bounds The bounds of the viewport. Order of the vector should
+  /// be: xmin, ymin, xmax, ymax
+  /// \param[in] _p0 The line's first endpoint
+  /// \param[in] _p1 The line's second endpoint
+  /// \return The new endpoints for the clipped line in the viewport. The first
+  /// point in the pair is the clipped point for _p0, and the second
+  /// point in the pair is the clipped point for _p1
+  private: std::pair<math::Vector2d, math::Vector2d> ClipToViewPort(
+              const math::Vector4d &_bounds, const math::Vector2d &_p0,
+              const math::Vector2d &_p1) const;
+
+  /// \brief Determine where a point is relative to the viewport
+  /// \param[in] _bounds The bounds of the viewport. Order of the vector should
+  /// be: xmin, ymin, xmax, ymax
+  /// \param[in] _x The x coordinate of the point
+  /// \param[in] _y The y coordinate of the point
+  /// \return The location, which is a bitwise combination of the following:
+  ///   INSIDE = 0 (0000)
+  ///   LEFT   = 1 (0001)
+  ///   RIGHT  = 2 (0010)
+  ///   BOTTOM = 4 (0100)
+  ///   TOP    = 8 (1000)
+  private: int LocationRelativeToViewPort(const math::Vector4d &_bounds,
+               double _x, double _y) const;
 };
 
 /////////////////////////////////////////////////
@@ -311,6 +378,160 @@ void Ogre2BoundingBoxMaterialSwitcher::cameraPostRenderScene(
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);
   }
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::AddToViewportLines(
+    const math::Vector4d &_bounds, const math::Vector2d &_p0,
+    const math::Vector2d &_p1, std::vector<math::Vector2d> &_lines) const
+{
+  auto endpoints = this->ClipToViewPort(_bounds, _p0, _p1);
+  if (endpoints.first != math::Vector2d::NaN &&
+      endpoints.second != math::Vector2d::NaN)
+  {
+    _lines.push_back(endpoints.first);
+    _lines.push_back(endpoints.second);
+  }
+}
+
+/////////////////////////////////////////////////
+std::pair<math::Vector2d, math::Vector2d>
+Ogre2BoundingBoxCameraPrivate::ClipToViewPort(const math::Vector4d &_bounds,
+    const math::Vector2d &_p0, const math::Vector2d &_p1) const
+{
+  const auto xmin = _bounds[0];
+  const auto ymin = _bounds[1];
+  const auto xmax = _bounds[2];
+  const auto ymax = _bounds[3];
+
+  auto x0 = _p0.X();
+  auto y0 = _p0.Y();
+  auto x1 = _p1.X();
+  auto y1 = _p1.Y();
+
+  auto location0 = this->LocationRelativeToViewPort(_bounds, x0, y0);
+  auto location1 = this->LocationRelativeToViewPort(_bounds, x1, y1);
+  bool accept = false;
+
+  while (true)
+  {
+    if (!(location0 | location1))
+    {
+      // bitwise OR is 0, which means both endpoints are in the bounds
+      accept = true;
+      break;
+    }
+    else if (location0 & location1)
+    {
+      // bitwise AND is not 0, which means that both points share a zone
+      // outside (left, right, top, bottom) of the window. This means that the
+      // line formed by these points does not appear in the window formed by the
+      // bounds. Reject this line
+      break;
+    }
+    else
+    {
+      // calculate the line segment to clip from an outside point to an
+      // intersection with clip edge
+      double x = 0.0;
+      double y = 0.0;
+
+      // at least one endpoint is outside the clip rectangle; pick it
+      int outerLocation = location1 > location0 ? location1 : location0;
+
+      // Find the intersection point. Use formulas:
+      //    slope = (y1 - y0) / (x1 - x0)
+      //    x = x0 + (1 / slope) * (ym - y0), where ym is ymin or ymax
+      //    y = y0 + slope * (xm - x0), where xm is xmin or xmax
+      // Divide by zero wont happen because in each case, outerLocation bit
+      // being tested guarantees the denominator is non-zero
+      if (outerLocation & this->kTop)
+      {
+        // point is above clip window
+        x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0);
+        y = ymax;
+      }
+      else if (outerLocation & this->kBottom)
+      {
+        // point is below clip window
+        x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0);
+        y = ymin;
+      }
+      else if (outerLocation & this->kRight)
+      {
+        // point is to the right of clip window
+        y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0);
+        x = xmax;
+      }
+      else if (outerLocation & this->kLeft)
+      {
+        // point is to the left of clip window
+        y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0);
+        x = xmin;
+      }
+      else
+      {
+        ignerr << "Internal error: no point was found outside of the clip "
+               << "window\n";
+        break;
+      }
+
+      // update the outside point to the intersection point
+      if (outerLocation == location0)
+      {
+        x0 = x;
+        y0 = y;
+        location0 = this->LocationRelativeToViewPort(_bounds, x0, y0);
+      }
+      else
+      {
+        x1 = x;
+        y1 = y;
+        location1 = this->LocationRelativeToViewPort(_bounds, x1, y1);
+      }
+    }
+  }
+
+  if (accept)
+    return {math::Vector2d(x0, y0), math::Vector2d(x1, y1)};
+
+  return {math::Vector2d::NaN, math::Vector2d::NaN};
+}
+
+/////////////////////////////////////////////////
+int Ogre2BoundingBoxCameraPrivate::LocationRelativeToViewPort(
+    const math::Vector4d &_bounds, double _x, double _y) const
+{
+  // Relative location is a bitwise combination of:
+  //   inside = 0 (0000)
+  //   left   = 1 (0001)
+  //   right  = 2 (0010)
+  //   bottom = 4 (0100)
+  //   top    = 8 (1000)
+
+  const auto xmin = _bounds[0];
+  const auto ymin = _bounds[1];
+  const auto xmax = _bounds[2];
+  const auto ymax = _bounds[3];
+
+  // initialize the point as being inside the bounds
+  int relativeLocation = this->kInside;
+
+  // to the left
+  if (_x < xmin)
+    relativeLocation |= this->kLeft;
+  // to the right
+  else if (_x > xmax)
+    relativeLocation |= this->kRight;
+
+  // below
+  if (_y < ymin)
+    relativeLocation |= this->kBottom;
+  // above
+  else if (_y > ymax)
+    relativeLocation |= this->kTop;
+
+  return relativeLocation;
 }
 
 /////////////////////////////////////////////////
@@ -1267,9 +1488,9 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
     // Get the 3D vertices of the box in 3D camera coord.
     auto vertices = _box.Vertices();
 
-    // Project the 3D vertices in 3D camera coord
-    // to 2D vertices in clip coord[-1,1]
+    // Project the 3D vertices in 3D camera coord to 2D vertices in clip coord
     auto projMatrix = this->ogreCamera->getProjectionMatrix();
+    std::vector<math::Vector2d> vertices2d;
     for (auto &vertex : vertices)
     {
       // Convert to homogeneous coord.
@@ -1280,20 +1501,59 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
       projVertex.x /= projVertex.w;
       projVertex.y /= projVertex.w;
 
-      vertex = math::Vector3d(projVertex.x, projVertex.y, projVertex.z);
+      vertices2d.push_back({projVertex.x, projVertex.y});
     }
 
-    std::vector<math::Vector2i> projVertices;
+    // clip the values outside the frustum range [-1, 1]
+    /*
+
+        1 -------- 0
+        /|         /|
+      2 -------- 3 .
+      | |        | |
+      . 5 -------- 4
+      |/         |/
+      6 -------- 7
+
+    */
+
+    std::vector<math::Vector2d> clippedVertices;
+    const math::Vector4d box(-1.0, -1.0, 1.0, 1.0);
+    // top
+    this->dataPtr->AddToViewportLines(box, vertices2d[0], vertices2d[1],
+        clippedVertices);
+    this->dataPtr->AddToViewportLines(box, vertices2d[1], vertices2d[2],
+        clippedVertices);
+    this->dataPtr->AddToViewportLines(box, vertices2d[2], vertices2d[3],
+        clippedVertices);
+    this->dataPtr->AddToViewportLines(box, vertices2d[3], vertices2d[0],
+        clippedVertices);
+    // bottom
+    this->dataPtr->AddToViewportLines(box, vertices2d[4], vertices2d[5],
+        clippedVertices);
+    this->dataPtr->AddToViewportLines(box, vertices2d[5], vertices2d[6],
+        clippedVertices);
+    this->dataPtr->AddToViewportLines(box, vertices2d[6], vertices2d[7],
+        clippedVertices);
+    this->dataPtr->AddToViewportLines(box, vertices2d[7], vertices2d[4],
+        clippedVertices);
+    // pillars
+    this->dataPtr->AddToViewportLines(box, vertices2d[0], vertices2d[4],
+        clippedVertices);
+    this->dataPtr->AddToViewportLines(box, vertices2d[1], vertices2d[5],
+        clippedVertices);
+    this->dataPtr->AddToViewportLines(box, vertices2d[2], vertices2d[6],
+        clippedVertices);
+    this->dataPtr->AddToViewportLines(box, vertices2d[3], vertices2d[7],
+        clippedVertices);
 
     // Convert To screen coord.
     uint32_t width = this->ImageWidth();
     uint32_t height = this->ImageHeight();
-    for (auto &vertex : vertices)
-    {
-      // clip the values outside the frustum range [-1, 1]
-      vertex.X() = std::clamp<double>(vertex.X(), -1.0, 1.0);
-      vertex.Y() = std::clamp<double>(vertex.Y(), -1.0, 1.0);
 
+    std::vector<math::Vector2i> projVertices;
+    for (auto &vertex : clippedVertices)
+    {
       // convert from [-1, 1] range to [0, 1] range & to the screen range
       vertex.X() = uint32_t((vertex.X() + 1.0) / 2 * width );
       vertex.Y() = uint32_t((1.0 - vertex.Y()) / 2 * height);
@@ -1306,45 +1566,8 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
       projVertices.push_back(math::Vector2i(vertex.X(), vertex.Y()));
     }
 
-    // // Uncomment to debug the projected 2D points of the 3D box
-    // for (auto &vertex : vertices)
-    // {
-    //   auto index = static_cast<uint32_t>(
-    //     (vertex.Y() * width + vertex.X()) * 3);
-    //   _data[index] = 0;
-    //   _data[index + 1] = 255;
-    //   _data[index + 2] = 0;
-    // }
-    // return;
-
-    /* Draw every line in the 3D box according to that structure
-
-        1 -------- 0
-        /|         /|
-      2 -------- 3 .
-      | |        | |
-      . 5 -------- 4
-      |/         |/
-      6 -------- 7
-    */
-
-    // Upper rectangle
-    this->DrawLine(_data, projVertices[0], projVertices[1]);
-    this->DrawLine(_data, projVertices[1], projVertices[2]);
-    this->DrawLine(_data, projVertices[2], projVertices[3]);
-    this->DrawLine(_data, projVertices[3], projVertices[0]);
-
-    // Lower rectangle
-    this->DrawLine(_data, projVertices[4], projVertices[5]);
-    this->DrawLine(_data, projVertices[5], projVertices[6]);
-    this->DrawLine(_data, projVertices[6], projVertices[7]);
-    this->DrawLine(_data, projVertices[7], projVertices[4]);
-
-    // Pillars
-    this->DrawLine(_data, projVertices[0], projVertices[4]);
-    this->DrawLine(_data, projVertices[1], projVertices[5]);
-    this->DrawLine(_data, projVertices[2], projVertices[6]);
-    this->DrawLine(_data, projVertices[3], projVertices[7]);
+    for (unsigned int endPt = 0; endPt < projVertices.size(); endPt += 2)
+      this->DrawLine(_data, projVertices[endPt], projVertices[endPt + 1]);
 
     return;
   }

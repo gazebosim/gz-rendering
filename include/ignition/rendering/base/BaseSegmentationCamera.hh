@@ -81,7 +81,8 @@ namespace ignition
       public: virtual int BackgroundLabel() const override;
 
       // Documentation inherited
-      public: void LabelMapFromColoredBuffer(uint8_t *) const override = 0;
+      public: void LabelMapFromColoredBuffer(
+                  uint8_t *_labelBuffer) const override = 0;
 
       /// \brief The buffer that contains segmentation data
       protected: uint8_t *segmentationData {nullptr};

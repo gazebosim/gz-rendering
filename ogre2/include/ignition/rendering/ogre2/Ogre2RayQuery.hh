@@ -49,7 +49,8 @@ namespace ignition
                 const math::Vector2d &_coord);
 
       // Documentation inherited
-      public: virtual RayQueryResult ClosestPoint();
+      public: virtual RayQueryResult ClosestPoint(
+            bool _forceSceneUpdate = true);
 
       /// \brief Get closest point by selection buffer.
       /// This is executed on the GPU.

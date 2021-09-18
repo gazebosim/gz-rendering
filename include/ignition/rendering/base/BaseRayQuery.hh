@@ -60,7 +60,8 @@ namespace ignition
                 const math::Vector2d &_coord) override;
 
       // Documentation inherited
-      public: virtual RayQueryResult ClosestPoint() override;
+      public: virtual RayQueryResult ClosestPoint(
+            bool _forceSceneUpdate = true) override;
 
       /// \brief Ray origin
       protected: math::Vector3d origin;
@@ -142,7 +143,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    RayQueryResult BaseRayQuery<T>::ClosestPoint()
+    RayQueryResult BaseRayQuery<T>::ClosestPoint(bool /*_forceSceneUpdate*/)
     {
       // TODO(anyone): implement a generic ray query here?
       RayQueryResult result;

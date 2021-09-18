@@ -24,11 +24,12 @@
 #include <unordered_set>
 
 #include <ignition/math/Color.hh>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
+#include "ignition/rendering/SegmentationCamera.hh"
 
 namespace ignition
 {
@@ -41,10 +42,13 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   public Ogre::Camera::Listener
 {
   /// \brief Constructor
-  public: explicit Ogre2SegmentationMaterialSwitcher(Ogre2ScenePtr _scene);
+  /// \param[in] _scene The scene associated with the material switcher
+  /// \param[in] _camera The canera associated with the material switcher
+  public: Ogre2SegmentationMaterialSwitcher(Ogre2ScenePtr _scene,
+              SegmentationCamera *_camera);
 
   /// \brief Destructor
-  public: ~Ogre2SegmentationMaterialSwitcher() = default;
+  public: ~Ogre2SegmentationMaterialSwitcher();
 
   /// \brief Ogre's pre render update callback
   /// \param[in] _cam Ogre camera
@@ -54,12 +58,17 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// \param[in] _cam Ogre camera
   public: virtual void cameraPostRenderScene(Ogre::Camera *_cam) override;
 
+  /// \brief Get the map between color IDs and label IDs
+  /// \return The map between color and label IDs
+  public: const std::unordered_map<int64_t, int64_t> &ColorToLabel() const;
+
   /// \brief Convert label of semantic map to a unique color for colored map and
   /// add the color of the label to the taken colors if it doesn't exist
   /// \param[in] _label id of the semantic map or encoded id of panoptic map
   /// \param[in] _isMultiLink bool used to skip the taken color check if the
-  /// label is for a multi link model, as all links should have the same color
-  /// \return _color unique color in the colored map for that label
+  /// label is for a multi link model (all links for the same model should have
+  /// the same color)
+  /// \return Unique color in the colored map for that label
   private: math::Color LabelToColor(int64_t _label,
     bool _isMultiLink = false);
 
@@ -82,42 +91,29 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   private: std::unordered_map<Ogre::SubItem *,
     Ogre::HlmsDatablock *> datablockMap;
 
-  /// \brief Ogre v1 material consisting of a shader that changes the
+  /// \brief Ogre material consisting of a shader that changes the
   /// appearance of item to use a unique color for mouse picking
   private: Ogre::MaterialPtr plainMaterial;
 
-  /// \brief Ogre v1 material consisting of a shader that changes the
+  /// \brief Ogre material consisting of a shader that changes the
   /// appearance of item to use a unique color for mouse picking. In
   /// addition, the depth check and depth write properties disabled.
   private: Ogre::MaterialPtr plainOverlayMaterial;
-
-  /// \brief Background & unlabeled objects label id in semantic map
-  private: int backgroundLabel = 0;
-
-  /// \brief Background & unlabeled objects color in the colored map
-  private: math::Color backgroundColor {0, 0, 0};
-
-  /// \brief Segmentation Type
-  private: SegmentationType type {SegmentationType::ST_SEMANTIC};
-
-  /// \brief True to generate colored map
-  /// False to generate labels ids map
-  private: bool isColoredMap {false};
 
   /// \brief Keep track of num of instances of the same label
   /// Key: label id, value: num of instances
   private: std::unordered_map<unsigned int, unsigned int> instancesCount;
 
-  /// \brief keep track of the random colors, stores encoded id of r,g,b
+  /// \brief keep track of the random colors (store encoded id of r,g,b)
   private: std::unordered_set<int64_t> takenColors;
 
   /// \brief keep track of the labels that are already colored.
-  /// Usful for coloring items in semantic mode in LabelToColor()
+  /// Useful for coloring items in semantic mode in LabelToColor()
   private: std::unordered_set<int64_t> coloredLabel;
 
   /// \brief Mapping from the colorId to the label id, used in converting
   /// the colored map to label ids map
-  /// Key: colorId label id, value: label in case of semantic segmentation
+  /// Key: colorId, value: label in case of semantic segmentation
   /// or composite id (8 bit label + 16 bit instances) in instance type
   private: std::unordered_map<int64_t, int64_t> colorToLabel;
 
@@ -127,7 +123,10 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// \brief Ogre2 Scene
   private: Ogre2ScenePtr scene = nullptr;
 
-  friend class Ogre2SegmentationCamera;
+  /// \brief Pointer to segmentation camera that gives the material switcher
+  /// access to things like the segmentation type, background color, background
+  /// label, and if colored map is enabled
+  private: SegmentationCamera *segmentationCamera {nullptr};
 };
 }
 }  // namespace rendering

@@ -15,7 +15,6 @@
  *
  */
 
-
 #include <string>
 
 #include <ignition/common/Console.hh>
@@ -56,9 +55,6 @@ class ignition::rendering::Ogre2SegmentationCameraPrivate
   /// \brief Dummy render texture for the depth data
   public: RenderTexturePtr segmentationTexture {nullptr};
 
-  /// \brief The segmentation material
-  public: Ogre::MaterialPtr segmentationMaterial;
-
   /// \brief New Segmentation Frame Event to notify listeners with new data
   /// \param[in] _data Segmentation buffer data
   /// \param[in] _width Width of the image
@@ -73,7 +69,6 @@ class ignition::rendering::Ogre2SegmentationCameraPrivate
   /// with colored version for segmentation
   public: std::unique_ptr<Ogre2SegmentationMaterialSwitcher>
           materialSwitcher {nullptr};
-
 };
 
 using namespace ignition;
@@ -101,7 +96,7 @@ void Ogre2SegmentationCamera::Init()
   this->CreateRenderTexture();
 
   this->dataPtr->materialSwitcher.reset(
-      new Ogre2SegmentationMaterialSwitcher(this->scene));
+      new Ogre2SegmentationMaterialSwitcher(this->scene, this));
 }
 
 /////////////////////////////////////////////////
@@ -131,11 +126,7 @@ void Ogre2SegmentationCamera::Destroy()
   {
     ogreCompMgr->removeWorkspace(
         this->dataPtr->ogreCompositorWorkspace);
-  }
-  if (this->dataPtr->segmentationMaterial)
-  {
-    Ogre::MaterialManager::getSingleton().remove(
-        this->dataPtr->segmentationMaterial->getName());
+    this->dataPtr->ogreCompositorWorkspace = nullptr;
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
@@ -220,15 +211,15 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
   this->SetImageFormat(PixelFormat::PF_R8G8B8);
   Ogre::PixelFormatGpu ogrePF = Ogre::PFG_RGBA8_UNORM;
 
-  auto backgroundColor = Ogre2Conversions::Convert(
-      this->dataPtr->materialSwitcher->backgroundColor);
+  auto backgroundColor_ = Ogre2Conversions::Convert(
+      this->backgroundColor);
 
   std::string wsDefName = "SegmentationCameraWorkspace_" + this->Name();
-  ogreCompMgr->createBasicWorkspaceDef(wsDefName, backgroundColor);
+  ogreCompMgr->createBasicWorkspaceDef(wsDefName, backgroundColor_);
 
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
-  // create render texture - these textures pack the thermal data
+  // create render texture
   this->dataPtr->ogreSegmentationTexture =
     textureMgr->createOrRetrieveTexture(this->Name() + "_segmentation",
       Ogre::GpuPageOutStrategy::SaveToSystemRam,
@@ -350,76 +341,31 @@ void Ogre2SegmentationCamera::CreateRenderTexture()
 }
 
 /////////////////////////////////////////////////
-void Ogre2SegmentationCamera::SetBackgroundColor(
-  const math::Color &_color)
-{
-  this->dataPtr->materialSwitcher->backgroundColor.Set(
-    _color.R(), _color.G(), _color.B()
-  );
-}
-
-/////////////////////////////////////////////////
 void Ogre2SegmentationCamera::SetBackgroundLabel(int _label)
 {
-  this->dataPtr->materialSwitcher->backgroundLabel = _label;
+  this->backgroundLabel = _label;
   this->SetBackgroundColor(
     math::Color(_label / 255.0, _label / 255.0, _label / 255.0));
-}
-
-/////////////////////////////////////////////////
-math::Color Ogre2SegmentationCamera::BackgroundColor() const
-{
-  return this->dataPtr->materialSwitcher->backgroundColor;
-}
-
-/////////////////////////////////////////////////
-int Ogre2SegmentationCamera::BackgroundLabel() const
-{
-  return this->dataPtr->materialSwitcher->backgroundLabel;
-}
-
-/////////////////////////////////////////////////
-void Ogre2SegmentationCamera::SetSegmentationType(SegmentationType _type)
-{
-  this->dataPtr->materialSwitcher->type = _type;
-}
-
-/////////////////////////////////////////////////
-void Ogre2SegmentationCamera::EnableColoredMap(bool _enable)
-{
-  this->dataPtr->materialSwitcher->isColoredMap = _enable;
-}
-
-/////////////////////////////////////////////////
-SegmentationType Ogre2SegmentationCamera::Type() const
-{
-  return this->dataPtr->materialSwitcher->type;
-}
-
-/////////////////////////////////////////////////
-bool Ogre2SegmentationCamera::IsColoredMap() const
-{
-  return this->dataPtr->materialSwitcher->isColoredMap;
 }
 
 /////////////////////////////////////////////////
 void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
   uint8_t * _labelBuffer) const
 {
-  if (!this->dataPtr->materialSwitcher->isColoredMap)
+  if (!this->isColoredMap)
     return;
 
   if (!this->dataPtr->buffer)
     return;
 
-  const auto &colorToLabel = this->dataPtr->materialSwitcher->colorToLabel;
+  auto colorToLabel = this->dataPtr->materialSwitcher->ColorToLabel();
 
   auto width = this->ImageWidth();
   auto height = this->ImageHeight();
 
-  for (uint32_t i = 0; i < height; i++)
+  for (uint32_t i = 0; i < height; ++i)
   {
-    for (uint32_t j = 0; j < width; j++)
+    for (uint32_t j = 0; j < width; ++j)
     {
       auto index = (i * width + j) * 3;
       auto r = this->dataPtr->buffer[index + 2];
@@ -432,13 +378,9 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
       int64_t colorId = r * 256 * 256 + g * 256 + b;
 
       // initialize the pixel with the background label value
-      {
-        uint8_t label8bit = this->dataPtr->materialSwitcher->backgroundLabel;
-
-        _labelBuffer[index] =     label8bit;
-        _labelBuffer[index + 1] = label8bit;
-        _labelBuffer[index + 2] = label8bit;
-      }
+      _labelBuffer[index] = this->backgroundLabel;
+      _labelBuffer[index + 1] = this->backgroundLabel;
+      _labelBuffer[index + 2] = this->backgroundLabel;
 
       // skip if not exist
       auto it = colorToLabel.find(colorId);
@@ -447,17 +389,15 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
 
       int64_t label = it->second;
 
-      if (this->dataPtr->materialSwitcher->type ==
-          SegmentationType::ST_SEMANTIC)
+      if (this->type == SegmentationType::ST_SEMANTIC)
       {
         uint8_t label8bit = label % 256;
 
-        _labelBuffer[index] =     label8bit;
+        _labelBuffer[index] = label8bit;
         _labelBuffer[index + 1] = label8bit;
         _labelBuffer[index + 2] = label8bit;
       }
-      else if (this->dataPtr->materialSwitcher->type ==
-        SegmentationType::ST_PANOPTIC)
+      else if (this->type == SegmentationType::ST_PANOPTIC)
       {
         // get the label and instance counts from the composite label id
         uint8_t label8bit = label / (256 * 256);

@@ -21,7 +21,8 @@
 #include <utility>
 #include <vector>
 
-#include "ignition/common/Console.hh"
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/RenderTypes.hh"
@@ -43,10 +44,10 @@ using namespace rendering;
 
 /////////////////////////////////////////////////
 Ogre2SegmentationMaterialSwitcher::Ogre2SegmentationMaterialSwitcher(
-  Ogre2ScenePtr _scene)
+  Ogre2ScenePtr _scene, SegmentationCamera *_camera)
 {
   this->scene = _scene;
-  this->backgroundColor.Set(0, 0, 0);
+  this->segmentationCamera = _camera;
 
   // plain material to switch item's material
   Ogre::ResourcePtr res =
@@ -75,6 +76,12 @@ Ogre2SegmentationMaterialSwitcher::Ogre2SegmentationMaterialSwitcher(
 }
 
 /////////////////////////////////////////////////
+Ogre2SegmentationMaterialSwitcher::~Ogre2SegmentationMaterialSwitcher()
+{
+  this->segmentationCamera = nullptr;
+}
+
+/////////////////////////////////////////////////
 bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
 {
   // Get the int value of the 24 bit color
@@ -97,8 +104,8 @@ bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
 math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
   bool _isMultiLink)
 {
-  if (_label == this->backgroundLabel)
-    return this->backgroundColor;
+  if (_label == this->segmentationCamera->BackgroundLabel())
+    return this->segmentationCamera->BackgroundColor();
 
   // use label as seed to generate the same color for the label
   this->generator.seed(_label);
@@ -114,7 +121,7 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
   // if the label is colored before return the color
   // don't check for taken colors in that case, all items
   // with the same label will have the same color
-  if (this->type == SegmentationType::ST_SEMANTIC &&
+  if (this->segmentationCamera->Type() == SegmentationType::ST_SEMANTIC &&
     this->coloredLabel.count(_label))
     return color;
 
@@ -210,16 +217,16 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       catch(std::bad_variant_access &e)
       {
         // items with no class are considered background
-        label = this->backgroundLabel;
+        label = this->segmentationCamera->BackgroundLabel();
       }
 
       // sub item custom parameter to set the pixel color material
       Ogre::Vector4 customParameter;
 
       // Material Switching
-      if (this->type == SegmentationType::ST_SEMANTIC)
+      if (this->segmentationCamera->Type() == SegmentationType::ST_SEMANTIC)
       {
-        if (this->isColoredMap)
+        if (this->segmentationCamera->IsColoredMap())
         {
           // semantic material (each pixel has item's color)
           math::Color color = this->LabelToColor(label);
@@ -234,7 +241,8 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
             labelColor, labelColor, labelColor, 1.0);
         }
       }
-      else if (this->type == SegmentationType::ST_PANOPTIC)
+      else if (this->segmentationCamera->Type() ==
+          SegmentationType::ST_PANOPTIC)
       {
         auto itemName = visual->Name();
         std::string parentName = this->TopLevelModelVisual(visual)->Name();
@@ -258,13 +266,13 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
 
         int instanceCount = it->second;
 
-        if (this->isColoredMap)
+        if (this->segmentationCamera->IsColoredMap())
         {
           // convert 24 bit number to int64
           int compositeId = label * 256 * 256 + instanceCount;
 
           math::Color color;
-          if (label == this->backgroundLabel)
+          if (label == this->segmentationCamera->BackgroundLabel())
             color = this->LabelToColor(label, isMultiLink);
           else
             color = this->LabelToColor(compositeId, isMultiLink);
@@ -284,7 +292,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
         }
       }
 
-      for (unsigned int i = 0; i < item->getNumSubItems(); i++)
+      for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
       {
         // save subitems material
         Ogre::SubItem *subItem = item->getSubItem(i);
@@ -318,4 +326,11 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
   // restore item to use pbs hlms material
   for (const auto &[subItem, dataBlock] : this->datablockMap)
     subItem->setDatablock(dataBlock);
+}
+
+////////////////////////////////////////////////
+const std::unordered_map<int64_t, int64_t> &
+Ogre2SegmentationMaterialSwitcher::ColorToLabel() const
+{
+  return this->colorToLabel;
 }

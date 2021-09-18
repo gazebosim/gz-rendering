@@ -43,7 +43,7 @@ namespace ignition
       public: virtual ~BaseSegmentationCamera();
 
       // Documentation inherited
-      public: virtual void CreateSegmentationTexture() override;
+      public: virtual void CreateSegmentationTexture() override = 0;
 
       // Documentation inherited
       public: virtual uint8_t *SegmentationData() const override;
@@ -75,13 +75,30 @@ namespace ignition
       public: virtual void SetBackgroundLabel(int _label) override;
 
       // Documentation inherited
-      public: virtual math::Color BackgroundColor() const override;
+      public: virtual const math::Color &BackgroundColor() const override;
 
       // Documentation inherited
       public: virtual int BackgroundLabel() const override;
 
       // Documentation inherited
-      public: void LabelMapFromColoredBuffer(uint8_t *) const override;
+      public: void LabelMapFromColoredBuffer(uint8_t *) const override = 0;
+
+      /// \brief The buffer that contains segmentation data
+      protected: uint8_t *segmentationData {nullptr};
+
+      /// \brief The segmentation type
+      protected: SegmentationType type {SegmentationType::ST_SEMANTIC};
+
+      /// \brief Whether a colored map is being generated (true) or label ID map
+      /// is being generated (false)
+      protected: bool isColoredMap {false};
+
+      /// \brief The color of objects that are considered background (i.e.,
+      /// objects that have no label)
+      protected: math::Color backgroundColor {0, 0, 0};
+
+      /// \brief The label of background objects
+      protected: int backgroundLabel {0};
     };
 
     //////////////////////////////////////////////////
@@ -94,26 +111,18 @@ namespace ignition
     template <class T>
     BaseSegmentationCamera<T>::~BaseSegmentationCamera()
     {
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseSegmentationCamera<T>::CreateSegmentationTexture()
-    {
+      if (this->segmentationData)
+      {
+        delete [] this->segmentationData;
+        this->segmentationData = nullptr;
+      }
     }
 
     //////////////////////////////////////////////////
     template <class T>
     uint8_t *BaseSegmentationCamera<T>::SegmentationData() const
     {
-      return nullptr;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseSegmentationCamera<T>::LabelMapFromColoredBuffer(
-      uint8_t *) const
-    {
+      return this->segmentationData;
     }
 
     //////////////////////////////////////////////////
@@ -128,54 +137,59 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseSegmentationCamera<T>::SetSegmentationType(SegmentationType)
+    void BaseSegmentationCamera<T>::SetSegmentationType(SegmentationType _type)
     {
+      this->type = _type;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseSegmentationCamera<T>::EnableColoredMap(bool)  // NOLINT
+    void BaseSegmentationCamera<T>::EnableColoredMap(bool _enable)
     {
+      this->isColoredMap = _enable;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     SegmentationType BaseSegmentationCamera<T>::Type() const
     {
-      return SegmentationType::ST_SEMANTIC;
+      return this->type;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     bool BaseSegmentationCamera<T>::IsColoredMap() const
     {
-      return false;
+      return this->isColoredMap;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseSegmentationCamera<T>::SetBackgroundColor(const math::Color&)
+    void BaseSegmentationCamera<T>::SetBackgroundColor(
+        const math::Color &_color)
     {
+      this->backgroundColor = _color;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseSegmentationCamera<T>::SetBackgroundLabel(int)  // NOLINT
+    void BaseSegmentationCamera<T>::SetBackgroundLabel(int _label)
     {
+      this->backgroundLabel = _label;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    math::Color BaseSegmentationCamera<T>::BackgroundColor() const
+    const math::Color &BaseSegmentationCamera<T>::BackgroundColor() const
     {
-      return math::Color();
+      return this->backgroundColor;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     int BaseSegmentationCamera<T>::BackgroundLabel() const
     {
-      return 0;
+      return this->backgroundLabel;
     }
   }
   }

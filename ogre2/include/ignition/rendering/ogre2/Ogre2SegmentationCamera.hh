@@ -24,11 +24,13 @@
   #include <Winsock2.h>
 #endif
 
-#include "ignition/rendering/base/BaseSegmentationCamera.hh"
 #include <memory>
 #include <string>
+
 #include <ignition/common/Console.hh>
 #include <ignition/common/Event.hh>
+
+#include "ignition/rendering/base/BaseSegmentationCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
@@ -78,28 +80,7 @@ namespace ignition
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       // Documentation inherited
-      public: void SetSegmentationType(SegmentationType _type) override;
-
-      // Documentation inherited
-      public: void EnableColoredMap(bool _enable) override;
-
-      // Documentation inherited
-      public: virtual SegmentationType Type() const override;
-
-      // Documentation inherited
-      public: virtual bool IsColoredMap() const override;
-
-      // Documentation inherited
-      public: void SetBackgroundColor(const math::Color &_color) override;
-
-      // Documentation inherited
       public: void SetBackgroundLabel(int _label) override;
-
-      // Documentation inherited
-      public: math::Color BackgroundColor() const override;
-
-      // Documentation inherited
-      public: int BackgroundLabel() const override;
 
       // Documentation inherited
       public: void LabelMapFromColoredBuffer(uint8_t * _labelBuffer) const;
@@ -107,8 +88,7 @@ namespace ignition
       /// \brief Create the camera.
       protected: void CreateCamera();
 
-      /// \brief Create dummy render texture. Needed to satisfy inheritance
-      /// and to set image's dims
+      /// \brief Create render texture
       protected: virtual void CreateRenderTexture();
 
       // Documentation inherited

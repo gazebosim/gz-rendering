@@ -52,10 +52,9 @@ void SegmentationCameraTest::SegmentationCamera(
   if (!engine)
   {
     ignerr << "Engine '" << _renderEngine
-              << "' failed to create a scene" << std::endl;
+              << "' was unable to be retrieved" << std::endl;
     return;
   }
-
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 

@@ -36,12 +36,14 @@
 
 #include <ignition/common/Console.hh>
 #include <ignition/math/Vector2.hh>
+
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
+#include <ignition/rendering/OrbitViewController.hh>
 #include <ignition/rendering/RayQuery.hh>
 #include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/OrbitViewController.hh>
 #include <ignition/rendering/SegmentationCamera.hh>
+
 #include "GlutWindow.hh"
 
 #define KEY_ESC 27
@@ -155,6 +157,7 @@ void handleMouse()
     double ny = 1.0 -
         2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
 
+    // TODO(anyone) figure out why this code is causing a crash
     // g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
     // g_target  = g_rayQuery->ClosestPoint();
     // if (!g_target)
@@ -164,6 +167,8 @@ void handleMouse()
     //   return;
     // }
 
+    // TODO(anyone) get mouse wheel scroll zoom to work (currently isn't
+    // working)
     // mouse wheel scroll zoom
     if ((g_mouse.button == 3 || g_mouse.button == 4) &&
         g_mouse.state == GLUT_UP)
@@ -198,6 +203,8 @@ void handleMouse()
       g_viewControl.SetTarget(g_target.point);
       g_viewControl.Orbit(drag);
     }
+    // TODO(anyone) get right mouse button zoom to work. Seems to crash when
+    // used with the RayQuery
     // right mouse button zoom
     else if (g_mouse.button == GLUT_RIGHT_BUTTON && g_mouse.state == GLUT_DOWN)
     {

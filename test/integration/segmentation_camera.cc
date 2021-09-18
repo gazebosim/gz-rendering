@@ -130,10 +130,9 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   if (!engine)
   {
     ignerr << "Engine '" << _renderEngine
-              << "' failed to create a scene" << std::endl;
+              << "' was unable to be retrieved" << std::endl;
     return;
   }
-
   ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   BuildScene(scene);
@@ -174,7 +173,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
           std::bind(OnNewSegmentationFrame,
           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
           std::placeholders::_4, std::placeholders::_5));
-  EXPECT_NE(nullptr, connection);
+  ASSERT_NE(nullptr, connection);
 
   // Update once to create image
   camera->Update();
@@ -228,6 +227,9 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   EXPECT_EQ(1, rightLabel);
 
   // instance count
+  // the instance count for the right box is 1 and the instance count for the
+  // left box is 2 because of how items are sorted when material switching:
+  // https://github.com/ignitionrobotics/ign-rendering/blob/c4e06851605bda75e2ca45a35f0e9bd86fbd7f2f/ogre2/src/Ogre2SegmentationMaterialSwitcher.cc#L171-L179
   EXPECT_EQ(1, middleCount);
   EXPECT_EQ(1, rightCount);
   EXPECT_EQ(2, leftCount);

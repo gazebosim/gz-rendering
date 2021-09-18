@@ -22,6 +22,7 @@
 
 #include <ignition/common/Event.hh>
 #include <ignition/math/Color.hh>
+
 #include "ignition/rendering/Camera.hh"
 
 
@@ -30,7 +31,8 @@ namespace ignition
   namespace rendering
   {
     /// \brief Segmentation types for Semantic / Panpoptic segmentation
-    enum class SegmentationType {
+    enum class SegmentationType
+    {
       /// \brief Pixels of same label from different items
       /// have the same color & id.
       ST_SEMANTIC = 0,
@@ -96,7 +98,7 @@ namespace ignition
 
       /// \brief Get color for background & unlabeled items in the colored map
       /// \return Color of background & unlabeled items
-      public: virtual math::Color BackgroundColor() const = 0;
+      public: virtual const math::Color &BackgroundColor() const = 0;
 
       /// \brief Get label for background & unlabeled items in the semantic map
       /// \return label of background & unlabeled items
@@ -106,11 +108,11 @@ namespace ignition
       /// IDs map, so users get both the colored map and the corresponding IDs
       /// map. This function must be called before the next render loop and
       /// the colored map mode must be enabeled
-      /// \param[out] _labelBuffer A buffer that contains the label IDs map
-      /// data. This output buffer must be allocated with the same size before
-      /// calling
+      /// \param[out] _labelBuffer A buffer that is populated with  the label
+      /// IDs map data. This output buffer must be allocated with the same size
+      /// before calling
       public: virtual void LabelMapFromColoredBuffer(
-        uint8_t * _labelBuffer) const = 0;
+        uint8_t *_labelBuffer) const = 0;
     };
   }
   }

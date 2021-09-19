@@ -29,22 +29,21 @@
   #include <GL/glx.h>
 #endif
 
-#include <mutex>
 #include <fstream>
+#include <mutex>
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Image.hh>
+#include <ignition/rendering/BoundingBoxCamera.hh>
 #include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
+#include <ignition/rendering/OrbitViewController.hh>
 #include <ignition/rendering/RayQuery.hh>
 #include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/OrbitViewController.hh>
-#include <ignition/rendering/BoundingBoxCamera.hh>
 
 #include "GlutWindow.hh"
 
 #define KEY_ESC 27
-#define KEY_TAB  9
 #define UNSUPPORTED_BUTTONS 5
 
 //////////////////////////////////////////////////
@@ -57,6 +56,7 @@ ir::BoundingBoxCameraPtr g_camera_bbox;
 ir::ImagePtr g_image;
 ignition::common::ConnectionPtr g_connection;
 std::vector<ir::BoundingBox> g_boxes;
+std::mutex g_boxesMutex;
 int g_counter = 0;
 
 bool g_initContext = false;
@@ -276,7 +276,7 @@ void idleCB()
 //////////////////////////////////////////////////
 bool SaveImage(const uint8_t *_data)
 {
-  std::string savePath = "save";
+  const std::string savePath = "save";
   uint width = g_camera->ImageWidth();
   uint height = g_camera->ImageHeight();
 
@@ -284,7 +284,11 @@ bool SaveImage(const uint8_t *_data)
   if (!ignition::common::isDirectory(savePath))
   {
     if (!ignition::common::createDirectories(savePath))
+    {
+      ignerr << "Could not create a directory [" << savePath
+             << "] for saving images.\n";
       return false;
+    }
   }
 
   std::string filename = "image" + std::to_string(g_counter) + ".png";
@@ -297,7 +301,7 @@ bool SaveImage(const uint8_t *_data)
 }
 
 //////////////////////////////////////////////////
-void SaveBoxes(std::vector<ir::BoundingBox> &boxes)
+void SaveBoxes(const std::vector<ir::BoundingBox> &_boxes)
 {
   std::string savePath = "boxes";
 
@@ -311,7 +315,7 @@ void SaveBoxes(std::vector<ir::BoundingBox> &boxes)
   std::string filename = savePath + "/boxes" + std::to_string(g_counter) + ".txt";
   std::ofstream file(filename);
 
-  for (auto box : boxes)
+  for (const auto &box : _boxes)
   {
     file << box.center << " " << box.size << " " << box.orientation << '\n';
   }
@@ -327,6 +331,7 @@ void keyboardCB(unsigned char _key, int, int)
   }
   else if (_key == 's' || _key == 'S')
   {
+    std::lock_guard<std::mutex> lock(g_boxesMutex);
     // Save
     unsigned char *data = g_image->Data<unsigned char>();
 
@@ -334,18 +339,19 @@ void keyboardCB(unsigned char _key, int, int)
     SaveBoxes(g_boxes);
     ++g_counter;
 
-    std::cout << " Saved sample " << g_counter << std::endl;
+    std::cout << "Saved sample " << g_counter << std::endl;
   }
 }
 
 //////////////////////////////////////////////////
-void OnNewBoundingBoxes(const std::vector<ir::BoundingBox> &boxes)
+void OnNewBoundingBoxes(const std::vector<ir::BoundingBox> &_boxes)
 {
+  std::lock_guard<std::mutex> lock(g_boxesMutex);
   unsigned char *data = g_image->Data<unsigned char>();
-  for (auto box : boxes)
+  for (const auto &box : _boxes)
     g_camera_bbox->DrawBoundingBox(data, box);
 
-  g_boxes = boxes;
+  g_boxes = _boxes;
 }
 
 //////////////////////////////////////////////////
@@ -391,14 +397,13 @@ void initContext()
 void printUsage()
 {
   std::cout << "===============================" << std::endl;
-  std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "   S  - Save image & its boxes " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
   std::cout << "===============================" << std::endl;
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr> _cameras)
+void run(std::vector<ir::CameraPtr> &_cameras)
 {
   if (_cameras.empty())
   {

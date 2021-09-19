@@ -620,13 +620,15 @@ namespace ignition
       /// \param[in] _name Name of BoundingBox camera
       /// \return Pointer to BoundingBox camera
       protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
-                     unsigned int,
-                     const std::string &)
-                  {
-                    ignerr << "BoundingBox camera not supported by: "
-                            << this->Engine()->Name() << std::endl;
-                    return BoundingBoxCameraPtr();
-                  }
+                     unsigned int _id, const std::string &_name)
+                 {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
+                   ignerr << "BoundingBox camera not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return BoundingBoxCameraPtr();
+                 }
 
       /// \brief Implementation for creating GpuRays sensor.
       /// \param[in] _id Unique id

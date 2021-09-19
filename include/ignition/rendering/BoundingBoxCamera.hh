@@ -17,12 +17,13 @@
 #ifndef IGNITION_RENDERING_BOUNDINGBOXCAMERA_HH_
 #define IGNITION_RENDERING_BOUNDINGBOXCAMERA_HH_
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 #include <ignition/common/Event.hh>
 #include <ignition/math/Vector3.hh>
+
 #include "ignition/rendering/Camera.hh"
 
 namespace ignition
@@ -30,8 +31,8 @@ namespace ignition
   namespace rendering
   {
     /// \brief BoundingBox types for Visible / Full 2D Boxes / 3D Boxes
-    enum class BoundingBoxType {
-
+    enum class BoundingBoxType
+    {
       /// 2D box that shows the full box of occluded objects
       BBT_FULLBOX2D = 0,
 
@@ -77,9 +78,18 @@ namespace ignition
         this->type = _type;
       }
 
+      /// \brief Get the vertices of the 3D bounding box. If the bounding box
+      /// type isn't 3D, an empty vector is returned
+      /// \return The vertices of the 3D bounding box
       std::vector<math::Vector3d> Vertices() const
       {
+        if (this->type != BoundingBoxType::BBT_BOX3D)
+          return {};
+
         /*
+          The numbers listed here are the corresponding indices in the vector
+          that is returned by this method
+
             1 -------- 0
            /|         /|
           2 -------- 3 .
@@ -90,9 +100,9 @@ namespace ignition
         */
 
         std::vector<math::Vector3d> vertices;
-        auto w = size.X();
-        auto h = size.Y();
-        auto l = size.Z();
+        auto w = this->size.X();
+        auto h = this->size.Y();
+        auto l = this->size.Z();
 
         // 8 vertices | box corners
         vertices.push_back(math::Vector3d(w/2, h/2, l/2));
@@ -117,9 +127,8 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \class BoundingBoxCamera BoundingBoxCamera.hh
     /// ignition/rendering/BoundingBoxCamera.hh
-    /// \brief Poseable BoundingBox camera used for rendering the scene graph.
-    /// This camera is designed to produced BoundingBox data, instead of a 2D
-    /// image.
+    /// \brief Poseable BoundingBox camera used for rendering bounding boxes of
+    /// objects in the scene.
     class IGNITION_RENDERING_VISIBLE BoundingBoxCamera :
       public virtual Camera,
       public virtual Sensor
@@ -143,8 +152,8 @@ namespace ignition
       public: virtual BoundingBoxType Type() const = 0;
 
       /// \brief Draw a bounding box on the given image in green color
-      /// \param[in] data buffer contains the image data
-      /// \param[in] box bounding box to be drawn
+      /// \param[in] _data buffer contains the image data
+      /// \param[in] _box bounding box to be drawn
       public: virtual void DrawBoundingBox(unsigned char *_data,
         const BoundingBox &_box) = 0;
     };

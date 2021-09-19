@@ -37,7 +37,6 @@
 
 using namespace ignition;
 using namespace rendering;
-using namespace math;
 
 const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
@@ -48,8 +47,8 @@ uint n_spheres = 0;
 
 //////////////////////////////////////////////////
 VisualPtr createDuck(ScenePtr _scene,
-  math::Vector3d _position, MaterialPtr _material,
-  math::Quaterniond _rotation = Quaterniond(1.5708, 0, 2.0))
+  const math::Vector3d &_position, MaterialPtr _material,
+  const math::Quaterniond &_rotation = math::Quaterniond(1.5708, 0, 2.0))
 {
   n_ducks++;
 
@@ -72,9 +71,9 @@ VisualPtr createDuck(ScenePtr _scene,
 
 //////////////////////////////////////////////////
 VisualPtr createBox(ScenePtr _scene,
-  math::Vector3d _position, MaterialPtr _material,
-  std::string _name="",
-  math::Quaterniond _rotation = math::Quaterniond(0,0,0))
+  const math::Vector3d &_position, MaterialPtr _material,
+  const std::string &_name = "",
+  const math::Quaterniond &_rotation = math::Quaterniond(0,0,0))
 {
   n_boxes++;
 
@@ -99,7 +98,7 @@ VisualPtr createBox(ScenePtr _scene,
 //////////////////////////////////////////////////
 VisualPtr createSphere(ScenePtr _scene,
   math::Vector3d _position, MaterialPtr _material,
-  Quaterniond _rotation = math::Quaterniond(0,0,0))
+  math::Quaterniond _rotation = math::Quaterniond(0,0,0))
 {
   n_spheres++;
 
@@ -116,7 +115,7 @@ VisualPtr createSphere(ScenePtr _scene,
 }
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene)
+void buildScene(ScenePtr _scene, BoundingBoxType _type)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
@@ -168,22 +167,22 @@ void buildScene(ScenePtr _scene)
   root->AddChild(plane);
 
   // create a mesh
-  auto duck = createDuck(_scene, Vector3d(5, 0, 0), skyBlue);
+  auto duck = createDuck(_scene, math::Vector3d(5, 0, 0), skyBlue);
   root->AddChild(duck);
 
   // create a sphere1
-  auto sphere1 = createSphere(_scene, Vector3d(3, -1.5, 0), green);
+  auto sphere1 = createSphere(_scene, math::Vector3d(3, -1.5, 0), green);
   root->AddChild(sphere1);
 
   // create a sphere2
-  auto sphere2 = createSphere(_scene, Vector3d(5, 4, 2), green);
+  auto sphere2 = createSphere(_scene, math::Vector3d(5, 4, 2), green);
   root->AddChild(sphere2);
 
   // create boxes
-  auto box1 = createBox(_scene, Vector3d(3, 2, 0), blue);
+  auto box1 = createBox(_scene, math::Vector3d(3, 2, 0), blue);
   root->AddChild(box1);
 
-  auto box2 = createBox(_scene, Vector3d(2, -1, 1), blue);
+  auto box2 = createBox(_scene, math::Vector3d(2, -1, 1), blue);
   box2->SetLocalScale(1.2);
   root->AddChild(box2);
 
@@ -212,12 +211,13 @@ void buildScene(ScenePtr _scene)
   boundingboxCamera->SetHFOV(camera->HFOV());
   boundingboxCamera->SetNearClipPlane(camera->NearClipPlane());
   boundingboxCamera->SetFarClipPlane(camera->FarClipPlane());
-  boundingboxCamera->SetBoundingBoxType(BoundingBoxType::BBT_BOX3D);
+  boundingboxCamera->SetBoundingBoxType(_type);
   root->AddChild(boundingboxCamera);
 }
 
 //////////////////////////////////////////////////
-std::vector<CameraPtr> createCameras(const std::string &_engineName)
+std::vector<CameraPtr> createCameras(const std::string &_engineName,
+    BoundingBoxType _type)
 {
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName);
@@ -228,7 +228,7 @@ std::vector<CameraPtr> createCameras(const std::string &_engineName)
     return std::vector<CameraPtr>();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  buildScene(scene);
+  buildScene(scene, _type);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
@@ -246,12 +246,29 @@ int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
 
-  // Expose engine name to command line because we can't instantiate both
-  // ogre and ogre2 at the same time
-  std::string ogreEngineName("ogre");
-  if (_argc > 1)
+  // default to 3D boxes unless user specifies otherwise
+  BoundingBoxType bboxType = BoundingBoxType::BBT_BOX3D;
+  if (_argc == 2)
   {
-    ogreEngineName = _argv[1];
+    const std::string type3d = "3D";
+    const std::string type2dVisible = "2D_visible";
+    const std::string type2dFull = "2D_full";
+    if (type2dVisible.compare(_argv[1]) == 0)
+    {
+      bboxType = BoundingBoxType::BBT_VISIBLEBOX2D;
+    }
+    else if (type2dFull.compare(_argv[1]) == 0)
+    {
+      bboxType = BoundingBoxType::BBT_FULLBOX2D;
+    }
+    else if (type3d.compare(_argv[1]) != 0)
+    {
+      ignerr << "Invalid bounding box type given. Valid options are: "
+             << type3d << ", " << type2dVisible << ", or "
+             << type2dFull << "\n";
+      ignerr << "you entered " << _argv[1] << "\n";
+      return -1;
+    }
   }
 
   common::Console::SetVerbosity(4);
@@ -260,15 +277,16 @@ int main(int _argc, char** _argv)
 
   engineNames.push_back("ogre2");
 
-  for (auto engineName : engineNames)
+  for (const auto &engineName : engineNames)
   {
     try
     {
-      cameras = createCameras(engineName);
+      cameras = createCameras(engineName, bboxType);
     }
     catch (...)
     {
       std::cerr << "Error starting up: " << engineName << std::endl;
+      return -1;
     }
   }
   run(cameras);

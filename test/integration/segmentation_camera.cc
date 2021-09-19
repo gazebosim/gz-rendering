@@ -185,9 +185,12 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   math::Vector2d middleProj(width * 0.5, height * 0.5);
 
   // get their index in the buffer
-  uint32_t leftIndex = (leftProj.Y() * width + leftProj.X()) * 3;
-  uint32_t rightIndex = (rightProj.Y() * width + rightProj.X()) * 3;
-  uint32_t middleIndex = (middleProj.Y() * width + middleProj.X()) * 3;
+  auto leftIndex =
+    static_cast<uint32_t>((leftProj.Y() * width + leftProj.X()) * 3);
+  auto rightIndex =
+    static_cast<uint32_t>((rightProj.Y() * width + rightProj.X()) * 3);
+  auto middleIndex =
+    static_cast<uint32_t>((middleProj.Y() * width + middleProj.X()) * 3);
 
   // cast the unsigned char to unsigned int to read it
   uint8_t leftLabel =   g_buffer[leftIndex];

@@ -83,7 +83,8 @@ namespace ignition
       public: void SetBackgroundLabel(int _label) override;
 
       // Documentation inherited
-      public: void LabelMapFromColoredBuffer(uint8_t * _labelBuffer) const;
+      public: void LabelMapFromColoredBuffer(
+                  uint8_t * _labelBuffer) const override;
 
       /// \brief Create the camera.
       protected: void CreateCamera();

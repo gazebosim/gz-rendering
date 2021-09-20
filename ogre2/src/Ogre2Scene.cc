@@ -469,10 +469,13 @@ void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
   // If we're not inside any Terra, then prefer the one that is
   // "closest" to camera. Both may be nullptrs though.
   if (insideTerra)
+  {
     pbsTerraShadows->setTerra(insideTerra);
+  }
   else
+  {
     pbsTerraShadows->setTerra(closestTerra);
-
+  }
 
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 2
   if (!this->heightmaps.empty())

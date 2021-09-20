@@ -329,7 +329,7 @@ namespace ignition
     {
       if (!this->Scene())
       {
-        ignerr << "Cloning a geometry failed because the geometry to be "
+        ignerr << "Cloning a mesh failed because the mesh to be "
           << "cloned does not belong to a scene.\n";
         return nullptr;
       }

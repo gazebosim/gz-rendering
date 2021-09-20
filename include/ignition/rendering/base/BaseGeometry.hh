@@ -51,6 +51,7 @@ namespace ignition
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true) override = 0;
 
+      // Documentation inherited
       public: virtual GeometryPtr Clone() const override;
 
       // Documentation inherited
@@ -98,6 +99,7 @@ namespace ignition
     template <class T>
     GeometryPtr BaseGeometry<T>::Clone() const
     {
+      ignwarn << "Clone functionality for Geometry does not exist yet.\n";
       return nullptr;
     }
 

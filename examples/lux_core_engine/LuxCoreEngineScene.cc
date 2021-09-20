@@ -41,7 +41,12 @@ void LuxCoreEngineScene::SetAmbientLight(const math::Color &_color)
 DirectionalLightPtr LuxCoreEngineScene::CreateDirectionalLightImpl(
                  unsigned int _id, const std::string &_name) 
 {
-  LuxCoreEngineDirectionalLightPtr light(new LuxCoreEngineDirectionalLight);
+  LuxCoreEngineDirectionalLightPtr light(new LuxCoreEngineDirectionalLight("sun"));
+
+  sceneLux->Parse(
+	    luxrays::Property() <<
+	    luxrays::Property("scene.lights." + _name + ".type")("sun"));
+
   bool result = this->InitObject(light, _id, _name);
   return (result) ? light : nullptr;
 }
@@ -248,16 +253,6 @@ bool LuxCoreEngineScene::InitImpl()
       luxrays::Property("scene.camera.lookat.orig")(1.f , 6.f , 3.f) <<
 		  luxrays::Property("scene.camera.lookat.target")(0.f , 0.f , .5f) <<
 		  luxrays::Property("scene.camera.fieldofview")(60.f));
-
-  sceneLux->Parse(
-		  luxrays::Property("scene.lights.skyl.type")("sky2") <<
-		  luxrays::Property("scene.lights.skyl.dir")(0.166974f, 0.59908f, 0.783085f) <<
-		  luxrays::Property("scene.lights.skyl.turbidity")(2.2f) <<
-		  luxrays::Property("scene.lights.skyl.gain")(0.8f, 0.8f, 0.8f) <<
-		  luxrays::Property("scene.lights.sunl.type")("sun") <<
-		  luxrays::Property("scene.lights.sunl.dir")(0.166974f, 0.59908f, 0.783085f) <<
-		  luxrays::Property("scene.lights.sunl.turbidity")(2.2f) <<
-		  luxrays::Property("scene.lights.sunl.gain")(0.8f, 0.8f, 0.8f));
   
   this->CreateStores();
   this->CreateMeshFactory();

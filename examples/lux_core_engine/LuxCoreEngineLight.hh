@@ -6,6 +6,8 @@
 #include "LuxCoreEngineRenderTypes.hh"
 #include "LuxCoreEngineNode.hh"
 
+#include "luxcore/luxcore.h"
+
 namespace ignition
 {
   namespace rendering
@@ -15,6 +17,9 @@ namespace ignition
       public BaseLight<LuxCoreEngineNode>
     {
       public: virtual ignition::math::Color DiffuseColor() const;
+
+      public: virtual void SetDiffuseColor(double _r, double _g, double _b,
+                  double _a = 1.0);
 
       public: virtual void SetDiffuseColor(
           const ignition::math::Color &_color);
@@ -47,11 +52,21 @@ namespace ignition
       public: virtual double Intensity() const;
 
       public: virtual void SetIntensity(double _intensity);
+
+      protected: std::string lightType;
+
+      protected: float gainR, gainG, gainB;
+
+      protected: float directionX, directionY, directionZ;
     };
     class LuxCoreEngineDirectionalLight :
       public BaseDirectionalLight<LuxCoreEngineLight>
     {
+      public: LuxCoreEngineDirectionalLight(std::string lightType);
+      
       public: virtual math::Vector3d Direction() const;
+
+      public: virtual void SetDirection(double _x, double _y, double _z);
 
       public: virtual void SetDirection(const math::Vector3d &_dir);
     };

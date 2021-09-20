@@ -28,6 +28,8 @@ void LuxCoreEngineCamera::Render()
     luxcore::RenderConfig *config = luxcore::RenderConfig::Create(props, scene->SceneLux());
     this->renderSessionLux = luxcore::RenderSession::Create(config);
     this->renderSessionLux->Start();
+
+    std::cout << scene->SceneLux()->ToProperties() << std::endl;
   }
 
   this->renderSessionLux->WaitNewFrame();

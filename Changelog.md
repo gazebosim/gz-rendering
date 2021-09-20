@@ -65,6 +65,9 @@
 1. Visualize wireframes
     * [Pull request #314](https://github.com/ignitionrobotics/ign-rendering/pull/314)
 
+1. Add environment map tutorial
+    * [Pull request #295](https://github.com/ignitionrobotics/ign-rendering/pull/295)
+
 1. From Ogre 2.1 to Ogre 2.2
     * [Pull request #272](https://github.com/ignitionrobotics/ign-rendering/pull/272)
     * [Pull request #393](https://github.com/ignitionrobotics/ign-rendering/pull/393)

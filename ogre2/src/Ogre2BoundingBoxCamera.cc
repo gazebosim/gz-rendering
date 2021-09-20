@@ -621,8 +621,8 @@ void Ogre2BoundingBoxCamera::MarkVisibleBoxes()
 }
 
 /////////////////////////////////////////////////
-void Ogre2BoundingBoxCamera::MeshVertices(
-  std::vector<uint32_t> _ogreIds, std::vector<math::Vector3d> &_vertices)
+void Ogre2BoundingBoxCamera::MeshVertices(const std::vector<uint32_t> &_ogreIds,
+    std::vector<math::Vector3d> &_vertices) const
 {
   auto viewMatrix = this->ogreCamera->getViewMatrix();
 
@@ -1083,24 +1083,24 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
 
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::MeshMinimalBox(
-  const Ogre::MeshPtr mesh,
-  const Ogre::Matrix4 &viewMatrix,
-  const Ogre::Matrix4 &projMatrix,
-  Ogre::Vector3 &minVertex,
-  Ogre::Vector3 &maxVertex,
-  const Ogre::Vector3 &position,
-  const Ogre::Quaternion &oreintation,
-  const Ogre::Vector3 &scale
+  const Ogre::MeshPtr _mesh,
+  const Ogre::Matrix4 &_viewMatrix,
+  const Ogre::Matrix4 &_projMatrix,
+  Ogre::Vector3 &_minVertex,
+  Ogre::Vector3 &_maxVertex,
+  const Ogre::Vector3 &_position,
+  const Ogre::Quaternion &_orientation,
+  const Ogre::Vector3 &_scale
   )
 {
-  minVertex.x = INT32_MAX;
-  minVertex.y = INT32_MAX;
-  minVertex.z = INT32_MAX;
-  maxVertex.x = INT32_MIN;
-  maxVertex.y = INT32_MIN;
-  maxVertex.z = INT32_MIN;
+  _minVertex.x = INT32_MAX;
+  _minVertex.y = INT32_MAX;
+  _minVertex.z = INT32_MAX;
+  _maxVertex.x = INT32_MIN;
+  _maxVertex.y = INT32_MIN;
+  _maxVertex.z = INT32_MIN;
 
-  auto subMeshes = mesh->getSubMeshes();
+  auto subMeshes = _mesh->getSubMeshes();
 
   for (auto subMesh : subMeshes)
   {
@@ -1142,23 +1142,23 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
         else
           ignerr << "Vertex Buffer type error" << std::endl;
 
-        vec = (oreintation * (vec * scale)) + position;
+        vec = (_orientation * (vec * _scale)) + _position;
 
         Ogre::Vector4 vec4(vec.x, vec.y, vec.z, 1);
-        vec4 =  projMatrix * viewMatrix * vec4;
+        vec4 =  _projMatrix * _viewMatrix * vec4;
 
         // homogenous
         vec.x = vec4.x / vec4.w;
         vec.y = vec4.y / vec4.w;
         vec.z = vec4.z;
 
-        minVertex.x = std::min(minVertex.x, vec.x);
-        minVertex.y = std::min(minVertex.y, vec.y);
-        minVertex.z = std::min(minVertex.z, vec.z);
+        _minVertex.x = std::min(_minVertex.x, vec.x);
+        _minVertex.y = std::min(_minVertex.y, vec.y);
+        _minVertex.z = std::min(_minVertex.z, vec.z);
 
-        maxVertex.x = std::max(maxVertex.x, vec.x);
-        maxVertex.y = std::max(maxVertex.y, vec.y);
-        maxVertex.z = std::max(maxVertex.z, vec.z);
+        _maxVertex.x = std::max(_maxVertex.x, vec.x);
+        _maxVertex.y = std::max(_maxVertex.y, vec.y);
+        _maxVertex.z = std::max(_maxVertex.z, vec.z);
 
         // get the next element
         requests[0].data += requests[0].vertexBuffer->getBytesPerElement();
@@ -1170,7 +1170,7 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
 
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
-  const math::Vector2i _point1, const math::Vector2i _point2)
+  const math::Vector2i &_point1, const math::Vector2i &_point2)
 {
   int x0, y0, x1, y1;
 
@@ -1402,7 +1402,7 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
 
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
-  Ogre::Vector3 &minVertex, Ogre::Vector3 &maxVertex)
+  Ogre::Vector3 &minVertex, Ogre::Vector3 &maxVertex) const
 {
   uint32_t width = this->ImageWidth();
   uint32_t height = this->ImageHeight();

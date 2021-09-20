@@ -59,7 +59,7 @@ void OgreNode::Destroy()
 {
   BaseNode::Destroy();
 
-  if (nullptr != this->scene)
+  if (nullptr != this->scene && nullptr != this->ogreNode)
   {
     Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
     if (nullptr != ogreSceneManager)

@@ -24,6 +24,7 @@
 #endif
 
 #ifdef __APPLE__
+  #define GL_SILENCE_DEPRECATION
   #include <OpenGL/gl.h>
 #else
 #ifndef _WIN32
@@ -841,7 +842,7 @@ void Ogre2ThermalCamera::Render()
 #endif
 
   // update the compositors
-  this->scene->StartRendering();
+  this->scene->StartRendering(this->ogreCamera);
 
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
   this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);

@@ -24,6 +24,7 @@
 #endif
 
 #ifdef __APPLE__
+  #define GL_SILENCE_DEPRECATION
   #include <OpenGL/gl.h>
 #else
 #ifndef _WIN32
@@ -928,6 +929,9 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
           this->dataPtr->ogreCompositorWorkspaceDef,
           false);
 
+  this->dataPtr->ogreCompositorWorkspace->addListener(
+    engine->TerraWorkspaceListener());
+
   // add the listener
   Ogre::CompositorNode *node =
       this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
@@ -958,7 +962,7 @@ void Ogre2DepthCamera::Render()
   glEnable(GL_DEPTH_CLAMP);
 #endif
 
-  this->scene->StartRendering();
+  this->scene->StartRendering(this->ogreCamera);
 
   // update the compositors
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();

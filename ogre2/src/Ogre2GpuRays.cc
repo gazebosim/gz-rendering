@@ -1213,6 +1213,7 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
   // update the compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
+    this->scene->UpdateAllHeightmaps(this->dataPtr->cubeCam[i]);
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(true);
 
     this->dataPtr->ogreCompositorWorkspace1st[i]->_validateFinalTarget();
@@ -1244,7 +1245,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
-  this->scene->StartRendering();
+  this->scene->StartRendering(nullptr);
 
   this->UpdateRenderTarget1stPass();
   this->UpdateRenderTarget2ndPass();

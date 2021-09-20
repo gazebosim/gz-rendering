@@ -54,6 +54,30 @@ OgreMarker::~OgreMarker()
 //////////////////////////////////////////////////
 void OgreMarker::PreRender()
 {
+  if (this->markerType == MarkerType::MT_POINTS &&
+      this->dataPtr->dynamicRenderable &&
+      this->dataPtr->dynamicRenderable->PointCount() > 0u)
+  {
+    std::string pointsMatName = "PointCloudPoint";
+    if (this->dataPtr->dynamicRenderable->getMaterial().isNull() ||
+        this->dataPtr->dynamicRenderable->getMaterial()->getName()
+        != pointsMatName)
+    {
+#if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
+      this->dataPtr->dynamicRenderable->setMaterial(pointsMatName);
+#else
+      Ogre::MaterialPtr pointsMat =
+          Ogre::MaterialManager::getSingleton().getByName(
+          pointsMatName);
+      this->dataPtr->dynamicRenderable->setMaterial(pointsMat);
+#endif
+    }
+    auto pass = this->dataPtr->dynamicRenderable->getMaterial()->getTechnique(
+        0)->getPass(0);
+    auto vertParams = pass->getVertexProgramParameters();
+    vertParams->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
+  }
+
   this->dataPtr->dynamicRenderable->Update();
 }
 

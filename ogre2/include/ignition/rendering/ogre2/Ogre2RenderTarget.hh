@@ -285,7 +285,7 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: virtual bool IsRenderWindow() const;
+      public: virtual bool IsRenderWindow() const override;
 
       // Documentation inherited.
       public: virtual Ogre::TextureGpu *RenderTarget() const override;

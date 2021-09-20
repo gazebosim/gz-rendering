@@ -294,11 +294,15 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
   EXPECT_FLOAT_EQ(scan[last], ignition::math::INF_F);
 
-  // rays cater should see box01 with laser retro value set to laserRetro1
-  // and box02 with laser retro value set to laserRetro2
-  EXPECT_NEAR(scan[mid+1], laserRetro1, 5.0);
-  EXPECT_NEAR(scan[0+1], laserRetro2, 5.0);
-  EXPECT_FLOAT_EQ(scan[last+1], 0.0);
+  // laser retro is currently only supported in ogre2
+  if (_renderEngine == "ogre2")
+  {
+    // rays cater should see box01 with laser retro value set to laserRetro1
+    // and box02 with laser retro value set to laserRetro2
+    EXPECT_NEAR(scan[mid+1], laserRetro1, 5.0);
+    EXPECT_NEAR(scan[0+1], laserRetro2, 5.0);
+    EXPECT_FLOAT_EQ(scan[last+1], 0.0);
+  }
 
   // Verify rays caster 2 range readings
   // listen to new gpu rays frames

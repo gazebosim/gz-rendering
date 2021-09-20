@@ -41,6 +41,9 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+#include "Terra/Hlms/OgreHlmsTerra.h"
+#include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
+#include "Terra/TerraWorkspaceListener.h"
 #include "Ogre2IgnHlmsCustomizations.hh"
 
 class ignition::rendering::Ogre2RenderEnginePrivate
@@ -54,6 +57,13 @@ class ignition::rendering::Ogre2RenderEnginePrivate
 
   /// \brief Controls Hlms customizations for both PBS and Unlit
   public: ignition::rendering::Ogre2IgnHlmsCustomizations hlmsCustomizations;
+
+  /// \brief Pbs listener that adds terra shadows
+  public: std::unique_ptr<Ogre::HlmsPbsTerraShadows> hlmsPbsTerraShadows;
+
+  /// \brief Listener that needs to be in every workspace
+  /// that wants terrain to cast shadows from spot and point lights
+  public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
 };
 
 using namespace ignition;
@@ -90,12 +100,6 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   const char *env = std::getenv("OGRE2_RESOURCE_PATH");
   if (env)
     this->ogrePaths.push_back(std::string(env));
-
-#ifdef __APPLE__
-  // on OSX the plugins may be placed in the parent lib directory
-  if (ogrePath.rfind("OGRE") == ogrePath.size()-4u)
-    this->ogrePaths.push_back(ogrePath.substr(0, ogrePath.size()-5));
-#endif
 }
 
 //////////////////////////////////////////////////
@@ -121,6 +125,8 @@ void Ogre2RenderEngine::Destroy()
 
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
+
+  this->dataPtr->hlmsPbsTerraShadows.reset();
 
   if (this->ogreRoot)
   {
@@ -645,6 +651,14 @@ void Ogre2RenderEngine::RegisterHlms()
       rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSLES");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       commonGLSLESMaterialFolder, "FileSystem", "General");
+  Ogre::String terraMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Terra");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      terraMaterialFolder, "FileSystem", "General");
+  Ogre::String terraGLSLMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Terra", "GLSL");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      terraGLSLMaterialFolder, "FileSystem", "General");
 
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework
@@ -720,14 +734,57 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     archivePbsLibraryFolders.push_back(customizationsArchiveLibrary);
+    {
+      archivePbsLibraryFolders.push_back( archiveManager.load(
+        rootHlmsFolder + "Hlms/Terra/" + "GLSL" + "/PbsTerraShadows",
+        "FileSystem", true ) );
+      this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
+    }
 
     // Create and register
     hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
+    hlmsPbs->setListener(this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
     // disable writting debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
     hlmsPbs->setListener(&this->dataPtr->hlmsCustomizations);
+  }
+
+  {
+    Ogre::HlmsTerra *hlmsTerra = 0;
+    // Create & Register HlmsPbs
+    // Do the same for HlmsPbs:
+    Ogre::HlmsTerra::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Archive *archiveTerra = archiveManager.load(
+        rootHlmsFolder + mainFolderPath, "FileSystem", true);
+
+    // Add ignition's customizations
+    libraryFoldersPaths.push_back("Hlms/Terra/ign");
+
+    // Get the library archive(s)
+    Ogre::ArchiveVec archiveTerraLibraryFolders;
+    libraryFolderPathIt = libraryFoldersPaths.begin();
+    libraryFolderPathEn = libraryFoldersPaths.end();
+    while (libraryFolderPathIt != libraryFolderPathEn)
+    {
+      Ogre::Archive *archiveLibrary =
+          archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
+          "FileSystem", true);
+      archiveTerraLibraryFolders.push_back(archiveLibrary);
+      ++libraryFolderPathIt;
+    }
+
+    // Create and register
+    hlmsTerra = OGRE_NEW Ogre::HlmsTerra(archiveTerra,
+                                         &archiveTerraLibraryFolders);
+    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsTerra);
+
+    // disable writting debug output to disk
+    hlmsTerra->setDebugOutputPath(false, false);
+
+    this->dataPtr->terraWorkspaceListener.reset(
+      new Ogre::TerraWorkspaceListener(hlmsTerra));
   }
 }
 
@@ -897,6 +954,19 @@ Ogre2IgnHlmsCustomizations& Ogre2RenderEngine::HlmsCustomizations()
 Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 {
   return this->ogreOverlaySystem;
+}
+
+/////////////////////////////////////////////////
+Ogre::HlmsPbsTerraShadows *Ogre2RenderEngine::HlmsPbsTerraShadows() const
+{
+  return this->dataPtr->hlmsPbsTerraShadows.get();
+}
+
+/////////////////////////////////////////////////
+Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
+  const
+{
+  return this->dataPtr->terraWorkspaceListener.get();
 }
 
 // Register this plugin

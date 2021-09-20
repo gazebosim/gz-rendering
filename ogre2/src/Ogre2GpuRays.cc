@@ -189,6 +189,9 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 
   /// \brief Near clip plane for cube camera
   public: float nearClipCube = 0.0;
+
+  /// \brief Min allowed angle in radians;
+  public: const math::Angle kMinAllowedAngle = 1e-4;
 };
 
 using namespace ignition;
@@ -251,8 +254,10 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
       Ogre2VisualPtr ogreVisual =
           std::dynamic_pointer_cast<Ogre2Visual>(result);
 
-      // get laser_retro
-      Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
+      if (ogreVisual->HasUserData(laserRetroKey))
+      {
+        // get laser_retro
+        Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
 
         float retroValue = -1.0;
         try
@@ -282,8 +287,6 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
         // only accept positive laser retro value
         if (retroValue >= 0)
         {
-          // set visibility flag so the camera can see it
-          item->addVisibilityFlags(0x01000000);
           for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
           {
             Ogre::SubItem *subItem = item->getSubItem(i);
@@ -305,9 +308,10 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
           }
         }
       }
-      itor.moveNext();
     }
+    itor.moveNext();
   }
+}
 
 //////////////////////////////////////////////////
 void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
@@ -487,6 +491,7 @@ void Ogre2GpuRays::ConfigureCamera()
 {
   // horizontal gpu rays setup
   auto hfovAngle = this->AngleMax() - this->AngleMin();
+  hfovAngle = std::max(this->dataPtr->kMinAllowedAngle, hfovAngle);
   this->SetHFOV(hfovAngle);
 
   // vertical laser setup
@@ -494,7 +499,8 @@ void Ogre2GpuRays::ConfigureCamera()
 
   if (this->VerticalRangeCount() > 1)
   {
-    vfovAngle = (this->VerticalAngleMax() - this->VerticalAngleMin()).Radian();
+    vfovAngle = std::max(this->dataPtr->kMinAllowedAngle.Radian(),
+        (this->VerticalAngleMax() - this->VerticalAngleMin()).Radian());
   }
   else
   {
@@ -579,11 +585,16 @@ void Ogre2GpuRays::CreateSampleTexture()
   double max = this->AngleMax().Radian();
   double vmin = this->VerticalAngleMin().Radian();
   double vmax = this->VerticalAngleMax().Radian();
-  double hStep = (max-min) / static_cast<double>(this->dataPtr->w2nd-1);
+
+  double hAngle = std::max(this->dataPtr->kMinAllowedAngle.Radian(), max - min);
+  double vAngle = std::max(this->dataPtr->kMinAllowedAngle.Radian(),
+      vmax - vmin);
+
+  double hStep = hAngle / static_cast<double>(this->dataPtr->w2nd-1);
   double vStep = 1.0;
   // non-planar case
   if (this->dataPtr->h2nd > 1)
-    vStep = (vmax-vmin) / static_cast<double>(this->dataPtr->h2nd-1);
+    vStep = vAngle / static_cast<double>(this->dataPtr->h2nd-1);
 
   // create an RGB texture (cubeUVTex) to pack info that tells the shaders how
   // to sample from the cubemap textures.
@@ -887,7 +898,17 @@ void Ogre2GpuRays::Setup1stPass()
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // set camera custom visibility mask when rendering laser retro
-      passScene->mVisibilityMask = 0x01000000 &
+      // todo(anyone) currently in this color + depth pass, lidar sees all
+      // objects, including ones without laser_retro set. So the lidar outputs
+      // data containing depth data + some non-zero retro value for all
+      // objects. If we want to output a retro value of zero for objects
+      // without laser_retro, one possible approach could be to separate out
+      // the color and depth pass:
+      // 1: color pass that see only objects with laser_retro by using custom
+      //    visibility mask
+      // 2: depth pass that see all objects
+      // Then assemble these data in the final quad pass.
+      passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 
@@ -937,7 +958,7 @@ void Ogre2GpuRays::Setup1stPass()
           particleTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue::Black);
-      // set camera custom visibility mask when rendering laser retro
+      // set camera custom visibility mask when rendering particles
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
@@ -1214,12 +1235,13 @@ void Ogre2GpuRays::CreateGpuRaysTextures()
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget1stPass()
 {
-  Ogre::vector<Ogre::TextureGpu*>::type swappedTargets;
+  Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
   swappedTargets.reserve(2u);
 
   // update the compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
+    this->scene->UpdateAllHeightmaps(this->dataPtr->cubeCam[i]);
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(true);
 
     this->dataPtr->ogreCompositorWorkspace1st[i]->_validateFinalTarget();
@@ -1243,7 +1265,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
   this->dataPtr->ogreCompositorWorkspace2nd->_update();
   this->dataPtr->ogreCompositorWorkspace2nd->_endUpdate(false);
 
-  Ogre::vector<Ogre::TextureGpu*>::type swappedTargets;
+  Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
   swappedTargets.reserve(2u);
   this->dataPtr->ogreCompositorWorkspace2nd->_swapFinalTarget(swappedTargets);
 }
@@ -1251,7 +1273,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
-  this->scene->StartRendering();
+  this->scene->StartRendering(nullptr);
 
   auto engine = Ogre2RenderEngine::Instance();
   Ogre2IgnHlmsCustomizations &hlmsCustomizations =

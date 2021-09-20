@@ -304,8 +304,11 @@ Ogre::SubEntity *OgreSubMesh::OgreSubEntity() const
 //////////////////////////////////////////////////
 void OgreSubMesh::Destroy()
 {
-  Ogre::MaterialManager::getSingleton().remove(
-        this->ogreSubEntity->getMaterialName());
+  // this causes several tests to crash on exit because MaterialManager
+  // is already deleted before this call
+  // todo(anyone) check if ogre root is deleted before removing material?
+  // Ogre::MaterialManager::getSingleton().remove(
+  //       this->ogreSubEntity->getMaterialName());
   OgreRTShaderSystem::Instance()->DetachEntity(this);
 
   BaseSubMesh::Destroy();

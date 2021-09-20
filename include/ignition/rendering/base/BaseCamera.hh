@@ -123,7 +123,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetProjectionType(
-          CameraProjectionType _projectionType) override;
+          CameraProjectionType _type) override;
 
       // Documentation inherited.
       public: virtual math::Vector2i Project(const math::Vector3d &_pt) const

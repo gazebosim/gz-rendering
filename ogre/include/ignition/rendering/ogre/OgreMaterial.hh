@@ -98,6 +98,7 @@ namespace ignition
 
       public: virtual bool CastShadows() const override;
 
+      // Documentation inherited.
       public: virtual void SetCastShadows(const bool _castShadows) override;
 
       public: virtual bool ReceiveShadows() const override;
@@ -122,7 +123,8 @@ namespace ignition
 
       public: virtual std::string Texture() const override;
 
-      public: virtual void SetTexture(const std::string &_name) override;
+      // Documentation inherited.
+      public: virtual void SetTexture(const std::string &_texture) override;
 
       public: virtual void ClearTexture() override;
 
@@ -130,12 +132,14 @@ namespace ignition
 
       public: virtual std::string NormalMap() const override;
 
-      public: virtual void SetNormalMap(const std::string &_name) override;
+      // Documentation inherited.
+      public: virtual void SetNormalMap(const std::string &_normalMap) override;
 
       public: virtual void ClearNormalMap() override;
 
       public: virtual enum ShaderType ShaderType() const override;
 
+      // Documentation inherited.
       public: virtual void SetShaderType(enum ShaderType _type) override;
 
       public: virtual Ogre::MaterialPtr Material() const;

@@ -39,6 +39,9 @@ namespace Ogre
   {
     class OverlaySystem;
   }
+
+  class HlmsPbsTerraShadows;
+  class CompositorWorkspaceListener;
 }
 
 namespace ignition
@@ -117,7 +120,7 @@ namespace ignition
 
       /// \brief Create a scene
       /// \param[in] _id Unique scene Id
-      /// \parampin] _name Name of scene
+      /// \param[in] _name Name of scene
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name) override;
 
@@ -180,6 +183,25 @@ namespace ignition
       /// \return Pointer to the ogre overlay system.
       public: Ogre::v1::OverlaySystem *OverlaySystem() const;
 
+      /// \internal
+      /// \brief Get a pointer to the Pbs listener that adds terra shadows.
+      /// Do NOT assume HlmsPbs::getListener() == HlmsPbsTerraShadows()
+      /// as there may be more than one listener in the future with
+      /// a master listener coordinating them
+      /// \return Pointer to the Pbs listener that adds terra shadows.
+      public: Ogre::HlmsPbsTerraShadows *HlmsPbsTerraShadows() const;
+
+      /// \internal
+      /// \brief Get a pointer to the workspace listener that adds terra
+      /// casting shadows from spot and point lights.
+      ///
+      /// This listener needs to be added to each workspace that wants
+      /// terrain shadows from spot/point lights. If no terrains are in scene
+      /// then the workspace's overhead is negligible / almost 0.
+      /// \return Pointer to the CompositorWorkspaceListener
+      public: Ogre::CompositorWorkspaceListener
+          *TerraWorkspaceListener() const;
+
       /// \brief Pointer to the ogre's overlay system
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
 
@@ -220,4 +242,3 @@ namespace ignition
   }
 }
 #endif
-

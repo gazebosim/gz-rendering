@@ -290,6 +290,7 @@ void Ogre2RenderTarget::BuildCompositor()
 
   this->dataPtr->rtListener = new Ogre2RenderTargetCompositorListener(this);
   this->ogreCompositorWorkspace->addListener(this->dataPtr->rtListener);
+  this->ogreCompositorWorkspace->addListener(engine->TerraWorkspaceListener());
 }
 
 //////////////////////////////////////////////////
@@ -450,7 +451,7 @@ void Ogre2RenderTarget::PostRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
-  this->scene->StartRendering();
+  this->scene->StartRendering(this->ogreCamera);
 
   this->ogreCompositorWorkspace->_validateFinalTarget();
   this->ogreCompositorWorkspace->_beginUpdate(false);

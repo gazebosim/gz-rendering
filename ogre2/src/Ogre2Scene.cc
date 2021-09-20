@@ -28,6 +28,7 @@
 #include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
+#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
 #include "ignition/rendering/ogre2/Ogre2InertiaVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2JointVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
@@ -65,6 +66,9 @@
 #include <OgreHlms.h>
 #include <OgreHlmsManager.h>
 #endif
+
+#include "Terra/Terra.h"
+#include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -257,8 +261,11 @@ void Ogre2Scene::EndForcedRender()
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::StartRendering()
+void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
 {
+  if (_camera)
+    this->UpdateAllHeightmaps(_camera);
+
   if (this->LegacyAutoGpuFlush())
   {
     auto engine = Ogre2RenderEngine::Instance();
@@ -404,6 +411,93 @@ bool Ogre2Scene::InitImpl()
   this->CreateMeshFactory();
   UpdateShadowNode();
   return true;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsPbsTerraShadows *pbsTerraShadows = engine->HlmsPbsTerraShadows();
+
+  Ogre::Real closestTerraSqDist = std::numeric_limits<Ogre::Real>::max();
+  Ogre::Terra *closestTerra = 0;
+  Ogre::Terra *insideTerra = 0;
+
+  const Ogre::Vector2 cameraPos2d(_camera->getDerivedPosition().xy());
+
+  auto itor = this->heightmaps.begin();
+  auto endt = this->heightmaps.end();
+
+  while (itor != endt)
+  {
+    Ogre2HeightmapPtr heightmap = itor->lock();
+    if (!heightmap)
+    {
+      // Heightmap has been destroyed. Remove it from our list.
+      // Swap and pop trick
+      itor = Ogre::efficientVectorRemove(this->heightmaps, itor);
+      endt = this->heightmaps.end();
+    }
+    else
+    {
+      heightmap->UpdateForRender(_camera);
+      Ogre::Terra *terra = heightmap->Terra();
+
+      const Ogre::Vector2 origin2d = terra->getTerrainOrigin().xy() +
+                                     terra->getXZDimensions() * 0.5f;
+      const Ogre::Vector2 end2d = origin2d + terra->getXZDimensions();
+
+      if (!(cameraPos2d.x < origin2d.x || cameraPos2d.x > end2d.x ||
+            cameraPos2d.y < origin2d.y || cameraPos2d.x > end2d.y) )
+      {
+        // Give preference to the Terra we're currently inside of
+        insideTerra = terra;
+      }
+      else
+      {
+        auto sqDist = cameraPos2d.squaredDistance((origin2d + end2d) * 0.5f);
+        if( sqDist < closestTerraSqDist )
+        {
+          closestTerraSqDist = sqDist;
+          closestTerra = terra;
+        }
+      }
+
+      ++itor;
+    }
+  }
+
+  // If we're not inside any Terra, then prefer the one that is
+  // "closest" to camera. Both may be nullptrs though.
+  if (insideTerra)
+    pbsTerraShadows->setTerra(insideTerra);
+  else
+    pbsTerraShadows->setTerra(closestTerra);
+
+
+#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 2
+  if (!this->heightmaps.empty())
+  {
+      // Ogre 2.2 expects ign to provide Terra's shadow texture
+      // to each compositor that may use it to properly set barriers
+      // (otherwise GPU may start rendering before the Compute Shader
+      // is done ray marching terrain shadows)
+      //
+      // This is insane with so many possible compositors ign has,
+      // so we do a brute-force approach here (not that expensive actually)
+      //
+      // Ogre 2.3 got rid of this requirement due to being very user-hostile
+      Ogre::RenderSystem *renderSys =
+              this->ogreSceneManager->getDestinationRenderSystem();
+
+      Ogre::ResourceTransition resourceTransition;
+      resourceTransition.readBarrierBits = Ogre::ReadBarrier::Uav;
+      resourceTransition.writeBarrierBits = Ogre::WriteBarrier::Uav;
+      renderSys->_resourceTransitionCreated(&resourceTransition);
+      renderSys->_executeResourceTransition(&resourceTransition);
+      renderSys->_resourceTransitionDestroyed(&resourceTransition);
+  }
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -1037,13 +1131,13 @@ CapsulePtr Ogre2Scene::CreateCapsuleImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int,
-    const std::string &, const HeightmapDescriptor &)
+HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int _id,
+  const std::string &_name, const HeightmapDescriptor &_desc)
 {
-  ignerr << "Ogre 2 doesn't support heightmaps yet, see " <<
-      "https://github.com/ignitionrobotics/ign-rendering/issues/187"
-      << std::endl;
-  return nullptr;
+  Ogre2HeightmapPtr heightmap(new Ogre2Heightmap(_desc));
+  heightmaps.push_back(heightmap);
+  bool result = this->InitObject(heightmap, _id, _name);
+  return (result) ? heightmap : nullptr;
 }
 
 //////////////////////////////////////////////////

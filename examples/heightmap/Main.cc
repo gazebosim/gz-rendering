@@ -170,8 +170,8 @@ void buildScene(ScenePtr _scene)
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(1.441, 25.787, 17.801);
   camera->SetLocalRotation(0.0, 0.588, -1.125);
-  camera->SetImageWidth(800);
-  camera->SetImageHeight(600);
+  camera->SetImageWidth(1600);
+  camera->SetImageHeight(900);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
@@ -207,7 +207,15 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back("ogre");
+  // Expose engine name to command line because we can't instantiate both
+  // ogre and ogre2 at the same time
+  std::string ogreEngineName("ogre2");
+  if (_argc > 1)
+  {
+    ogreEngineName = _argv[1];
+  }
+
+  engineNames.push_back(ogreEngineName);
 
   for (auto engineName : engineNames)
   {

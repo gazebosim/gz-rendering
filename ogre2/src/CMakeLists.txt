@@ -38,6 +38,7 @@ target_link_libraries(${ogre2_target}
   PRIVATE
     ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
+    terra
     IgnOGRE2::IgnOGRE2)
 
 set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})

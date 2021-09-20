@@ -842,7 +842,7 @@ void Ogre2ThermalCamera::Render()
 #endif
 
   // update the compositors
-  this->scene->StartRendering();
+  this->scene->StartRendering(this->ogreCamera);
 
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
   this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);

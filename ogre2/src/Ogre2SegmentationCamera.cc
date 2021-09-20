@@ -310,7 +310,7 @@ ignition::common::ConnectionPtr
 void Ogre2SegmentationCamera::Render()
 {
   // update the compositors
-  this->scene->StartRendering();
+  this->scene->StartRendering(nullptr);
 
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
   this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);

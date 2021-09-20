@@ -57,7 +57,9 @@ namespace ignition
       /// \brief Create a texture which will hold the segmentation data
       public: virtual void CreateSegmentationTexture() = 0;
 
-      /// \brief Get the segmentation image data
+      /// \brief Get the segmentation image data.
+      /// If the segmentation type is panoptic, the first two channels are the
+      /// instance count, and the last channel is the label.
       /// \return The labels-buffer as an array of unsigned ints
       public: virtual uint8_t *SegmentationData() const = 0;
 

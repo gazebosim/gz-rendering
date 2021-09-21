@@ -4,20 +4,15 @@
 
 ### Ignition Rendering 6.0.0 (20XX-XX-XX)
 
-1. Fix ogre 1.x tests
-    * [Pull request #409](https://github.com/ignitionrobotics/ign-rendering/pull/409)
-
 1. Update test config to run ogre 1.x tests in ign-rendering6 on macOS
     * [Pull request #407](https://github.com/ignitionrobotics/ign-rendering/pull/407)
+    * [Pull request #409](https://github.com/ignitionrobotics/ign-rendering/pull/409)
 
 1. Check if key exists in gpu lidar's user data
     * [Pull request #396](https://github.com/ignitionrobotics/ign-rendering/pull/396)
 
-1. Add SetSize API for LidarVisual
+1. Add SetSize API for LidarVisual and markers
     * [Pull request #392](https://github.com/ignitionrobotics/ign-rendering/pull/392)
-
-1. Add Ogre2Heightmap functionality
-    * [Pull request #386](https://github.com/ignitionrobotics/ign-rendering/pull/386)
 
 1. Add Ogre2Heightmap functionality
     * [Pull request #386](https://github.com/ignitionrobotics/ign-rendering/pull/386)

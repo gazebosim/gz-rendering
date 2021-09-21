@@ -45,6 +45,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
+#include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2WireBox.hh"
 
@@ -972,6 +973,15 @@ ThermalCameraPtr Ogre2Scene::CreateThermalCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
   Ogre2ThermalCameraPtr camera(new Ogre2ThermalCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+SegmentationCameraPtr Ogre2Scene::CreateSegmentationCameraImpl(
+  const unsigned int _id, const std::string &_name)
+{
+  Ogre2SegmentationCameraPtr camera(new Ogre2SegmentationCamera);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }

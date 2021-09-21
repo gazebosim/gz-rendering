@@ -1276,6 +1276,12 @@ void Ogre2GpuRays::Render()
   this->scene->StartRendering(nullptr);
 
   auto engine = Ogre2RenderEngine::Instance();
+
+  // The Hlms customizations add a "spherical" clipping; which ignores depth
+  // clamping as it clips before sending vertices to the pixel shader.
+  // These customization can be used to implement multi-tiered
+  // "near plane distances" as proposed in:
+  // https://github.com/ignitionrobotics/ign-rendering/issues/395
   Ogre2IgnHlmsCustomizations &hlmsCustomizations =
       engine->HlmsCustomizations();
 

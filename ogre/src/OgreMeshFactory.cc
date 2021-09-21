@@ -64,8 +64,6 @@ OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
     return nullptr;
   }
 
-  mesh->CopyMeshDescriptor(normDesc);
-
   // create sub-mesh store
   OgreSubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreEntity);
   mesh->subMeshes = subMeshFactory.Create();

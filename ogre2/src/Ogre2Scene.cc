@@ -1116,6 +1116,7 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
   Ogre2MeshPtr mesh = this->meshFactory->Create(_desc);
   if (nullptr == mesh)
     return nullptr;
+  mesh->SetDescriptor(_desc);
 
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;

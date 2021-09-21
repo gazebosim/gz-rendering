@@ -121,6 +121,10 @@ namespace ignition
       public: virtual SubMeshPtr SubMeshByIndex(
                   unsigned int _index) const = 0;
 
+      /// \brief Get the mesh's mesh descriptor
+      /// \return The mesh's mesh descriptor
+      public: virtual const MeshDescriptor &GetMeshDescriptor() const = 0;
+
       /// \brief Copy an existing MeshDescriptor. Once copying is complete,
       /// MeshDescriptor::Load needs to be called on the mesh's MeshDescriptor
       /// before using it

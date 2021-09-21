@@ -102,6 +102,8 @@ namespace ignition
 
       public: virtual GeometryPtr Clone() const override;
 
+      public: const MeshDescriptor &GetMeshDescriptor() const override;
+
       public: virtual void CopyMeshDescriptor(
                   const MeshDescriptor &_copy) override;
 
@@ -364,6 +366,13 @@ namespace ignition
       }
 
       return result;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    const MeshDescriptor &BaseMesh<T>::GetMeshDescriptor() const
+    {
+      return this->meshDescriptor;
     }
 
     //////////////////////////////////////////////////

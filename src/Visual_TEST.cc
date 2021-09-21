@@ -734,8 +734,6 @@ void VisualTest::Clone(const std::string &_renderEngine)
   EXPECT_EQ(clonedVisual->LocalPose(), parent->LocalPose());
   EXPECT_EQ(clonedVisual->Wireframe(), parent->Wireframe());
 
-  // TODO(adlarkin) compare geometries once cloning is implemented for those
-
   // compare materials (the material is cloned, so the name is different but
   // the properties of the material are the same)
   auto clonedVisualMaterial = clonedVisual->Material();
@@ -752,7 +750,7 @@ void VisualTest::Clone(const std::string &_renderEngine)
   EXPECT_DOUBLE_EQ(clonedVisualMaterial->Transparency(),
       originalVisualMaterial->Transparency());
 
-  // TODO(adlarkin) compare children
+  // TODO(anyone) compare child visuals that were cloned
 
   // clean up
   engine->DestroyScene(scene);

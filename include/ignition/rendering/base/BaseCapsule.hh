@@ -126,6 +126,9 @@ namespace ignition
       {
         result->SetRadius(this->Radius());
         result->SetLength(this->Length());
+
+        if (this->Material())
+          result->SetMaterial(this->Material());
       }
 
       return result;

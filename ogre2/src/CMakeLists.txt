@@ -27,6 +27,11 @@ set_property(
   OGRE2_VERSION="${OGRE2_VERSION}"
 )
 
+target_include_directories(${ogre2_target}
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 target_link_libraries(${ogre2_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}

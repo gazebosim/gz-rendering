@@ -92,7 +92,7 @@ namespace ignition
       /// that will perform rendering.
       ///
       /// May update shadows if light direction changed
-      /// \param[in] _camera Camera about to be used for rendering
+      /// \param[in] _activeCamera Camera about to be used for rendering
       public: void UpdateForRender(Ogre::Camera *_activeCamera);
 
       /// \brief Heightmap should only be created by scene.

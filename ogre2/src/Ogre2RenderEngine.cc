@@ -723,9 +723,9 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     {
-      archivePbsLibraryFolders.push_back( archiveManager.load(
-        rootHlmsFolder + "Hlms/Terra/" + "GLSL" + "/PbsTerraShadows",
-        "FileSystem", true ) );
+      archivePbsLibraryFolders.push_back(archiveManager.load(
+        rootHlmsFolder + common::joinPaths("Hlms", "Terra", "GLSL",
+        "PbsTerraShadows"), "FileSystem", true ));
       this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
     }
 
@@ -747,7 +747,7 @@ void Ogre2RenderEngine::RegisterHlms()
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
 
     // Add ignition's customizations
-    libraryFoldersPaths.push_back("Hlms/Terra/ign");
+    libraryFoldersPaths.push_back(common::joinPaths("Hlms", "Terra", "ign"));
 
     // Get the library archive(s)
     Ogre::ArchiveVec archiveTerraLibraryFolders;

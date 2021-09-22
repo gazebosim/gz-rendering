@@ -231,8 +231,8 @@ void MeshTest::MeshClone(const std::string &_renderEngine)
 
   // Compare mesh descriptors. The pointer to the mesh isn't included, but all
   // other fields should be equal
-  auto clonedMeshDescriptor = clonedMesh->GetMeshDescriptor();
-  auto originalMeshDescriptor = mesh->GetMeshDescriptor();
+  auto clonedMeshDescriptor = clonedMesh->Descriptor();
+  auto originalMeshDescriptor = mesh->Descriptor();
   EXPECT_EQ(clonedMeshDescriptor.meshName, originalMeshDescriptor.meshName);
   EXPECT_EQ(clonedMeshDescriptor.subMeshName,
       originalMeshDescriptor.subMeshName);

@@ -100,12 +100,14 @@ namespace ignition
 
       public: virtual void PreRender() override;
 
+      // Documentation inherited.
       public: virtual GeometryPtr Clone() const override;
 
-      public: const MeshDescriptor &GetMeshDescriptor() const override;
+      // Documentation inherited.
+      public: void SetDescriptor(const MeshDescriptor &_desc) override;
 
-      public: virtual void CopyMeshDescriptor(
-                  const MeshDescriptor &_copy) override;
+      // Documentation inherited.
+      public: const MeshDescriptor &Descriptor() const override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
@@ -342,11 +344,9 @@ namespace ignition
         return nullptr;
       }
 
-      auto result = this->Scene()->CreateMesh(this->meshDescriptor.meshName);
+      auto result = this->Scene()->CreateMesh(this->meshDescriptor);
       if (result)
       {
-        result->CopyMeshDescriptor(this->meshDescriptor);
-
         if (this->Material())
         {
           // this call will set the material for the mesh and its submeshes
@@ -370,18 +370,16 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    const MeshDescriptor &BaseMesh<T>::GetMeshDescriptor() const
+    const MeshDescriptor &BaseMesh<T>::Descriptor() const
     {
       return this->meshDescriptor;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMesh<T>::CopyMeshDescriptor(const MeshDescriptor &_copy)
+    void BaseMesh<T>::SetDescriptor(const MeshDescriptor &_desc)
     {
-      this->meshDescriptor.meshName = _copy.meshName;
-      this->meshDescriptor.subMeshName = _copy.subMeshName;
-      this->meshDescriptor.centerSubMesh = _copy.centerSubMesh;
+      this->meshDescriptor = _desc;
     }
 
     //////////////////////////////////////////////////

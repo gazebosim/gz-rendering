@@ -546,6 +546,7 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
   if (nullptr == mesh)
     return nullptr;
 
+  mesh->SetDescriptor(_desc);
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
 }

@@ -368,9 +368,9 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
     for (uint32_t j = 0; j < width; ++j)
     {
       auto index = (i * width + j) * 3;
-      auto r = this->dataPtr->buffer[index + 2];
+      auto r = this->dataPtr->buffer[index];
       auto g = this->dataPtr->buffer[index + 1];
-      auto b = this->dataPtr->buffer[index];
+      auto b = this->dataPtr->buffer[index + 2];
 
       // get color 24 bit unique id, we don't multiply it by 255 like before
       // as they are not normalized we read it from the buffer in

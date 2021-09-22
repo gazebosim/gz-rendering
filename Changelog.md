@@ -11,11 +11,15 @@
 1. Check if key exists in gpu lidar's user data
     * [Pull request #396](https://github.com/ignitionrobotics/ign-rendering/pull/396)
 
+1. Clone visuals and geometries
+    * [Pull request #397](https://github.com/ignitionrobotics/ign-rendering/pull/397)
+
 1. Add SetSize API for LidarVisual and markers
     * [Pull request #392](https://github.com/ignitionrobotics/ign-rendering/pull/392)
 
 1. Add Ogre2Heightmap functionality
     * [Pull request #386](https://github.com/ignitionrobotics/ign-rendering/pull/386)
+    * [Pull request #416](https://github.com/ignitionrobotics/ign-rendering/pull/416)
 
 1. Prevent default-constructed variants from holding a type
     * [Pull request #371](https://github.com/ignitionrobotics/ign-rendering/pull/371)
@@ -41,6 +45,10 @@
 
 1. Segmentation Camera
     * [Pull request #329](https://github.com/ignitionrobotics/ign-rendering/pull/329)
+    * [Pull request #419](https://github.com/ignitionrobotics/ign-rendering/pull/419)
+
+1. Stub bounding box camera APIs
+    * [Pull request #420](https://github.com/ignitionrobotics/ign-rendering/pull/420)
 
 1. Inertia visual
     * [Pull request #326](https://github.com/ignitionrobotics/ign-rendering/pull/326)

@@ -30,7 +30,7 @@ option(USE_UNOFFICAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the buil
 
 #--------------------------------------
 # Find ignition-math
-ign_find_package(ignition-math6 REQUIRED VERSION 6.6)
+ign_find_package(ignition-math6 REQUIRED COMPONENTS eigen3 VERSION 6.9)
 set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
 #--------------------------------------

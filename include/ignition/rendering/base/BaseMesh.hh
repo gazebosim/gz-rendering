@@ -100,6 +100,15 @@ namespace ignition
 
       public: virtual void PreRender() override;
 
+      // Documentation inherited.
+      public: virtual GeometryPtr Clone() const override;
+
+      // Documentation inherited.
+      public: void SetDescriptor(const MeshDescriptor &_desc) override;
+
+      // Documentation inherited.
+      public: const MeshDescriptor &Descriptor() const override;
+
       // Documentation inherited
       public: virtual void Destroy() override;
 
@@ -111,6 +120,9 @@ namespace ignition
 
       /// \brief Pointer to currently assigned material
       protected: MaterialPtr material;
+
+      /// \brief MeshDescriptor for this mesh
+      protected: MeshDescriptor meshDescriptor;
     };
 
     //////////////////////////////////////////////////
@@ -317,6 +329,61 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    GeometryPtr BaseMesh<T>::Clone() const
+    {
+      if (!this->Scene())
+      {
+        ignerr << "Cloning a mesh failed because the mesh to be "
+          << "cloned does not belong to a scene.\n";
+        return nullptr;
+      }
+      else if (this->meshDescriptor.meshName.empty())
+      {
+        ignerr << "Cloning a geometry failed because the name of the mesh is "
+          << "missing.\n";
+        return nullptr;
+      }
+
+      auto result = this->Scene()->CreateMesh(this->meshDescriptor);
+      if (result)
+      {
+        if (this->Material())
+        {
+          // this call will set the material for the mesh and its submeshes
+          result->SetMaterial(this->Material());
+        }
+        else
+        {
+          // if the mesh doesn't have a material, clone any existing submesh
+          // materials
+          for (unsigned int i = 0; i < this->SubMeshCount(); ++i)
+          {
+            auto existingSubMeshMaterial = this->SubMeshByIndex(i)->Material();
+            if (existingSubMeshMaterial)
+              result->SubMeshByIndex(i)->SetMaterial(existingSubMeshMaterial);
+          }
+        }
+      }
+
+      return result;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    const MeshDescriptor &BaseMesh<T>::Descriptor() const
+    {
+      return this->meshDescriptor;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMesh<T>::SetDescriptor(const MeshDescriptor &_desc)
+    {
+      this->meshDescriptor = _desc;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMesh<T>::Destroy()
     {
       T::Destroy();
@@ -324,6 +391,7 @@ namespace ignition
       if (this->material && this->ownsMaterial)
         this->Scene()->DestroyMaterial(this->material);
       this->material.reset();
+      this->meshDescriptor = MeshDescriptor();
     }
 
     //////////////////////////////////////////////////

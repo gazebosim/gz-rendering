@@ -1285,6 +1285,10 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
     std::vector<math::Vector2d> vertices2d;
     for (auto &vertex : vertices)
     {
+      // Skip boxes which has any vertex behind the camera (has positive z)
+      if (vertex.Z() > 0)
+        return;
+
       // Convert to homogeneous coord.
       auto homoVertex =
         Ogre::Vector4(vertex.X(), vertex.Y(), vertex.Z(), 1);

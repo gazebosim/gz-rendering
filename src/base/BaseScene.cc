@@ -27,6 +27,7 @@
 
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
+#include "ignition/rendering/BoundingBoxCamera.hh"
 #include "ignition/rendering/COMVisual.hh"
 #include "ignition/rendering/InertiaVisual.hh"
 #include "ignition/rendering/JointVisual.hh"
@@ -811,6 +812,36 @@ ThermalCameraPtr BaseScene::CreateThermalCamera(const unsigned int _id,
     const std::string &_name)
 {
   ThermalCameraPtr camera = this->CreateThermalCameraImpl(_id, _name);
+  bool result = this->RegisterSensor(camera);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateBoundingBoxCamera(objId);
+}
+//////////////////////////////////////////////////
+BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera(
+  const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "BoundingBoxCamera");
+  return this->CreateBoundingBoxCamera(_id, objName);
+}
+//////////////////////////////////////////////////
+BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera(
+  const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateBoundingBoxCamera(objId, _name);
+}
+//////////////////////////////////////////////////
+BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera(
+  const unsigned int _id,
+    const std::string &_name)
+{
+  BoundingBoxCameraPtr camera = this->CreateBoundingBoxCameraImpl(_id, _name);
   bool result = this->RegisterSensor(camera);
   return (result) ? camera : nullptr;
 }

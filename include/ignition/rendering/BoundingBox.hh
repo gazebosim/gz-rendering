@@ -17,6 +17,8 @@
 #ifndef IGNITION_RENDERING_BOUNDINGBOX_HH_
 #define IGNITION_RENDERING_BOUNDINGBOX_HH_
 
+#include <memory>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 

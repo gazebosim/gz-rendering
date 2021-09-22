@@ -18,7 +18,10 @@
 #ifndef IGNITION_RENDERING_BASECAPSULE_HH_
 #define IGNITION_RENDERING_BASECAPSULE_HH_
 
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/Capsule.hh"
+#include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 
 namespace ignition
@@ -49,6 +52,9 @@ namespace ignition
 
       // Documentation inherited
       public: virtual double Length() const override;
+
+      // Documentation inherited
+      public: virtual GeometryPtr Clone() const override;
 
       /// \brief Radius of the capsule
       protected: double radius = 0.5;
@@ -102,6 +108,30 @@ namespace ignition
     double BaseCapsule<T>::Length() const
     {
       return this->length;
+    }
+
+    /////////////////////////////////////////////////
+    template <class T>
+    GeometryPtr BaseCapsule<T>::Clone() const
+    {
+      if (!this->Scene())
+      {
+        ignerr << "Cloning a Capsule failed because the capsule to be "
+          << "cloned does not belong to a scene.\n";
+        return nullptr;
+      }
+
+      auto result = this->Scene()->CreateCapsule();
+      if (result)
+      {
+        result->SetRadius(this->Radius());
+        result->SetLength(this->Length());
+
+        if (this->Material())
+          result->SetMaterial(this->Material());
+      }
+
+      return result;
     }
     }
   }

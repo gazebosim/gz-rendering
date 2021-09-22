@@ -19,6 +19,8 @@
 
 #include <memory>
 
+#include <ignition/common/SuppressWarning.hh>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 

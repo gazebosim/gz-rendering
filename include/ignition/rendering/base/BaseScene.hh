@@ -339,6 +339,21 @@ namespace ignition
                   const unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera() override;
+
+      // Documentation inherited.
+      public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera(
+        const unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera(
+        const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera(
+        const unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual SegmentationCameraPtr CreateSegmentationCamera() override;
 
       // Documentation inherited.
@@ -613,6 +628,21 @@ namespace ignition
                    ignerr << "Thermal camera not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return ThermalCameraPtr();
+                 }
+
+      /// \brief Implementation for creating a BoundingBox camera.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of BoundingBox camera
+      /// \return Pointer to BoundingBox camera
+      protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
+                     unsigned int _id, const std::string &_name)
+                 {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
+                   ignerr << "BoundingBox camera not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return BoundingBoxCameraPtr();
                  }
 
       /// \brief Implementation for creating a segmentation camera.

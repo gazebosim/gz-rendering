@@ -35,6 +35,30 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
   /// position / orientation / size info of the box and its label
   class IGNITION_RENDERING_VISIBLE BoundingBox
   {
+    /// \brief Constructor
+    public: BoundingBox();
+
+    /// \brief Copy constructor
+    /// \param[in] _box BoundingBox to copy.
+    public: BoundingBox(const BoundingBox &_box);
+
+    /// \brief Move constructor
+    /// \param[in] _box BoundingBox to move.
+    public: BoundingBox(BoundingBox &&_box) noexcept;
+
+    /// \brief Destructor
+    public: virtual ~BoundingBox();
+
+    /// \brief Move assignment operator.
+    /// \param[in] _box Heightmap box to move.
+    /// \return Reference to this.
+    public: BoundingBox &operator=(BoundingBox &&_box);
+
+    /// \brief Copy Assignment operator.
+    /// \param[in] _box The heightmap box to set values from.
+    /// \return *this
+    public: BoundingBox &operator=(const BoundingBox &_box);
+
     /// \internal
     /// \brief Private data
     IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

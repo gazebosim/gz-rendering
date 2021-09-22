@@ -26,3 +26,40 @@ class ignition::rendering::BoundingBoxPrivate
 {
 };
 
+//////////////////////////////////////////////////
+BoundingBox::BoundingBox() :
+    dataPtr(std::make_unique<BoundingBoxPrivate>())
+{
+}
+
+/////////////////////////////////////////////////
+BoundingBox::~BoundingBox()
+{
+}
+
+//////////////////////////////////////////////////
+BoundingBox::BoundingBox(const BoundingBox &_texture)
+  : dataPtr(std::make_unique<BoundingBoxPrivate>(*_texture.dataPtr))
+{
+}
+
+//////////////////////////////////////////////////
+BoundingBox::BoundingBox(BoundingBox &&_texture) noexcept
+  : dataPtr(std::exchange(_texture.dataPtr, nullptr))
+{
+}
+
+/////////////////////////////////////////////////
+BoundingBox &BoundingBox::operator=(
+    const BoundingBox &_texture)
+{
+  return *this = BoundingBox(_texture);
+}
+
+/////////////////////////////////////////////////
+BoundingBox &BoundingBox::operator=(BoundingBox &&_texture)
+{
+  std::swap(this->dataPtr, _texture.dataPtr);
+  return *this;
+}
+

@@ -21,6 +21,7 @@ ign_configure_project(VERSION_SUFFIX pre1)
 # Set project-specific options
 #============================================================================
 
+set(CMAKE_CXX_STANDARD 14)
 option(USE_UNOFFICAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
 
 #============================================================================
@@ -153,8 +154,17 @@ if (HAVE_OGRE2)
   list(APPEND RENDERING_COMPONENTS ogre2)
 endif()
 
+configure_file("${PROJECT_SOURCE_DIR}/cppcheck.suppress.in"
+               ${PROJECT_BINARY_DIR}/cppcheck.suppress)
+
 ign_configure_build(QUIT_IF_BUILD_ERRORS
     COMPONENTS ${RENDERING_COMPONENTS})
+
+if (HAVE_OGRE2)
+  # Must be done after ign_configure_build or else Terra
+  # won't see IGN_ADD_fPIC_TO_LIBRARIES
+  add_subdirectory(ogre2/src/terrain/Terra)
+endif()
 
 #============================================================================
 # Create package information

@@ -40,6 +40,7 @@ namespace ignition
     class Ogre2GizmoVisual;
     class Ogre2GpuRays;
     class Ogre2Grid;
+    class Ogre2Heightmap;
     class Ogre2InertiaVisual;
     class Ogre2JointVisual;
     class Ogre2Light;
@@ -60,6 +61,7 @@ namespace ignition
     class Ogre2RenderTexture;
     class Ogre2RenderWindow;
     class Ogre2Scene;
+    class Ogre2SegmentationCamera;
     class Ogre2Sensor;
     class Ogre2SpotLight;
     class Ogre2SubMesh;
@@ -89,6 +91,7 @@ namespace ignition
     typedef shared_ptr<Ogre2GizmoVisual>          Ogre2GizmoVisualPtr;
     typedef shared_ptr<Ogre2GpuRays>              Ogre2GpuRaysPtr;
     typedef shared_ptr<Ogre2Grid>                 Ogre2GridPtr;
+    typedef shared_ptr<Ogre2Heightmap>            Ogre2HeightmapPtr;
     typedef shared_ptr<Ogre2InertiaVisual>        Ogre2InertiaVisualPtr;
     typedef shared_ptr<Ogre2JointVisual>          Ogre2JointVisualPtr;
     typedef shared_ptr<Ogre2Light>                Ogre2LightPtr;
@@ -108,6 +111,8 @@ namespace ignition
     typedef shared_ptr<Ogre2RenderTexture>        Ogre2RenderTexturePtr;
     typedef shared_ptr<Ogre2RenderWindow>         Ogre2RenderWindowPtr;
     typedef shared_ptr<Ogre2Scene>                Ogre2ScenePtr;
+    typedef shared_ptr<Ogre2SegmentationCamera>
+      Ogre2SegmentationCameraPtr;
     typedef shared_ptr<Ogre2Sensor>               Ogre2SensorPtr;
     typedef shared_ptr<Ogre2SpotLight>            Ogre2SpotLightPtr;
     typedef shared_ptr<Ogre2SubMesh>              Ogre2SubMeshPtr;

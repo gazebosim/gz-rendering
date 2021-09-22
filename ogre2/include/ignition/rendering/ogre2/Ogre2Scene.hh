@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
@@ -135,7 +136,12 @@ namespace ignition
       /// \brief When LegacyAutoGpuFlush(), this function mimics
       /// legacy behavior.
       /// When not, it verifies PreRender has been called
-      public: void StartRendering();
+      /// It also performs necessary updates for all heightmaps
+      ///
+      /// \param _camera camera that is about to render, used
+      /// by heightmaps (Terra). See Ogre2Scene::UpdateAllHeightmaps
+      /// Can be null
+      public: void StartRendering(Ogre::Camera *_camera);
 
       /// \internal
       /// \brief Every Render() function calls this function with
@@ -231,6 +237,10 @@ namespace ignition
 
       // Documentation inherited
       protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
+                     unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
+      protected: virtual SegmentationCameraPtr CreateSegmentationCameraImpl(
                      unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited
@@ -338,6 +348,12 @@ namespace ignition
       protected: virtual bool InitObject(Ogre2ObjectPtr _object,
                      unsigned int _id, const std::string &_name);
 
+      /// \internal
+      /// \brief Iterates through all Heightmaps and calls
+      /// Ogre2Heightmap::UpdateForRender on each of them
+      /// \param[in] _camera Camera about to be used for rendering
+      public: void UpdateAllHeightmaps(Ogre::Camera *_camera);
+
       /// \brief Create a compositor shadow node with the same number of shadow
       /// textures as the number of shadow casting lights
       protected: void UpdateShadowNode();
@@ -408,6 +424,9 @@ namespace ignition
 
       /// \brief A list of ogre materials
       protected: Ogre2MaterialMapPtr materials;
+
+      /// \brief A list of ogre heightmaps
+      protected: std::vector<std::weak_ptr<Ogre2Heightmap>> heightmaps;
 
       /// \brief Pointer to the ogre scene manager
       protected: Ogre::SceneManager *ogreSceneManager = nullptr;

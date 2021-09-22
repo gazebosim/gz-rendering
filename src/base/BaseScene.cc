@@ -44,6 +44,7 @@
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Text.hh"
 #include "ignition/rendering/ThermalCamera.hh"
+#include "ignition/rendering/SegmentationCamera.hh"
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
@@ -841,6 +842,36 @@ BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera(
     const std::string &_name)
 {
   BoundingBoxCameraPtr camera = this->CreateBoundingBoxCameraImpl(_id, _name);
+  bool result = this->RegisterSensor(camera);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+SegmentationCameraPtr BaseScene::CreateSegmentationCamera()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateSegmentationCamera(objId);
+}
+//////////////////////////////////////////////////
+SegmentationCameraPtr BaseScene::CreateSegmentationCamera(
+  const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "SegmentationCamera");
+  return this->CreateSegmentationCamera(_id, objName);
+}
+//////////////////////////////////////////////////
+SegmentationCameraPtr BaseScene::CreateSegmentationCamera(
+  const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateSegmentationCamera(objId, _name);
+}
+//////////////////////////////////////////////////
+SegmentationCameraPtr BaseScene::CreateSegmentationCamera(
+  const unsigned int _id,
+    const std::string &_name)
+{
+  SegmentationCameraPtr camera = this->CreateSegmentationCameraImpl(_id, _name);
   bool result = this->RegisterSensor(camera);
   return (result) ? camera : nullptr;
 }

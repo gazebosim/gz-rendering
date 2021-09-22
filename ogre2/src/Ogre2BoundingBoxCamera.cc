@@ -510,7 +510,7 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
 void Ogre2BoundingBoxCamera::Render()
 {
   // update the compositors
-  this->scene->StartRendering();
+  this->scene->StartRendering(nullptr);
 
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
   this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);

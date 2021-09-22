@@ -685,6 +685,12 @@ namespace ignition
       public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera() = 0;
 
       /// \brief Create new BoundingBox camera with the given ID.
+      /// \brief Create new segmentation camera. A unique ID and name will
+      /// automatically be assigned to the camera.
+      /// \return The created camera
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera() = 0;
+
+      /// \brief Create new segmentation camera with the given ID.
       /// A unique name will automatically be assigned to the camera.
       /// If the given ID is already in use, NULL will be returned.
       /// \param[in] _id ID of the new camera
@@ -693,6 +699,10 @@ namespace ignition
                   unsigned int _id) = 0;
 
       /// \brief Create new BoundingBox camera with the given name.
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new segmentation camera with the given name.
       /// A unique ID will automatically be assigned to the camera.
       /// If the given name is already in use, NULL will be returned.
       /// \param[in] _name Name of the new camera
@@ -701,11 +711,23 @@ namespace ignition
                   const std::string &_name) = 0;
 
       /// \brief Create new BoundingBox camera with the given ID & name. If
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new boundingbox camera with the given name and ID. If
       /// either the given ID or name is already in use, will return NULL.
       /// \param[in] _id ID of the new camera
       /// \param[in] _name Name of the new camera
       /// \return The created camera
       public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera(
+                  unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new segmentation camera with the given name and ID. If
+      /// either the given ID or name is already in use, will return NULL.
+      /// \param[in] _id ID of the new camera
+      /// \param[in] _name Name of the new camera
+      /// \return The created camera
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera(
                   unsigned int _id, const std::string &_name) = 0;
 
       /// \brief Create new gpu rays caster. A unique ID and name will

@@ -354,6 +354,21 @@ namespace ignition
         const unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera() override;
+
+      // Documentation inherited.
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera(
+        const unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera(
+        const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera(
+        const unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual GpuRaysPtr CreateGpuRays() override;
 
       // Documentation inherited.
@@ -621,13 +636,30 @@ namespace ignition
       /// \return Pointer to BoundingBox camera
       protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
                      unsigned int _id, const std::string &_name)
+                  {
+                    // The following two lines will avoid doxygen warnings
+                    (void)_id;
+                    (void)_name;
+
+                    ignerr << "BoundingBox camera not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                    return BoundingBoxCameraPtr();
+                  }
+      /// \brief Implementation for creating a segmentation camera.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of segmentation camera
+      /// \return Pointer to segmentation camera
+      protected: virtual SegmentationCameraPtr CreateSegmentationCameraImpl(
+                     unsigned int _id,
+                     const std::string &_name)
                  {
                    // The following two lines will avoid doxygen warnings
                    (void)_id;
                    (void)_name;
-                   ignerr << "BoundingBox camera not supported by: "
+
+                   ignerr << "Segmentation camera not supported by: "
                           << this->Engine()->Name() << std::endl;
-                   return BoundingBoxCameraPtr();
+                   return SegmentationCameraPtr();
                  }
 
       /// \brief Implementation for creating GpuRays sensor.

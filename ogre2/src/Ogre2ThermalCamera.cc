@@ -468,9 +468,6 @@ void Ogre2ThermalCamera::Init()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::Destroy()
 {
-
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
   if (this->dataPtr->thermalImage)
   {
     delete [] this->dataPtr->thermalImage;
@@ -480,7 +477,9 @@ void Ogre2ThermalCamera::Destroy()
   if (!this->ogreCamera)
     return;
 
-  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  auto ogreCompMgr = ogreRoot->getCompositorManager2();
 
   // remove thermal texture, material, compositor
   if (this->dataPtr->ogreThermalTexture)
@@ -842,7 +841,7 @@ void Ogre2ThermalCamera::Render()
 #endif
 
   // update the compositors
-  this->scene->StartRendering();
+  this->scene->StartRendering(this->ogreCamera);
 
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
   this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);

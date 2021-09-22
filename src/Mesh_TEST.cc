@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <memory>
 #include <string>
 
 #include <ignition/common/Console.hh>
@@ -41,6 +42,9 @@ class MeshTest : public testing::Test,
 
   /// \brief Test mesh skeleton animation API
   public: void MeshSkeletonAnimation(const std::string &_renderEngine);
+
+  /// \brief Test mesh clone API
+  public: void MeshClone(const std::string &_renderEngine);
 
   public: const std::string TEST_MEDIA_PATH =
         common::joinPaths(std::string(PROJECT_SOURCE_PATH),
@@ -200,6 +204,91 @@ void MeshTest::MeshSkeletonAnimation(const std::string &_renderEngine)
 TEST_P(MeshTest, MeshSkeletonAnimation)
 {
   MeshSkeletonAnimation(GetParam());
+}
+
+/////////////////////////////////////////////////
+void MeshTest::MeshClone(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+           << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+
+  // create the mesh using mesh descriptor
+  MeshDescriptor descriptor("unit_box");
+  MeshPtr mesh = scene->CreateMesh(descriptor);
+  ASSERT_NE(nullptr, mesh);
+
+  // clone the mesh
+  auto clonedMesh = std::dynamic_pointer_cast<rendering::Mesh>(mesh->Clone());
+  ASSERT_NE(nullptr, clonedMesh);
+
+  // Compare mesh descriptors. The pointer to the mesh isn't included, but all
+  // other fields should be equal
+  auto clonedMeshDescriptor = clonedMesh->Descriptor();
+  auto originalMeshDescriptor = mesh->Descriptor();
+  EXPECT_EQ(clonedMeshDescriptor.meshName, originalMeshDescriptor.meshName);
+  EXPECT_EQ(clonedMeshDescriptor.subMeshName,
+      originalMeshDescriptor.subMeshName);
+  EXPECT_EQ(clonedMeshDescriptor.centerSubMesh,
+      originalMeshDescriptor.centerSubMesh);
+  EXPECT_EQ(nullptr, clonedMeshDescriptor.mesh);
+  EXPECT_EQ(nullptr, originalMeshDescriptor.mesh);
+
+  // Helper function for comparing materials.
+  std::function<void(MaterialPtr, MaterialPtr, bool)> compareMaterials =
+    [&](const MaterialPtr _mat1, const MaterialPtr _mat2, bool _unique)
+    {
+      ASSERT_NE(nullptr, _mat1);
+      ASSERT_NE(nullptr, _mat2);
+      if (_unique)
+      {
+        EXPECT_NE(_mat1, _mat2);
+        EXPECT_NE(_mat1->Name(), _mat2->Name());
+      }
+      else
+      {
+        EXPECT_EQ(_mat1, _mat2);
+        EXPECT_EQ(_mat1->Name(), _mat2->Name());
+      }
+      EXPECT_EQ(_mat1->Type(), _mat2->Type());
+      EXPECT_EQ(_mat1->Ambient(), _mat2->Ambient());
+      EXPECT_EQ(_mat1->Diffuse(), _mat2->Diffuse());
+      EXPECT_EQ(_mat1->Specular(),
+          _mat2->Specular());
+      EXPECT_DOUBLE_EQ(_mat1->Transparency(),
+          _mat2->Transparency());
+    };
+
+  // compare materials and submeshes
+  compareMaterials(clonedMesh->Material(), mesh->Material(), true);
+  ASSERT_EQ(clonedMesh->SubMeshCount(), mesh->SubMeshCount());
+  for (unsigned int i = 0; i < clonedMesh->SubMeshCount(); ++i)
+  {
+    // since the "top level mesh" has a material, the submesh materials are not
+    // unique copies:
+    // https://github.com/ignitionrobotics/ign-rendering/blob/8f961d0c4cc755b6a2ca217d5a73de268ef95514/include/ignition/rendering/base/BaseMesh.hh#L293
+    auto clonedSubMesh = clonedMesh->SubMeshByIndex(i);
+    auto originalSubMesh = clonedMesh->SubMeshByIndex(i);
+    compareMaterials(clonedSubMesh->Material(), originalSubMesh->Material(),
+        false);
+  }
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_P(MeshTest, MeshClone)
+{
+  MeshClone(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Mesh, MeshTest,

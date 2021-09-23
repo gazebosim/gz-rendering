@@ -24,26 +24,20 @@ namespace ignition
 
       public: virtual void PreRender() override;
 
-        // Documentation inherited.
+      public: virtual math::Vector3d LocalPosition() const override;
+      
       public: virtual math::Vector3d LocalScale() const override;
 
-        // Documentation inherited.
       public: virtual bool InheritScale() const override;
 
-        // Documentation inherited.
       public: virtual void SetInheritScale(bool _inherit) override;
 
-        // Documentation inherited.
       protected: virtual void SetLocalScaleImpl(
                        const math::Vector3d &_scale) override;
 
       protected: virtual math::Pose3d RawLocalPose() const override;
 
       protected: virtual void SetRawLocalPose(const math::Pose3d &_pose) override;
-
-      protected: virtual void WritePoseToDevice();
-
-      protected: virtual void WritePoseToDeviceImpl();
 
       protected: virtual void SetParent(LuxCoreEngineNodePtr _parent);
 

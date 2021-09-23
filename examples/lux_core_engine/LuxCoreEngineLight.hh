@@ -53,11 +53,11 @@ namespace ignition
 
       public: virtual void SetIntensity(double _intensity);
 
+      public: virtual void UpdateLuxSDL() = 0;
+
       protected: std::string lightType;
 
       protected: float gainR, gainG, gainB;
-
-      protected: float directionX, directionY, directionZ;
     };
     class LuxCoreEngineDirectionalLight :
       public BaseDirectionalLight<LuxCoreEngineLight>
@@ -69,6 +69,21 @@ namespace ignition
       public: virtual void SetDirection(double _x, double _y, double _z);
 
       public: virtual void SetDirection(const math::Vector3d &_dir);
+
+      public: virtual void UpdateLuxSDL();
+      
+      protected: float directionX, directionY, directionZ;
+    };
+    class LuxCoreEnginePointLight :
+      public BasePointLight<LuxCoreEngineLight>
+    {
+      public: LuxCoreEnginePointLight(std::string lightType);
+    
+      public: virtual void SetLocalPosition(double _x, double _y, double _z);
+
+      public: virtual void UpdateLuxSDL();
+      
+      protected: float localPositionX, localPositionY, localPositionZ;
     };
     }
   }

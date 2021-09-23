@@ -34,6 +34,7 @@ namespace ignition
 
     class LuxCoreEngineLight;
     class LuxCoreEngineDirectionalLight;
+    class LuxCoreEnginePointLight;
 
     class LuxCoreEngineVisual;
     class LuxCoreEngineGeometry;
@@ -58,6 +59,7 @@ namespace ignition
     typedef BaseLightStore<LuxCoreEngineLight>            LuxCoreEngineLightStore;
     typedef shared_ptr<LuxCoreEngineLightStore>           LuxCoreEngineLightStorePtr;
     typedef shared_ptr<LuxCoreEngineDirectionalLight>     LuxCoreEngineDirectionalLightPtr;
+    typedef shared_ptr<LuxCoreEnginePointLight>           LuxCoreEnginePointLightPtr;
 
     typedef shared_ptr<LuxCoreEngineVisual>               LuxCoreEngineVisualPtr;
     typedef shared_ptr<LuxCoreEngineMesh>                 LuxCoreEngineMeshPtr;

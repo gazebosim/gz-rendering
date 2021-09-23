@@ -13,10 +13,7 @@ void LuxCoreEngineLight::SetDiffuseColor(double _r, double _g, double _b, double
   this->gainG = _g;
   this->gainB = _b;
 
-  scene->SceneLux()->Parse(
-	    luxrays::Property("scene.lights." + Name() + ".type")(this->lightType) <<
-	    luxrays::Property("scene.lights." + Name() + ".gain")(this->gainR, this->gainG, this->gainB) <<
-      luxrays::Property("scene.lights." + Name() + ".dir")(this->directionX, this->directionY, this->directionZ));
+  this->UpdateLuxSDL();
 }
 
 void LuxCoreEngineLight::SetDiffuseColor(const ignition::math::Color &_color) {}
@@ -60,12 +57,41 @@ void LuxCoreEngineDirectionalLight::SetDirection(double _x, double _y, double _z
 {
   this->directionX = _x;
   this->directionY = _y;
-  this->directionZ = -_z;
+  this->directionZ = _z;
 
+  this->UpdateLuxSDL();
+}
+
+void LuxCoreEngineDirectionalLight::SetDirection(const math::Vector3d &_dir) {}
+
+void LuxCoreEngineDirectionalLight::UpdateLuxSDL()
+{
   scene->SceneLux()->Parse(
 	    luxrays::Property("scene.lights." + Name() + ".type")(this->lightType) <<
 	    luxrays::Property("scene.lights." + Name() + ".gain")(this->gainR, this->gainG, this->gainB) <<
       luxrays::Property("scene.lights." + Name() + ".dir")(this->directionX, this->directionY, this->directionZ));
 }
 
-void LuxCoreEngineDirectionalLight::SetDirection(const math::Vector3d &_dir) {}
+LuxCoreEnginePointLight::LuxCoreEnginePointLight(std::string lightType)
+{
+  this->lightType = lightType;
+}
+
+void LuxCoreEnginePointLight::SetLocalPosition(double _x, double _y, double _z)
+{
+  this->localPositionX = _x;
+  this->localPositionY = _y;
+  this->localPositionZ = _z;
+
+  this->UpdateLuxSDL();
+}
+
+void LuxCoreEnginePointLight::UpdateLuxSDL()
+{
+  scene->SceneLux()->Parse(
+	    luxrays::Property("scene.lights." + Name() + ".type")(this->lightType) <<
+	    luxrays::Property("scene.lights." + Name() + ".gain")(this->gainR, this->gainG, this->gainB) <<
+      luxrays::Property("scene.lights." + Name() + ".position")(this->localPositionX, this->localPositionY, this->localPositionZ) <<
+	    luxrays::Property("scene.lights." + Name() + ".power")(10) <<
+	    luxrays::Property("scene.lights." + Name() + ".efficency")(15));
+}

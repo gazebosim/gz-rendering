@@ -3,9 +3,11 @@
 using namespace ignition;
 using namespace rendering;
 
-
 void LuxCoreEngineVisual::SetLocalPosition(double _x, double _y, double _z)
 {
+  math::Vector3 rotation = this->pose.Rot().Euler();
+  this->pose.Set(_x, _y, _z, rotation[0], rotation[1], rotation[2]);
+
   for (auto iter = this->geometries->Begin(); iter != this->geometries->End(); ++iter)
   {
     iter->second->SetLocalPosition(_x, _y, _z);

@@ -19,6 +19,11 @@ NodePtr LuxCoreEngineNode::Parent() const
 
 void LuxCoreEngineNode::PreRender() {}
 
+math::Vector3d LuxCoreEngineNode::LocalPosition() const
+{
+  return pose.Pos();
+}
+
 math::Vector3d LuxCoreEngineNode::LocalScale() const 
 {
   return math::Vector3d::One;
@@ -39,10 +44,6 @@ math::Pose3d LuxCoreEngineNode::RawLocalPose() const
 }
 
 void LuxCoreEngineNode::SetRawLocalPose(const math::Pose3d &_pose) {}
-
-void LuxCoreEngineNode::WritePoseToDevice() {}
-
-void LuxCoreEngineNode::WritePoseToDeviceImpl() {}
 
 void LuxCoreEngineNode::SetParent(LuxCoreEngineNodePtr _parent) {}
 

@@ -74,14 +74,14 @@ void updateCameras()
 
 {
   double angle = g_offset / 2 * M_PI;
-  double x = sin(angle) * 3.0 + 3.0;
-  double y = cos(angle) * 3.0;
+  double x = sin(angle) * 5.0 + 3;
+  double y = cos(angle) * 5.0;
   for (ir::CameraPtr camera : g_cameras)
   {
-    camera->SetLocalPosition(x, y, 0.0);
+    camera->SetLocalPosition(x, y, 5.0);
   }
 
-  g_offset += 0.0005;
+  g_offset += 0.05;
 }
 //! [update camera]
 
@@ -116,7 +116,7 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-  // updateCameras();
+  updateCameras();
 }
 
 //////////////////////////////////////////////////

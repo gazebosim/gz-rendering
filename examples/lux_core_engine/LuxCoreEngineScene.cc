@@ -9,7 +9,6 @@ LuxCoreEngineScene::LuxCoreEngineScene(unsigned int _id, const std::string &_nam
 {
   this->id_ = _id;
   this->name_ = _name;
-
 }
 
 LuxCoreEngineScene::~LuxCoreEngineScene() {}
@@ -54,7 +53,14 @@ DirectionalLightPtr LuxCoreEngineScene::CreateDirectionalLightImpl(
 PointLightPtr LuxCoreEngineScene::CreatePointLightImpl(unsigned int _id,
                  const std::string &_name)
 {
-  return nullptr;
+  LuxCoreEnginePointLightPtr light(new LuxCoreEnginePointLight("point"));
+
+  sceneLux->Parse(
+	    luxrays::Property() <<
+	    luxrays::Property("scene.lights." + _name + ".type")("point"));
+
+  bool result = this->InitObject(light, _id, _name);
+  return (result) ? light : nullptr;
 }
 
 SpotLightPtr LuxCoreEngineScene::CreateSpotLightImpl(unsigned int _id,
@@ -67,6 +73,11 @@ CameraPtr LuxCoreEngineScene::CreateCameraImpl(unsigned int _id,
                  const std::string &_name)
 {
   LuxCoreEngineCameraPtr camera(new LuxCoreEngineCamera);
+
+  sceneLux->Parse(
+	    luxrays::Property() <<
+	    luxrays::Property("scene.camera.type")("perspective"));
+
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }
@@ -245,14 +256,10 @@ bool LuxCoreEngineScene::LoadImpl()
 bool LuxCoreEngineScene::InitImpl()
 {  
   luxcore::Init(
-//    LogHandler
+    LogHandler
   );
 
   sceneLux = luxcore::Scene::Create();
-  sceneLux->Parse(
-      luxrays::Property("scene.camera.lookat.orig")(1.f , 6.f , 3.f) <<
-		  luxrays::Property("scene.camera.lookat.target")(0.f , 0.f , .5f) <<
-		  luxrays::Property("scene.camera.fieldofview")(60.f));
   
   this->CreateStores();
   this->CreateMeshFactory();

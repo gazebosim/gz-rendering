@@ -72,7 +72,7 @@ ign_find_package(IgnOGRE VERSION 1.9.0
 # Display a warning for the users on this setup unless they provide
 # USE_UNOFFICAL_OGRE_VERSIONS flag
 if (NOT USE_UNOFFICAL_OGRE_VERSIONS)
-  if (OGRE_FOUND AND OGRE_VERSION VERSION_GREATER "1.9.0")
+  if (OGRE_FOUND AND OGRE_VERSION VERSION_GREATER_EQUAL "1.10")
     IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
                       "The software might compile and even work but support from upstream"
                       "could be reduced to accepting patches for newer versions")

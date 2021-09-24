@@ -32,6 +32,12 @@ using namespace rendering;
 class SceneTest: public testing::Test,
                  public testing::WithParamInterface<const char *>
 {
+  // Documentation inherited
+  public: void SetUp() override
+  {
+    ignition::common::Console::SetVerbosity(4);
+  }
+
   // Test adding and removing visuals
   // Simulates 'levels' where visuals are added and removed throughout
   // frame updates
@@ -146,6 +152,14 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
   {
     igndbg << "RayQuery not supported yet in rendering engine: "
             << _renderEngine << std::endl;
+    return;
+  }
+  else if (_renderEngine == "ogre2")
+  {
+    // VisualAt tests fail on CI, see issue #170
+    // https://github.com/ignitionrobotics/ign-rendering/issues/170
+    igndbg << "VisualAt test is disabled in " << _renderEngine << "."
+           << std::endl;
     return;
   }
 

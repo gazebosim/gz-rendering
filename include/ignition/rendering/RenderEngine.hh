@@ -172,6 +172,15 @@ namespace ignition
       /// \return True if headless mode is enable, false otherwise.
       public: virtual bool Headless() const = 0;
 
+      /// \brief Set winID from Qt
+      /// Required in OGRE 2.2
+      /// \param[in] _winID Qt MainWindow ID
+      public: virtual void SetWinID(const std::string &_winID) = 0;
+
+      /// \brief Get headless mode
+      /// \return Qt MainWindow ID
+      public: virtual const std::string WinID() const = 0;
+
       /// \brief Add path to media resource location
       /// \param[in] _path Absolute path to resource location
       public: virtual void AddResourcePath(const std::string &_path) = 0;

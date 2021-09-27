@@ -95,6 +95,12 @@ namespace ignition
       public: virtual bool Headless() const override;
 
       // Documentation Inherited
+      public: virtual void SetWinID(const std::string &_winID) override;
+
+      // Documentation Inherited
+      public: virtual const std::string WinID() const override;
+
+      // Documentation Inherited
       public: virtual RenderPassSystemPtr RenderPassSystem() const override;
 
       protected: virtual void PrepareScene(ScenePtr _scene);
@@ -118,6 +124,8 @@ namespace ignition
       protected: bool initialized = false;
 
       protected: bool isHeadless = false;
+
+      protected: std::string winID = "";
 
       protected: unsigned int nextSceneId;
 

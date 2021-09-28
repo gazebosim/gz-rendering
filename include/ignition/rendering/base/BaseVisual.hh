@@ -528,8 +528,14 @@ namespace ignition
       {
         NodePtr child = it->second;
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
-        if (nullptr != visual)
-          visual->Clone("", result);
+        // recursively delete all cloned visuals if the child cannot be
+        // retrieved, or if cloning the child visual failed
+        if (!visual || !visual->Clone("", result))
+        {
+          ignerr << "Cloning a child visual failed.\n";
+          scene_->DestroyVisual(result, true);
+          return nullptr;
+        }
       }
 
       for (unsigned int i = 0; i < this->GeometryCount(); ++i)

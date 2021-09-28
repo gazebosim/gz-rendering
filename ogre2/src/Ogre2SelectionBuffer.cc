@@ -209,7 +209,6 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
         Ogre::TextureFlags::RenderToTexture,
         Ogre::TextureTypes::Type2D);
   this->dataPtr->renderTexture->setResolution(1, 1);
-  // this->dataPtr->renderTexture->setResolution(this->dataPtr->width, this->dataPtr->height);
   this->dataPtr->renderTexture->setNumMipmaps(1u);
   this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA32_FLOAT);
 

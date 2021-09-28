@@ -434,6 +434,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   double projectionA = projectionAB.x;
   double projectionB = projectionAB.y;
   projectionB /= farPlane;
+
   psParams->setNamedConstant("projectionParams",
       Ogre::Vector2(projectionA, projectionB));
   psParams->setNamedConstant("near",

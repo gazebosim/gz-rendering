@@ -9,7 +9,7 @@ project(ignition-rendering6 VERSION 6.0.0)
 # Find ignition-cmake
 #============================================================================
 # If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake2 2.3 REQUIRED)
+find_package(ignition-cmake2 2.8.0 REQUIRED)
 set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
 
 #============================================================================
@@ -22,7 +22,7 @@ ign_configure_project(VERSION_SUFFIX pre2)
 #============================================================================
 
 set(CMAKE_CXX_STANDARD 14)
-option(USE_UNOFFICAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
+option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
 
 #============================================================================
 # Search for project-specific dependencies
@@ -66,15 +66,19 @@ list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
 
 # Ogre versions greater than 1.9 are not officialy supported.
 # Display a warning for the users on this setup unless they provide
-# USE_UNOFFICAL_OGRE_VERSIONS flag
-if (NOT USE_UNOFFICAL_OGRE_VERSIONS)
-  ign_find_package(IgnOGRE VERSION 1.10
-    COMPONENTS ${ign_ogre_components})
+# USE_UNOFFICIAL_OGRE_VERSIONS flag
+if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
+  # Only for checking the ogre version
+  ign_find_package(IgnOGRE VERSION 1.10 QUIET)
 
   if (OGRE_FOUND)
     IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
                       "The software might compile and even work but support from upstream"
                       "could be reduced to accepting patches for newer versions")
+    ign_find_package(IgnOGRE VERSION 1.10
+      COMPONENTS ${ign_ogre_components}
+      REQUIRED_BY ogre
+      PRIVATE_FOR ogre)
   else()
     # If ogre 1.10 or greater was not found, then proceed to look for 1.9.x
     # versions which are offically supported

@@ -65,6 +65,16 @@ namespace ignition
       /// \return Returns the Ogre item at the coordinate.
       public: Ogre::Item *OnSelectionClick(const int _x, const int _y);
 
+      /// \brief Perform selection operation and get ogre item and
+      /// point of intersection.
+      /// \param[in] _x X coordinate in pixels.
+      /// \param[in] _y Y coordinate in pixels.
+      /// \param[out] _item Ogre item at the coordinate.
+      /// \param[out] _point 3D point of intersection with the ogre item's mesh.
+      /// \return True if an ogre item is found, false otherwise
+      public: bool ExecuteQuery(const int _x, const int _y, Ogre::Item *&_item,
+          math::Vector3d &_point);
+
       /// \brief Set dimension of the selection buffer
       /// \param[in] _width X dimension in pixels.
       /// \param[in] _height Y dimension in pixels.

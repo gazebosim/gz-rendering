@@ -132,6 +132,15 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   // API without RayQueryResult and default max distance
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
 
+  if (_renderEngine == "ogre2")
+  {
+    // tests using selection buffer fail on CI, see issue #170
+    // https://github.com/ignitionrobotics/ign-rendering/issues/170
+    igndbg << "Selection buffer based screenToScene test is disabled in "
+           << _renderEngine << "." << std::endl;
+    return;
+  }
+
   // high tol is used for z due to depth buffer precision.
   // Do not merge the tol changes forward to ign-rendering6.
   EXPECT_NEAR(0.5, result.Z(), 1e-3);

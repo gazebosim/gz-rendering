@@ -126,10 +126,11 @@ RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
         typeid(unsigned int))
     {
       auto userAny = ogreItem->getUserObjectBindings().getUserAny();
-      double pointLength = point.Length();
-      if (!std::isinf(pointLength))
+      double distance = this->dataPtr->camera->WorldPosition().Distance(point)
+          - this->dataPtr->camera->NearClipPlane();
+      if (!std::isinf(distance))
       {
-        result.distance = pointLength;
+        result.distance = distance;
         result.point = point;
         result.objectId = Ogre::any_cast<unsigned int>(userAny);
       }

@@ -885,7 +885,10 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   }
 
 #if !defined(__APPLE__) && !defined(_MSC_VER)
-  params["parentWindowHandle"] = this->winID;
+  if (!this->winID.empty())
+  {
+    params["parentWindowHandle"] = this->winID;
+  }
 #endif
 
   int attempts = 0;

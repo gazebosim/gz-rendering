@@ -481,6 +481,13 @@ namespace ignition
     VisualPtr BaseVisual<T>::Clone(const std::string &_name,
         NodePtr _newParent) const
     {
+      const std::string skipCloneKey = "skip-visual-clone";
+      if (this->HasUserData(skipCloneKey))
+      {
+        ignerr << "Not cloning because the visual is " << skipCloneKey << "\n";
+        return nullptr;
+      }
+
       ScenePtr scene_ = this->Scene();
       if (nullptr == scene_)
       {
@@ -527,10 +534,21 @@ namespace ignition
       for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
         NodePtr child = it->second;
-        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+
         // recursively delete all cloned visuals if the child cannot be
         // retrieved, or if cloning the child visual failed
-        if (!visual || !visual->Clone("", result))
+        auto success = false;
+        if (auto visual = std::dynamic_pointer_cast<Visual>(child))
+        {
+          // don't clone a child visual if it's marked as one to be skipped
+          if (visual->HasUserData(skipCloneKey))
+            continue;
+
+          if (visual->Clone("", result))
+            success = true;
+        }
+
+        if (!success)
         {
           ignerr << "Cloning a child visual failed.\n";
           scene_->DestroyVisual(result, true);

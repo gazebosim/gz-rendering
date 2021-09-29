@@ -149,6 +149,10 @@ namespace ignition
       /// \param[in] _newParent Parent of the cloned Visual. Set to nullptr if
       /// the cloned visual should have no parent.
       /// \return The visual. nullptr is returned if cloning failed.
+      /// \note If the visual to be cloned has boolean UserData with a key
+      /// "skip-visual-clone", nullptr is returned. If the visual to be cloned
+      /// does not have this UserData, but a child visual does, then the child
+      /// visuals with this UserData will not be cloned.
       public: virtual VisualPtr Clone(const std::string &_name,
                   NodePtr _newParent) const = 0;
     };

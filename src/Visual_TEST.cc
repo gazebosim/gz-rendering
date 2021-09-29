@@ -751,6 +751,37 @@ void VisualTest::Clone(const std::string &_renderEngine)
       originalVisualMaterial->Transparency());
 
   // TODO(anyone) compare child visuals that were cloned
+  // The code below ensures that children were cloned, but cloned children
+  // should be compared to their original children to ensure that the cloned
+  // children are correct
+  ASSERT_EQ(parent->ChildCount(), clonedVisual->ChildCount());
+  ASSERT_EQ(1u, parent->ChildCount());
+  auto clonedChild = clonedVisual->ChildByIndex(0u);
+  ASSERT_EQ(child->ChildCount(), clonedChild->ChildCount());
+  ASSERT_EQ(1u, child->ChildCount());
+  auto clonedGrandChild = clonedChild->ChildByIndex(0u);
+  ASSERT_EQ(grandChild->ChildCount(), clonedGrandChild->ChildCount());
+  EXPECT_EQ(0u, grandChild->ChildCount());
+
+  // make sure visuals are ignored during cloning if they have UserData attached
+  // that signals skipping cloning
+  const std::string skipCloneKey = "skip-visual-clone";
+  VisualPtr invalidParent = scene->CreateVisual();
+  ASSERT_NE(nullptr, invalidParent);
+  invalidParent->SetUserData(skipCloneKey, static_cast<bool>(true));
+  EXPECT_EQ(nullptr, invalidParent->Clone("", invalidParent->Parent()));
+  // if the top-level visual doesn't have the skip clone UserData attached but
+  // children do, then these children should not be cloned
+  VisualPtr validParent = scene->CreateVisual();
+  ASSERT_NE(nullptr, validParent);
+  VisualPtr invalidChild = scene->CreateVisual();
+  ASSERT_NE(nullptr, invalidChild);
+  invalidChild->SetUserData(skipCloneKey, static_cast<bool>(true));
+  validParent->AddChild(invalidChild);
+  EXPECT_EQ(1u, validParent->ChildCount());
+  auto clonedValidParent = validParent->Clone("", validParent->Parent());
+  ASSERT_NE(nullptr, clonedValidParent);
+  EXPECT_EQ(0u, clonedValidParent->ChildCount());
 
   // clean up
   engine->DestroyScene(scene);

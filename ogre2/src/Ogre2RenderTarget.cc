@@ -227,6 +227,7 @@ void Ogre2RenderTarget::BuildCompositor()
             static_cast<Ogre::CompositorPassSceneDef *>(
             rt0TargetDef->addPass(Ogre::PASS_SCENE));
         passScene->mIncludeOverlays = true;
+        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
         passScene->mFirstRQ = 2u;
       }
     }

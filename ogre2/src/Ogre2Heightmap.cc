@@ -60,11 +60,14 @@ class ignition::rendering::Ogre2HeightmapPrivate
   /// \brief Size of the heightmap data.
   public: unsigned int dataSize{0u};
 
+  /// \brief Pointer to ogre terra object
   public: std::unique_ptr<Ogre::Terra> terra{nullptr};
 };
 
 using namespace ignition;
 using namespace rendering;
+
+const uint32_t Ogre2Heightmap::kHeightmapVisibilityFlags = 0x00200000;
 
 //////////////////////////////////////////////////
 Ogre2Heightmap::Ogre2Heightmap(const HeightmapDescriptor &_desc)
@@ -236,6 +239,8 @@ void Ogre2Heightmap::Init()
   this->dataPtr->terra->setDatablock(
         ogreRoot->getHlmsManager()->
         getHlms(Ogre::HLMS_USER3)->getDefaultDatablock());
+
+  this->dataPtr->terra->setVisibilityFlags(kHeightmapVisibilityFlags);
 
   Ogre::Hlms *hlmsTerra =
           ogreRoot->getHlmsManager()->getHlms(Ogre::HLMS_USER3);

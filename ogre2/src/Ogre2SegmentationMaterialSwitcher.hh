@@ -127,10 +127,6 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// access to things like the segmentation type, background color, background
   /// label, and if colored map is enabled
   private: SegmentationCamera *segmentationCamera {nullptr};
-
-  /// \brief Map of all heightmap visuals to their original visibility flags.
-  /// The key is the ID of the visual
-  private: std::unordered_map<unsigned int, uint32_t> heightmapVisFlags;
 };
 }
 }  // namespace rendering

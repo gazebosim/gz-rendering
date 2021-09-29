@@ -208,21 +208,6 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       Ogre2VisualPtr ogreVisual = std::dynamic_pointer_cast<Ogre2Visual>(
         visual);
 
-      // segmentation doesn't work with heightmaps for now, so disable the
-      // visibility during material switching
-      // TODO(anyone) add support for segmentation with heightmaps
-      for (auto i = 0u; i < ogreVisual->GeometryCount(); ++i)
-      {
-        if (std::dynamic_pointer_cast<Heightmap>(
-              ogreVisual->GeometryByIndex(i)))
-        {
-          this->heightmapVisFlags[ogreVisual->Id()] =
-            ogreVisual->VisibilityFlags();
-          ogreVisual->SetVisibilityFlags(0x00000000);
-          break;
-        }
-      }
-
       // get class user data
       Variant labelAny = ogreVisual->UserData("label");
       int label;
@@ -342,20 +327,6 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
   // restore item to use pbs hlms material
   for (const auto &[subItem, dataBlock] : this->datablockMap)
     subItem->setDatablock(dataBlock);
-
-  // restore heightmap visual visibility flags
-  for (const auto &[heightMapVisId, visFlags] : this->heightmapVisFlags)
-  {
-    auto visual = this->scene->VisualById(heightMapVisId);
-    if (!visual)
-    {
-      ignerr << "Could not restore heightmap visual visibility flags for "
-             << "visual with ID of " << heightMapVisId << "\n";
-      continue;
-    }
-    visual->SetVisibilityFlags(visFlags);
-  }
-  this->heightmapVisFlags.clear();
 }
 
 ////////////////////////////////////////////////

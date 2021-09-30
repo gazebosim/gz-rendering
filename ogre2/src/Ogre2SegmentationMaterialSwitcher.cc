@@ -321,6 +321,8 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
 
   // disable heightmaps in segmentation camera sensor
   // until we support changing its material based on input label
+  // TODO(anyone) add support for heightmaps with the segmentation camera
+  // https://github.com/ignitionrobotics/ign-rendering/issues/444
   auto heightmaps = this->scene->Heightmaps();
   for (auto h : heightmaps)
   {

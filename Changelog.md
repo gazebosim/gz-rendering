@@ -4,23 +4,9 @@
 
 ### Ignition Rendering 6.0.0 (20XX-XX-XX)
 
-1. Add bounding box sensor API stubs
-    * [Pull request #420](https://github.com/ignitionrobotics/ign-rendering/pull/420)
-
-1. Segmentation Camera
-    * [Pull request #329](https://github.com/ignitionrobotics/ign-rendering/pull/329)
-    * [Pull request #419](https://github.com/ignitionrobotics/ign-rendering/pull/419)
-
-1. Add Ogre2Heightmap
-    * [Pull request #386](https://github.com/ignitionrobotics/ign-rendering/pull/386)
-    * [Pull request #416](https://github.com/ignitionrobotics/ign-rendering/pull/416)
-
 1. Avoid configure warning when checking ogre-1.10
     * [Pull request #411](https://github.com/ignitionrobotics/ign-rendering/pull/411)
     * [Pull request #413](https://github.com/ignitionrobotics/ign-rendering/pull/413)
-
-1. Add SetSize API for LidarVisual
-    * [Pull request #392](https://github.com/ignitionrobotics/ign-rendering/pull/392)
 
 1. Use selection buffer in ray queries (ogre2)
     * [Pull request #378](https://github.com/ignitionrobotics/ign-rendering/pull/378)
@@ -71,6 +57,7 @@
 1. Segmentation Camera
     * [Pull request #329](https://github.com/ignitionrobotics/ign-rendering/pull/329)
     * [Pull request #419](https://github.com/ignitionrobotics/ign-rendering/pull/419)
+    * [Pull request #443](https://github.com/ignitionrobotics/ign-rendering/pull/443)
 
 1. Stub bounding box camera APIs
     * [Pull request #420](https://github.com/ignitionrobotics/ign-rendering/pull/420)

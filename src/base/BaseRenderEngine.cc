@@ -260,18 +260,6 @@ bool BaseRenderEngine::Headless() const
 }
 
 //////////////////////////////////////////////////
-void BaseRenderEngine::SetWinID(const std::string &_winID)
-{
-  this->winID = _winID;
-}
-
-//////////////////////////////////////////////////
-const std::string BaseRenderEngine::WinID() const
-{
-  return this->winID;
-}
-
-//////////////////////////////////////////////////
 void BaseRenderEngine::PrepareScene(ScenePtr _scene)
 {
   if (_scene)

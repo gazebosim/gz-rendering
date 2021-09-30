@@ -104,7 +104,7 @@ namespace ignition
       /// \return the Pointer to the material assigned to this visual. If the
       /// material is cloned at the time it is set to this visual, the cloned
       /// material will be returned.
-      public: virtual MaterialPtr Material() = 0;
+      public: virtual MaterialPtr Material() const = 0;
 
       /// \brief Enable or disable wireframe
       /// \param[in] _show True to enable wireframe
@@ -142,6 +142,15 @@ namespace ignition
       /// \return The local bounding box
       public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
               const = 0;
+
+      /// \brief Clone the visual (and its children) with a new name.
+      /// \param[in] _name Name of the cloned Visual. Set this to an empty
+      /// string to auto-generate a unique name for the cloned visual.
+      /// \param[in] _newParent Parent of the cloned Visual. Set to nullptr if
+      /// the cloned visual should have no parent.
+      /// \return The visual. nullptr is returned if cloning failed.
+      public: virtual VisualPtr Clone(const std::string &_name,
+                  NodePtr _newParent) const = 0;
     };
     }
   }

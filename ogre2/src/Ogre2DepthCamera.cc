@@ -153,6 +153,9 @@ class ignition::rendering::Ogre2DepthCameraPrivate
 
   /// \brief Name of sky box material
   public: const std::string kSkyboxMaterialName = "SkyBox";
+
+  /// \brief Name of shadow compositor node
+  public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
 };
 
 using namespace ignition;
@@ -434,6 +437,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   double projectionA = projectionAB.x;
   double projectionB = projectionAB.y;
   projectionB /= farPlane;
+
   psParams->setNamedConstant("projectionParams",
       Ogre::Vector2(projectionA, projectionB));
   psParams->setNamedConstant("near",
@@ -695,6 +699,25 @@ void Ogre2DepthCamera::CreateDepthTexture()
     else
       colorTargetDef->setNumPasses(1);
     {
+      // scene pass - opaque
+      {
+        Ogre::CompositorPassSceneDef *passScene =
+            static_cast<Ogre::CompositorPassSceneDef *>(
+            colorTargetDef->addPass(Ogre::PASS_SCENE));
+        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
+        passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
+        passScene->mIncludeOverlays = false;
+        passScene->mFirstRQ = 0u;
+        passScene->mLastRQ = 2u;
+        if (!validBackground)
+        {
+          passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+          passScene->setAllClearColours(Ogre::ColourValue(
+              Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
+        }
+      }
+
+      // render background, e.g. sky, after opaque stuff
       if (validBackground)
       {
         // quad pass
@@ -711,21 +734,16 @@ void Ogre2DepthCamera::CreateDepthTexture()
             Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
       }
 
-      // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          colorTargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
-
-      // todo(anyone) PbsMaterialsShadowNode is hardcoded.
-      // Although this may be just fine
-      passScene->mShadowNode = "PbsMaterialsShadowNode";
-
-      if (!validBackground)
+      // scene pass - transparent stuff
       {
-        passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-        passScene->setAllClearColours(Ogre::ColourValue(
-            Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
+        Ogre::CompositorPassSceneDef *passScene =
+            static_cast<Ogre::CompositorPassSceneDef *>(
+            colorTargetDef->addPass(Ogre::PASS_SCENE));
+        passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
+        // todo(anyone) PbsMaterialsShadowNode is hardcoded.
+        // Although this may be just fine
+        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
+        passScene->mFirstRQ = 2u;
       }
     }
 

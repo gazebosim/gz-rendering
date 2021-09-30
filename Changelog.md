@@ -11,11 +11,15 @@
 1. Check if key exists in gpu lidar's user data
     * [Pull request #396](https://github.com/ignitionrobotics/ign-rendering/pull/396)
 
+1. Clone visuals and geometries
+    * [Pull request #397](https://github.com/ignitionrobotics/ign-rendering/pull/397)
+
 1. Add SetSize API for LidarVisual and markers
     * [Pull request #392](https://github.com/ignitionrobotics/ign-rendering/pull/392)
 
 1. Add Ogre2Heightmap functionality
     * [Pull request #386](https://github.com/ignitionrobotics/ign-rendering/pull/386)
+    * [Pull request #416](https://github.com/ignitionrobotics/ign-rendering/pull/416)
 
 1. Prevent default-constructed variants from holding a type
     * [Pull request #371](https://github.com/ignitionrobotics/ign-rendering/pull/371)
@@ -41,6 +45,10 @@
 
 1. Segmentation Camera
     * [Pull request #329](https://github.com/ignitionrobotics/ign-rendering/pull/329)
+    * [Pull request #419](https://github.com/ignitionrobotics/ign-rendering/pull/419)
+
+1. Stub bounding box camera APIs
+    * [Pull request #420](https://github.com/ignitionrobotics/ign-rendering/pull/420)
 
 1. Inertia visual
     * [Pull request #326](https://github.com/ignitionrobotics/ign-rendering/pull/326)
@@ -208,6 +216,25 @@
     * [Pull request #286](https://github.com/ignitionrobotics/ign-rendering/pull/286)
 
 ### Ignition Rendering 4.X
+
+### Ignition Rendering 4.9.0 (2021-09-15)
+
+1. Output warning message if a mesh with zero submeshes is created
+    * [Pull request #391](https://github.com/ignitionrobotics/ign-rendering/pull/391)
+
+1. Fix particle effect randomness
+    * [Pull request #388](https://github.com/ignitionrobotics/ign-rendering/pull/388)
+
+1. Fix single ray gpu lidar
+    * [Pull request #384](https://github.com/ignitionrobotics/ign-rendering/pull/384)
+
+1. Use selection buffer in ray queries (ogre2)
+    * [Pull request #378](https://github.com/ignitionrobotics/ign-rendering/pull/378)
+    * [Pull request #383](https://github.com/ignitionrobotics/ign-rendering/pull/383)
+
+1. All changes merged forward from ign-rendering3
+    * [Pull request #382](https://github.com/ignitionrobotics/ign-rendering/pull/382)
+    * [Pull request #398](https://github.com/ignitionrobotics/ign-rendering/pull/398)
 
 ### Ignition Rendering 4.8.0 (2021-06-18)
 
@@ -441,7 +468,7 @@
 ### Ignition Rendering 3.X.X (2021-XX-XX)
 
 1. CMake warning on Ogre versions that are not officially supported.
-   To disable the new warning, it is enough to enable the cmake option USE_UNOFFICAL_OGRE_VERSIONS
+   To disable the new warning, it is enough to enable the cmake option USE_UNOFFICIAL_OGRE_VERSIONS
     * [Pull request 376](https://github.com/ignitionrobotics/ign-rendering/pull/376)
 
 ### Ignition Rendering 3.5.0 (2021-05-25)

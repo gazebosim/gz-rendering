@@ -23,6 +23,7 @@
 #include <ignition/math/Matrix4.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
+#include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/Object.hh"
 
 namespace ignition
@@ -119,6 +120,14 @@ namespace ignition
       /// \return The sub-mesh at the given index
       public: virtual SubMeshPtr SubMeshByIndex(
                   unsigned int _index) const = 0;
+
+      /// \brief Set the mesh's mesh descriptor
+      /// \return The mesh's mesh descriptor
+      public: virtual void SetDescriptor(const MeshDescriptor &_desc) = 0;
+
+      /// \brief Get the mesh's mesh descriptor
+      /// \return The mesh's mesh descriptor
+      public: virtual const MeshDescriptor &Descriptor() const = 0;
     };
 
     /// \class SubMesh Mesh.hh ignition/rendering/Mesh.hh

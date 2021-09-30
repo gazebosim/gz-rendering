@@ -187,6 +187,14 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
             << _renderEngine << std::endl;
     return;
   }
+  else if (_renderEngine == "ogre2")
+  {
+    // VisualAt tests fail on CI, see issue #170
+    // https://github.com/ignitionrobotics/ign-rendering/issues/170
+    igndbg << "VisualAt test is disabled in " << _renderEngine << "."
+           << std::endl;
+    return;
+  }
 
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);

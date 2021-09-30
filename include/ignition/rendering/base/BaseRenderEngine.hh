@@ -119,6 +119,9 @@ namespace ignition
 
       protected: bool isHeadless = false;
 
+      /// \brief ID from a external window
+      protected: std::string winID = "";
+
       protected: unsigned int nextSceneId;
 
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING

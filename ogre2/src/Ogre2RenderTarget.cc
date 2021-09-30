@@ -189,6 +189,23 @@ void Ogre2RenderTarget::BuildCompositor()
     else
       rt0TargetDef->setNumPasses(1);
     {
+      // scene pass - opaque
+      {
+        Ogre::CompositorPassSceneDef *passScene =
+            static_cast<Ogre::CompositorPassSceneDef *>(
+            rt0TargetDef->addPass(Ogre::PASS_SCENE));
+        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
+        passScene->mIncludeOverlays = false;
+        passScene->mFirstRQ = 0u;
+        passScene->mLastRQ = 2u;
+        if (!validBackground)
+        {
+          passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+          passScene->setAllClearColours(this->ogreBackgroundColor);
+        }
+      }
+
+      // render background, e.g. sky, after opaque stuff
       if (validBackground)
       {
         // quad pass
@@ -204,17 +221,14 @@ void Ogre2RenderTarget::BuildCompositor()
         passQuad->setAllClearColours(this->ogreBackgroundColor);
       }
 
-      // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          rt0TargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->mShadowNode = this->dataPtr->kShadowNodeName;
-      passScene->mIncludeOverlays = true;
-
-      if (!validBackground)
+      // scene pass - transparent stuff
       {
-        passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-        passScene->setAllClearColours(this->ogreBackgroundColor);
+        Ogre::CompositorPassSceneDef *passScene =
+            static_cast<Ogre::CompositorPassSceneDef *>(
+            rt0TargetDef->addPass(Ogre::PASS_SCENE));
+        passScene->mIncludeOverlays = true;
+        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
+        passScene->mFirstRQ = 2u;
       }
     }
 

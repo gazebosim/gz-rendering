@@ -95,9 +95,6 @@ namespace ignition
       /// \param[in] _activeCamera Camera about to be used for rendering
       public: void UpdateForRender(Ogre::Camera *_activeCamera);
 
-      /// \brief Heightmap visibility flags
-      public: static const uint32_t kHeightmapVisibilityFlags;
-
       /// \brief Heightmap should only be created by scene.
       private: friend class OgreScene;
 

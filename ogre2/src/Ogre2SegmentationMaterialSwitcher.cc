@@ -318,6 +318,16 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
   this->instancesCount.clear();
   this->takenColors.clear();
   this->coloredLabel.clear();
+
+  // disable heightmaps in segmentation camera sensor
+  // until we support changing its material based on input label
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+      heightmap->Parent()->SetVisible(false);
+  }
 }
 
 ////////////////////////////////////////////////
@@ -327,6 +337,15 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
   // restore item to use pbs hlms material
   for (const auto &[subItem, dataBlock] : this->datablockMap)
     subItem->setDatablock(dataBlock);
+
+  // re-enable heightmaps
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+      heightmap->Parent()->SetVisible(true);
+  }
 }
 
 ////////////////////////////////////////////////

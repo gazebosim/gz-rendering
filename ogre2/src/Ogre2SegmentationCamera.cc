@@ -22,7 +22,6 @@
 
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -242,13 +241,6 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
         this->ogreCamera,
         wsDefName,
         false);
-
-  // disable heightmaps in segmentation camera view
-  auto nodeSeq = this->dataPtr->ogreCompositorWorkspace->getNodeSequence();
-  auto pass = nodeSeq[0]->_getPasses()[0]->getDefinition();
-  auto scenePass = dynamic_cast<const Ogre::CompositorPassSceneDef *>(pass);
-  const_cast<Ogre::CompositorPassSceneDef *>(scenePass)->mVisibilityMask =
-      IGN_VISIBILITY_ALL & ~Ogre2Heightmap::kHeightmapVisibilityFlags;
 
   this->ogreCamera->addListener(
     this->dataPtr->materialSwitcher.get());

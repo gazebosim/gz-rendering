@@ -125,6 +125,7 @@ namespace ignition
 
       protected: bool isHeadless = false;
 
+      /// \brief ID from a external window
       protected: std::string winID = "";
 
       protected: unsigned int nextSceneId;

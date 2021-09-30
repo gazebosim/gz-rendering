@@ -172,12 +172,11 @@ namespace ignition
       /// \return True if headless mode is enable, false otherwise.
       public: virtual bool Headless() const = 0;
 
-      /// \brief Set winID from Qt
-      /// Required in OGRE 2.2
+      /// \brief Set winID from a external window
       /// \param[in] _winID Qt MainWindow ID
       public: virtual void SetWinID(const std::string &_winID) = 0;
 
-      /// \brief Get headless mode
+      /// \brief Get winID
       /// \return Qt MainWindow ID
       public: virtual const std::string WinID() const = 0;
 

@@ -617,10 +617,10 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   // The other params are used to clamp the range output
   // Use the 'real' clip distance here so thermal can be
   // linearized correctly
-  double projectionA = farPlane /
-      (farPlane - nearPlane);
-  double projectionB = (-farPlane * nearPlane) /
-      (farPlane - nearPlane);
+  Ogre::Vector2 projectionAB =
+    this->ogreCamera->getProjectionParamsAB();
+  double projectionA = projectionAB.x;
+  double projectionB = projectionAB.y;
   projectionB /= farPlane;
   psParams->setNamedConstant("projectionParams",
       Ogre::Vector2(projectionA, projectionB));

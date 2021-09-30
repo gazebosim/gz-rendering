@@ -85,7 +85,7 @@ void JointVisualTest::JointVisual(const std::string &_renderEngine)
   // set parent axis
   math::Vector3d axis1(0.0, 1.0, 0.0);
   useParentFrame = true;
-  jointVisual->SetParentAxis(axis1, "joint_parent", true);
+  jointVisual->SetParentAxis(axis1, "joint_parent", useParentFrame);
   jointVisual->PreRender();
   EXPECT_NE(nullptr, jointVisual->ArrowVisual());
   EXPECT_EQ(axis2, jointVisual->Axis());

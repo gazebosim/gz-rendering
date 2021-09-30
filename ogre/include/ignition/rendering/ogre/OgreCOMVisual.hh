@@ -64,7 +64,7 @@ namespace ignition
       public: virtual VisualPtr SphereVisual() const override;
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() const;
+      public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
       public: virtual void SetMaterial(

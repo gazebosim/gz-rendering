@@ -17,6 +17,8 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
+
 #include <ignition/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
@@ -71,6 +73,7 @@ void CapsuleTest::Capsule(const std::string &_renderEngine)
   mat->SetAmbient(0.6, 0.7, 0.8);
   mat->SetDiffuse(0.3, 0.8, 0.2);
   mat->SetSpecular(0.4, 0.9, 1.0);
+  mat->SetTransparency(0.3);
 
   capsule->SetMaterial(mat);
   MaterialPtr capsuleMat = capsule->Material();
@@ -78,6 +81,28 @@ void CapsuleTest::Capsule(const std::string &_renderEngine)
   EXPECT_EQ(math::Color(0.6f, 0.7f, 0.8f), capsuleMat->Ambient());
   EXPECT_EQ(math::Color(0.3f, 0.8f, 0.2f), capsuleMat->Diffuse());
   EXPECT_EQ(math::Color(0.4f, 0.9f, 1.0f), capsuleMat->Specular());
+
+  // test cloning a capsule
+  auto clonedCapsule =
+    std::dynamic_pointer_cast<rendering::Capsule>(capsule->Clone());
+  ASSERT_NE(nullptr, clonedCapsule);
+  EXPECT_DOUBLE_EQ(clonedCapsule->Radius(), capsule->Radius());
+  EXPECT_DOUBLE_EQ(clonedCapsule->Length(), capsule->Length());
+
+  // compare materials (the material is cloned, so the name is different but
+  // the properties of the material are the same)
+  auto clonedMaterial = clonedCapsule->Material();
+  ASSERT_NE(nullptr, clonedMaterial);
+  auto originalMaterial = capsule->Material();
+  ASSERT_NE(nullptr, originalMaterial);
+  EXPECT_NE(clonedMaterial, originalMaterial);
+  EXPECT_NE(clonedMaterial->Name(), originalMaterial->Name());
+  EXPECT_EQ(clonedMaterial->Type(), originalMaterial->Type());
+  EXPECT_EQ(clonedMaterial->Ambient(), originalMaterial->Ambient());
+  EXPECT_EQ(clonedMaterial->Diffuse(), originalMaterial->Diffuse());
+  EXPECT_EQ(clonedMaterial->Specular(), originalMaterial->Specular());
+  EXPECT_DOUBLE_EQ(clonedMaterial->Transparency(),
+      originalMaterial->Transparency());
 
   // Clean up
   engine->DestroyScene(scene);

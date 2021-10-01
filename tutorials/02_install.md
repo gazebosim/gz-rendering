@@ -206,7 +206,7 @@ On macOS, add OSRF packages:
   brew tap osrf/simulation
   ```
 
-Install Ignition GUI:
+Install Ignition Rendering:
   ```
   brew install ignition-rendering<#>
   ```

@@ -924,6 +924,12 @@ MaterialMapPtr Ogre2Scene::Materials() const
 }
 
 //////////////////////////////////////////////////
+const std::vector<std::weak_ptr<Ogre2Heightmap>> &Ogre2Scene::Heightmaps() const
+{
+  return this->heightmaps;
+}
+
+//////////////////////////////////////////////////
 DirectionalLightPtr Ogre2Scene::CreateDirectionalLightImpl(unsigned int _id,
     const std::string &_name)
 {

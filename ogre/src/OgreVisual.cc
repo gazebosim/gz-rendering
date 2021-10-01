@@ -55,10 +55,8 @@ void OgreVisual::SetWireframe(bool _show)
   for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
       i++)
   {
-    Ogre::Entity *entity = nullptr;
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
-
-    entity = dynamic_cast<Ogre::Entity *>(obj);
+    Ogre::Entity *entity = dynamic_cast<Ogre::Entity *>(obj);
 
     if (!entity)
       continue;

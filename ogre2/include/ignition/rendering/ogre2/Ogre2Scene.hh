@@ -350,6 +350,11 @@ namespace ignition
       /// \param[in] _camera Camera about to be used for rendering
       public: void UpdateAllHeightmaps(Ogre::Camera *_camera);
 
+      /// \internal
+      /// \brief Return all heightmaps in the scene
+      public: const std::vector<std::weak_ptr<Ogre2Heightmap>> &Heightmaps()
+          const;
+
       /// \brief Create a compositor shadow node with the same number of shadow
       /// textures as the number of shadow casting lights
       protected: void UpdateShadowNode();

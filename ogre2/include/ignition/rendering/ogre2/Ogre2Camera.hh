@@ -125,6 +125,10 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVisibilityMask(uint32_t _mask) override;
 
+      /// \brief Get the selection buffer object
+      /// \return the selection buffer object
+      public: Ogre2SelectionBuffer *SelectionBuffer() const;
+
       // Documentation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;
 

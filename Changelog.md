@@ -6,7 +6,12 @@
 
 ### Ignition Rendering 6.X
 
-### Ignition Rendering 6.0.0 (20XX-XX-XX)
+### Ignition Rendering 6.0.1 (2021-10-01)
+
+1. Disable using selection buffer for ray queries
+    * [Pull request #447](https://github.com/ignitionrobotics/ign-rendering/pull/447)
+
+### Ignition Rendering 6.0.0 (2021-09-30)
 
 1. Avoid configure warning when checking ogre-1.10
     * [Pull request #411](https://github.com/ignitionrobotics/ign-rendering/pull/411)

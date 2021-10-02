@@ -457,7 +457,8 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   // transMatrix[0][3] -= x1+x2;
   // transMatrix[1][3] += y1+y2;
   // Ogre::Matrix4 customProjectionMatrix =
-  //     scaleMatrix * transMatrix * this->dataPtr->camera->getProjectionMatrix();
+  //     scaleMatrix * transMatrix *
+  //     this->dataPtr->camera->getProjectionMatrix();
   // this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
   //     customProjectionMatrix);
 

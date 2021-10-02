@@ -487,7 +487,7 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   math::Vector3d point;
   // Ogre::ColourValue colorValue = image.getColourAt(_x, _y, 0, 0);
   Ogre::ColourValue colorValue = image.getColourAt(0, 0, 0, 0);
-  std::cerr << "x: " << _x << "got color value: " << colorValue.r << " "
+  std::cerr << "x: " << _x << " got color value: " << colorValue.r << " "
             << colorValue.g
             << " " << colorValue.b << std::endl;
 

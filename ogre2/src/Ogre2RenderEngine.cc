@@ -294,6 +294,10 @@ bool Ogre2RenderEngine::LoadImpl(
   if (it != _params.end())
     std::istringstream(it->second) >> this->isHeadless;
 
+  it = _params.find("winID");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->winID;
+
   try
   {
     this->LoadAttempt();
@@ -879,6 +883,13 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     params["externalGLControl"] = "true";
     params["currentGLContext"] = "true";
   }
+
+#if !defined(__APPLE__) && !defined(_MSC_VER)
+  if (!this->winID.empty())
+  {
+    params["parentWindowHandle"] = this->winID;
+  }
+#endif
 
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)

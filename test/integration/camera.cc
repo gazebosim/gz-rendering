@@ -285,6 +285,29 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
     }
   }
 
+  // change camera size
+  camera->SetImageWidth(1200);
+  camera->SetImageHeight(800);
+
+  // render a few frames
+  for (auto i = 0; i < 30; ++i)
+  {
+    camera->Update();
+  }
+
+  // test that VisualAt still works after resize
+  {
+    double x = 300;
+    auto vis = camera->VisualAt(math::Vector2i(x, camera->ImageHeight() / 2));
+    EXPECT_NE(nullptr, vis) << "X: " << x;
+    if (vis)
+    {
+      EXPECT_EQ("sphere", vis->Name());
+    }
+  }
+
+
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

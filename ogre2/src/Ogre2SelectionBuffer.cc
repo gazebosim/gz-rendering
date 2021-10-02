@@ -506,6 +506,10 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
 
   math::Vector3d point(pixel[0], pixel[1], pixel[2]);
 
+   std::cerr << "x: " << _x << " got color value: " << r << " "
+             << g << " " << b << ", point: " << point << std::endl;
+
+
   auto rot = Ogre2Conversions::Convert(
       this->dataPtr->camera->getParentSceneNode()->_getDerivedOrientation());
   auto pos = Ogre2Conversions::Convert(

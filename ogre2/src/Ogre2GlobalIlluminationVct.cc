@@ -55,7 +55,7 @@ class gz::rendering::Ogre2GlobalIlluminationVctPrivate
   public: uint32_t octants[3]{1u, 1u, 1u};
 
   /// \brief See GlobalIlluminationVct::SetBounceCount
-  public: uint32_t bounceCount;
+  public: uint32_t bounceCount = 6u;
 
   /// \brief See GlobalIlluminationVct::SetThinWallCounter
   public: float thinWallCounter = 1.0f;
@@ -149,6 +149,8 @@ const uint32_t *Ogre2GlobalIlluminationVct::OctantCount() const
 void Ogre2GlobalIlluminationVct::SetBounceCount(uint32_t _bounceCount)
 {
   this->dataPtr->bounceCount = _bounceCount;
+  if (_bounceCount == 0u && this->dataPtr->vctLighting)
+    this->dataPtr->vctLighting->setAllowMultipleBounces(false);
 }
 
 //////////////////////////////////////////////////
@@ -264,6 +266,8 @@ void Ogre2GlobalIlluminationVct::Build()
     this->dataPtr->vctLighting =
       new Ogre::VctLighting(Ogre::Id::generateNewId<Ogre::VctLighting>(),
                             this->dataPtr->voxelizer, true);
+
+    this->dataPtr->vctLighting->setAnisotropic(this->dataPtr->anisotropic);
   }
 
   this->LightingChanged();

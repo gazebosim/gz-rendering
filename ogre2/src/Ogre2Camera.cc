@@ -264,6 +264,8 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
       static_cast<int>(std::rint(ratio * _mousePos.X())),
       static_cast<int>(std::rint(ratio * _mousePos.Y())));
 
+  std::cerr << "scaling factor " << ratio << ", " << mousePos << std::endl;
+
   Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(
       mousePos.X(), mousePos.Y());
 

@@ -250,7 +250,6 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   for (auto x = 0u; x < camera->ImageWidth(); x = x + 100)
   {
     auto vis = camera->VisualAt(math::Vector2i(x, camera->ImageHeight() / 2));
-    std::cerr << "x==== " << x << std::endl;
 
     if (x <= 100)
     {

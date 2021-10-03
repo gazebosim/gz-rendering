@@ -297,7 +297,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
 
   // test that VisualAt still works after resize
   {
-    double x = 300;
+    unsigned int x = 300u;
     auto vis = camera->VisualAt(math::Vector2i(x, camera->ImageHeight() / 2));
     EXPECT_NE(nullptr, vis) << "X: " << x;
     if (vis)

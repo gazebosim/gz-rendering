@@ -24,6 +24,7 @@
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -42,6 +43,15 @@ class ignition::rendering::Ogre2RayQueryPrivate
 {
   /// \brief Ogre ray scene query object for computing intersection.
   public: Ogre::RaySceneQuery *rayQuery = nullptr;
+
+  //// \brief Pointer to camera
+  public: Ogre2CameraPtr camera{nullptr};
+
+  /// \brief Image pos to cast the ray from
+  public: math::Vector2i imgPos = math::Vector2i::Zero;
+
+  /// \brief thread that ray query is created in
+  public: std::thread::id threadId;
 };
 
 using namespace ignition;
@@ -51,6 +61,7 @@ using namespace rendering;
 Ogre2RayQuery::Ogre2RayQuery()
     : dataPtr(new Ogre2RayQueryPrivate)
 {
+  this->dataPtr->threadId = std::this_thread::get_id();
 }
 
 //////////////////////////////////////////////////
@@ -70,10 +81,82 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
 
   this->origin = Ogre2Conversions::Convert(ray.getOrigin());
   this->direction = Ogre2Conversions::Convert(ray.getDirection());
+
+  this->dataPtr->camera = camera;
+
+  this->dataPtr->imgPos.X() = static_cast<int>(
+      screenPos.X() * this->dataPtr->camera->ImageWidth());
+  this->dataPtr->imgPos.Y() = static_cast<int>(
+      screenPos.Y() * this->dataPtr->camera->ImageHeight());
 }
 
 //////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPoint()
+{
+  RayQueryResult result;
+
+  // ray query using selection buffer does not seem to work on some machines
+  // using cpu based ray-triangle intersection method
+  // \todo remove this line if selection buffer is working again
+  return this->ClosestPointByIntersection();
+
+#ifdef __APPLE__
+  return this->ClosestPointByIntersection();
+#else
+  if (!this->dataPtr->camera ||
+      !this->dataPtr->camera->Parent() ||
+      std::this_thread::get_id() != this->dataPtr->threadId)
+  {
+    // use legacy method for backward compatibility if no camera is set or
+    // camera is not attached in the scene tree or
+    // this function is called from non-rendering thread
+    return this->ClosestPointByIntersection();
+  }
+  else
+  {
+    // the VisualAt function is a hack to force creation of the selection
+    // buffer object
+    // todo(anyone) Make Camera::SetSelectionBuffer function public?
+    if (!this->dataPtr->camera->SelectionBuffer())
+      this->dataPtr->camera->VisualAt(math::Vector2i(0, 0));
+
+    return this->ClosestPointBySelectionBuffer();
+  }
+#endif
+}
+
+//////////////////////////////////////////////////
+RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
+{
+  RayQueryResult result;
+  Ogre::Item *ogreItem = nullptr;
+  math::Vector3d point;
+  bool success = this->dataPtr->camera->SelectionBuffer()->ExecuteQuery(
+      this->dataPtr->imgPos.X(), this->dataPtr->imgPos.Y(), ogreItem, point);
+  result.distance = -1;
+
+  if (success && ogreItem)
+  {
+    if (!ogreItem->getUserObjectBindings().getUserAny().isEmpty() &&
+        ogreItem->getUserObjectBindings().getUserAny().getType() ==
+        typeid(unsigned int))
+    {
+      auto userAny = ogreItem->getUserObjectBindings().getUserAny();
+      double distance = this->dataPtr->camera->WorldPosition().Distance(point)
+          - this->dataPtr->camera->NearClipPlane();
+      if (!std::isinf(distance))
+      {
+        result.distance = distance;
+        result.point = point;
+        result.objectId = Ogre::any_cast<unsigned int>(userAny);
+      }
+    }
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+RayQueryResult Ogre2RayQuery::ClosestPointByIntersection()
 {
   RayQueryResult result;
   Ogre2ScenePtr ogreScene =

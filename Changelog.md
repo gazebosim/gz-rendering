@@ -2,33 +2,56 @@
 
 ### Ignition Rendering 6.X
 
-### Ignition Rendering 6.0.0 (20XX-XX-XX)
+### Ignition Rendering 6.0.1 (2021-10-01)
+
+1. Disable using selection buffer for ray queries
+    * [Pull request #447](https://github.com/ignitionrobotics/ign-rendering/pull/447)
+
+### Ignition Rendering 6.0.0 (2021-09-30)
+
+1. Avoid configure warning when checking ogre-1.10
+    * [Pull request #411](https://github.com/ignitionrobotics/ign-rendering/pull/411)
+    * [Pull request #413](https://github.com/ignitionrobotics/ign-rendering/pull/413)
+
+1. Use selection buffer in ray queries (ogre2)
+    * [Pull request #378](https://github.com/ignitionrobotics/ign-rendering/pull/378)
+
+1. Fix particle effect randomness
+    * [Pull request #388](https://github.com/ignitionrobotics/ign-rendering/pull/388)
 
 1. Update test config to run ogre 1.x tests in ign-rendering6 on macOS
     * [Pull request #407](https://github.com/ignitionrobotics/ign-rendering/pull/407)
     * [Pull request #409](https://github.com/ignitionrobotics/ign-rendering/pull/409)
+    * [Pull request #409](https://github.com/ignitionrobotics/ign-rendering/pull/409)
 
-1. Check if key exists in gpu lidar's user data
-    * [Pull request #396](https://github.com/ignitionrobotics/ign-rendering/pull/396)
+1. Clone visuals and geometries
+    * [Pull request #397](https://github.com/ignitionrobotics/ign-rendering/pull/397)
+    * [Pull request #434](https://github.com/ignitionrobotics/ign-rendering/pull/434)
 
 1. Add SetSize API for LidarVisual and markers
     * [Pull request #392](https://github.com/ignitionrobotics/ign-rendering/pull/392)
 
 1. Add Ogre2Heightmap functionality
     * [Pull request #386](https://github.com/ignitionrobotics/ign-rendering/pull/386)
+    * [Pull request #416](https://github.com/ignitionrobotics/ign-rendering/pull/416)
 
 1. Prevent default-constructed variants from holding a type
     * [Pull request #371](https://github.com/ignitionrobotics/ign-rendering/pull/371)
+    * [Pull request #396](https://github.com/ignitionrobotics/ign-rendering/pull/396)
 
 1. Temporarily set number of camera pass count per flush to 0 in ogre2 to prevent downstream build failures
     * [Pull request #367](https://github.com/ignitionrobotics/ign-rendering/pull/367)
 
-1. Joint visual
-    * [Pull request #366](https://github.com/ignitionrobotics/ign-rendering/pull/366)
-    * [Pull request #387](https://github.com/ignitionrobotics/ign-rendering/pull/387)
+1. New visuals
+    1. Joint visual
+        * [Pull request #366](https://github.com/ignitionrobotics/ign-rendering/pull/366)
+        * [Pull request #387](https://github.com/ignitionrobotics/ign-rendering/pull/387)
 
-1. Fixing camera projection type test
-    * [Pull request #361](https://github.com/ignitionrobotics/ign-rendering/pull/361)
+    1. Center of mass visual
+        * [Pull request #345](https://github.com/ignitionrobotics/ign-rendering/pull/345)
+
+    1. Inertia visual
+        * [Pull request #326](https://github.com/ignitionrobotics/ign-rendering/pull/326)
 
 1. UserData methods moved from Visual to Node
     * [Pull request #358](https://github.com/ignitionrobotics/ign-rendering/pull/358)
@@ -36,14 +59,13 @@
 1. Replace renderOneFrame for per-workspace update calls
     * [Pull request #353](https://github.com/ignitionrobotics/ign-rendering/pull/353)
 
-1. Center of mass visual
-    * [Pull request #345](https://github.com/ignitionrobotics/ign-rendering/pull/345)
-
 1. Segmentation Camera
     * [Pull request #329](https://github.com/ignitionrobotics/ign-rendering/pull/329)
+    * [Pull request #419](https://github.com/ignitionrobotics/ign-rendering/pull/419)
+    * [Pull request #443](https://github.com/ignitionrobotics/ign-rendering/pull/443)
 
-1. Inertia visual
-    * [Pull request #326](https://github.com/ignitionrobotics/ign-rendering/pull/326)
+1. Stub bounding box camera APIs
+    * [Pull request #420](https://github.com/ignitionrobotics/ign-rendering/pull/420)
 
 1. Changed calculation for range clipping
     * [Pull request #325](https://github.com/ignitionrobotics/ign-rendering/pull/325)
@@ -53,9 +75,7 @@
 
 1. Add orthographic view controller
     * [Pull request #322](https://github.com/ignitionrobotics/ign-rendering/pull/322)
-
-1. Port codecov to new configuration
-    * [Pull request #318](https://github.com/ignitionrobotics/ign-rendering/pull/318)
+    * [Pull request #361](https://github.com/ignitionrobotics/ign-rendering/pull/361)
 
 1. Visualize wireframes
     * [Pull request #314](https://github.com/ignitionrobotics/ign-rendering/pull/314)
@@ -66,13 +86,16 @@
 1. From Ogre 2.1 to Ogre 2.2
     * [Pull request #272](https://github.com/ignitionrobotics/ign-rendering/pull/272)
     * [Pull request #393](https://github.com/ignitionrobotics/ign-rendering/pull/393)
+    * [Pull request #436](https://github.com/ignitionrobotics/ign-rendering/pull/436)
+    * [Pull request #426](https://github.com/ignitionrobotics/ign-rendering/pull/426)
+    * [Pull request #440](https://github.com/ignitionrobotics/ign-rendering/pull/440)
 
-1. All changes merged forward from ign-rendering5
-    * [Pull request #310](https://github.com/ignitionrobotics/ign-rendering/pull/310)
-    * [Pull request #331](https://github.com/ignitionrobotics/ign-rendering/pull/331)
-    * [Pull request #350](https://github.com/ignitionrobotics/ign-rendering/pull/350)
-    * [Pull request #401](https://github.com/ignitionrobotics/ign-rendering/pull/401)
-    * [Pull request #406](https://github.com/ignitionrobotics/ign-rendering/pull/406)
+1. Documentation updates
+    * [Pull request #425](https://github.com/ignitionrobotics/ign-rendering/pull/425)
+    * [Pull request #431](https://github.com/ignitionrobotics/ign-rendering/pull/431)
+
+1. Infrastructure
+    * [Pull request #318](https://github.com/ignitionrobotics/ign-rendering/pull/318)
 
 ### Ignition Rendering 5.X
 
@@ -208,6 +231,25 @@
     * [Pull request #286](https://github.com/ignitionrobotics/ign-rendering/pull/286)
 
 ### Ignition Rendering 4.X
+
+### Ignition Rendering 4.9.0 (2021-09-15)
+
+1. Output warning message if a mesh with zero submeshes is created
+    * [Pull request #391](https://github.com/ignitionrobotics/ign-rendering/pull/391)
+
+1. Fix particle effect randomness
+    * [Pull request #388](https://github.com/ignitionrobotics/ign-rendering/pull/388)
+
+1. Fix single ray gpu lidar
+    * [Pull request #384](https://github.com/ignitionrobotics/ign-rendering/pull/384)
+
+1. Use selection buffer in ray queries (ogre2)
+    * [Pull request #378](https://github.com/ignitionrobotics/ign-rendering/pull/378)
+    * [Pull request #383](https://github.com/ignitionrobotics/ign-rendering/pull/383)
+
+1. All changes merged forward from ign-rendering3
+    * [Pull request #382](https://github.com/ignitionrobotics/ign-rendering/pull/382)
+    * [Pull request #398](https://github.com/ignitionrobotics/ign-rendering/pull/398)
 
 ### Ignition Rendering 4.8.0 (2021-06-18)
 
@@ -441,7 +483,7 @@
 ### Ignition Rendering 3.X.X (2021-XX-XX)
 
 1. CMake warning on Ogre versions that are not officially supported.
-   To disable the new warning, it is enough to enable the cmake option USE_UNOFFICAL_OGRE_VERSIONS
+   To disable the new warning, it is enough to enable the cmake option USE_UNOFFICIAL_OGRE_VERSIONS
     * [Pull request 376](https://github.com/ignitionrobotics/ign-rendering/pull/376)
 
 ### Ignition Rendering 3.5.0 (2021-05-25)

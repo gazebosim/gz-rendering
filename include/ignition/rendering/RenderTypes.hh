@@ -48,6 +48,7 @@ namespace ignition
 
     class ArrowVisual;
     class AxisVisual;
+    class BoundingBoxCamera;
     class Camera;
     class Capsule;
     class COMVisual;
@@ -111,6 +112,10 @@ namespace ignition
     /// \typedef ThermalCameraPtr
     /// \brief Shared pointer to ThermalCamera
     typedef shared_ptr<ThermalCamera> ThermalCameraPtr;
+
+    /// \typedef BoundingBoxCameraPtr
+    /// \brief Shared pointer to BoundingBoxCamera
+    typedef shared_ptr<BoundingBoxCamera> BoundingBoxCameraPtr;
 
     /// \typedef SegmentationCameraPtr
     /// \brief Shared pointer to Segmentation Camera
@@ -281,6 +286,10 @@ namespace ignition
     /// \typedef const ThermalCameraPtr
     /// \brief Shared pointer to const ThermalCamera
     typedef shared_ptr<const ThermalCamera> ConstThermalCameraPtr;
+
+    /// \typedef const BoundingBoxCameraPtr
+    /// \brief Shared pointer to const BoundingBox Camera
+    typedef shared_ptr<const BoundingBoxCamera> ConstBoundingBoxCameraPtr;
 
     /// \typedef const SegmentationCameraPtr
     /// \brief Shared pointer to const Segmentation Camera

@@ -60,6 +60,7 @@ class ignition::rendering::Ogre2HeightmapPrivate
   /// \brief Size of the heightmap data.
   public: unsigned int dataSize{0u};
 
+  /// \brief Pointer to ogre terra object
   public: std::unique_ptr<Ogre::Terra> terra{nullptr};
 };
 

@@ -86,9 +86,9 @@ wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt update
 ```
 
-Install OGRE 2.1 debs
+Install OGRE 2.2 debs
 ```
-sudo apt install libogre-2.1-dev
+sudo apt install libogre-2.2-dev
 ```
 
 **OptiX (experimental)**

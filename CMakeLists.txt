@@ -61,7 +61,7 @@ endif()
 
 #--------------------------------------
 # Find OGRE
-list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
+list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
 
 # Ogre versions greater than 1.9 are not officialy supported.
 # Display a warning for the users on this setup unless they provide

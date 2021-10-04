@@ -2,6 +2,9 @@
 
 ### Ignition Rendering 6.X
 
+1. Fix check for ogre when using USE_UNOFFICIAL_OGRE_VERSIONS
+    * [Pull request #xxx](https://github.com/ignitionrobotics/ign-rendering/pull/xxx)
+
 ### Ignition Rendering 6.0.1 (2021-10-01)
 
 1. Disable using selection buffer for ray queries

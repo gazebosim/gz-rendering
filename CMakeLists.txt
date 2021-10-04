@@ -79,14 +79,16 @@ if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
       COMPONENTS ${ign_ogre_components}
       REQUIRED_BY ogre
       PRIVATE_FOR ogre)
-  else()
-    # If ogre 1.10 or greater was not found, then proceed to look for 1.9.x
-    # versions which are offically supported
-    ign_find_package(IgnOGRE VERSION 1.9.0
-      COMPONENTS ${ign_ogre_components}
-      REQUIRED_BY ogre
-      PRIVATE_FOR ogre)
   endif()
+endif()
+
+if (NOT OGRE_FOUND)
+  # If ogre 1.10 or greater was not found, then proceed to look for 1.9.x
+  # versions which are offically supported
+  ign_find_package(IgnOGRE VERSION 1.9.0
+    COMPONENTS ${ign_ogre_components}
+    REQUIRED_BY ogre
+    PRIVATE_FOR ogre)
 endif()
 
 if (OGRE_FOUND)

@@ -374,7 +374,6 @@ void Ogre2RenderEngine::CreateContext()
     int contextAttribs[] = {
       GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
       GLX_CONTEXT_MINOR_VERSION_ARB, 3,
-      GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
       None
     };
     this->dummyContext =

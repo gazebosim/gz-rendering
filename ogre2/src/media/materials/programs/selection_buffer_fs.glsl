@@ -65,5 +65,5 @@ void main()
   float rgba = packFloat(color);
 
   // fragColor = vec4(point.xyz, rgba);
-  fragColor = vec4(color.rgb, rgba);
+  fragColor = vec4(0.1, 0.2, 0.3, 0.5);
 }

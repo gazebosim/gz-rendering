@@ -244,6 +244,20 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
     camera->Update();
   }
 
+  std::string home;
+  ignition::common::env(IGN_HOMEDIR, home);
+  std::ifstream file(home + "/.ignition/rendering/ogre2.log");
+  if (!file.is_open())
+  {
+    std::cerr << "Failed to read file ogre2.log"  << std::endl;
+    return;
+  }
+  std::string str((std::istreambuf_iterator<char>(file)),
+      std::istreambuf_iterator<char>());
+  std::cerr << "========================\n" << str << std::endl;
+
+
+
   EXPECT_EQ(800u, camera->ImageWidth());
   EXPECT_EQ(600u, camera->ImageHeight());
 

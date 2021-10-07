@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 #============================================================================
 # Initialize the project
 #============================================================================
-project(ignition-rendering6 VERSION 6.0.0)
+project(ignition-rendering6 VERSION 6.0.1)
 
 #============================================================================
 # Find ignition-cmake
@@ -15,7 +15,7 @@ set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
 #============================================================================
 # Set up the project
 #============================================================================
-ign_configure_project(VERSION_SUFFIX pre2)
+ign_configure_project(VERSION_SUFFIX)
 
 #============================================================================
 # Set project-specific options

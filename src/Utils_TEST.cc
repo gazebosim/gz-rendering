@@ -121,14 +121,14 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   root->AddChild(camera);
   camera->Update();
 
-  if (_renderEngine == "ogre2")
-  {
-    // tests using selection buffer fail on CI, see issue #170
-    // https://github.com/ignitionrobotics/ign-rendering/issues/170
-    igndbg << "Selection buffer based screenToScene test is disabled in "
-           << _renderEngine << "." << std::endl;
-    return;
-  }
+//  if (_renderEngine == "ogre2")
+//  {
+//    // tests using selection buffer fail on CI, see issue #170
+//    // https://github.com/ignitionrobotics/ign-rendering/issues/170
+//    igndbg << "Selection buffer based screenToScene test is disabled in "
+//           << _renderEngine << "." << std::endl;
+//    return;
+//  }
 
   // \todo(anyone)
   // the centerClick var above is set to a screen pos of (width/2, height/2).
@@ -143,20 +143,20 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   // API without RayQueryResult and default max distance
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
 
-  EXPECT_NEAR(0.5, result.Z(), 5e-4);
+  EXPECT_NEAR(0.5, result.Z(), 3e-6);
   EXPECT_NEAR(0.0, result.X(), 2e-6);
   EXPECT_NEAR(0.0, result.Y(), 2e-6);
   EXPECT_TRUE(rayResult);
-  EXPECT_NEAR(14.5 - camera->NearClipPlane(), rayResult.distance, 5e-4);
+  EXPECT_NEAR(14.5 - camera->NearClipPlane(), rayResult.distance, 4e-6);
   EXPECT_EQ(box->Id(), rayResult.objectId);
 
   result = screenToScene(centerClick, camera, rayQuery, rayResult, 20.0);
 
-  EXPECT_NEAR(0.5, result.Z(), 5e-4);
+  EXPECT_NEAR(0.5, result.Z(), 3e-6);
   EXPECT_NEAR(0.0, result.X(), 2e-6);
   EXPECT_NEAR(0.0, result.Y(), 2e-6);
   EXPECT_TRUE(rayResult);
-  EXPECT_NEAR(14.5 - camera->NearClipPlane(), rayResult.distance, 5e-4);
+  EXPECT_NEAR(14.5 - camera->NearClipPlane(), rayResult.distance, 4e-6);
   EXPECT_EQ(box->Id(), rayResult.objectId);
 
   // Move camera closer to box
@@ -165,11 +165,11 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
 
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
 
-  EXPECT_NEAR(0.5, result.Z(), 1e-4);
+  EXPECT_NEAR(0.5, result.Z(), 3e-6);
   EXPECT_NEAR(0.0, result.X(), 2e-6);
   EXPECT_NEAR(0.0, result.Y(), 2e-6);
   EXPECT_TRUE(rayResult);
-  EXPECT_NEAR(6.5 - camera->NearClipPlane(), rayResult.distance, 1e-4);
+  EXPECT_NEAR(6.5 - camera->NearClipPlane(), rayResult.distance, 4e-6);
   EXPECT_EQ(box->Id(), rayResult.objectId);
 }
 

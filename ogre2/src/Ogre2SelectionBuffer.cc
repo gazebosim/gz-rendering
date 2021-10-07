@@ -228,9 +228,9 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
         Ogre::GpuPageOutStrategy::SaveToSystemRam,
         Ogre::TextureFlags::RenderToTexture,
         Ogre::TextureTypes::Type2D);
-  // this->dataPtr->renderTexture->setResolution(1, 1);
-  this->dataPtr->renderTexture->setResolution(this->dataPtr->width,
-      this->dataPtr->height);
+  this->dataPtr->renderTexture->setResolution(1, 1);
+  // this->dataPtr->renderTexture->setResolution(this->dataPtr->width,
+  //     this->dataPtr->height);
   this->dataPtr->renderTexture->setNumMipmaps(1u);
   this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA32_FLOAT);
   // this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
@@ -444,30 +444,30 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
        || _y >= static_cast<int>(targetHeight))
      return false;
 
-  // // // 1x1 selection buffer, adapted from rviz
-  // // // http://docs.ros.org/indigo/api/rviz/html/c++/selection__manager_8cpp.html
-  // unsigned int width = 1;
-  // unsigned int height = 1;
-  // float x1 = static_cast<float>(_x) /
-  //     static_cast<float>(targetWidth - 1) - 0.5f;
-  // float y1 = static_cast<float>(_y) /
-  //     static_cast<float>(targetHeight - 1) - 0.5f;
-  // float x2 = static_cast<float>(_x+width) /
-  //     static_cast<float>(targetWidth - 1) - 0.5f;
-  // float y2 = static_cast<float>(_y+height) /
-  //     static_cast<float>(targetHeight - 1) - 0.5f;
+  // 1x1 selection buffer, adapted from rviz
+  // http://docs.ros.org/indigo/api/rviz/html/c++/selection__manager_8cpp.html
+  unsigned int width = 1;
+  unsigned int height = 1;
+  float x1 = static_cast<float>(_x) /
+      static_cast<float>(targetWidth - 1) - 0.5f;
+  float y1 = static_cast<float>(_y) /
+      static_cast<float>(targetHeight - 1) - 0.5f;
+  float x2 = static_cast<float>(_x+width) /
+      static_cast<float>(targetWidth - 1) - 0.5f;
+  float y2 = static_cast<float>(_y+height) /
+      static_cast<float>(targetHeight - 1) - 0.5f;
 
-  // Ogre::Matrix4 scaleMatrix = Ogre::Matrix4::IDENTITY;
-  // Ogre::Matrix4 transMatrix = Ogre::Matrix4::IDENTITY;
-  // scaleMatrix[0][0] = 1.0 / (x2-x1);
-  // scaleMatrix[1][1] = 1.0 / (y2-y1);
-  // transMatrix[0][3] -= x1+x2;
-  // transMatrix[1][3] += y1+y2;
-  // Ogre::Matrix4 customProjectionMatrix =
-  //     scaleMatrix * transMatrix *
-  //     this->dataPtr->camera->getProjectionMatrix();
-  // this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
-  //     customProjectionMatrix);
+  Ogre::Matrix4 scaleMatrix = Ogre::Matrix4::IDENTITY;
+  Ogre::Matrix4 transMatrix = Ogre::Matrix4::IDENTITY;
+  scaleMatrix[0][0] = 1.0 / (x2-x1);
+  scaleMatrix[1][1] = 1.0 / (y2-y1);
+  transMatrix[0][3] -= x1+x2;
+  transMatrix[1][3] += y1+y2;
+  Ogre::Matrix4 customProjectionMatrix =
+      scaleMatrix * transMatrix *
+      this->dataPtr->camera->getProjectionMatrix();
+  this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
+      customProjectionMatrix);
 
   this->dataPtr->selectionCamera->setPosition(
       this->dataPtr->camera->getDerivedPosition());
@@ -479,7 +479,7 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
 
   Ogre::Image2 image;
   image.convertFromTexture(this->dataPtr->renderTexture, 0, 0);
-  // Ogre::ColourValue pixel = image.getColourAt(0, 0, 0, 0);
+  Ogre::ColourValue pixel = image.getColourAt(0, 0, 0, 0);
 
 ////////////////
 //   math::Vector3d point;
@@ -497,8 +497,7 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
 //   cv.A(1.0);
 /////////////
 
-  // Ogre::ColourValue pixel = image.getColourAt(0, 0, 0, 0);
-  Ogre::ColourValue pixel = image.getColourAt(_x, _y, 0, 0);
+ //  Ogre::ColourValue pixel = image.getColourAt(_x, _y, 0, 0);
 
   float color = pixel[3];
   uint32_t *rgba = reinterpret_cast<uint32_t *>(&color);

@@ -44,7 +44,7 @@ material SelectionBuffer
     pass
     {
       // Make this pass use the vertex shader defined above
-      vertex_program_ref selection_buffer_fs { }
+      vertex_program_ref selection_buffer_vs { }
 
       // Make this pass use the pixel shader defined above
       fragment_program_ref selection_buffer_fs { }

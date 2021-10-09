@@ -302,6 +302,10 @@ bool Ogre2RenderEngine::LoadImpl(
   if (it != _params.end())
     std::istringstream(it->second) >> this->winID;
 
+  it = _params.find("metal");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->useMetalRenderSystem;
+
   try
   {
     this->LoadAttempt();
@@ -339,7 +343,7 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  if (!this->useCurrentGLContext)
+  if (!this->useCurrentGLContext && !this->useMetalRenderSystem)
     this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
@@ -362,7 +366,7 @@ void Ogre2RenderEngine::CreateLogger()
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
-  this->ogreLogManager->createLog(logPath, true, false, false);
+  this->ogreLogManager->createLog(logPath, true, true, false);
 }
 
 //////////////////////////////////////////////////
@@ -489,6 +493,12 @@ void Ogre2RenderEngine::LoadPlugins()
     p = common::joinPaths(path, "Plugin_ParticleFX");
     plugins.push_back(p);
 
+    if (this->useMetalRenderSystem)
+    {
+      std::string p = common::joinPaths(path, "RenderSystem_Metal");
+      plugins.push_back(p);
+    }
+  
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
       // check if plugin library exists
@@ -534,6 +544,11 @@ void Ogre2RenderEngine::CreateRenderSystem()
   const Ogre::RenderSystemList *rsList;
 
   rsList = &(this->ogreRoot->getAvailableRenderers());
+  std::string targetRenderSysName("OpenGL 3+ Rendering Subsystem");
+  if (this->useMetalRenderSystem)
+  {
+    targetRenderSysName = "Metal Rendering Subsystem";
+  }
 
   int c = 0;
 
@@ -551,11 +566,11 @@ void Ogre2RenderEngine::CreateRenderSystem()
   // (it thinks the while loop is empty), so we must put the whole while
   // statement on one line and add NOLINT at the end so that cpplint doesn't
   // complain about the line being too long
-  while (renderSys && renderSys->getName().compare("OpenGL 3+ Rendering Subsystem") != 0); // NOLINT
+  while (renderSys && renderSys->getName().compare(targetRenderSysName) != 0); // NOLINT
 
   if (renderSys == nullptr)
   {
-    ignerr << "unable to find OpenGL rendering system. OGRE is probably "
+    ignerr << "unable to find " << targetRenderSysName << ". OGRE is probably "
             "installed incorrectly. Double check the OGRE cmake output, "
             "and make sure OpenGL is enabled." << std::endl;
   }
@@ -662,6 +677,18 @@ void Ogre2RenderEngine::RegisterHlms()
       rootHlmsFolder, "2.0", "scripts", "materials", "Terra", "GLSL");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       terraGLSLMaterialFolder, "FileSystem", "General");
+
+  if (this->useMetalRenderSystem)
+  {
+    Ogre::String commonMetalMaterialFolder = common::joinPaths(
+        rootHlmsFolder, "2.0", "scripts", "materials", "Common", "Metal");
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        commonMetalMaterialFolder, "FileSystem", "General");
+    Ogre::String terraMetalMaterialFolder = common::joinPaths(
+        rootHlmsFolder, "2.0", "scripts", "materials", "Terra", "Metal");
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        terraMetalMaterialFolder, "FileSystem", "General");
+  }
 
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework

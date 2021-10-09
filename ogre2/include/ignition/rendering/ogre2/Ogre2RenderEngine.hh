@@ -232,6 +232,9 @@ namespace ignition
       /// \brief True to use the current opengl context
       private: bool useCurrentGLContext = false;
 
+      /// \brief True to use the Metal render system
+      private: bool useMetalRenderSystem = false;
+
       /// \brief Pointer to private data
       private: std::unique_ptr<Ogre2RenderEnginePrivate> dataPtr;
 

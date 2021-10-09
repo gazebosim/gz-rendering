@@ -159,7 +159,10 @@ CameraPtr createCamera(const std::string &_engineName,
     std::vector<VisualPtr> &_visuals, common::SkeletonPtr &_skel)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::engine(_engineName);
+  std::map<std::string, std::string> params;
+  params["metal"] = "1";
+
+  RenderEngine *engine = rendering::engine(_engineName, params);
   if (!engine)
   {
     ignwarn << "Engine '" << _engineName

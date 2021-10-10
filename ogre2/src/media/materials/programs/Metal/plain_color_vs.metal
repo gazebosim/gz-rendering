@@ -41,7 +41,7 @@ vertex PS_INPUT main_metal
 {
 	PS_INPUT outVs;
 
-  outVs.gl_Position    = ( p.worldViewProj * input.position ).xyzw;
+  outVs.gl_Position = ( p.worldViewProj * input.position ).xyzw;
 
 	return outVs;
 }

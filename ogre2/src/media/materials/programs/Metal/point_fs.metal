@@ -33,7 +33,5 @@ fragment float4 main_metal
 	constant Params &p [[buffer(PARAMETER_SLOT)]]
 )
 {
-  //float4 color(0.5, 0, 0.5, 1.0);
-
   return p.color;
 }

@@ -8,14 +8,13 @@ using namespace metal;
 struct VS_INPUT
 {
 	float4 position [[attribute(VES_POSITION)]];
-	float3 normal	[[attribute(VES_NORMAL)]];
+	float3 normal	  [[attribute(VES_NORMAL)]];
 };
 
 struct PS_INPUT
 {
-	float3 cameraDir;
-
 	float4 gl_Position [[position]];
+	float3 cameraDir;
 };
 
 struct Params

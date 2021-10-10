@@ -25,7 +25,7 @@ struct VS_INPUT
 
 struct PS_INPUT
 {
-	float4 gl_Position [[position]];
+	float4 gl_Position  [[position]];
 	float  gl_PointSize [[point_size]];
 };
 

@@ -39,7 +39,7 @@ using namespace rendering;
 
 
 const std::string RESOURCE_PATH =
-    common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
+    common::joinPaths(std::string(PROJECT_BINARY_PATH), "Debug/media");
 
 
 //////////////////////////////////////////////////
@@ -294,18 +294,18 @@ CameraPtr createCamera(const std::string &_engineName)
   SensorPtr sensor = scene->SensorByName("camera");
   // get render pass system
   CameraPtr camera = std::dynamic_pointer_cast<Camera>(sensor);
-  RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-  if (rpSystem)
-  {
-    // add gaussian noise pass
-    RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
-    GaussianNoisePassPtr noisePass =
-        std::dynamic_pointer_cast<GaussianNoisePass>(pass);
-    noisePass->SetMean(0.1);
-    noisePass->SetStdDev(0.08);
-    noisePass->SetEnabled(false);
-    camera->AddRenderPass(noisePass);
-  }
+//  RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
+//  if (rpSystem)
+//  {
+//    // add gaussian noise pass
+//    RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
+//    GaussianNoisePassPtr noisePass =
+//        std::dynamic_pointer_cast<GaussianNoisePass>(pass);
+//    noisePass->SetMean(0.1);
+//    noisePass->SetStdDev(0.08);
+//    noisePass->SetEnabled(false);
+//    camera->AddRenderPass(noisePass);
+//  }
 
   return camera;
 }

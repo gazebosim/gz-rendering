@@ -101,10 +101,7 @@ void buildScene(ScenePtr _scene)
 CameraPtr createCamera(const std::string &_engineName)
 {
   // create and populate scene
-  std::map<std::string, std::string> params;
-  params["metal"] = "1";
-
-  RenderEngine *engine = rendering::engine(_engineName, params);
+  RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName

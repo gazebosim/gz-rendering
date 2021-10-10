@@ -842,6 +842,10 @@ void Ogre2RenderEngine::CreateResources()
     archNames.push_back(
         std::make_pair(p + "/materials/programs", "General"));
     archNames.push_back(
+        std::make_pair(p + "/materials/programs/GLSL", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/programs/Metal", "General"));
+    archNames.push_back(
         std::make_pair(p + "/materials/scripts", "General"));
     archNames.push_back(
         std::make_pair(p + "/materials/textures", "General"));

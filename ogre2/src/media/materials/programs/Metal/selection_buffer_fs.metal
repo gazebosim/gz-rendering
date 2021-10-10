@@ -26,18 +26,49 @@ struct PS_INPUT
 
 struct Params
 {
-	texture2d<float> colorTexture [[texture(0)]];
-	texture2d<float> depthTexture [[texture(0)]];
-  float2           projectionParams;
-  float            far;
-  float            inf;
+  float2  projectionParams;
+  float   far;
+  float   inf;
 };
+
+float packFloat(float4 color)
+{
+  int rgba = (int(color.x * 255.0) << 24) +
+             (int(color.y * 255.0) << 16) +
+             (int(color.z * 255.0) << 8) +
+             int(color.w * 255.0);
+  return as_type<float>(rgba);
+}
 
 fragment float4 main_metal
 (
 	PS_INPUT inPs [[stage_in]],
+	texture2d<float> colorTexture [[texture(0)]],
+	texture2d<float> depthTexture [[texture(1)]],
+	sampler				   colorSampler	[[sampler(0)]],
+	sampler				   depthSampler	[[sampler(1)]],
 	constant Params &p [[buffer(PARAMETER_SLOT)]]
 )
 {
-  return float4(0.5, 0, 0.5, 1.0);
+  // get linear depth
+  float fDepth = depthTexture.sample(depthSampler, inPs.uv0).x;
+
+  float d = p.projectionParams.y / (fDepth - p.projectionParams.x);
+
+  // reconstruct 3d viewspace pos from depth
+  float3 viewSpacePos = inPs.cameraDir * d;
+
+  // convert to z up
+  float3 point = float3(-viewSpacePos.z, -viewSpacePos.x, viewSpacePos.y);
+
+  // set to inf if point is at far clip plane
+  if (point.x > p.far - 1e-4)
+    point = float3(p.inf);
+
+  // color
+  float4 color = colorTexture.sample(colorSampler, inPs.uv0);
+
+  float rgba = packFloat(color);
+
+  return float4(point.xyz, rgba);
 }

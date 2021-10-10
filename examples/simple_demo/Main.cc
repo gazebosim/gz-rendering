@@ -186,13 +186,11 @@ void buildScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName)
+CameraPtr createCamera(const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
   // create and populate scene
-  std::map<std::string, std::string> params;
-  params["metal"] = "1";
-
-  RenderEngine *engine = rendering::engine(_engineName, params);
+  RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -220,6 +218,12 @@ int main(int _argc, char** _argv)
     ogreEngineName = _argv[1];
   }
 
+  bool useMetalRenderSystem{false};
+  if (_argc > 2 && std::string(_argv[2]).compare("metal") == 0)
+  {
+    useMetalRenderSystem = true;
+  }
+
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
@@ -231,7 +235,13 @@ int main(int _argc, char** _argv)
   {
     try
     {
-      CameraPtr camera = createCamera(engineName);
+      std::map<std::string, std::string> params;
+      if (engineName.compare("ogre2") == 0 && useMetalRenderSystem)
+      {
+        params["metal"] = "1";
+      }
+
+      CameraPtr camera = createCamera(engineName, params);
       if (camera)
       {
         cameras.push_back(camera);

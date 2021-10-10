@@ -39,7 +39,7 @@ using namespace rendering;
 
 
 const std::string RESOURCE_PATH =
-    common::joinPaths(std::string(PROJECT_BINARY_PATH), "Debug/media");
+    common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 
 //////////////////////////////////////////////////
@@ -274,13 +274,11 @@ void buildScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName)
+CameraPtr createCamera(const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
   // create and populate scene
-  std::map<std::string, std::string> params;
-  params["metal"] = "1";
-
-  RenderEngine *engine = rendering::engine(_engineName, params);
+  RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -294,18 +292,18 @@ CameraPtr createCamera(const std::string &_engineName)
   SensorPtr sensor = scene->SensorByName("camera");
   // get render pass system
   CameraPtr camera = std::dynamic_pointer_cast<Camera>(sensor);
-//  RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-//  if (rpSystem)
-//  {
-//    // add gaussian noise pass
-//    RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
-//    GaussianNoisePassPtr noisePass =
-//        std::dynamic_pointer_cast<GaussianNoisePass>(pass);
-//    noisePass->SetMean(0.1);
-//    noisePass->SetStdDev(0.08);
-//    noisePass->SetEnabled(false);
-//    camera->AddRenderPass(noisePass);
-//  }
+ RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
+ if (rpSystem)
+ {
+   // add gaussian noise pass
+   RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
+   GaussianNoisePassPtr noisePass =
+       std::dynamic_pointer_cast<GaussianNoisePass>(pass);
+   noisePass->SetMean(0.1);
+   noisePass->SetStdDev(0.08);
+   noisePass->SetEnabled(false);
+   camera->AddRenderPass(noisePass);
+ }
 
   return camera;
 }
@@ -319,12 +317,24 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
+  bool useMetalRenderSystem{false};
+  if (_argc > 2 && std::string(_argv[2]).compare("metal") == 0)
+  {
+    useMetalRenderSystem = true;
+  }
+
   engineNames.push_back("ogre2");
   for (auto engineName : engineNames)
   {
     try
     {
-      CameraPtr camera = createCamera(engineName);
+      std::map<std::string, std::string> params;
+      if (engineName.compare("ogre2") == 0 && useMetalRenderSystem)
+      {
+        params["metal"] = "1";
+      }
+
+      CameraPtr camera = createCamera(engineName, params);
       if (camera)
       {
         cameras.push_back(camera);

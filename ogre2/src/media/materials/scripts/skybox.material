@@ -76,7 +76,6 @@ fragment_program SkyBox_fs unified
     delegate SkyBox_fs_Metal
 }
 
-
 // Material definition
 material SkyBox
 {

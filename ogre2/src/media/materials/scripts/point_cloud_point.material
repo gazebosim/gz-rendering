@@ -15,7 +15,8 @@
  *
  */
 
-vertex_program PointCloudVS glsl
+// GLSL shaders
+vertex_program PointCloudVS_GLSL glsl
 {
   source point_vs.glsl
 
@@ -26,13 +27,44 @@ vertex_program PointCloudVS glsl
   }
 }
 
-fragment_program PointCloudFS glsl
+fragment_program PointCloudFS_GLSL glsl
 {
   source point_fs.glsl
   default_params
   {
     param_named color float4 1.0 1.0 1.0 1.0
   }
+}
+
+// Metal shaders
+vertex_program PointCloudVS_Metal metal
+{
+  source point_vs.metal
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+    param_named size float 1.0
+  }
+}
+
+fragment_program PointCloudFS_Metal metal
+{
+  source point_fs.metal
+  shader_reflection_pair_hint PointCloudVS_Metal
+}
+
+// Unified shaders
+vertex_program PointCloudVS unified
+{
+  delegate PointCloudVS_GLSL
+  delegate PointCloudVS_Metal
+}
+
+fragment_program PointCloudFS unified
+{
+  delegate PointCloudFS_GLSL
+  delegate PointCloudFS_Metal
 }
 
 material PointCloudPoint

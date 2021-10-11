@@ -216,7 +216,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
                     fullPath);
 
               bool matPtrNotNull;
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
               matPtrNotNull = !matPtr.isNull();
 #else
               matPtrNotNull = matPtr != nullptr;
@@ -725,7 +725,7 @@ void OgreRenderEngine::CheckCapabilities()
   bool hasVertexPrograms =
     capabilities->hasCapability(Ogre::RSC_VERTEX_PROGRAM);
 
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
   bool hasFBO =
     capabilities->hasCapability(Ogre::RSC_FBO);
 #else

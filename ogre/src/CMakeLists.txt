@@ -15,11 +15,8 @@ set(engine_name "ogre")
 
 ign_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre_target)
 
-if(OGRE_VERSION VERSION_LESS 1.10.3)
-  add_definitions(-DOGRE_VERSION_LT_1_10_3)
-endif()
-if(OGRE_VERSION VERSION_LESS 1.10.1)
-  add_definitions(-DOGRE_VERSION_LT_1_10_1)
+if(OGRE_VERSION VERSION_LESS 1.11.0)
+  add_definitions(-DOGRE_VERSION_LT_1_11_0)
 endif()
 if(OGRE_VERSION VERSION_LESS 1.12.0)
   add_definitions(-DOGRE_VERSION_LT_1_12_0)

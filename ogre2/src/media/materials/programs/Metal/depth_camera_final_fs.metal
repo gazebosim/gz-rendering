@@ -22,30 +22,18 @@ using namespace metal;
 
 struct PS_INPUT
 {
-  float2 uv0;
-  float3 cameraDir;
 };
 
 struct Params
 {
-  float4 inColor;
+  float4 color;
 };
 
 fragment float4 main_metal
 (
   PS_INPUT inPs [[stage_in]],
-  texture2d<float>  depthTexture [[texture(0)]],
-  texture2d<float>  colorTexture [[texture(1)]],
-  texture2d<float>  particleTexture [[texture(2)]],
-  texture2d<float>  particleDepthTexture [[texture(3)]],
-  sampler           depthSampler [[sampler(0)]],
-  sampler           colorSampler [[sampler(1)]],
-  sampler           particleSampler [[sampler(2)]],
-  sampler           particleDepthSampler [[sampler(3)]],
   constant Params &p [[buffer(PARAMETER_SLOT)]]
 )
 {
-
-  float4 fragColor(0.5, 0, 0.5, 1);
-  return fragColor;
+  return p.color;
 }

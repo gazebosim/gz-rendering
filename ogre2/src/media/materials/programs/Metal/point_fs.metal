@@ -24,13 +24,13 @@ struct PS_INPUT
 
 struct Params
 {
-	float4 color;
+  float4 color;
 };
 
 fragment float4 main_metal
 (
-	PS_INPUT inPs [[stage_in]],
-	constant Params &p [[buffer(PARAMETER_SLOT)]]
+  PS_INPUT inPs [[stage_in]],
+  constant Params &p [[buffer(PARAMETER_SLOT)]]
 )
 {
   return p.color;

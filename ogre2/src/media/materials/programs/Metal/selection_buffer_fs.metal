@@ -21,7 +21,7 @@ using namespace metal;
 struct PS_INPUT
 {
   float2 uv0;
-	float3 cameraDir;
+  float3 cameraDir;
 };
 
 struct Params
@@ -42,12 +42,12 @@ float packFloat(float4 color)
 
 fragment float4 main_metal
 (
-	PS_INPUT inPs [[stage_in]],
-	texture2d<float> colorTexture [[texture(0)]],
-	texture2d<float> depthTexture [[texture(1)]],
-	sampler				   colorSampler	[[sampler(0)]],
-	sampler				   depthSampler	[[sampler(1)]],
-	constant Params &p [[buffer(PARAMETER_SLOT)]]
+  PS_INPUT inPs [[stage_in]],
+  texture2d<float> colorTexture [[texture(0)]],
+  texture2d<float> depthTexture [[texture(1)]],
+  sampler          colorSampler	[[sampler(0)]],
+  sampler          depthSampler	[[sampler(1)]],
+  constant Params &p [[buffer(PARAMETER_SLOT)]]
 )
 {
   // get linear depth

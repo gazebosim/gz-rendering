@@ -45,15 +45,15 @@ vertex PS_INPUT main_metal
 {
   PS_INPUT outVs;
 
-  outVs.gl_Position    = ( p.worldViewProj * input.position ).xyzw;
-  outVs.uv0            = input.uv0;
+  outVs.gl_Position = ( p.worldViewProj * input.position ).xyzw;
+  outVs.uv0 = input.uv0;
 
   // normal is used in fragment shader to reconstruct
   // viewspace pos from depth buffer data
   // see the `quad_normals` and `camera_far_corners_view_space`
   // param descriptions in
   // https://ogrecave.github.io/ogre/api/2.1/compositor.html
-  outVs.cameraDir     = input.normal;
+  outVs.cameraDir = input.normal;
 
   return outVs;
 }

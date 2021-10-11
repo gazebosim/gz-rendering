@@ -15,25 +15,73 @@
  *
  */
  
- // TODO_IMPLEMENT: this is a placeholder only
+// For details and documentation see: depth_camera_final_fs.glsl
 
 #include <metal_stdlib>
 using namespace metal;
 
 struct PS_INPUT
 {
+  float2 uv0;
 };
 
 struct Params
 {
-  float4 color;
+  float near;
+  float far;
+  float min;
+  float max;
+  float4 texResolution;
 };
 
 fragment float4 main_metal
 (
   PS_INPUT inPs [[stage_in]],
-  constant Params &p [[buffer(PARAMETER_SLOT)]]
+  texture2d<float>  inputTexture [[texture(0)]],
+  sampler           inputSampler [[sampler(0)]],
+  constant Params &params [[buffer(PARAMETER_SLOT)]]
 )
 {
-  return p.color;
+  float tolerance = 1e-6;
+
+  // Note: We use texelFetch because p.a contains an uint32 and sampling
+  // (even w/ point filtering) causes p.a to loss information (e.g.
+  // values close to 0 get rounded to 0)
+  //
+  // See https://github.com/ignitionrobotics/ign-rendering/issues/332
+  // float4 p = texelFetch(inputTexture, int2(inPs.uv0 * params.texResolution.xy), 0);
+  // TODO - establish Metal equivalent - use standard sampler as interim approx.
+  float4 p = inputTexture.sample(inputSampler, inPs.uv0);
+
+  float3 point = p.xyz;
+
+  // Clamp again in case render passes changed depth values
+  // to be outside of min/max range
+
+  // clamp xyz
+  if (!isinf(point.x) && length(point) > params.far - tolerance)
+  {
+    if (isinf(params.max))
+    {
+      point = float3(params.max);
+    }
+    else
+    {
+      point.x = params.max;
+    }
+  }
+  else if (point.x < params.near + tolerance)
+  {
+    if (isinf(params.min))
+    {
+      point = float3(params.min);
+    }
+    else
+    {
+      point.x = params.min;
+    }
+  }
+
+  float4 fragColor(point, p.a);
+  return fragColor;
 }

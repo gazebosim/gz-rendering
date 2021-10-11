@@ -15,26 +15,26 @@
  *
  */
  
- // TODO_IMPLEMENT: this is a placeholder only
-
 #include <metal_stdlib>
 using namespace metal;
 
 struct VS_INPUT
 {
   float4 position [[attribute(VES_POSITION)]];
+  float3 normal   [[attribute(VES_NORMAL)]];
+  float2 uv0      [[attribute(VES_TEXTURE_COORDINATES0)]];
 };
 
 struct PS_INPUT
 {
-  float4 gl_Position  [[position]];
-  float  gl_PointSize [[point_size]];
+  float4 gl_Position [[position]];
+  float2 uv0;
+  float3 cameraDir;
 };
 
 struct Params
 {
   float4x4 worldViewProj;
-  float size;
 };
 
 vertex PS_INPUT main_metal
@@ -45,8 +45,15 @@ vertex PS_INPUT main_metal
 {
   PS_INPUT outVs;
 
-  outVs.gl_Position    = ( p.worldViewProj * input.position ).xyzw;
-  outVs.gl_PointSize   = p.size;
+  outVs.gl_Position = ( p.worldViewProj * input.position ).xyzw;
+  outVs.uv0 = input.uv0;
+
+  // normal is used in fragment shader to reconstruct
+  // viewspace pos from depth buffer data
+  // see the `quad_normals` and `camera_far_corners_view_space`
+  // param descriptions in
+  // https://ogrecave.github.io/ogre/api/2.1/compositor.html
+  outVs.cameraDir = input.normal;
 
   return outVs;
 }

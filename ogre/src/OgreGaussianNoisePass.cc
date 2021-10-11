@@ -44,7 +44,7 @@ namespace ignition
       public: virtual void notifyMaterialRender(unsigned int _passId,
                                                 Ogre::MaterialPtr &_mat)
       {
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
         IGN_ASSERT(!_mat.isNull(), "Null OGRE material");
 #else
         IGN_ASSERT(_mat, "Null OGRE material");
@@ -68,7 +68,7 @@ namespace ignition
         IGN_ASSERT(pass, "Null OGRE material pass");
         Ogre::GpuProgramParametersSharedPtr params =
             pass->getFragmentProgramParameters();
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
         IGN_ASSERT(!params.isNull(), "Null OGRE material GPU parameters");
 #else
         IGN_ASSERT(params, "Null OGRE material GPU parameters");

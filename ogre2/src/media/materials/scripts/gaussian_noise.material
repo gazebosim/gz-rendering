@@ -110,7 +110,7 @@ fragment_program GaussianNoiseDepthFS_Metal metal
 }
 
 // Unified shaders
-fragment_program GaussianNoiseDepthFS glsl
+fragment_program GaussianNoiseDepthFS unified
 {
   delegate GaussianNoiseDepthFS_GLSL
   delegate GaussianNoiseDepthFS_Metal

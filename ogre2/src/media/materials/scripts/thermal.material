@@ -53,13 +53,13 @@ fragment_program ThermalCameraFS_Metal metal
 }
 
 // Unified shaders
-vertex_program ThermalCameraVS glsl
+vertex_program ThermalCameraVS unified
 {
   delegate ThermalCameraVS_GLSL
   delegate ThermalCameraVS_Metal
 }
 
-fragment_program ThermalCameraFS glsl
+fragment_program ThermalCameraFS unified
 {
   delegate ThermalCameraFS_GLSL
   delegate ThermalCameraFS_Metal

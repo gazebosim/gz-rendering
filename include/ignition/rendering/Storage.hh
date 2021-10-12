@@ -294,6 +294,10 @@ namespace ignition
       public: virtual ~StoreWrapper() { }
     };
 
+// armhf failed to build with this code. It can not be removed for the rest
+// of arches to keep ABI but should be removed in major versions unreleased
+// see https://github.com/ignitionrobotics/ign-rendering/pull/457
+#ifndef __ARM_PCS_VFP
     template class Store<Scene>;
     template class Store<Node>;
     template class Store<Light>;
@@ -303,6 +307,7 @@ namespace ignition
     template class Store<SubMesh>;
     template class Map<Material>;
     template class CompositeStore<Node>;
+#endif
 
     /// \def SceneStore
     /// \brief Store of Scene

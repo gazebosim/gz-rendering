@@ -219,6 +219,7 @@ void handleMouse()
 
 //////////////////////////////////////////////////
 // From ign-sensors/src/DepthCameraSensor.cc
+//! [convert depth to image]
 void ConvertDepthToImage(
     const float *_data,
     unsigned char *_imageBuffer,
@@ -241,6 +242,7 @@ void ConvertDepthToImage(
     _imageBuffer[j * 3 + 2] = d;
   }
 }
+//! [convert depth to image]
 
 //////////////////////////////////////////////////
 void displayCB()
@@ -294,6 +296,7 @@ void keyboardCB(unsigned char _key, int, int)
 
 //////////////////////////////////////////////////
 // See ign-sensors/src/DepthCameraSensor.cc
+//! [depth frame callback]
 void OnNewDepthFrame(const float *_scan,
                      unsigned int _width, unsigned int _height,
                      unsigned int /*_channels*/,
@@ -302,8 +305,10 @@ void OnNewDepthFrame(const float *_scan,
   unsigned char *data = g_image->Data<unsigned char>();
   ConvertDepthToImage(_scan, data, _width, _height);
 }
+//! [depth frame callback]
 
 //////////////////////////////////////////////////
+//! [init camera]
 void initCamera(ir::CameraPtr _camera)
 {
   g_camera = _camera;
@@ -322,6 +327,7 @@ void initCamera(ir::CameraPtr _camera)
 
   g_camera->Update();
 }
+//! [init camera]
 
 //////////////////////////////////////////////////
 void initContext()

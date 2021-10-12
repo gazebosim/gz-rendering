@@ -103,6 +103,7 @@ void buildScene(ScenePtr _scene)
   sphere2->SetUserData("label", 3);
   root->AddChild(sphere2);
 
+//! [create camera]
   // create camera
   DepthCameraPtr camera = _scene->CreateDepthCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.5);
@@ -118,6 +119,8 @@ void buildScene(ScenePtr _scene)
   camera->CreateDepthTexture();
 
   root->AddChild(camera);
+
+//! [create camera]
 }
 
 //////////////////////////////////////////////////

@@ -81,7 +81,60 @@ fragment float4 main_metal
   constant Params &p [[buffer(PARAMETER_SLOT)]]
 )
 {
+  // get linear depth
+  float fDepth = depthTexture.sample(depthSampler, inPs.uv0).x;
+  float d = p.projectionParams.y / (fDepth - p.projectionParams.x);
 
-  float4 fragColor(0.5, 0, 0.5, 1);
+  // get retro
+  float retro = colorTexture.sample(colorSampler, inPs.uv0).x * 2000.0;
+
+  // reconstruct 3d viewspace pos from depth
+  float3 viewSpacePos = inPs.cameraDir * d;
+
+  // get length of 3d point, i.e.range
+  float l = length(viewSpacePos);
+
+  // particle mask - color and depth
+  float4 particle = particleTexture.sample(particleSampler, inPs.uv0);
+  float particleDepth = particleDepthTexture.sample(particleDepthSampler, inPs.uv0).x;
+  float pd = p.projectionParams.y / (particleDepth - p.projectionParams.x);
+
+  // check if need to apply scatter effect
+  if (particle.x > 0.0 && pd < d)
+  {
+    // apply scatter effect so that only some of the smoke pixels are visible
+    float r = rand(inPs.uv0 + float2(p.rnd, p.rnd));
+    if (r < p.particleScatterRatio)
+    {
+      float3 point = inPs.cameraDir * pd;
+
+      float rr = rand(inPs.uv0 + float2(p.rnd, p.rnd)) - 0.5;
+
+      // apply gaussian noise to particle range data
+      // With large particles, the range returned are all from the first large
+      // particle. So add noise with some mean values so that all the points are
+      // shifted further out. This gives depth readings beyond the first few
+      // particles and avoid too many early returns
+      float3 noise = gaussrand(inPs.uv0, float3(p.rnd, p.rnd, p.rnd),
+           p.particleStddev, rr*rr*p.particleStddev*0.5).xyz;
+      float noiseLength = length(noise);
+
+      // apply gaussian noise to particle depth data
+      float newLength = length(point) + noiseLength;
+
+      // make sure we do not produce values larger than the range of the first
+      // non-particle obstacle, e.g. a box behind particle should still return
+      // a hit
+      if (newLength < l)
+        l = newLength;
+    }
+  }
+
+  if (l > p.far)
+    l = p.max;
+  else if (l < p.near)
+    l = p.min;
+
+  float4 fragColor(l, retro, 0.0, 1.0);
   return fragColor;
 }

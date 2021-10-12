@@ -50,11 +50,11 @@ vertex_program selection_buffer_vs_Metal metal
 fragment_program selection_buffer_fs_Metal metal
 {
   source selection_buffer_fs.metal
-  shader_reflection_pair_hint DepthCameraVS_Metal
+  shader_reflection_pair_hint selection_buffer_vs_Metal
 }
 
 // Unified shaders
-fragment_program selection_buffer_vs unified
+vertex_program selection_buffer_vs unified
 {
   delegate selection_buffer_vs_GLSL
   delegate selection_buffer_vs_Metal

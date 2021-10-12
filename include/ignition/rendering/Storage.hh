@@ -294,6 +294,16 @@ namespace ignition
       public: virtual ~StoreWrapper() { }
     };
 
+    template class Store<Scene>;
+    template class Store<Node>;
+    template class Store<Light>;
+    template class Store<Sensor>;
+    template class Store<Visual>;
+    template class Store<Geometry>;
+    template class Store<SubMesh>;
+    template class Map<Material>;
+    template class CompositeStore<Node>;
+
     /// \def SceneStore
     /// \brief Store of Scene
     typedef Store<Scene> SceneStore;

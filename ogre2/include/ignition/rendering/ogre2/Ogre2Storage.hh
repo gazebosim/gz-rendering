@@ -33,6 +33,14 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    template class BaseGeometryStore<Ogre2Geometry>;
+    template class BaseLightStore<Ogre2Light>;
+    template class BaseNodeStore<Ogre2Node>;
+    template class BaseSceneStore<Ogre2Scene>;
+    template class BaseSensorStore<Ogre2Sensor>;
+    template class BaseSubMeshStore<Ogre2SubMesh>;
+    template class BaseVisualStore<Ogre2Visual>;
 
     typedef BaseGeometryStore<Ogre2Geometry>    Ogre2GeometryStore;
     typedef BaseLightStore<Ogre2Light>          Ogre2LightStore;

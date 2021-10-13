@@ -657,7 +657,10 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   // otherwise this becomes a transparent material
   if (_type == Ogre::PBSM_DIFFUSE)
   {
-    if (this->TextureAlphaEnabled())
+    bool isGrayscale = (Ogre::PixelFormatGpuUtils::getNumberOfComponents(
+            tex->getPixelFormat()) == 1u);
+
+    if (this->TextureAlphaEnabled() || isGrayscale)
     {
       if (tex)
       {
@@ -665,15 +668,15 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
         tex->waitForData();
 
         // only enable alpha from texture if texture has alpha component
-        if (!Ogre::PixelFormatGpuUtils::hasAlpha(tex->getPixelFormat()))
+        if (this->TextureAlphaEnabled() &&
+            !Ogre::PixelFormatGpuUtils::hasAlpha(tex->getPixelFormat()))
         {
           this->SetAlphaFromTexture(false, this->AlphaThreshold(),
               this->TwoSidedEnabled());
         }
 
         // treat grayscale texture as RGB
-        if (Ogre::PixelFormatGpuUtils::getNumberOfComponents(
-            tex->getPixelFormat()) == 1u)
+        if (isGrayscale)
         {
           this->ogreDatablock->setUseDiffuseMapAsGrayscale(true);
         }

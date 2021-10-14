@@ -534,13 +534,23 @@ void Ogre2GpuRays::ConfigureCamera()
   v |= v >> 8;
   v |= v >> 16;
   v++;
+
+  // limit min texture size to 128
+  // This is needed for large fov with low sample count,
+  // e.g. 360 degrees and only 4 samples. Otherwise the depth data returned are
+  // inaccurate.
+  // \todo(anyone) For small fov, we shouldn't need such a high min texture size
+  // requirement, e.g. a single ray lidar only needs 1x1 texture. Look for ways
+  // to compute the optimal min texture size
+  unsigned int min1stPassSamples = 128u;
+
   // limit max texture size to 1024
-  unsigned int min1stPassSamples = 2u;
   unsigned int max1stPassSamples = 1024u;
   unsigned int samples1stPass =
       std::clamp(v, min1stPassSamples, max1stPassSamples);
 
   this->Set1stTextureSize(samples1stPass, samples1stPass);
+  // this->Set1stTextureSize(max1stPassSamples, max1stPassSamples);
 
   // Configure second pass texture size
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());

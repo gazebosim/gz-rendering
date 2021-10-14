@@ -32,9 +32,9 @@
 #include <mutex>
 
 #include <ignition/common/Console.hh>
-#include <ignition/rendering/Camera.hh>
 #include <ignition/rendering/Image.hh>
 #include <ignition/rendering/Scene.hh>
+#include <ignition/rendering/WideAngleCamera.hh>
 
 #include "GlutWindow.hh"
 
@@ -50,6 +50,7 @@ ir::CameraPtr g_camera;
 ir::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
+ignition::common::ConnectionPtr g_connection;
 
 bool g_initContext = false;
 
@@ -98,7 +99,7 @@ void displayCB()
   }
 #endif
 
-  g_cameras[g_cameraIndex]->Capture(*g_image);
+  g_cameras[g_cameraIndex]->Update();
 
 #if __APPLE__
   CGLSetCurrentContext(g_glutContext);
@@ -139,6 +140,16 @@ void keyboardCB(unsigned char _key, int, int)
 }
 
 //////////////////////////////////////////////////
+void OnNewWideAngleFrame(const void *_data,
+                     unsigned int _width, unsigned int _height,
+                     unsigned int _channels,
+                     const std::string &/*_format*/)
+{
+  unsigned char *data = g_image->Data<unsigned char>();
+  memcpy(data, _data,_width * _height * _channels);
+}
+
+//////////////////////////////////////////////////
 void initCamera(ir::CameraPtr _camera)
 {
   g_camera = _camera;
@@ -146,7 +157,19 @@ void initCamera(ir::CameraPtr _camera)
   imgh = g_camera->ImageHeight();
   ir::Image image = g_camera->CreateImage();
   g_image = std::make_shared<ir::Image>(image);
-  g_camera->Capture(*g_image);
+
+  ir::WideAngleCameraPtr wideAngleCamera =
+      std::dynamic_pointer_cast<ir::WideAngleCamera>(
+      g_camera);
+
+  // connect to new image event
+  g_connection = wideAngleCamera->ConnectNewWideAngleFrame(
+        std::bind(OnNewWideAngleFrame,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+  // update the camera once
+  g_camera->Update();
 }
 
 //////////////////////////////////////////////////

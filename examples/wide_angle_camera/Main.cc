@@ -79,7 +79,6 @@ void buildScene(ScenePtr _scene)
   gray->SetDiffuse(0.7, 0.7, 0.7);
   gray->SetSpecular(0.7, 0.7, 0.7);
 
-//! [create grid visual]
   VisualPtr grid = _scene->CreateVisual();
   GridPtr gridGeom = _scene->CreateGrid();
   gridGeom->SetCellCount(20);
@@ -89,9 +88,8 @@ void buildScene(ScenePtr _scene)
   grid->SetLocalPosition(3, 0, 0.0);
   grid->SetMaterial(gray);
   root->AddChild(grid);
-//! [create grid visual]
 
-//! [create camera]
+//! [create wide angle camera]
   WideAngleCameraPtr camera = _scene->CreateWideAngleCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
@@ -101,7 +99,7 @@ void buildScene(ScenePtr _scene)
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
-//! [create camera]
+//! [create wide angle camera]
 }
 
 //////////////////////////////////////////////////

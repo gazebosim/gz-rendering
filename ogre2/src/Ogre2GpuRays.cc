@@ -550,7 +550,6 @@ void Ogre2GpuRays::ConfigureCamera()
       std::clamp(v, min1stPassSamples, max1stPassSamples);
 
   this->Set1stTextureSize(samples1stPass, samples1stPass);
-  // this->Set1stTextureSize(max1stPassSamples, max1stPassSamples);
 
   // Configure second pass texture size
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());

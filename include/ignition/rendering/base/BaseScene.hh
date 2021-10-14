@@ -369,6 +369,21 @@ namespace ignition
         const unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual WideAngleCameraPtr CreateWideAngleCamera() override;
+
+      // Documentation inherited.
+      public: virtual WideAngleCameraPtr CreateWideAngleCamera(
+        const unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual WideAngleCameraPtr CreateWideAngleCamera(
+        const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual WideAngleCameraPtr CreateWideAngleCamera(
+        const unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual GpuRaysPtr CreateGpuRays() override;
 
       // Documentation inherited.
@@ -659,6 +674,22 @@ namespace ignition
                    ignerr << "Segmentation camera not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return SegmentationCameraPtr();
+                 }
+
+      /// \brief Implementation for creating a wide angle camera.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of wide angle camera
+      /// \return Pointer to wide angle camera
+      protected: virtual WideAngleCameraPtr CreateWideAngleCameraImpl(
+                     unsigned int _id,
+                     const std::string &_name)
+                 {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
+                   ignerr << "Wide angle camera not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return WideAngleCameraPtr();
                  }
 
       /// \brief Implementation for creating GpuRays sensor.

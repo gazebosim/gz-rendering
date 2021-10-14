@@ -65,6 +65,7 @@ namespace ignition
     class OgreText;
     class OgreThermalCamera;
     class OgreVisual;
+    class OgreWideAngleCamera;
     class OgreWireBox;
 
     typedef BaseSceneStore<OgreScene>       OgreSceneStore;
@@ -123,6 +124,7 @@ namespace ignition
     typedef shared_ptr<OgreThermalCamera>        OgreThermalCameraPtr;
     typedef shared_ptr<OgreVisual>               OgreVisualPtr;
     typedef shared_ptr<OgreVisualStore>          OgreVisualStorePtr;
+    typedef shared_ptr<OgreWideAngleCamera>      OgreWideAngleCameraPtr;
     typedef shared_ptr<OgreWireBox>              OgreWireBoxPtr;
     }
   }

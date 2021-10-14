@@ -68,6 +68,15 @@ class ignition::rendering::OgreWideAngleCameraPrivate
   /// \brief Pointer to the ogre camera
   public: Ogre::Camera *ogreCamera = nullptr;
 
+  /// \brief Dummy texture
+  public: OgreRenderTexturePtr wideAngleTexture;
+
+  /// \brief The image buffer
+  public: unsigned char *imageBuffer = nullptr;
+
+  /// \brief Outgoing image data, used by newImageFrame event.
+  public: unsigned char *wideAngleImage = nullptr;
+
   /// \brief Mutex to lock while rendering the world
 //  public: std::mutex renderMutex;
 
@@ -105,9 +114,19 @@ void OgreWideAngleCamera::Init()
 {
   BaseWideAngleCamera::Init();
   this->CreateCamera();
-//  this->CreateWideAngleTexture();
+  this->CreateRenderTexture();
   this->Reset();
   // this->CreateEnvRenderTexture(this->scopedUniqueName + "_envRttTex");
+}
+
+/////////////////////////////////////////////////
+void OgreWideAngleCamera::CreateRenderTexture()
+{
+  RenderTexturePtr base = this->scene->CreateRenderTexture();
+  this->dataPtr->wideAngleTexture =
+      std::dynamic_pointer_cast<OgreRenderTexture>(base);
+  this->dataPtr->wideAngleTexture->SetWidth(1);
+  this->dataPtr->wideAngleTexture->SetHeight(1);
 }
 
 //////////////////////////////////////////////////
@@ -159,6 +178,18 @@ void OgreWideAngleCamera::PreRender()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Destroy()
 {
+  if (this->dataPtr->imageBuffer)
+  {
+    delete [] this->dataPtr->imageBuffer;
+    this->dataPtr->imageBuffer = nullptr;
+  }
+
+  if (this->dataPtr->wideAngleImage)
+  {
+    delete [] this->dataPtr->wideAngleImage;
+    this->dataPtr->wideAngleImage = nullptr;
+  }
+
   for (int i = 0; i < 6; ++i)
   {
     OgreRTShaderSystem::DetachViewport(this->dataPtr->envViewports[i],
@@ -435,7 +466,7 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
   this->dataPtr->cubeMapCompInstance =
     Ogre::CompositorManager::getSingleton().addCompositor(
     this->dataPtr->ogreCamera->getViewport(),
-    "WideOgreCameraLensMap/ParametrisedMap");
+    "WideCameraLensMap/ParametrisedMap");
 
   this->dataPtr->compMat =
       Ogre::MaterialManager::getSingleton().getByName("WideLensMap");
@@ -642,9 +673,62 @@ std::vector<Ogre::Camera *> OgreWideAngleCamera::OgreEnvCameras() const
 }
 
 //////////////////////////////////////////////////
+void OgreWideAngleCamera::PostRender()
+{
+  if (this->dataPtr->newImageFrame.ConnectionCount() <= 0u)
+    return;
+
+  unsigned int width = this->ImageWidth();
+  unsigned int height = this->ImageHeight();
+  unsigned int len = width * height;
+
+  PixelFormat format = PF_R8G8B8;
+  unsigned int channelCount = PixelUtil::ChannelCount(format);
+  unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
+
+  if (!this->dataPtr->wideAngleImage)
+    this->dataPtr->wideAngleImage = new unsigned char[len * channelCount];
+  if (!this->dataPtr->imageBuffer)
+    this->dataPtr->imageBuffer = new unsigned char[len * channelCount];
+
+  // get image data
+  Ogre::RenderTarget *rt =
+      this->dataPtr->ogreRenderTexture->getBuffer()->getRenderTarget();
+  Ogre::PixelBox ogrePixelBox(width, height, 1,
+      OgreConversions::Convert(format), this->dataPtr->imageBuffer);
+  rt->copyContentsToMemory(ogrePixelBox);
+
+  // fill image data
+  memcpy(this->dataPtr->wideAngleImage, this->dataPtr->imageBuffer,
+      height*width*channelCount*bytesPerChannel);
+
+  this->dataPtr->newImageFrame(
+      this->dataPtr->imageBuffer, width, height, 1, "PF_R8G8B8");
+
+  // Uncomment to debug wide angle cameraoutput
+  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // for (unsigned int i = 0; i < height; ++i)
+  // {
+  //   for (unsigned int j = 0; j < width; ++j)
+  //   {
+  //     igndbg << "[" << this->dataPtr->wideAngleImage[i*width + j] << "]";
+  //   }
+  //   igndbg << std::endl;
+  // }
+}
+
+
+
+//////////////////////////////////////////////////
 common::ConnectionPtr OgreWideAngleCamera::ConnectNewWideAngleFrame(
     std::function<void(const void *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {
   return this->dataPtr->newImageFrame.Connect(_subscriber);
+}
+
+//////////////////////////////////////////////////
+RenderTargetPtr OgreWideAngleCamera::RenderTarget() const
+{
+  return this->dataPtr->wideAngleTexture;
 }

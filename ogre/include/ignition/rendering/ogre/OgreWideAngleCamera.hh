@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "ignition/rendering/base/BaseWideAngleCamera.hh"
+#include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreSensor.hh"
@@ -59,6 +60,11 @@ namespace ignition
       // Documentation inherited
       // public: void Load() override;
       // using Camera::Load;
+      /// \brief Create a texture
+      public: virtual void CreateRenderTexture();
+
+      /// \brief Render the camera
+      public: virtual void PostRender() override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
@@ -134,9 +140,15 @@ namespace ignition
       protected: void notifyMaterialRender(Ogre::uint32 _pass_id,
           Ogre::MaterialPtr &_material) override;
 
+      /// \brief Get a pointer to the render target.
+      /// \return Pointer to the render target
+      protected: virtual RenderTargetPtr RenderTarget() const override;
+
       /// \internal
       /// \brief Private data pointer
       private: std::unique_ptr<OgreWideAngleCameraPrivate> dataPtr;
+
+      private: friend class OgreScene;
     };
     }
   }

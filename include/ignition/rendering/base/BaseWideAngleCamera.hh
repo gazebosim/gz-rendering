@@ -49,10 +49,10 @@ namespace ignition
       // public: virtual const void *WideAngleData() const;
 
       // Documentation inherited.
-      public: virtual void SetLens(const CameraLens &_lens);
+      public: virtual void SetLens(const CameraLens &_lens) override;
 
       // Documentation inherited.
-      public: virtual const CameraLens &Lens() const;
+      public: virtual const CameraLens &Lens() const override;
 
       // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewWideAngleFrame(

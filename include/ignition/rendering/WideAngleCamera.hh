@@ -22,6 +22,7 @@
 #include <ignition/common/Event.hh>
 
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/CameraLens.hh"
 #include "ignition/rendering/Scene.hh"
 
 namespace ignition
@@ -41,7 +42,7 @@ namespace ignition
 
       /// \brief Set the camera lens to use for this wide angle camera
       /// \param[in] _lens Camera lens to set
-      public: virtual void SetCameraLens(const CameraLens &_lens) = 0;
+      public: virtual void SetLens(const CameraLens &_lens) = 0;
 
       /// \brief Get the camera lens used by this wide angle camera
       /// \return Camera lens set to this wide angle camera

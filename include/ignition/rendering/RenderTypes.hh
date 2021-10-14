@@ -91,6 +91,7 @@ namespace ignition
     class Text;
     class ThermalCamera;
     class Visual;
+    class WideAngleCamera;
     class WireBox;
 
     /// \typedef ArrowVisualPtr
@@ -120,6 +121,10 @@ namespace ignition
     /// \typedef SegmentationCameraPtr
     /// \brief Shared pointer to Segmentation Camera
     typedef shared_ptr<SegmentationCamera> SegmentationCameraPtr;
+
+    /// \typedef WideAngleCameraPtr
+    /// \brief Shared pointer to Wide Angle Camera
+    typedef shared_ptr<WideAngleCamera> WideAngleCameraPtr;
 
     /// \typedef GpuRaysPtr
     /// \brief Shared pointer to GpuRays
@@ -294,6 +299,10 @@ namespace ignition
     /// \typedef const SegmentationCameraPtr
     /// \brief Shared pointer to const Segmentation Camera
     typedef shared_ptr<const SegmentationCamera> ConstSegmentationCameraPtr;
+
+    /// \typedef const SegmentationCameraPtr
+    /// \brief Shared pointer to const Wide Angle Camera
+    typedef shared_ptr<const WideAngleCamera> ConstWideAngleCameraPtr;
 
     /// \typedef const GpuRaysPtr
     /// \brief Shared pointer to const GpuRays

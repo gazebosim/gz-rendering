@@ -115,6 +115,9 @@ namespace ignition
       public: virtual unsigned int RenderTextureGLId() const override;
 
       // Documentation inherited.
+      public: virtual void RenderTextureMetalId(void *_textureIdPtr) const override;
+
+      // Documentation inherited.
       public: void SetShadowsDirty() override;
 
       // Documentation inherited.

@@ -105,6 +105,9 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual unsigned int GLId() const override;
+
+      // Documentation inherited.
+      public: virtual void MetalId(void *_texturePtrId) const override;
     };
 
     template <class T>
@@ -289,6 +292,12 @@ namespace ignition
     unsigned int BaseRenderTexture<T>::GLId() const
     {
       return 0u;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTexture<T>::MetalId(void *_textureIdPtr) const
+    {
     }
 
     //////////////////////////////////////////////////

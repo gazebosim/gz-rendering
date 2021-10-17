@@ -548,6 +548,16 @@ unsigned int Ogre2RenderTarget::GLIdImpl() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTarget::MetalIdImpl(void *_textureIdPtr) const
+{
+  if (!this->dataPtr->ogreTexture[0])
+    return;
+
+  this->dataPtr->ogreTexture[1]->
+      getCustomAttribute("msFinalTextureBuffer", _textureIdPtr);
+}
+
+//////////////////////////////////////////////////
 uint8_t Ogre2RenderTarget::TargetFSAA() const
 {
   // check if target fsaa is supported
@@ -891,6 +901,12 @@ void Ogre2RenderTexture::BuildTarget()
 unsigned int Ogre2RenderTexture::GLId() const
 {
   return Ogre2RenderTarget::GLIdImpl();
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::MetalId(void *_textureIdPtr) const
+{
+  Ogre2RenderTarget::MetalIdImpl(_textureIdPtr);
 }
 
 //////////////////////////////////////////////////

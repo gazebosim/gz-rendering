@@ -109,6 +109,13 @@ namespace ignition
       /// \brief Returns the OpenGL texture Id. A valid Id is returned only
       // if this is an OpenGL render texture
       public: virtual unsigned int GLId() const = 0;
+
+      /// \brief Gets the Metal texture id. A valid Id is obtained only
+      /// if this is an Metal render texture.
+      /// The pointer set by this function must be released to an
+      /// id<MTLTexture> using CFBridgingRelease.
+      /// \param[out] _textureIdPtr the address of a void* pointer.
+      public: virtual void MetalId(void *_textureIdPtr) const = 0;
     };
 
     /* \class RenderWindow RenderWindow.hh \

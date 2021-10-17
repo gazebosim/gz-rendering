@@ -208,6 +208,21 @@ unsigned int Ogre2Camera::RenderTextureGLId() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2Camera::RenderTextureMetalId(void *_textureIdPtr) const
+{
+  if (!this->renderTexture)
+    return;
+
+  Ogre2RenderTexturePtr rt =
+      std::dynamic_pointer_cast<Ogre2RenderTexture>(this->renderTexture);
+
+  if (!rt)
+    return;
+
+  rt->MetalId(_textureIdPtr);
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::SetShadowsDirty()
 {
   this->SetShadowsNodeDefDirty();

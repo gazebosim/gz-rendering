@@ -12,11 +12,9 @@
 1. Ogre: Do not assume that ogre plugins have lib prefix on macOS
     * [Pull request 454](https://github.com/ignitionrobotics/ign-rendering/pull/454)
 
-1. Fixed screento functions names
-    * [Pull request 368](https://github.com/ignitionrobotics/ign-rendering/pull/368)
-
 1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
     * [Pull request 363](https://github.com/ignitionrobotics/ign-rendering/pull/363)
+    * [Pull request 368](https://github.com/ignitionrobotics/ign-rendering/pull/368)
 
 1. Relax Gaussian noise test tolerance to fix flaky test
     * [Pull request 344](https://github.com/ignitionrobotics/ign-rendering/pull/344)

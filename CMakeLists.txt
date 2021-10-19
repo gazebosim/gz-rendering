@@ -63,28 +63,19 @@ endif()
 # Find OGRE
 list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
 
-# Ogre versions greater than 1.9 are not officialy supported.
+ign_find_package(IgnOGRE VERSION 1.9.0
+  COMPONENTS ${ign_ogre_components}
+  REQUIRED_BY ogre
+  PRIVATE_FOR ogre)
+
+# Ogre versions greater than 1.9.x are not officialy supported.
 # Display a warning for the users on this setup unless they provide
 # USE_UNOFFICIAL_OGRE_VERSIONS flag
 if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
-  # Only for checking the ogre version
-  ign_find_package(IgnOGRE VERSION 1.10 QUIET)
-
-  if (OGRE_FOUND)
+  if (${OGRE_VERSION} VERSION_GREATER_EQUAL 1.10.0)
     IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
                       "The software might compile and even work but support from upstream"
                       "could be reduced to accepting patches for newer versions")
-    ign_find_package(IgnOGRE VERSION 1.10
-      COMPONENTS ${ign_ogre_components}
-      REQUIRED_BY ogre
-      PRIVATE_FOR ogre)
-  else()
-    # If ogre 1.10 or greater was not found, then proceed to look for 1.9.x
-    # versions which are offically supported
-    ign_find_package(IgnOGRE VERSION 1.9.0
-      COMPONENTS ${ign_ogre_components}
-      REQUIRED_BY ogre
-      PRIVATE_FOR ogre)
   endif()
 endif()
 

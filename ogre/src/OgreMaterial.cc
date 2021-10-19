@@ -46,7 +46,7 @@ void OgreMaterial::Destroy()
     return;
 
   Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
   if (!this->ogreMaterial.isNull())
   {
     matManager.remove(this->ogreMaterial->getName());
@@ -561,7 +561,7 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
 
   if (image.getWidth() == 0)
   {
-    #if OGRE_VERSION_LT_1_10_1
+    #if OGRE_VERSION_LT_1_11_0
     texture.setNull();
     #else
     texture.reset();

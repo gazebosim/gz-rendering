@@ -1,10 +1,13 @@
 vertex_program plaincolor_vs glsl
 {
   source plain_color_vs.glsl
+  num_clip_distances 1
 
   default_params
   {
     param_named_auto worldViewProj worldviewproj_matrix
+    param_named_auto worldView worldview_matrix
+    param_named ignMinClipDistance float 0.0
   }
 }
 

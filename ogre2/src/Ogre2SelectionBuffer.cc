@@ -229,8 +229,11 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
         Ogre::TextureFlags::RenderToTexture,
         Ogre::TextureTypes::Type2D);
   this->dataPtr->renderTexture->setResolution(1, 1);
+  // this->dataPtr->renderTexture->setResolution(this->dataPtr->width,
+  //     this->dataPtr->height);
   this->dataPtr->renderTexture->setNumMipmaps(1u);
   this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA32_FLOAT);
+  // this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
 
   this->dataPtr->renderTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -379,6 +382,12 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
       this->dataPtr->ogreCompWorkspaceDefName);
   workDef->connectExternal(0, nodeDef->getName(), 0);
 
+///////////
+//  this->dataPtr->ogreCompMgr->createBasicWorkspaceDef(
+//      this->dataPtr->ogreCompWorkspaceDefName,
+//      Ogre::ColourValue(0.1, 0.2, 0.3));
+///////////
+
   this->dataPtr->ogreCompositorWorkspace =
       this->dataPtr->ogreCompMgr->addWorkspace(
         this->dataPtr->scene->OgreSceneManager(),
@@ -435,8 +444,8 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
        || _y >= static_cast<int>(targetHeight))
      return false;
 
-  // // 1x1 selection buffer, adapted from rviz
-  // // http://docs.ros.org/indigo/api/rviz/html/c++/selection__manager_8cpp.html
+  // 1x1 selection buffer, adapted from rviz
+  // http://docs.ros.org/indigo/api/rviz/html/c++/selection__manager_8cpp.html
   unsigned int width = 1;
   unsigned int height = 1;
   float x1 = static_cast<float>(_x) /
@@ -455,7 +464,8 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   transMatrix[0][3] -= x1+x2;
   transMatrix[1][3] += y1+y2;
   Ogre::Matrix4 customProjectionMatrix =
-      scaleMatrix * transMatrix * this->dataPtr->camera->getProjectionMatrix();
+      scaleMatrix * transMatrix *
+      this->dataPtr->camera->getProjectionMatrix();
   this->dataPtr->selectionCamera->setCustomProjectionMatrix(true,
       customProjectionMatrix);
 
@@ -469,8 +479,26 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
 
   Ogre::Image2 image;
   image.convertFromTexture(this->dataPtr->renderTexture, 0, 0);
-
   Ogre::ColourValue pixel = image.getColourAt(0, 0, 0, 0);
+
+////////////////
+//   math::Vector3d point;
+//   // Ogre::ColourValue colorValue = image.getColourAt(_x, _y, 0, 0);
+//   Ogre::ColourValue colorValue = image.getColourAt(0, 0, 0, 0);
+//   std::cerr << "x: " << _x << " got color value: " << colorValue.r << " "
+//             << colorValue.g
+//             << " " << colorValue.b << std::endl;
+//
+//   ignition::math::Color cv(
+//     colorValue.r,
+//     colorValue.g,
+//     colorValue.b);
+//
+//   cv.A(1.0);
+/////////////
+
+ //  Ogre::ColourValue pixel = image.getColourAt(_x, _y, 0, 0);
+
   float color = pixel[3];
   uint32_t *rgba = reinterpret_cast<uint32_t *>(&color);
   unsigned int r = *rgba >> 24 & 0xFF;
@@ -478,6 +506,10 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   unsigned int b = *rgba >> 8 & 0xFF;
 
   math::Vector3d point(pixel[0], pixel[1], pixel[2]);
+
+  // std::cerr << "x: " << _x << " got color value: " << r << " "
+  //           << g << " " << b << ", point: " << point << " | " << color
+  //           << std::endl;
 
   auto rot = Ogre2Conversions::Convert(
       this->dataPtr->camera->getParentSceneNode()->_getDerivedOrientation());

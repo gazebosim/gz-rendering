@@ -113,7 +113,7 @@
 
 #define OGRE_Load3D( tex, iuv, lod ) texelFetch( tex, ivec3( iuv ), lod )
 
-#define bufferFetch1( buffer, idx ) texelFetch( buffer, idx ).x
+#define bufferFetch1( buffer, idx ) bufferFetch( buffer, idx ).x
 
 #define OGRE_SAMPLER_ARG_DECL( samplerName )
 #define OGRE_SAMPLER_ARG( samplerName )

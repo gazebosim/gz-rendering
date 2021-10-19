@@ -187,14 +187,6 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
             << _renderEngine << std::endl;
     return;
   }
-  // else if (_renderEngine == "ogre2")
-  // {
-  //   // VisualAt tests fail on CI, see issue #170
-  //   // https://github.com/ignitionrobotics/ign-rendering/issues/170
-  //   igndbg << "VisualAt test is disabled in " << _renderEngine << "."
-  //          << std::endl;
-  //   return;
-  // }
 
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
@@ -243,18 +235,6 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   {
     camera->Update();
   }
-
-  // std::string home;
-  // ignition::common::env(IGN_HOMEDIR, home);
-  // std::ifstream file(home + "/.ignition/rendering/ogre2.log");
-  // if (!file.is_open())
-  // {
-  //   std::cerr << "Failed to read file ogre2.log"  << std::endl;
-  //   return;
-  // }
-  // std::string str((std::istreambuf_iterator<char>(file)),
-  //     std::istreambuf_iterator<char>());
-  // std::cerr << "========================\n" << str << std::endl;
 
   EXPECT_EQ(800u, camera->ImageWidth());
   EXPECT_EQ(600u, camera->ImageHeight());

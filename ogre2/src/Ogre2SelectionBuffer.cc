@@ -382,12 +382,6 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
       this->dataPtr->ogreCompWorkspaceDefName);
   workDef->connectExternal(0, nodeDef->getName(), 0);
 
-///////////
-//  this->dataPtr->ogreCompMgr->createBasicWorkspaceDef(
-//      this->dataPtr->ogreCompWorkspaceDefName,
-//      Ogre::ColourValue(0.1, 0.2, 0.3));
-///////////
-
   this->dataPtr->ogreCompositorWorkspace =
       this->dataPtr->ogreCompMgr->addWorkspace(
         this->dataPtr->scene->OgreSceneManager(),
@@ -481,24 +475,6 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   image.convertFromTexture(this->dataPtr->renderTexture, 0, 0);
   Ogre::ColourValue pixel = image.getColourAt(0, 0, 0, 0);
 
-////////////////
-//   math::Vector3d point;
-//   // Ogre::ColourValue colorValue = image.getColourAt(_x, _y, 0, 0);
-//   Ogre::ColourValue colorValue = image.getColourAt(0, 0, 0, 0);
-//   std::cerr << "x: " << _x << " got color value: " << colorValue.r << " "
-//             << colorValue.g
-//             << " " << colorValue.b << std::endl;
-//
-//   ignition::math::Color cv(
-//     colorValue.r,
-//     colorValue.g,
-//     colorValue.b);
-//
-//   cv.A(1.0);
-/////////////
-
- //  Ogre::ColourValue pixel = image.getColourAt(_x, _y, 0, 0);
-
   float color = pixel[3];
   uint32_t *rgba = reinterpret_cast<uint32_t *>(&color);
   unsigned int r = *rgba >> 24 & 0xFF;
@@ -506,10 +482,6 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   unsigned int b = *rgba >> 8 & 0xFF;
 
   math::Vector3d point(pixel[0], pixel[1], pixel[2]);
-
-  // std::cerr << "x: " << _x << " got color value: " << r << " "
-  //           << g << " " << b << ", point: " << point << " | " << color
-  //           << std::endl;
 
   auto rot = Ogre2Conversions::Convert(
       this->dataPtr->camera->getParentSceneNode()->_getDerivedOrientation());

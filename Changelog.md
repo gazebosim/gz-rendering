@@ -1,6 +1,29 @@
 ## Ignition Rendering
 
-### Ignition Rendering 3.x.x (2021-XX-XX)
+### Ignition Rendering 3.6.0 (2021-10-15)
+
+1. Avoid symbol redefition to fix armel builds
+    * [Pull request 457](https://github.com/ignitionrobotics/ign-rendering/pull/457)
+
+1. Fix floating point precision bug handling alpha channel
+    * [Pull request 322](https://github.com/ignitionrobotics/ign-rendering/pull/322)
+    * [Pull request 333](https://github.com/ignitionrobotics/ign-rendering/pull/333)
+
+1. Ogre: Do not assume that ogre plugins have lib prefix on macOS
+    * [Pull request 454](https://github.com/ignitionrobotics/ign-rendering/pull/454)
+
+1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
+    * [Pull request 363](https://github.com/ignitionrobotics/ign-rendering/pull/363)
+    * [Pull request 368](https://github.com/ignitionrobotics/ign-rendering/pull/368)
+
+1. Relax Gaussian noise test tolerance to fix flaky test
+    * [Pull request 344](https://github.com/ignitionrobotics/ign-rendering/pull/344)
+
+1. Fix ogre2 render pass high GPU usage
+    * [Pull request 342](https://github.com/ignitionrobotics/ign-rendering/pull/342)
+
+1. Backport memory fixes found by ASAN
+    * [Pull request 340](https://github.com/ignitionrobotics/ign-rendering/pull/340)
 
 1. CMake warning on Ogre versions that are not officially supported.
    To disable the new warning, it is enough to enable the cmake option USE_UNOFFICIAL_OGRE_VERSIONS

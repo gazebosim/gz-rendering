@@ -259,7 +259,8 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
       this->ImageWidth(), this->ImageHeight());
   }
 
-  float ratio = screenScalingFactor();
+  // float ratio = screenScalingFactor();
+  float ratio = 1.0f;
   ignition::math::Vector2i mousePos(
       static_cast<int>(std::rint(ratio * _mousePos.X())),
       static_cast<int>(std::rint(ratio * _mousePos.Y())));

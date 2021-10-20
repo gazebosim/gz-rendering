@@ -121,15 +121,6 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   root->AddChild(camera);
   camera->Update();
 
-//  if (_renderEngine == "ogre2")
-//  {
-//    // tests using selection buffer fail on CI, see issue #170
-//    // https://github.com/ignitionrobotics/ign-rendering/issues/170
-//    igndbg << "Selection buffer based screenToScene test is disabled in "
-//           << _renderEngine << "." << std::endl;
-//    return;
-//  }
-
   // \todo(anyone)
   // the centerClick var above is set to a screen pos of (width/2, height/2).
   // This is off-by-1. The actual center pos should be at
@@ -137,7 +128,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   // from the expected position. However, fixing the centerClick above caused
   // the screenToPlane tests to fail so only modifying the pos here, and the
   // cause of test failure need to be investigated.
-  centerClick = ignition::math::Vector2i(halfWidth-1, halfHeight-1);
+  // centerClick = ignition::math::Vector2i(halfWidth-1, halfHeight-1);
 
   // API without RayQueryResult and default max distance
   result = screenToScene(centerClick, camera, rayQuery, rayResult);

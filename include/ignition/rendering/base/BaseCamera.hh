@@ -810,7 +810,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::RenderTextureMetalId(void *_textureIdPtr) const
+    void BaseCamera<T>::RenderTextureMetalId(void */*_textureIdPtr*/) const
     {
       ignerr << "RenderTextureMetalId is not supported by current render"
           << " engine" << std::endl;

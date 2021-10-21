@@ -107,7 +107,7 @@ namespace ignition
       public: virtual unsigned int GLId() const override;
 
       // Documentation inherited.
-      public: virtual void MetalId(void *_texturePtrId) const override;
+      public: virtual void MetalId(void *_textureIdPtr) const override;
     };
 
     template <class T>

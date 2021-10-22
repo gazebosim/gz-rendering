@@ -31,7 +31,7 @@ fragment_program PointCloudFS glsl
   source point_fs.glsl
   default_params
   {
-    param_named color vec4 1.0 1.0 1.0 1.0
+    param_named color float4 1.0 1.0 1.0 1.0
   }
 }
 

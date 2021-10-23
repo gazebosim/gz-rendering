@@ -26,11 +26,14 @@ struct VS_INPUT
 struct PS_INPUT
 {
   float4 gl_Position [[position]];
+  float gl_ClipDistance [[clip_distance]] [1];
 };
 
 struct Params
 {
   float4x4 worldViewProj;
+  float4x4 worldView;
+  float ignMinClipDistance;
 };
 
 vertex PS_INPUT main_metal
@@ -42,6 +45,19 @@ vertex PS_INPUT main_metal
   PS_INPUT outVs;
 
   outVs.gl_Position = ( p.worldViewProj * input.position ).xyzw;
+
+  if( p.ignMinClipDistance > 0.0f )
+  {
+    // Frustum is rectangular; but the minimum lidar distance is spherical,
+    // so we can't rely on near plane to clip geometry that is too close,
+    // we have to do it by hand
+    float3 viewSpacePos = (p.worldView * input.position).xyz;
+    outVs.gl_ClipDistance[0] = length( viewSpacePos.xyz ) - p.ignMinClipDistance;
+  }
+  else
+  {
+  	outVs.gl_ClipDistance[0] = 1.0f;
+  }
 
   return outVs;
 }

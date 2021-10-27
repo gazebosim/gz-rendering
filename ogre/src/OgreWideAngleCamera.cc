@@ -83,9 +83,8 @@ class ignition::rendering::OgreWideAngleCameraPrivate
 //  public: std::mutex renderMutex;
 
   /// \brief Mutex to lock while setting or reading camera properties
-//  public: std::mutex dataMutex;
-  /// \brief Event used to signal depth data
-  public: ignition::common::EventT<void(const void *,
+  /// \brief Event used to signal camera data
+  public: ignition::common::EventT<void(const unsigned char *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newImageFrame;
 };
@@ -728,7 +727,7 @@ void OgreWideAngleCamera::PostRender()
 
 //////////////////////////////////////////////////
 common::ConnectionPtr OgreWideAngleCamera::ConnectNewWideAngleFrame(
-    std::function<void(const void *, unsigned int, unsigned int,
+    std::function<void(const unsigned char *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {
   return this->dataPtr->newImageFrame.Connect(_subscriber);

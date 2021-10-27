@@ -51,7 +51,7 @@ namespace ignition
       /// \brief Subscribes a new listener to this camera's new frame event
       /// \param[in] _listener New camera listener callback
       public: virtual common::ConnectionPtr ConnectNewWideAngleFrame(
-          std::function<void(const void *, unsigned int, unsigned int,
+          std::function<void(const unsigned char *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;
     };
     }

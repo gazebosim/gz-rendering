@@ -115,11 +115,8 @@ namespace ignition
 
       // Documentation inherited
       public: common::ConnectionPtr ConnectNewWideAngleFrame(
-          std::function<void(const void *, unsigned int, unsigned int,
+          std::function<void(const unsigned char *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
-
-      // Documentation inherited
-      // protected: void RenderImpl() override;
 
       // Documentation inherited
       // protected: void UpdateFOV() override;

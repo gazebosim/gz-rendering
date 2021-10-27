@@ -46,9 +46,6 @@ namespace ignition
       public: virtual void CreateWideAngleTexture();
 
       // Documentation inherited.
-      // public: virtual const void *WideAngleData() const;
-
-      // Documentation inherited.
       public: virtual void SetLens(const CameraLens &_lens) override;
 
       // Documentation inherited.
@@ -56,7 +53,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewWideAngleFrame(
-          std::function<void(const void *, unsigned int, unsigned int,
+          std::function<void(const unsigned char*, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
       /// \brief Camera lens used by this wide angle camera
@@ -98,7 +95,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     common::ConnectionPtr BaseWideAngleCamera<T>::ConnectNewWideAngleFrame(
-          std::function<void(const void *, unsigned int, unsigned int,
+          std::function<void(const unsigned char *, unsigned int, unsigned int,
           unsigned int, const std::string &)>)
     {
       return nullptr;

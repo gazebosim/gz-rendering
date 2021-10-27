@@ -48,7 +48,7 @@ class ignition::rendering::CameraLensPrivate
   public: bool scaleToHFov = true;
 
   /// \brief Mapping function type
-  public: MappingFunctionType type = MFT_GNOMONICAL;
+  public: MappingFunctionType type = MFT_GNOMONIC;
 
   /// \brief Enumeration of functions that can be casted to some other types
   public: class MapFunctionEnum
@@ -310,7 +310,7 @@ void CameraLens::SetType(MappingFunctionType _type)
   // c1, c2, c3, f, fun
   std::map<MappingFunctionType, std::tuple<double, double, double,
       double, AngleFunctionType> > funTypes = {
-    {MFT_GNOMONICAL,      std::make_tuple(1.0, 1.0, 0.0, 1.0, AFT_TAN)},
+    {MFT_GNOMONIC,        std::make_tuple(1.0, 1.0, 0.0, 1.0, AFT_TAN)},
     {MFT_STEREOGRAPHIC,   std::make_tuple(2.0, 2.0, 0.0, 1.0, AFT_TAN)},
     {MFT_EQUIDISTANT,     std::make_tuple(1.0, 1.0, 0.0, 1.0, AFT_IDENTITY)},
     {MFT_EQUISOLID_ANGLE, std::make_tuple(2.0, 2.0, 0.0, 1.0, AFT_SIN)},

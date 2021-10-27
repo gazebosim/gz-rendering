@@ -37,8 +37,8 @@ namespace ignition
     /// \brief Enum for mapping function types
     enum IGNITION_RENDERING_VISIBLE MappingFunctionType
     {
-      /// \brief Gnomonical
-      MFT_GNOMONICAL = 0,
+      /// \brief Gnomonic
+      MFT_GNOMONIC = 0,
 
       /// \brief Stereographic
       MFT_STEREOGRAPHIC = 1,

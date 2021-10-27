@@ -1,5 +1,9 @@
 ## Ignition Rendering
 
+### Ignition Rendering 7.X
+
+### Ignition Rendering 7.0.0 (202X-XX-XX)
+
 ### Ignition Rendering 6.X
 
 ### Ignition Rendering 6.0.1 (2021-10-01)

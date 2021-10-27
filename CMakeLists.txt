@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 #============================================================================
 # Initialize the project
 #============================================================================
-project(ignition-rendering6 VERSION 6.0.1)
+project(ignition-rendering7 VERSION 7.0.0)
 
 #============================================================================
 # Find ignition-cmake
@@ -15,7 +15,7 @@ set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
 #============================================================================
 # Set up the project
 #============================================================================
-ign_configure_project(VERSION_SUFFIX)
+ign_configure_project(VERSION_SUFFIX pre1)
 
 #============================================================================
 # Set project-specific options
@@ -62,21 +62,30 @@ endif()
 
 #--------------------------------------
 # Find OGRE
-list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
+list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
 
-ign_find_package(IgnOGRE VERSION 1.9.0
-  COMPONENTS ${ign_ogre_components}
-  REQUIRED_BY ogre
-  PRIVATE_FOR ogre)
-
-# Ogre versions greater than 1.9.x are not officialy supported.
+# Ogre versions greater than 1.9 are not officialy supported.
 # Display a warning for the users on this setup unless they provide
 # USE_UNOFFICIAL_OGRE_VERSIONS flag
 if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
-  if (${OGRE_VERSION} VERSION_GREATER_EQUAL 1.10.0)
+  # Only for checking the ogre version
+  ign_find_package(IgnOGRE VERSION 1.10 QUIET)
+
+  if (OGRE_FOUND)
     IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
                       "The software might compile and even work but support from upstream"
                       "could be reduced to accepting patches for newer versions")
+    ign_find_package(IgnOGRE VERSION 1.10
+      COMPONENTS ${ign_ogre_components}
+      REQUIRED_BY ogre
+      PRIVATE_FOR ogre)
+  else()
+    # If ogre 1.10 or greater was not found, then proceed to look for 1.9.x
+    # versions which are offically supported
+    ign_find_package(IgnOGRE VERSION 1.9.0
+      COMPONENTS ${ign_ogre_components}
+      REQUIRED_BY ogre
+      PRIVATE_FOR ogre)
   endif()
 endif()
 

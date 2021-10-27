@@ -48,26 +48,26 @@ class ignition::rendering::CameraLensPrivate
   public: bool scaleToHFov = true;
 
   /// \brief Mapping function type
-  public: std::string type = "gnomonical";
+  public: MappingFunctionType type = MFT_GNOMONICAL;
 
   /// \brief Enumeration of functions that can be casted to some other types
   public: class MapFunctionEnum
           {
             /// \brief Constructor
-            /// \param[in] str Function name 'sin', 'tan' or 'id'
-            public: explicit MapFunctionEnum(const std::string &_str)
+            /// \param[in] _fun Angle function MFT_SIN, MFT_TAN, or MFT_IDENTITY
+            public: explicit MapFunctionEnum(AngleFunctionType _fun)
             {
-              variants.push_back(std::make_tuple("sin",
+              variants.push_back(std::make_tuple(AFT_SIN,
                     math::Vector3d::UnitX,
                     std::function<float (float)>(
                       static_cast<float (*)(float)>(&std::sin))));
 
-              variants.push_back(std::make_tuple("tan",
+              variants.push_back(std::make_tuple(AFT_TAN,
                     math::Vector3d::UnitY,
                     std::function<float (float)>(
                       static_cast<float (*)(float)>(&std::tan))));
 
-              variants.push_back(std::make_tuple("id",
+              variants.push_back(std::make_tuple(AFT_IDENTITY,
                     math::Vector3d::UnitZ,
                     std::function<float (float)>(
                       [](float t) -> float
@@ -77,7 +77,7 @@ class ignition::rendering::CameraLensPrivate
 
               for (auto item : variants)
               {
-                if (std::get<0>(item) == _str)
+                if (std::get<0>(item) == _fun)
                 {
                   value = item;
                   return;
@@ -85,7 +85,7 @@ class ignition::rendering::CameraLensPrivate
               }
 
               // function provided is not in array
-              throw std::invalid_argument("Unknown function ["+_str+"]");
+              throw std::invalid_argument("Unknown angle function");
             }
 
             /// \brief Cast to ignition::math::Vector3d,
@@ -97,9 +97,9 @@ class ignition::rendering::CameraLensPrivate
               return std::get<1>(value);
             }
 
-            /// \brief Cast to std::string
-            /// \return The same string which was passed to constructor
-            public: std::string AsString() const
+            /// \brief Get the angle transformation function
+            /// \return The same function which was passed to constructor
+            public: AngleFunctionType AngleFunction() const
             {
               return std::get<0>(value);
             }
@@ -122,7 +122,7 @@ class ignition::rendering::CameraLensPrivate
 
             /// \brief List of all available functions
             ///   and its associated representations
-            private: std::vector<std::tuple<std::string,
+            private: std::vector<std::tuple<AngleFunctionType,
                      math::Vector3d,
                        std::function<float (float)> > > variants;
 
@@ -132,7 +132,7 @@ class ignition::rendering::CameraLensPrivate
 
   /// \brief `fun` component of the mapping function,
   /// \see CameraLens description
-  public: MapFunctionEnum fun = MapFunctionEnum("id");
+  public: MapFunctionEnum fun = MapFunctionEnum(AFT_IDENTITY);
 
   /// \brief SDF element of the lens
 //  public: sdf::ElementPtr sdf;
@@ -172,8 +172,8 @@ CameraLens &CameraLens::operator=(const CameraLens &_other)
 }
 
 //////////////////////////////////////////////////
-void CameraLens::SetLensFunction(double _c1, double _c2,
-    const std::string &_fun, double _f, double _c3)
+void CameraLens::SetCustomMappingFunction(double _c1, double _c2,
+    AngleFunctionType _fun, double _f, double _c3)
 {
   this->dataPtr->c1 = _c1;
   this->dataPtr->c2 = _c2;
@@ -186,11 +186,13 @@ void CameraLens::SetLensFunction(double _c1, double _c2,
   }
   catch(const std::exception &ex)
   {
-    ignerr << "`fun` value [" << _fun << "] is not known, "
-          << "[tan] will be used instead" << std::endl;
+    ignerr << "Angle functionis not known, "
+           << "[tan] will be used instead" << std::endl;
 
-    this->dataPtr->fun = CameraLensPrivate::MapFunctionEnum("tan");
+    this->dataPtr->fun = CameraLensPrivate::MapFunctionEnum(AFT_TAN);
   }
+  if (!this->IsCustom())
+    this->ConvertToCustom();
 }
 
 // //////////////////////////////////////////////////
@@ -231,7 +233,7 @@ void CameraLens::SetLensFunction(double _c1, double _c2,
 // }
 
 //////////////////////////////////////////////////
-std::string CameraLens::Type() const
+MappingFunctionType CameraLens::Type() const
 {
 //  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
   return this->dataPtr->type;
@@ -240,7 +242,7 @@ std::string CameraLens::Type() const
 //////////////////////////////////////////////////
 bool CameraLens::IsCustom() const
 {
-  return this->Type() == "custom";
+  return this->Type() == MFT_CUSTOM;
 }
 
 //////////////////////////////////////////////////
@@ -276,11 +278,11 @@ double CameraLens::F() const
 }
 
 //////////////////////////////////////////////////
-std::string CameraLens::Fun() const
+AngleFunctionType CameraLens::AngleFunction() const
 {
 //  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
 
-  return this->dataPtr->fun.AsString();
+  return this->dataPtr->fun.AngleFunction();
 }
 
 //////////////////////////////////////////////////
@@ -301,22 +303,23 @@ bool CameraLens::ScaleToHFOV() const
 }
 
 //////////////////////////////////////////////////
-void CameraLens::SetType(const std::string &_type)
+void CameraLens::SetType(MappingFunctionType _type)
 {
 //  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
 
   // c1, c2, c3, f, fun
-  std::map< std::string, std::tuple<double, double, double,
-      double, std::string> > funTypes = {
-    {"gnomonical",      std::make_tuple(1.0, 1.0, 0.0, 1.0, "tan")},
-    {"stereographic",   std::make_tuple(2.0, 2.0, 0.0, 1.0, "tan")},
-    {"equidistant",     std::make_tuple(1.0, 1.0, 0.0, 1.0, "id")},
-    {"equisolid_angle", std::make_tuple(2.0, 2.0, 0.0, 1.0, "sin")},
-    {"orthographic",    std::make_tuple(1.0, 1.0, 0.0, 1.0, "sin")}};
+  std::map<MappingFunctionType, std::tuple<double, double, double,
+      double, AngleFunctionType> > funTypes = {
+    {MFT_GNOMONICAL,      std::make_tuple(1.0, 1.0, 0.0, 1.0, AFT_TAN)},
+    {MFT_STEREOGRAPHIC,   std::make_tuple(2.0, 2.0, 0.0, 1.0, AFT_TAN)},
+    {MFT_EQUIDISTANT,     std::make_tuple(1.0, 1.0, 0.0, 1.0, AFT_IDENTITY)},
+    {MFT_EQUISOLID_ANGLE, std::make_tuple(2.0, 2.0, 0.0, 1.0, AFT_SIN)},
+    {MFT_ORTHOGRAPHIC,    std::make_tuple(1.0, 1.0, 0.0, 1.0, AFT_SIN)}};
 
-  funTypes.emplace("custom",
+  funTypes.emplace(MFT_CUSTOM,
       std::make_tuple(this->C1(), this->C2(), this->C3(), this->F(),
-        CameraLensPrivate::MapFunctionEnum(this->Fun()).AsString()));
+      this->AngleFunction()));
+//        CameraLensPrivate::MapFunctionEnum(this->AngleFunction()).AngleFunction()));
 
   decltype(funTypes)::mapped_type params;
 
@@ -326,20 +329,20 @@ void CameraLens::SetType(const std::string &_type)
   }
   catch(...)
   {
-    ignerr << "Unknown lens type [" << _type << "]" << std::endl;
+    ignerr << "Unknown lens type." << std::endl;
     return;
   }
 
 //  this->dataPtr->sdf->GetElement("type")->Set(_type);
   this->dataPtr->type = _type;
 
-  if (_type == "custom")
+  if (_type == MFT_CUSTOM)
   {
     this->SetC1(std::get<0>(params));
     this->SetC2(std::get<1>(params));
     this->SetC3(std::get<2>(params));
     this->SetF(std::get<3>(params));
-    this->SetFun(std::get<4>(params));
+    this->SetAngleFunction(std::get<4>(params));
   }
   else
   {
@@ -415,7 +418,7 @@ void CameraLens::SetF(double _f)
 }
 
 //////////////////////////////////////////////////
-void CameraLens::SetFun(const std::string &_fun)
+void CameraLens::SetAngleFunction(AngleFunctionType _fun)
 {
 //  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
 
@@ -498,7 +501,7 @@ void CameraLens::ConvertToCustom()
 {
 //  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
 
-  this->SetType("custom");
+  this->SetType(MFT_CUSTOM);
 
 //   sdf::ElementPtr cf = this->dataPtr->sdf->AddElement("custom_function");
 //

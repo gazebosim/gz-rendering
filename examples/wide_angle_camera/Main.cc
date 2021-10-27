@@ -66,10 +66,9 @@ void buildScene(ScenePtr _scene)
   // create box visual
   VisualPtr box = _scene->CreateVisual();
   box->AddGeometry(_scene->CreateBox());
-  box->SetOrigin(0.0, 0.5, 0.0);
+  box->SetOrigin(0.0, 0.0, 0.0);
   box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
-  box->SetLocalScale(1, 2.5, 1);
+  box->SetLocalScale(3, 3, 3);
   box->SetMaterial(blue);
   root->AddChild(box);
 
@@ -90,14 +89,20 @@ void buildScene(ScenePtr _scene)
   root->AddChild(grid);
 
 //! [create wide angle camera]
+  CameraLens lens;
+  lens.SetCustomMappingFunction(1.05, 4.0, AFT_TAN, 1.0, 0.0);
+  lens.SetType(MFT_CUSTOM);
+  lens.SetCutOffAngle(IGN_PI);
+
   WideAngleCameraPtr camera = _scene->CreateWideAngleCamera("camera");
+  camera->SetLens(lens);
+  camera->SetHFOV(2.6);
   camera->SetLocalPosition(0.0, 0.0, 0.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 //! [create wide angle camera]
 }

@@ -37,7 +37,7 @@
 class ignition::rendering::OgreWideAngleCameraPrivate
 {
   /// \brief Environment texture size
-  public: int envTextureSize = 256u;
+  public: int envTextureSize = 512u;
 
   /// \brief Compositor used to render rectangle with attached cube map
   public: Ogre::CompositorInstance *cubeMapCompInstance = nullptr;
@@ -484,10 +484,11 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Render()
 {
-//  std::lock_guard<std::mutex> lock(this->dataPtr->renderMutex);
-
   for (int i = 0; i < 6; ++i)
+  {
     this->dataPtr->envRenderTargets[i]->update();
+  //   this->dataPtr->envRenderTargets[i]->writeContentsToFile(std::string("img") + std::to_string(i) + ".png");
+  }
 
   this->dataPtr->compMat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->
       setTextureName(this->dataPtr->envCubeMapTexture->getName());
@@ -568,6 +569,12 @@ void OgreWideAngleCamera::SetUniformVariables(Ogre::Pass *_pass,
     _pass->getVertexProgramParameters();
 
   uniformsVs->setNamedConstant("ratio", static_cast<Ogre::Real>(_ratio));
+
+//  std::cerr << "set uniform var "  << _hfov << std::endl;
+//  std::cerr << "  c " << this->Lens().C1() << " " << this->Lens().C2() << " " << this->Lens().C3() << std::endl;
+//  std::cerr << "  scaleToFov " << this->Lens().ScaleToHFOV() << ", f " << this->Lens().F() << std::endl;
+//  std::cerr << "  cutoffangle " << this->Lens().CutOffAngle() << ", ratio " << _ratio << std::endl;
+
 }
 
 //////////////////////////////////////////////////
@@ -705,7 +712,7 @@ void OgreWideAngleCamera::PostRender()
       height*width*channelCount*bytesPerChannel);
 
   this->dataPtr->newImageFrame(
-      this->dataPtr->imageBuffer, width, height, 1, "PF_R8G8B8");
+      this->dataPtr->wideAngleImage, width, height, channelCount, "PF_R8G8B8");
 
   // Uncomment to debug wide angle cameraoutput
   // igndbg << "wxh: " << width << " x " << height << std::endl;
@@ -718,8 +725,6 @@ void OgreWideAngleCamera::PostRender()
   //   igndbg << std::endl;
   // }
 }
-
-
 
 //////////////////////////////////////////////////
 common::ConnectionPtr OgreWideAngleCamera::ConnectNewWideAngleFrame(

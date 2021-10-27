@@ -19,7 +19,6 @@
 #define IGNITION_RENDERING_CAMERALENS_HH_
 
 #include <memory>
-#include <string>
 
 #include <ignition/math/Vector3.hh>
 
@@ -35,6 +34,41 @@ namespace ignition
     // foward declarations
     class CameraLensPrivate;
 
+    /// \brief Enum for mapping function types
+    enum IGNITION_RENDERING_VISIBLE MappingFunctionType
+    {
+      /// \brief Gnomonical
+      MFT_GNOMONICAL = 0,
+
+      /// \brief Stereographic
+      MFT_STEREOGRAPHIC = 1,
+
+      /// \brief Equidistant
+      MFT_EQUIDISTANT = 2,
+
+      /// \brief Equisolid angle
+      MFT_EQUISOLID_ANGLE = 3,
+
+      /// \brief Orthographic
+      MFT_ORTHOGRAPHIC = 4,
+
+      /// \brief custom
+      MFT_CUSTOM = 5
+    };
+
+    /// \brief Enum for angle function types
+    enum IGNITION_RENDERING_VISIBLE AngleFunctionType
+    {
+      /// \brief identity
+      AFT_IDENTITY = 0,
+
+      /// \brief sin
+      AFT_SIN = 1,
+
+      /// \brief TAN
+      AFT_TAN = 2
+    };
+
     /// \brief Describes a lens of a camera
     ///   as amapping function of type r = c1*f*fun(theta/c2+c3)
     class IGNITION_RENDERING_VISIBLE CameraLens
@@ -49,29 +83,21 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~CameraLens();
 
-      /// \brief Load camera lens from SDF file
-      /// \param[in] _sdf SDF lens element
-      // public: void Load(sdf::ElementPtr _sdf);
-
-      /// \brief Load camera lens with default parameters
-      // public: void Load();
-
-      /// \brief Init custom camera lens with specified parameters
+      /// \brief Set custom camera lens with specified parameters
       /// \param[in] _c1 Image scaling factor
       /// \param[in] _c2 Angle scaling factor
       /// \param[in] _fun Angle transform function
       /// \param[in] _f Focal length of the optical system
       /// \param[in] _c3 Angle shift parameter, should be 0 in most cases
-      public: void SetLensFunction(double _c1, double _c2,
-                        const std::string &_fun, double _f,
-                        double _c3);
+      public: void SetCustomMappingFunction(double _c1, double _c2,
+                        AngleFunctionType _fun, double _f, double _c3);
 
       /// \brief Get lens projection type
-      /// \return Lens projection type string
-      public: std::string Type() const;
+      /// \return Lens projection / mapping function type
+      public: MappingFunctionType Type() const;
 
       /// \brief Checks if lens type is of the custom type
-      /// \return True if this->Type() == "custom"
+      /// \return True if this->Type() == MFT_CUSTOM
       public: bool IsCustom() const;
 
       /// \brief Gets c1 parameter
@@ -91,8 +117,8 @@ namespace ignition
       public: double F() const;
 
       /// \brief Gets angle transform function
-      /// \return Angle transform function string
-      public: std::string Fun() const;
+      /// \return Angle transform function
+      public: AngleFunctionType AngleFunction() const;
 
       /// \brief Gets cut off angle
       /// \return Cut off angle
@@ -103,8 +129,8 @@ namespace ignition
       public: bool ScaleToHFOV() const;
 
       /// \brief Set lens projection type
-      /// \param[in] _type Lens projection type string
-      public: void SetType(const std::string &_type);
+      /// \param[in] _type Lens projection / mapping function type
+      public: void SetType(MappingFunctionType _type);
 
       /// \brief Sets c1 parameter
       /// \param[in] _c c1 parameter
@@ -123,8 +149,8 @@ namespace ignition
       public: void SetF(double _f);
 
       /// \brief Sets angle transform function
-      /// \param[in] _fun Angle transform function string
-      public: void SetFun(const std::string &_fun);
+      /// \param[in] _fun Angle transform function
+      public: void SetAngleFunction(AngleFunctionType _fun);
 
       /// \brief Sets cut-off angle
       /// \param[in] _angle cut-off angle

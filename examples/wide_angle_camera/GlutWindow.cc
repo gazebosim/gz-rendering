@@ -117,7 +117,7 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-  updateCameras();
+//  updateCameras();
 }
 
 //////////////////////////////////////////////////

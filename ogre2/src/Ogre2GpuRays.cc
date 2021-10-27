@@ -33,6 +33,7 @@
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
+#include "Ogre2IgnHlmsCustomizations.hh"
 #include "Ogre2ParticleNoiseListener.hh"
 
 #ifdef _MSC_VER
@@ -186,6 +187,9 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// emitter region
   public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
 
+  /// \brief Near clip plane for cube camera
+  public: float nearClipCube = 0.0;
+
   /// \brief Min allowed angle in radians;
   public: const math::Angle kMinAllowedAngle = 1e-4;
 };
@@ -212,6 +216,16 @@ Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
 void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    Ogre2IgnHlmsCustomizations &hlmsCustomizations =
+        engine->HlmsCustomizations();
+    Ogre::Pass *pass =
+        this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
+    pass->getVertexProgramParameters()->setNamedConstant(
+          "ignMinClipDistance", hlmsCustomizations.minDistanceClip );
+  }
+
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
@@ -309,6 +323,11 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);
   }
+
+  Ogre::Pass *pass =
+      this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
+  pass->getVertexProgramParameters()->setNamedConstant(
+        "ignMinClipDistance", 0.0f );
 }
 
 
@@ -515,8 +534,17 @@ void Ogre2GpuRays::ConfigureCamera()
   v |= v >> 8;
   v |= v >> 16;
   v++;
+
+  // limit min texture size to 128
+  // This is needed for large fov with low sample count,
+  // e.g. 360 degrees and only 4 samples. Otherwise the depth data returned are
+  // inaccurate.
+  // \todo(anyone) For small fov, we shouldn't need such a high min texture size
+  // requirement, e.g. a single ray lidar only needs 1x1 texture. Look for ways
+  // to compute the optimal min texture size
+  unsigned int min1stPassSamples = 128u;
+
   // limit max texture size to 1024
-  unsigned int min1stPassSamples = 2u;
   unsigned int max1stPassSamples = 1024u;
   unsigned int samples1stPass =
       std::clamp(v, min1stPassSamples, max1stPassSamples);
@@ -527,7 +555,7 @@ void Ogre2GpuRays::ConfigureCamera()
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());
 
   // Set ogre cam properties
-  this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
+  this->dataPtr->ogreCamera->setNearClipDistance(this->dataPtr->nearClipCube);
   this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
 }
 
@@ -991,7 +1019,7 @@ void Ogre2GpuRays::Setup1stPass()
     this->ogreNode->attachObject(this->dataPtr->cubeCam[i]);
     this->dataPtr->cubeCam[i]->setFOVy(Ogre::Degree(90));
     this->dataPtr->cubeCam[i]->setAspectRatio(1);
-    this->dataPtr->cubeCam[i]->setNearClipDistance(this->NearClipPlane());
+    this->dataPtr->cubeCam[i]->setNearClipDistance(this->dataPtr->nearClipCube);
     this->dataPtr->cubeCam[i]->setFarClipDistance(this->FarClipPlane());
     this->dataPtr->cubeCam[i]->setFixedYawAxis(false);
     this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
@@ -1200,6 +1228,15 @@ void Ogre2GpuRays::Setup2ndPass()
 /////////////////////////////////////////////////////////
 void Ogre2GpuRays::CreateGpuRaysTextures()
 {
+  // make cube cam near clip smaller than specified and manually clip range
+  // values in 1st pass shader (gpu_rays_1st_pass_fs.glsl).
+  // This is so that we don't incorrectly clip the range values near the
+  // corners of the cube cam viewport.
+
+  // compute smallest box to fit in sphere with radius = this->NearClipPlane
+  double boxSize = this->NearClipPlane() * 2 / std::sqrt(3.0);
+  this->dataPtr->nearClipCube = boxSize * 0.5;
+
   this->ConfigureCamera();
   this->CreateSampleTexture();
   this->Setup1stPass();
@@ -1249,8 +1286,21 @@ void Ogre2GpuRays::Render()
 {
   this->scene->StartRendering(nullptr);
 
+  auto engine = Ogre2RenderEngine::Instance();
+
+  // The Hlms customizations add a "spherical" clipping; which ignores depth
+  // clamping as it clips before sending vertices to the pixel shader.
+  // These customization can be used to implement multi-tiered
+  // "near plane distances" as proposed in:
+  // https://github.com/ignitionrobotics/ign-rendering/issues/395
+  Ogre2IgnHlmsCustomizations &hlmsCustomizations =
+      engine->HlmsCustomizations();
+
+  hlmsCustomizations.minDistanceClip =
+      static_cast<float>(this->NearClipPlane());
   this->UpdateRenderTarget1stPass();
   this->UpdateRenderTarget2ndPass();
+  hlmsCustomizations.minDistanceClip = -1;
 
   this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
 }

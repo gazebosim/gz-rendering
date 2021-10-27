@@ -34,7 +34,11 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
+
+// armhf failed to build with this code. It can not be removed for the rest
+// of arches to keep ABI but should be removed in major versions unreleased
+// see https://github.com/ignitionrobotics/ign-rendering/pull/457
+#ifndef __ARM_PCS_VFP
     template class BaseGeometryStore<Ogre2Geometry>;
     template class BaseLightStore<Ogre2Light>;
     template class BaseNodeStore<Ogre2Node>;
@@ -42,6 +46,7 @@ namespace ignition
     template class BaseSensorStore<Ogre2Sensor>;
     template class BaseSubMeshStore<Ogre2SubMesh>;
     template class BaseVisualStore<Ogre2Visual>;
+#endif
 
     typedef BaseGeometryStore<Ogre2Geometry>    Ogre2GeometryStore;
     typedef BaseLightStore<Ogre2Light>          Ogre2LightStore;

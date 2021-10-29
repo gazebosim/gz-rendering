@@ -560,10 +560,20 @@ uint8_t Ogre2RenderTarget::TargetFSAA() const
   {
     // output warning but only do it once
     static bool ogre2FSAAWarn = false;
-    if (ogre2FSAAWarn)
+    if (!ogre2FSAAWarn)
     {
+      std::ostringstream os;
+      os << "[ ";
+      for (auto &&level : fsaaLevels)
+      {
+        os << level << " ";
+      }
+      os << "]";
+
       ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
-              << "is not supported. Setting to 0" << std::endl;
+              << "is not supported; valid FSAA levels are: " << os.str()
+              << ". Setting to 0" << std::endl;
+      targetFSAA = 0u;
       ogre2FSAAWarn = true;
     }
   }

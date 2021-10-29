@@ -79,7 +79,7 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
       // OGRE 1.9 changes the shared pointer definition
-      #if OGRE_VERSION_LT_1_10_1
+      #if OGRE_VERSION_LT_1_11_0
       Ogre::MaterialPtr plainMaterial = res.staticCast<Ogre::Material>();
       #else
       Ogre::MaterialPtr plainMaterial =

@@ -379,6 +379,24 @@ void VisualTest::UserData(const std::string &_renderEngine)
   value = visual->UserData(unsignedIntKey);
   EXPECT_EQ(unsignedIntValue, std::get<unsigned int>(value));
 
+  // int64_t
+  std::string int64Key = "int64_t";
+  int64_t int64Value = -math::MAX_I64;
+  EXPECT_FALSE(visual->HasUserData(int64Key));
+  visual->SetUserData(int64Key, int64Value);
+  EXPECT_TRUE(visual->HasUserData(int64Key));
+  value = visual->UserData(int64Key);
+  EXPECT_EQ(int64Value, std::get<int64_t>(value));
+
+  // uint64_t
+  std::string uint64Key = "uint64_t";
+  uint64_t uint64Value = math::MAX_UI64;
+  EXPECT_FALSE(visual->HasUserData(uint64Key));
+  visual->SetUserData(uint64Key, uint64Value);
+  EXPECT_TRUE(visual->HasUserData(uint64Key));
+  value = visual->UserData(uint64Key);
+  EXPECT_EQ(uint64Value, std::get<uint64_t>(value));
+
   // test a key that does not exist (should return no data)
   value = visual->UserData("invalidKey");
   EXPECT_FALSE(std::holds_alternative<int>(value));

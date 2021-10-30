@@ -259,11 +259,7 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
       this->ImageWidth(), this->ImageHeight());
   }
 
-#ifdef __APPLE__
-  float ratio = 1.0f;
-#else
   float ratio = screenScalingFactor();
-#endif
 
   ignition::math::Vector2i mousePos(
       static_cast<int>(std::rint(ratio * _mousePos.X())),

@@ -103,7 +103,12 @@ namespace ignition
       /// \brief Pointer to private data.
       private: std::unique_ptr<Ogre2ThermalCameraPrivate> dataPtr;
 
+      /// \brief Make scene our friend so it can create a camera
       private: friend class Ogre2Scene;
+
+      /// \brief Make ray query our friend so it can use the internal ogre
+      /// camera to execute queries
+      private: friend class Ogre2RayQuery;
     };
     }
   }

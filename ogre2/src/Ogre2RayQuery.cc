@@ -22,9 +22,12 @@
 
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
+#include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -75,19 +78,46 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
 {
   // convert to nomalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
-  Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(_camera);
-  Ogre::Ray ray =
+
+  Ogre::Ray ray;  
+
+  if (Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(_camera))
+  {
+    ray =
       camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
+    
+    this->dataPtr->camera = camera;
+  }
+  else if (Ogre2DepthCameraPtr camera = 
+      std::dynamic_pointer_cast<Ogre2DepthCamera>(_camera))
+  {
+    ray =
+      camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
+  }
+  else if (Ogre2SegmentationCameraPtr camera =
+      std::dynamic_pointer_cast<Ogre2SegmentationCamera>(_camera))
+  {
+    ray =
+      camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
+  }
+  else if (Ogre2ThermalCameraPtr camera =
+      std::dynamic_pointer_cast<Ogre2ThermalCamera>(_camera))
+  {
+    ray =
+      camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
+  }
+  else
+  {
+    ignwarn << "Camera does not support ray query\n";
+  }
 
   this->origin = Ogre2Conversions::Convert(ray.getOrigin());
   this->direction = Ogre2Conversions::Convert(ray.getDirection());
 
-  this->dataPtr->camera = camera;
-
   this->dataPtr->imgPos.X() = static_cast<int>(
-      screenPos.X() * this->dataPtr->camera->ImageWidth());
+      screenPos.X() * _camera->ImageWidth());
   this->dataPtr->imgPos.Y() = static_cast<int>(
-      screenPos.Y() * this->dataPtr->camera->ImageHeight());
+      screenPos.Y() * _camera->ImageHeight());
 }
 
 //////////////////////////////////////////////////

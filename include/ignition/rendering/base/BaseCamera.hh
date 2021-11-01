@@ -180,6 +180,10 @@ namespace ignition
       public: virtual unsigned int RenderTextureGLId() const override;
 
       // Documentation inherited.
+      public: virtual void RenderTextureMetalId(void *_textureIdPtr)
+          const override;
+
+      // Documentation inherited.
       public: virtual void AddRenderPass(const RenderPassPtr &_pass) override;
 
       // Documentation inherited.
@@ -802,6 +806,14 @@ namespace ignition
       ignerr << "RenderTextureGLId is not supported by current render"
           << " engine" << std::endl;
       return 0u;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::RenderTextureMetalId(void */*_textureIdPtr*/) const
+    {
+      ignerr << "RenderTextureMetalId is not supported by current render"
+          << " engine" << std::endl;
     }
 
     //////////////////////////////////////////////////

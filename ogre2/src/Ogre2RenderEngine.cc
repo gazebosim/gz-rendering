@@ -498,7 +498,7 @@ void Ogre2RenderEngine::LoadPlugins()
       std::string p = common::joinPaths(path, "RenderSystem_Metal");
       plugins.push_back(p);
     }
-  
+
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
       // check if plugin library exists

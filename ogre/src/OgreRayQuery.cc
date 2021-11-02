@@ -55,18 +55,20 @@ void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
   Ogre::Ray ray;
-  
+
   if (OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(_camera))
   {
     ray =
       camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
   }
-  else if (OgreDepthCameraPtr camera = std::dynamic_pointer_cast<OgreDepthCamera>(_camera))
+  else if (OgreDepthCameraPtr camera =
+    std::dynamic_pointer_cast<OgreDepthCamera>(_camera))
   {
     ray =
       camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
   }
-  else if (OgreThermalCameraPtr camera = std::dynamic_pointer_cast<OgreThermalCamera>(_camera))
+  else if (OgreThermalCameraPtr camera =
+    std::dynamic_pointer_cast<OgreThermalCamera>(_camera))
   {
     ray =
       camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());

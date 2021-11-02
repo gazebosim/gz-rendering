@@ -79,16 +79,16 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
   // convert to nomalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
-  Ogre::Ray ray;  
+  Ogre::Ray ray;
 
   if (Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(_camera))
   {
     ray =
       camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
-    
+
     this->dataPtr->camera = camera;
   }
-  else if (Ogre2DepthCameraPtr camera = 
+  else if (Ogre2DepthCameraPtr camera =
       std::dynamic_pointer_cast<Ogre2DepthCamera>(_camera))
   {
     ray =

@@ -36,7 +36,8 @@ namespace ignition
       //
       /// \param[in] _typename Name of the object type to retrieve.
       /// \return A pointer to an Ogre::MovableObject. Has default nullptr.
-      public: virtual Ogre::MovableObject *OgreMovableObject(const char* _typename) const = 0;
+      public: virtual Ogre::MovableObject *OgreMovableObject(
+          const char* _typename) const = 0;
 
       /// \brief Access the Ogre::Camera object.
       //

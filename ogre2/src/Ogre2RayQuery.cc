@@ -96,7 +96,6 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
 
   Ogre::Ray ray = ogre2ObjectInterface->OgreCamera()->getCameraToViewportRay(
       screenPos.X(), screenPos.Y());
-  
 
   this->origin = Ogre2Conversions::Convert(ray.getOrigin());
   this->direction = Ogre2Conversions::Convert(ray.getDirection());

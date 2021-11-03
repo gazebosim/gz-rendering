@@ -32,6 +32,7 @@
 
 #include "ignition/rendering/base/BaseSegmentationCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2ObjectInterface.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 namespace ignition
@@ -46,7 +47,8 @@ namespace ignition
     /// \brief Segmentation camera used to label each pixel with a label id.
     /// Supports Semantic / Panoptic Segmentation
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationCamera :
-      public BaseSegmentationCamera<Ogre2Sensor>
+      public virtual BaseSegmentationCamera<Ogre2Sensor>,
+      public virtual Ogre2ObjectInterface
     {
       /// \brief Constructor
       protected: Ogre2SegmentationCamera();
@@ -85,6 +87,13 @@ namespace ignition
       // Documentation inherited
       public: void LabelMapFromColoredBuffer(
                   uint8_t * _labelBuffer) const override;
+
+      // Documentation inherited.
+      public: virtual Ogre::MovableObject* OgreMovableObject(
+          const char* _typename) const override;
+
+      // Documentation inherited.
+      public: virtual Ogre::Camera *OgreCamera() const override;
 
       /// \brief Create the camera.
       protected: void CreateCamera();

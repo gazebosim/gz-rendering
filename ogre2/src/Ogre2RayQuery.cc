@@ -23,6 +23,7 @@
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
+#include "ignition/rendering/ogre2/Ogre2ObjectInterface.hh"
 #include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
@@ -79,37 +80,23 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
   // convert to nomalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
-  Ogre::Ray ray;
-
-  if (Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(_camera))
+  Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(_camera);
+  if (camera)
   {
-    ray =
-      camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
-
     this->dataPtr->camera = camera;
   }
-  else if (Ogre2DepthCameraPtr camera =
-      std::dynamic_pointer_cast<Ogre2DepthCamera>(_camera))
-  {
-    ray =
-      camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
-  }
-  else if (Ogre2SegmentationCameraPtr camera =
-      std::dynamic_pointer_cast<Ogre2SegmentationCamera>(_camera))
-  {
-    ray =
-      camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
-  }
-  else if (Ogre2ThermalCameraPtr camera =
-      std::dynamic_pointer_cast<Ogre2ThermalCamera>(_camera))
-  {
-    ray =
-      camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
-  }
-  else
+
+  Ogre2ObjectInterfacePtr ogre2ObjectInterface =
+      std::dynamic_pointer_cast<Ogre2ObjectInterface>(_camera);
+  if (!ogre2ObjectInterface)
   {
     ignwarn << "Camera does not support ray query\n";
+    return;
   }
+
+  Ogre::Ray ray = ogre2ObjectInterface->OgreCamera()->getCameraToViewportRay(
+      screenPos.X(), screenPos.Y());
+  
 
   this->origin = Ogre2Conversions::Convert(ray.getOrigin());
   this->direction = Ogre2Conversions::Convert(ray.getDirection());

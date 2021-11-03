@@ -21,6 +21,7 @@
 
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/OgreObjectInterface.hh"
 #include "ignition/rendering/ogre/OgreSensor.hh"
 #include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
 
@@ -39,7 +40,8 @@ namespace ignition
     class OgreSelectionBuffer;
 
     class IGNITION_RENDERING_OGRE_VISIBLE OgreCamera :
-      public BaseCamera<OgreSensor>
+      public virtual BaseCamera<OgreSensor>,
+      public virtual OgreObjectInterface
     {
       protected: OgreCamera();
 
@@ -118,8 +120,12 @@ namespace ignition
       // Documentation inherited.
       public: virtual void SetVisibilityMask(uint32_t _mask) override;
 
-      /// \brief Get underlying Ogre camera
-      public: Ogre::Camera *Camera() const;
+      // Documentation inherited.
+      public: virtual Ogre::MovableObject* OgreMovableObject(
+          const char* _typename) const override;
+
+      // Documentation inherited.
+      public: virtual Ogre::Camera *Camera() const override;
 
       // Documentation inherited.
       // public: virtual uint32_t VisibilityMask() const override;

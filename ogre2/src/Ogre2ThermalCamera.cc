@@ -949,3 +949,16 @@ RenderTargetPtr Ogre2ThermalCamera::RenderTarget() const
 {
   return this->dataPtr->thermalTexture;
 }
+
+//////////////////////////////////////////////////
+Ogre::MovableObject*
+Ogre2ThermalCamera::OgreMovableObject(const char* _typename) const
+{
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
+Ogre::Camera *Ogre2ThermalCamera::OgreCamera() const
+{
+  return this->ogreCamera;
+}

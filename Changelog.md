@@ -30,9 +30,6 @@
 1. Fix ray query distance calculation
     * [Pull request #438](https://github.com/ignitionrobotics/ign-rendering/pull/438)
 
-1. disable VisualAt tests
-    * [Pull request #disable VisualAt tests](https://github.com/ignitionrobotics/ign-rendering/pull/disable VisualAt tests)
-
 1. Fix the spelling of USE_UNOFFICIAL_OGRE_VERSIONS flag
     * [Pull request #413](https://github.com/ignitionrobotics/ign-rendering/pull/413)
 

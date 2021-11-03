@@ -1272,7 +1272,7 @@ void Ogre2DepthCamera::AddRenderPass(const RenderPassPtr &_pass)
 
 //////////////////////////////////////////////////
 Ogre::MovableObject*
-Ogre2DepthCamera::OgreMovableObject(const char* _typename) const
+Ogre2DepthCamera::OgreMovableObject(const char* /*_typename*/) const
 {
   return nullptr;
 }

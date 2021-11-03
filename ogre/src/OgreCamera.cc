@@ -341,7 +341,7 @@ void OgreCamera::SetVisibilityMask(uint32_t _mask)
 
 //////////////////////////////////////////////////
 Ogre::MovableObject*
-OgreCamera::OgreMovableObject(const char* _typename) const
+OgreCamera::OgreMovableObject(const char* /*_typename*/) const
 {
   return nullptr;
 }

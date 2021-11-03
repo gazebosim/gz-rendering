@@ -417,7 +417,7 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
 
 //////////////////////////////////////////////////
 Ogre::MovableObject*
-Ogre2SegmentationCamera::OgreMovableObject(const char* _typename) const
+Ogre2SegmentationCamera::OgreMovableObject(const char* /*_typename*/) const
 {
   return nullptr;
 }

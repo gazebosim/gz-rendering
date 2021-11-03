@@ -572,7 +572,7 @@ RenderTargetPtr OgreThermalCamera::RenderTarget() const
 
 //////////////////////////////////////////////////
 Ogre::MovableObject*
-OgreThermalCamera::OgreMovableObject(const char* _typename) const
+OgreThermalCamera::OgreMovableObject(const char* /*_typename*/) const
 {
   return nullptr;
 }

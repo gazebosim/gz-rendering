@@ -15,7 +15,7 @@
  *
  */
 
-#include "ignition/rendering/ogre/Ogre2ObjectInterface.hh"
+#include "ignition/rendering/ogre2/Ogre2ObjectInterface.hh"
 
 using namespace ignition;
 using namespace rendering;

@@ -52,6 +52,10 @@ namespace ignition
       public: virtual const CameraLens &Lens() const override;
 
       // Documentation inherited.
+      public: virtual math::Vector3d Project3d(const math::Vector3d &_pt) const
+          override;
+
+      // Documentation inherited.
       public: virtual common::ConnectionPtr ConnectNewWideAngleFrame(
           std::function<void(const unsigned char*, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
@@ -90,6 +94,17 @@ namespace ignition
     template <class T>
     void BaseWideAngleCamera<T>::CreateWideAngleTexture()
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Vector3d BaseWideAngleCamera<T>:: Project3d(const math::Vector3d &)
+        const
+    {
+      ignerr << "Project3d is not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
+      return math::Vector3d();
     }
 
     //////////////////////////////////////////////////

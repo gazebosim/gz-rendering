@@ -57,9 +57,6 @@ namespace ignition
       // Documentation inherited
       public: virtual void Init() override;
 
-      // Documentation inherited
-      // public: void Load() override;
-      // using Camera::Load;
       /// \brief Create a texture
       public: virtual void CreateRenderTexture();
 
@@ -72,13 +69,6 @@ namespace ignition
       /// \brief Gets the environment texture size
       /// \return Texture size
       public: unsigned int EnvTextureSize() const;
-
-      /// \brief Gets camera's lens description
-      /// \return Camera's lens description
-      /// public: CameraLens *Lens() const;
-
-      // Documentation inherited
-      // public: void SetRenderTarget(Ogre::RenderTarget *_target) override;
 
       /// \brief Sets environment texture size
       /// \param[in] _size Texture size

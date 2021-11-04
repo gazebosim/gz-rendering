@@ -717,11 +717,15 @@ void OgreWideAngleCamera::PostRender()
   // igndbg << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
-  //   for (unsigned int j = 0; j < width; ++j)
+  //   for (unsigned int j = 0; j < width * channelCount; j += channelCount)
   //   {
-  //     igndbg << "[" << this->dataPtr->wideAngleImage[i*width + j] << "]";
+  //     unsigned int idx = i * width * channelCount + j;
+  //     unsigned int r = this->dataPtr->wideAngleImage[idx];
+  //     unsigned int g = this->dataPtr->wideAngleImage[idx + 1];
+  //     unsigned int b = this->dataPtr->wideAngleImage[idx + 2];
+  //     std::cout << "[" << r << "," << g << "," << b << "]";
   //   }
-  //   igndbg << std::endl;
+  //   std::cout << std::endl;
   // }
 }
 

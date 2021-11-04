@@ -17,8 +17,9 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2OBJECTINTERFACE_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2OBJECTINTERFACE_HH_
 
-#include "ignition/rendering/ogre2/Export.hh"
+#include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Export.hh"
 
 namespace ignition
 {

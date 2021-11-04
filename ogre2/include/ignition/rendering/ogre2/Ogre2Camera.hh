@@ -134,10 +134,6 @@ namespace ignition
       public: Ogre2SelectionBuffer *SelectionBuffer() const;
 
       // Documentation inherited.
-      public: virtual Ogre::MovableObject* OgreMovableObject(
-          const char* _typename) const override;
-
-      // Documentation inherited.
       public: virtual Ogre::Camera *OgreCamera() const override;
 
       // Documentation inherited.

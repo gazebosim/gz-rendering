@@ -17,8 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2OBJECTINTERFACE_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2OBJECTINTERFACE_HH_
 
-#include <memory>
-
+#include "ignition/rendering/ogre2/Export.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 
 namespace ignition
@@ -28,16 +27,16 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     /// \brief Mixin class to provide direct access to Ogre objects.
-    class Ogre2ObjectInterface
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2ObjectInterface
     {
-      public: virtual ~Ogre2ObjectInterface() = default;
+      public: virtual ~Ogre2ObjectInterface();
 
       /// \brief Access to an Ogre::MovableObject.
       //
       /// \param[in] _typename Name of the object type to retrieve.
       /// \return A pointer to an Ogre::MovableObject. Has default nullptr.
       public: virtual Ogre::MovableObject *OgreMovableObject(
-          const char* _typename) const = 0;
+          const char* _typename) const;
 
       /// \brief Access the Ogre::Camera object.
       //

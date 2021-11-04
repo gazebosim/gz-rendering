@@ -89,10 +89,6 @@ namespace ignition
                   uint8_t * _labelBuffer) const override;
 
       // Documentation inherited.
-      public: virtual Ogre::MovableObject* OgreMovableObject(
-          const char* _typename) const override;
-
-      // Documentation inherited.
       public: virtual Ogre::Camera *OgreCamera() const override;
 
       /// \brief Create the camera.

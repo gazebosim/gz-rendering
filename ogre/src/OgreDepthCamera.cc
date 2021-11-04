@@ -584,13 +584,6 @@ double OgreDepthCamera::FarClipPlane() const
 }
 
 //////////////////////////////////////////////////
-Ogre::MovableObject*
-OgreDepthCamera::OgreMovableObject(const char* /*_typename*/) const
-{
-  return nullptr;
-}
-
-//////////////////////////////////////////////////
 Ogre::Camera *OgreDepthCamera::Camera() const
 {
   return this->ogreCamera;

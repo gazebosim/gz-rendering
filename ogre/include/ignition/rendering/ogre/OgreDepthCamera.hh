@@ -128,10 +128,6 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: virtual Ogre::MovableObject* OgreMovableObject(
-          const char* _typename) const override;
-
-      // Documentation inherited.
       public: virtual Ogre::Camera *Camera() const override;
 
       /// \brief Update a render target

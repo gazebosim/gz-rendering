@@ -86,10 +86,6 @@ namespace ignition
       public: virtual void Render() override;
 
       // Documentation inherited.
-      public: virtual Ogre::MovableObject* OgreMovableObject(
-          const char* _typename) const override;
-
-      // Documentation inherited.
       public: virtual Ogre::Camera *OgreCamera() const override;
 
       /// \brief Get a pointer to the render target.

@@ -25,7 +25,7 @@ OgreObjectInterface::~OgreObjectInterface() = default;
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *OgreObjectInterface::OgreMovableObject(
-    const char* _typename) const
+    const char* /*_typename*/) const
 {
   return nullptr;
 }

@@ -25,7 +25,7 @@ Ogre2ObjectInterface::~Ogre2ObjectInterface() = default;
 
 //////////////////////////////////////////////////
 Ogre::MovableObject *Ogre2ObjectInterface::OgreMovableObject(
-    const char* _typename) const
+    const char* /*_typename*/) const
 {
   return nullptr;
 }

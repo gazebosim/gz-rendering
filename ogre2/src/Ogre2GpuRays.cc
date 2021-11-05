@@ -33,6 +33,7 @@
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
+#include "Ogre2IgnHlmsCustomizations.hh"
 #include "Ogre2ParticleNoiseListener.hh"
 
 #ifdef _MSC_VER
@@ -186,6 +187,9 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// emitter region
   public: std::unique_ptr<Ogre2ParticleNoiseListener> particleNoiseListener[6];
 
+  /// \brief Near clip plane for cube camera
+  public: float nearClipCube = 0.0;
+
   /// \brief Min allowed angle in radians;
   public: const math::Angle kMinAllowedAngle = 1e-4;
 };
@@ -212,6 +216,16 @@ Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
 void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    Ogre2IgnHlmsCustomizations &hlmsCustomizations =
+        engine->HlmsCustomizations();
+    Ogre::Pass *pass =
+        this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
+    pass->getVertexProgramParameters()->setNamedConstant(
+          "ignMinClipDistance", hlmsCustomizations.minDistanceClip );
+  }
+
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
@@ -309,6 +323,11 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);
   }
+
+  Ogre::Pass *pass =
+      this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
+  pass->getVertexProgramParameters()->setNamedConstant(
+        "ignMinClipDistance", 0.0f );
 }
 
 
@@ -515,8 +534,17 @@ void Ogre2GpuRays::ConfigureCamera()
   v |= v >> 8;
   v |= v >> 16;
   v++;
+
+  // limit min texture size to 128
+  // This is needed for large fov with low sample count,
+  // e.g. 360 degrees and only 4 samples. Otherwise the depth data returned are
+  // inaccurate.
+  // \todo(anyone) For small fov, we shouldn't need such a high min texture size
+  // requirement, e.g. a single ray lidar only needs 1x1 texture. Look for ways
+  // to compute the optimal min texture size
+  unsigned int min1stPassSamples = 128u;
+
   // limit max texture size to 1024
-  unsigned int min1stPassSamples = 2u;
   unsigned int max1stPassSamples = 1024u;
   unsigned int samples1stPass =
       std::clamp(v, min1stPassSamples, max1stPassSamples);
@@ -527,7 +555,7 @@ void Ogre2GpuRays::ConfigureCamera()
   this->SetRangeCount(this->RangeCount(), this->VerticalRangeCount());
 
   // Set ogre cam properties
-  this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
+  this->dataPtr->ogreCamera->setNearClipDistance(this->dataPtr->nearClipCube);
   this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
 }
 
@@ -583,6 +611,7 @@ void Ogre2GpuRays::CreateSampleTexture()
   //   R: u coordinate on the cubemap face
   //   G: v coordinate on the cubemap face
   //   B: cubemap face index
+  //   A: unused
   // this texture is passed to the 2nd pass fragment shader
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -602,7 +631,7 @@ void Ogre2GpuRays::CreateSampleTexture()
   this->dataPtr->cubeUVTexture->setResolution(
     this->dataPtr->w2nd, this->dataPtr->h2nd);
   this->dataPtr->cubeUVTexture->setNumMipmaps(1u);
-  this->dataPtr->cubeUVTexture->setPixelFormat(Ogre::PFG_RGB32_FLOAT);
+  this->dataPtr->cubeUVTexture->setPixelFormat(Ogre::PFG_RGBA32_FLOAT);
 
   const Ogre::uint32 rowAlignment = 1u;
   const size_t dataSize = Ogre::PixelFormatGpuUtils::getSizeBytes(
@@ -642,7 +671,8 @@ void Ogre2GpuRays::CreateSampleTexture()
       pDest[index++] = uv.Y();
       // face
       pDest[index++] = faceIdx;
-
+      // unused
+      pDest[index++] = 1.0;
       h += hStep;
     }
     v += vStep;
@@ -989,7 +1019,7 @@ void Ogre2GpuRays::Setup1stPass()
     this->ogreNode->attachObject(this->dataPtr->cubeCam[i]);
     this->dataPtr->cubeCam[i]->setFOVy(Ogre::Degree(90));
     this->dataPtr->cubeCam[i]->setAspectRatio(1);
-    this->dataPtr->cubeCam[i]->setNearClipDistance(this->NearClipPlane());
+    this->dataPtr->cubeCam[i]->setNearClipDistance(this->dataPtr->nearClipCube);
     this->dataPtr->cubeCam[i]->setFarClipDistance(this->FarClipPlane());
     this->dataPtr->cubeCam[i]->setFixedYawAxis(false);
     this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
@@ -1024,7 +1054,7 @@ void Ogre2GpuRays::Setup1stPass()
       this->dataPtr->w1st, this->dataPtr->h1st);
     this->dataPtr->firstPassTextures[i]->setNumMipmaps(1u);
     this->dataPtr->firstPassTextures[i]->setPixelFormat(
-      Ogre::PFG_RGB32_FLOAT);
+      Ogre::PFG_RG32_FLOAT);
 
     this->dataPtr->firstPassTextures[i]->scheduleTransitionTo(
       Ogre::GpuResidency::Resident);
@@ -1088,7 +1118,7 @@ void Ogre2GpuRays::Setup2ndPass()
     this->dataPtr->w2nd, this->dataPtr->h2nd);
   this->dataPtr->secondPassTexture->setNumMipmaps(1u);
   this->dataPtr->secondPassTexture->setPixelFormat(
-    Ogre::PFG_RGB32_FLOAT);
+    Ogre::PFG_RGBA32_FLOAT);
 
   this->dataPtr->secondPassTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -1198,6 +1228,15 @@ void Ogre2GpuRays::Setup2ndPass()
 /////////////////////////////////////////////////////////
 void Ogre2GpuRays::CreateGpuRaysTextures()
 {
+  // make cube cam near clip smaller than specified and manually clip range
+  // values in 1st pass shader (gpu_rays_1st_pass_fs.glsl).
+  // This is so that we don't incorrectly clip the range values near the
+  // corners of the cube cam viewport.
+
+  // compute smallest box to fit in sphere with radius = this->NearClipPlane
+  double boxSize = this->NearClipPlane() * 2 / std::sqrt(3.0);
+  this->dataPtr->nearClipCube = boxSize * 0.5;
+
   this->ConfigureCamera();
   this->CreateSampleTexture();
   this->Setup1stPass();
@@ -1247,8 +1286,21 @@ void Ogre2GpuRays::Render()
 {
   this->scene->StartRendering(nullptr);
 
+  auto engine = Ogre2RenderEngine::Instance();
+
+  // The Hlms customizations add a "spherical" clipping; which ignores depth
+  // clamping as it clips before sending vertices to the pixel shader.
+  // These customization can be used to implement multi-tiered
+  // "near plane distances" as proposed in:
+  // https://github.com/ignitionrobotics/ign-rendering/issues/395
+  Ogre2IgnHlmsCustomizations &hlmsCustomizations =
+      engine->HlmsCustomizations();
+
+  hlmsCustomizations.minDistanceClip =
+      static_cast<float>(this->NearClipPlane());
   this->UpdateRenderTarget1stPass();
   this->UpdateRenderTarget2ndPass();
+  hlmsCustomizations.minDistanceClip = -1;
 
   this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
 }
@@ -1266,15 +1318,14 @@ void Ogre2GpuRays::PostRender()
   unsigned int width = this->dataPtr->w2nd;
   unsigned int height = this->dataPtr->h2nd;
 
-  int len = width * height * this->Channels();
-
-  PixelFormat format = PF_FLOAT32_RGB;
-  unsigned int channelCount = PixelUtil::ChannelCount(format);
+  PixelFormat format = PF_FLOAT32_RGBA;
+  unsigned int rawChannelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
+  int rawLen = width * height * rawChannelCount;
 
   if (!this->dataPtr->gpuRaysBuffer)
   {
-    this->dataPtr->gpuRaysBuffer = new float[len];
+    this->dataPtr->gpuRaysBuffer = new float[rawLen];
   }
 
   // blit data from gpu to cpu
@@ -1288,18 +1339,40 @@ void Ogre2GpuRays::PostRender()
   for (unsigned int i = 0; i < height; ++i)
   {
     unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
-    unsigned int rowIdx = i * width * channelCount;
+    unsigned int rowIdx = i * width * rawChannelCount;
     memcpy(&this->dataPtr->gpuRaysBuffer[rowIdx], &bufferTmp[rawDataRowIdx],
-        width * channelCount * bytesPerChannel);
+        width * rawChannelCount * bytesPerChannel);
   }
 
+  // Metal does not support RGB32_FLOAT so the internal texture format is
+  // RGBA32_FLOAT. For backward compatibility, output data is kept in RGB
+  // format instead of RGBA
+  int outputLen = width * height * this->Channels();
   if (!this->dataPtr->gpuRaysScan)
   {
-    this->dataPtr->gpuRaysScan = new float[len];
+    this->dataPtr->gpuRaysScan = new float[outputLen];
   }
 
-  memcpy(this->dataPtr->gpuRaysScan,
-    this->dataPtr->gpuRaysBuffer, len * sizeof(float));
+  // copy data from RGBA buffer to RGB buffer
+  for (unsigned int row = 0; row < height; ++row)
+  {
+    // the texture box step size could be larger than our image buffer step
+    // size
+    for (unsigned int column = 0; column < width; ++column)
+    {
+      unsigned int idx = (row * width * this->Channels()) +
+          column * this->Channels();
+      unsigned int rawIdx = (row * width * rawChannelCount) +
+          column * rawChannelCount;
+
+      this->dataPtr->gpuRaysScan[idx] =
+          this->dataPtr->gpuRaysBuffer[rawIdx];
+      this->dataPtr->gpuRaysScan[idx + 1] =
+          this->dataPtr->gpuRaysBuffer[rawIdx + 1];
+      this->dataPtr->gpuRaysScan[idx + 2] =
+          this->dataPtr->gpuRaysBuffer[rawIdx + 2];
+    }
+  }
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
       width, height, this->Channels(), "PF_FLOAT32_RGB");
@@ -1310,18 +1383,16 @@ void Ogre2GpuRays::PostRender()
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     if (this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] < 20) {
-  //       std::cerr
-  //       << "["
-  //       << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3]
-  //       <<  " "
-  //       << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1]
-  //       <<  " "
-  //       << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2]
-  //       <<  "]\n";
-  //     }
+  //     std::cerr
+  //     << "["
+  //     << this->dataPtr->gpuRaysScan[i*width*3 + j*3]
+  //     <<  " "
+  //     << this->dataPtr->gpuRaysScan[i*width*3 + j*3 + 1]
+  //     <<  " "
+  //     << this->dataPtr->gpuRaysScan[i*width*3 + j*3 + 2]
+  //     <<  "]\n";
   //   }
-  //   // igndbg << std::endl;
+  //   std::cerr << std::endl;
   // }
 }
 

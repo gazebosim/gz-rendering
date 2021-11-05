@@ -51,6 +51,9 @@ void OgreVisual::SetWireframe(bool _show)
   if (this->dataPtr->wireframe == _show)
     return;
 
+  if (!this->ogreNode)
+    return;
+
   this->dataPtr->wireframe = _show;
   for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
       i++)
@@ -100,6 +103,9 @@ bool OgreVisual::Wireframe() const
 //////////////////////////////////////////////////
 void OgreVisual::SetVisible(bool _visible)
 {
+  if (!this->ogreNode)
+    return;
+
   this->ogreNode->setVisible(_visible);
 }
 
@@ -124,6 +130,19 @@ GeometryStorePtr OgreVisual::Geometries() const
 //////////////////////////////////////////////////
 bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 {
+  if (!_geometry)
+  {
+    ignerr << "Cannot attach null geometry." << std::endl;
+
+    return false;
+  }
+
+  if (!this->ogreNode)
+  {
+    ignerr << "Cannot attach geometry, null Ogre node." << std::endl;
+    return false;
+  }
+
   OgreGeometryPtr derived =
       std::dynamic_pointer_cast<OgreGeometry>(_geometry);
 
@@ -137,16 +156,20 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 
   // Some geometries, like heightmaps, may not have an OgreObject
   Ogre::MovableObject *ogreObj = derived->OgreObject();
-  if (ogreObj)
+  if (!ogreObj)
   {
-    // set user data for mouse queries
-    ogreObj->getUserObjectBindings().setUserAny(
-        Ogre::Any(this->Id()));
-    ogreObj->setVisibilityFlags(this->visibilityFlags);
-    this->ogreNode->attachObject(ogreObj);
+    ignerr << "Cannot attach a null geometry object" << std::endl;
+    return false;
   }
 
+  // set user data for mouse queries
+  ogreObj->getUserObjectBindings().setUserAny(
+      Ogre::Any(this->Id()));
+  ogreObj->setVisibilityFlags(this->visibilityFlags);
+
   derived->SetParent(this->SharedThis());
+  this->ogreNode->attachObject(ogreObj);
+
   return true;
 }
 
@@ -154,7 +177,10 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 {
   if (!this->ogreNode)
-    return true;
+  {
+    ignerr << "Cannot detach geometry, null Ogre node." << std::endl;
+    return false;
+  }
 
   OgreGeometryPtr derived =
       std::dynamic_pointer_cast<OgreGeometry>(_geometry);
@@ -200,6 +226,9 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
 void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
     bool _local, const ignition::math::Pose3d &_pose) const
 {
+  if (!this->ogreNode)
+    return;
+
   this->ogreNode->_updateBounds();
   this->ogreNode->_update(false, true);
 
@@ -228,6 +257,7 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
         Ogre::Vector3 ogreMin = bb.getMinimum();
         Ogre::Vector3 ogreMax = bb.getMaximum();
 
+        // Get ogre bounding boxes and size to object's scale
         min = scale * ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
         max = scale * ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
         box.Min() = min,
@@ -240,9 +270,8 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
         if (_local)
         {
           ignition::math::Pose3d worldPose = this->WorldPose();
-          ignition::math::Quaternion parentRot = _pose.Rot();
           ignition::math::Vector3d parentPos = _pose.Pos();
-          ignition::math::Quaternion parentRotInv = parentRot.Inverse();
+          ignition::math::Quaternion parentRotInv = _pose.Rot().Inverse();
           ignition::math::Pose3d localTransform =
             ignition::math::Pose3d(
                 (parentRotInv * (worldPose.Pos() - parentPos)),

@@ -29,6 +29,7 @@
 
 #include "ignition/rendering/base/BaseThermalCamera.hh"
 #include "ignition/rendering/ogre2/Export.hh"
+#include "ignition/rendering/ogre2/Ogre2ObjectInterface.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 #include "ignition/common/Event.hh"
@@ -53,7 +54,8 @@ namespace ignition
 
     /// \brief Thermal camera used to render thermal data into an image buffer
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2ThermalCamera :
-      public BaseThermalCamera<Ogre2Sensor>
+      public virtual BaseThermalCamera<Ogre2Sensor>,
+      public virtual Ogre2ObjectInterface
     {
       /// \brief Constructor
       protected: Ogre2ThermalCamera();
@@ -83,6 +85,9 @@ namespace ignition
       /// \brief Implementation of the render call
       public: virtual void Render() override;
 
+      // Documentation inherited.
+      public: virtual Ogre::Camera *OgreCamera() const override;
+
       /// \brief Get a pointer to the render target.
       /// \return Pointer to the render target
       protected: virtual RenderTargetPtr RenderTarget() const override;
@@ -103,6 +108,7 @@ namespace ignition
       /// \brief Pointer to private data.
       private: std::unique_ptr<Ogre2ThermalCameraPrivate> dataPtr;
 
+      /// \brief Make scene our friend so it can create a camera
       private: friend class Ogre2Scene;
     };
     }

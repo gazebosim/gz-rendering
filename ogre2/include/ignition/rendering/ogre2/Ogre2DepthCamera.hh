@@ -28,6 +28,7 @@
 #include <string>
 
 #include "ignition/rendering/base/BaseDepthCamera.hh"
+#include "ignition/rendering/ogre2/Ogre2ObjectInterface.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 #include "ignition/common/Event.hh"
@@ -52,7 +53,8 @@ namespace ignition
 
     /// \brief Depth camera used to render depth data into an image buffer
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2DepthCamera :
-      public BaseDepthCamera<Ogre2Sensor>
+      public virtual BaseDepthCamera<Ogre2Sensor>,
+      public virtual Ogre2ObjectInterface
     {
       /// \brief Constructor
       protected: Ogre2DepthCamera();
@@ -128,6 +130,9 @@ namespace ignition
       // Documentation inherited.
       public: void AddRenderPass(const RenderPassPtr &_pass) override;
 
+      // Documentation inherited.
+      public: virtual Ogre::Camera *OgreCamera() const override;
+
       /// \brief Get a pointer to the render target.
       /// \return Pointer to the render target
       protected: virtual RenderTargetPtr RenderTarget() const override;
@@ -155,6 +160,7 @@ namespace ignition
       /// \brief Pointer to private data.
       private: std::unique_ptr<Ogre2DepthCameraPrivate> dataPtr;
 
+      /// \brief Make scene our friend so it can create a camera
       private: friend class Ogre2Scene;
     };
     }

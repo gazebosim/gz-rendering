@@ -39,12 +39,6 @@ OgreCamera::~OgreCamera()
 }
 
 //////////////////////////////////////////////////
-Ogre::Camera *OgreCamera::Camera() const
-{
-  return this->ogreCamera;
-}
-
-//////////////////////////////////////////////////
 void OgreCamera::Destroy()
 {
   if (!this->ogreCamera)
@@ -343,4 +337,10 @@ void OgreCamera::SetVisibilityMask(uint32_t _mask)
 {
   BaseCamera::SetVisibilityMask(_mask);
   this->renderTexture->SetVisibilityMask(_mask);
+}
+
+//////////////////////////////////////////////////
+Ogre::Camera *OgreCamera::Camera() const
+{
+  return this->ogreCamera;
 }

@@ -153,7 +153,6 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  // Some geometries, like heightmaps, may not have an OgreObject
   Ogre::MovableObject *ogreObj = derived->OgreObject();
   if (!ogreObj)
   {

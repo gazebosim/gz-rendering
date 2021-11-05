@@ -611,6 +611,7 @@ void Ogre2GpuRays::CreateSampleTexture()
   //   R: u coordinate on the cubemap face
   //   G: v coordinate on the cubemap face
   //   B: cubemap face index
+  //   A: unused
   // this texture is passed to the 2nd pass fragment shader
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -630,7 +631,7 @@ void Ogre2GpuRays::CreateSampleTexture()
   this->dataPtr->cubeUVTexture->setResolution(
     this->dataPtr->w2nd, this->dataPtr->h2nd);
   this->dataPtr->cubeUVTexture->setNumMipmaps(1u);
-  this->dataPtr->cubeUVTexture->setPixelFormat(Ogre::PFG_RGB32_FLOAT);
+  this->dataPtr->cubeUVTexture->setPixelFormat(Ogre::PFG_RGBA32_FLOAT);
 
   const Ogre::uint32 rowAlignment = 1u;
   const size_t dataSize = Ogre::PixelFormatGpuUtils::getSizeBytes(
@@ -670,7 +671,8 @@ void Ogre2GpuRays::CreateSampleTexture()
       pDest[index++] = uv.Y();
       // face
       pDest[index++] = faceIdx;
-
+      // unused
+      pDest[index++] = 1.0;
       h += hStep;
     }
     v += vStep;
@@ -1052,7 +1054,7 @@ void Ogre2GpuRays::Setup1stPass()
       this->dataPtr->w1st, this->dataPtr->h1st);
     this->dataPtr->firstPassTextures[i]->setNumMipmaps(1u);
     this->dataPtr->firstPassTextures[i]->setPixelFormat(
-      Ogre::PFG_RGB32_FLOAT);
+      Ogre::PFG_RG32_FLOAT);
 
     this->dataPtr->firstPassTextures[i]->scheduleTransitionTo(
       Ogre::GpuResidency::Resident);
@@ -1116,7 +1118,7 @@ void Ogre2GpuRays::Setup2ndPass()
     this->dataPtr->w2nd, this->dataPtr->h2nd);
   this->dataPtr->secondPassTexture->setNumMipmaps(1u);
   this->dataPtr->secondPassTexture->setPixelFormat(
-    Ogre::PFG_RGB32_FLOAT);
+    Ogre::PFG_RGBA32_FLOAT);
 
   this->dataPtr->secondPassTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -1316,15 +1318,14 @@ void Ogre2GpuRays::PostRender()
   unsigned int width = this->dataPtr->w2nd;
   unsigned int height = this->dataPtr->h2nd;
 
-  int len = width * height * this->Channels();
-
-  PixelFormat format = PF_FLOAT32_RGB;
-  unsigned int channelCount = PixelUtil::ChannelCount(format);
+  PixelFormat format = PF_FLOAT32_RGBA;
+  unsigned int rawChannelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
+  int rawLen = width * height * rawChannelCount;
 
   if (!this->dataPtr->gpuRaysBuffer)
   {
-    this->dataPtr->gpuRaysBuffer = new float[len];
+    this->dataPtr->gpuRaysBuffer = new float[rawLen];
   }
 
   // blit data from gpu to cpu
@@ -1338,18 +1339,40 @@ void Ogre2GpuRays::PostRender()
   for (unsigned int i = 0; i < height; ++i)
   {
     unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
-    unsigned int rowIdx = i * width * channelCount;
+    unsigned int rowIdx = i * width * rawChannelCount;
     memcpy(&this->dataPtr->gpuRaysBuffer[rowIdx], &bufferTmp[rawDataRowIdx],
-        width * channelCount * bytesPerChannel);
+        width * rawChannelCount * bytesPerChannel);
   }
 
+  // Metal does not support RGB32_FLOAT so the internal texture format is
+  // RGBA32_FLOAT. For backward compatibility, output data is kept in RGB
+  // format instead of RGBA
+  int outputLen = width * height * this->Channels();
   if (!this->dataPtr->gpuRaysScan)
   {
-    this->dataPtr->gpuRaysScan = new float[len];
+    this->dataPtr->gpuRaysScan = new float[outputLen];
   }
 
-  memcpy(this->dataPtr->gpuRaysScan,
-    this->dataPtr->gpuRaysBuffer, len * sizeof(float));
+  // copy data from RGBA buffer to RGB buffer
+  for (unsigned int row = 0; row < height; ++row)
+  {
+    // the texture box step size could be larger than our image buffer step
+    // size
+    for (unsigned int column = 0; column < width; ++column)
+    {
+      unsigned int idx = (row * width * this->Channels()) +
+          column * this->Channels();
+      unsigned int rawIdx = (row * width * rawChannelCount) +
+          column * rawChannelCount;
+
+      this->dataPtr->gpuRaysScan[idx] =
+          this->dataPtr->gpuRaysBuffer[rawIdx];
+      this->dataPtr->gpuRaysScan[idx + 1] =
+          this->dataPtr->gpuRaysBuffer[rawIdx + 1];
+      this->dataPtr->gpuRaysScan[idx + 2] =
+          this->dataPtr->gpuRaysBuffer[rawIdx + 2];
+    }
+  }
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
       width, height, this->Channels(), "PF_FLOAT32_RGB");
@@ -1360,18 +1383,16 @@ void Ogre2GpuRays::PostRender()
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     if (this->dataPtr->gpuRaysBuffer[i*width*3 + j*3] < 20) {
-  //       std::cerr
-  //       << "["
-  //       << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3]
-  //       <<  " "
-  //       << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 1]
-  //       <<  " "
-  //       << this->dataPtr->gpuRaysBuffer[i*width*3 + j*3 + 2]
-  //       <<  "]\n";
-  //     }
+  //     std::cerr
+  //     << "["
+  //     << this->dataPtr->gpuRaysScan[i*width*3 + j*3]
+  //     <<  " "
+  //     << this->dataPtr->gpuRaysScan[i*width*3 + j*3 + 1]
+  //     <<  " "
+  //     << this->dataPtr->gpuRaysScan[i*width*3 + j*3 + 2]
+  //     <<  "]\n";
   //   }
-  //   // igndbg << std::endl;
+  //   std::cerr << std::endl;
   // }
 }
 

@@ -414,3 +414,9 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
     }
   }
 }
+
+//////////////////////////////////////////////////
+Ogre::Camera *Ogre2SegmentationCamera::OgreCamera() const
+{
+  return this->ogreCamera;
+}

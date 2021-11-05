@@ -31,6 +31,7 @@
 #include "ignition/rendering/base/BaseDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreObjectInterface.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
@@ -63,7 +64,8 @@ namespace ignition
     **/
     /// \brief Depth camera used to render depth data into an image buffer
     class IGNITION_RENDERING_OGRE_VISIBLE OgreDepthCamera :
-      public BaseDepthCamera<OgreSensor>
+      public virtual BaseDepthCamera<OgreSensor>,
+      public virtual OgreObjectInterface
     {
       /// \brief Constructor
       protected: OgreDepthCamera();
@@ -124,6 +126,9 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void Destroy() override;
+
+      // Documentation inherited.
+      public: virtual Ogre::Camera *Camera() const override;
 
       /// \brief Update a render target
       /// \param[in] _target Render target to update

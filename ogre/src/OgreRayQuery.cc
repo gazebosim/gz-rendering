@@ -22,8 +22,11 @@
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
+#include "ignition/rendering/ogre/OgreDepthCamera.hh"
+#include "ignition/rendering/ogre/OgreObjectInterface.hh"
 #include "ignition/rendering/ogre/OgreRayQuery.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreThermalCamera.hh"
 
 class ignition::rendering::OgreRayQueryPrivate
 {
@@ -51,9 +54,17 @@ void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
 {
   // convert to nomalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
-  OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(_camera);
-  Ogre::Ray ray =
-      camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
+
+  OgreObjectInterfacePtr ogreObjectInterface =
+      std::dynamic_pointer_cast<OgreObjectInterface>(_camera);
+  if (!ogreObjectInterface)
+  {
+    ignwarn << "Camera does not support ray query\n";
+    return;
+  }
+
+  Ogre::Ray ray = ogreObjectInterface->Camera()->getCameraToViewportRay(
+      screenPos.X(), screenPos.Y());
 
   this->origin = OgreConversions::Convert(ray.getOrigin());
   this->direction = OgreConversions::Convert(ray.getDirection());

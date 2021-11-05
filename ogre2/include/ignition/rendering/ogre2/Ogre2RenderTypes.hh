@@ -51,6 +51,7 @@ namespace ignition
     class Ogre2MeshFactory;
     class Ogre2Node;
     class Ogre2Object;
+    class Ogre2ObjectInterface;
     class Ogre2ParticleEmitter;
     class Ogre2PointLight;
     class Ogre2RayQuery;
@@ -101,6 +102,7 @@ namespace ignition
     typedef shared_ptr<Ogre2MeshFactory>          Ogre2MeshFactoryPtr;
     typedef shared_ptr<Ogre2Node>                 Ogre2NodePtr;
     typedef shared_ptr<Ogre2Object>               Ogre2ObjectPtr;
+    typedef shared_ptr<Ogre2ObjectInterface>      Ogre2ObjectInterfacePtr;
     typedef shared_ptr<Ogre2ParticleEmitter>      Ogre2ParticleEmitterPtr;
     typedef shared_ptr<Ogre2PointLight>           Ogre2PointLightPtr;
     typedef shared_ptr<Ogre2RayQuery>             Ogre2RayQueryPtr;

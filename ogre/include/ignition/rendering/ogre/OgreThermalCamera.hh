@@ -117,7 +117,6 @@ namespace ignition
       private: std::unique_ptr<OgreThermalCameraPrivate> dataPtr;
 
       private: friend class OgreScene;
-      private: friend class OgreRayQuery;
     };
     }
   }

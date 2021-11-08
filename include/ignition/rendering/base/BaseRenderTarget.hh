@@ -296,7 +296,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseRenderTexture<T>::MetalId(void */*_textureIdPtr*/) const
+    void BaseRenderTexture<T>::MetalId(void *) const
     {
     }
 

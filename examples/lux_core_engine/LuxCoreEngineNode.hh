@@ -3,66 +3,83 @@
 
 #include "ignition/rendering/base/BaseNode.hh"
 
-#include "LuxCoreEngineRenderTypes.hh"
 #include "LuxCoreEngineObject.hh"
+#include "LuxCoreEngineRenderTypes.hh"
 
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    class LuxCoreEngineNode :
-      public BaseNode<LuxCoreEngineObject>
-    {
-      protected: LuxCoreEngineNode();
+namespace ignition {
+namespace rendering {
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+class LuxCoreEngineNode : public BaseNode<LuxCoreEngineObject> {
+protected:
+  LuxCoreEngineNode();
 
-      public: virtual ~LuxCoreEngineNode();
+public:
+  virtual ~LuxCoreEngineNode();
 
-      public: virtual bool HasParent() const override;
+public:
+  virtual bool HasParent() const override;
 
-      public: virtual NodePtr Parent() const override;
+public:
+  virtual NodePtr Parent() const override;
 
-      public: virtual void PreRender() override;
+public:
+  virtual void PreRender() override;
 
-      public: virtual math::Vector3d LocalPosition() const override;
-      
-      public: virtual math::Vector3d LocalScale() const override;
+public:
+  virtual math::Vector3d LocalPosition() const override;
 
-      public: virtual bool InheritScale() const override;
+public:
+  virtual math::Vector3d LocalScale() const override;
 
-      public: virtual void SetInheritScale(bool _inherit) override;
+public:
+  virtual bool InheritScale() const override;
 
-      protected: virtual void SetLocalScaleImpl(
-                       const math::Vector3d &_scale) override;
+public:
+  virtual void SetInheritScale(bool _inherit) override;
 
-      protected: virtual math::Pose3d RawLocalPose() const override;
+protected:
+  virtual void SetLocalScaleImpl(const math::Vector3d &_scale) override;
 
-      protected: virtual void SetRawLocalPose(const math::Pose3d &_pose) override;
+protected:
+  virtual math::Pose3d RawLocalPose() const override;
 
-      protected: virtual void SetParent(LuxCoreEngineNodePtr _parent);
+protected:
+  virtual void SetRawLocalPose(const math::Pose3d &_pose) override;
 
-      protected: virtual void Init();
+protected:
+  virtual void SetParent(LuxCoreEngineNodePtr _parent);
 
-      protected: virtual NodeStorePtr Children() const override;
+protected:
+  virtual void Init();
 
-      protected: virtual bool AttachChild(NodePtr _child) override;
+protected:
+  virtual NodeStorePtr Children() const override;
 
-      protected: virtual bool DetachChild(NodePtr _child) override;
+protected:
+  virtual bool AttachChild(NodePtr _child) override;
 
-      protected: LuxCoreEngineNodePtr parent;
+protected:
+  virtual bool DetachChild(NodePtr _child) override;
 
-      protected: math::Pose3d pose;
+protected:
+  LuxCoreEngineNodePtr parent;
 
-      protected: bool poseDirty;
+protected:
+  math::Pose3d pose;
 
-      // protected: LuxCoreStorePtr children;
+protected:
+  bool poseDirty;
 
-      protected: math::Vector3d scale = math::Vector3d::One;
+  // protected: LuxCoreStorePtr children;
 
-      protected: bool inheritScale = true;
-    };
-    }
-  }
-}
+protected:
+  math::Vector3d scale = math::Vector3d::One;
+
+protected:
+  bool inheritScale = true;
+};
+} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace rendering
+} // namespace ignition
 
 #endif

@@ -6,8 +6,5 @@ using namespace rendering;
 LuxCoreEngineObject::LuxCoreEngineObject() {}
 
 LuxCoreEngineObject::~LuxCoreEngineObject() {}
-  
-ScenePtr LuxCoreEngineObject::Scene() const
-{
-  return nullptr;
-}
+
+ScenePtr LuxCoreEngineObject::Scene() const { return nullptr; }

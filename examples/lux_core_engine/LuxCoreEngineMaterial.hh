@@ -3,41 +3,47 @@
 
 #include "ignition/rendering/base/BaseMaterial.hh"
 
-#include "LuxCoreEngineRenderTypes.hh"
 #include "LuxCoreEngineObject.hh"
+#include "LuxCoreEngineRenderTypes.hh"
 
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    class LuxCoreEngineMaterial :
-      public BaseMaterial<LuxCoreEngineObject>
-    {
-      protected: LuxCoreEngineMaterial();
+namespace ignition {
+namespace rendering {
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+class LuxCoreEngineMaterial : public BaseMaterial<LuxCoreEngineObject> {
+protected:
+  LuxCoreEngineMaterial();
 
-      public: virtual ~LuxCoreEngineMaterial();
+public:
+  virtual ~LuxCoreEngineMaterial();
 
-      public: void UpdateLuxSDL();
+public:
+  void UpdateLuxSDL();
 
-      public: void SetDiffuse(const double _r, const double _g,
-                  const double _b, const double _a = 1.0);
+public:
+  void SetDiffuse(const double _r, const double _g, const double _b,
+                  const double _a = 1.0);
 
-      public: void SetEmissive(const double _r, const double _g,
-                  const double _b, const double _a = 1.0);
+public:
+  void SetEmissive(const double _r, const double _g, const double _b,
+                   const double _a = 1.0);
 
-      public: void SetShaderType(enum ShaderType _type);
+public:
+  void SetShaderType(enum ShaderType _type);
 
-      protected: float diffuseR, diffuseG, diffuseB;
+protected:
+  float diffuseR, diffuseG, diffuseB;
 
-      protected: float emissiveR, emissiveG, emissiveB;
+protected:
+  float emissiveR, emissiveG, emissiveB;
 
-      protected: std::string materialType;
+protected:
+  std::string materialType;
 
-      private: friend class LuxCoreEngineScene;
-    };
-    }
-  }
-}
+private:
+  friend class LuxCoreEngineScene;
+};
+} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace rendering
+} // namespace ignition
 
 #endif

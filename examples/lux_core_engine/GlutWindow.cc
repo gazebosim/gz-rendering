@@ -16,17 +16,17 @@
  */
 
 #if __APPLE__
-  #include <OpenGL/gl.h>
-  #include <OpenGL/OpenGL.h>
-  #include <GLUT/glut.h>
+#include <GLUT/glut.h>
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl.h>
 #else
-  #include <GL/glew.h>
-  #include <GL/gl.h>
-  #include <GL/glut.h>
+#include <GL/gl.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
 #endif
 
 #if !defined(__APPLE__) && !defined(_WIN32)
-  #include <GL/glx.h>
+#include <GL/glx.h>
 #endif
 
 #include <mutex>
@@ -39,7 +39,7 @@
 #include "GlutWindow.hh"
 
 #define KEY_ESC 27
-#define KEY_TAB  9
+#define KEY_TAB 9
 
 //////////////////////////////////////////////////
 unsigned int imgw = 0;
@@ -54,16 +54,16 @@ ir::ImagePtr g_image;
 bool g_initContext = false;
 
 #if __APPLE__
-  CGLContextObj g_context;
-  CGLContextObj g_glutContext;
+CGLContextObj g_context;
+CGLContextObj g_glutContext;
 #elif _WIN32
 #else
-  GLXContext g_context;
-  Display *g_display;
-  GLXDrawable g_drawable;
-  GLXContext g_glutContext;
-  Display *g_glutDisplay;
-  GLXDrawable g_glutDrawable;
+GLXContext g_context;
+Display *g_display;
+GLXDrawable g_drawable;
+GLXContext g_glutContext;
+Display *g_glutDisplay;
+GLXDrawable g_glutDrawable;
 #endif
 
 double g_offset = 1;
@@ -77,8 +77,7 @@ void updateCameras()
   double angle = g_offset / 2 * M_PI;
   double x = sin(angle) * 12.0;
   double y = cos(angle) * 12.0;
-  for (ir::CameraPtr camera : g_cameras)
-  {
+  for (ir::CameraPtr camera : g_cameras) {
     camera->SetLocalPosition(x, y, 1.0);
   }
 
@@ -87,14 +86,12 @@ void updateCameras()
 //! [update camera]
 
 //////////////////////////////////////////////////
-void displayCB()
-{
+void displayCB() {
 #if __APPLE__
   CGLSetCurrentContext(g_context);
 #elif _WIN32
 #else
-  if (g_display)
-  {
+  if (g_display) {
     glXMakeCurrent(g_display, g_drawable, g_context);
   }
 #endif
@@ -118,34 +115,25 @@ void displayCB()
 
   glutSwapBuffers();
 
-  if (isRotating)
-  {
+  if (isRotating) {
     updateCameras();
   }
 }
 
 //////////////////////////////////////////////////
-void idleCB()
-{
-  glutPostRedisplay();
-}
+void idleCB() { glutPostRedisplay(); }
 
 //////////////////////////////////////////////////
-void keyboardCB(unsigned char _key, int, int)
-{
-  if (_key == KEY_ESC || _key == 'q' || _key == 'Q')
-  {
+void keyboardCB(unsigned char _key, int, int) {
+  if (_key == KEY_ESC || _key == 'q' || _key == 'Q') {
     exit(0);
-  }
-  else if (_key == KEY_TAB)
-  {
+  } else if (_key == KEY_TAB) {
     isRotating = !isRotating;
   }
 }
 
 //////////////////////////////////////////////////
-void initCamera(ir::CameraPtr _camera)
-{
+void initCamera(ir::CameraPtr _camera) {
   g_camera = _camera;
   imgw = g_camera->ImageWidth();
   imgh = g_camera->ImageHeight();
@@ -156,8 +144,7 @@ void initCamera(ir::CameraPtr _camera)
 }
 
 //////////////////////////////////////////////////
-void initContext()
-{
+void initContext() {
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
@@ -168,8 +155,7 @@ void initContext()
 }
 
 //////////////////////////////////////////////////
-void printUsage()
-{
+void printUsage() {
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Switch render engines  " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
@@ -177,10 +163,8 @@ void printUsage()
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr> _cameras)
-{
-  if (_cameras.empty())
-  {
+void run(std::vector<ir::CameraPtr> _cameras) {
+  if (_cameras.empty()) {
     ignerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }

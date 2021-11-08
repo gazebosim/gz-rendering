@@ -5,6 +5,4 @@
 using namespace ignition;
 using namespace rendering;
 
-LuxCoreEngineGeometry::LuxCoreEngineGeometry()
-{
-}
+LuxCoreEngineGeometry::LuxCoreEngineGeometry() {}

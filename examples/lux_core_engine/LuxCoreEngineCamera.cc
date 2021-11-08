@@ -19,6 +19,9 @@ void LuxCoreEngineCamera::Render()
   { 
     luxrays::Properties props;
     props.Set(luxrays::Property("renderengine.type")("RTPATHOCL"));
+    props.Set(luxrays::Property("rtpath.resolutionreduction.preview")("4"));
+    props.Set(luxrays::Property("rtpath.resolutionreduction.preview.step")("8"));
+    props.Set(luxrays::Property("rtpath.resolutionreduction")("4"));
     props.Set(luxrays::Property("sampler.type")("TILEPATHSAMPLER"));
     props.Set(luxrays::Property("film.width")(this->ImageWidth())); 
     props.Set(luxrays::Property("film.height")(this->ImageHeight())); 

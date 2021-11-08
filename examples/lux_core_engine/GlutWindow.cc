@@ -67,6 +67,7 @@ bool g_initContext = false;
 #endif
 
 double g_offset = 1;
+bool isRotating = true;
 
 //////////////////////////////////////////////////
 //! [update camera]
@@ -74,14 +75,14 @@ void updateCameras()
 
 {
   double angle = g_offset / 2 * M_PI;
-  double x = sin(angle) * 5.0 + 3;
-  double y = cos(angle) * 5.0;
+  double x = sin(angle) * 12.0;
+  double y = cos(angle) * 12.0;
   for (ir::CameraPtr camera : g_cameras)
   {
-    camera->SetLocalPosition(x, y, 5.0);
+    camera->SetLocalPosition(x, y, 1.0);
   }
 
-  g_offset += 0.05;
+  g_offset += 0.005;
 }
 //! [update camera]
 
@@ -116,7 +117,11 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-  updateCameras();
+
+  if (isRotating)
+  {
+    updateCameras();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -134,7 +139,7 @@ void keyboardCB(unsigned char _key, int, int)
   }
   else if (_key == KEY_TAB)
   {
-    g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
+    isRotating = !isRotating;
   }
 }
 

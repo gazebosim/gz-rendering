@@ -16,11 +16,11 @@ namespace ignition
     {
       public: LuxCoreEngineGeometry();
 
-      public: void SetLocalPosition(double _x, double _y, double _z);
+      public: virtual void SetLocalPosition(double _x, double _y, double _z) = 0;
 
-      public: void SetLocalScale(double _x, double _y, double _z);
+      public: virtual void SetLocalScale(double _x, double _y, double _z) = 0;
 
-      private: float transformationMatrix[16];
+      public: virtual void SetLocalRotation(double _r, double _p, double _y) = 0;
     };
     }
   }

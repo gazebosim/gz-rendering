@@ -152,11 +152,23 @@ MeshPtr LuxCoreEngineScene::CreateMeshImpl(unsigned int _id,
   if (nullptr == mesh)
     return nullptr;
 
-  sceneLux->Parse(
-	    luxrays::Property("scene.objects." + _name + ".shape")(_name + "-mesh") <<
-	    luxrays::Property("scene.objects." + _name  + ".material")("Default/White"));
+  if (mesh->SubMeshes()->Size() > 0)
+  {
+    for (unsigned int i = 0; i < mesh->SubMeshes()->Size(); i++)
+    {
+      sceneLux->Parse(
+	        luxrays::Property("scene.objects." + mesh->SubMeshes()->GetByIndex(i)->Name() + ".shape")(mesh->SubMeshes()->GetByIndex(i)->Name() + "-submesh") <<
+	        luxrays::Property("scene.objects." + mesh->SubMeshes()->GetByIndex(i)->Name() + ".material")("Default/White"));
+    }
+  }
+  else
+  {
+    sceneLux->Parse(
+	      luxrays::Property("scene.objects." + _name + ".shape")(_name + "-mesh") <<
+	      luxrays::Property("scene.objects." + _name  + ".material")("Default/White"));
+  }
 
-  bool result = this->InitObject(mesh, _id, _name);
+  bool result = this->InitObject(mesh, _id, mesh->Name());
   return (result) ? mesh : nullptr;
 }
 

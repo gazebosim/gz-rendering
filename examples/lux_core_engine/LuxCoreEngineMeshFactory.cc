@@ -2,6 +2,9 @@
 
 #include "LuxCoreEngineScene.hh"
 
+#include <ignition/common/Mesh.hh>
+#include <ignition/common/SubMesh.hh>
+
 using namespace ignition;
 using namespace rendering;
 
@@ -10,19 +13,27 @@ LuxCoreEngineMeshFactory::LuxCoreEngineMeshFactory(LuxCoreEngineScenePtr _scene)
 
 LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc, const std::string &_name) 
 {
-  LuxCoreEngineMeshPtr mesh(new LuxCoreEngineMesh());
-  
+  LuxCoreEngineMeshPtr mesh(new LuxCoreEngineMesh);
+
+  std::string meshName = _name;
+  meshName.erase(std::remove(meshName.begin(), meshName.end(), '.'), meshName.end());
+  mesh->SetName(meshName);
+
+  struct Vertex {
+    float x, y, z;
+
+    Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
+  };
+
+  struct VertexTriangle {
+    unsigned int v1, v2, v3;
+
+    VertexTriangle(unsigned int v1, unsigned int v2, unsigned int v3) : v1(v1), v2(v2), v3(v3) {}
+  };
+
   if (_desc.meshName == "unit_box")
   {
-    std::string meshName = _name + "-mesh";
-
-    struct Vertex {
-      float x, y, z;
-
-      Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
-    };
-
-	  Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(24);
+    Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(24);
 
     float minX = -0.5f, minY = -0.5f, minZ = -0.5f;
     float maxX = 0.5f, maxY = 0.5f, maxZ = 0.5f;
@@ -58,12 +69,6 @@ LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_des
 	  p[22] = Vertex(maxX, maxY, maxZ);
 	  p[23] = Vertex(maxX, maxY, minZ);
 
-    struct VertexTriangle {
-      unsigned int v1, v2, v3;
-
-      VertexTriangle(unsigned int v1, unsigned int v2, unsigned int v3) : v1(v1), v2(v2), v3(v3) {}
-    };
-
 	  VertexTriangle *vi = (VertexTriangle *)luxcore::Scene::AllocTrianglesBuffer(12);
 	  
     vi[0] = VertexTriangle(0, 1, 2);
@@ -84,19 +89,10 @@ LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_des
 	  vi[10] = VertexTriangle(20, 21, 22);
 	  vi[11] = VertexTriangle(22, 23, 20);
 
-    scene->SceneLux()->DefineMesh(meshName, 24, 12, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
+    scene->SceneLux()->DefineMesh(meshName + "-mesh", 24, 12, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
   }
-
-  if (_desc.meshName == "unit_plane")
+  else if (_desc.meshName == "unit_plane")
   {
-    std::string meshName = _name + "-mesh";
-
-    struct Vertex {
-      float x, y, z;
-
-      Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
-    };
-
 	  Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(4);
 
     float minX = -0.5f, minY = -0.5f, z = 0.0f;
@@ -107,18 +103,45 @@ LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_des
 	  p[2] = Vertex(maxX, maxY, z);
 	  p[3] = Vertex(maxX, minY, z);
 
-    struct VertexTriangle {
-      unsigned int v1, v2, v3;
-
-      VertexTriangle(unsigned int v1, unsigned int v2, unsigned int v3) : v1(v1), v2(v2), v3(v3) {}
-    };
-
 	  VertexTriangle *vi = (VertexTriangle *)luxcore::Scene::AllocTrianglesBuffer(2);
 	  
     vi[0] = VertexTriangle(0, 1, 2);
 	  vi[1] = VertexTriangle(2, 3, 0);
 
-    scene->SceneLux()->DefineMesh(meshName, 4, 2, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
+    scene->SceneLux()->DefineMesh(meshName + "-mesh", 4, 2, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
+  }
+  else
+  {
+    for (unsigned int i = 0; i < _desc.mesh->SubMeshCount(); i++)
+    {
+      LuxCoreEngineSubMeshPtr submesh(new LuxCoreEngineSubMesh);
+
+      auto submeshCommon = _desc.mesh->SubMeshByIndex(i).lock();
+      std::string submeshName = _name + "-mesh" + "-" + submeshCommon->Name();
+      submeshName.erase(std::remove(submeshName.begin(), submeshName.end(), '.'), submeshName.end());
+
+      submesh->SetName(submeshName);
+
+	    Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(
+          submeshCommon->VertexCount());
+
+      for (unsigned int x = 0; x < submeshCommon->VertexCount(); x++)
+      {
+        p[x] = Vertex(submeshCommon->Vertex(x)[0],
+            submeshCommon->Vertex(x)[1], submeshCommon->Vertex(x)[2]);
+      }
+
+      unsigned int *vi = (unsigned int *)luxcore::Scene::AllocTrianglesBuffer(submeshCommon->IndexCount() / 3);
+
+      for (unsigned int x = 0; x < submeshCommon->IndexCount(); x++)
+      {
+        vi[x] = submeshCommon->Index(x);
+      }
+
+      scene->SceneLux()->DefineMesh(submeshName + "-submesh", submeshCommon->VertexCount(), submeshCommon->IndexCount() / 3, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
+    
+      mesh->AddSubMesh(submesh);
+    }
   }
 
   return mesh;

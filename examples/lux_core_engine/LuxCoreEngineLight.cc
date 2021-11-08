@@ -57,7 +57,7 @@ void LuxCoreEngineDirectionalLight::SetDirection(double _x, double _y, double _z
 {
   this->directionX = _x;
   this->directionY = _y;
-  this->directionZ = _z;
+  this->directionZ = -_z;
 
   this->UpdateLuxSDL();
 }
@@ -92,6 +92,6 @@ void LuxCoreEnginePointLight::UpdateLuxSDL()
 	    luxrays::Property("scene.lights." + Name() + ".type")(this->lightType) <<
 	    luxrays::Property("scene.lights." + Name() + ".gain")(this->gainR, this->gainG, this->gainB) <<
       luxrays::Property("scene.lights." + Name() + ".position")(this->localPositionX, this->localPositionY, this->localPositionZ) <<
-	    luxrays::Property("scene.lights." + Name() + ".power")(10) <<
-	    luxrays::Property("scene.lights." + Name() + ".efficency")(15));
+	    luxrays::Property("scene.lights." + Name() + ".power")(20) <<
+	    luxrays::Property("scene.lights." + Name() + ".efficency")(20));
 }

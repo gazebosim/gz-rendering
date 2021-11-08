@@ -39,6 +39,7 @@ namespace ignition
     class LuxCoreEngineVisual;
     class LuxCoreEngineGeometry;
     class LuxCoreEngineMesh;
+    class LuxCoreEngineSubMesh;
     class LuxCoreEngineMeshFactory;
 
     typedef shared_ptr<LuxCoreEngineCamera>               LuxCoreEngineCameraPtr;
@@ -63,6 +64,9 @@ namespace ignition
 
     typedef shared_ptr<LuxCoreEngineVisual>               LuxCoreEngineVisualPtr;
     typedef shared_ptr<LuxCoreEngineMesh>                 LuxCoreEngineMeshPtr;
+    typedef shared_ptr<LuxCoreEngineSubMesh>              LuxCoreEngineSubMeshPtr;
+    typedef BaseSubMeshStore<LuxCoreEngineSubMesh>        LuxCoreEngineSubMeshStore;
+    typedef shared_ptr<LuxCoreEngineSubMeshStore>         LuxCoreEngineSubMeshStorePtr;
     typedef shared_ptr<LuxCoreEngineGeometry>             LuxCoreEngineGeometryPtr;
     typedef shared_ptr<LuxCoreEngineMeshFactory>          LuxCoreEngineMeshFactoryPtr;
     typedef BaseVisualStore<LuxCoreEngineVisual>          LuxCoreEngineVisualStore;

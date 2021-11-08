@@ -22,6 +22,14 @@ void LuxCoreEngineVisual::SetLocalScale(double _x, double _y, double _z)
   }
 }
 
+void LuxCoreEngineVisual::SetLocalRotation(double _r, double _p, double _y)
+{
+  for (auto iter = this->geometries->Begin(); iter != this->geometries->End(); ++iter)
+  {
+    iter->second->SetLocalRotation(_r, _p, _y);
+  }
+}
+
 void LuxCoreEngineVisual::SetMaterial(MaterialPtr _material, bool _unique)
 {
   for (auto iter = this->geometries->Begin(); iter != this->geometries->End(); ++iter)
@@ -35,7 +43,10 @@ GeometryStorePtr LuxCoreEngineVisual::Geometries() const
   return this->geometries;
 }
 
-bool LuxCoreEngineVisual::AttachGeometry(GeometryPtr _geometry) {}
+bool LuxCoreEngineVisual::AttachGeometry(GeometryPtr _geometry) 
+{
+  return true;
+}
 
 bool LuxCoreEngineVisual::DetachGeometry(GeometryPtr _geometry) {}
 

@@ -38,151 +38,108 @@ using namespace rendering;
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
 {
-  // initialize _scene
-  _scene->SetAmbientLight(0.3, 0.3, 0.3);
-  // VisualPtr root = _scene->RootVisual();
+  // DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
+  // light0->SetDirection(-0.5, 0.5, -1);
+  // light0->SetDiffuseColor(0.00001, 0.00001, 0.00001);
 
-  // create directional light
-  DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
-  light0->SetDirection(-0.5, 0.5, -1);
-  light0->SetDiffuseColor(0.5, 0.5, 0.5);
-  light0->SetSpecularColor(0.5, 0.5, 0.5);
-  // root->AddChild(light0);
+  // PointLightPtr light2 = _scene->CreatePointLight();
+  // light2->SetDiffuseColor(0.5, 0.5, 0.5);
+  // light2->SetLocalPosition(3, 5, 5);
 
-  // // create point light
-  // PointLightPtr light1 = _scene->CreatePointLight();
-  // light1->SetDiffuseColor(0.5, 0.5, 0.5);
-  // light1->SetSpecularColor(0.5, 0.5, 0.5);
-  // light1->SetLocalPosition(5, -5, 10);
-  // root->AddChild(light1);
+  // MaterialPtr red = _scene->CreateMaterial();
+  // red->SetDiffuse(1.0, 0.0, 0.0);
 
-  // create point light
-  PointLightPtr light2 = _scene->CreatePointLight();
-  light2->SetDiffuseColor(0.5, 0.5, 0.5);
-  light2->SetSpecularColor(0.5, 0.5, 0.5);
-  light2->SetLocalPosition(3, 5, 5);
-  // root->AddChild(light2);
+  // VisualPtr leftWall = _scene->CreateVisual();
+  // leftWall->AddGeometry(_scene->CreatePlane());
+  // leftWall->SetLocalScale(1, 5, 5);
+  // leftWall->SetLocalRotation(0, IGN_PI / 2, 0);
+  // leftWall->SetLocalPosition(0, 0, 2.5);
+  // leftWall->SetMaterial(red);
+  // 
+  // MaterialPtr green = _scene->CreateMaterial();
+  // green->SetDiffuse(0.0, 1.0, 0.0);
+  // 
+  // VisualPtr rightWall = _scene->CreateVisual();
+  // rightWall->AddGeometry(_scene->CreatePlane());
+  // rightWall->SetLocalScale(1, 5, 5);
+  // rightWall->SetLocalRotation(0, IGN_PI / 2, 0);
+  // rightWall->SetLocalPosition(0, 0, -2.5);
+  // rightWall->SetMaterial(green);
 
-  // create green material
-  MaterialPtr green = _scene->CreateMaterial();
-  green->SetAmbient(0.0, 0.5, 0.0);
-  green->SetDiffuse(0.0, 0.7, 0.0);
-  green->SetSpecular(0.5, 0.5, 0.5);
-  green->SetShininess(50);
-  green->SetReflectivity(0);
+  // MaterialPtr white = _scene->CreateMaterial();
+  // white->SetDiffuse(1.0, 1.0, 1.0);
+  // 
+  // VisualPtr backWall = _scene->CreateVisual();
+  // backWall->AddGeometry(_scene->CreatePlane());
+  // backWall->SetLocalScale(5, 1, 5);
+  // backWall->SetLocalRotation(IGN_PI / 2, 0, 0);
+  // backWall->SetLocalPosition(0, 0, -2.5);
+  // backWall->SetMaterial(white);
 
-  // create center visual
-  // VisualPtr center = _scene->CreateVisual();
-  // center->AddGeometry(_scene->CreateSphere());
-  // center->SetLocalPosition(3, 0, 0);
-  // center->SetLocalScale(0.1, 0.1, 0.1);
-  // center->SetMaterial(green);
-  // root->AddChild(center);
+  // VisualPtr floor = _scene->CreateVisual();
+  // floor->AddGeometry(_scene->CreatePlane());
+  // floor->SetLocalScale(5, 5, 1);
+  // floor->SetLocalRotation(0, 0, 0);
+  // floor->SetLocalPosition(0, 0, -2.5);
+  // floor->SetMaterial(white);
 
-//! [red material]
-  // create red material
-  MaterialPtr red = _scene->CreateMaterial();
-  red->SetAmbient(0.5, 0.0, 0.0);
-  red->SetDiffuse(1.0, 0.0, 0.0);
-  red->SetSpecular(0.5, 0.5, 0.5);
-  red->SetShininess(50);
-  red->SetReflectivity(0);
-  red->SetRenderOrder(3);
-//! [red material]
+  // VisualPtr ceiling = _scene->CreateVisual();
+  // ceiling->AddGeometry(_scene->CreatePlane());
+  // ceiling->SetLocalScale(5, 5, 1);
+  // ceiling->SetLocalRotation(0, 0, 0);
+  // ceiling->SetLocalPosition(0, 0, 2.5);
+  // ceiling->SetMaterial(white);
 
-  // create sphere visual
-  // VisualPtr sphere = _scene->CreateVisual();
-  // sphere->AddGeometry(_scene->CreateSphere());
-  // sphere->SetOrigin(0.0, -0.5, 0.0);
-  // sphere->SetLocalPosition(3, 0, 0);
-  // sphere->SetLocalRotation(0, 0, 0);
-  // sphere->SetLocalScale(1, 1, 1);
-  // sphere->SetMaterial(red);
-  // root->AddChild(sphere);
+  // MaterialPtr lightMaterial = _scene->CreateMaterial();
+  // lightMaterial->SetEmissive(1.0, 1.0, 1.0);
+  // lightMaterial->SetDiffuse(1.0, 1.0, 1.0);
 
-  // create blue material
-  MaterialPtr blue = _scene->CreateMaterial();
-  blue->SetAmbient(0.0, 0.0, 0.3);
-  blue->SetDiffuse(0.0, 0.0, 0.8);
-  blue->SetSpecular(0.5, 0.5, 0.5);
-  blue->SetShininess(50);
-  blue->SetReflectivity(0);
+  // VisualPtr ceilingLight = _scene->CreateVisual();
+  // ceiling->AddGeometry(_scene->CreatePlane());
+  // ceiling->SetLocalScale(2.5, 2.5, 1);
+  // ceiling->SetLocalRotation(0, 0, 0);
+  // ceiling->SetLocalPosition(0, 0, 2.5);
+  // ceiling->SetMaterial(lightMaterial);
 
-  // create box visual
-  VisualPtr box = _scene->CreateVisual();
-  box->AddGeometry(_scene->CreateBox());
-  box->SetOrigin(0.0, 0.5, 0.0);
-  box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
-  box->SetLocalScale(1, 2.5, 1);
-  box->SetMaterial(blue);
-  // root->AddChild(box);
+  MaterialPtr boxMaterial1 = _scene->CreateMaterial();
+  boxMaterial1->SetDiffuse(1.0, 1.0, 1.0);
 
-  // create ellipsoid visual
-  // VisualPtr ellipsoidVisual = _scene->CreateVisual();
-  // auto ellipsoid = _scene->CreateSphere();
-  // ellipsoidVisual->SetLocalScale(1.2, 0.7, 0.5);
-  // ellipsoidVisual->AddGeometry(ellipsoid);
-  // ellipsoidVisual->SetLocalPosition(3, -1, 0);
-  // ellipsoidVisual->SetMaterial(green);
-  // root->AddChild(ellipsoidVisual);
+  // MaterialPtr boxMaterial2 = _scene->CreateMaterial();
+  // boxMaterial2->SetDiffuse(1.0, 1.0, 1.0);
 
-//! [white material]
-  // create white material
-  MaterialPtr white = _scene->CreateMaterial();
-  white->SetAmbient(0.5, 0.5, 0.5);
-  white->SetDiffuse(0.8, 0.8, 0.8);
-  white->SetReceiveShadows(true);
-  white->SetReflectivity(0);
-  white->SetRenderOrder(0);
-//! [white material]
+  VisualPtr box1 = _scene->CreateVisual();
+  box1->AddGeometry(_scene->CreateBox());
+  box1->SetLocalPosition(0, -0.85, -1.25);
+  box1->SetLocalRotation(0, 0, -IGN_PI / 4);
+  box1->SetLocalScale(1.5, 1.5, 1.5);
+  box1->SetMaterial(boxMaterial1);
 
-  // VisualPtr capsuleVisual = _scene->CreateVisual();
-  // CapsulePtr capsule = _scene->CreateCapsule();
-  // capsule->SetLength(0.2);
-  // capsule->SetRadius(0.2);
-  // capsuleVisual->AddGeometry(capsule);
-  // capsuleVisual->SetOrigin(0.0, 0.0, 0.0);
-  // capsuleVisual->SetLocalPosition(4, 2, 0);
-  // capsuleVisual->SetLocalScale(1, 1, 1);
-  // capsuleVisual->SetMaterial(red);
-  // root->AddChild(capsuleVisual);
-
-  // create plane visual
-  VisualPtr plane = _scene->CreateVisual();
-  plane->AddGeometry(_scene->CreatePlane());
-  plane->SetLocalScale(5, 8, 1);
-  plane->SetLocalPosition(3, 0, -0.5);
-  plane->SetMaterial(white);
-  // root->AddChild(plane);
-
-  // create plane visual
-  // VisualPtr plane2 = _scene->CreateVisual();
-  // plane2->AddGeometry(_scene->CreatePlane());
-  // plane2->SetLocalScale(5, 8, 1);
-  // plane2->SetLocalPosition(4, 0.5, -0.5);
-  // plane2->Scale(0.1, 0.1, 1);
-  // plane2->SetMaterial(red);
-  // root->AddChild(plane2);
-
-  // create axis visual
-  // VisualPtr axis = _scene->CreateAxisVisual();
-  // axis->SetLocalPosition(4.0, 0.5, -0.4);
-  // root->AddChild(axis);
-
-  // create camera
+  // VisualPtr box2 = _scene->CreateVisual();
+  // box2->AddGeometry(_scene->CreateBox());
+  // box2->SetLocalPosition(0.5, 0.5, -0.5);
+  // box2->SetLocalRotation(0, 0, -IGN_PI / 10);
+  // box2->SetLocalScale(1.5, 1.5, 3.0);
+  // box2->SetMaterial(boxMaterial2);
+ 
+  VisualPtr mesh = _scene->CreateVisual();
+  MeshDescriptor descriptor;
+  descriptor.meshName = "media/duck.dae";
+  common::MeshManager *meshManager = common::MeshManager::Instance();
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+  mesh->AddGeometry(meshGeom);
+  mesh->SetLocalPosition(3, 0, 0);
+  mesh->SetLocalRotation(1.5708, 0, 2.0);
+ 
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
-  camera->SetImageWidth(800);
-  camera->SetImageHeight(600);
-  camera->SetAntiAliasing(2);
+  camera->SetImageWidth(400);
+  camera->SetImageHeight(300);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
-  // root->AddChild(camera);
 
-  // track target
-  camera->SetTrackTarget(box);
+  camera->SetTrackTarget(mesh);
 }
 
 //////////////////////////////////////////////////

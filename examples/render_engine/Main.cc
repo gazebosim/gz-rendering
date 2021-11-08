@@ -16,12 +16,12 @@
  */
 
 #if defined(__APPLE__)
-  #include <OpenGL/gl.h>
-  #include <GLUT/glut.h>
+#include <GLUT/glut.h>
+#include <OpenGL/gl.h>
 #elif not defined(_WIN32)
-  #include <GL/glew.h>
-  #include <GL/gl.h>
-  #include <GL/glut.h>
+#include <GL/gl.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
 #endif
 
 #include <iostream>
@@ -36,11 +36,11 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene)
-{
+void buildScene(ScenePtr _scene) {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
-  // VisualPtr root = _scene->RootVisual(); No idea how to do this abstraction in luxcore
+  // VisualPtr root = _scene->RootVisual(); No idea how to do this abstraction
+  // in luxcore
 
   // create directional light
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
@@ -64,7 +64,6 @@ void buildScene(ScenePtr _scene)
   // green->SetShininess(50);
   // green->SetReflectivity(0);
 
-
   // create center visual
   // VisualPtr cylinder = _scene->CreateVisual();
   // cylinder->AddGeometry(_scene->CreateCylinder());
@@ -74,7 +73,7 @@ void buildScene(ScenePtr _scene)
   // cylinder->SetMaterial(green);
   // root->AddChild(cylinder);
 
-//! [red material]
+  //! [red material]
   // create red material
   // MaterialPtr red = _scene->CreateMaterial();
   // red->SetAmbient(0.5, 0.0, 0.0);
@@ -83,9 +82,9 @@ void buildScene(ScenePtr _scene)
   // red->SetShininess(50);
   // red->SetReflectivity(0);
   // red->SetRenderOrder(3);
-//! [red material]
+  //! [red material]
 
-// create blue material
+  // create blue material
   // MaterialPtr blue = _scene->CreateMaterial();
   // blue->SetAmbient(0.0, 0.0, 0.3);
   // blue->SetDiffuse(0.0, 0.0, 0.8);
@@ -103,8 +102,6 @@ void buildScene(ScenePtr _scene)
   // sphere->SetMaterial(blue);
   // root->AddChild(sphere);
 
-  
-
   // create box visual
   // VisualPtr box = _scene->CreateVisual();
   // box->AddGeometry(_scene->CreateBox());
@@ -114,7 +111,7 @@ void buildScene(ScenePtr _scene)
   // box->SetMaterial(red);
   // root->AddChild(box);
 
-//! [white material]
+  //! [white material]
   // create white material
   // MaterialPtr white = _scene->CreateMaterial();
   // white->SetAmbient(0.5, 0.5, 0.5);
@@ -122,7 +119,7 @@ void buildScene(ScenePtr _scene)
   // white->SetReceiveShadows(true);
   // white->SetReflectivity(0);
   // white->SetRenderOrder(0);
-//! [white material]
+  //! [white material]
 
   // create plane visual
   // VisualPtr plane = _scene->CreateVisual();
@@ -148,14 +145,11 @@ void buildScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName)
-{
+CameraPtr createCamera(const std::string &_engineName) {
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName);
-  if (!engine)
-  {
-    std::cout << "Engine '" << _engineName
-              << "' is not supported" << std::endl;
+  if (!engine) {
+    std::cout << "Engine '" << _engineName << "' is not supported" << std::endl;
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
@@ -167,15 +161,13 @@ CameraPtr createCamera(const std::string &_engineName)
 }
 
 //////////////////////////////////////////////////
-int main(int _argc, char** _argv)
-{
+int main(int _argc, char **_argv) {
   glutInit(&_argc, _argv);
 
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
   std::string ogreEngineName("ogre");
-  if (_argc > 1)
-  {
+  if (_argc > 1) {
     ogreEngineName = _argv[1];
   }
 
@@ -186,18 +178,13 @@ int main(int _argc, char** _argv)
   // engineNames.push_back(ogreEngineName);
   engineNames.push_back("CustomRenderEngine");
 
-  for (auto engineName : engineNames)
-  {
-    try
-    {
+  for (auto engineName : engineNames) {
+    try {
       CameraPtr camera = createCamera(engineName);
-      if (camera)
-      {
+      if (camera) {
         cameras.push_back(camera);
       }
-    }
-    catch (std::exception & ex)
-    {
+    } catch (std::exception &ex) {
       std::cout << ex.what() << std::endl;
       // std::cerr << "Error starting up: " << engineName << std::endl;
     }

@@ -17,8 +17,8 @@
 #ifndef IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_GLUTWINDOW_HH_
 #define IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_GLUTWINDOW_HH_
 
-#include <vector>
 #include "ignition/rendering/RenderTypes.hh"
+#include <vector>
 
 namespace ir = ignition::rendering;
 

@@ -16,12 +16,12 @@
  */
 
 #if defined(__APPLE__)
-  #include <OpenGL/gl.h>
-  #include <GLUT/glut.h>
+#include <GLUT/glut.h>
+#include <OpenGL/gl.h>
 #elif not defined(_WIN32)
-  #include <GL/glew.h>
-  #include <GL/gl.h>
-  #include <GL/glut.h>
+#include <GL/gl.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
 #endif
 
 #include <iostream>
@@ -36,8 +36,7 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene)
-{
+void buildScene(ScenePtr _scene) {
   // DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
   // light0->SetDirection(-0.5, 0.5, -1);
   // light0->SetDiffuseColor(0.00001, 0.00001, 0.00001);
@@ -55,10 +54,10 @@ void buildScene(ScenePtr _scene)
   // leftWall->SetLocalRotation(0, IGN_PI / 2, 0);
   // leftWall->SetLocalPosition(0, 0, 2.5);
   // leftWall->SetMaterial(red);
-  // 
+  //
   // MaterialPtr green = _scene->CreateMaterial();
   // green->SetDiffuse(0.0, 1.0, 0.0);
-  // 
+  //
   // VisualPtr rightWall = _scene->CreateVisual();
   // rightWall->AddGeometry(_scene->CreatePlane());
   // rightWall->SetLocalScale(1, 5, 5);
@@ -68,7 +67,7 @@ void buildScene(ScenePtr _scene)
 
   // MaterialPtr white = _scene->CreateMaterial();
   // white->SetDiffuse(1.0, 1.0, 1.0);
-  // 
+  //
   // VisualPtr backWall = _scene->CreateVisual();
   // backWall->AddGeometry(_scene->CreatePlane());
   // backWall->SetLocalScale(5, 1, 5);
@@ -120,7 +119,7 @@ void buildScene(ScenePtr _scene)
   // box2->SetLocalRotation(0, 0, -IGN_PI / 10);
   // box2->SetLocalScale(1.5, 1.5, 3.0);
   // box2->SetMaterial(boxMaterial2);
- 
+
   VisualPtr mesh = _scene->CreateVisual();
   MeshDescriptor descriptor;
   descriptor.meshName = "media/duck.dae";
@@ -130,7 +129,7 @@ void buildScene(ScenePtr _scene)
   mesh->AddGeometry(meshGeom);
   mesh->SetLocalPosition(3, 0, 0);
   mesh->SetLocalRotation(1.5708, 0, 2.0);
- 
+
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
@@ -143,14 +142,11 @@ void buildScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName)
-{
+CameraPtr createCamera(const std::string &_engineName) {
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName);
-  if (!engine)
-  {
-    std::cout << "Engine '" << _engineName
-              << "' is not supported" << std::endl;
+  if (!engine) {
+    std::cout << "Engine '" << _engineName << "' is not supported" << std::endl;
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
@@ -162,15 +158,13 @@ CameraPtr createCamera(const std::string &_engineName)
 }
 
 //////////////////////////////////////////////////
-int main(int _argc, char** _argv)
-{
+int main(int _argc, char **_argv) {
   glutInit(&_argc, _argv);
 
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
   std::string ogreEngineName("ogre");
-  if (_argc > 1)
-  {
+  if (_argc > 1) {
     ogreEngineName = _argv[1];
   }
 
@@ -181,18 +175,13 @@ int main(int _argc, char** _argv)
   // engineNames.push_back(ogreEngineName);
   engineNames.push_back("LuxCoreEngine");
 
-  for (auto engineName : engineNames)
-  {
-    try
-    {
+  for (auto engineName : engineNames) {
+    try {
       CameraPtr camera = createCamera(engineName);
-      if (camera)
-      {
+      if (camera) {
         cameras.push_back(camera);
       }
-    }
-    catch (std::exception & ex)
-    {
+    } catch (std::exception &ex) {
       std::cout << ex.what() << std::endl;
       // std::cerr << "Error starting up: " << engineName << std::endl;
     }

@@ -5,59 +5,73 @@
 
 #include "ignition/rendering/base/BaseMesh.hh"
 
-#include "LuxCoreEngineRenderTypes.hh"
 #include "LuxCoreEngineGeometry.hh"
+#include "LuxCoreEngineRenderTypes.hh"
 
 #include "luxcore/luxcore.h"
 
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    class LuxCoreEngineMesh :
-      public BaseMesh<LuxCoreEngineGeometry>
-    {
-      public: LuxCoreEngineMesh();
+namespace ignition {
+namespace rendering {
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+class LuxCoreEngineMesh : public BaseMesh<LuxCoreEngineGeometry> {
+public:
+  LuxCoreEngineMesh();
 
-      public: bool HasParent() const;
+public:
+  bool HasParent() const;
 
-      public: VisualPtr Parent() const;
-      
-      public: void SetMaterial(MaterialPtr _material, bool _unique = true);
+public:
+  VisualPtr Parent() const;
 
-      public: void SetLocalPosition(double _x, double _y, double _z);
+public:
+  void SetMaterial(MaterialPtr _material, bool _unique = true);
 
-      public: void SetLocalScale(double _x, double _y, double _z);
+public:
+  void SetLocalPosition(double _x, double _y, double _z);
 
-      public: void SetLocalRotation(double _r, double _p, double _y);
+public:
+  void SetLocalScale(double _x, double _y, double _z);
 
-      public: void SetName(std::string name);
+public:
+  void SetLocalRotation(double _r, double _p, double _y);
 
-      public: void AddSubMesh(const LuxCoreEngineSubMeshPtr _child);
- 
-      public: SubMeshStorePtr SubMeshes() const;
+public:
+  void SetName(std::string name);
 
-      private: void UpdateTransformation();
+public:
+  void AddSubMesh(const LuxCoreEngineSubMeshPtr _child);
 
-      protected: LuxCoreEngineSubMeshStorePtr subMeshes;
+public:
+  SubMeshStorePtr SubMeshes() const;
 
-      private: float translationMatrix[16];
-      private: float rotationMatrix[16];
-      private: float scaleMatrix[16];
+private:
+  void UpdateTransformation();
 
-      private: float previousMatrix[16];
-    };
+protected:
+  LuxCoreEngineSubMeshStorePtr subMeshes;
 
-    class LuxCoreEngineSubMesh :
-      public BaseSubMesh<LuxCoreEngineObject>
-    {
-      public: void SetMaterialImpl(MaterialPtr _material);
+private:
+  float translationMatrix[16];
 
-      public: void SetName(std::string name);     
-    };
-    }
-  }
-}
+private:
+  float rotationMatrix[16];
+
+private:
+  float scaleMatrix[16];
+
+private:
+  float previousMatrix[16];
+};
+
+class LuxCoreEngineSubMesh : public BaseSubMesh<LuxCoreEngineObject> {
+public:
+  void SetMaterialImpl(MaterialPtr _material);
+
+public:
+  void SetName(std::string name);
+};
+} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace rendering
+} // namespace ignition
 
 #endif

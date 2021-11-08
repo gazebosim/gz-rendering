@@ -19,35 +19,38 @@
 
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
-namespace ignition
-{
-  namespace rendering
-  {
+namespace ignition {
+namespace rendering {
 
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    class CustomRenderEngineCamera;
-    class CustomRenderEngineScene;
-    class CustomRenderEngineSensor;
-    class CustomRenderEngineNode;
-    class CustomRenderEngineObject;
-    class CustomRenderEngineMaterial;
-    class CustomRenderEngineRenderTarget;
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+class CustomRenderEngineCamera;
+class CustomRenderEngineScene;
+class CustomRenderEngineSensor;
+class CustomRenderEngineNode;
+class CustomRenderEngineObject;
+class CustomRenderEngineMaterial;
+class CustomRenderEngineRenderTarget;
 
-    typedef shared_ptr<CustomRenderEngineCamera>               CustomRenderEngineCameraPtr;
-    typedef shared_ptr<CustomRenderEngineScene>                CustomRenderEngineScenePtr;
-    typedef BaseSceneStore<CustomRenderEngineScene>            CustomRenderEngineSceneStore;
-    typedef shared_ptr<CustomRenderEngineSceneStore>           CustomRenderEngineSceneStorePtr;
-    typedef shared_ptr<CustomRenderEngineSensor>               CustomRenderEngineSensorPtr;
-    typedef shared_ptr<CustomRenderEngineNode>                 CustomRenderEngineNodePtr;
-    typedef shared_ptr<CustomRenderEngineObject>               CustomRenderEngineObjectPtr;
-    typedef shared_ptr<CustomRenderEngineMaterial>             CustomRenderEngineMaterialPtr;
-    typedef BaseMaterialMap<CustomRenderEngineMaterial>        CustomRenderEngineMaterialMap;
-    typedef shared_ptr<CustomRenderEngineMaterialMap>          CustomRenderEngineMaterialMapPtr;
-    typedef BaseSensorStore<CustomRenderEngineSensor>          CustomRenderEngineSensorStore;
-    typedef shared_ptr<CustomRenderEngineSensorStore>          CustomRenderEngineSensorStorePtr;
-    typedef shared_ptr<CustomRenderEngineRenderTarget>         CustomRenderEngineRenderTargetPtr;
+typedef shared_ptr<CustomRenderEngineCamera> CustomRenderEngineCameraPtr;
+typedef shared_ptr<CustomRenderEngineScene> CustomRenderEngineScenePtr;
+typedef BaseSceneStore<CustomRenderEngineScene> CustomRenderEngineSceneStore;
+typedef shared_ptr<CustomRenderEngineSceneStore>
+    CustomRenderEngineSceneStorePtr;
+typedef shared_ptr<CustomRenderEngineSensor> CustomRenderEngineSensorPtr;
+typedef shared_ptr<CustomRenderEngineNode> CustomRenderEngineNodePtr;
+typedef shared_ptr<CustomRenderEngineObject> CustomRenderEngineObjectPtr;
+typedef shared_ptr<CustomRenderEngineMaterial> CustomRenderEngineMaterialPtr;
+typedef BaseMaterialMap<CustomRenderEngineMaterial>
+    CustomRenderEngineMaterialMap;
+typedef shared_ptr<CustomRenderEngineMaterialMap>
+    CustomRenderEngineMaterialMapPtr;
+typedef BaseSensorStore<CustomRenderEngineSensor> CustomRenderEngineSensorStore;
+typedef shared_ptr<CustomRenderEngineSensorStore>
+    CustomRenderEngineSensorStorePtr;
+typedef shared_ptr<CustomRenderEngineRenderTarget>
+    CustomRenderEngineRenderTargetPtr;
 
-    }
-  }
-}
+} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace rendering
+} // namespace ignition
 #endif

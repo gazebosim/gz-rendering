@@ -3,44 +3,52 @@
 
 #include "ignition/rendering/base/BaseVisual.hh"
 
-#include "LuxCoreEngineRenderTypes.hh"
-#include "LuxCoreEngineNode.hh"
 #include "LuxCoreEngineGeometry.hh"
+#include "LuxCoreEngineNode.hh"
+#include "LuxCoreEngineRenderTypes.hh"
 
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    class LuxCoreEngineVisual :
-      public BaseVisual<LuxCoreEngineNode>
-    {
-      public: void SetLocalPosition(double _x, double _y, double _z);
+namespace ignition {
+namespace rendering {
+inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+class LuxCoreEngineVisual : public BaseVisual<LuxCoreEngineNode> {
+public:
+  void SetLocalPosition(double _x, double _y, double _z);
 
-      public: void SetLocalScale(double _x, double _y, double _z);
-      
-      public: void SetLocalRotation(double _r, double _p, double _y);
+public:
+  void SetLocalScale(double _x, double _y, double _z);
 
-      public: void SetMaterial(MaterialPtr _material, bool _unique = true);
+public:
+  void SetLocalRotation(double _r, double _p, double _y);
 
-      protected: GeometryStorePtr Geometries() const;
+public:
+  void SetMaterial(MaterialPtr _material, bool _unique = true);
 
-      protected: bool AttachGeometry(GeometryPtr _geometry);
+protected:
+  GeometryStorePtr Geometries() const;
 
-      protected: bool DetachGeometry(GeometryPtr _geometry);
+protected:
+  bool AttachGeometry(GeometryPtr _geometry);
 
-      protected: void Init();
+protected:
+  bool DetachGeometry(GeometryPtr _geometry);
 
-      private: void CreateStorage();
+protected:
+  void Init();
 
-      private: LuxCoreEngineVisualPtr SharedThis();
+private:
+  void CreateStorage();
 
-      protected: LuxCoreEngineGeometryStorePtr geometries;
+private:
+  LuxCoreEngineVisualPtr SharedThis();
 
-      private: friend class LuxCoreEngineScene;
-    };
-    }
-  }
-}
+protected:
+  LuxCoreEngineGeometryStorePtr geometries;
+
+private:
+  friend class LuxCoreEngineScene;
+};
+} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace rendering
+} // namespace ignition
 
 #endif

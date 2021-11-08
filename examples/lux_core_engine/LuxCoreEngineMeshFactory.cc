@@ -19,16 +19,25 @@ LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_des
   meshName.erase(std::remove(meshName.begin(), meshName.end(), '.'), meshName.end());
   mesh->SetName(meshName);
 
+  struct Coordinate {
+    float x, y;
+
+    Coordinate(float x, float y) : x(x), y(y) {}
+    Coordinate() {}
+  };
+
   struct Vertex {
     float x, y, z;
 
     Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
+    Vertex() {}
   };
 
   struct VertexTriangle {
     unsigned int v1, v2, v3;
 
     VertexTriangle(unsigned int v1, unsigned int v2, unsigned int v3) : v1(v1), v2(v2), v3(v3) {}
+    VertexTriangle() {}
   };
 
   if (_desc.meshName == "unit_box")
@@ -122,6 +131,8 @@ LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_des
 
       submesh->SetName(submeshName);
 
+
+      // Vertices
 	    Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(
           submeshCommon->VertexCount());
 
@@ -131,6 +142,7 @@ LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_des
             submeshCommon->Vertex(x)[1], submeshCommon->Vertex(x)[2]);
       }
 
+      // Indices
       unsigned int *vi = (unsigned int *)luxcore::Scene::AllocTrianglesBuffer(submeshCommon->IndexCount() / 3);
 
       for (unsigned int x = 0; x < submeshCommon->IndexCount(); x++)
@@ -138,7 +150,26 @@ LuxCoreEngineMeshPtr LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_des
         vi[x] = submeshCommon->Index(x);
       }
 
-      scene->SceneLux()->DefineMesh(submeshName + "-submesh", submeshCommon->VertexCount(), submeshCommon->IndexCount() / 3, (float *)p, (unsigned int *)vi, NULL, NULL, NULL, NULL);
+      // Normals
+      Vertex *n = (Vertex *)luxcore::Scene::AllocVerticesBuffer(
+          submeshCommon->NormalCount());
+
+      for (unsigned int x = 0; x < submeshCommon->NormalCount(); x++)
+      {
+        n[x] = Vertex(submeshCommon->Normal(x)[0],
+            submeshCommon->Normal(x)[1], submeshCommon->Normal(x)[2]);
+      }
+
+      // UV Coordinates
+      Coordinate *uv = new Coordinate[submeshCommon->TexCoordCount()];
+
+      for (unsigned int x = 0; x < submeshCommon->TexCoordCount(); x++)
+      {
+        uv[x] = Coordinate(submeshCommon->TexCoord(x)[0],
+            submeshCommon->TexCoord(x)[1]);
+      }
+
+      scene->SceneLux()->DefineMesh(submeshName + "-submesh", submeshCommon->VertexCount(), submeshCommon->IndexCount() / 3, (float *)p, (unsigned int *)vi, (float *)n, (float *)uv, NULL, NULL);
     
       mesh->AddSubMesh(submesh);
     }

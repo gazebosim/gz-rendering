@@ -18,8 +18,21 @@ namespace ignition
 
       public: virtual ~LuxCoreEngineMaterial();
 
+      public: void UpdateLuxSDL();
+
       public: void SetDiffuse(const double _r, const double _g,
                   const double _b, const double _a = 1.0);
+
+      public: void SetEmissive(const double _r, const double _g,
+                  const double _b, const double _a = 1.0);
+
+      public: void SetShaderType(enum ShaderType _type);
+
+      protected: float diffuseR, diffuseG, diffuseB;
+
+      protected: float emissiveR, emissiveG, emissiveB;
+
+      protected: std::string materialType;
 
       private: friend class LuxCoreEngineScene;
     };

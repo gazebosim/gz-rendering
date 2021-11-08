@@ -25,8 +25,36 @@ namespace ignition
       public: VisualPtr Parent() const;
       
       public: void SetMaterial(MaterialPtr _material, bool _unique = true);
-      
-      protected: SubMeshStorePtr SubMeshes() const;
+
+      public: void SetLocalPosition(double _x, double _y, double _z);
+
+      public: void SetLocalScale(double _x, double _y, double _z);
+
+      public: void SetLocalRotation(double _r, double _p, double _y);
+
+      public: void SetName(std::string name);
+
+      public: void AddSubMesh(const LuxCoreEngineSubMeshPtr _child);
+ 
+      public: SubMeshStorePtr SubMeshes() const;
+
+      private: void UpdateTransformation();
+
+      protected: LuxCoreEngineSubMeshStorePtr subMeshes;
+
+      private: float translationMatrix[16];
+      private: float rotationMatrix[16];
+      private: float scaleMatrix[16];
+
+      private: float previousMatrix[16];
+    };
+
+    class LuxCoreEngineSubMesh :
+      public BaseSubMesh<LuxCoreEngineObject>
+    {
+      public: void SetMaterialImpl(MaterialPtr _material);
+
+      public: void SetName(std::string name);     
     };
     }
   }

@@ -18,6 +18,8 @@ namespace ignition
       public: void SetLocalPosition(double _x, double _y, double _z);
 
       public: void SetLocalScale(double _x, double _y, double _z);
+      
+      public: void SetLocalRotation(double _r, double _p, double _y);
 
       public: void SetMaterial(MaterialPtr _material, bool _unique = true);
 

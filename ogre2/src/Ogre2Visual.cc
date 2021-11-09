@@ -61,6 +61,9 @@ void Ogre2Visual::SetWireframe(bool _show)
   if (this->dataPtr->wireframe == _show)
     return;
 
+  if (!this->ogreNode)
+    return;
+
   this->dataPtr->wireframe = _show;
   for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
       i++)
@@ -96,6 +99,9 @@ bool Ogre2Visual::Wireframe() const
 //////////////////////////////////////////////////
 void Ogre2Visual::SetVisible(bool _visible)
 {
+  if (!this->ogreNode)
+    return;
+
   this->ogreNode->setVisible(_visible);
 }
 
@@ -127,6 +133,12 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
   {
     ignerr << "Cannot attach null geometry." << std::endl;
 
+    return false;
+  }
+
+  if (!this->ogreNode)
+  {
+    ignerr << "Cannot attach geometry, null Ogre node." << std::endl;
     return false;
   }
 
@@ -164,6 +176,12 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
 //////////////////////////////////////////////////
 bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
 {
+  if (!this->ogreNode)
+  {
+    ignerr << "Cannot detach geometry, null Ogre node." << std::endl;
+    return false;
+  }
+
   Ogre2GeometryPtr derived =
       std::dynamic_pointer_cast<Ogre2Geometry>(_geometry);
 
@@ -175,7 +193,8 @@ bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
     return false;
   }
 
-  this->ogreNode->detachObject(derived->OgreObject());
+  if (nullptr != derived->OgreObject())
+    this->ogreNode->detachObject(derived->OgreObject());
   derived->SetParent(nullptr);
   return true;
 }
@@ -207,6 +226,9 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
 void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
     bool _local, const ignition::math::Pose3d &_pose) const
 {
+  if (!this->ogreNode)
+    return;
+
   ignition::math::Vector3d scale = this->WorldScale();
 
   for (size_t i = 0; i < this->ogreNode->numAttachedObjects(); i++)

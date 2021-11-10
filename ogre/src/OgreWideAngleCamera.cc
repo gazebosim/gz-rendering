@@ -486,7 +486,6 @@ void OgreWideAngleCamera::Render()
   for (int i = 0; i < 6; ++i)
   {
     this->dataPtr->envRenderTargets[i]->update();
-  //   this->dataPtr->envRenderTargets[i]->writeContentsToFile(std::string("img") + std::to_string(i) + ".png");
   }
 
   this->dataPtr->compMat->getTechnique(0)->getPass(0)->getTextureUnitState(0)->

@@ -145,6 +145,16 @@ Ogre2SelectionBuffer::~Ogre2SelectionBuffer()
 {
   this->DeleteRTTBuffer();
 
+  // remove selectionMaterial in destructor
+  // this does not need to be done in DeleteRTTBuffer as we do not need to
+  // reload the same material every time
+  if (!this->dataPtr->selectionMaterial.isNull())
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        this->dataPtr->selectionMaterial->getName());
+    this->dataPtr->selectionMaterial.setNull();
+  }
+
   // remove selection buffer camera
   this->dataPtr->sceneMgr->destroyCamera(this->dataPtr->selectionCamera);
 }
@@ -184,16 +194,6 @@ void Ogre2SelectionBuffer::Update()
 /////////////////////////////////////////////////
 void Ogre2SelectionBuffer::DeleteRTTBuffer()
 {
-  // \todo Delete material?
-  // This causes an ogre assertion error about unlinking renderables
-  // when the RTT buffer is created again
-  // if (this->dataPtr->selectionMaterial)
-  // {
-  //   Ogre::MaterialManager::getSingleton().remove(
-  //       this->dataPtr->selectionMaterial->getName());
-  //   this->dataPtr->selectionMaterial.setNull();
-  // }
-
   if (this->dataPtr->ogreCompositorWorkspace)
   {
     // TODO(ahcorde): Remove the workspace. Potential leak here
@@ -229,11 +229,8 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
         Ogre::TextureFlags::RenderToTexture,
         Ogre::TextureTypes::Type2D);
   this->dataPtr->renderTexture->setResolution(1, 1);
-  // this->dataPtr->renderTexture->setResolution(this->dataPtr->width,
-  //     this->dataPtr->height);
   this->dataPtr->renderTexture->setNumMipmaps(1u);
   this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA32_FLOAT);
-  // this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
 
   this->dataPtr->renderTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -247,8 +244,6 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   std::string matSelectionName = "SelectionBuffer";
   std::string matSelectionCloneName =
       this->dataPtr->camera->getName() + "_" + matSelectionName;
-  this->dataPtr->selectionMaterial =
-      Ogre::MaterialManager::getSingleton().getByName(matSelectionName);
   if (this->dataPtr->selectionMaterial.isNull())
   {
     Ogre::MaterialPtr matSelection =

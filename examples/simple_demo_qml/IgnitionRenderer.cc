@@ -178,7 +178,6 @@ ignition::rendering::CameraPtr CreateCamera(const std::string &_engineName)
   // ensure that the QML application and Ignition / Ogre2 share an OpenGL
   // context
   params["useCurrentGLContext"] = "1";
-  // params["metal"] = "1";
   RenderEngine *engine = rendering::engine(_engineName, params);
   if (!engine)
   {

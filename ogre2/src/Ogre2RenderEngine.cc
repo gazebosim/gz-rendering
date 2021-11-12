@@ -52,6 +52,9 @@ class ignition::rendering::Ogre2RenderEnginePrivate
   public: GLXFBConfig* dummyFBConfigs = nullptr;
 #endif
 
+  /// \brief True to use the Metal render system
+  public: bool useMetalRenderSystem = false;
+
   /// \brief A list of supported fsaa levels
   public: std::vector<unsigned int> fsaaLevels;
 
@@ -304,7 +307,7 @@ bool Ogre2RenderEngine::LoadImpl(
 
   it = _params.find("metal");
   if (it != _params.end())
-    std::istringstream(it->second) >> this->useMetalRenderSystem;
+    std::istringstream(it->second) >> this->dataPtr->useMetalRenderSystem;
 
   try
   {
@@ -343,7 +346,7 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  if (!this->useCurrentGLContext && !this->useMetalRenderSystem)
+  if (!this->useCurrentGLContext && !this->dataPtr->useMetalRenderSystem)
     this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
@@ -366,7 +369,7 @@ void Ogre2RenderEngine::CreateLogger()
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
-  this->ogreLogManager->createLog(logPath, true, true, false);
+  this->ogreLogManager->createLog(logPath, true, false, false);
 }
 
 //////////////////////////////////////////////////
@@ -493,9 +496,9 @@ void Ogre2RenderEngine::LoadPlugins()
     p = common::joinPaths(path, "Plugin_ParticleFX");
     plugins.push_back(p);
 
-    if (this->useMetalRenderSystem)
+    if (this->dataPtr->useMetalRenderSystem)
     {
-      std::string p = common::joinPaths(path, "RenderSystem_Metal");
+      p = common::joinPaths(path, "RenderSystem_Metal");
       plugins.push_back(p);
     }
 
@@ -545,7 +548,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
   rsList = &(this->ogreRoot->getAvailableRenderers());
   std::string targetRenderSysName("OpenGL 3+ Rendering Subsystem");
-  if (this->useMetalRenderSystem)
+  if (this->dataPtr->useMetalRenderSystem)
   {
     targetRenderSysName = "Metal Rendering Subsystem";
   }
@@ -678,7 +681,7 @@ void Ogre2RenderEngine::RegisterHlms()
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       terraGLSLMaterialFolder, "FileSystem", "General");
 
-  if (this->useMetalRenderSystem)
+  if (this->dataPtr->useMetalRenderSystem)
   {
     Ogre::String commonMetalMaterialFolder = common::joinPaths(
         rootHlmsFolder, "2.0", "scripts", "materials", "Common", "Metal");

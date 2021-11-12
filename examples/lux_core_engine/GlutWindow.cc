@@ -16,12 +16,12 @@
  */
 
 #if __APPLE__
-#include <GLUT/glut.h>
-#include <OpenGL/OpenGL.h>
 #include <OpenGL/gl.h>
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
 #else
-#include <GL/gl.h>
 #include <GL/glew.h>
+#include <GL/gl.h>
 #include <GL/glut.h>
 #endif
 

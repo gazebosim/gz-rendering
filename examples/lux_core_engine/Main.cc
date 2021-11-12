@@ -16,11 +16,11 @@
  */
 
 #if defined(__APPLE__)
-#include <GLUT/glut.h>
 #include <OpenGL/gl.h>
+#include <GLUT/glut.h>
 #elif not defined(_WIN32)
-#include <GL/gl.h>
 #include <GL/glew.h>
+#include <GL/gl.h>
 #include <GL/glut.h>
 #endif
 

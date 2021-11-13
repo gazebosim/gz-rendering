@@ -199,7 +199,7 @@ int main(int _argc, char** _argv)
   }
 
   std::map<std::string, std::string> params;
-  if (engineName.compare("ogre2") == 0
+  if (ogreEngineName.compare("ogre2") == 0
       && graphicsApi == GraphicsAPI::METAL)
   {
     params["metal"] = "1";

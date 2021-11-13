@@ -45,7 +45,7 @@ GraphicsAPI GraphicsAPIUtils::Set(const std::string &_str)
   std::transform(str.begin(), str.end(), str.begin(), ::toupper);
 
   // Set the enum
-  GraphicsAPI e;
+  GraphicsAPI e{GraphicsAPI::UNKNOWN};
   graphicsAPIIface.Set(e, str);
   return e;
 }

@@ -34,6 +34,7 @@
 
 #include <ignition/plugin/Register.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"

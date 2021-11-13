@@ -16,7 +16,7 @@
  */
 
 #include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderEngine.hh"
+#include "ignition/rendering/GraphicsAPI.hh"
 #include <ignition/common/EnumIface.hh>
 
 #include <algorithm>

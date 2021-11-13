@@ -179,53 +179,6 @@ namespace ignition
       /// \brief Get the render pass system for this engine.
       public: virtual RenderPassSystemPtr RenderPassSystem() const = 0;
     };
- 
-     /// \brief The graphics API used by the render engine 
-    enum class IGNITION_RENDERING_VISIBLE GraphicsAPI : uint16_t
-    {
-      /// \internal
-      /// \brief Indicator used to create an iterator over the
-      /// enum. Do not use this.
-      GRAPHICS_API_BEGIN = 0,
-
-      /// \brief Unknown graphics interface
-      UNKNOWN = GRAPHICS_API_BEGIN,
-
-      /// \brief OpenGL graphics interface
-      OPENGL = 1,
-
-      /// \brief Direct3D11 graphics interface
-      DIRECT3D11 = 2,
-
-      /// \brief Vulkan graphics interface
-      VULKAN = 3,
-
-      /// \brief Metal graphics interface
-      METAL = 4,
-
-      /// \internal
-      /// \brief Indicator used to create an iterator over the
-      /// enum. Do not use this.
-      GRAPHICS_API_END
-    };
-
-    /// \brief The graphics API used by the render engine 
-    class IGNITION_RENDERING_VISIBLE GraphicsAPIUtils
-    {
-      /// \brief Convert enum value to string.
-      /// \param[in] _e Enum value to convert.
-      /// \return String representation of the enum. An empty string is
-      /// returned if _e is invalid, or the names for the enum have not been
-      /// set.
-      public: static std::string Str(GraphicsAPI _e);
-
-      /// \brief Set an enum from a string. This function requires a valid
-      /// string, and an array of names for the enum must exist.
-      /// The string is not case sensitive.
-      /// \param[in] _str String value to convert to enum value.
-      /// \return GraphicsAPI enum
-      public: static GraphicsAPI Set(const std::string &_str);
-    };
     }
   }
 }

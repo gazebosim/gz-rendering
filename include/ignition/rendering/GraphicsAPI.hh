@@ -27,7 +27,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-     /// \brief The graphics API used by the render engine 
+     /// \brief The graphics API used by the render engine
     enum class IGNITION_RENDERING_VISIBLE GraphicsAPI : uint16_t
     {
       /// \internal
@@ -56,7 +56,7 @@ namespace ignition
       GRAPHICS_API_END
     };
 
-    /// \brief The graphics API used by the render engine 
+    /// \brief Utils to convert GraphicsAPI to and from strings
     class IGNITION_RENDERING_VISIBLE GraphicsAPIUtils
     {
       /// \brief Convert enum value to string.

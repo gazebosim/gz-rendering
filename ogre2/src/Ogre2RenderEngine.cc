@@ -352,8 +352,8 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  if (!this->useCurrentGLContext 
-      && !(this->dataPtr->graphicsAPI == GraphicsAPI::METAL))
+  if (!this->useCurrentGLContext &&
+      this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
     this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();

@@ -52,8 +52,8 @@ class ignition::rendering::Ogre2RenderEnginePrivate
   public: GLXFBConfig* dummyFBConfigs = nullptr;
 #endif
 
-  /// \brief True to use the Metal render system
-  public: bool useMetalRenderSystem = false;
+  /// \brief The graphics API to use
+  public: ignition::rendering::GraphicsAPI graphicsAPI{GraphicsAPI::OPENGL};
 
   /// \brief A list of supported fsaa levels
   public: std::vector<unsigned int> fsaaLevels;
@@ -307,7 +307,12 @@ bool Ogre2RenderEngine::LoadImpl(
 
   it = _params.find("metal");
   if (it != _params.end())
-    std::istringstream(it->second) >> this->dataPtr->useMetalRenderSystem;
+  {
+    bool useMetal;
+    std::istringstream(it->second) >> useMetal;
+    if(useMetal)
+        this->dataPtr->graphicsAPI = GraphicsAPI::METAL;
+  }
 
   try
   {
@@ -346,7 +351,8 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  if (!this->useCurrentGLContext && !this->dataPtr->useMetalRenderSystem)
+  if (!this->useCurrentGLContext 
+      && !(this->dataPtr->graphicsAPI == GraphicsAPI::METAL))
     this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
@@ -496,7 +502,7 @@ void Ogre2RenderEngine::LoadPlugins()
     p = common::joinPaths(path, "Plugin_ParticleFX");
     plugins.push_back(p);
 
-    if (this->dataPtr->useMetalRenderSystem)
+    if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
     {
       p = common::joinPaths(path, "RenderSystem_Metal");
       plugins.push_back(p);
@@ -548,7 +554,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
   rsList = &(this->ogreRoot->getAvailableRenderers());
   std::string targetRenderSysName("OpenGL 3+ Rendering Subsystem");
-  if (this->dataPtr->useMetalRenderSystem)
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
   {
     targetRenderSysName = "Metal Rendering Subsystem";
   }
@@ -681,7 +687,7 @@ void Ogre2RenderEngine::RegisterHlms()
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       terraGLSLMaterialFolder, "FileSystem", "General");
 
-  if (this->dataPtr->useMetalRenderSystem)
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
   {
     Ogre::String commonMetalMaterialFolder = common::joinPaths(
         rootHlmsFolder, "2.0", "scripts", "materials", "Common", "Metal");

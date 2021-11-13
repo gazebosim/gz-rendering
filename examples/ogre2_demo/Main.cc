@@ -317,10 +317,10 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  bool useMetalRenderSystem{false};
-  if (_argc > 2 && std::string(_argv[2]).compare("metal") == 0)
+  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  if (_argc > 2)
   {
-    useMetalRenderSystem = true;
+    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
   }
 
   engineNames.push_back("ogre2");
@@ -329,7 +329,8 @@ int main(int _argc, char** _argv)
     try
     {
       std::map<std::string, std::string> params;
-      if (engineName.compare("ogre2") == 0 && useMetalRenderSystem)
+      if (engineName.compare("ogre2") == 0
+          && graphicsApi == GraphicsAPI::METAL)
       {
         params["metal"] = "1";
       }

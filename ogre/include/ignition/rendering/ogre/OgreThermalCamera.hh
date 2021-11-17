@@ -32,6 +32,7 @@
 #include "ignition/rendering/ogre/Export.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreObjectInterface.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
@@ -61,7 +62,8 @@ namespace ignition
     **/
     /// \brief Depth camera used to render thermal data into an image buffer
     class IGNITION_RENDERING_OGRE_VISIBLE OgreThermalCamera :
-      public BaseThermalCamera<OgreSensor>
+      public virtual BaseThermalCamera<OgreSensor>,
+      public virtual OgreObjectInterface
     {
       /// \brief Constructor
       protected: OgreThermalCamera();
@@ -93,6 +95,9 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void Destroy() override;
+
+      // Documentation inherited.
+      public: virtual Ogre::Camera *Camera() const override;
 
       /// \brief Get a pointer to the render target.
       /// \return Pointer to the render target

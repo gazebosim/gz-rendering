@@ -136,6 +136,9 @@ namespace ignition
       // Documentation inherited
       public: unsigned int GLIdImpl() const;
 
+      // Documentation inherited
+      public: void MetalIdImpl(void *_textureIdPtr) const;
+
       /// \brief Destroy the render texture
       protected: void DestroyTargetImpl();
 
@@ -252,6 +255,9 @@ namespace ignition
 
       // Documentation inherited
       public: virtual unsigned int GLId() const override;
+
+      // Documentation inherited
+      public: virtual void MetalId(void *_textureIdPtr) const override;
 
       // Documentation inherited
       // TODO(anyone): this function should be removed.

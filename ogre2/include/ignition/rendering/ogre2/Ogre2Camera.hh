@@ -22,6 +22,7 @@
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Ogre2ObjectInterface.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 namespace Ogre
@@ -41,7 +42,8 @@ namespace ignition
 
     /// \brief Ogre2.x implementation of the camera class
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Camera :
-      public BaseCamera<Ogre2Sensor>
+      public virtual BaseCamera<Ogre2Sensor>,
+      public virtual Ogre2ObjectInterface
     {
       /// \brief Constructor
       protected: Ogre2Camera();
@@ -115,12 +117,14 @@ namespace ignition
       public: virtual unsigned int RenderTextureGLId() const override;
 
       // Documentation inherited.
+      public: virtual void RenderTextureMetalId(void *_textureIdPtr)
+          const override;
+
+      // Documentation inherited.
       public: void SetShadowsDirty() override;
 
       // Documentation inherited.
       public: virtual void Destroy() override;
-
-      public: Ogre::Camera *OgreCamera() const;
 
       // Documentation inherited.
       public: virtual void SetVisibilityMask(uint32_t _mask) override;
@@ -128,6 +132,9 @@ namespace ignition
       /// \brief Get the selection buffer object
       /// \return the selection buffer object
       public: Ogre2SelectionBuffer *SelectionBuffer() const;
+
+      // Documentation inherited.
+      public: virtual Ogre::Camera *OgreCamera() const override;
 
       // Documentation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;

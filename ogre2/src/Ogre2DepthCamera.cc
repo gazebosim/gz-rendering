@@ -1269,3 +1269,9 @@ void Ogre2DepthCamera::AddRenderPass(const RenderPassPtr &_pass)
   this->dataPtr->renderPasses.push_back(depthNoisePass);
   this->dataPtr->renderPassDirty = true;
 }
+
+//////////////////////////////////////////////////
+Ogre::Camera *Ogre2DepthCamera::OgreCamera() const
+{
+  return this->ogreCamera;
+}

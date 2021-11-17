@@ -44,7 +44,7 @@ namespace ignition
     /// "empty variant" should be returned for keys that don't exist)
     using Variant =
       std::variant<std::monostate, int, float, double, std::string, bool,
-        unsigned int>;
+        unsigned int, int64_t, uint64_t>;
 
     /// \class Node Node.hh ignition/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph

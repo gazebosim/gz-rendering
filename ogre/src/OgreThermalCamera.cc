@@ -569,3 +569,9 @@ RenderTargetPtr OgreThermalCamera::RenderTarget() const
 {
   return this->dataPtr->thermalTexture;
 }
+
+//////////////////////////////////////////////////
+Ogre::Camera *OgreThermalCamera::Camera() const
+{
+  return this->ogreCamera;
+}

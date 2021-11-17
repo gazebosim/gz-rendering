@@ -208,6 +208,21 @@ unsigned int Ogre2Camera::RenderTextureGLId() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2Camera::RenderTextureMetalId(void *_textureIdPtr) const
+{
+  if (!this->renderTexture)
+    return;
+
+  Ogre2RenderTexturePtr rt =
+      std::dynamic_pointer_cast<Ogre2RenderTexture>(this->renderTexture);
+
+  if (!rt)
+    return;
+
+  rt->MetalId(_textureIdPtr);
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::SetShadowsDirty()
 {
   this->SetShadowsNodeDefDirty();
@@ -348,15 +363,15 @@ void Ogre2Camera::SetFarClipPlane(const double _far)
 }
 
 //////////////////////////////////////////////////
-Ogre::Camera *Ogre2Camera::OgreCamera() const
-{
-  return ogreCamera;
-}
-
-//////////////////////////////////////////////////
 void Ogre2Camera::SetVisibilityMask(uint32_t _mask)
 {
   BaseSensor::SetVisibilityMask(_mask);
   if (this->renderTexture)
     this->renderTexture->SetVisibilityMask(_mask);
+}
+
+//////////////////////////////////////////////////
+Ogre::Camera *Ogre2Camera::OgreCamera() const
+{
+  return this->ogreCamera;
 }

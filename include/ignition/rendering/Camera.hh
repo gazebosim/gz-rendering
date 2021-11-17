@@ -317,6 +317,14 @@ namespace ignition
       /// \return Texture Id of type GLuint.
       public: virtual unsigned int RenderTextureGLId() const = 0;
 
+      /// \brief Get the Metal texture id associated with the render texture
+      /// used by this camera. A valid Id is obtained only if the underlying
+      /// render engine is Metal based.
+      /// The pointer set by this function must be released to an
+      /// id<MTLTexture> using CFBridgingRelease.
+      /// \param[out] _textureIdPtr the address of a void* pointer.
+      public: virtual void RenderTextureMetalId(void *_textureIdPtr) const = 0;
+
       /// \brief Add a render pass to the camera
       /// \param[in] _pass New render pass to add
       public: virtual void AddRenderPass(const RenderPassPtr &_pass) = 0;

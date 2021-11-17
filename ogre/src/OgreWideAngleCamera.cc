@@ -23,6 +23,12 @@
 #ifndef _WIN32
   #include <GL/gl.h>
   #include <GL/glext.h>
+
+  // OGRE/RenderSystems/GL/GL/glext.h does not seem to have
+  // this defined
+  #ifndef GL_TEXTURE_CUBE_MAP_SEAMLESS
+    #define GL_TEXTURE_CUBE_MAP_SEAMLESS 0x884F
+  #endif
 #endif
 #endif
 
@@ -453,11 +459,9 @@ void OgreWideAngleCamera::notifyMaterialRender(Ogre::uint32 /*_pass_id*/,
     this->HFOV().Radian());
 
 #ifndef _WIN32
-  // XXX: OGRE doesn't allow to enable cubemap filtering extention thru its API
+  // OGRE doesn't allow to enable cubemap filtering extention thru its API
   // suppose that this function was invoked in a thread that has OpenGL context
-  #ifdef GL_TEXTURE_CUBE_MAP_SEAMLESS
   glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-  #endif
 #endif
 }
 

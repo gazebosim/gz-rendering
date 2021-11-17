@@ -64,13 +64,41 @@ void buildScene(ScenePtr _scene)
   blue->SetReflectivity(0);
 
   // create box visual
-  VisualPtr box = _scene->CreateVisual();
+  VisualPtr box = _scene->CreateVisual("box");
   box->AddGeometry(_scene->CreateBox());
   box->SetOrigin(0.0, 0.0, 0.0);
-  box->SetLocalPosition(3, 0, 0);
+  box->SetLocalPosition(5, 0, 0);
   box->SetLocalScale(3, 3, 3);
   box->SetMaterial(blue);
   root->AddChild(box);
+
+  // create red material
+  MaterialPtr red = _scene->CreateMaterial();
+  red->SetAmbient(0.3, 0.0, 0.0);
+  red->SetDiffuse(0.8, 0.0, 0.0);
+  red->SetSpecular(0.5, 0.5, 0.5);
+
+  // create another box
+  VisualPtr box2 = _scene->CreateVisual("box2");
+  box2->AddGeometry(_scene->CreateBox());
+  box2->SetLocalPosition(3, -2, 1);
+  box2->SetLocalRotation(0, 0.3, 0.7);
+  box2->SetMaterial(red);
+  root->AddChild(box2);
+
+  // create green material
+  MaterialPtr green = _scene->CreateMaterial();
+  green->SetAmbient(0.0, 0.2, 0.0);
+  green->SetDiffuse(0.0, 0.6, 0.0);
+  green->SetSpecular(0.5, 0.5, 0.5);
+
+  // create a sphere
+  VisualPtr sphere = _scene->CreateVisual("sphere");
+  sphere->AddGeometry(_scene->CreateSphere());
+  sphere->SetLocalPosition(3, 2.5, 0);
+  sphere->SetLocalScale(1.5, 1.5, 1.5);
+  sphere->SetMaterial(green);
+  root->AddChild(sphere);
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();
@@ -96,7 +124,7 @@ void buildScene(ScenePtr _scene)
 
   WideAngleCameraPtr camera = _scene->CreateWideAngleCamera("camera");
   camera->SetLens(lens);
-  camera->SetHFOV(3.14);
+  camera->SetHFOV(3.0);
   camera->SetLocalPosition(0.0, 0.0, 0.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);

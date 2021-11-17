@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_MESH_VIEWER_GLUTWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_MESH_VIEWER_GLUTWINDOW_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_WIDE_ANGLE_CAMERA_GLUTWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_WIDE_ANGLE_CAMERA_GLUTWINDOW_HH_
 
 #include <vector>
 #include "ignition/rendering/RenderTypes.hh"

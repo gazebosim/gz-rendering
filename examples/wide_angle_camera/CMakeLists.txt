@@ -32,8 +32,3 @@ target_link_libraries(wide_angle_camera
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )
-
-# add_custom_command(TARGET wide_angle_camera POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E copy_directory
-#   ${CMAKE_SOURCE_DIR}/media
-#   $<TARGET_FILE_DIR:wide_angle_camera>/media)

@@ -163,14 +163,6 @@ namespace ignition
       ///   note: c1 and f parameters are ignored in this case
       public: void SetScaleToHFOV(bool _scale);
 
-      /// \brief Set uniform variables of a shader
-      ///   for the provided material technique pass
-      /// \param[in] _pass ::Pass used for rendering
-      /// \param[in] _ratio Frame aspect ratio
-      /// \param[in] _hfov Horizontal field of view
-      // public: void SetUniformVariables(::Pass *_pass, float _ratio,
-      //                                  float _hfov);
-
       /// \brief Apply mapping function to input number
       /// \return Result of the application
       public: float ApplyMappingFunction(float _f) const;

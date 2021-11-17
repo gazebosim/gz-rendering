@@ -133,12 +133,6 @@ class ignition::rendering::CameraLensPrivate
   /// \brief `fun` component of the mapping function,
   /// \see CameraLens description
   public: MapFunctionEnum fun = MapFunctionEnum(AFT_IDENTITY);
-
-  /// \brief SDF element of the lens
-//  public: sdf::ElementPtr sdf;
-
-  /// \brief Mutex to lock when getting or setting lens data
-//  public: std::recursive_mutex dataMutex;
 };
 
 using namespace ignition;
@@ -195,43 +189,6 @@ void CameraLens::SetCustomMappingFunction(double _c1, double _c2,
     this->ConvertToCustom();
 }
 
-// //////////////////////////////////////////////////
-// void CameraLens::Load()
-// {
-//   if (!this->dataPtr->sdf->HasElement("type"))
-//   {
-//     gzwarn << "You should specify lens type using <type> element";
-//     this->dataPtr->sdf->AddElement("type");
-//   }
-//
-//   if (this->IsCustom())
-//   {
-//     if (this->dataPtr->sdf->HasElement("custom_function"))
-//     {
-//       sdf::ElementPtr cf = this->dataPtr->sdf->GetElement("custom_function");
-//
-//       this->Init(
-//         cf->Get<double>("c1"),
-//         cf->Get<double>("c2"),
-//         cf->Get<std::string>("fun"),
-//         cf->Get<double>("f"),
-//         cf->Get<double>("c3"));
-//     }
-//     else
-//     {
-//       ignerr << "You need a <custom_function> element to use this lens type, "
-//             << "setting lens type to `stereographic`" << std::endl;
-//
-//       this->dataPtr->sdf->GetElement("type")->Set("stereographic");
-//       this->SetLensFunction(this->Type());
-//     }
-//   }
-//   else
-//     this->SetLensFunction(this->Type());
-//
-//   this->SetCutOffAngle(this->dataPtr->sdf->Get<double>("cutoff_angle"));
-// }
-
 //////////////////////////////////////////////////
 MappingFunctionType CameraLens::Type() const
 {
@@ -256,40 +213,30 @@ double CameraLens::C1() const
 //////////////////////////////////////////////////
 double CameraLens::C2() const
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   return this->dataPtr->c2;
 }
 
 //////////////////////////////////////////////////
 double CameraLens::C3() const
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   return this->dataPtr->c3;
 }
 
 //////////////////////////////////////////////////
 double CameraLens::F() const
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   return this->dataPtr->f;
 }
 
 //////////////////////////////////////////////////
 AngleFunctionType CameraLens::AngleFunction() const
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   return this->dataPtr->fun.AngleFunction();
 }
 
 //////////////////////////////////////////////////
 double CameraLens::CutOffAngle() const
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   return this->dataPtr->cutOffAngle;
 }
 
@@ -297,16 +244,11 @@ double CameraLens::CutOffAngle() const
 bool CameraLens::ScaleToHFOV() const
 {
   return this->dataPtr->scaleToHFov;
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
-//   return this->dataPtr->sdf->Get<bool>("scale_to_hfov");
 }
 
 //////////////////////////////////////////////////
 void CameraLens::SetType(MappingFunctionType _type)
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   // c1, c2, c3, f, fun
   std::map<MappingFunctionType, std::tuple<double, double, double,
       double, AngleFunctionType> > funTypes = {
@@ -319,7 +261,6 @@ void CameraLens::SetType(MappingFunctionType _type)
   funTypes.emplace(MFT_CUSTOM,
       std::make_tuple(this->C1(), this->C2(), this->C3(), this->F(),
       this->AngleFunction()));
-//        CameraLensPrivate::MapFunctionEnum(this->AngleFunction()).AngleFunction()));
 
   decltype(funTypes)::mapped_type params;
 
@@ -333,7 +274,6 @@ void CameraLens::SetType(MappingFunctionType _type)
     return;
   }
 
-//  this->dataPtr->sdf->GetElement("type")->Set(_type);
   this->dataPtr->type = _type;
 
   if (_type == MFT_CUSTOM)
@@ -346,7 +286,6 @@ void CameraLens::SetType(MappingFunctionType _type)
   }
   else
   {
-    // Do not write values to SDF
     this->dataPtr->c1 = std::get<0>(params);
     this->dataPtr->c2 = std::get<1>(params);
     this->dataPtr->c3 = std::get<2>(params);
@@ -368,60 +307,42 @@ void CameraLens::SetType(MappingFunctionType _type)
 //////////////////////////////////////////////////
 void CameraLens::SetC1(double _c)
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   this->dataPtr->c1 = _c;
 
   if (!this->IsCustom())
     this->ConvertToCustom();
-
-//  this->dataPtr->sdf->GetElement("custom_function")->GetElement("c1")->Set(_c);
 }
 
 //////////////////////////////////////////////////
 void CameraLens::SetC2(double _c)
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   this->dataPtr->c2 = _c;
 
   if (!this->IsCustom())
     this->ConvertToCustom();
-
-//  this->dataPtr->sdf->GetElement("custom_function")->GetElement("c2")->Set(_c);
 }
 
 //////////////////////////////////////////////////
 void CameraLens::SetC3(double _c)
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   this->dataPtr->c3 = _c;
 
   if (!this->IsCustom())
     this->ConvertToCustom();
-
-//  this->dataPtr->sdf->GetElement("custom_function")->GetElement("c3")->Set(_c);
 }
 
 //////////////////////////////////////////////////
 void CameraLens::SetF(double _f)
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   this->dataPtr->f = _f;
 
   if (!this->IsCustom())
     this->ConvertToCustom();
-
-//  this->dataPtr->sdf->GetElement("custom_function")->GetElement("f")->Set(_f);
 }
 
 //////////////////////////////////////////////////
 void CameraLens::SetAngleFunction(AngleFunctionType _fun)
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   if (!this->IsCustom())
     this->ConvertToCustom();
 
@@ -435,82 +356,24 @@ void CameraLens::SetAngleFunction(AngleFunctionType _fun)
           << "keeping the old one" << std::endl;
     return;
   }
-
-//  auto customFunction = this->dataPtr->sdf->GetElement("custom_function");
-//  customFunction->GetElement("fun")->Set(_fun);
 }
 
 //////////////////////////////////////////////////
 void CameraLens::SetCutOffAngle(const double _angle)
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   this->dataPtr->cutOffAngle = _angle;
-
-//  this->dataPtr->sdf->GetElement("cutoff_angle")->Set(_angle);
 }
 
 //////////////////////////////////////////////////
 void CameraLens::SetScaleToHFOV(bool _scale)
 {
   this->dataPtr->scaleToHFov = _scale;
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
-//  this->dataPtr->sdf->GetElement("scale_to_hfov")->Set(_scale);
 }
-
-//////////////////////////////////////////////////
-// void CameraLens::SetUniformVariables(::Pass *_pass, const float _ratio,
-//                                      const float _hfov)
-// {
-//   ::GpuProgramParametersSharedPtr uniforms =
-//     _pass->getFragmentProgramParameters();
-//
-//   uniforms->setNamedConstant("c1", static_cast<::Real>(this->dataPtr->c1));
-//   uniforms->setNamedConstant("c2", static_cast<::Real>(this->dataPtr->c2));
-//   uniforms->setNamedConstant("c3", static_cast<::Real>(this->dataPtr->c3));
-//
-//   if (this->ScaleToHFOV())
-//   {
-//     float param = (_hfov/2)/this->dataPtr->c2+this->dataPtr->c3;
-//     float funRes = this->dataPtr->fun.Apply(static_cast<float>(param));
-//
-//     float newF = 1.0f/(this->dataPtr->c1*funRes);
-//
-//     uniforms->setNamedConstant("f", static_cast<::Real>(newF));
-//   }
-//   else
-//     uniforms->setNamedConstant("f", static_cast<::Real>(this->dataPtr->f));
-//
-//   auto vecFun = this->dataPtr->fun.AsVector3d();
-//
-//   uniforms->setNamedConstant("fun", ::Vector3(
-//       vecFun.X(), vecFun.Y(), vecFun.Z()));
-//
-//   uniforms->setNamedConstant("cutOffAngle",
-//     static_cast<::Real>(this->dataPtr->cutOffAngle));
-//
-//   ::GpuProgramParametersSharedPtr uniforms_vs =
-//     _pass->getVertexProgramParameters();
-//
-//   uniforms_vs->setNamedConstant("ratio", static_cast<::Real>(_ratio));
-// }
 
 //////////////////////////////////////////////////
 void CameraLens::ConvertToCustom()
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   this->SetType(MFT_CUSTOM);
-
-//   sdf::ElementPtr cf = this->dataPtr->sdf->AddElement("custom_function");
-//
-//   cf->AddElement("c1")->Set(this->dataPtr->c1);
-//   cf->AddElement("c2")->Set(this->dataPtr->c2);
-//   cf->AddElement("c3")->Set(this->dataPtr->c3);
-//   cf->AddElement("f")->Set(this->dataPtr->f);
-//
-//   cf->AddElement("fun")->Set(this->dataPtr->fun.AsString());
 }
 
 //////////////////////////////////////////////////

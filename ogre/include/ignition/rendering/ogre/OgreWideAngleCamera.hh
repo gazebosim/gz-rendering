@@ -42,8 +42,7 @@ namespace ignition
     // forward declarations
     class OgreWideAngleCameraPrivate;
 
-    /// \class OgreWideAngleCamera OgreWideAngleCamera.hh rendering/rendering.hh
-    /// \brief Camera with variable mapping function
+    /// \brief Ogre implementation of WideAngleCamera
     class IGNITION_RENDERING_OGRE_VISIBLE OgreWideAngleCamera :
         public BaseWideAngleCamera<OgreSensor>,
         protected Ogre::CompositorInstance::Listener
@@ -74,9 +73,9 @@ namespace ignition
       /// \param[in] _size Texture size
       public: void SetEnvTextureSize(int _size);
 
-      // Documentation inherited
+      /// \brief Set the background color of the camera
+      /// \param[in] _color Color to set the background to
       public: bool SetBackgroundColor(const math::Color &_color);
-          // override;
 
       /// \brief Project 3D world coordinates to screen coordinates
       /// \param[in] _pt 3D world coodinates
@@ -108,8 +107,8 @@ namespace ignition
           std::function<void(const unsigned char *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
-      // Documentation inherited
-      // protected: void UpdateFOV() override;
+      // Documentation inherited.
+      public: virtual void SetVisibilityMask(uint32_t _mask) override;
 
       /// \brief Set the camera's render target
       protected: void CreateWideAngleTexture();

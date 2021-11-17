@@ -96,7 +96,7 @@ void buildScene(ScenePtr _scene)
 
   WideAngleCameraPtr camera = _scene->CreateWideAngleCamera("camera");
   camera->SetLens(lens);
-  camera->SetHFOV(2.6);
+  camera->SetHFOV(3.14);
   camera->SetLocalPosition(0.0, 0.0, 0.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);

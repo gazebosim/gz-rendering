@@ -79,10 +79,6 @@ class ignition::rendering::OgreWideAngleCameraPrivate
   /// \brief Outgoing image data, used by newImageFrame event.
   public: unsigned char *wideAngleImage = nullptr;
 
-  /// \brief Mutex to lock while rendering the world
-//  public: std::mutex renderMutex;
-
-  /// \brief Mutex to lock while setting or reading camera properties
   /// \brief Event used to signal camera data
   public: ignition::common::EventT<void(const unsigned char *,
               unsigned int, unsigned int, unsigned int,
@@ -96,7 +92,6 @@ using namespace rendering;
 OgreWideAngleCamera::OgreWideAngleCamera()
     : dataPtr(std::make_unique<OgreWideAngleCameraPrivate>())
 {
-  // this->dataPtr->lens = new CameraLens();
   for (int i = 0; i < 6; ++i)
   {
     this->dataPtr->envCameras[i] = nullptr;
@@ -106,7 +101,6 @@ OgreWideAngleCamera::OgreWideAngleCamera()
 //////////////////////////////////////////////////
 OgreWideAngleCamera::~OgreWideAngleCamera()
 {
-//  delete this->Lens();
   this->Destroy();
 }
 
@@ -117,7 +111,6 @@ void OgreWideAngleCamera::Init()
   this->CreateCamera();
   this->CreateRenderTexture();
   this->Reset();
-  // this->CreateEnvRenderTexture(this->scopedUniqueName + "_envRttTex");
 }
 
 /////////////////////////////////////////////////
@@ -137,44 +130,6 @@ void OgreWideAngleCamera::PreRender()
   if (!this->dataPtr->ogreRenderTexture)
     this->CreateWideAngleTexture();
 }
-
-//////////////////////////////////////////////////
-//void OgreWideAngleCamera::Load()
-//{
-//  Camera::Load();
-//
-//  // Cube map texture format defaults to matching image pixel format
-//  this->dataPtr->envCubeMapTextureFormat =
-//    static_cast<Ogre::PixelFormat>(this->imageFormat);
-//
-//  this->CreateEnvCameras();
-//
-//  if (this->sdf->HasElement("lens"))
-//  {
-//    sdf::ElementPtr sdfLens = this->sdf->GetElement("lens");
-//
-//    this->dataPtr->lens->Load(sdfLens);
-//
-//    if (sdfLens->HasElement("env_texture_size"))
-//      this->dataPtr->envTextureSize = sdfLens->Get<int>("env_texture_size");
-//
-//    const std::string envTextureFormat = "ignition:env_texture_format";
-//    if (sdfLens->HasElement(envTextureFormat))
-//    {
-//      this->dataPtr->envCubeMapTextureFormat = static_cast<Ogre::PixelFormat>(
-//        this->OgrePixelFormat(sdfLens->Get<std::string>(envTextureFormat)));
-//    }
-//  }
-//  else
-//    this->dataPtr->lens->Load();
-//
-//  std::string lensType = this->dataPtr->lens->Type();
-//  if (lensType == "gnomonical" && this->HFOV() > (IGN_PI/2.0))
-//  {
-//    ignerr << "The recommended camera horizontal FOV should be <= PI/2"
-//        << " for lens of type 'gnomonical'." << std::endl;
-//  }
-//}
 
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Destroy()
@@ -222,16 +177,8 @@ void OgreWideAngleCamera::Destroy()
 //////////////////////////////////////////////////
 unsigned int OgreWideAngleCamera::EnvTextureSize() const
 {
-//  std::lock_guard<std::mutex> lock(this->dataPtr->dataMutex);
-
   return this->dataPtr->envTextureSize;
 }
-
-// //////////////////////////////////////////////////
-// OgreCameraLens *OgreWideAngleCamera::Lens() const
-// {
-//   return this->dataPtr->lens;
-// }
 
 //////////////////////////////////////////////////
 // void OgreWideAngleCamera::SetRenderTarget(Ogre::RenderTarget *_target)
@@ -267,12 +214,6 @@ unsigned int OgreWideAngleCamera::EnvTextureSize() const
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::SetEnvTextureSize(int _size)
 {
-//  std::lock_guard<std::mutex> lock(this->dataPtr->dataMutex);
-
-//  if (this->sdf->HasElement("env_texture_size"))
-//    this->sdf->AddElement("env_texture_size")->Set(_size);
-//
-//  this->sdf->GetElement("env_texture_size")->Set(_size);
   this->dataPtr->envTextureSize = _size;
 }
 
@@ -452,14 +393,9 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
 
     auto const &bgColor = this->scene->BackgroundColor();
     vp->setBackgroundColour(OgreConversions::Convert(bgColor));
-    // vp->setVisibilityMask(GZ_VISIBILITY_ALL &
-        // ~(GZ_VISIBILITY_GUI | GZ_VISIBILITY_SELECTABLE));
+    vp->setVisibilityMask(this->VisibilityMask());
 
     this->dataPtr->envViewports[i] = vp;
-
-//    if (this->scene->GetSkyX())
-//      rtt->addListener(this->scene->GetSkyX());
-
     this->dataPtr->envRenderTargets[i] = rtt;
   }
 
@@ -519,7 +455,9 @@ void OgreWideAngleCamera::notifyMaterialRender(Ogre::uint32 /*_pass_id*/,
 #ifndef _WIN32
   // XXX: OGRE doesn't allow to enable cubemap filtering extention thru its API
   // suppose that this function was invoked in a thread that has OpenGL context
-  // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+  #ifdef GL_TEXTURE_CUBE_MAP_SEAMLESS
+  glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+  #endif
 #endif
 }
 
@@ -567,12 +505,6 @@ void OgreWideAngleCamera::SetUniformVariables(Ogre::Pass *_pass,
     _pass->getVertexProgramParameters();
 
   uniformsVs->setNamedConstant("ratio", static_cast<Ogre::Real>(_ratio));
-
-//  std::cerr << "set uniform var "  << _hfov << std::endl;
-//  std::cerr << "  c " << this->Lens().C1() << " " << this->Lens().C2() << " " << this->Lens().C3() << std::endl;
-//  std::cerr << "  scaleToFov " << this->Lens().ScaleToHFOV() << ", f " << this->Lens().F() << std::endl;
-//  std::cerr << "  cutoffangle " << this->Lens().CutOffAngle() << ", ratio " << _ratio << std::endl;
-
 }
 
 //////////////////////////////////////////////////
@@ -740,4 +672,15 @@ common::ConnectionPtr OgreWideAngleCamera::ConnectNewWideAngleFrame(
 RenderTargetPtr OgreWideAngleCamera::RenderTarget() const
 {
   return this->dataPtr->wideAngleTexture;
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::SetVisibilityMask(uint32_t _mask)
+{
+  BaseCamera::SetVisibilityMask(_mask);
+  for (int i = 0; i < 6; ++i)
+  {
+    auto *vp = this->dataPtr->envViewports[i];
+    vp->setVisibilityMask(_mask);
+  }
 }

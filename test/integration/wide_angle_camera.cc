@@ -63,11 +63,11 @@ int g_counter = 0;
 /// \brief callback to get the wide angle camera image data
 void OnNewWideAngleFrame(const unsigned char *_data,
                     unsigned int _width, unsigned int _height,
-                    unsigned int /*_channels*/,
+                    unsigned int _channels,
                     const std::string &/*_format*/)
 {
   g_mutex.lock();
-  auto bufferSize = _width * _height * 3;
+  auto bufferSize = _width * _height * _channels;
 
   if (!g_buffer)
     g_buffer = new unsigned char[bufferSize];

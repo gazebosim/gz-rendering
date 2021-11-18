@@ -48,9 +48,12 @@ class ignition::rendering::OgreWideAngleCameraPrivate
   /// \brief Compositor used to render rectangle with attached cube map
   public: Ogre::CompositorInstance *cubeMapCompInstance = nullptr;
 
+  /// \brief Number of cameras used to create the cubemap
+  public: static const unsigned int kEnvCameraCount = 6u;
+
   /// \brief A Set of 6 cameras,
   ///   each pointing in different direction with FOV of 90deg
-  public: Ogre::Camera *envCameras[6];
+  public: Ogre::Camera *envCameras[kEnvCameraCount];
 
   /// \brief Render targets for envCameras
   public: Ogre::RenderTarget *envRenderTargets[6];
@@ -98,7 +101,7 @@ using namespace rendering;
 OgreWideAngleCamera::OgreWideAngleCamera()
     : dataPtr(std::make_unique<OgreWideAngleCameraPrivate>())
 {
-  for (int i = 0; i < 6; ++i)
+  for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
     this->dataPtr->envCameras[i] = nullptr;
     this->dataPtr->envRenderTargets[i] = nullptr;
@@ -153,7 +156,7 @@ void OgreWideAngleCamera::Destroy()
     this->dataPtr->wideAngleImage = nullptr;
   }
 
-  for (int i = 0; i < 6; ++i)
+  for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
     OgreRTShaderSystem::DetachViewport(this->dataPtr->envViewports[i],
         this->scene);
@@ -197,7 +200,7 @@ void OgreWideAngleCamera::SetEnvTextureSize(int _size)
 void OgreWideAngleCamera::CreateCamera()
 {
   // Create dummy ogre camera object
-  Ogre::SceneManager *ogreSceneManager  = this->scene->OgreSceneManager();
+  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
     ignerr << "Scene manager cannot be obtained" << std::endl;
@@ -219,13 +222,12 @@ void OgreWideAngleCamera::CreateCamera()
   this->dataPtr->ogreCamera->setAutoAspectRatio(true);
 }
 
-
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::CreateEnvCameras()
 {
   double nearPlane = this->NearClipPlane();
   double farPlane = this->FarClipPlane();
-  for (int i = 0; i < 6; ++i)
+  for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
     std::stringstream name_str;
 
@@ -245,8 +247,10 @@ void OgreWideAngleCamera::CreateEnvCameras()
     this->dataPtr->envCameras[i]->setFarClipDistance(farPlane);
   }
 
-  for (int i = 0; i < 6; ++i)
+  for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
+  {
     this->ogreNode->attachObject(this->dataPtr->envCameras[i]);
+  }
 
   // set environment cameras orientation
   this->dataPtr->envCameras[0]->yaw(Ogre::Degree(-90));
@@ -265,7 +269,7 @@ bool OgreWideAngleCamera::SetBackgroundColor(const math::Color &_color)
   if (this->dataPtr->ogreCamera->getViewport())
   {
     this->dataPtr->ogreCamera->getViewport()->setBackgroundColour(clr);
-    for (int i = 0; i < 6; ++i)
+    for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
     {
       if (this->dataPtr->envViewports[i])
       {
@@ -354,7 +358,7 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
           false,
           fsaa).getPointer();
 
-  for (int i = 0; i < 6; ++i)
+  for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
     Ogre::RenderTarget *rtt;
     rtt = this->dataPtr->envCubeMapTexture->getBuffer(i)->getRenderTarget();
@@ -395,7 +399,7 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Render()
 {
-  for (int i = 0; i < 6; ++i)
+  for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
     this->dataPtr->envRenderTargets[i]->update();
   }
@@ -488,7 +492,7 @@ math::Vector3d OgreWideAngleCamera::Project3d(
   // project onto cubemap face then onto
   ignition::math::Vector3d screenPos;
   // loop through all env cameras can find the one that sees the 3d world point
-  for (int i = 0; i < 6; ++i)
+  for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
     // project world point to camera clip space.
     auto viewProj = this->dataPtr->envCameras[i]->getProjectionMatrix() *
@@ -508,15 +512,15 @@ math::Vector3d OgreWideAngleCamera::Project3d(
       // face of the cube. Note: operate in clip space so
       // left handed coordinate system rotation
       if (i == 0)
-        rot = ignition::math::Quaterniond(0.0, M_PI*0.5, 0.0);
+        rot = ignition::math::Quaterniond(0.0, IGN_PI * 0.5, 0.0);
       else if (i == 1)
-        rot = ignition::math::Quaterniond(0.0, -M_PI*0.5, 0.0);
+        rot = ignition::math::Quaterniond(0.0, -IGN_PI * 0.5, 0.0);
       else if (i == 2)
-        rot = ignition::math::Quaterniond(-M_PI*0.5, 0.0, 0.0);
+        rot = ignition::math::Quaterniond(-IGN_PI * 0.5, 0.0, 0.0);
       else if (i == 3)
-        rot = ignition::math::Quaterniond(M_PI*0.5, 0.0, 0.0);
+        rot = ignition::math::Quaterniond(IGN_PI * 0.5, 0.0, 0.0);
       else if (i == 5)
-        rot = ignition::math::Quaterniond(0.0, M_PI, 0.0);
+        rot = ignition::math::Quaterniond(0.0, IGN_PI, 0.0);
       dir = rot * dir;
       dir.Normalize();
 
@@ -654,7 +658,7 @@ void OgreWideAngleCamera::SetVisibilityMask(uint32_t _mask)
   BaseCamera::SetVisibilityMask(_mask);
   if (this->dataPtr->envViewports[0] == nullptr)
     return;
-  for (int i = 0; i < 6; ++i)
+  for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
     auto *vp = this->dataPtr->envViewports[i];
     vp->setVisibilityMask(_mask);

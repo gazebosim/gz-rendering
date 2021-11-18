@@ -76,6 +76,8 @@ namespace ignition
 
       /// \brief Set the background color of the camera
       /// \param[in] _color Color to set the background to
+      /// \return True if the background color is set successfully,
+      /// false otherwise
       public: bool SetBackgroundColor(const math::Color &_color);
 
       /// \brief Project 3D world coordinates to screen coordinates

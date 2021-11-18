@@ -164,6 +164,8 @@ namespace ignition
       public: void SetScaleToHFOV(bool _scale);
 
       /// \brief Apply mapping function to input number
+      /// \param[in] _f Input floating point number to apply the mapping
+      /// function to.
       /// \return Result of the application
       public: float ApplyMappingFunction(float _f) const;
 

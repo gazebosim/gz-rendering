@@ -42,7 +42,7 @@ class ignition::rendering::CameraLensPrivate
   public: double f = 1.0;
 
   /// \brief Visible field of view
-  public: double cutOffAngle = IGN_PI*0.5;
+  public: double cutOffAngle = IGN_PI * 0.5;
 
   /// \brief True to scale image to hfov, false to render as output according
   /// to projection parameters

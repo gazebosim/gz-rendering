@@ -187,37 +187,6 @@ unsigned int OgreWideAngleCamera::EnvTextureSize() const
 }
 
 //////////////////////////////////////////////////
-// void OgreWideAngleCamera::SetRenderTarget(Ogre::RenderTarget *_target)
-// {
-// //  Camera::SetRenderTarget(_target);
-//
-//   if (this->renderTarget)
-//   {
-//     this->dataPtr->cubeMapCompInstance =
-//       Ogre::CompositorManager::getSingleton().addCompositor(this->viewport,
-//           "WideOgreCameraLensMap/ParametrisedMap");
-//
-//     if (this->dataPtr->envCubeMapTexture)
-//     {
-//       this->dataPtr->compMat =
-//           Ogre::MaterialManager::getSingleton().getByName("WideLensMap");
-//
-//       auto pass = this->dataPtr->compMat->getTechnique(0)->getPass(0);
-//
-//       if (!pass->getNumTextureUnitStates())
-//         pass->createTextureUnitState();
-//
-//       this->dataPtr->cubeMapCompInstance->addListener(this);
-//     }
-//     else
-//       ignerr << "WideAngleCamera compositor texture missng" << std::endl;
-//
-//
-//     this->dataPtr->cubeMapCompInstance->setEnabled(true);
-//   }
-// }
-
-//////////////////////////////////////////////////
 void OgreWideAngleCamera::SetEnvTextureSize(int _size)
 {
   this->dataPtr->envTextureSize = _size;

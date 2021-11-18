@@ -70,23 +70,6 @@ bool g_initContext = false;
 double g_offset = 0.0;
 
 //////////////////////////////////////////////////
-//! [update camera]
-void updateCameras()
-
-{
-  double angle = g_offset / 2 * M_PI;
-  double x = sin(angle) * 3.0 + 3.0;
-  double y = cos(angle) * 3.0;
-  for (ir::CameraPtr camera : g_cameras)
-  {
-    camera->SetLocalPosition(x, y, 0.0);
-  }
-
-  g_offset += 0.0005;
-}
-//! [update camera]
-
-//////////////////////////////////////////////////
 void displayCB()
 {
 #if __APPLE__
@@ -117,7 +100,6 @@ void displayCB()
   glDrawPixels(imgw, imgh, GL_RGB, GL_UNSIGNED_BYTE, data);
 
   glutSwapBuffers();
-//  updateCameras();
 }
 
 //////////////////////////////////////////////////

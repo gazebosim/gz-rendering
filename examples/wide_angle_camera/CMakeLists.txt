@@ -22,8 +22,6 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
-configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
-
 add_executable(wide_angle_camera Main.cc GlutWindow.cc)
 
 target_link_libraries(wide_angle_camera

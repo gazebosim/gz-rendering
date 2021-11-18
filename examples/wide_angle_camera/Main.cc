@@ -28,17 +28,12 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
-#include <ignition/common/MeshManager.hh>
 #include <ignition/rendering.hh>
 
-#include "example_config.hh"
 #include "GlutWindow.hh"
 
 using namespace ignition;
 using namespace rendering;
-
-const std::string RESOURCE_PATH =
-    common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)

@@ -130,7 +130,7 @@ class ignition::rendering::CameraLensPrivate
             private: decltype(variants)::value_type value;
           };
 
-  /// \brief `fun` component of the mapping function,
+  /// \brief Angle function component of the mapping function,
   /// \see CameraLens description
   public: MapFunctionEnum fun = MapFunctionEnum(AFT_IDENTITY);
 };
@@ -192,7 +192,6 @@ void CameraLens::SetCustomMappingFunction(double _c1, double _c2,
 //////////////////////////////////////////////////
 MappingFunctionType CameraLens::Type() const
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
   return this->dataPtr->type;
 }
 
@@ -205,8 +204,6 @@ bool CameraLens::IsCustom() const
 //////////////////////////////////////////////////
 double CameraLens::C1() const
 {
-//  std::lock_guard<std::recursive_mutex> lock(this->dataPtr->dataMutex);
-
   return this->dataPtr->c1;
 }
 
@@ -249,7 +246,7 @@ bool CameraLens::ScaleToHFOV() const
 //////////////////////////////////////////////////
 void CameraLens::SetType(MappingFunctionType _type)
 {
-  // c1, c2, c3, f, fun
+  // c1, c2, c3, f, angle function
   std::map<MappingFunctionType, std::tuple<double, double, double,
       double, AngleFunctionType> > funTypes = {
     {MFT_GNOMONIC,        std::make_tuple(1.0, 1.0, 0.0, 1.0, AFT_TAN)},

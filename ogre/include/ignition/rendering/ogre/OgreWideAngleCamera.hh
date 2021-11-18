@@ -120,7 +120,7 @@ namespace ignition
       /// \brief Creates a set of 6 cameras pointing in different directions
       protected: void CreateEnvCameras();
 
-      /// \bried Callback that is used to set mapping material uniform values,
+      /// \brief Callback that is used to set mapping material uniform values,
       ///   implements Ogre::CompositorInstance::Listener interface
       /// \param[in] _pass_id Pass identifier
       /// \param[in] _material Material whose parameters should be set

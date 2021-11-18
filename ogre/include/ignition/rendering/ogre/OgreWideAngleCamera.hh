@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_WIDEANGLECAMERA_HH_
 #define IGNITION_RENDERING_OGRE_WIDEANGLECAMERA_HH_
 
+#include <memory>
 #include <string>
 #include <vector>
 

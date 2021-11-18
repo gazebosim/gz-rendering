@@ -84,7 +84,8 @@ namespace ignition
       /// \param[in] _pt 3D world coodinates
       /// \return Screen coordinates. Z is the distance of point from camera
       /// optical center.
-      public: math::Vector3d Project3d(const math::Vector3d &_pt) const;
+      public: math::Vector3d Project3d(const math::Vector3d &_pt) const
+          override;
 
       /// \brief Get the list of ogre cameras used to create the cube map for
       /// generating the wide angle camera image
@@ -114,7 +115,7 @@ namespace ignition
       public: virtual void SetVisibilityMask(uint32_t _mask) override;
 
       /// \brief Set the camera's render target
-      protected: void CreateWideAngleTexture();
+      protected: void CreateWideAngleTexture() override;
 
       /// \brief Create the camera.
       protected: void CreateCamera();

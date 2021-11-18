@@ -36,6 +36,7 @@ set_property(
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
   ignition-common${IGN_COMMON_VER}::requested
+  ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
   PRIVATE
   ignition-plugin${IGN_PLUGIN_VER}::loader
 )

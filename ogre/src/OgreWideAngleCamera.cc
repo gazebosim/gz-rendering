@@ -102,6 +102,7 @@ OgreWideAngleCamera::OgreWideAngleCamera()
   {
     this->dataPtr->envCameras[i] = nullptr;
     this->dataPtr->envRenderTargets[i] = nullptr;
+    this->dataPtr->envViewports[i] = nullptr;
   }
 }
 //////////////////////////////////////////////////
@@ -651,6 +652,8 @@ RenderTargetPtr OgreWideAngleCamera::RenderTarget() const
 void OgreWideAngleCamera::SetVisibilityMask(uint32_t _mask)
 {
   BaseCamera::SetVisibilityMask(_mask);
+  if (this->dataPtr->envViewports[0] == nullptr)
+    return;
   for (int i = 0; i < 6; ++i)
   {
     auto *vp = this->dataPtr->envViewports[i];

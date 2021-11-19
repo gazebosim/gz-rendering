@@ -135,9 +135,10 @@ namespace ignition
 
       private: friend class OgreScene;
 
-      /// \internal
+      /// \cond warning
       /// \brief Private data pointer
       IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
+      /// \endcond
     };
     }
   }

@@ -133,11 +133,11 @@ namespace ignition
       /// \return Pointer to the render target
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
+      private: friend class OgreScene;
+
       /// \internal
       /// \brief Private data pointer
       IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
-
-      private: friend class OgreScene;
     };
     }
   }

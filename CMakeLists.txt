@@ -45,6 +45,11 @@ ign_find_package(ignition-plugin1 REQUIRED COMPONENTS all)
 set(IGN_PLUGIN_VER ${ignition-plugin1_VERSION_MAJOR})
 
 #--------------------------------------
+# Find ignition-utils
+ign_find_package(ignition-utils1 REQUIRED)
+set(IGN_UTILS_VER ${ignition-utils1_VERSION_MAJOR})
+
+#--------------------------------------
 # Find FreeImage
 ign_find_package(FreeImage VERSION 3.9
   REQUIRED_BY optix

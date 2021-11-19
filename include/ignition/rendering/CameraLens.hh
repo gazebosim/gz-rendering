@@ -21,6 +21,7 @@
 #include <memory>
 
 #include <ignition/math/Vector3.hh>
+#include <ignition/utils/ImplPtr.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
@@ -31,9 +32,6 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    // foward declarations
-    class CameraLensPrivate;
-
     /// \brief Enum for mapping function types
     enum IGNITION_RENDERING_VISIBLE MappingFunctionType
     {
@@ -76,12 +74,12 @@ namespace ignition
       /// \brief Constructor
       public: CameraLens();
 
+      /// \brief Destructor
+      public: virtual ~CameraLens();
+
       /// \brief Constructor
       /// \param[in] _other The other camera lens
       public: explicit CameraLens(const CameraLens &_other);
-
-      /// \brief Destructor
-      public: virtual ~CameraLens();
 
       /// \brief Set custom camera lens with specified parameters
       /// \param[in] _c1 Image scaling factor
@@ -184,7 +182,7 @@ namespace ignition
 
       /// \internal
       /// \brief Private data pointer
-      private: std::unique_ptr<CameraLensPrivate> dataPtr;
+      IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
     };
     }
   }

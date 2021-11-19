@@ -27,7 +27,7 @@
 #include "ignition/rendering/CameraLens.hh"
 
 /// \brief Private fields of camera lens
-class ignition::rendering::CameraLensPrivate
+class ignition::rendering::CameraLens::Implementation
 {
   /// \brief Linear scale factor
   public: double c1 = 1.0;
@@ -141,16 +141,16 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 CameraLens::CameraLens()
-  : dataPtr(std::make_unique<CameraLensPrivate>())
+  : dataPtr(utils::MakeUniqueImpl<Implementation>())
 {
 }
 
 //////////////////////////////////////////////////
 CameraLens::CameraLens(const CameraLens &_other)
-  : dataPtr(std::make_unique<CameraLensPrivate>())
+  : dataPtr(utils::MakeUniqueImpl<Implementation>())
 {
   // Avoid incorrect cppcheck error about dataPtr being assigned in constructor
-  CameraLensPrivate &dp = *(this->dataPtr);
+  CameraLens::Implementation &dp = *(this->dataPtr);
   dp = *(_other.dataPtr);
 }
 
@@ -177,14 +177,14 @@ void CameraLens::SetCustomMappingFunction(double _c1, double _c2,
 
   try
   {
-    this->dataPtr->fun = CameraLensPrivate::MapFunctionEnum(_fun);
+    this->dataPtr->fun = CameraLens::Implementation::MapFunctionEnum(_fun);
   }
   catch(const std::exception &ex)
   {
     ignerr << "Angle functionis not known, "
            << "[tan] will be used instead" << std::endl;
 
-    this->dataPtr->fun = CameraLensPrivate::MapFunctionEnum(AFT_TAN);
+    this->dataPtr->fun = CameraLens::Implementation::MapFunctionEnum(AFT_TAN);
   }
   if (!this->IsCustom())
     this->ConvertToCustom();
@@ -292,7 +292,7 @@ void CameraLens::SetType(MappingFunctionType _type)
     try
     {
       this->dataPtr->fun =
-          CameraLensPrivate::MapFunctionEnum(std::get<4>(params));
+          CameraLens::Implementation::MapFunctionEnum(std::get<4>(params));
     }
     catch(const std::exception &ex)
     {
@@ -346,7 +346,7 @@ void CameraLens::SetAngleFunction(AngleFunctionType _fun)
 
   try
   {
-    this->dataPtr->fun = CameraLensPrivate::MapFunctionEnum(_fun);
+    this->dataPtr->fun = CameraLens::Implementation::MapFunctionEnum(_fun);
   }
   catch(const std::exception &ex)
   {

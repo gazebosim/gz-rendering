@@ -40,7 +40,7 @@
 #include "ignition/rendering/ogre/OgreWideAngleCamera.hh"
 
 /// \brief Private data for the WideAngleCamera class
-class ignition::rendering::OgreWideAngleCameraPrivate
+class ignition::rendering::OgreWideAngleCamera::Implementation
 {
   /// \brief Environment texture size
   public: int envTextureSize = 512u;
@@ -99,7 +99,7 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 OgreWideAngleCamera::OgreWideAngleCamera()
-    : dataPtr(std::make_unique<OgreWideAngleCameraPrivate>())
+    : dataPtr(utils::MakeUniqueImpl<Implementation>())
 {
   for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {

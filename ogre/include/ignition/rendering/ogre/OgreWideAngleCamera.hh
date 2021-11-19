@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 
+#include <ignition/utils/ImplPtr.hh>
+
 #include "ignition/rendering/base/BaseWideAngleCamera.hh"
 #include "ignition/rendering/ogre/OgreRenderTarget.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
@@ -40,9 +42,6 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    // forward declarations
-    class OgreWideAngleCameraPrivate;
-
     /// \brief Ogre implementation of WideAngleCamera
     class IGNITION_RENDERING_OGRE_VISIBLE OgreWideAngleCamera :
         public BaseWideAngleCamera<OgreSensor>,
@@ -136,7 +135,7 @@ namespace ignition
 
       /// \internal
       /// \brief Private data pointer
-      private: std::unique_ptr<OgreWideAngleCameraPrivate> dataPtr;
+      IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
 
       private: friend class OgreScene;
     };

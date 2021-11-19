@@ -17,8 +17,6 @@
 #ifndef IGNITION_RENDERING_DISTORTIONPASS_HH_
 #define IGNITION_RENDERING_DISTORTIONPASS_HH_
 
-#include <string>
-
 #include <ignition/math/Vector2.hh>
 
 #include "ignition/rendering/config.hh"
@@ -34,7 +32,7 @@ namespace ignition
     /* \class DistortionPass DistortionPass.hh \
      * ignition/rendering/DistortionPass.hh
      */
-    /// \brief A render pass that applies Gaussian noise to the render target
+    /// \brief A render pass that applies distortion to the render target
     class IGNITION_RENDERING_VISIBLE DistortionPass
       : public virtual RenderPass
     {
@@ -43,19 +41,6 @@ namespace ignition
 
       /// \brief Destructor
       public: virtual ~DistortionPass();
-
-      /// \brief Set whether to crop the black border around the distorted
-      /// image points. Note that cropping only occurs for the legacy mode
-      /// distortion implementation.
-      /// \param[in] _crop True to crop the black border
-      /// \sa Crop
-      public: virtual void SetCrop(const bool _crop) = 0;
-
-      /// \brief Get whether or not the camera is being cropped to
-      /// account for black borders created by barrel distortion.
-      /// \return True if the black border is cropped
-      /// \sa SetCrop
-      public: virtual bool Crop() const = 0;
 
       /// \brief Get the radial distortion coefficient k1.
       /// \return Distortion coefficient k1.
@@ -80,6 +65,30 @@ namespace ignition
       /// \brief Get the distortion center.
       /// \return Distortion center.
       public: virtual math::Vector2d Center() const = 0;
+
+      /// \brief Set the radial distortion coefficient k1.
+      /// \param[in] _k1 Distortion coefficient k1.
+      public: virtual void SetK1(double _k1) = 0;
+
+      /// \brief Set the radial distortion coefficient k2.
+      /// \param[in] _k2 Distortion coefficient k1.
+      public: virtual void SetK2(double _k2) = 0;
+
+      /// \brief Set the radial distortion coefficient k3.
+      /// \param[in] _k3 Distortion coefficient k1.
+      public: virtual void SetK3(double _k3) = 0;
+
+      /// \brief Set the tangential distortion coefficient p1.
+      /// \param[in] _p1 Distortion coefficient k1.
+      public: virtual void SetP1(double _p1) = 0;
+
+      /// \brief Set the tangential distortion coefficient p2.
+      /// \param[in] _p2 Distortion coefficient k1.
+      public: virtual void SetP2(double _p2) = 0;
+
+      /// \brief Set the distortion center.
+      /// \param[in] _center Distortion center.
+      public: virtual void SetCenter(math::Vector2d _center) = 0;
     };
     }
   }

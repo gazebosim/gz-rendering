@@ -112,14 +112,6 @@ void Ogre2Marker::PreRender()
     auto pass = item->getSubItem(0)->getMaterial()->getTechnique(0)->getPass(0);
     auto vertParams = pass->getVertexProgramParameters();
     vertParams->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
-
-    // support setting color only from diffuse for now
-    if (this->dataPtr->material)
-    {
-      auto fragParams = pass->getFragmentProgramParameters();
-      fragParams->setNamedConstant("color",
-          Ogre2Conversions::Convert(this->dataPtr->material->Diffuse()));
-    }
   }
 
   this->dataPtr->dynamicRenderable->Update();

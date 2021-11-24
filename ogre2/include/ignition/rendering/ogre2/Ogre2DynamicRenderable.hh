@@ -137,6 +137,14 @@ namespace ignition
       private: void GenerateNormals(Ogre::OperationType _opType,
           const std::vector<math::Vector3d> &_vertices, float *_vbuffer);
 
+      /// \brief Helper function to generate colors per-vertex. Only applies
+      /// to points. The colors fill the normal slots on the vertex buffer.
+      /// \param[in] _opType Ogre render operation type
+      /// \param[in] _vertices a list of vertices
+      /// \param[in,out] _vbuffer vertex buffer to be filled
+      private: void GenerateColors(Ogre::OperationType _opType,
+          const std::vector<math::Vector3d> &_vertices, float *_vbuffer);
+
       /// \brief Destroy the vertex buffer
       private: void DestroyBuffer();
 

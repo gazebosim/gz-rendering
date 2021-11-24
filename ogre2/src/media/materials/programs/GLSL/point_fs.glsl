@@ -18,13 +18,11 @@
 #version 330
 
 uniform vec4 color;
+in vec3 ptColor;
 
 out vec4 fragColor;
 
 void main()
 {
-  // todo(anyone) update Ogre2DynamicRenderable to support vertex coloring
-  // so we can set color using the line below
-  // fragColor = gl_Color;
-  fragColor = color;
+  fragColor = vec4(ptColor.x, ptColor.y, ptColor.z, 1);
 }

@@ -53,8 +53,80 @@ namespace ignition
       // Documentation inherited
       public: void CreateRenderPass() override;
 
+      /// \brief Apply distortion model
+      /// \param[in] _in Input uv coordinate.
+      /// \param[in] _center Normalized distortion center.
+      /// \param[in] _k1 Radial distortion coefficient k1.
+      /// \param[in] _k2 Radial distortion coefficient k2.
+      /// \param[in] _k3 Radial distortion coefficient k3.
+      /// \param[in] _p1 Tangential distortion coefficient p1.
+      /// \param[in] _p2 Tangential distortion coefficient p2.
+      /// \return Distorted coordinate.
+      public: static ignition::math::Vector2d Distort(
+                  const ignition::math::Vector2d &_in,
+                  const ignition::math::Vector2d &_center,
+                  double _k1, double _k2, double _k3,
+                  double _p1, double _p2);
+
+      /// \brief Apply distortion model using camera coordinates projection
+      /// \param[in] _in Input uv coordinate.
+      /// \param[in] _center Normalized distortion center.
+      /// \param[in] _k1 Radial distortion coefficient k1.
+      /// \param[in] _k2 Radial distortion coefficient k2.
+      /// \param[in] _k3 Radial distortion coefficient k3.
+      /// \param[in] _p1 Tangential distortion coefficient p1.
+      /// \param[in] _p2 Tangential distortion coefficient p2.
+      /// \param[in] _width Width of the image texture in pixels.
+      /// \param[in] _f Focal length in pixels.
+      /// \return Distorted coordinate.
+      public: static ignition::math::Vector2d Distort(
+                  const ignition::math::Vector2d &_in,
+                  const ignition::math::Vector2d &_center,
+                  double _k1, double _k2, double _k3,
+                  double _p1, double _p2,
+                  unsigned int _width, double _f);
+
+      /// \brief get the distortion map value.
+      /// \return the distortion map value at the specified index,
+      /// or (-1, -1) if the index
+      /// is out of bounds.
+      protected: ignition::math::Vector2d
+        DistortionMapValueClamped(const int x, const int y) const;
+
+      /// \brief calculate the correct scale factor to "zoom" the render,
+      /// cutting off black borders caused by distortion (only if the crop
+      /// flag has been set).
+      protected: void CalculateAndApplyDistortionScale();
+
+      /// \brief Scale applied to distorted image.
+      public: ignition::math::Vector2d distortionScale = {1.0, 1.0};
+
+      /// \brief True if the distorted image will be cropped to remove the
+      /// black pixels at the corners of the image.
+      public: bool distortionCrop = true;
+
+      /// \brief Use the legacy distortion mode. If this is set to false, the
+      /// new mode modifies how Brown's distortion equations are applied to
+      /// better reflect real distortion. The image is projected from image
+      /// plane to camera plane to apply distortion equations, then projected
+      /// back to image plane. Note that the new distortion doesn't allow
+      /// the image to be cropped.
+      public: bool legacyMode = true;
+
       /// \brief Distortion compositor.
       public: Ogre::CompositorInstance *distortionInstance = nullptr;
+
+      /// \brief Ogre Material that contains the distortion shader
+      public: Ogre::MaterialPtr distortionMaterial;
+
+      /// \brief Mapping of distorted to undistorted normalized pixels
+      public: std::vector<ignition::math::Vector2d> distortionMap;
+      
+      /// \brief Width of distortion texture map
+      public: unsigned int distortionTexWidth;
+
+      /// \brief Height of distortion texture map
+      public: unsigned int distortionTexHeight;
     };
     }
   }

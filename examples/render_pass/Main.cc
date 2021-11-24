@@ -168,6 +168,7 @@ CameraPtr createCamera(const std::string &_engineName)
     RenderPassPtr pass = rpSystem->Create<DistortionPass>();
     DistortionPassPtr distortionPass =
         std::dynamic_pointer_cast<DistortionPass>(pass);
+    distortionPass->SetK1(0.5);
     camera->AddRenderPass(distortionPass);
   }
   //! [get render pass system]

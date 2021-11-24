@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_DISTORTIONPASS_HH_
 
 #include <ignition/math/Vector2.hh>
+#include <ignition/math/Vector3.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"

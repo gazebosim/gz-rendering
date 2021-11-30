@@ -15,7 +15,8 @@
  *
  */
 
-vertex_program GpuRaysScan1stVS glsl
+// GLSL shaders
+vertex_program GpuRaysScan1stVS_GLSL glsl
 {
   source gpu_rays_1st_pass_vs.glsl
   default_params
@@ -24,7 +25,7 @@ vertex_program GpuRaysScan1stVS glsl
   }
 }
 
-fragment_program GpuRaysScan1stFS glsl
+fragment_program GpuRaysScan1stFS_GLSL glsl
 {
   source gpu_rays_1st_pass_fs.glsl
 
@@ -35,6 +36,35 @@ fragment_program GpuRaysScan1stFS glsl
     param_named particleDepthTexture int 2
     param_named particleTexture int 3
   }
+}
+
+// Metal shaders
+vertex_program GpuRaysScan1stVS_Metal metal
+{
+  source gpu_rays_1st_pass_vs.metal
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
+}
+
+fragment_program GpuRaysScan1stFS_Metal metal
+{
+  source gpu_rays_1st_pass_fs.metal
+  shader_reflection_pair_hint GpuRaysScan1stVS_Metal
+}
+
+// Unified shaders
+vertex_program GpuRaysScan1stVS unified
+{
+  delegate GpuRaysScan1stVS_GLSL
+  delegate GpuRaysScan1stVS_Metal
+}
+
+fragment_program GpuRaysScan1stFS unified
+{
+  delegate GpuRaysScan1stFS_GLSL
+  delegate GpuRaysScan1stFS_Metal
 }
 
 material GpuRaysScan1st
@@ -69,7 +99,8 @@ material GpuRaysScan1st
   }
 }
 
-fragment_program GpuRaysScan2ndFS glsl
+// GLSL shaders
+fragment_program GpuRaysScan2ndFS_GLSL glsl
 {
   source gpu_rays_2nd_pass_fs.glsl
 
@@ -83,6 +114,20 @@ fragment_program GpuRaysScan2ndFS glsl
     param_named tex4 int 5
     param_named tex5 int 6
   }
+}
+
+// Metal shaders
+fragment_program GpuRaysScan2ndFS_Metal metal
+{
+  source gpu_rays_2nd_pass_fs.metal
+  shader_reflection_pair_hint Ogre/Compositor/Quad_vs
+}
+
+// Unified shaders
+fragment_program GpuRaysScan2ndFS unified
+{
+  delegate GpuRaysScan2ndFS_GLSL
+  delegate GpuRaysScan2ndFS_Metal
 }
 
 material GpuRaysScan2nd
@@ -125,7 +170,8 @@ material GpuRaysScan2nd
   }
 }
 
-vertex_program laser_retro_vs glsl
+// GLSL shaders
+vertex_program laser_retro_vs_GLSL glsl
 {
   source plain_color_vs.glsl
   num_clip_distances 1
@@ -138,7 +184,7 @@ vertex_program laser_retro_vs glsl
   }
 }
 
-fragment_program laser_retro_fs glsl
+fragment_program laser_retro_fs_GLSL glsl
 {
   source plain_color_fs.glsl
 
@@ -146,6 +192,39 @@ fragment_program laser_retro_fs glsl
   {
     param_named inColor float4 0 0 0 1
   }
+}
+
+// Metal shaders
+vertex_program laser_retro_vs_Metal metal
+{
+  source plain_color_vs.metal
+  num_clip_distances 1
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+    param_named_auto worldView worldview_matrix
+    param_named ignMinClipDistance float 0.0
+  }
+}
+
+fragment_program laser_retro_fs_Metal metal
+{
+  source plain_color_fs.metal
+  shader_reflection_pair_hint laser_retro_vs_Metal
+}
+
+// Unified shaders
+vertex_program laser_retro_vs unified
+{
+  delegate laser_retro_vs_GLSL
+  delegate laser_retro_vs_Metal
+}
+
+fragment_program laser_retro_fs unified
+{
+  delegate laser_retro_fs_GLSL
+  delegate laser_retro_fs_Metal
 }
 
 material LaserRetroSource

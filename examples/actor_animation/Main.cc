@@ -156,10 +156,11 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
 
 //////////////////////////////////////////////////
 CameraPtr createCamera(const std::string &_engineName,
+    const std::map<std::string, std::string>& _params,
     std::vector<VisualPtr> &_visuals, common::SkeletonPtr &_skel)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
     ignwarn << "Engine '" << _engineName
@@ -187,6 +188,12 @@ int main(int _argc, char** _argv)
     ogreEngineName = _argv[1];
   }
 
+  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  if (_argc > 2)
+  {
+    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
+  }
+
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
@@ -201,7 +208,14 @@ int main(int _argc, char** _argv)
     std::cout << "Starting engine [" << engineName << "]" << std::endl;
     try
     {
-      CameraPtr camera = createCamera(engineName, visuals, skel);
+      std::map<std::string, std::string> params;
+      if (engineName.compare("ogre2") == 0
+          && graphicsApi == GraphicsAPI::METAL)
+      {
+        params["metal"] = "1";
+      }
+
+      CameraPtr camera = createCamera(engineName, params, visuals, skel);
       if (camera)
       {
         cameras.push_back(camera);

@@ -15,7 +15,8 @@
  *
  */
 
-vertex_program selection_buffer_vs glsl
+// GLSL shaders
+vertex_program selection_buffer_vs_GLSL glsl
 {
   // reuse depth camera vertex shader
   source depth_camera_vs.glsl
@@ -25,7 +26,7 @@ vertex_program selection_buffer_vs glsl
   }
 }
 
-fragment_program selection_buffer_fs glsl
+fragment_program selection_buffer_fs_GLSL glsl
 {
   source selection_buffer_fs.glsl
   default_params
@@ -35,6 +36,36 @@ fragment_program selection_buffer_fs glsl
 
     param_named_auto colorTexResolution texture_size 0
   }
+}
+
+// Metal shaders
+vertex_program selection_buffer_vs_Metal metal
+{
+  // reuse depth camera vertex shader
+  source depth_camera_vs.metal
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
+}
+
+fragment_program selection_buffer_fs_Metal metal
+{
+  source selection_buffer_fs.metal
+  shader_reflection_pair_hint selection_buffer_vs_Metal
+}
+
+// Unified shaders
+vertex_program selection_buffer_vs unified
+{
+  delegate selection_buffer_vs_GLSL
+  delegate selection_buffer_vs_Metal
+}
+
+fragment_program selection_buffer_fs unified
+{
+  delegate selection_buffer_fs_GLSL
+  delegate selection_buffer_fs_Metal
 }
 
 material SelectionBuffer

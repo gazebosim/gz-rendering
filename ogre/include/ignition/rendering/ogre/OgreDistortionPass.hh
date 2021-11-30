@@ -31,6 +31,10 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    // Forward declaration
+    class DistortionCompositorListener;
+
     /* \class OgreDistortionPass OgreDistortionPass.hh \
      * ignition/rendering/ogre/OgreDistortionPass.hh
      */
@@ -127,6 +131,12 @@ namespace ignition
 
       /// \brief Height of distortion texture map
       public: unsigned int distortionTexHeight;
+
+      /// \brief Distortion compositor listener
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      public: std::shared_ptr<DistortionCompositorListener>
+          distortionCompositorListener;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

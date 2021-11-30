@@ -22,6 +22,39 @@
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreDistortionPass.hh"
 
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    class DistortionCompositorListener
+      : public Ogre::CompositorInstance::Listener
+    {
+      /// \brief Constructor, setting mean and standard deviation.
+      public: DistortionCompositorListener(
+          const ignition::math::Vector2d &_distortionScale):
+          distortionScale(_distortionScale) {}
+
+      /// \brief Callback that OGRE will invoke for us on each render call
+      /// \param[in] _passID OGRE material pass ID.
+      /// \param[in] _mat Pointer to OGRE material.
+      public: virtual void notifyMaterialRender(unsigned int _passId,
+                                                Ogre::MaterialPtr &_mat)
+      {
+        Ogre::GpuProgramParametersSharedPtr params =
+            _mat->getTechnique(0)->getPass(_passId)
+                     ->getFragmentProgramParameters();
+        params->setNamedConstant("scale",
+            Ogre::Vector3(1.0/distortionScale.X(),
+            1.0/distortionScale.Y(), 1.0));
+      }
+
+      private: const ignition::math::Vector2d &distortionScale;
+    };
+    }
+  }
+}
+
 using namespace ignition;
 using namespace rendering;
 
@@ -38,6 +71,10 @@ OgreDistortionPass::~OgreDistortionPass()
 //////////////////////////////////////////////////
 void OgreDistortionPass::PreRender()
 {
+  if (!this->distortionInstance)
+    return;
+  if (this->enabled != this->distortionInstance->getEnabled())
+    this->distortionInstance->setEnabled(this->enabled);
 }
 
 //////////////////////////////////////////////////
@@ -65,20 +102,20 @@ void OgreDistortionPass::CreateRenderPass()
     return;
   }
 
-  float viewportWidth = this->ogreCamera->getViewport()->getWidth();
-  float viewportHeight = this->ogreCamera->getViewport()->getHeight();
+  float viewportWidth = this->ogreCamera->getViewport()->getActualWidth();
+  float viewportHeight = this->ogreCamera->getViewport()->getActualHeight();
 
   // seems to work best with a square distortion map texture
-  unsigned int texSide = viewportHeight > viewportWidth ? viewportHeight :
+  unsigned int texSize = viewportHeight > viewportWidth ? viewportHeight :
       viewportWidth;
   // calculate focal length from largest fov
   const double fov = viewportHeight > viewportWidth ?
       this->ogreCamera->getFOVy().valueRadians() :
       (this->ogreCamera->getFOVy().valueRadians() *
       this->ogreCamera->getAspectRatio());
-  const double focalLength = texSide/(2*tan(fov/2));
-  this->distortionTexWidth = texSide;
-  this->distortionTexHeight = texSide;
+  const double focalLength = texSize/(2*tan(fov/2));
+  this->distortionTexWidth = texSize;
+  this->distortionTexHeight = texSize;
   unsigned int imageSize =
       this->distortionTexWidth * this->distortionTexHeight;
   double colStepSize = 1.0 / this->distortionTexWidth;
@@ -338,11 +375,31 @@ void OgreDistortionPass::CreateRenderPass()
       getPass(0)->setMaterial(this->distortionMaterial);
 
   this->distortionInstance->setEnabled(this->enabled);
+
+  // add listener
+  this->distortionCompositorListener.reset(new
+        DistortionCompositorListener(this->distortionScale));
+  this->distortionInstance->addListener(
+    this->distortionCompositorListener.get());
 }
 
 //////////////////////////////////////////////////
 void OgreDistortionPass::Destroy()
 {
+  if (this->distortionInstance)
+  {
+    this->distortionInstance->setEnabled(false);
+    if (this->distortionCompositorListener)
+    {
+      this->distortionInstance->removeListener(
+          this->distortionCompositorListener.get());
+    }
+    Ogre::CompositorManager::getSingleton().removeCompositor(
+        this->ogreCamera->getViewport(), "RenderPass/Distortion");
+
+    this->distortionInstance = nullptr;
+    this->distortionCompositorListener.reset();
+  }
 }
 
 //////////////////////////////////////////////////

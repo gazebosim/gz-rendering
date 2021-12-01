@@ -104,7 +104,10 @@ float screenScalingFactor()
 {
   // todo(anyone) set device pixel ratio for high dpi displays on Windows
   float ratio = 1.0;
-#ifdef __linux__
+
+  // the scaling factor seems to cause issues with mouse picking.
+  // see https://github.com/ignitionrobotics/ign-gazebo/issues/147
+#if 0
   auto closeDisplay = [](Display * display)
   {
     if (display)

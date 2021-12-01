@@ -121,15 +121,6 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   root->AddChild(camera);
   camera->Update();
 
-  if (_renderEngine == "ogre2")
-  {
-    // tests using selection buffer fail on CI, see issue #170
-    // https://github.com/ignitionrobotics/ign-rendering/issues/170
-    igndbg << "Selection buffer based screenToScene test is disabled in "
-           << _renderEngine << "." << std::endl;
-    return;
-  }
-
   // API without RayQueryResult and default max distance
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
 

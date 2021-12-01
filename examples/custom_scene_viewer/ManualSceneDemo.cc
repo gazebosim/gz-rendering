@@ -91,9 +91,10 @@ unsigned int ManualSceneDemo::CameraCount() const
 }
 
 //////////////////////////////////////////////////
-void ManualSceneDemo::AddCamera(const std::string &_engineName)
+void ManualSceneDemo::AddCamera(const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
-  RenderEngine *engine = rendering::engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -191,6 +192,19 @@ int main(int _argc, char** _argv)
     ogreEngineName = _argv[1];
   }
 
+  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  if (_argc > 2)
+  {
+    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
+  }
+
+  std::map<std::string, std::string> params;
+  if (ogreEngineName.compare("ogre2") == 0
+      && graphicsApi == GraphicsAPI::METAL)
+  {
+    params["metal"] = "1";
+  }
+
   common::Console::SetVerbosity(4);
 //! [add scenes]
   ManualSceneDemoPtr sceneDemo(new ManualSceneDemo);
@@ -208,7 +222,7 @@ int main(int _argc, char** _argv)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(4)));
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
 //! [add scenes]
-  sceneDemo->AddCamera(ogreEngineName);
+  sceneDemo->AddCamera(ogreEngineName, params);
   sceneDemo->AddCamera("optix");
   sceneDemo->Run();
   return 0;

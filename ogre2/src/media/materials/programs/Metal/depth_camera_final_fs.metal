@@ -49,9 +49,10 @@ fragment float4 main_metal
   // values close to 0 get rounded to 0)
   //
   // See https://github.com/ignitionrobotics/ign-rendering/issues/332
-  // float4 p = texelFetch(inputTexture, int2(inPs.uv0 * params.texResolution.xy), 0);
-  // TODO - establish Metal equivalent - use standard sampler as interim approx.
-  float4 p = inputTexture.sample(inputSampler, inPs.uv0);
+  // Either: Metal equivalent of texelFetch
+  float4 p = inputTexture.read(uint2(inPs.uv0 * params.texResolution.xy), 0);
+  // Or: Use standard sampler
+  // float4 p = inputTexture.sample(inputSampler, inPs.uv0);
 
   float3 point = p.xyz;
 

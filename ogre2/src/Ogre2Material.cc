@@ -541,7 +541,8 @@ void Ogre2Material::ClearLightMap()
   this->lightMapUvSet = 0u;
 
   // in ogre 2.2, we swtiched to use the emissive map slot for light map
-  this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->lightMapName);
+  if (this->ogreDatablock->getUseEmissiveAsLightmap())
+    this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->lightMapName);
   this->ogreDatablock->setUseEmissiveAsLightmap(false);
 }
 

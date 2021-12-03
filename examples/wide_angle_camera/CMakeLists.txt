@@ -42,9 +42,6 @@ endif()
 add_executable(wide_angle_camera Main.cc GlutWindow.cc)
 
 target_link_libraries(wide_angle_camera
-#  ${GLUT_LIBRARIES}
-#  ${OPENGL_LIBRARIES}
-#  ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )

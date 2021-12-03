@@ -546,7 +546,7 @@ math::Vector3d OgreWideAngleCamera::Project3d(
         double param = (fov/2.0) / this->Lens().C2() + this->Lens().C3();
         double funRes = this->Lens().ApplyMappingFunction(
             static_cast<float>(param));
-        f = 1.0/(this->Lens().C1()*funRes);
+        f = 1.0 / (this->Lens().C1() * funRes);
       }
 
       // Apply fisheye lens mapping function

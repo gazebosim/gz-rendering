@@ -94,7 +94,7 @@ void WideAngleCameraTest::WideAngleCamera(
   if (!engine)
   {
     ignerr << "Engine '" << _renderEngine
-              << "' was unable to be retrieved" << std::endl;
+           << "' was unable to be retrieved" << std::endl;
     return;
   }
   ignition::rendering::ScenePtr scene = engine->CreateScene("scene");

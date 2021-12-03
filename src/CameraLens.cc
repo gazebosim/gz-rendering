@@ -105,11 +105,12 @@ class ignition::rendering::CameraLens::Implementation
               return std::get<0>(value);
             }
 
-            /// \brief Apply function to float value
+            /// \brief Apply function to a float value
+            /// \param _f input float value
             /// \return The result of application
-            public: float Apply(float _t)
+            public: float Apply(float _f)
             {
-              return std::get<2>(value)(_t);
+              return std::get<2>(value)(_f);
             }
 
             /// \brief Assignment operator
@@ -297,7 +298,7 @@ void CameraLens::SetType(MappingFunctionType _type)
     catch(const std::exception &ex)
     {
       ignerr << "`fun` value [" << std::get<4>(params)
-            << "] is not known, keeping the old one" << std::endl;
+             << "] is not known, keeping the old one" << std::endl;
     }
   }
 }
@@ -351,7 +352,7 @@ void CameraLens::SetAngleFunction(AngleFunctionType _fun)
   catch(const std::exception &ex)
   {
     ignerr << "`Fun` value [" << _fun << "] is not known, "
-          << "keeping the old one" << std::endl;
+           << "keeping the old one" << std::endl;
     return;
   }
 }

@@ -35,6 +35,7 @@
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
+#include <ignition/common/Image.hh>
 
 #include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ShaderType.hh"
@@ -479,6 +480,36 @@ void Ogre2Material::SetEmissiveMap(const std::string &_name)
   }
 
   this->emissiveMapName = _name;
+
+  // workaround for grayscale emissive texture
+  // convert to RGB otherwise the emissive map is rendered red
+  std::string baseName = common::basename(_name);
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+      root->getRenderSystem()->getTextureGpuManager();
+  common::Image img(_name);
+  if (img.BPP() == 8u)
+  {
+    std::string p = common::parentPath(_name);
+    std::string rgbTexName = "ign_" + baseName;
+    std::string filename = common::joinPaths(p, rgbTexName);
+    this->emissiveMapName = filename;
+    auto tex = textureMgr->findTextureNoThrow(rgbTexName);
+    if (!tex)
+    {
+      ignmsg << "Grayscale emissive texture detected. Converting to RGB: "
+          << filename << std::endl;
+      unsigned int size = img.Width() * img.Height() * 3u;
+      unsigned char *data = new unsigned char[size];
+      img.RGBData(&data, size);
+      common::Image rgbImg;
+      rgbImg.SetFromData(data, img.Width(), img.Height(),
+          common::Image::PixelFormatType::RGB_INT8);
+      rgbImg.SavePNG(filename);
+      baseName = filename;
+      delete [] data;
+    }
+  }
   this->SetTextureMapImpl(this->emissiveMapName, Ogre::PBSM_EMISSIVE);
 }
 
@@ -642,7 +673,6 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   samplerBlockRef.mW = Ogre::TAM_WRAP;
 
   this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
-
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
   Ogre::TextureGpuManager *textureMgr =
       root->getRenderSystem()->getTextureGpuManager();
@@ -685,6 +715,90 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     }
   }
 }
+
+//////////////////////////////////////////////////////
+/* Ogre2Material::UploadData(Ogre::TextureGpu *_texture, unsigned char *_data)
+{
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr = root->getRenderSystem()->getTextureGpuManager();
+  Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
+                                  "MyPcgTexture",
+                                  Ogre::GpuPageOutStrategy::Discard,
+                                  Ogre::TextureFlags::ManualTexture,
+                                  Ogre::TextureTypes::Type2D,
+                                  Ogre::BLANKSTRING,
+                                  0u );
+  texture->setPixelFormat( Ogre::PFG_RGBA8_UNORM_SRGB );
+  texture->setTextureType( Ogre::TextureTypes::Type2D );
+  texture->setNumMipmaps( 1u );
+  texture->setResolution(width, height);
+
+  const uint32 rowAlignment = 4u;
+  const size_t dataSize = Ogre::PixelFormatGpuUtils::getSizeBytes( texture->getWidth(),
+                                                                   texture->getHeight(),
+                                                                   texture->getDepth(),
+                                                                   texture->getNumSlices(),
+                                                                   texture->getPixelFormat(),
+                                                                   rowAlignment );
+  const size_t bytesPerRow = texture->_getSysRamCopyBytesPerRow( 0 );
+  Ogre::uint8 *imageData = reinterpret_cast<Ogre::uint8 *>(OGRE_MALLOC_SIMD( dataSize,
+                                                           MEMCATEGORY_RESOURCE));
+
+  for (unsigned int i = 0u; i < height; ++i)
+  {
+    for (unsigned int j = 0u; j < width; ++j)
+    {
+    }
+  }
+  // ... fill imageData ...
+
+  //Tell the texture we're going resident. The imageData pointer is only needed
+  //if the texture pageout strategy is GpuPageOutStrategy::AlwaysKeepSystemRamCopy
+  //which is in this example is not, so a nullptr would also work just fine.
+  texture->_transitionTo( GpuResidency::Resident, imageData );
+  texture->_setNextResidencyStatus( GpuResidency::Resident );
+  //We have to upload the data via a StagingTexture, which acts as an intermediate stash
+  //memory that is both visible to CPU and GPU.
+  StagingTexture *stagingTexture = textureManager->getStagingTexture( texture->getWidth(),
+                                                                      texture->getHeight(),
+                                                                      texture->getDepth(),
+                                                                      texture->getNumSlices(),
+                                                                      texture->getPixelFormat() );
+  //Call this function to indicate you're going to start calling mapRegion. startMapRegion
+  //must be called from main thread.
+  stagingTexture->startMapRegion();
+  //Map region of the staging texture. This function can be called from any thread after
+  //startMapRegion has already been called.
+  TextureBox texBox = stagingTexture->mapRegion( texture->getWidth(), texture->getHeight(),
+                                                 texture->getDepth(), texture->getNumSlices(),
+                                                 texture->getPixelFormat() );
+  texBox.copyFrom( imageData, texture->getWidth(), texture->getHeight(), bytesPerRow );
+  //stopMapRegion indicates you're done calling mapRegion. Call this from the main thread.
+  //It is your responsability to ensure you're done using all pointers returned from
+  //previous mapRegion calls, and that you won't call it again.
+  //You cannot upload until you've called this function.
+  //Do NOT call startMapRegion again until you're done with upload() calls.
+  stagingTexture->stopMapRegion();
+  //Upload an area of the staging texture into the texture. Must be done from main thread.
+  //The last bool parameter, 'skipSysRamCopy', is only relevant for AlwaysKeepSystemRamCopy
+  //textures, and we set it to true because we know it's already up to date. Otherwise
+  //it needs to be false.
+  stagingTexture->upload( texBox, texture, 0, 0, true );
+  //Tell the TextureGpuManager we're done with this StagingTexture. Otherwise it will leak.
+  textureManager->removeStagingTexture( stagingTexture );
+  stagingTexture = 0;
+  //Do not free the pointer if texture's paging strategy is GpuPageOutStrategy::AlwaysKeepSystemRamCopy
+  OGRE_FREE_SIMD( imageData, MEMCATEGORY_RESOURCE );
+  imageData = 0;
+  //This call is very important. It notifies the texture is fully ready for being displayed.
+  //Since we've scheduled the texture to become resident and pp until now, the texture knew
+  //it was being loaded and that only the metadata was certain. This call here signifies
+  //loading is done; and any registered listeners will be notified.
+  texture->notifyDataIsReady();
+}
+*/
+
+
 
 //////////////////////////////////////////////////////
 Ogre::TextureGpu* Ogre2Material::Texture(const std::string &_name)

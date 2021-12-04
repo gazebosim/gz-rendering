@@ -50,10 +50,6 @@
 /// \brief Private data for the Ogre2Material class
 class ignition::rendering::Ogre2MaterialPrivate
 {
-  /// \brief Upload raw image data to gpu
-  public: void UploadData(Ogre::TextureGpu *_texture, unsigned char *_data,
-      unsigned int size);
-
   /// \brief Ogre stores the name using hashes. This variable will
   /// store the material hash name
   public: std::string hashName;
@@ -643,17 +639,20 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     }
   }
 
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+      root->getRenderSystem()->getTextureGpuManager();
+
   // workaround for grayscale emissive texture
   // convert to RGB otherwise the emissive map is rendered red
   if (_type == Ogre::PBSM_EMISSIVE)
   {
-    Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-    Ogre::TextureGpuManager *textureMgr =
-        root->getRenderSystem()->getTextureGpuManager();
     common::Image img(_texture);
+    // check for 8 bit pixel
     if (img.BPP() == 8u)
     {
       std::string p = common::parentPath(_texture);
+      // set a custom name for the rgb texture by appending ign_ prefix
       std::string rgbTexName = "ign_" + baseName;
       baseName = rgbTexName;
       std::string filename = common::joinPaths(p, rgbTexName);
@@ -662,40 +661,48 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       {
         ignmsg << "Grayscale emissive texture detected. Converting to RGB: "
             << filename << std::endl;
+        // need to be 4 channels for gpu texture
         unsigned int channels = 4u;
         unsigned int size = img.Width() * img.Height() * channels;
         unsigned char *data = new unsigned char[size];
-//        img.RGBData(&data, size);
         for (unsigned int i = 0; i < img.Height(); ++i)
         {
           for (unsigned int j = 0; j < img.Width(); ++j)
           {
-            math::Color c = img.Pixel(j, i);
+            // flip Y
+            math::Color c = img.Pixel(j, img.Height() - i - 1u);
             unsigned int idx = i * img.Width() * channels + j * channels;
-            data[idx] = static_cast<uint8_t>(c.R() * 255);
-            data[idx + 1u] = static_cast<uint8_t>(c.G() * 255);
-            data[idx + 2u] = static_cast<uint8_t>(c.B() * 255);
+            data[idx] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 1u] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 2u] = static_cast<uint8_t>(c.R() * 255u);
             data[idx + 3u] = 255u;
           }
         }
 
+        // create the gpu texture
+        Ogre::uint32 textureFlags = 0;
+        textureFlags |= Ogre::TextureFlags::AutomaticBatching;
+        if (this->ogreDatablock->suggestUsingSRGB(_type))
+            textureFlags |= Ogre::TextureFlags::PrefersLoadingFromFileAsSRGB;
         Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
             rgbTexName,
             Ogre::GpuPageOutStrategy::Discard,
-            Ogre::TextureFlags::ManualTexture,
+            textureFlags,
             Ogre::TextureTypes::Type2D,
-            Ogre::BLANKSTRING,
+            Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
             0u);
+
         texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
         texture->setTextureType(Ogre::TextureTypes::Type2D);
         texture->setNumMipmaps(1u);
         texture->setResolution(img.Width(), img.Height());
-        this->dataPtr->UploadData(texture, data, size);
+        texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+        texture->waitForData();
 
-        //common::Image rgbImg;
-        //rgbImg.SetFromData(data, img.Width(), img.Height(),
-        //    common::Image::PixelFormatType::RGB_INT8);
-        //rgbImg.SavePNG(filename);
+        // upload raw color image data to gpu texture
+        Ogre::Image2 image;
+        image.loadDynamicImage(data, false, texture);
+        image.uploadTo(texture, 0, 0);
         delete [] data;
       }
     }
@@ -707,9 +714,6 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   samplerBlockRef.mW = Ogre::TAM_WRAP;
 
   this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
-  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-  Ogre::TextureGpuManager *textureMgr =
-      root->getRenderSystem()->getTextureGpuManager();
   auto tex = textureMgr->findTextureNoThrow(baseName);
 
   if (tex)
@@ -748,66 +752,6 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       }
     }
   }
-}
-
-//////////////////////////////////////////////////////
-void Ogre2MaterialPrivate::UploadData(Ogre::TextureGpu *_texture,
-    unsigned char *_data, unsigned int _size)
-{
-  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-  Ogre::TextureGpuManager *textureManager =
-    root->getRenderSystem()->getTextureGpuManager();
-
-  const size_t bytesPerRow = _texture->_getSysRamCopyBytesPerRow(0);
-  Ogre::uint8 *imageData = reinterpret_cast<Ogre::uint8 *>(OGRE_MALLOC_SIMD(
-      _size, Ogre::MEMCATEGORY_RESOURCE));
-  memcpy(imageData, _data, _size);
-
-  //Tell the texture we're going resident. The imageData pointer is only needed
-  //if the texture pageout strategy is GpuPageOutStrategy::AlwaysKeepSystemRamCopy
-  //which is in this example is not, so a nullptr would also work just fine.
-  _texture->_transitionTo(Ogre::GpuResidency::Resident, imageData);
-  _texture->_setNextResidencyStatus(Ogre::GpuResidency::Resident);
-  //We have to upload the data via a StagingTexture, which acts as an intermediate stash
-  //memory that is both visible to CPU and GPU.
-  Ogre::StagingTexture *stagingTexture = textureManager->getStagingTexture(
-      _texture->getWidth(),
-      _texture->getHeight(),
-      _texture->getDepth(),
-      _texture->getNumSlices(),
-      _texture->getPixelFormat());
-  //Call this function to indicate you're going to start calling mapRegion. startMapRegion
-  //must be called from main thread.
-  stagingTexture->startMapRegion();
-  //Map region of the staging texture. This function can be called from any thread after
-  //startMapRegion has already been called.
-  Ogre::TextureBox texBox = stagingTexture->mapRegion(
-      _texture->getWidth(), _texture->getHeight(),
-      _texture->getDepth(), _texture->getNumSlices(),
-      _texture->getPixelFormat());
-  texBox.copyFrom(imageData, _texture->getWidth(), _texture->getHeight(), bytesPerRow);
-  //stopMapRegion indicates you're done calling mapRegion. Call this from the main thread.
-  //It is your responsability to ensure you're done using all pointers returned from
-  //previous mapRegion calls, and that you won't call it again.
-  //You cannot upload until you've called this function.
-  //Do NOT call startMapRegion again until you're done with upload() calls.
-  stagingTexture->stopMapRegion();
-  //Upload an area of the staging texture into the texture. Must be done from main thread.
-  //The last bool parameter, 'skipSysRamCopy', is only relevant for AlwaysKeepSystemRamCopy
-  //textures, and we set it to true because we know it's already up to date. Otherwise
-  //it needs to be false.
-  stagingTexture->upload(texBox, _texture, 0u, 0, 0, true);
-  //Tell the TextureGpuManager we're done with this StagingTexture. Otherwise it will leak.
-  textureManager->removeStagingTexture(stagingTexture);
-  stagingTexture = 0;
-  //Do not free the pointer if texture's paging strategy is GpuPageOutStrategy::AlwaysKeepSystemRamCopy
-  OGRE_FREE_SIMD(imageData, Ogre::MEMCATEGORY_RESOURCE);
-  imageData = 0;
-  //This call is very important. It notifies the texture is fully ready for being displayed.
-  //Since we've scheduled the texture to become resident and pp until now, the texture knew
-  //it was being loaded and that only the metadata was certain. This call here signifies
-  //loading is done; and any registered listeners will be notified.
-  _texture->notifyDataIsReady();
 }
 
 //////////////////////////////////////////////////////

@@ -944,8 +944,6 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   }
 #endif
 
-//  params["reverse_depth"] = "No";
-
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
   {

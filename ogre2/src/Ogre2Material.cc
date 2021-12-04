@@ -27,8 +27,6 @@
 #include <OgreHlmsManager.h>
 #include <OgreMaterialManager.h>
 #include <OgrePixelFormatGpuUtils.h>
-#include <OgreStagingTexture.h>
-#include <OgreTextureBox.h>
 #include <OgreTextureGpuManager.h>
 #include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER

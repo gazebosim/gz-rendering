@@ -71,7 +71,7 @@ void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
 }
 
 //////////////////////////////////////////////////
-RayQueryResult OgreRayQuery::ClosestPoint(bool /*_forceSceneUpdate*/)
+RayQueryResult OgreRayQuery::ClosestPoint(bool /*_forceSceneUpdate*/) // NOLINT
 {
   RayQueryResult result;
   OgreScenePtr ogreScene = std::dynamic_pointer_cast<OgreScene>(this->Scene());

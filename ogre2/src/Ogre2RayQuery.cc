@@ -117,7 +117,7 @@ RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
   return this->ClosestPointByIntersection();
 
 #ifdef __APPLE__
-  return this->ClosestPointByIntersection();
+  return this->ClosestPointByIntersection(_forceSceneUpdate);
 #else
   if (!this->dataPtr->camera ||
       !this->dataPtr->camera->Parent() ||
@@ -126,7 +126,7 @@ RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
     // use legacy method for backward compatibility if no camera is set or
     // camera is not attached in the scene tree or
     // this function is called from non-rendering thread
-    return this->ClosestPointByIntersection();
+    return this->ClosestPointByIntersection(_forceSceneUpdate);
   }
   else
   {
@@ -172,7 +172,7 @@ RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
 }
 
 //////////////////////////////////////////////////
-RayQueryResult Ogre2RayQuery::ClosestPointByIntersection()
+RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
 {
   RayQueryResult result;
   Ogre2ScenePtr ogreScene =

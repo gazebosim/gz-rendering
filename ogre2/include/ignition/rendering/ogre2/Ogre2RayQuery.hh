@@ -58,7 +58,8 @@ namespace ignition
 
       /// \brief Get closest point by ray triangle intersection test.
       /// This is executed on the CPU.
-      private: RayQueryResult ClosestPointByIntersection();
+      private: RayQueryResult ClosestPointByIntersection(
+            bool _forceSceneUpdate);
 
       /// \brief Private data pointer
       private: std::unique_ptr<Ogre2RayQueryPrivate> dataPtr;

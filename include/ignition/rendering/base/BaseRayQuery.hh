@@ -143,7 +143,8 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    RayQueryResult BaseRayQuery<T>::ClosestPoint(bool /*_forceSceneUpdate*/)
+    RayQueryResult BaseRayQuery<T>::ClosestPoint(
+        bool /*_forceSceneUpdate*/)  // NOLINT
     {
       // TODO(anyone): implement a generic ray query here?
       RayQueryResult result;

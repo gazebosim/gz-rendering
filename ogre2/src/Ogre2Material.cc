@@ -643,7 +643,8 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
   // workaround for grayscale emissive texture
   // convert to RGB otherwise the emissive map is rendered red
-  if (_type == Ogre::PBSM_EMISSIVE)
+  if (_type == Ogre::PBSM_EMISSIVE &&
+      !this->ogreDatablock->getUseEmissiveAsLightmap())
   {
     common::Image img(_texture);
     // check for 8 bit pixel
@@ -658,7 +659,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       if (!tex)
       {
         ignmsg << "Grayscale emissive texture detected. Converting to RGB: "
-            << filename << std::endl;
+            << rgbTexName << std::endl;
         // need to be 4 channels for gpu texture
         unsigned int channels = 4u;
         unsigned int size = img.Width() * img.Height() * channels;
@@ -685,7 +686,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
         Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
             rgbTexName,
             Ogre::GpuPageOutStrategy::Discard,
-            textureFlags,
+            textureFlags | Ogre::TextureFlags::ManualTexture,
             Ogre::TextureTypes::Type2D,
             Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
             0u);

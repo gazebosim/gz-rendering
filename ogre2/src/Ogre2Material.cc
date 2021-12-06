@@ -650,16 +650,16 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     // check for 8 bit pixel
     if (img.BPP() == 8u)
     {
-      std::string p = common::parentPath(_texture);
+      std::string parentPath = common::parentPath(_texture);
       // set a custom name for the rgb texture by appending ign_ prefix
       std::string rgbTexName = "ign_" + baseName;
       baseName = rgbTexName;
-      std::string filename = common::joinPaths(p, rgbTexName);
+      std::string filename = common::joinPaths(parentPath, rgbTexName);
       auto tex = textureMgr->findTextureNoThrow(rgbTexName);
       if (!tex)
       {
         ignmsg << "Grayscale emissive texture detected. Converting to RGB: "
-            << rgbTexName << std::endl;
+               << rgbTexName << std::endl;
         // need to be 4 channels for gpu texture
         unsigned int channels = 4u;
         unsigned int size = img.Width() * img.Height() * channels;

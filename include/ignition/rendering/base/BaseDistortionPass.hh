@@ -117,21 +117,21 @@ namespace ignition
     {
       return this->k1;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     double BaseDistortionPass<T>::K2() const
     {
       return this->k2;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     double BaseDistortionPass<T>::K3() const
     {
       return this->k3;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     double BaseDistortionPass<T>::P1() const
@@ -145,35 +145,35 @@ namespace ignition
     {
       return this->p2;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     math::Vector2d BaseDistortionPass<T>::Center() const
     {
       return this->lensCenter;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     void BaseDistortionPass<T>::SetK1(double _k1)
     {
       this->k1 = _k1;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     void BaseDistortionPass<T>::SetK2(double _k2)
     {
       this->k2 = _k2;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     void BaseDistortionPass<T>::SetK3(double _k3)
     {
       this->k3 = _k3;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     void BaseDistortionPass<T>::SetP1(double _p1)
@@ -187,7 +187,7 @@ namespace ignition
     {
       this->p2 = _p2;
     }
-    
+
     //////////////////////////////////////////////////
     template <class T>
     void BaseDistortionPass<T>::SetCenter(math::Vector2d _center)

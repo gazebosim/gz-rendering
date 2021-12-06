@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_OGRE_OGREDISTORTIONPASS_HH_
 
 #include <memory>
+#include <vector>
 
 #include <ignition/common/SuppressWarning.hh>
 
@@ -95,7 +96,7 @@ namespace ignition
       /// \param[in] _y Y component of map.
       /// \return the distortion map value at the specified index.
       protected: ignition::math::Vector2d
-        DistortionMapValueClamped(const int x, const int y) const;
+        DistortionMapValueClamped(const int _x, const int _y) const;
 
       /// \brief calculate the correct scale factor to "zoom" the render,
       /// cutting off black borders caused by distortion (only if the crop
@@ -125,7 +126,7 @@ namespace ignition
 
       /// \brief Mapping of distorted to undistorted normalized pixels
       public: std::vector<ignition::math::Vector2d> distortionMap;
-      
+
       /// \brief Width of distortion texture map
       public: unsigned int distortionTexWidth;
 

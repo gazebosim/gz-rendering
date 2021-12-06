@@ -183,7 +183,7 @@ void OgreDistortionPass::CreateRenderPass()
       }
 
       // compute the index in the distortion map
-      distortedCol = round(distortedLocation.X() * 
+      distortedCol = round(distortedLocation.X() *
         this->distortionTexWidth);
       distortedRow = round(distortedLocation.Y() *
         this->distortionTexHeight);
@@ -445,15 +445,15 @@ ignition::math::Vector2d OgreDistortionPass::Distort(
 //////////////////////////////////////////////////
 ignition::math::Vector2d
     OgreDistortionPass::DistortionMapValueClamped(
-    const int x, const int y) const
+    const int _x, const int _y) const
 {
-  if (x < 0 || x >= static_cast<int>(this->distortionTexWidth) ||
-      y < 0 || y >= static_cast<int>(this->distortionTexHeight))
+  if (_x < 0 || _x >= static_cast<int>(this->distortionTexWidth) ||
+      _y < 0 || _y >= static_cast<int>(this->distortionTexHeight))
   {
     return ignition::math::Vector2d(-1, -1);
   }
   ignition::math::Vector2d res =
-      this->distortionMap[y * this->distortionTexWidth + x];
+      this->distortionMap[_y * this->distortionTexWidth + _x];
   return res;
 }
 

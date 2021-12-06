@@ -15,7 +15,6 @@
  *
  */
 
-
 #include "ignition/rendering/DistortionPass.hh"
 
 using namespace ignition;

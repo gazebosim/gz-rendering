@@ -45,8 +45,10 @@ namespace ignition
             _mat->getTechnique(0)->getPass(_passId)
                      ->getFragmentProgramParameters();
         params->setNamedConstant("scale",
-            Ogre::Vector3(1.0/distortionScale.X(),
-            1.0/distortionScale.Y(), 1.0));
+            Ogre::Vector3(
+              1.0 / distortionScale.X(),
+              1.0 / distortionScale.Y(),
+              1.0));
       }
 
       private: const ignition::math::Vector2d &distortionScale;
@@ -113,7 +115,7 @@ void OgreDistortionPass::CreateRenderPass()
       this->ogreCamera->getFOVy().valueRadians() :
       (this->ogreCamera->getFOVy().valueRadians() *
       this->ogreCamera->getAspectRatio());
-  const double focalLength = texSize/(2*tan(fov/2));
+  const double focalLength = texSize / (2 * tan(fov / 2));
   this->distortionTexWidth = texSize;
   this->distortionTexHeight = texSize;
   unsigned int imageSize =
@@ -271,7 +273,7 @@ void OgreDistortionPass::CreateRenderPass()
     for (unsigned int j = 0; j < this->distortionTexWidth; ++j)
     {
       ignition::math::Vector2d vec =
-          this->distortionMap[i*this->distortionTexWidth+j];
+          this->distortionMap[i * this->distortionTexWidth + j];
 
       // perform interpolation on-the-fly:
       // check for empty mapping within the region and correct it by
@@ -280,23 +282,22 @@ void OgreDistortionPass::CreateRenderPass()
       if (vec.X() < -0.5 && vec.Y() < -0.5)
       {
         ignition::math::Vector2d left =
-            this->DistortionMapValueClamped(j-1, i);
+            this->DistortionMapValueClamped(j - 1, i);
         ignition::math::Vector2d right =
-            this->DistortionMapValueClamped(j+1, i);
+            this->DistortionMapValueClamped(j + 1, i);
         ignition::math::Vector2d bottom =
-            this->DistortionMapValueClamped(j, i+1);
+            this->DistortionMapValueClamped(j, i + 1);
         ignition::math::Vector2d top =
-            this->DistortionMapValueClamped(j, i-1);
+            this->DistortionMapValueClamped(j, i - 1);
 
         ignition::math::Vector2d topLeft =
-            this->DistortionMapValueClamped(j-1, i-1);
+            this->DistortionMapValueClamped(j - 1, i - 1);
         ignition::math::Vector2d topRight =
-            this->DistortionMapValueClamped(j+1, i-1);
+            this->DistortionMapValueClamped(j + 1, i - 1);
         ignition::math::Vector2d bottomLeft =
-            this->DistortionMapValueClamped(j-1, i+1);
+            this->DistortionMapValueClamped(j - 1, i + 1);
         ignition::math::Vector2d bottomRight =
-            this->DistortionMapValueClamped(j+1, i+1);
-
+            this->DistortionMapValueClamped(j + 1, i + 1);
 
         ignition::math::Vector2d interpolated;
         double divisor = 0;
@@ -420,7 +421,7 @@ ignition::math::Vector2d OgreDistortionPass::Distort(
   // apply Brown's distortion model, see
   // http://en.wikipedia.org/wiki/Distortion_%28optics%29#Software_correction
 
-  ignition::math::Vector2d normalized2d = (_in - _center)*(_width/_f);
+  ignition::math::Vector2d normalized2d = (_in - _center) * (_width / _f);
   ignition::math::Vector3d normalized(normalized2d.X(), normalized2d.Y(), 0);
   double rSq = normalized.X() * normalized.X() +
                normalized.Y() * normalized.Y();
@@ -437,8 +438,8 @@ ignition::math::Vector2d OgreDistortionPass::Distort(
   dist.Y() += _p1 * (rSq + 2 * (normalized.Y()*normalized.Y())) +
       2 * _p2 * normalized.X() * normalized.Y();
 
-  return ((_center*_width) +
-    ignition::math::Vector2d(dist.X(), dist.Y())*_f)/_width;
+  return ((_center * _width) +
+    ignition::math::Vector2d(dist.X(), dist.Y()) *_f) / _width;
 }
 
 //////////////////////////////////////////////////
@@ -452,7 +453,7 @@ ignition::math::Vector2d
     return ignition::math::Vector2d(-1, -1);
   }
   ignition::math::Vector2d res =
-      this->distortionMap[y*this->distortionTexWidth+x];
+      this->distortionMap[y * this->distortionTexWidth + x];
   return res;
 }
 
@@ -481,10 +482,10 @@ void OgreDistortionPass::CalculateAndApplyDistortionScale()
     // If distortionScale is extremely small, don't crop
     if (newScale.X() < 1e-7 || newScale.Y() < 1e-7)
     {
-          ignerr << "Distortion model attempted to apply a scale parameter of ("
-                << this->distortionScale.X() << ", "
-                << this->distortionScale.Y()
-                << ", which is invalid.\n";
+       ignerr << "Distortion model attempted to apply a scale parameter of ("
+             << this->distortionScale.X() << ", "
+             << this->distortionScale.Y()
+             << ", which is invalid.\n";
     }
     else
       this->distortionScale = newScale;

@@ -91,9 +91,9 @@ namespace ignition
                   unsigned int _width, double _f);
 
       /// \brief get the distortion map value.
-      /// \return the distortion map value at the specified index,
-      /// or (-1, -1) if the index
-      /// is out of bounds.
+      /// \param[in] _x X component of map.
+      /// \param[in] _y Y component of map.
+      /// \return the distortion map value at the specified index.
       protected: ignition::math::Vector2d
         DistortionMapValueClamped(const int x, const int y) const;
 
@@ -133,6 +133,7 @@ namespace ignition
       public: unsigned int distortionTexHeight;
 
       /// \brief Distortion compositor listener
+      /// uses <ignition/utils/ImplPtr.hh> from ign-rendering7
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::shared_ptr<DistortionCompositorListener>
           distortionCompositorListener;

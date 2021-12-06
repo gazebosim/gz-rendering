@@ -89,8 +89,23 @@ namespace ignition
                 const math::Vector2d &_coord) = 0;
 
       /// \brief Compute intersections
+      /// \param[in] _forceSceneUpdate Performance optimization hint
+      /// When true Ogre2 will update all derived transforms to their
+      /// latest to get correct results.
+      ///
+      /// When false, that step is skipped. It is only safe to
+      /// set it to false when nothing has changed since the last
+      /// update (i.e. nothing moved, no new objects created).
+      ///
+      /// Ogre will assert if built in Debug mode if this value
+      /// is set to false when it shouldn't be.
+      ///
+      /// See https://ogrecave.github.io/ogre-next/api/2.2/
+      /// _ogre20_changes.html#AssersionCachedOutOfDate
+      /// for more info
       /// \return A vector of intersection results
-      public: virtual RayQueryResult ClosestPoint() = 0;
+      public: virtual RayQueryResult ClosestPoint(
+            bool _forceSceneUpdate = true) = 0;
     };
     }
   }

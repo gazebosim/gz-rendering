@@ -107,17 +107,17 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
 }
 
 //////////////////////////////////////////////////
-RayQueryResult Ogre2RayQuery::ClosestPoint()
+RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 {
   RayQueryResult result;
 
   // ray query using selection buffer does not seem to work on some machines
   // using cpu based ray-triangle intersection method
   // \todo remove this line if selection buffer is working again
-  return this->ClosestPointByIntersection();
+  return this->ClosestPointByIntersection(_forceSceneUpdate);
 
 #ifdef __APPLE__
-  return this->ClosestPointByIntersection();
+  return this->ClosestPointByIntersection(_forceSceneUpdate);
 #else
   if (!this->dataPtr->camera ||
       !this->dataPtr->camera->Parent() ||
@@ -126,7 +126,7 @@ RayQueryResult Ogre2RayQuery::ClosestPoint()
     // use legacy method for backward compatibility if no camera is set or
     // camera is not attached in the scene tree or
     // this function is called from non-rendering thread
-    return this->ClosestPointByIntersection();
+    return this->ClosestPointByIntersection(_forceSceneUpdate);
   }
   else
   {
@@ -172,13 +172,18 @@ RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
 }
 
 //////////////////////////////////////////////////
-RayQueryResult Ogre2RayQuery::ClosestPointByIntersection()
+RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
 {
   RayQueryResult result;
   Ogre2ScenePtr ogreScene =
       std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
   if (!ogreScene)
     return result;
+
+  if (_forceSceneUpdate)
+  {
+    ogreScene->OgreSceneManager()->updateSceneGraph();
+  }
 
   Ogre::Ray mouseRay(Ogre2Conversions::Convert(this->origin),
       Ogre2Conversions::Convert(this->direction));

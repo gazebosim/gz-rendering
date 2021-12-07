@@ -18,8 +18,10 @@
 #version 330
 
 in vec4 vertex;
+in vec3 normal;
 uniform mat4 worldViewProj;
 uniform float size;
+out vec3 ptColor;
 
 out gl_PerVertex
 {
@@ -31,4 +33,6 @@ void main()
   // Calculate output position
   gl_Position = worldViewProj * vertex;
   gl_PointSize = size;
+  // We're abusing the normal variable to hold per-point colors
+  ptColor = normal;
 }

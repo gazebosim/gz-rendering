@@ -311,7 +311,8 @@ void Ogre2DynamicRenderable::UpdateBuffer()
 
   // fill the rest of the buffer with the position of the last vertex to avoid
   // the geometry connecting back to 0, 0, 0
-  if (vertexCount > 0 && vertexCount < this->dataPtr->vertexBufferCapacity)
+  if (vertexCount > 0 && vertexCount < this->dataPtr->vertexBufferCapacity &&
+      this->dataPtr->operationType != Ogre::OperationType::OT_POINT_LIST)
   {
     math::Vector3d lastVertex = this->dataPtr->vertices[vertexCount-1];
     for (unsigned int i = vertexCount; i < this->dataPtr->vertexBufferCapacity;
@@ -330,6 +331,10 @@ void Ogre2DynamicRenderable::UpdateBuffer()
 
   // fill normals
   this->GenerateNormals(this->dataPtr->operationType, this->dataPtr->vertices,
+      vertices);
+
+  // fill colors for points
+  this->GenerateColors(this->dataPtr->operationType, this->dataPtr->vertices,
       vertices);
 
   // unmap buffer
@@ -359,7 +364,7 @@ void Ogre2DynamicRenderable::UpdateBuffer()
       this->dataPtr->ogreItem->setCastShadows(
           this->dataPtr->material->CastShadows());
     }
-    else if (lowLevelMat)
+    if (lowLevelMat)
     {
       // the _initialise call above resets the ogre item properties so set
       // them again
@@ -448,7 +453,7 @@ void Ogre2DynamicRenderable::AddPoint(const ignition::math::Vector3d &_pt,
   this->dataPtr->vertices.push_back(_pt);
 
   // todo(anyone)
-  // setting material works but vertex coloring does not work yet.
+  // setting material works but vertex coloring only works for points
   // It requires using an unlit datablock:
   // https://forums.ogre3d.org/viewtopic.php?t=93627#p539276
   this->dataPtr->colors.push_back(_color);
@@ -492,12 +497,12 @@ void Ogre2DynamicRenderable::SetColor(unsigned int _index,
 
 
   // todo(anyone)
-  // vertex coloring does not work yet. It requires using an unlit datablock:
+  // vertex coloring only works for points.
+  // Full implementation requires using an unlit datablock:
   // https://forums.ogre3d.org/viewtopic.php?t=93627#p539276
   this->dataPtr->colors[_index] = _color;
 
-  // uncomment this line when colors are working
-  // this->dataPtr->dirty = true;
+  this->dataPtr->dirty = true;
 }
 
 /////////////////////////////////////////////////
@@ -705,6 +710,45 @@ void Ogre2DynamicRenderable::GenerateNormals(Ogre::OperationType _opType,
         _vbuffer[idx3+3] = n3a.X();
         _vbuffer[idx3+4] = n3a.Y();
         _vbuffer[idx3+5] = n3a.Z();
+      }
+
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2DynamicRenderable::GenerateColors(Ogre::OperationType _opType,
+  const std::vector<math::Vector3d> &_vertices, float *_vbuffer)
+{
+  unsigned int vertexCount = _vertices.size();
+  // Skip if colors haven't been setup per-vertex correctly.
+  if (vertexCount != this->dataPtr->colors.size())
+    return;
+
+  // Each vertex occupies 6 elements in the vbuffer float array. Normally,
+  // the last 3 are reserved for normals. But for types that don't use normals,
+  // we use them for per-vertex coloring.
+  // vbuffer[i]   : position x
+  // vbuffer[i+1] : position y
+  // vbuffer[i+2] : position z
+  // vbuffer[i+3] : color r
+  // vbuffer[i+4] : color g
+  // vbuffer[i+5] : color b
+  switch (_opType)
+  {
+    case Ogre::OperationType::OT_POINT_LIST:
+    {
+      for (unsigned int i = 0; i < vertexCount; ++i)
+      {
+        auto color = this->dataPtr->colors[i];
+
+        unsigned int idx = i * 6;
+        _vbuffer[idx+3] = color.R();
+        _vbuffer[idx+4] = color.G();
+        _vbuffer[idx+5] = color.B();
       }
 
       break;

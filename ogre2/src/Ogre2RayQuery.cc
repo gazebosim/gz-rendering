@@ -144,6 +144,10 @@ RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 //////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
 {
+  // update selection buffer dimension in case window is resized
+  this->dataPtr->camera->SelectionBuffer()->SetDimensions(
+    this->dataPtr->camera->ImageWidth(), this->dataPtr->camera->ImageHeight());
+
   RayQueryResult result;
   Ogre::Item *ogreItem = nullptr;
   math::Vector3d point;

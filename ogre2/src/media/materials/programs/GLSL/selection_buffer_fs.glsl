@@ -25,6 +25,7 @@ in block
 
 uniform sampler2D colorTexture;
 uniform sampler2D depthTexture;
+uniform vec4 colorTexResolution;
 
 out vec4 fragColor;
 
@@ -58,7 +59,8 @@ void main()
     point = vec3(inf);
 
   // color
-  vec4 color = texture(colorTexture, inPs.uv0);
+  vec4 color = texelFetch(colorTexture,
+      ivec2(inPs.uv0 * colorTexResolution.xy), 0);
 
   float rgba = packFloat(color);
 

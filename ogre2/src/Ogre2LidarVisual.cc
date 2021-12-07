@@ -347,6 +347,8 @@ void Ogre2LidarVisual::Update()
       this->dataPtr->deadZoneRayFans[j]->SetPoint(0, this->offset.Pos());
     }
 
+    auto pointMat = this->Scene()->Material("Lidar/BlueRay");
+
     unsigned count = this->horizontalCount;
     // Process each ray in current scan
     for (unsigned int i = 0; i < count; ++i)
@@ -441,14 +443,16 @@ void Ogre2LidarVisual::Update()
         {
           if (this->displayNonHitting || !inf)
           {
-            this->dataPtr->points[j]->AddPoint(inf ? noHitPt: pt);
+            this->dataPtr->points[j]->AddPoint(inf ? noHitPt : pt,
+                pointMat->Diffuse());
           }
         }
         else
         {
           if (this->displayNonHitting || !inf)
           {
-            this->dataPtr->points[j]->SetPoint(i, inf ? noHitPt: pt);
+            this->dataPtr->points[j]->SetPoint(i, inf ? noHitPt : pt);
+            this->dataPtr->points[j]->SetColor(i, pointMat->Diffuse());
           }
         }
       }
@@ -483,12 +487,6 @@ void Ogre2LidarVisual::Update()
     auto pass = this->dataPtr->pointsMat->getTechnique(0)->getPass(0);
     auto vertParams = pass->getVertexProgramParameters();
     vertParams->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
-
-    // support setting color only from diffuse for now
-    MaterialPtr mat = this->Scene()->Material("Lidar/BlueRay");
-    auto fragParams = pass->getFragmentProgramParameters();
-    fragParams->setNamedConstant("color",
-        Ogre2Conversions::Convert(mat->Diffuse()));
   }
 
   // The newly created dynamic lines are having default visibility as true.

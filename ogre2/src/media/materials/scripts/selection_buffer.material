@@ -33,6 +33,8 @@ fragment_program selection_buffer_fs_GLSL glsl
   {
     param_named colorTexture int 0
     param_named depthTexture int 1
+
+    param_named_auto colorTexResolution texture_size 0
   }
 }
 

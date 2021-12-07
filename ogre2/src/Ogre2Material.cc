@@ -35,6 +35,7 @@
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
+#include <ignition/common/Image.hh>
 
 #include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ShaderType.hh"
@@ -636,16 +637,82 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     }
   }
 
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+      root->getRenderSystem()->getTextureGpuManager();
+
+  // workaround for grayscale emissive texture
+  // convert to RGB otherwise the emissive map is rendered red
+  if (_type == Ogre::PBSM_EMISSIVE &&
+      !this->ogreDatablock->getUseEmissiveAsLightmap())
+  {
+    common::Image img(_texture);
+    // check for 8 bit pixel
+    if (img.BPP() == 8u)
+    {
+      std::string parentPath = common::parentPath(_texture);
+      // set a custom name for the rgb texture by appending ign_ prefix
+      std::string rgbTexName = "ign_" + baseName;
+      baseName = rgbTexName;
+      std::string filename = common::joinPaths(parentPath, rgbTexName);
+      auto tex = textureMgr->findTextureNoThrow(rgbTexName);
+      if (!tex)
+      {
+        ignmsg << "Grayscale emissive texture detected. Converting to RGB: "
+               << rgbTexName << std::endl;
+        // need to be 4 channels for gpu texture
+        unsigned int channels = 4u;
+        unsigned int size = img.Width() * img.Height() * channels;
+        unsigned char *data = new unsigned char[size];
+        for (unsigned int i = 0; i < img.Height(); ++i)
+        {
+          for (unsigned int j = 0; j < img.Width(); ++j)
+          {
+            // flip Y
+            math::Color c = img.Pixel(j, img.Height() - i - 1u);
+            unsigned int idx = i * img.Width() * channels + j * channels;
+            data[idx] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 1u] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 2u] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 3u] = 255u;
+          }
+        }
+
+        // create the gpu texture
+        Ogre::uint32 textureFlags = 0;
+        textureFlags |= Ogre::TextureFlags::AutomaticBatching;
+        if (this->ogreDatablock->suggestUsingSRGB(_type))
+            textureFlags |= Ogre::TextureFlags::PrefersLoadingFromFileAsSRGB;
+        Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
+            rgbTexName,
+            Ogre::GpuPageOutStrategy::Discard,
+            textureFlags | Ogre::TextureFlags::ManualTexture,
+            Ogre::TextureTypes::Type2D,
+            Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+            0u);
+
+        texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+        texture->setTextureType(Ogre::TextureTypes::Type2D);
+        texture->setNumMipmaps(1u);
+        texture->setResolution(img.Width(), img.Height());
+        texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+        texture->waitForData();
+
+        // upload raw color image data to gpu texture
+        Ogre::Image2 image;
+        image.loadDynamicImage(data, false, texture);
+        image.uploadTo(texture, 0, 0);
+        delete [] data;
+      }
+    }
+  }
+
   Ogre::HlmsSamplerblock samplerBlockRef;
   samplerBlockRef.mU = Ogre::TAM_WRAP;
   samplerBlockRef.mV = Ogre::TAM_WRAP;
   samplerBlockRef.mW = Ogre::TAM_WRAP;
 
   this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
-
-  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-  Ogre::TextureGpuManager *textureMgr =
-      root->getRenderSystem()->getTextureGpuManager();
   auto tex = textureMgr->findTextureNoThrow(baseName);
 
   if (tex)

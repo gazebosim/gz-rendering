@@ -11,6 +11,7 @@ set(tests
   sky.cc
   thermal_camera.cc
   lidar_visual.cc
+  wide_angle_camera.cc
 )
 
 link_directories(${PROJECT_BINARY_DIR}/test)

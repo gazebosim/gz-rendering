@@ -46,6 +46,7 @@
 #include "ignition/rendering/ThermalCamera.hh"
 #include "ignition/rendering/SegmentationCamera.hh"
 #include "ignition/rendering/Visual.hh"
+#include "ignition/rendering/WideAngleCamera.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
 
@@ -872,6 +873,36 @@ SegmentationCameraPtr BaseScene::CreateSegmentationCamera(
     const std::string &_name)
 {
   SegmentationCameraPtr camera = this->CreateSegmentationCameraImpl(_id, _name);
+  bool result = this->RegisterSensor(camera);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+WideAngleCameraPtr BaseScene::CreateWideAngleCamera()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateWideAngleCamera(objId);
+}
+//////////////////////////////////////////////////
+WideAngleCameraPtr BaseScene::CreateWideAngleCamera(
+  const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "WideAngleCamera");
+  return this->CreateWideAngleCamera(_id, objName);
+}
+//////////////////////////////////////////////////
+WideAngleCameraPtr BaseScene::CreateWideAngleCamera(
+  const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateWideAngleCamera(objId, _name);
+}
+//////////////////////////////////////////////////
+WideAngleCameraPtr BaseScene::CreateWideAngleCamera(
+  const unsigned int _id,
+    const std::string &_name)
+{
+  WideAngleCameraPtr camera = this->CreateWideAngleCameraImpl(_id, _name);
   bool result = this->RegisterSensor(camera);
   return (result) ? camera : nullptr;
 }

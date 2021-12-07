@@ -47,6 +47,7 @@
 #include "ignition/rendering/ogre/OgreText.hh"
 #include "ignition/rendering/ogre/OgreThermalCamera.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
+#include "ignition/rendering/ogre/OgreWideAngleCamera.hh"
 #include "ignition/rendering/ogre/OgreWireBox.hh"
 
 namespace ignition
@@ -446,6 +447,15 @@ ThermalCameraPtr OgreScene::CreateThermalCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
   OgreThermalCameraPtr camera(new OgreThermalCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+///////////////////////////////////////////////////
+WideAngleCameraPtr OgreScene::CreateWideAngleCameraImpl(const unsigned int _id,
+    const std::string &_name)
+{
+  OgreWideAngleCameraPtr camera(new OgreWideAngleCamera);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }

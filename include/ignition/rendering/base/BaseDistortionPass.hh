@@ -76,7 +76,7 @@ namespace ignition
       public: void SetP2(double _p2);
 
       // Documentation inherited.
-      public: void SetCenter(math::Vector2d _center);
+      public: void SetCenter(const math::Vector2d &_center);
 
       /// \brief Radial distortion coefficient k1.
       public: double k1 = 0;
@@ -190,7 +190,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseDistortionPass<T>::SetCenter(math::Vector2d _center)
+    void BaseDistortionPass<T>::SetCenter(const math::Vector2d &_center)
     {
       this->lensCenter = _center;
     }

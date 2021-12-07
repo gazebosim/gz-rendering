@@ -89,7 +89,7 @@ namespace ignition
 
       /// \brief Set the distortion center.
       /// \param[in] _center Distortion center.
-      public: virtual void SetCenter(math::Vector2d _center) = 0;
+      public: virtual void SetCenter(const math::Vector2d &_center) = 0;
     };
     }
   }

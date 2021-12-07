@@ -53,6 +53,38 @@ namespace ignition
 
       private: const ignition::math::Vector2d &distortionScale;
     };
+
+    class OgreDistortionPass::Implementation
+    {
+      /// \brief Scale applied to distorted image.
+      public: ignition::math::Vector2d distortionScale = {1.0, 1.0};
+
+      /// \brief True if the distorted image will be cropped to remove the
+      /// black pixels at the corners of the image.
+      public: bool distortionCrop = true;
+
+      /// \brief Distortion compositor.
+      public: Ogre::CompositorInstance *distortionInstance = nullptr;
+
+      /// \brief Ogre Material that contains the distortion shader
+      public: Ogre::MaterialPtr distortionMaterial;
+
+      /// \brief Mapping of distorted to undistorted normalized pixels
+      public: std::vector<ignition::math::Vector2d> distortionMap;
+
+      /// \brief Width of distortion texture map
+      public: unsigned int distortionTexWidth = 0u;
+
+      /// \brief Height of distortion texture map
+      public: unsigned int distortionTexHeight = 0u;
+
+      /// \brief Distortion compositor listener
+      /// uses <ignition/utils/ImplPtr.hh> from ign-rendering7
+      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      public: std::shared_ptr<DistortionCompositorListener>
+          distortionCompositorListener;
+      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+    };
     }
   }
 }
@@ -61,7 +93,8 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-OgreDistortionPass::OgreDistortionPass()
+OgreDistortionPass::OgreDistortionPass() :
+    dataPtr(utils::MakeUniqueImpl<Implementation>())
 {
 }
 
@@ -73,10 +106,10 @@ OgreDistortionPass::~OgreDistortionPass()
 //////////////////////////////////////////////////
 void OgreDistortionPass::PreRender()
 {
-  if (!this->distortionInstance)
+  if (!this->dataPtr->distortionInstance)
     return;
-  if (this->enabled != this->distortionInstance->getEnabled())
-    this->distortionInstance->setEnabled(this->enabled);
+  if (this->enabled != this->dataPtr->distortionInstance->getEnabled())
+    this->dataPtr->distortionInstance->setEnabled(this->enabled);
 }
 
 //////////////////////////////////////////////////
@@ -88,7 +121,7 @@ void OgreDistortionPass::CreateRenderPass()
     return;
   }
 
-  if (this->distortionInstance)
+  if (this->dataPtr->distortionInstance)
   {
     ignerr << "Distortion pass already created. " << std::endl;
     return;
@@ -116,12 +149,12 @@ void OgreDistortionPass::CreateRenderPass()
       (this->ogreCamera->getFOVy().valueRadians() *
       this->ogreCamera->getAspectRatio());
   const double focalLength = texSize / (2 * tan(fov / 2));
-  this->distortionTexWidth = texSize;
-  this->distortionTexHeight = texSize;
+  this->dataPtr->distortionTexWidth = texSize;
+  this->dataPtr->distortionTexHeight = texSize;
   unsigned int imageSize =
-      this->distortionTexWidth * this->distortionTexHeight;
-  double colStepSize = 1.0 / this->distortionTexWidth;
-  double rowStepSize = 1.0 / this->distortionTexHeight;
+      this->dataPtr->distortionTexWidth * this->dataPtr->distortionTexHeight;
+  double colStepSize = 1.0 / this->dataPtr->distortionTexWidth;
+  double rowStepSize = 1.0 / this->dataPtr->distortionTexHeight;
 
   // Half step-size vector to add to the value being placed in distortion map.
   // Necessary for compositor to correctly interpolate pixel values.
@@ -129,15 +162,15 @@ void OgreDistortionPass::CreateRenderPass()
       0.5 * ignition::math::Vector2d(rowStepSize, colStepSize);
 
   // initialize distortion map
-  this->distortionMap.resize(imageSize);
-  for (unsigned int i = 0; i < this->distortionMap.size(); ++i)
+  this->dataPtr->distortionMap.resize(imageSize);
+  for (unsigned int i = 0; i < this->dataPtr->distortionMap.size(); ++i)
   {
-    this->distortionMap[i] = -1;
+    this->dataPtr->distortionMap[i] = -1;
   }
 
   ignition::math::Vector2d distortionCenterCoordinates(
-      this->lensCenter.X() * this->distortionTexWidth,
-      this->lensCenter.Y() * this->distortionTexWidth);
+      this->lensCenter.X() * this->dataPtr->distortionTexWidth,
+      this->lensCenter.Y() * this->dataPtr->distortionTexWidth);
 
   // declare variables before the loop
   const auto unsetPixelVector =  ignition::math::Vector2d(-1, -1);
@@ -151,11 +184,11 @@ void OgreDistortionPass::CreateRenderPass()
   double normalizedColLocation, normalizedRowLocation;
 
   // fill the distortion map
-  for (unsigned int mapRow = 0; mapRow < this->distortionTexHeight;
+  for (unsigned int mapRow = 0; mapRow < this->dataPtr->distortionTexHeight;
     ++mapRow)
   {
     normalizedRowLocation = mapRow*rowStepSize;
-    for (unsigned int mapCol = 0; mapCol < this->distortionTexWidth;
+    for (unsigned int mapCol = 0; mapCol < this->dataPtr->distortionTexWidth;
       ++mapCol)
     {
       normalizedColLocation = mapCol*colStepSize;
@@ -163,30 +196,19 @@ void OgreDistortionPass::CreateRenderPass()
       normalizedLocation[0] = normalizedColLocation;
       normalizedLocation[1] = normalizedRowLocation;
 
-      if (this->legacyMode)
-      {
-        distortedLocation = this->Distort(
-            normalizedLocation,
-            this->lensCenter,
-            this->k1, this->k2, this->k3,
-            this->p1, this->p2);
-      }
-      else
-      {
-        distortedLocation = this->Distort(
-            normalizedLocation,
-            this->lensCenter,
-            this->k1, this->k2, this->k3,
-            this->p1, this->p2,
-            this->distortionTexWidth,
-            focalLength);
-      }
+      distortedLocation = this->Distort(
+          normalizedLocation,
+          this->lensCenter,
+          this->k1, this->k2, this->k3,
+          this->p1, this->p2,
+          this->dataPtr->distortionTexWidth,
+          focalLength);
 
       // compute the index in the distortion map
       distortedCol = round(distortedLocation.X() *
-        this->distortionTexWidth);
+        this->dataPtr->distortionTexWidth);
       distortedRow = round(distortedLocation.Y() *
-        this->distortionTexHeight);
+        this->dataPtr->distortionTexHeight);
 
       // Note that the following makes sure that, for significant distortions,
       // there is not a problem where the distorted image seems to fold over
@@ -195,19 +217,19 @@ void OgreDistortionPass::CreateRenderPass()
       // nonlegacy distortion modes.
 
       // Make sure the distorted pixel is within the texture dimensions
-      if (distortedCol < this->distortionTexWidth &&
-          distortedRow < this->distortionTexHeight)
+      if (distortedCol < this->dataPtr->distortionTexWidth &&
+          distortedRow < this->dataPtr->distortionTexHeight)
       {
-        distortedIdx = distortedRow * this->distortionTexWidth +
+        distortedIdx = distortedRow * this->dataPtr->distortionTexWidth +
           distortedCol;
 
         // check if the index has already been set
-        if (this->distortionMap[distortedIdx] != unsetPixelVector)
+        if (this->dataPtr->distortionMap[distortedIdx] != unsetPixelVector)
         {
           // grab current coordinates that map to this destination
           currDistortedCoordinates =
-            this->distortionMap[distortedIdx] *
-            this->distortionTexWidth;
+            this->dataPtr->distortionMap[distortedIdx] *
+            this->dataPtr->distortionTexWidth;
 
           // grab new coordinates to map to
           newDistortedCoordinates[0] = mapCol;
@@ -217,13 +239,13 @@ void OgreDistortionPass::CreateRenderPass()
           if (newDistortedCoordinates.Distance(distortionCenterCoordinates) <
               currDistortedCoordinates.Distance(distortionCenterCoordinates))
           {
-            this->distortionMap[distortedIdx] = normalizedLocation +
+            this->dataPtr->distortionMap[distortedIdx] = normalizedLocation +
               halfTexelSize;
           }
         }
         else
         {
-          this->distortionMap[distortedIdx] = normalizedLocation +
+          this->dataPtr->distortionMap[distortedIdx] = normalizedLocation +
             halfTexelSize;
         }
       }
@@ -234,11 +256,11 @@ void OgreDistortionPass::CreateRenderPass()
   }
 
   // set up the distortion instance
-  this->distortionMaterial =
+  this->dataPtr->distortionMaterial =
     Ogre::MaterialManager::getSingleton().getByName(
         "Distortion");
-  this->distortionMaterial =
-    this->distortionMaterial->clone(
+  this->dataPtr->distortionMaterial =
+    this->dataPtr->distortionMaterial->clone(
         this->ogreCamera->getName() + "_Distortion");
 
   // create the distortion map texture for the distortion instance
@@ -248,8 +270,8 @@ void OgreDistortionPass::CreateRenderPass()
           texName,
           "General",
           Ogre::TEX_TYPE_2D,
-          this->distortionTexWidth,
-          this->distortionTexHeight,
+          this->dataPtr->distortionTexWidth,
+          this->dataPtr->distortionTexHeight,
           0,
           Ogre::PF_FLOAT32_RGB);
   Ogre::HardwarePixelBufferSharedPtr pixelBuffer = renderTexture->getBuffer();
@@ -268,12 +290,12 @@ void OgreDistortionPass::CreateRenderPass()
   float *pDest = static_cast<float *>(pixelBox.data);
 #endif
 
-  for (unsigned int i = 0; i < this->distortionTexHeight; ++i)
+  for (unsigned int i = 0; i < this->dataPtr->distortionTexHeight; ++i)
   {
-    for (unsigned int j = 0; j < this->distortionTexWidth; ++j)
+    for (unsigned int j = 0; j < this->dataPtr->distortionTexWidth; ++j)
     {
       ignition::math::Vector2d vec =
-          this->distortionMap[i * this->distortionTexWidth + j];
+          this->dataPtr->distortionMap[i * this->dataPtr->distortionTexWidth + j];
 
       // perform interpolation on-the-fly:
       // check for empty mapping within the region and correct it by
@@ -365,51 +387,42 @@ void OgreDistortionPass::CreateRenderPass()
   this->CalculateAndApplyDistortionScale();
 
   // set up the distortion map texture to be used in the pixel shader.
-  this->distortionMaterial->getTechnique(0)->getPass(0)->
+  this->dataPtr->distortionMaterial->getTechnique(0)->getPass(0)->
       createTextureUnitState(texName, 1);
 
   // create compositor instance
-  this->distortionInstance =
+  this->dataPtr->distortionInstance =
     Ogre::CompositorManager::getSingleton().addCompositor(
         this->ogreCamera->getViewport(), "RenderPass/Distortion");
-  this->distortionInstance->getTechnique()->getOutputTargetPass()->
-      getPass(0)->setMaterial(this->distortionMaterial);
+  this->dataPtr->distortionInstance->getTechnique()->getOutputTargetPass()->
+      getPass(0)->setMaterial(this->dataPtr->distortionMaterial);
 
-  this->distortionInstance->setEnabled(this->enabled);
+  this->dataPtr->distortionInstance->setEnabled(this->enabled);
 
   // add listener
-  this->distortionCompositorListener.reset(new
-        DistortionCompositorListener(this->distortionScale));
-  this->distortionInstance->addListener(
-    this->distortionCompositorListener.get());
+  this->dataPtr->distortionCompositorListener.reset(new
+        DistortionCompositorListener(this->dataPtr->distortionScale));
+  this->dataPtr->distortionInstance->addListener(
+    this->dataPtr->distortionCompositorListener.get());
 }
 
 //////////////////////////////////////////////////
 void OgreDistortionPass::Destroy()
 {
-  if (this->distortionInstance)
+  if (this->dataPtr->distortionInstance)
   {
-    this->distortionInstance->setEnabled(false);
-    if (this->distortionCompositorListener)
+    this->dataPtr->distortionInstance->setEnabled(false);
+    if (this->dataPtr->distortionCompositorListener)
     {
-      this->distortionInstance->removeListener(
-          this->distortionCompositorListener.get());
+      this->dataPtr->distortionInstance->removeListener(
+          this->dataPtr->distortionCompositorListener.get());
     }
     Ogre::CompositorManager::getSingleton().removeCompositor(
         this->ogreCamera->getViewport(), "RenderPass/Distortion");
 
-    this->distortionInstance = nullptr;
-    this->distortionCompositorListener.reset();
+    this->dataPtr->distortionInstance = nullptr;
+    this->dataPtr->distortionCompositorListener.reset();
   }
-}
-
-//////////////////////////////////////////////////
-ignition::math::Vector2d OgreDistortionPass::Distort(
-    const ignition::math::Vector2d &_in,
-    const ignition::math::Vector2d &_center, double _k1, double _k2, double _k3,
-    double _p1, double _p2)
-{
-  return Distort(_in, _center, _k1, _k2, _k3, _p1, _p2, 1u, 1.0);
 }
 
 //////////////////////////////////////////////////
@@ -445,54 +458,69 @@ ignition::math::Vector2d OgreDistortionPass::Distort(
 //////////////////////////////////////////////////
 ignition::math::Vector2d
     OgreDistortionPass::DistortionMapValueClamped(
-    const int _x, const int _y) const
+    int _x, int _y) const
 {
-  if (_x < 0 || _x >= static_cast<int>(this->distortionTexWidth) ||
-      _y < 0 || _y >= static_cast<int>(this->distortionTexHeight))
+  if (_x < 0 || _x >= static_cast<int>(this->dataPtr->distortionTexWidth) ||
+      _y < 0 || _y >= static_cast<int>(this->dataPtr->distortionTexHeight))
   {
     return ignition::math::Vector2d(-1, -1);
   }
   ignition::math::Vector2d res =
-      this->distortionMap[_y * this->distortionTexWidth + _x];
+      this->dataPtr->distortionMap[_y * this->dataPtr->distortionTexWidth + _x];
   return res;
 }
 
 //////////////////////////////////////////////////
 void OgreDistortionPass::CalculateAndApplyDistortionScale()
 {
-  if (this->distortionMaterial.isNull())
+  if (this->dataPtr->distortionMaterial.isNull())
     return;
 
   // Scale up image if cropping enabled and valid
-  if (this->distortionCrop && this->k1 < 0)
+  if (this->dataPtr->distortionCrop && this->k1 < 0)
   {
+    float viewportWidth = this->ogreCamera->getViewport()->getActualWidth();
+    float viewportHeight = this->ogreCamera->getViewport()->getActualHeight();
+
+    unsigned int texSize = viewportHeight > viewportWidth ? viewportHeight :
+        viewportWidth;
+
+    const double fov = viewportHeight > viewportWidth ?
+        this->ogreCamera->getFOVy().valueRadians() :
+        (this->ogreCamera->getFOVy().valueRadians() *
+        this->ogreCamera->getAspectRatio());
+
+    const double focalLength = texSize / (2 * tan(fov / 2));
+
     // I believe that if not used with a square distortion texture, this
     // calculation will result in stretching of the final output image.
     ignition::math::Vector2d boundA = this->Distort(
         ignition::math::Vector2d(0, 0),
         this->lensCenter,
         this->k1, this->k2, this->k3,
-        this->p1, this->p2);
+        this->p1, this->p2, this->dataPtr->distortionTexWidth,
+        focalLength);
     ignition::math::Vector2d boundB = this->Distort(
         ignition::math::Vector2d(1, 1),
         this->lensCenter,
         this->k1, this->k2, this->k3,
-        this->p1, this->p2);
+        this->p1, this->p2, this->dataPtr->distortionTexWidth,
+        focalLength);
     ignition::math::Vector2d newScale = boundB - boundA;
     // If distortionScale is extremely small, don't crop
     if (newScale.X() < 1e-7 || newScale.Y() < 1e-7)
     {
        ignerr << "Distortion model attempted to apply a scale parameter of ("
-             << this->distortionScale.X() << ", "
-             << this->distortionScale.Y()
+             << this->dataPtr->distortionScale.X() << ", "
+             << this->dataPtr->distortionScale.Y()
              << ", which is invalid.\n";
     }
     else
-      this->distortionScale = newScale;
+      this->dataPtr->distortionScale = newScale;
   }
   // Otherwise no scaling
   else
-    this->distortionScale = ignition::math::Vector2d(1, 1);
+    this->dataPtr->distortionScale = ignition::math::Vector2d(1, 1);
 }
 
 IGN_RENDERING_REGISTER_RENDER_PASS(OgreDistortionPass, DistortionPass)

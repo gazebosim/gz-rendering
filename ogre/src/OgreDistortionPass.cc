@@ -27,33 +27,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    class DistortionCompositorListener
-      : public Ogre::CompositorInstance::Listener
-    {
-      /// \brief Constructor, setting mean and standard deviation.
-      public: DistortionCompositorListener(
-          const ignition::math::Vector2d &_distortionScale):
-          distortionScale(_distortionScale) {}
-
-      /// \brief Callback that OGRE will invoke for us on each render call
-      /// \param[in] _passID OGRE material pass ID.
-      /// \param[in] _mat Pointer to OGRE material.
-      public: virtual void notifyMaterialRender(unsigned int _passId,
-                                                Ogre::MaterialPtr &_mat)
-      {
-        Ogre::GpuProgramParametersSharedPtr params =
-            _mat->getTechnique(0)->getPass(_passId)
-                     ->getFragmentProgramParameters();
-        params->setNamedConstant("scale",
-            Ogre::Vector3(
-              1.0 / distortionScale.X(),
-              1.0 / distortionScale.Y(),
-              1.0));
-      }
-
-      private: const ignition::math::Vector2d &distortionScale;
-    };
-
     class OgreDistortionPass::Implementation
     {
       /// \brief Scale applied to distorted image.
@@ -68,6 +41,9 @@ namespace ignition
 
       /// \brief Ogre Material that contains the distortion shader
       public: Ogre::MaterialPtr distortionMaterial;
+
+      /// \brief Ogre Texture that contains the distortion map
+      public: Ogre::TexturePtr distortionTexture;
 
       /// \brief Mapping of distorted to undistorted normalized pixels
       public: std::vector<ignition::math::Vector2d> distortionMap;
@@ -84,6 +60,46 @@ namespace ignition
       public: std::shared_ptr<DistortionCompositorListener>
           distortionCompositorListener;
       IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+    };
+
+    class DistortionCompositorListener
+      : public Ogre::CompositorInstance::Listener
+    {
+      /// \brief Constructor, setting mean and standard deviation.
+      public: DistortionCompositorListener(
+          const Ogre::TexturePtr &_distortionTexture,
+          const ignition::math::Vector2d &_distortionScale):
+          distortionTexture(_distortionTexture),
+          distortionScale(_distortionScale) {}
+
+      /// \brief Callback that OGRE will invoke for us on each render call
+      /// \param[in] _passID OGRE material pass ID.
+      /// \param[in] _mat Pointer to OGRE material.
+      public: virtual void notifyMaterialRender(unsigned int _passId,
+                                                Ogre::MaterialPtr &_mat)
+      {
+        // If more compositors are added to the camera in addition to the
+        // distortion compositor, an Ogre bug will cause the material for the
+        // last camera initialized to be used for all cameras. This workaround
+        // doesn't correct the material used, but it applies the correct texture
+        // to this active material.
+        _mat->getTechnique(0)->getPass(_passId)->getTextureUnitState(1)->
+            setTexture(distortionTexture);
+
+        // @todo Explore more efficent implementations as it is run every frame
+        Ogre::GpuProgramParametersSharedPtr params =
+            _mat->getTechnique(0)->getPass(_passId)
+                     ->getFragmentProgramParameters();
+        params->setNamedConstant("scale",
+            Ogre::Vector3(
+              1.0 / distortionScale.X(),
+              1.0 / distortionScale.Y(),
+              1.0));
+      }
+
+      private: const Ogre::TexturePtr &distortionTexture;
+
+      private: const ignition::math::Vector2d &distortionScale;
     };
     }
   }
@@ -265,7 +281,7 @@ void OgreDistortionPass::CreateRenderPass()
 
   // create the distortion map texture for the distortion instance
   std::string texName = this->ogreCamera->getName() + "_distortionTex";
-  Ogre::TexturePtr renderTexture =
+  this->dataPtr->distortionTexture =
       Ogre::TextureManager::getSingleton().createManual(
           texName,
           "General",
@@ -274,7 +290,8 @@ void OgreDistortionPass::CreateRenderPass()
           this->dataPtr->distortionTexHeight,
           0,
           Ogre::PF_FLOAT32_RGB);
-  Ogre::HardwarePixelBufferSharedPtr pixelBuffer = renderTexture->getBuffer();
+  Ogre::HardwarePixelBufferSharedPtr pixelBuffer =
+      this->dataPtr->distortionTexture->getBuffer();
 
   // fill the distortion map, while interpolating to fill dead pixels
   pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
@@ -295,7 +312,8 @@ void OgreDistortionPass::CreateRenderPass()
     for (unsigned int j = 0; j < this->dataPtr->distortionTexWidth; ++j)
     {
       ignition::math::Vector2d vec =
-          this->dataPtr->distortionMap[i * this->dataPtr->distortionTexWidth + j];
+          this->dataPtr->distortionMap[i *
+              this->dataPtr->distortionTexWidth + j];
 
       // perform interpolation on-the-fly:
       // check for empty mapping within the region and correct it by
@@ -401,7 +419,8 @@ void OgreDistortionPass::CreateRenderPass()
 
   // add listener
   this->dataPtr->distortionCompositorListener.reset(new
-        DistortionCompositorListener(this->dataPtr->distortionScale));
+        DistortionCompositorListener(this->dataPtr->distortionTexture,
+                                     this->dataPtr->distortionScale));
   this->dataPtr->distortionInstance->addListener(
     this->dataPtr->distortionCompositorListener.get());
 }

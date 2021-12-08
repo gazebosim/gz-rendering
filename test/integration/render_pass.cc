@@ -24,6 +24,7 @@
 
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/DepthCamera.hh"
+#include "ignition/rendering/DistortionPass.hh"
 #include "ignition/rendering/GaussianNoisePass.hh"
 #include "ignition/rendering/Image.hh"
 #include "ignition/rendering/PixelFormat.hh"
@@ -56,6 +57,9 @@ class RenderPassTest: public testing::Test,
 
   // Test and verify Gaussian noise pass is applied to a depth camera
   public: void DepthGaussianNoise(const std::string &_renderEngine);
+
+  // Test and verify Distortion pass is applied to a camera
+  public: void Distortion(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -392,6 +396,152 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
   ignition::rendering::unloadEngine(engine->Name());
 }
 
+void RenderPassTest::Distortion(const std::string &_renderEngine)
+{
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  if (_renderEngine == "ogre2")
+  {
+    igndbg << "Distortion is currently not supported in OGRE2" << std::endl;
+    return;
+
+  }
+
+  // add resources in build dir
+  engine->AddResourcePath(
+      common::joinPaths(std::string(PROJECT_BUILD_PATH), "src"));
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+  scene->SetAmbientLight(0.3, 0.3, 0.3);
+
+  VisualPtr root = scene->RootVisual();
+
+  unsigned int width = 320;
+  unsigned int height = 240;
+
+  // create  camera
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_TRUE(camera != nullptr);
+  camera->SetImageWidth(width);
+  camera->SetImageHeight(height);
+  root->AddChild(camera);
+
+  // create directional light
+  DirectionalLightPtr light = scene->CreateDirectionalLight();
+  light->SetDirection(0.0, 0.0, -1);
+  light->SetDiffuseColor(0.5, 0.5, 0.5);
+  light->SetSpecularColor(0.5, 0.5, 0.5);
+  root->AddChild(light);
+
+  // create green material
+  MaterialPtr green = scene->CreateMaterial();
+  green->SetDiffuse(0.0, 0.7, 0.0);
+  green->SetSpecular(0.5, 0.5, 0.5);
+
+  // create box
+  VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetLocalPosition(1.0, 0.0, 0.5);
+  box->SetMaterial(green);
+  root->AddChild(box);
+
+  // create white material
+  MaterialPtr white = scene->CreateMaterial();
+  white->SetAmbient(0.5, 0.5, 0.5);
+  white->SetDiffuse(0.8, 0.8, 0.8);
+  white->SetReceiveShadows(true);
+  white->SetReflectivity(0);
+
+  // create plane
+  VisualPtr plane = scene->CreateVisual();
+  plane->AddGeometry(scene->CreatePlane());
+  plane->SetLocalScale(5, 8, 1);
+  plane->SetLocalPosition(3, 0, -0.5);
+  plane->SetMaterial(white);
+  root->AddChild(plane);
+
+  // capture original image with box (no distortion)
+  Image image = camera->CreateImage();
+  Image imageBarrel = camera->CreateImage();
+  Image imagePincushion = camera->CreateImage();
+  camera->Capture(image);
+
+  RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
+  if (rpSystem)
+  {
+    // add barrel distortion pass
+    {
+      RenderPassPtr pass = rpSystem->Create<DistortionPass>();
+      DistortionPassPtr distortionPass =
+          std::dynamic_pointer_cast<DistortionPass>(pass);
+      distortionPass->SetK1(-0.1349);
+      distortionPass->SetK2(-0.51868);
+      distortionPass->SetK3(-0.001);
+      camera->AddRenderPass(distortionPass);
+      camera->Capture(imageBarrel);
+      camera->RemoveRenderPass(distortionPass);
+    }
+    // add pincushion distortion pass
+    {
+      RenderPassPtr pass = rpSystem->Create<DistortionPass>();
+      DistortionPassPtr distortionPass =
+          std::dynamic_pointer_cast<DistortionPass>(pass);
+      distortionPass->SetK1(0.1349);
+      distortionPass->SetK2(0.51868);
+      distortionPass->SetK3(0.001);
+      camera->AddRenderPass(distortionPass);
+      camera->Capture(imagePincushion);
+      camera->RemoveRenderPass(distortionPass);
+    }
+  }
+  else
+  {
+    ignwarn << "Engine '" << _renderEngine << "' does not support "
+            << "render pass  system" << std::endl;
+    return;
+  }
+
+  unsigned char* imageData = (unsigned char*)image.Data();
+  unsigned char* imageBarrelData = (unsigned char*)imageBarrel.Data();
+  unsigned char* imagePincushionData = (unsigned char*)imagePincushion.Data();
+
+  unsigned int colorSum = 0;
+  unsigned int colorSum2 = 0;
+  unsigned int colorSum3 = 0;
+  for (unsigned int y = 0; y < height; ++y)
+  {
+    for (unsigned int x = 0; x < width*3; x+=3)
+    {
+      unsigned int r = imageData[(y*width*3) + x];
+      unsigned int g = imageData[(y*width*3) + x + 1];
+      unsigned int b = imageData[(y*width*3) + x + 2];
+      colorSum += r + g + b;
+      unsigned int r3 = imageBarrelData[(y*width*3) + x];
+      unsigned int g3 = imageBarrelData[(y*width*3) + x + 1];
+      unsigned int b3 = imageBarrelData[(y*width*3) + x + 2];
+      colorSum2 += r3 + g3 + b3;
+      unsigned int r4 = imagePincushionData[(y*width*3) + x];
+      unsigned int g4 = imagePincushionData[(y*width*3) + x + 1];
+      unsigned int b4 = imagePincushionData[(y*width*3) + x + 2];
+      colorSum3 += r4 + g4 + b4;
+    }
+  }
+  EXPECT_GT(colorSum, colorSum2);
+  EXPECT_LT(colorSum, colorSum3);
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
 /////////////////////////////////////////////////
 TEST_P(RenderPassTest, GaussianNoise)
 {
@@ -408,7 +558,13 @@ TEST_P(RenderPassTest, DepthGaussianNoise)
   DepthGaussianNoise(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(GaussianNoise, RenderPassTest,
+/////////////////////////////////////////////////
+TEST_P(RenderPassTest, Distortion)
+{
+  Distortion(GetParam());
+}
+
+INSTANTIATE_TEST_CASE_P(RenderPass, RenderPassTest,
     RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 

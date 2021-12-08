@@ -29,6 +29,7 @@ struct Params
   float2  projectionParams;
   float   far;
   float   inf;
+  float4  colorTexResolution;
 };
 
 float packFloat(float4 color)
@@ -66,7 +67,11 @@ fragment float4 main_metal
     point = float3(p.inf);
 
   // color
-  float4 color = colorTexture.sample(colorSampler, inPs.uv0);
+  // Either: Metal equivalent of texelFetch
+  float4 color = colorTexture.read(
+      uint2(inPs.uv0 * p.colorTexResolution.xy), 0);
+  // Or: Use standard sampler
+  // float4 color = colorTexture.sample(colorSampler, inPs.uv0);
 
   float rgba = packFloat(color);
 

@@ -836,8 +836,12 @@ void Ogre2ThermalCamera::Render()
 {
   // GL_DEPTH_CLAMP is disabled in later version of ogre2.2
   // however our shaders rely on clamped values so enable it for this sensor
+  auto engine = Ogre2RenderEngine::Instance();
+  std::string renderSystemName =
+      engine->OgreRoot()->getRenderSystem()->getFriendlyName();
 #ifndef _WIN32
-  glEnable(GL_DEPTH_CLAMP);
+  if (renderSystemName.find("OpenGL") != std::string::npos)
+    glEnable(GL_DEPTH_CLAMP);
 #endif
 
   // update the compositors
@@ -855,7 +859,8 @@ void Ogre2ThermalCamera::Render()
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
 #ifndef _WIN32
-  glDisable(GL_DEPTH_CLAMP);
+  if (renderSystemName.find("OpenGL") != std::string::npos)
+    glDisable(GL_DEPTH_CLAMP);
 #endif
 }
 

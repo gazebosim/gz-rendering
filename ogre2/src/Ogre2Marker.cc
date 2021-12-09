@@ -36,6 +36,7 @@
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
@@ -44,6 +45,7 @@
 #endif
 #include <OgreItem.h>
 #include <OgreMaterialManager.h>
+#include <OgreRoot.h>
 #include <OgreTechnique.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
@@ -94,6 +96,11 @@ void Ogre2Marker::PreRender()
     {
       // enable GL_PROGRAM_POINT_SIZE so we can set gl_PointSize in vertex
       // shader
+      auto engine = Ogre2RenderEngine::Instance();
+      std::string renderSystemName =
+          engine->OgreRoot()->getRenderSystem()->getFriendlyName();
+      if (renderSystemName.find("OpenGL") != std::string::npos)
+      {
       #ifdef __APPLE__
         glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
       #else
@@ -101,6 +108,7 @@ void Ogre2Marker::PreRender()
         glEnable(GL_PROGRAM_POINT_SIZE);
       #endif
       #endif
+      }
       Ogre::MaterialPtr pointsMat =
           Ogre::MaterialManager::getSingleton().getByName(
           "PointCloudPoint");

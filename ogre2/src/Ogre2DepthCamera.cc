@@ -979,8 +979,9 @@ void Ogre2DepthCamera::Render()
   auto engine = Ogre2RenderEngine::Instance();
   std::string renderSystemName =
       engine->OgreRoot()->getRenderSystem()->getFriendlyName();
+  bool useGL = renderSystemName.find("OpenGL") != std::string::npos;
 #ifndef _WIN32
-  if (renderSystemName.find("OpenGL") != std::string::npos)
+  if (useGL)
     glEnable(GL_DEPTH_CLAMP);
 #endif
 
@@ -999,7 +1000,7 @@ void Ogre2DepthCamera::Render()
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
 #ifndef _WIN32
-  if (renderSystemName.find("OpenGL") != std::string::npos)
+  if (useGL)
     glDisable(GL_DEPTH_CLAMP);
 #endif
 }

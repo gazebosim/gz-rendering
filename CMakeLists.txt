@@ -35,9 +35,9 @@ set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-common
-ign_find_package(ignition-common4 REQUIRED
-  COMPONENTS graphics events)
-set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
+ign_find_package(ignition-common5 REQUIRED
+COMPONENTS geospatial graphics events)
+set(IGN_COMMON_VER ${ignition-common5_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-plugin

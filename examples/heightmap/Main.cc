@@ -28,6 +28,7 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/Dem.hh>
 #include <ignition/common/HeightmapData.hh>
 #include <ignition/common/ImageHeightmap.hh>
 #include <ignition/rendering.hh>
@@ -68,6 +69,7 @@ void buildScene(ScenePtr _scene)
   light1->SetCastShadows(true);
   root->AddChild(light1);
 
+/*
 //! [create a heightmap]
   auto data = std::make_shared<common::ImageHeightmap>();
   data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
@@ -114,6 +116,7 @@ void buildScene(ScenePtr _scene)
   root->AddChild(vis);
 //! [create a heightmap]
 
+
 //! [create another heightmap]
   auto data2 = std::make_shared<common::ImageHeightmap>();
   data2->Load(common::joinPaths(RESOURCE_PATH, "city_terrain.jpg"));
@@ -159,6 +162,55 @@ void buildScene(ScenePtr _scene)
   vis2->AddGeometry(heightmapGeom2);
   root->AddChild(vis2);
 //! [create another heightmap]
+*/
+
+//! [create a heightmap dem]
+  auto data = std::make_shared<common::Dem>();
+  data->Load(common::joinPaths(RESOURCE_PATH, "volcano.tif"));
+
+
+  HeightmapDescriptor desc;
+  desc.SetName("example_volcano");
+  desc.SetData(data);
+  desc.SetSize({10, 10, 10});
+  // desc.SetSize({129, 129, 80});
+  desc.SetSampling(2u);
+  desc.SetUseTerrainPaging(false);
+
+  HeightmapTexture textureA;
+  textureA.SetSize(1.0);
+  textureA.SetDiffuse("../media/dirt_diffusespecular.png");
+  textureA.SetNormal("../media/flat_normal.png");
+  desc.AddTexture(textureA);
+
+  HeightmapBlend blendA;
+  blendA.SetMinHeight(2.0);
+  blendA.SetFadeDistance(5.0);
+  desc.AddBlend(blendA);
+
+  HeightmapTexture textureB;
+  textureB.SetSize(1.0);
+  textureB.SetDiffuse("../media/grass_diffusespecular.png");
+  textureB.SetNormal("../media/flat_normal.png");
+  desc.AddTexture(textureB);
+
+  HeightmapBlend blendB;
+  blendB.SetMinHeight(4.0);
+  blendB.SetFadeDistance(5.0);
+  desc.AddBlend(blendB);
+
+  HeightmapTexture textureC;
+  textureC.SetSize(1.0);
+  textureC.SetDiffuse("../media/fungus_diffusespecular.png");
+  textureC.SetNormal("../media/flat_normal.png");
+  desc.AddTexture(textureC);
+
+  auto heightmapGeom = _scene->CreateHeightmap(desc);
+
+  auto vis = _scene->CreateVisual();
+  vis->AddGeometry(heightmapGeom);
+  root->AddChild(vis);
+//! [create a heightmap dem]
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();

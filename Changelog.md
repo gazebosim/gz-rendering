@@ -6,6 +6,77 @@
 
 ### Ignition Rendering 6.X
 
+### Ignition Rendering 6.1.0 (2021-12-09)
+
+1. Check for OpenGL backend before calling GL APIs
+    * [Pull request #509](https://github.com/ignitionrobotics/ign-rendering/pull/509)
+
+1. Fix loading grayscale emissive map
+    * [Pull request #503](https://github.com/ignitionrobotics/ign-rendering/pull/503)
+    * [Pull request #501](https://github.com/ignitionrobotics/ign-rendering/pull/501)
+
+1. Fixes to selection buffer
+    * [Pull request #446](https://github.com/ignitionrobotics/ign-rendering/pull/446)
+    * [Pull request #510](https://github.com/ignitionrobotics/ign-rendering/pull/510)
+    * [Pull request #498](https://github.com/ignitionrobotics/ign-rendering/pull/498)
+
+1. Add Metal support for the Ogre2 Render Engine
+    * [Pull request #463](https://github.com/ignitionrobotics/ign-rendering/pull/463)
+
+1. Add a depth camera example
+    * [Pull request #467](https://github.com/ignitionrobotics/ign-rendering/pull/467)
+
+1. More nullptr checking on visuals and base axis
+    * [Pull request #486](https://github.com/ignitionrobotics/ign-rendering/pull/486)
+
+1. Fix Utils unit test
+    * [Pull request #481](https://github.com/ignitionrobotics/ign-rendering/pull/481)
+
+1. Fix context attributes of glXCreateContextAttribsARB.
+    * [Pull request #460](https://github.com/ignitionrobotics/ign-rendering/pull/460)
+
+1. [Ogre2] fix invalid anti-aliasing level warning
+    * [Pull request #470](https://github.com/ignitionrobotics/ign-rendering/pull/470)
+
+1. Avoid symbol redefinition to fix armel builds
+    * [Pull request #457](https://github.com/ignitionrobotics/ign-rendering/pull/457)
+
+1. fix grayscale albedo map
+    * [Pull request #466](https://github.com/ignitionrobotics/ign-rendering/pull/466)
+
+1. Fix selection buffer material script
+    * [Pull request #456](https://github.com/ignitionrobotics/ign-rendering/pull/456)
+
+1. [macOS] modify definition of bufferFetch1 to work when GL_ARB_texture_buffer_range is not available
+    * [Pull request #462](https://github.com/ignitionrobotics/ign-rendering/pull/462)
+
+1. Fix compilation against Ogre 1.10.12
+    * [Pull request #390](https://github.com/ignitionrobotics/ign-rendering/pull/390)
+
+1. Fix logic on warning for ogre versions different than 1.9.x
+    * [Pull request #465](https://github.com/ignitionrobotics/ign-rendering/pull/465)
+
+1. Fix point cloud material syntax error
+    * [Pull request #433](https://github.com/ignitionrobotics/ign-rendering/pull/433)
+
+1. Run ogre2 particles by default
+    * [Pull request #430](https://github.com/ignitionrobotics/ign-rendering/pull/430)
+
+1. Ogre: Do not assume that ogre plugins have lib prefix on macOS
+    * [Pull request #454](https://github.com/ignitionrobotics/ign-rendering/pull/454)
+
+1. Fix heightmap crash if only shadow casting spotlights are one scene
+    * [Pull request #451](https://github.com/ignitionrobotics/ign-rendering/pull/451)
+
+1. Added macOS instructions
+    * [Pull request #448](https://github.com/ignitionrobotics/ign-rendering/pull/448)
+
+1. Ogre: Add missing required Paging component
+    * [Pull request #452](https://github.com/ignitionrobotics/ign-rendering/pull/452)
+
+1. Fix ray query distance calculation
+    * [Pull request #438](https://github.com/ignitionrobotics/ign-rendering/pull/438)
+
 ### Ignition Rendering 6.0.1 (2021-10-01)
 
 1. Disable using selection buffer for ray queries

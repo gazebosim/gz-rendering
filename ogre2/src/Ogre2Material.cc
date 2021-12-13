@@ -281,7 +281,22 @@ void Ogre2Material::SetRenderOrder(const float _renderOrder)
   this->renderOrder = _renderOrder;
   Ogre::HlmsMacroblock macroblock(
       *this->ogreDatablock->getMacroblock());
-  macroblock.mDepthBiasConstant = _renderOrder;
+
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+
+  if (renderSystem->isReverseDepth())
+  {
+    // Reverse depth needs 100x scale AND ends up being superior
+    // See https://github.com/ignitionrobotics/ign-rendering/
+    // issues/427#issuecomment-991800352
+    // and see https://www.youtube.com/watch?v=s2XdH3fYUac
+    macroblock.mDepthBiasConstant = _renderOrder * 100.0f;
+  }
+  else
+  {
+    macroblock.mDepthBiasConstant = _renderOrder;
+  }
   this->ogreDatablock->setMacroblock(macroblock);
 }
 

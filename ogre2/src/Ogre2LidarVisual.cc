@@ -30,6 +30,7 @@
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Geometry.hh"
@@ -39,6 +40,7 @@
 #endif
 #include <OgreItem.h>
 #include <OgreMaterialManager.h>
+#include <OgreRoot.h>
 #include <OgreSceneNode.h>
 #include <OgreTechnique.h>
 #ifdef _MSC_VER
@@ -153,13 +155,19 @@ void Ogre2LidarVisual::Init()
 void Ogre2LidarVisual::Create()
 {
   // enable GL_PROGRAM_POINT_SIZE so we can set gl_PointSize in vertex shader
+  auto engine = Ogre2RenderEngine::Instance();
+  std::string renderSystemName =
+      engine->OgreRoot()->getRenderSystem()->getFriendlyName();
+  if (renderSystemName.find("OpenGL") != std::string::npos)
+  {
 #ifdef __APPLE__
-  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 #else
 #ifndef _WIN32
-  glEnable(GL_PROGRAM_POINT_SIZE);
+    glEnable(GL_PROGRAM_POINT_SIZE);
 #endif
 #endif
+  }
   this->dataPtr->pointsMat =
       Ogre::MaterialManager::getSingleton().getByName(
       "PointCloudPoint");

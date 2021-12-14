@@ -976,8 +976,13 @@ void Ogre2DepthCamera::Render()
 {
   // GL_DEPTH_CLAMP was disabled in later version of ogre2.2
   // however our shaders rely on clamped values so enable it for this sensor
+  auto engine = Ogre2RenderEngine::Instance();
+  std::string renderSystemName =
+      engine->OgreRoot()->getRenderSystem()->getFriendlyName();
+  bool useGL = renderSystemName.find("OpenGL") != std::string::npos;
 #ifndef _WIN32
-  glEnable(GL_DEPTH_CLAMP);
+  if (useGL)
+    glEnable(GL_DEPTH_CLAMP);
 #endif
 
   this->scene->StartRendering(this->ogreCamera);
@@ -995,7 +1000,8 @@ void Ogre2DepthCamera::Render()
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
 #ifndef _WIN32
-  glDisable(GL_DEPTH_CLAMP);
+  if (useGL)
+    glDisable(GL_DEPTH_CLAMP);
 #endif
 }
 

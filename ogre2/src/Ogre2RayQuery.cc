@@ -111,10 +111,6 @@ RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 {
   RayQueryResult result;
 
-  // ray query using selection buffer does not seem to work on some machines
-  // using cpu based ray-triangle intersection method
-  // \todo remove this line if selection buffer is working again
-  return this->ClosestPointByIntersection(_forceSceneUpdate);
 
 #ifdef __APPLE__
   return this->ClosestPointByIntersection(_forceSceneUpdate);

@@ -153,8 +153,10 @@ void OgreDistortionPass::CreateRenderPass()
     return;
   }
 
-  float viewportWidth = this->ogreCamera->getViewport()->getActualWidth();
-  float viewportHeight = this->ogreCamera->getViewport()->getActualHeight();
+  float viewportWidth = static_cast<float>(this->ogreCamera->
+      getViewport()->getActualWidth());
+  float viewportHeight = static_cast<float>(this->ogreCamera->
+      getViewport()->getActualHeight());
 
   // seems to work best with a square distortion map texture
   unsigned int texSize = viewportHeight > viewportWidth ? viewportHeight :
@@ -221,10 +223,10 @@ void OgreDistortionPass::CreateRenderPass()
           focalLength);
 
       // compute the index in the distortion map
-      distortedCol = round(distortedLocation.X() *
-        this->dataPtr->distortionTexWidth);
-      distortedRow = round(distortedLocation.Y() *
-        this->dataPtr->distortionTexHeight);
+      distortedCol = static_cast<unsigned int>(round(distortedLocation.X() *
+        this->dataPtr->distortionTexWidth));
+      distortedRow = static_cast<unsigned int>(round(distortedLocation.Y() *
+        this->dataPtr->distortionTexHeight));
 
       // Note that the following makes sure that, for significant distortions,
       // there is not a problem where the distorted image seems to fold over
@@ -498,8 +500,10 @@ void OgreDistortionPass::CalculateAndApplyDistortionScale()
   // Scale up image if cropping enabled and valid
   if (this->dataPtr->distortionCrop && this->k1 < 0)
   {
-    float viewportWidth = this->ogreCamera->getViewport()->getActualWidth();
-    float viewportHeight = this->ogreCamera->getViewport()->getActualHeight();
+    float viewportWidth = static_cast<float>(this->ogreCamera->getViewport()->
+        getActualWidth());
+    float viewportHeight = static_cast<float>(this->ogreCamera->getViewport()->
+        getActualHeight());
 
     unsigned int texSize = viewportHeight > viewportWidth ? viewportHeight :
         viewportWidth;

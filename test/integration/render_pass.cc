@@ -441,18 +441,6 @@ void RenderPassTest::Distortion(const std::string &_renderEngine)
   light->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light);
 
-  // create green material
-  MaterialPtr green = scene->CreateMaterial();
-  green->SetDiffuse(0.0, 0.7, 0.0);
-  green->SetSpecular(0.5, 0.5, 0.5);
-
-  // create box
-  VisualPtr box = scene->CreateVisual();
-  box->AddGeometry(scene->CreateBox());
-  box->SetLocalPosition(1.0, 0.0, 0.5);
-  box->SetMaterial(green);
-  root->AddChild(box);
-
   // create white material
   MaterialPtr white = scene->CreateMaterial();
   white->SetAmbient(0.5, 0.5, 0.5);
@@ -535,7 +523,7 @@ void RenderPassTest::Distortion(const std::string &_renderEngine)
     }
   }
   EXPECT_GT(colorSum, colorSum2);
-  EXPECT_LT(colorSum, colorSum3);
+  EXPECT_GT(colorSum, colorSum3);
 
   // Clean up
   engine->DestroyScene(scene);

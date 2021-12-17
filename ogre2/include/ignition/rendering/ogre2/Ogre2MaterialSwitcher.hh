@@ -24,8 +24,16 @@
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreCamera.h>
+#include <OgreMaterial.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 namespace ignition
 {
@@ -38,7 +46,7 @@ namespace ignition
 
     /// \brief Helper class to assign unique colors to renderables
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2MaterialSwitcher :
-      public Ogre::RenderTargetListener
+      public Ogre::Camera::Listener
     {
       /// \brief Constructor
       public: explicit Ogre2MaterialSwitcher(Ogre2ScenePtr _scene);
@@ -55,16 +63,15 @@ namespace ignition
       public: void Reset();
 
       /// \brief Ogre's pre render update callback
-      /// \param[in] _evt Ogre render target event containing information about
+      /// \param[in] _cam Ogre render target event containing information about
       /// the source render target.
-      public: virtual void preRenderTargetUpdate(
-                  const Ogre::RenderTargetEvent &_evt);
+      public: virtual void cameraPreRenderScene(
+                  Ogre::Camera *_cam) override;
 
       /// \brief Ogre's post render update callback
-      /// \param[in] _evt Ogre render target event containing information about
+      /// \param[in] _cam Ogre render target event containing information about
       /// the source render target.
-      public: virtual void postRenderTargetUpdate(
-                  const Ogre::RenderTargetEvent &_evt);
+      public: virtual void cameraPostRenderScene(Ogre::Camera *_cam) override;
 
       /// \brief Current unique color value
       private: ignition::math::Color currentColor;

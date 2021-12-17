@@ -26,9 +26,18 @@
 using namespace ignition;
 using namespace rendering;
 
+/// \brief Private data for the Ogre2Visual class
+class ignition::rendering::OgreVisualPrivate
+{
+  /// \brief True if wireframe mode is enabled
+  public: bool wireframe;
+};
+
 //////////////////////////////////////////////////
 OgreVisual::OgreVisual()
+  : dataPtr(new OgreVisualPrivate)
 {
+  this->dataPtr->wireframe = false;
 }
 
 //////////////////////////////////////////////////
@@ -37,8 +46,66 @@ OgreVisual::~OgreVisual()
 }
 
 //////////////////////////////////////////////////
+void OgreVisual::SetWireframe(bool _show)
+{
+  if (this->dataPtr->wireframe == _show)
+    return;
+
+  if (!this->ogreNode)
+    return;
+
+  this->dataPtr->wireframe = _show;
+  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
+      i++)
+  {
+    Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
+    Ogre::Entity *entity = dynamic_cast<Ogre::Entity *>(obj);
+
+    if (!entity)
+      continue;
+
+    for (unsigned int j = 0; j < entity->getNumSubEntities(); j++)
+    {
+      Ogre::SubEntity *subEntity = entity->getSubEntity(j);
+      Ogre::MaterialPtr entityMaterial = subEntity->getMaterial();
+      if (entityMaterial.isNull())
+        continue;
+
+      unsigned int techniqueCount, passCount;
+      Ogre::Technique *technique;
+      Ogre::Pass *pass;
+
+      for (techniqueCount = 0;
+           techniqueCount < entityMaterial->getNumTechniques();
+           ++techniqueCount)
+      {
+        technique = entityMaterial->getTechnique(techniqueCount);
+
+        for (passCount = 0; passCount < technique->getNumPasses(); passCount++)
+        {
+          pass = technique->getPass(passCount);
+          if (_show)
+            pass->setPolygonMode(Ogre::PM_WIREFRAME);
+          else
+            pass->setPolygonMode(Ogre::PM_SOLID);
+        }
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+bool OgreVisual::Wireframe() const
+{
+  return this->dataPtr->wireframe;
+}
+
+//////////////////////////////////////////////////
 void OgreVisual::SetVisible(bool _visible)
 {
+  if (!this->ogreNode)
+    return;
+
   this->ogreNode->setVisible(_visible);
 }
 
@@ -63,6 +130,19 @@ GeometryStorePtr OgreVisual::Geometries() const
 //////////////////////////////////////////////////
 bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 {
+  if (!_geometry)
+  {
+    ignerr << "Cannot attach null geometry." << std::endl;
+
+    return false;
+  }
+
+  if (!this->ogreNode)
+  {
+    ignerr << "Cannot attach geometry, null Ogre node." << std::endl;
+    return false;
+  }
+
   OgreGeometryPtr derived =
       std::dynamic_pointer_cast<OgreGeometry>(_geometry);
 
@@ -93,7 +173,10 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 {
   if (!this->ogreNode)
-    return true;
+  {
+    ignerr << "Cannot detach geometry, null Ogre node." << std::endl;
+    return false;
+  }
 
   OgreGeometryPtr derived =
       std::dynamic_pointer_cast<OgreGeometry>(_geometry);
@@ -139,6 +222,9 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
 void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
     bool _local, const ignition::math::Pose3d &_pose) const
 {
+  if (!this->ogreNode)
+    return;
+
   this->ogreNode->_updateBounds();
   this->ogreNode->_update(false, true);
 
@@ -167,6 +253,7 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
         Ogre::Vector3 ogreMin = bb.getMinimum();
         Ogre::Vector3 ogreMax = bb.getMaximum();
 
+        // Get ogre bounding boxes and size to object's scale
         min = scale * ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
         max = scale * ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
         box.Min() = min,
@@ -179,9 +266,8 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
         if (_local)
         {
           ignition::math::Pose3d worldPose = this->WorldPose();
-          ignition::math::Quaternion parentRot = _pose.Rot();
           ignition::math::Vector3d parentPos = _pose.Pos();
-          ignition::math::Quaternion parentRotInv = parentRot.Inverse();
+          ignition::math::Quaternion parentRotInv = _pose.Rot().Inverse();
           ignition::math::Pose3d localTransform =
             ignition::math::Pose3d(
                 (parentRotInv * (worldPose.Pos() - parentPos)),

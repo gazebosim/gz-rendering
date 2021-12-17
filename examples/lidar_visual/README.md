@@ -20,7 +20,7 @@ By default, the demo uses the Ogre 1 engine:
 
     ./lidar_visual
 
-It's also possible to use Ogre 2, i.e. (Currently disabled)
+It's also possible to use Ogre 2:
 
     ./lidar_visual ogre2
 

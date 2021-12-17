@@ -64,6 +64,9 @@ class GpuRaysTest: public testing::Test,
 
   // Test detection of particles
   public: void RaysParticles(const std::string &_renderEngine);
+
+  // Test single ray box intersection
+  public: void SingleRay(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -163,7 +166,7 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 {
 #ifdef __APPLE__
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  ignerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
 
@@ -233,7 +236,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   root->AddChild(gpuRays2);
 
   // Laser retro test values
-  double laserRetro1 = 2000;
+  double laserRetro1 = 1500;
   double laserRetro2 = 1000;
   std::string userDataKey = "laser_retro";
 
@@ -247,8 +250,6 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   visualBox1->SetWorldRotation(box01Pose.Rot());
   visualBox1->SetUserData(userDataKey, laserRetro1);
   root->AddChild(visualBox1);
-
-
 
   // box on the right of the first gpu rays caster
   ignition::math::Pose3d box02Pose(ignition::math::Vector3d(0, -5, 0.5),
@@ -291,13 +292,17 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   // rays caster 1 should see box01 and box02
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);
   EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
-  EXPECT_DOUBLE_EQ(scan[last], ignition::math::INF_D);
+  EXPECT_FLOAT_EQ(scan[last], ignition::math::INF_F);
 
-  // rays cater should see box01 with laser retro value set to laserRetro1
-  // and box02 with laser retro value set to laserRetro2
-  EXPECT_NEAR(scan[mid+1], laserRetro1, 5.0);
-  EXPECT_NEAR(scan[0+1], laserRetro2, 5.0);
-  EXPECT_DOUBLE_EQ(scan[last+1], 0.0);
+  // laser retro is currently only supported in ogre2
+  if (_renderEngine == "ogre2")
+  {
+    // rays cater should see box01 with laser retro value set to laserRetro1
+    // and box02 with laser retro value set to laserRetro2
+    EXPECT_NEAR(scan[mid+1], laserRetro1, 5.0);
+    EXPECT_NEAR(scan[0+1], laserRetro2, 5.0);
+    EXPECT_FLOAT_EQ(scan[last+1], 0.0);
+  }
 
   // Verify rays caster 2 range readings
   // listen to new gpu rays frames
@@ -308,9 +313,9 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->Copy(scan2);
 
   // Only box01 should be visible to rays caster 2
-  EXPECT_DOUBLE_EQ(scan2[0], maxRange);
+  EXPECT_FLOAT_EQ(scan2[0], maxRange);
   EXPECT_NEAR(scan2[mid], expectedRangeAtMidPointBox1, LASER_TOL);
-  EXPECT_DOUBLE_EQ(scan2[last], maxRange);
+  EXPECT_FLOAT_EQ(scan2[last], maxRange);
 
   // Move all boxes out of range
   visualBox1->SetWorldPosition(
@@ -325,10 +330,10 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->Copy(scan2);
 
   for (int i = 0; i < gpuRays->RayCount(); ++i)
-    EXPECT_DOUBLE_EQ(scan[i * 3], ignition::math::INF_D);
+    EXPECT_FLOAT_EQ(scan[i * 3], ignition::math::INF_F);
 
   for (int i = 0; i < gpuRays2->RayCount(); ++i)
-    EXPECT_DOUBLE_EQ(scan2[i * 3], maxRange);
+    EXPECT_FLOAT_EQ(scan2[i * 3], maxRange);
 
   c.reset();
 
@@ -348,7 +353,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 {
 #ifdef __APPLE__
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  ignerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
 
@@ -442,10 +447,10 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
     angleStep += vAngleStep;
 
     // check that the values in the extremes are infinity
-    EXPECT_DOUBLE_EQ(scan[i * hRayCount * channels],
-        ignition::math::INF_D);
-    EXPECT_DOUBLE_EQ(scan[(i * hRayCount + (hRayCount - 1)) * channels],
-        ignition::math::INF_D);
+    EXPECT_FLOAT_EQ(scan[i * hRayCount * channels],
+        ignition::math::INF_F);
+    EXPECT_FLOAT_EQ(scan[(i * hRayCount + (hRayCount - 1)) * channels],
+        ignition::math::INF_F);
   }
 
   // Move box out of range
@@ -461,8 +466,8 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   {
     for (int i = 0; i < gpuRays->RayCount(); ++i)
     {
-      EXPECT_DOUBLE_EQ(scan[j * gpuRays->RayCount() * channels+ i * channels],
-          ignition::math::INF_D);
+      EXPECT_FLOAT_EQ(scan[j * gpuRays->RayCount() * channels+ i * channels],
+          ignition::math::INF_F);
     }
   }
 
@@ -481,7 +486,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
 {
 #ifdef __APPLE__
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  ignerr << "Skipping test for apple, see issue #35." << std::endl;
   return;
 #endif
 
@@ -629,7 +634,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
     EXPECT_NEAR(expectedRangeAtMidPointBox2, scan[0], LASER_TOL);
 
     // sensor should not see box03 as it is out of range
-    EXPECT_DOUBLE_EQ(ignition::math::INF_D, scan[last]);
+    EXPECT_DOUBLE_EQ(ignition::math::INF_F, scan[last]);
   }
 
   // there should be at least one hit
@@ -667,7 +672,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
     EXPECT_NEAR(expectedRangeAtMidPointBox2, scan[0], LASER_TOL);
 
     // sensor should not see box03 as it is out of range
-    EXPECT_DOUBLE_EQ(ignition::math::INF_D, scan[last]);
+    EXPECT_DOUBLE_EQ(ignition::math::INF_F, scan[last]);
   }
 
   // there should be at least one hit
@@ -690,6 +695,104 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());
 }
+
+/////////////////////////////////////////////////
+/// \brief Test single ray box intersection
+void GpuRaysTest::SingleRay(const std::string &_renderEngine)
+{
+#ifdef __APPLE__
+  ignerr << "Skipping test for apple, see issue #35." << std::endl;
+  return;
+#endif
+
+  if (_renderEngine == "optix")
+  {
+    igndbg << "GpuRays not supported yet in rendering engine: "
+            << _renderEngine << std::endl;
+    return;
+  }
+
+  // Test GPU single ray box intersection.
+  // Place GPU above box looking downwards
+  // ray should intersect with center of box
+
+  const double hMinAngle = 0.0;
+  const double hMaxAngle = 0.0;
+  const double minRange = 0.05;
+  const double maxRange = 40.0;
+  const int hRayCount = 1;
+  const int vRayCount = 1;
+
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+
+  VisualPtr root = scene->RootVisual();
+
+  // Create first ray caster
+  ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 7),
+      ignition::math::Quaterniond(0, IGN_PI/2.0, 0));
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
+  gpuRays->SetWorldPosition(testPose.Pos());
+  gpuRays->SetWorldRotation(testPose.Rot());
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  // box in the center
+  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(0, 0, 4.5),
+                                   ignition::math::Quaterniond::Identity);
+  VisualPtr visualBox1 = scene->CreateVisual("UnitBox1");
+  visualBox1->AddGeometry(scene->CreateBox());
+  visualBox1->SetWorldPosition(box01Pose.Pos());
+  visualBox1->SetWorldRotation(box01Pose.Rot());
+  root->AddChild(visualBox1);
+
+  // Verify rays caster range readings
+  // listen to new gpu rays frames
+  unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+  common::ConnectionPtr c =
+    gpuRays->ConnectNewGpuRaysFrame(
+        std::bind(&::OnNewGpuRaysFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+  gpuRays->Update();
+
+  int mid = 0;
+  double unitBoxSize = 1.0;
+  double expectedRangeAtMidPointBox = testPose.Pos().Z() -
+      (abs(box01Pose.Pos().Z()) + unitBoxSize/2);
+
+  // rays caster 1 should see box01 and box02
+  EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox, LASER_TOL);
+
+  c.reset();
+
+  delete [] scan;
+
+  scan = nullptr;
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
 /////////////////////////////////////////////////
 TEST_P(GpuRaysTest, Configure)
 {
@@ -713,6 +816,13 @@ TEST_P(GpuRaysTest, RaysParticles)
 {
   RaysParticles(GetParam());
 }
+
+/////////////////////////////////////////////////
+TEST_P(GpuRaysTest, SingleRay)
+{
+  SingleRay(GetParam());
+}
+
 
 INSTANTIATE_TEST_CASE_P(GpuRays, GpuRaysTest,
     RENDER_ENGINE_VALUES,

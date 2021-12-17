@@ -18,6 +18,14 @@
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreSceneNode.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 using namespace ignition;
 using namespace rendering;
 

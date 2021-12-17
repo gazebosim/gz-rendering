@@ -17,12 +17,20 @@
 
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-// #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 #include "ignition/rendering/Utils.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreCamera.h>
+#include <OgreItem.h>
+#include <OgreSceneManager.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 /// \brief Private data for the Ogre2Camera class
 class ignition::rendering::Ogre2CameraPrivate
@@ -200,9 +208,35 @@ unsigned int Ogre2Camera::RenderTextureGLId() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2Camera::SetShadowsDirty()
+{
+  this->SetShadowsNodeDefDirty();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetShadowsNodeDefDirty()
+{
+  if (!this->renderTexture)
+    return;
+
+  Ogre2RenderTexturePtr rt =
+      std::dynamic_pointer_cast<Ogre2RenderTexture>(this->renderTexture);
+
+  if (rt)
+    rt->SetShadowsNodeDefDirty();
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::SetSelectionBuffer()
 {
-  this->selectionBuffer = new Ogre2SelectionBuffer(this->name, this->scene);
+  this->selectionBuffer = new Ogre2SelectionBuffer(this->name, this->scene,
+    this->ImageWidth(), this->ImageHeight());
+}
+
+//////////////////////////////////////////////////
+Ogre2SelectionBuffer *Ogre2Camera::SelectionBuffer() const
+{
+  return this->selectionBuffer;
 }
 
 //////////////////////////////////////////////////
@@ -219,12 +253,16 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
       return result;
     }
   }
+  else
+  {
+    this->selectionBuffer->SetDimensions(
+      this->ImageWidth(), this->ImageHeight());
+  }
 
   float ratio = screenScalingFactor();
   ignition::math::Vector2i mousePos(
       static_cast<int>(std::rint(ratio * _mousePos.X())),
       static_cast<int>(std::rint(ratio * _mousePos.Y())));
-
   Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(
       mousePos.X(), mousePos.Y());
 
@@ -266,6 +304,32 @@ math::Matrix4d Ogre2Camera::ProjectionMatrix() const
 math::Matrix4d Ogre2Camera::ViewMatrix() const
 {
   return Ogre2Conversions::Convert(this->ogreCamera->getViewMatrix(true));
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetProjectionMatrix(const math::Matrix4d &_matrix)
+{
+  BaseCamera::SetProjectionMatrix(_matrix);
+  this->ogreCamera->setCustomProjectionMatrix(true,
+      Ogre2Conversions::Convert(this->projectionMatrix));
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetProjectionType(CameraProjectionType _type)
+{
+  BaseCamera::SetProjectionType(_type);
+  switch (this->projectionType)
+  {
+    default:
+    case CPT_PERSPECTIVE:
+      this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
+      break;
+    case CPT_ORTHOGRAPHIC:
+      this->ogreCamera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+      break;
+  }
+  // reset projection matrix when projection type changes
+  this->ogreCamera->setCustomProjectionMatrix(false);
 }
 
 //////////////////////////////////////////////////

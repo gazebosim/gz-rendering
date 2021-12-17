@@ -21,7 +21,6 @@
 
 #include "ignition/rendering/base/BaseLightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 
 namespace Ogre
 {
@@ -60,7 +59,7 @@ namespace ignition
       public: void CreateVisual();
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() const;
+      public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
       public: virtual void SetMaterial(

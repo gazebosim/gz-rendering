@@ -105,6 +105,48 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
 
   EXPECT_NE(viewMatrix, camera->ViewMatrix());
 
+  // projection type
+  math::Matrix4d initialProjectionMatrix = camera->ProjectionMatrix();
+  math::Matrix4d initialViewMatrix = camera->ViewMatrix();
+  EXPECT_EQ(CameraProjectionType::CPT_PERSPECTIVE, camera->ProjectionType());
+  camera->SetProjectionType(CameraProjectionType::CPT_ORTHOGRAPHIC);
+  EXPECT_EQ(CameraProjectionType::CPT_ORTHOGRAPHIC, camera->ProjectionType());
+  EXPECT_NE(initialProjectionMatrix, camera->ProjectionMatrix());
+  EXPECT_EQ(initialViewMatrix, camera->ViewMatrix());
+
+  camera->SetProjectionType(CameraProjectionType::CPT_PERSPECTIVE);
+  EXPECT_EQ(CameraProjectionType::CPT_PERSPECTIVE, camera->ProjectionType());
+  EXPECT_EQ(initialProjectionMatrix, camera->ProjectionMatrix());
+  EXPECT_EQ(initialViewMatrix, camera->ViewMatrix());
+
+  // project 3d to 2d
+  unsigned int width = 320u;
+  unsigned int height = 240u;
+  camera->SetImageWidth(width);
+  camera->SetImageHeight(height);
+  camera->SetLocalPosition(math::Vector3d::Zero);
+  camera->SetLocalRotation(math::Quaterniond::Identity);
+
+  math::Vector2i pos2d = camera->Project(math::Vector3d(2.0, 0, 0));
+  EXPECT_EQ(static_cast<int>(width * 0.5), pos2d.X());
+  EXPECT_EQ(static_cast<int>(height * 0.5), pos2d.Y());
+
+  pos2d = camera->Project(math::Vector3d(3.0, 0, 0));
+  EXPECT_EQ(static_cast<int>(width * 0.5), pos2d.X());
+  EXPECT_EQ(static_cast<int>(height * 0.5), pos2d.Y());
+
+  pos2d = camera->Project(math::Vector3d(2.0, 1, 0));
+  EXPECT_GT(static_cast<int>(width * 0.5), pos2d.X());
+  EXPECT_EQ(static_cast<int>(height * 0.5), pos2d.Y());
+
+  pos2d = camera->Project(math::Vector3d(2.0, 1, 1));
+  EXPECT_GT(static_cast<int>(width * 0.5), pos2d.X());
+  EXPECT_GT(static_cast<int>(height * 0.5), pos2d.Y());
+
+  pos2d = camera->Project(math::Vector3d(2.0, -1, -1));
+  EXPECT_LT(static_cast<int>(width * 0.5), pos2d.X());
+  EXPECT_LT(static_cast<int>(height * 0.5), pos2d.Y());
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

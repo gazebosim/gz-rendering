@@ -34,6 +34,7 @@
 
 #include <ignition/plugin/Register.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -41,6 +42,10 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+#include "Terra/Hlms/OgreHlmsTerra.h"
+#include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
+#include "Terra/TerraWorkspaceListener.h"
+#include "Ogre2IgnHlmsCustomizations.hh"
 
 class ignition::rendering::Ogre2RenderEnginePrivate
 {
@@ -48,8 +53,21 @@ class ignition::rendering::Ogre2RenderEnginePrivate
   public: GLXFBConfig* dummyFBConfigs = nullptr;
 #endif
 
+  /// \brief The graphics API to use
+  public: ignition::rendering::GraphicsAPI graphicsAPI{GraphicsAPI::OPENGL};
+
   /// \brief A list of supported fsaa levels
   public: std::vector<unsigned int> fsaaLevels;
+
+  /// \brief Controls Hlms customizations for both PBS and Unlit
+  public: ignition::rendering::Ogre2IgnHlmsCustomizations hlmsCustomizations;
+
+  /// \brief Pbs listener that adds terra shadows
+  public: std::unique_ptr<Ogre::HlmsPbsTerraShadows> hlmsPbsTerraShadows;
+
+  /// \brief Listener that needs to be in every workspace
+  /// that wants terrain to cast shadows from spot and point lights
+  public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
 };
 
 using namespace ignition;
@@ -86,12 +104,12 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   const char *env = std::getenv("OGRE2_RESOURCE_PATH");
   if (env)
     this->ogrePaths.push_back(std::string(env));
+}
 
-#ifdef __APPLE__
-  // on OSX the plugins may be placed in the parent lib directory
-  if (ogrePath.rfind("OGRE") == ogrePath.size()-4u)
-    this->ogrePaths.push_back(ogrePath.substr(0, ogrePath.size()-5));
-#endif
+//////////////////////////////////////////////////
+Ogre::Window * Ogre2RenderEngine::OgreWindow() const
+{
+  return this->window;
 }
 
 //////////////////////////////////////////////////
@@ -112,8 +130,21 @@ void Ogre2RenderEngine::Destroy()
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
 
-  if (ogreRoot)
+  this->dataPtr->hlmsPbsTerraShadows.reset();
+
+  if (this->ogreRoot)
   {
+    // Clean up any textures that may still be in flight.
+    Ogre::TextureGpuManager *mgr =
+    this->ogreRoot->getRenderSystem()->getTextureGpuManager();
+
+    auto entries = mgr->getEntries();
+    for (auto& [name, entry] : entries)
+    {
+      if (entry.resourceGroup == "General" && !entry.destroyRequested)
+        mgr->destroyTexture(entry.texture);
+    }
+
     try
     {
       // TODO(anyone): do we need to catch segfault on delete?
@@ -267,6 +298,23 @@ bool Ogre2RenderEngine::LoadImpl(
   if (it != _params.end())
     std::istringstream(it->second) >> this->useCurrentGLContext;
 
+  it = _params.find("headless");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->isHeadless;
+
+  it = _params.find("winID");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->winID;
+
+  it = _params.find("metal");
+  if (it != _params.end())
+  {
+    bool useMetal;
+    std::istringstream(it->second) >> useMetal;
+    if(useMetal)
+        this->dataPtr->graphicsAPI = GraphicsAPI::METAL;
+  }
+
   try
   {
     this->LoadAttempt();
@@ -304,7 +352,8 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  if (!this->useCurrentGLContext)
+  if (!this->useCurrentGLContext &&
+      this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
     this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
@@ -340,6 +389,8 @@ void Ogre2RenderEngine::CreateContext()
 
   if (!this->dummyDisplay)
   {
+    // Not able to create a Xwindow, try to run in headless mode
+    this->SetHeadless(true);
     ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
     return;
   }
@@ -380,7 +431,6 @@ void Ogre2RenderEngine::CreateContext()
     int contextAttribs[] = {
       GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
       GLX_CONTEXT_MINOR_VERSION_ARB, 3,
-      GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
       None
     };
     this->dummyContext =
@@ -453,6 +503,12 @@ void Ogre2RenderEngine::LoadPlugins()
     p = common::joinPaths(path, "Plugin_ParticleFX");
     plugins.push_back(p);
 
+    if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
+    {
+      p = common::joinPaths(path, "RenderSystem_Metal");
+      plugins.push_back(p);
+    }
+
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
       // check if plugin library exists
@@ -498,6 +554,11 @@ void Ogre2RenderEngine::CreateRenderSystem()
   const Ogre::RenderSystemList *rsList;
 
   rsList = &(this->ogreRoot->getAvailableRenderers());
+  std::string targetRenderSysName("OpenGL 3+ Rendering Subsystem");
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
+  {
+    targetRenderSysName = "Metal Rendering Subsystem";
+  }
 
   int c = 0;
 
@@ -515,24 +576,41 @@ void Ogre2RenderEngine::CreateRenderSystem()
   // (it thinks the while loop is empty), so we must put the whole while
   // statement on one line and add NOLINT at the end so that cpplint doesn't
   // complain about the line being too long
-  while (renderSys && renderSys->getName().compare("OpenGL 3+ Rendering Subsystem") != 0); // NOLINT
+  while (renderSys && renderSys->getName().compare(targetRenderSysName) != 0); // NOLINT
 
   if (renderSys == nullptr)
   {
-    ignerr << "unable to find OpenGL rendering system. OGRE is probably "
+    ignerr << "unable to find " << targetRenderSysName << ". OGRE is probably "
             "installed incorrectly. Double check the OGRE cmake output, "
             "and make sure OpenGL is enabled." << std::endl;
   }
 
-  // We operate in windowed mode
-  renderSys->setConfigOption("Full Screen", "No");
+  if (!this->Headless())
+  {
 
-  /// We used to allow the user to set the RTT mode to PBuffer, FBO, or Copy.
-  ///   Copy is slow, and there doesn't seem to be a good reason to use it
-  ///   PBuffer limits the size of the renderable area of the RTT to the
-  ///           size of the first window created.
-  ///   FBO seem to be the only good option
-  renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+    // We operate in windowed mode
+    renderSys->setConfigOption("Full Screen", "No");
+
+    /// We used to allow the user to set the RTT mode to PBuffer, FBO, or Copy.
+    ///   Copy is slow, and there doesn't seem to be a good reason to use it
+    ///   PBuffer limits the size of the renderable area of the RTT to the
+    ///           size of the first window created.
+    ///   FBO seem to be the only good option
+    renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+  }
+  else
+  {
+    try
+    {
+        // This may fail if Ogre was *only* build with EGL support, but in that
+        // case we can ignore the error
+        renderSys->setConfigOption( "Interface", "Headless EGL / PBuffer" );
+    }
+    catch( Ogre::Exception & )
+    {
+      std::cerr << "Unable to setup EGL (headless mode)" << '\n';
+    }
+  }
 
   // get all supported fsaa values
   Ogre::ConfigOptionMap configMap = renderSys->getConfigOptions();
@@ -570,6 +648,186 @@ void Ogre2RenderEngine::CreateRenderSystem()
   this->ogreRoot->setRenderSystem(renderSys);
 }
 
+void Ogre2RenderEngine::RegisterHlms()
+{
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+  // install path
+  std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
+  if (!common::exists(mediaPath))
+  {
+    // src path
+    mediaPath = common::joinPaths(resourcePath, "ogre2", "src", "media");
+  }
+
+  // register PbsMaterial resources
+  Ogre::String rootHlmsFolder = mediaPath;
+  Ogre::String pbsCompositorFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "Compositors");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      pbsCompositorFolder, "FileSystem", "General");
+  Ogre::String commonMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonMaterialFolder, "FileSystem", "General");
+  Ogre::String commonGLSLMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSL");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonGLSLMaterialFolder, "FileSystem", "General");
+  Ogre::String commonGLSLESMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSLES");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonGLSLESMaterialFolder, "FileSystem", "General");
+  Ogre::String terraMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Terra");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      terraMaterialFolder, "FileSystem", "General");
+  Ogre::String terraGLSLMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Terra", "GLSL");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      terraGLSLMaterialFolder, "FileSystem", "General");
+
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
+  {
+    Ogre::String commonMetalMaterialFolder = common::joinPaths(
+        rootHlmsFolder, "2.0", "scripts", "materials", "Common", "Metal");
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        commonMetalMaterialFolder, "FileSystem", "General");
+    Ogre::String terraMetalMaterialFolder = common::joinPaths(
+        rootHlmsFolder, "2.0", "scripts", "materials", "Terra", "Metal");
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        terraMetalMaterialFolder, "FileSystem", "General");
+  }
+
+  // The following code is taken from the registerHlms() function in ogre2
+  // samples framework
+  if (rootHlmsFolder.empty())
+    rootHlmsFolder = "./";
+  else if (*(rootHlmsFolder.end() - 1) != '/')
+    rootHlmsFolder += "/";
+
+  // At this point rootHlmsFolder should be a valid path to the Hlms data folder
+
+  // For retrieval of the paths to the different folders needed
+  Ogre::String mainFolderPath;
+  Ogre::StringVector libraryFoldersPaths;
+  Ogre::StringVector::const_iterator libraryFolderPathIt;
+  Ogre::StringVector::const_iterator libraryFolderPathEn;
+
+  Ogre::ArchiveManager &archiveManager = Ogre::ArchiveManager::getSingleton();
+
+  Ogre::Archive *customizationsArchiveLibrary =
+      archiveManager.load(common::joinPaths(rootHlmsFolder, "Hlms", "Ignition"),
+      "FileSystem", true);
+
+  {
+    Ogre::HlmsUnlit *hlmsUnlit = 0;
+    // Create & Register HlmsUnlit
+    // Get the path to all the subdirectories used by HlmsUnlit
+    Ogre::HlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Archive *archiveUnlit = archiveManager.load(
+        rootHlmsFolder + mainFolderPath, "FileSystem", true);
+    Ogre::ArchiveVec archiveUnlitLibraryFolders;
+    libraryFolderPathIt = libraryFoldersPaths.begin();
+    libraryFolderPathEn = libraryFoldersPaths.end();
+    while (libraryFolderPathIt != libraryFolderPathEn)
+    {
+      Ogre::Archive *archiveLibrary =
+          archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
+          "FileSystem", true);
+      archiveUnlitLibraryFolders.push_back(archiveLibrary);
+      ++libraryFolderPathIt;
+    }
+
+    archiveUnlitLibraryFolders.push_back(customizationsArchiveLibrary);
+
+    // Create and register the unlit Hlms
+    hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit,
+        &archiveUnlitLibraryFolders);
+    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
+
+    // disable writting debug output to disk
+    hlmsUnlit->setDebugOutputPath(false, false);
+    hlmsUnlit->setListener(&this->dataPtr->hlmsCustomizations);
+  }
+
+  {
+    Ogre::HlmsPbs *hlmsPbs = 0;
+    // Create & Register HlmsPbs
+    // Do the same for HlmsPbs:
+    Ogre::HlmsPbs::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Archive *archivePbs = archiveManager.load(
+        rootHlmsFolder + mainFolderPath, "FileSystem", true);
+
+    // Get the library archive(s)
+    Ogre::ArchiveVec archivePbsLibraryFolders;
+    libraryFolderPathIt = libraryFoldersPaths.begin();
+    libraryFolderPathEn = libraryFoldersPaths.end();
+    while (libraryFolderPathIt != libraryFolderPathEn)
+    {
+      Ogre::Archive *archiveLibrary =
+          archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
+          "FileSystem", true);
+      archivePbsLibraryFolders.push_back(archiveLibrary);
+      ++libraryFolderPathIt;
+    }
+
+    archivePbsLibraryFolders.push_back(customizationsArchiveLibrary);
+    {
+      archivePbsLibraryFolders.push_back(archiveManager.load(
+        rootHlmsFolder + common::joinPaths("Hlms", "Terra", "GLSL",
+        "PbsTerraShadows"), "FileSystem", true ));
+      this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
+    }
+
+    // Create and register
+    hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
+    hlmsPbs->setListener(this->dataPtr->hlmsPbsTerraShadows.get());
+    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
+
+    // disable writting debug output to disk
+    hlmsPbs->setDebugOutputPath(false, false);
+    hlmsPbs->setListener(&this->dataPtr->hlmsCustomizations);
+  }
+
+  {
+    Ogre::HlmsTerra *hlmsTerra = 0;
+    // Create & Register HlmsPbs
+    // Do the same for HlmsPbs:
+    Ogre::HlmsTerra::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Archive *archiveTerra = archiveManager.load(
+        rootHlmsFolder + mainFolderPath, "FileSystem", true);
+
+    // Add ignition's customizations
+    libraryFoldersPaths.push_back(common::joinPaths("Hlms", "Terra", "ign"));
+
+    // Get the library archive(s)
+    Ogre::ArchiveVec archiveTerraLibraryFolders;
+    libraryFolderPathIt = libraryFoldersPaths.begin();
+    libraryFolderPathEn = libraryFoldersPaths.end();
+    while (libraryFolderPathIt != libraryFolderPathEn)
+    {
+      Ogre::Archive *archiveLibrary =
+          archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
+          "FileSystem", true);
+      archiveTerraLibraryFolders.push_back(archiveLibrary);
+      ++libraryFolderPathIt;
+    }
+
+    // Create and register
+    hlmsTerra = OGRE_NEW Ogre::HlmsTerra(archiveTerra,
+                                         &archiveTerraLibraryFolders);
+    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsTerra);
+
+    // disable writting debug output to disk
+    hlmsTerra->setDebugOutputPath(false, false);
+
+    this->dataPtr->terraWorkspaceListener.reset(
+      new Ogre::TerraWorkspaceListener(hlmsTerra));
+  }
+}
+
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateResources()
 {
@@ -594,6 +852,10 @@ void Ogre2RenderEngine::CreateResources()
     archNames.push_back(
         std::make_pair(p + "/materials/programs", "General"));
     archNames.push_back(
+        std::make_pair(p + "/materials/programs/GLSL", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/programs/Metal", "General"));
+    archNames.push_back(
         std::make_pair(p + "/materials/scripts", "General"));
     archNames.push_back(
         std::make_pair(p + "/materials/textures", "General"));
@@ -611,95 +873,6 @@ void Ogre2RenderEngine::CreateResources()
             "path in the world file is set correctly." << std::endl;
       }
     }
-  }
-
-  // register PbsMaterial resources
-  Ogre::String rootHlmsFolder = mediaPath;
-  Ogre::String pbsCompositorFolder = common::joinPaths(
-      rootHlmsFolder, "2.0", "scripts", "Compositors");
-  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-      pbsCompositorFolder, "FileSystem", "General");
-  Ogre::String commonMaterialFolder = common::joinPaths(
-      rootHlmsFolder, "2.0", "scripts", "materials", "Common");
-  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-      commonMaterialFolder, "FileSystem", "General");
-  Ogre::String commonGLSLMaterialFolder = common::joinPaths(
-      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSL");
-  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-      commonGLSLMaterialFolder, "FileSystem", "General");
-
-  // The following code is taken from the registerHlms() function in ogre2
-  // samples framework
-  if (rootHlmsFolder.empty())
-    rootHlmsFolder = "./";
-  else if (*(rootHlmsFolder.end() - 1) != '/')
-    rootHlmsFolder += "/";
-
-  // At this point rootHlmsFolder should be a valid path to the Hlms data folder
-
-  // For retrieval of the paths to the different folders needed
-  Ogre::String mainFolderPath;
-  Ogre::StringVector libraryFoldersPaths;
-  Ogre::StringVector::const_iterator libraryFolderPathIt;
-  Ogre::StringVector::const_iterator libraryFolderPathEn;
-
-  Ogre::ArchiveManager &archiveManager = Ogre::ArchiveManager::getSingleton();
-
-  {
-    Ogre::HlmsUnlit *hlmsUnlit = 0;
-    // Create & Register HlmsUnlit
-    // Get the path to all the subdirectories used by HlmsUnlit
-    Ogre::HlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
-    Ogre::Archive *archiveUnlit = archiveManager.load(
-        rootHlmsFolder + mainFolderPath, "FileSystem", true);
-    Ogre::ArchiveVec archiveUnlitLibraryFolders;
-    libraryFolderPathIt = libraryFoldersPaths.begin();
-    libraryFolderPathEn = libraryFoldersPaths.end();
-    while (libraryFolderPathIt != libraryFolderPathEn)
-    {
-      Ogre::Archive *archiveLibrary =
-          archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
-          "FileSystem", true);
-      archiveUnlitLibraryFolders.push_back(archiveLibrary);
-      ++libraryFolderPathIt;
-    }
-
-    // Create and register the unlit Hlms
-    hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit,
-        &archiveUnlitLibraryFolders);
-    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
-
-    // disable writting debug output to disk
-    hlmsUnlit->setDebugOutputPath(false, false);
-  }
-
-  {
-    Ogre::HlmsPbs *hlmsPbs = 0;
-    // Create & Register HlmsPbs
-    // Do the same for HlmsPbs:
-    Ogre::HlmsPbs::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
-    Ogre::Archive *archivePbs = archiveManager.load(
-        rootHlmsFolder + mainFolderPath, "FileSystem", true);
-
-    // Get the library archive(s)
-    Ogre::ArchiveVec archivePbsLibraryFolders;
-    libraryFolderPathIt = libraryFoldersPaths.begin();
-    libraryFolderPathEn = libraryFoldersPaths.end();
-    while (libraryFolderPathIt != libraryFolderPathEn)
-    {
-      Ogre::Archive *archiveLibrary =
-          archiveManager.load(rootHlmsFolder + *libraryFolderPathIt,
-          "FileSystem", true);
-      archivePbsLibraryFolders.push_back(archiveLibrary);
-      ++libraryFolderPathIt;
-    }
-
-    // Create and register
-    hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
-    Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
-
-    // disable writting debug output to disk
-    hlmsPbs->setDebugOutputPath(false, false);
   }
 }
 
@@ -722,7 +895,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 {
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
-  Ogre::RenderWindow *window = nullptr;
+  window = nullptr;
 
   // if use current gl then don't include window handle params
   if (!this->useCurrentGLContext)
@@ -756,7 +929,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   params["contentScalingFactor"] = std::to_string(_ratio);
 
   // Ogre 2 PBS expects gamma correction
-  params["gamma"] = "true";
+  params["gamma"] = "Yes";
 
   if (this->useCurrentGLContext)
   {
@@ -764,13 +937,21 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     params["currentGLContext"] = "true";
   }
 
+#if !defined(__APPLE__) && !defined(_MSC_VER)
+  if (!this->winID.empty())
+  {
+    params["parentWindowHandle"] = this->winID;
+  }
+#endif
+
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
   {
     try
     {
-      window = this->ogreRoot->createRenderWindow(
+      window = Ogre::Root::getSingleton().createRenderWindow(
           stream.str(), _width, _height, false, &params);
+      this->RegisterHlms();
     }
     catch(const std::exception &_e)
     {
@@ -789,8 +970,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   if (window)
   {
-    window->setActive(true);
-    window->setVisible(true);
+    window->_setVisible(true);
 
     // Windows needs to reposition the render window to 0,0.
     window->reposition(0, 0);
@@ -816,9 +996,28 @@ std::vector<unsigned int> Ogre2RenderEngine::FSAALevels() const
 }
 
 /////////////////////////////////////////////////
+Ogre2IgnHlmsCustomizations& Ogre2RenderEngine::HlmsCustomizations()
+{
+  return this->dataPtr->hlmsCustomizations;
+}
+
+/////////////////////////////////////////////////
 Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 {
   return this->ogreOverlaySystem;
+}
+
+/////////////////////////////////////////////////
+Ogre::HlmsPbsTerraShadows *Ogre2RenderEngine::HlmsPbsTerraShadows() const
+{
+  return this->dataPtr->hlmsPbsTerraShadows.get();
+}
+
+/////////////////////////////////////////////////
+Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
+  const
+{
+  return this->dataPtr->terraWorkspaceListener.get();
 }
 
 // Register this plugin

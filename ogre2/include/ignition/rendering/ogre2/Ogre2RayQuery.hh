@@ -20,7 +20,6 @@
 #include <memory>
 
 #include "ignition/rendering/base/BaseRayQuery.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 
@@ -51,6 +50,14 @@ namespace ignition
 
       // Documentation inherited
       public: virtual RayQueryResult ClosestPoint();
+
+      /// \brief Get closest point by selection buffer.
+      /// This is executed on the GPU.
+      private: RayQueryResult ClosestPointBySelectionBuffer();
+
+      /// \brief Get closest point by ray triangle intersection test.
+      /// This is executed on the CPU.
+      private: RayQueryResult ClosestPointByIntersection();
 
       /// \brief Private data pointer
       private: std::unique_ptr<Ogre2RayQueryPrivate> dataPtr;

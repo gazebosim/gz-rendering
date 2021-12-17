@@ -13,7 +13,8 @@ jobs:
         id: ci
         uses: ignition-tooling/action-ignition-ci@bionic
         with:
-          codecov-token: ${{ secrets.CODECOV_TOKEN }}
+          codecov-enabled: true
+          doxygen-enabled: true
   focal-ci:
     runs-on: ubuntu-latest
     name: Ubuntu Focal CI

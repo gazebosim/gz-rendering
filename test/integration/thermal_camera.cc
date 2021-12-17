@@ -236,7 +236,10 @@ void ThermalCameraTest::ThermalCameraBoxes(
       for (unsigned int j = 0; j < thermalCamera->ImageWidth(); ++j)
       {
         float temp = thermalData[step + j] * linearResolution;
+#ifndef __APPLE__
+        // https://github.com/ignitionrobotics/ign-rendering/issues/253
         EXPECT_NEAR(boxTemp, temp, boxTempRange);
+#endif
       }
     }
 

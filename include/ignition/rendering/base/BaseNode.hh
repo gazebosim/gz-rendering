@@ -17,7 +17,9 @@
 #ifndef IGNITION_RENDERING_BASE_BASENODE_HH_
 #define IGNITION_RENDERING_BASE_BASENODE_HH_
 
+#include <map>
 #include <string>
+
 #include "ignition/rendering/Node.hh"
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
@@ -45,6 +47,9 @@ namespace ignition
       public: virtual math::Vector3d LocalPosition() const override;
 
       public: virtual math::Pose3d LocalPose() const override;
+
+      // Documentation inherited
+      public: virtual math::Pose3d InitialLocalPose() const override;
 
       public: virtual void SetLocalPose(const math::Pose3d &_pose) override;
 
@@ -168,6 +173,16 @@ namespace ignition
 
       public: virtual void PreRender() override;
 
+      // Documentation inherited
+      public: virtual void SetUserData(const std::string &_key, Variant _value)
+        override;
+
+      // Documentation inherited
+      public: virtual Variant UserData(const std::string &_key) const override;
+
+      // Documentation inherited
+      public: virtual bool HasUserData(const std::string &_key) const override;
+
       protected: virtual void PreRenderChildren();
 
       protected: virtual math::Pose3d RawLocalPose() const = 0;
@@ -186,6 +201,17 @@ namespace ignition
                      const math::Vector3d &_scale) = 0;
 
       protected: math::Vector3d origin;
+
+      /// \brief Flag to indicate whether initial local pose
+      /// is set for this node.
+      protected: bool initialLocalPoseSet = false;
+
+      /// \brief Initial local pose for this node.
+      protected: ignition::math::Pose3d initialLocalPose =
+          ignition::math::Pose3d::Zero;
+
+      /// \brief A map of custom key value data
+      protected: std::map<std::string, Variant> userData;
     };
 
     //////////////////////////////////////////////////
@@ -320,7 +346,20 @@ namespace ignition
         return;
       }
 
+      if (!initialLocalPoseSet)
+      {
+        this->initialLocalPose = pose;
+        this->initialLocalPoseSet = true;
+      }
+
       this->SetRawLocalPose(pose);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Pose3d BaseNode<T>::InitialLocalPose() const
+    {
+      return this->initialLocalPose;
     }
 
     //////////////////////////////////////////////////
@@ -572,8 +611,6 @@ namespace ignition
       this->SetLocalScale(_scale * this->LocalScale());
     }
 
-
-
     //////////////////////////////////////////////////
     template <class T>
     void BaseNode<T>::Destroy()
@@ -630,6 +667,31 @@ namespace ignition
     {
       return this->Children()->GetByIndex(_index);
     }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseNode<T>::SetUserData(const std::string &_key, Variant _value)
+    {
+     this->userData[_key] = _value;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    Variant BaseNode<T>::UserData(const std::string &_key) const
+    {
+     Variant value;
+     auto it = this->userData.find(_key);
+     if (it != this->userData.end())
+       value = it->second;
+     return value;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseNode<T>::HasUserData(const std::string &_key) const
+    {
+      return this->userData.find(_key) != this->userData.end();
     }
   }
 }

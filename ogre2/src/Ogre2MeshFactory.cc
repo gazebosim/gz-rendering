@@ -28,7 +28,6 @@
 #include <ignition/math/Matrix4.hh>
 
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -36,9 +35,32 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreHardwareBufferManager.h>
+#include <OgreItem.h>
+#include <OgreKeyFrame.h>
+#include <OgreMesh2.h>
+#include <OgreMeshManager.h>
+#include <OgreMeshManager2.h>
+#include <OgreOldBone.h>
+#include <OgreOldSkeletonManager.h>
+#include <OgreSceneManager.h>
+#include <OgreSkeleton.h>
+#include <OgreSubItem.h>
+#include <OgreSubMesh.h>
+#include <OgreSubMesh2.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 /// \brief Private data for the Ogre2MeshFactory class
 class ignition::rendering::Ogre2MeshFactoryPrivate
 {
+  /// \brief Vector with the template materials, we keep the pointer to be
+  /// able to remove it when nobody is using it.
+  public: std::vector<MaterialPtr> materialCache;
 };
 
 /// \brief Private data for the Ogre2SubMeshStoreFactory class
@@ -70,6 +92,25 @@ void Ogre2MeshFactory::Clear()
 }
 
 //////////////////////////////////////////////////
+void Ogre2MeshFactory::ClearMaterialsCache(const std::string &_name)
+{
+  auto it = this->dataPtr->materialCache.begin();
+  for (auto &mat : this->dataPtr->materialCache)
+  {
+    std::string matName = mat->Name();
+    std::string textureName = mat->Texture();
+    if (textureName == _name)
+    {
+      this->scene->UnregisterMaterial(matName);
+      break;
+    }
+    ++it;
+  }
+  if (it != this->dataPtr->materialCache.end())
+    this->dataPtr->materialCache.erase(it);
+}
+
+//////////////////////////////////////////////////
 Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
 {
   // create ogre entity
@@ -89,6 +130,12 @@ Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
   // create sub-mesh store
   Ogre2SubMeshStoreFactory subMeshFactory(this->scene, mesh->ogreItem);
   mesh->subMeshes = subMeshFactory.Create();
+  for (unsigned int i = 0; i < mesh->subMeshes->Size(); i++)
+  {
+    Ogre2SubMeshPtr submesh =
+        std::dynamic_pointer_cast<Ogre2SubMesh>(mesh->subMeshes->GetById(i));
+    submesh->SetMeshName(this->MeshName(_desc));
+  }
   return mesh;
 }
 
@@ -428,6 +475,7 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       if (material)
       {
         mat->CopyFrom(*material);
+        this->dataPtr->materialCache.push_back(mat);
       }
       else
       {
@@ -476,6 +524,15 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
     ignerr << "Unable to insert mesh[" << e.getDescription() << "]"
         << std::endl;
     return false;
+  }
+
+  if (ogreMesh->getNumSubMeshes() == 0u)
+  {
+    std::string msg = "Unable to load mesh: '" + _desc.meshName + "'";
+    if (!_desc.subMeshName.empty())
+      msg += ", submesh: '" + _desc.subMeshName + "'";
+    msg += ". Mesh will be empty.";
+    ignwarn << msg << std::endl;
   }
 
   return true;

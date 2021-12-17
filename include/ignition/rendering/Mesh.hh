@@ -23,6 +23,7 @@
 #include <ignition/math/Matrix4.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Geometry.hh"
+#include "ignition/rendering/MeshDescriptor.hh"
 #include "ignition/rendering/Object.hh"
 
 namespace ignition
@@ -119,6 +120,14 @@ namespace ignition
       /// \return The sub-mesh at the given index
       public: virtual SubMeshPtr SubMeshByIndex(
                   unsigned int _index) const = 0;
+
+      /// \brief Set the mesh's mesh descriptor
+      /// \return The mesh's mesh descriptor
+      public: virtual void SetDescriptor(const MeshDescriptor &_desc) = 0;
+
+      /// \brief Get the mesh's mesh descriptor
+      /// \return The mesh's mesh descriptor
+      public: virtual const MeshDescriptor &Descriptor() const = 0;
     };
 
     /// \class SubMesh Mesh.hh ignition/rendering/Mesh.hh
@@ -139,13 +148,13 @@ namespace ignition
       /// \param[in] _name Name of registered Material
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Set the materials of this SubMesh
       /// \param[in] _material New Material to be assigned
       /// \param[in] _unique True if the given material should be cloned
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
     };
     }
   }

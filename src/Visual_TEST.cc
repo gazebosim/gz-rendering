@@ -55,6 +55,12 @@ class VisualTest : public testing::Test,
 
   /// \brief Test getting setting bounding boxes
   public: void BoundingBox(const std::string &_renderEngine);
+
+  /// \brief Test changing to wireframe
+  public: void Wireframe(const std::string &_renderEngine);
+
+  /// \brief Test cloning visuals
+  public: void Clone(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -322,30 +328,66 @@ void VisualTest::UserData(const std::string &_renderEngine)
   // int
   std::string intKey = "int";
   int intValue = 1998;
+  EXPECT_FALSE(visual->HasUserData(intKey));
   visual->SetUserData(intKey, intValue);
+  EXPECT_TRUE(visual->HasUserData(intKey));
   Variant value = visual->UserData(intKey);
   EXPECT_EQ(intValue, std::get<int>(value));
 
   // float
   std::string floatKey = "float";
   float floatValue = 1.345f;
+  EXPECT_FALSE(visual->HasUserData(floatKey));
   visual->SetUserData(floatKey, floatValue);
+  EXPECT_TRUE(visual->HasUserData(floatKey));
   value = visual->UserData(floatKey);
   EXPECT_FLOAT_EQ(floatValue, std::get<float>(value));
 
   // double
   std::string doubleKey = "double";
   double doubleValue = -0.123;
+  EXPECT_FALSE(visual->HasUserData(doubleKey));
   visual->SetUserData(doubleKey, doubleValue);
+  EXPECT_TRUE(visual->HasUserData(doubleKey));
   value = visual->UserData(doubleKey);
   EXPECT_DOUBLE_EQ(doubleValue, std::get<double>(value));
 
   // string
   std::string stringKey = "string";
   std::string stringValue = "test_string";
+  EXPECT_FALSE(visual->HasUserData(stringKey));
   visual->SetUserData(stringKey, stringValue);
+  EXPECT_TRUE(visual->HasUserData(stringKey));
   value = visual->UserData(stringKey);
   EXPECT_EQ(stringValue, std::get<std::string>(value));
+
+  // bool
+  std::string boolKey = "bool";
+  bool boolValue = true;
+  EXPECT_FALSE(visual->HasUserData(boolKey));
+  visual->SetUserData(boolKey, boolValue);
+  EXPECT_TRUE(visual->HasUserData(boolKey));
+  value = visual->UserData(boolKey);
+  EXPECT_EQ(boolValue, std::get<bool>(value));
+
+  // unsigned int
+  std::string unsignedIntKey = "unsignedInt";
+  unsigned int unsignedIntValue = 5u;
+  EXPECT_FALSE(visual->HasUserData(unsignedIntKey));
+  visual->SetUserData(unsignedIntKey, unsignedIntValue);
+  EXPECT_TRUE(visual->HasUserData(unsignedIntKey));
+  value = visual->UserData(unsignedIntKey);
+  EXPECT_EQ(unsignedIntValue, std::get<unsigned int>(value));
+
+  // test a key that does not exist (should return no data)
+  value = visual->UserData("invalidKey");
+  EXPECT_FALSE(std::holds_alternative<int>(value));
+  EXPECT_FALSE(std::holds_alternative<float>(value));
+  EXPECT_FALSE(std::holds_alternative<double>(value));
+  EXPECT_FALSE(std::holds_alternative<std::string>(value));
+  EXPECT_FALSE(std::holds_alternative<bool>(value));
+  EXPECT_FALSE(std::holds_alternative<unsigned int>(value));
+  EXPECT_EQ(0u, value.index());
 
   // test invalid access
   EXPECT_THROW(
@@ -546,6 +588,179 @@ void VisualTest::BoundingBox(const std::string &_renderEngine)
 TEST_P(VisualTest, BoundingBox)
 {
   BoundingBox(GetParam());
+}
+
+/////////////////////////////////////////////////
+void VisualTest::Wireframe(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported\n";
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene7");
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+  EXPECT_EQ(false, visual->Wireframe());
+
+  // set wireframe
+  visual->SetWireframe(true);
+  EXPECT_EQ(true, visual->Wireframe());
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, Wireframe)
+{
+  Wireframe(GetParam());
+}
+
+/////////////////////////////////////////////////
+void VisualTest::Clone(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene8");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr parent = scene->CreateVisual();
+  ASSERT_NE(nullptr, parent);
+
+  // add descendant visuals (one child, one grandchild)
+  VisualPtr child = scene->CreateVisual();
+  ASSERT_NE(nullptr, child);
+  parent->AddChild(child);
+  VisualPtr grandChild = scene->CreateVisual();
+  ASSERT_NE(nullptr, grandChild);
+  child->AddChild(grandChild);
+  EXPECT_EQ(1u, parent->ChildCount());
+  EXPECT_EQ(1u, child->ChildCount());
+  EXPECT_EQ(0u, grandChild->ChildCount());
+
+  // create geometries
+  GeometryPtr parentBox = scene->CreateBox();
+  parent->AddGeometry(parentBox);
+  GeometryPtr childCylinder = scene->CreateCylinder();
+  child->AddGeometry(childCylinder);
+  GeometryPtr grandChildSphere = scene->CreateSphere();
+  grandChild->AddGeometry(grandChildSphere);
+
+  // create material
+  math::Color ambient(0.5f, 0.2f, 0.4f, 1.0f);
+  math::Color diffuse(0.1f, 0.9f, 0.3f, 1.0f);
+  math::Color specular(0.8f, 0.7f, 0.0f, 1.0f);
+  double transparency = 0.3;
+  MaterialPtr material = scene->CreateMaterial("unique");
+  ASSERT_NE(nullptr, material);
+  EXPECT_TRUE(scene->MaterialRegistered("unique"));
+  material->SetAmbient(ambient);
+  material->SetDiffuse(diffuse);
+  material->SetSpecular(specular);
+  material->SetTransparency(transparency);
+  // this SetMaterial call applies the material to all of the geometries for the
+  // visual (including geometries of child visuals)
+  parent->SetMaterial(material);
+
+  // set scale
+  const math::Vector3d parentLocalScale(1, 2, 3);
+  parent->SetLocalScale(parentLocalScale);
+  const math::Vector3d childLocalScale(4, 5, 6);
+  child->SetLocalScale(childLocalScale);
+  child->SetInheritScale(true);
+  const math::Vector3d grandChildLocalScale(7, 8, 9);
+  grandChild->SetLocalScale(grandChildLocalScale);
+  grandChild->SetInheritScale(false);
+
+  // set user data
+  const auto parentUserData = "parent";
+  parent->SetUserData(parentUserData, parentUserData);
+  const auto childUserData = "child";
+  child->SetUserData(childUserData, childUserData);
+  const auto grandChildUserData = "grandChild";
+  grandChild->SetUserData(grandChildUserData, grandChildUserData);
+
+  // set visibility flags
+  const uint32_t visibilityFlags = 0x00000001u;
+  parent->SetVisibilityFlags(visibilityFlags);
+  const uint32_t grandChildVisibilityFlags = 0x01000000u;
+  grandChild->SetVisibilityFlags(grandChildVisibilityFlags);
+  EXPECT_EQ(visibilityFlags, parent->VisibilityFlags());
+  EXPECT_EQ(visibilityFlags, child->VisibilityFlags());
+  EXPECT_EQ(grandChildVisibilityFlags, grandChild->VisibilityFlags());
+
+  // set pose
+  const math::Pose3d parentPose(1, 1, 1, 0, 0, 0);
+  parent->SetWorldPose(parentPose);
+  const math::Pose3d grandChildPoseOffset(1, 1, 1, 0, 0, 1);
+  grandChild->SetLocalPose(grandChildPoseOffset);
+  EXPECT_EQ(parentPose, parent->WorldPose());
+  EXPECT_EQ(parentPose, child->WorldPose());
+  EXPECT_EQ(parentPose * grandChildPoseOffset, grandChild->WorldPose());
+
+  // set wireframe
+  parent->SetWireframe(true);
+  child->SetWireframe(false);
+  grandChild->SetWireframe(true);
+
+  // clone the parent visual
+  const auto preCloneNodeCount = scene->NodeCount();
+  const auto clonedVisualName = "clonedVisual";
+  auto clonedVisual = parent->Clone(clonedVisualName, parent->Parent());
+  ASSERT_NE(nullptr, clonedVisual);
+  EXPECT_GT(scene->NodeCount(), preCloneNodeCount);
+
+  // check the clone
+  EXPECT_EQ(clonedVisualName, clonedVisual->Name());
+  EXPECT_NE(clonedVisual->Name(), parent->Name());
+  EXPECT_NE(clonedVisual->Id(), parent->Id());
+  EXPECT_EQ(clonedVisual->Scene(), parent->Scene());
+  EXPECT_EQ(clonedVisual->ChildCount(), parent->ChildCount());
+  EXPECT_EQ(clonedVisual->LocalScale(), parent->LocalScale());
+  EXPECT_EQ(clonedVisual->WorldScale(), parent->WorldScale());
+  EXPECT_EQ(clonedVisual->UserData(parentUserData),
+      parent->UserData(parentUserData));
+  EXPECT_EQ(clonedVisual->VisibilityFlags(), parent->VisibilityFlags());
+  EXPECT_EQ(clonedVisual->WorldPose(), parent->WorldPose());
+  EXPECT_EQ(clonedVisual->LocalPose(), parent->LocalPose());
+  EXPECT_EQ(clonedVisual->Wireframe(), parent->Wireframe());
+
+  // compare materials (the material is cloned, so the name is different but
+  // the properties of the material are the same)
+  auto clonedVisualMaterial = clonedVisual->Material();
+  auto originalVisualMaterial = parent->Material();
+  ASSERT_NE(nullptr, clonedVisualMaterial);
+  ASSERT_NE(nullptr, originalVisualMaterial);
+  EXPECT_NE(clonedVisualMaterial, originalVisualMaterial);
+  EXPECT_NE(clonedVisualMaterial->Name(), originalVisualMaterial->Name());
+  EXPECT_EQ(clonedVisualMaterial->Type(), originalVisualMaterial->Type());
+  EXPECT_EQ(clonedVisualMaterial->Ambient(), originalVisualMaterial->Ambient());
+  EXPECT_EQ(clonedVisualMaterial->Diffuse(), originalVisualMaterial->Diffuse());
+  EXPECT_EQ(clonedVisualMaterial->Specular(),
+      originalVisualMaterial->Specular());
+  EXPECT_DOUBLE_EQ(clonedVisualMaterial->Transparency(),
+      originalVisualMaterial->Transparency());
+
+  // TODO(anyone) compare child visuals that were cloned
+
+  // clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+TEST_P(VisualTest, Clone)
+{
+  Clone(GetParam());
 }
 
 

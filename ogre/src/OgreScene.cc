@@ -21,6 +21,7 @@
 #include "ignition/rendering/ogre/OgreAxisVisual.hh"
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreCapsule.hh"
+#include "ignition/rendering/ogre/OgreCOMVisual.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreDepthCamera.hh"
 #include "ignition/rendering/ogre/OgreGeometry.hh"
@@ -29,6 +30,8 @@
 #include "ignition/rendering/ogre/OgreGrid.hh"
 #include "ignition/rendering/ogre/OgreHeightmap.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "ignition/rendering/ogre/OgreInertiaVisual.hh"
+#include "ignition/rendering/ogre/OgreJointVisual.hh"
 #include "ignition/rendering/ogre/OgreLidarVisual.hh"
 #include "ignition/rendering/ogre/OgreLightVisual.hh"
 #include "ignition/rendering/ogre/OgreMarker.hh"
@@ -213,7 +216,7 @@ void OgreScene::SetGradientBackgroundColor(
     // Create background rectangle covering the whole screen
     rect = new ColoredRectangle2D();
     rect->setCorners(-1.0, 1.0, 1.0, -1.0);
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
     rect->setMaterial("Background");
 #else
     rect->setMaterial(material);
@@ -346,6 +349,12 @@ VisualStorePtr OgreScene::Visuals() const
 }
 
 //////////////////////////////////////////////////
+void OgreScene::ClearMaterialsCache(const std::string &_name)
+{
+  this->meshFactory->ClearMaterialsCache(_name);
+}
+
+//////////////////////////////////////////////////
 MaterialMapPtr OgreScene::Materials() const
 {
   return this->materials;
@@ -367,6 +376,32 @@ PointLightPtr OgreScene::CreatePointLightImpl(unsigned int _id,
   OgrePointLightPtr light(new OgrePointLight);
   bool result = this->InitObject(light, _id, _name);
   return (result) ? light : nullptr;
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr OgreScene::CreateCOMVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreCOMVisualPtr visual(new OgreCOMVisual);
+    bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+InertiaVisualPtr OgreScene::CreateInertiaVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreInertiaVisualPtr visual(new OgreInertiaVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr OgreScene::CreateJointVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreJointVisualPtr visual(new OgreJointVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -511,6 +546,7 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
   if (nullptr == mesh)
     return nullptr;
 
+  mesh->SetDescriptor(_desc);
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
 }

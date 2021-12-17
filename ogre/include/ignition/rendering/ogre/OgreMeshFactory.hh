@@ -56,7 +56,15 @@ namespace ignition
 
       protected: virtual bool Validate(const MeshDescriptor &_desc);
 
+      /// \brief Remove internal material cache for a specific material
+      /// \param[in] _name Name of the template material to remove.
+      public: void ClearMaterialsCache(const std::string &_name);
+
       protected: OgreScenePtr scene;
+
+      /// \brief Vector with the template materials, we keep the pointer to be
+      /// able to remove it when nobody is using it.
+      protected: std::vector<MaterialPtr> materialCache;
     };
 
     class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMeshStoreFactory

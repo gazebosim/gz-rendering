@@ -133,6 +133,7 @@ void buildScene(ScenePtr _scene)
   sphere->SetMaterial(red);
   root->AddChild(sphere);
 
+  //! [create envmap]
   // create mirror material
   MaterialPtr mirrorMat = _scene->CreateMaterial();
   mirrorMat->SetDiffuse(1.0, 1.0, 1.0);
@@ -141,6 +142,7 @@ void buildScene(ScenePtr _scene)
   std::string skyEnvironmentMap =
       common::joinPaths(RESOURCE_PATH, "skybox_lowres.dds");
   mirrorMat->SetEnvironmentMap(skyEnvironmentMap);
+  //! [create envmap]
 
   // create box visual
   VisualPtr box = _scene->CreateVisual("box");
@@ -272,10 +274,11 @@ void buildScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName)
+CameraPtr createCamera(const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -314,12 +317,25 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
+  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  if (_argc > 2)
+  {
+    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
+  }
+
   engineNames.push_back("ogre2");
   for (auto engineName : engineNames)
   {
     try
     {
-      CameraPtr camera = createCamera(engineName);
+      std::map<std::string, std::string> params;
+      if (engineName.compare("ogre2") == 0
+          && graphicsApi == GraphicsAPI::METAL)
+      {
+        params["metal"] = "1";
+      }
+
+      CameraPtr camera = createCamera(engineName, params);
       if (camera)
       {
         cameras.push_back(camera);

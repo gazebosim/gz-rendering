@@ -17,7 +17,6 @@
 #ifndef IGNITION_RENDERING_VISUAL_HH_
 #define IGNITION_RENDERING_VISUAL_HH_
 
-#include <variant>
 #include <string>
 #include <ignition/math/AxisAlignedBox.hh>
 #include "ignition/rendering/config.hh"
@@ -28,9 +27,6 @@ namespace ignition
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    using Variant = std::variant<int, float, double, std::string>;
-
     /// \class Visual Visual.hh ignition/rendering/Visual.hh
     /// \brief Represents a visual node in a scene graph. A Visual is the only
     /// node that can have Geometry and other Visual children.
@@ -84,31 +80,39 @@ namespace ignition
       /// \param[in] _name Name of the material to be assigned
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Set the material for all attached visuals and geometries
-      /// \param[in] _name Name of the material to be assigned
+      /// \param[in] _material Name of the material to be assigned
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Set the material for all attached visuals only
-      /// \param[in] _name Name of the material to be assigned
+      /// \param[in] _material Name of the material to be assigned
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetChildMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Set the material for all attached geometries only
-      /// \param[in] _name Name of the material to be assigned
+      /// \param[in] _material Name of the material to be assigned
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetGeometryMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Get the material assigned to attached visuals and geometries.
       /// \return the Pointer to the material assigned to this visual. If the
       /// material is cloned at the time it is set to this visual, the cloned
       /// material will be returned.
-      public: virtual MaterialPtr Material() = 0;
+      public: virtual MaterialPtr Material() const = 0;
+
+      /// \brief Enable or disable wireframe
+      /// \param[in] _show True to enable wireframe
+      public: virtual void SetWireframe(bool _show) = 0;
+
+      /// \brief Get whether wireframe is enabled for this visual.
+      /// \return True if wireframe is enabled for this visual.
+      public: virtual bool Wireframe() const = 0;
 
       /// \brief Specify if this visual is visible
       /// \param[in] _visible True if this visual should be made visible
@@ -123,23 +127,12 @@ namespace ignition
       public: virtual uint32_t VisibilityFlags() const = 0;
 
       /// \brief Add visibility flags
-      /// \param[in] _visibility flags
+      /// \param[in] _flags Visibility flags
       public: virtual void AddVisibilityFlags(uint32_t _flags) = 0;
 
       /// \brief Remove visibility flags
-      /// \param[in] _visibility flags
+      /// \param[in] _flags Visibility flags
       public: virtual void RemoveVisibilityFlags(uint32_t _flags) = 0;
-
-      /// \brief Store any custom data associated with this visual
-      /// \param[in] _key Unique key
-      /// \param[in] _value Value in any type
-      public: virtual void SetUserData(const std::string &_key,
-          Variant _value) = 0;
-
-      /// \brief Get custom data stored in this visual
-      /// \param[in] _key Unique key
-      /// \param[in] _value Value in any type
-      public: virtual Variant UserData(const std::string &_key) const = 0;
 
       /// \brief Get the bounding box in world frame coordinates.
       /// \return The axis aligned bounding box
@@ -149,6 +142,15 @@ namespace ignition
       /// \return The local bounding box
       public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
               const = 0;
+
+      /// \brief Clone the visual (and its children) with a new name.
+      /// \param[in] _name Name of the cloned Visual. Set this to an empty
+      /// string to auto-generate a unique name for the cloned visual.
+      /// \param[in] _newParent Parent of the cloned Visual. Set to nullptr if
+      /// the cloned visual should have no parent.
+      /// \return The visual. nullptr is returned if cloning failed.
+      public: virtual VisualPtr Clone(const std::string &_name,
+                  NodePtr _newParent) const = 0;
     };
     }
   }

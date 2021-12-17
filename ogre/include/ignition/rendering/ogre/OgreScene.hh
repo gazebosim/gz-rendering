@@ -79,6 +79,17 @@ namespace ignition
                      unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
+      protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
+                     unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
+      protected: virtual JointVisualPtr CreateJointVisualImpl(unsigned int _id,
+                     const std::string &_name) override;
+
       protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
                      const std::string &_name) override;
 
@@ -199,6 +210,10 @@ namespace ignition
       protected: virtual VisualStorePtr Visuals() const override;
 
       protected: virtual MaterialMapPtr Materials() const override;
+
+      /// \brief Remove internal material cache for a specific material
+      /// \param[in] _name Name of the template material to remove.
+      public: void ClearMaterialsCache(const std::string &_name);
 
       private: void CreateContext();
 

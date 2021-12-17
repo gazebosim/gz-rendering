@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 #============================================================================
 # Initialize the project
 #============================================================================
-project(ignition-rendering5 VERSION 5.0.0)
+project(ignition-rendering6 VERSION 6.1.0)
 
 #============================================================================
 # Find ignition-cmake
 #============================================================================
 # If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake2 2.3 REQUIRED)
+find_package(ignition-cmake2 2.8.0 REQUIRED)
 set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
 
 #============================================================================
@@ -21,7 +21,8 @@ ign_configure_project(VERSION_SUFFIX)
 # Set project-specific options
 #============================================================================
 
-# ignition-rendering currently has no options that are unique to it
+set(CMAKE_CXX_STANDARD 14)
+option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
 
 #============================================================================
 # Search for project-specific dependencies
@@ -29,7 +30,7 @@ ign_configure_project(VERSION_SUFFIX)
 
 #--------------------------------------
 # Find ignition-math
-ign_find_package(ignition-math6 REQUIRED VERSION 6.6)
+ign_find_package(ignition-math6 REQUIRED COMPONENTS eigen3 VERSION 6.9)
 set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
 
 #--------------------------------------
@@ -61,12 +62,23 @@ endif()
 
 #--------------------------------------
 # Find OGRE
-list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay")
+list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
 
-ign_find_package(IgnOGRE VERSION 1.8.0
+ign_find_package(IgnOGRE VERSION 1.9.0
   COMPONENTS ${ign_ogre_components}
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
+
+# Ogre versions greater than 1.9.x are not officialy supported.
+# Display a warning for the users on this setup unless they provide
+# USE_UNOFFICIAL_OGRE_VERSIONS flag
+if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
+  if (${OGRE_VERSION} VERSION_GREATER_EQUAL 1.10.0)
+    IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
+                      "The software might compile and even work but support from upstream"
+                      "could be reduced to accepting patches for newer versions")
+  endif()
+endif()
 
 if (OGRE_FOUND)
   # find boost - mainly needed on macOS and also by the terrain component
@@ -80,7 +92,7 @@ endif()
 
 #--------------------------------------
 # Find OGRE2
-ign_find_package(IgnOGRE2 VERSION 2.1.0
+ign_find_package(IgnOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
@@ -137,8 +149,17 @@ if (HAVE_OGRE2)
   list(APPEND RENDERING_COMPONENTS ogre2)
 endif()
 
+configure_file("${PROJECT_SOURCE_DIR}/cppcheck.suppress.in"
+               ${PROJECT_BINARY_DIR}/cppcheck.suppress)
+
 ign_configure_build(QUIT_IF_BUILD_ERRORS
     COMPONENTS ${RENDERING_COMPONENTS})
+
+if (HAVE_OGRE2)
+  # Must be done after ign_configure_build or else Terra
+  # won't see IGN_ADD_fPIC_TO_LIBRARIES
+  add_subdirectory(ogre2/src/terrain/Terra)
+endif()
 
 #============================================================================
 # Create package information
@@ -154,6 +175,7 @@ configure_file(${CMAKE_SOURCE_DIR}/tutorials.md.in ${CMAKE_BINARY_DIR}/tutorials
 ign_create_docs(
   API_MAINPAGE_MD "${CMAKE_BINARY_DIR}/api.md"
   TUTORIALS_MAINPAGE_MD "${CMAKE_BINARY_DIR}/tutorials.md"
+  IMAGE_PATH_DIRS "${CMAKE_SOURCE_DIR}/tutorials/img"
   TAGFILES
     "${IGNITION-COMMON_DOXYGEN_TAGFILE} = ${IGNITION-COMMON_API_URL}"
     "${IGNITION-MATH_DOXYGEN_TAGFILE} = ${IGNITION-MATH_API_URL}"

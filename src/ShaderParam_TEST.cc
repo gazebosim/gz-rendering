@@ -87,6 +87,115 @@ TEST(ShaderParam, IntType)
   EXPECT_EQ(10, val3);
 }
 
+/////////////////////////////////////////////////
+TEST(ShaderParam, FloatBufferType)
+{
+  float b[10] =
+  {
+    0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f
+  };
+
+  ShaderParam p;
+  p.InitializeBuffer(10);
+  p.UpdateBuffer(b);
+
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p.Type());
+  EXPECT_EQ(10, static_cast<int>(p.Count()));
+
+  std::shared_ptr<void> buffer;
+  EXPECT_TRUE(p.Buffer(buffer));
+  for (int x = 0; x < 10; ++x)
+  {
+    EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
+        reinterpret_cast<float*>(buffer.get())[x]);
+  }
+
+  // test copy assignment
+  ShaderParam p2;
+  p2 = p;
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p2.Type());
+  EXPECT_EQ(10, static_cast<int>(p2.Count()));
+
+  std::shared_ptr<void> buffer2;
+  EXPECT_TRUE(p2.Buffer(buffer2));
+  for (int x = 0; x < 10; ++x)
+  {
+    EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
+        reinterpret_cast<float*>(buffer2.get())[x]);
+  }
+
+  // test copy constructor
+  ShaderParam p3(p);
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT_BUFFER, p3.Type());
+  EXPECT_EQ(10, static_cast<int>(p3.Count()));
+
+  std::shared_ptr<void> buffer3;
+  EXPECT_TRUE(p3.Buffer(buffer3));
+  for (int x = 0; x < 10; ++x)
+  {
+    EXPECT_FLOAT_EQ(static_cast<float>(x) / 10.0f,
+        reinterpret_cast<float*>(buffer3.get())[x]);
+  }
+
+  ShaderParam p4;
+  p4 = 1;
+  std::shared_ptr<void> buffer4;
+  EXPECT_FALSE(p4.Buffer(buffer4));
+}
+
+/////////////////////////////////////////////////
+TEST(ShaderParam, IntBufferType)
+{
+  int b[10] =
+  {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+  };
+
+  ShaderParam p;
+  p.InitializeBuffer(10);
+  p.UpdateBuffer(b);
+
+  EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p.Type());
+  EXPECT_EQ(10, static_cast<int>(p.Count()));
+
+  std::shared_ptr<void> buffer;
+  EXPECT_TRUE(p.Buffer(buffer));
+  for (int x = 0; x < 10; ++x)
+  {
+    EXPECT_EQ(x, reinterpret_cast<int*>(buffer.get())[x]);
+  }
+
+  // test copy assignment
+  ShaderParam p2;
+  p2 = p;
+  EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p2.Type());
+  EXPECT_EQ(10, static_cast<int>(p2.Count()));
+
+  std::shared_ptr<void> buffer2;
+  EXPECT_TRUE(p2.Buffer(buffer2));
+  for (int x = 0; x < 10; ++x)
+  {
+    EXPECT_EQ(x, reinterpret_cast<int*>(buffer2.get())[x]);
+  }
+
+  // test copy constructor
+  ShaderParam p3(p);
+  EXPECT_EQ(ShaderParam::PARAM_INT_BUFFER, p3.Type());
+  EXPECT_EQ(10, static_cast<int>(p3.Count()));
+
+  std::shared_ptr<void> buffer3;
+  EXPECT_TRUE(p3.Buffer(buffer3));
+  for (int x = 0; x < 10; ++x)
+  {
+    EXPECT_EQ(x, reinterpret_cast<int*>(buffer3.get())[x]);
+  }
+
+  ShaderParam p4;
+  p4 = 1;
+  std::shared_ptr<void> buffer4;
+  EXPECT_FALSE(p4.Buffer(buffer4));
+}
+
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {

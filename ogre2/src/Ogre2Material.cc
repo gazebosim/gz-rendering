@@ -20,14 +20,22 @@
 #ifdef _MSC_VER
 #pragma warning(push, 0)
 #endif
+#include <Hlms/Pbs/OgreHlmsPbs.h>
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
+#include <Hlms/Unlit/OgreHlmsUnlit.h>
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
+#include <OgreHlmsManager.h>
+#include <OgreMaterialManager.h>
+#include <OgrePixelFormatGpuUtils.h>
+#include <OgreTextureGpuManager.h>
+#include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
+#include <ignition/common/Image.hh>
 
 #include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ShaderType.hh"
@@ -36,9 +44,13 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
+
 /// \brief Private data for the Ogre2Material class
 class ignition::rendering::Ogre2MaterialPrivate
 {
+  /// \brief Ogre stores the name using hashes. This variable will
+  /// store the material hash name
+  public: std::string hashName;
 };
 
 using namespace ignition;
@@ -82,6 +94,89 @@ void Ogre2Material::Destroy()
     matManager.remove(this->ogreMaterial);
     this->ogreMaterial.reset();
   }
+
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureManager =
+    root->getRenderSystem()->getTextureGpuManager();
+
+  textureManager->setStagingTextureMaxBudgetBytes(
+    8u * 1024u * 1024u);
+  textureManager->setWorkerThreadMaxPreloadBytes(
+    8u * 1024u * 1024u);
+  textureManager->setWorkerThreadMaxPerStagingTextureRequestBytes(
+    4u * 1024u * 1024u);
+
+  Ogre::TextureGpuManager::BudgetEntryVec budget;
+  textureManager->setWorkerThreadMinimumBudget( budget );
+  Ogre::HlmsManager *hlmsManager = root->getHlmsManager();
+
+  Ogre::TextureGpu* textureToRemove = nullptr;
+  bool textureIsUse = false;
+  // Check each material from each Hlms (except low level) to see if their
+  // material is currently in use. If it's not, then its textures may be
+  // not either
+  for (size_t i = Ogre::HLMS_PBS; i < Ogre::HLMS_MAX; ++i)
+  {
+    Ogre::Hlms *hlms = hlmsManager->getHlms(static_cast<Ogre::HlmsTypes>(i));
+
+    if(hlms)
+    {
+      const Ogre::Hlms::HlmsDatablockMap &datablocks = hlms->getDatablockMap();
+
+      Ogre::Hlms::HlmsDatablockMap::const_iterator itor = datablocks.begin();
+      Ogre::Hlms::HlmsDatablockMap::const_iterator end  = datablocks.end();
+
+      while (itor != end)
+      {
+        if (i == Ogre::HLMS_PBS)
+        {
+          Ogre::HlmsPbsDatablock *derivedDatablock =
+            static_cast<Ogre::HlmsPbsDatablock*>(itor->second.datablock);
+          for (size_t texUnit = 0; texUnit < Ogre::NUM_PBSM_TEXTURE_TYPES;
+            ++texUnit)
+          {
+            // Check each texture from the material
+            Ogre::TextureGpu *tex = derivedDatablock->getTexture(texUnit);
+            if (tex)
+            {
+              // If getLinkedRenderables is empty, then the material is
+              // not in use, and thus so is potentially the texture
+              if (!itor->second.datablock->getLinkedRenderables().empty())
+              {
+                if (tex->getNameStr() == this->textureName)
+                {
+                  textureIsUse = true;
+                }
+              }
+              else
+              {
+                if (tex->getNameStr() == this->textureName)
+                {
+                  textureToRemove = tex;
+                }
+              }
+            }
+          }
+        }
+        ++itor;
+      }
+    }
+  }
+
+  if (textureToRemove && !textureIsUse)
+  {
+    Ogre2ScenePtr s = std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+    s->ClearMaterialsCache(this->textureName);
+    this->Scene()->UnregisterMaterial(this->name);
+    textureManager->destroyTexture(textureToRemove);
+  }
+
+  Ogre2ScenePtr s = std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+  Ogre::SceneManager *sceneManager = s->OgreSceneManager();
+  sceneManager->shrinkToFitMemoryPools();
+
+  Ogre::VaoManager *vaoManager = textureManager->getVaoManager();
+  vaoManager->cleanupEmptyPools();
 }
 
 //////////////////////////////////////////////////
@@ -175,7 +270,9 @@ void Ogre2Material::SetAlphaFromTexture(bool _enabled,
 //////////////////////////////////////////////////
 float Ogre2Material::RenderOrder() const
 {
-  return this->renderOrder;
+  Ogre::HlmsMacroblock macroblock(
+      *this->ogreDatablock->getMacroblock());
+  return macroblock.mDepthBiasConstant;
 }
 
 //////////////////////////////////////////////////
@@ -184,7 +281,22 @@ void Ogre2Material::SetRenderOrder(const float _renderOrder)
   this->renderOrder = _renderOrder;
   Ogre::HlmsMacroblock macroblock(
       *this->ogreDatablock->getMacroblock());
-  macroblock.mDepthBiasConstant = _renderOrder;
+
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+
+  if (renderSystem->isReverseDepth())
+  {
+    // Reverse depth needs 100x scale AND ends up being superior
+    // See https://github.com/ignitionrobotics/ign-rendering/
+    // issues/427#issuecomment-991800352
+    // and see https://www.youtube.com/watch?v=s2XdH3fYUac
+    macroblock.mDepthBiasConstant = _renderOrder * 100.0f;
+  }
+  else
+  {
+    macroblock.mDepthBiasConstant = _renderOrder;
+  }
   this->ogreDatablock->setMacroblock(macroblock);
 }
 
@@ -229,7 +341,7 @@ void Ogre2Material::SetTexture(const std::string &_name)
 void Ogre2Material::ClearTexture()
 {
   this->textureName = "";
-  this->ogreDatablock->setTexture(Ogre::PBSM_DIFFUSE, 0, Ogre::TexturePtr());
+  this->ogreDatablock->setTexture(Ogre::PBSM_DIFFUSE, this->textureName);
 }
 
 //////////////////////////////////////////////////
@@ -261,7 +373,7 @@ void Ogre2Material::SetNormalMap(const std::string &_name)
 void Ogre2Material::ClearNormalMap()
 {
   this->normalMapName = "";
-  this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, 0, Ogre::TexturePtr());
+  this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, this->normalMapName);
 }
 
 //////////////////////////////////////////////////
@@ -293,7 +405,7 @@ void Ogre2Material::SetRoughnessMap(const std::string &_name)
 void Ogre2Material::ClearRoughnessMap()
 {
   this->roughnessMapName = "";
-  this->ogreDatablock->setTexture(Ogre::PBSM_ROUGHNESS, 0, Ogre::TexturePtr());
+  this->ogreDatablock->setTexture(Ogre::PBSM_ROUGHNESS, this->roughnessMapName);
 }
 
 //////////////////////////////////////////////////
@@ -325,7 +437,7 @@ void Ogre2Material::SetMetalnessMap(const std::string &_name)
 void Ogre2Material::ClearMetalnessMap()
 {
   this->metalnessMapName = "";
-  this->ogreDatablock->setTexture(Ogre::PBSM_METALLIC, 0, Ogre::TexturePtr());
+  this->ogreDatablock->setTexture(Ogre::PBSM_METALLIC, this->metalnessMapName);
 }
 
 //////////////////////////////////////////////////
@@ -357,7 +469,8 @@ void Ogre2Material::SetEnvironmentMap(const std::string &_name)
 void Ogre2Material::ClearEnvironmentMap()
 {
   this->environmentMapName = "";
-  this->ogreDatablock->setTexture(Ogre::PBSM_REFLECTION, 0, Ogre::TexturePtr());
+  this->ogreDatablock->setTexture(
+    Ogre::PBSM_REFLECTION, this->environmentMapName);
 }
 
 //////////////////////////////////////////////////
@@ -389,7 +502,7 @@ void Ogre2Material::SetEmissiveMap(const std::string &_name)
 void Ogre2Material::ClearEmissiveMap()
 {
   this->emissiveMapName = "";
-  this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, 0, Ogre::TexturePtr());
+  this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->emissiveMapName);
 }
 
 //////////////////////////////////////////////////
@@ -422,16 +535,19 @@ void Ogre2Material::SetLightMap(const std::string &_name, unsigned int _uvSet)
   this->lightMapName = _name;
   this->lightMapUvSet = _uvSet;
 
-  // reserve detail map 0 for light map
-  Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
+  // in ign-rendering5 + ogre 2.1, we reserved detail map 0 for light map
+  // and set a blend mode (PBSM_BLEND_OVERLAY AND PBSM_BLEND_MULTIPLY2X
+  // produces better results) to blend with base albedo map. However, this
+  // creates unwanted red highlights with ogre 2.2. So switching to use the
+  // emissive map slot and calling setUseEmissiveAsLightmap(true)
+  // Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
+  // this->ogreDatablock->setDetailMapBlendMode(0, Ogre::PBSM_BLEND_OVERLAY);
+  Ogre::PbsTextureTypes type = Ogre::PBSM_EMISSIVE;
 
   // lightmap usually uses a different tex coord set
   this->SetTextureMapImpl(this->lightMapName, type);
-
   this->ogreDatablock->setTextureUvSource(type, this->lightMapUvSet);
-
-  // PBSM_BLEND_OVERLAY and PBSM_BLEND_MULTIPLY2X produces better results
-  this->ogreDatablock->setDetailMapBlendMode(0, Ogre::PBSM_BLEND_OVERLAY);
+  this->ogreDatablock->setUseEmissiveAsLightmap(true);
 }
 
 //////////////////////////////////////////////////
@@ -439,7 +555,11 @@ void Ogre2Material::ClearLightMap()
 {
   this->lightMapName = "";
   this->lightMapUvSet = 0u;
-  this->ogreDatablock->setTexture(Ogre::PBSM_DETAIL0, 0, Ogre::TexturePtr());
+
+  // in ogre 2.2, we swtiched to use the emissive map slot for light map
+  if (this->ogreDatablock->getUseEmissiveAsLightmap())
+    this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->lightMapName);
+  this->ogreDatablock->setUseEmissiveAsLightmap(false);
 }
 
 //////////////////////////////////////////////////
@@ -515,6 +635,10 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       }
     }
   }
+  else
+  {
+    return;
+  }
 
   // temp workaround check if the model is a OBJ file
   {
@@ -528,42 +652,131 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     }
   }
 
-  Ogre::HlmsTextureManager *hlmsTextureManager =
-      this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
-  Ogre::HlmsTextureManager::TextureLocation texLocation =
-      hlmsTextureManager->createOrRetrieveTexture(baseName,
-      this->ogreDatablock->suggestMapTypeBasedOnTextureType(_type));
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+      root->getRenderSystem()->getTextureGpuManager();
+
+  // workaround for grayscale emissive texture
+  // convert to RGB otherwise the emissive map is rendered red
+  if (_type == Ogre::PBSM_EMISSIVE &&
+      !this->ogreDatablock->getUseEmissiveAsLightmap())
+  {
+    common::Image img(_texture);
+    // check for 8 bit pixel
+    if (img.BPP() == 8u)
+    {
+      std::string parentPath = common::parentPath(_texture);
+      // set a custom name for the rgb texture by appending ign_ prefix
+      std::string rgbTexName = "ign_" + baseName;
+      baseName = rgbTexName;
+      std::string filename = common::joinPaths(parentPath, rgbTexName);
+      auto tex = textureMgr->findTextureNoThrow(rgbTexName);
+      if (!tex)
+      {
+        ignmsg << "Grayscale emissive texture detected. Converting to RGB: "
+               << rgbTexName << std::endl;
+        // need to be 4 channels for gpu texture
+        unsigned int channels = 4u;
+        unsigned int size = img.Width() * img.Height() * channels;
+        unsigned char *data = new unsigned char[size];
+        for (unsigned int i = 0; i < img.Height(); ++i)
+        {
+          for (unsigned int j = 0; j < img.Width(); ++j)
+          {
+            // flip Y
+            math::Color c = img.Pixel(j, img.Height() - i - 1u);
+            unsigned int idx = i * img.Width() * channels + j * channels;
+            data[idx] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 1u] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 2u] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 3u] = 255u;
+          }
+        }
+
+        // create the gpu texture
+        Ogre::uint32 textureFlags = 0;
+        textureFlags |= Ogre::TextureFlags::AutomaticBatching;
+        if (this->ogreDatablock->suggestUsingSRGB(_type))
+            textureFlags |= Ogre::TextureFlags::PrefersLoadingFromFileAsSRGB;
+        Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
+            rgbTexName,
+            Ogre::GpuPageOutStrategy::Discard,
+            textureFlags | Ogre::TextureFlags::ManualTexture,
+            Ogre::TextureTypes::Type2D,
+            Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+            0u);
+
+        texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+        texture->setTextureType(Ogre::TextureTypes::Type2D);
+        texture->setNumMipmaps(1u);
+        texture->setResolution(img.Width(), img.Height());
+        texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+        texture->waitForData();
+
+        // upload raw color image data to gpu texture
+        Ogre::Image2 image;
+        image.loadDynamicImage(data, false, texture);
+        image.uploadTo(texture, 0, 0);
+        delete [] data;
+      }
+    }
+  }
 
   Ogre::HlmsSamplerblock samplerBlockRef;
   samplerBlockRef.mU = Ogre::TAM_WRAP;
   samplerBlockRef.mV = Ogre::TAM_WRAP;
   samplerBlockRef.mW = Ogre::TAM_WRAP;
 
-  this->ogreDatablock->setTexture(_type, texLocation.xIdx, texLocation.texture,
-      &samplerBlockRef);
+  this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
+  auto tex = textureMgr->findTextureNoThrow(baseName);
+
+  if (tex)
+  {
+    tex->waitForMetadata();
+    this->dataPtr->hashName = tex->getName().getFriendlyText();
+  }
 
   // disable alpha from texture if texture does not have an alpha channel
   // otherwise this becomes a transparent material
   if (_type == Ogre::PBSM_DIFFUSE)
   {
-    if (this->TextureAlphaEnabled() && !texLocation.texture->hasAlpha())
+    bool isGrayscale = (Ogre::PixelFormatGpuUtils::getNumberOfComponents(
+            tex->getPixelFormat()) == 1u);
+
+    if (this->TextureAlphaEnabled() || isGrayscale)
     {
-      this->SetAlphaFromTexture(false, this->AlphaThreshold(),
-          this->TwoSidedEnabled());
+      if (tex)
+      {
+        tex->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+        tex->waitForData();
+
+        // only enable alpha from texture if texture has alpha component
+        if (this->TextureAlphaEnabled() &&
+            !Ogre::PixelFormatGpuUtils::hasAlpha(tex->getPixelFormat()))
+        {
+          this->SetAlphaFromTexture(false, this->AlphaThreshold(),
+              this->TwoSidedEnabled());
+        }
+
+        // treat grayscale texture as RGB
+        if (isGrayscale)
+        {
+          this->ogreDatablock->setUseDiffuseMapAsGrayscale(true);
+        }
+      }
     }
   }
 }
 
-//////////////////////////////////////////////////
-Ogre::TexturePtr Ogre2Material::Texture(const std::string &_name)
+//////////////////////////////////////////////////////
+Ogre::TextureGpu* Ogre2Material::Texture(const std::string &_name)
 {
-  Ogre::HlmsTextureManager *hlmsTextureManager =
-      this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
-  Ogre::HlmsTextureManager::TextureLocation texLocation =
-      hlmsTextureManager->createOrRetrieveTexture(_name,
-      Ogre::HlmsTextureManager::TEXTURE_TYPE_DIFFUSE);
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+    root->getRenderSystem()->getTextureGpuManager();
 
-  return texLocation.texture;
+  auto tex = textureMgr->findTextureNoThrow(_name);
+  return tex;
 }
 
 //////////////////////////////////////////////////
@@ -668,13 +881,16 @@ void Ogre2Material::FillUnlitDatablock(Ogre::HlmsUnlitDatablock *_datablock)
   if (!this->textureName.empty())
   {
     std::string baseName = common::basename(this->textureName);
-    Ogre::HlmsTextureManager *hlmsTextureManager =
-        this->ogreHlmsPbs->getHlmsManager()->getTextureManager();
-    Ogre::HlmsTextureManager::TextureLocation texLocation =
-        hlmsTextureManager->createOrRetrieveTexture(baseName,
-        this->ogreDatablock->suggestMapTypeBasedOnTextureType(
-        Ogre::PBSM_DIFFUSE));
-    _datablock->setTexture(0, texLocation.xIdx, texLocation.texture);
+
+    Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+    Ogre::TextureGpuManager *textureMgr =
+      root->getRenderSystem()->getTextureGpuManager();
+    Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(baseName,
+          Ogre::GpuPageOutStrategy::Discard,
+          Ogre::TextureFlags::ManualTexture,
+          Ogre::TextureTypes::Type2D);
+
+    _datablock->setTexture(0, texture);
   }
 
   auto samplerblock = this->ogreDatablock->getSamplerblock(Ogre::PBSM_DIFFUSE);

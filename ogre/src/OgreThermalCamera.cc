@@ -149,7 +149,7 @@ OgreThermalCameraMaterialSwitcher::OgreThermalCameraMaterialSwitcher(
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
   // OGRE 1.9 changes the shared pointer definition
-  #if OGRE_VERSION_LT_1_10_1
+  #if OGRE_VERSION_LT_1_11_0
   this->heatSourceMaterial = res.staticCast<Ogre::Material>();
   #else
   this->heatSourceMaterial =
@@ -422,7 +422,7 @@ void OgreThermalCamera::CreateThermalTexture()
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
   // OGRE 1.9 changes the shared pointer definition
-  #if OGRE_VERSION_LT_1_10_1
+  #if OGRE_VERSION_LT_1_11_0
   this->dataPtr->thermalMaterial = res.staticCast<Ogre::Material>();
   #else
   this->dataPtr->thermalMaterial =

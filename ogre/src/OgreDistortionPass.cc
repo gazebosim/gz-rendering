@@ -159,8 +159,8 @@ void OgreDistortionPass::CreateRenderPass()
       getViewport()->getActualHeight());
 
   // seems to work best with a square distortion map texture
-  unsigned int texSize = viewportHeight > viewportWidth ? viewportHeight :
-      viewportWidth;
+  unsigned int texSize = static_cast<unsigned int>(viewportHeight >
+      viewportWidth ? viewportHeight : viewportWidth);
   // calculate focal length from largest fov
   const double fov = viewportHeight > viewportWidth ?
       this->ogreCamera->getFOVy().valueRadians() :
@@ -505,8 +505,8 @@ void OgreDistortionPass::CalculateAndApplyDistortionScale()
     float viewportHeight = static_cast<float>(this->ogreCamera->getViewport()->
         getActualHeight());
 
-    unsigned int texSize = viewportHeight > viewportWidth ? viewportHeight :
-        viewportWidth;
+    unsigned int texSize = static_cast<unsigned int>(viewportHeight >
+        viewportWidth ? viewportHeight : viewportWidth);
 
     const double fov = viewportHeight > viewportWidth ?
         this->ogreCamera->getFOVy().valueRadians() :

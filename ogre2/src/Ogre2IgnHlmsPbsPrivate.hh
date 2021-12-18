@@ -19,17 +19,24 @@
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2IgnOgreRenderingMode.hh"
 
+#include "Ogre2IgnHlmsSharedPrivate.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
 #include <Hlms/Pbs/OgreHlmsPbs.h>
 #include <OgreHlmsListener.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 namespace Ogre
 {
-  typedef ignition::rendering::IgnOgreRenderingMode IgnOgreRenderingMode;
-
-  class IGNITION_RENDERING_OGRE2_HIDDEN IgnHlmsPbs : public HlmsPbs,
-                                                     public HlmsListener
+  class IGNITION_RENDERING_OGRE2_HIDDEN IgnHlmsPbs
+    : public HlmsPbs,
+      public HlmsListener,
+      public ignition::rendering::IgnHlmsShared
   {
     public: IgnHlmsPbs(Archive *dataFolder, ArchiveVec *libraryFolders);
     public: virtual ~IgnHlmsPbs() override;
@@ -79,26 +86,6 @@ namespace Ogre
       bool _casterPass, uint32 _lastCacheHash,
       CommandBuffer *_commandBuffer ) override;
 
-    /// \brief Binds currPerObjectDataBuffer to the right slot.
-    /// Does nothing if it's nullptr
-    /// \param _commandBuffer Cmd buffer to bind to
-    /// \internal
-    private: void BindObjectDataBuffer(CommandBuffer *_commandBuffer);
-
-    /// \brief Vector of buffers holding per-object data.
-    /// When one runs out, we push a new one. On the next frame
-    /// we reuse them all from 0
-    ///
-    /// It also calls BindObjectDataBuffer if a new one must be created
-    /// \param _instanceIdx Instance to write to
-    /// \return Pointer to write data for that instance
-    /// \internal
-    private: float *MapObjectDataBufferFor(uint32_t _instanceIdx,
-                                           CommandBuffer *_commandBuffer);
-
-    /// \brief Unmaps the current buffer holding per-object data from memory
-    private: void UnmapObjectDataBuffer();
-
     public: virtual void preCommandBufferExecution(
         CommandBuffer *_commandBuffer) override;
 
@@ -113,32 +100,6 @@ namespace Ogre
     /// the constructor will need. Our own stuff is appended here
     public: static void GetDefaultPaths(String &_outDataFolderPath,
                                         StringVector &_outLibraryFoldersPaths);
-
-    /// \brief Vector of buffers holding per-object data.
-    /// When one runs out, we push a new one. On the next frame
-    /// we reuse them all from 0
-    /// \internal
-    private: std::vector<ConstBufferPacked *> perObjectDataBuffers;
-
-    /// \brief The buffer currently use. Can be nullptr
-    /// It is contained in perObjectDataBuffers
-    /// \internal
-    private: ConstBufferPacked *currPerObjectDataBuffer = nullptr;
-
-    /// \brief The last content of mCurrentConstBuffer. If it changes
-    /// we need a new currPerObjectDataBuffer too (because drawId will
-    /// be reset from 0)
-    /// \internal
-    private: ConstBufferPacked *lastMainConstBuffer = nullptr;
-
-    /// \brief The mapped contents of currPerObjectDataBuffer
-    /// \internal
-    private: float *currPerObjectDataPtr = nullptr;
-
-    /// \brief See IgnOgreRenderingMode. Public variable.
-    /// Modifying it takes change on the next render
-    public: IgnOgreRenderingMode ignOgreRenderingMode =
-        ignition::rendering::IORM_NORMAL;
   };
 }  // namespace Ogre
 

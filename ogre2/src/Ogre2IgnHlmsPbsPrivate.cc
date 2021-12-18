@@ -72,7 +72,7 @@ namespace Ogre
       return;
     }
 
-    BindObjectDataBuffer(_commandBuffer);
+    this->BindObjectDataBuffer(_commandBuffer);
   }
 
   /////////////////////////////////////////////////
@@ -89,7 +89,9 @@ namespace Ogre
     {
       Vector4 customParam =
         _queuedRenderable.renderable->getCustomParameter(1u);
-      float *dataPtr = MapObjectDataBufferFor(instanceIdx, _commandBuffer);
+      float *dataPtr = this->MapObjectDataBufferFor(
+        instanceIdx, _commandBuffer, this->mVaoManager, this->mConstBuffers,
+        this->mCurrentConstBuffer, this->mStartMappedConstBuffer);
       dataPtr[0] = customParam.x;
       dataPtr[1] = customParam.y;
       dataPtr[2] = customParam.z;
@@ -113,7 +115,9 @@ namespace Ogre
     {
       Vector4 customParam =
         _queuedRenderable.renderable->getCustomParameter(1u);
-      float *dataPtr = MapObjectDataBufferFor(instanceIdx, _commandBuffer);
+      float *dataPtr = this->MapObjectDataBufferFor(
+        instanceIdx, _commandBuffer, this->mVaoManager, this->mConstBuffers,
+        this->mCurrentConstBuffer, this->mStartMappedConstBuffer);
       dataPtr[0] = customParam.x;
       dataPtr[1] = customParam.y;
       dataPtr[2] = customParam.z;
@@ -124,86 +128,9 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::BindObjectDataBuffer(CommandBuffer *_commandBuffer)
-  {
-    if (this->currPerObjectDataBuffer)
-    {
-      *_commandBuffer->addCommand<CbShaderBuffer>() =
-        CbShaderBuffer(VertexShader, kPerObjectDataBufferSlot,
-                       this->currPerObjectDataBuffer, 0u,
-                       static_cast<uint32_t>(
-                         this->currPerObjectDataBuffer->getTotalSizeBytes()));
-    }
-  }
-
-  /////////////////////////////////////////////////
-  float *IgnHlmsPbs::MapObjectDataBufferFor(uint32_t _instanceIdx,
-                                            CommandBuffer *_commandBuffer)
-  {
-    const uint32_t numFloatsPerObject = 4u;
-
-    if (!this->currPerObjectDataBuffer ||
-        this->mConstBuffers[this->mCurrentConstBuffer] !=
-          this->lastMainConstBuffer)
-    {
-      // mConstBuffers[this->mCurrentConstBuffer] changed, which means
-      // gl_InstanceId / drawId will be reset to 0. We must create a new
-      // buffer and bind that one
-
-      UnmapObjectDataBuffer();
-
-      const size_t bufferSize =
-        std::min<size_t>(65536, mVaoManager->getConstBufferMaxSize());
-      ConstBufferPacked *constBuffer = this->mVaoManager->createConstBuffer(
-        bufferSize, BT_DYNAMIC_PERSISTENT, nullptr, false);
-      this->perObjectDataBuffers.push_back(constBuffer);
-      this->currPerObjectDataBuffer = constBuffer;
-      this->currPerObjectDataPtr = reinterpret_cast<float *>(
-        constBuffer->map(0u, constBuffer->getNumElements()));
-
-      IGN_ASSERT(this->mCurrentConstBuffer <= this->mConstBuffers.size() &&
-                   mStartMappedConstBuffer != nullptr,
-                 "This should not happen. Base class must've bound something");
-
-      this->lastMainConstBuffer =
-        this->mConstBuffers[this->mCurrentConstBuffer];
-
-      BindObjectDataBuffer(_commandBuffer);
-    }
-
-    const size_t offset = _instanceIdx * numFloatsPerObject;
-
-    // This assert triggering either means:
-    //  - This class got modified and we're packing more data into
-    //    currPerObjectDataBuffer, so it must be bigger
-    //    (use a TexBufferPacked if we're past limits)
-    //  - There is a bug and currPerObjectDataBuffer got out of sync
-    //    with mCurrentConstBuffer
-    IGN_ASSERT((offset + numFloatsPerObject) * sizeof(float) <=
-                 this->currPerObjectDataBuffer->getTotalSizeBytes(),
-               "Out of bounds!");
-
-    return this->currPerObjectDataPtr + offset;
-  }
-
-  /////////////////////////////////////////////////
-  void IgnHlmsPbs::UnmapObjectDataBuffer()
-  {
-    if (this->currPerObjectDataBuffer)
-    {
-      this->currPerObjectDataBuffer->unmap(
-        UO_KEEP_PERSISTENT, 0u,
-        this->currPerObjectDataBuffer->getNumElements());
-      this->currPerObjectDataPtr = 0;
-      this->currPerObjectDataBuffer = 0;
-      this->lastMainConstBuffer = 0;
-    }
-  }
-
-  /////////////////////////////////////////////////
   void IgnHlmsPbs::preCommandBufferExecution(CommandBuffer *_commandBuffer)
   {
-    UnmapObjectDataBuffer();
+    this->UnmapObjectDataBuffer();
     HlmsPbs::preCommandBufferExecution(_commandBuffer);
   }
 

@@ -46,7 +46,8 @@ namespace Ogre
                                    SceneManager * /*_sceneManager*/,
                                    Hlms *_hlms)
   {
-    if (!_casterPass && this->ignOgreRenderingMode == IORM_SOLID_COLOR)
+    if (!_casterPass &&
+        this->ignOgreRenderingMode == ignition::rendering::IORM_SOLID_COLOR)
     {
       _hlms->_setProperty("ign_render_solid_color", 1);
     }
@@ -65,8 +66,11 @@ namespace Ogre
                                    CommandBuffer *_commandBuffer,
                                    const HlmsDatablock * /*_datablock*/)
   {
-    if (_casterPass || this->ignOgreRenderingMode != IORM_SOLID_COLOR)
+    if (_casterPass ||
+        this->ignOgreRenderingMode != ignition::rendering::IORM_SOLID_COLOR)
+    {
       return;
+    }
 
     BindObjectDataBuffer(_commandBuffer);
   }
@@ -80,10 +84,11 @@ namespace Ogre
     const uint32 instanceIdx = HlmsPbs::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
+    if (this->ignOgreRenderingMode == ignition::rendering::IORM_SOLID_COLOR &&
+        !_casterPass)
     {
       Vector4 customParam =
-        _queuedRenderable.renderable->getCustomParameter(0u);
+        _queuedRenderable.renderable->getCustomParameter(1u);
       float *dataPtr = MapObjectDataBufferFor(instanceIdx, _commandBuffer);
       dataPtr[0] = customParam.x;
       dataPtr[1] = customParam.y;
@@ -103,10 +108,11 @@ namespace Ogre
     const uint32 instanceIdx = HlmsPbs::fillBuffersForV2(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
+    if (this->ignOgreRenderingMode == ignition::rendering::IORM_SOLID_COLOR &&
+        !_casterPass)
     {
       Vector4 customParam =
-        _queuedRenderable.renderable->getCustomParameter(0u);
+        _queuedRenderable.renderable->getCustomParameter(1u);
       float *dataPtr = MapObjectDataBufferFor(instanceIdx, _commandBuffer);
       dataPtr[0] = customParam.x;
       dataPtr[1] = customParam.y;

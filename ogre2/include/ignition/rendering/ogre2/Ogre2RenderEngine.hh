@@ -28,6 +28,7 @@
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2IgnOgreRenderingMode.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
 namespace Ogre
@@ -182,6 +183,12 @@ namespace ignition
       /// \brief Get a pointer to the Ogre overlay system.
       /// \return Pointer to the ogre overlay system.
       public: Ogre::v1::OverlaySystem *OverlaySystem() const;
+
+      /// \internal
+      /// \brief Sets the current rendering mode. See IgnOgreRenderingMode
+      /// and see Ogre::IgnHlmsPbs
+      /// \param[in] renderingMode
+      public: void SetIgnOgreRenderingMode(IgnOgreRenderingMode renderingMode);
 
       /// \internal
       /// \brief Get a pointer to the Pbs listener that adds terra shadows.

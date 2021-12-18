@@ -19,28 +19,14 @@
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
+#include "ignition/rendering/ogre2/Ogre2IgnOgreRenderingMode.hh"
 
 #include <Hlms/Pbs/OgreHlmsPbs.h>
 #include <OgreHlmsListener.h>
 
 namespace Ogre
 {
-  /// \enum IgnOgreRenderingMode
-  /// \brief Rendering modes so that IgnHlms implementations
-  /// follow alternate code paths or extra customizations
-  /// when they're enabled
-  enum IGNITION_RENDERING_OGRE2_HIDDEN IgnOgreRenderingMode
-  {
-    /// \brief Normal rendering
-    IORM_NORMAL,
-
-    /// \brief Render a solid color explicit per object.
-    /// Used by e.g. Segmentation camera mode
-    IORM_SOLID_COLOR,
-
-    /// \brief Total number of rendering modes
-    IORM_COUNT,
-  };
+  typedef ignition::rendering::IgnOgreRenderingMode IgnOgreRenderingMode;
 
   class IGNITION_RENDERING_OGRE2_HIDDEN IgnHlmsPbs : public HlmsPbs,
                                                      public HlmsListener
@@ -151,7 +137,8 @@ namespace Ogre
 
     /// \brief See IgnOgreRenderingMode. Public variable.
     /// Modifying it takes change on the next render
-    public: IgnOgreRenderingMode ignOgreRenderingMode = IORM_NORMAL;
+    public: IgnOgreRenderingMode ignOgreRenderingMode =
+        ignition::rendering::IORM_NORMAL;
   };
 }  // namespace Ogre
 

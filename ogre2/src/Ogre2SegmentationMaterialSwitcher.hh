@@ -38,6 +38,11 @@ namespace rendering
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
 /// \brief Helper class to assign unique colors to renderables
+/// Due to historic reasons it's called "MaterialSwitcher" although
+/// there is no longer any material switching going on.
+///
+/// Hlms customizations take care of running custom code that outputs
+/// a flat colour
 class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   public Ogre::Camera::Listener
 {
@@ -86,19 +91,6 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
 
   /// \brief A map of ogre sub item pointer to its original hlms maults to 10mK
   private: double resolution = 0.01;
-
-  /// \brief A map of ogre sub item pointer to their original hlms material
-  private: std::unordered_map<Ogre::SubItem *,
-    Ogre::HlmsDatablock *> datablockMap;
-
-  /// \brief Ogre material consisting of a shader that changes the
-  /// appearance of item to use a unique color for mouse picking
-  private: Ogre::MaterialPtr plainMaterial;
-
-  /// \brief Ogre material consisting of a shader that changes the
-  /// appearance of item to use a unique color for mouse picking. In
-  /// addition, the depth check and depth write properties disabled.
-  private: Ogre::MaterialPtr plainOverlayMaterial;
 
   /// \brief Keep track of num of instances of the same label
   /// Key: label id, value: num of instances

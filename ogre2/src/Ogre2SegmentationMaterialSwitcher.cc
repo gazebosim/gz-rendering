@@ -24,6 +24,7 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/RenderTypes.hh"
@@ -49,31 +50,6 @@ Ogre2SegmentationMaterialSwitcher::Ogre2SegmentationMaterialSwitcher(
 {
   this->scene = _scene;
   this->segmentationCamera = _camera;
-
-  // plain material to switch item's material
-  Ogre::ResourcePtr res =
-    Ogre::MaterialManager::getSingleton().load("ign-rendering/plain_color",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
-  this->plainMaterial = res.staticCast<Ogre::Material>();
-  this->plainMaterial->load();
-
-  // plain overlay material
-  this->plainOverlayMaterial =
-      this->plainMaterial->clone("plain_color_overlay");
-  if (!this->plainOverlayMaterial->getTechnique(0) ||
-      !this->plainOverlayMaterial->getTechnique(0)->getPass(0))
-  {
-    ignerr << "Problem creating selection buffer overlay material"
-        << std::endl;
-    return;
-  }
-  Ogre::Pass *overlayPass =
-      this->plainOverlayMaterial->getTechnique(0)->getPass(0);
-  Ogre::HlmsMacroblock macroblock(*overlayPass->getMacroblock());
-  macroblock.mDepthCheck = false;
-  macroblock.mDepthWrite = false;
-  overlayPass->setMacroblock(macroblock);
 }
 
 /////////////////////////////////////////////////
@@ -159,9 +135,11 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
   this->colorToLabel.clear();
-  this->datablockMap.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
+
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
 
   // Used for multi-link models, where each model has many ogre items but
   // belongs to the same object, and all of them has the same parent name
@@ -295,21 +273,9 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
 
       for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
       {
-        // save subitems material
+        // Set the custom value to the sub item to render
         Ogre::SubItem *subItem = item->getSubItem(i);
-        Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-        this->datablockMap[subItem] = datablock;
-
-        // switch the material
         subItem->setCustomParameter(1, customParameter);
-
-        // check if it's an overlay material by assuming the
-        // depth check and depth write properties are off.
-        if (!datablock->getMacroblock()->mDepthWrite &&
-            !datablock->getMacroblock()->mDepthCheck)
-          subItem->setMaterial(this->plainOverlayMaterial);
-        else
-          subItem->setMaterial(this->plainMaterial);
       }
     }
   }
@@ -336,10 +302,6 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
 void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
-  // restore item to use pbs hlms material
-  for (const auto &[subItem, dataBlock] : this->datablockMap)
-    subItem->setDatablock(dataBlock);
-
   // re-enable heightmaps
   auto heightmaps = this->scene->Heightmaps();
   for (auto h : heightmaps)
@@ -348,6 +310,9 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
     if (heightmap)
       heightmap->Parent()->SetVisible(true);
   }
+
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->SetIgnOgreRenderingMode(IORM_NORMAL);
 }
 
 ////////////////////////////////////////////////

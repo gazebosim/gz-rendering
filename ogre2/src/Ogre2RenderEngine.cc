@@ -70,6 +70,9 @@ class ignition::rendering::Ogre2RenderEnginePrivate
   /// \brief Listener that needs to be in every workspace
   /// that wants terrain to cast shadows from spot and point lights
   public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
+
+  /// \brief Custom PBS modifications
+  public: Ogre::IgnHlmsPbs *ignHlmsPbs;
 };
 
 using namespace ignition;
@@ -253,7 +256,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
                 matPtr->load();
               }
             }
-            catch(Ogre::Exception& e)
+            catch(Ogre::Exception&)
             {
               ignerr << "Unable to parse material file[" << fullPath << "]\n";
             }
@@ -263,7 +266,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
       }
     }
   }
-  catch(Ogre::Exception &_e)
+  catch(Ogre::Exception &)
   {
     ignerr << "Unable to load Ogre Resources.\nMake sure the"
         "resources path in the world file is set correctly." << std::endl;
@@ -468,7 +471,7 @@ void Ogre2RenderEngine::CreateRoot()
   {
     this->ogreRoot = new Ogre::Root("", "", "");
   }
-  catch (Ogre::Exception &ex)
+  catch (Ogre::Exception &)
   {
     ignerr << "Unable to create Ogre root" << std::endl;
   }
@@ -536,7 +539,7 @@ void Ogre2RenderEngine::LoadPlugins()
         // Load the plugin into OGRE
         this->ogreRoot->loadPlugin(filename);
       }
-      catch(Ogre::Exception &e)
+      catch(Ogre::Exception &)
       {
         if ((*piter).find("RenderSystem") != std::string::npos)
         {
@@ -791,6 +794,8 @@ void Ogre2RenderEngine::RegisterHlms()
     // disable writting debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
     hlmsPbs->setListener(&this->dataPtr->hlmsCustomizations);
+
+    dataPtr->ignHlmsPbs = hlmsPbs;
   }
 
   {
@@ -1007,6 +1012,13 @@ Ogre2IgnHlmsCustomizations& Ogre2RenderEngine::HlmsCustomizations()
 Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 {
   return this->ogreOverlaySystem;
+}
+
+/////////////////////////////////////////////////
+void Ogre2RenderEngine::SetIgnOgreRenderingMode(
+  IgnOgreRenderingMode renderingMode)
+{
+  this->dataPtr->ignHlmsPbs->ignOgreRenderingMode = renderingMode;
 }
 
 /////////////////////////////////////////////////

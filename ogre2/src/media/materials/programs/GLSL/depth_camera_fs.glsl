@@ -150,14 +150,6 @@ void main()
     {
       point.x = max;
     }
-    // clamp to background color only if it is not a particle pixel
-    // this is because point.x may have been set to background depth value
-    // due to the scatter effect. We should still render particles in the color
-    // image
-    if (particle.x < 1e-6)
-    {
-      color = vec4(backgroundColor, 1.0);
-    }
   }
   else if (point.x < near + tolerance)
   {
@@ -168,12 +160,6 @@ void main()
     else
     {
       point.x = min;
-    }
-
-    // clamp to background color only if it is not a particle pixel
-    if (particle.x < 1e-6)
-    {
-      color = vec4(backgroundColor, 1.0);
     }
   }
 

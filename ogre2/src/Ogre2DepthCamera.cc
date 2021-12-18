@@ -695,9 +695,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
         baseNodeDef->addTargetPass("colorTexture");
 
     if (validBackground)
-      colorTargetDef->setNumPasses(2);
+      colorTargetDef->setNumPasses(3);
     else
-      colorTargetDef->setNumPasses(1);
+      colorTargetDef->setNumPasses(2);
     {
       // scene pass - opaque
       {

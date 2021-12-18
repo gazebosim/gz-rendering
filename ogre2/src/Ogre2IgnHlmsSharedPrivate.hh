@@ -46,9 +46,11 @@ namespace ignition
     {
       /// \brief Binds currPerObjectDataBuffer to the right slot.
       /// Does nothing if it's nullptr
-      /// \param _commandBuffer Cmd buffer to bind to
+      /// \param[in] _commandBuffer Cmd buffer to bind to
+      /// \param[in] _perObjectDataBufferSlot slot to bind the buffer to
       /// \internal
-      protected: void BindObjectDataBuffer(Ogre::CommandBuffer *_commandBuffer);
+      protected: void BindObjectDataBuffer(Ogre::CommandBuffer *_commandBuffer,
+                                           uint16_t _perObjectDataBufferSlot);
 
       /// \brief Vector of buffers holding per-object data.
       /// When one runs out, we push a new one. On the next frame
@@ -66,6 +68,8 @@ namespace ignition
       /// \param[in] _startMappedConstBuffer value of mStartMappedConstBuffer
       /// for validation (to ensure our implementation isn't out of sync
       /// with Ogre's)
+      /// \param[in] _perObjectDataBufferSlot See
+      /// IgnHlmsShared::BindObjectDataBuffer
       /// \return Pointer to write data for that instance
       /// \internal
       protected: float *MapObjectDataBufferFor(uint32_t _instanceIdx,
@@ -73,7 +77,8 @@ namespace ignition
             Ogre::VaoManager *_vaoManager,
             const ConstBufferPackedVec &_constBuffers,
             uint32_t _currConstBufferIdx,
-            uint32_t *_startMappedConstBuffer);
+            uint32_t *_startMappedConstBuffer,
+            uint16_t _perObjectDataBufferSlot);
 
       /// \brief Unmaps the current buffer holding per-object data from memory
       protected: void UnmapObjectDataBuffer();

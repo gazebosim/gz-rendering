@@ -15,7 +15,7 @@
  *
  */
 
-#include "Ogre2IgnHlmsPbsPrivate.hh"
+#include "Ogre2IgnHlmsUnlitPrivate.hh"
 
 #include <ignition/common/Util.hh>
 
@@ -28,23 +28,22 @@
 namespace Ogre
 {
   /// \brief The slot where to bind currPerObjectDataBuffer
-  /// HlmsPbs might consume slot 3, so we always use slot 4 for simplicity
+  /// Note it's different from HlmsPbs!
   /// \internal
-  static const uint16 kPerObjectDataBufferSlot = 4u;
+  static const uint16 kPerObjectDataBufferSlot = 3u;
 
-  IgnHlmsPbs::IgnHlmsPbs(Archive *dataFolder, ArchiveVec *libraryFolders) :
-    HlmsPbs(dataFolder, libraryFolders)
+  IgnHlmsUnlit::IgnHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders) :
+    HlmsUnlit(dataFolder, libraryFolders)
   {
   }
 
   /////////////////////////////////////////////////
-  IgnHlmsPbs::~IgnHlmsPbs() {}
+  IgnHlmsUnlit::~IgnHlmsUnlit() {}
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::preparePassHash(const CompositorShadowNode * /*_shadowNode*/,
-                                   bool _casterPass, bool /*_dualParaboloid*/,
-                                   SceneManager * /*_sceneManager*/,
-                                   Hlms *_hlms)
+  void IgnHlmsUnlit::preparePassHash(
+    const CompositorShadowNode * /*_shadowNode*/, bool _casterPass,
+    bool /*_dualParaboloid*/, SceneManager * /*_sceneManager*/, Hlms *_hlms)
   {
     if (!_casterPass &&
         this->ignOgreRenderingMode == ignition::rendering::IORM_SOLID_COLOR)
@@ -54,17 +53,17 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::notifyPropertiesMergedPreGenerationStep()
+  void IgnHlmsUnlit::notifyPropertiesMergedPreGenerationStep()
   {
-    HlmsPbs::notifyPropertiesMergedPreGenerationStep();
+    HlmsUnlit::notifyPropertiesMergedPreGenerationStep();
 
     setProperty("IgnPerObjectDataSlot", kPerObjectDataBufferSlot);
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::hlmsTypeChanged(bool _casterPass,
-                                   CommandBuffer *_commandBuffer,
-                                   const HlmsDatablock * /*_datablock*/)
+  void IgnHlmsUnlit::hlmsTypeChanged(bool _casterPass,
+                                     CommandBuffer *_commandBuffer,
+                                     const HlmsDatablock * /*_datablock*/)
   {
     if (_casterPass ||
         this->ignOgreRenderingMode != ignition::rendering::IORM_SOLID_COLOR)
@@ -76,12 +75,11 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 IgnHlmsPbs::fillBuffersForV1(const HlmsCache *_cache,
-                                      const QueuedRenderable &_queuedRenderable,
-                                      bool _casterPass, uint32 _lastCacheHash,
-                                      CommandBuffer *_commandBuffer)
+  uint32 IgnHlmsUnlit::fillBuffersForV1(
+    const HlmsCache *_cache, const QueuedRenderable &_queuedRenderable,
+    bool _casterPass, uint32 _lastCacheHash, CommandBuffer *_commandBuffer)
   {
-    const uint32 instanceIdx = HlmsPbs::fillBuffersForV1(
+    const uint32 instanceIdx = HlmsUnlit::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
     if (this->ignOgreRenderingMode == ignition::rendering::IORM_SOLID_COLOR &&
@@ -103,12 +101,11 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 IgnHlmsPbs::fillBuffersForV2(const HlmsCache *_cache,
-                                      const QueuedRenderable &_queuedRenderable,
-                                      bool _casterPass, uint32 _lastCacheHash,
-                                      CommandBuffer *_commandBuffer)
+  uint32 IgnHlmsUnlit::fillBuffersForV2(
+    const HlmsCache *_cache, const QueuedRenderable &_queuedRenderable,
+    bool _casterPass, uint32 _lastCacheHash, CommandBuffer *_commandBuffer)
   {
-    const uint32 instanceIdx = HlmsPbs::fillBuffersForV2(
+    const uint32 instanceIdx = HlmsUnlit::fillBuffersForV2(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
     if (this->ignOgreRenderingMode == ignition::rendering::IORM_SOLID_COLOR &&
@@ -130,16 +127,16 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::preCommandBufferExecution(CommandBuffer *_commandBuffer)
+  void IgnHlmsUnlit::preCommandBufferExecution(CommandBuffer *_commandBuffer)
   {
     this->UnmapObjectDataBuffer();
-    HlmsPbs::preCommandBufferExecution(_commandBuffer);
+    HlmsUnlit::preCommandBufferExecution(_commandBuffer);
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::frameEnded()
+  void IgnHlmsUnlit::frameEnded()
   {
-    HlmsPbs::frameEnded();
+    HlmsUnlit::frameEnded();
 
     this->currPerObjectDataBuffer = nullptr;
     this->lastMainConstBuffer = nullptr;
@@ -147,11 +144,11 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::GetDefaultPaths(String &_outDataFolderPath,
-                                   StringVector &_outLibraryFoldersPaths)
+  void IgnHlmsUnlit::GetDefaultPaths(String &_outDataFolderPath,
+                                     StringVector &_outLibraryFoldersPaths)
   {
-    HlmsPbs::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
+    HlmsUnlit::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 
-    _outLibraryFoldersPaths.push_back("Hlms/Ignition/Pbs");
+    _outLibraryFoldersPaths.push_back("Hlms/Ignition/Unlit");
   }
 }  // namespace Ogre

@@ -1,0 +1,7 @@
+@property( ign_render_solid_color )
+
+@piece( custom_VStoPS )
+  FLAT_INTERPOLANT( float4 ignSolidColour, @counter(texcoord) );
+@end
+
+@end

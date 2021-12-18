@@ -43,6 +43,7 @@
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "Ogre2IgnHlmsPbsPrivate.hh"
+#include "Ogre2IgnHlmsUnlitPrivate.hh"
 
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
@@ -73,6 +74,9 @@ class ignition::rendering::Ogre2RenderEnginePrivate
 
   /// \brief Custom PBS modifications
   public: Ogre::IgnHlmsPbs *ignHlmsPbs;
+
+  /// \brief Custom Unlit modifications
+  public: Ogre::IgnHlmsUnlit *ignHlmsUnlit;
 };
 
 using namespace ignition;
@@ -727,10 +731,10 @@ void Ogre2RenderEngine::RegisterHlms()
       "FileSystem", true);
 
   {
-    Ogre::HlmsUnlit *hlmsUnlit = 0;
+    Ogre::IgnHlmsUnlit *hlmsUnlit = 0;
     // Create & Register HlmsUnlit
     // Get the path to all the subdirectories used by HlmsUnlit
-    Ogre::HlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::IgnHlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
     Ogre::Archive *archiveUnlit = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
     Ogre::ArchiveVec archiveUnlitLibraryFolders;
@@ -748,13 +752,16 @@ void Ogre2RenderEngine::RegisterHlms()
     archiveUnlitLibraryFolders.push_back(customizationsArchiveLibrary);
 
     // Create and register the unlit Hlms
-    hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit,
+    hlmsUnlit = OGRE_NEW Ogre::IgnHlmsUnlit(archiveUnlit,
         &archiveUnlitLibraryFolders);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
 
     // disable writting debug output to disk
     hlmsUnlit->setDebugOutputPath(false, false);
-    hlmsUnlit->setListener(&this->dataPtr->hlmsCustomizations);
+    // hlmsUnlit->setListener(&this->dataPtr->hlmsCustomizations);
+    hlmsUnlit->setListener(hlmsUnlit);
+
+    this->dataPtr->ignHlmsUnlit = hlmsUnlit;
   }
 
   {

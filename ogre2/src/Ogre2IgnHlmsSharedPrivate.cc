@@ -35,20 +35,15 @@ namespace ignition
 {
   namespace rendering
   {
-    /// \brief The slot where to bind currPerObjectDataBuffer
-    /// HlmsPbs might consume slot 3, so we always use slot 4 for simplicity
-    /// \internal
-    static const uint16_t kPerObjectDataBufferSlot = 4u;
-
     /////////////////////////////////////////////////
     void IgnHlmsShared::BindObjectDataBuffer(
-      Ogre::CommandBuffer *_commandBuffer)
+      Ogre::CommandBuffer *_commandBuffer, uint16_t _perObjectDataBufferSlot)
     {
       if (this->currPerObjectDataBuffer)
       {
         *_commandBuffer->addCommand<Ogre::CbShaderBuffer>() =
           Ogre::CbShaderBuffer(
-            Ogre::VertexShader, kPerObjectDataBufferSlot,
+            Ogre::VertexShader, _perObjectDataBufferSlot,
             this->currPerObjectDataBuffer, 0u,
             static_cast<uint32_t>(
               this->currPerObjectDataBuffer->getTotalSizeBytes()));
@@ -59,7 +54,8 @@ namespace ignition
     float *IgnHlmsShared::MapObjectDataBufferFor(
       uint32_t _instanceIdx, Ogre::CommandBuffer *_commandBuffer,
       Ogre::VaoManager *_vaoManager, const ConstBufferPackedVec &_constBuffers,
-      uint32_t _currConstBufferIdx, uint32_t *_startMappedConstBuffer)
+      uint32_t _currConstBufferIdx, uint32_t *_startMappedConstBuffer,
+      uint16_t _perObjectDataBufferSlot)
     {
       const uint32_t numFloatsPerObject = 4u;
 
@@ -88,7 +84,7 @@ namespace ignition
 
         this->lastMainConstBuffer = _constBuffers[_currConstBufferIdx];
 
-        BindObjectDataBuffer(_commandBuffer);
+        BindObjectDataBuffer(_commandBuffer, _perObjectDataBufferSlot);
       }
 
       const size_t offset = _instanceIdx * numFloatsPerObject;

@@ -27,6 +27,11 @@
 
 namespace Ogre
 {
+  /// \brief The slot where to bind currPerObjectDataBuffer
+  /// HlmsPbs might consume slot 3, so we always use slot 4 for simplicity
+  /// \internal
+  static const uint16 kPerObjectDataBufferSlot = 4u;
+
   IgnHlmsPbs::IgnHlmsPbs(Archive *dataFolder, ArchiveVec *libraryFolders) :
     HlmsPbs(dataFolder, libraryFolders)
   {
@@ -45,6 +50,14 @@ namespace Ogre
     {
       _hlms->_setProperty("ign_render_solid_color", 1);
     }
+  }
+
+  /////////////////////////////////////////////////
+  void IgnHlmsPbs::notifyPropertiesMergedPreGenerationStep()
+  {
+    HlmsPbs::notifyPropertiesMergedPreGenerationStep();
+
+    setProperty("IgnPerObjectDataSlot", kPerObjectDataBufferSlot);
   }
 
   /////////////////////////////////////////////////
@@ -110,7 +123,7 @@ namespace Ogre
     if (this->currPerObjectDataBuffer)
     {
       *_commandBuffer->addCommand<CbShaderBuffer>() =
-        CbShaderBuffer(VertexShader, this->perObjectDataBufferSlot,
+        CbShaderBuffer(VertexShader, kPerObjectDataBufferSlot,
                        this->currPerObjectDataBuffer, 0u,
                        static_cast<uint32_t>(
                          this->currPerObjectDataBuffer->getTotalSizeBytes()));
@@ -195,5 +208,14 @@ namespace Ogre
     this->currPerObjectDataBuffer = nullptr;
     this->lastMainConstBuffer = nullptr;
     this->currPerObjectDataPtr = nullptr;
+  }
+
+  /////////////////////////////////////////////////
+  void IgnHlmsPbs::GetDefaultPaths(String &_outDataFolderPath,
+                                   StringVector &_outLibraryFoldersPaths)
+  {
+    HlmsPbs::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
+
+    _outLibraryFoldersPaths.push_back("Hlms/Ignition/Pbs");
   }
 }  // namespace Ogre

@@ -42,6 +42,8 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+#include "Ogre2IgnHlmsPbsPrivate.hh"
+
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #include "Terra/TerraWorkspaceListener.h"
@@ -753,10 +755,10 @@ void Ogre2RenderEngine::RegisterHlms()
   }
 
   {
-    Ogre::HlmsPbs *hlmsPbs = 0;
+    Ogre::IgnHlmsPbs *hlmsPbs = 0;
     // Create & Register HlmsPbs
     // Do the same for HlmsPbs:
-    Ogre::HlmsPbs::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::IgnHlmsPbs::GetDefaultPaths(mainFolderPath, libraryFoldersPaths);
     Ogre::Archive *archivePbs = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
 
@@ -782,7 +784,7 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     // Create and register
-    hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
+    hlmsPbs = OGRE_NEW Ogre::IgnHlmsPbs(archivePbs, &archivePbsLibraryFolders);
     hlmsPbs->setListener(this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 

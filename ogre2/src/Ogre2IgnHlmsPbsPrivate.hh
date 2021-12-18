@@ -50,12 +50,25 @@ namespace Ogre
 
     public: using HlmsPbs::preparePassHash;
 
+    /// \brief Override HlmsListener to add customizations.
+    /// We can't override HlmsPbs because adding properties before
+    /// calling it will be cleared. And adding it afterwards is too late.
+    /// The listener gets called right in the middle
+    ///
+    /// \param[in] _shadowNode see base class
+    /// \param[in] _casterPass see base class
+    /// \param[in] _dualParaboloid see base class
+    /// \param[in] _sceneManager see base class
+    /// \param[in] _hlms see base class
     public: virtual void preparePassHash(
         const CompositorShadowNode *_shadowNode,
         bool _casterPass,
         bool _dualParaboloid,
         SceneManager *_sceneManager,
         Hlms *_hlms) override;
+
+    /// \brief Override to calculate which slots are used
+    public: virtual void notifyPropertiesMergedPreGenerationStep() override;
 
     /// \brief Override HlmsListener::hlmsTypeChanged so we can
     /// bind buffers which carry per-object data when in IORM_SOLID_COLOR
@@ -105,15 +118,21 @@ namespace Ogre
 
     public: virtual void frameEnded() override;
 
+    //// \brief Same as HlmsPbs::getDefaultPaths, but we also append
+    /// our own paths with customizations
+    /// \param[out] _outDataFolderPath Path (as a String) used for
+    /// creating the "dataFolder" Archive the constructor will need
+    /// \param[out] _outLibraryFoldersPaths
+    /// Vector of String used for creating the ArchiveVector "libraryFolders"
+    /// the constructor will need. Our own stuff is appended here
+    public: static void GetDefaultPaths(String &_outDataFolderPath,
+                                        StringVector &_outLibraryFoldersPaths);
+
     /// \brief Vector of buffers holding per-object data.
     /// When one runs out, we push a new one. On the next frame
     /// we reuse them all from 0
     /// \internal
     private: std::vector<ConstBufferPacked *> perObjectDataBuffers;
-
-    /// \brief The slot where to bind currPerObjectDataBuffer
-    /// \internal
-    private: uint16_t perObjectDataBufferSlot = 0u;
 
     /// \brief The buffer currently use. Can be nullptr
     /// It is contained in perObjectDataBuffers

@@ -793,7 +793,8 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // disable writting debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
-    hlmsPbs->setListener(&this->dataPtr->hlmsCustomizations);
+    // hlmsPbs->setListener(&this->dataPtr->hlmsCustomizations);
+    hlmsPbs->setListener(hlmsPbs);
 
     dataPtr->ignHlmsPbs = hlmsPbs;
   }

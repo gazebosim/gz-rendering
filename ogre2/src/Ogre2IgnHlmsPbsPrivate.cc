@@ -143,7 +143,8 @@ namespace Ogre
     const uint32_t numFloatsPerObject = 4u;
 
     if (!this->currPerObjectDataBuffer ||
-        this->currPerObjectDataBuffer != this->lastMainConstBuffer)
+        this->mConstBuffers[this->mCurrentConstBuffer] !=
+          this->lastMainConstBuffer)
     {
       // mConstBuffers[this->mCurrentConstBuffer] changed, which means
       // gl_InstanceId / drawId will be reset to 0. We must create a new

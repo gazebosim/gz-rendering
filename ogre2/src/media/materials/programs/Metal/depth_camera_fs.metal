@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
- 
+
 // For details and documentation see: depth_camera_fs.glsl
 
 #include <metal_stdlib>
@@ -34,6 +34,7 @@ struct Params
   float min;
   float max;
   float3 backgroundColor;
+  int hasBackground;
 
   float particleStddev;
   float particleScatterRatio;
@@ -161,6 +162,15 @@ fragment float4 main_metal
     {
       point.x = p.max;
     }
+    // clamp to background color only if it is not a particle pixel
+    // this is because point.x may have been set to background depth value
+    // due to the scatter effect. We should still render particles in the color
+    // image
+    // todo(iche033) handle case when background is a cubemap
+    if (hasBackground == 0 && particle.x < 1e-6)
+    {
+      color = float4(p.backgroundColor, 1.0);
+    }
   }
   else if (point.x < p.near + tolerance)
   {
@@ -171,6 +181,13 @@ fragment float4 main_metal
     else
     {
       point.x = p.min;
+    }
+
+    // clamp to background color only if it is not a particle pixel
+    // todo(iche033) handle case when background is a cubemap
+    if (hasBackground == 0 && particle.x < 1e-6)
+    {
+      color = float4(p.backgroundColor, 1.0);
     }
   }
 

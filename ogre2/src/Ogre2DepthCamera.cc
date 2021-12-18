@@ -479,6 +479,11 @@ void Ogre2DepthCamera::CreateDepthTexture()
   bool validBackground = backgroundMaterial &&
       !backgroundMaterial->EnvironmentMap().empty();
 
+  // let depth camera shader know if there is background material
+  // This is needed for manual clipping of color pixel values.
+  psParams->setNamedConstant("hasBackground",
+      static_cast<int>(validBackground));
+
   if (validBackground)
   {
     Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();

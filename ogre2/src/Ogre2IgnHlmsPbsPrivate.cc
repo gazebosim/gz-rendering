@@ -38,9 +38,10 @@ namespace Ogre
   /// \internal
   static const uint16 kPerObjectDataBufferSlot = 4u;
 
-  IgnHlmsPbs::IgnHlmsPbs(Archive *dataFolder, ArchiveVec *libraryFolders,
-                         Ogre2IgnHlmsCustomizations *_sphericalClipMinDistance,
-                         Ogre::HlmsPbsTerraShadows *terraShadows) :
+  Ogre2IgnHlmsPbs::Ogre2IgnHlmsPbs(
+    Archive *dataFolder, ArchiveVec *libraryFolders,
+    Ogre2IgnHlmsCustomizations *_sphericalClipMinDistance,
+    Ogre::HlmsPbsTerraShadows *terraShadows) :
     HlmsPbs(dataFolder, libraryFolders)
   {
     this->customizations.push_back(_sphericalClipMinDistance);
@@ -48,9 +49,10 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::preparePassHash(const CompositorShadowNode *_shadowNode,
-                                   bool _casterPass, bool _dualParaboloid,
-                                   SceneManager *_sceneManager, Hlms *_hlms)
+  void Ogre2IgnHlmsPbs::preparePassHash(const CompositorShadowNode *_shadowNode,
+                                        bool _casterPass, bool _dualParaboloid,
+                                        SceneManager *_sceneManager,
+                                        Hlms *_hlms)
   {
     if (!_casterPass && this->ignOgreRenderingMode == IORM_SOLID_COLOR)
     {
@@ -66,7 +68,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 IgnHlmsPbs::getPassBufferSize(
+  uint32 Ogre2IgnHlmsPbs::getPassBufferSize(
     const Ogre::CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, Ogre::SceneManager *_sceneManager) const
   {
@@ -82,7 +84,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  float *IgnHlmsPbs::preparePassBuffer(
+  float *Ogre2IgnHlmsPbs::preparePassBuffer(
     const Ogre::CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, Ogre::SceneManager *_sceneManager,
     float *_passBufferPtr)
@@ -98,7 +100,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::shaderCacheEntryCreated(
+  void Ogre2IgnHlmsPbs::shaderCacheEntryCreated(
     const String &_shaderProfile, const HlmsCache *_hlmsCacheEntry,
     const HlmsCache &_passCache, const HlmsPropertyVec &_properties,
     const QueuedRenderable &_queuedRenderable)
@@ -113,7 +115,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::notifyPropertiesMergedPreGenerationStep()
+  void Ogre2IgnHlmsPbs::notifyPropertiesMergedPreGenerationStep()
   {
     HlmsPbs::notifyPropertiesMergedPreGenerationStep();
 
@@ -121,9 +123,9 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::hlmsTypeChanged(bool _casterPass,
-                                   CommandBuffer *_commandBuffer,
-                                   const HlmsDatablock *_datablock)
+  void Ogre2IgnHlmsPbs::hlmsTypeChanged(bool _casterPass,
+                                        CommandBuffer *_commandBuffer,
+                                        const HlmsDatablock *_datablock)
   {
     // Allow additional listener-only customizations to inject their stuff
     for (Ogre::HlmsListener *listener : this->customizations)
@@ -140,10 +142,9 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 IgnHlmsPbs::fillBuffersForV1(const HlmsCache *_cache,
-                                      const QueuedRenderable &_queuedRenderable,
-                                      bool _casterPass, uint32 _lastCacheHash,
-                                      CommandBuffer *_commandBuffer)
+  uint32 Ogre2IgnHlmsPbs::fillBuffersForV1(
+    const HlmsCache *_cache, const QueuedRenderable &_queuedRenderable,
+    bool _casterPass, uint32 _lastCacheHash, CommandBuffer *_commandBuffer)
   {
     const uint32 instanceIdx = HlmsPbs::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
@@ -166,10 +167,9 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 IgnHlmsPbs::fillBuffersForV2(const HlmsCache *_cache,
-                                      const QueuedRenderable &_queuedRenderable,
-                                      bool _casterPass, uint32 _lastCacheHash,
-                                      CommandBuffer *_commandBuffer)
+  uint32 Ogre2IgnHlmsPbs::fillBuffersForV2(
+    const HlmsCache *_cache, const QueuedRenderable &_queuedRenderable,
+    bool _casterPass, uint32 _lastCacheHash, CommandBuffer *_commandBuffer)
   {
     const uint32 instanceIdx = HlmsPbs::fillBuffersForV2(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
@@ -192,14 +192,14 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::preCommandBufferExecution(CommandBuffer *_commandBuffer)
+  void Ogre2IgnHlmsPbs::preCommandBufferExecution(CommandBuffer *_commandBuffer)
   {
     this->UnmapObjectDataBuffer();
     HlmsPbs::preCommandBufferExecution(_commandBuffer);
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::frameEnded()
+  void Ogre2IgnHlmsPbs::frameEnded()
   {
     HlmsPbs::frameEnded();
 
@@ -209,8 +209,8 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsPbs::GetDefaultPaths(String &_outDataFolderPath,
-                                   StringVector &_outLibraryFoldersPaths)
+  void Ogre2IgnHlmsPbs::GetDefaultPaths(String &_outDataFolderPath,
+                                        StringVector &_outLibraryFoldersPaths)
   {
     HlmsPbs::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 

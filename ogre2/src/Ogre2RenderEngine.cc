@@ -74,10 +74,10 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
   public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
 
   /// \brief Custom PBS modifications
-  public: Ogre::IgnHlmsPbs *ignHlmsPbs;
+  public: Ogre::Ogre2IgnHlmsPbs *ignHlmsPbs;
 
   /// \brief Custom Unlit modifications
-  public: Ogre::IgnHlmsUnlit *ignHlmsUnlit;
+  public: Ogre::Ogre2IgnHlmsUnlit *ignHlmsUnlit;
 };
 
 using namespace ignition;
@@ -732,10 +732,10 @@ void Ogre2RenderEngine::RegisterHlms()
       "FileSystem", true);
 
   {
-    Ogre::IgnHlmsUnlit *hlmsUnlit = 0;
+    Ogre::Ogre2IgnHlmsUnlit *hlmsUnlit = 0;
     // Create & Register HlmsUnlit
     // Get the path to all the subdirectories used by HlmsUnlit
-    Ogre::IgnHlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Ogre2IgnHlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
     Ogre::Archive *archiveUnlit = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
     Ogre::ArchiveVec archiveUnlitLibraryFolders;
@@ -753,7 +753,7 @@ void Ogre2RenderEngine::RegisterHlms()
     archiveUnlitLibraryFolders.push_back(customizationsArchiveLibrary);
 
     // Create and register the unlit Hlms
-    hlmsUnlit = OGRE_NEW Ogre::IgnHlmsUnlit(archiveUnlit,
+    hlmsUnlit = OGRE_NEW Ogre::Ogre2IgnHlmsUnlit(archiveUnlit,
         &archiveUnlitLibraryFolders, &this->dataPtr->hlmsCustomizations);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
 
@@ -765,10 +765,10 @@ void Ogre2RenderEngine::RegisterHlms()
   }
 
   {
-    Ogre::IgnHlmsPbs *hlmsPbs = 0;
+    Ogre::Ogre2IgnHlmsPbs *hlmsPbs = 0;
     // Create & Register HlmsPbs
     // Do the same for HlmsPbs:
-    Ogre::IgnHlmsPbs::GetDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Ogre2IgnHlmsPbs::GetDefaultPaths(mainFolderPath, libraryFoldersPaths);
     Ogre::Archive *archivePbs = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
 
@@ -794,7 +794,7 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     // Create and register
-    hlmsPbs = OGRE_NEW Ogre::IgnHlmsPbs(
+    hlmsPbs = OGRE_NEW Ogre::Ogre2IgnHlmsPbs(
       archivePbs, &archivePbsLibraryFolders, &this->dataPtr->hlmsCustomizations,
       this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);

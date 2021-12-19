@@ -36,7 +36,7 @@ namespace Ogre
   /// \internal
   static const uint16 kPerObjectDataBufferSlot = 3u;
 
-  IgnHlmsUnlit::IgnHlmsUnlit(
+  Ogre2IgnHlmsUnlit::Ogre2IgnHlmsUnlit(
     Archive *dataFolder, ArchiveVec *libraryFolders,
     Ogre2IgnHlmsCustomizations *_sphericalClipMinDistance) :
     HlmsUnlit(dataFolder, libraryFolders)
@@ -45,9 +45,9 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsUnlit::preparePassHash(const CompositorShadowNode *_shadowNode,
-                                     bool _casterPass, bool _dualParaboloid,
-                                     SceneManager *_sceneManager, Hlms *_hlms)
+  void Ogre2IgnHlmsUnlit::preparePassHash(
+    const CompositorShadowNode *_shadowNode, bool _casterPass,
+    bool _dualParaboloid, SceneManager *_sceneManager, Hlms *_hlms)
   {
     if (!_casterPass && this->ignOgreRenderingMode == IORM_SOLID_COLOR)
     {
@@ -63,7 +63,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 IgnHlmsUnlit::getPassBufferSize(
+  uint32 Ogre2IgnHlmsUnlit::getPassBufferSize(
     const Ogre::CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, Ogre::SceneManager *_sceneManager) const
   {
@@ -79,7 +79,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  float *IgnHlmsUnlit::preparePassBuffer(
+  float *Ogre2IgnHlmsUnlit::preparePassBuffer(
     const Ogre::CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, Ogre::SceneManager *_sceneManager,
     float *_passBufferPtr)
@@ -95,7 +95,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsUnlit::shaderCacheEntryCreated(
+  void Ogre2IgnHlmsUnlit::shaderCacheEntryCreated(
     const String &_shaderProfile, const HlmsCache *_hlmsCacheEntry,
     const HlmsCache &_passCache, const HlmsPropertyVec &_properties,
     const QueuedRenderable &_queuedRenderable)
@@ -110,7 +110,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsUnlit::notifyPropertiesMergedPreGenerationStep()
+  void Ogre2IgnHlmsUnlit::notifyPropertiesMergedPreGenerationStep()
   {
     HlmsUnlit::notifyPropertiesMergedPreGenerationStep();
 
@@ -118,9 +118,9 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsUnlit::hlmsTypeChanged(bool _casterPass,
-                                     CommandBuffer *_commandBuffer,
-                                     const HlmsDatablock *_datablock)
+  void Ogre2IgnHlmsUnlit::hlmsTypeChanged(bool _casterPass,
+                                          CommandBuffer *_commandBuffer,
+                                          const HlmsDatablock *_datablock)
   {
     // Allow additional listener-only customizations to inject their stuff
     for (Ogre::HlmsListener *listener : this->customizations)
@@ -137,7 +137,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 IgnHlmsUnlit::fillBuffersForV1(
+  uint32 Ogre2IgnHlmsUnlit::fillBuffersForV1(
     const HlmsCache *_cache, const QueuedRenderable &_queuedRenderable,
     bool _casterPass, uint32 _lastCacheHash, CommandBuffer *_commandBuffer)
   {
@@ -162,7 +162,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 IgnHlmsUnlit::fillBuffersForV2(
+  uint32 Ogre2IgnHlmsUnlit::fillBuffersForV2(
     const HlmsCache *_cache, const QueuedRenderable &_queuedRenderable,
     bool _casterPass, uint32 _lastCacheHash, CommandBuffer *_commandBuffer)
   {
@@ -187,14 +187,15 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsUnlit::preCommandBufferExecution(CommandBuffer *_commandBuffer)
+  void Ogre2IgnHlmsUnlit::preCommandBufferExecution(
+    CommandBuffer *_commandBuffer)
   {
     this->UnmapObjectDataBuffer();
     HlmsUnlit::preCommandBufferExecution(_commandBuffer);
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsUnlit::frameEnded()
+  void Ogre2IgnHlmsUnlit::frameEnded()
   {
     HlmsUnlit::frameEnded();
 
@@ -204,8 +205,8 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsUnlit::GetDefaultPaths(String &_outDataFolderPath,
-                                     StringVector &_outLibraryFoldersPaths)
+  void Ogre2IgnHlmsUnlit::GetDefaultPaths(String &_outDataFolderPath,
+                                          StringVector &_outLibraryFoldersPaths)
   {
     HlmsUnlit::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 

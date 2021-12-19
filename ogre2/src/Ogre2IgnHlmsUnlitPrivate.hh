@@ -56,19 +56,19 @@ namespace Ogre
   /// \internal
   /// \remark Public variables take effect immediately (i.e. for the
   /// next render)
-  class IGNITION_RENDERING_OGRE2_HIDDEN IgnHlmsUnlit final
+  class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2IgnHlmsUnlit final
     : public HlmsUnlit,
       public HlmsListener,
       public ignition::rendering::Ogre2IgnHlmsShared
   {
     /// \brief Constructor. Asks for modular listeners so we can add
     /// them in the proper order
-    public: IgnHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders,
-                       ignition::rendering::Ogre2IgnHlmsCustomizations
-                       *_sphericalClipMinDistance);
+    public: Ogre2IgnHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders,
+                              ignition::rendering::Ogre2IgnHlmsCustomizations
+                              *_sphericalClipMinDistance);
 
     /// \brief Destructor. Virtual to silence warnings
-    public: virtual ~IgnHlmsUnlit() override = default;
+    public: virtual ~Ogre2IgnHlmsUnlit() override = default;
 
     // Documentation inherited
     public: using HlmsUnlit::preparePassHash;
@@ -128,8 +128,8 @@ namespace Ogre
     /// bind buffers which carry per-object data when in IORM_SOLID_COLOR
     /// \param _casterPass true if this is a caster pass
     /// \param _commandBuffer command buffer so we can add commands
-    /// \param _datablock material of the object that caused IgnHlmsUnlit to be
-    /// bound again
+    /// \param _datablock material of the object that caused
+    /// Ogre2IgnHlmsUnlit to be bound again
     public: virtual void hlmsTypeChanged(
         bool _casterPass,
         CommandBuffer *_commandBuffer,

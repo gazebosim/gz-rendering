@@ -17,6 +17,7 @@
 
 #include "Ogre2IgnHlmsUnlitPrivate.hh"
 
+#include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
 #include <CommandBuffer/OgreCbShaderBuffer.h>
@@ -24,6 +25,9 @@
 #include <OgreRenderQueue.h>
 #include <Vao/OgreConstBufferPacked.h>
 #include <Vao/OgreVaoManager.h>
+
+using namespace ignition;
+using namespace rendering;
 
 namespace Ogre
 {
@@ -38,15 +42,11 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  IgnHlmsUnlit::~IgnHlmsUnlit() {}
-
-  /////////////////////////////////////////////////
   void IgnHlmsUnlit::preparePassHash(
     const CompositorShadowNode * /*_shadowNode*/, bool _casterPass,
     bool /*_dualParaboloid*/, SceneManager * /*_sceneManager*/, Hlms *_hlms)
   {
-    if (!_casterPass &&
-        this->ignOgreRenderingMode == ignition::rendering::IORM_SOLID_COLOR)
+    if (!_casterPass && this->ignOgreRenderingMode == IORM_SOLID_COLOR)
     {
       _hlms->_setProperty("ign_render_solid_color", 1);
     }
@@ -65,8 +65,7 @@ namespace Ogre
                                      CommandBuffer *_commandBuffer,
                                      const HlmsDatablock * /*_datablock*/)
   {
-    if (_casterPass ||
-        this->ignOgreRenderingMode != ignition::rendering::IORM_SOLID_COLOR)
+    if (_casterPass || this->ignOgreRenderingMode != IORM_SOLID_COLOR)
     {
       return;
     }
@@ -82,8 +81,7 @@ namespace Ogre
     const uint32 instanceIdx = HlmsUnlit::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->ignOgreRenderingMode == ignition::rendering::IORM_SOLID_COLOR &&
-        !_casterPass)
+    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
     {
       Vector4 customParam =
         _queuedRenderable.renderable->getCustomParameter(1u);
@@ -108,8 +106,7 @@ namespace Ogre
     const uint32 instanceIdx = HlmsUnlit::fillBuffersForV2(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->ignOgreRenderingMode == ignition::rendering::IORM_SOLID_COLOR &&
-        !_casterPass)
+    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
     {
       Vector4 customParam =
         _queuedRenderable.renderable->getCustomParameter(1u);
@@ -149,6 +146,13 @@ namespace Ogre
   {
     HlmsUnlit::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 
-    _outLibraryFoldersPaths.push_back("Hlms/Ignition/Unlit");
+    _outLibraryFoldersPaths.push_back(
+      common::joinPaths("Hlms", "Ignition", "SolidColor"));
+    _outLibraryFoldersPaths.push_back(
+      common::joinPaths("Hlms", "Ignition", "SphericalClipMinDistance"));
+    // For now use the same template as Pbs since they're the same code
+    // We'll change it if they need to diverge
+    _outLibraryFoldersPaths.push_back(
+      common::joinPaths("Hlms", "Ignition", "Pbs"));
   }
 }  // namespace Ogre

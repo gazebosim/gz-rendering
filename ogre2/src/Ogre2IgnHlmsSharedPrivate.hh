@@ -42,7 +42,7 @@ namespace ignition
     /// \brief Implements code shared across all or most of our Hlms
     /// customizations
     /// \internal
-    class IGNITION_RENDERING_OGRE2_HIDDEN IgnHlmsShared
+    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2IgnHlmsShared
     {
       /// \brief Binds currPerObjectDataBuffer to the right slot.
       /// Does nothing if it's nullptr
@@ -69,7 +69,7 @@ namespace ignition
       /// for validation (to ensure our implementation isn't out of sync
       /// with Ogre's)
       /// \param[in] _perObjectDataBufferSlot See
-      /// IgnHlmsShared::BindObjectDataBuffer
+      /// Ogre2IgnHlmsShared::BindObjectDataBuffer
       /// \return Pointer to write data for that instance
       /// \internal
       protected: float *MapObjectDataBufferFor(uint32_t _instanceIdx,

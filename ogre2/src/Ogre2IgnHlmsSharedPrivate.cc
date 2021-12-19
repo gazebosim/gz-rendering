@@ -36,7 +36,7 @@ namespace ignition
   namespace rendering
   {
     /////////////////////////////////////////////////
-    void IgnHlmsShared::BindObjectDataBuffer(
+    void Ogre2IgnHlmsShared::BindObjectDataBuffer(
       Ogre::CommandBuffer *_commandBuffer, uint16_t _perObjectDataBufferSlot)
     {
       if (this->currPerObjectDataBuffer)
@@ -51,7 +51,7 @@ namespace ignition
     }
 
     /////////////////////////////////////////////////
-    float *IgnHlmsShared::MapObjectDataBufferFor(
+    float *Ogre2IgnHlmsShared::MapObjectDataBufferFor(
       uint32_t _instanceIdx, Ogre::CommandBuffer *_commandBuffer,
       Ogre::VaoManager *_vaoManager, const ConstBufferPackedVec &_constBuffers,
       uint32_t _currConstBufferIdx, uint32_t *_startMappedConstBuffer,
@@ -103,7 +103,7 @@ namespace ignition
     }
 
     /////////////////////////////////////////////////
-    void IgnHlmsShared::UnmapObjectDataBuffer()
+    void Ogre2IgnHlmsShared::UnmapObjectDataBuffer()
     {
       if (this->currPerObjectDataBuffer)
       {

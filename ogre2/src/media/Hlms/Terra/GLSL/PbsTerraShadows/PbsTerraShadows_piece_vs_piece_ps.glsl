@@ -1,12 +1,12 @@
 @property( !hlms_shadowcaster && terra_enabled )
 
-@piece( custom_VStoPS )
+@piece( custom_VStoPS_terra )
     float terrainShadow;
 @end
 
 /// Extra per-pass global data we need for applying our
 /// shadows to regular objects, passed to all PBS shaders.
-@piece( custom_passBuffer )
+@piece( custom_passBuffer_terra )
     vec4 terraOrigin; //Normalized. i.e. -terrainOrigin / terrainDimensions
     //.xz = terrain 1.0 / XZ dimensions.
     //.y  = 1.0 / terrainHeight;
@@ -14,14 +14,14 @@
 @end
 
 /// Add the shadows' texture to the vertex shader
-@piece( custom_vs_uniformDeclaration )
+@piece( custom_vs_uniformDeclaration_terra )
     uniform sampler2D terrainShadows;
 @end
 
 /// Evaluate the shadow based on world XZ position & height in the vertex shader.
 /// Doing it at the pixel shader level would be more accurate, but the difference
 /// is barely noticeable, and slower
-@piece( custom_vs_posExecution )
+@piece( custom_vs_posExecution_terra )
 	@property( z_up )
 		vec3 terraWorldPos = vec3( worldPos.x, -worldPos.z, worldPos.y );
 	@else

@@ -794,13 +794,13 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     // Create and register
-    hlmsPbs = OGRE_NEW Ogre::IgnHlmsPbs(archivePbs, &archivePbsLibraryFolders);
-    hlmsPbs->setListener(this->dataPtr->hlmsPbsTerraShadows.get());
+    hlmsPbs = OGRE_NEW Ogre::IgnHlmsPbs(
+      archivePbs, &archivePbsLibraryFolders, &this->dataPtr->hlmsCustomizations,
+      this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
     // disable writting debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
-    // hlmsPbs->setListener(&this->dataPtr->hlmsCustomizations);
     hlmsPbs->setListener(hlmsPbs);
 
     dataPtr->ignHlmsPbs = hlmsPbs;

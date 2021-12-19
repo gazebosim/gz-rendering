@@ -1,7 +1,5 @@
-@property( ign_render_solid_color )
+// This file interfaces all modular pieces into one
 
 @piece( custom_ps_posExecution )
-  outPs_colour0 = inPs.ignSolidColour;
-@end
-
+  @insertpiece( custom_ps_posExecution_solid_color )
 @end

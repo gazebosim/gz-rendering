@@ -36,10 +36,10 @@ namespace Ogre
   class IGNITION_RENDERING_OGRE2_HIDDEN IgnHlmsUnlit
     : public HlmsUnlit,
       public HlmsListener,
-      public ignition::rendering::IgnHlmsShared
+      public ignition::rendering::Ogre2IgnHlmsShared
   {
     public: IgnHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders);
-    public: virtual ~IgnHlmsUnlit() override;
+    public: virtual ~IgnHlmsUnlit() override = default;
 
     public: using HlmsUnlit::preparePassHash;
 

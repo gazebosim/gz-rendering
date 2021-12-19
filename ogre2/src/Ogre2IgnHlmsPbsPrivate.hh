@@ -20,6 +20,7 @@
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
+#include "Ogre2IgnHlmsCustomizations.hh"
 #include "Ogre2IgnHlmsSharedPrivate.hh"
 
 #ifdef _MSC_VER
@@ -33,14 +34,44 @@
 
 namespace Ogre
 {
-  class IGNITION_RENDERING_OGRE2_HIDDEN IgnHlmsPbs
+  class HlmsPbsTerraShadows;
+
+  /// \brief Controls custom shader snippets of Hlms:
+  ///
+  ///   - Toggles them on/off
+  ///   - Sends relevant data to the GPU buffers for shaders to use
+  ///
+  /// This listener requires Hlms to have been created with the piece data
+  /// files in ogre2/src/media/Hlms/Ignition registered
+  ///
+  /// We need to derive from HlmsPbs/HlmsUnlit (rather than just using
+  /// HlmsListener) when we need to use code that sends data
+  /// *per object*
+  ///
+  /// For performance reasons Ogre does not allow passing per-object
+  /// data via listeners; so we override Hlms implementations.
+  ///
+  /// Use GetDefaultPaths to get them
+  ///
+  /// \internal
+  /// \remark Public variables take effect immediately (i.e. for the
+  /// next render)
+  class IGNITION_RENDERING_OGRE2_HIDDEN IgnHlmsPbs final
     : public HlmsPbs,
       public HlmsListener,
-      public ignition::rendering::IgnHlmsShared
+      public ignition::rendering::Ogre2IgnHlmsShared
   {
-    public: IgnHlmsPbs(Archive *dataFolder, ArchiveVec *libraryFolders);
-    public: virtual ~IgnHlmsPbs() override;
+    ///\brief Constructor. Asks for modular listeners so we can add
+    /// them in the proper order
+    public: IgnHlmsPbs(Archive *dataFolder, ArchiveVec *libraryFolders,
+                       ignition::rendering::Ogre2IgnHlmsCustomizations
+                       *_sphericalClipMinDistance,
+                       Ogre::HlmsPbsTerraShadows *terraShadows);
 
+    ///\brief Destructor. Virtual to silence warnings
+    public: virtual ~IgnHlmsPbs() override = default;
+
+    // Documentation inherited
     public: using HlmsPbs::preparePassHash;
 
     /// \brief Override HlmsListener to add customizations.
@@ -60,7 +91,38 @@ namespace Ogre
         SceneManager *_sceneManager,
         Hlms *_hlms) override;
 
-    /// \brief Override to calculate which slots are used
+    /// \brief Tells Ogre the buffer data sent to GPU should be a little
+    /// bigger to fit our data we need to send
+    /// \param[in] _shadowNode see base class
+    /// \param[in] _casterPass see base class
+    /// \param[in] _dualParaboloid see base class
+    /// \param[in] _sceneManager see base class
+    public: virtual uint32 getPassBufferSize(
+        const Ogre::CompositorShadowNode *_shadowNode,
+        bool _casterPass, bool _dualParaboloid,
+        Ogre::SceneManager *_sceneManager) const override;
+
+    /// \brief Sends our custom data to GPU buffers that our
+    /// pieces activated in preparePassHash will need.
+    ///
+    /// Bytes written must not exceed what we informed in getPassBufferSize
+    /// \param _casterPass see base class
+    /// \param _sceneManager see base class
+    /// \param _passBufferPtr see base class
+    /// \return The pointer where Ogre should continue appending more data
+    private: virtual float* preparePassBuffer(
+          const Ogre::CompositorShadowNode *_shadowNode,
+          bool _casterPass, bool _dualParaboloid,
+          Ogre::SceneManager *_sceneManager,
+          float *_passBufferPtr) override;
+
+    /// \brief See HlmsListener::shaderCacheEntryCreated
+    public: virtual void shaderCacheEntryCreated(
+        const String &_shaderProfile, const HlmsCache *_hlmsCacheEntry,
+        const HlmsCache &_passCache, const HlmsPropertyVec &_properties,
+        const QueuedRenderable &_queuedRenderable) override;
+
+      /// \brief Override to calculate which slots are used
     public: virtual void notifyPropertiesMergedPreGenerationStep() override;
 
     /// \brief Override HlmsListener::hlmsTypeChanged so we can
@@ -74,21 +136,25 @@ namespace Ogre
         CommandBuffer *_commandBuffer,
         const HlmsDatablock *_datablock) override;
 
+    // Documentation inherited
     public: virtual uint32 fillBuffersForV1(
       const HlmsCache *_cache,
       const QueuedRenderable &_queuedRenderable,
       bool _casterPass, uint32 _lastCacheHash,
       CommandBuffer *_commandBuffer ) override;
 
+    // Documentation inherited
     public: virtual uint32 fillBuffersForV2(
       const HlmsCache *_cache,
       const QueuedRenderable &_queuedRenderable,
       bool _casterPass, uint32 _lastCacheHash,
       CommandBuffer *_commandBuffer ) override;
 
+    // Documentation inherited
     public: virtual void preCommandBufferExecution(
         CommandBuffer *_commandBuffer) override;
 
+    // Documentation inherited
     public: virtual void frameEnded() override;
 
     //// \brief Same as HlmsPbs::getDefaultPaths, but we also append
@@ -100,6 +166,10 @@ namespace Ogre
     /// the constructor will need. Our own stuff is appended here
     public: static void GetDefaultPaths(String &_outDataFolderPath,
                                         StringVector &_outLibraryFoldersPaths);
+
+    /// \brief Contains additional customizations that are modular and
+    /// implemented as listener-only
+    private: std::vector<Ogre::HlmsListener*> customizations;
   };
 }  // namespace Ogre
 

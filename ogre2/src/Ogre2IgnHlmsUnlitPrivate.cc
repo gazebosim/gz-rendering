@@ -36,19 +36,76 @@ namespace Ogre
   /// \internal
   static const uint16 kPerObjectDataBufferSlot = 3u;
 
-  IgnHlmsUnlit::IgnHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders) :
+  IgnHlmsUnlit::IgnHlmsUnlit(
+    Archive *dataFolder, ArchiveVec *libraryFolders,
+    Ogre2IgnHlmsCustomizations *_sphericalClipMinDistance) :
     HlmsUnlit(dataFolder, libraryFolders)
   {
+    this->customizations.push_back(_sphericalClipMinDistance);
   }
 
   /////////////////////////////////////////////////
-  void IgnHlmsUnlit::preparePassHash(
-    const CompositorShadowNode * /*_shadowNode*/, bool _casterPass,
-    bool /*_dualParaboloid*/, SceneManager * /*_sceneManager*/, Hlms *_hlms)
+  void IgnHlmsUnlit::preparePassHash(const CompositorShadowNode *_shadowNode,
+                                     bool _casterPass, bool _dualParaboloid,
+                                     SceneManager *_sceneManager, Hlms *_hlms)
   {
     if (!_casterPass && this->ignOgreRenderingMode == IORM_SOLID_COLOR)
     {
       _hlms->_setProperty("ign_render_solid_color", 1);
+    }
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->preparePassHash(_shadowNode, _casterPass, _dualParaboloid,
+                                _sceneManager, _hlms);
+    }
+  }
+
+  /////////////////////////////////////////////////
+  uint32 IgnHlmsUnlit::getPassBufferSize(
+    const Ogre::CompositorShadowNode *_shadowNode, bool _casterPass,
+    bool _dualParaboloid, Ogre::SceneManager *_sceneManager) const
+  {
+    uint32 bufferSize = 0u;
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      bufferSize += listener->getPassBufferSize(_shadowNode, _casterPass,
+                                                _dualParaboloid, _sceneManager);
+    }
+    return bufferSize;
+  }
+
+  /////////////////////////////////////////////////
+  float *IgnHlmsUnlit::preparePassBuffer(
+    const Ogre::CompositorShadowNode *_shadowNode, bool _casterPass,
+    bool _dualParaboloid, Ogre::SceneManager *_sceneManager,
+    float *_passBufferPtr)
+  {
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      _passBufferPtr =
+        listener->preparePassBuffer(_shadowNode, _casterPass, _dualParaboloid,
+                                    _sceneManager, _passBufferPtr);
+    }
+    return _passBufferPtr;
+  }
+
+  /////////////////////////////////////////////////
+  void IgnHlmsUnlit::shaderCacheEntryCreated(
+    const String &_shaderProfile, const HlmsCache *_hlmsCacheEntry,
+    const HlmsCache &_passCache, const HlmsPropertyVec &_properties,
+    const QueuedRenderable &_queuedRenderable)
+  {
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->shaderCacheEntryCreated(_shaderProfile, _hlmsCacheEntry,
+                                        _passCache, _properties,
+                                        _queuedRenderable);
     }
   }
 
@@ -63,8 +120,14 @@ namespace Ogre
   /////////////////////////////////////////////////
   void IgnHlmsUnlit::hlmsTypeChanged(bool _casterPass,
                                      CommandBuffer *_commandBuffer,
-                                     const HlmsDatablock * /*_datablock*/)
+                                     const HlmsDatablock *_datablock)
   {
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock);
+    }
+
     if (_casterPass || this->ignOgreRenderingMode != IORM_SOLID_COLOR)
     {
       return;
@@ -150,8 +213,6 @@ namespace Ogre
       common::joinPaths("Hlms", "Ignition", "SolidColor"));
     _outLibraryFoldersPaths.push_back(
       common::joinPaths("Hlms", "Ignition", "SphericalClipMinDistance"));
-    // For now use the same template as Pbs since they're the same code
-    // We'll change it if they need to diverge
     _outLibraryFoldersPaths.push_back(
       common::joinPaths("Hlms", "Ignition", "Pbs"));
   }

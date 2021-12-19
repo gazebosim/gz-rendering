@@ -26,7 +26,6 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
     {
-      /// \enum IgnOgreRenderingMode
       /// \brief Rendering modes so that IgnHlms implementations
       /// follow alternate code paths or extra customizations
       /// when they're enabled

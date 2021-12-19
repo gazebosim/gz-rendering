@@ -31,6 +31,8 @@
 #  pragma warning(pop)
 #endif
 
+#include <algorithm>
+
 namespace ignition
 {
   namespace rendering

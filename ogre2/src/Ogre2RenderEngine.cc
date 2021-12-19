@@ -50,7 +50,8 @@
 #include "Terra/TerraWorkspaceListener.h"
 #include "Ogre2IgnHlmsCustomizations.hh"
 
-class ignition::rendering::Ogre2RenderEnginePrivate
+class IGNITION_RENDERING_OGRE2_HIDDEN
+    ignition::rendering::Ogre2RenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
   public: GLXFBConfig* dummyFBConfigs = nullptr;
@@ -753,12 +754,11 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // Create and register the unlit Hlms
     hlmsUnlit = OGRE_NEW Ogre::IgnHlmsUnlit(archiveUnlit,
-        &archiveUnlitLibraryFolders);
+        &archiveUnlitLibraryFolders, &this->dataPtr->hlmsCustomizations);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
 
     // disable writting debug output to disk
     hlmsUnlit->setDebugOutputPath(false, false);
-    // hlmsUnlit->setListener(&this->dataPtr->hlmsCustomizations);
     hlmsUnlit->setListener(hlmsUnlit);
 
     this->dataPtr->ignHlmsUnlit = hlmsUnlit;

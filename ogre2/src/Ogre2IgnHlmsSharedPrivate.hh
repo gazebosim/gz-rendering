@@ -30,6 +30,8 @@
   #pragma warning(pop)
 #endif
 
+#include <vector>
+
 namespace ignition
 {
   namespace rendering

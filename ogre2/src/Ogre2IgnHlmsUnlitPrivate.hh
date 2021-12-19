@@ -32,6 +32,8 @@
   #pragma warning(pop)
 #endif
 
+#include <vector>
+
 namespace Ogre
 {
   /// \brief Controls custom shader snippets of Hlms:
@@ -59,13 +61,13 @@ namespace Ogre
       public HlmsListener,
       public ignition::rendering::Ogre2IgnHlmsShared
   {
-    ///\brief Constructor. Asks for modular listeners so we can add
+    /// \brief Constructor. Asks for modular listeners so we can add
     /// them in the proper order
     public: IgnHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders,
                        ignition::rendering::Ogre2IgnHlmsCustomizations
                        *_sphericalClipMinDistance);
 
-    ///\brief Destructor. Virtual to silence warnings
+    /// \brief Destructor. Virtual to silence warnings
     public: virtual ~IgnHlmsUnlit() override = default;
 
     // Documentation inherited

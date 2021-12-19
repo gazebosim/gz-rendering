@@ -32,6 +32,8 @@
   #pragma warning(pop)
 #endif
 
+#include <vector>
+
 namespace Ogre
 {
   class HlmsPbsTerraShadows;
@@ -61,14 +63,14 @@ namespace Ogre
       public HlmsListener,
       public ignition::rendering::Ogre2IgnHlmsShared
   {
-    ///\brief Constructor. Asks for modular listeners so we can add
+    /// \brief Constructor. Asks for modular listeners so we can add
     /// them in the proper order
     public: IgnHlmsPbs(Archive *dataFolder, ArchiveVec *libraryFolders,
                        ignition::rendering::Ogre2IgnHlmsCustomizations
                        *_sphericalClipMinDistance,
                        Ogre::HlmsPbsTerraShadows *terraShadows);
 
-    ///\brief Destructor. Virtual to silence warnings
+    /// \brief Destructor. Virtual to silence warnings
     public: virtual ~IgnHlmsPbs() override = default;
 
     // Documentation inherited

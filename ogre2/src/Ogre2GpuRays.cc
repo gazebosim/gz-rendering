@@ -33,7 +33,7 @@
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
-#include "Ogre2IgnHlmsCustomizations.hh"
+#include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
 #include "Ogre2ParticleNoiseListener.hh"
 
 #ifdef _MSC_VER
@@ -218,7 +218,7 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
 {
   {
     auto engine = Ogre2RenderEngine::Instance();
-    Ogre2IgnHlmsCustomizations &hlmsCustomizations =
+    Ogre2IgnHlmsSphericalClipMinDistance &hlmsCustomizations =
         engine->HlmsCustomizations();
     Ogre::Pass *pass =
         this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
@@ -1245,7 +1245,7 @@ void Ogre2GpuRays::Render()
   // These customization can be used to implement multi-tiered
   // "near plane distances" as proposed in:
   // https://github.com/ignitionrobotics/ign-rendering/issues/395
-  Ogre2IgnHlmsCustomizations &hlmsCustomizations =
+  Ogre2IgnHlmsSphericalClipMinDistance &hlmsCustomizations =
       engine->HlmsCustomizations();
 
   hlmsCustomizations.minDistanceClip =

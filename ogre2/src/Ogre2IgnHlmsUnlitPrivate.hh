@@ -20,7 +20,7 @@
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
-#include "Ogre2IgnHlmsCustomizations.hh"
+#include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
 #include "Ogre2IgnHlmsSharedPrivate.hh"
 
 #ifdef _MSC_VER
@@ -64,7 +64,8 @@ namespace Ogre
     /// \brief Constructor. Asks for modular listeners so we can add
     /// them in the proper order
     public: Ogre2IgnHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders,
-                              ignition::rendering::Ogre2IgnHlmsCustomizations
+                              ignition::rendering::
+                              Ogre2IgnHlmsSphericalClipMinDistance
                               *_sphericalClipMinDistance);
 
     /// \brief Destructor. Virtual to silence warnings

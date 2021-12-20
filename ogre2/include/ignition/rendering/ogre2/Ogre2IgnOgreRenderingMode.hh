@@ -29,7 +29,7 @@ namespace ignition
       /// \brief Rendering modes so that IgnHlms implementations
       /// follow alternate code paths or extra customizations
       /// when they're enabled
-      enum IGNITION_RENDERING_OGRE2_VISIBLE IgnOgreRenderingMode
+      enum IgnOgreRenderingMode
       {
         /// \brief Normal rendering
         IORM_NORMAL,

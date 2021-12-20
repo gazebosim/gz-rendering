@@ -17,8 +17,6 @@
 #ifndef IGNITION_RENDERING_BASEDISTORTIONPASS_HH_
 #define IGNITION_RENDERING_BASEDISTORTIONPASS_HH_
 
-#include <string>
-
 #include "ignition/rendering/DistortionPass.hh"
 
 namespace ignition

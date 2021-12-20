@@ -497,9 +497,11 @@ void RenderPassTest::Distortion(const std::string &_renderEngine)
     return;
   }
 
-  unsigned char* imageData = (unsigned char*)image.Data();
-  unsigned char* imageBarrelData = (unsigned char*)imageBarrel.Data();
-  unsigned char* imagePincushionData = (unsigned char*)imagePincushion.Data();
+  unsigned char* imageData = static_cast<unsigned char*>(image.Data());
+  unsigned char* imageBarrelData =
+      static_cast<unsigned char*>(imageBarrel.Data());
+  unsigned char* imagePincushionData =
+      static_cast<unsigned char*>(imagePincushion.Data());
 
   unsigned int colorSum = 0;
   unsigned int colorSum2 = 0;
@@ -522,6 +524,12 @@ void RenderPassTest::Distortion(const std::string &_renderEngine)
       colorSum3 += r4 + g4 + b4;
     }
   }
+
+  // Compare colors. Barrel distorted image should have more darker pixels than
+  // the original as the ground plane has been warped to occupy more of the
+  // image. The same should be true for pincushion distortion, because the
+  // ground plane is still distorted to be larger - just different parts
+  // of the image are distorted.
   EXPECT_GT(colorSum, colorSum2);
   EXPECT_GT(colorSum, colorSum3);
 

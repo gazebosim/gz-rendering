@@ -15,16 +15,6 @@
  *
  */
 
-// leave this out of OgreIncludes as it conflicts with other files requiring
-// gl.h
-#ifdef _MSC_VER
-#pragma warning(push, 0)
-#endif
-#include <OgreGL3PlusFBORenderTexture.h>
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/Material.hh"
@@ -66,7 +56,8 @@ class Ogre2RenderTargetCompositorListener :
       Ogre::CompositorPassScene *scenePass =
           static_cast<Ogre::CompositorPassScene *>(_pass);
       IGN_ASSERT(scenePass != nullptr, "Unable to get scene pass");
-      Ogre::Viewport *vp = scenePass->getViewport();
+      Ogre::Viewport *vp = scenePass->getCamera()->getLastViewport();
+      if (vp == nullptr) return;
       // make sure we do not alter the reserved visibility flags
       uint32_t f = this->ogreRenderTarget->VisibilityMask() |
           ~Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS;
@@ -100,6 +91,14 @@ class ignition::rendering::Ogre2RenderTargetPrivate
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
+
+  /// \brief Pointer to the internal ogre render texture objects
+  /// There's two because we ping pong postprocessing effects
+  /// and the final result is always in ogreTexture[1]
+  /// RenderWindows may have a 3rd texture which is the
+  /// actual window
+  ///
+  public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
 };
 
 using namespace ignition;
@@ -153,58 +152,60 @@ void Ogre2RenderTarget::BuildCompositor()
     Ogre::CompositorNodeDef *nodeDef =
         ogreCompMgr->addNodeDefinition(nodeDefName);
 
-    // Input texture
-    Ogre::TextureDefinitionBase::TextureDefinition *rt0TexDef =
-        nodeDef->addTextureDefinition("rt0");
-    rt0TexDef->textureType = Ogre::TEX_TYPE_2D;
-    rt0TexDef->width = 0;
-    rt0TexDef->height = 0;
-    rt0TexDef->depth = 1;
-    rt0TexDef->numMipmaps = 0;
-    rt0TexDef->widthFactor = 1;
-    rt0TexDef->heightFactor = 1;
-    rt0TexDef->formatList = {Ogre::PF_R8G8B8};
-    rt0TexDef->fsaa = 0;
-    rt0TexDef->uav = false;
-    rt0TexDef->automipmaps = false;
-    rt0TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolTrue;
-    rt0TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
-    rt0TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
-    rt0TexDef->fsaaExplicitResolve = false;
+    nodeDef->addTextureSourceName(
+          "rt0", 0u, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
+    nodeDef->addTextureSourceName(
+          "rt1", 1u, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
-    Ogre::TextureDefinitionBase::TextureDefinition *rt1TexDef =
-        nodeDef->addTextureDefinition("rt1");
-    rt1TexDef->textureType = Ogre::TEX_TYPE_2D;
-    rt1TexDef->width = 0;
-    rt1TexDef->height = 0;
-    rt1TexDef->depth = 1;
-    rt1TexDef->numMipmaps = 0;
-    rt1TexDef->widthFactor = 1;
-    rt1TexDef->heightFactor = 1;
-    rt1TexDef->formatList = {Ogre::PF_R8G8B8};
-    rt1TexDef->fsaa = 0;
-    rt1TexDef->uav = false;
-    rt1TexDef->automipmaps = false;
-    rt1TexDef->hwGammaWrite = Ogre::TextureDefinitionBase::BoolTrue;
-    rt1TexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
-    rt1TexDef->depthBufferFormat = Ogre::PF_UNKNOWN;
-    rt1TexDef->fsaaExplicitResolve = false;
+    {
+      // Add a manually-defined RTV (based on an automatically generated one)
+      // so that we can perform an explicit MSAA resolve.
+      const Ogre::RenderTargetViewDef *rt0Def =
+          nodeDef->getRenderTargetViewDef( "rt0" );
+      Ogre::RenderTargetViewDef *rtvDef =
+          nodeDef->addRenderTextureView( "rtv" );
+
+      *rtvDef = *rt0Def;
+
+      const uint8_t fsaa = TargetFSAA();
+      if (fsaa > 1u)
+      {
+        Ogre::TextureDefinitionBase::TextureDefinition *msaaDef =
+            nodeDef->addTextureDefinition("rt_fsaa");
+
+        msaaDef->fsaa = std::to_string(fsaa);
+
+        rtvDef->colourAttachments[0].textureName = "rt_fsaa";
+        rtvDef->colourAttachments[0].resolveTextureName = "rt0";
+      }
+    }
 
     nodeDef->setNumTargetPass(2);
     Ogre::CompositorTargetDef *rt0TargetDef =
-        nodeDef->addTargetPass("rt0");
+        nodeDef->addTargetPass("rtv");
 
     if (validBackground)
-      rt0TargetDef->setNumPasses(3);
-    else
       rt0TargetDef->setNumPasses(2);
+    else
+      rt0TargetDef->setNumPasses(1);
     {
-      // clear pass
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(
-          rt0TargetDef->addPass(Ogre::PASS_CLEAR));
-      passClear->mColourValue = this->ogreBackgroundColor;
+      // scene pass - opaque
+      {
+        Ogre::CompositorPassSceneDef *passScene =
+            static_cast<Ogre::CompositorPassSceneDef *>(
+            rt0TargetDef->addPass(Ogre::PASS_SCENE));
+        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
+        passScene->mIncludeOverlays = false;
+        passScene->mFirstRQ = 0u;
+        passScene->mLastRQ = 2u;
+        if (!validBackground)
+        {
+          passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+          passScene->setAllClearColours(this->ogreBackgroundColor);
+        }
+      }
 
+      // render background, e.g. sky, after opaque stuff
       if (validBackground)
       {
         // quad pass
@@ -215,14 +216,20 @@ void Ogre2RenderTarget::BuildCompositor()
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
+
+        passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
+        passQuad->setAllClearColours(this->ogreBackgroundColor);
       }
 
-      // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          rt0TargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->mShadowNode = this->dataPtr->kShadowNodeName;
-      passScene->mIncludeOverlays = true;
+      // scene pass - transparent stuff
+      {
+        Ogre::CompositorPassSceneDef *passScene =
+            static_cast<Ogre::CompositorPassSceneDef *>(
+            rt0TargetDef->addPass(Ogre::PASS_SCENE));
+        passScene->mIncludeOverlays = true;
+        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
+        passScene->mFirstRQ = 2u;
+      }
     }
 
     nodeDef->mapOutputChannel(0, "rt0");
@@ -233,9 +240,9 @@ void Ogre2RenderTarget::BuildCompositor()
         this->dataPtr->kFinalNodeName;
     Ogre::CompositorNodeDef *finalNodeDef =
         ogreCompMgr->addNodeDefinition(finalNodeDefName);
-    finalNodeDef->addTextureSourceName("rt_output", 0,
+    finalNodeDef->addTextureSourceName("rtN", 0,
         Ogre::TextureDefinitionBase::TEXTURE_INPUT);
-    finalNodeDef->addTextureSourceName("rtN", 1,
+    finalNodeDef->addTextureSourceName("rt_output", 1,
         Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
     finalNodeDef->setNumTargetPass(2);
@@ -248,7 +255,7 @@ void Ogre2RenderTarget::BuildCompositor()
           static_cast<Ogre::CompositorPassQuadDef *>(
           outTargetDef->addPass(Ogre::PASS_QUAD));
       passQuad->mMaterialName = "Ogre/Copy/4xFP32";
-      passQuad->addQuadTextureSource(0, "rtN", 0);
+      passQuad->addQuadTextureSource(0, "rtN");
 
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
@@ -258,23 +265,46 @@ void Ogre2RenderTarget::BuildCompositor()
       passScene->mIncludeOverlays = true;
       passScene->mFirstRQ = 254;
       passScene->mLastRQ = 255;
-    }
 
+    }
     Ogre::CompositorWorkspaceDef *workDef =
         ogreCompMgr->addWorkspaceDefinition(wsDefName);
-    workDef->connectExternal(0, finalNodeDefName, 0);
-    workDef->connect(nodeDefName, 0, finalNodeDefName, 1);
+
+    workDef->connectExternal(0, nodeDefName, 0);
+    workDef->connectExternal(1, nodeDefName, 1);
+
+    if (!this->IsRenderWindow())
+    {
+      workDef->connect(nodeDefName, finalNodeDefName);
+    }
+    else
+    {
+      // connect the last render pass to the final compositor node
+      // but only input, since output goes to the render window
+      workDef->connect(nodeDefName, 0, finalNodeDefName, 0);
+      workDef->connectExternal(2,  finalNodeDefName, 1);
+    }
   }
 
-  this->UpdateShadowNode();
+  Ogre::CompositorChannelVec externalTargets(2u);
+  for (size_t i = 0u; i < 2u; ++i)
+  {
+    // Connect them in reverse order
+    const size_t srcIdx = 2u - i - 1u;
+    externalTargets[i] = this->dataPtr->ogreTexture[srcIdx];
+  }
 
   this->ogreCompositorWorkspace =
-      ogreCompMgr->addWorkspace(this->scene->OgreSceneManager(),
-      this->RenderTarget(), this->ogreCamera,
-      this->ogreCompositorWorkspaceDefName, false);
+      ogreCompMgr->addWorkspace(
+        this->scene->OgreSceneManager(),
+        externalTargets,
+        this->ogreCamera,
+        this->ogreCompositorWorkspaceDefName,
+        false);
 
   this->dataPtr->rtListener = new Ogre2RenderTargetCompositorListener(this);
-  this->ogreCompositorWorkspace->setListener(this->dataPtr->rtListener);
+  this->ogreCompositorWorkspace->addListener(this->dataPtr->rtListener);
+  this->ogreCompositorWorkspace->addListener(engine->TerraWorkspaceListener());
 }
 
 //////////////////////////////////////////////////
@@ -283,10 +313,20 @@ void Ogre2RenderTarget::DestroyCompositor()
   if (!this->ogreCompositorWorkspace)
     return;
 
+  // Restore the original order so that this->ogreTexture[1] is the one with
+  // FSAA (which we need for BuildCompositor to connect correctly)
+  const Ogre::CompositorChannelVec &externalTargets =
+      this->ogreCompositorWorkspace->getExternalRenderTargets();
+  for (size_t i = 0u; i < 2u; ++i)
+  {
+    const size_t srcIdx = (2u - i - 1u);
+    this->dataPtr->ogreTexture[srcIdx] = externalTargets[i];
+  }
+
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
-  this->ogreCompositorWorkspace->setListener(nullptr);
+  this->ogreCompositorWorkspace->addListener(nullptr);
   ogreCompMgr->removeWorkspace(this->ogreCompositorWorkspace);
   ogreCompMgr->removeWorkspaceDefinition(this->ogreCompositorWorkspaceDefName);
   ogreCompMgr->removeNodeDefinition(this->ogreCompositorWorkspaceDefName +
@@ -309,6 +349,8 @@ void Ogre2RenderTarget::RebuildCompositor()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
+  Ogre::TextureGpu *texture = this->RenderTarget();
+
   // TODO(anyone) handle Bayer conversions
   // TODO(anyone) handle ogre version differences
 
@@ -318,10 +360,33 @@ void Ogre2RenderTarget::Copy(Image &_image) const
     return;
   }
 
-  void *data = _image.Data();
-  Ogre::PixelFormat imageFormat = Ogre2Conversions::Convert(_image.Format());
-  Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
-  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+  Ogre::Image2 image2;
+  image2.convertFromTexture(texture, 0u, 0u);
+  Ogre::TextureBox box = image2.getData(0);
+
+  auto dataImage = static_cast<unsigned char *>(_image.Data());
+  auto dataImage2 = static_cast<Ogre::uint8 *>(box.data);
+
+  unsigned int channelCount = 3u;
+  unsigned int rawChannelCount = 4u;
+  unsigned int bytesPerChannel = 1u;
+  for (unsigned int row = 0; row < this->height; ++row)
+  {
+    // the texture box step size could be larger than our image buffer step
+    // size
+    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
+    for (unsigned int column = 0; column < this->width; ++column)
+    {
+      unsigned int idx = (row * this->width * channelCount) +
+          column * channelCount;
+      unsigned int rawIdx = rawDataRowIdx +
+          column * rawChannelCount;
+
+      dataImage[idx] = dataImage2[rawIdx];
+      dataImage[idx + 1] = dataImage2[rawIdx + 1];
+      dataImage[idx + 2] = dataImage2[rawIdx + 2];
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -400,33 +465,129 @@ void Ogre2RenderTarget::PostRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
-  // TODO(anyone)
-  // There is current not an easy solution to manually updating
-  // render textures:
-  // https://forums.ogre3d.org/viewtopic.php?t=84687
-  this->ogreCompositorWorkspace->setEnabled(true);
+  this->scene->StartRendering(this->ogreCamera);
+
+  this->ogreCompositorWorkspace->_validateFinalTarget();
+  this->ogreCompositorWorkspace->_beginUpdate(false);
+  this->ogreCompositorWorkspace->_update();
+  this->ogreCompositorWorkspace->_endUpdate(false);
+
+  Ogre::vector<Ogre::TextureGpu*>::type swappedTargets;
+  swappedTargets.reserve(2u);
+  this->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
+
+  this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
+}
+
+//////////////////////////////////////////////////
+bool Ogre2RenderTarget::IsRenderWindow() const
+{
+  return false;
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::DestroyTargetImpl()
+{
+  if (nullptr == this->dataPtr->ogreTexture[0])
+    return;
+
+  this->DestroyCompositor();
+
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+
+  Ogre::TextureGpuManager *textureManager =
+    root->getRenderSystem()->getTextureGpuManager();
+  for (size_t i = 0u; i < 2u; ++i)
+  {
+    textureManager->destroyTexture(this->dataPtr->ogreTexture[i]);
+    this->dataPtr->ogreTexture[i] = nullptr;
+  }
+
+  // TODO(anyone) there is memory leak when a render texture is destroyed.
+  // The RenderSystem::_cleanupDepthBuffers method used in ogre1 does not
+  // seem to work in ogre2
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::BuildTargetImpl()
+{
   auto engine = Ogre2RenderEngine::Instance();
-  engine->OgreRoot()->renderOneFrame();
-  this->ogreCompositorWorkspace->setEnabled(false);
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+      ogreRoot->getRenderSystem()->getTextureGpuManager();
 
-  // The code below for manual updating render textures was suggested in ogre
-  // forum but it does not seem to work
-  // this->scene->OgreSceneManager()->updateSceneGraph();
-  // this->ogreCompositorWorkspace->_validateFinalTarget();
-  // engine->OgreRoot()->getRenderSystem()->_beginFrameOnce();
-  // this->ogreCompositorWorkspace->_beginUpdate(false);
-  // this->ogreCompositorWorkspace->_update();
-  // this->ogreCompositorWorkspace->_endUpdate(false);
+  for (size_t i = 0u; i < 2u; ++i)
+  {
+    this->dataPtr->ogreTexture[i] =
+        textureMgr->createTexture(
+          this->name + std::to_string(i),
+          Ogre::GpuPageOutStrategy::Discard,
+          Ogre::TextureFlags::RenderToTexture,
+          Ogre::TextureTypes::Type2D);
 
-  // this->scene->OgreSceneManager()->_frameEnded();
-  // for (size_t i=0; i < Ogre::HLMS_MAX; ++i)
-  // {
-  //   Ogre::Hlms *hlms = engine->OgreRoot()->getHlmsManager()->getHlms(
-  //       static_cast<Ogre::HlmsTypes>(i));
-  //   if(hlms)
-  //     hlms->frameEnded();
-  // }
-  // engine->OgreRoot()->getRenderSystem()->_update();
+    this->dataPtr->ogreTexture[i]->setResolution(this->width, this->height);
+    this->dataPtr->ogreTexture[i]->setNumMipmaps(1u);
+    this->dataPtr->ogreTexture[i]->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+
+    this->dataPtr->ogreTexture[i]->scheduleTransitionTo(
+          Ogre::GpuResidency::Resident);
+  }
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2RenderTarget::GLIdImpl() const
+{
+  if (!this->dataPtr->ogreTexture[0])
+    return 0;
+
+  unsigned int texId;
+  this->dataPtr->ogreTexture[1]->getCustomAttribute("msFinalTextureBuffer",
+                                                    &texId);
+
+  return static_cast<unsigned int>(texId);
+}
+
+//////////////////////////////////////////////////
+uint8_t Ogre2RenderTarget::TargetFSAA() const
+{
+  // check if target fsaa is supported
+  std::vector<unsigned int> fsaaLevels =
+      Ogre2RenderEngine::Instance()->FSAALevels();
+  unsigned int targetFSAA = this->antiAliasing;
+  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
+
+  if (it == fsaaLevels.end())
+  {
+    // output warning but only do it once
+    static bool ogre2FSAAWarn = false;
+    if (!ogre2FSAAWarn)
+    {
+      std::ostringstream os;
+      os << "[ ";
+      for (auto &&level : fsaaLevels)
+      {
+        os << level << " ";
+      }
+      os << "]";
+
+      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+              << "is not supported; valid FSAA levels are: " << os.str()
+              << ". Setting to 0" << std::endl;
+      targetFSAA = 0u;
+      ogre2FSAAWarn = true;
+    }
+  }
+
+  if (targetFSAA == 0u)
+    targetFSAA = 1u;
+
+  return static_cast<uint8_t>(targetFSAA);
+}
+
+//////////////////////////////////////////////////
+Ogre::TextureGpu *Ogre2RenderTarget::RenderTargetImpl() const
+{
+  return this->dataPtr->ogreTexture[1];
 }
 
 //////////////////////////////////////////////////
@@ -446,12 +607,15 @@ void Ogre2RenderTarget::UpdateBackgroundColor()
 {
   if (this->colorDirty)
   {
-    // set background color in compositor clear pass def
+    // set background color in the first pass that clears
+    // the RT (both node and its definition).
     auto nodeSeq = this->ogreCompositorWorkspace->getNodeSequence();
-    auto pass = nodeSeq[0]->_getPasses()[0]->getDefinition();
-    auto clearPass = dynamic_cast<const Ogre::CompositorPassClearDef *>(pass);
-    const_cast<Ogre::CompositorPassClearDef *>(clearPass)->mColourValue =
-        this->ogreBackgroundColor;
+    auto pass = nodeSeq[0]->_getPasses()[0];
+    pass->getRenderPassDesc()->setClearColour(this->ogreBackgroundColor);
+
+    auto passDef = pass->getDefinition();
+    const_cast<Ogre::CompositorPassDef*>(passDef)->setAllClearColours(
+          this->ogreBackgroundColor);
 
     this->colorDirty = false;
   }
@@ -485,7 +649,8 @@ void Ogre2RenderTarget::UpdateBackgroundMaterial()
     Ogre::TextureUnitState *texUnit =
         mat->getTechnique(0u)->getPass(0u)->getTextureUnitState(0u);
     texUnit->setTextureName(this->backgroundMaterial->EnvironmentMap(),
-        Ogre::TEX_TYPE_CUBE_MAP);
+        Ogre::TextureTypes::TypeCube);
+    texUnit->setHardwareGammaEnabled(false);
   }
 
   this->backgroundMaterialDirty = false;
@@ -500,7 +665,10 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
       this->dataPtr->kBaseNodeName,
       this->ogreCompositorWorkspaceDefName + "/" +
       this->dataPtr->kFinalNodeName,
-      this->renderPasses, this->renderPassDirty);
+      this->renderPasses,
+      this->renderPassDirty,
+      &this->dataPtr->ogreTexture,
+      this->IsRenderWindow());
 
   this->renderPassDirty = false;
 }
@@ -510,7 +678,8 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     Ogre::CompositorWorkspace *_workspace, const std::string &_workspaceDefName,
     const std::string &_baseNode, const std::string &_finalNode,
     const std::vector<RenderPassPtr> &_renderPasses,
-    bool _recreateNodes)
+    bool _recreateNodes, Ogre::TextureGpu *(*_ogreTextures)[2],
+    bool _isRenderWindow)
 {
   if (!_workspace || _workspaceDefName.empty() ||
       _baseNode.empty() || _finalNode.empty() || _renderPasses.empty())
@@ -534,10 +703,10 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
           ogre2RenderPass->OgreCompositorNodeDefinitionName());
 
       // check if we need to create all nodes or just update the connections.
-      // if node does not exist then it means it has not been added to the
-      // chain yet, in which case, we need to recreate the nodes and
-      // connections
-      if (!node)
+      // if node does not exist then it means it either has not been added to
+      // the chain yet or it was removed because it was disabled.
+      // In both cases, we need to recreate the nodes and connections
+      if (!node && ogre2RenderPass->IsEnabled())
       {
         _recreateNodes = true;
       }
@@ -566,7 +735,7 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
   // the first node is the base scene pass node
   std::string outNodeDefName = _baseNode;
   // the final compositor node
-  std::string finalNodeDefName = _finalNode;
+  const std::string finalNodeDefName = _finalNode;
   std::string inNodeDefName;
 
   // if new nodes need to be added then clear everything,
@@ -575,6 +744,8 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     workspaceDef->clearAll();
   else
     workspaceDef->clearAllInterNodeConnections();
+
+  int numActiveNodes = 0;
 
   // chain the render passes by connecting all the ogre compositor nodes
   // in between the base scene pass node and the final compositor node
@@ -589,420 +760,48 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     {
       workspaceDef->connect(outNodeDefName, inNodeDefName);
       outNodeDefName = inNodeDefName;
+      ++numActiveNodes;
     }
   }
 
-  // connect the last render pass to the final compositor node
-  workspaceDef->connect(outNodeDefName, 0,  finalNodeDefName, 1);
+  workspaceDef->connectExternal(0, _baseNode, 0);
+  workspaceDef->connectExternal(1, _baseNode, 1);
+
+  if (!_isRenderWindow)
+  {
+    // connect the last render pass to the final compositor node
+    workspaceDef->connect(outNodeDefName, finalNodeDefName);
+
+    // We must ensure the output is always in ogreTextures[1]
+    const bool bMustSwapRts = (numActiveNodes & 0x01) == 0u;
+
+    const Ogre::CompositorChannelVec &externalTargets =
+        _workspace->getExternalRenderTargets();
+    for (size_t i = 0u; i < 2u; ++i)
+    {
+      const size_t srcIdx = bMustSwapRts ? (2u - i - 1u) : i;
+      (*_ogreTextures)[srcIdx] = externalTargets[i];
+    }
+  }
+  else
+  {
+    // connect the last render pass to the final compositor node
+    // but only input, since output goes to the render window
+    workspaceDef->connect(outNodeDefName, 0, finalNodeDefName, 0);
+    workspaceDef->connectExternal(2, _finalNode, 1);
+  }
+
 
   // if new node definitions were added then recreate all the compositor nodes,
   // otherwise update the connections
   if (_recreateNodes)
   {
     // clearAll requires the output to be connected again.
-    workspaceDef->connectExternal(0, finalNodeDefName, 0);
     _workspace->recreateAllNodes();
   }
   else
   {
     _workspace->reconnectAllNodes();
-  }
-}
-
-//////////////////////////////////////////////////
-void Ogre2RenderTarget::UpdateShadowNode()
-{
-  if (!this->scene->ShadowsDirty())
-    return;
-
-  unsigned int spotPointLightCount = 0;
-  unsigned int dirLightCount = 0;
-
-  for (unsigned int i = 0; i < this->scene->LightCount(); ++i)
-  {
-    LightPtr light = this->scene->LightByIndex(i);
-    if (light->CastShadows())
-    {
-      if (std::dynamic_pointer_cast<DirectionalLight>(light))
-        dirLightCount++;
-      else
-        spotPointLightCount++;
-    }
-  }
-
-  // limit number of shadow maps
-  // shaders dynamically generated by ogre produce compile error at runtime if
-  // the number of shadow maps exceeds certain number. The error seems to
-  // suggest that the number of uniform variables has exceeded the max number
-  // allowed
-  unsigned int maxShadowMaps = 25u;
-  if (dirLightCount * 3 + spotPointLightCount > maxShadowMaps)
-  {
-    dirLightCount = std::min(static_cast<unsigned int>(maxShadowMaps / 3),
-        dirLightCount);
-    spotPointLightCount = std::min(
-        std::max(maxShadowMaps - dirLightCount * 3, 0u), spotPointLightCount);
-    ignwarn << "Number of shadow-casting lights exceeds the limit supported by "
-            << "the underlying rendering engine ogre2. Limiting to "
-            << dirLightCount << " directional lights and "
-            << spotPointLightCount << " point / spot lights" << std::endl;
-  }
-
-  auto engine = Ogre2RenderEngine::Instance();
-  Ogre::CompositorManager2 *compositorManager =
-      engine->OgreRoot()->getCompositorManager2();
-
-  Ogre::ShadowNodeHelper::ShadowParamVec shadowParams;
-  Ogre::ShadowNodeHelper::ShadowParam shadowParam;
-
-  // directional lights
-  unsigned int atlasId = 0u;
-  unsigned int texSize = 2048u;
-  unsigned int halfTexSize = texSize * 0.5;
-  for (unsigned int i = 0; i < dirLightCount; ++i)
-  {
-    shadowParam.technique = Ogre::SHADOWMAP_PSSM;
-    shadowParam.atlasId = atlasId;
-    shadowParam.numPssmSplits = 3u;
-    shadowParam.resolution[0].x = texSize;
-    shadowParam.resolution[0].y = texSize;
-    shadowParam.resolution[1].x = halfTexSize;
-    shadowParam.resolution[1].y = halfTexSize;
-    shadowParam.resolution[2].x = halfTexSize;
-    shadowParam.resolution[2].y = halfTexSize;
-    shadowParam.atlasStart[0].x = 0u;
-    shadowParam.atlasStart[0].y = 0u;
-    shadowParam.atlasStart[1].x = 0u;
-    shadowParam.atlasStart[1].y = texSize;
-    shadowParam.atlasStart[2].x = halfTexSize;
-    shadowParam.atlasStart[2].y = texSize;
-    shadowParam.supportedLightTypes = 0u;
-    shadowParam.addLightType(Ogre::Light::LT_DIRECTIONAL);
-    shadowParams.push_back(shadowParam);
-    atlasId++;
-  }
-
-  // others
-  unsigned int maxTexSize = 8192u;
-  unsigned int rowIdx = 0;
-  unsigned int colIdx = 0;
-  unsigned int rowSize = maxTexSize / texSize;
-  unsigned int colSize = rowSize;
-
-  for (unsigned int i = 0; i < spotPointLightCount; ++i)
-  {
-    shadowParam.technique = Ogre::SHADOWMAP_FOCUSED;
-    shadowParam.atlasId = atlasId;
-    shadowParam.resolution[0].x = texSize;
-    shadowParam.resolution[0].y = texSize;
-    shadowParam.atlasStart[0].x = colIdx * texSize;
-    shadowParam.atlasStart[0].y = rowIdx * texSize;
-
-    shadowParam.supportedLightTypes = 0u;
-    shadowParam.addLightType(Ogre::Light::LT_DIRECTIONAL);
-    shadowParam.addLightType(Ogre::Light::LT_POINT);
-    shadowParam.addLightType(Ogre::Light::LT_SPOTLIGHT);
-    shadowParams.push_back(shadowParam);
-
-    colIdx++;
-    colIdx = colIdx % colSize;
-    if (colIdx == 0u)
-      rowIdx++;
-
-    // check if we've filled the current texture atlas
-    // if so, increment atlas id to indicate we want a new texture
-    if (rowIdx >= rowSize)
-    {
-      atlasId++;
-      colIdx = 0;
-      rowIdx = 0;
-    }
-  }
-
-  std::string shadowNodeDefName = this->dataPtr->kShadowNodeName;
-  if (compositorManager->hasShadowNodeDefinition(shadowNodeDefName))
-    compositorManager->removeShadowNodeDefinition(shadowNodeDefName);
-
-  this->CreateShadowNodeWithSettings(compositorManager, shadowNodeDefName,
-      shadowParams);
-
-  this->scene->SetShadowsDirty(false);
-}
-
-////////////////////////////////////////////////////
-void Ogre2RenderTarget::CreateShadowNodeWithSettings(
-    Ogre::CompositorManager2 *_compositorManager,
-    const std::string &_shadowNodeName,
-    const Ogre::ShadowNodeHelper::ShadowParamVec &_shadowParams)
-{
-  Ogre::uint32 pointLightCubemapResolution = 1024u;
-  Ogre::Real pssmLambda = 0.95f;
-  Ogre::Real splitPadding = 1.0f;
-  Ogre::Real splitBlend = 0.125f;
-  Ogre::Real splitFade = 0.313f;
-
-  const Ogre::uint32 spotMask           = 1u << Ogre::Light::LT_SPOTLIGHT;
-  const Ogre::uint32 directionalMask    = 1u << Ogre::Light::LT_DIRECTIONAL;
-  const Ogre::uint32 pointMask          = 1u << Ogre::Light::LT_POINT;
-  const Ogre::uint32 spotAndDirMask = spotMask | directionalMask;
-
-  typedef Ogre::vector<Ogre::ShadowNodeHelper::Resolution>::type ResolutionVec;
-
-  size_t numExtraShadowMapsForPssmSplits = 0;
-  size_t numTargetPasses = 0;
-  ResolutionVec atlasResolutions;
-
-  // Validation and data gathering
-  bool hasPointLights = false;
-
-  Ogre::ShadowNodeHelper::ShadowParamVec::const_iterator itor =
-      _shadowParams.begin();
-  Ogre::ShadowNodeHelper::ShadowParamVec::const_iterator end =
-      _shadowParams.end();
-
-  while (itor != end)
-  {
-    if (itor->technique == Ogre::SHADOWMAP_PSSM)
-    {
-      numExtraShadowMapsForPssmSplits = itor->numPssmSplits - 1u;
-      // 1 per PSSM split
-      numTargetPasses += numExtraShadowMapsForPssmSplits + 1u;
-    }
-
-    if (itor->atlasId >= atlasResolutions.size())
-      atlasResolutions.resize(itor->atlasId + 1u);
-
-    Ogre::ShadowNodeHelper::Resolution &resolution =
-        atlasResolutions[itor->atlasId];
-
-    const size_t numSplits = itor->technique == Ogre::SHADOWMAP_PSSM ?
-        itor->numPssmSplits : 1u;
-    for (size_t i = 0; i < numSplits; ++i)
-    {
-      resolution.x = std::max(resolution.x,
-          itor->atlasStart[i].x + itor->resolution[i].x);
-      resolution.y = std::max(resolution.y,
-          itor->atlasStart[i].y + itor->resolution[i].y);
-    }
-
-    if (itor->supportedLightTypes & pointMask)
-    {
-      hasPointLights = true;
-      // 6 target passes per cubemap + 1 for copy
-      numTargetPasses += 7u;
-    }
-    if (itor->supportedLightTypes & spotAndDirMask &&
-        itor->technique != Ogre::SHADOWMAP_PSSM)
-    {
-      // 1 per directional/spot light (for non-PSSM techniques)
-      numTargetPasses += 1u;
-    }
-    ++itor;
-  }
-
-  // One clear for each atlas
-  numTargetPasses += atlasResolutions.size();
-  // Create the shadow node definition
-  Ogre::CompositorShadowNodeDef *shadowNodeDef =
-      _compositorManager->addShadowNodeDefinition(_shadowNodeName);
-
-  const size_t numTextures = atlasResolutions.size();
-  {
-    // Define the atlases (textures)
-    shadowNodeDef->setNumLocalTextureDefinitions(
-        numTextures + (hasPointLights ? 1u : 0u));
-    for (size_t i = 0; i < numTextures; ++i)
-    {
-      const Ogre::ShadowNodeHelper::Resolution &atlasRes = atlasResolutions[i];
-      Ogre::TextureDefinitionBase::TextureDefinition *texDef =
-          shadowNodeDef->addTextureDefinition(
-          "atlas" + Ogre::StringConverter::toString(i));
-
-      texDef->width = std::max(atlasRes.x, 1u);
-      texDef->height = std::max(atlasRes.y, 1u);
-      texDef->formatList.push_back(Ogre::PF_D32_FLOAT);
-      texDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
-      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
-      texDef->preferDepthTexture = false;
-      texDef->fsaa = false;
-    }
-
-    // Define the cubemap needed by point lights
-    if (hasPointLights)
-    {
-      Ogre::TextureDefinitionBase::TextureDefinition *texDef =
-          shadowNodeDef->addTextureDefinition("tmpCubemap");
-
-      texDef->width   = pointLightCubemapResolution;
-      texDef->height  = pointLightCubemapResolution;
-      texDef->depth   = 6u;
-      texDef->textureType = Ogre::TEX_TYPE_CUBE_MAP;
-      texDef->formatList.push_back(Ogre::PF_FLOAT32_R);
-      texDef->depthBufferId = 1u;
-      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
-      texDef->preferDepthTexture = false;
-      texDef->fsaa = false;
-    }
-  }
-
-  // Create the shadow maps
-  const size_t numShadowMaps =
-      _shadowParams.size() + numExtraShadowMapsForPssmSplits;
-  shadowNodeDef->setNumShadowTextureDefinitions(numShadowMaps);
-
-  itor = _shadowParams.begin();
-
-  while (itor != end)
-  {
-    const size_t lightIdx = itor - _shadowParams.begin();
-    const Ogre::ShadowNodeHelper::ShadowParam &shadowParam = *itor;
-
-    const Ogre::ShadowNodeHelper::Resolution &texResolution =
-        atlasResolutions[shadowParam.atlasId];
-
-    const size_t numSplits =
-        shadowParam.technique == Ogre::SHADOWMAP_PSSM ?
-        shadowParam.numPssmSplits : 1u;
-
-    for (size_t j = 0; j < numSplits; ++j)
-    {
-      Ogre::Vector2 uvOffset(
-          shadowParam.atlasStart[j].x, shadowParam.atlasStart[j].y);
-      Ogre::Vector2 uvLength(
-          shadowParam.resolution[j].x, shadowParam.resolution[j].y);
-
-      uvOffset /= Ogre::Vector2(texResolution.x, texResolution.y);
-      uvLength /= Ogre::Vector2(texResolution.x, texResolution.y);
-
-      const Ogre::String texName =
-          "atlas" + Ogre::StringConverter::toString(shadowParam.atlasId);
-
-      Ogre::ShadowTextureDefinition *shadowTexDef =
-          shadowNodeDef->addShadowTextureDefinition(lightIdx, j, texName,
-          0, uvOffset, uvLength, 0);
-      shadowTexDef->shadowMapTechnique = shadowParam.technique;
-      shadowTexDef->pssmLambda = pssmLambda;
-      shadowTexDef->splitPadding = splitPadding;
-      shadowTexDef->splitBlend = splitBlend;
-      shadowTexDef->splitFade = splitFade;
-      shadowTexDef->numSplits = numSplits;
-    }
-    ++itor;
-  }
-
-  shadowNodeDef->setNumTargetPass(numTargetPasses);
-
-  // Create the passes for each atlas
-  for (size_t atlasId = 0; atlasId < numTextures; ++atlasId)
-  {
-    const Ogre::String texName =
-        "atlas" + Ogre::StringConverter::toString(atlasId);
-    {
-      // Atlas clear pass
-      Ogre::CompositorTargetDef *targetDef =
-          shadowNodeDef->addTargetPass(texName);
-      targetDef->setNumPasses(1u);
-
-      Ogre::CompositorPassDef *passDef = targetDef->addPass(Ogre::PASS_CLEAR);
-      Ogre::CompositorPassClearDef *passClear =
-          static_cast<Ogre::CompositorPassClearDef *>(passDef);
-      passClear->mColourValue = Ogre::ColourValue::White;
-      passClear->mDepthValue = 1.0f;
-    }
-
-    // Pass scene for directional and spot lights first
-    size_t shadowMapIdx = 0;
-    itor = _shadowParams.begin();
-    while (itor != end)
-    {
-      const Ogre::ShadowNodeHelper::ShadowParam &shadowParam = *itor;
-      const size_t numSplits = shadowParam.technique == Ogre::SHADOWMAP_PSSM ?
-          shadowParam.numPssmSplits : 1u;
-      if (shadowParam.atlasId == atlasId &&
-          shadowParam.supportedLightTypes & spotAndDirMask)
-      {
-        size_t currentShadowMapIdx = shadowMapIdx;
-        for (size_t i = 0; i < numSplits; ++i)
-        {
-          Ogre::CompositorTargetDef *targetDef =
-              shadowNodeDef->addTargetPass(texName);
-          targetDef->setShadowMapSupportedLightTypes(
-              shadowParam.supportedLightTypes & spotAndDirMask);
-          targetDef->setNumPasses(1u);
-
-          Ogre::CompositorPassDef *passDef =
-              targetDef->addPass(Ogre::PASS_SCENE);
-          Ogre::CompositorPassSceneDef *passScene =
-              static_cast<Ogre::CompositorPassSceneDef *>(passDef);
-
-          passScene->mShadowMapIdx = currentShadowMapIdx + i;
-          passScene->mIncludeOverlays = false;
-        }
-      }
-      shadowMapIdx += numSplits;
-      ++itor;
-    }
-
-    // Pass scene for point lights last
-    shadowMapIdx = 0;
-    itor = _shadowParams.begin();
-    while (itor != end)
-    {
-      const Ogre::ShadowNodeHelper::ShadowParam &shadowParam = *itor;
-      if (shadowParam.atlasId == atlasId &&
-          shadowParam.supportedLightTypes & pointMask)
-      {
-        // Render to cubemap, each face clear + render
-        for (Ogre::uint32 i = 0; i < 6u; ++i)
-        {
-          Ogre::CompositorTargetDef *targetDef =
-              shadowNodeDef->addTargetPass("tmpCubemap", i);
-          targetDef->setNumPasses(2u);
-          targetDef->setShadowMapSupportedLightTypes(
-              shadowParam.supportedLightTypes & pointMask);
-          {
-            // Clear pass
-            Ogre::CompositorPassDef *passDef =
-                targetDef->addPass(Ogre::PASS_CLEAR);
-            Ogre::CompositorPassClearDef *passClear =
-                static_cast<Ogre::CompositorPassClearDef *>(passDef);
-            passClear->mColourValue = Ogre::ColourValue::White;
-            passClear->mDepthValue = 1.0f;
-            passClear->mShadowMapIdx = shadowMapIdx;
-          }
-
-          {
-            // Scene pass
-            Ogre::CompositorPassDef *passDef =
-                targetDef->addPass(Ogre::PASS_SCENE);
-            Ogre::CompositorPassSceneDef *passScene =
-                static_cast<Ogre::CompositorPassSceneDef *>(passDef);
-            passScene->mCameraCubemapReorient = true;
-            passScene->mShadowMapIdx = shadowMapIdx;
-            passScene->mIncludeOverlays = false;
-          }
-        }
-
-        // Copy to the atlas using a pass quad
-        // (Cubemap -> DPSM / Dual Paraboloid).
-        Ogre::CompositorTargetDef *targetDef =
-            shadowNodeDef->addTargetPass(texName);
-        targetDef->setShadowMapSupportedLightTypes(
-            shadowParam.supportedLightTypes & pointMask);
-        targetDef->setNumPasses(1u);
-        Ogre::CompositorPassDef *passDef = targetDef->addPass(Ogre::PASS_QUAD);
-        Ogre::CompositorPassQuadDef *passQuad =
-            static_cast<Ogre::CompositorPassQuadDef *>(passDef);
-        passQuad->mMaterialIsHlms = false;
-        passQuad->mMaterialName = "Ogre/DPSM/CubeToDpsm";
-        passQuad->addQuadTextureSource(0, "tmpCubemap", 0);
-        passQuad->mShadowMapIdx = shadowMapIdx;
-      }
-      const size_t numSplits = shadowParam.technique ==
-          Ogre::SHADOWMAP_PSSM ? shadowParam.numPssmSplits : 1u;
-      shadowMapIdx += numSplits;
-      ++itor;
-    }
   }
 }
 
@@ -1019,6 +818,16 @@ void Ogre2RenderTarget::SetMaterial(MaterialPtr _material)
 {
   this->material = _material;
 
+  // Have to rebuild the target so there is something to apply
+  // the applicator to
+  this->targetDirty = true;
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::SetShadowsNodeDefDirty()
+{
+  this->DestroyCompositor();
+
   // Have to rebuild the target so there is something to apply the applicator to
   this->targetDirty = true;
 }
@@ -1033,18 +842,20 @@ void Ogre2RenderTarget::RebuildMaterial()
     Ogre::MaterialPtr matPtr = ogreMaterial->Material();
 
     Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
-    Ogre::RenderTarget *target = this->RenderTarget();
     this->materialApplicator.reset(new Ogre2RenderTargetMaterial(
-        sceneMgr, target, matPtr.get()));
+        sceneMgr, this->ogreCamera, matPtr.get()));
   }
 }
 
 //////////////////////////////////////////////////
 // Ogre2RenderTexture
 //////////////////////////////////////////////////
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 Ogre2RenderTexture::Ogre2RenderTexture()
 {
 }
+#pragma GCC diagnostic pop
 
 //////////////////////////////////////////////////
 Ogre2RenderTexture::~Ogre2RenderTexture()
@@ -1058,13 +869,6 @@ void Ogre2RenderTexture::Destroy()
 }
 
 //////////////////////////////////////////////////
-Ogre::RenderTarget *Ogre2RenderTexture::RenderTarget() const
-{
-  return this->ogreTexture->getBuffer()->getRenderTarget();
-}
-
-
-//////////////////////////////////////////////////
 void Ogre2RenderTexture::RebuildTarget()
 {
   this->DestroyTarget();
@@ -1074,64 +878,19 @@ void Ogre2RenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::DestroyTarget()
 {
-  if (nullptr == this->ogreTexture)
-    return;
-
-  auto &manager = Ogre::TextureManager::getSingleton();
-  manager.unload(this->ogreTexture->getName());
-  manager.remove(this->ogreTexture->getName());
-
-  // TODO(anyone) there is memory leak when a render texture is destroyed.
-  // The RenderSystem::_cleanupDepthBuffers method used in ogre1 does not
-  // seem to work in ogre2
-
-  this->ogreTexture = nullptr;
+  Ogre2RenderTarget::DestroyTargetImpl();
 }
 
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::BuildTarget()
 {
-  Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
-  Ogre::PixelFormat ogreFormat = Ogre2Conversions::Convert(this->format);
-
-  // check if target fsaa is supported
-  unsigned int fsaa = 0;
-  std::vector<unsigned int> fsaaLevels =
-      Ogre2RenderEngine::Instance()->FSAALevels();
-  unsigned int targetFSAA = this->antiAliasing;
-  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
-  if (it != fsaaLevels.end())
-  {
-    fsaa = targetFSAA;
-  }
-  else
-  {
-    // output warning but only do it once
-    static bool ogre2FSAAWarn = false;
-    if (ogre2FSAAWarn)
-    {
-      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
-              << "is not supported. Setting to 0" << std::endl;
-      ogre2FSAAWarn = true;
-    }
-  }
-
-  // Ogre 2 PBS expects gamma correction to be enabled
-  this->ogreTexture = (manager.createManual(this->name, "General",
-      Ogre::TEX_TYPE_2D, this->width, this->height, 0, ogreFormat,
-      Ogre::TU_RENDERTARGET, 0, true, fsaa)).get();
+  Ogre2RenderTarget::BuildTargetImpl();
 }
 
 //////////////////////////////////////////////////
 unsigned int Ogre2RenderTexture::GLId() const
 {
-  if (!this->ogreTexture)
-    return 0;
-
-  GLuint texId;
-  this->ogreTexture->getCustomAttribute("GLID", &texId);
-
-  return static_cast<unsigned int>(texId);
+  return Ogre2RenderTarget::GLIdImpl();
 }
 
 //////////////////////////////////////////////////
@@ -1147,6 +906,12 @@ void Ogre2RenderTexture::PostRender()
 }
 
 //////////////////////////////////////////////////
+Ogre::TextureGpu *Ogre2RenderTexture::RenderTarget() const
+{
+  return Ogre2RenderTarget::RenderTargetImpl();
+}
+
+//////////////////////////////////////////////////
 // Ogre2RenderWindow
 //////////////////////////////////////////////////
 Ogre2RenderWindow::Ogre2RenderWindow()
@@ -1159,7 +924,13 @@ Ogre2RenderWindow::~Ogre2RenderWindow()
 }
 
 //////////////////////////////////////////////////
-Ogre::RenderTarget *Ogre2RenderWindow::RenderTarget() const
+bool Ogre2RenderWindow::IsRenderWindow() const
+{
+  return true;
+}
+
+//////////////////////////////////////////////////
+Ogre::TextureGpu *Ogre2RenderWindow::RenderTarget() const
 {
   return this->ogreRenderWindow;
 }
@@ -1179,9 +950,10 @@ void Ogre2RenderWindow::RebuildTarget()
   if (!this->ogreRenderWindow)
     this->BuildTarget();
 
-  Ogre::RenderWindow *window =
-      dynamic_cast<Ogre::RenderWindow *>(this->ogreRenderWindow);
-  window->resize(this->width, this->height);
+  Ogre::Window *window =
+      dynamic_cast<Ogre::Window *>(this->ogreRenderWindow);
+  window->requestResolution(this->width, this->height);
+  window->getTexture()->setResolution(this->width, this->height);
   window->windowMovedOrResized();
 }
 
@@ -1189,12 +961,11 @@ void Ogre2RenderWindow::RebuildTarget()
 void Ogre2RenderWindow::BuildTarget()
 {
   auto engine = Ogre2RenderEngine::Instance();
-  std::string renderTargetName =
-      engine->CreateRenderWindow(this->handle,
-          this->width,
-          this->height,
-          this->ratio,
-          this->antiAliasing);
-  this->ogreRenderWindow =
-      engine->OgreRoot()->getRenderTarget(renderTargetName);
+  engine->CreateRenderWindow(this->handle,
+      this->width,
+      this->height,
+      this->ratio,
+      this->antiAliasing);
+
+  this->ogreRenderWindow = engine->OgreWindow()->getTexture();
 }

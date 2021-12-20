@@ -66,6 +66,9 @@ OrbitViewController::~OrbitViewController()
 void OrbitViewController::SetCamera(const CameraPtr &_camera)
 {
   this->dataPtr->camera = _camera;
+  if (!this->dataPtr->camera)
+    return;
+  this->dataPtr->camera->SetProjectionType(CPT_PERSPECTIVE);
 }
 
 //////////////////////////////////////////////////
@@ -81,7 +84,7 @@ void OrbitViewController::SetTarget(const math::Vector3d &_target)
 }
 
 //////////////////////////////////////////////////
-math::Vector3d OrbitViewController::Target() const
+const math::Vector3d &OrbitViewController::Target() const
 {
   return this->dataPtr->target;
 }

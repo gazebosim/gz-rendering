@@ -216,7 +216,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
                     fullPath);
 
               bool matPtrNotNull;
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
               matPtrNotNull = !matPtr.isNull();
 #else
               matPtrNotNull = matPtr != nullptr;
@@ -425,20 +425,17 @@ void OgreRenderEngine::LoadPlugins()
     std::vector<std::string>::iterator piter;
 
 #ifdef __APPLE__
-    std::string prefix = "lib";
     std::string extension = ".dylib";
 #elif _WIN32
-    std::string prefix = "";
     std::string extension = ".dll";
 #else
-    std::string prefix = "";
     std::string extension = ".so";
 #endif
 
-    plugins.push_back(path+"/"+prefix+"RenderSystem_GL");
-    plugins.push_back(path+"/"+prefix+"Plugin_ParticleFX");
-    plugins.push_back(path+"/"+prefix+"Plugin_BSPSceneManager");
-    plugins.push_back(path+"/"+prefix+"Plugin_OctreeSceneManager");
+    plugins.push_back(path+"/RenderSystem_GL");
+    plugins.push_back(path+"/Plugin_ParticleFX");
+    plugins.push_back(path+"/Plugin_BSPSceneManager");
+    plugins.push_back(path+"/Plugin_OctreeSceneManager");
 
 #ifdef HAVE_OCULUS
     plugins.push_back(path+"/Plugin_CgProgramManager");
@@ -652,9 +649,6 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
   // Hide window if dimensions are less than or equal to one.
   params["border"] = "none";
 
-  std::ostringstream stream;
-  stream << "OgreWindow(0)" << "_" << _handle;
-
   // Needed for retina displays
   params["contentScalingFactor"] = std::to_string(_ratio);
 
@@ -664,9 +658,12 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     params["currentGLContext"] = "true";
   }
 
+  std::ostringstream stream;
   int attempts = 0;
-  while (window == nullptr && (attempts++) < 10)
+  while (window == nullptr && attempts < 10)
   {
+    stream.str("");
+    stream << "OgreWindow(" << attempts << ")" << "_" << _handle;
     try
     {
       window = this->ogreRoot->createRenderWindow(
@@ -678,6 +675,7 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
              << "]. Exception [" << _e.what() << "]" << std::endl;
       window = nullptr;
     }
+    attempts++;
   }
 
   if (attempts >= 10)
@@ -727,7 +725,7 @@ void OgreRenderEngine::CheckCapabilities()
   bool hasVertexPrograms =
     capabilities->hasCapability(Ogre::RSC_VERTEX_PROGRAM);
 
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
   bool hasFBO =
     capabilities->hasCapability(Ogre::RSC_FBO);
 #else

@@ -220,8 +220,8 @@ namespace ignition
       public: virtual std::string Texture() const = 0;
 
       /// \brief Set the material texture
-      /// \param[in] _name URI of the new texture file
-      public: virtual void SetTexture(const std::string &_name) = 0;
+      /// \param[in] _texture URI of the new texture file
+      public: virtual void SetTexture(const std::string &_texture) = 0;
 
       /// \brief Removes any texture mapped to this material
       public: virtual void ClearTexture() = 0;
@@ -235,8 +235,8 @@ namespace ignition
       public: virtual std::string NormalMap() const = 0;
 
       /// \brief Set the material normal map
-      /// \param[in] _name URI of the new normal map file
-      public: virtual void SetNormalMap(const std::string &_name) = 0;
+      /// \param[in] _normalMap URI of the new normal map file
+      public: virtual void SetNormalMap(const std::string &_normalMap) = 0;
 
       /// \brief Removes any normal map mapped to this material
       public: virtual void ClearNormalMap() = 0;
@@ -250,8 +250,9 @@ namespace ignition
       public: virtual std::string RoughnessMap() const = 0;
 
       /// \brief Set the material roughness map
-      /// \param[in] _name URI of the new roughness map file
-      public: virtual void SetRoughnessMap(const std::string &_name) = 0;
+      /// \param[in] _roughnessMap URI of the new roughness map file
+      public: virtual void SetRoughnessMap(
+        const std::string &_roughnessMap) = 0;
 
       /// \brief Removes any roughness map mapped to this material
       public: virtual void ClearRoughnessMap() = 0;
@@ -265,8 +266,9 @@ namespace ignition
       public: virtual std::string MetalnessMap() const = 0;
 
       /// \brief Set the material metalness map
-      /// \param[in] _name URI of the new metalness map file
-      public: virtual void SetMetalnessMap(const std::string &_name) = 0;
+      /// \param[in] _metalnessMap URI of the new metalness map file
+      public: virtual void SetMetalnessMap(
+        const std::string &_metalnessMap) = 0;
 
       /// \brief Removes any metalness map mapped to this material
       public: virtual void ClearMetalnessMap() = 0;
@@ -280,8 +282,9 @@ namespace ignition
       public: virtual std::string EnvironmentMap() const = 0;
 
       /// \brief Set the material environment map
-      /// \param[in] _name URI of the new environment map file
-      public: virtual void SetEnvironmentMap(const std::string &_name) = 0;
+      /// \param[in] _metalnessMap URI of the new environment map file
+      public: virtual void SetEnvironmentMap(
+        const std::string &_metalnessMap) = 0;
 
       /// \brief Removes any environment map mapped to this material
       public: virtual void ClearEnvironmentMap() = 0;
@@ -295,8 +298,9 @@ namespace ignition
       public: virtual std::string EmissiveMap() const = 0;
 
       /// \brief Set the material emissive map
-      /// \param[in] _name URI of the new emissive map file
-      public: virtual void SetEmissiveMap(const std::string &_name) = 0;
+      /// \param[in] _emissiveMap URI of the new emissive map file
+      public: virtual void SetEmissiveMap(
+        const std::string &_emissiveMap) = 0;
 
       /// \brief Removes any emissive map mapped to this material
       public: virtual void ClearEmissiveMap() = 0;
@@ -314,9 +318,9 @@ namespace ignition
       public: virtual unsigned int LightMapTexCoordSet() const = 0;
 
       /// \brief Set the material light map
-      /// \param[in] _name URI of the new light map file
+      /// \param[in] _lightMap URI of the new light map file
       /// \param[in] _uvSet Texture coordinate set to use
-      public: virtual void SetLightMap(const std::string &_name,
+      public: virtual void SetLightMap(const std::string &_lightMap,
           unsigned int _uvSet = 0u) = 0;
 
       /// \brief Removes any light map mapped to this material

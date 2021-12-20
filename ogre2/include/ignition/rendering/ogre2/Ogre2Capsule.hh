@@ -23,7 +23,6 @@
 
 #include "ignition/rendering/base/BaseCapsule.hh"
 #include "ignition/rendering/ogre2/Ogre2Geometry.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 
 namespace Ogre
 {

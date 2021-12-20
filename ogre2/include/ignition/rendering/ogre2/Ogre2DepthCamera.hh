@@ -28,7 +28,6 @@
 #include <string>
 
 #include "ignition/rendering/base/BaseDepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 #include "ignition/common/Event.hh"
@@ -73,6 +72,10 @@ namespace ignition
       /// \brief Create a texture which will hold the depth data
       /// \brief Set up 1st pass material, texture, and compositor
       public: virtual void CreateDepthTexture() override;
+
+      /// \brief Creates an Ogre Workspace instance. Assumes the definition
+      /// already and the depth texture have already been created
+      private: void CreateWorkspaceInstance();
 
       // Documentation inherited
       public: virtual void PreRender() override;
@@ -120,6 +123,9 @@ namespace ignition
       public: double FarClipPlane() const override;
 
       // Documentation inherited.
+      public: void SetShadowsDirty() override;
+
+      // Documentation inherited.
       public: void AddRenderPass(const RenderPassPtr &_pass) override;
 
       /// \brief Get a pointer to the render target.
@@ -134,6 +140,13 @@ namespace ignition
 
       /// \brief Create the camera.
       protected: void CreateCamera();
+
+      /// \brief Notifies us that the shadow node definition is about to be
+      /// updated. This means our compositor workspace must be destroyed
+      /// because the shadow node definition it's using will become a
+      /// dangling pointer otherwise
+      /// \sa SetShadowsDirty
+      private: void SetShadowsNodeDefDirty();
 
       /// \brief Pointer to the ogre camera
       protected: Ogre::Camera *ogreCamera;

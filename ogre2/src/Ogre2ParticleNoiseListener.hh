@@ -24,36 +24,39 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Helper class for updating particle noise params
-    class Ogre2ParticleNoiseListener : public Ogre::RenderTargetListener
+    class Ogre2ParticleNoiseListener : public Ogre::Camera::Listener
     {
       /// \brief constructor
       /// \param[in] _scene the scene manager responsible for rendering
       public: Ogre2ParticleNoiseListener(Ogre2ScenePtr _scene,
-          Ogre::Camera *_ogreCamera, Ogre::MaterialPtr _ogreMaterial);
+        Ogre::MaterialPtr _ogreMaterial);
 
       /// \brief destructor
       public: ~Ogre2ParticleNoiseListener() = default;
 
-      /// \brief Callback when a render target is about to be rendered
-      /// \param[in] _evt Ogre render target event containing information about
-      /// the source render target.
-      private: virtual void preRenderTargetUpdate(
-          const Ogre::RenderTargetEvent &_evt) override;
+      /// \brief Callback when a camera is about to be rendered
+      /// \param[in] _cam Ogre render camara which is about to render.
+      private: virtual void cameraPreRenderScene(
+          Ogre::Camera *_cam) override;
 
       /// \brief Pointer to scene
       private: Ogre2ScenePtr scene;
 
-      /// \brief Pointer to camera
-      private: Ogre::Camera *ogreCamera = nullptr;
-
       /// \brief Pointer to ogre matieral with shaders for applying particle
       /// scattering effect to sensors
       private: Ogre::MaterialPtr ogreMaterial;
+
+      /// \brief Particle scatter ratio. This is used to determine the ratio of
+      /// particles that will be detected by sensors. Increasing the ratio
+      /// increases the scatter of the particles, which means there is a higher
+      /// chance of particles reflecting and interfering with depth sensing,
+      /// making the emitter appear more dense. Decreasing the ratio decreases
+      /// the scatter of the particles, making it appear less dense. This value
+      /// should be > 0.
+      private: float particleScatterRatio = 0.65f;
     };
     }
   }
 }
 
 #endif
-
-

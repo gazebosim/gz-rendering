@@ -21,6 +21,7 @@
 
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 namespace Ogre
@@ -49,7 +50,7 @@ namespace ignition
       public: virtual ~Ogre2Camera();
 
       // Documentation inherited.
-      public: virtual void SetHFOV(const math::Angle &_angle) override;
+      public: virtual void SetHFOV(const math::Angle &_hfov) override;
 
       // Documentation inherited.
       public: virtual double AspectRatio() const override;
@@ -91,7 +92,15 @@ namespace ignition
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
       // Documentation inherited.
+      public: virtual void SetProjectionMatrix(
+          const math::Matrix4d &_matrix) override;
+
+      // Documentation inherited.
       public: virtual math::Matrix4d ViewMatrix() const override;
+
+      // Documentation inherited.
+      public: virtual void SetProjectionType(CameraProjectionType _type)
+          override;
 
       // Documentation inherited
       public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
@@ -106,12 +115,19 @@ namespace ignition
       public: virtual unsigned int RenderTextureGLId() const override;
 
       // Documentation inherited.
+      public: void SetShadowsDirty() override;
+
+      // Documentation inherited.
       public: virtual void Destroy() override;
 
       public: Ogre::Camera *OgreCamera() const;
 
       // Documentation inherited.
       public: virtual void SetVisibilityMask(uint32_t _mask) override;
+
+      /// \brief Get the selection buffer object
+      /// \return the selection buffer object
+      public: Ogre2SelectionBuffer *SelectionBuffer() const;
 
       // Documentation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;
@@ -128,6 +144,13 @@ namespace ignition
 
       /// \brief Create internal camera object
       private: void CreateCamera();
+
+      /// \brief Notifies us that the shadow node definition is about to be
+      /// updated. This means our compositor workspace must be destroyed
+      /// because the shadow node definition it's using will become a
+      /// dangling pointer otherwise
+      /// \sa SetShadowsDirty
+      private: void SetShadowsNodeDefDirty();
 
       /// \brief Pointer to ogre camera object
       protected: Ogre::Camera *ogreCamera = nullptr;

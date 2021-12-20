@@ -9,10 +9,10 @@
 
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/main/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/default)
-Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-bionic-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/job/ign_rendering-ci-win/badge/icon)](https://build.osrfoundation.org/job/ign_rendering-ci-win/)
+Test coverage | [![codecov](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/ign-rendering6/graph/badge.svg)](https://codecov.io/gh/ignitionrobotics/ign-rendering/branch/ign-rendering6)
+Ubuntu Bionic | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering6-bionic-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering6-bionic-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-ign-rendering6-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-ign-rendering6-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/job/ign_rendering-ign-6-win/badge/icon)](https://build.osrfoundation.org/job/ign_rendering-ign-6-win/)
 
 Ignition Rendering is a C++ library designed to provide an abstraction
 for different rendering engines. It offers unified APIs for creating
@@ -41,7 +41,7 @@ of libraries designed to rapidly develop robot applications.
 
 # Features
 
-* Support for rendering engines including OGRE and OptiX
+* Support for rendering engines including OGRE and OptiX (experimental)
 * Plugin-based architecture. Mulitple rendering engine plugins can be loaded at run time.
 * Object-oriented scene management.
 

@@ -50,7 +50,8 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetSkeletonLocalTransforms(
-                      const std::map<std::string, math::Matrix4d> &) override;
+                      const std::map<std::string, math::Matrix4d> &_tfs)
+                      override;
 
       // Documentation inherited.
       public: virtual std::unordered_map<std::string, float> SkeletonWeights()
@@ -58,7 +59,8 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetSkeletonWeights(
-                      const std::unordered_map<std::string, float> &) override;
+                      const std::unordered_map<std::string, float> &_weights)
+                      override;
 
       // Documentation inherited.
       public: virtual void SetSkeletonAnimationEnabled(const std::string &_name,
@@ -88,13 +90,24 @@ namespace ignition
       // Documentation inherited.
       public: virtual MaterialPtr Material() const override;
 
+      // Documentation inherited.
       public: virtual void SetMaterial(const std::string &_name,
                   bool _unique = true) override;
 
+      // Documentation inherited.
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true) override;
 
       public: virtual void PreRender() override;
+
+      // Documentation inherited.
+      public: virtual GeometryPtr Clone() const override;
+
+      // Documentation inherited.
+      public: void SetDescriptor(const MeshDescriptor &_desc) override;
+
+      // Documentation inherited.
+      public: const MeshDescriptor &Descriptor() const override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
@@ -107,6 +120,9 @@ namespace ignition
 
       /// \brief Pointer to currently assigned material
       protected: MaterialPtr material;
+
+      /// \brief MeshDescriptor for this mesh
+      protected: MeshDescriptor meshDescriptor;
     };
 
     //////////////////////////////////////////////////
@@ -313,6 +329,61 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
+    GeometryPtr BaseMesh<T>::Clone() const
+    {
+      if (!this->Scene())
+      {
+        ignerr << "Cloning a mesh failed because the mesh to be "
+          << "cloned does not belong to a scene.\n";
+        return nullptr;
+      }
+      else if (this->meshDescriptor.meshName.empty())
+      {
+        ignerr << "Cloning a geometry failed because the name of the mesh is "
+          << "missing.\n";
+        return nullptr;
+      }
+
+      auto result = this->Scene()->CreateMesh(this->meshDescriptor);
+      if (result)
+      {
+        if (this->Material())
+        {
+          // this call will set the material for the mesh and its submeshes
+          result->SetMaterial(this->Material());
+        }
+        else
+        {
+          // if the mesh doesn't have a material, clone any existing submesh
+          // materials
+          for (unsigned int i = 0; i < this->SubMeshCount(); ++i)
+          {
+            auto existingSubMeshMaterial = this->SubMeshByIndex(i)->Material();
+            if (existingSubMeshMaterial)
+              result->SubMeshByIndex(i)->SetMaterial(existingSubMeshMaterial);
+          }
+        }
+      }
+
+      return result;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    const MeshDescriptor &BaseMesh<T>::Descriptor() const
+    {
+      return this->meshDescriptor;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMesh<T>::SetDescriptor(const MeshDescriptor &_desc)
+    {
+      this->meshDescriptor = _desc;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMesh<T>::Destroy()
     {
       T::Destroy();
@@ -320,6 +391,7 @@ namespace ignition
       if (this->material && this->ownsMaterial)
         this->Scene()->DestroyMaterial(this->material);
       this->material.reset();
+      this->meshDescriptor = MeshDescriptor();
     }
 
     //////////////////////////////////////////////////

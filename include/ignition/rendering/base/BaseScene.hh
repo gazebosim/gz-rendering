@@ -265,9 +265,31 @@ namespace ignition
       public: virtual PointLightPtr CreatePointLight(unsigned int _id,
                   const std::string &_name) override;
 
+      /// \brief Implementation for creating CoM visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of CoM visual
+      /// \return Pointer to a CoM visual object
+      protected: virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
+      /// \brief Implementation for creating Inertia visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of inertia visual
+      /// \return Pointer to a inertia visual object
+      protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(
+                     unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Implementation for creating Joint visual.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of Joint visual
+      /// \return Pointer to a joint visual object
+      protected: virtual JointVisualPtr CreateJointVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
       /// \brief Implementation for creating Light visual.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of light visual
+      /// \return Pointer to a light visual object
       protected: virtual LightVisualPtr CreateLightVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
@@ -317,6 +339,36 @@ namespace ignition
                   const unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera() override;
+
+      // Documentation inherited.
+      public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera(
+        const unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera(
+        const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera(
+        const unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera() override;
+
+      // Documentation inherited.
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera(
+        const unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera(
+        const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual SegmentationCameraPtr CreateSegmentationCamera(
+        const unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual GpuRaysPtr CreateGpuRays() override;
 
       // Documentation inherited.
@@ -358,6 +410,50 @@ namespace ignition
                       override;
 
       public: virtual AxisVisualPtr CreateAxisVisual(unsigned int _id,
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual COMVisualPtr CreateCOMVisual() override;
+
+      // Documentation inherited
+      public: virtual COMVisualPtr CreateCOMVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual COMVisualPtr CreateCOMVisual(const std::string &_name)
+                      override;
+
+      // Documentation inherited
+      public: virtual COMVisualPtr CreateCOMVisual(unsigned int _id,
+                  const std::string &_name) override;
+
+      public: virtual InertiaVisualPtr CreateInertiaVisual() override;
+
+      // Documentation inherited
+      public: virtual InertiaVisualPtr CreateInertiaVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual InertiaVisualPtr CreateInertiaVisual(
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual InertiaVisualPtr CreateInertiaVisual(unsigned int _id,
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual() override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual(unsigned int _id)
+                      override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual(
+                  const std::string &_name) override;
+
+      // Documentation inherited
+      public: virtual JointVisualPtr CreateJointVisual(unsigned int _id,
                   const std::string &_name) override;
 
       // Documentation inherited
@@ -481,6 +577,19 @@ namespace ignition
 
       public: virtual void Destroy() override;
 
+      // Documentation inherited.
+      public: virtual void PostRender() override;
+
+      // Documentation inherited.
+      public: virtual void SetCameraPassCountPerGpuFlush(
+            uint8_t _numPass) override;
+
+      // Documentation inherited.
+      public: virtual uint8_t CameraPassCountPerGpuFlush() const override;
+
+      // Documentation inherited.
+      public: virtual bool LegacyAutoGpuFlush() const override;
+
       protected: virtual unsigned int CreateObjectId();
 
       protected: virtual std::string CreateObjectName(unsigned int _id,
@@ -511,19 +620,55 @@ namespace ignition
       /// \param[in] _id Unique id
       /// \param[in] _name Name of thermal camera
       protected: virtual ThermalCameraPtr CreateThermalCameraImpl(
-                     unsigned int /*_id*/, const std::string &/*_name*/)
+                     unsigned int _id, const std::string &_name)
                  {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
                    ignerr << "Thermal camera not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return ThermalCameraPtr();
                  }
 
+      /// \brief Implementation for creating a BoundingBox camera.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of BoundingBox camera
+      /// \return Pointer to BoundingBox camera
+      protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
+                     unsigned int _id, const std::string &_name)
+                 {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
+                   ignerr << "BoundingBox camera not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return BoundingBoxCameraPtr();
+                 }
+
+      /// \brief Implementation for creating a segmentation camera.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of segmentation camera
+      /// \return Pointer to segmentation camera
+      protected: virtual SegmentationCameraPtr CreateSegmentationCameraImpl(
+                     unsigned int _id,
+                     const std::string &_name)
+                 {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
+                   ignerr << "Segmentation camera not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return SegmentationCameraPtr();
+                 }
+
       /// \brief Implementation for creating GpuRays sensor.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of GpuRays sensor
-      protected: virtual GpuRaysPtr CreateGpuRaysImpl(unsigned int /*_id*/,
-                     const std::string & /*_name*/)
+      protected: virtual GpuRaysPtr CreateGpuRaysImpl(unsigned int _id,
+                     const std::string & _name)
                  {
+                   (void)_id;
+                   (void)_name;
                    ignerr << "GpuRays not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return GpuRaysPtr();
@@ -541,9 +686,11 @@ namespace ignition
       /// \brief Implementation for creating a GizmoVisual.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of GizmoVisual
-      protected: virtual GizmoVisualPtr CreateGizmoVisualImpl(unsigned int,
-                     const std::string &)
+      protected: virtual GizmoVisualPtr CreateGizmoVisualImpl(unsigned int _id,
+                     const std::string &_name)
                  {
+                   (void)_id;
+                   (void)_name;
                    ignerr << "GizmoVisual not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return GizmoVisualPtr();
@@ -641,8 +788,10 @@ namespace ignition
       /// \param[in] _name Name of ParticleEmitter.
       /// \return Pointer to the created particle emitter.
       protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
-                     unsigned int, const std::string &)
+                     unsigned int _id, const std::string &_name)
                  {
+                   (void)_id;
+                   (void)_name;
                    ignerr << "ParticleEmitter not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return ParticleEmitterPtr();

@@ -16,10 +16,21 @@
 */
 
 #include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2MaterialSwitcher.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/RenderTypes.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreItem.h>
+#include <OgreMaterialManager.h>
+#include <OgrePass.h>
+#include <OgreSceneManager.h>
+#include <OgreTechnique.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 using namespace ignition;
 using namespace rendering;
@@ -63,8 +74,8 @@ Ogre2MaterialSwitcher::~Ogre2MaterialSwitcher()
 }
 
 ////////////////////////////////////////////////
-void Ogre2MaterialSwitcher::preRenderTargetUpdate(
-    const Ogre::RenderTargetEvent &/*_evt*/)
+void Ogre2MaterialSwitcher::cameraPreRenderScene(
+    Ogre::Camera * /*_evt*/)
 {
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
@@ -104,8 +115,8 @@ void Ogre2MaterialSwitcher::preRenderTargetUpdate(
 }
 
 /////////////////////////////////////////////////
-void Ogre2MaterialSwitcher::postRenderTargetUpdate(
-    const Ogre::RenderTargetEvent &/*_evt*/)
+void Ogre2MaterialSwitcher::cameraPostRenderScene(
+    Ogre::Camera * /*_evt*/)
 {
   // restore item to use hlms material
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(

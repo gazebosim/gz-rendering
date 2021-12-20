@@ -51,6 +51,11 @@ TEST(PixelFormatTest, PixelUtil)
   EXPECT_EQ(2u, PixelUtil::BytesPerPixel(format));
   EXPECT_EQ(2u, PixelUtil::BytesPerChannel(format));
   EXPECT_EQ(2048u, PixelUtil::MemorySize(format, 32, 32));
+
+  format = PF_R8G8B8A8;
+  EXPECT_EQ(4u, PixelUtil::BytesPerPixel(format));
+  EXPECT_EQ(1u, PixelUtil::BytesPerChannel(format));
+  EXPECT_EQ(4096u, PixelUtil::MemorySize(format, 32, 32));
 }
 
 int main(int argc, char **argv)

@@ -17,6 +17,8 @@
 
 #include <string>
 
+#include <ignition/math/Rand.hh>
+
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
@@ -30,17 +32,15 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 Ogre2ParticleNoiseListener::Ogre2ParticleNoiseListener(
-    Ogre2ScenePtr _scene, Ogre::Camera *_ogreCamera,
-    Ogre::MaterialPtr _ogreMaterial)
+    Ogre2ScenePtr _scene, Ogre::MaterialPtr _ogreMaterial)
 {
   this->scene = _scene;
-  this->ogreCamera = _ogreCamera;
   this->ogreMaterial = _ogreMaterial;
 }
 
 //////////////////////////////////////////////////
-void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
-    const Ogre::RenderTargetEvent & /*_evt*/)
+void Ogre2ParticleNoiseListener::cameraPreRenderScene(
+    Ogre::Camera * _cam)
 {
   // the code here is responsible for setting the depth variation of readings
   // returned by sensor in areas where particles are. It does so by adding
@@ -75,7 +75,7 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
         aabb.getMaximum());
 
 
-    if (this->ogreCamera->isVisible(box))
+    if (_cam->isVisible(box))
     {
       // set stddev to half of size of particle emitter aabb
       auto hs = box.getHalfSize() * 0.5;
@@ -86,6 +86,8 @@ void Ogre2ParticleNoiseListener::preRenderTargetUpdate(
           pass->getFragmentProgramParameters();
       psParams->setNamedConstant("particleStddev",
           static_cast<float>(particleStddev));
+      psParams->setNamedConstant("rnd",
+          static_cast<float>(ignition::math::Rand::DblUniform(0.0, 1.0)));
 
       // get particle scatter ratio value from particle emitter user data
       // and pass that to the shaders

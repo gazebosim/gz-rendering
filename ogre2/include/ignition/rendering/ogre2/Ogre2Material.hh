@@ -22,7 +22,21 @@
 
 #include "ignition/rendering/base/BaseMaterial.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <Hlms/Pbs/OgreHlmsPbsPrerequisites.h>
+#include <OgreMaterial.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
+namespace Ogre
+{
+  class HlmsPbsDatablock;
+  class HlmsUnlitDatablock;
+}  // namespace Ogre
 
 namespace ignition
 {
@@ -93,7 +107,7 @@ namespace ignition
       public: virtual std::string Texture() const override;
 
       // Documentation inherited
-      public: virtual void SetTexture(const std::string &_name) override;
+      public: virtual void SetTexture(const std::string &_texture) override;
 
       // Documentation inherited
       public: virtual void ClearTexture() override;
@@ -105,7 +119,7 @@ namespace ignition
       public: virtual std::string NormalMap() const override;
 
       // Documentation inherited
-      public: virtual void SetNormalMap(const std::string &_name) override;
+      public: virtual void SetNormalMap(const std::string &_normalMap) override;
 
       // Documentation inherited
       public: virtual void ClearNormalMap() override;
@@ -117,7 +131,8 @@ namespace ignition
       public: virtual std::string RoughnessMap() const override;
 
       // Documentation inherited
-      public: virtual void SetRoughnessMap(const std::string &_name) override;
+      public: virtual void SetRoughnessMap(
+        const std::string &_roughnessMap) override;
 
       // Documentation inherited
       public: virtual void ClearRoughnessMap() override;
@@ -129,7 +144,8 @@ namespace ignition
       public: virtual std::string MetalnessMap() const override;
 
       // Documentation inherited
-      public: virtual void SetMetalnessMap(const std::string &_name) override;
+      public: virtual void SetMetalnessMap(
+        const std::string &_metalnessMap) override;
 
       // Documentation inherited
       public: virtual void ClearMetalnessMap() override;
@@ -141,7 +157,8 @@ namespace ignition
       public: virtual std::string EnvironmentMap() const override;
 
       // Documentation inherited
-      public: virtual void SetEnvironmentMap(const std::string &_name) override;
+      public: virtual void SetEnvironmentMap(
+        const std::string &_metalnessMap) override;
 
       // Documentation inherited
       public: virtual void ClearEnvironmentMap() override;
@@ -156,7 +173,8 @@ namespace ignition
       public: virtual std::string EmissiveMap() const override;
 
       // Documentation inherited
-      public: virtual void SetEmissiveMap(const std::string &_name) override;
+      public: virtual void SetEmissiveMap(
+        const std::string &_emissiveMap) override;
 
       // Documentation inherited
       public: virtual void ClearEmissiveMap() override;
@@ -171,7 +189,7 @@ namespace ignition
       public: virtual unsigned int LightMapTexCoordSet() const override;
 
       // Documentation inherited
-      public: virtual void SetLightMap(const std::string &_name,
+      public: virtual void SetLightMap(const std::string &_lightMap,
           unsigned int _uvSet = 0u) override;
 
       // Documentation inherited
@@ -232,7 +250,7 @@ namespace ignition
 
       /// \brief Get a pointer to the ogre texture by name
       /// \return Ogre texture
-      protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
+      protected: virtual Ogre::TextureGpu *Texture(const std::string &_name);
 
       /// \brief Updates the material transparency in the engine,
       /// based on transparency and diffuse alpha values

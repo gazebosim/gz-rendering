@@ -133,7 +133,7 @@ namespace ignition
       public: virtual TextVerticalAlign VerticalAlignment() const = 0;
 
       /// \brief Set the baseline height of the text
-      /// \param[in] _height Baseline height
+      /// \param[in] _baseline Baseline height
       /// \sa Baseline()
       public: virtual void SetBaseline(const float _baseline) = 0;
 
@@ -143,7 +143,7 @@ namespace ignition
       public: virtual float Baseline() const = 0;
 
       /// \brief True = text always is displayed ontop.
-      /// \param[in] _show Set to true to render the text on top of
+      /// \param[in] _onTop Set to true to render the text on top of
       /// all other drawables.
       /// \sa ShowOnTop()
       public: virtual void SetShowOnTop(const bool _onTop) = 0;

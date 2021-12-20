@@ -15,13 +15,37 @@
  *
  */
 
+#ifdef __APPLE__
+  #define GL_SILENCE_DEPRECATION
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glext.h>
+#else
+#ifndef _WIN32
+  #include <GL/gl.h>
+#endif
+#endif
 
 #include <ignition/common/Console.hh>
+
+#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Geometry.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <OgreItem.h>
+#include <OgreMaterialManager.h>
+#include <OgreRoot.h>
+#include <OgreSceneNode.h>
+#include <OgreTechnique.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 class ignition::rendering::Ogre2LidarVisualPrivate
 {
@@ -55,6 +79,10 @@ class ignition::rendering::Ogre2LidarVisualPrivate
 
   /// \brief The visibility of the visual
   public: bool visible = true;
+
+  /// \brief Pointer to point cloud material.
+  /// Used when LidarVisualType = LVT_POINTS.
+  public: Ogre::MaterialPtr pointsMat;
 };
 
 using namespace ignition;
@@ -113,6 +141,7 @@ void Ogre2LidarVisual::Destroy()
   }
 
   this->dataPtr->lidarPoints.clear();
+  this->dataPtr->pointsMat.setNull();
 }
 
 //////////////////////////////////////////////////
@@ -125,6 +154,24 @@ void Ogre2LidarVisual::Init()
 //////////////////////////////////////////////////
 void Ogre2LidarVisual::Create()
 {
+  // enable GL_PROGRAM_POINT_SIZE so we can set gl_PointSize in vertex shader
+  auto engine = Ogre2RenderEngine::Instance();
+  std::string renderSystemName =
+      engine->OgreRoot()->getRenderSystem()->getFriendlyName();
+  if (renderSystemName.find("OpenGL") != std::string::npos)
+  {
+#ifdef __APPLE__
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+#else
+#ifndef _WIN32
+    glEnable(GL_PROGRAM_POINT_SIZE);
+#endif
+#endif
+  }
+  this->dataPtr->pointsMat =
+      Ogre::MaterialManager::getSingleton().getByName(
+      "PointCloudPoint");
+
   this->ClearPoints();
   this->dataPtr->receivedData = false;
 }
@@ -292,8 +339,11 @@ void Ogre2LidarVisual::Update()
                                     new Ogre2DynamicRenderable(this->Scene()));
 
         renderable->SetOperationType(MT_POINTS);
-        MaterialPtr mat = this->Scene()->Material("Lidar/BlueRay");
-        renderable->SetMaterial(mat, false);
+
+        // use low level programmable material so we can customize point size
+        Ogre::Item *item = dynamic_cast<Ogre::Item *>(renderable->OgreObject());
+        item->setCastShadows(false);
+        item->getSubItem(0)->setMaterial(this->dataPtr->pointsMat);
 
         this->ogreNode->attachObject(renderable->OgreObject());
         this->dataPtr->points.push_back(renderable);
@@ -431,6 +481,22 @@ void Ogre2LidarVisual::Update()
       this->dataPtr->points[j]->Update();
     }
     verticalAngle += this->verticalAngleStep;
+  }
+
+  if (this->dataPtr->lidarVisType == LidarVisualType::LVT_POINTS &&
+      !this->dataPtr->points.empty())
+  {
+    // point renderables use low level materials
+    // get the material and set size uniform variable
+    auto pass = this->dataPtr->pointsMat->getTechnique(0)->getPass(0);
+    auto vertParams = pass->getVertexProgramParameters();
+    vertParams->setNamedConstant("size", static_cast<Ogre::Real>(this->size));
+
+    // support setting color only from diffuse for now
+    MaterialPtr mat = this->Scene()->Material("Lidar/BlueRay");
+    auto fragParams = pass->getFragmentProgramParameters();
+    fragParams->setNamedConstant("color",
+        Ogre2Conversions::Convert(mat->Diffuse()));
   }
 
   // The newly created dynamic lines are having default visibility as true.

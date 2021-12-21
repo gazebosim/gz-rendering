@@ -74,10 +74,10 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
   public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
 
   /// \brief Custom PBS modifications
-  public: Ogre::Ogre2IgnHlmsPbs *ignHlmsPbs;
+  public: Ogre::Ogre2IgnHlmsPbs *ignHlmsPbs{nullptr};
 
   /// \brief Custom Unlit modifications
-  public: Ogre::Ogre2IgnHlmsUnlit *ignHlmsUnlit;
+  public: Ogre::Ogre2IgnHlmsUnlit *ignHlmsUnlit{nullptr};
 };
 
 using namespace ignition;

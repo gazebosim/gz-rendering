@@ -311,8 +311,7 @@ void Ogre2DynamicRenderable::UpdateBuffer()
 
   // fill the rest of the buffer with the position of the last vertex to avoid
   // the geometry connecting back to 0, 0, 0
-  if (vertexCount > 0 && vertexCount < this->dataPtr->vertexBufferCapacity &&
-      this->dataPtr->operationType != Ogre::OperationType::OT_POINT_LIST)
+  if (vertexCount > 0 && vertexCount < this->dataPtr->vertexBufferCapacity)
   {
     math::Vector3d lastVertex = this->dataPtr->vertices[vertexCount-1];
     for (unsigned int i = vertexCount; i < this->dataPtr->vertexBufferCapacity;
@@ -723,9 +722,8 @@ void Ogre2DynamicRenderable::GenerateNormals(Ogre::OperationType _opType,
 void Ogre2DynamicRenderable::GenerateColors(Ogre::OperationType _opType,
   const std::vector<math::Vector3d> &_vertices, float *_vbuffer)
 {
-  unsigned int vertexCount = _vertices.size();
   // Skip if colors haven't been setup per-vertex correctly.
-  if (vertexCount != this->dataPtr->colors.size())
+  if (_vertices.size() != this->dataPtr->colors.size())
     return;
 
   // Each vertex occupies 6 elements in the vbuffer float array. Normally,
@@ -741,9 +739,10 @@ void Ogre2DynamicRenderable::GenerateColors(Ogre::OperationType _opType,
   {
     case Ogre::OperationType::OT_POINT_LIST:
     {
-      for (unsigned int i = 0; i < vertexCount; ++i)
+      for (unsigned int i = 0; i < this->dataPtr->vertexBufferCapacity; ++i)
       {
-        auto color = this->dataPtr->colors[i];
+        math::Color color = i < this->dataPtr->colors.size() ?
+            this->dataPtr->colors[i] : this->dataPtr->colors.back();
 
         unsigned int idx = i * 6;
         _vbuffer[idx+3] = color.R();

@@ -1,6 +1,29 @@
 ## Ignition Rendering
 
-### Ignition Rendering 4.X
+### Ignition Rendering 4.9.1 (2021-12-20)
+
+1. Remove unused time var in material scripts
+    * [Pull request #485](https://github.com/ignitionrobotics/ign-rendering/pull/485)
+
+1. Fix logic on warning for ogre versions different than 1.9.x
+    * [Pull request #465](https://github.com/ignitionrobotics/ign-rendering/pull/465)
+    * [Pull request #411](https://github.com/ignitionrobotics/ign-rendering/pull/411)
+    * [Pull request #413](https://github.com/ignitionrobotics/ign-rendering/pull/413)
+
+1. Avoid symbol redefition to fix armel builds
+    * [Pull request #457](https://github.com/ignitionrobotics/ign-rendering/pull/457)
+
+1. Fix selection buffer material script
+    * [Pull request #456](https://github.com/ignitionrobotics/ign-rendering/pull/456)
+
+1. Fix compilation against Ogre 1.10.12
+    * [Pull request #390](https://github.com/ignitionrobotics/ign-rendering/pull/390)
+
+1. Ogre: Do not assume that ogre plugins have lib prefix on macOS
+    * [Pull request #454](https://github.com/ignitionrobotics/ign-rendering/pull/454)
+
+1. Fix ray query distance calculation
+    * [Pull request #438](https://github.com/ignitionrobotics/ign-rendering/pull/438)
 
 ### Ignition Rendering 4.9.0 (2021-09-15)
 

@@ -99,6 +99,7 @@ namespace Ogre
     /// \param[in] _casterPass see base class
     /// \param[in] _dualParaboloid see base class
     /// \param[in] _sceneManager see base class
+    /// \return Size in bytes of how bigger the buffer should be
     public: virtual uint32 getPassBufferSize(
         const Ogre::CompositorShadowNode *_shadowNode,
         bool _casterPass, bool _dualParaboloid,
@@ -108,9 +109,11 @@ namespace Ogre
     /// pieces activated in preparePassHash will need.
     ///
     /// Bytes written must not exceed what we informed in getPassBufferSize
-    /// \param _casterPass see base class
-    /// \param _sceneManager see base class
-    /// \param _passBufferPtr see base class
+    /// \param[in] _shadowNode see base class
+    /// \param[in] _casterPass see base class
+    /// \param[in] _dualParaboloid see base class
+    /// \param[in] _sceneManager see base class
+    /// \param[in] _passBufferPtr see base class
     /// \return The pointer where Ogre should continue appending more data
     private: virtual float* preparePassBuffer(
           const Ogre::CompositorShadowNode *_shadowNode,
@@ -129,9 +132,9 @@ namespace Ogre
 
     /// \brief Override HlmsListener::hlmsTypeChanged so we can
     /// bind buffers which carry per-object data when in IORM_SOLID_COLOR
-    /// \param _casterPass true if this is a caster pass
-    /// \param _commandBuffer command buffer so we can add commands
-    /// \param _datablock material of the object that caused
+    /// \param[in] _casterPass true if this is a caster pass
+    /// \param[in] _commandBuffer command buffer so we can add commands
+    /// \param[in] _datablock material of the object that caused
     /// Ogre2IgnHlmsPbs to be bound again
     public: virtual void hlmsTypeChanged(
         bool _casterPass,

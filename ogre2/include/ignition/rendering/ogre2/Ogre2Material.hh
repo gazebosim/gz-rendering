@@ -241,6 +241,32 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetDepthWriteEnabled(bool _enabled) override;
 
+      // Documentation inherited.
+      // \sa Material::SetVertexShader(const std::string &)
+      public: virtual void SetVertexShader(const std::string &_path) override;
+
+      // Documentation inherited.
+      // \sa Material::VertexShader() const
+      public: virtual std::string VertexShader() const override;
+
+      // Documentation inherited.
+      // \sa Material::VertexShaderParams()
+      public: virtual ShaderParamsPtr VertexShaderParams() override;
+
+      // Documentation inherited.
+      // \sa Material::SetFragmentShader(const std::string &)
+      public: virtual void SetFragmentShader(const std::string &_path)
+                  override;
+
+      // Documentation inherited.
+      // \sa Material::FragmentShader() const
+      public: virtual std::string FragmentShader() const override;
+
+      // Documentation inherited.
+      // \sa Material::FragmentShaderParams()
+      public: virtual ShaderParamsPtr FragmentShaderParams() override;
+
+
       /// \brief Set the texture map for this material
       /// \param[in] _texture Name of the texture.
       /// \param[in] _type Type of texture, i.e. diffuse, normal, roughness,

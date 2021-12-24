@@ -604,6 +604,75 @@ float Ogre2Material::Metalness() const
 //////////////////////////////////////////////////
 void Ogre2Material::PreRender()
 {
+  this->UpdateShaderParams();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::UpdateShaderParams()
+{
+  if (this->dataPtr->vertexShaderParams &&
+      this->dataPtr->vertexShaderParams->IsDirty())
+  {
+    Ogre::GpuProgramParametersSharedPtr ogreParams;
+    auto mat = this->Material();
+    auto pass = mat->getTechnique(0u)->getPass(0);
+    ogreParams = pass->getVertexProgramParameters();
+    this->UpdateShaderParams(this->dataPtr->vertexShaderParams, ogreParams);
+    this->dataPtr->vertexShaderParams->ClearDirty();
+  }
+  if (this->dataPtr->fragmentShaderParams &&
+      this->dataPtr->fragmentShaderParams->IsDirty())
+  {
+    Ogre::GpuProgramParametersSharedPtr ogreParams;
+    auto mat = this->Material();
+    auto pass = mat->getTechnique(0u)->getPass(0);
+    ogreParams = pass->getFragmentProgramParameters();
+    this->UpdateShaderParams(this->dataPtr->fragmentShaderParams, ogreParams);
+    this->dataPtr->fragmentShaderParams->ClearDirty();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
+    Ogre::GpuProgramParametersSharedPtr _ogreParams)
+{
+  for (const auto name_param : *_params)
+  {
+    if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
+    {
+      float value;
+      name_param.second.Value(&value);
+      _ogreParams->setNamedConstant(name_param.first, value);
+    }
+    else if (ShaderParam::PARAM_INT == name_param.second.Type())
+    {
+      int value;
+      name_param.second.Value(&value);
+      _ogreParams->setNamedConstant(name_param.first, value);
+    }
+    else if (ShaderParam::PARAM_FLOAT_BUFFER == name_param.second.Type())
+    {
+      std::shared_ptr<void> buffer;
+      name_param.second.Buffer(buffer);
+      uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
+      _ogreParams->setNamedConstant(name_param.first,
+          reinterpret_cast<float*>(buffer.get()), count, multiple);
+    }
+    else if (ShaderParam::PARAM_INT_BUFFER == name_param.second.Type())
+    {
+      std::shared_ptr<void> buffer;
+      name_param.second.Buffer(buffer);
+      uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
+      _ogreParams->setNamedConstant(name_param.first,
+        reinterpret_cast<int*>(buffer.get()), count, multiple);
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -684,7 +753,6 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       // set a custom name for the rgb texture by appending ign_ prefix
       std::string rgbTexName = "ign_" + baseName;
       baseName = rgbTexName;
-      std::string filename = common::joinPaths(parentPath, rgbTexName);
       auto tex = textureMgr->findTextureNoThrow(rgbTexName);
       if (!tex)
       {
@@ -936,11 +1004,17 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
 
   Ogre::HighLevelGpuProgramPtr vertexShader =
     Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
-        "__ignition_rendering_vertex__" + _path,
+        "_ign_" + _path,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
   vertexShader->setSourceFile(_path);
+
+  Ogre::GpuProgramParametersSharedPtr params =
+      vertexShader->getDefaultParameters();
+  params->setNamedAutoConstant("worldViewProj",
+      Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
+
   vertexShader->load();
 
   assert(vertexShader->isLoaded());
@@ -986,7 +1060,7 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
 
   Ogre::HighLevelGpuProgramPtr fragmentShader =
     Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
-        "__ignition_rendering_fragment__" + _path,
+        "_ign_" + _path,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
 
@@ -1000,7 +1074,6 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
   auto mat = this->Material();
   auto pass = mat->getTechnique(0u)->getPass(0);
   pass->setFragmentProgram(fragmentShader->getName());
-  // mat->setLightingEnabled(false);
   mat->compile();
   mat->load();
   this->dataPtr->fragmentShaderPath = _path;

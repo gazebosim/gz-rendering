@@ -43,15 +43,19 @@
 using namespace ignition;
 using namespace rendering;
 
-const std::string vertexShaderFile = "vertex_shader.glsl";
-const std::string fragmentShaderFile = "fragment_shader.glsl";
+const std::string vertexShaderGLSLFile = "vertex_shader.glsl";
+const std::string fragmentShaderGLSLFile = "fragment_shader.glsl";
+
+const std::string vertexShaderGLSL330File = "vertex_shader_330.glsl";
+const std::string fragmentShaderGLSL330File = "fragment_shader_330.glsl";
+
 //! [init shaders variables]
 
 const std::string RESOURCE_PATH =
     ignition::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene)
+void buildScene(ScenePtr _scene, const std::string &_engineName)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
@@ -63,6 +67,19 @@ void buildScene(ScenePtr _scene)
   light0->SetDiffuseColor(0.5, 0.5, 0.5);
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
+
+  t std::string vertexShaderFile;
+  std::string fragmentShaderFile;
+  if (_engineName == "ogre2")
+  {
+    vertexShaderFile = vertexShaderGLSL330File;
+    fragmentShaderFile = fragmentShaderGLSL330File;
+  }
+  else
+  {
+    vertexShaderFile = vertexShaderGLSLFile;
+    fragmentShaderFile = fragmentShaderGLSLFile;
+  }
 
   // create shader materials
   // path to look for vertex and fragment shader parameters
@@ -103,10 +120,11 @@ void buildScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName)
+CameraPtr createCamera(const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -114,7 +132,7 @@ CameraPtr createCamera(const std::string &_engineName)
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  buildScene(scene);
+  buildScene(scene, _engineName);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
@@ -126,22 +144,50 @@ int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
 
+
+  // Expose engine name to command line because we can't instantiate both
+  // ogre and ogre2 at the same time
+  std::string ogreEngineName("ogre");
+  if (_argc > 1)
+  {
+    ogreEngineName = _argv[1];
+  }
+
+  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  if (_argc > 2)
+  {
+    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
+  }
+
   common::Console::SetVerbosity(4);
+  std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  std::string engine("ogre");
+  engineNames.push_back(ogreEngineName);
 
-  try
+  for (auto engineName : engineNames)
   {
-    CameraPtr camera = createCamera(engine);
-    if (camera)
+    try
     {
-      cameras.push_back(camera);
+      std::map<std::string, std::string> params;
+      if (engineName.compare("ogre2") == 0
+          && graphicsApi == GraphicsAPI::METAL)
+      {
+        // \todo(anyone) uncomment once metal shaders are available
+        // params["metal"] = "1";
+        ignerr << "Metal shaders are not implemented yet. Using GSLS" << std::endl;
+      }
+
+      CameraPtr camera = createCamera(engineName, params);
+      if (camera)
+      {
+        cameras.push_back(camera);
+      }
     }
-  }
-  catch (...)
-  {
-    std::cerr << "Error starting up: " << engine << std::endl;
+    catch (...)
+    {
+      std::cerr << "Error starting up: " << engineName << std::endl;
+    }
   }
 
   run(cameras);

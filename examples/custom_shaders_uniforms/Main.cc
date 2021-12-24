@@ -175,7 +175,7 @@ int main(int _argc, char** _argv)
       {
         // \todo(anyone) uncomment once metal shaders are available
         // params["metal"] = "1";
-        ignerr << "Metal shaders are not implemented yet. Using GSLS" << std::endl;
+        ignerr << "Metal shaders are not implemented yet. Using GLSL" << std::endl;
       }
 
       CameraPtr camera = createCamera(engineName, params);

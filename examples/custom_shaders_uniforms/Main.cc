@@ -68,7 +68,7 @@ void buildScene(ScenePtr _scene, const std::string &_engineName)
   light0->SetSpecularColor(0.5, 0.5, 0.5);
   root->AddChild(light0);
 
-  t std::string vertexShaderFile;
+  std::string vertexShaderFile;
   std::string fragmentShaderFile;
   if (_engineName == "ogre2")
   {

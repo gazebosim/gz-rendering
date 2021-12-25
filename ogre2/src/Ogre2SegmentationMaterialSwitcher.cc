@@ -271,12 +271,40 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
         }
       }
 
+      this->datablockMap.clear();
+      Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+      // Construct one now so that datablock->setBlendblock each is as fast as
+      // possible
+      const Ogre::HlmsBlendblock *noBlend =
+        hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
+
       for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
       {
         // Set the custom value to the sub item to render
         Ogre::SubItem *subItem = item->getSubItem(i);
         subItem->setCustomParameter(1, customParameter);
+
+        Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+        const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
+
+        // We can't do any sort of blending. This isn't colour what we're
+        // storing, but rather an ID.
+        if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
+            blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
+            blendblock->mBlendOperation != Ogre::SBO_ADD ||
+            (blendblock->mSeparateBlend &&
+             (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
+              blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
+              blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+        {
+          hlmsManager->addReference(blendblock);
+          this->datablockMap[datablock] = blendblock;
+          datablock->setBlendblock(noBlend);
+        }
       }
+
+      hlmsManager->destroyBlendblock(noBlend);
     }
   }
 
@@ -302,6 +330,18 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
 void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  // Restore original blending to modified materials
+  for (const auto &[datablock, blendblock] : this->datablockMap)
+  {
+    datablock->setBlendblock(blendblock);
+    // Remove the reference we added (this won't actually destroy it)
+    hlmsManager->destroyBlendblock(blendblock);
+  }
+  this->datablockMap.clear();
+
   // re-enable heightmaps
   auto heightmaps = this->scene->Heightmaps();
   for (auto h : heightmaps)
@@ -311,7 +351,6 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
       heightmap->Parent()->SetVisible(true);
   }
 
-  auto engine = Ogre2RenderEngine::Instance();
   engine->SetIgnOgreRenderingMode(IORM_NORMAL);
 }
 

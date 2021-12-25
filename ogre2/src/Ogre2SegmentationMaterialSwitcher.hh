@@ -109,6 +109,10 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// or composite id (8 bit label + 16 bit instances) in instance type
   private: std::unordered_map<int64_t, int64_t> colorToLabel;
 
+  /// \brief A map of ogre datablock pointer to their original blendblocks
+  private: std::unordered_map<Ogre::HlmsDatablock *,
+      const Ogre::HlmsBlendblock *> datablockMap;
+
   /// \brief Pseudo num generator to generate colors from label id
   private: std::default_random_engine generator;
 

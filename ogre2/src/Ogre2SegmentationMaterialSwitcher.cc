@@ -162,6 +162,14 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       return object1->getName() > object2->getName();
   });
 
+  this->datablockMap.clear();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  // Construct one now so that datablock->setBlendblock
+  // each is as fast as possible
+  const Ogre::HlmsBlendblock *noBlend =
+    hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
+
   for (auto object : ogreObjects)
   {
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
@@ -271,14 +279,6 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
         }
       }
 
-      this->datablockMap.clear();
-      Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
-
-      // Construct one now so that datablock->setBlendblock each is as fast as
-      // possible
-      const Ogre::HlmsBlendblock *noBlend =
-        hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
-
       for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
       {
         // Set the custom value to the sub item to render
@@ -303,10 +303,11 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
           datablock->setBlendblock(noBlend);
         }
       }
-
-      hlmsManager->destroyBlendblock(noBlend);
     }
   }
+
+  // Remove the reference count on noBlend we created
+  hlmsManager->destroyBlendblock(noBlend);
 
   // reset the count & colors tracking
   this->instancesCount.clear();

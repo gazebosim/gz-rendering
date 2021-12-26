@@ -542,9 +542,15 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //   texture colorTexture target_width target_height PF_R8G8B8
     //       depth_texture depth_format PF_D32_FLOAT
     //   texture depthTexture target_width target_height PF_D32_FLOAT
-    //   texture particleTexture target_width target_height PF_L8
+    //   texture particleTexture target_width target_height PFG_R8_UNORM
     //   // particleDepthTexture shares same depth buffer as particleTexture
-    //   texture particleDepthTexture target_width target_height PF_D32_FLOAT
+    //   texture particleDepthTexture target_width target_height PFG_D32_FLOAT
+    //
+    //   rtv particleTexture
+    //   {
+    //     depth particleDepthTexture
+    //   }
+    //
     //   target colorTexture
     //   {
     //     pass clear
@@ -567,16 +573,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //     }
     //   }
     //   target particleTexture
-    //   {
-    //     pass clear
-    //     {
-    //     }
-    //     pass render_scene
-    //     {
-    //       visibility_mask 0x00100000
-    //     }
-    //   }
-    //   target particleDepthTexture
     //   {
     //     pass clear
     //     {

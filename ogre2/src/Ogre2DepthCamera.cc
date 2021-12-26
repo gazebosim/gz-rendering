@@ -670,11 +670,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleTexDef->preferDepthTexture = false;
     particleTexDef->fsaa = "0";
 
-    Ogre::RenderTargetViewDef *rtvParticleTexture =
-      baseNodeDef->addRenderTextureView("particleTexture");
-    rtvParticleTexture->setForTextureDefinition(
-      "particleTexture", particleTexDef);
-
     Ogre::TextureDefinitionBase::TextureDefinition *particleDepthTexDef =
         baseNodeDef->addTextureDefinition("particleDepthTexture");
     particleDepthTexDef->textureType = Ogre::TextureTypes::Type2D;
@@ -690,12 +685,15 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleDepthTexDef->fsaa = "0";
     particleDepthTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
 
-    Ogre::RenderTargetViewDef *rtvparticleDepthTex =
-      baseNodeDef->addRenderTextureView("particleDepthTexture");
-    rtvparticleDepthTex->setForTextureDefinition(
-      "particleDepthTexture", particleDepthTexDef);
+    // Auto setup the RTV then manually override the depth buffer so
+    // it uses the one we created (and thus we can sample from it later)
+    Ogre::RenderTargetViewDef *rtvParticleTexture =
+      baseNodeDef->addRenderTextureView("particleTexture");
+    rtvParticleTexture->setForTextureDefinition("particleTexture",
+                                                particleTexDef);
+    rtvParticleTexture->depthAttachment.textureName = "particleDepthTexture";
 
-    baseNodeDef->setNumTargetPass(5);
+    baseNodeDef->setNumTargetPass(4);
     Ogre::CompositorTargetDef *colorTargetDef =
         baseNodeDef->addTargetPass("colorTexture");
 
@@ -780,23 +778,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
           particleTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue::Black);
-      passScene->mVisibilityMask =
-          Ogre2ParticleEmitter::kParticleVisibilityFlags;
-    }
-
-    Ogre::CompositorTargetDef *particleDepthTargetDef =
-        baseNodeDef->addTargetPass("particleDepthTexture");
-    particleDepthTargetDef->setNumPasses(1);
-    {
-      // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          particleDepthTargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-      passScene->setAllClearColours(Ogre::ColourValue(
-        this->FarClipPlane(),
-        this->FarClipPlane(),
-        this->FarClipPlane()));
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }

@@ -19,14 +19,21 @@
 
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 
+#include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
 #include <CommandBuffer/OgreCbShaderBuffer.h>
 #include <CommandBuffer/OgreCommandBuffer.h>
 #include <OgreRenderQueue.h>
 #include <Vao/OgreConstBufferPacked.h>
 #include <Vao/OgreVaoManager.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 using namespace ignition;
 using namespace rendering;
@@ -176,8 +183,24 @@ namespace Ogre
 
     if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
     {
-      Vector4 customParam =
-        _queuedRenderable.renderable->getCustomParameter(1u);
+      Vector4 customParam;
+      try
+      {
+        customParam = _queuedRenderable.renderable->getCustomParameter(1u);
+      }
+      catch (ItemIdentityException &)
+      {
+        // This error can trigger for two reasons:
+        //
+        //  1. We forgot to call setCustomParameter(1u, ...)
+        //  2. This object should not be rendered and we should've called
+        //     movableObject->setVisible(false) or use RenderQueue IDs
+        //     or visibility flags to prevent rendering it
+        ignerr << "A module is trying to render an object without "
+                  "specifying a parameter. Please report this bug at "
+                  "https://github.com/ignitionrobotics/ign-rendering/issues";
+        throw;
+      }
       float *dataPtr = this->MapObjectDataBufferFor(
         instanceIdx, _commandBuffer, this->mVaoManager, this->mConstBuffers,
         this->mCurrentConstBuffer, this->mStartMappedConstBuffer,

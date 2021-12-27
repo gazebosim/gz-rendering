@@ -237,14 +237,14 @@ void OrthoViewController::Orbit(const math::Vector2d &_value)
 
   // rotate around world axis at target point
   math::Quaterniond yawQuat;
-  yawQuat.Axis(math::Vector3d::UnitZ, -dy);
+  yawQuat.SetFromAxisAngle(math::Vector3d::UnitZ, -dy);
   this->dataPtr->camera->SetWorldRotation(
       yawQuat * this->dataPtr->camera->WorldRotation());
   this->dataPtr->camera->SetWorldPosition(
       yawQuat * this->dataPtr->camera->WorldPosition());
 
   math::Quaterniond localPitchQuat;
-  localPitchQuat.Axis(
+  localPitchQuat.SetFromAxisAngle(
       this->dataPtr->camera->WorldRotation()*math::Vector3d::UnitY, dp);
   this->dataPtr->camera->SetWorldRotation(
       localPitchQuat * this->dataPtr->camera->WorldRotation());

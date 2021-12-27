@@ -23,8 +23,6 @@
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/MeshManager.hh>
 
-#include "ignition/common/Time.hh"
-
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
 #include "ignition/rendering/BoundingBoxCamera.hh"
@@ -53,11 +51,6 @@
 using namespace ignition;
 using namespace rendering;
 
-// Prevent deprecation warnings for simTime
-#ifndef _WIN32
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 //////////////////////////////////////////////////
 BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   id(_id),
@@ -73,9 +66,6 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
 BaseScene::~BaseScene()
 {
 }
-#ifndef _WIN32
-# pragma GCC diagnostic pop
-#endif
 
 //////////////////////////////////////////////////
 void BaseScene::Load()
@@ -144,25 +134,6 @@ void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)
 {
   this->time = _time;
 }
-
-//////////////////////////////////////////////////
-#ifndef _WIN32
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-common::Time BaseScene::SimTime() const
-{
-  return this->simTime;
-}
-
-////////////////////////////////////////////////////
-void BaseScene::SetSimTime(const common::Time &_time)
-{
-  this->simTime = _time;
-}
-#ifndef _WIN32
-# pragma GCC diagnostic pop
-#endif
 
 //////////////////////////////////////////////////
 VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,

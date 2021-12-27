@@ -18,7 +18,6 @@
 #define IGNITION_RENDERING_LIDARVISUAL_HH_
 
 #include <vector>
-#include <ignition/common/Time.hh>
 #include <ignition/math/Color.hh>
 #include <ignition/math/Vector3.hh>
 #include "ignition/rendering/config.hh"

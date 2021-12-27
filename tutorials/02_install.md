@@ -59,8 +59,8 @@ sudo apt install -y \
     libxmu-dev \
     libxi-dev \
     libignition-cmake2-dev \
-    libignition-math6-dev \
-    libignition-common4-dev \
+    libignition-math7-dev \
+    libignition-common5-dev \
     libignition-plugin-dev
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
 ```

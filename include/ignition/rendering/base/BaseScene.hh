@@ -58,11 +58,6 @@ namespace ignition
 
       public: virtual std::string Name() const override;
 
-      public: virtual void IGN_DEPRECATED(4)
-        SetSimTime(const common::Time &_time) override;
-
-      public: virtual common::Time IGN_DEPRECATED(4) SimTime() const override;
-
       public: virtual std::chrono::steady_clock::duration Time()
         const override;
 
@@ -857,8 +852,6 @@ namespace ignition
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: std::string name;
       IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
-
-      protected: common::Time IGN_DEPRECATED(4) simTime;
 
       protected: std::chrono::steady_clock::duration time =
         std::chrono::steady_clock::duration::zero();

@@ -23,7 +23,6 @@
 
 #include <ignition/common/Material.hh>
 #include <ignition/common/Mesh.hh>
-#include <ignition/common/Time.hh>
 
 #include <ignition/math/Color.hh>
 
@@ -78,17 +77,8 @@ namespace ignition
 
       /// \brief Get the last simulation update time
       /// \return The last simulation update time
-      public: virtual common::Time IGN_DEPRECATED(4) SimTime() const = 0;
-
-      /// \brief Get the last simulation update time
-      /// \return The last simulation update time
       public: virtual std::chrono::steady_clock::duration
         Time() const = 0;
-
-      /// \brief Set the last simulation update time
-      /// \param[in] _time Latest simulation update time
-      public: virtual void IGN_DEPRECATED(4)
-        SetSimTime(const common::Time &_time) = 0;
 
       /// \brief Set the last simulation update time
       /// \param[in] _time Latest simulation update time

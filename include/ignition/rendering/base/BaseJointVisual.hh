@@ -394,9 +394,9 @@ namespace ignition
       ignition::math::Quaterniond quat;
       // check the parallel case
       if (ignition::math::equal(angle, IGN_PI))
-        quat.Axis(u.Perpendicular(), angle);
+        quat.SetFromAxisAngle(u.Perpendicular(), angle);
       else
-        quat.Axis((v.Cross(u)).Normalize(), angle);
+        quat.SetFromAxisAngle((v.Cross(u)).Normalize(), angle);
       _arrowVisual->SetLocalRotation(quat);
 
       if (_useParentFrame)

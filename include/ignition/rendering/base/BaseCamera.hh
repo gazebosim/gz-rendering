@@ -473,7 +473,7 @@ namespace ignition
     void BaseCamera<T>::Reset()
     {
       math::Angle fov;
-      fov.Degree(60);
+      fov.SetDegree(60);
       this->SetImageWidth(1);
       this->SetImageHeight(1);
       this->SetImageFormat(PF_R8G8B8);

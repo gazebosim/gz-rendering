@@ -548,9 +548,9 @@ void TransformController::Rotate(const math::Quaterniond &_rotation, bool _snap)
   {
     math::Vector3d axis;
     double angle;
-    rotation.ToAxis(axis, angle);
+    rotation.AxisAngle(axis, angle);
     angle = rint(angle / (IGN_PI * 0.25)) * (IGN_PI * 0.25);
-    rotation.Axis(axis, angle);
+    rotation.SetFromAxisAngle(axis, angle);
   }
 
   this->dataPtr->node->SetWorldRotation(rotation);

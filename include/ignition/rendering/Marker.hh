@@ -17,7 +17,6 @@
 #ifndef IGNITION_RENDERING_MARKER_HH_
 #define IGNITION_RENDERING_MARKER_HH_
 
-#include <ignition/common/Time.hh>
 #include <ignition/math/Color.hh>
 #include <ignition/math/Vector3.hh>
 #include "ignition/rendering/config.hh"

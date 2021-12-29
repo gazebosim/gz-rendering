@@ -30,14 +30,14 @@ option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the bui
 
 #--------------------------------------
 # Find ignition-math
-ign_find_package(ignition-math6 REQUIRED COMPONENTS eigen3 VERSION 6.9)
-set(IGN_MATH_VER ${ignition-math6_VERSION_MAJOR})
+ign_find_package(ignition-math7 REQUIRED COMPONENTS eigen3)
+set(IGN_MATH_VER ${ignition-math7_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-common
-ign_find_package(ignition-common4 REQUIRED
+ign_find_package(ignition-common5 REQUIRED
   COMPONENTS graphics events)
-set(IGN_COMMON_VER ${ignition-common4_VERSION_MAJOR})
+set(IGN_COMMON_VER ${ignition-common5_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-plugin

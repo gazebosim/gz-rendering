@@ -27,6 +27,7 @@
   #pragma warning(push, 0)
 #endif
 #include <Hlms/Pbs/OgreHlmsPbsPrerequisites.h>
+#include <OgreGpuProgramParams.h>
 #include <OgreMaterial.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
@@ -241,6 +242,31 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetDepthWriteEnabled(bool _enabled) override;
 
+      // Documentation inherited.
+      // \sa Material::SetVertexShader(const std::string &)
+      public: virtual void SetVertexShader(const std::string &_path) override;
+
+      // Documentation inherited.
+      // \sa Material::VertexShader() const
+      public: virtual std::string VertexShader() const override;
+
+      // Documentation inherited.
+      // \sa Material::VertexShaderParams()
+      public: virtual ShaderParamsPtr VertexShaderParams() override;
+
+      // Documentation inherited.
+      // \sa Material::SetFragmentShader(const std::string &)
+      public: virtual void SetFragmentShader(const std::string &_path)
+                  override;
+
+      // Documentation inherited.
+      // \sa Material::FragmentShader() const
+      public: virtual std::string FragmentShader() const override;
+
+      // Documentation inherited.
+      // \sa Material::FragmentShaderParams()
+      public: virtual ShaderParamsPtr FragmentShaderParams() override;
+
       /// \brief Set the texture map for this material
       /// \param[in] _texture Name of the texture.
       /// \param[in] _type Type of texture, i.e. diffuse, normal, roughness,
@@ -258,6 +284,15 @@ namespace ignition
 
       // Documentation inherited.
       protected: virtual void Init() override;
+
+      /// \brief bind shader parameters that have changed
+      protected: void UpdateShaderParams();
+
+      /// \brief Transfer params from ign-rendering type to ogre type
+      /// \param[in] _params ignition rendering params
+      /// \param[out] _ogreParams ogre type for holding params
+      protected: void UpdateShaderParams(ConstShaderParamsPtr _params,
+          Ogre::GpuProgramParametersSharedPtr _ogreParams);
 
       /// \brief  Ogre material. Mainly used for render targets.
       protected: Ogre::MaterialPtr ogreMaterial;

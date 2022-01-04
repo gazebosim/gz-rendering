@@ -111,6 +111,8 @@ void updateCameras()
 //! [update uniforms]
 void updateUniforms()
 {
+  if (!g_shaderParams)
+    return;
   (*g_shaderParams)["u_seed"].UpdateBuffer(g_seed);
   (*g_shaderParams)["u_resolution"].UpdateBuffer(g_resolution);
   (*g_shaderParams)["u_color"].UpdateBuffer(g_color);
@@ -200,6 +202,8 @@ void initUniforms()
   ir::VisualPtr sphere =
       std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("box"));
   ir::MaterialPtr shader = sphere->Material();
+  if (!shader)
+    return;
   g_shaderParams = shader->FragmentShaderParams();
 
   (*g_shaderParams)["u_seed"].InitializeBuffer(1);

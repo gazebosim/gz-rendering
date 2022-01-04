@@ -301,10 +301,6 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   depthTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
   depthTexDef->fsaa = "0";
 
-  Ogre::RenderTargetViewDef *rtvDepth =
-      nodeDef->addRenderTextureView("depthTexture");
-  rtvDepth->setForTextureDefinition("depthTexture", depthTexDef);
-
   Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
       nodeDef->addTextureDefinition("colorTexture");
   colorTexDef->textureType = Ogre::TextureTypes::Type2D;
@@ -321,15 +317,18 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   colorTexDef->preferDepthTexture = true;
   colorTexDef->fsaa = "0";
 
+  // Auto setup the RTV then manually override the depth buffer so
+  // it uses the one we created (and thus we can sample from it later)
   Ogre::RenderTargetViewDef *rtvColor =
     nodeDef->addRenderTextureView("colorTexture");
   rtvColor->setForTextureDefinition("colorTexture", colorTexDef);
+  rtvColor->depthAttachment.textureName = "depthTexture";
 
   // Input texture
   nodeDef->addTextureSourceName("rt", 0,
       Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
-  nodeDef->setNumTargetPass(3);
+  nodeDef->setNumTargetPass(2);
   Ogre::CompositorTargetDef *colorTargetDef =
       nodeDef->addTargetPass("colorTexture");
   colorTargetDef->setNumPasses(1);
@@ -338,19 +337,6 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
     Ogre::CompositorPassSceneDef *passScene =
         static_cast<Ogre::CompositorPassSceneDef *>(
         colorTargetDef->addPass(Ogre::PASS_SCENE));
-    passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-    passScene->setAllClearColours(Ogre::ColourValue::Black);
-    passScene->mVisibilityMask = IGN_VISIBILITY_SELECTABLE;
-  }
-
-  Ogre::CompositorTargetDef *depthTargetDef =
-      nodeDef->addTargetPass("depthTexture");
-  depthTargetDef->setNumPasses(1);
-  {
-    // scene pass
-    Ogre::CompositorPassSceneDef *passScene =
-        static_cast<Ogre::CompositorPassSceneDef *>(
-        depthTargetDef->addPass(Ogre::PASS_SCENE));
     passScene->setAllLoadActions(Ogre::LoadAction::Clear);
     passScene->setAllClearColours(Ogre::ColourValue::Black);
     passScene->mVisibilityMask = IGN_VISIBILITY_SELECTABLE;

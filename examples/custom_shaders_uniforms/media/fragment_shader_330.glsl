@@ -15,14 +15,18 @@
  *
  */
 
-#define M_PI 3.1415926535897932384626433832795
+#version 330
 
-varying vec4 interpolatedPosition;
+#define M_PI 3.1415926535897932384626433832795
 
 uniform int u_seed;
 uniform vec2 u_resolution;
 uniform vec3 u_color;
 uniform mat4 u_adjustments;
+
+in vec4 interpolatedPosition;
+
+out vec4 fragColor;
 
 float random(vec2 uv, float seed) {
   return fract(sin(mod(dot(uv, vec2(12.9898, 78.233)) + 1113.1 * seed, M_PI)) * 43758.5453);;
@@ -35,5 +39,5 @@ void main()
   vec2 normalizedFragCoord = b / u_resolution;
 
   vec3 color = vec3(random(normalizedFragCoord, float(u_seed)));
-  gl_FragColor = vec4(color * u_color, 1.0);
+  fragColor = vec4(color * u_color, 1.0);
 }

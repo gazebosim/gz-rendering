@@ -15,10 +15,21 @@
  *
  */
 
-varying vec4 interpolatedPosition;
+#version 330
+
+in vec4 vertex;
+uniform mat4 worldViewProj;
+
+out gl_PerVertex
+{
+  vec4 gl_Position;
+};
+
+out vec4 interpolatedPosition;
 
 void main()
 {
-  gl_Position = ftransform();
+  gl_Position = worldViewProj * vertex;
   interpolatedPosition = gl_Position;
 }
+

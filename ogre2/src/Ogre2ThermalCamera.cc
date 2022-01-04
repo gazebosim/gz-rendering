@@ -659,6 +659,12 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   //   in 0 rt_input
   //   texture depthTexture target_width target_height PFG_D32_FLOAT
   //   texture colorTexture target_width target_height PFG_RGBA8_UNORM
+  //
+  //   rtv colorTexture
+  //   {
+  //     depth depthTexture
+  //   }
+  //
   //   target colorTexture
   //   {
   //     pass clear
@@ -712,10 +718,6 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     thermalTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
     thermalTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
 
-    Ogre::RenderTargetViewDef *rtv =
-      nodeDef->addRenderTextureView("depthTexture");
-    rtv->setForTextureDefinition("depthTexture", thermalTexDef);
-
     Ogre::TextureDefinitionBase::TextureDefinition *colorTexDef =
         nodeDef->addTextureDefinition("colorTexture");
     colorTexDef->textureType = Ogre::TextureTypes::Type2D;
@@ -731,9 +733,10 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
     colorTexDef->preferDepthTexture = true;
 
-    Ogre::RenderTargetViewDef *rtv2 =
+    Ogre::RenderTargetViewDef *rtv =
       nodeDef->addRenderTextureView("colorTexture");
-    rtv2->setForTextureDefinition("colorTexture", colorTexDef);
+    rtv->setForTextureDefinition("colorTexture", colorTexDef);
+    rtv->depthAttachment.textureName = "depthTexture";
 
     nodeDef->setNumTargetPass(2);
     Ogre::CompositorTargetDef *colorTargetDef =

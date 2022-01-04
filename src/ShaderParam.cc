@@ -37,7 +37,7 @@ class ignition::rendering::ShaderParamPrivate
   public: std::shared_ptr<void> buffer;
 
   /// \brief Count of elements in buffer of parameter held
-  public: uint32_t count;
+  public: uint32_t count = 0u;
 };
 
 

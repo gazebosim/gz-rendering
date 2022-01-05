@@ -451,6 +451,13 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
         ignition::math::INF_F);
     EXPECT_FLOAT_EQ(scan[(i * hRayCount + (hRayCount - 1)) * channels],
         ignition::math::INF_F);
+
+    // laser retro is currently only supported in ogre2
+    if (_renderEngine == "ogre2")
+    {
+      // object does not have retro value set so it should be 0
+      EXPECT_FLOAT_EQ(scan[i * hRayCount * channels + 1], 0.0);
+    }
   }
 
   // Move box out of range

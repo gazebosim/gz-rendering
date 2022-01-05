@@ -907,16 +907,6 @@ void Ogre2GpuRays::Setup1stPass()
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // set camera custom visibility mask when rendering laser retro
-      // todo(anyone) currently in this color + depth pass, lidar sees all
-      // objects, including ones without laser_retro set. So the lidar outputs
-      // data containing depth data + some non-zero retro value for all
-      // objects. If we want to output a retro value of zero for objects
-      // without laser_retro, one possible approach could be to separate out
-      // the color and depth pass:
-      // 1: color pass that see only objects with laser_retro by using custom
-      //    visibility mask
-      // 2: depth pass that see all objects
-      // Then assemble these data in the final quad pass.
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }

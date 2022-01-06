@@ -172,6 +172,79 @@
 
 ### Ignition Rendering 5.X.X (20XX-XX-XX)
 
+### Ignition Rendering 5.2.0 (2021-11-02)
+
+1. Fix context attributes of glXCreateContextAttribsARB.
+    * [Pull request #460](https://github.com/ignitionrobotics/ign-rendering/pull/460)
+
+1. Fix logic on warning for ogre versions different than 1.9.x
+    * [Pull request #465](https://github.com/ignitionrobotics/ign-rendering/pull/465)
+
+1. Avoid symbol redefition to fix armel builds
+    * [Pull request #457](https://github.com/ignitionrobotics/ign-rendering/pull/457)
+
+1. Fix selection buffer material script
+    * [Pull request #456](https://github.com/ignitionrobotics/ign-rendering/pull/456)
+
+1. Fix compilation against Ogre 1.10.12
+    * [Pull request #390](https://github.com/ignitionrobotics/ign-rendering/pull/390)
+
+1. ogre: Do not assume that ogre plugins have lib prefix on macOS
+    * [Pull request #454](https://github.com/ignitionrobotics/ign-rendering/pull/454)
+
+1. ogre: Add missing required Paging component
+    * [Pull request #452](https://github.com/ignitionrobotics/ign-rendering/pull/452)
+
+1. Fix ray query distance calculation
+    * [Pull request #438](https://github.com/ignitionrobotics/ign-rendering/pull/438)
+
+1. Fix the spelling of USE_UNOFFICIAL_OGRE_VERSIONS flag
+    * [Pull request #413](https://github.com/ignitionrobotics/ign-rendering/pull/413)
+
+1. Avoid configure warning when checking ogre-1.10
+    * [Pull request #411](https://github.com/ignitionrobotics/ign-rendering/pull/411)
+
+1. Use selection buffer in ray queries (ogre2)
+    * [Pull request #378](https://github.com/ignitionrobotics/ign-rendering/pull/378)
+
+1. Fix particle effect randomness
+    * [Pull request #388](https://github.com/ignitionrobotics/ign-rendering/pull/388)
+
+1. Update simple_demo_qml coding style
+    * [Pull request #404](https://github.com/ignitionrobotics/ign-rendering/pull/404)
+
+1. Disabling flaky depth and thermal camera tests on mac
+    * [Pull request #405](https://github.com/ignitionrobotics/ign-rendering/pull/405)
+
+1. [macOS] add a QML version of simple_demo
+    * [Pull request #373](https://github.com/ignitionrobotics/ign-rendering/pull/373)
+
+1. Fix single ray gpu lidar
+    * [Pull request #384](https://github.com/ignitionrobotics/ign-rendering/pull/384)
+
+1. Warn about non-existent submesh
+    * [Pull request #391](https://github.com/ignitionrobotics/ign-rendering/pull/391)
+
+1. Improved doxygen
+    * [Pull request #398](https://github.com/ignitionrobotics/ign-rendering/pull/398)
+    * [Pull request #389](https://github.com/ignitionrobotics/ign-rendering/pull/389)
+
+1. Set OGRE minimal version to 1.8. Warn on versions not supported (ign-rendering3)
+    * [Pull request #376](https://github.com/ignitionrobotics/ign-rendering/pull/376)
+
+1. 👩‍🌾 Remove bitbucket-pipelines.yml
+    * [Pull request #385](https://github.com/ignitionrobotics/ign-rendering/pull/385)
+
+1. [macOS] support OpenGL < 4.2 in PBS shader
+    * [Pull request #377](https://github.com/ignitionrobotics/ign-rendering/pull/377)
+
+1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
+    * [Pull request #363](https://github.com/ignitionrobotics/ign-rendering/pull/363)
+    * [Pull request #368](https://github.com/ignitionrobotics/ign-rendering/pull/368)
+
+1. More nullptr checking on Node classes
+    * [Pull request #364](https://github.com/ignitionrobotics/ign-rendering/pull/364)
+
 ### Ignition Rendering 5.1.0 (2021-06-22)
 
 1. add ifdef for apple in integration test
@@ -551,7 +624,30 @@
 1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
 
-### Ignition Rendering 3.X.X (2021-XX-XX)
+### Ignition Rendering 3.6.0 (2021-10-15)
+
+1. Avoid symbol redefition to fix armel builds
+    * [Pull request 457](https://github.com/ignitionrobotics/ign-rendering/pull/457)
+
+1. Fix floating point precision bug handling alpha channel
+    * [Pull request 322](https://github.com/ignitionrobotics/ign-rendering/pull/322)
+    * [Pull request 333](https://github.com/ignitionrobotics/ign-rendering/pull/333)
+
+1. Ogre: Do not assume that ogre plugins have lib prefix on macOS
+    * [Pull request 454](https://github.com/ignitionrobotics/ign-rendering/pull/454)
+
+1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
+    * [Pull request 363](https://github.com/ignitionrobotics/ign-rendering/pull/363)
+    * [Pull request 368](https://github.com/ignitionrobotics/ign-rendering/pull/368)
+
+1. Relax Gaussian noise test tolerance to fix flaky test
+    * [Pull request 344](https://github.com/ignitionrobotics/ign-rendering/pull/344)
+
+1. Fix ogre2 render pass high GPU usage
+    * [Pull request 342](https://github.com/ignitionrobotics/ign-rendering/pull/342)
+
+1. Backport memory fixes found by ASAN
+    * [Pull request 340](https://github.com/ignitionrobotics/ign-rendering/pull/340)
 
 1. CMake warning on Ogre versions that are not officially supported.
    To disable the new warning, it is enough to enable the cmake option USE_UNOFFICIAL_OGRE_VERSIONS

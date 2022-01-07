@@ -16,7 +16,9 @@
 */
 
 #include "ignition/common/Console.hh"
+
 #include "ignition/rendering/ogre2/Ogre2MaterialSwitcher.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/RenderTypes.hh"
 
@@ -26,6 +28,7 @@
 #include <OgreItem.h>
 #include <OgreMaterialManager.h>
 #include <OgrePass.h>
+#include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreTechnique.h>
 #ifdef _MSC_VER
@@ -47,31 +50,6 @@ Ogre2MaterialSwitcher::Ogre2MaterialSwitcher(Ogre2ScenePtr _scene)
 {
   this->currentColor = ignition::math::Color(0.0, 0.0, 0.1);
   this->scene = _scene;
-
-  // plain opaque material
-  Ogre::ResourcePtr res =
-    Ogre::MaterialManager::getSingleton().load("ign-rendering/plain_color",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
-  this->plainMaterial = res.staticCast<Ogre::Material>();
-  this->plainMaterial->load();
-
-  // plain overlay material
-  this->plainOverlayMaterial =
-      this->plainMaterial->clone("plain_color_overlay");
-  if (!this->plainOverlayMaterial->getTechnique(0) ||
-      !this->plainOverlayMaterial->getTechnique(0)->getPass(0))
-  {
-    ignerr << "Problem creating selection buffer overlay material"
-        << std::endl;
-    return;
-  }
-  Ogre::Pass *overlayPass =
-      this->plainOverlayMaterial->getTechnique(0)->getPass(0);
-  Ogre::HlmsMacroblock macroblock(*overlayPass->getMacroblock());
-  macroblock.mDepthCheck = false;
-  macroblock.mDepthWrite = false;
-  overlayPass->setMacroblock(macroblock);
 }
 
 /////////////////////////////////////////////////
@@ -83,9 +61,17 @@ Ogre2MaterialSwitcher::~Ogre2MaterialSwitcher()
 void Ogre2MaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_evt*/)
 {
-  // swap item to use v1 shader material
-  // Note: keep an eye out for performance impact on switching materials
-  // on the fly. We are not doing this often so should be ok.
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
+
+  this->datablockMap.clear();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  // Construct one now so that datablock->setBlendblock
+  // each is as fast as possible
+  const Ogre::HlmsBlendblock *noBlend =
+    hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
+
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -100,29 +86,27 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
     for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
     {
       Ogre::SubItem *subItem = item->getSubItem(i);
+
       subItem->setCustomParameter(1,
           Ogre::Vector4(this->currentColor.R(), this->currentColor.G(),
                         this->currentColor.B(), 1.0));
 
-      // case when item is using low level materials
-      // e.g. shaders
-      if (!subItem->getMaterial().isNull())
+      Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+      const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
+
+      // We can't do any sort of blending. This isn't colour what we're
+      // storing, but rather an ID.
+      if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
+          blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
+          blendblock->mBlendOperation != Ogre::SBO_ADD ||
+          (blendblock->mSeparateBlend &&
+           (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
+            blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
+            blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
       {
-        materialMap[this][subItem] = subItem->getMaterial();
-        subItem->setMaterial(this->plainMaterial);
-      }
-      // regular Pbs Hlms datablock
-      else
-      {
-        Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-        this->datablockMap[subItem] = datablock;
-        // check if it's an overlay material by assuming the
-        // depth check and depth write properties are off.
-        if (!datablock->getMacroblock()->mDepthWrite &&
-            !datablock->getMacroblock()->mDepthCheck)
-          subItem->setMaterial(this->plainOverlayMaterial);
-        else
-          subItem->setMaterial(this->plainMaterial);
+        hlmsManager->addReference(blendblock);
+        this->datablockMap[datablock] = blendblock;
+        datablock->setBlendblock(noBlend);
       }
     }
     itor.moveNext();
@@ -133,30 +117,19 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
 void Ogre2MaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_evt*/)
 {
-  // restore item to use hlms material
-  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
-      Ogre::ItemFactory::FACTORY_TYPE_NAME);
-  while (itor.hasMoreElements())
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  // Restore original blending to modified materials
+  for (const auto &[datablock, blendblock] : this->datablockMap)
   {
-    Ogre::MovableObject *object = itor.peekNext();
-    Ogre::Item *item = static_cast<Ogre::Item *>(object);
-    for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
-    {
-      Ogre::SubItem *subItem = item->getSubItem(i);
-      auto it = this->datablockMap.find(subItem);
-      if (it != this->datablockMap.end())
-        subItem->setDatablock(it->second);
-      else
-      {
-        auto mIt = materialMap[this].find(subItem);
-        if (mIt != materialMap[this].end())
-          subItem->setMaterial(mIt->second);
-      }
-    }
-    itor.moveNext();
+    datablock->setBlendblock(blendblock);
+    // Remove the reference we added (this won't actually destroy it)
+    hlmsManager->destroyBlendblock(blendblock);
   }
   this->datablockMap.clear();
-  materialMap[this].clear();
+
+  engine->SetIgnOgreRenderingMode(IORM_NORMAL);
 }
 
 /////////////////////////////////////////////////

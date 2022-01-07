@@ -15,10 +15,17 @@
  *
  */
 
-varying vec4 interpolatedPosition;
+#include "ignition/rendering/DistortionPass.hh"
 
-void main()
+using namespace ignition;
+using namespace rendering;
+
+//////////////////////////////////////////////////
+DistortionPass::DistortionPass()
 {
-  gl_Position = ftransform();
-  interpolatedPosition = gl_Position;
+}
+
+//////////////////////////////////////////////////
+DistortionPass::~DistortionPass()
+{
 }

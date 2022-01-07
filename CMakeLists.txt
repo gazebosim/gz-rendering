@@ -57,6 +57,11 @@ ign_find_package(FreeImage VERSION 3.9
 
 #--------------------------------------
 # Find OpenGL
+# See CMP0072 for more details (cmake --help-policy CMP0072)
+if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
+  set(OpenGL_GL_PREFERENCE "GLVND")
+endif()
+
 ign_find_package(OpenGL
   REQUIRED_BY ogre ogre2
   PKGCONFIG gl)

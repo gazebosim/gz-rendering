@@ -15,10 +15,37 @@
  *
  */
 
-varying vec4 interpolatedPosition;
-
-void main()
+vertex_program CameraDistortionMapVS glsl
 {
-  gl_Position = ftransform();
-  interpolatedPosition = gl_Position;
+  source camera_distortion_map_vs.glsl
+}
+
+fragment_program CameraDistortionMapFS glsl
+{
+  source camera_distortion_map_fs.glsl
+  default_params
+  {
+    param_named RT int 0
+    param_named distortionMap int 1
+    param_named scale float3 1.0 1.0 1.0
+  }
+}
+
+material Distortion
+{
+  technique
+  {
+    pass
+    {
+      vertex_program_ref CameraDistortionMapVS { }
+      fragment_program_ref CameraDistortionMapFS { }
+
+      texture_unit RT
+      {
+        tex_coord_set 0
+        tex_address_mode border
+        filtering linear linear linear
+      }
+    }
+  }
 }

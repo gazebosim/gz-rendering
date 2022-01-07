@@ -185,9 +185,9 @@ void Ogre2RenderTarget::BuildCompositor()
         nodeDef->addTargetPass("rtv");
 
     if (validBackground)
-      rt0TargetDef->setNumPasses(2);
+      rt0TargetDef->setNumPasses(3);
     else
-      rt0TargetDef->setNumPasses(1);
+      rt0TargetDef->setNumPasses(2);
     {
       // scene pass - opaque
       {

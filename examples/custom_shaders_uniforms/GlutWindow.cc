@@ -210,6 +210,13 @@ void initUniforms()
   (*g_shaderParams)["u_resolution"].InitializeBuffer(2);
   (*g_shaderParams)["u_color"].InitializeBuffer(3);
   (*g_shaderParams)["u_adjustments"].InitializeBuffer(16);
+
+  auto engine = g_camera->Scene()->Engine();
+  if (engine->Name() == "ogre2")
+  {
+    auto params = shader->VertexShaderParams();
+    (*params)["worldviewproj_matrix"] = 1;
+  }
 }
 
 //////////////////////////////////////////////////

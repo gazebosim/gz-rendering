@@ -638,6 +638,14 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
 {
   for (const auto name_param : *_params)
   {
+    auto *constantDef =
+        Ogre::GpuProgramParameters::getAutoConstantDefinition(name_param.first);
+    if (constantDef)
+    {
+      _ogreParams->setNamedAutoConstant(name_param.first, constantDef->acType);
+      continue;
+    }
+
     if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
     {
       float value;
@@ -1012,8 +1020,6 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
 
   Ogre::GpuProgramParametersSharedPtr params =
       vertexShader->getDefaultParameters();
-  params->setNamedAutoConstant("worldViewProj",
-      Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
 
   vertexShader->load();
 

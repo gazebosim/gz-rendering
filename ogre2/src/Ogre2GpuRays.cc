@@ -82,16 +82,9 @@ class Ogre2LaserRetroMaterialSwitcher : public Ogre::Camera::Listener
   /// \brief Scene manager
   private: Ogre2ScenePtr scene = nullptr;
 
-  /// \brief Pointer to the laser retro source material
-  private: Ogre::MaterialPtr laserRetroSourceMaterial;
-
-  /// \brief Custom parameter index of laser retro value in an ogre subitem.
-  /// This has to match the custom index specifed in LaserRetroSource material
-  /// script in media/materials/scripts/gpu_rays.material
-  private: const unsigned int customParamIdx = 10u;
-
-  /// \brief A map of ogre sub item pointer to their original hlms material
-  private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
+  /// \brief A map of ogre datablock pointer to their original blendblocks
+  private: std::unordered_map<Ogre::HlmsDatablock *,
+      const Ogre::HlmsBlendblock *> datablockMap;
 };
 }
 }
@@ -203,33 +196,23 @@ Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
     Ogre2ScenePtr _scene)
 {
   this->scene = _scene;
-  // plain opaque material
-  Ogre::ResourcePtr res =
-    Ogre::MaterialManager::getSingleton().load("LaserRetroSource",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
-  this->laserRetroSourceMaterial = res.staticCast<Ogre::Material>();
-  this->laserRetroSourceMaterial->load();
 }
 
 //////////////////////////////////////////////////
 void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
-  {
-    auto engine = Ogre2RenderEngine::Instance();
-    Ogre2IgnHlmsSphericalClipMinDistance &hlmsCustomizations =
-        engine->SphericalClipMinDistance();
-    Ogre::Pass *pass =
-        this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
-    pass->getVertexProgramParameters()->setNamedConstant(
-          "ignMinClipDistance", hlmsCustomizations.minDistanceClip );
-  }
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
 
-  // swap item to use v1 shader material
-  // Note: keep an eye out for performance impact on switching materials
-  // on the fly. We are not doing this often so should be ok.
   this->datablockMap.clear();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  // Construct one now so that datablock->setBlendblock
+  // each is as fast as possible
+  const Ogre::HlmsBlendblock *noBlend =
+    hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
+
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -300,33 +283,50 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
         retroValue = 2000.0f;
       }
       float color = retroValue / 2000.0f;
-      subItem->setCustomParameter(this->customParamIdx,
+      subItem->setCustomParameter(1u,
                                   Ogre::Vector4(color, color, color, 1.0));
-
       Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-      this->datablockMap[subItem] = datablock;
+      const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
 
-      subItem->setMaterial(this->laserRetroSourceMaterial);
+      // We can't do any sort of blending. This isn't colour what we're
+      // storing, but rather an ID.
+      if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
+          blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
+          blendblock->mBlendOperation != Ogre::SBO_ADD ||
+          (blendblock->mSeparateBlend &&
+           (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
+            blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
+            blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+      {
+        hlmsManager->addReference(blendblock);
+        this->datablockMap[datablock] = blendblock;
+        datablock->setBlendblock(noBlend);
+      }
     }
     itor.moveNext();
   }
+
+  // Remove the reference count on noBlend we created
+  hlmsManager->destroyBlendblock(noBlend);
 }
 
 //////////////////////////////////////////////////
 void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
-  // restore item to use hlms material
-  for (auto it : this->datablockMap)
-  {
-    Ogre::SubItem *subItem = it.first;
-    subItem->setDatablock(it.second);
-  }
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
 
-  Ogre::Pass *pass =
-      this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
-  pass->getVertexProgramParameters()->setNamedConstant(
-        "ignMinClipDistance", 0.0f );
+  // Restore original blending to modified materials
+  for (const auto &[datablock, blendblock] : this->datablockMap)
+  {
+    datablock->setBlendblock(blendblock);
+    // Remove the reference we added (this won't actually destroy it)
+    hlmsManager->destroyBlendblock(blendblock);
+  }
+  this->datablockMap.clear();
+
+  engine->SetIgnOgreRenderingMode(IORM_NORMAL);
 }
 
 
@@ -1285,6 +1285,9 @@ void Ogre2GpuRays::PostRender()
   image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
   Ogre::TextureBox box = image.getData(0u);
   float *bufferTmp = static_cast<float *>(box.data);
+
+  // TODO(anyone): It seems wasteful to have gpuRaysBuffer at all
+  // We should be able to convert directly from bufferTmp to gpuRaysScan
 
   // copy data row by row. The texture box may not be a contiguous region of
   // a texture

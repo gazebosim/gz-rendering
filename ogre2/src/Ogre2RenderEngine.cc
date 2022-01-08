@@ -42,12 +42,16 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
+#include "Ogre2IgnHlmsPbsPrivate.hh"
+#include "Ogre2IgnHlmsUnlitPrivate.hh"
+
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #include "Terra/TerraWorkspaceListener.h"
 #include "Ogre2IgnHlmsCustomizations.hh"
 
-class ignition::rendering::Ogre2RenderEnginePrivate
+class IGNITION_RENDERING_OGRE2_HIDDEN
+    ignition::rendering::Ogre2RenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
   public: GLXFBConfig* dummyFBConfigs = nullptr;
@@ -68,6 +72,12 @@ class ignition::rendering::Ogre2RenderEnginePrivate
   /// \brief Listener that needs to be in every workspace
   /// that wants terrain to cast shadows from spot and point lights
   public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
+
+  /// \brief Custom PBS modifications
+  public: Ogre::Ogre2IgnHlmsPbs *ignHlmsPbs{nullptr};
+
+  /// \brief Custom Unlit modifications
+  public: Ogre::Ogre2IgnHlmsUnlit *ignHlmsUnlit{nullptr};
 };
 
 using namespace ignition;
@@ -251,7 +261,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
                 matPtr->load();
               }
             }
-            catch(Ogre::Exception& e)
+            catch(Ogre::Exception&)
             {
               ignerr << "Unable to parse material file[" << fullPath << "]\n";
             }
@@ -261,7 +271,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
       }
     }
   }
-  catch(Ogre::Exception &_e)
+  catch(Ogre::Exception &)
   {
     ignerr << "Unable to load Ogre Resources.\nMake sure the"
         "resources path in the world file is set correctly." << std::endl;
@@ -466,7 +476,7 @@ void Ogre2RenderEngine::CreateRoot()
   {
     this->ogreRoot = new Ogre::Root("", "", "");
   }
-  catch (Ogre::Exception &ex)
+  catch (Ogre::Exception &)
   {
     ignerr << "Unable to create Ogre root" << std::endl;
   }
@@ -534,7 +544,7 @@ void Ogre2RenderEngine::LoadPlugins()
         // Load the plugin into OGRE
         this->ogreRoot->loadPlugin(filename);
       }
-      catch(Ogre::Exception &e)
+      catch(Ogre::Exception &)
       {
         if ((*piter).find("RenderSystem") != std::string::npos)
         {
@@ -722,10 +732,11 @@ void Ogre2RenderEngine::RegisterHlms()
       "FileSystem", true);
 
   {
-    Ogre::HlmsUnlit *hlmsUnlit = 0;
+    Ogre::Ogre2IgnHlmsUnlit *hlmsUnlit = 0;
     // Create & Register HlmsUnlit
     // Get the path to all the subdirectories used by HlmsUnlit
-    Ogre::HlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Ogre2IgnHlmsUnlit::getDefaultPaths(mainFolderPath,
+                                             libraryFoldersPaths);
     Ogre::Archive *archiveUnlit = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
     Ogre::ArchiveVec archiveUnlitLibraryFolders;
@@ -743,20 +754,22 @@ void Ogre2RenderEngine::RegisterHlms()
     archiveUnlitLibraryFolders.push_back(customizationsArchiveLibrary);
 
     // Create and register the unlit Hlms
-    hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit,
-        &archiveUnlitLibraryFolders);
+    hlmsUnlit = OGRE_NEW Ogre::Ogre2IgnHlmsUnlit(archiveUnlit,
+        &archiveUnlitLibraryFolders, &this->dataPtr->hlmsCustomizations);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
 
     // disable writting debug output to disk
     hlmsUnlit->setDebugOutputPath(false, false);
-    hlmsUnlit->setListener(&this->dataPtr->hlmsCustomizations);
+    hlmsUnlit->setListener(hlmsUnlit);
+
+    this->dataPtr->ignHlmsUnlit = hlmsUnlit;
   }
 
   {
-    Ogre::HlmsPbs *hlmsPbs = 0;
+    Ogre::Ogre2IgnHlmsPbs *hlmsPbs = 0;
     // Create & Register HlmsPbs
     // Do the same for HlmsPbs:
-    Ogre::HlmsPbs::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Ogre2IgnHlmsPbs::GetDefaultPaths(mainFolderPath, libraryFoldersPaths);
     Ogre::Archive *archivePbs = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
 
@@ -782,13 +795,16 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     // Create and register
-    hlmsPbs = OGRE_NEW Ogre::HlmsPbs(archivePbs, &archivePbsLibraryFolders);
-    hlmsPbs->setListener(this->dataPtr->hlmsPbsTerraShadows.get());
+    hlmsPbs = OGRE_NEW Ogre::Ogre2IgnHlmsPbs(
+      archivePbs, &archivePbsLibraryFolders, &this->dataPtr->hlmsCustomizations,
+      this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
     // disable writting debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
-    hlmsPbs->setListener(&this->dataPtr->hlmsCustomizations);
+    hlmsPbs->setListener(hlmsPbs);
+
+    dataPtr->ignHlmsPbs = hlmsPbs;
   }
 
   {
@@ -1005,6 +1021,13 @@ Ogre2IgnHlmsCustomizations& Ogre2RenderEngine::HlmsCustomizations()
 Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 {
   return this->ogreOverlaySystem;
+}
+
+/////////////////////////////////////////////////
+void Ogre2RenderEngine::SetIgnOgreRenderingMode(
+  IgnOgreRenderingMode renderingMode)
+{
+  this->dataPtr->ignHlmsPbs->ignOgreRenderingMode = renderingMode;
 }
 
 /////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 @property( ign_spherical_clip_min_distance )
-	@piece( custom_passBuffer )
+  @piece( custom_passBuffer_spherical_clip_min_distance )
 		#define ignMinClipDistance ignMinClipDistance_ignCameraPos.x
 		#define ignCameraPos ignMinClipDistance_ignCameraPos.yzw
 		float4 ignMinClipDistance_ignCameraPos;

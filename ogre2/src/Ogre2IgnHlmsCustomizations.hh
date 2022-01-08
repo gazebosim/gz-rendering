@@ -46,7 +46,7 @@ namespace ignition
     /// \internal
     /// \remark Public variables take effect immediately (i.e. for the
     /// next render)
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2IgnHlmsCustomizations final :
+    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2IgnHlmsCustomizations final :
         public Ogre::HlmsListener
     {
     public:

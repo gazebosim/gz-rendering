@@ -1,0 +1,7 @@
+@property( ign_render_solid_color )
+
+@piece( custom_ps_posExecution_solid_color )
+  outPs_colour0 = inPs.ignSolidColour;
+@end
+
+@end

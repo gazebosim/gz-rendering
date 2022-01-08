@@ -1,5 +1,5 @@
 @property( ign_spherical_clip_min_distance )
-	@piece( custom_vs_posExecution )
+  @piece( custom_vs_posExecution_spherical_clip_min_distance )
 		@property( ign_spherical_clip_needs_worldPos )
 			// Unlit didn't declare this
 			float3 worldPos = (gl_Position * passBuf.invViewProj).xyz;

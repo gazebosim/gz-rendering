@@ -79,7 +79,7 @@ void buildScene(ScenePtr _scene)
   desc.SetSize({10, 10, 5});
 
   desc.SetSampling(2u);
-  desc.SetUseTerrainPaging(true);
+  // desc.SetUseTerrainPaging(true);
 
   HeightmapTexture textureA;
   textureA.SetSize(1.0);

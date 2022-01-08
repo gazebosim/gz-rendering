@@ -465,9 +465,9 @@ void OgreHeightmap::Init()
   // ogre. It is later translated back by the setOrigin call.
   double minElevation = 0.0;
 
-  // TODO(chapulina) add a virtual HeightmapData::MinElevation function to
-  // avoid the ifdef check. i.e. heightmapSizeZ = MaxElevation - MinElevation
   double heightmapSizeZ = this->descriptor.Data()->MaxElevation();
+  heightmapSizeZ = heightmapSizeZ - this->descriptor.Data()->MinElevation();
+  minElevation = this->descriptor.Data()->MinElevation();
 
   // \todo These parameters shouldn't be hardcoded, and instead parametrized so
   // that they can be made consistent across different libraries (like
@@ -476,6 +476,7 @@ void OgreHeightmap::Init()
   // sampling size along image width and height
   unsigned int vertSize = (this->descriptor.Data()->Width() *
       this->descriptor.Sampling()) - this->descriptor.Sampling() + 1;
+
   math::Vector3d scale;
   scale.X(this->descriptor.Size().X() / vertSize);
   scale.Y(this->descriptor.Size().Y() / vertSize);
@@ -498,7 +499,6 @@ void OgreHeightmap::Init()
       this->dataPtr->heights.push_back(lookup[index] - minElevation);
     }
   }
-
   std::cout << "constructed lookup" << std::endl;
 
   this->dataPtr->dataSize = vertSize;

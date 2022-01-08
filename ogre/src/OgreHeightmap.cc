@@ -445,6 +445,8 @@ void OgreHeightmap::Init()
   if (this->descriptor.Name().empty())
     this->descriptor.SetName(this->Name());
 
+  std::cout << "set name"<< std::endl;
+
   // Add paths
   for (auto i = 0u; i < this->descriptor.TextureCount(); ++i)
   {
@@ -452,6 +454,8 @@ void OgreHeightmap::Init()
     OgreRenderEngine::Instance()->AddResourcePath(texture->Diffuse());
     OgreRenderEngine::Instance()->AddResourcePath(texture->Normal());
   }
+
+  std::cout << "added paths" << std::endl;
 
   // The terraingGroup is composed by a number of terrains (1 by default)
   int nTerrains = 1;
@@ -494,6 +498,8 @@ void OgreHeightmap::Init()
       this->dataPtr->heights.push_back(lookup[index] - minElevation);
     }
   }
+
+  std::cout << "constructed lookup" << std::endl;
 
   this->dataPtr->dataSize = vertSize;
 
@@ -560,6 +566,8 @@ void OgreHeightmap::Init()
     prefix = common::joinPaths(terrainDirPath, "ignition_terrain");
   }
 
+  std::cout << "paging finished" << std::endl;
+
   double sqrtN = sqrt(nTerrains);
 
   // Create terrain group, which holds all the individual terrain instances.
@@ -595,6 +603,11 @@ void OgreHeightmap::Init()
 
   defaultimp.terrainSize = this->dataPtr->dataSize;
   defaultimp.worldSize = this->descriptor.Size().X();
+
+  std::cout << "\t\tvertSize: " << vertSize << std::endl;
+  std::cout << "\t\tterrainSize: " << defaultimp.terrainSize << std::endl;
+  std::cout << "\t\tworldSize: " << defaultimp.worldSize << std::endl;
+  std::cout << "\t\tdescriptor width: " << this->descriptor.Data()->Width() << std::endl;
 
   defaultimp.inputScale = 1.0;
 
@@ -661,15 +674,39 @@ void OgreHeightmap::Init()
   ignmsg << "Loading heightmap: " << this->descriptor.Name() << std::endl;
   auto time = std::chrono::steady_clock::now();
 
+  std::cout << "sqrtN " << sqrtN << std::endl;
+
   for (int y = 0; y <= sqrtN - 1; ++y)
     for (int x = 0; x <= sqrtN - 1; ++x)
+    {
       this->DefineTerrain(x, y);
+      // this->dataPtr->terrainGroup->increaseLodLevel(x, y, true);
+      // below retrieving terrain ptr doesn't work, needs to be loaded
+      // Ogre::Terrain *terrain = this->dataPtr->terrainGroup->getTerrain(x, y);
+      // terrain->load();
+
+      // Ogre::TerrainQuadTreeNode *node = terrain->getQuadTree();
+    }
 
   // use ignition shaders
   this->CreateMaterial();
 
+  std::cout << "created materials" << std::endl;
+
+  // this->dataPtr->terrainGroup->update(true);
+  //
+  // std::cout << "updated" << std::endl;
+  //
+  // this->dataPtr->terrainGroup->updateDerivedData();
+  //
+  // std::cout << "update derived" << std::endl;
+
+  // this->dataPtr->terrainGroup->autoUpdateLod(true);
+
   // Sync load since we want everything in place when we start
   this->dataPtr->terrainGroup->loadAllTerrains(true);
+
+  std::cout << "loaded" << std::endl;
 
   ignmsg << "Heightmap loaded. Process took "
         <<  std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -966,14 +1003,22 @@ void OgreHeightmap::DefineTerrain(int _x, int _y)
 
       this->dataPtr->terrainGroup->defineTerrain(_x, _y,
           &this->dataPtr->subTerrains[this->dataPtr->terrainIdx][0]);
+      // this->dataPtr->terrainGroup->autoUpdateLod(_x, _y, true,
+      //     Ogre::Any(&this->dataPtr->subTerrains[this->dataPtr->terrainIdx][0]));
       ++this->dataPtr->terrainIdx;
     }
     else
     {
       this->dataPtr->terrainGroup->defineTerrain(_x, _y,
           &this->dataPtr->heights[0]);
+      // this->dataPtr->terrainGroup->autoUpdateLod(_x, _y, true,
+      //     Ogre::Any(&this->dataPtr->heights[0]));
     }
   }
+
+  // std::cout << "about to load" << std::endl;
+  // this->dataPtr->terrainGroup->loadTerrain(_x, _y, true);
+  // std::cout << "loaded" << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -1383,6 +1428,8 @@ Ogre::MaterialPtr IgnTerrainMatGen::SM2Profile::generate(
     lodValues.push_back(
         Ogre::TerrainGlobalOptions::getSingleton().getCompositeMapDistance());
 
+    for (auto &x :lodValues)
+      std::cout << "lodValues" << x << std::endl;
     mat->setLodLevels(lodValues);
     Ogre::Technique *lowLodTechnique = mat->getTechnique(1);
     lowLodTechnique->setLodIndex(1);

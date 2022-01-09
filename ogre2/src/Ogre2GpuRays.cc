@@ -219,7 +219,7 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
   {
     auto engine = Ogre2RenderEngine::Instance();
     Ogre2IgnHlmsSphericalClipMinDistance &hlmsCustomizations =
-        engine->HlmsCustomizations();
+        engine->SphericalClipMinDistance();
     Ogre::Pass *pass =
         this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
     pass->getVertexProgramParameters()->setNamedConstant(
@@ -1246,7 +1246,7 @@ void Ogre2GpuRays::Render()
   // "near plane distances" as proposed in:
   // https://github.com/ignitionrobotics/ign-rendering/issues/395
   Ogre2IgnHlmsSphericalClipMinDistance &hlmsCustomizations =
-      engine->HlmsCustomizations();
+      engine->SphericalClipMinDistance();
 
   hlmsCustomizations.minDistanceClip =
       static_cast<float>(this->NearClipPlane());

@@ -176,7 +176,7 @@ namespace ignition
       public: std::vector<unsigned int> FSAALevels() const;
 
       /// \brief Deprecated. Use SphericalClipMinDistance instead
-      public: Ogre2IgnHlmsSphericalClipMinDistance &IGN_DEPRECATED(7)
+      public: Ogre2IgnHlmsSphericalClipMinDistance IGN_DEPRECATED(7) &
           HlmsCustomizations();
 
       /// \brief Retrieves Hlms customizations for tweaking them

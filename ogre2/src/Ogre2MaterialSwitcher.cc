@@ -111,6 +111,9 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
     }
     itor.moveNext();
   }
+
+  // Remove the reference count on noBlend we created
+  hlmsManager->destroyBlendblock(noBlend);
 }
 
 /////////////////////////////////////////////////

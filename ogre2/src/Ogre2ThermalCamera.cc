@@ -108,9 +108,6 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
   /// \brief Scene manager
   private: Ogre2ScenePtr scene = nullptr;
 
-  /// \brief Pointer to the heat source material
-  private: Ogre::MaterialPtr heatSourceMaterial;
-
   /// \brief Pointer to the "base" heat signature material.
   /// All renderable items with a heat signature texture use their own
   /// copy of this base material, with the item's specific heat
@@ -129,14 +126,13 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
   /// \brief The thermal camera
   private: const Ogre::Camera* ogreCamera{nullptr};
 
-  /// \brief Custom parameter index of temperature data in an ogre subitem.
-  /// This has to match the custom index specifed in ThermalHeatSource material
-  /// script in media/materials/scripts/thermal_camera.material
-  private: const unsigned int customParamIdx = 10u;
-
   /// \brief A map of ogre sub item pointer to their original hlms material
   private: std::unordered_map<Ogre::SubItem *, Ogre::HlmsDatablock *>
-      datablockMap;
+      itemDatablockMap;
+
+  /// \brief A map of ogre datablock pointer to their original blendblocks
+  private: std::unordered_map<Ogre::HlmsDatablock *,
+      const Ogre::HlmsBlendblock *> datablockMap;
 
   /// \brief linear temperature resolution. Defaults to 10mK
   private: double resolution = 0.01;
@@ -214,9 +210,6 @@ Ogre2ThermalCameraMaterialSwitcher::Ogre2ThermalCameraMaterialSwitcher(
     Ogre::MaterialManager::getSingleton().load("ThermalHeatSource",
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-  this->heatSourceMaterial = res.staticCast<Ogre::Material>();
-  this->heatSourceMaterial->load();
-
   this->baseHeatSigMaterial = Ogre::MaterialManager::getSingleton().
     getByName("ThermalHeatSignature");
 
@@ -239,10 +232,21 @@ void Ogre2ThermalCameraMaterialSwitcher::SetLinearResolution(double _resolution)
 void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
+
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
-  this->datablockMap.clear();
+  this->itemDatablockMap.clear();
+
+  // Construct one now so that datablock->setBlendblock
+  // each is as fast as possible
+  const Ogre::HlmsBlendblock *noBlend =
+    hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
+
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -312,17 +316,31 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           Ogre::SubItem *subItem = item->getSubItem(i);
 
           // normalize temperature value
-          float color = (temp / this->resolution) / ((1 << bitDepth) - 1.0);
+          const float color = static_cast<float>((temp / this->resolution) /
+                                                 ((1 << bitDepth) - 1.0));
 
           // set g, b, a to 0. This will be used by shaders to determine
           // if particular fragment is a heat source or not
-          // see media/materials/programs/thermal_camera_fs.glsl
-          subItem->setCustomParameter(this->customParamIdx,
-              Ogre::Vector4(color, 0, 0, 0.0));
-          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          this->datablockMap[subItem] = datablock;
+          // see media/materials/programs/GLSL/thermal_camera_fs.glsl
+          subItem->setCustomParameter(1, Ogre::Vector4(color, 0, 0, 0.0));
 
-          subItem->setMaterial(this->heatSourceMaterial);
+          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+          const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
+
+          // We can't do any sort of blending. This isn't colour what we're
+          // storing, but rather an ID.
+          if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
+              blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
+              blendblock->mBlendOperation != Ogre::SBO_ADD ||
+              (blendblock->mSeparateBlend &&
+               (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
+                blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
+                blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+          {
+            hlmsManager->addReference(blendblock);
+            this->datablockMap[datablock] = blendblock;
+            datablock->setBlendblock(noBlend);
+          }
         }
       }
       // get heat signature and the corresponding min/max temperature values
@@ -336,7 +354,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
         {
           // make sure the texture is in ogre's resource path
           const auto &texture = *heatSignature;
-          auto engine = Ogre2RenderEngine::Instance();
           engine->AddResourcePath(texture);
 
           // create a material for this item, now that the texture has been
@@ -385,7 +402,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           Ogre::SubItem *subItem = item->getSubItem(i);
 
           Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          this->datablockMap[subItem] = datablock;
+          this->itemDatablockMap[subItem] = datablock;
 
           subItem->setMaterial(this->heatSignatureMaterials[item->getId()]);
         }
@@ -415,7 +432,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
             {
               Ogre::SubItem *subItem = item->getSubItem(i);
               Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-              this->datablockMap[subItem] = datablock;
+              this->itemDatablockMap[subItem] = datablock;
               subItem->setDatablock(unlit);
             }
           }
@@ -424,14 +441,29 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     }
     itor.moveNext();
   }
+
+  // Remove the reference count on noBlend we created
+  hlmsManager->destroyBlendblock(noBlend);
 }
 
 //////////////////////////////////////////////////
 void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  // Restore original blending to modified materials
+  for (const auto &[datablock, blendblock] : this->datablockMap)
+  {
+    datablock->setBlendblock(blendblock);
+    // Remove the reference we added (this won't actually destroy it)
+    hlmsManager->destroyBlendblock(blendblock);
+  }
+  this->datablockMap.clear();
+
   // restore item to use pbs hlms material
-  for (auto it : this->datablockMap)
+  for (auto it : this->itemDatablockMap)
   {
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);

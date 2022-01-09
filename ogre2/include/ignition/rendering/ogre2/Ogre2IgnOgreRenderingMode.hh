@@ -38,10 +38,14 @@ namespace ignition
         /// Used by e.g. Segmentation camera mode
         IORM_SOLID_COLOR,
 
-        /// \brief Render a solid color explicit per object.
-        /// But Unlit won't do that.
+        /// \brief Like IORM_SOLID_COLOR, but if CustomParameter 2u
+        /// is present, raw diffuse texture will be multiplied against
+        /// the solid colour.
+        ///
+        /// Also Unlit will behave as if IORM_NORMAL
+        ///
         /// Used by thermal camera
-        IORM_SOLID_COLOR_NOT_UNLIT,
+        IORM_SOLID_THERMAL_COLOR_TEXTURED,
 
         /// \brief Total number of rendering modes
         IORM_COUNT,

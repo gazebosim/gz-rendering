@@ -63,9 +63,12 @@ namespace Ogre
   {
     if (!_casterPass &&
         (this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
-         this->ignOgreRenderingMode == IORM_SOLID_COLOR_NOT_UNLIT))
+         this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED))
     {
       _hlms->_setProperty("ign_render_solid_color", 1);
+
+      if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED)
+        _hlms->_setProperty("ign_render_solid_color_textured", 1);
     }
 
     // Allow additional listener-only customizations to inject their stuff
@@ -144,7 +147,7 @@ namespace Ogre
 
     if (_casterPass ||
         (this->ignOgreRenderingMode != IORM_SOLID_COLOR &&
-         this->ignOgreRenderingMode != IORM_SOLID_COLOR_NOT_UNLIT))
+         this->ignOgreRenderingMode != IORM_SOLID_THERMAL_COLOR_TEXTURED))
     {
       return;
     }
@@ -161,7 +164,7 @@ namespace Ogre
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
     if ((this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
-         this->ignOgreRenderingMode == IORM_SOLID_COLOR_NOT_UNLIT) &&
+         this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
         !_casterPass)
     {
       Vector4 customParam =
@@ -173,7 +176,22 @@ namespace Ogre
       dataPtr[0] = customParam.x;
       dataPtr[1] = customParam.y;
       dataPtr[2] = customParam.z;
-      dataPtr[3] = customParam.w;
+
+      if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
+          _queuedRenderable.renderable->hasCustomParameter(2u))
+      {
+        IGN_ASSERT(customParam.w >= 0.0f,
+                   "customParam.w can't be negative for "
+                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+
+        // Negate customParam.w to tell the shader we wish to multiply
+        // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
+        dataPtr[3] = -customParam.w - 0.5f;
+      }
+      else
+      {
+        dataPtr[3] = customParam.w;
+      }
     }
 
     return instanceIdx;
@@ -188,7 +206,7 @@ namespace Ogre
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
     if ((this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
-         this->ignOgreRenderingMode == IORM_SOLID_COLOR_NOT_UNLIT) &&
+         this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
         !_casterPass)
     {
       Vector4 customParam;
@@ -217,6 +235,22 @@ namespace Ogre
       dataPtr[1] = customParam.y;
       dataPtr[2] = customParam.z;
       dataPtr[3] = customParam.w;
+
+      if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
+          _queuedRenderable.renderable->hasCustomParameter(2u))
+      {
+        IGN_ASSERT(customParam.w >= 0.0f,
+                   "customParam.w can't be negative for "
+                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+
+        // Negate customParam.w to tell the shader we wish to multiply
+        // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
+        dataPtr[3] = -customParam.w - 0.5f;
+      }
+      else
+      {
+        dataPtr[3] = customParam.w;
+      }
     }
 
     return instanceIdx;

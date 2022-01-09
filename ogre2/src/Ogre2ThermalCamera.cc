@@ -233,7 +233,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
   auto engine = Ogre2RenderEngine::Instance();
-  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR_NOT_UNLIT);
+  engine->SetIgnOgreRenderingMode(IORM_SOLID_THERMAL_COLOR_TEXTURED);
 
   Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
 
@@ -254,7 +254,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     Ogre::MovableObject *object = itor.peekNext();
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
-    bool backgroundObject = true;
     const std::string tempKey = "temperature";
     // get visual
     Ogre::Any userAny = item->getUserObjectBindings().getUserAny();
@@ -313,8 +312,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
               << std::endl;
         }
 
-        backgroundObject = false;
-
         for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
         {
           Ogre::SubItem *subItem = item->getSubItem(i);
@@ -350,8 +347,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
       // get heat signature and the corresponding min/max temperature values
       else if (auto heatSignature = std::get_if<std::string>(&tempAny))
       {
-        backgroundObject = false;
-
         // if this is the first time rendering the heat signature,
         // we need to make sure that the texture is loaded and applied to
         // the heat signature material before loading the material
@@ -413,72 +408,37 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           subItem->setMaterial(this->heatSignatureMaterials[item->getId()]);
         }
       }
-    }
-
-    // Temperature object not set (or there was an error)
-    // We need to use the "background object" material which uses
-    // an Unlit material to output full RGB that is actually used
-    // by thermal_camera_fs.glsl
-    if (backgroundObject)
-    {
-      VisualPtr result;
-      try
+      else
       {
-        result = this->scene->VisualById(Ogre::any_cast<unsigned int>(userAny));
-      }
-      catch (Ogre::Exception &e)
-      {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
-      }
-      Ogre2VisualPtr ogreVisual =
-        std::dynamic_pointer_cast<Ogre2Visual>(result);
-
-      Ogre::Aabb aabb = item->getWorldAabbUpdated();
-      Ogre::AxisAlignedBox box =
-        Ogre::AxisAlignedBox(aabb.getMinimum(), aabb.getMaximum());
-
-      // we will be converting rgb values to temperature values in shaders
-      // but we want to make sure the object rgb values are not affected by
-      // lighting, so disable lighting
-      // Also check if objects are within camera view
-      if (ogreVisual->GeometryCount() > 0u && this->ogreCamera->isVisible(box))
-      {
-        auto geom = ogreVisual->GeometryByIndex(0);
-        if (geom)
+        // Temperature object not set
+        // We consider this a "background object".
+        //
+        // It will be set to ambient temperature in thermal_camera_fs.glsl
+        // but its unlit, textured RGB color actually matters.
+        //
+        // We will be converting rgb values to temperature values in shaders
+        // thus we want them textured but without lighting
+        for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
         {
-          MaterialPtr mat = geom->Material();
-          Ogre2MaterialPtr ogreMat =
-            std::dynamic_pointer_cast<Ogre2Material>(mat);
+          Ogre::SubItem *subItem = item->getSubItem(i);
 
-          if(!ogreMat->HasTexture())
-          {
-            // Fast path: We can use the current PBS datablock
-            // while in IORM_SOLID_COLOR_NOT_UNLIT
-            math::Color color = ogreMat->Diffuse();
-            for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
-            {
-              Ogre::SubItem *subItem = item->getSubItem(i);
-              subItem->setCustomParameter(
-                1, Ogre::Vector4(color.R(), color.G(), color.B(), 1.0));
+          const Ogre::HlmsDatablock *datablock = subItem->getDatablock();
 
-              // We don't save to this->datablockMap because we're already
-              // honouring the original HlmsBlendblock. There's nothing
-              // to override.
-            }
-          }
-          else
-          {
-            // Slow path: IORM_SOLID_COLOR_NOT_UNLIT doesn't support a texture,
-            // so we use a temporary Unlit Datablock
-            Ogre::HlmsUnlitDatablock *unlit = ogreMat->UnlitDatablock();
-            for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
-            {
-              Ogre::SubItem *subItem = item->getSubItem(i);
-              Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-              this->itemDatablockMap[subItem] = datablock;
-              subItem->setDatablock(unlit);
-            }
-          }
+          IGN_ASSERT(datablock->getCreator()->getType() == Ogre::HLMS_PBS ||
+                       datablock->getCreator()->getType() == Ogre::HLMS_UNLIT,
+                     "Item's datablock is expected to be PBS or Unlit");
+
+          const Ogre::ColourValue color = datablock->getDiffuseColour();
+          subItem->setCustomParameter(
+            1u, Ogre::Vector4(color.r, color.g, color.b, 1.0));
+
+          // Set 2 to signal we want it to multiply against
+          // the diffuse texture (if any). The actual value doesn't matter.
+          subItem->setCustomParameter(2u, Ogre::Vector4::ZERO);
+
+          // We don't save to this->datablockMap because we're already
+          // honouring the original HlmsBlendblock. There's nothing
+          // to override.
         }
       }
     }

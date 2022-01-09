@@ -233,7 +233,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
   auto engine = Ogre2RenderEngine::Instance();
-  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
+  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR_NOT_UNLIT);
 
   Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
 
@@ -453,7 +453,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           if(!ogreMat->HasTexture())
           {
             // Fast path: We can use the current PBS datablock
-            // while in IORM_SOLID_COLOR
+            // while in IORM_SOLID_COLOR_NOT_UNLIT
             math::Color color = ogreMat->Diffuse();
             for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
             {
@@ -468,7 +468,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           }
           else
           {
-            // Slow path: IORM_SOLID_COLOR doesn't support a texture,
+            // Slow path: IORM_SOLID_COLOR_NOT_UNLIT doesn't support a texture,
             // so we use a temporary Unlit Datablock
             Ogre::HlmsUnlitDatablock *unlit = ogreMat->UnlitDatablock();
             for (unsigned int i = 0; i < item->getNumSubItems(); ++i)

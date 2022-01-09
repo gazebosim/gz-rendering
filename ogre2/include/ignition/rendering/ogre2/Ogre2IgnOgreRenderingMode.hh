@@ -38,6 +38,11 @@ namespace ignition
         /// Used by e.g. Segmentation camera mode
         IORM_SOLID_COLOR,
 
+        /// \brief Render a solid color explicit per object.
+        /// But Unlit won't do that.
+        /// Used by thermal camera
+        IORM_SOLID_COLOR_NOT_UNLIT,
+
         /// \brief Total number of rendering modes
         IORM_COUNT,
       };

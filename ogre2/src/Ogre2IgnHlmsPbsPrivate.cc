@@ -61,7 +61,9 @@ namespace Ogre
                                         SceneManager *_sceneManager,
                                         Hlms *_hlms)
   {
-    if (!_casterPass && this->ignOgreRenderingMode == IORM_SOLID_COLOR)
+    if (!_casterPass &&
+        (this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
+         this->ignOgreRenderingMode == IORM_SOLID_COLOR_NOT_UNLIT))
     {
       _hlms->_setProperty("ign_render_solid_color", 1);
     }
@@ -140,7 +142,9 @@ namespace Ogre
       listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock);
     }
 
-    if (_casterPass || this->ignOgreRenderingMode != IORM_SOLID_COLOR)
+    if (_casterPass ||
+        (this->ignOgreRenderingMode != IORM_SOLID_COLOR &&
+         this->ignOgreRenderingMode != IORM_SOLID_COLOR_NOT_UNLIT))
     {
       return;
     }
@@ -156,7 +160,9 @@ namespace Ogre
     const uint32 instanceIdx = HlmsPbs::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
+    if ((this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
+         this->ignOgreRenderingMode == IORM_SOLID_COLOR_NOT_UNLIT) &&
+        !_casterPass)
     {
       Vector4 customParam =
         _queuedRenderable.renderable->getCustomParameter(1u);
@@ -181,7 +187,9 @@ namespace Ogre
     const uint32 instanceIdx = HlmsPbs::fillBuffersForV2(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
+    if ((this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
+         this->ignOgreRenderingMode == IORM_SOLID_COLOR_NOT_UNLIT) &&
+        !_casterPass)
     {
       Vector4 customParam;
       try

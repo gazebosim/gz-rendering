@@ -210,6 +210,18 @@ void initUniforms()
   (*g_shaderParams)["u_resolution"].InitializeBuffer(2);
   (*g_shaderParams)["u_color"].InitializeBuffer(3);
   (*g_shaderParams)["u_adjustments"].InitializeBuffer(16);
+
+  auto engine = g_camera->Scene()->Engine();
+  if (engine->Name() == "ogre2")
+  {
+    // worldviewproj_matrix is a constant defined by ogre.
+    // Here we add a line to add this constant to the params.
+    // The specified value is ignored as it will be auto bound to the
+    // correct type and value. See available constants:
+    // https://github.com/OGRECave/ogre-next/blob/v2-2/OgreMain/src/OgreGpuProgramParams.cpp
+    auto params = shader->VertexShaderParams();
+    (*params)["worldviewproj_matrix"] = 1;
+  }
 }
 
 //////////////////////////////////////////////////

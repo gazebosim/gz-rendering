@@ -18,7 +18,7 @@
 #version 330
 
 in vec4 vertex;
-uniform mat4 worldViewProj;
+uniform mat4 worldviewproj_matrix;
 
 out gl_PerVertex
 {
@@ -29,7 +29,7 @@ out vec4 interpolatedPosition;
 
 void main()
 {
-  gl_Position = worldViewProj * vertex;
+  gl_Position = worldviewproj_matrix * vertex;
   interpolatedPosition = gl_Position;
 }
 

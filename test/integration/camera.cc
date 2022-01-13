@@ -54,7 +54,7 @@ class CameraTest: public testing::Test,
   // Test selecting visual with custom shader
   public: void ShaderSelection(const std::string &_renderEngine);
 
-  // Path to test textures
+  // Path to test media directory
   public: const std::string TEST_MEDIA_PATH =
           ignition::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
                 "test", "media");
@@ -570,6 +570,10 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
             << _renderEngine << std::endl;
     return;
   }
+
+  // This test checks that custom shaders are being rendering correctly in
+  // camera view. It also verifies that visual selection is working and the
+  // visual's material remains the same after selection.
 
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);

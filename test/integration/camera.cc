@@ -656,7 +656,6 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
     (*params)["worldviewproj_matrix"] = 1;
   }
 
-
   // render a few frames
   for (auto i = 0; i < 30; ++i)
   {
@@ -667,6 +666,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   Image image = camera->CreateImage();
   camera->Capture(image);
 
+  // verify correct visual is returned
   VisualPtr vis = camera->VisualAt(
       math::Vector2i(camera->ImageWidth() / 2, camera->ImageHeight() / 2));
   EXPECT_NE(nullptr, vis);
@@ -681,6 +681,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   unsigned int height = camera->ImageHeight();
   unsigned int width = camera->ImageWidth();
 
+  // verify that camera sees red color before and after selection
   int mid = (height / 2 * width * 3u) + (width / 2 - 1) * 3u;
   int r = static_cast<int>(data[mid]);
   int g = static_cast<int>(data[mid+1]);
@@ -731,7 +732,6 @@ TEST_P(CameraTest, ShaderSelection)
 {
   ShaderSelection(GetParam());
 }
-
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
     RENDER_ENGINE_VALUES,

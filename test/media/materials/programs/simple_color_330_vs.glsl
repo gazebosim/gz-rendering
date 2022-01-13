@@ -29,4 +29,3 @@ void main()
 {
   gl_Position = worldviewproj_matrix * vertex;
 }
-

@@ -86,8 +86,6 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
-  this->datablockMap.clear();
-  materialMap[this].clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -157,6 +155,8 @@ void Ogre2MaterialSwitcher::cameraPostRenderScene(
     }
     itor.moveNext();
   }
+  this->datablockMap.clear();
+  materialMap[this].clear();
 }
 
 /////////////////////////////////////////////////

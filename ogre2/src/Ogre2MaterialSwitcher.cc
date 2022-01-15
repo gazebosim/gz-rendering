@@ -83,7 +83,8 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
 
     this->colorDict[this->currentColor.AsRGBA()] = item->getName();
 
-    for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+    const size_t numSubItems = item->getNumSubItems();
+    for (size_t i = 0; i < numSubItems; ++i)
     {
       Ogre::SubItem *subItem = item->getSubItem(i);
 
@@ -131,6 +132,29 @@ void Ogre2MaterialSwitcher::cameraPostRenderScene(
     hlmsManager->destroyBlendblock(blendblock);
   }
   this->datablockMap.clear();
+
+  // Remove the custom parameter. Why? If there are multiple cameras that
+  // use IORM_SOLID_COLOR (or any other mode), we want them to throw if
+  // that code forgot to call setCustomParameter. We may miss those errors
+  // if that code forgets to call but it was already carrying the value
+  // we set here.
+  //
+  // This consumes more performance but it's the price to pay for
+  // safety.
+  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
+      Ogre::ItemFactory::FACTORY_TYPE_NAME);
+  while (itor.hasMoreElements())
+  {
+    Ogre::MovableObject *object = itor.peekNext();
+    Ogre::Item *item = static_cast<Ogre::Item *>(object);
+    const size_t numSubItems = item->getNumSubItems();
+    for (size_t i = 0; i < numSubItems; ++i)
+    {
+      Ogre::SubItem *subItem = item->getSubItem(i);
+      subItem->removeCustomParameter(1u);
+    }
+    itor.moveNext();
+  }
 
   engine->SetIgnOgreRenderingMode(IORM_NORMAL);
 }

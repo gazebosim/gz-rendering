@@ -43,6 +43,7 @@
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "Ogre2IgnHlmsPbsPrivate.hh"
+#include "Ogre2IgnHlmsTerraPrivate.hh"
 #include "Ogre2IgnHlmsUnlitPrivate.hh"
 
 #include "Terra/Hlms/OgreHlmsTerra.h"
@@ -777,6 +778,14 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // Get the library archive(s)
     Ogre::ArchiveVec archivePbsLibraryFolders;
+
+    {
+      archivePbsLibraryFolders.push_back(archiveManager.load(
+        rootHlmsFolder + common::joinPaths("Hlms", "Terra", "GLSL",
+        "PbsTerraShadows"), "FileSystem", true ));
+      this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
+    }
+
     libraryFolderPathIt = libraryFoldersPaths.begin();
     libraryFolderPathEn = libraryFoldersPaths.end();
     while (libraryFolderPathIt != libraryFolderPathEn)
@@ -789,12 +798,6 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     archivePbsLibraryFolders.push_back(customizationsArchiveLibrary);
-    {
-      archivePbsLibraryFolders.push_back(archiveManager.load(
-        rootHlmsFolder + common::joinPaths("Hlms", "Terra", "GLSL",
-        "PbsTerraShadows"), "FileSystem", true ));
-      this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
-    }
 
     // Create and register
     hlmsPbs =
@@ -811,10 +814,11 @@ void Ogre2RenderEngine::RegisterHlms()
   }
 
   {
-    Ogre::HlmsTerra *hlmsTerra = 0;
+    Ogre::Ogre2IgnHlmsTerra *hlmsTerra = 0;
     // Create & Register HlmsPbs
     // Do the same for HlmsPbs:
-    Ogre::HlmsTerra::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Ogre2IgnHlmsTerra::getDefaultPaths(mainFolderPath,
+                                             libraryFoldersPaths);
     Ogre::Archive *archiveTerra = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
 
@@ -835,8 +839,9 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     // Create and register
-    hlmsTerra = OGRE_NEW Ogre::HlmsTerra(archiveTerra,
-                                         &archiveTerraLibraryFolders);
+    hlmsTerra = OGRE_NEW Ogre::Ogre2IgnHlmsTerra(
+      archiveTerra, &archiveTerraLibraryFolders,
+      &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsTerra);
 
     // disable writting debug output to disk

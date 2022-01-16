@@ -102,7 +102,7 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
 
   /// \brief Keep track of num of instances of the same label
   /// Key: label id, value: num of instances
-  private: std::unordered_map<unsigned int, unsigned int> instancesCount;
+  private: std::unordered_map<int, unsigned int> instancesCount;
 
   /// \brief keep track of the random colors (store encoded id of r,g,b)
   private: std::unordered_set<int64_t> takenColors;

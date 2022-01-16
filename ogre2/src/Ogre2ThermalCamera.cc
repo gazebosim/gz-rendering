@@ -55,6 +55,7 @@
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
@@ -67,6 +68,8 @@
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
 #include <ignition/common/Image.hh>
+
+#include "Terra/Terra.h"
 
 namespace ignition
 {
@@ -247,6 +250,8 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
   const Ogre::HlmsBlendblock *noBlend =
     hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
 
+  const std::string tempKey = "temperature";
+
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -254,7 +259,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     Ogre::MovableObject *object = itor.peekNext();
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
-    const std::string tempKey = "temperature";
     // get visual
     Ogre::Any userAny = item->getUserObjectBindings().getUserAny();
     if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
@@ -449,6 +453,85 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     itor.moveNext();
   }
 
+  // Do the same with heightmaps / terrain
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+    {
+      VisualPtr visual = heightmap->Parent();
+
+      // get temperature
+      Variant tempAny = visual->UserData(tempKey);
+      if (tempAny.index() != 0 && !std::holds_alternative<std::string>(tempAny))
+      {
+        float temp = -1.0;
+        bool foundTemp = true;
+        try
+        {
+          temp = std::get<float>(tempAny);
+        }
+        catch (...)
+        {
+          try
+          {
+            temp = static_cast<float>(std::get<double>(tempAny));
+          }
+          catch (...)
+          {
+            try
+            {
+              temp = std::get<int>(tempAny);
+            }
+            catch (std::bad_variant_access &e)
+            {
+              ignerr << "Error casting user data: " << e.what() << "\n";
+              temp = -1.0;
+              foundTemp = false;
+            }
+          }
+        }
+
+        // if a non-positive temperature was given, clamp it to 0
+        if (foundTemp && temp < 0.0)
+        {
+          temp = 0.0;
+          ignwarn << "Unable to set negatve temperature for: " << visual->Name()
+                  << ". Value cannot be lower than absolute "
+                  << "zero. Clamping temperature to 0 degrees Kelvin."
+                  << std::endl;
+        }
+
+        // normalize temperature value
+        const float color = static_cast<float>((temp / this->resolution) /
+                                               ((1 << bitDepth) - 1.0));
+
+        heightmap->Terra()->SetSolidColor(1u, Ogre::Vector4(color, 0, 0, 0.0));
+        // TODO(anyone): Retrieve datablock and make sure it's not blending
+        // like we do with Items (it should be impossible?)
+      }
+      // get heat signature and the corresponding min/max temperature values
+      else if (std::get_if<std::string>(&tempAny))
+      {
+        ignerr << "Heat Signature not yet supported by Heightmaps. Simulation "
+                  "may crash!\n";
+      }
+      else
+      {
+        // Temperature object not set
+        // We consider this a "background object".
+
+        // TODO(anyone): Retrieve datablock and get diffuse color
+        // (it's likely gonna be 1 1 1 1 anyway... Does it matter?).
+        heightmap->Terra()->SetSolidColor(1u,
+                                          Ogre::Vector4(1.0, 1.0, 1.0, 1.0));
+        // TODO(anyone): Retrieve datablock and make sure it's not blending
+        // like we do with Items (it should be impossible?)
+      }
+    }
+  }
+
   // Remove the reference count on noBlend we created
   hlmsManager->destroyBlendblock(noBlend);
 }
@@ -491,6 +574,15 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
       subItem->removeCustomParameter(2u);
     }
     itor.moveNext();
+  }
+
+  // Remove the custom parameter (same reason as with Items)
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+      heightmap->Terra()->UnsetSolidColors();
   }
 
   // restore item to use pbs hlms material

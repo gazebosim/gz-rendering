@@ -26,6 +26,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
 #include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -35,6 +36,8 @@
 
 #include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
 #include "Ogre2ParticleNoiseListener.hh"
+
+#include "Terra/Terra.h"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -213,14 +216,14 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
   const Ogre::HlmsBlendblock *noBlend =
     hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
 
+  const std::string laserRetroKey = "laser_retro";
+
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
   {
     Ogre::MovableObject *object = itor.peekNext();
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
-
-    std::string laserRetroKey = "laser_retro";
 
     float retroValue = 0.0f;
 
@@ -307,6 +310,65 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
     itor.moveNext();
   }
 
+  // Do the same with heightmaps / terrain
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+    {
+      float retroValue = 0.0f;
+
+      // get visual
+      VisualPtr visual = heightmap->Parent();
+
+      if (visual->HasUserData(laserRetroKey))
+      {
+        // get laser_retro
+        Variant tempLaserRetro = visual->UserData(laserRetroKey);
+
+        try
+        {
+          retroValue = std::get<float>(tempLaserRetro);
+        }
+        catch (...)
+        {
+          try
+          {
+            retroValue = static_cast<float>(std::get<double>(tempLaserRetro));
+          }
+          catch (...)
+          {
+            try
+            {
+              retroValue = std::get<int>(tempLaserRetro);
+            }
+            catch (std::bad_variant_access &e)
+            {
+              ignerr << "Error casting user data: " << e.what() << "\n";
+            }
+          }
+        }
+      }
+
+      // only accept positive laser retro value
+      retroValue = std::max(retroValue, 0.0f);
+
+      // limit laser retro value to 2000 (as in gazebo)
+      if (retroValue > 2000.0f)
+      {
+        retroValue = 2000.0f;
+      }
+      float color = retroValue / 2000.0f;
+
+      // TODO(anyone): Retrieve datablock and make sure it's not blending
+      // like we do with Items (it should be impossible?)
+      const Ogre::Vector4 customParameter =
+        Ogre::Vector4(color, color, color, 1.0);
+      heightmap->Terra()->SetSolidColor(1u, customParameter);
+    }
+  }
+
   // Remove the reference count on noBlend we created
   hlmsManager->destroyBlendblock(noBlend);
 }
@@ -348,6 +410,15 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
       subItem->removeCustomParameter(1u);
     }
     itor.moveNext();
+  }
+
+  // Remove the custom parameter (same reason as with Items)
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+      heightmap->Terra()->UnsetSolidColors();
   }
 
   engine->SetIgnOgreRenderingMode(IORM_NORMAL);
@@ -1260,7 +1331,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
-  this->scene->StartRendering(nullptr);
+  this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   auto engine = Ogre2RenderEngine::Instance();
 

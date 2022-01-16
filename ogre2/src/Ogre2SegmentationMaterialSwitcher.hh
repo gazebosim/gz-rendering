@@ -67,6 +67,14 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// \return The map between color and label IDs
   public: const std::unordered_map<int64_t, int64_t> &ColorToLabel() const;
 
+  /// \brief Create a color to apply for the given visual
+  /// \param[in] _visual Visual will be applying the color to
+  /// \param[in,out] _prevParentName A persistent string between call
+  /// to ensure multilink visuals receive the same color
+  /// \return The color to apply to the visual
+  private: Ogre::Vector4 GetColorForVisual(const VisualPtr &_visual,
+                                           std::string &_prevParentName);
+
   /// \brief Convert label of semantic map to a unique color for colored map and
   /// add the color of the label to the taken colors if it doesn't exist
   /// \param[in] _label id of the semantic map or encoded id of panoptic map

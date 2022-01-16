@@ -17,10 +17,13 @@
 
 #include "ignition/common/Console.hh"
 
+#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
 #include "ignition/rendering/ogre2/Ogre2MaterialSwitcher.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/RenderTypes.hh"
+
+#include "Terra/Terra.h"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -83,14 +86,16 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
 
     this->colorDict[this->currentColor.AsRGBA()] = item->getName();
 
+    const Ogre::Vector4 ogreCurrentColor(this->currentColor.R(),
+                                         this->currentColor.G(),
+                                         this->currentColor.B(), 1.0);
+
     const size_t numSubItems = item->getNumSubItems();
     for (size_t i = 0; i < numSubItems; ++i)
     {
       Ogre::SubItem *subItem = item->getSubItem(i);
 
-      subItem->setCustomParameter(1,
-          Ogre::Vector4(this->currentColor.R(), this->currentColor.G(),
-                        this->currentColor.B(), 1.0));
+      subItem->setCustomParameter(1, ogreCurrentColor);
 
       Ogre::HlmsDatablock *datablock = subItem->getDatablock();
       const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
@@ -111,6 +116,24 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
       }
     }
     itor.moveNext();
+  }
+
+  // Do the same with heightmaps / terrain
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+    {
+      this->NextColor();
+      this->colorDict[this->currentColor.AsRGBA()] = heightmap->Name();
+
+      // TODO(anyone): Retrieve datablock and make sure it's not blending
+      // like we do with Items (it should be impossible?)
+      heightmap->Terra()->SetSolidColor(
+        1u, Ogre::Vector4(this->currentColor.R(), this->currentColor.G(),
+                          this->currentColor.B(), 1.0));
+    }
   }
 
   // Remove the reference count on noBlend we created
@@ -154,6 +177,15 @@ void Ogre2MaterialSwitcher::cameraPostRenderScene(
       subItem->removeCustomParameter(1u);
     }
     itor.moveNext();
+  }
+
+  // Remove the custom parameter (same reason as with Items)
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+      heightmap->Terra()->UnsetSolidColors();
   }
 
   engine->SetIgnOgreRenderingMode(IORM_NORMAL);

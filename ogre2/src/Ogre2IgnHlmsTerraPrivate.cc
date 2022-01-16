@@ -21,6 +21,8 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
+#include "Terra/Terra.h"
+
 #ifdef _MSC_VER
 #  pragma warning(push, 0)
 #endif
@@ -162,8 +164,27 @@ namespace Ogre
          this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
         !_casterPass)
     {
-      Vector4 customParam =
-        _queuedRenderable.renderable->getCustomParameter(1u);
+      const Ogre::Terra *terra =
+        static_cast<const Ogre::Terra *>(_queuedRenderable.movableObject);
+
+      Vector4 customParam;
+      try
+      {
+        customParam = terra->SolidColor(1u);
+      }
+      catch (ItemIdentityException &)
+      {
+        // This error can trigger for two reasons:
+        //
+        //  1. We forgot to call setSolidColor(1u, ...)
+        //  2. This object should not be rendered and we should've called
+        //     movableObject->setVisible(false) or use RenderQueue IDs
+        //     or visibility flags to prevent rendering it
+        ignerr << "A module is trying to render an object without "
+                  "specifying a parameter. Please report this bug at "
+                  "https://github.com/ignitionrobotics/ign-rendering/issues\n";
+        throw;
+      }
       float *dataPtr = this->MapObjectDataBufferFor(
         instanceIdx, _commandBuffer, this->mVaoManager, this->mConstBuffers,
         this->mCurrentConstBuffer, this->mStartMappedConstBuffer,
@@ -173,7 +194,7 @@ namespace Ogre
       dataPtr[2] = customParam.z;
 
       if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
-          _queuedRenderable.renderable->hasCustomParameter(2u))
+          terra->HasSolidColor(2u))
       {
         IGN_ASSERT(customParam.w >= 0.0f,
                    "customParam.w can't be negative for "
@@ -204,16 +225,19 @@ namespace Ogre
          this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
         !_casterPass)
     {
+      const Ogre::Terra *terra =
+        static_cast<const Ogre::Terra *>(_queuedRenderable.movableObject);
+
       Vector4 customParam;
       try
       {
-        customParam = _queuedRenderable.renderable->getCustomParameter(1u);
+        customParam = terra->SolidColor(1u);
       }
       catch (ItemIdentityException &)
       {
         // This error can trigger for two reasons:
         //
-        //  1. We forgot to call setCustomParameter(1u, ...)
+        //  1. We forgot to call setSolidColor(1u, ...)
         //  2. This object should not be rendered and we should've called
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
@@ -232,7 +256,7 @@ namespace Ogre
       dataPtr[3] = customParam.w;
 
       if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
-          _queuedRenderable.renderable->hasCustomParameter(2u))
+          terra->HasSolidColor(2u))
       {
         IGN_ASSERT(customParam.w >= 0.0f,
                    "customParam.w can't be negative for "
@@ -279,6 +303,8 @@ namespace Ogre
       common::joinPaths("Hlms", "Ignition", "SolidColor"));
     _outLibraryFoldersPaths.push_back(
       common::joinPaths("Hlms", "Ignition", "SphericalClipMinDistance"));
+    _outLibraryFoldersPaths.push_back(
+      common::joinPaths("Hlms", "Terra", "ign"));
     _outLibraryFoldersPaths.push_back(
       common::joinPaths("Hlms", "Ignition", "Pbs"));
   }

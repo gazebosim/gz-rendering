@@ -1007,12 +1007,13 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
     return;
   }
 
+  std::string baseName = common::basename(_path);
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
   "FileSystem", "General", false);
 
   Ogre::HighLevelGpuProgramPtr vertexShader =
     Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
-        "_ign_" + _path,
+        "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
@@ -1064,9 +1065,10 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
   "FileSystem", "General", false);
 
+  std::string baseName = common::basename(_path);
   Ogre::HighLevelGpuProgramPtr fragmentShader =
     Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
-        "_ign_" + _path,
+        "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
 

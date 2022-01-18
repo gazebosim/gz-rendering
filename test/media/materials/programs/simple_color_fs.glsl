@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,7 @@
  *
  */
 
-#version 330
-
-in vec4 vertex;
-uniform mat4 worldviewproj_matrix;
-
-out gl_PerVertex
-{
-  vec4 gl_Position;
-};
-
-out vec4 interpolatedPosition;
-
 void main()
 {
-  gl_Position = worldviewproj_matrix * vertex;
-  interpolatedPosition = gl_Position;
+  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
-

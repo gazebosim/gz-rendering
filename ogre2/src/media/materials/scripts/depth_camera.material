@@ -135,6 +135,13 @@ fragment_program DepthCameraFinalFS_Metal metal
 {
   source depth_camera_final_fs.metal
   shader_reflection_pair_hint DepthCameraFinalVS_Metal
+
+  default_params
+  {
+    param_named inputTexture int 0
+
+    param_named_auto texResolution texture_size 0
+  }
 }
 
 // Unified shaders

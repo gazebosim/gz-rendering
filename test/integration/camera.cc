@@ -567,7 +567,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   if (_renderEngine == "optix")
   {
     igndbg << "Custom shaders are not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
+           << _renderEngine << std::endl;
     return;
   }
   else if (_renderEngine == "ogre2")
@@ -597,7 +597,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+           << "' is not supported" << std::endl;
     return;
   }
 

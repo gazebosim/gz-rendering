@@ -5,6 +5,14 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
+## Ignition Rendering 6.x to 7.x
+
+### Deprecations
+
+1. **ogre2/include/ignition/rendering/ogre2/Ogre2RenderEngine.hh**
+    + Deprecated: `Ogre2IgnHlmsSphericalClipMinDistance &HlmsCustomizations()`
+    + Replacement: `Ogre2IgnHlmsSphericalClipMinDistance &SphericalClipMinDistance()`
+
 ## Ignition Rendering 5.x to 6.x
 
 ### Modifications

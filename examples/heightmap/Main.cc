@@ -28,8 +28,8 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
-#include <ignition/common/HeightmapData.hh>
-#include <ignition/common/ImageHeightmap.hh>
+#include <ignition/common/geospatial/HeightmapData.hh>
+#include <ignition/common/geospatial/ImageHeightmap.hh>
 #include <ignition/rendering.hh>
 
 #include "example_config.hh"

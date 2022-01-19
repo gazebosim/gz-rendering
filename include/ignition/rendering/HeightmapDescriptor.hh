@@ -19,7 +19,7 @@
 
 #include <memory>
 #include <string>
-#include <ignition/common/HeightmapData.hh>
+#include <ignition/common/geospatial/HeightmapData.hh>
 #include <ignition/common/SuppressWarning.hh>
 
 #include "ignition/rendering/config.hh"

@@ -53,7 +53,7 @@ namespace ignition
     //
     // forward declaration
     class Ogre2RenderEnginePrivate;
-    class Ogre2IgnHlmsCustomizations;
+    class Ogre2IgnHlmsSphericalClipMinDistance;
 
     /// \brief Plugin for loading ogre render engine
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderEnginePlugin :
@@ -175,9 +175,13 @@ namespace ignition
       /// \return a list of FSAA levels
       public: std::vector<unsigned int> FSAALevels() const;
 
+      /// \brief Deprecated. Use SphericalClipMinDistance instead
+      public: Ogre2IgnHlmsSphericalClipMinDistance IGN_DEPRECATED(7) &
+          HlmsCustomizations();
+
       /// \brief Retrieves Hlms customizations for tweaking them
       /// \return Ogre HLMS customizations
-      public: Ogre2IgnHlmsCustomizations &HlmsCustomizations();
+      public: Ogre2IgnHlmsSphericalClipMinDistance &SphericalClipMinDistance();
 
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.

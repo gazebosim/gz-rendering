@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
-#include "Ogre2IgnHlmsCustomizations.hh"
+#include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
 
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 
 #ifdef _MSC_VER
-  #pragma warning(push, 0)
+#  pragma warning(push, 0)
 #endif
 #include <OgreCamera.h>
 #include <OgreHlms.h>
@@ -28,18 +28,17 @@
 #include <OgreSceneManager.h>
 #include <OgreViewport.h>
 #ifdef _MSC_VER
-  #pragma warning(pop)
+#  pragma warning(pop)
 #endif
 
 using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-void Ogre2IgnHlmsCustomizations::preparePassHash(
-    const Ogre::CompositorShadowNode */*_shadowNode*/,
-    bool _casterPass, bool /*_dualParaboloid*/,
-    Ogre::SceneManager */*_sceneManager*/,
-    Ogre::Hlms *_hlms)
+void Ogre2IgnHlmsSphericalClipMinDistance::preparePassHash(
+  const Ogre::CompositorShadowNode * /*_shadowNode*/, bool _casterPass,
+  bool /*_dualParaboloid*/, Ogre::SceneManager * /*_sceneManager*/,
+  Ogre::Hlms *_hlms)
 {
   this->needsWorldPos = false;
   if (!_casterPass && this->MinDistanceClipEnabled())
@@ -62,10 +61,9 @@ void Ogre2IgnHlmsCustomizations::preparePassHash(
 }
 
 //////////////////////////////////////////////////
-Ogre::uint32 Ogre2IgnHlmsCustomizations::getPassBufferSize(
-    const Ogre::CompositorShadowNode */*_shadowNode*/,
-    bool _casterPass, bool /*_dualParaboloid*/,
-    Ogre::SceneManager */*_sceneManager*/) const
+Ogre::uint32 Ogre2IgnHlmsSphericalClipMinDistance::getPassBufferSize(
+  const Ogre::CompositorShadowNode * /*_shadowNode*/, bool _casterPass,
+  bool /*_dualParaboloid*/, Ogre::SceneManager * /*_sceneManager*/) const
 {
   if (_casterPass || !this->MinDistanceClipEnabled())
     return 0u;
@@ -78,16 +76,15 @@ Ogre::uint32 Ogre2IgnHlmsCustomizations::getPassBufferSize(
 }
 
 //////////////////////////////////////////////////
-float* Ogre2IgnHlmsCustomizations::preparePassBuffer(
-    const Ogre::CompositorShadowNode */*_shadowNode*/,
-    bool _casterPass, bool /*_dualParaboloid*/,
-    Ogre::SceneManager *_sceneManager,
-    float *_passBufferPtr)
+float *Ogre2IgnHlmsSphericalClipMinDistance::preparePassBuffer(
+  const Ogre::CompositorShadowNode * /*_shadowNode*/, bool _casterPass,
+  bool /*_dualParaboloid*/, Ogre::SceneManager *_sceneManager,
+  float *_passBufferPtr)
 {
   if (!_casterPass && this->MinDistanceClipEnabled())
   {
     const Ogre::Camera *camera =
-        _sceneManager->getCamerasInProgress().renderingCamera;
+      _sceneManager->getCamerasInProgress().renderingCamera;
     const Ogre::Vector3 &camPos = camera->getDerivedPosition();
 
     // float4 ignMinClipDistance_ignCameraPos
@@ -105,19 +102,18 @@ float* Ogre2IgnHlmsCustomizations::preparePassBuffer(
       auto engine = Ogre2RenderEngine::Instance();
       auto ogreRoot = engine->OgreRoot();
       Ogre::RenderPassDescriptor *renderPassDesc =
-          ogreRoot->getRenderSystem()->getCurrentPassDescriptor();
-      Ogre::Matrix4 projectionMatrix =
-          camera->getProjectionMatrixWithRSDepth();
+        ogreRoot->getRenderSystem()->getCurrentPassDescriptor();
+      Ogre::Matrix4 projectionMatrix = camera->getProjectionMatrixWithRSDepth();
       if (renderPassDesc->requiresTextureFlipping())
       {
-          projectionMatrix[1][0]  = -projectionMatrix[1][0];
-          projectionMatrix[1][1]  = -projectionMatrix[1][1];
-          projectionMatrix[1][2]  = -projectionMatrix[1][2];
-          projectionMatrix[1][3]  = -projectionMatrix[1][3];
+        projectionMatrix[1][0] = -projectionMatrix[1][0];
+        projectionMatrix[1][1] = -projectionMatrix[1][1];
+        projectionMatrix[1][2] = -projectionMatrix[1][2];
+        projectionMatrix[1][3] = -projectionMatrix[1][3];
       }
 
-      Ogre::Matrix4 invViewProj = (projectionMatrix *
-                                   camera->getViewMatrix(true)).inverse();
+      Ogre::Matrix4 invViewProj =
+        (projectionMatrix * camera->getViewMatrix(true)).inverse();
       for (size_t i = 0; i < 16u; ++i)
       {
         *_passBufferPtr++ = static_cast<float>(invViewProj[0][i]);

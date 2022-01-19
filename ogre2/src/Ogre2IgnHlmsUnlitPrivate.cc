@@ -45,7 +45,7 @@ namespace Ogre
 
   Ogre2IgnHlmsUnlit::Ogre2IgnHlmsUnlit(
     Archive *dataFolder, ArchiveVec *libraryFolders,
-    Ogre2IgnHlmsCustomizations *_sphericalClipMinDistance) :
+    Ogre2IgnHlmsSphericalClipMinDistance *_sphericalClipMinDistance) :
     HlmsUnlit(dataFolder, libraryFolders)
   {
     this->customizations.push_back(_sphericalClipMinDistance);

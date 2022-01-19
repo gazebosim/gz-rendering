@@ -47,7 +47,7 @@ namespace Ogre
 
   Ogre2IgnHlmsPbs::Ogre2IgnHlmsPbs(
     Archive *dataFolder, ArchiveVec *libraryFolders,
-    Ogre2IgnHlmsCustomizations *_sphericalClipMinDistance,
+    Ogre2IgnHlmsSphericalClipMinDistance *_sphericalClipMinDistance,
     Ogre::HlmsPbsTerraShadows *terraShadows) :
     HlmsPbs(dataFolder, libraryFolders)
   {

@@ -48,7 +48,7 @@
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #include "Terra/TerraWorkspaceListener.h"
-#include "Ogre2IgnHlmsCustomizations.hh"
+#include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
 
 class IGNITION_RENDERING_OGRE2_HIDDEN
     ignition::rendering::Ogre2RenderEnginePrivate
@@ -64,7 +64,8 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
   public: std::vector<unsigned int> fsaaLevels;
 
   /// \brief Controls Hlms customizations for both PBS and Unlit
-  public: ignition::rendering::Ogre2IgnHlmsCustomizations hlmsCustomizations;
+  public: ignition::rendering::Ogre2IgnHlmsSphericalClipMinDistance
+  sphericalClipMinDistance;
 
   /// \brief Pbs listener that adds terra shadows
   public: std::unique_ptr<Ogre::HlmsPbsTerraShadows> hlmsPbsTerraShadows;
@@ -754,8 +755,9 @@ void Ogre2RenderEngine::RegisterHlms()
     archiveUnlitLibraryFolders.push_back(customizationsArchiveLibrary);
 
     // Create and register the unlit Hlms
-    hlmsUnlit = OGRE_NEW Ogre::Ogre2IgnHlmsUnlit(archiveUnlit,
-        &archiveUnlitLibraryFolders, &this->dataPtr->hlmsCustomizations);
+    hlmsUnlit = OGRE_NEW Ogre::Ogre2IgnHlmsUnlit(
+      archiveUnlit, &archiveUnlitLibraryFolders,
+      &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
 
     // disable writting debug output to disk
@@ -795,9 +797,10 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     // Create and register
-    hlmsPbs = OGRE_NEW Ogre::Ogre2IgnHlmsPbs(
-      archivePbs, &archivePbsLibraryFolders, &this->dataPtr->hlmsCustomizations,
-      this->dataPtr->hlmsPbsTerraShadows.get());
+    hlmsPbs =
+      OGRE_NEW Ogre::Ogre2IgnHlmsPbs(archivePbs, &archivePbsLibraryFolders,
+                                     &this->dataPtr->sphericalClipMinDistance,
+                                     this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
     // disable writting debug output to disk
@@ -1012,9 +1015,16 @@ std::vector<unsigned int> Ogre2RenderEngine::FSAALevels() const
 }
 
 /////////////////////////////////////////////////
-Ogre2IgnHlmsCustomizations& Ogre2RenderEngine::HlmsCustomizations()
+Ogre2IgnHlmsSphericalClipMinDistance& Ogre2RenderEngine::HlmsCustomizations()
 {
-  return this->dataPtr->hlmsCustomizations;
+  return this->dataPtr->sphericalClipMinDistance;
+}
+
+/////////////////////////////////////////////////
+Ogre2IgnHlmsSphericalClipMinDistance& Ogre2RenderEngine::
+SphericalClipMinDistance()
+{
+  return this->dataPtr->sphericalClipMinDistance;
 }
 
 /////////////////////////////////////////////////

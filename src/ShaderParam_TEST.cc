@@ -196,6 +196,42 @@ TEST(ShaderParam, IntBufferType)
   EXPECT_FALSE(p4.Buffer(buffer4));
 }
 
+/////////////////////////////////////////////////
+TEST(ShaderParam, TextureType)
+{
+  ShaderParam p;
+  std::string texName = "some_texture.png";
+  ShaderParam::ParamType type = ShaderParam::ParamType::PARAM_TEXTURE;
+  unsigned int uvSetIndex = 1u;
+  p.SetTexture(texName, type, uvSetIndex);
+
+  std::string texNameRet;
+  unsigned int uvSetIndexRet;
+  p.Value(texNameRet, uvSetIndexRet);
+  EXPECT_EQ(type, p.Type());
+  EXPECT_EQ(texName, texNameRet);
+  EXPECT_EQ(uvSetIndex, uvSetIndexRet);
+
+  // test copy assignment
+  ShaderParam p2;
+  p2 = p;
+  EXPECT_EQ(type, p2.Type());
+  std::string texNameRet2;
+  unsigned int uvSetIndexRet2;
+  p2.Value(texNameRet2, uvSetIndexRet2);
+  EXPECT_EQ(texName, texNameRet2);
+  EXPECT_EQ(uvSetIndex, uvSetIndexRet2);
+
+  // test copy constructor
+  ShaderParam p3(p);
+  EXPECT_EQ(type, p3.Type());
+  std::string texNameRet3;
+  unsigned int uvSetIndexRet3;
+  p3.Value(texNameRet3, uvSetIndexRet3);
+  EXPECT_EQ(texName, texNameRet3);
+  EXPECT_EQ(uvSetIndex, uvSetIndexRet3);
+}
+
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {

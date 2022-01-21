@@ -254,9 +254,7 @@ void handleMouse()
   }
 }
 
-
 //////////////////////////////////////////////////
-//! [update uniforms]
 void updateUniforms()
 {
   if (!g_vsParams)
@@ -267,10 +265,10 @@ void updateUniforms()
       std::chrono::duration_cast<std::chrono::milliseconds>(t).count() /
       1000.0;
 
+  // update the time `t` uniform
   float s = fmod(seconds, 100);
   (*g_vsParams)["t"] = s;
 }
-//! [update uniforms]
 
 //////////////////////////////////////////////////
 void displayCB()
@@ -349,6 +347,7 @@ void initUniforms()
   if (!shader)
     return;
 
+  // set vertex shader params
   g_vsParams = shader->VertexShaderParams();
 
   auto engine = g_camera->Scene()->Engine();
@@ -409,9 +408,11 @@ void initUniforms()
 
   // camera_position_object_space is a constant defined by ogre.
   (*g_vsParams)["camera_position_object_space"] = 1;
+
   (*g_vsParams)["t"] = 0.0f;
   g_startTime = std::chrono::steady_clock::now();
 
+  // set fragment shader params
   g_fsParams = shader->FragmentShaderParams();
 
   float hdrMultiplier = 0.4f;

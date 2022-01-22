@@ -63,24 +63,25 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 //
 /// \brief Helper class for switching the ogre item's material to laser retro
 /// source material when a thermal camera is being rendered.
-class Ogre2LaserRetroMaterialSwitcher : public Ogre::Camera::Listener
+class IGNITION_RENDERING_OGRE2_HIDDEN
+    Ogre2LaserRetroMaterialSwitcher : public Ogre::CompositorWorkspaceListener
 {
   /// \brief constructor
   /// \param[in] _scene the scene manager responsible for rendering
   public: explicit Ogre2LaserRetroMaterialSwitcher(Ogre2ScenePtr _scene);
 
   /// \brief destructor
-  public: ~Ogre2LaserRetroMaterialSwitcher() = default;
+  public: virtual ~Ogre2LaserRetroMaterialSwitcher() = default;
 
-  /// \brief Callback when a camera is about to be rendered
-  /// \param[in] _evt Ogre camera which is about to render
-  private: virtual void cameraPreRenderScene(
-      Ogre::Camera *_cam) override;
+  /// \brief Called when each pass is about to be executed.
+  /// \param[in] _pass Ogre pass which is about to execute
+  private: virtual void passPreExecute(
+      Ogre::CompositorPass *_pass) override;
 
-  /// \brief Callback when a camera is finisned being rendered
-  /// \param[in] _evt Ogre camera which has already rendered
-  private: virtual void cameraPostRenderScene(
-      Ogre::Camera *_cam) override;
+    /// \brief Callback when each pass is finisned executing.
+    /// \param[in] _pass Ogre pass which has already executed
+  private: virtual void passPosExecute(
+      Ogre::CompositorPass *_pass) override;
 
   /// \brief Scene manager
   private: Ogre2ScenePtr scene = nullptr;
@@ -96,7 +97,7 @@ class Ogre2LaserRetroMaterialSwitcher : public Ogre::Camera::Listener
 
 /// \internal
 /// \brief Private data for the Ogre2GpuRays class
-class ignition::rendering::Ogre2GpuRaysPrivate
+class IGNITION_RENDERING_OGRE2_HIDDEN ignition::rendering::Ogre2GpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.
@@ -193,6 +194,8 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 using namespace ignition;
 using namespace rendering;
 
+// Arbitrary value
+static const uint32_t kLaserRetroMainDepthPassId = 9525u;
 
 //////////////////////////////////////////////////
 Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
@@ -202,9 +205,12 @@ Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
 }
 
 //////////////////////////////////////////////////
-void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
-    Ogre::Camera * /*_cam*/)
+void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
+  Ogre::CompositorPass *_pass)
 {
+  if(_pass->getDefinition()->mIdentifier != kLaserRetroMainDepthPassId)
+    return;
+
   auto engine = Ogre2RenderEngine::Instance();
   engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
 
@@ -374,9 +380,12 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
 }
 
 //////////////////////////////////////////////////
-void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
-    Ogre::Camera * /*_cam*/)
+void Ogre2LaserRetroMaterialSwitcher::passPosExecute(
+  Ogre::CompositorPass *_pass)
 {
+  if(_pass->getDefinition()->mIdentifier != kLaserRetroMainDepthPassId)
+    return;
+
   auto engine = Ogre2RenderEngine::Instance();
   Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
 
@@ -1001,6 +1010,8 @@ void Ogre2GpuRays::Setup1stPass()
           colorTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
+      // Id so we can run custom code in our CompositorWorkspaceListener
+      passScene->mIdentifier = kLaserRetroMainDepthPassId;
       // set camera custom visibility mask when rendering laser retro
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
@@ -1115,6 +1126,13 @@ void Ogre2GpuRays::Setup1stPass()
           wsDefName,
           false);
 
+    // add laser retro material switcher to workspace listener
+    // so we can switch to use IORM_SOLID_COLOR
+    this->dataPtr->laserRetroMaterialSwitcher[i].reset(
+      new Ogre2LaserRetroMaterialSwitcher(this->scene));
+    this->dataPtr->ogreCompositorWorkspace1st[i]->addListener(
+      this->dataPtr->laserRetroMaterialSwitcher[i].get());
+
     Ogre::CompositorNode *node =
         this->dataPtr->ogreCompositorWorkspace1st[i]->getNodeSequence()[0];
     auto channelsTex = node->getLocalTextures();
@@ -1123,14 +1141,6 @@ void Ogre2GpuRays::Setup1stPass()
     {
       if (c->getPixelFormat() == Ogre::PFG_R16_UNORM)
       {
-        // add laser retro material switcher to render target listener
-        // so we can switch to use laser retro material when the camera is being
-        // updated
-        this->dataPtr->laserRetroMaterialSwitcher[i].reset(
-            new Ogre2LaserRetroMaterialSwitcher(this->scene));
-        this->dataPtr->cubeCam[i]->addListener(
-            this->dataPtr->laserRetroMaterialSwitcher[i].get());
-
         // add particle noise / scatter effects listener so we can set the
         // amount of noise based on size of emitter
         this->dataPtr->particleNoiseListener[i].reset(

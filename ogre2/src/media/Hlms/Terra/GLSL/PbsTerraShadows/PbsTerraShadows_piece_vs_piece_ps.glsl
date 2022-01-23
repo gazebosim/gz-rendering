@@ -15,7 +15,8 @@
 
 /// Add the shadows' texture to the vertex shader
 @piece( custom_vs_uniformDeclaration_terra )
-    uniform sampler2D terrainShadows;
+	vulkan_layout( ogre_t@value(terrainShadows) ) uniform texture2D terrainShadows;
+	vulkan( layout( ogre_s@value(terrainShadows) ) uniform sampler terrainShadowSampler );
 @end
 
 /// Evaluate the shadow based on world XZ position & height in the vertex shader.
@@ -27,8 +28,9 @@
 	@else
 		vec3 terraWorldPos = worldPos.xyz;
 	@end
-	vec3 terraShadowData = textureLod( terrainShadows, terraWorldPos.xz * passBuf.invTerraBounds.xz +
-						   passBuf.terraOrigin.xz, 0 ).xyz;
+	vec3 terraShadowData = textureLod( vkSampler2D( terrainShadows, terrainShadowSampler ),
+									   terraWorldPos.xz * passBuf.invTerraBounds.xz +
+									   passBuf.terraOrigin.xz, 0 ).xyz;
 	float terraHeightWeight = terraWorldPos.y * passBuf.invTerraBounds.y + passBuf.terraOrigin.y;
     terraHeightWeight = (terraHeightWeight - terraShadowData.y) * terraShadowData.z * 1023.0;
     outVs.terrainShadow = mix( terraShadowData.x, 1.0, clamp( terraHeightWeight, 0.0, 1.0 ) );

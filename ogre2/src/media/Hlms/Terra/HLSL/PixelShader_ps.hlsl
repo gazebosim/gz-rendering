@@ -3,29 +3,19 @@
 
 @insertpiece( DefaultTerraHeaderPS )
 
+
 // START UNIFORM DECLARATION
-@property( !hlms_shadowcaster )
-	@insertpiece( PassStructDecl )
-	@insertpiece( TerraMaterialStructDecl )
-	@insertpiece( TerraInstanceStructDecl )
-	@insertpiece( PccManualProbeDecl )
-@end
 @insertpiece( custom_ps_uniformDeclaration )
 // END UNIFORM DECLARATION
+
+@insertpiece( PccManualProbeDecl )
+
 struct PS_INPUT
 {
 	@insertpiece( Terra_VStoPS_block )
 };
 
-@padd( roughness_map0_sampler,	samplerStateStart )
-@padd( roughness_map1_sampler,	samplerStateStart )
-@padd( roughness_map2_sampler,	samplerStateStart )
-@padd( roughness_map3_sampler,	samplerStateStart )
-
-@padd( metalness_map0_sampler,	samplerStateStart )
-@padd( metalness_map1_sampler,	samplerStateStart )
-@padd( metalness_map2_sampler,	samplerStateStart )
-@padd( metalness_map3_sampler,	samplerStateStart )
+@pset( currSampler, samplerStateStart )
 
 @property( !hlms_shadowcaster )
 
@@ -62,7 +52,7 @@ SamplerState samplerStateTerra		: register(s@value(terrainNormals));
 
 @property( hlms_forwardplus )
 	Buffer<uint> f3dGrid : register(t@value(f3dGrid));
-	Buffer<float4> f3dLightList : register(t@value(f3dLightList));
+	ReadOnlyBuffer( @value(f3dLightList), float4, f3dLightList );
 @end
 
 @property( irradiance_volumes )
@@ -80,7 +70,7 @@ SamplerState samplerStateTerra		: register(s@value(terrainNormals));
 		@property( !hlms_cubemaps_use_dpm )
 			TextureCubeArray	texEnvProbeMap : register(t@value(texEnvProbeMap));
 		@else
-			@property( use_envprobe_map )Texture2DArray	texEnvProbeMap : register(t@value(texEnvProbeMap));@end
+			Texture2DArray	texEnvProbeMap : register(t@value(texEnvProbeMap));
 			@insertpiece( DeclDualParaboloidFunc )
 		@end
 	@end
@@ -90,7 +80,7 @@ SamplerState samplerStateTerra		: register(s@value(terrainNormals));
 @end
 
 @foreach( num_samplers, n )
-	SamplerState samplerState@value(samplerStateStart) : register(s@counter(samplerStateStart));@end
+	SamplerState samplerState@value(currSampler) : register(s@counter(currSampler));@end
 
 @property( use_parallax_correct_cubemaps )
 	@insertpiece( DeclParallaxLocalCorrect )
@@ -106,6 +96,7 @@ SamplerState samplerStateTerra		: register(s@value(terrainNormals));
 @insertpiece( DeclAreaLtcLightFuncs )
 
 @insertpiece( DeclVctTextures )
+@insertpiece( DeclIrradianceFieldTextures )
 
 @insertpiece( DeclOutputType )
 
@@ -129,12 +120,6 @@ SamplerState samplerStateTerra		: register(s@value(terrainNormals));
 @end
 }
 @else ///!hlms_shadowcaster
-
-@insertpiece( DeclShadowCasterMacros )
-
-@property( hlms_shadowcaster_point || exponential_shadow_maps )
-	@insertpiece( PassStructDecl )
-@end
 
 @insertpiece( DeclOutputType )
 

@@ -84,6 +84,12 @@ namespace ignition
       private: std::unordered_map<Ogre::HlmsDatablock *,
           const Ogre::HlmsBlendblock *> datablockMap;
 
+      /// \brief A map of ogre sub item pointer to their original low level
+      /// material.
+      /// Most objects don't use one so it should be almost always empty.
+      private:
+        std::vector<std::pair<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
+
       /// \brief Increment unique color value that will be assigned to the
       /// next renderable
       private: void NextColor();

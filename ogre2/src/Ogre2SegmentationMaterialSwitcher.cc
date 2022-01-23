@@ -255,8 +255,12 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       return object1->getName() > object2->getName();
   });
 
+  this->materialMap.clear();
   this->datablockMap.clear();
   Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  Ogre::HlmsDatablock *defaultPbs =
+    hlmsManager->getHlms(Ogre::HLMS_PBS)->getDefaultDatablock();
 
   // Construct one now so that datablock->setBlendblock
   // each is as fast as possible
@@ -295,22 +299,33 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
         Ogre::SubItem *subItem = item->getSubItem(i);
         subItem->setCustomParameter(1, customParameter);
 
-        Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-        const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
-
-        // We can't do any sort of blending. This isn't colour what we're
-        // storing, but rather an ID.
-        if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
-            blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
-            blendblock->mBlendOperation != Ogre::SBO_ADD ||
-            (blendblock->mSeparateBlend &&
-             (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
-              blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
-              blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+        if (!subItem->getMaterial().isNull())
         {
-          hlmsManager->addReference(blendblock);
-          this->datablockMap[datablock] = blendblock;
-          datablock->setBlendblock(noBlend);
+          // TODO(anyone): We need to keep the material's vertex shader
+          // to keep vertex deformation consistent. See
+          // https://github.com/ignitionrobotics/ign-rendering/issues/544
+          this->materialMap.push_back({ subItem, subItem->getMaterial() });
+          subItem->setDatablock(defaultPbs);
+        }
+        else
+        {
+          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+          const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
+
+          // We can't do any sort of blending. This isn't colour what we're
+          // storing, but rather an ID.
+          if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
+              blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
+              blendblock->mBlendOperation != Ogre::SBO_ADD ||
+              (blendblock->mSeparateBlend &&
+               (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
+                blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
+                blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+          {
+            hlmsManager->addReference(blendblock);
+            this->datablockMap[datablock] = blendblock;
+            datablock->setBlendblock(noBlend);
+          }
         }
       }
     }
@@ -379,6 +394,13 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
     }
     itor.moveNext();
   }
+
+  // Restore Items with low level materials
+  for (auto subItemMat : this->materialMap)
+  {
+    subItemMat.first->setMaterial(subItemMat.second);
+  }
+  this->materialMap.clear();
 
   // Remove the custom parameter (same reason as with Items)
   auto heightmaps = this->scene->Heightmaps();

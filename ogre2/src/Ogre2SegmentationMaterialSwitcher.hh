@@ -121,6 +121,12 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   private: std::unordered_map<Ogre::HlmsDatablock *,
       const Ogre::HlmsBlendblock *> datablockMap;
 
+  /// \brief A map of ogre sub item pointer to their original low level
+  /// material.
+  /// Most objects don't use one so it should be almost always empty.
+  private:
+    std::vector<std::pair<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
+
   /// \brief Pseudo num generator to generate colors from label id
   private: std::default_random_engine generator;
 

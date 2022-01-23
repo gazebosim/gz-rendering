@@ -130,8 +130,14 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
   private: const Ogre::Camera* ogreCamera{nullptr};
 
   /// \brief A map of ogre sub item pointer to their original hlms material
-  private: std::unordered_map<Ogre::SubItem *, Ogre::HlmsDatablock *>
+  private: std::vector<std::pair<Ogre::SubItem *, Ogre::HlmsDatablock *>>
       itemDatablockMap;
+
+  /// \brief A map of ogre sub item pointer to their original low level
+  /// material.
+  /// Most objects don't use one so it should be almost always empty.
+  private:
+    std::vector<std::pair<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
 
   /// \brief A map of ogre datablock pointer to their original blendblocks
   private: std::unordered_map<Ogre::HlmsDatablock *,
@@ -238,12 +244,15 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
   auto engine = Ogre2RenderEngine::Instance();
   engine->SetIgnOgreRenderingMode(IORM_SOLID_THERMAL_COLOR_TEXTURED);
 
-  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
-
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
   this->itemDatablockMap.clear();
+  this->materialMap.clear();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  Ogre::HlmsDatablock *defaultPbs =
+    hlmsManager->getHlms(Ogre::HLMS_PBS)->getDefaultDatablock();
 
   // Construct one now so that datablock->setBlendblock
   // each is as fast as possible
@@ -330,22 +339,33 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           // see media/materials/programs/GLSL/thermal_camera_fs.glsl
           subItem->setCustomParameter(1, Ogre::Vector4(color, 0, 0, 0.0));
 
-          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
-
-          // We can't do any sort of blending. This isn't colour what we're
-          // storing, but rather an ID.
-          if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
-              blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
-              blendblock->mBlendOperation != Ogre::SBO_ADD ||
-              (blendblock->mSeparateBlend &&
-               (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
-                blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
-                blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+          if (!subItem->getMaterial().isNull())
           {
-            hlmsManager->addReference(blendblock);
-            this->datablockMap[datablock] = blendblock;
-            datablock->setBlendblock(noBlend);
+            // TODO(anyone): We need to keep the material's vertex shader
+            // to keep vertex deformation consistent. See
+            // https://github.com/ignitionrobotics/ign-rendering/issues/544
+            this->materialMap.push_back({ subItem, subItem->getMaterial() });
+            subItem->setDatablock(defaultPbs);
+          }
+          else
+          {
+            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+            const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
+
+            // We can't do any sort of blending. This isn't colour what we're
+            // storing, but rather an ID.
+            if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
+                blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
+                blendblock->mBlendOperation != Ogre::SBO_ADD ||
+                (blendblock->mSeparateBlend &&
+                 (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
+                  blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
+                  blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+            {
+              hlmsManager->addReference(blendblock);
+              this->datablockMap[datablock] = blendblock;
+              datablock->setBlendblock(noBlend);
+            }
           }
         }
       }
@@ -408,8 +428,21 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
         {
           Ogre::SubItem *subItem = item->getSubItem(i);
 
-          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          this->itemDatablockMap[subItem] = datablock;
+          if (!subItem->getMaterial().isNull())
+          {
+            // TODO(anyone): We need to keep the material's vertex shader
+            // to keep vertex deformation consistent. See
+            // https://github.com/ignitionrobotics/ign-rendering/issues/544
+            this->materialMap.push_back({ subItem, subItem->getMaterial() });
+          }
+          else
+          {
+            // TODO(anyone): We're not using Hlms pieces, therefore HW
+            // vertex deformation (e.g. skinning / skeletal animation) won't
+            // show up correctly
+            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+            this->itemDatablockMap.push_back({ subItem, datablock });
+          }
 
           subItem->setMaterial(this->heatSignatureMaterials[item->getId()]);
         }
@@ -430,11 +463,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           Ogre::SubItem *subItem = item->getSubItem(i);
 
           const Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-
-          IGN_ASSERT(datablock->getCreator()->getType() == Ogre::HLMS_PBS ||
-                       datablock->getCreator()->getType() == Ogre::HLMS_UNLIT,
-                     "Item's datablock is expected to be PBS or Unlit");
-
           const Ogre::ColourValue color = datablock->getDiffuseColour();
           subItem->setCustomParameter(
             1u, Ogre::Vector4(color.r, color.g, color.b, 1.0));
@@ -443,9 +471,20 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           // the diffuse texture (if any). The actual value doesn't matter.
           subItem->setCustomParameter(2u, Ogre::Vector4::ZERO);
 
-          // We don't save to this->datablockMap because we're already
-          // honouring the original HlmsBlendblock. There's nothing
-          // to override.
+          if (!subItem->getMaterial().isNull())
+          {
+            // TODO(anyone): We need to keep the material's vertex shader
+            // to keep vertex deformation consistent. See
+            // https://github.com/ignitionrobotics/ign-rendering/issues/544
+            this->materialMap.push_back({ subItem, subItem->getMaterial() });
+            subItem->setDatablock(defaultPbs);
+          }
+          else
+          {
+            // We don't save to this->datablockMap because we're already
+            // honouring the original HlmsBlendblock. There's nothing
+            // to override.
+          }
         }
       }
     }
@@ -575,6 +614,13 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
     }
     itor.moveNext();
   }
+
+  // Restore Items with low level materials
+  for (auto subItemMat : this->materialMap)
+  {
+    subItemMat.first->setMaterial(subItemMat.second);
+  }
+  this->materialMap.clear();
 
   // Remove the custom parameter (same reason as with Items)
   auto heightmaps = this->scene->Heightmaps();

@@ -20,6 +20,9 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/config.hh"

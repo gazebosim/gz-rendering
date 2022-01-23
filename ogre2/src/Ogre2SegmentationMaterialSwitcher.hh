@@ -18,10 +18,12 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 
-#include <string>
 #include <random>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include <ignition/math/Color.hh>
 

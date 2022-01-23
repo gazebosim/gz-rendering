@@ -93,7 +93,7 @@
 						   int2( 0, 0 ), cellData.xzTexPosBounds.zw ) );
 
 	float3 worldPos;
-	worldPos.y = OGRE_Load2D( heightMap, rshort2( uVertexPos.xy ), 0 ).x;
+	worldPos.y = float( OGRE_Load2D( heightMap, rshort2( uVertexPos.xy ), 0 ).x );
 @property( use_skirts )
 	float skirtHeight = uintBitsToFloat( cellData.numVertsPerLine.w );
 	if( isSkirt )
@@ -117,7 +117,11 @@
 
 	@insertpiece( DoShadowReceiveVS )
 	@property( hlms_shadowcaster )
-		float shadowConstantBias = material.kD.w;
+		@property( hlms_no_reverse_depth || hlms_shadowcaster_point )
+			float shadowConstantBias = material.kD.w;
+		@else
+			float shadowConstantBias = -material.kD.w;
+		@end
 		@insertpiece( DoShadowCasterVS )
 	@end
 

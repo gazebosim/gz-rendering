@@ -1,8 +1,21 @@
 
 #include "/media/matias/Datos/SyntaxHighlightingMisc.h"
 
+@undefpiece( MaterialStructDecl )
+@undefpiece( InstanceStructDecl )
+
 @piece( DefaultTerraHeaderPS )
 	@insertpiece( DefaultHeaderPS )
+	@property( !hlms_shadowcaster )
+		@insertpiece( TerraMaterialStructDecl )
+		@insertpiece( TerraInstanceStructDecl )
+	@else
+		@insertpiece( DeclShadowCasterMacros )
+		@property( hlms_shadowcaster_point || exponential_shadow_maps )
+			@insertpiece( PassStructDecl )
+		@end
+	@end
+
 	@property( !hlms_prepass && needs_view_dir )
 		@insertpiece( DeclareBRDF )
 		@insertpiece( DeclareBRDF_InstantRadiosity )
@@ -162,7 +175,7 @@
 	@end
 
 	// IGN CUSTOMIZE BEGIN
-	//	pixelData.roughness =	(roughness0 * detailWeights.x * material.roughness.x +
+	//	pixelData.perceptualRoughness =	(roughness0 * detailWeights.x * material.roughness.x +
 	//							 roughness1 * detailWeights.y * material.roughness.y) +
 	//							(roughness2 * detailWeights.z * material.roughness.z +
 	//							 roughness3 * detailWeights.w * material.roughness.w);
@@ -171,8 +184,13 @@
 	roughness = lerp( roughness, roughness1, detailWeights.y );
 	roughness = lerp( roughness, roughness2, detailWeights.z );
 	roughness = lerp( roughness, roughness3, detailWeights.w );
+	pixelData.perceptualRoughness = roughness;
 	// IGN CUSTOMIZE END
-	pixelData.roughness = max( pixelData.roughness, 0.001f );
+	@property( perceptual_roughness )
+		pixelData.roughness = max( pixelData.perceptualRoughness * pixelData.perceptualRoughness, 0.001f );
+	@else
+		pixelData.roughness = max( pixelData.perceptualRoughness, 0.001f );
+	@end
 @end
 
 @undefpiece( LoadNormalData )

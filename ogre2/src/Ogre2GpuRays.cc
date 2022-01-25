@@ -35,6 +35,7 @@
 
 #include "Ogre2IgnHlmsCustomizations.hh"
 #include "Ogre2ParticleNoiseListener.hh"
+#include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -1248,11 +1249,27 @@ void Ogre2GpuRays::Render()
   Ogre2IgnHlmsCustomizations &hlmsCustomizations =
       engine->HlmsCustomizations();
 
+#if IGNITION_RENDERING_MAJOR_VERSION < 7
+    // TODO(anyone): Remove this block of code when porting to ign-rendering7
+    //
+    // Set Ogre2IgnHlmsCustomizations, as we don't need terrain shadows
+    auto ogreRoot = engine->OgreRoot();
+    Ogre::Hlms *hlmsPbs = ogreRoot->getHlmsManager()->getHlms(Ogre::HLMS_PBS);
+    hlmsPbs->setListener(&hlmsCustomizations);
+#endif
+
   hlmsCustomizations.minDistanceClip =
       static_cast<float>(this->NearClipPlane());
   this->UpdateRenderTarget1stPass();
   this->UpdateRenderTarget2ndPass();
   hlmsCustomizations.minDistanceClip = -1;
+
+#if IGNITION_RENDERING_MAJOR_VERSION < 7
+  // TODO(anyone): Remove this block of code when porting to ign-rendering7
+  //
+  // Restore the terrain shadows listener
+  hlmsPbs->setListener(engine->HlmsPbsTerraShadows());
+#endif
 
   this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
 }

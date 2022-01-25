@@ -32,7 +32,11 @@
 //
 // The derivative terms (Tangent, Binormal, Normal) have been
 // updated to be consistent with this convention.
-//
+
+
+// original concept:
+// https://developer.nvidia.com/gpugems/gpugems/part-i-natural-effects/chapter-1-effective-water-simulation-physical-models
+
 
 #version 330
 

@@ -74,8 +74,8 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// \param[in,out] _prevParentName A persistent string between call
   /// to ensure multilink visuals receive the same color
   /// \return The color to apply to the visual
-  private: Ogre::Vector4 GetColorForVisual(const VisualPtr &_visual,
-                                           std::string &_prevParentName);
+  private: Ogre::Vector4 ColorForVisual(const VisualPtr &_visual,
+                                        std::string &_prevParentName);
 
   /// \brief Convert label of semantic map to a unique color for colored map and
   /// add the color of the label to the taken colors if it doesn't exist

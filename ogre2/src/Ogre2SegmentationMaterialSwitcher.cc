@@ -80,7 +80,7 @@ bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
 }
 
 /////////////////////////////////////////////////
-Ogre::Vector4 Ogre2SegmentationMaterialSwitcher::GetColorForVisual(
+Ogre::Vector4 Ogre2SegmentationMaterialSwitcher::ColorForVisual(
   const VisualPtr &_visual, std::string &_prevParentName)
 {
   // get class user data
@@ -290,7 +290,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       }
 
       const Ogre::Vector4 customParameter =
-        GetColorForVisual(visual, prevParentName);
+        ColorForVisual(visual, prevParentName);
 
       const size_t numSubItems = item->getNumSubItems();
       for (size_t i = 0; i < numSubItems; ++i)
@@ -342,7 +342,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       // like we do with Items (it should be impossible?)
       VisualPtr visual = heightmap->Parent();
       const Ogre::Vector4 customParameter =
-        GetColorForVisual(visual, prevParentName);
+        ColorForVisual(visual, prevParentName);
       heightmap->Terra()->SetSolidColor(1u, customParameter);
     }
   }

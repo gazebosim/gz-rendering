@@ -78,8 +78,8 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
   private: virtual void passPreExecute(
       Ogre::CompositorPass *_pass) override;
 
-    /// \brief Callback when each pass is finisned executing.
-    /// \param[in] _pass Ogre pass which has already executed
+  /// \brief Callback when each pass is finisned executing.
+  /// \param[in] _pass Ogre pass which has already executed
   private: virtual void passPosExecute(
       Ogre::CompositorPass *_pass) override;
 

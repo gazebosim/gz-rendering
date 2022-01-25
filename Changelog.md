@@ -2,6 +2,46 @@
 
 ### Ignition Rendering 6.X
 
+### Ignition Rendering 6.2.0 (2022-01-xx)
+
+1. Fix crash when hovering the cursor in heightmap.sdf
+    * [Pull request #536](https://github.com/ignitionrobotics/ign-rendering/pull/536)
+
+1. Fix material switching for objects using shaders (ogre2)
+    * [Pull request #533](https://github.com/ignitionrobotics/ign-rendering/pull/533)
+
+1. [Metal] Fix depth camera
+    * [Pull request #535](https://github.com/ignitionrobotics/ign-rendering/pull/535)
+    * A contribution from Rhys Mainwaring <rhys.mainwaring@me.com>
+
+1. Bind shader uniforms to constants from ogre
+    * [Pull request #531](https://github.com/ignitionrobotics/ign-rendering/pull/531)
+
+1. Silence CMake policy CMP0072
+    * [Pull request #528](https://github.com/ignitionrobotics/ign-rendering/pull/528)
+
+1. Fix various issues with Ogre2GpuRays
+    * [Pull request #522](https://github.com/ignitionrobotics/ign-rendering/pull/522)
+    * [Pull request #527](https://github.com/ignitionrobotics/ign-rendering/pull/527)
+
+1. Fix Ogre2ThermalCamera using garbage depth data
+    * [Pull request #523](https://github.com/ignitionrobotics/ign-rendering/pull/523)
+
+1. Performance optimization by avoiding unnecessary passes
+    * [Pull request #524](https://github.com/ignitionrobotics/ign-rendering/pull/524)
+
+1. Support using custom shader materials and updating uniform variables (ogre2)
+    * [Pull request #520](https://github.com/ignitionrobotics/ign-rendering/pull/520)
+
+1. Port Camera Distortion effect from gazebo11
+    * [Pull request #502](https://github.com/ignitionrobotics/ign-rendering/pull/502)
+
+1. Fix sky background in RGBD camera
+    * [Pull request #515](https://github.com/ignitionrobotics/ign-rendering/pull/515)
+
+1. RenderOrder is in different scale in Reverse Z
+    * [Pull request #514](https://github.com/ignitionrobotics/ign-rendering/pull/514)
+
 ### Ignition Rendering 6.1.0 (2021-12-09)
 
 1. Check for OpenGL backend before calling GL APIs

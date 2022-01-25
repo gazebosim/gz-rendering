@@ -788,7 +788,15 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // disable writting debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
-    hlmsPbs->setListener(&this->dataPtr->hlmsCustomizations);
+
+#if IGNITION_RENDERING_MAJOR_VERSION >= 7
+    IGN_ASSERT(
+      hlmsPbs->getListener() != &this->dataPtr->hlmsCustomizations &&
+        hlmsPbs->getListener() != this->dataPtr->hlmsPbsTerraShadows.get(),
+      "Bad merge! In ign-rendering7 there's a new listener that will "
+      "coordinate all other listeners. Watch out all 3 Hlms (Unlit, Pbs, "
+      "Terra)");
+#endif
   }
 
   {

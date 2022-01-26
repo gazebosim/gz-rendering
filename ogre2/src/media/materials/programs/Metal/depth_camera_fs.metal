@@ -167,7 +167,7 @@ fragment float4 main_metal
     // due to the scatter effect. We should still render particles in the color
     // image
     // todo(iche033) handle case when background is a cubemap
-    if (hasBackground == 0 && particle.x < 1e-6)
+    if (p.hasBackground == 0 && particle.x < 1e-6)
     {
       color = float4(p.backgroundColor, 1.0);
     }
@@ -185,7 +185,7 @@ fragment float4 main_metal
 
     // clamp to background color only if it is not a particle pixel
     // todo(iche033) handle case when background is a cubemap
-    if (hasBackground == 0 && particle.x < 1e-6)
+    if (p.hasBackground == 0 && particle.x < 1e-6)
     {
       color = float4(p.backgroundColor, 1.0);
     }

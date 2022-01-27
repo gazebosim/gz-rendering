@@ -14,19 +14,21 @@
  * limitations under the License.
  *
  */
- 
+
 #include <metal_stdlib>
 using namespace metal;
 
 struct VS_INPUT
 {
   float4 position [[attribute(VES_POSITION)]];
+  float3 normal   [[attribute(VES_NORMAL)]];
 };
 
 struct PS_INPUT
 {
   float4 gl_Position  [[position]];
   float  gl_PointSize [[point_size]];
+  float3 ptColor;
 };
 
 struct Params
@@ -45,6 +47,8 @@ vertex PS_INPUT main_metal
 
   outVs.gl_Position    = ( p.worldViewProj * input.position ).xyzw;
   outVs.gl_PointSize   = p.size;
+  // We're abusing the normal variable to hold per-point colors
+  outVs.ptColor        = input.normal;
 
   return outVs;
 }

@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
- 
+
 #include <metal_stdlib>
 using namespace metal;
 
 struct PS_INPUT
 {
+  float3 ptColor;
 };
 
 struct Params
 {
-  float4 color;
 };
 
 fragment float4 main_metal
@@ -33,5 +33,5 @@ fragment float4 main_metal
   constant Params &p [[buffer(PARAMETER_SLOT)]]
 )
 {
-  return p.color;
+  return float4(inPs.ptColor.x, inPs.ptColor.y, inPs.ptColor.z, 1.0);
 }

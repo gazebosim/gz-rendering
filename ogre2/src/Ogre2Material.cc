@@ -680,6 +680,81 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       _ogreParams->setNamedConstant(name_param.first,
         reinterpret_cast<int*>(buffer.get()), count, multiple);
     }
+    else if (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
+             ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())
+    {
+      // add the textures to the resource path
+      std::string value;
+      uint32_t uvSetIndex = 0;
+      name_param.second.Value(value, uvSetIndex);
+      ShaderParam::ParamType type = name_param.second.Type();
+
+      std::string baseName = value;
+      std::string dirPath = value;
+      if (common::isFile(value))
+      {
+        baseName = common::basename(value);
+        size_t idx = value.rfind(baseName);
+        if (idx != std::string::npos)
+        {
+          dirPath = value.substr(0, idx);
+          if (!dirPath.empty() &&
+            !Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+            dirPath))
+          {
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+                dirPath, "FileSystem", "General");
+          }
+        }
+      }
+      else
+      {
+        ignerr << "Shader param texture not found: " << value << std::endl;
+        continue;
+      }
+
+      // get the material and create the texture unit state it does not exist
+      auto mat = this->Material();
+      auto pass = mat->getTechnique(0u)->getPass(0);
+      auto texUnit = pass->getTextureUnitState(name_param.first);
+      if (!texUnit)
+      {
+        texUnit = pass->createTextureUnitState();
+        texUnit->setName(name_param.first);
+      }
+      // make sure to cast to int before calling setNamedConstant later
+      // to set the texture index
+      int texIndex = static_cast<int>(pass->getTextureUnitStateIndex(texUnit));
+
+      // set texture coordinate set
+      texUnit->setTextureCoordSet(uvSetIndex);
+
+      // set to wrap mode otherwise default is clamp mode
+      Ogre::HlmsSamplerblock samplerBlockRef;
+      samplerBlockRef.mU = Ogre::TAM_WRAP;
+      samplerBlockRef.mV = Ogre::TAM_WRAP;
+      samplerBlockRef.mW = Ogre::TAM_WRAP;
+      texUnit->setSamplerblock(samplerBlockRef);
+
+      // regular 2d texture
+      if (type == ShaderParam::ParamType::PARAM_TEXTURE)
+      {
+        texUnit->setTextureName(baseName, Ogre::TextureTypes::Type2D);
+      }
+      // cube maps
+      else if (type == ShaderParam::ParamType::PARAM_TEXTURE_CUBE)
+      {
+        texUnit->setCubicTextureName(baseName, true);
+      }
+      else
+      {
+        ignerr << "Unrecognized texture type set for shader param: "
+               << name_param.first << std::endl;
+        continue;
+      }
+      // set the texture map index
+      _ogreParams->setNamedConstant(name_param.first, &texIndex, 1, 1);
+    }
   }
 }
 

@@ -2,7 +2,13 @@
 
 ### Ignition Rendering 6.X
 
-### Ignition Rendering 6.2.0 (2022-01-xx)
+### Ignition Rendering 6.2.0 (2022-01-28)
+
+1. Fix missing terrain shadows casted on objects
+    * [Pull request #547](https://github.com/ignitionrobotics/ign-rendering/pull/547)
+
+1. Add waves
+    * [Pull request #541](https://github.com/ignitionrobotics/ign-rendering/pull/541)
 
 1. Fix crash when hovering the cursor in heightmap.sdf
     * [Pull request #536](https://github.com/ignitionrobotics/ign-rendering/pull/536)

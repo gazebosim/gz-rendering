@@ -8,7 +8,7 @@
 		// Ogre 2.2 should use outVs_clipDistanceN for compatibility with all
 		// APIs
 		// Rare case of geometry without normals.
-		outVs_clipDistance[@value(ign_spherical_clip_idx)] =
+		outVs_clipDistance@value(ign_spherical_clip_idx) =
 			distance( worldPos.xyz, passBuf.ignCameraPos.xyz ) -
 			passBuf.ignMinClipDistance;
 	@end

@@ -941,7 +941,7 @@ void Ogre2GpuRays::CreateSampleTexture()
 /////////////////////////////////////////////////////////
 void Ogre2GpuRays::Setup1stPass()
 {
-  // Create 1st pass compositor
+  // Create tmp textures
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::TextureGpuManager *textureMgr =

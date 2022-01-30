@@ -20,11 +20,11 @@
 // Simple vertex shader; just setting things up for the real work to be done in
 // gaussian_noise_fs.glsl.
 
-in vec4 vertex;
-in vec2 uv0;
+vulkan_layout( OGRE_POSITION ) in vec4 vertex;
+vulkan_layout( OGRE_TEXCOORD0 ) in vec2 uv0;
 
 vulkan( layout( ogre_P0 ) uniform Params { )
-	uniform mat4 worldViewProj;
+  uniform mat4 worldViewProj;
 vulkan( }; )
 
 out gl_PerVertex

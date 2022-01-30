@@ -18,12 +18,12 @@
 
 #version ogre_glsl_ver_330
 
-in vec4 vertex;
-in vec3 normal;
-in vec2 uv0;
+vulkan_layout( OGRE_POSITION ) in vec4 vertex;
+vulkan_layout( OGRE_NORMAL ) in vec3 normal;
+vulkan_layout( OGRE_TEXCOORD0 ) in vec2 uv0;
 
 vulkan( layout( ogre_P0 ) uniform Params { )
-	uniform mat4 worldViewProj;
+  uniform mat4 worldViewProj;
 vulkan( }; )
 
 out gl_PerVertex

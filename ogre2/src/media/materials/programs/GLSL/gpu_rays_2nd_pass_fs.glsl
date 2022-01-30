@@ -58,7 +58,7 @@ vulkan( layout( ogre_s0 ) uniform sampler texSampler );
 vulkan_layout( location = 0 )
 out vec4 fragColor;
 
-vec2 getRange(vec2 uv, sampler2D tex)
+vec2 getRange(vec2 uv, texture2D tex)
 {
   vec2 range = texture(vkSampler2D(tex,texSampler), uv).xy;
   return range;

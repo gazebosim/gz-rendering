@@ -33,14 +33,14 @@ vulkan_layout( location = 0 )
 out vec4 fragColor;
 
 vulkan( layout( ogre_P0 ) uniform Params { )
-	// The minimum and maximum temprature values (in Kelvin) that the
-	// heat signature texture should be normalized to
-	// (users can override these defaults)
-	uniform float minTemp = 0.0;
-	uniform float maxTemp = 100.0;
+  // The minimum and maximum temprature values (in Kelvin) that the
+  // heat signature texture should be normalized to
+  // (users can override these defaults)
+  uniform float minTemp;
+  uniform float maxTemp;
 
-	uniform int bitDepth;
-	uniform float resolution;
+  uniform int bitDepth;
+  uniform float resolution;
 vulkan( }; )
 
 // map a temperature from the [min, max] range to the user defined

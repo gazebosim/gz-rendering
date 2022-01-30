@@ -17,12 +17,20 @@
 
 #version ogre_glsl_ver_330
 
-in vec3 ptColor;
+vulkan( layout( ogre_P0 ) uniform Params { )
+  uniform vec4 color;
+vulkan( }; )
+
+vulkan_layout( location = 0 )
+in block
+{
+  vec3 ptColor;
+} inPs;
 
 vulkan_layout( location = 0 )
 out vec4 fragColor;
 
 void main()
 {
-  fragColor = vec4(ptColor.x, ptColor.y, ptColor.z, 1);
+  fragColor = vec4(inPs.ptColor.x, inPs.ptColor.y, inPs.ptColor.z, 1);
 }

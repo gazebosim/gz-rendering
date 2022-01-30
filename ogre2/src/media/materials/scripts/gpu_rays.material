@@ -109,10 +109,52 @@ material GpuRaysScan1st
   }
 }
 
+// Define a version of Quad_vs that uses root_layout high
+vertex_program Ogre/Compositor/High/Quad_vs_GLSL glsl
+{
+  source Quad_vs.glsl
+  root_layout high
+}
+
+vertex_program Ogre/Compositor/High/Quad_vs_VK glslvk
+{
+  source Quad_vs.glsl
+  root_layout high
+}
+
+vertex_program Ogre/Compositor/High/Quad_vs_HLSL hlsl
+{
+  source Quad_vs.hlsl
+  entry_point main
+  target vs_5_0 vs_4_0 vs_4_0_level_9_1 vs_4_0_level_9_3
+  root_layout high
+}
+
+vertex_program Ogre/Compositor/High/Quad_vs_Metal metal
+{
+  source Quad_vs.metal
+  root_layout high
+}
+
+// Unified definitions
+vertex_program Ogre/Compositor/High/Quad_vs unified
+{
+  delegate Ogre/Compositor/High/Quad_vs_GLSL
+  delegate Ogre/Compositor/High/Quad_vs_VK
+  delegate Ogre/Compositor/High/Quad_vs_HLSL
+  delegate Ogre/Compositor/High/Quad_vs_Metal
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
+}
+
 // GLSL shaders
 fragment_program GpuRaysScan2ndFS_GLSL glsl
 {
   source gpu_rays_2nd_pass_fs.glsl
+  root_layout high
 
   default_params
   {
@@ -130,13 +172,15 @@ fragment_program GpuRaysScan2ndFS_GLSL glsl
 fragment_program GpuRaysScan2ndFS_VK glslvk
 {
   source gpu_rays_2nd_pass_fs.glsl
+  root_layout high
 }
 
 // Metal shaders
 fragment_program GpuRaysScan2ndFS_Metal metal
 {
   source gpu_rays_2nd_pass_fs.metal
-  shader_reflection_pair_hint Ogre/Compositor/Quad_vs
+  shader_reflection_pair_hint Ogre/Compositor/High/Quad_vs
+  root_layout high
 }
 
 // Unified shaders
@@ -153,7 +197,7 @@ material GpuRaysScan2nd
   {
     pass gpu_rays_tex_2nd
     {
-      vertex_program_ref Ogre/Compositor/Quad_vs { }
+      vertex_program_ref Ogre/Compositor/High/Quad_vs { }
       fragment_program_ref GpuRaysScan2ndFS { }
       texture_unit cubeUVTex
       {

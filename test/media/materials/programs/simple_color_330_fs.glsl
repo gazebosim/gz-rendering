@@ -1,3 +1,5 @@
+#version ogre_glsl_ver_330
+
 /*
  * Copyright (C) 2022 Open Source Robotics Foundation
  *
@@ -15,8 +17,7 @@
  *
  */
 
-#version 330
-
+vulkan_layout( location = 0 )
 out vec4 fragColor;
 
 void main()

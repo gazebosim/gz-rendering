@@ -137,6 +137,22 @@ class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
   /// \brief Texture packed with cubemap face and uv data
   public: Ogre::TextureGpu *cubeUVTexture = nullptr;
 
+  /// \brief Temporary texture where to render a side of the cubemap
+  /// during GpuRays1stPass. Shared across all active faces to save memory
+  public: Ogre::TextureGpu *colorTexture = nullptr;
+
+  /// \brief Temporary texture where to render a side of the cubemap
+  /// during GpuRays1stPass. Shared across all active faces to save memory
+  public: Ogre::TextureGpu *depthTexture = nullptr;
+
+  /// \brief Temporary texture where to render a side of the cubemap
+  /// during GpuRays1stPass. Shared across all active faces to save memory
+  public: Ogre::TextureGpu *particleTexture = nullptr;
+
+  /// \brief Temporary texture where to render a side of the cubemap
+  /// during GpuRays1stPass. Shared across all active faces to save memory
+  public: Ogre::TextureGpu *particleDepthTexture = nullptr;
+
   /// \brief Set of cubemap faces that are needed to generate the final
   /// range data
   public: std::set<unsigned int> cubeFaceIdx;
@@ -571,11 +587,31 @@ void Ogre2GpuRays::Destroy()
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
+  auto textureGpuManager = ogreRoot->getRenderSystem()->getTextureGpuManager();
   if (this->dataPtr->cubeUVTexture)
   {
-    ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
-      this->dataPtr->cubeUVTexture);
+    textureGpuManager->destroyTexture(this->dataPtr->cubeUVTexture);
     this->dataPtr->cubeUVTexture = nullptr;
+  }
+  if (this->dataPtr->colorTexture)
+  {
+    textureGpuManager->destroyTexture(this->dataPtr->colorTexture);
+    this->dataPtr->colorTexture = nullptr;
+  }
+  if (this->dataPtr->depthTexture)
+  {
+    textureGpuManager->destroyTexture(this->dataPtr->depthTexture);
+    this->dataPtr->depthTexture = nullptr;
+  }
+  if (this->dataPtr->particleTexture)
+  {
+    textureGpuManager->destroyTexture(this->dataPtr->particleTexture);
+    this->dataPtr->particleTexture = nullptr;
+  }
+  if (this->dataPtr->particleDepthTexture)
+  {
+    textureGpuManager->destroyTexture(this->dataPtr->particleDepthTexture);
+    this->dataPtr->particleDepthTexture = nullptr;
   }
 
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
@@ -880,9 +916,68 @@ void Ogre2GpuRays::CreateSampleTexture()
 /////////////////////////////////////////////////////////
 void Ogre2GpuRays::Setup1stPass()
 {
-  // Create 1st pass compositor
+  // Create tmp textures
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
+
+  IGN_ASSERT(!this->dataPtr->colorTexture && !this->dataPtr->depthTexture &&
+               !this->dataPtr->particleTexture &&
+               !this->dataPtr->particleDepthTexture,
+             "Textures not destroyed!");
+
+  Ogre::CompositorChannelVec compoChannels;
+  compoChannels.reserve(5u);
+
+  std::string texName;
+
+  texName = this->Name() + "_colorTexture";
+  this->dataPtr->colorTexture = textureMgr->createTexture(
+    texName, texName, Ogre::GpuPageOutStrategy::Discard,
+    Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
+  this->dataPtr->colorTexture->setResolution(this->dataPtr->w1st,
+                                             this->dataPtr->h1st);
+  this->dataPtr->colorTexture->setPixelFormat(Ogre::PFG_R16_UNORM);
+  this->dataPtr->colorTexture->scheduleTransitionTo(
+    Ogre::GpuResidency::Resident);
+
+  texName = this->Name() + "_depthTexture";
+  this->dataPtr->depthTexture = textureMgr->createTexture(
+    texName, texName, Ogre::GpuPageOutStrategy::Discard,
+    Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
+  this->dataPtr->depthTexture->setResolution(this->dataPtr->w1st,
+                                             this->dataPtr->h1st);
+  this->dataPtr->depthTexture->setPixelFormat(Ogre::PFG_D32_FLOAT);
+  this->dataPtr->depthTexture->scheduleTransitionTo(
+    Ogre::GpuResidency::Resident);
+
+  texName = this->Name() + "_particleTexture";
+  this->dataPtr->particleTexture = textureMgr->createTexture(
+    texName, texName, Ogre::GpuPageOutStrategy::Discard,
+    Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
+  this->dataPtr->particleTexture->setResolution(this->dataPtr->w1st / 2u,
+                                             this->dataPtr->h1st/ 2u);
+  this->dataPtr->particleTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
+  this->dataPtr->particleTexture->scheduleTransitionTo(
+    Ogre::GpuResidency::Resident);
+
+  texName = this->Name() + "_particleDepthTexture";
+  this->dataPtr->particleDepthTexture = textureMgr->createTexture(
+    texName, texName, Ogre::GpuPageOutStrategy::Discard,
+    Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
+  this->dataPtr->particleDepthTexture->setResolution(this->dataPtr->w1st / 2u,
+                                                     this->dataPtr->h1st / 2u);
+  this->dataPtr->particleDepthTexture->setPixelFormat(Ogre::PFG_D32_FLOAT);
+  this->dataPtr->particleDepthTexture->scheduleTransitionTo(
+    Ogre::GpuResidency::Resident);
+
+  compoChannels.push_back(this->dataPtr->colorTexture);
+  compoChannels.push_back(this->dataPtr->depthTexture);
+  compoChannels.push_back(this->dataPtr->particleTexture);
+  compoChannels.push_back(this->dataPtr->particleDepthTexture);
+
+  // Create 1st pass compositor
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
   const std::string wsDefName = "GpuRays1stPassWorkspace";
@@ -925,13 +1020,10 @@ void Ogre2GpuRays::Setup1stPass()
 
     // create render texture - these textures pack the range data
     // that will be used in the 2nd pass
-    Ogre::TextureGpuManager *textureMgr =
-      ogreRoot->getRenderSystem()->getTextureGpuManager();
-    std::stringstream texName;
-    texName << this->Name() << "_first_pass_" << i;
+    texName = this->Name() + "_first_pass_" + std::to_string(i);
     this->dataPtr->firstPassTextures[i] =
       textureMgr->createOrRetrieveTexture(
-        texName.str(),
+        texName,
         Ogre::GpuPageOutStrategy::Discard,
         Ogre::TextureFlags::RenderToTexture,
         Ogre::TextureTypes::Type2D);
@@ -947,14 +1039,18 @@ void Ogre2GpuRays::Setup1stPass()
     this->dataPtr->firstPassTextures[i]->scheduleTransitionTo(
       Ogre::GpuResidency::Resident);
 
+    compoChannels.push_back(this->dataPtr->firstPassTextures[i]);
+
     // create compositor workspace
     this->dataPtr->ogreCompositorWorkspace1st[i] =
         ogreCompMgr->addWorkspace(
           this->scene->OgreSceneManager(),
-          this->dataPtr->firstPassTextures[i],
+          compoChannels,
           this->dataPtr->cubeCam[i],
           wsDefName,
           false);
+
+    compoChannels.pop_back();
 
     // add laser retro material switcher to workspace listener
     // so we can switch to use IORM_SOLID_COLOR

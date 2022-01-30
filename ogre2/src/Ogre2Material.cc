@@ -1194,6 +1194,9 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
         Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
   vertexShader->setSourceFile(_path);
+  vertexShader->setPrefabRootLayout(Ogre::PrefabRootLayout::Standard);
+  vertexShader->setReplaceVersionMacro(true);
+
   vertexShader->load();
 
   assert(vertexShader->isLoaded());
@@ -1295,6 +1298,8 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
   }
 
   fragmentShader->setSourceFile(_path);
+  fragmentShader->setPrefabRootLayout(Ogre::PrefabRootLayout::Standard);
+  fragmentShader->setReplaceVersionMacro(true);
   fragmentShader->load();
 
   assert(fragmentShader->isLoaded());

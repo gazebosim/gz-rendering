@@ -16,16 +16,23 @@
 */
 
 #include "ignition/common/Console.hh"
+
+#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
 #include "ignition/rendering/ogre2/Ogre2MaterialSwitcher.hh"
+#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/RenderTypes.hh"
+
+#include "Terra/Terra.h"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
+#include <OgreHlms.h>
 #include <OgreItem.h>
 #include <OgreMaterialManager.h>
 #include <OgrePass.h>
+#include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreTechnique.h>
 #ifdef _MSC_VER
@@ -35,43 +42,11 @@
 using namespace ignition;
 using namespace rendering;
 
-
-/// \brief A map of ogre sub item pointer to their original low level material
-/// \todo(anyone) Added here for ABI compatibity This can be removed once
-/// ign-rendering7 switches to Hlms customization for "switching" materials
-std::map<Ogre2MaterialSwitcher *,
-         std::map<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
-
 /////////////////////////////////////////////////
 Ogre2MaterialSwitcher::Ogre2MaterialSwitcher(Ogre2ScenePtr _scene)
 {
   this->currentColor = ignition::math::Color(0.0, 0.0, 0.1);
   this->scene = _scene;
-
-  // plain opaque material
-  Ogre::ResourcePtr res =
-    Ogre::MaterialManager::getSingleton().load("ign-rendering/plain_color",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
-  this->plainMaterial = res.staticCast<Ogre::Material>();
-  this->plainMaterial->load();
-
-  // plain overlay material
-  this->plainOverlayMaterial =
-      this->plainMaterial->clone("plain_color_overlay");
-  if (!this->plainOverlayMaterial->getTechnique(0) ||
-      !this->plainOverlayMaterial->getTechnique(0)->getPass(0))
-  {
-    ignerr << "Problem creating selection buffer overlay material"
-        << std::endl;
-    return;
-  }
-  Ogre::Pass *overlayPass =
-      this->plainOverlayMaterial->getTechnique(0)->getPass(0);
-  Ogre::HlmsMacroblock macroblock(*overlayPass->getMacroblock());
-  macroblock.mDepthCheck = false;
-  macroblock.mDepthWrite = false;
-  overlayPass->setMacroblock(macroblock);
 }
 
 /////////////////////////////////////////////////
@@ -83,9 +58,21 @@ Ogre2MaterialSwitcher::~Ogre2MaterialSwitcher()
 void Ogre2MaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_evt*/)
 {
-  // swap item to use v1 shader material
-  // Note: keep an eye out for performance impact on switching materials
-  // on the fly. We are not doing this often so should be ok.
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
+
+  this->materialMap.clear();
+  this->datablockMap.clear();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  Ogre::HlmsDatablock *defaultPbs =
+    hlmsManager->getHlms(Ogre::HLMS_PBS)->getDefaultDatablock();
+
+  // Construct one now so that datablock->setBlendblock
+  // each is as fast as possible
+  const Ogre::HlmsBlendblock *noBlend =
+    hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
+
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -97,66 +84,128 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
 
     this->colorDict[this->currentColor.AsRGBA()] = item->getName();
 
-    for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+    const Ogre::Vector4 ogreCurrentColor(this->currentColor.R(),
+                                         this->currentColor.G(),
+                                         this->currentColor.B(), 1.0);
+
+    const size_t numSubItems = item->getNumSubItems();
+    for (size_t i = 0; i < numSubItems; ++i)
     {
       Ogre::SubItem *subItem = item->getSubItem(i);
-      subItem->setCustomParameter(1,
-          Ogre::Vector4(this->currentColor.R(), this->currentColor.G(),
-                        this->currentColor.B(), 1.0));
 
-      // case when item is using low level materials
-      // e.g. shaders
+      subItem->setCustomParameter(1, ogreCurrentColor);
+
       if (!subItem->getMaterial().isNull())
       {
-        materialMap[this][subItem] = subItem->getMaterial();
-        subItem->setMaterial(this->plainMaterial);
+        // TODO(anyone): We need to keep the material's vertex shader
+        // to keep vertex deformation consistent. See
+        // https://github.com/ignitionrobotics/ign-rendering/issues/544
+        this->materialMap.push_back({ subItem, subItem->getMaterial() });
+        subItem->setDatablock(defaultPbs);
       }
-      // regular Pbs Hlms datablock
       else
       {
+        // regular Pbs Hlms datablock
         Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-        this->datablockMap[subItem] = datablock;
-        // check if it's an overlay material by assuming the
-        // depth check and depth write properties are off.
-        if (!datablock->getMacroblock()->mDepthWrite &&
-            !datablock->getMacroblock()->mDepthCheck)
-          subItem->setMaterial(this->plainOverlayMaterial);
-        else
-          subItem->setMaterial(this->plainMaterial);
+        const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
+
+        // We can't do any sort of blending. This isn't colour what we're
+        // storing, but rather an ID.
+        if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
+            blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
+            blendblock->mBlendOperation != Ogre::SBO_ADD ||
+            (blendblock->mSeparateBlend &&
+             (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
+              blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
+              blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+        {
+          hlmsManager->addReference(blendblock);
+          this->datablockMap[datablock] = blendblock;
+          datablock->setBlendblock(noBlend);
+        }
       }
     }
     itor.moveNext();
   }
+
+  // Do the same with heightmaps / terrain
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+    {
+      this->NextColor();
+      this->colorDict[this->currentColor.AsRGBA()] = heightmap->Name();
+
+      // TODO(anyone): Retrieve datablock and make sure it's not blending
+      // like we do with Items (it should be impossible?)
+      heightmap->Terra()->SetSolidColor(
+        1u, Ogre::Vector4(this->currentColor.R(), this->currentColor.G(),
+                          this->currentColor.B(), 1.0));
+    }
+  }
+
+  // Remove the reference count on noBlend we created
+  hlmsManager->destroyBlendblock(noBlend);
 }
 
 /////////////////////////////////////////////////
 void Ogre2MaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_evt*/)
 {
-  // restore item to use hlms material
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  // Restore original blending to modified materials
+  for (const auto &[datablock, blendblock] : this->datablockMap)
+  {
+    datablock->setBlendblock(blendblock);
+    // Remove the reference we added (this won't actually destroy it)
+    hlmsManager->destroyBlendblock(blendblock);
+  }
+  this->datablockMap.clear();
+
+  // Remove the custom parameter. Why? If there are multiple cameras that
+  // use IORM_SOLID_COLOR (or any other mode), we want them to throw if
+  // that code forgot to call setCustomParameter. We may miss those errors
+  // if that code forgets to call but it was already carrying the value
+  // we set here.
+  //
+  // This consumes more performance but it's the price to pay for
+  // safety.
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
   {
     Ogre::MovableObject *object = itor.peekNext();
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
-    for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+    const size_t numSubItems = item->getNumSubItems();
+    for (size_t i = 0; i < numSubItems; ++i)
     {
       Ogre::SubItem *subItem = item->getSubItem(i);
-      auto it = this->datablockMap.find(subItem);
-      if (it != this->datablockMap.end())
-        subItem->setDatablock(it->second);
-      else
-      {
-        auto mIt = materialMap[this].find(subItem);
-        if (mIt != materialMap[this].end())
-          subItem->setMaterial(mIt->second);
-      }
+      subItem->removeCustomParameter(1u);
     }
     itor.moveNext();
   }
-  this->datablockMap.clear();
-  materialMap[this].clear();
+
+  // Restore Items with low level materials
+  for (auto subItemMat : this->materialMap)
+  {
+    subItemMat.first->setMaterial(subItemMat.second);
+  }
+  this->materialMap.clear();
+
+  // Remove the custom parameter (same reason as with Items)
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+      heightmap->Terra()->UnsetSolidColors();
+  }
+
+  engine->SetIgnOgreRenderingMode(IORM_NORMAL);
 }
 
 /////////////////////////////////////////////////

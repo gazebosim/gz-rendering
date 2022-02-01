@@ -6,6 +6,6 @@
 	float4 ignWeightsMaxHeight;
 @end
 
-@piece( custom_VStoPS )
+@piece( custom_VStoPS_terra )
 	INTERPOLANT( float localHeight, @counter(texcoord) );
 @end

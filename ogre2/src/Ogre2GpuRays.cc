@@ -26,6 +26,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
 #include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -35,6 +36,8 @@
 
 #include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
 #include "Ogre2ParticleNoiseListener.hh"
+
+#include "Terra/Terra.h"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -60,38 +63,38 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 //
 /// \brief Helper class for switching the ogre item's material to laser retro
 /// source material when a thermal camera is being rendered.
-class Ogre2LaserRetroMaterialSwitcher : public Ogre::Camera::Listener
+class IGNITION_RENDERING_OGRE2_HIDDEN
+    Ogre2LaserRetroMaterialSwitcher : public Ogre::CompositorWorkspaceListener
 {
   /// \brief constructor
   /// \param[in] _scene the scene manager responsible for rendering
   public: explicit Ogre2LaserRetroMaterialSwitcher(Ogre2ScenePtr _scene);
 
   /// \brief destructor
-  public: ~Ogre2LaserRetroMaterialSwitcher() = default;
+  public: virtual ~Ogre2LaserRetroMaterialSwitcher() = default;
 
-  /// \brief Callback when a camera is about to be rendered
-  /// \param[in] _evt Ogre camera which is about to render
-  private: virtual void cameraPreRenderScene(
-      Ogre::Camera *_cam) override;
+  /// \brief Called when each pass is about to be executed.
+  /// \param[in] _pass Ogre pass which is about to execute
+  private: virtual void passPreExecute(
+      Ogre::CompositorPass *_pass) override;
 
-  /// \brief Callback when a camera is finisned being rendered
-  /// \param[in] _evt Ogre camera which has already rendered
-  private: virtual void cameraPostRenderScene(
-      Ogre::Camera *_cam) override;
+  /// \brief Callback when each pass is finisned executing.
+  /// \param[in] _pass Ogre pass which has already executed
+  private: virtual void passPosExecute(
+      Ogre::CompositorPass *_pass) override;
 
   /// \brief Scene manager
   private: Ogre2ScenePtr scene = nullptr;
 
-  /// \brief Pointer to the laser retro source material
-  private: Ogre::MaterialPtr laserRetroSourceMaterial;
+  /// \brief A map of ogre datablock pointer to their original blendblocks
+  private: std::unordered_map<Ogre::HlmsDatablock *,
+      const Ogre::HlmsBlendblock *> datablockMap;
 
-  /// \brief Custom parameter index of laser retro value in an ogre subitem.
-  /// This has to match the custom index specifed in LaserRetroSource material
-  /// script in media/materials/scripts/gpu_rays.material
-  private: const unsigned int customParamIdx = 10u;
-
-  /// \brief A map of ogre sub item pointer to their original hlms material
-  private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
+  /// \brief A map of ogre sub item pointer to their original low level
+  /// material.
+  /// Most objects don't use one so it should be almost always empty.
+  private:
+    std::vector<std::pair<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
 };
 }
 }
@@ -100,7 +103,7 @@ class Ogre2LaserRetroMaterialSwitcher : public Ogre::Camera::Listener
 
 /// \internal
 /// \brief Private data for the Ogre2GpuRays class
-class ignition::rendering::Ogre2GpuRaysPrivate
+class IGNITION_RENDERING_OGRE2_HIDDEN ignition::rendering::Ogre2GpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.
@@ -197,47 +200,46 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 using namespace ignition;
 using namespace rendering;
 
+// Arbitrary value
+static const uint32_t kLaserRetroMainDepthPassId = 9525u;
 
 //////////////////////////////////////////////////
 Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
     Ogre2ScenePtr _scene)
 {
   this->scene = _scene;
-  // plain opaque material
-  Ogre::ResourcePtr res =
-    Ogre::MaterialManager::getSingleton().load("LaserRetroSource",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
-  this->laserRetroSourceMaterial = res.staticCast<Ogre::Material>();
-  this->laserRetroSourceMaterial->load();
 }
 
 //////////////////////////////////////////////////
-void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
-    Ogre::Camera * /*_cam*/)
+void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
+  Ogre::CompositorPass *_pass)
 {
-  {
-    auto engine = Ogre2RenderEngine::Instance();
-    Ogre2IgnHlmsSphericalClipMinDistance &hlmsCustomizations =
-        engine->SphericalClipMinDistance();
-    Ogre::Pass *pass =
-        this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
-    pass->getVertexProgramParameters()->setNamedConstant(
-          "ignMinClipDistance", hlmsCustomizations.minDistanceClip );
-  }
+  if(_pass->getDefinition()->mIdentifier != kLaserRetroMainDepthPassId)
+    return;
 
-  // swap item to use v1 shader material
-  // Note: keep an eye out for performance impact on switching materials
-  // on the fly. We are not doing this often so should be ok.
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
+
+  this->materialMap.clear();
   this->datablockMap.clear();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  Ogre::HlmsDatablock *defaultPbs =
+    hlmsManager->getHlms(Ogre::HLMS_PBS)->getDefaultDatablock();
+
+  // Construct one now so that datablock->setBlendblock
+  // each is as fast as possible
+  const Ogre::HlmsBlendblock *noBlend =
+    hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
+
+  const std::string laserRetroKey = "laser_retro";
+
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
   {
     Ogre::MovableObject *object = itor.peekNext();
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
-
-    std::string laserRetroKey = "laser_retro";
 
     float retroValue = 0.0f;
 
@@ -290,7 +292,8 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
       retroValue = std::max(retroValue, 0.0f);
     }
 
-    for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+    const size_t numSubItems = item->getNumSubItems();
+    for (size_t i = 0; i < numSubItems; ++i)
     {
       Ogre::SubItem *subItem = item->getSubItem(i);
 
@@ -300,33 +303,164 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
         retroValue = 2000.0f;
       }
       float color = retroValue / 2000.0f;
-      subItem->setCustomParameter(this->customParamIdx,
+      subItem->setCustomParameter(1u,
                                   Ogre::Vector4(color, color, color, 1.0));
 
-      Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-      this->datablockMap[subItem] = datablock;
+      if (!subItem->getMaterial().isNull())
+      {
+        // TODO(anyone): We need to keep the material's vertex shader
+        // to keep vertex deformation consistent. See
+        // https://github.com/ignitionrobotics/ign-rendering/issues/544
+        this->materialMap.push_back({ subItem, subItem->getMaterial() });
+        subItem->setDatablock(defaultPbs);
+      }
+      else
+      {
+        // regular Pbs Hlms datablock
+        Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+        const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
 
-      subItem->setMaterial(this->laserRetroSourceMaterial);
+        // We can't do any sort of blending. This isn't colour what we're
+        // storing, but rather an ID.
+        if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
+            blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
+            blendblock->mBlendOperation != Ogre::SBO_ADD ||
+            (blendblock->mSeparateBlend &&
+             (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
+              blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
+              blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+        {
+          hlmsManager->addReference(blendblock);
+          this->datablockMap[datablock] = blendblock;
+          datablock->setBlendblock(noBlend);
+        }
+      }
     }
     itor.moveNext();
   }
+
+  // Do the same with heightmaps / terrain
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+    {
+      float retroValue = 0.0f;
+
+      // get visual
+      VisualPtr visual = heightmap->Parent();
+
+      if (visual->HasUserData(laserRetroKey))
+      {
+        // get laser_retro
+        Variant tempLaserRetro = visual->UserData(laserRetroKey);
+
+        try
+        {
+          retroValue = std::get<float>(tempLaserRetro);
+        }
+        catch (...)
+        {
+          try
+          {
+            retroValue = static_cast<float>(std::get<double>(tempLaserRetro));
+          }
+          catch (...)
+          {
+            try
+            {
+              retroValue = std::get<int>(tempLaserRetro);
+            }
+            catch (std::bad_variant_access &e)
+            {
+              ignerr << "Error casting user data: " << e.what() << "\n";
+            }
+          }
+        }
+      }
+
+      // only accept positive laser retro value
+      retroValue = std::max(retroValue, 0.0f);
+
+      // limit laser retro value to 2000 (as in gazebo)
+      if (retroValue > 2000.0f)
+      {
+        retroValue = 2000.0f;
+      }
+      float color = retroValue / 2000.0f;
+
+      // TODO(anyone): Retrieve datablock and make sure it's not blending
+      // like we do with Items (it should be impossible?)
+      const Ogre::Vector4 customParameter =
+        Ogre::Vector4(color, color, color, 1.0);
+      heightmap->Terra()->SetSolidColor(1u, customParameter);
+    }
+  }
+
+  // Remove the reference count on noBlend we created
+  hlmsManager->destroyBlendblock(noBlend);
 }
 
 //////////////////////////////////////////////////
-void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
-    Ogre::Camera * /*_cam*/)
+void Ogre2LaserRetroMaterialSwitcher::passPosExecute(
+  Ogre::CompositorPass *_pass)
 {
-  // restore item to use hlms material
-  for (auto it : this->datablockMap)
+  if(_pass->getDefinition()->mIdentifier != kLaserRetroMainDepthPassId)
+    return;
+
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  // Restore original blending to modified materials
+  for (const auto &[datablock, blendblock] : this->datablockMap)
   {
-    Ogre::SubItem *subItem = it.first;
-    subItem->setDatablock(it.second);
+    datablock->setBlendblock(blendblock);
+    // Remove the reference we added (this won't actually destroy it)
+    hlmsManager->destroyBlendblock(blendblock);
+  }
+  this->datablockMap.clear();
+
+  // Remove the custom parameter. Why? If there are multiple cameras that
+  // use IORM_SOLID_COLOR (or any other mode), we want them to throw if
+  // that code forgot to call setCustomParameter. We may miss those errors
+  // if that code forgets to call but it was already carrying the value
+  // we set here.
+  //
+  // This consumes more performance but it's the price to pay for
+  // safety.
+  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
+      Ogre::ItemFactory::FACTORY_TYPE_NAME);
+  while (itor.hasMoreElements())
+  {
+    Ogre::MovableObject *object = itor.peekNext();
+    Ogre::Item *item = static_cast<Ogre::Item *>(object);
+    const size_t numSubItems = item->getNumSubItems();
+    for (size_t i = 0; i < numSubItems; ++i)
+    {
+      Ogre::SubItem *subItem = item->getSubItem(i);
+      subItem->removeCustomParameter(1u);
+    }
+    itor.moveNext();
   }
 
-  Ogre::Pass *pass =
-      this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
-  pass->getVertexProgramParameters()->setNamedConstant(
-        "ignMinClipDistance", 0.0f );
+  // Restore Items with low level materials
+  for (auto subItemMat : this->materialMap)
+  {
+    subItemMat.first->setMaterial(subItemMat.second);
+  }
+  this->materialMap.clear();
+
+  // Remove the custom parameter (same reason as with Items)
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+      heightmap->Terra()->UnsetSolidColors();
+  }
+
+  engine->SetIgnOgreRenderingMode(IORM_NORMAL);
 }
 
 
@@ -906,6 +1040,8 @@ void Ogre2GpuRays::Setup1stPass()
           colorTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
+      // Id so we can run custom code in our CompositorWorkspaceListener
+      passScene->mIdentifier = kLaserRetroMainDepthPassId;
       // set camera custom visibility mask when rendering laser retro
       passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
@@ -1020,6 +1156,13 @@ void Ogre2GpuRays::Setup1stPass()
           wsDefName,
           false);
 
+    // add laser retro material switcher to workspace listener
+    // so we can switch to use IORM_SOLID_COLOR
+    this->dataPtr->laserRetroMaterialSwitcher[i].reset(
+      new Ogre2LaserRetroMaterialSwitcher(this->scene));
+    this->dataPtr->ogreCompositorWorkspace1st[i]->addListener(
+      this->dataPtr->laserRetroMaterialSwitcher[i].get());
+
     Ogre::CompositorNode *node =
         this->dataPtr->ogreCompositorWorkspace1st[i]->getNodeSequence()[0];
     auto channelsTex = node->getLocalTextures();
@@ -1028,14 +1171,6 @@ void Ogre2GpuRays::Setup1stPass()
     {
       if (c->getPixelFormat() == Ogre::PFG_R16_UNORM)
       {
-        // add laser retro material switcher to render target listener
-        // so we can switch to use laser retro material when the camera is being
-        // updated
-        this->dataPtr->laserRetroMaterialSwitcher[i].reset(
-            new Ogre2LaserRetroMaterialSwitcher(this->scene));
-        this->dataPtr->cubeCam[i]->addListener(
-            this->dataPtr->laserRetroMaterialSwitcher[i].get());
-
         // add particle noise / scatter effects listener so we can set the
         // amount of noise based on size of emitter
         this->dataPtr->particleNoiseListener[i].reset(
@@ -1236,7 +1371,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
-  this->scene->StartRendering(nullptr);
+  this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   auto engine = Ogre2RenderEngine::Instance();
 
@@ -1285,6 +1420,9 @@ void Ogre2GpuRays::PostRender()
   image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
   Ogre::TextureBox box = image.getData(0u);
   float *bufferTmp = static_cast<float *>(box.data);
+
+  // TODO(anyone): It seems wasteful to have gpuRaysBuffer at all
+  // We should be able to convert directly from bufferTmp to gpuRaysScan
 
   // copy data row by row. The texture box may not be a contiguous region of
   // a texture

@@ -55,6 +55,7 @@
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
@@ -67,6 +68,8 @@
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
 #include <ignition/common/Image.hh>
+
+#include "Terra/Terra.h"
 
 namespace ignition
 {
@@ -108,9 +111,6 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
   /// \brief Scene manager
   private: Ogre2ScenePtr scene = nullptr;
 
-  /// \brief Pointer to the heat source material
-  private: Ogre::MaterialPtr heatSourceMaterial;
-
   /// \brief Pointer to the "base" heat signature material.
   /// All renderable items with a heat signature texture use their own
   /// copy of this base material, with the item's specific heat
@@ -129,14 +129,19 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
   /// \brief The thermal camera
   private: const Ogre::Camera* ogreCamera{nullptr};
 
-  /// \brief Custom parameter index of temperature data in an ogre subitem.
-  /// This has to match the custom index specifed in ThermalHeatSource material
-  /// script in media/materials/scripts/thermal_camera.material
-  private: const unsigned int customParamIdx = 10u;
-
   /// \brief A map of ogre sub item pointer to their original hlms material
-  private: std::unordered_map<Ogre::SubItem *, Ogre::HlmsDatablock *>
-      datablockMap;
+  private: std::vector<std::pair<Ogre::SubItem *, Ogre::HlmsDatablock *>>
+      itemDatablockMap;
+
+  /// \brief A map of ogre sub item pointer to their original low level
+  /// material.
+  /// Most objects don't use one so it should be almost always empty.
+  private:
+    std::vector<std::pair<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
+
+  /// \brief A map of ogre datablock pointer to their original blendblocks
+  private: std::unordered_map<Ogre::HlmsDatablock *,
+      const Ogre::HlmsBlendblock *> datablockMap;
 
   /// \brief linear temperature resolution. Defaults to 10mK
   private: double resolution = 0.01;
@@ -214,9 +219,6 @@ Ogre2ThermalCameraMaterialSwitcher::Ogre2ThermalCameraMaterialSwitcher(
     Ogre::MaterialManager::getSingleton().load("ThermalHeatSource",
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-  this->heatSourceMaterial = res.staticCast<Ogre::Material>();
-  this->heatSourceMaterial->load();
-
   this->baseHeatSigMaterial = Ogre::MaterialManager::getSingleton().
     getByName("ThermalHeatSignature");
 
@@ -239,10 +241,26 @@ void Ogre2ThermalCameraMaterialSwitcher::SetLinearResolution(double _resolution)
 void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  auto engine = Ogre2RenderEngine::Instance();
+  engine->SetIgnOgreRenderingMode(IORM_SOLID_THERMAL_COLOR_TEXTURED);
+
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
-  this->datablockMap.clear();
+  this->itemDatablockMap.clear();
+  this->materialMap.clear();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  Ogre::HlmsDatablock *defaultPbs =
+    hlmsManager->getHlms(Ogre::HLMS_PBS)->getDefaultDatablock();
+
+  // Construct one now so that datablock->setBlendblock
+  // each is as fast as possible
+  const Ogre::HlmsBlendblock *noBlend =
+    hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
+
+  const std::string tempKey = "temperature";
+
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -250,7 +268,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     Ogre::MovableObject *object = itor.peekNext();
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
-    const std::string tempKey = "temperature";
     // get visual
     Ogre::Any userAny = item->getUserObjectBindings().getUserAny();
     if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
@@ -307,22 +324,49 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
               << "zero. Clamping temperature to 0 degrees Kelvin."
               << std::endl;
         }
-        for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+
+        const size_t numSubItems = item->getNumSubItems();
+        for (size_t i = 0; i < numSubItems; ++i)
         {
           Ogre::SubItem *subItem = item->getSubItem(i);
 
           // normalize temperature value
-          float color = (temp / this->resolution) / ((1 << bitDepth) - 1.0);
+          const float color = static_cast<float>((temp / this->resolution) /
+                                                 ((1 << bitDepth) - 1.0));
 
           // set g, b, a to 0. This will be used by shaders to determine
           // if particular fragment is a heat source or not
-          // see media/materials/programs/thermal_camera_fs.glsl
-          subItem->setCustomParameter(this->customParamIdx,
-              Ogre::Vector4(color, 0, 0, 0.0));
-          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          this->datablockMap[subItem] = datablock;
+          // see media/materials/programs/GLSL/thermal_camera_fs.glsl
+          subItem->setCustomParameter(1, Ogre::Vector4(color, 0, 0, 0.0));
 
-          subItem->setMaterial(this->heatSourceMaterial);
+          if (!subItem->getMaterial().isNull())
+          {
+            // TODO(anyone): We need to keep the material's vertex shader
+            // to keep vertex deformation consistent. See
+            // https://github.com/ignitionrobotics/ign-rendering/issues/544
+            this->materialMap.push_back({ subItem, subItem->getMaterial() });
+            subItem->setDatablock(defaultPbs);
+          }
+          else
+          {
+            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+            const Ogre::HlmsBlendblock *blendblock = datablock->getBlendblock();
+
+            // We can't do any sort of blending. This isn't colour what we're
+            // storing, but rather an ID.
+            if (blendblock->mSourceBlendFactor != Ogre::SBF_ONE ||
+                blendblock->mDestBlendFactor != Ogre::SBF_ZERO ||
+                blendblock->mBlendOperation != Ogre::SBO_ADD ||
+                (blendblock->mSeparateBlend &&
+                 (blendblock->mSourceBlendFactorAlpha != Ogre::SBF_ONE ||
+                  blendblock->mDestBlendFactorAlpha != Ogre::SBF_ZERO ||
+                  blendblock->mBlendOperationAlpha != Ogre::SBO_ADD)))
+            {
+              hlmsManager->addReference(blendblock);
+              this->datablockMap[datablock] = blendblock;
+              datablock->setBlendblock(noBlend);
+            }
+          }
         }
       }
       // get heat signature and the corresponding min/max temperature values
@@ -336,7 +380,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
         {
           // make sure the texture is in ogre's resource path
           const auto &texture = *heatSignature;
-          auto engine = Ogre2RenderEngine::Instance();
           engine->AddResourcePath(texture);
 
           // create a material for this item, now that the texture has been
@@ -380,62 +423,222 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           this->heatSignatureMaterials[item->getId()] = heatSignatureMaterial;
         }
 
-        for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
+        const size_t numSubItems = item->getNumSubItems();
+        for (size_t i = 0; i < numSubItems; ++i)
         {
           Ogre::SubItem *subItem = item->getSubItem(i);
 
-          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          this->datablockMap[subItem] = datablock;
+          if (!subItem->getMaterial().isNull())
+          {
+            // TODO(anyone): We need to keep the material's vertex shader
+            // to keep vertex deformation consistent. See
+            // https://github.com/ignitionrobotics/ign-rendering/issues/544
+            this->materialMap.push_back({ subItem, subItem->getMaterial() });
+          }
+          else
+          {
+            // TODO(anyone): We're not using Hlms pieces, therefore HW
+            // vertex deformation (e.g. skinning / skeletal animation) won't
+            // show up correctly
+            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+            this->itemDatablockMap.push_back({ subItem, datablock });
+          }
 
           subItem->setMaterial(this->heatSignatureMaterials[item->getId()]);
         }
       }
-      // background objects
       else
       {
-        Ogre::Aabb aabb = item->getWorldAabbUpdated();
-        Ogre::AxisAlignedBox box = Ogre::AxisAlignedBox(aabb.getMinimum(),
-            aabb.getMaximum());
-
-        // we will be converting rgb values to temperature values in shaders
-        // but we want to make sure the object rgb values are not affected by
-        // lighting, so disable lighting
-        // Also check if objects are within camera view
-        if (ogreVisual->GeometryCount() > 0u &&
-            this->ogreCamera->isVisible(box))
+        // Temperature object not set
+        // We consider this a "background object".
+        //
+        // It will be set to ambient temperature in thermal_camera_fs.glsl
+        // but its unlit, textured RGB color actually matters.
+        //
+        // We will be converting rgb values to temperature values in shaders
+        // thus we want them textured but without lighting
+        const size_t numSubItems = item->getNumSubItems();
+        for (size_t i = 0; i < numSubItems; ++i)
         {
-          auto geom = ogreVisual->GeometryByIndex(0);
-          if (geom)
+          Ogre::SubItem *subItem = item->getSubItem(i);
+
+          const Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+          const Ogre::ColourValue color = datablock->getDiffuseColour();
+          subItem->setCustomParameter(
+            1u, Ogre::Vector4(color.r, color.g, color.b, 1.0));
+
+          // Set 2 to signal we want it to multiply against
+          // the diffuse texture (if any). The actual value doesn't matter.
+          subItem->setCustomParameter(2u, Ogre::Vector4::ZERO);
+
+          if (!subItem->getMaterial().isNull())
           {
-            MaterialPtr mat = geom->Material();
-            Ogre2MaterialPtr ogreMat =
-                std::dynamic_pointer_cast<Ogre2Material>(mat);
-            Ogre::HlmsUnlitDatablock *unlit = ogreMat->UnlitDatablock();
-            for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
-            {
-              Ogre::SubItem *subItem = item->getSubItem(i);
-              Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-              this->datablockMap[subItem] = datablock;
-              subItem->setDatablock(unlit);
-            }
+            // TODO(anyone): We need to keep the material's vertex shader
+            // to keep vertex deformation consistent. See
+            // https://github.com/ignitionrobotics/ign-rendering/issues/544
+            this->materialMap.push_back({ subItem, subItem->getMaterial() });
+            subItem->setDatablock(defaultPbs);
+          }
+          else
+          {
+            // We don't save to this->datablockMap because we're already
+            // honouring the original HlmsBlendblock. There's nothing
+            // to override.
           }
         }
       }
     }
+
     itor.moveNext();
   }
+
+  // Do the same with heightmaps / terrain
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+    {
+      VisualPtr visual = heightmap->Parent();
+
+      // get temperature
+      Variant tempAny = visual->UserData(tempKey);
+      if (tempAny.index() != 0 && !std::holds_alternative<std::string>(tempAny))
+      {
+        float temp = -1.0;
+        bool foundTemp = true;
+        try
+        {
+          temp = std::get<float>(tempAny);
+        }
+        catch (...)
+        {
+          try
+          {
+            temp = static_cast<float>(std::get<double>(tempAny));
+          }
+          catch (...)
+          {
+            try
+            {
+              temp = std::get<int>(tempAny);
+            }
+            catch (std::bad_variant_access &e)
+            {
+              ignerr << "Error casting user data: " << e.what() << "\n";
+              temp = -1.0;
+              foundTemp = false;
+            }
+          }
+        }
+
+        // if a non-positive temperature was given, clamp it to 0
+        if (foundTemp && temp < 0.0)
+        {
+          temp = 0.0;
+          ignwarn << "Unable to set negatve temperature for: " << visual->Name()
+                  << ". Value cannot be lower than absolute "
+                  << "zero. Clamping temperature to 0 degrees Kelvin."
+                  << std::endl;
+        }
+
+        // normalize temperature value
+        const float color = static_cast<float>((temp / this->resolution) /
+                                               ((1 << bitDepth) - 1.0));
+
+        heightmap->Terra()->SetSolidColor(1u, Ogre::Vector4(color, 0, 0, 0.0));
+        // TODO(anyone): Retrieve datablock and make sure it's not blending
+        // like we do with Items (it should be impossible?)
+      }
+      // get heat signature and the corresponding min/max temperature values
+      else if (std::get_if<std::string>(&tempAny))
+      {
+        ignerr << "Heat Signature not yet supported by Heightmaps. Simulation "
+                  "may crash!\n";
+      }
+      else
+      {
+        // Temperature object not set
+        // We consider this a "background object".
+
+        // TODO(anyone): Retrieve datablock and get diffuse color
+        // (it's likely gonna be 1 1 1 1 anyway... Does it matter?).
+        heightmap->Terra()->SetSolidColor(1u,
+                                          Ogre::Vector4(1.0, 1.0, 1.0, 1.0));
+        // TODO(anyone): Retrieve datablock and make sure it's not blending
+        // like we do with Items (it should be impossible?)
+      }
+    }
+  }
+
+  // Remove the reference count on noBlend we created
+  hlmsManager->destroyBlendblock(noBlend);
 }
 
 //////////////////////////////////////////////////
 void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
+
+  // Restore original blending to modified materials
+  for (const auto &[datablock, blendblock] : this->datablockMap)
+  {
+    datablock->setBlendblock(blendblock);
+    // Remove the reference we added (this won't actually destroy it)
+    hlmsManager->destroyBlendblock(blendblock);
+  }
+  this->datablockMap.clear();
+
+  // Remove the custom parameter. Why? If there are multiple cameras that
+  // use IORM_SOLID_COLOR (or any other mode), we want them to throw if
+  // that code forgot to call setCustomParameter. We may miss those errors
+  // if that code forgets to call but it was already carrying the value
+  // we set here.
+  //
+  // This consumes more performance but it's the price to pay for
+  // safety.
+  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
+      Ogre::ItemFactory::FACTORY_TYPE_NAME);
+  while (itor.hasMoreElements())
+  {
+    Ogre::MovableObject *object = itor.peekNext();
+    Ogre::Item *item = static_cast<Ogre::Item *>(object);
+    const size_t numSubItems = item->getNumSubItems();
+    for (size_t i = 0; i < numSubItems; ++i)
+    {
+      Ogre::SubItem *subItem = item->getSubItem(i);
+      subItem->removeCustomParameter(1u);
+      subItem->removeCustomParameter(2u);
+    }
+    itor.moveNext();
+  }
+
+  // Restore Items with low level materials
+  for (auto subItemMat : this->materialMap)
+  {
+    subItemMat.first->setMaterial(subItemMat.second);
+  }
+  this->materialMap.clear();
+
+  // Remove the custom parameter (same reason as with Items)
+  auto heightmaps = this->scene->Heightmaps();
+  for (auto h : heightmaps)
+  {
+    auto heightmap = h.lock();
+    if (heightmap)
+      heightmap->Terra()->UnsetSolidColors();
+  }
+
   // restore item to use pbs hlms material
-  for (auto it : this->datablockMap)
+  for (auto it : this->itemDatablockMap)
   {
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);
   }
+
+  engine->SetIgnOgreRenderingMode(IORM_NORMAL);
 }
 
 //////////////////////////////////////////////////

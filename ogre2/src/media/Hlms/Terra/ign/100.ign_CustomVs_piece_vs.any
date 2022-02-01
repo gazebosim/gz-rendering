@@ -1,4 +1,4 @@
 
-@piece( custom_vs_posExecution )
+@piece( custom_vs_posExecution_terra )
 	outVs.localHeight = worldPos.z - cellData.pos.y;
 @end

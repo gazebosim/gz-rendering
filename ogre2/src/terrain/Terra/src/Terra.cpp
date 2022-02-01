@@ -94,6 +94,13 @@ namespace Ogre
         m_camera( camera ),
         mHlmsTerraIndex( std::numeric_limits<uint32>::max() )
     {
+      // IGN CUSTOMIZE BEGIN
+      for(int i = 0; i < 2; ++i)
+      {
+        mSolidColor[i] = Vector4::ZERO;
+        mSolidColorSet[i] = false;
+      }
+      // IGN CUSTOMIZE END
     }
     //-----------------------------------------------------------------------------------
     Terra::~Terra()
@@ -522,6 +529,43 @@ namespace Ogre
 
         m_collectedCells[0].clear();
     }
+    //-----------------------------------------------------------------------------------
+    // IGN CUSTOMIZE BEGIN
+    void Terra::SetSolidColor(size_t _idx, const Vector4 solidColor)
+    {
+      assert(_idx > 0u && _idx < 3u);
+      _idx = _idx - 1u;
+
+      mSolidColor[_idx] = solidColor;
+      mSolidColorSet[_idx] = true;
+    }
+    //-----------------------------------------------------------------------------------
+    Vector4 Terra::SolidColor(size_t _idx) const
+    {
+      assert(_idx > 0u && _idx < 3u);
+      _idx = _idx - 1u;
+
+      if (!mSolidColorSet[_idx])
+      {
+        OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
+                    "Parameter at the given index was not found.",
+                    "Terra::getSolidColors");
+      }
+      return mSolidColor[_idx];
+    }
+    //-----------------------------------------------------------------------------------
+    bool Terra::HasSolidColor(size_t _idx) const
+    {
+      assert(_idx > 0u && _idx < 3u);
+      return mSolidColorSet[_idx - 1u];
+    }
+    //-----------------------------------------------------------------------------------
+    void Terra::UnsetSolidColors()
+    {
+      mSolidColorSet[0] = false;
+      mSolidColorSet[1] = false;
+    }
+    // IGN CUSTOMIZE END
     //-----------------------------------------------------------------------------------
     void Terra::update( const Vector3 &lightDir, float lightEpsilon )
     {

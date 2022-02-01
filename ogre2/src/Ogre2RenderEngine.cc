@@ -43,6 +43,7 @@
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "Ogre2IgnHlmsPbsPrivate.hh"
+#include "Ogre2IgnHlmsTerraPrivate.hh"
 #include "Ogre2IgnHlmsUnlitPrivate.hh"
 
 #include "Terra/Hlms/OgreHlmsTerra.h"
@@ -79,6 +80,9 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
 
   /// \brief Custom Unlit modifications
   public: Ogre::Ogre2IgnHlmsUnlit *ignHlmsUnlit{nullptr};
+
+  /// \brief Custom Terra modifications
+  public: Ogre::Ogre2IgnHlmsTerra *ignHlmsTerra{nullptr};
 };
 
 using namespace ignition;
@@ -777,6 +781,14 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // Get the library archive(s)
     Ogre::ArchiveVec archivePbsLibraryFolders;
+
+    {
+      archivePbsLibraryFolders.push_back(archiveManager.load(
+        rootHlmsFolder + common::joinPaths("Hlms", "Terra", "GLSL",
+        "PbsTerraShadows"), "FileSystem", true ));
+      this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
+    }
+
     libraryFolderPathIt = libraryFoldersPaths.begin();
     libraryFolderPathEn = libraryFoldersPaths.end();
     while (libraryFolderPathIt != libraryFolderPathEn)
@@ -789,12 +801,6 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     archivePbsLibraryFolders.push_back(customizationsArchiveLibrary);
-    {
-      archivePbsLibraryFolders.push_back(archiveManager.load(
-        rootHlmsFolder + common::joinPaths("Hlms", "Terra", "GLSL",
-        "PbsTerraShadows"), "FileSystem", true ));
-      this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
-    }
 
     // Create and register
     hlmsPbs =
@@ -811,15 +817,13 @@ void Ogre2RenderEngine::RegisterHlms()
   }
 
   {
-    Ogre::HlmsTerra *hlmsTerra = 0;
+    Ogre::Ogre2IgnHlmsTerra *hlmsTerra = 0;
     // Create & Register HlmsPbs
     // Do the same for HlmsPbs:
-    Ogre::HlmsTerra::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Ogre2IgnHlmsTerra::GetDefaultPaths(mainFolderPath,
+                                             libraryFoldersPaths);
     Ogre::Archive *archiveTerra = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
-
-    // Add ignition's customizations
-    libraryFoldersPaths.push_back(common::joinPaths("Hlms", "Terra", "ign"));
 
     // Get the library archive(s)
     Ogre::ArchiveVec archiveTerraLibraryFolders;
@@ -835,15 +839,19 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     // Create and register
-    hlmsTerra = OGRE_NEW Ogre::HlmsTerra(archiveTerra,
-                                         &archiveTerraLibraryFolders);
+    hlmsTerra = OGRE_NEW Ogre::Ogre2IgnHlmsTerra(
+      archiveTerra, &archiveTerraLibraryFolders,
+      &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsTerra);
 
     // disable writting debug output to disk
     hlmsTerra->setDebugOutputPath(false, false);
+    hlmsTerra->setListener(hlmsTerra);
 
     this->dataPtr->terraWorkspaceListener.reset(
       new Ogre::TerraWorkspaceListener(hlmsTerra));
+
+    this->dataPtr->ignHlmsTerra = hlmsTerra;
   }
 }
 
@@ -1038,6 +1046,8 @@ void Ogre2RenderEngine::SetIgnOgreRenderingMode(
   IgnOgreRenderingMode renderingMode)
 {
   this->dataPtr->ignHlmsPbs->ignOgreRenderingMode = renderingMode;
+  this->dataPtr->ignHlmsUnlit->ignOgreRenderingMode = renderingMode;
+  this->dataPtr->ignHlmsTerra->ignOgreRenderingMode = renderingMode;
 }
 
 /////////////////////////////////////////////////

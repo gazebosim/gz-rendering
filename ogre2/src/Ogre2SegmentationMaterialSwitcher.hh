@@ -18,10 +18,12 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 
-#include <string>
 #include <random>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include <ignition/math/Color.hh>
 
@@ -67,6 +69,14 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// \return The map between color and label IDs
   public: const std::unordered_map<int64_t, int64_t> &ColorToLabel() const;
 
+  /// \brief Create a color to apply for the given visual
+  /// \param[in] _visual Visual will be applying the color to
+  /// \param[in,out] _prevParentName A persistent string between call
+  /// to ensure multilink visuals receive the same color
+  /// \return The color to apply to the visual
+  private: Ogre::Vector4 ColorForVisual(const VisualPtr &_visual,
+                                        std::string &_prevParentName);
+
   /// \brief Convert label of semantic map to a unique color for colored map and
   /// add the color of the label to the taken colors if it doesn't exist
   /// \param[in] _label id of the semantic map or encoded id of panoptic map
@@ -94,7 +104,7 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
 
   /// \brief Keep track of num of instances of the same label
   /// Key: label id, value: num of instances
-  private: std::unordered_map<unsigned int, unsigned int> instancesCount;
+  private: std::unordered_map<int, unsigned int> instancesCount;
 
   /// \brief keep track of the random colors (store encoded id of r,g,b)
   private: std::unordered_set<int64_t> takenColors;
@@ -112,6 +122,12 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// \brief A map of ogre datablock pointer to their original blendblocks
   private: std::unordered_map<Ogre::HlmsDatablock *,
       const Ogre::HlmsBlendblock *> datablockMap;
+
+  /// \brief A map of ogre sub item pointer to their original low level
+  /// material.
+  /// Most objects don't use one so it should be almost always empty.
+  private:
+    std::vector<std::pair<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
 
   /// \brief Pseudo num generator to generate colors from label id
   private: std::default_random_engine generator;

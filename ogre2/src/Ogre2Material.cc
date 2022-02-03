@@ -40,6 +40,7 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Image.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ShaderType.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -51,6 +52,9 @@
 /// \brief Private data for the Ogre2Material class
 class ignition::rendering::Ogre2MaterialPrivate
 {
+  /// \brief The graphics API to use
+  public: GraphicsAPI graphicsAPI{GraphicsAPI::OPENGL};
+
   /// \brief Ogre stores the name using hashes. This variable will
   /// store the material hash name
   public: std::string hashName;
@@ -66,6 +70,20 @@ class ignition::rendering::Ogre2MaterialPrivate
 
   /// \brief Parameters to be bound to the fragment shader
   public: ShaderParamsPtr fragmentShaderParams;
+
+  /// \brief Returns the shader language code
+  public: std::string shaderLanguageCode() const
+  {
+    switch (this->graphicsAPI)
+    {
+      case GraphicsAPI::OPENGL:
+        return "glsl";
+      case GraphicsAPI::METAL:
+        return "metal";
+      default:
+        return "invalid";
+    }
+  }
 };
 
 using namespace ignition;
@@ -752,8 +770,11 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
                << name_param.first << std::endl;
         continue;
       }
-      // set the texture map index
-      _ogreParams->setNamedConstant(name_param.first, &texIndex, 1, 1);
+      if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+      {
+        // set the texture map index
+        _ogreParams->setNamedConstant(name_param.first, &texIndex, 1, 1);
+      }
     }
   }
 }
@@ -1090,13 +1111,10 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
     Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
         "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
+        this->dataPtr->shaderLanguageCode(),
+        Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
   vertexShader->setSourceFile(_path);
-
-  Ogre::GpuProgramParametersSharedPtr params =
-      vertexShader->getDefaultParameters();
-
   vertexShader->load();
 
   assert(vertexShader->isLoaded());
@@ -1145,7 +1163,19 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
     Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
         "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+        this->dataPtr->shaderLanguageCode(),
+        Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+
+  // set shader language specific parameters 
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
+  {
+    // must set reflection pair hint for Metal fragment shaders
+    // otherwise the parameters (uniforms) will not be set correctly
+    std::string paramName("shader_reflection_pair_hint");
+    std::string paramValue =
+        "_ign_" + common::basename(this->dataPtr->vertexShaderPath); 
+    fragmentShader->setParameter(paramName, paramValue);
+  }
 
   fragmentShader->setSourceFile(_path);
   fragmentShader->load();

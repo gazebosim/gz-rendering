@@ -87,18 +87,6 @@ bool g_initContext = false;
   GLXDrawable g_glutDrawable;
 #endif
 
-double g_offset = 0.0;
-
-int g_seed[1] = {0};
-float g_resolution[2] = {400, 200};
-float g_color[3] = {1.0, 1.0, 1.0};
-float g_adjustments[16] = {
-  0, 0, 0, 0.0005,
-  0, 0, 0, 0,
-  0, 0, 0, 0,
-  0, 0, 0, 0
-};
-
 // view control variables
 ir::RayQueryPtr g_rayQuery;
 ir::OrbitViewController g_viewControl;
@@ -341,9 +329,9 @@ void initCamera(ir::CameraPtr _camera)
 void initUniforms()
 {
   ir::NodePtr node = g_camera->Parent();
-  ir::VisualPtr sphere =
+  ir::VisualPtr waves =
       std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("waves"));
-  ir::MaterialPtr shader = sphere->Material();
+  ir::MaterialPtr shader = waves->Material();
   if (!shader)
     return;
 
@@ -372,7 +360,7 @@ void initUniforms()
   (*g_vsParams)["bumpSpeed"].InitializeBuffer(2);
   (*g_vsParams)["bumpSpeed"].UpdateBuffer(bumpSpeed);
 
-  float amplitude = 0.7f;
+  float amplitude = 3.0f;
   float amplitudeV[3] = {0.6f * amplitude, 0.4f * amplitude, 0.3f * amplitude};
   (*g_vsParams)["amplitude"].InitializeBuffer(3);
   (*g_vsParams)["amplitude"].UpdateBuffer(amplitudeV);

@@ -1166,14 +1166,14 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
         this->dataPtr->shaderLanguageCode(),
         Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
 
-  // set shader language specific parameters 
+  // set shader language specific parameters
   if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
   {
     // must set reflection pair hint for Metal fragment shaders
     // otherwise the parameters (uniforms) will not be set correctly
     std::string paramName("shader_reflection_pair_hint");
     std::string paramValue =
-        "_ign_" + common::basename(this->dataPtr->vertexShaderPath); 
+        "_ign_" + common::basename(this->dataPtr->vertexShaderPath);
     fragmentShader->setParameter(paramName, paramValue);
   }
 

@@ -38,6 +38,12 @@ class ignition::rendering::ShaderParamPrivate
 
   /// \brief Count of elements in buffer of parameter held
   public: uint32_t count = 0u;
+
+  /// \brief Path to texture
+  public: std::string texture;
+
+  /// \brief Texture coord set index
+  public: uint32_t uvSetIndex = 0u;
 };
 
 
@@ -98,6 +104,15 @@ void ShaderParam::operator=(const int _value)
 }
 
 //////////////////////////////////////////////////
+void ShaderParam::SetTexture(const std::string &_value,
+    ShaderParam::ParamType _type, unsigned int _uvSetIndex)
+{
+  this->dataPtr->type = _type;
+  this->dataPtr->texture = _value;
+  this->dataPtr->uvSetIndex = _uvSetIndex;
+}
+
+//////////////////////////////////////////////////
 void ShaderParam::InitializeBuffer(uint32_t _count)
 {
   this->dataPtr->count = _count;
@@ -152,5 +167,13 @@ bool ShaderParam::Buffer(std::shared_ptr<void> &_buffer) const
     _buffer = this->dataPtr->buffer;
     return true;
   }
+  return false;
+}
+
+//////////////////////////////////////////////////
+bool ShaderParam::Value(std::string &_value, uint32_t &_uvSetIndex) const
+{
+  _value = this->dataPtr->texture;
+  _uvSetIndex = this->dataPtr->uvSetIndex;
   return false;
 }

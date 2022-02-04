@@ -20,8 +20,8 @@
 
 #include <cstdint>
 #include <cstring>
-
 #include <memory>
+#include <string>
 
 #include <ignition/common/SuppressWarning.hh>
 
@@ -56,6 +56,12 @@ namespace ignition
 
         /// \brief Int Buffer type parameter
         PARAM_INT_BUFFER = 4,
+
+        /// \brief texture type parameter
+        PARAM_TEXTURE = 5,
+
+        /// \brief cube map type parameter
+        PARAM_TEXTURE_CUBE = 6,
       };
 
       /// \brief constructor
@@ -89,6 +95,14 @@ namespace ignition
       /// \param[in] _value Value to set this parameter to
       public: void operator=(const int _value);
 
+      /// \brief Set this to be a texture parameter
+      /// \param[in] _value Value to set this parameter to
+      /// \param[in] _type Type of texture
+      /// \param[in] _uvSetIndex Texture coordinate set index
+      public: void SetTexture(const std::string &_value,
+          ShaderParam::ParamType _type = ShaderParam::ParamType::PARAM_TEXTURE,
+          uint32_t _uvSetIndex = 0u);
+
       /// \brief Set this to be a buffer parameter
       /// \param[in] _count Number of 32-bit elements in the buffer
       public: void InitializeBuffer(uint32_t _count);
@@ -110,6 +124,12 @@ namespace ignition
       /// \param[out] _value variable the value will be copied to
       /// \return true if the parameter is the expected type
       public: bool Value(int *_value) const;
+
+      /// \brief Get the value of this parameter if it is a texture
+      /// \param[out] _value variable the value will be copied to
+      /// \param[out] _uvSetIndex Texture coordinate set index
+      /// \return true if the parameter filled
+      public: bool Value(std::string &_value, uint32_t &_uvSetIndex) const;
 
       /// \brief Get the value of this parameter if it is a buffer
       /// \param[out] _buffer variable the value will be copied to

@@ -232,8 +232,16 @@ void Ogre2Material::Destroy()
   Ogre::SceneManager *sceneManager = s->OgreSceneManager();
   sceneManager->shrinkToFitMemoryPools();
 
-  Ogre::VaoManager *vaoManager = textureManager->getVaoManager();
-  vaoManager->cleanupEmptyPools();
+  try
+  {
+    Ogre::VaoManager *vaoManager = textureManager->getVaoManager();
+    vaoManager->cleanupEmptyPools();
+  }
+  catch (Ogre::UnimplementedException &)
+  {
+    // Do nothing. Vulkan does not implement this and is not needed
+    // It might be implemented in the future though
+  }
 }
 
 //////////////////////////////////////////////////

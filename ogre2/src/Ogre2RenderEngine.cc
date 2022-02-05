@@ -553,7 +553,7 @@ void Ogre2RenderEngine::LoadPlugins()
       try
       {
         // Load the plugin into OGRE
-        this->ogreRoot->loadPlugin(filename,false);
+        this->ogreRoot->loadPlugin(filename, false);
       }
       catch(Ogre::Exception &)
       {

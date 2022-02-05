@@ -52,9 +52,6 @@
 /// \brief Private data for the Ogre2Material class
 class ignition::rendering::Ogre2MaterialPrivate
 {
-  /// \brief The graphics API to use
-  public: GraphicsAPI graphicsAPI{GraphicsAPI::OPENGL};
-
   /// \brief Ogre stores the name using hashes. This variable will
   /// store the material hash name
   public: std::string hashName;
@@ -71,10 +68,12 @@ class ignition::rendering::Ogre2MaterialPrivate
   /// \brief Parameters to be bound to the fragment shader
   public: ShaderParamsPtr fragmentShaderParams;
 
-  /// \brief Returns the shader language code
-  public: std::string shaderLanguageCode() const
+  /// \brief Returns the shader language code.
+  /// \param[in] _graphicsAPI The graphic API.
+  /// \return The shader language code string.
+  public: static std::string shaderLanguageCode(GraphicsAPI _graphicsAPI)
   {
-    switch (this->graphicsAPI)
+    switch (_graphicsAPI)
     {
       case GraphicsAPI::OPENGL:
         return "glsl";
@@ -770,7 +769,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
                << name_param.first << std::endl;
         continue;
       }
-      if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+      if (Ogre2RenderEngine::Instance()->GraphicsAPI() == GraphicsAPI::OPENGL)
       {
         // set the texture map index
         _ogreParams->setNamedConstant(name_param.first, &texIndex, 1, 1);
@@ -1111,7 +1110,8 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
     Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
         "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        this->dataPtr->shaderLanguageCode(),
+        this->dataPtr->shaderLanguageCode(
+            Ogre2RenderEngine::Instance()->GraphicsAPI()),
         Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
   vertexShader->setSourceFile(_path);
@@ -1163,11 +1163,12 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
     Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
         "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        this->dataPtr->shaderLanguageCode(),
+        this->dataPtr->shaderLanguageCode(
+            Ogre2RenderEngine::Instance()->GraphicsAPI()),
         Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
 
   // set shader language specific parameters
-  if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
+  if (Ogre2RenderEngine::Instance()->GraphicsAPI() == GraphicsAPI::METAL)
   {
     // must set reflection pair hint for Metal fragment shaders
     // otherwise the parameters (uniforms) will not be set correctly

@@ -24,6 +24,7 @@
 
 #include <ignition/common/SingletonT.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -212,6 +213,10 @@ namespace ignition
       /// \return Pointer to the CompositorWorkspaceListener
       public: Ogre::CompositorWorkspaceListener
           *TerraWorkspaceListener() const;
+
+      /// \brief Get the render engine's graphics API
+      /// \return The graphics API enum class
+      public: GraphicsAPI GraphicsAPI() const;
 
       /// \brief Pointer to the ogre's overlay system
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;

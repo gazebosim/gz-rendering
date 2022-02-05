@@ -1090,11 +1090,6 @@ void Ogre2GpuRays::Setup2ndPass()
   this->dataPtr->secondPassTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
 
-  // Create second pass material
-  // The GpuRaysScan2nd material is defined in script (gpu_rays.material).
-  // We need to clone it since we are going to modify texture unit states.
-  const std::string mat2ndName = "GpuRaysScan2nd";
-
   Ogre::CompositorChannelVec compoChannels;
 
   // The compositor will plug all these textures into the material

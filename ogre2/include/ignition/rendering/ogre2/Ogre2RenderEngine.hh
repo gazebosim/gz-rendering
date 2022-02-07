@@ -216,7 +216,7 @@ namespace ignition
 
       /// \brief Get the render engine's graphics API
       /// \return The graphics API enum class
-      public: GraphicsAPI GraphicsAPI() const;
+      public: rendering::GraphicsAPI GraphicsAPI() const;
 
       /// \brief Pointer to the ogre's overlay system
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;

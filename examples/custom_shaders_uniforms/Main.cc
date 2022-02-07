@@ -49,13 +49,18 @@ const std::string fragmentShaderGLSLFile = "fragment_shader.glsl";
 const std::string vertexShaderGLSL330File = "vertex_shader_330.glsl";
 const std::string fragmentShaderGLSL330File = "fragment_shader_330.glsl";
 
+const std::string vertexShaderMetalFile = "vertex_shader.metal";
+const std::string fragmentShaderMetalFile = "fragment_shader.metal";
+
 //! [init shaders variables]
 
 const std::string RESOURCE_PATH =
     ignition::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene, const std::string &_engineName)
+void buildScene(ScenePtr _scene,
+    const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
@@ -72,8 +77,17 @@ void buildScene(ScenePtr _scene, const std::string &_engineName)
   std::string fragmentShaderFile;
   if (_engineName == "ogre2")
   {
-    vertexShaderFile = vertexShaderGLSL330File;
-    fragmentShaderFile = fragmentShaderGLSL330File;
+    auto it = _params.find("metal");
+    if (it != _params.end() && it->second == "1")
+    {
+      vertexShaderFile = vertexShaderMetalFile;
+      fragmentShaderFile = fragmentShaderMetalFile;
+    }
+    else
+    {
+      vertexShaderFile = vertexShaderGLSL330File;
+      fragmentShaderFile = fragmentShaderGLSL330File;
+    }
   }
   else
   {
@@ -132,7 +146,7 @@ CameraPtr createCamera(const std::string &_engineName,
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  buildScene(scene, _engineName);
+  buildScene(scene, _engineName, _params);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
@@ -173,9 +187,7 @@ int main(int _argc, char** _argv)
       if (engineName.compare("ogre2") == 0
           && graphicsApi == GraphicsAPI::METAL)
       {
-        // \todo(anyone) uncomment once metal shaders are available
-        // params["metal"] = "1";
-        ignerr << "Metal shaders are not implemented yet. Using GLSL" << std::endl;
+        params["metal"] = "1";
       }
 
       CameraPtr camera = createCamera(engineName, params);

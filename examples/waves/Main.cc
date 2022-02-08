@@ -85,7 +85,7 @@ void buildScene(ScenePtr _scene, const std::string &_engineName)
   shader->SetVertexShader(vertexShaderPath);
   shader->SetFragmentShader(fragmentShaderPath);
 
-   // create box visual
+   // create waves visual
    VisualPtr waves = _scene->CreateVisual("waves");
    MeshDescriptor descriptor;
    descriptor.meshName = common::joinPaths(RESOURCE_PATH, "mesh.dae");
@@ -100,11 +100,11 @@ void buildScene(ScenePtr _scene, const std::string &_engineName)
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0, 0.0, 0.5);
+  camera->SetLocalPosition(0, 0.0, 3.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
-  camera->SetAntiAliasing(2);
+  camera->SetAntiAliasing(4);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);

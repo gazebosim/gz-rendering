@@ -19,7 +19,7 @@
 
 #include <memory>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
@@ -61,9 +61,9 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     /// \internal
     /// \brief Private data
-    IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+    IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
     private: std::unique_ptr<BoundingBoxPrivate> dataPtr;
-    IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+    IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
   };
 }
 }

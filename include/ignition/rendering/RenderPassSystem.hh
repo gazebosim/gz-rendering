@@ -22,7 +22,7 @@
 #include <string>
 #include <typeinfo>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
@@ -80,13 +80,13 @@ namespace ignition
       private: RenderPassPtr CreateImpl(const std::string &_type);
 
       /// \brief A map of render pass type id name to its factory class
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: static std::map<std::string, RenderPassFactory *> renderPassMap;
 
       /// \internal
       /// \brief Pointer to private data class
       private: std::unique_ptr<RenderPassSystemPrivate> dataPtr;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
 
     /// \brief Render pass registration macro

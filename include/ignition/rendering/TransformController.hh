@@ -19,7 +19,7 @@
 
 #include <memory>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include <ignition/math/Quaternion.hh>
 #include <ignition/math/Plane.hh>
@@ -213,9 +213,9 @@ namespace ignition
           const math::Planed &_plane, math::Vector3d &_result);
 
       /// \brief Private data pointer
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::unique_ptr<TransformControllerPrivate> dataPtr;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

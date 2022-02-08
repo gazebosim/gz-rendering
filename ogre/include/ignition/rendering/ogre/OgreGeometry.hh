@@ -17,7 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
 #define IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/base/BaseGeometry.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
@@ -48,9 +48,9 @@ namespace ignition
 
       protected: virtual void SetParent(OgreVisualPtr _parent);
 
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: OgreVisualPtr parent;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       private: friend class OgreVisual;
     };

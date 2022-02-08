@@ -17,7 +17,7 @@
 #ifndef IGNITION_RENDERING_RAYQUERY_HH_
 #define IGNITION_RENDERING_RAYQUERY_HH_
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 #include <ignition/math/Vector3.hh>
 
 #include "ignition/rendering/config.hh"
@@ -38,9 +38,9 @@ namespace ignition
       public: double distance = -1;
 
       /// \brief Intersection point in 3d space
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: math::Vector3d point;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Intersected object id
       public: unsigned int objectId = 0;

@@ -20,7 +20,7 @@
 #include <memory>
 #include <string>
 #include <ignition/common/HeightmapData.hh>
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
@@ -86,9 +86,9 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     public: void SetNormal(const std::string &_normal);
 
     /// \brief Private data pointer.
-    IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+    IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
     private: std::unique_ptr<HeightmapTexturePrivate> dataPtr;
-    IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+    IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
   };
 
   /// \brief Blend information to be used between textures on heightmaps.
@@ -135,9 +135,9 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     public: void SetFadeDistance(double _fadeDistance);
 
     /// \brief Private data pointer.
-    IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+    IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
     private: std::unique_ptr<HeightmapBlendPrivate> dataPtr;
-    IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+    IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
   };
 
   /// \class HeightmapDescriptor HeightmapDescriptor.hh
@@ -252,9 +252,9 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     /// \internal
     /// \brief Private data
-    IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+    IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
     private: std::unique_ptr<HeightmapDescriptorPrivate> dataPtr;
-    IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+    IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
   };
 }
 }

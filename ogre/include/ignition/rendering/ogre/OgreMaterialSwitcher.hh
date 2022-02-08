@@ -21,7 +21,7 @@
 #include <map>
 #include <string>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre/Export.hh"
@@ -103,9 +103,9 @@ namespace ignition
 
       /// \brief Color dictionary that maps the unique color value to
       /// renderable name
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: std::map<unsigned int, std::string> colorDict;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Increment unique color value that will be assigned to the
       /// next renderable

@@ -762,6 +762,13 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       else if (type == ShaderParam::ParamType::PARAM_TEXTURE_CUBE)
       {
         texUnit->setCubicTextureName(baseName, true);
+        // must apply this check for Metal rendering to work
+        // (i.e. not segfault). See the discussion in:
+        // https://github.com/ignitionrobotics/ign-rendering/pull/541
+        if (texUnit->isLoaded())
+        {
+          texUnit->_load();
+        }
       }
       else
       {

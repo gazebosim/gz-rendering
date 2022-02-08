@@ -46,11 +46,16 @@ using namespace rendering;
 const std::string vertexShaderGLSL330File = "GerstnerWaves_vs_330.glsl";
 const std::string fragmentShaderGLSL330File = "GerstnerWaves_fs_330.glsl";
 
+const std::string vertexShaderMetalFile = "GerstnerWaves_vs.metal";
+const std::string fragmentShaderMetalFile = "GerstnerWaves_fs.metal";
+
 const std::string RESOURCE_PATH =
     ignition::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene, const std::string &_engineName)
+void buildScene(ScenePtr _scene,
+    const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.8, 0.8, 0.8);
@@ -69,8 +74,16 @@ void buildScene(ScenePtr _scene, const std::string &_engineName)
   std::string vertexShaderFile;
   std::string fragmentShaderFile;
 
-  vertexShaderFile = vertexShaderGLSL330File;
-  fragmentShaderFile = fragmentShaderGLSL330File;
+  if (_params.find("metal") != _params.end())
+  {
+    vertexShaderFile = vertexShaderMetalFile;
+    fragmentShaderFile = fragmentShaderMetalFile;
+  }
+  else
+  {
+    vertexShaderFile = vertexShaderGLSL330File;
+    fragmentShaderFile = fragmentShaderGLSL330File;
+  }
 
   // create shader materials
   // path to look for vertex and fragment shader parameters
@@ -85,7 +98,7 @@ void buildScene(ScenePtr _scene, const std::string &_engineName)
   shader->SetVertexShader(vertexShaderPath);
   shader->SetFragmentShader(fragmentShaderPath);
 
-   // create box visual
+  // create waves visual
    VisualPtr waves = _scene->CreateVisual("waves");
    MeshDescriptor descriptor;
    descriptor.meshName = common::joinPaths(RESOURCE_PATH, "mesh.dae");
@@ -100,11 +113,11 @@ void buildScene(ScenePtr _scene, const std::string &_engineName)
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0, 0.0, 0.5);
+  camera->SetLocalPosition(0, 0.0, 3.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
-  camera->SetAntiAliasing(2);
+  camera->SetAntiAliasing(4);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
@@ -123,7 +136,7 @@ CameraPtr createCamera(const std::string &_engineName,
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  buildScene(scene, _engineName);
+  buildScene(scene, _engineName, _params);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
@@ -164,9 +177,7 @@ int main(int _argc, char** _argv)
       {
          if (graphicsApi == GraphicsAPI::METAL)
          {
-          // \todo(anyone) uncomment once metal shaders are available
-          // params["metal"] = "1";
-          ignerr << "Metal shaders are not implemented yet. Using GLSL" << std::endl;
+          params["metal"] = "1";
          }
       }
       else

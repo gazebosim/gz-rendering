@@ -646,6 +646,13 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       continue;
     }
 
+    if (!_ogreParams->_findNamedConstantDefinition(name_param.first))
+    {
+      ignwarn << "Unable to find GPU program parameter: "
+              << name_param.first << std::endl;
+      continue;
+    }
+
     if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
     {
       float value;

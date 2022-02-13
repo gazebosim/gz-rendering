@@ -112,7 +112,7 @@ void mouseMoved(const SDL_Event &_arg)
 //////////////////////////////////////////////////
 void mouseWheel(const SDL_Event &_arg)
 {
-  g_mouse.motionWheel = _arg.wheel.x;
+  g_mouse.motionWheel = -_arg.wheel.y;
 }
 
 //////////////////////////////////////////////////
@@ -167,23 +167,23 @@ void handleMouse()
       g_target.point = g_rayQuery->Origin() + g_rayQuery->Direction() * 10;
       return;
     }
+  }
 
-    // mouse wheel scroll zoom
-    if (g_mouse.motionWheel != 0)
+  // mouse wheel scroll zoom
+  if (g_mouse.motionWheel != 0)
+  {
+    double scroll = g_mouse.motionWheel;
+    double distance = rayCamera->WorldPosition().Distance(g_target.point);
+    int factor = 1;
+    double amount = -(scroll * factor) * (distance / 5.0);
+    for (ir::CameraPtr camera : g_cameras)
     {
-      double scroll = g_mouse.motionWheel;
-      double distance = rayCamera->WorldPosition().Distance(g_target.point);
-      int factor = 1;
-      double amount = -(scroll * factor) * (distance / 5.0);
-      for (ir::CameraPtr camera : g_cameras)
-      {
-        g_viewControl.SetCamera(camera);
-        g_viewControl.SetTarget(g_target.point);
-        g_viewControl.Zoom(amount);
-      }
-
-      g_mouse.motionWheel = 0;
+      g_viewControl.SetCamera(camera);
+      g_viewControl.SetTarget(g_target.point);
+      g_viewControl.Zoom(amount);
     }
+
+    g_mouse.motionWheel = 0;
   }
 
   if (g_mouse.motionDirty)
@@ -416,7 +416,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
         mouseMoved(evt);
         break;
       case SDL_MOUSEWHEEL:
-        mouseMoved(evt);
+        mouseWheel(evt);
         break;
       case SDL_MOUSEBUTTONDOWN:
         mousePressed(evt.button);

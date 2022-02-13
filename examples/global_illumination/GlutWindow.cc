@@ -319,7 +319,8 @@ void handleWindowEvent(const SDL_Event &evt)
     break;
   case SDL_WINDOWEVENT_RESIZED:
 #ifdef __LINUX__
-    g_nativeWindow->RequestResolution(evt.window.data1, evt.window.data2);
+    g_nativeWindow->RequestResolution(static_cast<uint32_t>(evt.window.data1),
+                                      static_cast<uint32_t>(evt.window.data2));
 #endif
     g_nativeWindow->NotifyWindowMovedOrResized();
     break;

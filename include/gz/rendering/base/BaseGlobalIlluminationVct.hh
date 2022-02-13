@@ -83,7 +83,7 @@ namespace gz
     //////////////////////////////////////////////////
     template <class T>
     void BaseGlobalIlluminationVct<T>::SetHighQuality(
-          bool _highQuality) // NOLINT
+          bool /*_highQuality*/) // NOLINT
     {
     }
 
@@ -97,7 +97,7 @@ namespace gz
     //////////////////////////////////////////////////
     template <class T>
     void BaseGlobalIlluminationVct<T>::SetAnisotropic(
-          bool _anisotropic) // NOLINT
+          bool /*_anisotropic*/) // NOLINT
     {
     }
 

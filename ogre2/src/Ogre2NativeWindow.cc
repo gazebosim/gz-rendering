@@ -156,7 +156,7 @@ void Ogre2NativeWindow::Draw(CameraPtr _camera)
 
   Ogre::TextureGpu *texture = renderTarget->RenderTarget();
   if (!this->dataPtr->workspace ||
-      this->dataPtr->workspace->getFinalTarget() != texture)
+      this->dataPtr->workspace->getExternalRenderTargets()[1] != texture)
   {
     if (this->dataPtr->workspace)
     {
@@ -170,18 +170,30 @@ void Ogre2NativeWindow::Draw(CameraPtr _camera)
     this->dataPtr->workspace =
       ogreCompMgr->addWorkspace(scene->OgreSceneManager(), channels,
                                 camera->OgreCamera(), kWorkspaceName, false);
+
+    // This is a bit of a hack. You're not really supposed to draw
+    // to a window by hand. Vulkan needs
+    // CompositorManager2::prepareRenderWindowsForPresent to be called,
+    // but this won't happen because the workspace is disabled
+    //
+    // So the first frame performs this hack to ensure the Vulkan
+    // workspace is setup to prepare the window for present
+    this->dataPtr->workspace->setEnabled(true);
+    ogreCompMgr->_update();
+    this->dataPtr->workspace->setEnabled(false);
+    scene->FlushGpuCommandsAndStartNewFrame(1u, true);
   }
+  else
+  {
+    this->dataPtr->workspace->_validateFinalTarget();
+    this->dataPtr->workspace->_beginUpdate(false);
+    this->dataPtr->workspace->_update();
+    this->dataPtr->workspace->_endUpdate(false);
 
-  // scene->StartRendering(camera->OgreCamera());
+    Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
+    swappedTargets.reserve(2u);
+    this->dataPtr->workspace->_swapFinalTarget(swappedTargets);
 
-  this->dataPtr->workspace->_validateFinalTarget();
-  this->dataPtr->workspace->_beginUpdate(false);
-  this->dataPtr->workspace->_update();
-  this->dataPtr->workspace->_endUpdate(false);
-
-  Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
-  swappedTargets.reserve(2u);
-  this->dataPtr->workspace->_swapFinalTarget(swappedTargets);
-
-  scene->FlushGpuCommandsAndStartNewFrame(1u, true);
+    scene->FlushGpuCommandsAndStartNewFrame(1u, true);
+  }
 }

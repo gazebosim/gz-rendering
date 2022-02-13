@@ -89,6 +89,12 @@ namespace ignition
       public: virtual void AddResourcePath(const std::string &_path) override;
 
       // Documentation Inherited
+      public: virtual GraphicsAPI CurrentGraphicsAPI() const override
+      {
+        return GraphicsAPI::UNKNOWN;
+      }
+
+      // Documentation Inherited
       public: virtual void SetHeadless(bool _headless) override;
 
       // Documentation Inherited

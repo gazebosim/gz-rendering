@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include "ignition/rendering/config.hh"
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Export.hh"
 
@@ -162,6 +163,10 @@ namespace ignition
       /// \return The created scene
       public: virtual ScenePtr CreateScene(unsigned int _id,
                   const std::string &_name) = 0;
+
+      /// \brief Returns the GraphicsAPI currently in use
+      /// \return GraphicsAPI currently in use
+      public: virtual GraphicsAPI CurrentGraphicsAPI() const = 0;
 
       /// \brief Set headless mode
       /// Only available in OGRE 2.2, which makes use of EGL

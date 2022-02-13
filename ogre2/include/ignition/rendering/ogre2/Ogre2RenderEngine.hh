@@ -120,6 +120,9 @@ namespace ignition
                   const unsigned int _width, const unsigned int _height,
                   const double _ratio, const unsigned int _antiAliasing);
 
+      // Documentation Inherited
+      public: virtual GraphicsAPI CurrentGraphicsAPI() const override;
+
       /// \brief Create a scene
       /// \param[in] _id Unique scene Id
       /// \param[in] _name Name of scene

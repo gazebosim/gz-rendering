@@ -483,7 +483,7 @@ void Ogre2ParticleEmitter::CreateParticleSystem()
       Ogre::Any(this->Id()));
 
   this->dataPtr->ps->setCullIndividually(true);
-  this->dataPtr->ps->setParticleQuota(500);
+  this->dataPtr->ps->setParticleQuota(5000);
   this->dataPtr->ps->setSortingEnabled(true);
 
   this->dataPtr->ps->setVisibilityFlags(kParticleVisibilityFlags);

@@ -1069,12 +1069,6 @@ Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
   return this->dataPtr->terraWorkspaceListener.get();
 }
 
-/////////////////////////////////////////////////
-GraphicsAPI Ogre2RenderEngine::GraphicsAPI() const
-{
-  return this->dataPtr->graphicsAPI;
-}
-
 // Register this plugin
 IGNITION_ADD_PLUGIN(ignition::rendering::Ogre2RenderEnginePlugin,
                     ignition::rendering::RenderEnginePlugin)

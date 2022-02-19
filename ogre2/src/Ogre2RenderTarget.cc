@@ -349,10 +349,7 @@ void Ogre2RenderTarget::RebuildCompositor()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
-  Ogre::TextureGpu *texture = this->RenderTarget();
-
   // TODO(anyone) handle Bayer conversions
-  // TODO(anyone) handle ogre version differences
 
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
@@ -360,33 +357,32 @@ void Ogre2RenderTarget::Copy(Image &_image) const
     return;
   }
 
-  Ogre::Image2 image2;
-  image2.convertFromTexture(texture, 0u, 0u);
-  Ogre::TextureBox box = image2.getData(0);
+  Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_image.Format());
+  Ogre::TextureGpu *texture = this->RenderTarget();
 
-  auto dataImage = static_cast<unsigned char *>(_image.Data());
-  auto dataImage2 = static_cast<Ogre::uint8 *>(box.data);
-
-  unsigned int channelCount = 3u;
-  unsigned int rawChannelCount = 4u;
-  unsigned int bytesPerChannel = 1u;
-  for (unsigned int row = 0; row < this->height; ++row)
+  if (dstOgrePf != texture->getPixelFormat() &&
+      Ogre::PixelFormatGpuUtils::getEquivalentSRGB(dstOgrePf) ==
+        texture->getPixelFormat())
   {
-    // the texture box step size could be larger than our image buffer step
-    // size
-    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
-    for (unsigned int column = 0; column < this->width; ++column)
-    {
-      unsigned int idx = (row * this->width * channelCount) +
-          column * channelCount;
-      unsigned int rawIdx = rawDataRowIdx +
-          column * rawChannelCount;
-
-      dataImage[idx] = dataImage2[rawIdx];
-      dataImage[idx + 1] = dataImage2[rawIdx + 1];
-      dataImage[idx + 2] = dataImage2[rawIdx + 2];
-    }
+    // Formats are identical except for sRGB-ness.
+    // Force a raw copy to go into the fast path (this is likely an Ogre bug)
+    dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentSRGB(dstOgrePf);
   }
+
+  Ogre::TextureBox dstBox(
+    texture->getInternalWidth(), texture->getInternalHeight(),
+    texture->getDepth(), texture->getNumSlices(),
+    static_cast<uint32_t>(
+      Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstOgrePf)),
+    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
+      texture->getInternalWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
+    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
+      texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
+      dstOgrePf, 1u)));
+  dstBox.data = _image.Data();
+
+  Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
+                                     dstOgrePf);
 }
 
 //////////////////////////////////////////////////

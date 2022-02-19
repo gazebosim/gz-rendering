@@ -55,7 +55,7 @@ const Ogre::PixelFormatGpu Ogre2Conversions::ogrePixelFormats[PF_COUNT] =
       // PF_L16
       Ogre::PFG_R16_UNORM,
       // PF_R8G8B8A8
-      Ogre::PFG_RGBA8_UNORM_SRGB,
+      Ogre::PFG_RGBA8_UNORM,
     };
 
 //////////////////////////////////////////////////

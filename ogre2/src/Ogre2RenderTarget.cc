@@ -360,13 +360,16 @@ void Ogre2RenderTarget::Copy(Image &_image) const
   Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_image.Format());
   Ogre::TextureGpu *texture = this->RenderTarget();
 
-  if (dstOgrePf != texture->getPixelFormat() &&
-      Ogre::PixelFormatGpuUtils::getEquivalentSRGB(dstOgrePf) ==
-        texture->getPixelFormat())
+  if (Ogre::PixelFormatGpuUtils::isSRgb(dstOgrePf) !=
+      Ogre::PixelFormatGpuUtils::isSRgb(texture->getPixelFormat()))
   {
     // Formats are identical except for sRGB-ness.
-    // Force a raw copy to go into the fast path (this is likely an Ogre bug)
-    dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentSRGB(dstOgrePf);
+    // Force a raw copy by making them match (no conversion!).
+    // We can't change the TextureGpu format now, so we change dstOgrePf
+    if (Ogre::PixelFormatGpuUtils::isSRgb(texture->getPixelFormat()))
+      dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentSRGB(dstOgrePf);
+    else
+      dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentLinear(dstOgrePf);
   }
 
   Ogre::TextureBox dstBox(

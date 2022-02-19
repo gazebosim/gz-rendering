@@ -373,14 +373,14 @@ void Ogre2RenderTarget::Copy(Image &_image) const
   }
 
   Ogre::TextureBox dstBox(
-    texture->getInternalWidth(), texture->getInternalHeight(),
+    texture->getWidth(), texture->getHeight(),
     texture->getDepth(), texture->getNumSlices(),
     static_cast<uint32_t>(
       Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstOgrePf)),
     static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
+      texture->getWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
     static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
+      texture->getWidth(), texture->getHeight(), 1u, 1u,
       dstOgrePf, 1u)));
   dstBox.data = _image.Data();
 

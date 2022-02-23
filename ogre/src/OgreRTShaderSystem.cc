@@ -70,6 +70,9 @@ class ignition::rendering::OgreRTShaderSystemPrivate
 
   /// \brief Flag to indicate shadows need to be reapplied
   public: bool resetShadows = false;
+
+  /// \brief thread that shader system is created in
+  public: std::thread::id threadId;
 };
 
 using namespace ignition;
@@ -86,11 +89,17 @@ OgreRTShaderSystem::OgreRTShaderSystem()
 #else
   this->dataPtr->pssmSetup.reset();
 #endif
+
+  this->dataPtr->threadId = std::this_thread::get_id();
 }
 
 //////////////////////////////////////////////////
 OgreRTShaderSystem::~OgreRTShaderSystem()
 {
+  if (std::this_thread::get_id() == this->dataPtr->threadId)
+  {
+    this->Fini();
+  }
 }
 
 //////////////////////////////////////////////////

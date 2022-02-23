@@ -19,7 +19,7 @@
 
 #include <memory>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/PixelFormat.hh"
@@ -100,10 +100,10 @@ namespace ignition
       /// \brief Image pixel format
       private: PixelFormat format = PF_UNKNOWN;
 
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief Pointer to the image data
       private: DataPtr data = nullptr;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
 
     //////////////////////////////////////////////////

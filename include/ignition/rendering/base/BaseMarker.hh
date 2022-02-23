@@ -17,7 +17,7 @@
 #ifndef IGNITION_RENDERING_BASEMARKER_HH_
 #define IGNITION_RENDERING_BASEMARKER_HH_
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/Marker.hh"
 #include "ignition/rendering/base/BaseObject.hh"
@@ -89,10 +89,10 @@ namespace ignition
                   const ignition::math::Vector3d &_value) override;
 
       /// \brief Life time of a marker
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: std::chrono::steady_clock::duration lifetime =
           std::chrono::steady_clock::duration::zero();
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Layer at which the marker will reside
       protected: int32_t layer = 0;

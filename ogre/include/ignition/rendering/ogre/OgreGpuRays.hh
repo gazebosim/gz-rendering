@@ -23,7 +23,7 @@
 #include <memory>
 #include <sstream>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/base/BaseGpuRays.hh"
@@ -185,9 +185,9 @@ namespace ignition
 
       /// \internal
       /// \brief Pointer to private data.
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: std::unique_ptr<OgreGpuRaysPrivate> dataPtr;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       private: friend class OgreScene;
     };

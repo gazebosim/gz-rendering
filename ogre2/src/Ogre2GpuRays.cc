@@ -36,6 +36,7 @@
 
 #include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
 #include "Ogre2ParticleNoiseListener.hh"
+#include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 
 #include "Terra/Terra.h"
 

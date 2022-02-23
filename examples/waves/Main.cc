@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,16 +43,11 @@
 using namespace ignition;
 using namespace rendering;
 
-const std::string vertexShaderGLSLFile = "vertex_shader.glsl";
-const std::string fragmentShaderGLSLFile = "fragment_shader.glsl";
+const std::string vertexShaderGLSL330File = "GerstnerWaves_vs_330.glsl";
+const std::string fragmentShaderGLSL330File = "GerstnerWaves_fs_330.glsl";
 
-const std::string vertexShaderGLSL330File = "vertex_shader_330.glsl";
-const std::string fragmentShaderGLSL330File = "fragment_shader_330.glsl";
-
-const std::string vertexShaderMetalFile = "vertex_shader.metal";
-const std::string fragmentShaderMetalFile = "fragment_shader.metal";
-
-//! [init shaders variables]
+const std::string vertexShaderMetalFile = "GerstnerWaves_vs.metal";
+const std::string fragmentShaderMetalFile = "GerstnerWaves_fs.metal";
 
 const std::string RESOURCE_PATH =
     ignition::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
@@ -63,8 +58,11 @@ void buildScene(ScenePtr _scene,
     const std::map<std::string, std::string>& _params)
 {
   // initialize _scene
-  _scene->SetAmbientLight(0.3, 0.3, 0.3);
+  _scene->SetAmbientLight(0.8, 0.8, 0.8);
   VisualPtr root = _scene->RootVisual();
+
+  // enable sky
+  _scene->SetSkyEnabled(true);
 
   // create directional light
   DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
@@ -75,24 +73,16 @@ void buildScene(ScenePtr _scene,
 
   std::string vertexShaderFile;
   std::string fragmentShaderFile;
-  if (_engineName == "ogre2")
+
+  if (_params.find("metal") != _params.end())
   {
-    auto it = _params.find("metal");
-    if (it != _params.end() && it->second == "1")
-    {
-      vertexShaderFile = vertexShaderMetalFile;
-      fragmentShaderFile = fragmentShaderMetalFile;
-    }
-    else
-    {
-      vertexShaderFile = vertexShaderGLSL330File;
-      fragmentShaderFile = fragmentShaderGLSL330File;
-    }
+    vertexShaderFile = vertexShaderMetalFile;
+    fragmentShaderFile = fragmentShaderMetalFile;
   }
   else
   {
-    vertexShaderFile = vertexShaderGLSLFile;
-    fragmentShaderFile = fragmentShaderGLSLFile;
+    vertexShaderFile = vertexShaderGLSL330File;
+    fragmentShaderFile = fragmentShaderGLSL330File;
   }
 
   // create shader materials
@@ -103,34 +93,34 @@ void buildScene(ScenePtr _scene,
   std::string fragmentShaderPath = ignition::common::joinPaths(
       RESOURCE_PATH, fragmentShaderFile);
 
-  //! [add shader to visual]
   // create shader material
   ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
   shader->SetVertexShader(vertexShaderPath);
   shader->SetFragmentShader(fragmentShaderPath);
 
-  // create box visual
-  VisualPtr box = _scene->CreateVisual("box");
-  box->AddGeometry(_scene->CreateBox());
-  box->SetOrigin(0.0, 0.0, 0.0);
-  box->SetLocalPosition(0, 1, 0);
-  box->SetLocalScale(2, 2, 2);
-  box->SetMaterial(shader);
-  root->AddChild(box);
+   // create waves visual
+   VisualPtr waves = _scene->CreateVisual("waves");
+   MeshDescriptor descriptor;
+   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "mesh.dae");
+   common::MeshManager *meshManager = common::MeshManager::Instance();
+   descriptor.mesh = meshManager->Load(descriptor.meshName);
+   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+   waves->AddGeometry(meshGeom);
+   waves->SetLocalPosition(3, 0, 0);
+   waves->SetLocalScale(1, 1, 1);
+   waves->SetMaterial(shader);
+   root->AddChild(waves);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.0);
+  camera->SetLocalPosition(0, 0.0, 3.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
-  camera->SetAntiAliasing(2);
+  camera->SetAntiAliasing(4);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
-
-  // track target
-  camera->SetTrackTarget(box);
 }
 
 //////////////////////////////////////////////////
@@ -158,7 +148,6 @@ int main(int _argc, char** _argv)
 {
   glutInit(&_argc, _argv);
 
-
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
   std::string ogreEngineName("ogre");
@@ -184,10 +173,20 @@ int main(int _argc, char** _argv)
     try
     {
       std::map<std::string, std::string> params;
-      if (engineName.compare("ogre2") == 0
-          && graphicsApi == GraphicsAPI::METAL)
+      if (engineName.compare("ogre2") == 0)
       {
-        params["metal"] = "1";
+         if (graphicsApi == GraphicsAPI::METAL)
+         {
+          params["metal"] = "1";
+         }
+      }
+      else
+      {
+        // todo(anyone) Passing textures to custom shaders is currently
+        // only available in ogre2
+        engineName = "ogre2";
+        ignerr << "Only ogre2 engine is supported. Switching to use ogre2."
+               << std::endl;
       }
 
       CameraPtr camera = createCamera(engineName, params);

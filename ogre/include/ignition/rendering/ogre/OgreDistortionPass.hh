@@ -20,8 +20,8 @@
 #include <memory>
 #include <vector>
 
-#include <ignition/common/SuppressWarning.hh>
 #include <ignition/utils/ImplPtr.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/base/BaseDistortionPass.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"

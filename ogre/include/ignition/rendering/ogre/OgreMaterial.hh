@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/base/BaseMaterial.hh"
 #include "ignition/rendering/ogre/OgreObject.hh"
@@ -205,7 +205,7 @@ namespace ignition
 
       protected: virtual void Init() override;
 
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: Ogre::MaterialPtr ogreMaterial;
 
       protected: Ogre::Technique *ogreTechnique = nullptr;
@@ -236,7 +236,7 @@ namespace ignition
 
       /// \brief Parameters to be bound to the fragment shader
       protected: ShaderParamsPtr fragmentShaderParams;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       private: friend class OgreScene;
     };

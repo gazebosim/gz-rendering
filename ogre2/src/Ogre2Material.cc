@@ -40,6 +40,7 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Image.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ShaderType.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -66,6 +67,22 @@ class ignition::rendering::Ogre2MaterialPrivate
 
   /// \brief Parameters to be bound to the fragment shader
   public: ShaderParamsPtr fragmentShaderParams;
+
+  /// \brief Returns the shader language code.
+  /// \param[in] _graphicsAPI The graphic API.
+  /// \return The shader language code string.
+  public: static std::string shaderLanguageCode(GraphicsAPI _graphicsAPI)
+  {
+    switch (_graphicsAPI)
+    {
+      case GraphicsAPI::OPENGL:
+        return "glsl";
+      case GraphicsAPI::METAL:
+        return "metal";
+      default:
+        return "invalid";
+    }
+  }
 };
 
 using namespace ignition;
@@ -646,6 +663,13 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       continue;
     }
 
+    if (!_ogreParams->_findNamedConstantDefinition(name_param.first))
+    {
+      ignwarn << "Unable to find GPU program parameter: "
+              << name_param.first << std::endl;
+      continue;
+    }
+
     if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
     {
       float value;
@@ -679,6 +703,91 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       uint32_t multiple = 1;
       _ogreParams->setNamedConstant(name_param.first,
         reinterpret_cast<int*>(buffer.get()), count, multiple);
+    }
+    else if (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
+             ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())
+    {
+      // add the textures to the resource path
+      std::string value;
+      uint32_t uvSetIndex = 0;
+      name_param.second.Value(value, uvSetIndex);
+      ShaderParam::ParamType type = name_param.second.Type();
+
+      std::string baseName = value;
+      std::string dirPath = value;
+      if (common::isFile(value))
+      {
+        baseName = common::basename(value);
+        size_t idx = value.rfind(baseName);
+        if (idx != std::string::npos)
+        {
+          dirPath = value.substr(0, idx);
+          if (!dirPath.empty() &&
+            !Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+            dirPath))
+          {
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+                dirPath, "FileSystem", "General");
+          }
+        }
+      }
+      else
+      {
+        ignerr << "Shader param texture not found: " << value << std::endl;
+        continue;
+      }
+
+      // get the material and create the texture unit state it does not exist
+      auto mat = this->Material();
+      auto pass = mat->getTechnique(0u)->getPass(0);
+      auto texUnit = pass->getTextureUnitState(name_param.first);
+      if (!texUnit)
+      {
+        texUnit = pass->createTextureUnitState();
+        texUnit->setName(name_param.first);
+      }
+      // make sure to cast to int before calling setNamedConstant later
+      // to set the texture index
+      int texIndex = static_cast<int>(pass->getTextureUnitStateIndex(texUnit));
+
+      // set texture coordinate set
+      texUnit->setTextureCoordSet(uvSetIndex);
+
+      // set to wrap mode otherwise default is clamp mode
+      Ogre::HlmsSamplerblock samplerBlockRef;
+      samplerBlockRef.mU = Ogre::TAM_WRAP;
+      samplerBlockRef.mV = Ogre::TAM_WRAP;
+      samplerBlockRef.mW = Ogre::TAM_WRAP;
+      texUnit->setSamplerblock(samplerBlockRef);
+
+      // regular 2d texture
+      if (type == ShaderParam::ParamType::PARAM_TEXTURE)
+      {
+        texUnit->setTextureName(baseName, Ogre::TextureTypes::Type2D);
+      }
+      // cube maps
+      else if (type == ShaderParam::ParamType::PARAM_TEXTURE_CUBE)
+      {
+        texUnit->setCubicTextureName(baseName, true);
+        // must apply this check for Metal rendering to work
+        // (i.e. not segfault). See the discussion in:
+        // https://github.com/ignitionrobotics/ign-rendering/pull/541
+        if (texUnit->isLoaded())
+        {
+          texUnit->_load();
+        }
+      }
+      else
+      {
+        ignerr << "Unrecognized texture type set for shader param: "
+               << name_param.first << std::endl;
+        continue;
+      }
+      if (Ogre2RenderEngine::Instance()->GraphicsAPI() == GraphicsAPI::OPENGL)
+      {
+        // set the texture map index
+        _ogreParams->setNamedConstant(name_param.first, &texIndex, 1, 1);
+      }
     }
   }
 }
@@ -1015,13 +1124,11 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
     Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
         "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
+        this->dataPtr->shaderLanguageCode(
+            Ogre2RenderEngine::Instance()->GraphicsAPI()),
+        Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
   vertexShader->setSourceFile(_path);
-
-  Ogre::GpuProgramParametersSharedPtr params =
-      vertexShader->getDefaultParameters();
-
   vertexShader->load();
 
   assert(vertexShader->isLoaded());
@@ -1070,7 +1177,20 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
     Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
         "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+        this->dataPtr->shaderLanguageCode(
+            Ogre2RenderEngine::Instance()->GraphicsAPI()),
+        Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+
+  // set shader language specific parameters
+  if (Ogre2RenderEngine::Instance()->GraphicsAPI() == GraphicsAPI::METAL)
+  {
+    // must set reflection pair hint for Metal fragment shaders
+    // otherwise the parameters (uniforms) will not be set correctly
+    std::string paramName("shader_reflection_pair_hint");
+    std::string paramValue =
+        "_ign_" + common::basename(this->dataPtr->vertexShaderPath);
+    fragmentShader->setParameter(paramName, paramValue);
+  }
 
   fragmentShader->setSourceFile(_path);
   fragmentShader->load();

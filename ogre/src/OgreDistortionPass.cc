@@ -56,10 +56,10 @@ namespace ignition
 
       /// \brief Distortion compositor listener
       /// uses <ignition/utils/ImplPtr.hh> from ign-rendering7
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::shared_ptr<DistortionCompositorListener>
           distortionCompositorListener;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
 
     class DistortionCompositorListener

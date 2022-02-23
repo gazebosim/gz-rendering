@@ -98,7 +98,7 @@ void buildScene(ScenePtr _scene,
   shader->SetVertexShader(vertexShaderPath);
   shader->SetFragmentShader(fragmentShaderPath);
 
-  // create waves visual
+   // create waves visual
    VisualPtr waves = _scene->CreateVisual("waves");
    MeshDescriptor descriptor;
    descriptor.meshName = common::joinPaths(RESOURCE_PATH, "mesh.dae");

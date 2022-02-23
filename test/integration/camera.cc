@@ -671,6 +671,10 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
     // correct type and value.
     auto params = visual->Material()->VertexShaderParams();
     (*params)["worldviewproj_matrix"] = 1;
+
+    // check setting invalid param - this should print a warning msg and
+    // not cause the program to crash.
+    (*params)["worldviewproj_matrix_invalid"] = 1;
   }
 
   // render a few frames

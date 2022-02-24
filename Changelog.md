@@ -2,6 +2,20 @@
 
 ### Ignition Rendering 6.X
 
+### Ignition Rendering 6.2.1 (2022-02-24)
+
+1. Restore format conversion in Ogre2RenderTarget::Copy
+    * [Pull request #564](https://github.com/ignitionrobotics/ign-rendering/pull/564)
+
+1. Increase particle emitter quota
+    * [Pull request #562](https://github.com/ignitionrobotics/ign-rendering/pull/562)
+
+1.Make sure shader param exists before setting its value
+    * [Pull request #558](https://github.com/ignitionrobotics/ign-rendering/pull/558)
+
+1. Backport wave changes
+    * [Pull request #557](https://github.com/ignitionrobotics/ign-rendering/pull/557)
+
 ### Ignition Rendering 6.2.0 (2022-01-28)
 
 1. Fix missing terrain shadows casted on objects

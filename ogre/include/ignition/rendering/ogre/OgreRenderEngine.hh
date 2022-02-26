@@ -101,7 +101,7 @@ namespace ignition
       public: void AddResourcePath(const std::string &_uri) override;
 
       // Documentation Inherited
-      public: virtual GraphicsAPI CurrentGraphicsAPI() const override;
+      public: virtual rendering::GraphicsAPI GraphicsAPI() const override;
 
       public: virtual Ogre::Root *OgreRoot() const;
 

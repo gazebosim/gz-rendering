@@ -166,7 +166,7 @@ namespace ignition
 
       /// \brief Returns the GraphicsAPI currently in use
       /// \return GraphicsAPI currently in use
-      public: virtual GraphicsAPI CurrentGraphicsAPI() const = 0;
+      public: virtual rendering::GraphicsAPI GraphicsAPI() const = 0;
 
       /// \brief Set headless mode
       /// Only available in OGRE 2.2, which makes use of EGL

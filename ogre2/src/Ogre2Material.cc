@@ -776,7 +776,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
                << name_param.first << std::endl;
         continue;
       }
-      if (Ogre2RenderEngine::Instance()->CurrentGraphicsAPI() ==
+      if (Ogre2RenderEngine::Instance()->GraphicsAPI() ==
           GraphicsAPI::OPENGL)
       {
         // set the texture map index
@@ -1119,7 +1119,7 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
         "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         this->dataPtr->shaderLanguageCode(
-            Ogre2RenderEngine::Instance()->CurrentGraphicsAPI()),
+            Ogre2RenderEngine::Instance()->GraphicsAPI()),
         Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
   vertexShader->setSourceFile(_path);
@@ -1172,11 +1172,11 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
         "_ign_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         this->dataPtr->shaderLanguageCode(
-            Ogre2RenderEngine::Instance()->CurrentGraphicsAPI()),
+            Ogre2RenderEngine::Instance()->GraphicsAPI()),
         Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
 
   // set shader language specific parameters
-  if (Ogre2RenderEngine::Instance()->CurrentGraphicsAPI() == GraphicsAPI::METAL)
+  if (Ogre2RenderEngine::Instance()->GraphicsAPI() == GraphicsAPI::METAL)
   {
     // must set reflection pair hint for Metal fragment shaders
     // otherwise the parameters (uniforms) will not be set correctly

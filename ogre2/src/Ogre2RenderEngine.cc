@@ -1006,7 +1006,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 }
 
 //////////////////////////////////////////////////
-GraphicsAPI Ogre2RenderEngine::CurrentGraphicsAPI() const
+GraphicsAPI Ogre2RenderEngine::GraphicsAPI() const
 {
   return this->dataPtr->graphicsAPI;
 }

@@ -246,7 +246,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
 }
 
 //////////////////////////////////////////////////
-GraphicsAPI OgreRenderEngine::CurrentGraphicsAPI() const
+GraphicsAPI OgreRenderEngine::GraphicsAPI() const
 {
   return GraphicsAPI::OPENGL;
 }

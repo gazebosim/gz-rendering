@@ -121,7 +121,7 @@ namespace ignition
                   const double _ratio, const unsigned int _antiAliasing);
 
       // Documentation Inherited
-      public: virtual GraphicsAPI CurrentGraphicsAPI() const override;
+      public: virtual rendering::GraphicsAPI GraphicsAPI() const override;
 
       /// \brief Create a scene
       /// \param[in] _id Unique scene Id

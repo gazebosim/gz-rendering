@@ -783,7 +783,8 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
                << name_param.first << std::endl;
         continue;
       }
-      if (Ogre2RenderEngine::Instance()->GraphicsAPI() == GraphicsAPI::OPENGL)
+      if (Ogre2RenderEngine::Instance()->GraphicsAPI() ==
+          GraphicsAPI::OPENGL)
       {
         // set the texture map index
         _ogreParams->setNamedConstant(name_param.first, &texIndex, 1, 1);

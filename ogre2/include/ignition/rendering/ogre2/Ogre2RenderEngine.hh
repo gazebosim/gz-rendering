@@ -120,6 +120,9 @@ namespace ignition
                   const unsigned int _width, const unsigned int _height,
                   const double _ratio, const unsigned int _antiAliasing);
 
+      // Documentation Inherited
+      public: virtual rendering::GraphicsAPI GraphicsAPI() const override;
+
       /// \brief Create a scene
       /// \param[in] _id Unique scene Id
       /// \param[in] _name Name of scene
@@ -213,10 +216,6 @@ namespace ignition
       /// \return Pointer to the CompositorWorkspaceListener
       public: Ogre::CompositorWorkspaceListener
           *TerraWorkspaceListener() const;
-
-      /// \brief Get the render engine's graphics API
-      /// \return The graphics API enum class
-      public: rendering::GraphicsAPI GraphicsAPI() const;
 
       /// \brief Pointer to the ogre's overlay system
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;

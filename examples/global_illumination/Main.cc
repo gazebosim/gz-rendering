@@ -292,7 +292,7 @@ void buildScene(ScenePtr _scene)
   gi->SetMaxCascades(3u);
 
   CiVctCascadePtr cascade = gi->AddCascade(nullptr);
-  const uint32_t resolution[3]{ 128u, 128u, 32u };
+  const uint32_t resolution[3]{ 128u, 128u, 128u };
   const uint32_t octantCount[3]{ 4, 4, 2 };
   cascade->SetAreaHalfSize(ignition::math::Vector3d(5.0, 5.0, 5.0));
   cascade->SetResolution(resolution);
@@ -309,6 +309,7 @@ void buildScene(ScenePtr _scene)
 
   gi->AutoCalculateStepSizes(ignition::math::Vector3d(3.0, 3.0, 3.0));
 
+  gi->Bind(camera);
   gi->SetHighQuality(false);
   gi->Start(2u, true);
   gi->Build();

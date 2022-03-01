@@ -708,11 +708,16 @@ void Ogre2DepthCamera::CreateDepthTexture()
         passScene->mIncludeOverlays = false;
         passScene->mFirstRQ = 0u;
         passScene->mLastRQ = 2u;
-        if (!validBackground)
+        if (validBackground)
+        {
+          passScene->setAllLoadActions(Ogre::LoadAction::DontCare);
+          passScene->mLoadActionDepth = Ogre::LoadAction::Clear;
+          passScene->mLoadActionStencil = Ogre::LoadAction::Clear;
+        }
+        else
         {
           passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-          passScene->setAllClearColours(Ogre::ColourValue(
-              Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
+          passScene->setAllClearColours(this->ogreBackgroundColor);
         }
       }
 

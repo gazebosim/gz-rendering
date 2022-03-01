@@ -717,7 +717,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
         else
         {
           passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-          passScene->setAllClearColours(this->ogreBackgroundColor);
+          passScene->setAllClearColours(
+              Ogre2Conversions::Convert(this->Scene()->BackgroundColor()));
+
         }
       }
 
@@ -732,10 +734,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
-
-        passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
-        passQuad->setAllClearColours(Ogre::ColourValue(
-            Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
       }
 
       // scene pass - transparent stuff

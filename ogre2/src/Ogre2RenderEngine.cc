@@ -398,6 +398,11 @@ void Ogre2RenderEngine::CreateLogger()
 void Ogre2RenderEngine::CreateContext()
 {
 #if not (__APPLE__ || _WIN32)
+  if (this->Headless())
+  {
+    // Nothing to do
+    return;
+  }
   // create X11 display
   this->dummyDisplay = XOpenDisplay(0);
   Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -406,7 +411,8 @@ void Ogre2RenderEngine::CreateContext()
   {
     // Not able to create a Xwindow, try to run in headless mode
     this->SetHeadless(true);
-    ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
+    ignwarn << "Unable to open display: " << XDisplayName(0)
+            << ". Trying to run in headless mode." << std::endl;
     return;
   }
 

@@ -198,7 +198,13 @@ void Ogre2RenderTarget::BuildCompositor()
         passScene->mIncludeOverlays = false;
         passScene->mFirstRQ = 0u;
         passScene->mLastRQ = 2u;
-        if (!validBackground)
+        if (validBackground)
+        {
+          passScene->setAllLoadActions(Ogre::LoadAction::DontCare);
+          passScene->mLoadActionDepth = Ogre::LoadAction::Clear;
+          passScene->mLoadActionStencil = Ogre::LoadAction::Clear;
+        }
+        else
         {
           passScene->setAllLoadActions(Ogre::LoadAction::Clear);
           passScene->setAllClearColours(this->ogreBackgroundColor);
@@ -216,9 +222,6 @@ void Ogre2RenderTarget::BuildCompositor()
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
-
-        passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
-        passQuad->setAllClearColours(this->ogreBackgroundColor);
       }
 
       // scene pass - transparent stuff

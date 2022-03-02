@@ -40,6 +40,7 @@
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Image.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ShaderType.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"

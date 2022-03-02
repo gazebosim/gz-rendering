@@ -708,11 +708,18 @@ void Ogre2DepthCamera::CreateDepthTexture()
         passScene->mIncludeOverlays = false;
         passScene->mFirstRQ = 0u;
         passScene->mLastRQ = 2u;
-        if (!validBackground)
+        if (validBackground)
+        {
+          passScene->setAllLoadActions(Ogre::LoadAction::DontCare);
+          passScene->mLoadActionDepth = Ogre::LoadAction::Clear;
+          passScene->mLoadActionStencil = Ogre::LoadAction::Clear;
+        }
+        else
         {
           passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-          passScene->setAllClearColours(Ogre::ColourValue(
-              Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
+          passScene->setAllClearColours(
+              Ogre2Conversions::Convert(this->Scene()->BackgroundColor()));
+
         }
       }
 
@@ -727,10 +734,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
-
-        passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
-        passQuad->setAllClearColours(Ogre::ColourValue(
-            Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
       }
 
       // scene pass - transparent stuff

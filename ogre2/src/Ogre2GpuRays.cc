@@ -198,6 +198,11 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 using namespace ignition;
 using namespace rendering;
 
+/// \brief A map of ogre sub item pointer to their original low level material
+/// \todo(anyone) Added here for ABI compatibity. Move to private class
+/// in ign-rendering7
+std::map<Ogre2LaserRetroMaterialSwitcher *,
+         std::map<Ogre::SubItem *, Ogre::MaterialPtr>> laserRetroMaterialMap;
 
 //////////////////////////////////////////////////
 Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
@@ -230,7 +235,6 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
-  this->datablockMap.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -304,9 +308,18 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
       subItem->setCustomParameter(this->customParamIdx,
                                   Ogre::Vector4(color, color, color, 1.0));
 
-      Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-      this->datablockMap[subItem] = datablock;
-
+      // case when item is using low level materials
+      // e.g. shaders
+      if (!subItem->getMaterial().isNull())
+      {
+        laserRetroMaterialMap[this][subItem] = subItem->getMaterial();
+      }
+      // regular Pbs Hlms datablock
+      else
+      {
+        Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+        this->datablockMap[subItem] = datablock;
+      }
       subItem->setMaterial(this->laserRetroSourceMaterial);
     }
     itor.moveNext();
@@ -324,12 +337,24 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
     subItem->setDatablock(it.second);
   }
 
+  auto lIt = laserRetroMaterialMap.find(this);
+  if (lIt !=  laserRetroMaterialMap.end())
+  {
+    for (auto it : lIt->second)
+    {
+      Ogre::SubItem *subItem = it.first;
+      subItem->setMaterial(it.second);
+    }
+  }
+
   Ogre::Pass *pass =
       this->laserRetroSourceMaterial->getBestTechnique()->getPass(0u);
   pass->getVertexProgramParameters()->setNamedConstant(
         "ignMinClipDistance", 0.0f );
-}
 
+  this->datablockMap.clear();
+  laserRetroMaterialMap[this].clear();
+}
 
 //////////////////////////////////////////////////
 Ogre2GpuRays::Ogre2GpuRays()

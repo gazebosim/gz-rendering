@@ -337,10 +337,10 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
     subItem->setDatablock(it.second);
   }
 
-  auto lIt = laserRetroMaterialMap.find(this);
-  if (lIt !=  laserRetroMaterialMap.end())
+  auto laserRetroIt = laserRetroMaterialMap.find(this);
+  if (laserRetroIt !=  laserRetroMaterialMap.end())
   {
-    for (auto it : lIt->second)
+    for (auto it : laserRetroIt->second)
     {
       Ogre::SubItem *subItem = it.first;
       subItem->setMaterial(it.second);

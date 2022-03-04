@@ -114,9 +114,13 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
 
         if (technique && !technique->isDepthWriteEnabled() &&
             !technique->isDepthCheckEnabled())
+        {
           subItem->setMaterial(this->plainOverlayMaterial);
+        }
         else
+        {
           subItem->setMaterial(this->plainMaterial);
+        }
       }
       // regular Pbs Hlms datablock
       else

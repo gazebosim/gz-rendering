@@ -993,6 +993,12 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 }
 
 //////////////////////////////////////////////////
+GraphicsAPI Ogre2RenderEngine::GraphicsAPI() const
+{
+  return this->dataPtr->graphicsAPI;
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderEngine::InitAttempt()
 {
   this->initialized = false;

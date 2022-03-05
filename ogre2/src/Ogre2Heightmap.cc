@@ -158,17 +158,35 @@ void Ogre2Heightmap::Init()
   // Obtain min and max elevation and bring everything to range [0; 1]
   // Terra should support non-normalized ranges but there are a couple
   // bugs preventing that, so it's just easier to normalize the data
-  float minElevation = 0.0;
-  float maxElevation = 0.0;
+  double minElevation = this->descriptor.Data()->MinElevation();
+  double maxElevation = this->descriptor.Data()->MaxElevation();
+
+  // Sanity check
+  if (minElevation >= maxElevation)
+  {
+    ignerr << "Internal error: min elevation [" << minElevation
+           << "] >= max elevation [" << maxElevation << "]" << std::endl;
+    return;
+  }
 
   for (unsigned int y = 0; y < newWidth; ++y)
   {
     for (unsigned int x = 0; x < newWidth; ++x)
     {
       const size_t index = y * srcWidth + x;
-      const float heightVal = lookup[index];
-      minElevation = std::min(minElevation, heightVal);
-      maxElevation = std::max(maxElevation, heightVal);
+      float heightVal = lookup[index];
+
+      // Sanity check in case we get NaNs from ign-common, this prevents a crash
+      // in Ogre
+      if (!std::isfinite(heightVal))
+        heightVal = minElevation;
+
+      if (heightVal < minElevation || heightVal > maxElevation)
+      {
+        ignerr << "Internal error: height [" << heightVal
+               << "] is out of bounds [" << minElevation << " / "
+               << maxElevation << "]" << std::endl;
+      }
       this->dataPtr->heights.push_back(heightVal);
     }
   }
@@ -208,9 +226,10 @@ void Ogre2Heightmap::Init()
   const math::Vector3d newSize = this->descriptor.Size() *
                                  math::Vector3d(1.0, 1.0, heightDiff);
 
+  // The position's Y sign ends up flipped
   math::Vector3d center(
       this->descriptor.Position().X(),
-      this->descriptor.Position().Y(),
+      -this->descriptor.Position().Y(),
       this->descriptor.Position().Z() + newSize.Z() * 0.5 + minElevation);
 
   Ogre::Root *ogreRoot = Ogre2RenderEngine::Instance()->OgreRoot();

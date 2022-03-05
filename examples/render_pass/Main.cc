@@ -160,18 +160,24 @@ CameraPtr createCamera(const std::string &_engineName,
   {
     // add gaussian noise pass
     RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
-    GaussianNoisePassPtr noisePass =
-        std::dynamic_pointer_cast<GaussianNoisePass>(pass);
-    noisePass->SetMean(0.1);
-    noisePass->SetStdDev(0.08);
-    camera->AddRenderPass(noisePass);
+    if (pass)
+    {
+      GaussianNoisePassPtr noisePass =
+          std::dynamic_pointer_cast<GaussianNoisePass>(pass);
+      noisePass->SetMean(0.1);
+      noisePass->SetStdDev(0.08);
+      camera->AddRenderPass(noisePass);
+    }
 
     // add distortion pass
     pass = rpSystem->Create<DistortionPass>();
-    DistortionPassPtr distortionPass =
-        std::dynamic_pointer_cast<DistortionPass>(pass);
-    distortionPass->SetK1(0.5);
-    camera->AddRenderPass(distortionPass);
+    if (pass)
+    {
+      DistortionPassPtr distortionPass =
+          std::dynamic_pointer_cast<DistortionPass>(pass);
+      distortionPass->SetK1(0.5);
+      camera->AddRenderPass(distortionPass);
+    }
   }
   //! [get render pass system]
 

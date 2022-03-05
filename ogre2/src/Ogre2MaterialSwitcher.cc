@@ -37,8 +37,8 @@ using namespace rendering;
 
 
 /// \brief A map of ogre sub item pointer to their original low level material
-/// \todo(anyone) Added here for ABI compatibity This can be removed once
-/// ign-rendering7 switches to Hlms customization for "switching" materials
+/// \todo(anyone) Added here for ABI compatibity. Move to private class
+/// in ign-rendering7
 std::map<Ogre2MaterialSwitcher *,
          std::map<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
 
@@ -110,6 +110,17 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
       {
         materialMap[this][subItem] = subItem->getMaterial();
         subItem->setMaterial(this->plainMaterial);
+        auto technique = subItem->getMaterial()->getTechnique(0);
+
+        if (technique && !technique->isDepthWriteEnabled() &&
+            !technique->isDepthCheckEnabled())
+        {
+          subItem->setMaterial(this->plainOverlayMaterial);
+        }
+        else
+        {
+          subItem->setMaterial(this->plainMaterial);
+        }
       }
       // regular Pbs Hlms datablock
       else

@@ -22,6 +22,7 @@
 #include "test_config.h"  // NOLINT(build/include)
 
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/GpuRays.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
@@ -663,6 +664,25 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 
+  // Create a gpu ray
+  // laser retro material switching may also affect shader materials
+  const double hMinAngle = -IGN_PI/2.0;
+  const double hMaxAngle = IGN_PI/2.0;
+  const double minRange = 0.1;
+  const double maxRange = 10.0;
+  const int hRayCount = 320;
+  const int vRayCount = 1;
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
+  gpuRays->SetWorldPosition(0, 0, 0);
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
   if (_renderEngine == "ogre2")
   {
     // worldviewproj_matrix is a constant defined by ogre.
@@ -681,6 +701,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   for (auto i = 0; i < 30; ++i)
   {
     camera->Update();
+    gpuRays->Update();
   }
 
   // capture a frame

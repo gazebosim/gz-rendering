@@ -855,7 +855,8 @@ Ogre::MaterialPtr Ogre2Material::Material()
       this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.hlsl");
       break;
     case GraphicsAPI::METAL:
-      this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.metal");
+      this->dataPtr->ogreSolidColorShader->setSourceFile(
+        "plain_color_fs.metal");
       break;
     default:
       IGN_ASSERT(false, "Impossible path!");

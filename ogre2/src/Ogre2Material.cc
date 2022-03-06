@@ -68,6 +68,22 @@ class ignition::rendering::Ogre2MaterialPrivate
   /// \brief Parameters to be bound to the fragment shader
   public: ShaderParamsPtr fragmentShaderParams;
 
+  /// \brief Material to be used when rendering to special
+  /// cameras (e.g. sensors) like Ogre2GpuRays,
+  /// Ogre2LaserRetroMaterialSwitcher, etc
+  ///
+  /// It shares the same Vertex Shader, but uses a different
+  /// Pixel Shader
+  public: Ogre::MaterialPtr ogreSolidColorMat;
+
+  /// \brief A clone of plaincolor_fs. We need a clone
+  /// because some Metal needs to pair with the vertex shader they're
+  /// going to be used and Vulkan needs to have the same or a compatible
+  /// Root Layout profile.
+  ///
+  /// Used in ogreSolidColorMat
+  public: Ogre::HighLevelGpuProgramPtr ogreSolidColorShader;
+
   /// \brief Returns the shader language code.
   /// \param[in] _graphicsAPI The graphic API.
   /// \return The shader language code string.
@@ -77,6 +93,8 @@ class ignition::rendering::Ogre2MaterialPrivate
     {
       case GraphicsAPI::OPENGL:
         return "glsl";
+      case GraphicsAPI::VULKAN:
+        return "glslvk";
       case GraphicsAPI::METAL:
         return "metal";
       default:
@@ -125,6 +143,13 @@ void Ogre2Material::Destroy()
     Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
     matManager.remove(this->ogreMaterial);
     this->ogreMaterial.reset();
+
+    matManager.remove(this->dataPtr->ogreSolidColorMat);
+    this->dataPtr->ogreSolidColorMat.reset();
+
+    Ogre::HighLevelGpuProgramManager::getSingleton().remove(
+      this->dataPtr->ogreSolidColorShader);
+    this->dataPtr->ogreSolidColorShader.reset();
   }
 
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
@@ -630,11 +655,15 @@ void Ogre2Material::UpdateShaderParams()
   if (this->dataPtr->vertexShaderParams &&
       this->dataPtr->vertexShaderParams->IsDirty())
   {
-    Ogre::GpuProgramParametersSharedPtr ogreParams;
-    auto mat = this->Material();
-    auto pass = mat->getTechnique(0u)->getPass(0);
-    ogreParams = pass->getVertexProgramParameters();
-    this->UpdateShaderParams(this->dataPtr->vertexShaderParams, ogreParams);
+    Ogre::MaterialPtr mat[2] = { this->Material(),
+                                 this->dataPtr->ogreSolidColorMat };
+    for (int i = 0; i < 2; ++i)
+    {
+      Ogre::GpuProgramParametersSharedPtr ogreParams;
+      auto pass = mat[i]->getTechnique(0u)->getPass(0);
+      ogreParams = pass->getVertexProgramParameters();
+      this->UpdateShaderParams(this->dataPtr->vertexShaderParams, ogreParams);
+    }
     this->dataPtr->vertexShaderParams->ClearDirty();
   }
   if (this->dataPtr->fragmentShaderParams &&
@@ -802,6 +831,42 @@ Ogre::MaterialPtr Ogre2Material::Material()
     Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
     this->ogreMaterial = matManager.create(this->name,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+    this->dataPtr->ogreSolidColorMat = matManager.create(
+      this->name + "_solid",
+      Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+
+    const auto graphicsApi = Ogre2RenderEngine::Instance()->GraphicsAPI();
+
+    this->dataPtr->ogreSolidColorShader =
+      Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
+        "_ign_" + this->name + "_solid_fs",
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        this->dataPtr->shaderLanguageCode(graphicsApi),
+        Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+
+    switch (graphicsApi)
+    {
+    case GraphicsAPI::OPENGL:
+    case GraphicsAPI::VULKAN:
+      this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.glsl");
+      break;
+    case GraphicsAPI::DIRECT3D11:
+      this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.hlsl");
+      break;
+    case GraphicsAPI::METAL:
+      this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.metal");
+      break;
+    default:
+      IGN_ASSERT(false, "Impossible path!");
+    }
+
+    auto mat = this->dataPtr->ogreSolidColorMat;
+    auto pass = mat->getTechnique(0u)->getPass(0);
+    pass->setFragmentProgram(this->dataPtr->ogreSolidColorShader->getName());
+    auto psParams = pass->getFragmentProgramParameters();
+    psParams->setNamedAutoConstant("inColor",
+                                   Ogre::GpuProgramParameters::ACT_CUSTOM, 1u);
   }
 
   return this->ogreMaterial;
@@ -1136,11 +1201,37 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
   assert(!(vertexShader->hasCompileError()));
   assert(vertexShader->isSupported());
 
-  auto mat = this->Material();
-  auto pass = mat->getTechnique(0u)->getPass(0);
-  pass->setVertexProgram(vertexShader->getName());
-  mat->compile();
-  mat->load();
+  // Call it now to ensure ogreSolidColorShader is created
+  auto mainMat = this->Material();
+
+  // We can set this setting now for the solid pixel shader
+  // Metal needs this. Other APIs will ignore it.
+  this->dataPtr->ogreSolidColorShader->setParameter(
+    "shader_reflection_pair_hint", vertexShader->getName());
+
+  Ogre::MaterialPtr mat[2] = { mainMat, this->dataPtr->ogreSolidColorMat };
+
+  for (int i = 0; i < 2; ++i)
+  {
+    auto pass = mat[i]->getTechnique(0u)->getPass(0);
+    pass->setVertexProgram(vertexShader->getName());
+    mat[i]->compile();
+    mat[i]->load();
+  }
+
+  if(this->dataPtr->ogreSolidColorMat->getNumSupportedTechniques() == 0u)
+  {
+    ignwarn
+      << "Material '" << this->Name()
+      << "' could not be paired with special pixel shader '"
+      << this->dataPtr->ogreSolidColorShader->getSourceFile()
+      << "' See Ogre.log for details. This shader is used for special "
+         "rendering in sensors (e.g. Lidar, Thermal). Your vertex shader "
+         "must have a compatible signature if you want it to work.\n"
+         "See https://github.com/ignitionrobotics/ign-rendering/issues/544\n"
+         "If this issue isn't fixed, sensor rendering MIGHT not be correct"
+         "if your vertex shader performs custom geometry deformation";
+  }
 
   this->dataPtr->vertexShaderPath = _path;
   this->dataPtr->vertexShaderParams.reset(new ShaderParams);

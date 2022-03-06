@@ -341,11 +341,25 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
 
           if (!subItem->getMaterial().isNull())
           {
-            // TODO(anyone): We need to keep the material's vertex shader
-            // to keep vertex deformation consistent. See
+            // We need to keep the material's vertex shader
+            // to keep vertex deformation consistent; so we use
+            // a cloned material with a different pixel shader
             // https://github.com/ignitionrobotics/ign-rendering/issues/544
-            this->materialMap.push_back({ subItem, subItem->getMaterial() });
-            subItem->setDatablock(defaultPbs);
+            auto material = Ogre::MaterialManager::getSingleton().getByName(
+              subItem->getMaterial()->getName() + "_solid",
+              Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+            if (material->getNumSupportedTechniques() > 0u)
+            {
+              subItem->setMaterial(material);
+            }
+            else
+            {
+              // The supplied vertex shader could not pair with the
+              // pixel shader we provide. Try to salvage the situation
+              // using PBS shader. Custom deformation won't work but
+              // if we're lucky that won't matter
+              subItem->setDatablock(defaultPbs);
+            }
           }
           else
           {
@@ -473,11 +487,25 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
 
           if (!subItem->getMaterial().isNull())
           {
-            // TODO(anyone): We need to keep the material's vertex shader
-            // to keep vertex deformation consistent. See
+            // We need to keep the material's vertex shader
+            // to keep vertex deformation consistent; so we use
+            // a cloned material with a different pixel shader
             // https://github.com/ignitionrobotics/ign-rendering/issues/544
-            this->materialMap.push_back({ subItem, subItem->getMaterial() });
-            subItem->setDatablock(defaultPbs);
+            auto material = Ogre::MaterialManager::getSingleton().getByName(
+              subItem->getMaterial()->getName() + "_solid",
+              Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+            if (material->getNumSupportedTechniques() > 0u)
+            {
+              subItem->setMaterial(material);
+            }
+            else
+            {
+              // The supplied vertex shader could not pair with the
+              // pixel shader we provide. Try to salvage the situation
+              // using PBS shader. Custom deformation won't work but
+              // if we're lucky that won't matter
+              subItem->setDatablock(defaultPbs);
+            }
           }
           else
           {

@@ -64,6 +64,13 @@ namespace ignition
     {
     }
 
+    /////////////////////////////////////////////////
+    template <class T>
+    void BaseSonarCone<T>::CreateDepthTexture()
+    {
+    }
+
+
     //////////////////////////////////////////////////
     template <class T>
     const float *BaseSonarCone<T>::DepthData() const

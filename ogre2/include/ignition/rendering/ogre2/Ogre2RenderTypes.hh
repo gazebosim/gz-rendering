@@ -63,6 +63,7 @@ namespace ignition
     class Ogre2Scene;
     class Ogre2SegmentationCamera;
     class Ogre2Sensor;
+    class Ogre2SonarCone;
     class Ogre2SpotLight;
     class Ogre2SubMesh;
     class Ogre2ThermalCamera;
@@ -115,6 +116,7 @@ namespace ignition
       Ogre2SegmentationCameraPtr;
     typedef shared_ptr<Ogre2Sensor>               Ogre2SensorPtr;
     typedef shared_ptr<Ogre2SpotLight>            Ogre2SpotLightPtr;
+    typedef shared_ptr<Ogre2SonarCone>            Ogre2SonarConePtr;
     typedef shared_ptr<Ogre2SubMesh>              Ogre2SubMeshPtr;
     typedef shared_ptr<Ogre2ThermalCamera>        Ogre2ThermalCameraPtr;
     typedef shared_ptr<Ogre2Visual>               Ogre2VisualPtr;

@@ -86,6 +86,7 @@ namespace ignition
     class Scene;
     class SegmentationCamera;
     class Sensor;
+    class SonarCone;
     class ShaderParams;
     class SpotLight;
     class SubMesh;
@@ -126,6 +127,10 @@ namespace ignition
     /// \typedef WideAngleCameraPtr
     /// \brief Shared pointer to Wide Angle Camera
     typedef shared_ptr<WideAngleCamera> WideAngleCameraPtr;
+
+    /// \typedef WideAngleCameraPtr
+    /// \brief Shared pointer to Wide Angle Camera
+    typedef shared_ptr<SonarCone> SonarConePtr;
 
     /// \typedef GpuRaysPtr
     /// \brief Shared pointer to GpuRays
@@ -300,6 +305,10 @@ namespace ignition
     /// \typedef const BoundingBoxCameraPtr
     /// \brief Shared pointer to const BoundingBox Camera
     typedef shared_ptr<const BoundingBoxCamera> ConstBoundingBoxCameraPtr;
+
+    /// \typedef const SonarConePtr
+    /// \brief Shared pointer to const SonarCone
+    typedef shared_ptr<const SonarCone> ConstSonarConePtr;
 
     /// \typedef const SegmentationCameraPtr
     /// \brief Shared pointer to const Segmentation Camera

@@ -318,6 +318,17 @@ namespace ignition
       public: virtual DepthCameraPtr CreateDepthCamera(const unsigned int _id,
                   const std::string &_name) override;
 
+      public: virtual SonarConePtr CreateSonarCone() override;
+
+      public: virtual SonarConePtr CreateSonarCone(const unsigned int _id)
+                      override;
+
+      public: virtual SonarConePtr CreateSonarCone(
+                  const std::string &_name) override;
+
+      public: virtual SonarConePtr CreateSonarCone(const unsigned int _id,
+                  const std::string &_name) override;
+
       // Documentation inherited.
       public: virtual ThermalCameraPtr CreateThermalCamera() override;
 
@@ -625,6 +636,17 @@ namespace ignition
 
       protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      protected: virtual SonarConePtr CreateSonarConeImpl(unsigned int _id,
+                     const std::string &_name)
+                 {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
+                   ignerr << "Sonar cone not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return SonarConePtr();
+                 }
 
       /// \brief Implementation for creating a thermal camera.
       /// \param[in] _id Unique id

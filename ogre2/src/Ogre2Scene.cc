@@ -46,6 +46,7 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
+#include "ignition/rendering/ogre2/Ogre2SonarCone.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2WireBox.hh"
 
@@ -973,6 +974,15 @@ DepthCameraPtr Ogre2Scene::CreateDepthCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
   Ogre2DepthCameraPtr camera(new Ogre2DepthCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+SonarConePtr Ogre2Scene::CreateSonarConeImpl(const unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2SonarConePtr camera(new Ogre2SonarCone);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }

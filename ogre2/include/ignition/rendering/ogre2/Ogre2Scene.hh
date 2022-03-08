@@ -232,6 +232,10 @@ namespace ignition
                      const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual SonarConePtr CreateSonarConeImpl(unsigned int _id,
+                     const std::string &_name);
+
+      // Documentation inherited
       protected: virtual ThermalCameraPtr CreateThermalCameraImpl(
                      unsigned int _id, const std::string &_name) override;
 

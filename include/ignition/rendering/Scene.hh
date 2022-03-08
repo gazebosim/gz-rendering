@@ -640,6 +640,35 @@ namespace ignition
       public: virtual DepthCameraPtr CreateDepthCamera(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new Sonar Cone. A unique ID and name will
+      /// automatically be assigned to the camera.
+      /// \return The created camera
+      public: virtual SonarConePtr CreateSonarCone() = 0;
+
+      /// \brief Create new Sonar Cone with the given ID. A unique name
+      /// will automatically be assigned to the camera. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new camera
+      /// \return The created camera
+      public: virtual SonarConePtr CreateSonarCone(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new Sonar Cone with the given name. A unique ID
+      /// will automatically be assigned to the camera. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new camera
+      /// \return The created camera
+      public: virtual SonarConePtr CreateSonarCone(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new Sonar Cone with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new camera
+      /// \param[in] _name Name of the new camera
+      /// \return The created camera
+      public: virtual SonarConePtr CreateSonarCone(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new thermal camera. A unique ID and name will
       /// automatically be assigned to the camera.
       /// \return The created camera

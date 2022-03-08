@@ -43,6 +43,7 @@
 #include "ignition/rendering/Text.hh"
 #include "ignition/rendering/ThermalCamera.hh"
 #include "ignition/rendering/SegmentationCamera.hh"
+#include "ignition/rendering/SonarCone.hh"
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/WideAngleCamera.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
@@ -760,7 +761,32 @@ DepthCameraPtr BaseScene::CreateDepthCamera(const unsigned int _id,
   bool result = this->RegisterSensor(camera);
   return (result) ? camera : nullptr;
 }
-
+//////////////////////////////////////////////////
+SonarConePtr BaseScene::CreateSonarCone()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateSonarCone(objId);
+}
+//////////////////////////////////////////////////
+SonarConePtr BaseScene::CreateSonarCone(const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "DepthCamera");
+  return this->CreateSonarCone(_id, objName);
+}
+//////////////////////////////////////////////////
+SonarConePtr BaseScene::CreateSonarCone(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateSonarCone(objId, _name);
+}
+//////////////////////////////////////////////////
+SonarConePtr BaseScene::CreateSonarCone(const unsigned int _id,
+    const std::string &_name)
+{
+  SonarConePtr camera = this->CreateSonarConeImpl(_id, _name);
+  bool result = this->RegisterSensor(camera);
+  return (result) ? camera : nullptr;
+}
 //////////////////////////////////////////////////
 ThermalCameraPtr BaseScene::CreateThermalCamera()
 {

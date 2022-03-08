@@ -93,6 +93,9 @@ class Ogre2LaserRetroMaterialSwitcher : public Ogre::Camera::Listener
 
   /// \brief A map of ogre sub item pointer to their original hlms material
   private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
+
+  /// \brief A map of ogre sub item pointer to their original low level material
+  private: std::map<Ogre::SubItem *, Ogre::MaterialPtr> laserRetroMaterialMap;
 };
 }
 }
@@ -197,12 +200,6 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 
 using namespace ignition;
 using namespace rendering;
-
-/// \brief A map of ogre sub item pointer to their original low level material
-/// \todo(anyone) Added here for ABI compatibity. Move to private class
-/// in ign-rendering7
-std::map<Ogre2LaserRetroMaterialSwitcher *,
-         std::map<Ogre::SubItem *, Ogre::MaterialPtr>> laserRetroMaterialMap;
 
 //////////////////////////////////////////////////
 Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
@@ -312,7 +309,7 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
       // e.g. shaders
       if (!subItem->getMaterial().isNull())
       {
-        laserRetroMaterialMap[this][subItem] = subItem->getMaterial();
+        this->laserRetroMaterialMap[subItem] = subItem->getMaterial();
       }
       // regular Pbs Hlms datablock
       else
@@ -337,14 +334,11 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
     subItem->setDatablock(it.second);
   }
 
-  auto laserRetroIt = laserRetroMaterialMap.find(this);
-  if (laserRetroIt !=  laserRetroMaterialMap.end())
+  // restore item to use low level material
+  for (auto it : this->laserRetroMaterialMap)
   {
-    for (auto it : laserRetroIt->second)
-    {
-      Ogre::SubItem *subItem = it.first;
-      subItem->setMaterial(it.second);
-    }
+    Ogre::SubItem *subItem = it.first;
+    subItem->setMaterial(it.second);
   }
 
   Ogre::Pass *pass =
@@ -353,7 +347,7 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPostRenderScene(
         "ignMinClipDistance", 0.0f );
 
   this->datablockMap.clear();
-  laserRetroMaterialMap[this].clear();
+  this->laserRetroMaterialMap.clear();
 }
 
 //////////////////////////////////////////////////

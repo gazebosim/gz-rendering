@@ -697,7 +697,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   thermalCamera->SetAspectRatio(1.333);
   thermalCamera->SetImageWidth(320);
   thermalCamera->SetImageHeight(240);
-  thermalCamera->SetHFOV(IGN_PI / 2);
+  thermalCamera->SetHFOV(IGN_PI_2);
   root->AddChild(thermalCamera);
 
   // Create segmentation camera
@@ -713,7 +713,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   segmentationCamera->SetAspectRatio(1.333);
   segmentationCamera->SetImageWidth(320);
   segmentationCamera->SetImageHeight(240);
-  segmentationCamera->SetHFOV(IGN_PI / 2);
+  segmentationCamera->SetHFOV(IGN_PI_2);
   root->AddChild(segmentationCamera);
 
   if (_renderEngine == "ogre2")

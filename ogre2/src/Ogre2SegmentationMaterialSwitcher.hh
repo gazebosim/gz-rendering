@@ -18,6 +18,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 
+#include <map>
 #include <string>
 #include <random>
 #include <unordered_map>

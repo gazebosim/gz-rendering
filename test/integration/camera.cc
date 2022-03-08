@@ -702,7 +702,8 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 
   // Create segmentation camera
   // segmentation material switching may also affect shader materials
-  auto segmentationCamera = scene->CreateSegmentationCamera("SegmentationCamera");
+  auto segmentationCamera =
+      scene->CreateSegmentationCamera("SegmentationCamera");
   ASSERT_NE(camera, nullptr);
   segmentationCamera->SetLocalPosition(0.0, 0.0, 0.0);
   segmentationCamera->SetLocalRotation(0.0, 0.0, 0.0);

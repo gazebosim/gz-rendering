@@ -409,9 +409,9 @@ void Ogre2SonarCone::CreateDepthTexture()
   this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
 
   // Load depth material
-  // The DepthCamera material is defined in script (depth_camera.material).
+  // The SonarCone material is defined in script (sonar_cone.material).
   // We need to clone it since we are going to modify its uniform variables
-  std::string matDepthName = "DepthCamera";
+  std::string matDepthName = "SonarCone";
   Ogre::MaterialPtr matDepth =
       Ogre::MaterialManager::getSingleton().getByName(matDepthName);
   this->dataPtr->depthMaterial = matDepth->clone(

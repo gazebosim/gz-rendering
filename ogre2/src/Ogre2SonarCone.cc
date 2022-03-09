@@ -455,7 +455,7 @@ void Ogre2SonarCone::CreateDepthTexture()
   psParams->setNamedConstant("particleStddev",
     static_cast<float>(this->dataPtr->particleStddev));
 
-  std::string matDepthFinalName = "DepthCameraFinal";
+  std::string matDepthFinalName = "SonarConeFinal";
   Ogre::MaterialPtr matDepthFinal =
       Ogre::MaterialManager::getSingleton().getByName(matDepthFinalName);
   this->dataPtr->depthFinalMaterial = matDepthFinal->clone(
@@ -474,45 +474,14 @@ void Ogre2SonarCone::CreateDepthTexture()
   psParamsFinal->setNamedConstant("min",
       static_cast<float>(this->dataPtr->dataMinVal));
 
-  // create background material is specified
-  MaterialPtr backgroundMaterial = this->Scene()->BackgroundMaterial();
-  bool validBackground = backgroundMaterial &&
-      !backgroundMaterial->EnvironmentMap().empty();
-
-  // let depth camera shader know if there is background material
-  // This is needed for manual clipping of color pixel values.
-  psParams->setNamedConstant("hasBackground",
-      static_cast<int>(validBackground));
-
-  if (validBackground)
-  {
-    Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-    std::string skyMatName = this->dataPtr->kSkyboxMaterialName + "_"
-        + this->Name();
-    auto mat = matManager.getByName(skyMatName);
-    if (!mat)
-    {
-      auto skyboxMat = matManager.getByName(this->dataPtr->kSkyboxMaterialName);
-      if (!skyboxMat)
-      {
-        ignerr << "Unable to find skybox material" << std::endl;
-        return;
-      }
-      mat = skyboxMat->clone(skyMatName);
-    }
-    Ogre::TextureUnitState *texUnit =
-        mat->getTechnique(0u)->getPass(0u)->getTextureUnitState(0u);
-    texUnit->setTextureName(backgroundMaterial->EnvironmentMap(),
-        Ogre::TextureTypes::TypeCube);
-  }
-
   // Create depth camera compositor
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  std::string wsDefName = "DepthCameraWorkspace_" + this->Name();
+  std::string wsDefName = "SonarConeWorkspace_" + this->Name();
   this->dataPtr->ogreCompositorWorkspaceDef = wsDefName;
+
   if (!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
   {
     // The depth camera compositor does a few passes in order to simulate
@@ -693,10 +662,7 @@ void Ogre2SonarCone::CreateDepthTexture()
     Ogre::CompositorTargetDef *colorTargetDef =
         baseNodeDef->addTargetPass("colorTexture");
 
-    if (validBackground)
-      colorTargetDef->setNumPasses(3);
-    else
-      colorTargetDef->setNumPasses(2);
+    colorTargetDef->setNumPasses(2);
     {
       // scene pass - opaque
       {
@@ -708,32 +674,11 @@ void Ogre2SonarCone::CreateDepthTexture()
         passScene->mIncludeOverlays = false;
         passScene->mFirstRQ = 0u;
         passScene->mLastRQ = 2u;
-        if (validBackground)
-        {
-          passScene->setAllLoadActions(Ogre::LoadAction::DontCare);
-          passScene->mLoadActionDepth = Ogre::LoadAction::Clear;
-          passScene->mLoadActionStencil = Ogre::LoadAction::Clear;
-        }
-        else
-        {
-          passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-          passScene->setAllClearColours(
-              Ogre2Conversions::Convert(this->Scene()->BackgroundColor()));
 
-        }
-      }
+        passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+        passScene->setAllClearColours(
+            Ogre2Conversions::Convert(this->Scene()->BackgroundColor()));
 
-      // render background, e.g. sky, after opaque stuff
-      if (validBackground)
-      {
-        // quad pass
-        Ogre::CompositorPassQuadDef *passQuad =
-            static_cast<Ogre::CompositorPassQuadDef *>(
-            colorTargetDef->addPass(Ogre::PASS_QUAD));
-        passQuad->mMaterialName = this->dataPtr->kSkyboxMaterialName + "_"
-            + this->Name();
-        passQuad->mFrustumCorners =
-            Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
       }
 
       // scene pass - transparent stuff

@@ -100,7 +100,7 @@ material SonarCone
 }
 
 // GLSL shaders
-vertex_program DepthCameraFinalVS_GLSL glsl
+vertex_program SonarConeFinalVS_GLSL glsl
 {
   source depth_camera_final_vs.glsl
   default_params
@@ -122,7 +122,7 @@ fragment_program SonarConeFinalFS_GLSL glsl
 }
 
 // Metal shaders
-vertex_program DepthCameraFinalVS_Metal metal
+vertex_program SonarConeFinalVS_Metal metal
 {
   source depth_camera_final_vs.metal
   default_params
@@ -134,7 +134,7 @@ vertex_program DepthCameraFinalVS_Metal metal
 fragment_program SonarConeFinalFS_Metal metal
 {
   source depth_camera_final_fs.metal
-  shader_reflection_pair_hint DepthCameraFinalVS_Metal
+  shader_reflection_pair_hint SonarConeFinalVS_Metal
 
   default_params
   {
@@ -145,26 +145,26 @@ fragment_program SonarConeFinalFS_Metal metal
 }
 
 // Unified shaders
-vertex_program DepthCameraFinalVS unified
+vertex_program SonarConeFinalVS unified
 {
-  delegate DepthCameraFinalVS_GLSL
-  delegate DepthCameraFinalVS_Metal
+  delegate SonarConeFinalVS_GLSL
+  delegate SonarConeFinalVS_Metal
 }
 
-fragment_program DepthCameraFinalFS unified
+fragment_program SonarConeFinalFS unified
 {
   delegate SonarConeFinalFS_GLSL
   delegate SonarConeFinalFS_Metal
 }
 
-material DepthCameraFinal
+material SonarConeFinal
 {
   technique
   {
     pass
     {
-      vertex_program_ref DepthCameraFinalVS { }
-      fragment_program_ref DepthCameraFinalFS { }
+      vertex_program_ref SonarConeFinalVS { }
+      fragment_program_ref SonarConeFinalFS { }
       texture_unit inputTexture
       {
         filtering none

@@ -108,14 +108,14 @@ void buildScene(ScenePtr _scene)
   SonarConePtr camera = _scene->CreateSonarCone("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
-  camera->SetImageWidth(800);
-  camera->SetImageHeight(600);
-  camera->SetAspectRatio(1.333);
+  camera->SetImageWidth(100);
+  camera->SetImageHeight(100);
+  camera->SetAspectRatio(1);
   camera->SetHFOV(IGN_PI / 2);
   camera->SetImageFormat(PixelFormat::PF_FLOAT32_RGBA);
   camera->SetNearClipPlane(0.15);
   camera->SetFarClipPlane(10.0);
-  camera->SetAntiAliasing(2);  
+  camera->SetAntiAliasing(2);
   camera->CreateDepthTexture();
 
   root->AddChild(camera);

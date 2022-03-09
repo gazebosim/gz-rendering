@@ -44,8 +44,7 @@
 #include <ignition/rendering/OrbitViewController.hh>
 #include <ignition/rendering/RayQuery.hh>
 #include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/SegmentationCamera.hh>
-#include <ignition/rendering/DepthCamera.hh>
+#include <ignition/rendering/SonarCone.hh>
 
 #include "GlutWindow.hh"
 
@@ -317,7 +316,7 @@ void initCamera(ir::CameraPtr _camera)
   ir::Image image = g_camera->CreateImage();  
   g_image = std::make_shared<ir::Image>(image);
 
-  ir::DepthCameraPtr depthCamera = std::dynamic_pointer_cast<ir::DepthCamera>(
+  ir::SonarConePtr depthCamera = std::dynamic_pointer_cast<ir::SonarCone>(
       g_camera);
 
   g_connection = depthCamera->ConnectNewDepthFrame(

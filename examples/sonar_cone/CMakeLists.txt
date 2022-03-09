@@ -24,16 +24,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
 configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
 
-add_executable(depth_camera Main.cc GlutWindow.cc)
+add_executable(sonar_cone Main.cc GlutWindow.cc)
 
-target_link_libraries(depth_camera
+target_link_libraries(sonar_cone
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )
 
-add_custom_command(TARGET depth_camera POST_BUILD
+add_custom_command(TARGET sonar_cone POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
   ${CMAKE_SOURCE_DIR}/media
-  $<TARGET_FILE_DIR:depth_camera>/media)
+  $<TARGET_FILE_DIR:sonar_cone>/media)

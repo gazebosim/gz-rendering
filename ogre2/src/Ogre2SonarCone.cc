@@ -484,91 +484,9 @@ void Ogre2SonarCone::CreateDepthTexture()
 
   if (!ogreCompMgr->hasWorkspaceDefinition(wsDefName))
   {
-    // The depth camera compositor does a few passes in order to simulate
-    // particles effects in depth / point cloud image data
-    //
-    // render scene (color) with particles, c1
-    // render scene (depth) without particles, d1
-    // render scene (grayscale) with particles only, g2
-    // render scene (depth) with particles only, d2
-    //
-    //   if g2 is non-zero // pixel with particle
-    //     if d2 < d1 // particle is in view
-    //       apply noise and scatterbility to d2
-    //       set depth data to d2
-    //     else
-    //       set depth data to d1
-    //   set color data to c1
-
     // We need to programmatically create the compositor because we need to
     // configure it to use the cloned depth material created earlier.
-    // The compositor node definition is equivalent to the following:
-    //
-    // compositor_node DepthCamera
-    // {
-    //   texture rt0 target_width target_height PF_FLOAT32_RGBA
-    //   texture rt1 target_width target_height PF_FLOAT32_RGBA
-    //   texture colorTexture target_width target_height PF_R8G8B8
-    //       depth_texture depth_format PF_D32_FLOAT
-    //   texture depthTexture target_width target_height PF_D32_FLOAT
-    //   texture particleTexture target_width target_height PFG_R8_UNORM
-    //   // particleDepthTexture shares same depth buffer as particleTexture
-    //   texture particleDepthTexture target_width target_height PFG_D32_FLOAT
-    //
-    //   rtv particleTexture
-    //   {
-    //     depth particleDepthTexture
-    //   }
-    //
-    //   target colorTexture
-    //   {
-    //     pass clear
-    //     {
-    //       colour_value 0.0 0.0 0.0 1.0
-    //     }
-    //     pass render_scene
-    //     {
-    //     }
-    //   }
-    //   target depthTexture
-    //   {
-    //     pass clear
-    //     {
-    //       colour_value 0.0 0.0 0.0 1.0
-    //     }
-    //     pass render_scene
-    //     {
-    //       visibility_mask 0x11011111
-    //     }
-    //   }
-    //   target particleTexture
-    //   {
-    //     pass clear
-    //     {
-    //     }
-    //     pass render_scene
-    //     {
-    //       visibility_mask 0x00100000
-    //     }
-    //   }
-    //   target rt0
-    //   {
-    //     pass clear
-    //     {
-    //     }
-    //     pass render_quad
-    //     {
-    //       material DepthCamera // Use copy instead of original
-    //       input 0 depthTexture
-    //       input 1 colorTexture
-    //       quad_normals camera_far_corners_view_space
-    //     }
-    //   }
-    //   out 0 rt0
-    //   out 1 rt1
-    // }
-
-    std::string baseNodeDefName = wsDefName + "/BaseNode";
+    std::string baseNodeDefName = wsDefName + "/Node";
     this->dataPtr->ogreCompositorBaseNodeDef = baseNodeDefName;
     Ogre::CompositorNodeDef *baseNodeDef =
         ogreCompMgr->addNodeDefinition(baseNodeDefName);
@@ -619,50 +537,11 @@ void Ogre2SonarCone::CreateDepthTexture()
       baseNodeDef->addRenderTextureView("colorTexture");
     rtvColor->setForTextureDefinition("colorTexture", colorTexDef);
 
-    Ogre::TextureDefinitionBase::TextureDefinition *particleTexDef =
-        baseNodeDef->addTextureDefinition("particleTexture");
-    particleTexDef->textureType = Ogre::TextureTypes::Type2D;
-    particleTexDef->width = 0;
-    particleTexDef->height = 0;
-    particleTexDef->depthOrSlices = 1;
-    particleTexDef->numMipmaps = 0;
-    particleTexDef->widthFactor = 0.5;
-    particleTexDef->heightFactor = 0.5;
-    particleTexDef->format = Ogre::PFG_R8_UNORM;
-    particleTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
-    particleTexDef->depthBufferId = Ogre::DepthBuffer::POOL_DEFAULT;
-    particleTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
-    particleTexDef->preferDepthTexture = false;
-    particleTexDef->fsaa = "0";
-
-    Ogre::TextureDefinitionBase::TextureDefinition *particleDepthTexDef =
-        baseNodeDef->addTextureDefinition("particleDepthTexture");
-    particleDepthTexDef->textureType = Ogre::TextureTypes::Type2D;
-    particleDepthTexDef->width = 0;
-    particleDepthTexDef->height = 0;
-    particleDepthTexDef->depthOrSlices = 1;
-    particleDepthTexDef->numMipmaps = 0;
-    particleDepthTexDef->widthFactor = 0.5;
-    particleDepthTexDef->heightFactor = 0.5;
-    particleDepthTexDef->format = Ogre::PFG_D32_FLOAT;
-    particleDepthTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
-    particleDepthTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
-    particleDepthTexDef->fsaa = "0";
-    particleDepthTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
-
-    // Auto setup the RTV then manually override the depth buffer so
-    // it uses the one we created (and thus we can sample from it later)
-    Ogre::RenderTargetViewDef *rtvParticleTexture =
-      baseNodeDef->addRenderTextureView("particleTexture");
-    rtvParticleTexture->setForTextureDefinition("particleTexture",
-                                                particleTexDef);
-    rtvParticleTexture->depthAttachment.textureName = "particleDepthTexture";
-
     baseNodeDef->setNumTargetPass(4);
     Ogre::CompositorTargetDef *colorTargetDef =
         baseNodeDef->addTargetPass("colorTexture");
 
-    colorTargetDef->setNumPasses(2);
+    colorTargetDef->setNumPasses(1);
     {
       // scene pass - opaque
       {
@@ -670,7 +549,9 @@ void Ogre2SonarCone::CreateDepthTexture()
             static_cast<Ogre::CompositorPassSceneDef *>(
             colorTargetDef->addPass(Ogre::PASS_SCENE));
         passScene->mShadowNode = this->dataPtr->kShadowNodeName;
-        passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
+        // SONAR should not see particles
+        passScene->mVisibilityMask =  IGN_VISIBILITY_ALL &
+          ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
         passScene->mIncludeOverlays = false;
         passScene->mFirstRQ = 0u;
         passScene->mLastRQ = 2u;
@@ -680,18 +561,7 @@ void Ogre2SonarCone::CreateDepthTexture()
             Ogre2Conversions::Convert(this->Scene()->BackgroundColor()));
 
       }
-
-      // scene pass - transparent stuff
-      {
-        Ogre::CompositorPassSceneDef *passScene =
-            static_cast<Ogre::CompositorPassSceneDef *>(
-            colorTargetDef->addPass(Ogre::PASS_SCENE));
-        passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
-        // todo(anyone) PbsMaterialsShadowNode is hardcoded.
-        // Although this may be just fine
-        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
-        passScene->mFirstRQ = 2u;
-      }
+      // SONAR doesn't care about transparency
     }
 
     Ogre::CompositorTargetDef *depthTargetDef =
@@ -712,20 +582,6 @@ void Ogre2SonarCone::CreateDepthTexture()
           & ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 
-    Ogre::CompositorTargetDef *particleTargetDef =
-        baseNodeDef->addTargetPass("particleTexture");
-    particleTargetDef->setNumPasses(1);
-    {
-      // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          particleTargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-      passScene->setAllClearColours(Ogre::ColourValue::Black);
-      passScene->mVisibilityMask =
-          Ogre2ParticleEmitter::kParticleVisibilityFlags;
-    }
-
     // rt0 target - converts depth to xyz
     Ogre::CompositorTargetDef *inTargetDef =
         baseNodeDef->addTargetPass("rt0");
@@ -744,8 +600,6 @@ void Ogre2SonarCone::CreateDepthTexture()
       passQuad->mMaterialName = this->dataPtr->depthMaterial->getName();
       passQuad->addQuadTextureSource(0, "depthTexture");
       passQuad->addQuadTextureSource(1, "colorTexture");
-      passQuad->addQuadTextureSource(2, "particleTexture");
-      passQuad->addQuadTextureSource(3, "particleDepthTexture");
       passQuad->mFrustumCorners =
           Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
     }
@@ -852,7 +706,6 @@ void Ogre2SonarCone::CreateDepthTexture()
       this->dataPtr->ogreDepthTexture[i]->scheduleTransitionTo(
         Ogre::GpuResidency::Resident);
   }
-
   CreateWorkspaceInstance();
 }
 

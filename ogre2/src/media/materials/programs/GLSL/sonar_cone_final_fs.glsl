@@ -30,6 +30,9 @@ uniform float near;
 uniform float far;
 uniform float min;
 uniform float max;
+uniform int numSonar;
+uniform float radius[6];
+uniform float samplePoints[12];
 
 uniform vec4 texResolution;
 
@@ -73,9 +76,17 @@ void main()
     }
   }
 
-  vec2 center = vec2(0.5, 0.5);
+  bool inside = false;
+  for (int i = 0; i < numSonar; i++)
+  {
+    vec2 center = vec2(samplePoints[i * 2], samplePoints[i * 2 + 1]);
+    if (length(inPs.uv0 - center) < radius[i])
+    {
+      inside = true;
+    }
+  }
 
-  if (length(inPs.uv0 - center) > 0.5)
+  if (!inside)
   {
     discard;
   }

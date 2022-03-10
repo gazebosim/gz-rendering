@@ -474,6 +474,21 @@ void Ogre2SonarCone::CreateDepthTexture()
   psParamsFinal->setNamedConstant("min",
       static_cast<float>(this->dataPtr->dataMinVal));
 
+  int numSonar = 2;
+  static float radius[7] = {0};
+  radius[0] = 0.1;
+  radius[1] = 0.1;
+
+  float centroids[12] = {0};
+  centroids[0] = 0.25;
+  centroids[1] = 0.25;
+  centroids[2] = 0.75;
+  centroids[3] = 0.75;
+
+  psParamsFinal->setNamedConstant("numSonar", static_cast<int>(numSonar));
+  psParamsFinal->setNamedConstant("radius", radius, 6, 1);
+  psParamsFinal->setNamedConstant("samplePoints", centroids, 12, 1);
+
   // Create depth camera compositor
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();

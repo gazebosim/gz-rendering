@@ -190,8 +190,8 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \return The heightmap's size.
     public: ignition::math::Vector3d Size() const;
 
-    /// \brief Set the heightmap's scaling factor. Defaults to 1x1x1.
-    /// \return The heightmap's size factor.
+    /// \brief Set the heightmap's size. Defaults to 1x1x1.
+    /// \param[in] _size The heightmap's size.
     public: void SetSize(const ignition::math::Vector3d &_size);
 
     /// \brief Get the heightmap's position offset.
@@ -199,7 +199,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     public: ignition::math::Vector3d Position() const;
 
     /// \brief Set the heightmap's position offset.
-    /// \return The heightmap's position offset.
+    /// \param[in] _position The heightmap's position offset.
     public: void SetPosition(const ignition::math::Vector3d &_position);
 
     /// \brief Get whether the heightmap uses terrain paging.

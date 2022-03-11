@@ -121,8 +121,8 @@ namespace ignition
       public: virtual SubMeshPtr SubMeshByIndex(
                   unsigned int _index) const = 0;
 
-      /// \brief Set the mesh's mesh descriptor
-      /// \return The mesh's mesh descriptor
+      /// \brief Set the mesh's descriptor
+      /// \param[in] _desc The new mesh descriptor
       public: virtual void SetDescriptor(const MeshDescriptor &_desc) = 0;
 
       /// \brief Get the mesh's mesh descriptor

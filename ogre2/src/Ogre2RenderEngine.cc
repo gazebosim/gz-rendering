@@ -389,9 +389,13 @@ void Ogre2RenderEngine::CreateContext()
 
   if (!this->dummyDisplay)
   {
-    // Not able to create a Xwindow, try to run in headless mode
-    this->SetHeadless(true);
-    ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
+    if (!this->Headless())
+    {
+      // Not able to create a Xwindow, try to run in headless mode
+      this->SetHeadless(true);
+      ignwarn << "Unable to open display [" << XDisplayName(0)
+        << "]. Attempting headless rendering." << std::endl;
+    }
     return;
   }
 

@@ -40,7 +40,7 @@ Be sure to replace `<#>` with a number value, such as `1` or `2`, depending on w
 
 ### Prerequisites
 
-Ubuntu Bionic 18.04 or above:
+Ubuntu Focal 20.04 or above:
 
 Install dependencies:
 ```
@@ -49,7 +49,6 @@ sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `ls
 wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt update
 sudo apt install -y \
-    g++-8 \
     cmake \
     pkg-config \
     git \
@@ -62,7 +61,6 @@ sudo apt install -y \
     libignition-math7-dev \
     libignition-common5-dev \
     libignition-plugin-dev
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
 ```
 
 ### Supported Rendering Engines

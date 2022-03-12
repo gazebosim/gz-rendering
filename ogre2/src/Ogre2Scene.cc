@@ -100,6 +100,8 @@ class ignition::rendering::Ogre2ScenePrivate
 using namespace ignition;
 using namespace rendering;
 
+static const Ogre::Real kSimulationTime = Ogre::Real(1.0 / 60.0);
+
 //////////////////////////////////////////////////
 Ogre2Scene::Ogre2Scene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name), dataPtr(std::make_unique<Ogre2ScenePrivate>())
@@ -269,7 +271,11 @@ void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
   if (this->LegacyAutoGpuFlush())
   {
     auto engine = Ogre2RenderEngine::Instance();
-    engine->OgreRoot()->_fireFrameStarted();
+
+    Ogre::FrameEvent evt;
+    evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
+    evt.timeSinceLastFrame = kSimulationTime;
+    engine->OgreRoot()->_fireFrameStarted(evt);
 
     this->ogreSceneManager->updateSceneGraph();
   }
@@ -332,7 +338,10 @@ void Ogre2Scene::EndFrame()
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
 
-  ogreRoot->_fireFrameRenderingQueued();
+  Ogre::FrameEvent evt;
+  evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
+  evt.timeSinceLastFrame = kSimulationTime;
+  ogreRoot->_fireFrameRenderingQueued(evt);
 
   auto itor = ogreRoot->getSceneManagerIterator();
   while (itor.hasMoreElements())
@@ -341,7 +350,7 @@ void Ogre2Scene::EndFrame()
     sceneManager->clearFrameData();
   }
 
-  ogreRoot->_fireFrameEnded();
+  ogreRoot->_fireFrameEnded(evt);
 }
 
 //////////////////////////////////////////////////

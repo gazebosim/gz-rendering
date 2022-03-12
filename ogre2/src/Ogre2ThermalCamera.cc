@@ -341,6 +341,8 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
 
           if (!subItem->getMaterial().isNull())
           {
+            this->materialMap.push_back({ subItem, subItem->getMaterial() });
+
             // We need to keep the material's vertex shader
             // to keep vertex deformation consistent; so we use
             // a cloned material with a different pixel shader
@@ -487,6 +489,8 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
 
           if (!subItem->getMaterial().isNull())
           {
+            this->materialMap.push_back({ subItem, subItem->getMaterial() });
+
             // We need to keep the material's vertex shader
             // to keep vertex deformation consistent; so we use
             // a cloned material with a different pixel shader

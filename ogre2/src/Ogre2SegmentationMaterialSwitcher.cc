@@ -159,7 +159,6 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
   this->colorToLabel.clear();
-  this->datablockMap.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
 
@@ -295,21 +294,41 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
 
       for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
       {
-        // save subitems material
         Ogre::SubItem *subItem = item->getSubItem(i);
-        Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-        this->datablockMap[subItem] = datablock;
-
-        // switch the material
         subItem->setCustomParameter(1, customParameter);
 
-        // check if it's an overlay material by assuming the
-        // depth check and depth write properties are off.
-        if (!datablock->getMacroblock()->mDepthWrite &&
-            !datablock->getMacroblock()->mDepthCheck)
-          subItem->setMaterial(this->plainOverlayMaterial);
+        // save subitems material
+        // case when item is using low level materials
+        // e.g. shaders
+        if (!subItem->getMaterial().isNull())
+        {
+          this->segmentationMaterialMap[subItem] = subItem->getMaterial();
+          auto technique = subItem->getMaterial()->getTechnique(0);
+
+          if (technique && !technique->isDepthWriteEnabled() &&
+              !technique->isDepthCheckEnabled())
+          {
+            subItem->setMaterial(this->plainOverlayMaterial);
+          }
+          else
+          {
+            subItem->setMaterial(this->plainMaterial);
+          }
+        }
+        // regular Pbs Hlms datablock
         else
-          subItem->setMaterial(this->plainMaterial);
+        {
+          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+          this->datablockMap[subItem] = datablock;
+
+          // check if it's an overlay material by assuming the
+          // depth check and depth write properties are off.
+          if (!datablock->getMacroblock()->mDepthWrite &&
+              !datablock->getMacroblock()->mDepthCheck)
+            subItem->setMaterial(this->plainOverlayMaterial);
+          else
+            subItem->setMaterial(this->plainMaterial);
+        }
       }
     }
   }
@@ -339,6 +358,12 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
   // restore item to use pbs hlms material
   for (const auto &[subItem, dataBlock] : this->datablockMap)
     subItem->setDatablock(dataBlock);
+
+  for (const auto &[subItem, material] : this->segmentationMaterialMap)
+    subItem->setMaterial(material);
+
+  this->datablockMap.clear();
+  this->segmentationMaterialMap.clear();
 
   // re-enable heightmaps
   auto heightmaps = this->scene->Heightmaps();

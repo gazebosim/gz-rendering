@@ -26,7 +26,10 @@
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
+#include "ignition/rendering/SegmentationCamera.hh"
 #include "ignition/rendering/ShaderParams.hh"
+#include "ignition/rendering/ThermalCamera.hh"
+
 
 using namespace ignition;
 using namespace rendering;
@@ -647,6 +650,10 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   visual->SetWorldRotation(0.0, 0.0, 0.0);
   visual->SetMaterial(shader);
   root->AddChild(visual);
+  // for thermal camera
+  visual->SetUserData("temperature", 310.0f);
+  // for segmentation camera
+  visual->SetUserData("label", 1);
 
   // visual will clone and create a unique material
   // so destroy this one
@@ -679,12 +686,40 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   gpuRays->SetAngleMin(hMinAngle);
   gpuRays->SetAngleMax(hMaxAngle);
   gpuRays->SetRayCount(hRayCount);
-
   gpuRays->SetVerticalRayCount(vRayCount);
   root->AddChild(gpuRays);
 
+  // Create thermal camera
+  // heat map material switching may also affect shader materials
+  auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
+  ASSERT_NE(thermalCamera, nullptr);
+  thermalCamera->SetAmbientTemperature(296.0f);
+  thermalCamera->SetAspectRatio(1.333);
+  thermalCamera->SetImageWidth(320);
+  thermalCamera->SetImageHeight(240);
+  thermalCamera->SetHFOV(IGN_PI_2);
+  root->AddChild(thermalCamera);
+
+  // Currently, only ogre2 supports segmentation cameras
+  SegmentationCameraPtr segmentationCamera;
   if (_renderEngine == "ogre2")
   {
+    // Create segmentation camera
+    // segmentation material switching may also affect shader materials
+    segmentationCamera =
+        scene->CreateSegmentationCamera("SegmentationCamera");
+    ASSERT_NE(camera, nullptr);
+    segmentationCamera->SetLocalPosition(0.0, 0.0, 0.0);
+    segmentationCamera->SetLocalRotation(0.0, 0.0, 0.0);
+    segmentationCamera->SetBackgroundLabel(23);
+    segmentationCamera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
+    segmentationCamera->EnableColoredMap(false);
+    segmentationCamera->SetAspectRatio(1.333);
+    segmentationCamera->SetImageWidth(320);
+    segmentationCamera->SetImageHeight(240);
+    segmentationCamera->SetHFOV(IGN_PI_2);
+    root->AddChild(segmentationCamera);
+
     // worldviewproj_matrix is a constant defined by ogre.
     // Here we add a line to add this constant to the params.
     // The specified value is ignored as it will be auto bound to the
@@ -702,6 +737,9 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   {
     camera->Update();
     gpuRays->Update();
+    thermalCamera->Update();
+    if (segmentationCamera)
+      segmentationCamera->Update();
   }
 
   // capture a frame

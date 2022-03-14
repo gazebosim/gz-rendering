@@ -700,24 +700,26 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   thermalCamera->SetHFOV(IGN_PI_2);
   root->AddChild(thermalCamera);
 
-  // Create segmentation camera
-  // segmentation material switching may also affect shader materials
-  auto segmentationCamera =
-      scene->CreateSegmentationCamera("SegmentationCamera");
-  ASSERT_NE(camera, nullptr);
-  segmentationCamera->SetLocalPosition(0.0, 0.0, 0.0);
-  segmentationCamera->SetLocalRotation(0.0, 0.0, 0.0);
-  segmentationCamera->SetBackgroundLabel(23);
-  segmentationCamera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
-  segmentationCamera->EnableColoredMap(false);
-  segmentationCamera->SetAspectRatio(1.333);
-  segmentationCamera->SetImageWidth(320);
-  segmentationCamera->SetImageHeight(240);
-  segmentationCamera->SetHFOV(IGN_PI_2);
-  root->AddChild(segmentationCamera);
-
+  // Currently, only ogre2 supports segmentation cameras
+  SegmentationCameraPtr segmentationCamera;
   if (_renderEngine == "ogre2")
   {
+    // Create segmentation camera
+    // segmentation material switching may also affect shader materials
+    segmentationCamera =
+        scene->CreateSegmentationCamera("SegmentationCamera");
+    ASSERT_NE(camera, nullptr);
+    segmentationCamera->SetLocalPosition(0.0, 0.0, 0.0);
+    segmentationCamera->SetLocalRotation(0.0, 0.0, 0.0);
+    segmentationCamera->SetBackgroundLabel(23);
+    segmentationCamera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
+    segmentationCamera->EnableColoredMap(false);
+    segmentationCamera->SetAspectRatio(1.333);
+    segmentationCamera->SetImageWidth(320);
+    segmentationCamera->SetImageHeight(240);
+    segmentationCamera->SetHFOV(IGN_PI_2);
+    root->AddChild(segmentationCamera);
+
     // worldviewproj_matrix is a constant defined by ogre.
     // Here we add a line to add this constant to the params.
     // The specified value is ignored as it will be auto bound to the
@@ -736,7 +738,8 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
     camera->Update();
     gpuRays->Update();
     thermalCamera->Update();
-    segmentationCamera->Update();
+    if (segmentationCamera)
+      segmentationCamera->Update();
   }
 
   // capture a frame

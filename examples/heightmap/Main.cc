@@ -306,31 +306,35 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  bool buildDemScene = false;
-  if (_argc > 1 && std::string(_argv[1]) == "dem")
+  int buildDemScene = 0;
+  for (int i = 1; i < _argc; ++i)
   {
-    buildDemScene = true;
+    if (std::string(_argv[i]) == "--dem")
+    {
+      buildDemScene = i;
+      break;
+    }
   }
 
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
   std::string ogreEngineName("ogre2");
-  if (buildDemScene)
+  if (buildDemScene > 0)
   {
     // For DEMs default to ogre since ogre2 renders incorrect sizes
     // https://github.com/ignitionrobotics/ign-rendering/issues/508
     ogreEngineName = "ogre";
   }
 
-  if (_argc > 2)
+  if (_argc > 1 && buildDemScene != 1)
   {
-    ogreEngineName = _argv[2];
+    ogreEngineName = _argv[1];
   }
 
   GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
-  if (_argc > 3)
+  if (_argc > 2 && buildDemScene != 2)
   {
-    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[3]));
+    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
   }
 
   engineNames.push_back(ogreEngineName);

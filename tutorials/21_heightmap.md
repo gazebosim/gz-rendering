@@ -74,4 +74,3 @@ DEM is `-212.296`. We need to translate the DEM for it to be at `z = 0` by
 setting the descriptor's z position to be `212.296`
 or `desc2.SetPosition({0, 0, std::abs(data2->MinElevation())});`.
 
-that the descriptor position

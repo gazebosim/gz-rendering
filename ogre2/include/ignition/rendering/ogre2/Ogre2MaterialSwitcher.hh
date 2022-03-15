@@ -20,6 +20,9 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include <ignition/math/Color.hh>
 #include "ignition/rendering/config.hh"
@@ -80,17 +83,15 @@ namespace ignition
       /// renderable name
       private: std::map<unsigned int, std::string> colorDict;
 
-      /// \brief A map of ogre sub item pointer to their original hlms material
-      private: std::map<Ogre::SubItem *, Ogre::HlmsDatablock *> datablockMap;
+      /// \brief A map of ogre datablock pointer to their original blendblocks
+      private: std::unordered_map<Ogre::HlmsDatablock *,
+          const Ogre::HlmsBlendblock *> datablockMap;
 
-      /// \brief Ogre v1 material consisting of a shader that changes the
-      /// appearance of item to use a unique color for mouse picking
-      private: Ogre::MaterialPtr plainMaterial;
-
-      /// \brief Ogre v1 material consisting of a shader that changes the
-      /// appearance of item to use a unique color for mouse picking. In
-      /// addition, the depth check and depth write properties disabled.
-      private: Ogre::MaterialPtr plainOverlayMaterial;
+      /// \brief A map of ogre sub item pointer to their original low level
+      /// material.
+      /// Most objects don't use one so it should be almost always empty.
+      private:
+        std::vector<std::pair<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
 
       /// \brief Increment unique color value that will be assigned to the
       /// next renderable

@@ -53,6 +53,13 @@ fragment_program selection_buffer_fs_Metal metal
 {
   source selection_buffer_fs.metal
   shader_reflection_pair_hint selection_buffer_vs_Metal
+  default_params
+  {
+    param_named colorTexture int 0
+    param_named depthTexture int 1
+
+    param_named_auto colorTexResolution texture_size 0
+  }
 }
 
 // Unified shaders

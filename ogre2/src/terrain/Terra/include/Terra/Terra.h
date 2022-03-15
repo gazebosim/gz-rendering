@@ -107,6 +107,13 @@ namespace Ogre
         CompositorManager2      *m_compositorManager;
         Camera const            *m_camera;
 
+        // IGN CUSTOMIZE BEGIN
+        /// See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        Vector4 mSolidColor[2];
+        /// See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        bool mSolidColorSet[2];
+        // IGN CUSTOMIZE END
+
         /// Converts value from Y-up to whatever the user up vector is (see m_zUp)
         inline Vector3 fromYUp( Vector3 value ) const;
         /// Same as fromYUp, but preserves original sign. Needed when value is a scale
@@ -169,6 +176,33 @@ namespace Ogre
         /// Note however, this may have a *tremendous* GPU performance impact.
         void setCustomSkirtMinHeight( const float skirtMinHeight ) { m_skirtSize = skirtMinHeight; }
         float getCustomSkirtMinHeight( void ) const { return m_skirtSize; }
+
+        // IGN CUSTOMIZE BEGIN
+        /// \brief See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// Replaces renderable->setCustomRenderable(...) because
+        /// a Terrain may have many renderables but the color is the same
+        /// for all of them
+        /// \param[in] _idx must in range [1; 2]
+        /// \param[in] _idx _solidColor color to apply
+        void SetSolidColor(size_t _idx, const Vector4 _solidColor);
+
+        /// \brief See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// Retrieves the value set with SetSolidColor. Throws if unset.
+        /// \param[in] _idx must in range [1; 2]
+        /// \return Color value
+        Vector4 SolidColor(size_t _idx) const;
+
+        /// \brief See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// Checks whether a color has been set
+        /// \param[in] _idx must in range [1; 2]
+        /// \return True if color has been unset
+        bool HasSolidColor(size_t _idx) const;
+
+        /// \brief See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// Marks all SetSolidColor as unset so that SolidColor throws
+        /// if used again without setting.
+        void UnsetSolidColors();
+        // IGN CUSTOMIZE END
 
         /** Must be called every frame so we can check the camera's position
             (passed in the constructor) and update our visible batches (and LODs)

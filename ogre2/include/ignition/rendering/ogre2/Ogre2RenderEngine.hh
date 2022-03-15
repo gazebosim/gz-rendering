@@ -24,6 +24,7 @@
 
 #include <ignition/common/SingletonT.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -118,6 +119,9 @@ namespace ignition
       public: std::string CreateRenderWindow(const std::string &_handle,
                   const unsigned int _width, const unsigned int _height,
                   const double _ratio, const unsigned int _antiAliasing);
+
+      // Documentation Inherited
+      public: virtual rendering::GraphicsAPI GraphicsAPI() const override;
 
       /// \brief Create a scene
       /// \param[in] _id Unique scene Id

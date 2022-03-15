@@ -17,7 +17,6 @@
 
 #version 330
 
-uniform vec4 color;
 in vec3 ptColor;
 
 out vec4 fragColor;

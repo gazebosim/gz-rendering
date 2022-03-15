@@ -20,7 +20,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Storage.hh"
 
@@ -89,6 +89,12 @@ namespace ignition
       public: virtual void AddResourcePath(const std::string &_path) override;
 
       // Documentation Inherited
+      public: virtual rendering::GraphicsAPI GraphicsAPI() const override
+      {
+        return GraphicsAPI::UNKNOWN;
+      }
+
+      // Documentation Inherited
       public: virtual void SetHeadless(bool _headless) override;
 
       // Documentation Inherited
@@ -124,14 +130,14 @@ namespace ignition
 
       protected: unsigned int nextSceneId;
 
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief a list of paths that render engines use to locate their
       /// resources
       protected: std::vector<std::string> resourcePaths;
 
       /// \brief Render pass system for this render engine.
       protected: RenderPassSystemPtr renderPassSystem;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

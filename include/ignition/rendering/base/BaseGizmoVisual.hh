@@ -21,7 +21,7 @@
 #include <map>
 #include <string>
 #include <ignition/common/MeshManager.hh>
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/base/BaseScene.hh"
 #include "ignition/rendering/base/BaseNode.hh"
@@ -92,7 +92,7 @@ namespace ignition
       /// \brief Current gizmo mode
       protected: TransformMode mode = TransformMode::TM_NONE;
 
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief A map of gizmo axis and their visuals
       protected: std::map<unsigned int, VisualPtr> visuals;
 
@@ -110,7 +110,7 @@ namespace ignition
 
       /// \brief A map of axis enums to materials
       protected: std::map<unsigned int, MaterialPtr> materials;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Material used by axes
       protected: enum AxisMaterial

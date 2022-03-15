@@ -22,7 +22,7 @@
 #include <string>
 
 #include <ignition/common/Console.hh>
-#include <ignition/common/SuppressWarning.hh>
+#include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Scene.hh"
@@ -35,9 +35,9 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     class IGNITION_RENDERING_VISIBLE BaseScene :
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public std::enable_shared_from_this<BaseScene>,
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
       public virtual Scene
     {
       protected: BaseScene(unsigned int _id, const std::string &_name);
@@ -849,9 +849,9 @@ namespace ignition
 
       protected: unsigned int id;
 
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: std::string name;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       protected: std::chrono::steady_clock::duration time =
         std::chrono::steady_clock::duration::zero();
@@ -880,9 +880,9 @@ namespace ignition
 
       private: unsigned int nextObjectId;
 
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: NodeStorePtr nodes;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

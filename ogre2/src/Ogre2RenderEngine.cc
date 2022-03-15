@@ -43,6 +43,7 @@
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 #include "Ogre2IgnHlmsPbsPrivate.hh"
+#include "Ogre2IgnHlmsTerraPrivate.hh"
 #include "Ogre2IgnHlmsUnlitPrivate.hh"
 
 #include "Terra/Hlms/OgreHlmsTerra.h"
@@ -79,6 +80,9 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
 
   /// \brief Custom Unlit modifications
   public: Ogre::Ogre2IgnHlmsUnlit *ignHlmsUnlit{nullptr};
+
+  /// \brief Custom Terra modifications
+  public: Ogre::Ogre2IgnHlmsTerra *ignHlmsTerra{nullptr};
 };
 
 using namespace ignition;
@@ -394,6 +398,11 @@ void Ogre2RenderEngine::CreateLogger()
 void Ogre2RenderEngine::CreateContext()
 {
 #if not (__APPLE__ || _WIN32)
+  if (this->Headless())
+  {
+    // Nothing to do
+    return;
+  }
   // create X11 display
   this->dummyDisplay = XOpenDisplay(0);
   Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -402,7 +411,8 @@ void Ogre2RenderEngine::CreateContext()
   {
     // Not able to create a Xwindow, try to run in headless mode
     this->SetHeadless(true);
-    ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
+    ignwarn << "Unable to open display: " << XDisplayName(0)
+            << ". Trying to run in headless mode." << std::endl;
     return;
   }
 
@@ -777,6 +787,14 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // Get the library archive(s)
     Ogre::ArchiveVec archivePbsLibraryFolders;
+
+    {
+      archivePbsLibraryFolders.push_back(archiveManager.load(
+        rootHlmsFolder + common::joinPaths("Hlms", "Terra", "GLSL",
+        "PbsTerraShadows"), "FileSystem", true ));
+      this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
+    }
+
     libraryFolderPathIt = libraryFoldersPaths.begin();
     libraryFolderPathEn = libraryFoldersPaths.end();
     while (libraryFolderPathIt != libraryFolderPathEn)
@@ -789,12 +807,6 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     archivePbsLibraryFolders.push_back(customizationsArchiveLibrary);
-    {
-      archivePbsLibraryFolders.push_back(archiveManager.load(
-        rootHlmsFolder + common::joinPaths("Hlms", "Terra", "GLSL",
-        "PbsTerraShadows"), "FileSystem", true ));
-      this->dataPtr->hlmsPbsTerraShadows.reset(new Ogre::HlmsPbsTerraShadows());
-    }
 
     // Create and register
     hlmsPbs =
@@ -811,15 +823,13 @@ void Ogre2RenderEngine::RegisterHlms()
   }
 
   {
-    Ogre::HlmsTerra *hlmsTerra = 0;
+    Ogre::Ogre2IgnHlmsTerra *hlmsTerra = 0;
     // Create & Register HlmsPbs
     // Do the same for HlmsPbs:
-    Ogre::HlmsTerra::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Ogre2IgnHlmsTerra::GetDefaultPaths(mainFolderPath,
+                                             libraryFoldersPaths);
     Ogre::Archive *archiveTerra = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
-
-    // Add ignition's customizations
-    libraryFoldersPaths.push_back(common::joinPaths("Hlms", "Terra", "ign"));
 
     // Get the library archive(s)
     Ogre::ArchiveVec archiveTerraLibraryFolders;
@@ -835,15 +845,19 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     // Create and register
-    hlmsTerra = OGRE_NEW Ogre::HlmsTerra(archiveTerra,
-                                         &archiveTerraLibraryFolders);
+    hlmsTerra = OGRE_NEW Ogre::Ogre2IgnHlmsTerra(
+      archiveTerra, &archiveTerraLibraryFolders,
+      &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsTerra);
 
     // disable writting debug output to disk
     hlmsTerra->setDebugOutputPath(false, false);
+    hlmsTerra->setListener(hlmsTerra);
 
     this->dataPtr->terraWorkspaceListener.reset(
       new Ogre::TerraWorkspaceListener(hlmsTerra));
+
+    this->dataPtr->ignHlmsTerra = hlmsTerra;
   }
 }
 
@@ -998,6 +1012,12 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 }
 
 //////////////////////////////////////////////////
+GraphicsAPI Ogre2RenderEngine::GraphicsAPI() const
+{
+  return this->dataPtr->graphicsAPI;
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderEngine::InitAttempt()
 {
   this->initialized = false;
@@ -1038,6 +1058,8 @@ void Ogre2RenderEngine::SetIgnOgreRenderingMode(
   IgnOgreRenderingMode renderingMode)
 {
   this->dataPtr->ignHlmsPbs->ignOgreRenderingMode = renderingMode;
+  this->dataPtr->ignHlmsUnlit->ignOgreRenderingMode = renderingMode;
+  this->dataPtr->ignHlmsTerra->ignOgreRenderingMode = renderingMode;
 }
 
 /////////////////////////////////////////////////

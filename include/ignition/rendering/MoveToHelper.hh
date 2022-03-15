@@ -89,9 +89,9 @@ namespace ignition
         /// param[in] _pose The init pose of the camera
         public: void SetInitCameraPose(const math::Pose3d &_pose);
 
-        IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
+        IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
         private: std::unique_ptr<MoveToHelperPrivate> dataPtr;
-        IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
+        IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
       };
     }
   }

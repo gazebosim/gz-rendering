@@ -195,7 +195,7 @@ void createDemHeightmaps(const ScenePtr _scene, VisualPtr _root)
     HeightmapDescriptor desc2;
     desc2.SetName("example_moon");
     desc2.SetData(data2);
-    desc2.SetSize({20, 20, 5});
+    desc2.SetSize({20, 20, 6.85});
     desc2.SetSampling(2u);
     desc2.SetUseTerrainPaging(false);
 

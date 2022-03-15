@@ -158,8 +158,8 @@ void Ogre2Heightmap::Init()
   // Obtain min and max elevation and bring everything to range [0; 1]
   // Terra should support non-normalized ranges but there are a couple
   // bugs preventing that, so it's just easier to normalize the data
-  float minElevation = 0.0;
-  float maxElevation = 0.0;
+  double minElevation = this->descriptor.Data()->MinElevation();
+  double maxElevation = this->descriptor.Data()->MaxElevation();
 
   for (unsigned int y = 0; y < newWidth; ++y)
   {
@@ -167,8 +167,12 @@ void Ogre2Heightmap::Init()
     {
       const size_t index = y * srcWidth + x;
       const float heightVal = lookup[index];
-      minElevation = std::min(minElevation, heightVal);
-      maxElevation = std::max(maxElevation, heightVal);
+      if (heightVal < minElevation || heightVal > maxElevation)
+      {
+        ignerr << "Internal error: height [" << heightVal
+               << "] is out of bounds [" << minElevation << " / "
+               << maxElevation << "]" << std::endl;
+      }
       this->dataPtr->heights.push_back(heightVal);
     }
   }
@@ -205,13 +209,12 @@ void Ogre2Heightmap::Init()
                          1u, Ogre::TextureTypes::Type2D,
                          Ogre::PFG_R32_FLOAT, false);
 
-  const math::Vector3d newSize = this->descriptor.Size() *
-                                 math::Vector3d(1.0, 1.0, heightDiff);
+  const math::Vector3d size = this->descriptor.Size();
 
   math::Vector3d center(
       this->descriptor.Position().X(),
       this->descriptor.Position().Y(),
-      this->descriptor.Position().Z() + newSize.Z() * 0.5 + minElevation);
+      this->descriptor.Position().Z() + size.Z() * 0.5 + minElevation);
 
   Ogre::Root *ogreRoot = Ogre2RenderEngine::Instance()->OgreRoot();
   Ogre::SceneManager *ogreSceneManager = ogreScene->OgreSceneManager();
@@ -230,7 +233,7 @@ void Ogre2Heightmap::Init()
   this->dataPtr->terra->load(
         image,
         Ogre2Conversions::Convert(center),
-        Ogre2Conversions::Convert(newSize),
+        Ogre2Conversions::Convert(size),
         this->descriptor.Name());
   this->dataPtr->autoSkirtValue =
       this->dataPtr->terra->getCustomSkirtMinHeight();
@@ -271,8 +274,8 @@ void Ogre2Heightmap::Init()
     using namespace Ogre;
     const HeightmapTexture *texture0 = this->descriptor.TextureByIndex(0);
     if (texture0->Normal().empty() &&
-        abs(newSize.X() - texture0->Size()) < 1e-6 &&
-        abs(newSize.Y() - texture0->Size()) < 1e-6 )
+        abs(size.X() - texture0->Size()) < 1e-6 &&
+        abs(size.Y() - texture0->Size()) < 1e-6 )
     {
       bCanUseFirstAsBase = true;
     }
@@ -302,9 +305,9 @@ void Ogre2Heightmap::Init()
                             texture0->Normal(), &samplerblock);
 
       const float sizeX =
-              static_cast<float>(newSize.X() / texture0->Size());
+              static_cast<float>(size.X() / texture0->Size());
       const float sizeY =
-              static_cast<float>(newSize.Y() / texture0->Size());
+              static_cast<float>(size.Y() / texture0->Size());
       if (!texture0->Diffuse().empty() || !texture0->Normal().empty())
         datablock->setDetailMapOffsetScale(0, Vector4(0, 0, sizeX, sizeY));
     }
@@ -323,9 +326,9 @@ void Ogre2Heightmap::Init()
                             texture->Normal(), &samplerblock);
 
       const float sizeX =
-              static_cast<float>(newSize.X() / texture->Size());
+              static_cast<float>(size.X() / texture->Size());
       const float sizeY =
-              static_cast<float>(newSize.Y() / texture->Size());
+              static_cast<float>(size.Y() / texture->Size());
       if (!texture->Diffuse().empty() || !texture->Normal().empty())
       {
           datablock->setDetailMapOffsetScale(

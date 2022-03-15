@@ -28,6 +28,7 @@
 #include <vector>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/geospatial/Dem.hh>
 #include <ignition/common/geospatial/HeightmapData.hh>
 #include <ignition/common/geospatial/ImageHeightmap.hh>
 #include <ignition/rendering.hh>
@@ -42,7 +43,178 @@ const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene)
+void createImageHeightmaps(const ScenePtr _scene, VisualPtr _root)
+{
+  //! [create an image heightmap]
+    auto data = std::make_shared<common::ImageHeightmap>();
+    data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
+
+    HeightmapDescriptor desc;
+    desc.SetName("example_bowl");
+    desc.SetData(data);
+    desc.SetSize({17, 17, 10});
+    desc.SetSampling(2u);
+    desc.SetUseTerrainPaging(false);
+
+    HeightmapTexture textureA;
+    textureA.SetSize(1.0);
+    textureA.SetDiffuse("../media/dirt_diffusespecular.png");
+    textureA.SetNormal("../media/flat_normal.png");
+    desc.AddTexture(textureA);
+
+    HeightmapBlend blendA;
+    blendA.SetMinHeight(2.0);
+    blendA.SetFadeDistance(5.0);
+    desc.AddBlend(blendA);
+
+    HeightmapTexture textureB;
+    textureB.SetSize(1.0);
+    textureB.SetDiffuse("../media/grass_diffusespecular.png");
+    textureB.SetNormal("../media/flat_normal.png");
+    desc.AddTexture(textureB);
+
+    HeightmapBlend blendB;
+    blendB.SetMinHeight(4.0);
+    blendB.SetFadeDistance(5.0);
+    desc.AddBlend(blendB);
+
+    HeightmapTexture textureC;
+    textureC.SetSize(1.0);
+    textureC.SetDiffuse("../media/fungus_diffusespecular.png");
+    textureC.SetNormal("../media/flat_normal.png");
+    desc.AddTexture(textureC);
+
+    auto heightmapGeom = _scene->CreateHeightmap(desc);
+
+    auto vis = _scene->CreateVisual();
+    vis->AddGeometry(heightmapGeom);
+    _root->AddChild(vis);
+  //! [create an image heightmap]
+
+  //! [create another image heightmap]
+    auto data2 = std::make_shared<common::ImageHeightmap>();
+    data2->Load(common::joinPaths(RESOURCE_PATH, "city_terrain.jpg"));
+
+    HeightmapDescriptor desc2;
+    desc2.SetName("example_city");
+    desc2.SetData(data2);
+    desc2.SetSize({26, 26, 20});
+    desc2.SetSampling(2u);
+    desc2.SetUseTerrainPaging(true);
+
+    HeightmapTexture textureA2;
+    textureA2.SetSize(1.0);
+    textureA2.SetDiffuse("../media/fungus_diffusespecular.png");
+    textureA2.SetNormal("../media/flat_normal.png");
+    desc2.AddTexture(textureA2);
+
+    HeightmapBlend blendA2;
+    blendA2.SetMinHeight(2.0);
+    blendA2.SetFadeDistance(5.0);
+    desc2.AddBlend(blendA2);
+
+    HeightmapTexture textureB2;
+    textureB2.SetSize(1.0);
+    textureB2.SetDiffuse("../media/grass_diffusespecular.png");
+    textureB2.SetNormal("../media/flat_normal.png");
+    desc2.AddTexture(textureB2);
+
+    HeightmapBlend blendB2;
+    blendB2.SetMinHeight(8.0);
+    blendB2.SetFadeDistance(5.0);
+    desc2.AddBlend(blendB2);
+
+    HeightmapTexture textureC2;
+    textureC2.SetSize(1.0);
+    textureC2.SetDiffuse("../media/dirt_diffusespecular.png");
+    textureC2.SetNormal("../media/flat_normal.png");
+    desc2.AddTexture(textureC2);
+    desc2.SetPosition({30, 0, 0});
+    auto heightmapGeom2 = _scene->CreateHeightmap(desc2);
+
+    auto vis2 = _scene->CreateVisual();
+    vis2->AddGeometry(heightmapGeom2);
+    _root->AddChild(vis2);
+  //! [create another image heightmap]
+}
+
+//////////////////////////////////////////////////
+void createDemHeightmaps(const ScenePtr _scene, VisualPtr _root)
+{
+  //! [create a dem heightmap]
+    auto data = std::make_shared<common::Dem>();
+    data->Load(common::joinPaths(RESOURCE_PATH, "volcano.tif"));
+
+    HeightmapDescriptor desc;
+    desc.SetName("example_volcano");
+    desc.SetData(data);
+    desc.SetSize({20, 20, 18});
+    desc.SetSampling(2u);
+    desc.SetUseTerrainPaging(true);
+
+    HeightmapTexture textureA;
+    textureA.SetSize(1.0);
+    textureA.SetDiffuse("../media/dirt_diffusespecular.png");
+    textureA.SetNormal("../media/flat_normal.png");
+    desc.AddTexture(textureA);
+
+    HeightmapBlend blendA;
+    blendA.SetMinHeight(2.0);
+    blendA.SetFadeDistance(5.0);
+    desc.AddBlend(blendA);
+
+    HeightmapTexture textureB;
+    textureB.SetSize(1.0);
+    textureB.SetDiffuse("../media/grass_diffusespecular.png");
+    textureB.SetNormal("../media/flat_normal.png");
+    desc.AddTexture(textureB);
+
+    HeightmapBlend blendB;
+    blendB.SetMinHeight(4.0);
+    blendB.SetFadeDistance(5.0);
+    desc.AddBlend(blendB);
+
+    HeightmapTexture textureC;
+    textureC.SetSize(1.0);
+    textureC.SetDiffuse("../media/fungus_diffusespecular.png");
+    textureC.SetNormal("../media/flat_normal.png");
+    desc.AddTexture(textureC);
+    desc.SetPosition({30, 0, 0});
+
+    auto heightmapGeom = _scene->CreateHeightmap(desc);
+
+    auto vis = _scene->CreateVisual();
+    vis->AddGeometry(heightmapGeom);
+    _root->AddChild(vis);
+  //! [create a dem heightmap]
+
+  //! [create another dem heightmap]
+    auto data2 = std::make_shared<common::Dem>();
+    data2->Load(common::joinPaths(RESOURCE_PATH, "moon.tif"));
+
+    HeightmapDescriptor desc2;
+    desc2.SetName("example_moon");
+    desc2.SetData(data2);
+    desc2.SetSize({20, 20, 6.85});
+    desc2.SetSampling(2u);
+    desc2.SetUseTerrainPaging(false);
+
+    HeightmapTexture textureA2;
+    textureA2.SetSize(20.0);
+    textureA2.SetDiffuse("../media/moon_diffuse.png");
+    textureA2.SetNormal("../media/moon_normal.png");
+    desc2.AddTexture(textureA2);
+    desc2.SetPosition({0, 0, std::abs(data2->MinElevation())});
+    auto heightmapGeom2 = _scene->CreateHeightmap(desc2);
+
+    auto vis2 = _scene->CreateVisual();
+    vis2->AddGeometry(heightmapGeom2);
+    _root->AddChild(vis2);
+  //! [create another dem heightmap]
+}
+
+//////////////////////////////////////////////////
+void buildScene(ScenePtr _scene, bool _buildDemScene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
@@ -68,97 +240,10 @@ void buildScene(ScenePtr _scene)
   light1->SetCastShadows(true);
   root->AddChild(light1);
 
-//! [create a heightmap]
-  auto data = std::make_shared<common::ImageHeightmap>();
-  data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
-
-  HeightmapDescriptor desc;
-  desc.SetName("example_bowl");
-  desc.SetData(data);
-  desc.SetSize({17, 17, 10});
-  desc.SetSampling(2u);
-  desc.SetUseTerrainPaging(false);
-
-  HeightmapTexture textureA;
-  textureA.SetSize(1.0);
-  textureA.SetDiffuse("../media/dirt_diffusespecular.png");
-  textureA.SetNormal("../media/flat_normal.png");
-  desc.AddTexture(textureA);
-
-  HeightmapBlend blendA;
-  blendA.SetMinHeight(2.0);
-  blendA.SetFadeDistance(5.0);
-  desc.AddBlend(blendA);
-
-  HeightmapTexture textureB;
-  textureB.SetSize(1.0);
-  textureB.SetDiffuse("../media/grass_diffusespecular.png");
-  textureB.SetNormal("../media/flat_normal.png");
-  desc.AddTexture(textureB);
-
-  HeightmapBlend blendB;
-  blendB.SetMinHeight(4.0);
-  blendB.SetFadeDistance(5.0);
-  desc.AddBlend(blendB);
-
-  HeightmapTexture textureC;
-  textureC.SetSize(1.0);
-  textureC.SetDiffuse("../media/fungus_diffusespecular.png");
-  textureC.SetNormal("../media/flat_normal.png");
-  desc.AddTexture(textureC);
-
-  auto heightmapGeom = _scene->CreateHeightmap(desc);
-
-  auto vis = _scene->CreateVisual();
-  vis->AddGeometry(heightmapGeom);
-  root->AddChild(vis);
-//! [create a heightmap]
-
-//! [create another heightmap]
-  auto data2 = std::make_shared<common::ImageHeightmap>();
-  data2->Load(common::joinPaths(RESOURCE_PATH, "city_terrain.jpg"));
-
-  HeightmapDescriptor desc2;
-  desc2.SetName("example_city");
-  desc2.SetData(data2);
-  desc2.SetSize({26, 26, 20});
-  desc2.SetSampling(2u);
-  desc2.SetUseTerrainPaging(true);
-
-  HeightmapTexture textureA2;
-  textureA2.SetSize(1.0);
-  textureA2.SetDiffuse("../media/fungus_diffusespecular.png");
-  textureA2.SetNormal("../media/flat_normal.png");
-  desc2.AddTexture(textureA2);
-
-  HeightmapBlend blendA2;
-  blendA2.SetMinHeight(2.0);
-  blendA2.SetFadeDistance(5.0);
-  desc2.AddBlend(blendA2);
-
-  HeightmapTexture textureB2;
-  textureB2.SetSize(1.0);
-  textureB2.SetDiffuse("../media/grass_diffusespecular.png");
-  textureB2.SetNormal("../media/flat_normal.png");
-  desc2.AddTexture(textureB2);
-
-  HeightmapBlend blendB2;
-  blendB2.SetMinHeight(8.0);
-  blendB2.SetFadeDistance(5.0);
-  desc2.AddBlend(blendB2);
-
-  HeightmapTexture textureC2;
-  textureC2.SetSize(1.0);
-  textureC2.SetDiffuse("../media/dirt_diffusespecular.png");
-  textureC2.SetNormal("../media/flat_normal.png");
-  desc2.AddTexture(textureC2);
-  desc2.SetPosition({30, 0, 0});
-  auto heightmapGeom2 = _scene->CreateHeightmap(desc2);
-
-  auto vis2 = _scene->CreateVisual();
-  vis2->AddGeometry(heightmapGeom2);
-  root->AddChild(vis2);
-//! [create another heightmap]
+  if (_buildDemScene)
+    createDemHeightmaps(_scene, root);
+  else
+    createImageHeightmaps(_scene, root);
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();
@@ -193,7 +278,8 @@ void buildScene(ScenePtr _scene)
 
 //////////////////////////////////////////////////
 CameraPtr createCamera(const std::string &_engineName,
-    const std::map<std::string, std::string>& _params)
+    const std::map<std::string, std::string>& _params,
+    bool _buildDemScene)
 {
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName, _params);
@@ -204,7 +290,7 @@ CameraPtr createCamera(const std::string &_engineName,
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
-  buildScene(scene);
+  buildScene(scene, _buildDemScene);
 
   // return camera sensor
   SensorPtr sensor = scene->SensorByName("camera");
@@ -220,16 +306,26 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
+  int buildDemScene = 0;
+  for (int i = 1; i < _argc; ++i)
+  {
+    if (std::string(_argv[i]) == "--dem")
+    {
+      buildDemScene = i;
+      break;
+    }
+  }
+
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
   std::string ogreEngineName("ogre2");
-  if (_argc > 1)
+  if (_argc > 1 && buildDemScene != 1)
   {
     ogreEngineName = _argv[1];
   }
 
   GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
-  if (_argc > 2)
+  if (_argc > 2 && buildDemScene != 2)
   {
     graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
   }
@@ -247,7 +343,7 @@ int main(int _argc, char** _argv)
         params["metal"] = "1";
       }
 
-      CameraPtr camera = createCamera(engineName, params);
+      CameraPtr camera = createCamera(engineName, params, buildDemScene);
       if (camera)
       {
         cameras.push_back(camera);

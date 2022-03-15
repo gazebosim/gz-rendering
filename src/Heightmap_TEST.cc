@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 
 #include <ignition/common/Console.hh>
-#include <ignition/common/ImageHeightmap.hh>
+#include <ignition/common/geospatial/ImageHeightmap.hh>
 #include <ignition/utilities/ExtraTestMacros.hh>
 
 #include "test_config.h"  // NOLINT(build/include)

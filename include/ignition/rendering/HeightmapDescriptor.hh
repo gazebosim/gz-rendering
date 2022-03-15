@@ -19,7 +19,7 @@
 
 #include <memory>
 #include <string>
-#include <ignition/common/HeightmapData.hh>
+#include <ignition/common/geospatial/HeightmapData.hh>
 #include <ignition/utils/SuppressWarning.hh>
 
 #include "ignition/rendering/config.hh"
@@ -186,11 +186,11 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \param[in] _data New data.
     public: void SetData(const std::shared_ptr<common::HeightmapData> &_data);
 
-    /// \brief Get the heightmap's scaling factor.
+    /// \brief Get the heightmap's final size in world units.
     /// \return The heightmap's size.
     public: ignition::math::Vector3d Size() const;
 
-    /// \brief Set the heightmap's scaling factor. Defaults to 1x1x1.
+    /// \brief Set the heightmap's final size in world units. Defaults to 1x1x1.
     /// \return The heightmap's size factor.
     public: void SetSize(const ignition::math::Vector3d &_size);
 

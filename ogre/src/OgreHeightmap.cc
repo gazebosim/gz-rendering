@@ -459,11 +459,9 @@ void OgreHeightmap::Init()
   // There is an issue with OGRE terrain LOD if heights are not relative to 0.
   // So we move the heightmap so that its min elevation = 0 before feeding to
   // ogre. It is later translated back by the setOrigin call.
-  double minElevation = 0.0;
-
-  // TODO(chapulina) add a virtual HeightmapData::MinElevation function to
-  // avoid the ifdef check. i.e. heightmapSizeZ = MaxElevation - MinElevation
-  double heightmapSizeZ = this->descriptor.Data()->MaxElevation();
+  double minElevation = this->descriptor.Data()->MinElevation();
+  double heightmapSizeZ =
+      this->descriptor.Data()->MaxElevation() - minElevation;
 
   // \todo These parameters shouldn't be hardcoded, and instead parametrized so
   // that they can be made consistent across different libraries (like

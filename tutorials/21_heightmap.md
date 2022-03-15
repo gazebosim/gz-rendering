@@ -38,7 +38,7 @@ You'll see:
 Example 2 (DEM heightmap):
 
 ```{.sh}
-./heightmap dem
+./heightmap --dem
 ```
 
 @image html img/heightmaps_dem.png

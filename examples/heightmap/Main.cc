@@ -319,13 +319,6 @@ int main(int _argc, char** _argv)
   // Expose engine name to command line because we can't instantiate both
   // ogre and ogre2 at the same time
   std::string ogreEngineName("ogre2");
-  if (buildDemScene > 0)
-  {
-    // For DEMs default to ogre since ogre2 renders incorrect sizes
-    // https://github.com/ignitionrobotics/ign-rendering/issues/508
-    ogreEngineName = "ogre";
-  }
-
   if (_argc > 1 && buildDemScene != 1)
   {
     ogreEngineName = _argv[1];

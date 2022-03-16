@@ -106,7 +106,7 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
         auto material = Ogre::MaterialManager::getSingleton().getByName(
           subItem->getMaterial()->getName() + "_solid",
           Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        if (material->getNumSupportedTechniques() > 0u)
+        if (material && material->getNumSupportedTechniques() > 0u)
         {
           subItem->setMaterial(material);
         }

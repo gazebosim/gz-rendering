@@ -528,6 +528,21 @@ namespace ignition
                                             const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual MapVisualPtr CreateMapVisual() override;
+
+      // Documentation inherited.
+      public: virtual MapVisualPtr CreateMapVisual(
+                                            unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual MapVisualPtr CreateMapVisual(
+                                            const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual MapVisualPtr CreateMapVisual(unsigned int _id,
+                                            const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual HeightmapPtr CreateHeightmap(
           const HeightmapDescriptor &_desc) override;
 
@@ -741,6 +756,13 @@ namespace ignition
       /// \param[in] _name unique object name.
       /// \return Pointer to a lidar visual
       protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
+                     const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a map visual
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a map visual
+      protected: virtual MapVisualPtr CreateMapVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
       /// \brief Implementation for creating a heightmap geometry

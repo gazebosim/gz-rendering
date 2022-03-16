@@ -1085,6 +1085,34 @@ namespace ignition
       public: virtual LidarVisualPtr CreateLidarVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new map visual. A unique ID and name will
+      /// automatically be assigned to the map visual.
+      /// \return The created map visual
+      public: virtual MapVisualPtr CreateMapVisual() = 0;
+
+      /// \brief Create new map visual with the given ID. A unique name
+      /// will automatically be assigned to the map visual. If the given
+      /// ID is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new map visual
+      /// \return The created map visual
+      public: virtual MapVisualPtr CreateMapVisual(unsigned int _id) = 0;
+
+      /// \brief Create new map visual with the given name. A unique ID
+      /// will automatically be assigned to the map visual. If the given
+      /// name is already in use, NULL will be returned.
+      /// \param[in] _name Name of the new map visual
+      /// \return The created map visual
+      public: virtual MapVisualPtr CreateMapVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new map visual with the given name. If either
+      /// the given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the map visual.
+      /// \param[in] _name Name of the new map visual.
+      /// \return The created map visual
+      public: virtual MapVisualPtr CreateMapVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Create new heightmap geomerty. The rendering::Heightmap will be
       /// created from the given HeightmapDescriptor.
       /// \param[in] _desc Data about the heightmap

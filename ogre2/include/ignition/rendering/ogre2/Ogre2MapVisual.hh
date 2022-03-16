@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_OGRE2_OGRELIDARVISUAL_HH_
-#define IGNITION_RENDERING_OGRE2_OGRELIDARVISUAL_HH_
+
+#ifndef IGNITION_RENDERING_OGRE2_OGREMAPVISUAL_HH_
+#define IGNITION_RENDERING_OGRE2_OGREMAPVISUAL_HH_
 
 #include <memory>
 #include <vector>
-#include "ignition/rendering/base/BaseLidarVisual.hh"
+#include "ignition/rendering/base/BaseMapVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
@@ -30,17 +31,17 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
-    class Ogre2LidarVisualPrivate;
+    class Ogre2MapVisualPrivate;
 
-    /// \brief Ogre 2.x implementation of a Lidar Visual.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2LidarVisual
-      : public BaseLidarVisual<Ogre2Visual>
+    /// \brief Ogre 2.x implementation of a map Visual.
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2MapVisual
+      : public BaseMapVisual<Ogre2Visual>
     {
       /// \brief Constructor
-      protected: Ogre2LidarVisual();
+      protected: Ogre2MapVisual();
 
       /// \brief Destructor
-      public: virtual ~Ogre2LidarVisual();
+      public: virtual ~Ogre2MapVisual();
 
       // Documentation inherited.
       public: virtual void Init() override;
@@ -51,23 +52,7 @@ namespace ignition
       // Documentation inherited.
       public: virtual void Destroy() override;
 
-      // Documentation inherited
-      public: virtual void Update() override;
-
-      // Documentation inherited
-      public: virtual void SetPoints(
-              const std::vector<double> &_points) override;
-
-      // Documentation inherited
-      public: virtual void ClearPoints() override;
-
-      // Documentation inherited
-      public: virtual unsigned int PointCount() const override;
-
-      // Documentation inherited
-      public: virtual std::vector<double> Points() const override;
-
-      /// \brief Create the Lidar Visual in ogre
+      /// \brief Create the map Visual in ogre
       private: void Create();
 
       /// \brief Clear data stored by dynamiclines
@@ -76,11 +61,11 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetVisible(bool _visible) override;
 
-      /// \brief Lidar Visual should only be created by scene.
+      /// \brief Map Visual should only be created by scene.
       private: friend class Ogre2Scene;
 
       /// \brief Private data class
-      private: std::unique_ptr<Ogre2LidarVisualPrivate> dataPtr;
+      private: std::unique_ptr<Ogre2MapVisualPrivate> dataPtr;
     };
     }
   }

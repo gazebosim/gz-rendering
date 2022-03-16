@@ -33,6 +33,7 @@
 #include "ignition/rendering/JointVisual.hh"
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/LightVisual.hh"
+#include "ignition/rendering/MapVisual.hh"
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/Capsule.hh"
 #include "ignition/rendering/DepthCamera.hh"
@@ -1255,6 +1256,36 @@ LidarVisualPtr BaseScene::CreateLidarVisual(unsigned int _id,
                                             const std::string &_name)
 {
   LidarVisualPtr lidar = this->CreateLidarVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(lidar);
+  return (result) ? lidar : nullptr;
+}
+
+//////////////////////////////////////////////////
+MapVisualPtr BaseScene::CreateMapVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateMapVisual(objId);
+}
+
+//////////////////////////////////////////////////
+MapVisualPtr BaseScene::CreateMapVisual(unsigned int _id)
+{
+  const std::string objName = this->CreateObjectName(_id, "MapVisual");
+  return this->CreateMapVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+MapVisualPtr BaseScene::CreateMapVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateMapVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+MapVisualPtr BaseScene::CreateMapVisual(unsigned int _id,
+                                            const std::string &_name)
+{
+  MapVisualPtr lidar = this->CreateMapVisualImpl(_id, _name);
   bool result = this->RegisterVisual(lidar);
   return (result) ? lidar : nullptr;
 }

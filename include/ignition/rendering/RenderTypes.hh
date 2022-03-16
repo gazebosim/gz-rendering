@@ -64,6 +64,7 @@ namespace ignition
     class InertiaVisual;
     class Light;
     class LightVisual;
+    class MapVisual;
     class JointVisual;
     class LidarVisual;
     class Light;
@@ -96,6 +97,10 @@ namespace ignition
     /// \typedef ArrowVisualPtr
     /// \brief Shared pointer to ArrowVisual
     typedef shared_ptr<ArrowVisual> ArrowVisualPtr;
+
+    /// \typedef MapVisualPtr
+    /// \brief Shared pointer to MapVisual
+    typedef shared_ptr<MapVisual> MapVisualPtr;
 
     /// \typedef AxisVisualPtr
     /// \brief Shared pointer to AxisVisual
@@ -270,6 +275,10 @@ namespace ignition
     /// \typedef const ArrowVisualPtr
     /// \brief Shared pointer to const ArrowVisual
     typedef shared_ptr<const ArrowVisual> ConstArrowVisualPtr;
+
+    /// \typedef const MapVisualPtr
+    /// \brief Shared pointer to const MapVisual
+    typedef shared_ptr<const MapVisual> ConstMapVisualPtr;
 
     /// \typedef const AxisVisualPtr
     /// \brief Shared pointer to const AxisVisual

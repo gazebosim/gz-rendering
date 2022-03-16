@@ -34,6 +34,7 @@
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2MapVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Marker.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
@@ -1184,6 +1185,15 @@ LidarVisualPtr Ogre2Scene::CreateLidarVisualImpl(unsigned int _id,
   Ogre2LidarVisualPtr lidar(new Ogre2LidarVisual);
   bool result = this->InitObject(lidar, _id, _name);
   return (result) ? lidar: nullptr;
+}
+
+//////////////////////////////////////////////////
+MapVisualPtr Ogre2Scene::CreateMapVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2MapVisualPtr map(new Ogre2MapVisual);
+  bool result = this->InitObject(map, _id, _name);
+  return (result) ? map: nullptr;
 }
 
 //////////////////////////////////////////////////

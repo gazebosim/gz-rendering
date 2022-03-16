@@ -22,10 +22,15 @@
 #include "test_config.h"  // NOLINT(build/include)
 
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/GpuRays.hh"
+#include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
+#include "ignition/rendering/SegmentationCamera.hh"
 #include "ignition/rendering/ShaderParams.hh"
+#include "ignition/rendering/ThermalCamera.hh"
+
 
 using namespace ignition;
 using namespace rendering;
@@ -629,6 +634,10 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   visual->SetWorldRotation(0.0, 0.0, 0.0);
   visual->SetMaterial(shader);
   root->AddChild(visual);
+  // for thermal camera
+  visual->SetUserData("temperature", 310.0f);
+  // for segmentation camera
+  visual->SetUserData("label", 1);
 
   // visual will clone and create a unique material
   // so destroy this one
@@ -646,8 +655,70 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 
+  // Create a gpu ray
+  // laser retro material switching may also affect shader materials
+  const double hMinAngle = -IGN_PI/2.0;
+  const double hMaxAngle = IGN_PI/2.0;
+  const double minRange = 0.1;
+  const double maxRange = 10.0;
+  const int hRayCount = 320;
+  const int vRayCount = 1;
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
+  gpuRays->SetWorldPosition(0, 0, 0);
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  // Create thermal camera
+  // heat map material switching may also affect shader materials
+  auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
+  ASSERT_NE(thermalCamera, nullptr);
+  thermalCamera->SetAmbientTemperature(296.0f);
+  thermalCamera->SetAspectRatio(1.333);
+  thermalCamera->SetImageWidth(320);
+  thermalCamera->SetImageHeight(240);
+  thermalCamera->SetHFOV(IGN_PI_2);
+  root->AddChild(thermalCamera);
+
+  // create lidar visual
+  LidarVisualPtr lidarVis = scene->CreateLidarVisual();
+  ASSERT_TRUE(lidarVis != nullptr);
+  root->AddChild(lidarVis);
+  lidarVis->SetMinVerticalAngle(-0.1);
+  lidarVis->SetMaxVerticalAngle(0.1);
+  lidarVis->SetMinHorizontalAngle(-1);
+  lidarVis->SetMaxHorizontalAngle(1);
+  lidarVis->SetMinRange(0.05);
+  lidarVis->SetMaxRange(105.20);
+  lidarVis->SetType(LVT_POINTS);
+  lidarVis->SetHorizontalRayCount(7);
+  std::vector<double> pts = {2, 14, 15, 3, 5, 10, 3};
+  lidarVis->SetPoints(pts);
+
+  // Currently, only ogre2 supports segmentation cameras
+  SegmentationCameraPtr segmentationCamera;
   if (_renderEngine == "ogre2")
   {
+    // Create segmentation camera
+    // segmentation material switching may also affect shader materials
+    segmentationCamera =
+        scene->CreateSegmentationCamera("SegmentationCamera");
+    ASSERT_NE(camera, nullptr);
+    segmentationCamera->SetLocalPosition(0.0, 0.0, 0.0);
+    segmentationCamera->SetLocalRotation(0.0, 0.0, 0.0);
+    segmentationCamera->SetBackgroundLabel(23);
+    segmentationCamera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
+    segmentationCamera->EnableColoredMap(false);
+    segmentationCamera->SetAspectRatio(1.333);
+    segmentationCamera->SetImageWidth(320);
+    segmentationCamera->SetImageHeight(240);
+    segmentationCamera->SetHFOV(IGN_PI_2);
+    root->AddChild(segmentationCamera);
+
     // worldviewproj_matrix is a constant defined by ogre.
     // Here we add a line to add this constant to the params.
     // The specified value is ignored as it will be auto bound to the
@@ -664,6 +735,12 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   for (auto i = 0; i < 30; ++i)
   {
     camera->Update();
+    gpuRays->Update();
+    thermalCamera->Update();
+    if (segmentationCamera)
+      segmentationCamera->Update();
+
+    lidarVis->Update();
   }
 
   // capture a frame

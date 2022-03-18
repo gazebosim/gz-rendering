@@ -4,7 +4,7 @@
 
 varying vec2 UV;
 uniform sampler2D eight_bit_image;
-uniform sampler1D palette = 1;
+uniform sampler1D palette;
 uniform float alpha;
 
 void main()
@@ -13,7 +13,5 @@ void main()
   // out of texture2D() as 1.0, which wraps around to 0.0 in the
   // palette texture.
   vec4 color = texture1D( palette, 0.999 * texture2D( eight_bit_image, UV ).x );
-  //vec4 color(1, 0 ,0, 1)
   gl_FragColor = vec4( color.rgb, color.a * alpha );
-  // gl_FragColor = vec4( 1, 0, 0, 1 );
 }

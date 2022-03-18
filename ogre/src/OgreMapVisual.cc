@@ -27,9 +27,11 @@
 
 #include <ignition/common/Console.hh>
 
+#include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ogre/OgreRenderEngine.hh"
 #include "ignition/rendering/ogre/OgreConversions.hh"
 #include "ignition/rendering/ogre/OgreMapVisual.hh"
+#include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
 #ifdef _MSC_VER
@@ -49,6 +51,7 @@ class ignition::rendering::OgreMapVisualPrivate
   public: Ogre::Material *material;
 
   public: Ogre::TexturePtr texture;
+  public: Ogre::TexturePtr paletteTexture;
 
   /// \brief Map surface visual
   public: VisualPtr mapVis = nullptr;
@@ -103,11 +106,12 @@ void OgreMapVisual::SetPaletteColor(std::vector<unsigned char> &_palette,
   _palette[4 * _position + 3] = _a;
 }
 
+
 //////////////////////////////////////////////////
 void OgreMapVisual::Create()
 {
   // Make the texture palette
-  std::vector<unsigned char> costmapTextureBytes;
+  std::vector<unsigned char> costmapTextureBytes(256 * 4, 0);
   this->SetPaletteColor(costmapTextureBytes, 0, 0, 0, 0, 0);
   for (unsigned char i = 1; i <= 98; i++)
   {
@@ -119,39 +123,45 @@ void OgreMapVisual::Create()
   // obstacle values in cyan
   this->SetPaletteColor(costmapTextureBytes, 99, 0, 255, 255, 255);
   // lethal obstacle values in purple
-  this->SetPaletteColor(costmapTextureBytes,100, 255, 0, 255, 255);
+  this->SetPaletteColor(costmapTextureBytes, 100, 255, 0, 255, 255);
+
+  // Set color for illegal positive values??
+  for (unsigned char i = 101; i <= 127; i++)
+    this->SetPaletteColor(costmapTextureBytes, i, 0, 255, 0, 255);
+
+  // Set red yellow colors for illegal negative values.
+  for (unsigned char i = 128; i <= 254; i++)
+  {
+    // set shades from red to yellow
+    this->SetPaletteColor(costmapTextureBytes, i,
+        255, (255 * (i - 128)) / (254 - 128), 0, 255);
+  }
+
+  // Set color for legal negative value minus one.
+  this->SetPaletteColor(costmapTextureBytes, 255, 0x70, 0x89, 0x86, 255);
 
   std::cout << "OgreMapVisual::Create!\n";
-  // this->dataPtr->mapVis->SetLocalPosition();
-  // this->dataPtr->mapVis->SetLocalRotation();
 
   int width = 100;
   int height = 100;
 
   int pixelCount = width * height;
 
-  auto pixels = std::vector<unsigned char>(pixelCount, 255);
-  /*for (int i = 0; i < pixelCount; i += 2)
-     pixels[i] = 128;
-     */
-
-  /*auto pixel_data = pixels.begin();
-  for (size_t map_row = y_; map_row < y_ + height_; map_row++)
+  auto pixels = std::vector<unsigned char>(pixelCount, 100);
+  for (int y = 0; y <height; ++y)
   {
-    size_t pixel_index = map_row * map_width + x_;
-    size_t pixels_to_copy = std::min(width_, map_size - pixel_index);
-
-    auto row_start = map.data.begin() + pixel_index;
-    std::copy(row_start, row_start + pixels_to_copy, pixel_data);
-    pixel_data += pixels_to_copy;
-    if (pixel_index + pixels_to_copy >= map_size) {
-      break;
+    for (int x =0; x<width; ++x)
+    {
+      if (math::isEven(x) && math::isOdd(y))
+         pixels[y*width+x] = 10;
+      else
+        pixels[y*width+x] = 200;
     }
-  }*/
+  }
 
+  // Create the map texture
   Ogre::DataStreamPtr pixelStream(new Ogre::MemoryDataStream(
          pixels.data(), pixelCount));
-
   try
   {
    this->dataPtr->texture = Ogre::TextureManager::getSingleton().loadRawData(
@@ -160,70 +170,37 @@ void OgreMapVisual::Create()
      pixelStream,
      static_cast<uint16_t>(width), static_cast<uint16_t>(height),
      Ogre::PF_L8, Ogre::TEX_TYPE_2D, 0);
-
-
-  /*std::string matName = "Indexed8BitImage";
-  Ogre::ResourcePtr res =
-    Ogre::MaterialManager::getSingleton().load(matName,
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-
-  // OGRE 1.9 changes the shared pointer definition
-  #if OGRE_VERSION_LT_1_11_0
-  this->dataPtr->material = res.staticCast<Ogre::Material>();
-  #else
-  this->dataPtr->material = std::static_pointer_cast<Ogre::Material>(res);
-  #endif
-  this->dataPtr->material->load();
-  static int thermalMatNameCount = 0;
-  this->dataPtr->material = this->dataPtr->material->clone(
-      matName + "_" + std::to_string(thermalMatNameCount++));
-  this->dataPtr->material->load();
-  */
-/*
-  this->dataPtr->material = dynamic_cast<Ogre::Material *>(
-      Ogre::MaterialManager::getSingleton().getByName(matName).get());
-  // clone the material since we're modifying it's definitions
-  this->dataPtr->material = this->dataPtr->material->clone(
-      matName + "_" + this->dataPtr->material->getName()).get();
-  this->dataPtr->material->load();
-
-   // this->dataPtr->material = this->dataPtr->material->clone("MapTexture1");
-   this->dataPtr->material->setReceiveShadows(false);
-   this->dataPtr->material->getTechnique(0)->setLightingEnabled(false);
-   this->dataPtr->material->setDepthBias(-16.0f, 0.0f);
-   this->dataPtr->material->setCullingMode(Ogre::CULL_NONE);
-   this->dataPtr->material->setDepthWriteEnabled(false);
-
-   Ogre::Pass *pass = this->dataPtr->material->getTechnique(0)->getPass(0);
-   Ogre::TextureUnitState * texUnit = nullptr;
-   if (pass->getNumTextureUnitStates() > 0)
-      texUnit = pass->getTextureUnitState(0);
-   else
-      texUnit = pass->createTextureUnitState();
-
-   texUnit->setTextureName(this->dataPtr->texture->getName());
-   texUnit->setTextureFiltering(Ogre::TFO_NONE);
-
-   std::cout << "Setting the material\n";
-   this->dataPtr->mapVis->SetMaterial(this->dataPtr->material->getName());
-   */
   }
   catch(Ogre::Exception& e)
   {
-    std::cout << "FAILEd\n";
-     std::cout << e.what() << std::endl;
+    std::cout << e.what() << std::endl;
   }
-  this->dataPtr->mapVis = this->Scene()->CreateVisual();
-  this->dataPtr->mapVis->AddGeometry(this->Scene()->CreatePlane());
 
-  MaterialPtr mat = this->Scene()->CreateMaterial("MapMaterial");
-  // mat->SetAmbient(1.0, 0.0, 0.0, 1.0);
-  // mat->SetDiffuse(1.0, 0.0, 0.0, 1.0);
+  // Create the palette texture
+  Ogre::DataStreamPtr paletteStream(new Ogre::MemoryDataStream(
+        costmapTextureBytes.data(), 256*4));
+  try
+  {
+    this->dataPtr->paletteTexture =
+      Ogre::TextureManager::getSingleton().loadRawData(
+      "PaletteTexture1",
+      Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+      paletteStream, 256, 1, Ogre::PF_BYTE_RGBA, Ogre::TEX_TYPE_1D, 0);
+  }
+  catch(Ogre::Exception& e)
+  {
+    std::cout << e.what() << std::endl;
+  }
+
+  // Create the material.
+  auto mat = std::dynamic_pointer_cast<OgreMaterial>(
+      this->Scene()->CreateMaterial("MapMaterial"));
 
   const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
 
+  // The vertex and fragment shaders used to render map data.
   std::string vertPath = common::joinPaths(
       resourcePath, "ogre", "media", "materials", "programs",
       "indexed_8bit_image_vs.glsl");
@@ -233,12 +210,67 @@ void OgreMapVisual::Create()
 
   mat->SetVertexShader(vertPath);
   mat->SetFragmentShader(fragPath);
-  mat->SetTexture("MapTexture1");
-  this->dataPtr->mapVis->SetMaterial("MapMaterial");
-  this->AddChild(this->dataPtr->mapVis);
+  mat->SetReceiveShadows(false);
+  mat->Material()->getTechnique(0)->setLightingEnabled(false);
+  mat->Material()->setDepthBias(-16.0f, 0.0f);
+  mat->Material()->setCullingMode(Ogre::CULL_NONE);
+  mat->SetDepthWriteEnabled(false);
 
-  this->dataPtr->mapVis->SetLocalScale(math::Vector3d(10, 10, 1));
+  Ogre::Pass *pass = mat->Material()->getTechnique(0)->getPass(0);
+  Ogre::TextureUnitState *textureUnit = nullptr;
 
+  // Set the pixel texture. This is the map data. The material automatically
+  // creates one texture unit state, so we can just get it.
+  textureUnit = pass->getTextureUnitState(0);
+  textureUnit->setTexture(this->dataPtr->texture);
+  textureUnit->setTextureFiltering(Ogre::TFO_NONE);
+
+  // Set the costmap palette texture. We need to create another texture unit
+  // to hold the palette
+  textureUnit = pass->createTextureUnitState();
+  textureUnit->setTexture(this->dataPtr->paletteTexture);
+  textureUnit->setTextureFiltering(Ogre::TFO_NONE);
+
+  // Update the fragment shader parameters so that the shader knows what
+  // textures to sample from.
+  Ogre::GpuProgramParametersSharedPtr fragParams =
+    pass->getFragmentProgramParameters();
+  fragParams->setNamedConstant("eight_bit_image", 0);
+  fragParams->setNamedConstant("palette", 1);
+
+  // Create the manual object that will hold the map material.
+  auto manualObject =
+    this->scene->OgreSceneManager()->createManualObject("MapPlane");
+  manualObject->begin(
+      "MapMaterial", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+  manualObject->position(0, 0, 0);
+  manualObject->textureCoord(0, 0);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->position(1, 1, 0);
+  manualObject->textureCoord(1, 1);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->position(0, 1, 0);
+  manualObject->textureCoord(0, 1);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->position(0, 0, 0);
+  manualObject->textureCoord(0, 0);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->position(1, 0, 0);
+  manualObject->textureCoord(1, 0);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->position(1, 1, 0);
+  manualObject->textureCoord(1, 1);
+  manualObject->normal(0, 0, 1);
+  manualObject->end();
+
+  // Add the manual object.
+  this->ogreNode->attachObject(manualObject);
+  this->ogreNode->setScale(10, 10, 1);
 }
 
 //////////////////////////////////////////////////

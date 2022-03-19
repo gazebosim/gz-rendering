@@ -61,13 +61,6 @@ namespace ignition
       /// \brief Clear data stored by dynamiclines
       private: void ClearVisualData();
 
-      private: void SetPaletteColor(std::vector<unsigned char> &_palette,
-                   unsigned char _position, unsigned char _r, unsigned char _g,
-                   unsigned char _b, unsigned char _a);
-
-      private: Ogre::TexturePtr MakePaletteTexture(
-                   std::vector<unsigned char> _bytes);
-
       /// \brief Map Visual should only be created by scene.
       private: friend class OgreScene;
 

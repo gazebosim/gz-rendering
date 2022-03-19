@@ -233,7 +233,7 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
   this->dataPtr->ogreSegmentationTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
 
-  // create compositor worksspace
+  // create compositor workspace
   this->dataPtr->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(
         this->scene->OgreSceneManager(),

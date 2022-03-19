@@ -45,16 +45,40 @@
   #pragma warning(pop)
 #endif
 
+// TODO:
+//   1. Add the concept of swatches.
+//   2. Allow user to set map data.
+//   3. Allow user to set palette (map, occupancy, raw)
+
 class ignition::rendering::OgreMapVisualPrivate
 {
+  public: void SetPaletteColor(std::vector<unsigned char> &_palette,
+               unsigned char _position, unsigned char _r, unsigned char _g,
+               unsigned char _b, unsigned char _a);
+
+  public: void SetPaletteIllegalPositiveValues(
+    std::vector<unsigned char> &_palette, unsigned char _r, unsigned char _g,
+    unsigned char _b, unsigned char _a);
+
+  public: void SetPaletteIllegalNegativeValues(
+              std::vector<unsigned char> &_palette);
+
+  public: void CreateMapPalette();
+
+  public: void CreateCostmapPalette();
+
+  public: void CreateRawPalette();
+
+  public: std::vector<unsigned char> mapPalette;
+  public: std::vector<unsigned char> costmapPalette;
+  public: std::vector<unsigned char> rawPalette;
+
   /// \brief Map visual materal
   public: Ogre::Material *material;
 
   public: Ogre::TexturePtr texture;
-  public: Ogre::TexturePtr paletteTexture;
 
-  /// \brief Map surface visual
-  public: VisualPtr mapVis = nullptr;
+  public: Ogre::TexturePtr paletteTexture;
 };
 
 using namespace ignition;
@@ -81,11 +105,6 @@ void OgreMapVisual::PreRender()
 //////////////////////////////////////////////////
 void OgreMapVisual::Destroy()
 {
-  if (this->dataPtr->mapVis != nullptr)
-  {
-    this->dataPtr->mapVis->Destroy();
-    this->dataPtr->mapVis.reset();
-  }
 }
 
 //////////////////////////////////////////////////
@@ -96,9 +115,9 @@ void OgreMapVisual::Init()
 }
 
 //////////////////////////////////////////////////
-void OgreMapVisual::SetPaletteColor(std::vector<unsigned char> &_palette,
-    unsigned char _position,
-    unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a)
+void OgreMapVisualPrivate::SetPaletteColor(std::vector<unsigned char> &_palette,
+    unsigned char _position, unsigned char _r, unsigned char _g,
+    unsigned char _b, unsigned char _a)
 {
   _palette[4 * _position + 0] = _r;
   _palette[4 * _position + 1] = _g;
@@ -106,47 +125,111 @@ void OgreMapVisual::SetPaletteColor(std::vector<unsigned char> &_palette,
   _palette[4 * _position + 3] = _a;
 }
 
+//////////////////////////////////////////////////
+void OgreMapVisualPrivate::SetPaletteIllegalPositiveValues(
+    std::vector<unsigned char> &_palette, unsigned char _r, unsigned char _g,
+    unsigned char _b, unsigned char _a)
+{
+  // Set color for illegal positive values
+  for (unsigned char i = 101; i <= 127; i++)
+    this->SetPaletteColor(_palette, i, _r, _g, _b, _a);
+}
+
+//////////////////////////////////////////////////
+void OgreMapVisualPrivate::SetPaletteIllegalNegativeValues(
+    std::vector<unsigned char> &_palette)
+{
+  // set shades from red to yellow
+  for (unsigned char i = 128; i <= 254; i++)
+  {
+    this->SetPaletteColor(_palette, i,
+        255, (255 * (i - 128)) / (254 - 128), 0, 255);
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreMapVisualPrivate::CreateMapPalette()
+{
+  // Allocate the color palette
+  this->mapPalette.assign(256 * 4, 0);
+
+  // Grey map values in the range 0-100. This supports a scaled map display
+  for (unsigned char i = 0; i <= 100; ++i)
+  {
+    unsigned char v = 255 - (255 * i) / 100;
+    this->SetPaletteColor(this->mapPalette, i, v, v, v, 255);
+  }
+
+  // Set illegal positive values to green
+  this->SetPaletteIllegalPositiveValues(this->mapPalette,
+      0, 255, 0, 255);
+
+  // Set colors for illegal negative values.
+  this->SetPaletteIllegalNegativeValues(this->mapPalette);
+
+  // Set color for legal negative value minus one.
+  this->SetPaletteColor(this->mapPalette, 255, 0x70, 0x89, 0x86, 255);
+}
+
+//////////////////////////////////////////////////
+void OgreMapVisualPrivate::CreateCostmapPalette()
+{
+  // Allocate the color palette
+  this->costmapPalette.assign(256 * 4, 0);
+
+  // Make the texture palette
+  this->SetPaletteColor(this->costmapPalette, 0, 0, 0, 0, 0);
+
+  // Grey map values in the range 0-100. This supports a scaled map display
+  for (unsigned char i = 1; i <= 98; i++)
+  {
+    unsigned char v = (255 * i) / 100;
+    this->SetPaletteColor(this->costmapPalette, i, v, 0, 255 - v, 255);
+  }
+
+  // Use cyan for obstacle values
+  this->SetPaletteColor(this->costmapPalette, 99, 0, 255, 255, 255);
+
+  // Use purple for lethal obstacles
+  this->SetPaletteColor(this->costmapPalette, 100, 255, 0, 255, 255);
+
+  // Set illegal positive values to green
+  this->SetPaletteIllegalPositiveValues(this->costmapPalette,
+      0, 255, 0, 255);
+
+  // Set colors for illegal negative values.
+  this->SetPaletteIllegalNegativeValues(this->costmapPalette);
+
+  // Set color for legal negative value minus one.
+  this->SetPaletteColor(this->costmapPalette, 255, 0x70, 0x89, 0x86, 255);
+}
+
+//////////////////////////////////////////////////
+void OgreMapVisualPrivate::CreateRawPalette()
+{
+  // Allocate the color palette
+  this->rawPalette.assign(256 * 4, 0);
+
+  for (int i = 0; i < 256; ++i)
+    this->SetPaletteColor(this->rawPalette, i, i, i, i, 255);
+}
 
 //////////////////////////////////////////////////
 void OgreMapVisual::Create()
 {
-  // Make the texture palette
-  std::vector<unsigned char> costmapTextureBytes(256 * 4, 0);
-  this->SetPaletteColor(costmapTextureBytes, 0, 0, 0, 0, 0);
-  for (unsigned char i = 1; i <= 98; i++)
-  {
-    unsigned char v = (255 * i) / 100;
-    this->SetPaletteColor(costmapTextureBytes,
-        i, v, 0, 255 - v, 255);
-  }
+  // Create the map texture palette
+  this->dataPtr->CreateMapPalette();
 
-  // obstacle values in cyan
-  this->SetPaletteColor(costmapTextureBytes, 99, 0, 255, 255, 255);
-  // lethal obstacle values in purple
-  this->SetPaletteColor(costmapTextureBytes, 100, 255, 0, 255, 255);
+  // Create the costmap texture palette
+  this->dataPtr->CreateCostmapPalette();
 
-  // Set color for illegal positive values??
-  for (unsigned char i = 101; i <= 127; i++)
-    this->SetPaletteColor(costmapTextureBytes, i, 0, 255, 0, 255);
+  // Create the raw texture palette
+  this->dataPtr->CreateRawPalette();
 
-  // Set red yellow colors for illegal negative values.
-  for (unsigned char i = 128; i <= 254; i++)
-  {
-    // set shades from red to yellow
-    this->SetPaletteColor(costmapTextureBytes, i,
-        255, (255 * (i - 128)) / (254 - 128), 0, 255);
-  }
-
-  // Set color for legal negative value minus one.
-  this->SetPaletteColor(costmapTextureBytes, 255, 0x70, 0x89, 0x86, 255);
-
-  std::cout << "OgreMapVisual::Create!\n";
-
+  // TEST CODE
   int width = 100;
   int height = 100;
-
   int pixelCount = width * height;
-
   auto pixels = std::vector<unsigned char>(pixelCount, 100);
   for (int y = 0; y <height; ++y)
   {
@@ -178,7 +261,7 @@ void OgreMapVisual::Create()
 
   // Create the palette texture
   Ogre::DataStreamPtr paletteStream(new Ogre::MemoryDataStream(
-        costmapTextureBytes.data(), 256*4));
+        this->dataPtr->mapPalette.data(), 256*4));
   try
   {
     this->dataPtr->paletteTexture =
@@ -278,19 +361,4 @@ void OgreMapVisual::SetVisible(bool /*_visible*/)
 {
   //this->dataPtr->visible = _visible;
   //this->ogreNode->setVisible(this->dataPtr->visible);
-}
-
-
-//////////////////////////////////////////////////
-Ogre::TexturePtr OgreMapVisual::MakePaletteTexture(
-    std::vector<unsigned char> _bytes)
-{
-  Ogre::DataStreamPtr byteStream(
-      new Ogre::MemoryDataStream(_bytes.data(), 256 * 4));
-
-  static int texCount = 0;
-  std::string texName = "MapPaletteTexture" + std::to_string(texCount++);
-  return Ogre::TextureManager::getSingleton().loadRawData(
-    texName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-    byteStream, 256, 1, Ogre::PF_BYTE_RGBA, Ogre::TEX_TYPE_1D, 0);
 }

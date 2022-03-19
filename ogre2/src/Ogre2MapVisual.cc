@@ -30,12 +30,17 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2MapVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2Material.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
+#include <OgreCommon.h>
+#include <Hlms/Pbs/OgreHlmsPbs.h>
+#include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <OgreItem.h>
+#include <OgreManualObject2.h>
 #include <OgreMaterialManager.h>
 #include <OgreRoot.h>
 #include <OgreSceneNode.h>
@@ -48,11 +53,30 @@
 
 class ignition::rendering::Ogre2MapVisualPrivate
 {
+  public: void SetPaletteColor(std::vector<unsigned char> &_palette,
+               unsigned char _position, unsigned char _r, unsigned char _g,
+               unsigned char _b, unsigned char _a);
+
+  public: void SetPaletteIllegalPositiveValues(
+    std::vector<unsigned char> &_palette, unsigned char _r, unsigned char _g,
+    unsigned char _b, unsigned char _a);
+
+  public: void SetPaletteIllegalNegativeValues(
+              std::vector<unsigned char> &_palette);
+
+
+  public: void CreateCostmapPalette();
+
+  public: std::vector<unsigned char> costmapPalette;
+
   /// \brief inertia visual materal
   public: Ogre2MaterialPtr material = nullptr;
 
   /// \brief Map surface visual
   public: VisualPtr mapVis = nullptr;
+
+  /// \brief Ogre item created from the dynamic geometry
+  public: Ogre::Item *ogreItem = nullptr;
 };
 
 using namespace ignition;
@@ -79,11 +103,6 @@ void Ogre2MapVisual::PreRender()
 //////////////////////////////////////////////////
 void Ogre2MapVisual::Destroy()
 {
-  if (this->dataPtr->mapVis != nullptr)
-  {
-    this->dataPtr->mapVis->Destroy();
-    this->dataPtr->mapVis.reset();
-  }
 }
 
 //////////////////////////////////////////////////
@@ -94,99 +113,183 @@ void Ogre2MapVisual::Init()
 }
 
 //////////////////////////////////////////////////
+void Ogre2MapVisualPrivate::SetPaletteColor(std::vector<unsigned char> &_palette,
+    unsigned char _position, unsigned char _r, unsigned char _g,
+    unsigned char _b, unsigned char _a)
+{
+  _palette[4 * _position + 0] = _r;
+  _palette[4 * _position + 1] = _g;
+  _palette[4 * _position + 2] = _b;
+  _palette[4 * _position + 3] = _a;
+}
+
+//////////////////////////////////////////////////
+void Ogre2MapVisualPrivate::SetPaletteIllegalPositiveValues(
+    std::vector<unsigned char> &_palette, unsigned char _r, unsigned char _g,
+    unsigned char _b, unsigned char _a)
+{
+  // Set color for illegal positive values
+  for (unsigned char i = 101; i <= 127; i++)
+    this->SetPaletteColor(_palette, i, _r, _g, _b, _a);
+}
+
+//////////////////////////////////////////////////
+void Ogre2MapVisualPrivate::SetPaletteIllegalNegativeValues(
+    std::vector<unsigned char> &_palette)
+{
+  // set shades from red to yellow
+  for (unsigned char i = 128; i <= 254; i++)
+  {
+    this->SetPaletteColor(_palette, i,
+        255, (255 * (i - 128)) / (254 - 128), 0, 255);
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2MapVisualPrivate::CreateCostmapPalette()
+{
+  // Allocate the color palette
+  this->costmapPalette.assign(256 * 4, 0);
+
+  // Make the texture palette
+  this->SetPaletteColor(this->costmapPalette, 0, 0, 0, 0, 0);
+
+  // Grey map values in the range 0-100. This supports a scaled map display
+  for (unsigned char i = 1; i <= 98; i++)
+  {
+    unsigned char v = (255 * i) / 100;
+    this->SetPaletteColor(this->costmapPalette, i, v, 0, 255 - v, 255);
+  }
+
+  // Use cyan for obstacle values
+  this->SetPaletteColor(this->costmapPalette, 99, 0, 255, 255, 255);
+
+  // Use purple for lethal obstacles
+  this->SetPaletteColor(this->costmapPalette, 100, 255, 0, 255, 255);
+
+  // Set illegal positive values to green
+  this->SetPaletteIllegalPositiveValues(this->costmapPalette,
+      0, 255, 0, 255);
+
+  // Set colors for illegal negative values.
+  this->SetPaletteIllegalNegativeValues(this->costmapPalette);
+
+  // Set color for legal negative value minus one.
+  this->SetPaletteColor(this->costmapPalette, 255, 0x70, 0x89, 0x86, 255);
+}
+
+//////////////////////////////////////////////////
 void Ogre2MapVisual::Create()
 {
-  std::cout << "Create!\n";
-  this->dataPtr->mapVis = this->Scene()->CreateVisual();
-  this->dataPtr->mapVis->AddGeometry(this->Scene()->CreatePlane());
-  this->dataPtr->mapVis->SetMaterial("Default/TransPurple");
-  this->AddChild(this->dataPtr->mapVis);
+  // Create the costmap texture palette
+  //
+  // Add this back in when shaders workd
+  // this->dataPtr->CreateCostmapPalette();
 
-  this->dataPtr->mapVis->SetLocalScale(math::Vector3d(10, 10, 1));
-  // this->dataPtr->mapVis->SetLocalPosition();
-  // this->dataPtr->mapVis->SetLocalRotation();
-
+  // TEST CODE that creates a image composed of dots
   int width = 100;
   int height = 100;
-
   int pixelCount = width * height;
-
-  auto pixels = std::vector<unsigned char>(pixelCount, 255);
-
-  /*auto pixel_data = pixels.begin();
-  for (size_t map_row = y_; map_row < y_ + height_; map_row++)
+  auto pixels = std::vector<unsigned char>(pixelCount, 100);
+  for (int y = 0; y <height; ++y)
   {
-    size_t pixel_index = map_row * map_width + x_;
-    size_t pixels_to_copy = std::min(width_, map_size - pixel_index);
-
-    auto row_start = map.data.begin() + pixel_index;
-    std::copy(row_start, row_start + pixels_to_copy, pixel_data);
-    pixel_data += pixels_to_copy;
-    if (pixel_index + pixels_to_copy >= map_size) {
-      break;
+    for (int x =0; x<width; ++x)
+    {
+      if (math::isEven(x) && math::isOdd(y))
+         pixels[y*width+x] = 10;
+      else
+        pixels[y*width+x] = 200;
     }
-  }*/
+  }
 
-   auto engine = Ogre2RenderEngine::Instance();
-   auto ogreRoot = engine->OgreRoot();
-   Ogre::TextureGpuManager *textureMgr =
-     ogreRoot->getRenderSystem()->getTextureGpuManager();
+  // Get the texture manager.
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+    ogreRoot->getRenderSystem()->getTextureGpuManager();
 
-   Ogre::TextureGpu *texture  = textureMgr->createOrRetrieveTexture(
-       "maptexture",
-       Ogre::GpuPageOutStrategy::SaveToSystemRam,
-       Ogre::TextureFlags::ManualTexture,
-       Ogre::TextureTypes::Type2D);
-   if (texture == nullptr)
-     std::cerr << "Unable to create texture\n";
-   texture->setResolution(width, height);
+  // Create an image based on the pixels.
+  Ogre::Image2 image;
+  image.loadDynamicImage(pixels.data(),
+      width, height, 1u, Ogre::TextureTypes::Type2D,
+      Ogre::PFG_R8_UINT, false);
 
-  this->dataPtr->mapVis->Material()->SetTexture("mapTexture");
-   Ogre::Image2 image;
-   unsigned char *dataDest = reinterpret_cast<unsigned char*>(
-       OGRE_MALLOC_SIMD(pixelCount, Ogre::MEMCATEGORY_RESOURCE));
+  // Create the texture.
+  Ogre::TextureGpu *texture;
+  try
+  {
+    texture = textureMgr->createOrRetrieveTexture(
+        "MapTexture",
+        Ogre::GpuPageOutStrategy::SaveToSystemRam,
+        Ogre::TextureFlags::ManualTexture,
+        Ogre::TextureTypes::Type2D);
 
-   for (int i = 0; i < pixelCount; i += 1)
-     dataDest[i] = 255;
+    texture->setResolution(image.getWidth(), image.getHeight());
+    texture->setNumMipmaps(image.getNumMipmaps());
+    texture->setPixelFormat(image.getPixelFormat());
+    texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+    image.uploadTo(texture, 0, texture->getNumMipmaps()-1);
+    texture->writeContentsToFile("/home/nkoenig/map.png", 0, 1, true);
+  }
+  catch(Ogre::Exception& e)
+  {
+    std::cout << e.what() << std::endl;
+  }
 
-   if (!dataDest)
-     std::cerr << "Unable to create data dest\n";
+  // Create the material.
+  auto mat = std::dynamic_pointer_cast<Ogre2Material>(
+      this->Scene()->CreateMaterial("MapMaterial"));
 
-   image.loadDynamicImage(dataDest,
-       width, height, 1u, Ogre::TextureTypes::Type2D,
-       Ogre::PFG_R8_UINT, false);
-   //image.loadDynamicImage(dataDest, false, texture);
+  // This line doesn't work, because `mat` requires a texture file, but
+  // I have texture that is in memory.
+  //mat->SetTexture("MapTexture");
+  mat->SetReceiveShadows(false);
+  mat->SetDepthWriteEnabled(false);
 
-   std::cout << "UploadTo\n";
-   try
-   {
-     texture->setPixelFormat(image.getPixelFormat());
-     texture->scheduleTransitionTo(Ogre::GpuResidency::Resident, &image,false);
-     texture->writeContentsToFile("/home/nkoenig/map.png", 0, 1, true);
+  // Try to add the texture to a texture unit.
+  Ogre::Pass *pass = mat->Material()->getTechnique(0)->getPass(0);
+  Ogre::TextureUnitState *textureUnit = nullptr;
+  textureUnit = pass->createTextureUnitState();
+  textureUnit->setTexture(texture);
+  //textureUnit->setTextureFiltering(Ogre::TFO_NONE);
 
-     // image.uploadTo(texture, 0, 0, 0, 1);
-   }
-   catch(Ogre::Exception& e)
-   {
-     std::cout << "Upload FAILED!!!\n";
-     std::cout << e.what() << std::endl;
-     std::cout << texture->getWidth() << " : " << image.getWidth() << std::endl;
-     std::cout << texture->getHeight() << " : " << image.getHeight() << std::endl;
-     std::cout << texture->getDepthOrSlices() << " : " << image.getDepthOrSlices() << std::endl;
-    std::cout << texture->getDepthOrSlices() << " : 0" << std::endl;
-    //std::cout << Ogre::PixelFormatGpuUtils::getFamily( texture->getPixelFormat() ) << " : " << Ogre::PixelFormatGpuUtils::getFamily( image.getPixelFormat() )
-   }
-   std::cout << "Done UploadTo\n";
-   /*Ogre::DataStreamPtr pixel_stream(new Ogre::MemoryDataStream(
-         pixels.data(), pixelCount));
+  // Create the manual object that will hold the map material.
+  // The `begin` line should associate the material with this object.
+  auto manualObject =
+    this->scene->OgreSceneManager()->createManualObject();
+  manualObject->begin(
+      *mat->Datablock()->getNameStr(), Ogre::OT_TRIANGLE_LIST);
+  manualObject->position(0, 0, 0);
+  manualObject->textureCoord(0, 0);
+  manualObject->normal(0, 0, 1);
 
-   this->dataPtr->texture = Ogre::TextureManager::getSingleton().loadRawData(
-     "MapTexture",// + std::to_string(texture_count_++),
-     "map_visual",
-     pixelStream,
-     static_cast<uint16_t>(width), static_cast<uint16_t>(height),
-     Ogre::PF_L8, Ogre::TEX_TYPE_2D, 0);
-     */
+  manualObject->position(1, 1, 0);
+  manualObject->textureCoord(1, 1);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->position(0, 1, 0);
+  manualObject->textureCoord(0, 1);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->position(0, 0, 0);
+  manualObject->textureCoord(0, 0);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->position(1, 0, 0);
+  manualObject->textureCoord(1, 0);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->position(1, 1, 0);
+  manualObject->textureCoord(1, 1);
+  manualObject->normal(0, 0, 1);
+
+  manualObject->triangle(0, 1, 2);
+  manualObject->triangle(3, 4, 5);
+  manualObject->end();
+
+  // Attache the manual object to the scene node.
+  this->ogreNode->attachObject(manualObject);
+  this->ogreNode->setScale(10, 10, 1);
 }
 
 //////////////////////////////////////////////////

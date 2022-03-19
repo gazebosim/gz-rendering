@@ -620,6 +620,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   }
   else
   {
+    ignerr << "Specified texture[" << _texture << "] is not a file.\n";
     return;
   }
 

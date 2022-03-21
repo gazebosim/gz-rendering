@@ -138,6 +138,9 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
   private: std::unordered_map<Ogre::SubItem *, Ogre::HlmsDatablock *>
       datablockMap;
 
+  /// \brief A map of ogre sub item pointer to their original low level material
+  private: std::map<Ogre::SubItem *, Ogre::MaterialPtr> thermalMaterialMap;
+
   /// \brief linear temperature resolution. Defaults to 10mK
   private: double resolution = 0.01;
 
@@ -150,7 +153,6 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
 }
 }
 }
-
 
 /// \internal
 /// \brief Private data for the Ogre2ThermalCamera class
@@ -242,7 +244,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
-  this->datablockMap.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -319,9 +320,18 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           // see media/materials/programs/thermal_camera_fs.glsl
           subItem->setCustomParameter(this->customParamIdx,
               Ogre::Vector4(color, 0, 0, 0.0));
-          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          this->datablockMap[subItem] = datablock;
-
+          // case when item is using low level materials
+          // e.g. shaders
+          if (!subItem->getMaterial().isNull())
+          {
+            this->thermalMaterialMap[subItem] = subItem->getMaterial();
+          }
+          // regular Pbs Hlms datablock
+          else
+          {
+            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+            this->datablockMap[subItem] = datablock;
+          }
           subItem->setMaterial(this->heatSourceMaterial);
         }
       }
@@ -384,8 +394,18 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
         {
           Ogre::SubItem *subItem = item->getSubItem(i);
 
-          Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-          this->datablockMap[subItem] = datablock;
+          // case when item is using low level materials
+          // e.g. shaders
+          if (!subItem->getMaterial().isNull())
+          {
+            this->thermalMaterialMap[subItem] = subItem->getMaterial();
+          }
+          // regular Pbs Hlms datablock
+          else
+          {
+            Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+            this->datablockMap[subItem] = datablock;
+          }
 
           subItem->setMaterial(this->heatSignatureMaterials[item->getId()]);
         }
@@ -414,8 +434,16 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
             for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
             {
               Ogre::SubItem *subItem = item->getSubItem(i);
-              Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-              this->datablockMap[subItem] = datablock;
+              if (!subItem->getMaterial().isNull())
+              {
+                this->thermalMaterialMap[subItem] = subItem->getMaterial();
+              }
+              // regular Pbs Hlms datablock
+              else
+              {
+                Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+                this->datablockMap[subItem] = datablock;
+              }
               subItem->setDatablock(unlit);
             }
           }
@@ -436,6 +464,16 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);
   }
+
+  // restore item to use low level material
+  for (auto it : this->thermalMaterialMap)
+  {
+    Ogre::SubItem *subItem = it.first;
+    subItem->setMaterial(it.second);
+  }
+
+  this->datablockMap.clear();
+  this->thermalMaterialMap.clear();
 }
 
 //////////////////////////////////////////////////

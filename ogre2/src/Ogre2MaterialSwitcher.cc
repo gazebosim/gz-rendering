@@ -109,7 +109,6 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
       if (!subItem->getMaterial().isNull())
       {
         materialMap[this][subItem] = subItem->getMaterial();
-        subItem->setMaterial(this->plainMaterial);
         auto technique = subItem->getMaterial()->getTechnique(0);
 
         if (technique && !technique->isDepthWriteEnabled() &&

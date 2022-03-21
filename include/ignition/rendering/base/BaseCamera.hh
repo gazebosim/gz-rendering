@@ -355,7 +355,7 @@ namespace ignition
         {
           math::Pose3d targetCamPose = math::Pose3d(this->followOffset,
               this->WorldRotation());
-          targetCamPose += this->followNode->WorldPose();
+          targetCamPose = this->followNode->WorldPose() * targetCamPose;
 
           math::Vector3d pos = this->WorldPosition() +
               (targetCamPose.Pos() - this->WorldPosition()) * this->followPGain;
@@ -375,7 +375,7 @@ namespace ignition
         }
         else
         {
-          targetPose += this->trackNode->WorldPose();
+          targetPose = this->trackNode->WorldPose() * targetPose;
         }
 
         math::Pose3d p =

@@ -692,7 +692,11 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       continue;
     }
 
-    if (!_ogreParams->_findNamedConstantDefinition(name_param.first))
+    if (!_ogreParams->_findNamedConstantDefinition(name_param.first) &&
+        !(Ogre2RenderEngine::Instance()->GraphicsAPI() !=
+            GraphicsAPI::OPENGL &&
+            (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
+             ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())))
     {
       ignwarn << "Unable to find GPU program parameter: "
               << name_param.first << std::endl;

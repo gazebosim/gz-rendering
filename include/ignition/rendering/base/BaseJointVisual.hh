@@ -406,7 +406,7 @@ namespace ignition
 
         // get rotation of joint visual in model frame
         ignition::math::Quaterniond quatFromModel =
-            (this->LocalPose() + parentInitPose).Rot();
+            (parentInitPose * this->LocalPose()).Rot();
 
         // rotate arrow visual so that the axis vector applies to the model
         // frame.

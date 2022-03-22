@@ -26,6 +26,7 @@ out vec3 ptColor;
 out gl_PerVertex
 {
   vec4 gl_Position;
+  float gl_PointSize;
 };
 
 void main()

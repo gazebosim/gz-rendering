@@ -79,3 +79,21 @@ material PointCloudPoint
     }
   }
 }
+
+// For sensors
+material PointCloudPoint_solid
+{
+  technique
+  {
+    pass
+    {
+      point_size_attenuation on
+      point_sprites on
+      vertex_program_ref   PointCloudVS {}
+      fragment_program_ref plaincolor_fs
+      {
+        param_named_auto inColor custom 1
+      }
+    }
+  }
+}

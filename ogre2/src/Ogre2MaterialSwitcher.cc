@@ -103,12 +103,25 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
         // to keep vertex deformation consistent; so we use
         // a cloned material with a different pixel shader
         // https://github.com/ignitionrobotics/ign-rendering/issues/544
+        //
+        // material may be a nullptr if we called setMaterial directly
+        // (i.e. it's not using Ogre2Material interface).
+        // In those cases we fallback to PBS in the current IORM mode.
         auto material = Ogre::MaterialManager::getSingleton().getByName(
           subItem->getMaterial()->getName() + "_solid",
           Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-        if (material->getNumSupportedTechniques() > 0u)
+        if (material)
         {
-          subItem->setMaterial(material);
+          if (material->getLoadingState() == Ogre::Resource::LOADSTATE_UNLOADED)
+          {
+            // Manually defined materials like PointCloudPoint_solid need this
+            material->load();
+          }
+
+          if (material->getNumSupportedTechniques() > 0u)
+          {
+            subItem->setMaterial(material);
+          }
         }
         else
         {

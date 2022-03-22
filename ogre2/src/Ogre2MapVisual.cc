@@ -26,7 +26,9 @@
 #endif
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/SubMesh.hh>
 
+#include "ignition/rendering/ogre2/Ogre2Mesh.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2MapVisual.hh"
@@ -39,9 +41,12 @@
 #include <OgreCommon.h>
 #include <Hlms/Pbs/OgreHlmsPbs.h>
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
+#include <Hlms/Unlit/OgreHlmsUnlit.h>
+#include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
 #include <OgreItem.h>
 #include <OgreManualObject2.h>
 #include <OgreMaterialManager.h>
+#include <OgrePixelFormatGpuUtils.h>
 #include <OgreRoot.h>
 #include <OgreSceneNode.h>
 #include <OgreTechnique.h>
@@ -97,7 +102,6 @@ Ogre2MapVisual::~Ogre2MapVisual()
 //////////////////////////////////////////////////
 void Ogre2MapVisual::PreRender()
 {
-  // no ops
 }
 
 //////////////////////////////////////////////////
@@ -189,16 +193,32 @@ void Ogre2MapVisual::Create()
   // TEST CODE that creates a image composed of dots
   int width = 100;
   int height = 100;
-  int pixelCount = width * height;
-  auto pixels = std::vector<unsigned char>(pixelCount, 100);
+  auto texFormat = Ogre::PFG_RGBA8_UNORM;
+  size_t sizeBytes = Ogre::PixelFormatGpuUtils::calculateSizeBytes(
+      width, height, 1u, 1u, texFormat, 1u, 4u);
+  Ogre::uint8 *data = reinterpret_cast<Ogre::uint8 *>(
+      OGRE_MALLOC_SIMD( sizeBytes, Ogre::MEMCATEGORY_GENERAL));
+  Ogre::Image2 image;
+  image.loadDynamicImage(data, width, height, 1u,
+      Ogre::TextureTypes::Type2D, texFormat, true, 1u);
   for (int y = 0; y <height; ++y)
   {
     for (int x =0; x<width; ++x)
     {
       if (math::isEven(x) && math::isOdd(y))
-         pixels[y*width+x] = 10;
+      {
+        *data++  = 10;
+        *data++  = 10;
+        *data++  = 10;
+        *data++  = 255;
+      }
       else
-        pixels[y*width+x] = 200;
+      {
+        *data++ = 200;
+        *data++ = 200;
+        *data++ = 200;
+        *data++ = 255;
+      }
     }
   }
 
@@ -208,12 +228,6 @@ void Ogre2MapVisual::Create()
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
 
-  // Create an image based on the pixels.
-  Ogre::Image2 image;
-  image.loadDynamicImage(pixels.data(),
-      width, height, 1u, Ogre::TextureTypes::Type2D,
-      Ogre::PFG_R8_UINT, false);
-
   // Create the texture.
   Ogre::TextureGpu *texture;
   try
@@ -222,74 +236,93 @@ void Ogre2MapVisual::Create()
         "MapTexture",
         Ogre::GpuPageOutStrategy::SaveToSystemRam,
         Ogre::TextureFlags::ManualTexture,
-        Ogre::TextureTypes::Type2D);
+        Ogre::TextureTypes::Type2D,
+        Ogre::BLANKSTRING,
+        0u);
 
-    texture->setResolution(image.getWidth(), image.getHeight());
-    texture->setNumMipmaps(image.getNumMipmaps());
-    texture->setPixelFormat(image.getPixelFormat());
+    texture->setResolution(width, height);
+    texture->setNumMipmaps(1u);
+    texture->setPixelFormat(texFormat);
+
     texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+    texture->_setNextResidencyStatus(
+      Ogre::GpuResidency::Resident);
     image.uploadTo(texture, 0, texture->getNumMipmaps()-1);
-    texture->writeContentsToFile("/home/nkoenig/map.png", 0, 1, true);
+    texture->notifyDataIsReady();
+
+    // texture->writeContentsToFile("/home/nkoenig/map.png", 0, 1, true);
   }
   catch(Ogre::Exception& e)
   {
     std::cout << e.what() << std::endl;
   }
 
+  std::string meshName = this->Name() + "_mesh";
+  common::Mesh mesh;
+  mesh.SetName(meshName);
+  common::SubMesh subMesh;
+  subMesh.SetName(this->Name() + "_submesh");
+  subMesh.SetPrimitiveType(common::SubMesh::TRIANGLES);
+  subMesh.AddVertex(math::Vector3d(0, 0, 0));
+  subMesh.AddTexCoordBySet(math::Vector2d(0, 0), 0u);
+  subMesh.AddNormal(math::Vector3d(0, 0, 1));
+
+  subMesh.AddVertex(math::Vector3d(1, 1, 0));
+  subMesh.AddTexCoordBySet(math::Vector2d(1, 1), 0u);
+  subMesh.AddNormal(math::Vector3d(0, 0, 1));
+
+  subMesh.AddVertex(math::Vector3d(0, 1, 0));
+  subMesh.AddTexCoordBySet(math::Vector2d(0, 1), 0u);
+  subMesh.AddNormal(math::Vector3d(0, 0, 1));
+
+  subMesh.AddVertex(math::Vector3d(1, 0, 0));
+  subMesh.AddTexCoordBySet(math::Vector2d(1, 0), 0u);
+  subMesh.AddNormal(math::Vector3d(0, 0, 1));
+
+  subMesh.AddIndex(0u);
+  subMesh.AddIndex(1u);
+  subMesh.AddIndex(2u);
+
+  subMesh.AddIndex(0u);
+  subMesh.AddIndex(3u);
+  subMesh.AddIndex(1u);
+
+  mesh.AddSubMesh(subMesh);
+
+  MeshDescriptor descriptor;
+  descriptor.meshName = meshName;
+  descriptor.mesh = &mesh;
+  MeshPtr meshGeom = this->Scene()->CreateMesh(descriptor);
+  this->ogreNode->attachObject(
+      std::dynamic_pointer_cast<Ogre2Mesh>(meshGeom)->OgreObject());
+  this->ogreNode->setScale(10, 10, 1);
+
   // Create the material.
   auto mat = std::dynamic_pointer_cast<Ogre2Material>(
       this->Scene()->CreateMaterial("MapMaterial"));
-
   // This line doesn't work, because `mat` requires a texture file, but
   // I have texture that is in memory.
   //mat->SetTexture("MapTexture");
   mat->SetReceiveShadows(false);
   mat->SetDepthWriteEnabled(false);
 
-  // Try to add the texture to a texture unit.
-  Ogre::Pass *pass = mat->Material()->getTechnique(0)->getPass(0);
-  Ogre::TextureUnitState *textureUnit = nullptr;
-  textureUnit = pass->createTextureUnitState();
-  textureUnit->setTexture(texture);
-  //textureUnit->setTextureFiltering(Ogre::TFO_NONE);
+  meshGeom->SetMaterial(mat);
+  auto datablock =
+    std::dynamic_pointer_cast<Ogre2Material>(meshGeom->Material())->UnlitDatablock();
 
-  // Create the manual object that will hold the map material.
-  // The `begin` line should associate the material with this object.
-  auto manualObject =
-    this->scene->OgreSceneManager()->createManualObject();
-  manualObject->begin(
-      *mat->Datablock()->getNameStr(), Ogre::OT_TRIANGLE_LIST);
-  manualObject->position(0, 0, 0);
-  manualObject->textureCoord(0, 0);
-  manualObject->normal(0, 0, 1);
+  // make it double sided
+  Ogre::HlmsMacroblock macroblock(*datablock->getMacroblock());
+  macroblock.mCullMode = Ogre::CULL_NONE;
+  datablock->setMacroblock(macroblock);
 
-  manualObject->position(1, 1, 0);
-  manualObject->textureCoord(1, 1);
-  manualObject->normal(0, 0, 1);
+  // disable filtering
+  Ogre::HlmsSamplerblock samplerblock;
+  samplerblock.setFiltering(Ogre::TFO_NONE);
 
-  manualObject->position(0, 1, 0);
-  manualObject->textureCoord(0, 1);
-  manualObject->normal(0, 0, 1);
+  datablock->setTexture(Ogre::PBSM_DIFFUSE, texture, &samplerblock);
 
-  manualObject->position(0, 0, 0);
-  manualObject->textureCoord(0, 0);
-  manualObject->normal(0, 0, 1);
-
-  manualObject->position(1, 0, 0);
-  manualObject->textureCoord(1, 0);
-  manualObject->normal(0, 0, 1);
-
-  manualObject->position(1, 1, 0);
-  manualObject->textureCoord(1, 1);
-  manualObject->normal(0, 0, 1);
-
-  manualObject->triangle(0, 1, 2);
-  manualObject->triangle(3, 4, 5);
-  manualObject->end();
-
-  // Attache the manual object to the scene node.
-  this->ogreNode->attachObject(manualObject);
-  this->ogreNode->setScale(10, 10, 1);
+  auto obj = std::dynamic_pointer_cast<Ogre2Mesh>(meshGeom)->OgreObject();
+  dynamic_cast<Ogre::Item *>(obj)->setDatablock(datablock);
 }
 
 //////////////////////////////////////////////////

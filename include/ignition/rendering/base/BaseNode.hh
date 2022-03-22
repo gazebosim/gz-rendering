@@ -428,7 +428,7 @@ namespace ignition
         return pose;
       }
 
-      return pose + parent->WorldPose();
+      return parent->WorldPose() * pose;
     }
 
     //////////////////////////////////////////////////

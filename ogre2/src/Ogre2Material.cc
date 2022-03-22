@@ -692,7 +692,11 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       continue;
     }
 
-    if (!_ogreParams->_findNamedConstantDefinition(name_param.first))
+    if (!_ogreParams->_findNamedConstantDefinition(name_param.first) &&
+        !(Ogre2RenderEngine::Instance()->GraphicsAPI() !=
+            GraphicsAPI::OPENGL &&
+            (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
+             ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())))
     {
       ignwarn << "Unable to find GPU program parameter: "
               << name_param.first << std::endl;
@@ -862,12 +866,6 @@ Ogre::MaterialPtr Ogre2Material::Material()
       IGN_ASSERT(false, "Impossible path!");
     }
 
-    auto mat = this->dataPtr->ogreSolidColorMat;
-    auto pass = mat->getTechnique(0u)->getPass(0);
-    pass->setFragmentProgram(this->dataPtr->ogreSolidColorShader->getName());
-    auto psParams = pass->getFragmentProgramParameters();
-    psParams->setNamedAutoConstant("inColor",
-                                   Ogre::GpuProgramParameters::ACT_CUSTOM, 1u);
   }
 
   return this->ogreMaterial;
@@ -1209,6 +1207,17 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
   // Metal needs this. Other APIs will ignore it.
   this->dataPtr->ogreSolidColorShader->setParameter(
     "shader_reflection_pair_hint", vertexShader->getName());
+
+  // Set 'inColor' on the cloned pixel shader. For Metal this must occur
+  // after vertex shader has been created and the reflection pair set.
+  {
+    auto mat = this->dataPtr->ogreSolidColorMat;
+    auto pass = mat->getTechnique(0u)->getPass(0);
+    pass->setFragmentProgram(this->dataPtr->ogreSolidColorShader->getName());
+    auto psParams = pass->getFragmentProgramParameters();
+    psParams->setNamedAutoConstant("inColor",
+        Ogre::GpuProgramParameters::ACT_CUSTOM, 1u);
+  }
 
   Ogre::MaterialPtr mat[2] = { mainMat, this->dataPtr->ogreSolidColorMat };
 

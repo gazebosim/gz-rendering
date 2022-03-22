@@ -156,7 +156,6 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
 }
 }
 
-
 /// \internal
 /// \brief Private data for the Ogre2ThermalCamera class
 class ignition::rendering::Ogre2ThermalCameraPrivate

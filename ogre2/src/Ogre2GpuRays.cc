@@ -480,7 +480,6 @@ void Ogre2LaserRetroMaterialSwitcher::passPosExecute(
   engine->SetIgnOgreRenderingMode(IORM_NORMAL);
 }
 
-
 //////////////////////////////////////////////////
 Ogre2GpuRays::Ogre2GpuRays()
   : dataPtr(new Ogre2GpuRaysPrivate)

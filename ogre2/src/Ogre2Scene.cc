@@ -100,8 +100,6 @@ class ignition::rendering::Ogre2ScenePrivate
 using namespace ignition;
 using namespace rendering;
 
-static const Ogre::Real kSimulationTime = Ogre::Real(1.0 / 60.0);
-
 //////////////////////////////////////////////////
 Ogre2Scene::Ogre2Scene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name), dataPtr(std::make_unique<Ogre2ScenePrivate>())
@@ -274,7 +272,11 @@ void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
 
     Ogre::FrameEvent evt;
     evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
-    evt.timeSinceLastFrame = kSimulationTime;
+    evt.timeSinceLastFrame = static_cast<Ogre::Real>(
+      static_cast<double>(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(this->Time())
+          .count()) /
+      1000000000.0);
     engine->OgreRoot()->_fireFrameStarted(evt);
 
     this->ogreSceneManager->updateSceneGraph();
@@ -340,7 +342,11 @@ void Ogre2Scene::EndFrame()
 
   Ogre::FrameEvent evt;
   evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
-  evt.timeSinceLastFrame = kSimulationTime;
+  evt.timeSinceLastFrame = static_cast<Ogre::Real>(
+    static_cast<double>(
+      std::chrono::duration_cast<std::chrono::nanoseconds>(this->Time())
+        .count()) /
+    1000000000.0);
   ogreRoot->_fireFrameRenderingQueued(evt);
 
   auto itor = ogreRoot->getSceneManagerIterator();

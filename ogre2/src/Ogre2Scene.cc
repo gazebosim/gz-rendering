@@ -104,6 +104,10 @@ using namespace rendering;
 Ogre2Scene::Ogre2Scene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name), dataPtr(std::make_unique<Ogre2ScenePrivate>())
 {
+  // Default to 60hz otherwise nothing can advance if user
+  // forgot to call SetTime
+  this->SetTime(
+    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
 }
 
 //////////////////////////////////////////////////

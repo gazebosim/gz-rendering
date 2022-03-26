@@ -92,6 +92,10 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
+  // 60hz
+  scene->SetTime(
+    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
+
   VisualPtr root = scene->RootVisual();
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays();
@@ -200,6 +204,10 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
+
+  // 60hz
+  scene->SetTime(
+    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
 
   VisualPtr root = scene->RootVisual();
 
@@ -389,6 +397,10 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
+  // 60hz
+  scene->SetTime(
+    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
+
   VisualPtr root = scene->RootVisual();
 
   // Create first ray caster
@@ -525,6 +537,10 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
+
+  // 60hz
+  scene->SetTime(
+    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
 
   VisualPtr root = scene->RootVisual();
 
@@ -741,6 +757,10 @@ void GpuRaysTest::SingleRay(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
+
+  // 60hz
+  scene->SetTime(
+    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
 
   VisualPtr root = scene->RootVisual();
 

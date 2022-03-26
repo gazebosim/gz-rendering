@@ -78,6 +78,9 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
+  // 60hz
+  scene->SetTime(
+    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
 
   VisualPtr root = scene->RootVisual();
 

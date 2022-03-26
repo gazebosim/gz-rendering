@@ -99,6 +99,9 @@ void DepthCameraTest::DepthCameraBoxes(
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
+  // 60hz
+  scene->SetTime(
+    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
 
   // Create an scene with a box in it
   scene->SetAmbientLight(1.0, 1.0, 1.0);
@@ -510,6 +513,9 @@ void DepthCameraTest::DepthCameraParticles(
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
+  // 60hz
+  scene->SetTime(
+    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
 
   // Create an scene with a box in it
   scene->SetAmbientLight(1.0, 1.0, 1.0);

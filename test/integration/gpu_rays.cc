@@ -92,9 +92,10 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
-  // 60hz
-  scene->SetTime(
-    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  // HACK: Tell ign-rendering6 to listen to SetTime calls
+  scene->SetTime(std::chrono::nanoseconds(-1));
+#endif
 
   VisualPtr root = scene->RootVisual();
 
@@ -205,9 +206,10 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
-  // 60hz
-  scene->SetTime(
-    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  // HACK: Tell ign-rendering6 to listen to SetTime calls
+  scene->SetTime(std::chrono::nanoseconds(-1));
+#endif
 
   VisualPtr root = scene->RootVisual();
 
@@ -290,6 +292,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
           std::placeholders::_4, std::placeholders::_5));
 
   gpuRays->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   int mid = static_cast<int>(hRayCount/2) * channels;
   int last = (hRayCount - 1) * channels;
@@ -317,6 +320,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   float *scan2 = new float[hRayCount * vRayCount * 3];
 
   gpuRays2->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   // Test Copy method instead of using the callback for the second rays caster
   gpuRays2->Copy(scan2);
 
@@ -334,7 +338,9 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   visualBox2->SetWorldRotation(box02Pose.Rot());
 
   gpuRays->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   gpuRays2->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   gpuRays2->Copy(scan2);
 
   for (int i = 0; i < gpuRays->RayCount(); ++i)
@@ -397,9 +403,10 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
-  // 60hz
-  scene->SetTime(
-    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  // HACK: Tell ign-rendering6 to listen to SetTime calls
+  scene->SetTime(std::chrono::nanoseconds(-1));
+#endif
 
   VisualPtr root = scene->RootVisual();
 
@@ -439,6 +446,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
           std::placeholders::_4, std::placeholders::_5));
 
   gpuRays->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   unsigned int mid = hRayCount * channels / 2;
   double unitBoxSize = 1.0;
@@ -480,6 +488,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 
   // wait for a few more laser scans
   gpuRays->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   for (int j = 0; j < gpuRays->VerticalRayCount(); ++j)
   {
@@ -538,9 +547,10 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
-  // 60hz
-  scene->SetTime(
-    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  // HACK: Tell ign-rendering6 to listen to SetTime calls
+  scene->SetTime(std::chrono::nanoseconds(-1));
+#endif
 
   VisualPtr root = scene->RootVisual();
 
@@ -639,6 +649,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   for (unsigned int i = 0u; i < 100u; ++i)
   {
     gpuRays->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
     // sensor should see ether a particle or box01
     double particleRange = static_cast<double>(scan[mid]);
@@ -677,6 +688,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   for (unsigned int i = 0u; i < 100u; ++i)
   {
     gpuRays->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
     // sensor should see ether a particle or box01
     double particleRange = static_cast<double>(scan[mid]);
@@ -758,9 +770,10 @@ void GpuRaysTest::SingleRay(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
-  // 60hz
-  scene->SetTime(
-    std::chrono::nanoseconds(static_cast<uint64_t>(1000000000.0 / 60.0)));
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  // HACK: Tell ign-rendering6 to listen to SetTime calls
+  scene->SetTime(std::chrono::nanoseconds(-1));
+#endif
 
   VisualPtr root = scene->RootVisual();
 
@@ -800,6 +813,7 @@ void GpuRaysTest::SingleRay(const std::string &_renderEngine)
           std::placeholders::_4, std::placeholders::_5));
 
   gpuRays->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   int mid = 0;
   double unitBoxSize = 1.0;

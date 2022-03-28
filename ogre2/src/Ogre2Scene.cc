@@ -99,6 +99,10 @@ class ignition::rendering::Ogre2ScenePrivate
   ///
   /// See https://github.com/ignitionrobotics/ign-rendering/issues/556
   /// See https://github.com/ignitionrobotics/ign-rendering/pull/584
+  ///
+  /// TODO(anyone): Remove any code using hackIgnoringSimTime for
+  /// ign-rendering7 as we can safely default to simulation time
+  /// without worrying about breaking existing apps.
   public: bool hackIgnoringSimTime = true;
 #endif
 

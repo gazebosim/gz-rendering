@@ -51,7 +51,7 @@ target_link_libraries(${ogre2_target}
     ${OGRE-Next_LIBRARIES}
     ${OGRE-Next_HlmsPbs_LIBRARIES}
     ${OGRE-Next_HlmsUnlit_LIBRARIES}
-    ${OGRE-Next_Planar_LIBRARIES}
+    ${OGRE-Next_Overlay_LIBRARIES}
 )
 
 if (HAVE_OGRE-Next)

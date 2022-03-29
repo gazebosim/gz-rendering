@@ -48,6 +48,10 @@ target_link_libraries(${ogre2_target}
     ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
     terra
+    ${OGRE-Next_LIBRARIES}
+    ${OGRE-Next_HlmsPbs_LIBRARIES}
+    ${OGRE-Next_HlmsUnlit_LIBRARIES}
+    ${OGRE-Next_Planar_LIBRARIES}
 )
 
 if (HAVE_OGRE-Next)

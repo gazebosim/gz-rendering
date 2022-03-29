@@ -531,7 +531,7 @@ void OgreHeightmap::Init()
   }
 
   std::string terrainNameSuffix = "";
-  if (this->LOD() == 0)
+  if (static_cast<unsigned int>(this->dataPtr->maxPixelError) == 0)
   {
     terrainNameSuffix = "_LOD0";
   }
@@ -544,7 +544,7 @@ void OgreHeightmap::Init()
     nTerrains = this->dataPtr->numTerrainSubdivisions;
     std::string terrainName = "gazebo_terrain_cache" +
         terrainNameSuffix;
-    prefix = terrainDirPath / terrainName.c_str();
+    prefix = common::joinPaths(terrainDirPath, terrainName.c_str());
   }
   else
   {
@@ -564,7 +564,7 @@ void OgreHeightmap::Init()
           this->dataPtr->numTerrainSubdivisions << " terrains." << std::endl;
     }
     std::string terrainName = "gazebo_terrain" + terrainNameSuffix;
-    prefix = terrainDirPath / terrainName.c_str();
+    prefix = common::joinPaths(terrainDirPath, terrainName.c_str());
   }
 
   double sqrtN = sqrt(nTerrains);

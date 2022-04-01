@@ -228,9 +228,10 @@
 1. Infrastructure
     * [Pull request #318](https://github.com/ignitionrobotics/ign-rendering/pull/318)
 
-### Ignition Rendering 5.X
+### Ignition Rendering 5.2.1 (2022-03-35)
 
-### Ignition Rendering 5.X.X (20XX-XX-XX)
+1. Silence CMake policy CMP0072
+    * [Pull request #528](https://github.com/ignitionrobotics/ign-rendering/pull/528)
 
 ### Ignition Rendering 5.2.0 (2021-11-02)
 

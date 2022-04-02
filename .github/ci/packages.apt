@@ -7,6 +7,7 @@ libignition-math6-dev
 libignition-math6-eigen3-dev
 libignition-plugin-dev
 libogre-1.9-dev
+libogre-2.2-dev
 libxi-dev
 libxmu-dev
 uuid-dev

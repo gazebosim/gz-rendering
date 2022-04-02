@@ -96,21 +96,14 @@ if (OGRE_FOUND)
 endif()
 
 #--------------------------------------
-# Find OGRE-Next
-find_package(OGRE-Next QUIET)
-if (OGRE-Next_FOUND)
-  set(HAVE_OGRE2 TRUE)
-  set(HAVE_OGRE-Next TRUE)
-else()
-  # Find OGRE2
-  ign_find_package(IgnOGRE2 VERSION 2.2.0
-      COMPONENTS HlmsPbs HlmsUnlit Overlay
-      REQUIRED_BY ogre2
-      PRIVATE_FOR ogre2)
+# Find OGRE2
+ign_find_package(IgnOGRE2 VERSION 2.2.0
+    COMPONENTS HlmsPbs HlmsUnlit Overlay
+    REQUIRED_BY ogre2
+    PRIVATE_FOR ogre2)
 
-  if (OGRE2_FOUND)
-    set(HAVE_OGRE2 TRUE)
-  endif()
+if (OGRE2_FOUND)
+  set(HAVE_OGRE2 TRUE)
 endif()
 
 # Plugin install dirs

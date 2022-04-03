@@ -159,7 +159,7 @@ void Ogre2Scene::SetTime(const std::chrono::steady_clock::duration &_time)
   {
     this->dataPtr->hackIgnoringSimTime = false;
   }
-  else
+  else  // NOLINT
 #endif
   {
     this->time = _time;

@@ -91,7 +91,7 @@ class ignition::rendering::Ogre2ScenePrivate
   public: uint32_t currNumCameraPasses = 0u;
 
   /// \brief Flag to indicate if we should flush GPU very often (per camera)
-  public: uint8_t cameraPassCountPerGpuFlush = 0u;
+  public: uint8_t cameraPassCountPerGpuFlush = 6u;
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";

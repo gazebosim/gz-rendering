@@ -79,6 +79,11 @@ void CameraTest::Track(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  // HACK: Tell ign-rendering6 to listen to SetTime calls
+  scene->SetTime(std::chrono::nanoseconds(-1));
+#endif
+
   VisualPtr root = scene->RootVisual();
 
   CameraPtr camera = scene->CreateCamera();
@@ -106,6 +111,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   EXPECT_EQ(initPos, camera->WorldPosition());
   EXPECT_NE(initRot, camera->WorldRotation());
@@ -126,6 +132,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera orientation when tracking target with offset
   // in world frame
@@ -144,6 +151,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   // verify camera orientation when tracking target with offset
   // in local frame
   // camera should be looking down and to the right
@@ -160,6 +168,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // reset camera pose
   camera->SetWorldPosition(initPos);
@@ -175,6 +184,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera rotaion has pitch component
   // but not as large as before without p gain
@@ -247,6 +257,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   for (auto i = 0; i < 30; ++i)
   {
     camera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   }
 
   EXPECT_EQ(800u, camera->ImageWidth());
@@ -298,6 +309,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   for (auto i = 0; i < 30; ++i)
   {
     camera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   }
 
   // test that VisualAt still works after resize
@@ -359,6 +371,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera is at same location as visual because
   // no offset is given
@@ -373,6 +386,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera pose when following target with offset
   // in world frame
@@ -389,6 +403,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera pose when following target with offset
   // in local frame
@@ -405,6 +420,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // reset camera pose
   camera->SetWorldPosition(initPos);
@@ -420,6 +436,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera position has changed but
   // but not as close to the target as before without p gain
@@ -723,6 +740,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
     thermalCamera->Update();
     if (segmentationCamera)
       segmentationCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   }
 
   // capture a frame

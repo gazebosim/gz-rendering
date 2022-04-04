@@ -29,31 +29,13 @@ add_definitions(-DOGRE_IGNORE_UNKNOWN_DEBUG)
 #  $<$<CONFIG:Debug>:DEBUG=1 _DEBUG=1>)
 
 target_include_directories(${PROJECT_NAME}
+  PRIVATE
+    # Hlms files inside Hlms/Pbs do not have #include <Hlms/Pbs/...> thus
+    # we must add this one manually for this to build correctly
+    ${OGRE2_INCLUDE}/Hlms/Pbs
+    ${OGRE2_INCLUDE}/Hlms/Common
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/include
 )
 
-if (HAVE_OGRE-Next)
-  target_include_directories(${PROJECT_NAME}
-    PRIVATE
-      # Hlms files inside Hlms/Pbs do not have #include <Hlms/Pbs/...> thus
-      # we must add this one manually for this to build correctly
-      ${OGRE-Next_INCLUDE_DIRS}
-      ${OGRE-Next_INCLUDE_DIRS}/OGRE-Next/PlanarReflections
-      ${OGRE-Next_HlmsPbs_INCLUDE_DIRS}
-      ${OGRE-Next_HlmsPbs_INCLUDE_DIRS}/..
-      ${OGRE-Next_HlmsPbs_INCLUDE_DIRS}/../Common
-  )
-
-  target_link_libraries(${PROJECT_NAME} PRIVATE ${OGRE-Next_LIBRARIES})
-else()
-  target_include_directories(${PROJECT_NAME}
-    PRIVATE
-      # Hlms files inside Hlms/Pbs do not have #include <Hlms/Pbs/...> thus
-      # we must add this one manually for this to build correctly
-      ${OGRE2_INCLUDE}/Hlms/Pbs
-      ${OGRE2_INCLUDE}/Hlms/Common
-  )
-
-  target_link_libraries(${PROJECT_NAME} PRIVATE IgnOGRE2::IgnOGRE2)
-endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE IgnOGRE2::IgnOGRE2)

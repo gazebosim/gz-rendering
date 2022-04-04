@@ -92,11 +92,6 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  // HACK: Tell ign-rendering6 to listen to SetTime calls
-  scene->SetTime(std::chrono::nanoseconds(-1));
-#endif
-
   VisualPtr root = scene->RootVisual();
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays();
@@ -205,11 +200,6 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
-
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  // HACK: Tell ign-rendering6 to listen to SetTime calls
-  scene->SetTime(std::chrono::nanoseconds(-1));
-#endif
 
   VisualPtr root = scene->RootVisual();
 
@@ -403,11 +393,6 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  // HACK: Tell ign-rendering6 to listen to SetTime calls
-  scene->SetTime(std::chrono::nanoseconds(-1));
-#endif
-
   VisualPtr root = scene->RootVisual();
 
   // Create first ray caster
@@ -546,11 +531,6 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
-
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  // HACK: Tell ign-rendering6 to listen to SetTime calls
-  scene->SetTime(std::chrono::nanoseconds(-1));
-#endif
 
   VisualPtr root = scene->RootVisual();
 
@@ -769,11 +749,6 @@ void GpuRaysTest::SingleRay(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
-
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  // HACK: Tell ign-rendering6 to listen to SetTime calls
-  scene->SetTime(std::chrono::nanoseconds(-1));
-#endif
 
   VisualPtr root = scene->RootVisual();
 

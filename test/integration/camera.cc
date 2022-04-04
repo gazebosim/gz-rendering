@@ -79,11 +79,6 @@ void CameraTest::Track(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  // HACK: Tell ign-rendering6 to listen to SetTime calls
-  scene->SetTime(std::chrono::nanoseconds(-1));
-#endif
-
   VisualPtr root = scene->RootVisual();
 
   CameraPtr camera = scene->CreateCamera();

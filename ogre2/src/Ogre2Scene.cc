@@ -86,26 +86,6 @@ class ignition::rendering::Ogre2ScenePrivate
   /// is incorrect
   public: bool frameUpdateStarted = false;
 
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  /// \brief HACK: SetTime was not doing anything; but it is needed for
-  /// particle FXs to simulate forward.
-  ///
-  /// To avoid breaking apps that were already calling SetTime() or
-  /// were never calling it, apps that call SetTime( -1 ) will tell
-  /// ign-rendering6 to start honouring simulation time.
-  ///
-  /// Otherwise the old behavior is used; which uses real time for particle
-  /// FXs instead of simulation time.
-  ///
-  /// See https://github.com/ignitionrobotics/ign-rendering/issues/556
-  /// See https://github.com/ignitionrobotics/ign-rendering/pull/584
-  ///
-  /// TODO(anyone): Remove any code using hackIgnoringSimTime for
-  /// ign-rendering7 as we can safely default to simulation time
-  /// without worrying about breaking existing apps.
-  public: bool hackIgnoringSimTime = true;
-#endif
-
   /// \brief Total time elapsed in simulation since last rendering frame
   public: std::chrono::steady_clock::duration lastRenderSimTime{0};
 
@@ -154,18 +134,9 @@ VisualPtr Ogre2Scene::RootVisual() const
 //////////////////////////////////////////////////
 void Ogre2Scene::SetTime(const std::chrono::steady_clock::duration &_time)
 {
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  if (std::chrono::duration_cast<std::chrono::nanoseconds>(_time).count() == -1)
-  {
-    this->dataPtr->hackIgnoringSimTime = false;
-  }
-  else  // NOLINT
-#endif
-  {
-    this->time = _time;
-    if (_time < this->dataPtr->lastRenderSimTime)
-      this->dataPtr->lastRenderSimTime = _time;
-  }
+  this->time = _time;
+  if (_time < this->dataPtr->lastRenderSimTime)
+    this->dataPtr->lastRenderSimTime = _time;
 }
 
 //////////////////////////////////////////////////
@@ -238,18 +209,7 @@ void Ogre2Scene::PreRender()
                             currTime - this->dataPtr->lastRenderSimTime)
                             .count()) /
       1000000000.0);
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-    if (!this->dataPtr->hackIgnoringSimTime)
-    {
-      engine->OgreRoot()->_fireFrameStarted(evt);
-    }
-    else
-    {
-      engine->OgreRoot()->_fireFrameStarted();
-    }
-#else
     engine->OgreRoot()->_fireFrameStarted(evt);
-#endif
 
     this->ogreSceneManager->updateSceneGraph();
   }
@@ -337,18 +297,7 @@ void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
                             currTime - this->dataPtr->lastRenderSimTime)
                             .count()) /
       1000000000.0);
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-    if (!this->dataPtr->hackIgnoringSimTime)
-    {
-      engine->OgreRoot()->_fireFrameStarted(evt);
-    }
-    else
-    {
-      engine->OgreRoot()->_fireFrameStarted();
-    }
-#else
     engine->OgreRoot()->_fireFrameStarted(evt);
-#endif
 
     this->ogreSceneManager->updateSceneGraph();
   }
@@ -419,18 +368,7 @@ void Ogre2Scene::EndFrame()
                           currTime - this->dataPtr->lastRenderSimTime)
                           .count()) /
     1000000000.0);
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  if (!this->dataPtr->hackIgnoringSimTime)
-  {
-    ogreRoot->_fireFrameRenderingQueued(evt);
-  }
-  else
-  {
-    ogreRoot->_fireFrameRenderingQueued();
-  }
-#else
   ogreRoot->_fireFrameRenderingQueued(evt);
-#endif
   this->dataPtr->lastRenderSimTime = currTime;
 
   auto itor = ogreRoot->getSceneManagerIterator();

@@ -132,13 +132,7 @@ std::chrono::steady_clock::duration BaseScene::Time() const
 //////////////////////////////////////////////////
 void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)
 {
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  // TODO(anyone): Remove me in ign-rendering7
-  if (std::chrono::duration_cast<std::chrono::nanoseconds>(_time).count() != -1)
-#endif
-  {
-    this->time = _time;
-  }
+  this->time = _time;
 }
 
 //////////////////////////////////////////////////

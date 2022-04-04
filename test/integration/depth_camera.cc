@@ -100,11 +100,6 @@ void DepthCameraTest::DepthCameraBoxes(
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
 
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  // HACK: Tell ign-rendering6 to listen to SetTime calls
-  scene->SetTime(std::chrono::nanoseconds(-1));
-#endif
-
   // Create an scene with a box in it
   scene->SetAmbientLight(1.0, 1.0, 1.0);
   ignition::rendering::VisualPtr root = scene->RootVisual();
@@ -519,11 +514,6 @@ void DepthCameraTest::DepthCameraParticles(
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
-
-#if IGNITION_RENDERING_MAJOR_VERSION <= 6
-  // HACK: Tell ign-rendering6 to listen to SetTime calls
-  scene->SetTime(std::chrono::nanoseconds(-1));
-#endif
 
   // Create an scene with a box in it
   scene->SetAmbientLight(1.0, 1.0, 1.0);

@@ -172,6 +172,7 @@ void DepthCameraTest::DepthCameraBoxes(
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;
     depthCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
     EXPECT_EQ(1u, g_depthCounter);
     EXPECT_EQ(1u, g_pointCloudCounter);
 
@@ -302,6 +303,7 @@ void DepthCameraTest::DepthCameraBoxes(
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;
     depthCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
     EXPECT_EQ(1u, g_depthCounter);
     EXPECT_EQ(1u, g_pointCloudCounter);
 
@@ -358,6 +360,7 @@ void DepthCameraTest::DepthCameraBoxes(
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;
     depthCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
     EXPECT_EQ(1u, g_depthCounter);
     EXPECT_EQ(1u, g_pointCloudCounter);
 
@@ -416,6 +419,7 @@ void DepthCameraTest::DepthCameraBoxes(
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;
     depthCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
     EXPECT_EQ(1u, g_depthCounter);
     EXPECT_EQ(1u, g_pointCloudCounter);
 
@@ -583,6 +587,7 @@ void DepthCameraTest::DepthCameraParticles(
     g_depthCounter = 0u;
     g_pointCloudCounter = 0u;
     depthCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
     EXPECT_EQ(1u, g_depthCounter);
     EXPECT_EQ(1u, g_pointCloudCounter);
 
@@ -636,6 +641,7 @@ void DepthCameraTest::DepthCameraParticles(
     for (unsigned int i = 0; i < 100; ++i)
     {
       depthCamera->Update();
+      scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
     }
     EXPECT_EQ(100u, g_depthCounter);
     EXPECT_EQ(100u, g_pointCloudCounter);
@@ -705,6 +711,7 @@ void DepthCameraTest::DepthCameraParticles(
     for (unsigned int i = 0; i < 100; ++i)
     {
       depthCamera->Update();
+      scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
     }
     EXPECT_EQ(100u, g_depthCounter);
     EXPECT_EQ(100u, g_pointCloudCounter);

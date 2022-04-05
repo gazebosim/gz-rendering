@@ -86,6 +86,9 @@ class ignition::rendering::Ogre2ScenePrivate
   /// is incorrect
   public: bool frameUpdateStarted = false;
 
+  /// \brief Total time elapsed in simulation since last rendering frame
+  public: std::chrono::steady_clock::duration lastRenderSimTime{0};
+
   /// \brief Keeps track how many passes we've done so far and
   /// compares it to cameraPassCountPerGpuFlush
   public: uint32_t currNumCameraPasses = 0u;
@@ -126,6 +129,14 @@ RenderEngine *Ogre2Scene::Engine() const
 VisualPtr Ogre2Scene::RootVisual() const
 {
   return this->rootVisual;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::SetTime(const std::chrono::steady_clock::duration &_time)
+{
+  this->time = _time;
+  if (_time < this->dataPtr->lastRenderSimTime)
+    this->dataPtr->lastRenderSimTime = _time;
 }
 
 //////////////////////////////////////////////////
@@ -190,7 +201,15 @@ void Ogre2Scene::PreRender()
   if (!this->LegacyAutoGpuFlush())
   {
     auto engine = Ogre2RenderEngine::Instance();
-    engine->OgreRoot()->_fireFrameStarted();
+    const auto currTime = this->Time();
+    Ogre::FrameEvent evt;
+    evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
+    evt.timeSinceLastFrame = static_cast<Ogre::Real>(
+      static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            currTime - this->dataPtr->lastRenderSimTime)
+                            .count()) /
+      1000000000.0);
+    engine->OgreRoot()->_fireFrameStarted(evt);
 
     this->ogreSceneManager->updateSceneGraph();
   }
@@ -269,7 +288,16 @@ void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
   if (this->LegacyAutoGpuFlush())
   {
     auto engine = Ogre2RenderEngine::Instance();
-    engine->OgreRoot()->_fireFrameStarted();
+
+    const auto currTime = this->Time();
+    Ogre::FrameEvent evt;
+    evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
+    evt.timeSinceLastFrame = static_cast<Ogre::Real>(
+      static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            currTime - this->dataPtr->lastRenderSimTime)
+                            .count()) /
+      1000000000.0);
+    engine->OgreRoot()->_fireFrameStarted(evt);
 
     this->ogreSceneManager->updateSceneGraph();
   }
@@ -332,7 +360,16 @@ void Ogre2Scene::EndFrame()
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
 
-  ogreRoot->_fireFrameRenderingQueued();
+  const auto currTime = this->Time();
+  Ogre::FrameEvent evt;
+  evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
+  evt.timeSinceLastFrame = static_cast<Ogre::Real>(
+    static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                          currTime - this->dataPtr->lastRenderSimTime)
+                          .count()) /
+    1000000000.0);
+  ogreRoot->_fireFrameRenderingQueued(evt);
+  this->dataPtr->lastRenderSimTime = currTime;
 
   auto itor = ogreRoot->getSceneManagerIterator();
   while (itor.hasMoreElements())
@@ -341,7 +378,7 @@ void Ogre2Scene::EndFrame()
     sceneManager->clearFrameData();
   }
 
-  ogreRoot->_fireFrameEnded();
+  ogreRoot->_fireFrameEnded(evt);
 }
 
 //////////////////////////////////////////////////

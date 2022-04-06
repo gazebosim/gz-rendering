@@ -5,6 +5,18 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
+## Ignition Rendering 6.2.1 to 6.X
+
+### Modifications
+
+1. Ogre 2 heightmaps: the Y position sign was flipped
+
+1. `Scene::SetTime` is often unset. Ignition's `Ogre2` now defaults to 60hz otherwise rendering won't advance forward.
+	+ Mostly affects Particles.
+	+ Also may affect gaussian postprocessing and other filters dependant on time.
+	+ Previous behavior was using real time instead of simulation time, which is wrong.
+	+ See https://github.com/ignitionrobotics/ign-rendering/issues/556 for details.
+
 ## Ignition Rendering 5.x to 6.x
 
 ### Modifications
@@ -39,12 +51,6 @@ release will remove the deprecated code.
 
 1. **depth_camera_fs.glsl** and **depth_camera_final_fs.glsl**
     + Far clipping changed from clipping by depth to clipping by range, i.e. distance to point, so that the data generated will never exceed the specified max range of the camera.
-
-1. `Scene::SetTime` is often unset. Ignition's `Ogre2` now defaults to 60hz otherwise rendering won't advance forward.
-	+ Mostly affects Particles.
-	+ Also may affect gaussian postprocessing and other filters dependant on time.
-	+ Previous behavior was using real time instead of simulation time, which is wrong.
-	+ See https://github.com/ignitionrobotics/ign-rendering/issues/556 for details.
 
 ## Ignition Rendering 4.0 to 4.1
 

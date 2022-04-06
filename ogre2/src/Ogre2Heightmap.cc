@@ -158,16 +158,8 @@ void Ogre2Heightmap::Init()
   // Obtain min and max elevation and bring everything to range [0; 1]
   // Terra should support non-normalized ranges but there are a couple
   // bugs preventing that, so it's just easier to normalize the data
-  double minElevation = this->descriptor.Data()->MinElevation();
-  double maxElevation = this->descriptor.Data()->MaxElevation();
-
-  // Sanity check
-  if (minElevation >= maxElevation)
-  {
-    ignerr << "Internal error: min elevation [" << minElevation
-           << "] >= max elevation [" << maxElevation << "]" << std::endl;
-    return;
-  }
+  float minElevation = 0.0;
+  float maxElevation = 0.0;
 
   for (unsigned int y = 0; y < newWidth; ++y)
   {
@@ -181,12 +173,8 @@ void Ogre2Heightmap::Init()
       if (!std::isfinite(heightVal))
         heightVal = minElevation;
 
-      if (heightVal < minElevation || heightVal > maxElevation)
-      {
-        ignerr << "Internal error: height [" << heightVal
-               << "] is out of bounds [" << minElevation << " / "
-               << maxElevation << "]" << std::endl;
-      }
+      minElevation = std::min(minElevation, heightVal);
+      maxElevation = std::max(maxElevation, heightVal);
       this->dataPtr->heights.push_back(heightVal);
     }
   }

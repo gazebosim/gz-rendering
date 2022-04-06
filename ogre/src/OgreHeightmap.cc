@@ -530,13 +530,21 @@ void OgreHeightmap::Init()
         "General");
   }
 
+  std::string terrainNameSuffix = "";
+  if (static_cast<unsigned int>(this->dataPtr->maxPixelError) == 0)
+  {
+    terrainNameSuffix = "_LOD0";
+  }
+
   // If the paging is enabled we modify the number of subterrains
   std::string prefix;
   if (this->descriptor.UseTerrainPaging())
   {
     this->dataPtr->splitTerrain = true;
     nTerrains = this->dataPtr->numTerrainSubdivisions;
-    prefix = common::joinPaths(terrainDirPath, "ignition_terrain_cache");
+    std::string terrainName = "gazebo_terrain_cache" +
+        terrainNameSuffix;
+    prefix = common::joinPaths(terrainDirPath, terrainName.c_str());
   }
   else
   {
@@ -555,7 +563,8 @@ void OgreHeightmap::Init()
       ignmsg << "Large heightmap used with LOD. It will be subdivided into " <<
           this->dataPtr->numTerrainSubdivisions << " terrains." << std::endl;
     }
-    prefix = common::joinPaths(terrainDirPath, "ignition_terrain");
+    std::string terrainName = "gazebo_terrain" + terrainNameSuffix;
+    prefix = common::joinPaths(terrainDirPath, terrainName.c_str());
   }
 
   double sqrtN = sqrt(nTerrains);

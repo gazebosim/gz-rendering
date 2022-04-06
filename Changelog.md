@@ -14,7 +14,7 @@
 1. Increase particle emitter quota
     * [Pull request #562](https://github.com/ignitionrobotics/ign-rendering/pull/562)
 
-1.Make sure shader param exists before setting its value
+1. Make sure shader param exists before setting its value
     * [Pull request #558](https://github.com/ignitionrobotics/ign-rendering/pull/558)
 
 1. Backport wave changes

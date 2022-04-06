@@ -166,7 +166,13 @@ void Ogre2Heightmap::Init()
     for (unsigned int x = 0; x < newWidth; ++x)
     {
       const size_t index = y * srcWidth + x;
-      const float heightVal = lookup[index];
+      float heightVal = lookup[index];
+
+      // Sanity check in case we get NaNs from ign-common, this prevents a crash
+      // in Ogre
+      if (!std::isfinite(heightVal))
+        heightVal = minElevation;
+
       if (heightVal < minElevation || heightVal > maxElevation)
       {
         ignerr << "Internal error: height [" << heightVal
@@ -211,9 +217,10 @@ void Ogre2Heightmap::Init()
 
   const math::Vector3d size = this->descriptor.Size();
 
+  // The position's Y sign ends up flipped
   math::Vector3d center(
       this->descriptor.Position().X(),
-      this->descriptor.Position().Y(),
+      -this->descriptor.Position().Y(),
       this->descriptor.Position().Z() + size.Z() * 0.5 + minElevation);
 
   Ogre::Root *ogreRoot = Ogre2RenderEngine::Instance()->OgreRoot();

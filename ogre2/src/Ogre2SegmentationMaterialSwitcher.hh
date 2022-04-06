@@ -18,6 +18,7 @@
 #ifndef IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 #define IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 
+#include <map>
 #include <string>
 #include <random>
 #include <unordered_map>
@@ -90,6 +91,9 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   /// \brief A map of ogre sub item pointer to their original hlms material
   private: std::unordered_map<Ogre::SubItem *,
     Ogre::HlmsDatablock *> datablockMap;
+
+  /// \brief A map of ogre sub item pointer to their original low level material
+  private: std::map<Ogre::SubItem *, Ogre::MaterialPtr> segmentationMaterialMap;
 
   /// \brief Ogre material consisting of a shader that changes the
   /// appearance of item to use a unique color for mouse picking

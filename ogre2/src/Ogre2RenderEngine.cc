@@ -383,6 +383,11 @@ void Ogre2RenderEngine::CreateLogger()
 void Ogre2RenderEngine::CreateContext()
 {
 #if not (__APPLE__ || _WIN32)
+  if (this->Headless())
+  {
+    // Nothing to do
+    return;
+  }
   // create X11 display
   this->dummyDisplay = XOpenDisplay(0);
   Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -391,7 +396,8 @@ void Ogre2RenderEngine::CreateContext()
   {
     // Not able to create a Xwindow, try to run in headless mode
     this->SetHeadless(true);
-    ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
+    ignwarn << "Unable to open display: " << XDisplayName(0)
+            << ". Trying to run in headless mode." << std::endl;
     return;
   }
 
@@ -788,7 +794,15 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // disable writting debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
-    hlmsPbs->setListener(&this->dataPtr->hlmsCustomizations);
+
+#if IGNITION_RENDERING_MAJOR_VERSION >= 7
+    IGN_ASSERT(
+      hlmsPbs->getListener() != &this->dataPtr->hlmsCustomizations &&
+        hlmsPbs->getListener() != this->dataPtr->hlmsPbsTerraShadows.get(),
+      "Bad merge! In ign-rendering7 there's a new listener that will "
+      "coordinate all other listeners. Watch out all 3 Hlms (Unlit, Pbs, "
+      "Terra)");
+#endif
   }
 
   {
@@ -976,6 +990,12 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     window->reposition(0, 0);
   }
   return stream.str();
+}
+
+//////////////////////////////////////////////////
+GraphicsAPI Ogre2RenderEngine::GraphicsAPI() const
+{
+  return this->dataPtr->graphicsAPI;
 }
 
 //////////////////////////////////////////////////

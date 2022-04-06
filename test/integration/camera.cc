@@ -22,9 +22,14 @@
 #include "test_config.h"  // NOLINT(build/include)
 
 #include "ignition/rendering/Camera.hh"
+#include "ignition/rendering/GpuRays.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
+#include "ignition/rendering/SegmentationCamera.hh"
+#include "ignition/rendering/ShaderParams.hh"
+#include "ignition/rendering/ThermalCamera.hh"
+
 
 using namespace ignition;
 using namespace rendering;
@@ -49,6 +54,14 @@ class CameraTest: public testing::Test,
 
   // Test and verify camera select function method using Selection Buffer
   public: void VisualAt(const std::string &_renderEngine);
+
+  // Test selecting visual with custom shader
+  public: void ShaderSelection(const std::string &_renderEngine);
+
+  // Path to test media directory
+  public: const std::string TEST_MEDIA_PATH =
+          ignition::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+                "test", "media");
 };
 
 /////////////////////////////////////////////////
@@ -65,6 +78,11 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
+
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  // HACK: Tell ign-rendering6 to listen to SetTime calls
+  scene->SetTime(std::chrono::nanoseconds(-1));
+#endif
 
   VisualPtr root = scene->RootVisual();
 
@@ -93,6 +111,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   EXPECT_EQ(initPos, camera->WorldPosition());
   EXPECT_NE(initRot, camera->WorldRotation());
@@ -113,6 +132,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera orientation when tracking target with offset
   // in world frame
@@ -131,6 +151,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   // verify camera orientation when tracking target with offset
   // in local frame
   // camera should be looking down and to the right
@@ -147,6 +168,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // reset camera pose
   camera->SetWorldPosition(initPos);
@@ -162,6 +184,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera rotaion has pitch component
   // but not as large as before without p gain
@@ -234,6 +257,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   for (auto i = 0; i < 30; ++i)
   {
     camera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   }
 
   EXPECT_EQ(800u, camera->ImageWidth());
@@ -285,6 +309,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   for (auto i = 0; i < 30; ++i)
   {
     camera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   }
 
   // test that VisualAt still works after resize
@@ -346,6 +371,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera is at same location as visual because
   // no offset is given
@@ -360,6 +386,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera pose when following target with offset
   // in world frame
@@ -376,6 +403,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera pose when following target with offset
   // in local frame
@@ -392,6 +420,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // reset camera pose
   camera->SetWorldPosition(initPos);
@@ -407,6 +436,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // render a frame
   camera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
   // verify camera position has changed but
   // but not as close to the target as before without p gain
@@ -553,6 +583,225 @@ void CameraTest::Visibility(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void CameraTest::ShaderSelection(const std::string &_renderEngine)
+{
+  if (_renderEngine == "optix")
+  {
+    igndbg << "Custom shaders are not supported yet in rendering engine: "
+           << _renderEngine << std::endl;
+    return;
+  }
+  else if (_renderEngine == "ogre2")
+  {
+    // \todo(anyone) test fails on github action (Bionic) but pass on other
+    // builds. Need to investigate further.
+    // Github action sets the MESA_GL_VERSION_OVERRIDE variable
+    // so check for this variable and disable test if it is set.
+#ifdef __linux__
+    std::string value;
+    bool result = common::env("MESA_GL_VERSION_OVERRIDE", value, true);
+    if (result && value == "3.3")
+    {
+      igndbg << "Test is run on machine with software rendering or mesa driver "
+             << "Skipping test. " << std::endl;
+      return;
+    }
+#endif
+  }
+
+  // This test checks that custom shaders are being rendering correctly in
+  // camera view. It also verifies that visual selection is working and the
+  // visual's material remains the same after selection.
+
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+           << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+  scene->SetAmbientLight(1, 1, 1);
+
+  VisualPtr root = scene->RootVisual();
+
+  // create directional light
+  DirectionalLightPtr light = scene->CreateDirectionalLight();
+  light->SetDirection(1.0, 0.0, -1);
+  light->SetDiffuseColor(0.5, 0.5, 0.5);
+  light->SetSpecularColor(0.5, 0.5, 0.5);
+  root->AddChild(light);
+
+  std::string vertexShaderFile;
+  std::string fragmentShaderFile;
+  if (_renderEngine == "ogre2")
+  {
+    vertexShaderFile = "simple_color_330_vs.glsl";
+    fragmentShaderFile = "simple_color_330_fs.glsl";
+  }
+  else if (_renderEngine == "ogre")
+  {
+    vertexShaderFile = "simple_color_vs.glsl";
+    fragmentShaderFile = "simple_color_fs.glsl";
+  }
+
+  // create shader materials
+  // path to look for vertex and fragment shader parameters
+  std::string vertexShaderPath = ignition::common::joinPaths(
+      TEST_MEDIA_PATH, "materials", "programs", vertexShaderFile);
+  std::string fragmentShaderPath = ignition::common::joinPaths(
+      TEST_MEDIA_PATH, "materials", "programs", fragmentShaderFile);
+
+  // create shader material
+  ignition::rendering::MaterialPtr shader = scene->CreateMaterial();
+  shader->SetVertexShader(vertexShaderPath);
+  shader->SetFragmentShader(fragmentShaderPath);
+
+  // create visual
+  VisualPtr visual = scene->CreateVisual("box");
+  visual->AddGeometry(scene->CreateBox());
+  visual->SetWorldPosition(2.0, 0.0, 0.0);
+  visual->SetWorldRotation(0.0, 0.0, 0.0);
+  visual->SetMaterial(shader);
+  root->AddChild(visual);
+  // for thermal camera
+  visual->SetUserData("temperature", 310.0f);
+  // for segmentation camera
+  visual->SetUserData("label", 1);
+
+  // visual will clone and create a unique material
+  // so destroy this one
+  scene->DestroyMaterial(shader);
+
+  // create camera
+  CameraPtr camera = scene->CreateCamera("camera");
+  ASSERT_TRUE(camera != nullptr);
+  camera->SetLocalPosition(0.0, 0.0, 0.0);
+  camera->SetLocalRotation(0.0, 0.0, 0.0);
+  camera->SetImageWidth(800);
+  camera->SetImageHeight(600);
+  camera->SetAntiAliasing(2);
+  camera->SetAspectRatio(1.333);
+  camera->SetHFOV(IGN_PI / 2);
+  root->AddChild(camera);
+
+  // Create a gpu ray
+  // laser retro material switching may also affect shader materials
+  const double hMinAngle = -IGN_PI/2.0;
+  const double hMaxAngle = IGN_PI/2.0;
+  const double minRange = 0.1;
+  const double maxRange = 10.0;
+  const int hRayCount = 320;
+  const int vRayCount = 1;
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
+  gpuRays->SetWorldPosition(0, 0, 0);
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  // Create thermal camera
+  // heat map material switching may also affect shader materials
+  auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
+  ASSERT_NE(thermalCamera, nullptr);
+  thermalCamera->SetAmbientTemperature(296.0f);
+  thermalCamera->SetAspectRatio(1.333);
+  thermalCamera->SetImageWidth(320);
+  thermalCamera->SetImageHeight(240);
+  thermalCamera->SetHFOV(IGN_PI_2);
+  root->AddChild(thermalCamera);
+
+  // Currently, only ogre2 supports segmentation cameras
+  SegmentationCameraPtr segmentationCamera;
+  if (_renderEngine == "ogre2")
+  {
+    // Create segmentation camera
+    // segmentation material switching may also affect shader materials
+    segmentationCamera =
+        scene->CreateSegmentationCamera("SegmentationCamera");
+    ASSERT_NE(camera, nullptr);
+    segmentationCamera->SetLocalPosition(0.0, 0.0, 0.0);
+    segmentationCamera->SetLocalRotation(0.0, 0.0, 0.0);
+    segmentationCamera->SetBackgroundLabel(23);
+    segmentationCamera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
+    segmentationCamera->EnableColoredMap(false);
+    segmentationCamera->SetAspectRatio(1.333);
+    segmentationCamera->SetImageWidth(320);
+    segmentationCamera->SetImageHeight(240);
+    segmentationCamera->SetHFOV(IGN_PI_2);
+    root->AddChild(segmentationCamera);
+
+    // worldviewproj_matrix is a constant defined by ogre.
+    // Here we add a line to add this constant to the params.
+    // The specified value is ignored as it will be auto bound to the
+    // correct type and value.
+    auto params = visual->Material()->VertexShaderParams();
+    (*params)["worldviewproj_matrix"] = 1;
+
+    // check setting invalid param - this should print a warning msg and
+    // not cause the program to crash.
+    (*params)["worldviewproj_matrix_invalid"] = 1;
+  }
+
+  // render a few frames
+  for (auto i = 0; i < 30; ++i)
+  {
+    camera->Update();
+    gpuRays->Update();
+    thermalCamera->Update();
+    if (segmentationCamera)
+      segmentationCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  }
+
+  // capture a frame
+  Image image = camera->CreateImage();
+  camera->Capture(image);
+
+  // verify correct visual is returned
+  VisualPtr vis = camera->VisualAt(
+      math::Vector2i(camera->ImageWidth() / 2, camera->ImageHeight() / 2));
+  EXPECT_NE(nullptr, vis);
+  EXPECT_EQ("box", vis->Name());
+
+  // capture another frame
+  Image image2 = camera->CreateImage();
+  camera->Capture(image2);
+
+  unsigned char *data = image.Data<unsigned char>();
+  unsigned char *data2 = image2.Data<unsigned char>();
+  unsigned int height = camera->ImageHeight();
+  unsigned int width = camera->ImageWidth();
+
+  // verify that camera sees red color before and after selection
+  int mid = (height / 2 * width * 3u) + (width / 2 - 1) * 3u;
+  int r = static_cast<int>(data[mid]);
+  int g = static_cast<int>(data[mid+1]);
+  int b = static_cast<int>(data[mid+2]);
+  int r2 = static_cast<int>(data2[mid]);
+  int g2 = static_cast<int>(data2[mid+1]);
+  int b2 = static_cast<int>(data2[mid+2]);
+
+  EXPECT_EQ(r, r2);
+  EXPECT_EQ(g, g2);
+  EXPECT_EQ(b, b2);
+
+  EXPECT_GT(r, g);
+  EXPECT_GT(r, b);
+  EXPECT_EQ(g, b);
+
+  // Clean up
+  engine->DestroyScene(scene);
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
 TEST_P(CameraTest, Track)
 {
   Track(GetParam());
@@ -574,6 +823,12 @@ TEST_P(CameraTest, Visibility)
 TEST_P(CameraTest, VisualAt)
 {
   VisualAt(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, ShaderSelection)
+{
+  ShaderSelection(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,

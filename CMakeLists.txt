@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 #============================================================================
 # Initialize the project
 #============================================================================
-project(ignition-rendering6 VERSION 6.0.1)
+project(ignition-rendering6 VERSION 6.2.1)
 
 #============================================================================
 # Find ignition-cmake
@@ -52,6 +52,11 @@ ign_find_package(FreeImage VERSION 3.9
 
 #--------------------------------------
 # Find OpenGL
+# See CMP0072 for more details (cmake --help-policy CMP0072)
+if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
+  set(OpenGL_GL_PREFERENCE "GLVND")
+endif()
+
 ign_find_package(OpenGL
   REQUIRED_BY ogre ogre2
   PKGCONFIG gl)
@@ -91,14 +96,21 @@ if (OGRE_FOUND)
 endif()
 
 #--------------------------------------
-# Find OGRE2
-ign_find_package(IgnOGRE2 VERSION 2.2.0
-    COMPONENTS HlmsPbs HlmsUnlit Overlay
-    REQUIRED_BY ogre2
-    PRIVATE_FOR ogre2)
-
-if (OGRE2_FOUND)
+# Find OGRE-Next
+find_package(OGRE-Next QUIET)
+if (OGRE-Next_FOUND)
   set(HAVE_OGRE2 TRUE)
+  set(HAVE_OGRE-Next TRUE)
+else()
+  # Find OGRE2
+  ign_find_package(IgnOGRE2 VERSION 2.2.0
+      COMPONENTS HlmsPbs HlmsUnlit Overlay
+      REQUIRED_BY ogre2
+      PRIVATE_FOR ogre2)
+
+  if (OGRE2_FOUND)
+    set(HAVE_OGRE2 TRUE)
+  endif()
 endif()
 
 # Plugin install dirs

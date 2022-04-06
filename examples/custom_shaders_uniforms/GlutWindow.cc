@@ -111,6 +111,8 @@ void updateCameras()
 //! [update uniforms]
 void updateUniforms()
 {
+  if (!g_shaderParams)
+    return;
   (*g_shaderParams)["u_seed"].UpdateBuffer(g_seed);
   (*g_shaderParams)["u_resolution"].UpdateBuffer(g_resolution);
   (*g_shaderParams)["u_color"].UpdateBuffer(g_color);
@@ -200,12 +202,26 @@ void initUniforms()
   ir::VisualPtr sphere =
       std::dynamic_pointer_cast<ir::Visual>(node->ChildByName("box"));
   ir::MaterialPtr shader = sphere->Material();
+  if (!shader)
+    return;
   g_shaderParams = shader->FragmentShaderParams();
 
   (*g_shaderParams)["u_seed"].InitializeBuffer(1);
   (*g_shaderParams)["u_resolution"].InitializeBuffer(2);
   (*g_shaderParams)["u_color"].InitializeBuffer(3);
   (*g_shaderParams)["u_adjustments"].InitializeBuffer(16);
+
+  auto engine = g_camera->Scene()->Engine();
+  if (engine->Name() == "ogre2")
+  {
+    // worldviewproj_matrix is a constant defined by ogre.
+    // Here we add a line to add this constant to the params.
+    // The specified value is ignored as it will be auto bound to the
+    // correct type and value. See available constants:
+    // https://github.com/OGRECave/ogre-next/blob/v2-2/OgreMain/src/OgreGpuProgramParams.cpp
+    auto params = shader->VertexShaderParams();
+    (*params)["worldviewproj_matrix"] = 1;
+  }
 }
 
 //////////////////////////////////////////////////

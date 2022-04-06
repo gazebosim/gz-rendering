@@ -121,6 +121,16 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   root->AddChild(camera);
   camera->Update();
 
+  // \todo(anyone)
+  // the centerClick var above is set to a screen pos of (width/2, height/2).
+  // This is off-by-1. The actual center pos should be at
+  // (width/2 - 1, height/2 - 1) so the result.X() and result.Y() is a bit off
+  // from the expected position. However, fixing the centerClick above caused
+  // the screenToPlane tests to fail so only modifying the pos here, and the
+  // cause of test failure need to be investigated.
+  if (_renderEngine == "ogre2")
+    centerClick = ignition::math::Vector2i(halfWidth-1, halfHeight-1);
+
   // API without RayQueryResult and default max distance
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
 

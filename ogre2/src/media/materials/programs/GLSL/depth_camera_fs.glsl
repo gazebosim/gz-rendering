@@ -36,6 +36,7 @@ uniform float far;
 uniform float min;
 uniform float max;
 uniform vec3 backgroundColor;
+uniform int hasBackground;
 
 uniform float particleStddev;
 uniform float particleScatterRatio;
@@ -154,7 +155,8 @@ void main()
     // this is because point.x may have been set to background depth value
     // due to the scatter effect. We should still render particles in the color
     // image
-    if (particle.x < 1e-6)
+    // todo(iche033) handle case when background is a cubemap
+    if (hasBackground == 0 && particle.x < 1e-6)
     {
       color = vec4(backgroundColor, 1.0);
     }
@@ -171,7 +173,8 @@ void main()
     }
 
     // clamp to background color only if it is not a particle pixel
-    if (particle.x < 1e-6)
+    // todo(iche033) handle case when background is a cubemap
+    if (hasBackground == 0 && particle.x < 1e-6)
     {
       color = vec4(backgroundColor, 1.0);
     }

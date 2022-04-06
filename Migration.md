@@ -5,6 +5,12 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
+## Ignition Rendering 6.0.1 to 6.1.0
+
+### Modifications
+
+1. Ogre 2 heightmaps: the Y position sign was flipped
+
 ## Ignition Rendering 5.x to 6.x
 
 ### Modifications

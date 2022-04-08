@@ -96,11 +96,21 @@ if (OGRE_FOUND)
 endif()
 
 #--------------------------------------
-# Find OGRE2
+# Find OGRE2: first try to find OGRE2 built with PlanarReflections support and
+# fallback to look for OGRE2 without it. Both seems to works for ign-rendering.
+# See https://github.com/ignitionrobotics/ign-rendering/issues/597
 ign_find_package(IgnOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay PlanarReflections
+    PRIVATE_FOR ogre2
+    QUIET)
+
+if (NOT OGRE2_FOUND)
+  message(STATUS "IgnOGRE2 was not found with PlanarReflections. Try looking without this component:")
+  ign_find_package(IgnOGRE2 VERSION 2.2.0
+    COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
+endif()
 
 if (OGRE2_FOUND)
   set(HAVE_OGRE2 TRUE)

@@ -489,7 +489,14 @@ void OgreHeightmap::Init()
     for (unsigned int x = 0; x < vertSize; ++x)
     {
       int index = (vertSize - y - 1) * vertSize + x;
-      this->dataPtr->heights.push_back(lookup[index] - minElevation);
+
+      // Sanity check in case we get NaNs from ign-common, this prevents a crash
+      // in Ogre
+      auto value = lookup[index];
+      if (!std::isfinite(value))
+        value = minElevation;
+
+      this->dataPtr->heights.push_back(value - minElevation);
     }
   }
 

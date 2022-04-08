@@ -152,7 +152,7 @@ void buildScene(ScenePtr _scene)
   textureC2.SetDiffuse("../media/dirt_diffusespecular.png");
   textureC2.SetNormal("../media/flat_normal.png");
   desc2.AddTexture(textureC2);
-  desc2.SetPosition({30, 0, 0});
+  desc2.SetPosition({30, 10, 0});
   auto heightmapGeom2 = _scene->CreateHeightmap(desc2);
 
   auto vis2 = _scene->CreateVisual();

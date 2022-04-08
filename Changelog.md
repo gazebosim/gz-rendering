@@ -2,6 +2,41 @@
 
 ### Ignition Rendering 6.X
 
+### Ignition Rendering 6.3.0 (2022-04-06)
+
+1. Flip heightmap's Y position on Ogre 2 and add sanity checks for NaN
+    * [Pull request #585](https://github.com/ignitionrobotics/ign-rendering/pull/585)
+
+1. Use custom simulation time variants for Ogre
+    * [Pull request #584](https://github.com/ignitionrobotics/ign-rendering/pull/584)
+
+1. Add Ubuntu Jammy CI
+    * [Pull request #577](https://github.com/ignitionrobotics/ign-rendering/pull/577)
+
+1. Fix shaders for other sensors that require material switching (ogre2)
+    * [Pull request #579](https://github.com/ignitionrobotics/ign-rendering/pull/579)
+
+1. fix render pass demo
+    * [Pull request #576](https://github.com/ignitionrobotics/ign-rendering/pull/576)
+
+1. Fix objects using shaders when there is a lidar in the scene (ogre2)
+    * [Pull request #575](https://github.com/ignitionrobotics/ign-rendering/pull/575)
+
+1. Do not set shader constants for textures on non-OpenGL graphics API
+    * [Pull request #574](https://github.com/ignitionrobotics/ign-rendering/pull/574)
+
+1. Use pose multiplication instead of addition
+    * [Pull request #573](https://github.com/ignitionrobotics/ign-rendering/pull/573)
+
+1. Fix sky background compositor setup
+    * [Pull request #571](https://github.com/ignitionrobotics/ign-rendering/pull/571)
+
+1. Backport OgreRTShaderSystem segfault fix
+    * [Pull request #570](https://github.com/ignitionrobotics/ign-rendering/pull/570)
+
+1. Remove unnecessary error message when headless rendering is enabled
+    * [Pull request #569](https://github.com/ignitionrobotics/ign-rendering/pull/569)
+
 ### Ignition Rendering 6.2.1 (2022-02-24)
 
 1. Restore format conversion in Ogre2RenderTarget::Copy
@@ -10,7 +45,7 @@
 1. Increase particle emitter quota
     * [Pull request #562](https://github.com/ignitionrobotics/ign-rendering/pull/562)
 
-1.Make sure shader param exists before setting its value
+1. Make sure shader param exists before setting its value
     * [Pull request #558](https://github.com/ignitionrobotics/ign-rendering/pull/558)
 
 1. Backport wave changes

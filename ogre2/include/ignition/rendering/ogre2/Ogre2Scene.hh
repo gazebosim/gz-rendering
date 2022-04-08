@@ -75,6 +75,10 @@ namespace ignition
       public: virtual VisualPtr RootVisual() const override;
 
       // Documentation inherited.
+      public: virtual void SetTime(
+        const std::chrono::steady_clock::duration &_time) override;
+
+      // Documentation inherited.
       public: virtual math::Color AmbientLight() const override;
 
       // Documentation inherited.

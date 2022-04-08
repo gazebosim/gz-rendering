@@ -5,6 +5,18 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
+## Ignition Rendering 6.2.1 to 6.X
+
+### Modifications
+
+1. Ogre 2 heightmaps: the Y position sign was flipped
+
+1. `Scene::SetTime` is often unset. Ignition's `Ogre2` now defaults to 60hz otherwise rendering won't advance forward.
+	+ Mostly affects Particles.
+	+ Also may affect gaussian postprocessing and other filters dependant on time.
+	+ Previous behavior was using real time instead of simulation time, which is wrong.
+	+ See https://github.com/ignitionrobotics/ign-rendering/issues/556 for details.
+
 ## Ignition Rendering 5.x to 6.x
 
 ### Modifications

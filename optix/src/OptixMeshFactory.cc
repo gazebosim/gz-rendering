@@ -125,7 +125,10 @@ OptixSubMeshStorePtr OptixSubMeshStoreFactory::Create(
       sm->optixGeomInstance->setGeometry(optixGeometry);
 
       common::MaterialPtr material;
-      material = _desc.mesh->MaterialByIndex(subMesh->MaterialIndex());
+      if (const auto subMeshIdx = SubMesh.GetMaterialIndex())
+      {
+        material = _desc.mesh->MaterialByIndex(subMeshIdx.value());
+      }
       MaterialPtr mat = this->scene->CreateMaterial();
       if (material)
       {

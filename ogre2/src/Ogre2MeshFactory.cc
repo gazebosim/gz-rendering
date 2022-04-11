@@ -469,7 +469,10 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       iBuf->unlock();
 
       common::MaterialPtr material;
-      material = _desc.mesh->MaterialByIndex(subMesh.MaterialIndex());
+      if (const auto subMeshIdx = subMesh.GetMaterialIndex())
+      {
+        material = _desc.mesh->MaterialByIndex(subMeshIdx.value());
+      }
 
       MaterialPtr mat = this->scene->CreateMaterial();
       if (material)

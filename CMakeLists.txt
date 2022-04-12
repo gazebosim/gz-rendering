@@ -104,7 +104,7 @@ ign_find_package(IgnOGRE2 VERSION 2.2.0
     PRIVATE_FOR ogre2
     QUIET)
 
-if (${OGRE2-PlanarReflections} STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
+if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
   message(STATUS "PlanarReflections component was not found. Try looking without it:")
   ign_find_package(IgnOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay

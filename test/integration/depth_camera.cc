@@ -286,7 +286,7 @@ void DepthCameraTest::DepthCameraBoxes(
       // Note: internal texture format used is RGB with no alpha channel
       // We observed the values can be either 255 or 0 but graphics card
       // drivers are free to fill it with any value they want.
-      // This should be fixed in ogre 2.2 in ign-rendering7 which forbids
+      // This should be fixed in ogre 2.2 in ign-rendering6 which forbids
       // the use of RGB format.
       // see https://github.com/ignitionrobotics/ign-rendering/issues/315
       EXPECT_TRUE(255u == ma || 0u == ma);

@@ -9,7 +9,7 @@ project(ignition-rendering6 VERSION 6.3.0)
 # Find ignition-cmake
 #============================================================================
 # If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake2 2.8.0 REQUIRED)
+find_package(ignition-cmake2 2.12.1 REQUIRED)
 set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
 
 #============================================================================
@@ -96,11 +96,21 @@ if (OGRE_FOUND)
 endif()
 
 #--------------------------------------
-# Find OGRE2
+# Find OGRE2: first try to find OGRE2 built with PlanarReflections support and
+# fallback to look for OGRE2 without it. Both seems to works for ign-rendering.
+# See https://github.com/ignitionrobotics/ign-rendering/issues/597
 ign_find_package(IgnOGRE2 VERSION 2.2.0
+    COMPONENTS HlmsPbs HlmsUnlit Overlay PlanarReflections
+    PRIVATE_FOR ogre2
+    QUIET)
+
+if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
+  message(STATUS "PlanarReflections component was not found. Try looking without it:")
+  ign_find_package(IgnOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
+endif()
 
 if (OGRE2_FOUND)
   set(HAVE_OGRE2 TRUE)

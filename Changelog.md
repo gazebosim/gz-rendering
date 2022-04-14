@@ -2,6 +2,11 @@
 
 ### Ignition Rendering 6.X
 
+### Ignition Rendering 6.3.1 (2022-04-13)
+
+1.  Revert OGRE-Next custom support and back to use IgnOGRE2 module
+    * [Pull request #605](https://github.com/ignitionrobotics/ign-rendering/pull/605)
+
 ### Ignition Rendering 6.3.0 (2022-04-06)
 
 1. Flip heightmap's Y position on Ogre 2 and add sanity checks for NaN

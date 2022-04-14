@@ -9,8 +9,8 @@ project(ignition-rendering7 VERSION 7.0.0)
 # Find ignition-cmake
 #============================================================================
 # If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake2 2.8.0 REQUIRED)
-set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
+find_package(ignition-cmake3 REQUIRED)
+set(IGN_CMAKE_VER ${ignition-cmake3_VERSION_MAJOR})
 
 #============================================================================
 # Set up the project

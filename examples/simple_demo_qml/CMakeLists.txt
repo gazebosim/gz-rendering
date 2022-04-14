@@ -9,8 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #------------------------------------------------------------------------
 # Find ignition-cmake
-find_package(ignition-cmake2 2.3 REQUIRED)
-set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
+find_package(ignition-cmake3 REQUIRED)
+set(IGN_CMAKE_VER ${ignition-cmake3_VERSION_MAJOR})
 
 #------------------------------------------------------------------------
 # Find ign-rendering

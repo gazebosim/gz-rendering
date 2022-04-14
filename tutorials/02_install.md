@@ -60,7 +60,7 @@ sudo apt install -y \
     libignition-cmake2-dev \
     libignition-math7-dev \
     libignition-common5-dev \
-    libignition-plugin-dev
+    libignition-plugin2-dev
 ```
 
 ### Supported Rendering Engines

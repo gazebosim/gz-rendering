@@ -57,7 +57,7 @@ sudo apt install -y \
     freeglut3-dev \
     libxmu-dev \
     libxi-dev \
-    libignition-cmake2-dev \
+    libignition-cmake3-dev \
     libignition-math7-dev \
     libignition-common5-dev \
     libignition-plugin2-dev

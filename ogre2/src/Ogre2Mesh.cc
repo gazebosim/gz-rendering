@@ -346,8 +346,17 @@ void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
     return;
   }
 
-  this->ogreSubItem->setDatablock(
-      static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock()));
+  // low level material with custom shaders
+  if (!derived->FragmentShader().empty() && !derived->VertexShader().empty())
+  {
+    this->ogreSubItem->setMaterial(derived->Material());
+  }
+  // Pbs Hlms material
+  else
+  {
+    this->ogreSubItem->setDatablock(
+        static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock()));
+  }
 
   // set cast shadows
   this->ogreSubItem->getParent()->setCastShadows(_material->CastShadows());

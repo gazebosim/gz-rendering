@@ -636,15 +636,15 @@ namespace ignition
       /// \return Pointer to BoundingBox camera
       protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
                      unsigned int _id, const std::string &_name)
-                  {
-                    // The following two lines will avoid doxygen warnings
-                    (void)_id;
-                    (void)_name;
-
-                    ignerr << "BoundingBox camera not supported by: "
+                 {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
+                   ignerr << "BoundingBox camera not supported by: "
                           << this->Engine()->Name() << std::endl;
-                    return BoundingBoxCameraPtr();
-                  }
+                   return BoundingBoxCameraPtr();
+                 }
+
       /// \brief Implementation for creating a segmentation camera.
       /// \param[in] _id Unique id
       /// \param[in] _name Name of segmentation camera

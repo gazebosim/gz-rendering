@@ -60,6 +60,7 @@ class ignition::rendering::Ogre2HeightmapPrivate
   /// \brief Size of the heightmap data.
   public: unsigned int dataSize{0u};
 
+  /// \brief Pointer to ogre terra object
   public: std::unique_ptr<Ogre::Terra> terra{nullptr};
 };
 
@@ -165,7 +166,13 @@ void Ogre2Heightmap::Init()
     for (unsigned int x = 0; x < newWidth; ++x)
     {
       const size_t index = y * srcWidth + x;
-      const float heightVal = lookup[index];
+      float heightVal = lookup[index];
+
+      // Sanity check in case we get NaNs from ign-common, this prevents a crash
+      // in Ogre
+      if (!std::isfinite(heightVal))
+        heightVal = minElevation;
+
       minElevation = std::min(minElevation, heightVal);
       maxElevation = std::max(maxElevation, heightVal);
       this->dataPtr->heights.push_back(heightVal);
@@ -207,9 +214,10 @@ void Ogre2Heightmap::Init()
   const math::Vector3d newSize = this->descriptor.Size() *
                                  math::Vector3d(1.0, 1.0, heightDiff);
 
+  // The position's Y sign ends up flipped
   math::Vector3d center(
       this->descriptor.Position().X(),
-      this->descriptor.Position().Y(),
+      -this->descriptor.Position().Y(),
       this->descriptor.Position().Z() + newSize.Z() * 0.5 + minElevation);
 
   Ogre::Root *ogreRoot = Ogre2RenderEngine::Instance()->OgreRoot();

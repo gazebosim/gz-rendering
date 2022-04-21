@@ -56,7 +56,7 @@ namespace ignition
       // 16 bit single channel
       PF_L16          = 11,
       /// < RGBA, 1-byte per channel
-      PF_R8G8B8A8       = 12,
+      PF_R8G8B8A8     = 12,
       /// < Number of pixel format types
       PF_COUNT        = 13
     };

@@ -234,6 +234,12 @@ void Ogre2Camera::SetSelectionBuffer()
 }
 
 //////////////////////////////////////////////////
+Ogre2SelectionBuffer *Ogre2Camera::SelectionBuffer() const
+{
+  return this->selectionBuffer;
+}
+
+//////////////////////////////////////////////////
 VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
 {
   VisualPtr result;
@@ -257,7 +263,6 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
   ignition::math::Vector2i mousePos(
       static_cast<int>(std::rint(ratio * _mousePos.X())),
       static_cast<int>(std::rint(ratio * _mousePos.Y())));
-
   Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(
       mousePos.X(), mousePos.Y());
 

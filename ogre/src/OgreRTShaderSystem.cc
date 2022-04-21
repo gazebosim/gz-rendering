@@ -70,6 +70,9 @@ class ignition::rendering::OgreRTShaderSystemPrivate
 
   /// \brief Flag to indicate shadows need to be reapplied
   public: bool resetShadows = false;
+
+  /// \brief thread that shader system is created in
+  public: std::thread::id threadId;
 };
 
 using namespace ignition;
@@ -81,17 +84,22 @@ OgreRTShaderSystem::OgreRTShaderSystem()
 {
   this->dataPtr->initialized = false;
   this->dataPtr->shadowsApplied = false;
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
   this->dataPtr->pssmSetup.setNull();
 #else
   this->dataPtr->pssmSetup.reset();
 #endif
+
+  this->dataPtr->threadId = std::this_thread::get_id();
 }
 
 //////////////////////////////////////////////////
 OgreRTShaderSystem::~OgreRTShaderSystem()
 {
-  this->Fini();
+  if (std::this_thread::get_id() == this->dataPtr->threadId)
+  {
+    this->Fini();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -157,7 +165,7 @@ void OgreRTShaderSystem::Fini()
 #endif
     this->dataPtr->shaderGenerator = nullptr;
   }
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
   this->dataPtr->pssmSetup.setNull();
 #else
   this->dataPtr->pssmSetup.reset();
@@ -300,7 +308,7 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
 #ifdef OGRE_VERSION_LT_1_12_0
       this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
           curMaterialName,
-      #ifndef OGRE_VERSION_LT_1_10_3
+      #ifndef OGRE_VERSION_LT_1_11_0
           curSubEntity->getMaterial()->getGroup(),
       #endif
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
@@ -380,7 +388,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
     try
     {
       success = this->dataPtr->shaderGenerator->createShaderBasedTechnique(
-#if OGRE_VERSION_LT_1_10_3
+#if OGRE_VERSION_LT_1_11_0
           curMaterialName,
 #else
           *material->Material(),
@@ -407,7 +415,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
             this->dataPtr->scenes[s]->Name() +
             Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME,
             curMaterialName,
-#ifndef OGRE_VERSION_LT_1_10_3
+#ifndef OGRE_VERSION_LT_1_11_0
             material->Material()->getGroup(),
 #endif
             0);
@@ -590,7 +598,7 @@ void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
   sceneMgr->setShadowTextureSelfShadow(false);
   sceneMgr->setShadowCasterRenderBackFaces(true);
 
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
   // Set up caster material - this is just a standard depth/shadow map caster
   sceneMgr->setShadowTextureCasterMaterial("PSSM/shadow_caster");
 #else
@@ -607,7 +615,7 @@ void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
   // pssmCasterPass->setFog(true);
 
   // shadow camera setup
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
   if (this->dataPtr->pssmSetup.isNull())
 #else
   if (this->dataPtr->pssmSetup == nullptr)

@@ -153,6 +153,9 @@ class ignition::rendering::Ogre2DepthCameraPrivate
 
   /// \brief Name of sky box material
   public: const std::string kSkyboxMaterialName = "SkyBox";
+
+  /// \brief Name of shadow compositor node
+  public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
 };
 
 using namespace ignition;
@@ -434,6 +437,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   double projectionA = projectionAB.x;
   double projectionB = projectionAB.y;
   projectionB /= farPlane;
+
   psParams->setNamedConstant("projectionParams",
       Ogre::Vector2(projectionA, projectionB));
   psParams->setNamedConstant("near",
@@ -474,6 +478,11 @@ void Ogre2DepthCamera::CreateDepthTexture()
   MaterialPtr backgroundMaterial = this->Scene()->BackgroundMaterial();
   bool validBackground = backgroundMaterial &&
       !backgroundMaterial->EnvironmentMap().empty();
+
+  // let depth camera shader know if there is background material
+  // This is needed for manual clipping of color pixel values.
+  psParams->setNamedConstant("hasBackground",
+      static_cast<int>(validBackground));
 
   if (validBackground)
   {
@@ -533,9 +542,15 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //   texture colorTexture target_width target_height PF_R8G8B8
     //       depth_texture depth_format PF_D32_FLOAT
     //   texture depthTexture target_width target_height PF_D32_FLOAT
-    //   texture particleTexture target_width target_height PF_L8
+    //   texture particleTexture target_width target_height PFG_R8_UNORM
     //   // particleDepthTexture shares same depth buffer as particleTexture
-    //   texture particleDepthTexture target_width target_height PF_D32_FLOAT
+    //   texture particleDepthTexture target_width target_height PFG_D32_FLOAT
+    //
+    //   rtv particleTexture
+    //   {
+    //     depth particleDepthTexture
+    //   }
+    //
     //   target colorTexture
     //   {
     //     pass clear
@@ -558,16 +573,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
     //     }
     //   }
     //   target particleTexture
-    //   {
-    //     pass clear
-    //     {
-    //     }
-    //     pass render_scene
-    //     {
-    //       visibility_mask 0x00100000
-    //     }
-    //   }
-    //   target particleDepthTexture
     //   {
     //     pass clear
     //     {
@@ -661,11 +666,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleTexDef->preferDepthTexture = false;
     particleTexDef->fsaa = "0";
 
-    Ogre::RenderTargetViewDef *rtvParticleTexture =
-      baseNodeDef->addRenderTextureView("particleTexture");
-    rtvParticleTexture->setForTextureDefinition(
-      "particleTexture", particleTexDef);
-
     Ogre::TextureDefinitionBase::TextureDefinition *particleDepthTexDef =
         baseNodeDef->addTextureDefinition("particleDepthTexture");
     particleDepthTexDef->textureType = Ogre::TextureTypes::Type2D;
@@ -681,20 +681,49 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleDepthTexDef->fsaa = "0";
     particleDepthTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
 
-    Ogre::RenderTargetViewDef *rtvparticleDepthTex =
-      baseNodeDef->addRenderTextureView("particleDepthTexture");
-    rtvparticleDepthTex->setForTextureDefinition(
-      "particleDepthTexture", particleDepthTexDef);
+    // Auto setup the RTV then manually override the depth buffer so
+    // it uses the one we created (and thus we can sample from it later)
+    Ogre::RenderTargetViewDef *rtvParticleTexture =
+      baseNodeDef->addRenderTextureView("particleTexture");
+    rtvParticleTexture->setForTextureDefinition("particleTexture",
+                                                particleTexDef);
+    rtvParticleTexture->depthAttachment.textureName = "particleDepthTexture";
 
-    baseNodeDef->setNumTargetPass(5);
+    baseNodeDef->setNumTargetPass(4);
     Ogre::CompositorTargetDef *colorTargetDef =
         baseNodeDef->addTargetPass("colorTexture");
 
     if (validBackground)
-      colorTargetDef->setNumPasses(2);
+      colorTargetDef->setNumPasses(3);
     else
-      colorTargetDef->setNumPasses(1);
+      colorTargetDef->setNumPasses(2);
     {
+      // scene pass - opaque
+      {
+        Ogre::CompositorPassSceneDef *passScene =
+            static_cast<Ogre::CompositorPassSceneDef *>(
+            colorTargetDef->addPass(Ogre::PASS_SCENE));
+        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
+        passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
+        passScene->mIncludeOverlays = false;
+        passScene->mFirstRQ = 0u;
+        passScene->mLastRQ = 2u;
+        if (validBackground)
+        {
+          passScene->setAllLoadActions(Ogre::LoadAction::DontCare);
+          passScene->mLoadActionDepth = Ogre::LoadAction::Clear;
+          passScene->mLoadActionStencil = Ogre::LoadAction::Clear;
+        }
+        else
+        {
+          passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+          passScene->setAllClearColours(
+              Ogre2Conversions::Convert(this->Scene()->BackgroundColor()));
+
+        }
+      }
+
+      // render background, e.g. sky, after opaque stuff
       if (validBackground)
       {
         // quad pass
@@ -705,27 +734,18 @@ void Ogre2DepthCamera::CreateDepthTexture()
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
-
-        passQuad->setAllLoadActions(Ogre::LoadAction::Clear);
-        passQuad->setAllClearColours(Ogre::ColourValue(
-            Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
       }
 
-      // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          colorTargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
-
-      // todo(anyone) PbsMaterialsShadowNode is hardcoded.
-      // Although this may be just fine
-      passScene->mShadowNode = "PbsMaterialsShadowNode";
-
-      if (!validBackground)
+      // scene pass - transparent stuff
       {
-        passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-        passScene->setAllClearColours(Ogre::ColourValue(
-            Ogre2Conversions::Convert(this->Scene()->BackgroundColor())));
+        Ogre::CompositorPassSceneDef *passScene =
+            static_cast<Ogre::CompositorPassSceneDef *>(
+            colorTargetDef->addPass(Ogre::PASS_SCENE));
+        passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
+        // todo(anyone) PbsMaterialsShadowNode is hardcoded.
+        // Although this may be just fine
+        passScene->mShadowNode = this->dataPtr->kShadowNodeName;
+        passScene->mFirstRQ = 2u;
       }
     }
 
@@ -757,23 +777,6 @@ void Ogre2DepthCamera::CreateDepthTexture()
           particleTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue::Black);
-      passScene->mVisibilityMask =
-          Ogre2ParticleEmitter::kParticleVisibilityFlags;
-    }
-
-    Ogre::CompositorTargetDef *particleDepthTargetDef =
-        baseNodeDef->addTargetPass("particleDepthTexture");
-    particleDepthTargetDef->setNumPasses(1);
-    {
-      // scene pass
-      Ogre::CompositorPassSceneDef *passScene =
-          static_cast<Ogre::CompositorPassSceneDef *>(
-          particleDepthTargetDef->addPass(Ogre::PASS_SCENE));
-      passScene->setAllLoadActions(Ogre::LoadAction::Clear);
-      passScene->setAllClearColours(Ogre::ColourValue(
-        this->FarClipPlane(),
-        this->FarClipPlane(),
-        this->FarClipPlane()));
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
@@ -958,8 +961,13 @@ void Ogre2DepthCamera::Render()
 {
   // GL_DEPTH_CLAMP was disabled in later version of ogre2.2
   // however our shaders rely on clamped values so enable it for this sensor
+  auto engine = Ogre2RenderEngine::Instance();
+  std::string renderSystemName =
+      engine->OgreRoot()->getRenderSystem()->getFriendlyName();
+  bool useGL = renderSystemName.find("OpenGL") != std::string::npos;
 #ifndef _WIN32
-  glEnable(GL_DEPTH_CLAMP);
+  if (useGL)
+    glEnable(GL_DEPTH_CLAMP);
 #endif
 
   this->scene->StartRendering(this->ogreCamera);
@@ -977,7 +985,8 @@ void Ogre2DepthCamera::Render()
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
 #ifndef _WIN32
-  glDisable(GL_DEPTH_CLAMP);
+  if (useGL)
+    glDisable(GL_DEPTH_CLAMP);
 #endif
 }
 

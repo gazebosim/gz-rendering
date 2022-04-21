@@ -152,7 +152,7 @@ void buildScene(ScenePtr _scene)
   textureC2.SetDiffuse("../media/dirt_diffusespecular.png");
   textureC2.SetNormal("../media/flat_normal.png");
   desc2.AddTexture(textureC2);
-  desc2.SetPosition({30, 0, 0});
+  desc2.SetPosition({30, 10, 0});
   auto heightmapGeom2 = _scene->CreateHeightmap(desc2);
 
   auto vis2 = _scene->CreateVisual();
@@ -192,10 +192,11 @@ void buildScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName)
+CameraPtr createCamera(const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
     ignwarn << "Engine '" << _engineName
@@ -227,13 +228,26 @@ int main(int _argc, char** _argv)
     ogreEngineName = _argv[1];
   }
 
+  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  if (_argc > 2)
+  {
+    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
+  }
+
   engineNames.push_back(ogreEngineName);
 
   for (auto engineName : engineNames)
   {
     try
     {
-      CameraPtr camera = createCamera(engineName);
+      std::map<std::string, std::string> params;
+      if (engineName.compare("ogre2") == 0
+          && graphicsApi == GraphicsAPI::METAL)
+      {
+        params["metal"] = "1";
+      }
+
+      CameraPtr camera = createCamera(engineName, params);
       if (camera)
       {
         cameras.push_back(camera);

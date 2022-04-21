@@ -32,6 +32,12 @@ using namespace rendering;
 class SceneTest: public testing::Test,
                  public testing::WithParamInterface<const char *>
 {
+  // Documentation inherited
+  public: void SetUp() override
+  {
+    ignition::common::Console::SetVerbosity(4);
+  }
+
   // Test adding and removing visuals
   // Simulates 'levels' where visuals are added and removed throughout
   // frame updates

@@ -18,6 +18,9 @@
 #define IGNITION_RENDERING_BASE_BASEGEOMETRY_HH_
 
 #include <string>
+
+#include <ignition/common/Console.hh>
+
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Scene.hh"
 
@@ -47,6 +50,9 @@ namespace ignition
       // Documentation inherited
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique = true) override = 0;
+
+      // Documentation inherited
+      public: virtual GeometryPtr Clone() const override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
@@ -87,6 +93,14 @@ namespace ignition
     {
       MaterialPtr material = this->Scene()->Material(_name);
       if (material) this->SetMaterial(material, _unique);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    GeometryPtr BaseGeometry<T>::Clone() const
+    {
+      ignwarn << "Clone functionality for Geometry does not exist yet.\n";
+      return nullptr;
     }
 
     //////////////////////////////////////////////////

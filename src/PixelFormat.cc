@@ -37,7 +37,7 @@ const char *PixelUtil::names[PF_COUNT] =
       "FLOAT32_RGBA",
       "FLOAT32_RGB",
       "L16",
-      "R8G8B8A8",
+      "R8G8B8A8"
     };
 
 //////////////////////////////////////////////////

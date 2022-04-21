@@ -49,6 +49,7 @@
 
 #define outVs_Position outVs.gl_Position
 #define outVs_viewportIndex outVs.gl_ViewportIndex
+#define outVs_clipDistance outVs.gl_ClipDistance
 #define outVs_clipDistance0 outVs.gl_ClipDistance0.x
 
 #define gl_SampleMaskIn0 gl_SampleMask

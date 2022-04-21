@@ -34,6 +34,7 @@
 
 #include <ignition/plugin/Register.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -44,6 +45,7 @@
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #include "Terra/TerraWorkspaceListener.h"
+#include "Ogre2IgnHlmsCustomizations.hh"
 
 class ignition::rendering::Ogre2RenderEnginePrivate
 {
@@ -51,8 +53,14 @@ class ignition::rendering::Ogre2RenderEnginePrivate
   public: GLXFBConfig* dummyFBConfigs = nullptr;
 #endif
 
+  /// \brief The graphics API to use
+  public: ignition::rendering::GraphicsAPI graphicsAPI{GraphicsAPI::OPENGL};
+
   /// \brief A list of supported fsaa levels
   public: std::vector<unsigned int> fsaaLevels;
+
+  /// \brief Controls Hlms customizations for both PBS and Unlit
+  public: ignition::rendering::Ogre2IgnHlmsCustomizations hlmsCustomizations;
 
   /// \brief Pbs listener that adds terra shadows
   public: std::unique_ptr<Ogre::HlmsPbsTerraShadows> hlmsPbsTerraShadows;
@@ -294,6 +302,19 @@ bool Ogre2RenderEngine::LoadImpl(
   if (it != _params.end())
     std::istringstream(it->second) >> this->isHeadless;
 
+  it = _params.find("winID");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->winID;
+
+  it = _params.find("metal");
+  if (it != _params.end())
+  {
+    bool useMetal;
+    std::istringstream(it->second) >> useMetal;
+    if(useMetal)
+        this->dataPtr->graphicsAPI = GraphicsAPI::METAL;
+  }
+
   try
   {
     this->LoadAttempt();
@@ -331,7 +352,8 @@ bool Ogre2RenderEngine::InitImpl()
 void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
-  if (!this->useCurrentGLContext)
+  if (!this->useCurrentGLContext &&
+      this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
     this->CreateContext();
   this->CreateRoot();
   this->CreateOverlay();
@@ -361,6 +383,11 @@ void Ogre2RenderEngine::CreateLogger()
 void Ogre2RenderEngine::CreateContext()
 {
 #if not (__APPLE__ || _WIN32)
+  if (this->Headless())
+  {
+    // Nothing to do
+    return;
+  }
   // create X11 display
   this->dummyDisplay = XOpenDisplay(0);
   Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -369,7 +396,8 @@ void Ogre2RenderEngine::CreateContext()
   {
     // Not able to create a Xwindow, try to run in headless mode
     this->SetHeadless(true);
-    ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
+    ignwarn << "Unable to open display: " << XDisplayName(0)
+            << ". Trying to run in headless mode." << std::endl;
     return;
   }
 
@@ -409,7 +437,6 @@ void Ogre2RenderEngine::CreateContext()
     int contextAttribs[] = {
       GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
       GLX_CONTEXT_MINOR_VERSION_ARB, 3,
-      GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
       None
     };
     this->dummyContext =
@@ -482,6 +509,12 @@ void Ogre2RenderEngine::LoadPlugins()
     p = common::joinPaths(path, "Plugin_ParticleFX");
     plugins.push_back(p);
 
+    if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
+    {
+      p = common::joinPaths(path, "RenderSystem_Metal");
+      plugins.push_back(p);
+    }
+
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
       // check if plugin library exists
@@ -527,6 +560,11 @@ void Ogre2RenderEngine::CreateRenderSystem()
   const Ogre::RenderSystemList *rsList;
 
   rsList = &(this->ogreRoot->getAvailableRenderers());
+  std::string targetRenderSysName("OpenGL 3+ Rendering Subsystem");
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
+  {
+    targetRenderSysName = "Metal Rendering Subsystem";
+  }
 
   int c = 0;
 
@@ -544,11 +582,11 @@ void Ogre2RenderEngine::CreateRenderSystem()
   // (it thinks the while loop is empty), so we must put the whole while
   // statement on one line and add NOLINT at the end so that cpplint doesn't
   // complain about the line being too long
-  while (renderSys && renderSys->getName().compare("OpenGL 3+ Rendering Subsystem") != 0); // NOLINT
+  while (renderSys && renderSys->getName().compare(targetRenderSysName) != 0); // NOLINT
 
   if (renderSys == nullptr)
   {
-    ignerr << "unable to find OpenGL rendering system. OGRE is probably "
+    ignerr << "unable to find " << targetRenderSysName << ". OGRE is probably "
             "installed incorrectly. Double check the OGRE cmake output, "
             "and make sure OpenGL is enabled." << std::endl;
   }
@@ -656,6 +694,18 @@ void Ogre2RenderEngine::RegisterHlms()
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       terraGLSLMaterialFolder, "FileSystem", "General");
 
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
+  {
+    Ogre::String commonMetalMaterialFolder = common::joinPaths(
+        rootHlmsFolder, "2.0", "scripts", "materials", "Common", "Metal");
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        commonMetalMaterialFolder, "FileSystem", "General");
+    Ogre::String terraMetalMaterialFolder = common::joinPaths(
+        rootHlmsFolder, "2.0", "scripts", "materials", "Terra", "Metal");
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        terraMetalMaterialFolder, "FileSystem", "General");
+  }
+
   // The following code is taken from the registerHlms() function in ogre2
   // samples framework
   if (rootHlmsFolder.empty())
@@ -672,6 +722,10 @@ void Ogre2RenderEngine::RegisterHlms()
   Ogre::StringVector::const_iterator libraryFolderPathEn;
 
   Ogre::ArchiveManager &archiveManager = Ogre::ArchiveManager::getSingleton();
+
+  Ogre::Archive *customizationsArchiveLibrary =
+      archiveManager.load(common::joinPaths(rootHlmsFolder, "Hlms", "Ignition"),
+      "FileSystem", true);
 
   {
     Ogre::HlmsUnlit *hlmsUnlit = 0;
@@ -692,6 +746,8 @@ void Ogre2RenderEngine::RegisterHlms()
       ++libraryFolderPathIt;
     }
 
+    archiveUnlitLibraryFolders.push_back(customizationsArchiveLibrary);
+
     // Create and register the unlit Hlms
     hlmsUnlit = OGRE_NEW Ogre::HlmsUnlit(archiveUnlit,
         &archiveUnlitLibraryFolders);
@@ -699,6 +755,7 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // disable writting debug output to disk
     hlmsUnlit->setDebugOutputPath(false, false);
+    hlmsUnlit->setListener(&this->dataPtr->hlmsCustomizations);
   }
 
   {
@@ -722,6 +779,7 @@ void Ogre2RenderEngine::RegisterHlms()
       ++libraryFolderPathIt;
     }
 
+    archivePbsLibraryFolders.push_back(customizationsArchiveLibrary);
     {
       archivePbsLibraryFolders.push_back(archiveManager.load(
         rootHlmsFolder + common::joinPaths("Hlms", "Terra", "GLSL",
@@ -736,6 +794,15 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // disable writting debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
+
+#if IGNITION_RENDERING_MAJOR_VERSION >= 7
+    IGN_ASSERT(
+      hlmsPbs->getListener() != &this->dataPtr->hlmsCustomizations &&
+        hlmsPbs->getListener() != this->dataPtr->hlmsPbsTerraShadows.get(),
+      "Bad merge! In ign-rendering7 there's a new listener that will "
+      "coordinate all other listeners. Watch out all 3 Hlms (Unlit, Pbs, "
+      "Terra)");
+#endif
   }
 
   {
@@ -798,6 +865,10 @@ void Ogre2RenderEngine::CreateResources()
         std::make_pair(p, "General"));
     archNames.push_back(
         std::make_pair(p + "/materials/programs", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/programs/GLSL", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/programs/Metal", "General"));
     archNames.push_back(
         std::make_pair(p + "/materials/scripts", "General"));
     archNames.push_back(
@@ -880,6 +951,13 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     params["currentGLContext"] = "true";
   }
 
+#if !defined(__APPLE__) && !defined(_MSC_VER)
+  if (!this->winID.empty())
+  {
+    params["parentWindowHandle"] = this->winID;
+  }
+#endif
+
   int attempts = 0;
   while (window == nullptr && (attempts++) < 10)
   {
@@ -915,6 +993,12 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 }
 
 //////////////////////////////////////////////////
+GraphicsAPI Ogre2RenderEngine::GraphicsAPI() const
+{
+  return this->dataPtr->graphicsAPI;
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderEngine::InitAttempt()
 {
   this->initialized = false;
@@ -929,6 +1013,12 @@ void Ogre2RenderEngine::InitAttempt()
 std::vector<unsigned int> Ogre2RenderEngine::FSAALevels() const
 {
   return this->dataPtr->fsaaLevels;
+}
+
+/////////////////////////////////////////////////
+Ogre2IgnHlmsCustomizations& Ogre2RenderEngine::HlmsCustomizations()
+{
+  return this->dataPtr->hlmsCustomizations;
 }
 
 /////////////////////////////////////////////////

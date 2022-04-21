@@ -167,7 +167,8 @@ namespace ignition
       {
         auto arrow = std::dynamic_pointer_cast<rendering::ArrowVisual>(
               this->ChildByIndex(i));
-        arrow->SetVisible(_visible);
+        if (arrow != nullptr)
+          arrow->SetVisible(_visible);
       }
     }
     }

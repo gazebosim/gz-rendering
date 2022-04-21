@@ -17,10 +17,10 @@
 #ifndef IGNITION_RENDERING_BASE_BASEBOUNDINGBOXCAMERA_HH_
 #define IGNITION_RENDERING_BASE_BASEBOUNDINGBOXCAMERA_HH_
 
-#include <string>
 #include <vector>
 
 #include <ignition/common/Event.hh>
+#include <ignition/math/Color.hh>
 
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/BoundingBoxCamera.hh"
@@ -32,22 +32,23 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     template <class T>
-    class BaseBoundingBoxCamera :
+    class BaseBoundingBoxCamera:
       public virtual BoundingBoxCamera,
       public virtual BaseCamera<T>,
       public virtual T
     {
+      /// \brief Constructor
       protected: BaseBoundingBoxCamera();
 
+      /// \brief Destructor
       public: virtual ~BaseBoundingBoxCamera();
 
       // Documentation inherited
-      public: virtual std::vector<BoundingBox> BoundingBoxData() const;
+      public: virtual const std::vector<BoundingBox> &BoundingBoxData() const;
 
       // Documentation inherited
-      public: virtual ignition::common::ConnectionPtr
-        ConnectNewBoundingBoxes(
-          std::function<void(const std::vector<BoundingBox> &)>  _subscriber);
+      public: virtual ignition::common::ConnectionPtr ConnectNewBoundingBoxes(
+        std::function<void(const std::vector<BoundingBox> &)> _subscriber) = 0;
 
       // Documentation inherited
       public: virtual void SetBoundingBoxType(BoundingBoxType _type);
@@ -57,7 +58,13 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void DrawBoundingBox(unsigned char *_data,
-        const BoundingBox &_box);
+        const math::Color &_color, const BoundingBox &_box) const = 0;
+
+      /// \brief The bounding box type
+      protected: BoundingBoxType type = BoundingBoxType::BBT_FULLBOX2D;
+
+      /// \brief The bounding box data
+      protected: std::vector<BoundingBox> boundingBoxes;
     };
 
     //////////////////////////////////////////////////
@@ -74,40 +81,26 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    std::vector<BoundingBox> BaseBoundingBoxCamera<T>::BoundingBoxData() const
+    const std::vector<BoundingBox> &
+    BaseBoundingBoxCamera<T>::BoundingBoxData() const
     {
-      return std::vector<BoundingBox>();
+      return this->boundingBoxes;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::common::ConnectionPtr BaseBoundingBoxCamera<T>::
-      ConnectNewBoundingBoxes(
-        std::function<void(const std::vector<BoundingBox> &)>)
+    void BaseBoundingBoxCamera<T>::SetBoundingBoxType(BoundingBoxType _type)
     {
-      return nullptr;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseBoundingBoxCamera<T>::SetBoundingBoxType(BoundingBoxType)
-    {
+      this->type = _type;
     }
 
     //////////////////////////////////////////////////
     template <class T>
     BoundingBoxType BaseBoundingBoxCamera<T>::Type() const
     {
-      return BoundingBoxType::BBT_VISIBLEBOX2D;
+      return this->type;
     }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseBoundingBoxCamera<T>::DrawBoundingBox(unsigned char *,
-      const BoundingBox &)
-    {
     }
-  }
   }
 }
 #endif

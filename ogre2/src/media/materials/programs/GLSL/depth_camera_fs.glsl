@@ -36,10 +36,12 @@ uniform float far;
 uniform float min;
 uniform float max;
 uniform vec3 backgroundColor;
+uniform int hasBackground;
 
 uniform float particleStddev;
 uniform float particleScatterRatio;
-uniform float time;
+// rnd is a random number in the range of [0-1]
+uniform float rnd;
 
 float packFloat(vec4 color)
 {
@@ -107,7 +109,7 @@ void main()
   if (particle.x > 0 && pd < d)
   {
     // apply scatter effect so that only some of the smoke pixels are visible
-    float r = rand(inPs.uv0 + vec2(time, time));
+    float r = rand(inPs.uv0 + vec2(rnd, rnd));
     if (r < particleScatterRatio)
     {
       // set point to 3d pos of particle pixel
@@ -115,14 +117,14 @@ void main()
       vec3 particlePoint = vec3(-particleViewSpacePos.z, -particleViewSpacePos.x,
           particleViewSpacePos.y);
 
-      float rr = rand(inPs.uv0 + vec2(1.0/time, time)) - 0.5;
+      float rr = rand(inPs.uv0 + vec2(rnd, rnd)) - 0.5;
 
       // apply gaussian noise to particle point cloud data
       // With large particles, the range returned are all from the first large
       // particle. So add noise with some mean values so that all the points are
       // shifted further out. This gives depth readings beyond the first few
       // particles and avoid too many early returns
-      vec3 noise = gaussrand(inPs.uv0, vec3(time, time, time),
+      vec3 noise = gaussrand(inPs.uv0, vec3(rnd, rnd, rnd),
           particleStddev, rr*rr*particleStddev*0.5).xyz;
       float noiseLength = length(noise);
       float particlePointLength = length(particlePoint);
@@ -153,7 +155,8 @@ void main()
     // this is because point.x may have been set to background depth value
     // due to the scatter effect. We should still render particles in the color
     // image
-    if (particle.x < 1e-6)
+    // todo(iche033) handle case when background is a cubemap
+    if (hasBackground == 0 && particle.x < 1e-6)
     {
       color = vec4(backgroundColor, 1.0);
     }
@@ -170,7 +173,8 @@ void main()
     }
 
     // clamp to background color only if it is not a particle pixel
-    if (particle.x < 1e-6)
+    // todo(iche033) handle case when background is a cubemap
+    if (hasBackground == 0 && particle.x < 1e-6)
     {
       color = vec4(backgroundColor, 1.0);
     }

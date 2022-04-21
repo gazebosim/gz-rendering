@@ -24,9 +24,12 @@
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <Hlms/Unlit/OgreHlmsUnlit.h>
 #include <Hlms/Unlit/OgreHlmsUnlitDatablock.h>
+#include <OgreHighLevelGpuProgram.h>
+#include <OgreHighLevelGpuProgramManager.h>
 #include <OgreHlmsManager.h>
 #include <OgreMaterialManager.h>
 #include <OgrePixelFormatGpuUtils.h>
+#include <OgreTechnique.h>
 #include <OgreTextureGpuManager.h>
 #include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
@@ -35,7 +38,9 @@
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
+#include <ignition/common/Image.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/ShaderParams.hh"
 #include "ignition/rendering/ShaderType.hh"
 #include "ignition/rendering/ogre2/Ogre2Material.hh"
@@ -50,6 +55,18 @@ class ignition::rendering::Ogre2MaterialPrivate
   /// \brief Ogre stores the name using hashes. This variable will
   /// store the material hash name
   public: std::string hashName;
+
+  /// \brief Path to vertex shader program.
+  public: std::string vertexShaderPath;
+
+  /// \brief Path to fragment shader program.
+  public: std::string fragmentShaderPath;
+
+  /// \brief Parameters to be bound to the vertex shader
+  public: ShaderParamsPtr vertexShaderParams;
+
+  /// \brief Parameters to be bound to the fragment shader
+  public: ShaderParamsPtr fragmentShaderParams;
 };
 
 using namespace ignition;
@@ -280,7 +297,22 @@ void Ogre2Material::SetRenderOrder(const float _renderOrder)
   this->renderOrder = _renderOrder;
   Ogre::HlmsMacroblock macroblock(
       *this->ogreDatablock->getMacroblock());
-  macroblock.mDepthBiasConstant = _renderOrder;
+
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+
+  if (renderSystem->isReverseDepth())
+  {
+    // Reverse depth needs 100x scale AND ends up being superior
+    // See https://github.com/ignitionrobotics/ign-rendering/
+    // issues/427#issuecomment-991800352
+    // and see https://www.youtube.com/watch?v=s2XdH3fYUac
+    macroblock.mDepthBiasConstant = _renderOrder * 100.0f;
+  }
+  else
+  {
+    macroblock.mDepthBiasConstant = _renderOrder;
+  }
   this->ogreDatablock->setMacroblock(macroblock);
 }
 
@@ -541,7 +573,8 @@ void Ogre2Material::ClearLightMap()
   this->lightMapUvSet = 0u;
 
   // in ogre 2.2, we swtiched to use the emissive map slot for light map
-  this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->lightMapName);
+  if (this->ogreDatablock->getUseEmissiveAsLightmap())
+    this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->lightMapName);
   this->ogreDatablock->setUseEmissiveAsLightmap(false);
 }
 
@@ -572,6 +605,169 @@ float Ogre2Material::Metalness() const
 //////////////////////////////////////////////////
 void Ogre2Material::PreRender()
 {
+  this->UpdateShaderParams();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::UpdateShaderParams()
+{
+  if (this->dataPtr->vertexShaderParams &&
+      this->dataPtr->vertexShaderParams->IsDirty())
+  {
+    Ogre::GpuProgramParametersSharedPtr ogreParams;
+    auto mat = this->Material();
+    auto pass = mat->getTechnique(0u)->getPass(0);
+    ogreParams = pass->getVertexProgramParameters();
+    this->UpdateShaderParams(this->dataPtr->vertexShaderParams, ogreParams);
+    this->dataPtr->vertexShaderParams->ClearDirty();
+  }
+  if (this->dataPtr->fragmentShaderParams &&
+      this->dataPtr->fragmentShaderParams->IsDirty())
+  {
+    Ogre::GpuProgramParametersSharedPtr ogreParams;
+    auto mat = this->Material();
+    auto pass = mat->getTechnique(0u)->getPass(0);
+    ogreParams = pass->getFragmentProgramParameters();
+    this->UpdateShaderParams(this->dataPtr->fragmentShaderParams, ogreParams);
+    this->dataPtr->fragmentShaderParams->ClearDirty();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
+    Ogre::GpuProgramParametersSharedPtr _ogreParams)
+{
+  for (const auto name_param : *_params)
+  {
+    auto *constantDef =
+        Ogre::GpuProgramParameters::getAutoConstantDefinition(name_param.first);
+    if (constantDef)
+    {
+      _ogreParams->setNamedAutoConstant(name_param.first, constantDef->acType);
+      continue;
+    }
+
+    if (!_ogreParams->_findNamedConstantDefinition(name_param.first) &&
+        !(Ogre2RenderEngine::Instance()->GraphicsAPI() !=
+            GraphicsAPI::OPENGL &&
+            (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
+             ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())))
+    {
+      ignwarn << "Unable to find GPU program parameter: "
+              << name_param.first << std::endl;
+      continue;
+    }
+
+    if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
+    {
+      float value;
+      name_param.second.Value(&value);
+      _ogreParams->setNamedConstant(name_param.first, value);
+    }
+    else if (ShaderParam::PARAM_INT == name_param.second.Type())
+    {
+      int value;
+      name_param.second.Value(&value);
+      _ogreParams->setNamedConstant(name_param.first, value);
+    }
+    else if (ShaderParam::PARAM_FLOAT_BUFFER == name_param.second.Type())
+    {
+      std::shared_ptr<void> buffer;
+      name_param.second.Buffer(buffer);
+      uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
+      _ogreParams->setNamedConstant(name_param.first,
+          reinterpret_cast<float*>(buffer.get()), count, multiple);
+    }
+    else if (ShaderParam::PARAM_INT_BUFFER == name_param.second.Type())
+    {
+      std::shared_ptr<void> buffer;
+      name_param.second.Buffer(buffer);
+      uint32_t count = name_param.second.Count();
+
+      // multiple other than 4 is currently only supported by GLSL
+      uint32_t multiple = 1;
+      _ogreParams->setNamedConstant(name_param.first,
+        reinterpret_cast<int*>(buffer.get()), count, multiple);
+    }
+    else if (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
+             ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())
+    {
+      // add the textures to the resource path
+      std::string value;
+      uint32_t uvSetIndex = 0;
+      name_param.second.Value(value, uvSetIndex);
+      ShaderParam::ParamType type = name_param.second.Type();
+
+      std::string baseName = value;
+      std::string dirPath = value;
+      if (common::isFile(value))
+      {
+        baseName = common::basename(value);
+        size_t idx = value.rfind(baseName);
+        if (idx != std::string::npos)
+        {
+          dirPath = value.substr(0, idx);
+          if (!dirPath.empty() &&
+            !Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+            dirPath))
+          {
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+                dirPath, "FileSystem", "General");
+          }
+        }
+      }
+      else
+      {
+        ignerr << "Shader param texture not found: " << value << std::endl;
+        continue;
+      }
+
+      // get the material and create the texture unit state it does not exist
+      auto mat = this->Material();
+      auto pass = mat->getTechnique(0u)->getPass(0);
+      auto texUnit = pass->getTextureUnitState(name_param.first);
+      if (!texUnit)
+      {
+        texUnit = pass->createTextureUnitState();
+        texUnit->setName(name_param.first);
+      }
+      // make sure to cast to int before calling setNamedConstant later
+      // to set the texture index
+      int texIndex = static_cast<int>(pass->getTextureUnitStateIndex(texUnit));
+
+      // set texture coordinate set
+      texUnit->setTextureCoordSet(uvSetIndex);
+
+      // set to wrap mode otherwise default is clamp mode
+      Ogre::HlmsSamplerblock samplerBlockRef;
+      samplerBlockRef.mU = Ogre::TAM_WRAP;
+      samplerBlockRef.mV = Ogre::TAM_WRAP;
+      samplerBlockRef.mW = Ogre::TAM_WRAP;
+      texUnit->setSamplerblock(samplerBlockRef);
+
+      // regular 2d texture
+      if (type == ShaderParam::ParamType::PARAM_TEXTURE)
+      {
+        texUnit->setTextureName(baseName, Ogre::TextureTypes::Type2D);
+      }
+      // cube maps
+      else if (type == ShaderParam::ParamType::PARAM_TEXTURE_CUBE)
+      {
+        texUnit->setCubicTextureName(baseName, true);
+      }
+      else
+      {
+        ignerr << "Unrecognized texture type set for shader param: "
+               << name_param.first << std::endl;
+        continue;
+      }
+      // set the texture map index
+      _ogreParams->setNamedConstant(name_param.first, &texIndex, 1, 1);
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -635,16 +831,81 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     }
   }
 
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+      root->getRenderSystem()->getTextureGpuManager();
+
+  // workaround for grayscale emissive texture
+  // convert to RGB otherwise the emissive map is rendered red
+  if (_type == Ogre::PBSM_EMISSIVE &&
+      !this->ogreDatablock->getUseEmissiveAsLightmap())
+  {
+    common::Image img(_texture);
+    // check for 8 bit pixel
+    if (img.BPP() == 8u)
+    {
+      std::string parentPath = common::parentPath(_texture);
+      // set a custom name for the rgb texture by appending ign_ prefix
+      std::string rgbTexName = "ign_" + baseName;
+      baseName = rgbTexName;
+      auto tex = textureMgr->findTextureNoThrow(rgbTexName);
+      if (!tex)
+      {
+        ignmsg << "Grayscale emissive texture detected. Converting to RGB: "
+               << rgbTexName << std::endl;
+        // need to be 4 channels for gpu texture
+        unsigned int channels = 4u;
+        unsigned int size = img.Width() * img.Height() * channels;
+        unsigned char *data = new unsigned char[size];
+        for (unsigned int i = 0; i < img.Height(); ++i)
+        {
+          for (unsigned int j = 0; j < img.Width(); ++j)
+          {
+            // flip Y
+            math::Color c = img.Pixel(j, img.Height() - i - 1u);
+            unsigned int idx = i * img.Width() * channels + j * channels;
+            data[idx] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 1u] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 2u] = static_cast<uint8_t>(c.R() * 255u);
+            data[idx + 3u] = 255u;
+          }
+        }
+
+        // create the gpu texture
+        Ogre::uint32 textureFlags = 0;
+        textureFlags |= Ogre::TextureFlags::AutomaticBatching;
+        if (this->ogreDatablock->suggestUsingSRGB(_type))
+            textureFlags |= Ogre::TextureFlags::PrefersLoadingFromFileAsSRGB;
+        Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
+            rgbTexName,
+            Ogre::GpuPageOutStrategy::Discard,
+            textureFlags | Ogre::TextureFlags::ManualTexture,
+            Ogre::TextureTypes::Type2D,
+            Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+            0u);
+
+        texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+        texture->setTextureType(Ogre::TextureTypes::Type2D);
+        texture->setNumMipmaps(1u);
+        texture->setResolution(img.Width(), img.Height());
+        texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+        texture->waitForData();
+
+        // upload raw color image data to gpu texture
+        Ogre::Image2 image;
+        image.loadDynamicImage(data, false, texture);
+        image.uploadTo(texture, 0, 0);
+        delete [] data;
+      }
+    }
+  }
+
   Ogre::HlmsSamplerblock samplerBlockRef;
   samplerBlockRef.mU = Ogre::TAM_WRAP;
   samplerBlockRef.mV = Ogre::TAM_WRAP;
   samplerBlockRef.mW = Ogre::TAM_WRAP;
 
   this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
-
-  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
-  Ogre::TextureGpuManager *textureMgr =
-      root->getRenderSystem()->getTextureGpuManager();
   auto tex = textureMgr->findTextureNoThrow(baseName);
 
   if (tex)
@@ -657,7 +918,10 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   // otherwise this becomes a transparent material
   if (_type == Ogre::PBSM_DIFFUSE)
   {
-    if (this->TextureAlphaEnabled())
+    bool isGrayscale = (Ogre::PixelFormatGpuUtils::getNumberOfComponents(
+            tex->getPixelFormat()) == 1u);
+
+    if (this->TextureAlphaEnabled() || isGrayscale)
     {
       if (tex)
       {
@@ -665,15 +929,15 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
         tex->waitForData();
 
         // only enable alpha from texture if texture has alpha component
-        if (!Ogre::PixelFormatGpuUtils::hasAlpha(tex->getPixelFormat()))
+        if (this->TextureAlphaEnabled() &&
+            !Ogre::PixelFormatGpuUtils::hasAlpha(tex->getPixelFormat()))
         {
           this->SetAlphaFromTexture(false, this->AlphaThreshold(),
               this->TwoSidedEnabled());
         }
 
         // treat grayscale texture as RGB
-        if (Ogre::PixelFormatGpuUtils::getNumberOfComponents(
-            tex->getPixelFormat()) == 1u)
+        if (isGrayscale)
         {
           this->ogreDatablock->setUseDiffuseMapAsGrayscale(true);
         }
@@ -816,4 +1080,109 @@ void Ogre2Material::FillUnlitDatablock(Ogre::HlmsUnlitDatablock *_datablock)
   _datablock->setUseColour(true);
   Ogre::Vector3 c = this->ogreDatablock->getDiffuse();
   _datablock->setColour(Ogre::ColourValue(c.x, c.y, c.z));
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetVertexShader(const std::string &_path)
+{
+  if (_path.empty())
+    return;
+
+  if (!common::exists(_path))
+  {
+    ignerr << "Vertex shader path does not exist: " << _path << std::endl;
+    return;
+  }
+
+  std::string baseName = common::basename(_path);
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
+  "FileSystem", "General", false);
+
+  Ogre::HighLevelGpuProgramPtr vertexShader =
+    Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
+        "_ign_" + baseName,
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
+
+  vertexShader->setSourceFile(_path);
+
+  Ogre::GpuProgramParametersSharedPtr params =
+      vertexShader->getDefaultParameters();
+
+  vertexShader->load();
+
+  assert(vertexShader->isLoaded());
+  assert(!(vertexShader->hasCompileError()));
+  assert(vertexShader->isSupported());
+
+  auto mat = this->Material();
+  auto pass = mat->getTechnique(0u)->getPass(0);
+  pass->setVertexProgram(vertexShader->getName());
+  mat->compile();
+  mat->load();
+
+  this->dataPtr->vertexShaderPath = _path;
+  this->dataPtr->vertexShaderParams.reset(new ShaderParams);
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2Material::VertexShader() const
+{
+  return this->dataPtr->vertexShaderPath;
+}
+
+//////////////////////////////////////////////////
+ShaderParamsPtr Ogre2Material::VertexShaderParams()
+{
+  return this->dataPtr->vertexShaderParams;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetFragmentShader(const std::string &_path)
+{
+  if (_path.empty())
+    return;
+
+  if (!common::exists(_path))
+  {
+    ignerr << "Fragment shader path does not exist: " << _path << std::endl;
+    return;
+  }
+
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
+  "FileSystem", "General", false);
+
+  std::string baseName = common::basename(_path);
+  Ogre::HighLevelGpuProgramPtr fragmentShader =
+    Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
+        "_ign_" + baseName,
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+
+  fragmentShader->setSourceFile(_path);
+  fragmentShader->load();
+
+  assert(fragmentShader->isLoaded());
+  assert(!(fragmentShader->hasCompileError()));
+  assert(fragmentShader->isSupported());
+
+  auto mat = this->Material();
+  auto pass = mat->getTechnique(0u)->getPass(0);
+  pass->setFragmentProgram(fragmentShader->getName());
+  mat->compile();
+  mat->load();
+  this->dataPtr->fragmentShaderPath = _path;
+  this->dataPtr->fragmentShaderParams.reset(new ShaderParams);
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2Material::FragmentShader() const
+{
+  return this->dataPtr->fragmentShaderPath;
+}
+
+//////////////////////////////////////////////////
+ShaderParamsPtr Ogre2Material::FragmentShaderParams()
+{
+  return this->dataPtr->fragmentShaderParams;
 }

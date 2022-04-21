@@ -216,7 +216,7 @@ void OgreScene::SetGradientBackgroundColor(
     // Create background rectangle covering the whole screen
     rect = new ColoredRectangle2D();
     rect->setCorners(-1.0, 1.0, 1.0, -1.0);
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
     rect->setMaterial("Background");
 #else
     rect->setMaterial(material);
@@ -546,6 +546,7 @@ MeshPtr OgreScene::CreateMeshImpl(unsigned int _id, const std::string &_name,
   if (nullptr == mesh)
     return nullptr;
 
+  mesh->SetDescriptor(_desc);
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
 }

@@ -54,6 +54,7 @@ namespace ignition
     class COMVisual;
     class DepthCamera;
     class DirectionalLight;
+    class DistortionPass;
     class GaussianNoisePass;
     class Geometry;
     class GizmoVisual;
@@ -116,6 +117,7 @@ namespace ignition
     /// \typedef BoundingBoxCameraPtr
     /// \brief Shared pointer to BoundingBoxCamera
     typedef shared_ptr<BoundingBoxCamera> BoundingBoxCameraPtr;
+
     /// \typedef SegmentationCameraPtr
     /// \brief Shared pointer to Segmentation Camera
     typedef shared_ptr<SegmentationCamera> SegmentationCameraPtr;
@@ -127,6 +129,10 @@ namespace ignition
     /// \typedef DirectionalLightPtr
     /// \brief Shared pointer to DirectionalLight
     typedef shared_ptr<DirectionalLight> DirectionalLightPtr;
+
+    /// \typedef DistortionPassPtr
+    /// \brief Shared pointer to DistortionPass
+    typedef shared_ptr<DistortionPass> DistortionPassPtr;
 
     /// \typedef GaussianNoisePassPtr
     /// \brief Shared pointer to GaussianNoisePass
@@ -289,6 +295,7 @@ namespace ignition
     /// \typedef const BoundingBoxCameraPtr
     /// \brief Shared pointer to const BoundingBox Camera
     typedef shared_ptr<const BoundingBoxCamera> ConstBoundingBoxCameraPtr;
+
     /// \typedef const SegmentationCameraPtr
     /// \brief Shared pointer to const Segmentation Camera
     typedef shared_ptr<const SegmentationCamera> ConstSegmentationCameraPtr;

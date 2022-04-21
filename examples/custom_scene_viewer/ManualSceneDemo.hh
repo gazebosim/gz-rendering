@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_MANUALSCENEDEMO_HH_
 #define IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_MANUALSCENEDEMO_HH_
 
+#include <map>
 #include <string>
 #include <ignition/rendering.hh>
 #include "TestTypes.hh"
@@ -46,7 +47,8 @@ namespace ignition
 
       public: virtual unsigned int CameraCount() const;
 
-      public: virtual void AddCamera(const std::string &_engineName);
+      public: virtual void AddCamera(const std::string &_engineName,
+          const std::map<std::string, std::string>& _params = {});
 
       public: virtual void PrevCamera();
 

@@ -736,12 +736,12 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
         vertices);
 
       // convert to rendering::BoundingBox format
-      BoundingBox box(BoundingBoxType::BBT_BOX3D);
+      BoundingBox box;
       auto pose = mergedBox.Pose();
-      box.center = pose.Pos();
-      box.orientation = pose.Rot();
-      box.size = mergedBox.Size();
-      box.label = this->dataPtr->visibleBoxesLabel[ogreIds[0]];
+      box.Center(pose.Pos());
+      box.Orientation(pose.Rot());
+      box.Size(mergedBox.Size());
+      box.Label(this->dataPtr->visibleBoxesLabel[ogreIds[0]]);
 
       this->dataPtr->outputBoxes.push_back(box);
     }
@@ -784,7 +784,7 @@ BoundingBox Ogre2BoundingBoxCamera::MergeBoxes2D(
   if (_boxes.size() == 1)
     return *_boxes[0];
 
-  BoundingBox mergedBox(this->dataPtr->type);
+  BoundingBox mergedBox;
   uint32_t minX = UINT32_MAX;
   uint32_t maxX = 0;
   uint32_t minY = UINT32_MAX;
@@ -792,10 +792,10 @@ BoundingBox Ogre2BoundingBoxCamera::MergeBoxes2D(
 
   for (auto box : _boxes)
   {
-    uint32_t boxMinX = box->center.X() - box->size.X() / 2;
-    uint32_t boxMaxX = box->center.X() + box->size.X() / 2;
-    uint32_t boxMinY = box->center.Y() - box->size.Y() / 2;
-    uint32_t boxMaxY = box->center.Y() + box->size.Y() / 2;
+    uint32_t boxMinX = box->Center().X() - box->Size().X() / 2;
+    uint32_t boxMaxX = box->Center().X() + box->Size().X() / 2;
+    uint32_t boxMinY = box->Center().Y() - box->Size().Y() / 2;
+    uint32_t boxMaxY = box->Center().Y() + box->Size().Y() / 2;
 
     minX = std::min<uint32_t>(minX, boxMinX);
     maxX = std::max<uint32_t>(maxX, boxMaxX);
@@ -805,9 +805,9 @@ BoundingBox Ogre2BoundingBoxCamera::MergeBoxes2D(
 
   uint32_t width = maxX - minX;
   uint32_t height = maxY - minY;
-  mergedBox.size.Set(width, height);
-  mergedBox.center.Set(minX + width / 2, minY + height / 2);
-  mergedBox.label = _boxes[0]->label;
+  mergedBox.Size({width, height, 0});
+  mergedBox.Center({minX + width / 2, minY + height / 2, 0});
+  mergedBox.Label(_boxes[0]->Label());
 
   return mergedBox;
 }
@@ -859,7 +859,7 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     // Keep track of mesh, useful in multi-links models
     this->dataPtr->ogreIdToItem[ogreId] = item;
 
-    BoundingBox *box = new BoundingBox(BoundingBoxType::BBT_BOX3D);
+    BoundingBox *box = new BoundingBox();
 
     // Position in world coord
     Ogre::Vector3 position = worldAabb.getCenter();
@@ -868,8 +868,8 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     Ogre::Vector3 viewPosition = viewMatrix * position;
 
     // Convert to ignition::math
-    box->center = Ogre2Conversions::Convert(viewPosition);
-    box->size = Ogre2Conversions::Convert(size);
+    box->Center(Ogre2Conversions::Convert(viewPosition));
+    box->Size(Ogre2Conversions::Convert(size));
 
     // Compute the rotation of the box from its world rotation & view matrix
     auto worldCameraRotation = Ogre2Conversions::Convert(
@@ -878,7 +878,7 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
 
     // Body to camera rotation = body_world * world_camera
     auto bodyCameraRotation = worldCameraRotation * bodyWorldRotation;
-    box->orientation = bodyCameraRotation;
+    box->Orientation(bodyCameraRotation);
 
     this->dataPtr->boundingboxes[ogreId] = box;
     itor.moveNext();
@@ -890,7 +890,7 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     uint32_t ogreId = box.first;
     uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
 
-    box.second->label = label;
+    box.second->Label(label);
   }
 
   // Combine boxes of multi-links model if exists
@@ -936,8 +936,8 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
         // create new boxes when its first pixel appears
         if (!this->dataPtr->boundingboxes.count(ogreId))
         {
-          box = new BoundingBox(BoundingBoxType::BBT_VISIBLEBOX2D);
-          box->label = label;
+          box = new BoundingBox();
+          box->Label(label);
 
           boundary = new BoxBoundary();
           boundary->minX = width;
@@ -969,13 +969,9 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
     auto boxWidth = boundary->maxX - boundary->minX;
     auto boxHeight = boundary->maxY - boundary->minY;
 
-    box.second->center.X() = boundary->minX + boxWidth / 2;
-    box.second->center.Y() = boundary->minY + boxHeight / 2;
-    box.second->center.Z() = 0;
-
-    box.second->size.X() = boxWidth;
-    box.second->size.Y() = boxHeight;
-    box.second->size.Z() = 0;
+    box.second->Center({boundary->minX + boxWidth / 2,
+        boundary->minY + boxHeight / 2, 0});
+    box.second->Size({boxWidth, boxHeight, 0});
   }
 
   for (auto bb : boxesBoundary)
@@ -1053,15 +1049,11 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
 
     this->ConvertToScreenCoord(minVertex, maxVertex);
 
-    BoundingBox *box = new BoundingBox(BoundingBoxType::BBT_FULLBOX2D);
+    BoundingBox *box = new BoundingBox();
     auto boxWidth = maxVertex.x - minVertex.x;
     auto boxHeight = minVertex.y - maxVertex.y;
-    box->center.X() = minVertex.x + boxWidth / 2;
-    box->center.Y() = maxVertex.y + boxHeight / 2;
-    box->center.Z() = 0;
-    box->size.X() = boxWidth;
-    box->size.Y() = boxHeight;
-    box->size.Z() = 0;
+    box->Center({minVertex.x + boxWidth / 2, maxVertex.y + boxHeight / 2, 0});
+    box->Size({boxWidth, boxHeight, 0});
 
     this->dataPtr->boundingboxes[ogreId] = box;
 
@@ -1074,7 +1066,7 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     uint32_t ogreId = box.first;
     uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
 
-    box.second->label = label;
+    box.second->Label(label);
   }
 
   // Combine boxes of multi-links model if exists
@@ -1170,7 +1162,8 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
 
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
-  const math::Vector2i &_point1, const math::Vector2i &_point2)
+  const math::Vector2i &_point1, const math::Vector2i &_point2,
+  const ignition::math::Color &_color) const
 {
   int x0, y0, x1, y1;
 
@@ -1207,9 +1200,9 @@ void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
     {
       // Plot the point
       auto index = (y * this->ImageWidth() + x) * 3;
-      _data[index] = 0;
-      _data[index + 1] = 255;
-      _data[index + 2] = 0;
+      _data[index] = 255 * _color.R();
+      _data[index + 1] = 255 * _color.G();
+      _data[index + 2] = 255 * _color.B();
 
       if (D > 0)
       {
@@ -1253,9 +1246,9 @@ void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
     {
       // Plot the point
       auto index = (y * this->ImageWidth() + x) * 3;
-      _data[index] = 0;
-      _data[index + 1] = 255;
-      _data[index + 2] = 0;
+      _data[index] = 255 * _color.R();
+      _data[index + 1] = 255 * _color.G();
+      _data[index + 2] = 255 * _color.B();
 
       if (D > 0)
       {
@@ -1271,14 +1264,14 @@ void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
 }
 
 /////////////////////////////////////////////////
-void Ogre2BoundingBoxCamera::DrawBoundingBox(
-  unsigned char *_data, const BoundingBox &_box)
+void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
+    const math::Color &_color, const BoundingBox &_box) const
 {
   // 3D box
-  if (_box.type == BoundingBoxType::BBT_BOX3D)
+  if (this->Type() == BoundingBoxType::BBT_BOX3D)
   {
     // Get the 3D vertices of the box in 3D camera coord.
-    auto vertices = _box.Vertices();
+    auto vertices = _box.Vertices3D();
 
     // Project the 3D vertices in 3D camera coord to 2D vertices in clip coord
     auto projMatrix = this->ogreCamera->getProjectionMatrix();
@@ -1304,7 +1297,7 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
     /*
 
         1 -------- 0
-        /|         /|
+       /|         /|
       2 -------- 3 .
       | |        | |
       . 5 -------- 4
@@ -1363,17 +1356,20 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
     }
 
     for (unsigned int endPt = 0; endPt < projVertices.size(); endPt += 2)
-      this->DrawLine(_data, projVertices[endPt], projVertices[endPt + 1]);
+    {
+      this->DrawLine(_data, projVertices[endPt], projVertices[endPt + 1],
+          _color);
+    }
 
     return;
   }
 
   // 2D box
-  math::Vector2 minVertex(_box.center.X() - _box.size.X() / 2,
-    _box.center.Y() - _box.size.Y() / 2);
+  math::Vector2 minVertex(_box.Center().X() - _box.Size().X() / 2,
+    _box.Center().Y() - _box.Size().Y() / 2);
 
-  math::Vector2 maxVertex(_box.center.X() + _box.size.X() / 2,
-    _box.center.Y() + _box.size.Y() / 2);
+  math::Vector2 maxVertex(_box.Center().X() + _box.Size().X() / 2,
+    _box.Center().Y() + _box.Size().Y() / 2);
 
   uint32_t width = this->ImageWidth();
 
@@ -1387,9 +1383,9 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
     for (auto j : x_values)
     {
       auto index = (i * width + j) * 3;
-      _data[index] = 0;
-      _data[index + 1] = 255;
-      _data[index + 2] = 0;
+      _data[index] = 255 * _color.R();
+      _data[index + 1] = 255 * _color.G();
+      _data[index + 2] = 255 * _color.B();
     }
   }
   for (auto i : y_values)
@@ -1397,9 +1393,9 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(
     for (uint32_t j = minVertex.X(); j < maxVertex.X(); j++)
     {
       auto index = (i * width + j) * 3;
-      _data[index] = 0;
-      _data[index + 1] = 255;
-      _data[index + 2] = 0;
+      _data[index] = 255 * _color.R();
+      _data[index + 1] = 255 * _color.G();
+      _data[index + 2] = 255 * _color.B();
     }
   }
 }
@@ -1431,7 +1427,7 @@ void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
 }
 
 /////////////////////////////////////////////////
-std::vector<BoundingBox> Ogre2BoundingBoxCamera::BoundingBoxData() const
+const std::vector<BoundingBox> &Ogre2BoundingBoxCamera::BoundingBoxData() const
 {
     return this->dataPtr->outputBoxes;
 }

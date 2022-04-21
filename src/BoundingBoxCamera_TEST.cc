@@ -51,7 +51,8 @@ void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
   ASSERT_NE(nullptr, scene);
 
   BoundingBoxCameraPtr camera(scene->CreateBoundingBoxCamera());
-  EXPECT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
+  camera->SetBoundingBoxType(BoundingBoxType::BBT_VISIBLEBOX2D);
 
   // Test Draw Bounding Box
   int width = 200;
@@ -60,21 +61,19 @@ void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
 
   unsigned char *data = new unsigned char[width * height * channels];
 
-  BoundingBox box(BoundingBoxType::BBT_VISIBLEBOX2D);
-  box.center.X() = 125;
-  box.center.Y() = 125;
-  box.size.X() = 50;
-  box.size.Y() = 50;
+  BoundingBox box;
+  box.Center({125, 125, 0});
+  box.Size({50, 50, 0});
 
   camera->SetImageWidth(width);
   camera->SetImageHeight(height);
-  camera->DrawBoundingBox(data, box);
+  camera->DrawBoundingBox(data, ignition::math::Color::Green, box);
 
   // test the boundaries (min & max box's points) color
-  uint32_t minX = uint32_t(box.center.X() - box.size.X() / 2);
-  uint32_t minY = uint32_t(box.center.Y() - box.size.Y() / 2);
-  uint32_t maxX = uint32_t(box.center.X() + box.size.X() / 2);
-  uint32_t maxY = uint32_t(box.center.Y() + box.size.Y() / 2);
+  uint32_t minX = uint32_t(box.Center().X() - box.Size().X() / 2);
+  uint32_t minY = uint32_t(box.Center().Y() - box.Size().Y() / 2);
+  uint32_t maxX = uint32_t(box.Center().X() + box.Size().X() / 2);
+  uint32_t maxY = uint32_t(box.Center().Y() + box.Size().Y() / 2);
   int minIndex = (minY * width + minX) * channels;
   int maxIndex = (maxY * width + (maxX-1)) * channels;
 

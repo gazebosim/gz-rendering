@@ -312,12 +312,14 @@ void SaveBoxes(const std::vector<ir::BoundingBox> &_boxes)
       return;
   }
 
-  std::string filename = savePath + "/boxes" + std::to_string(g_counter) + ".txt";
+  std::string filename =
+    savePath + "/boxes" + std::to_string(g_counter) + ".txt";
   std::ofstream file(filename);
 
   for (const auto &box : _boxes)
   {
-    file << box.center << " " << box.size << " " << box.orientation << '\n';
+    file << box.Center() << " " << box.Size() << " " << box.Orientation()
+         << '\n';
   }
   file.close();
 }
@@ -349,7 +351,7 @@ void OnNewBoundingBoxes(const std::vector<ir::BoundingBox> &_boxes)
   std::lock_guard<std::mutex> lock(g_boxesMutex);
   unsigned char *data = g_image->Data<unsigned char>();
   for (const auto &box : _boxes)
-    g_camera_bbox->DrawBoundingBox(data, box);
+    g_camera_bbox->DrawBoundingBox(data, ignition::math::Color::Green, box);
 
   g_boxes = _boxes;
 }

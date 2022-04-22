@@ -27,18 +27,9 @@ set_property(
   OGRE2_VERSION="${OGRE2_VERSION}"
 )
 
-if (HAVE_OGRE-Next)
-  target_include_directories(${ogre2_target}
-    PUBLIC
-      ${OGRE-Next_INCLUDE_DIRS}
-      ${OGRE-Next_HlmsUnlit_INCLUDE_DIRS}
-      ${OGRE-Next_HlmsPbs_INCLUDE_DIRS}/../Common
-  )
-endif()
-
 target_include_directories(${ogre2_target}
   PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(${ogre2_target}
@@ -48,17 +39,7 @@ target_link_libraries(${ogre2_target}
     ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
     terra
-)
-
-if (HAVE_OGRE-Next)
-  target_link_libraries(${ogre2_target}
-    PRIVATE
-      ${OGRE-Next_LIBRARIES})
-else()
-  target_link_libraries(${ogre2_target}
-    PRIVATE
-      IgnOGRE2::IgnOGRE2)
-endif()
+    IgnOGRE2::IgnOGRE2)
 
 set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
 set (unversioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_NO_VERSION_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})

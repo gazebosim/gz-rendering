@@ -137,7 +137,8 @@ namespace Ogre
     public: virtual void hlmsTypeChanged(
         bool _casterPass,
         CommandBuffer *_commandBuffer,
-        const HlmsDatablock *_datablock) override;
+        const HlmsDatablock *_datablock,
+        size_t _texUnit) override;
 
     // Documentation inherited
     public: virtual uint32 fillBuffersForV1(

@@ -355,7 +355,8 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
               << subMesh.SubMeshPrimitiveType() << "]\n";
       }
 
-      ogreSubMesh->vertexData[Ogre::VpNormal] = new Ogre::v1::VertexData();
+      ogreSubMesh->vertexData[Ogre::VpNormal] =
+        new Ogre::v1::VertexData(ogreMesh->getHardwareBufferManager());
       vertexData = ogreSubMesh->vertexData[Ogre::VpNormal];
       vertexDecl = vertexData->vertexDeclaration;
 

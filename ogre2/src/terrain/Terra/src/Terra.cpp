@@ -27,24 +27,23 @@ THE SOFTWARE.
 */
 
 #include "Terra/Terra.h"
+
 #include "Terra/TerraShadowMapper.h"
 #include "Terra/Hlms/OgreHlmsTerra.h"
 
 #include "OgreImage2.h"
 
-#include "OgreCamera.h"
-#include "OgreSceneManager.h"
+#include "Compositor/OgreCompositorChannel.h"
 #include "Compositor/OgreCompositorManager2.h"
 #include "Compositor/OgreCompositorWorkspace.h"
-#include "Compositor/OgreCompositorChannel.h"
+#include "OgreCamera.h"
+#include "OgreDepthBuffer.h"
 #include "OgreMaterialManager.h"
+#include "OgrePixelFormatGpuUtils.h"
+#include "OgreSceneManager.h"
+#include "OgreStagingTexture.h"
 #include "OgreTechnique.h"
 #include "OgreTextureGpuManager.h"
-#include "OgreStagingTexture.h"
-#include "OgrePixelFormatGpuUtils.h"
-#include "OgreDescriptorSetTexture.h"
-#include "OgreHlmsManager.h"
-#include "OgreRoot.h"
 
 namespace Ogre
 {
@@ -82,14 +81,15 @@ namespace Ogre
         m_xzInvDimensions( Vector2::UNIT_SCALE ),
         m_xzRelativeSize( Vector2::UNIT_SCALE ),
         m_height( 1.0f ),
+        m_heightUnormScaled( 1.0f ),
         m_terrainOrigin( Vector3::ZERO ),
         m_basePixelDimension( 256u ),
         m_currentCell( 0u ),
-        m_descriptorSet( 0 ),
         m_heightMapTex( 0 ),
         m_normalMapTex( 0 ),
         m_prevLightDir( Vector3::ZERO ),
         m_shadowMapper( 0 ),
+        m_sharedResources( 0 ),
         m_compositorManager( compositorManager ),
         m_camera( camera ),
         mHlmsTerraIndex( std::numeric_limits<uint32>::max() )
@@ -113,7 +113,6 @@ namespace Ogre
             hlms->_unlinkTerra( this );
         }
 
-        destroyDescriptorSet();
         if( m_shadowMapper )
         {
             m_shadowMapper->destroyShadowMap();
@@ -154,40 +153,10 @@ namespace Ogre
         return value;
     }
     //-----------------------------------------------------------------------------------
-    void Terra::createDescriptorSet(void)
-    {
-        destroyDescriptorSet();
-
-        OGRE_ASSERT_LOW( m_heightMapTex );
-        OGRE_ASSERT_LOW( m_normalMapTex );
-        OGRE_ASSERT_LOW( m_shadowMapper && m_shadowMapper->getShadowMapTex() );
-
-        DescriptorSetTexture descSet;
-        descSet.mTextures.push_back( m_heightMapTex );
-        descSet.mTextures.push_back( m_normalMapTex );
-        descSet.mTextures.push_back( m_shadowMapper->getShadowMapTex() );
-        descSet.mShaderTypeTexCount[VertexShader]   = 1u;
-        descSet.mShaderTypeTexCount[PixelShader]    = 2u;
-
-        HlmsManager *hlmsManager = Root::getSingleton().getHlmsManager();
-        m_descriptorSet = hlmsManager->getDescriptorSetTexture( descSet );
-    }
-    //-----------------------------------------------------------------------------------
-    void Terra::destroyDescriptorSet(void)
-    {
-        if( m_descriptorSet )
-        {
-            HlmsManager *hlmsManager = Root::getSingleton().getHlmsManager();
-            hlmsManager->destroyDescriptorSetTexture( m_descriptorSet );
-            m_descriptorSet = 0;
-        }
-    }
-    //-----------------------------------------------------------------------------------
     void Terra::destroyHeightmapTexture(void)
     {
         if( m_heightMapTex )
         {
-            destroyDescriptorSet();
             TextureGpuManager *textureManager =
                     mManager->getDestinationRenderSystem()->getTextureGpuManager();
             textureManager->destroyTexture( m_heightMapTex );
@@ -212,22 +181,34 @@ namespace Ogre
 
         TextureGpuManager *textureManager =
                 mManager->getDestinationRenderSystem()->getTextureGpuManager();
+        m_heightUnormScaled = m_height;
+        PixelFormatGpu pixelFormat = image.getPixelFormat();
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        // Many Android GPUs don't support PFG_R16_UNORM so we scale it by hand
+        if( pixelFormat == PFG_R16_UNORM &&
+            !textureManager->checkSupport( PFG_R16_UNORM, TextureTypes::Type2D, 0 ) )
+        {
+            pixelFormat = PFG_R16_UINT;
+            m_heightUnormScaled /= 65535.0f;
+        }
+#endif
+
         m_heightMapTex = textureManager->createTexture(
                              "HeightMapTex" + StringConverter::toString( getId() ),
                              GpuPageOutStrategy::SaveToSystemRam,
                              TextureFlags::ManualTexture,
                              TextureTypes::Type2D );
         m_heightMapTex->setResolution( image.getWidth(), image.getHeight() );
-        m_heightMapTex->setPixelFormat( image.getPixelFormat() );
+        m_heightMapTex->setPixelFormat( pixelFormat );
         m_heightMapTex->scheduleTransitionTo( GpuResidency::Resident );
 
         StagingTexture *stagingTexture = textureManager->getStagingTexture( image.getWidth(),
                                                                             image.getHeight(),
                                                                             1u, 1u,
-                                                                            image.getPixelFormat() );
+                                                                            pixelFormat );
         stagingTexture->startMapRegion();
         TextureBox texBox = stagingTexture->mapRegion( image.getWidth(), image.getHeight(), 1u, 1u,
-                                                       image.getPixelFormat() );
+                                                       pixelFormat );
 
         //for( uint8 mip=0; mip<numMipmaps; ++mip )
         texBox.copyFrom( image.getData( 0 ) );
@@ -235,11 +216,10 @@ namespace Ogre
         stagingTexture->upload( texBox, m_heightMapTex, 0, 0, 0 );
         textureManager->removeStagingTexture( stagingTexture );
         stagingTexture = 0;
-
-        m_heightMapTex->notifyDataIsReady();
     }
     //-----------------------------------------------------------------------------------
-    void Terra::createHeightmap( Image2 &image, const String &imageName )
+    void Terra::createHeightmap( Image2 &image, const String &imageName, bool bMinimizeMemoryConsumption,
+                                 bool bLowResShadow )
     {
         m_width = image.getWidth();
         m_depth = image.getHeight();
@@ -300,9 +280,9 @@ namespace Ogre
 
         delete m_shadowMapper;
         m_shadowMapper = new ShadowMapper( mManager, m_compositorManager );
-        m_shadowMapper->createShadowMap( getId(), m_heightMapTex );
-
-        createDescriptorSet();
+        m_shadowMapper->_setSharedResources( m_sharedResources );
+        m_shadowMapper->setMinimizeMemoryConsumption( bMinimizeMemoryConsumption );
+        m_shadowMapper->createShadowMap( getId(), m_heightMapTex, bLowResShadow );
 
         calculateOptimumSkirtSize();
     }
@@ -312,19 +292,28 @@ namespace Ogre
         destroyNormalTexture();
 
         TextureGpuManager *textureManager =
-                mManager->getDestinationRenderSystem()->getTextureGpuManager();
+            mManager->getDestinationRenderSystem()->getTextureGpuManager();
         m_normalMapTex = textureManager->createTexture(
-                             "NormalMapTex_" + StringConverter::toString( getId() ),
-                             GpuPageOutStrategy::SaveToSystemRam,
-                             TextureFlags::RenderToTexture|TextureFlags::AllowAutomipmaps,
-                             TextureTypes::Type2D );
+            "NormalMapTex_" + StringConverter::toString( getId() ), GpuPageOutStrategy::SaveToSystemRam,
+            TextureFlags::ManualTexture, TextureTypes::Type2D );
         m_normalMapTex->setResolution( m_heightMapTex->getWidth(), m_heightMapTex->getHeight() );
-        m_normalMapTex->setNumMipmaps(
-                    PixelFormatGpuUtils::getMaxMipmapCount( m_normalMapTex->getWidth(),
-                                                            m_normalMapTex->getHeight() ) );
-        m_normalMapTex->setPixelFormat( PFG_R10G10B10A2_UNORM );
+        m_normalMapTex->setNumMipmaps( PixelFormatGpuUtils::getMaxMipmapCount(
+            m_normalMapTex->getWidth(), m_normalMapTex->getHeight() ) );
+        if( textureManager->checkSupport(
+                PFG_R10G10B10A2_UNORM, TextureTypes::Type2D,
+                TextureFlags::RenderToTexture | TextureFlags::AllowAutomipmaps ) )
+        {
+            m_normalMapTex->setPixelFormat( PFG_R10G10B10A2_UNORM );
+        }
+        else
+        {
+            m_normalMapTex->setPixelFormat( PFG_RGBA8_UNORM );
+        }
         m_normalMapTex->scheduleTransitionTo( GpuResidency::Resident );
-        m_normalMapTex->notifyDataIsReady();
+
+        Ogre::TextureGpu *tmpRtt = TerraSharedResources::getTempTexture(
+            "TMP NormalMapTex_", getId(), m_sharedResources, TerraSharedResources::TmpNormalMap,
+            m_normalMapTex, TextureFlags::RenderToTexture | TextureFlags::AllowAutomipmaps );
 
         MaterialPtr normalMapperMat = MaterialManager::getSingleton().load(
                     "Terra/GpuNormalMapper",
@@ -334,8 +323,9 @@ namespace Ogre
         TextureUnitState *texUnit = pass->getTextureUnitState(0);
         texUnit->setTexture( m_heightMapTex );
 
-        //Normalize vScale for better precision in the shader math
-        const Vector3 vScale = Vector3( m_xzRelativeSize.x, m_height, m_xzRelativeSize.y ).normalisedCopy();
+        // Normalize vScale for better precision in the shader math
+        const Vector3 vScale =
+            Vector3( m_xzRelativeSize.x, m_heightUnormScaled, m_xzRelativeSize.y ).normalisedCopy();
 
         GpuProgramParametersSharedPtr psParams = pass->getFragmentProgramParameters();
         psParams->setNamedConstant( "heightMapResolution", Vector4( static_cast<Real>( m_width ),
@@ -344,26 +334,35 @@ namespace Ogre
         psParams->setNamedConstant( "vScale", vScale );
 
         CompositorChannelVec finalTargetChannels( 1, CompositorChannel() );
-        finalTargetChannels[0] = m_normalMapTex;
+        finalTargetChannels[0] = tmpRtt;
 
         Camera *dummyCamera = mManager->createCamera( "TerraDummyCamera" );
 
-        CompositorWorkspace *workspace =
-                m_compositorManager->addWorkspace( mManager, finalTargetChannels, dummyCamera,
-                                                   "Terra/GpuNormalMapperWorkspace", false );
+        const IdString workspaceName = m_heightMapTex->getPixelFormat() == PFG_R16_UINT
+                                           ? "Terra/GpuNormalMapperWorkspaceU16"
+                                           : "Terra/GpuNormalMapperWorkspace";
+        CompositorWorkspace *workspace = m_compositorManager->addWorkspace(
+            mManager, finalTargetChannels, dummyCamera, workspaceName, false );
         workspace->_beginUpdate( true );
         workspace->_update();
         workspace->_endUpdate( true );
 
         m_compositorManager->removeWorkspace( workspace );
         mManager->destroyCamera( dummyCamera );
+
+        for( uint8 i = 0u; i < m_normalMapTex->getNumMipmaps(); ++i )
+        {
+            tmpRtt->copyTo( m_normalMapTex, m_normalMapTex->getEmptyBox( i ), i,
+                            tmpRtt->getEmptyBox( i ), i );
+        }
+
+        TerraSharedResources::destroyTempTexture( m_sharedResources, tmpRtt );
     }
     //-----------------------------------------------------------------------------------
     void Terra::destroyNormalTexture(void)
     {
         if( m_normalMapTex )
         {
-            destroyDescriptorSet();
             TextureGpuManager *textureManager =
                     mManager->getDestinationRenderSystem()->getTextureGpuManager();
             textureManager->destroyTexture( m_normalMapTex );
@@ -386,14 +385,14 @@ namespace Ogre
             float minHeight = m_heightMap[y * m_width];
             for( size_t x=0; x<m_width; ++x )
             {
-                const float minValue = Ogre::min( m_heightMap[y * m_width + x],
+                const float minValue = std::min( m_heightMap[y * m_width + x],
                                                   m_heightMap[ny * m_width + x] );
-                minHeight = Ogre::min( minValue, minHeight );
+                minHeight = std::min( minValue, minHeight );
                 allEqualInLine &= m_heightMap[y * m_width + x] == m_heightMap[ny * m_width + x];
             }
 
             if( !allEqualInLine )
-                m_skirtSize = Ogre::min( minHeight, m_skirtSize );
+                m_skirtSize = std::min( minHeight, m_skirtSize );
         }
 
         for( size_t x=basePixelDimension-1u; x<m_width-1u; x += basePixelDimension )
@@ -404,17 +403,21 @@ namespace Ogre
             float minHeight = m_heightMap[x];
             for( size_t y=0; y<m_depth; ++y )
             {
-                const float minValue = Ogre::min( m_heightMap[y * m_width + x],
+                const float minValue = std::min( m_heightMap[y * m_width + x],
                                                   m_heightMap[y * m_width + nx] );
-                minHeight = Ogre::min( minValue, minHeight );
+                minHeight = std::min( minValue, minHeight );
                 allEqualInLine &= m_heightMap[y * m_width + x] == m_heightMap[y * m_width + nx];
             }
 
             if( !allEqualInLine )
-                m_skirtSize = Ogre::min( minHeight, m_skirtSize );
+                m_skirtSize = std::min( minHeight, m_skirtSize );
         }
 
         m_skirtSize /= m_height;
+
+        // Many Android GPUs don't support PFG_R16_UNORM so we scale it by hand
+        if( m_heightMapTex->getPixelFormat() == PFG_R16_UINT )
+            m_skirtSize *= 65535.0f;
     }
     //-----------------------------------------------------------------------------------
     inline GridPoint Terra::worldToGrid( const Vector3 &vPos ) const
@@ -528,6 +531,13 @@ namespace Ogre
             mRenderables.push_back( *itor++ );
 
         m_collectedCells[0].clear();
+    }
+    //-----------------------------------------------------------------------------------
+    void Terra::setSharedResources( TerraSharedResources *sharedResources )
+    {
+        m_sharedResources = sharedResources;
+        if( m_shadowMapper )
+            m_shadowMapper->_setSharedResources( sharedResources );
     }
     //-----------------------------------------------------------------------------------
     // IGN CUSTOMIZE BEGIN
@@ -693,16 +703,17 @@ namespace Ogre
         }
     }
     //-----------------------------------------------------------------------------------
-    void Terra::load( const String &texName, const Vector3 &center, const Vector3 &dimensions )
+    void Terra::load( const String &texName, const Vector3 &center, const Vector3 &dimensions,
+                      bool bMinimizeMemoryConsumption, bool bLowResShadow )
     {
         Ogre::Image2 image;
         image.load( texName, ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME );
 
-        load( image, center, dimensions, texName );
+        load( image, center, dimensions, bMinimizeMemoryConsumption, bLowResShadow, texName );
     }
     //-----------------------------------------------------------------------------------
-    void Terra::load( Image2 &image, Vector3 center,
-                      Vector3 dimensions, const String &imageName )
+    void Terra::load( Image2 &image, Vector3 center, Vector3 dimensions, bool bMinimizeMemoryConsumption,
+                      bool bLowResShadow, const String &imageName )
     {
         // Use sign-preserving because origin in XZ plane is always from
         // bottom-left to top-right.
@@ -714,7 +725,7 @@ namespace Ogre
         m_xzInvDimensions = 1.0f / m_xzDimensions;
         m_height = dimensions.y;
         m_basePixelDimension = 64u;
-        createHeightmap( image, imageName );
+        createHeightmap( image, imageName, bMinimizeMemoryConsumption, bLowResShadow );
 
         {
             //Find out how many TerrainCells we need. I think this might be
@@ -871,5 +882,81 @@ namespace Ogre
         m_savedState.m_renderables.swap( mRenderables );
         std::swap( m_savedState.m_currentCell, m_currentCell );
         std::swap( m_savedState.m_camera, m_camera );
+    }
+    //-----------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------
+    TerraSharedResources::TerraSharedResources()
+    {
+        memset( textures, 0, sizeof( textures ) );
+    }
+    //-----------------------------------------------------------------------------------
+    TerraSharedResources::~TerraSharedResources()
+    {
+        freeAllMemory();
+    }
+    //-----------------------------------------------------------------------------------
+    void TerraSharedResources::freeAllMemory()
+    {
+        freeStaticMemory();
+
+        for( size_t i = NumStaticTmpTextures; i < NumTemporaryUsages; ++i )
+        {
+            if( textures[i] )
+            {
+                TextureGpuManager *textureManager = textures[i]->getTextureManager();
+                textureManager->destroyTexture( textures[i] );
+                textures[i] = 0;
+            }
+        }
+    }
+    //-----------------------------------------------------------------------------------
+    void TerraSharedResources::freeStaticMemory()
+    {
+        for( size_t i = 0u; i < NumStaticTmpTextures; ++i )
+        {
+            if( textures[i] )
+            {
+                TextureGpuManager *textureManager = textures[i]->getTextureManager();
+                textureManager->destroyTexture( textures[i] );
+                textures[i] = 0;
+            }
+        }
+    }
+    //-----------------------------------------------------------------------------------
+    TextureGpu *TerraSharedResources::getTempTexture( const char *texName, IdType id,
+                                                      TerraSharedResources *sharedResources,
+                                                      TemporaryUsages temporaryUsage,
+                                                      TextureGpu *baseTemplate, uint32 flags )
+    {
+        TextureGpu *tmpRtt = 0;
+
+        if( sharedResources && sharedResources->textures[temporaryUsage] )
+            tmpRtt = sharedResources->textures[temporaryUsage];
+        else
+        {
+            TextureGpuManager *textureManager = baseTemplate->getTextureManager();
+            tmpRtt = textureManager->createTexture( texName + StringConverter::toString( id ),
+                                                    GpuPageOutStrategy::Discard, flags,
+                                                    TextureTypes::Type2D );
+            tmpRtt->copyParametersFrom( baseTemplate );
+            tmpRtt->scheduleTransitionTo( GpuResidency::Resident );
+            if( flags & TextureFlags::RenderToTexture )
+                tmpRtt->_setDepthBufferDefaults( DepthBuffer::POOL_NO_DEPTH, false, PFG_UNKNOWN );
+
+            if( sharedResources )
+                sharedResources->textures[temporaryUsage] = tmpRtt;
+        }
+        return tmpRtt;
+    }
+    //-----------------------------------------------------------------------------------
+    void TerraSharedResources::destroyTempTexture( TerraSharedResources *sharedResources,
+                                                   TextureGpu *tmpRtt )
+    {
+        if( !sharedResources )
+        {
+            TextureGpuManager *textureManager = tmpRtt->getTextureManager();
+            textureManager->destroyTexture( tmpRtt );
+        }
     }
 }

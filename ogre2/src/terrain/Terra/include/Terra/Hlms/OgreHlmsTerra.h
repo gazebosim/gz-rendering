@@ -58,10 +58,10 @@ namespace Ogre
     {
     protected:
         MovableObject const *mLastMovableObject;
-        DescriptorSetSampler const *mTerraDescSetSampler;
 
         FastArray<Terra *> mLinkedTerras;
 
+    protected:
         virtual HlmsDatablock* createDatablockImpl( IdString datablockName,
                                                     const HlmsMacroblock *macroblock,
                                                     const HlmsBlendblock *blendblock,
@@ -94,6 +94,10 @@ namespace Ogre
         void _unlinkTerra( Terra *terra );
 
         virtual void _changeRenderSystem( RenderSystem *newRs );
+
+        virtual void analyzeBarriers( BarrierSolver &barrierSolver,
+                                      ResourceTransitionArray &resourceTransitions,
+                                      Camera *renderingCamera, const bool bCasterPass );
 
         virtual uint32 fillBuffersFor( const HlmsCache *cache, const QueuedRenderable &queuedRenderable,
                                        bool casterPass, uint32 lastCacheHash,

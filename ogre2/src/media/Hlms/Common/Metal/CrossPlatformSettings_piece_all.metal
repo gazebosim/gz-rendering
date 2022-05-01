@@ -40,8 +40,6 @@ inline float3x3 toMat3x3( float3x4 m )
 #define NO_INTERPOLATION_PREFIX
 #define NO_INTERPOLATION_SUFFIX [[flat]]
 
-#define finalDrawId drawId
-
 #define floatBitsToUint(x) as_type<uint>(x)
 #define uintBitsToFloat(x) as_type<float>(x)
 #define floatBitsToInt(x) as_type<int>(x)
@@ -49,9 +47,13 @@ inline float3x3 toMat3x3( float3x4 m )
 #define discard discard_fragment()
 
 #define inVs_vertex input.position
+#define inVs_normal input.normal
+#define inVs_tangent input.tangent
+#define inVs_binormal input.binormal
 #define inVs_blendWeights input.blendWeights
 #define inVs_blendIndices input.blendIndices
 #define inVs_qtangent input.qtangent
+#define inVs_colour input.colour
 @property( iOS )
 	@property( !hlms_instanced_stereo )
 		#define inVs_drawId (baseInstance + instanceId)
@@ -70,9 +72,10 @@ inline float3x3 toMat3x3( float3x4 m )
 @foreach( hlms_uv_count, n )
     #define inVs_uv@n input.uv@n@end
 
+#define finalDrawId inVs_drawId
+
 #define outVs_Position outVs.gl_Position
 #define outVs_viewportIndex outVs.gl_ViewportIndex
-#define outVs_clipDistance outVs.gl_ClipDistance
 #define outVs_clipDistance0 outVs.gl_ClipDistance[0]
 
 #define gl_SampleMaskIn0 gl_SampleMask
@@ -100,10 +103,14 @@ inline float3x3 toMat3x3( float3x4 m )
 
 #define bufferFetch( buffer, idx ) buffer[idx]
 #define bufferFetch1( buffer, idx ) buffer[idx]
+#define readOnlyFetch( bufferVar, idx ) bufferVar[idx]
+#define readOnlyFetch1( bufferVar, idx ) bufferVar[idx]
 
 #define structuredBufferFetch( buffer, idx ) buffer[idx]
 
 #define OGRE_Texture3D_float4 texture3d<float>
+
+#define OGRE_ArrayTex( declType, varName, arrayCount ) array<declType, arrayCount> varName
 
 #define OGRE_SAMPLER_ARG_DECL( samplerName ) , sampler samplerName
 #define OGRE_SAMPLER_ARG( samplerName ) , samplerName

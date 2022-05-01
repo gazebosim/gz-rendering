@@ -862,6 +862,12 @@ Ogre::MaterialPtr Ogre2Material::Material()
     case GraphicsAPI::OPENGL:
     case GraphicsAPI::VULKAN:
       this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.glsl");
+      this->dataPtr->ogreSolidColorShader->setReplaceVersionMacro(true);
+      if (graphicsApi == GraphicsAPI::VULKAN)
+      {
+        this->dataPtr->ogreSolidColorShader->setPrefabRootLayout(
+          Ogre::PrefabRootLayout::Standard);
+      }
       break;
     case GraphicsAPI::DIRECT3D11:
       this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.hlsl");

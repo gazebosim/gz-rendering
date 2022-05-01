@@ -15,23 +15,30 @@
  *
  */
 
-#version 330
+#version ogre_glsl_ver_330
 
+vulkan_layout( location = 0 )
 in block
 {
   vec2 uv0;
   vec3 cameraDir;
 } inPs;
 
-uniform sampler2D colorTexture;
-uniform sampler2D depthTexture;
+vulkan_layout( ogre_t0 ) uniform texture2D colorTexture;
+vulkan_layout( ogre_t1 ) uniform texture2D depthTexture;
+
+vulkan( layout( ogre_s0 ) uniform sampler texSampler );
+
 uniform vec4 colorTexResolution;
 
+vulkan_layout( location = 0 )
 out vec4 fragColor;
 
-uniform vec2 projectionParams;
-uniform float far;
-uniform float inf;
+vulkan( layout( ogre_P0 ) uniform Params { )
+	uniform vec2 projectionParams;
+	uniform float far;
+	uniform float inf;
+vulkan( }; )
 
 float packFloat(vec4 color)
 {
@@ -45,7 +52,7 @@ float packFloat(vec4 color)
 void main()
 {
   // get linear depth
-  float fDepth = texture(depthTexture, inPs.uv0).x;
+  float fDepth = texture(vkSampler2D(depthTexture,texSampler), inPs.uv0).x;
   float d = projectionParams.y / (fDepth - projectionParams.x);
 
   // reconstruct 3d viewspace pos from depth

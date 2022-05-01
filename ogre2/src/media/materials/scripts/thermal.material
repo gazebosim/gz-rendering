@@ -19,10 +19,6 @@
 vertex_program ThermalCameraVS_GLSL glsl
 {
   source depth_camera_vs.glsl
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program ThermalCameraFS_GLSL glsl
@@ -36,14 +32,21 @@ fragment_program ThermalCameraFS_GLSL glsl
   }
 }
 
+// Vulkan shaders
+vertex_program ThermalCameraVS_VK glslvk
+{
+  source depth_camera_vs.glsl
+}
+
+fragment_program ThermalCameraFS_VK glslvk
+{
+  source thermal_camera_fs.glsl
+}
+
 // Metal shaders
 vertex_program ThermalCameraVS_Metal metal
 {
   source depth_camera_vs.metal
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program ThermalCameraFS_Metal metal
@@ -57,12 +60,19 @@ vertex_program ThermalCameraVS unified
 {
   delegate ThermalCameraVS_GLSL
   delegate ThermalCameraVS_Metal
+  delegate ThermalCameraVS_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
 }
 
 fragment_program ThermalCameraFS unified
 {
   delegate ThermalCameraFS_GLSL
   delegate ThermalCameraFS_Metal
+  delegate ThermalCameraFS_VK
 }
 
 material ThermalCamera
@@ -92,23 +102,23 @@ vertex_program heat_source_vs_GLSL glsl
 {
   source plain_color_vs.glsl
   num_clip_distances 1
-
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-    param_named_auto worldView worldview_matrix
-    param_named ignMinClipDistance float 0.0
-  }
 }
 
 fragment_program heat_source_fs_GLSL glsl
 {
   source plain_color_fs.glsl
+}
 
-  default_params
-  {
-    param_named inColor float4 1 1 1 1
-  }
+// Vulkan shaders
+vertex_program heat_source_vs_VK glslvk
+{
+  source plain_color_vs.glsl
+  num_clip_distances 1
+}
+
+fragment_program heat_source_fs_VK glslvk
+{
+  source plain_color_fs.glsl
 }
 
 // Metal shaders
@@ -116,13 +126,6 @@ vertex_program heat_source_vs_Metal metal
 {
   source plain_color_vs.metal
   num_clip_distances 1
-
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-    param_named_auto worldView worldview_matrix
-    param_named ignMinClipDistance float 0.0
-  }
 }
 
 fragment_program heat_source_fs_Metal metal
@@ -136,12 +139,26 @@ vertex_program heat_source_vs unified
 {
   delegate heat_source_vs_GLSL
   delegate heat_source_vs_Metal
+  delegate heat_source_vs_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+    param_named_auto worldView worldview_matrix
+    param_named ignMinClipDistance float 0.0
+  }
 }
 
 fragment_program heat_source_fs unified
 {
   delegate heat_source_fs_GLSL
   delegate heat_source_fs_Metal
+  delegate heat_source_fs_VK
+
+  default_params
+  {
+    param_named inColor float4 1 1 1 1
+  }
 }
 
 material ThermalHeatSource
@@ -171,10 +188,6 @@ material ThermalHeatSource
 vertex_program HeatSignatureVS_GLSL glsl
 {
   source gaussian_noise_vs.glsl
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program HeatSignatureFS_GLSL glsl
@@ -186,14 +199,21 @@ fragment_program HeatSignatureFS_GLSL glsl
   }
 }
 
+// Vulkan shaders
+vertex_program HeatSignatureVS_VK glslvk
+{
+  source gaussian_noise_vs.glsl
+}
+
+fragment_program HeatSignatureFS_VK glslvk
+{
+  source heat_signature_fs.glsl
+}
+
 // Metal shaders
 vertex_program HeatSignatureVS_Metal metal
 {
   source gaussian_noise_vs.metal
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program HeatSignatureFS_Metal metal
@@ -207,12 +227,19 @@ vertex_program HeatSignatureVS unified
 {
   delegate HeatSignatureVS_GLSL
   delegate HeatSignatureVS_Metal
+  delegate HeatSignatureVS_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
 }
 
 fragment_program HeatSignatureFS unified
 {
   delegate HeatSignatureFS_GLSL
   delegate HeatSignatureFS_Metal
+  delegate HeatSignatureFS_VK
 }
 
 material ThermalHeatSignature

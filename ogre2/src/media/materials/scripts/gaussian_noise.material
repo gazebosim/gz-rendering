@@ -19,10 +19,6 @@
 vertex_program GaussianNoiseVS_GLSL glsl
 {
   source gaussian_noise_vs.glsl
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program GaussianNoiseFS_GLSL glsl
@@ -31,20 +27,24 @@ fragment_program GaussianNoiseFS_GLSL glsl
   default_params
   {
     param_named RT int 0
-    param_named mean float 0.0
-    param_named stddev float 1.0
-    param_named offsets float3 0.0 0.0 0.0
   }
+}
+
+// vULKAN shaders
+vertex_program GaussianNoiseVS_VK glslvk
+{
+  source gaussian_noise_vs.glsl
+}
+
+fragment_program GaussianNoiseFS_VK glslvk
+{
+  source gaussian_noise_fs.glsl
 }
 
 // Metal shaders
 vertex_program GaussianNoiseVS_Metal metal
 {
   source gaussian_noise_vs.metal
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program GaussianNoiseFS_Metal metal
@@ -58,12 +58,26 @@ vertex_program GaussianNoiseVS unified
 {
   delegate GaussianNoiseVS_GLSL
   delegate GaussianNoiseVS_Metal
+  delegate GaussianNoiseVS_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
 }
 
 fragment_program GaussianNoiseFS unified
 {
   delegate GaussianNoiseFS_GLSL
   delegate GaussianNoiseFS_Metal
+  delegate GaussianNoiseFS_VK
+
+  default_params
+  {
+    param_named mean float 0.0
+    param_named stddev float 1.0
+    param_named offsets float3 0.0 0.0 0.0
+  }
 }
 
 material GaussianNoise
@@ -96,10 +110,13 @@ fragment_program GaussianNoiseDepthFS_GLSL glsl
   default_params
   {
     param_named RT int 0
-    param_named mean float 0.0
-    param_named stddev float 1.0
-    param_named offsets float3 0.0 0.0 0.0
   }
+}
+
+// Vulkan shaders
+fragment_program GaussianNoiseDepthFS_VK glslvk
+{
+  source gaussian_noise_depth_fs.glsl
 }
 
 // Metal shaders
@@ -114,6 +131,14 @@ fragment_program GaussianNoiseDepthFS unified
 {
   delegate GaussianNoiseDepthFS_GLSL
   delegate GaussianNoiseDepthFS_Metal
+  delegate GaussianNoiseDepthFS_VK
+
+  default_params
+  {
+    param_named mean float 0.0
+    param_named stddev float 1.0
+    param_named offsets float3 0.0 0.0 0.0
+  }
 }
 
 material GaussianNoiseDepth

@@ -19,10 +19,6 @@
 vertex_program DepthCameraVS_GLSL glsl
 {
   source depth_camera_vs.glsl
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program DepthCameraFS_GLSL glsl
@@ -31,21 +27,28 @@ fragment_program DepthCameraFS_GLSL glsl
 
   default_params
   {
-    param_named depthTexture int 0
-    param_named colorTexture int 1
-    param_named particleTexture int 2
-    param_named particleDepthTexture int 3
+  param_named depthTexture int 0
+  param_named colorTexture int 1
+  param_named particleTexture int 2
+  param_named particleDepthTexture int 3
   }
+}
+
+// Vulkan shaders
+vertex_program DepthCameraVS_VK glslvk
+{
+  source depth_camera_vs.glsl
+}
+
+fragment_program DepthCameraFS_VK glslvk
+{
+  source depth_camera_fs.glsl
 }
 
 // Metal shaders
 vertex_program DepthCameraVS_Metal metal
 {
   source depth_camera_vs.metal
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program DepthCameraFS_Metal metal
@@ -59,12 +62,19 @@ vertex_program DepthCameraVS unified
 {
   delegate DepthCameraVS_GLSL
   delegate DepthCameraVS_Metal
+  delegate DepthCameraVS_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
 }
 
 fragment_program DepthCameraFS unified
 {
   delegate DepthCameraFS_GLSL
   delegate DepthCameraFS_Metal
+  delegate DepthCameraFS_VK
 }
 
 material DepthCamera
@@ -116,32 +126,30 @@ fragment_program DepthCameraFinalFS_GLSL glsl
   default_params
   {
     param_named inputTexture int 0
-
-    param_named_auto texResolution texture_size 0
   }
+}
+
+// Vulkan shaders
+vertex_program DepthCameraFinalVS_VK glslvk
+{
+  source depth_camera_final_vs.glsl
+}
+
+fragment_program DepthCameraFinalFS_VK glslvk
+{
+  source depth_camera_final_fs.glsl
 }
 
 // Metal shaders
 vertex_program DepthCameraFinalVS_Metal metal
 {
   source depth_camera_final_vs.metal
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program DepthCameraFinalFS_Metal metal
 {
   source depth_camera_final_fs.metal
   shader_reflection_pair_hint DepthCameraFinalVS_Metal
-
-  default_params
-  {
-    param_named inputTexture int 0
-
-    param_named_auto texResolution texture_size 0
-  }
 }
 
 // Unified shaders
@@ -149,12 +157,24 @@ vertex_program DepthCameraFinalVS unified
 {
   delegate DepthCameraFinalVS_GLSL
   delegate DepthCameraFinalVS_Metal
+  delegate DepthCameraFinalVS_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
 }
 
 fragment_program DepthCameraFinalFS unified
 {
   delegate DepthCameraFinalFS_GLSL
   delegate DepthCameraFinalFS_Metal
+  delegate DepthCameraFinalFS_VK
+
+  default_params
+  {
+    param_named_auto texResolution texture_size 0
+  }
 }
 
 material DepthCameraFinal

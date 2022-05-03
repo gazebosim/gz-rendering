@@ -386,6 +386,9 @@ void Ogre2GpuRays::Init()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Destroy()
 {
+  if (!this->dataPtr->ogreCamera)
+    return;
+
   if (this->dataPtr->gpuRaysBuffer)
   {
     delete [] this->dataPtr->gpuRaysBuffer;
@@ -464,6 +467,32 @@ void Ogre2GpuRays::Destroy()
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorNodeDef2nd);
     this->dataPtr->ogreCompositorWorkspaceDef2nd.clear();
+  }
+
+  if (this->scene)
+  {
+    Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+    if (ogreSceneManager == nullptr)
+    {
+      ignerr << "Scene manager cannot be obtained" << std::endl;
+    }
+    else
+    {
+      for (unsigned int i = 0u; i < 6u; ++i)
+      {
+        if (this->dataPtr->cubeCam[i])
+        {
+          this->dataPtr->cubeCam[i]->removeListener(
+              this->dataPtr->particleNoiseListener[i].get());
+          ogreSceneManager->destroyCamera(this->dataPtr->cubeCam[i]);
+          this->dataPtr->cubeCam[i] = nullptr;
+        }
+        this->dataPtr->particleNoiseListener[i].reset();
+        this->dataPtr->laserRetroMaterialSwitcher[i].reset();
+      }
+      ogreSceneManager->destroyCamera(this->dataPtr->ogreCamera);
+      this->dataPtr->ogreCamera = nullptr;
+    }
   }
 }
 

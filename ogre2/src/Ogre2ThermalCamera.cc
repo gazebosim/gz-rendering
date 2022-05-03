@@ -177,7 +177,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace;
 
   /// \brief Thermal textures.
-  public: Ogre::TextureGpu *ogreThermalTexture;
+  public: Ogre::TextureGpu *ogreThermalTexture{nullptr};
 
   /// \brief Dummy render texture for the thermal data
   public: RenderTexturePtr thermalTexture = nullptr;
@@ -536,6 +536,7 @@ void Ogre2ThermalCamera::Destroy()
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->thermalMaterial->getName());
+    this->dataPtr->thermalMaterial.setNull();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
@@ -560,6 +561,8 @@ void Ogre2ThermalCamera::Destroy()
       this->ogreCamera = nullptr;
     }
   }
+
+  this->dataPtr->thermalMaterialSwitcher.reset();
 }
 
 //////////////////////////////////////////////////

@@ -798,6 +798,15 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
+
+  ASSERT_EQ(1u, camera.use_count());
+  ASSERT_EQ(1u, gpuRays.use_count());
+  ASSERT_EQ(1u, thermalCamera.use_count());
+  if (segmentationCamera)
+  {
+    ASSERT_EQ(1u, segmentationCamera.use_count());
+  }
+
   rendering::unloadEngine(engine->Name());
 }
 

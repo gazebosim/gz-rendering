@@ -196,6 +196,10 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 
   /// \brief Min allowed angle in radians;
   public: const math::Angle kMinAllowedAngle = 1e-4;
+
+  /// \brief Max number of cameras used for creating the cubemap of depth
+  /// textures for generating lidar data
+  public: const unsigned int kCubeCameraCount = 6;
 };
 
 using namespace ignition;
@@ -357,7 +361,7 @@ Ogre2GpuRays::Ogre2GpuRays()
   // r = depth, g = retro, and b = n/a
   this->channels = 3u;
 
-  for (unsigned int i = 0; i < 6u; ++i)
+  for (unsigned int i = 0; i < this->dataPtr->kCubeCameraCount; ++i)
   {
     this->dataPtr->cubeCam[i] = nullptr;
     this->dataPtr->ogreCompositorWorkspace1st[i] = nullptr;
@@ -474,11 +478,12 @@ void Ogre2GpuRays::Destroy()
     Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
     if (ogreSceneManager == nullptr)
     {
-      ignerr << "Scene manager cannot be obtained" << std::endl;
+      ignerr << "Scene manager not available. "
+             << "Unable to remove cameras and listeners" << std::endl;
     }
     else
     {
-      for (unsigned int i = 0u; i < 6u; ++i)
+      for (unsigned int i = 0u; i < this->dataPtr->kCubeCameraCount; ++i)
       {
         if (this->dataPtr->cubeCam[i])
         {
